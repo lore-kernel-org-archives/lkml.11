@@ -2,121 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238454AbiCAVAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:00:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
+        id S238457AbiCAVCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:02:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbiCAVAe (ORCPT
+        with ESMTP id S235428AbiCAVCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:00:34 -0500
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 12:59:52 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623AF70337;
-        Tue,  1 Mar 2022 12:59:52 -0800 (PST)
-Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MwQw1-1oF3sg3Nxt-00sMy4; Tue, 01 Mar 2022 21:54:47 +0100
-Received: by mail-wm1-f42.google.com with SMTP id c18-20020a7bc852000000b003806ce86c6dso1959111wml.5;
-        Tue, 01 Mar 2022 12:54:47 -0800 (PST)
-X-Gm-Message-State: AOAM530a05NOVHd+QWqarIZf3oTnW50d/On0hNZyH3ZK8It+IbmP7+V+
-        fxvPVWo0MFrrnGUtvC4Pviunihc0Wd3YCjRAppU=
-X-Google-Smtp-Source: ABdhPJyfexIsGrgwygzot8G9sKT9XjsIQsKTtfBymt2kmTT/NR84Ozb3Ztyvv7y1MPCl2UVcmgGXd7qIz2qyYblVz+s=
-X-Received: by 2002:a05:600c:4f8e:b0:381:6de4:fccc with SMTP id
- n14-20020a05600c4f8e00b003816de4fcccmr7841096wmq.82.1646168087390; Tue, 01
- Mar 2022 12:54:47 -0800 (PST)
+        Tue, 1 Mar 2022 16:02:09 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D447C70337;
+        Tue,  1 Mar 2022 13:01:27 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id q11so14464150pln.11;
+        Tue, 01 Mar 2022 13:01:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bOIBe7yMZ/zlQEAPp3pgauJ01CCSXHq9UiJfLThwzls=;
+        b=m4VXiXXvucihG1BfyCSBgKCpoAf7bhBPUcVd5IrlUqcBAGHfDiLwfTtbIlUnF4Atwb
+         wcRx3TglHBg6sS1yR7Rhpe/w08SL5+q4J2nJLF5RmIhrttU9FUE6gphazEQ656d8qARF
+         D5AVW+dQqIVyiFPifrhmmA2g0jl6oCE5gZa/I6x3MwhBZ2Zh6CwEZ5gmo0r4sf/cXzg8
+         PPVOaeGHAWRxyZKAuipGFb9tX0jfrbPeO0TvrBjbnQ3DGKsVKelB2IJlCh9sD0pL4dVs
+         nQ5MluWth6bP49ozpElfURqf9E36CSPeG11ig0kgbDLbT2aTuIf1EJKdm5fPAUQgWnzm
+         mTpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bOIBe7yMZ/zlQEAPp3pgauJ01CCSXHq9UiJfLThwzls=;
+        b=NR0oFBmOyBnNOH3aBriEvdGkR+X1q4AjkGmImA+Mgv5tKj5cXzUvVaF9Yv/uyadHR+
+         iE9OL3t9nByXh8AMQ/yBf6IIiJ+whGas5srbi92PzOQTn5Tk8HEYunXvQGGnoGo3xJQC
+         YPIJnzDHjxf/7qpbKp5+MUIJIEHvoDCNorNpjRfslGDi/a0xZCGSKwiS/xKBHHlKbjq9
+         XEfbCc7hWgUoXyA9/g9MqOsRD82X7z8TfGFVQT08v2tvsgvXwAjhS5TC2dqkE8R9cxIk
+         ucBta5E3QXt5FK8TJ+R7DzDIGk8wAhM/yXOcyqAvauLyuGi5f/fgkZXL95EkwXdJf+i3
+         9X7Q==
+X-Gm-Message-State: AOAM532fDhzTf6oNmCBSWsfDOiJ7NKOxfaYDuJ1vx2A1evI4uyNwAVoC
+        5dnw+XW7UpKUaa9nY3wKjp8=
+X-Google-Smtp-Source: ABdhPJxusFXIHW71NmkrejK1bs/xU2Fg5c+yf70kwofRE+uJGNcQbQTRIVy1oOGoXzTe+9Bf5OnySA==
+X-Received: by 2002:a17:902:c14d:b0:14f:f1b9:1eab with SMTP id 13-20020a170902c14d00b0014ff1b91eabmr27002705plj.129.1646168487197;
+        Tue, 01 Mar 2022 13:01:27 -0800 (PST)
+Received: from google.com ([2620:15c:202:201:c110:510b:4b7b:d004])
+        by smtp.gmail.com with ESMTPSA id q9-20020a056a00088900b004e03b051040sm18280946pfj.112.2022.03.01.13.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 13:01:26 -0800 (PST)
+Date:   Tue, 1 Mar 2022 13:01:23 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Sachi King <nakato@nakato.io>, Chen Yu <yu.c.chen@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] platform/surface: surfacepro3_button: don't load on
+ amd variant
+Message-ID: <Yh6Joy2HDnsuK6LN@google.com>
+References: <20211109081125.41410-1-nakato@nakato.io>
+ <20211109081125.41410-2-nakato@nakato.io>
+ <CAHp75Vcw-ARNZCRRJGzbQ7xc3ZB=98eFCuEFc4cj5W3vAj5EZw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
- <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
-In-Reply-To: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 1 Mar 2022 21:54:30 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
-Message-ID: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
-Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kernel test robot <lkp@intel.com>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        kbuild-all@lists.01.org, Arnd Bergmann <arnd@arndb.de>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:UyQiCNWs1ZLtkg6WG9++n+3GsQgzK+acpBbi33NPnZxg9U8Lwx5
- seheEZG2JPgKWzfHK4xhcCJfRX4t/+iKXpgvmzXtudKoVUDl/F6sHKr3OP6lhu9/RZwifnY
- p1tya+JEk/e9rTfqSpw8IKmfPNNWvzEnpKoLpJ61OmhzKwQwpLD82bRl6diLuPrLup6AlWx
- B5VLEJrpOJWgaCHKW8SjA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Vsttm/+D7CU=:1Sdx8KiiSCJPouRELWDGHf
- McMVhzXoPD6nxUL5Qa6xVnXmQaDnuJ4BPuvlpXeGWtGQGb3uT5XRGHRAqOob9lvzW/D9x21HQ
- KjPLwKIz/9xy1KBDym75bhpLIOzRfj1UJiPeKUR1EqCSOZnMlw5O5agGUEgd01h+SUhro5RYk
- 9oL32khYM6kg1OV00AqTZHSrSFLzCus7s9Gc3RnhMmbMmo0GIR2EzppSiqVOt+MHjg5DO4Qf1
- MS1LioWFVBx+EJ32Z+4DZV3sqKsOcywJfCptJskcOnGX5hYIG6jVqqrNoxsOBB9JLC53sSz6r
- 2t5kr3KlKMb80s3T8vbvwr4hsceNlMEWTfKDYLMIcZcGsDg7v6vRnzLEfulCftPOniBFolE1h
- llT3qd/BX+uACDvqIWYrT4kDsEh6Up8xVIjdkZ2YFMHLXYFwpSTpKKTVB6EdTqIG9NSkoidtP
- CuufGeDP+y/Qp/4XrsHpuK+lNTWaZRKqaxF56rVANrrD/QrRRxNQLCWuBql43lBb1ynMT0sed
- jCjIQ42M3xvHRb9jk6o2HferAFWWDG5lTjp25tcK0NdH2uc7E2khsDwqIghdVbfym8+r8DrOD
- E5B06qpZiqviKYgh95sVwV+3VSs5ylaTyWEDYQqk3OjYZYwqOQPUAGB8JrFLXkvi+MHD6XKjL
- lQZQr1bsH1+jZn+lyeNbYEqV5IPDxXldImVroekpUudyzFAXBgUv6nwJ6FezX2GYrs2PsvAze
- mNqaTePmRAVkoyvPBeXX3XJ51Nk4xNet65FkdmP2mdQ8un4QEZpeeRmWbtWc0kf0Ern0BNIRQ
- jgIWUab9aPQPilgM5t5qiR0w9WM8HSxeYAcjhBXg0RSKdr9jy8=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vcw-ARNZCRRJGzbQ7xc3ZB=98eFCuEFc4cj5W3vAj5EZw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 9:16 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Mar 1, 2022 at 10:00 AM kernel test robot <lkp@intel.com> wrote:
+On Tue, Nov 09, 2021 at 11:12:34AM +0200, Andy Shevchenko wrote:
+> On Tue, Nov 9, 2021 at 10:11 AM Sachi King <nakato@nakato.io> wrote:
 > >
-> > All warnings (new ones prefixed by >>):
-> >
-> > >> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
->
-> So that's potentially an interesting warning, but this email doesn't
-> actually tell *where* that warning happens.
->
-> I'm not entirely sure why this warning is new to this '-std=gnu11'
-> change, but it's intriguing.
-...
->
-> Is there some place to actually see the full log (or some way to get a
-> better pointer to just the new warning) to see that actual shift
-> overflow thing?
+> > The AMD variant of the Surface Laptop report 0 for their OEM platform
+> > revision.  The Surface devices that require the surfacepro3_button
+> > driver do not have the _DSM that gets the OEM platform revision.  If the
+> > method does not exist, load surfacepro3_button.
+> 
+> ...
+> 
+> >   * Surface Pro 4 and Surface Book 2 / Surface Pro 2017 use the same device
+> >   * ID (MSHW0040) for the power/volume buttons. Make sure this is the right
+> > - * device by checking for the _DSM method and OEM Platform Revision.
+> > + * device by checking for the _DSM method and OEM Platform Revision DSM
+> > + * function.
+> 
+> Not sure what this change means (not a native speaker).
+> 
+> ...
+> 
+> > -       dev_dbg(&dev->dev, "OEM Platform Revision %llu\n", oem_platform_rev);
+> 
+> I think this is useful to have.
+> 
+> What about leaving it as is for debugging purposes and just replacing
+> the last test?
 
-gcc-11 only shows the one line warning here. The source is
+I agree it is nice to be able to print it for debug purposes, but it has
+to be fetched separately, as with the proposed change we are not reading
+it.
 
-/* PCI CFG04 status fields */
-#define PCI_CFG04_STAT_BIT      16
-#define PCI_CFG04_STAT          0xffff0000
-#define PCI_CFG04_STAT_66_MHZ   (1 << 21)
-#define PCI_CFG04_STAT_FBB      (1 << 23)
-#define PCI_CFG04_STAT_MDPE     (1 << 24)
-#define PCI_CFG04_STAT_DST      (1 << 25)
-#define PCI_CFG04_STAT_STA      (1 << 27)
-#define PCI_CFG04_STAT_RTA      (1 << 28)
-#define PCI_CFG04_STAT_RMA      (1 << 29)
-#define PCI_CFG04_STAT_SSE      (1 << 30)
-#define PCI_CFG04_STAT_PE       (1 << 31)
-#define KORINA_STAT             (PCI_CFG04_STAT_MDPE | \
-                                 PCI_CFG04_STAT_STA | \
-                                 PCI_CFG04_STAT_RTA | \
-                                 PCI_CFG04_STAT_RMA | \
-                                 PCI_CFG04_STAT_SSE | \
-                                 PCI_CFG04_STAT_PE)
-#define KORINA_CNFG1            ((KORINA_STAT<<16)|KORINA_CMD)
+If I am understanding the change it wants to call acpi_dsm_check()
+to verify whether MSHW0040_DSM_GET_OMPR function exists at all (which is
+done by reading _DSM MSHW0040_DSM_UUID, revision MSHW0040_DSM_REVISION,
+function 0. Only if function 0 indicates that function
+MSHW0040_DSM_GET_OMPR is supported in this _DSM, we can read it to get
+the real version number, which can be 0.
 
-unsigned int korina_cnfg_regs[25] = {
-        KORINA_CNFG1, /* ... */
-};
+Treating 0 as an invalid version as it was done in original change is
+wrong.
 
-This looks like an actual bug to me, the bits are shifted 16 bits twice
-by accident, and it's been like this since rb532 was introduced in
-2008.
+I propose we combine the old and new code, call acpi_dsm_check() and
+bail if it returns false, otherwise proceed to calling
+acpi_evaluate_dsm_typed() and dev_dbg() the version.
 
-         Arnd
+Sachi, are you going to update the patch? You do not need to adjust the
+surface driver as Hans is getting rid of it.
+
+Thanks.
+
+-- 
+Dmitry
