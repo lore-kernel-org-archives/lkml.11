@@ -2,109 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE3FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C02C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234624AbiCALo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 06:44:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        id S234616AbiCALoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 06:44:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234616AbiCALoX (ORCPT
+        with ESMTP id S234628AbiCALoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 06:44:23 -0500
-X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 03:43:42 PST
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A9B55BD1;
-        Tue,  1 Mar 2022 03:43:42 -0800 (PST)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-        by gnuweeb.org (Postfix) with ESMTPSA id 342487EDA6;
-        Tue,  1 Mar 2022 11:34:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1646134448;
-        bh=wMwH0Esa7+9XDQnRseGQt8XVBoPkgTDDTk0Y4Mory9w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ozNH5t1JqCXZkK+2cROun6P2rSOAmspGKECltAFEdVniA8sbDxBzMgW9oPNrpGbh1
-         NzNz/TGh51LiBjUbwxMk2BAGleNmweGzvJtzI5rjcyW9hJNzJtnuI9g4+MDq2FZ5Vo
-         rgTlebg9O99wGVDzAEBeeeAo+j5Rz07B5wdCfpk+Oa6zAAgpGx8mNgxkV/YhPicZaM
-         cn/02HjPudmVAufa15GpcnRKYf4oERNNDAA9eUpyKIO+ePrWCAPMNgSXq7MefOFk9m
-         jk+NmDVNv+zkyYKXul9xoMT5pad3v5vz3wDl5qSaQb16gkihZtgm00mJboSlrR0kcJ
-         iu+wAfbinm4qw==
-Received: by mail-lf1-f42.google.com with SMTP id j7so26338916lfu.6;
-        Tue, 01 Mar 2022 03:34:08 -0800 (PST)
-X-Gm-Message-State: AOAM533FqFQyYydoYGquVgR9KCPMq3HBLnKQDjWeIBGvsXLDIWrbb1sR
-        8MonECnOBtNR92BRkVfdQg7q1YouKo8fXPcFd/4=
-X-Google-Smtp-Source: ABdhPJx/og7d59BUuP9SzoT81fyxcdFHHXnA6Zmocol8wG52eI7x4l9kVQJ+3a3dLhPtZKivoBAxuF+VBA9iz/o4cMQ=
-X-Received: by 2002:a05:6512:1190:b0:443:ff19:e685 with SMTP id
- g16-20020a056512119000b00443ff19e685mr14888853lfr.70.1646134446046; Tue, 01
- Mar 2022 03:34:06 -0800 (PST)
+        Tue, 1 Mar 2022 06:44:37 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905C154BF3
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 03:43:56 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id r20so21530271ljj.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 03:43:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SEk3in6d11xvs8mwQBocWYXf/yhdK/EMkyVlgK9A4i8=;
+        b=CswNEEJn4JADhLcX4CAe+MctkNkw32JX9FA1Ik86hWA1dPYwZ9UPTGZjDeXbWcI2y4
+         t84RoTdIrvN8SQtmHUCUMW7FGCVyQrYeG7XJNHyVUaChUmtmSYsVxraD2GbESM2fxGWs
+         PKaNXmLncNnprvELIXil4KzV9JS9W4dLniO3l8RmVVnVA7LDM1eBACs6JEH8jGEA2zJL
+         bl6Bw/Xv56PdiIiK7p3JfQoKUDYgnlIOTFjmxvKeGavoMrauovu37hv0Vf1HsWcNlmxT
+         5Is2TClhySG+Ruvd8WWxusQmWZGzY17UBq7/A2UihfoDDv79jwYIpiXC1s3i/hEaU6fw
+         +v3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SEk3in6d11xvs8mwQBocWYXf/yhdK/EMkyVlgK9A4i8=;
+        b=oatxFRFKSBFfwSq3jRhf5PL/opd3wmhL5u9bE2EkJU2jSYPQFLKgb3nOTZZNm213Os
+         BE024ReZrMzekX/x9snFRmDih0emXOrtx/OSlNuszKILydY6AJ51ROlrzNH6RdQvLGej
+         2FPc//+Gpmx/EVypjk4t+7x6mqy/ArIYW0HgzappAGWu5o6g3v747+SQI1Ztl1wgBnxN
+         lCGcoCiaGtVFCdsA0zh36yA6/D+BdWZN0eyHI+fmkjFSsNtOqjiWyGB5EboVFAUuZkXb
+         dvavoSpGgOMSmotOi6uAJz3y3Ipt2/RxfcRX8Xiz5O0M9NXHYmDYM+2Rm+XgpcHhRgLs
+         vAxA==
+X-Gm-Message-State: AOAM530TeDQfTFokOwjIYmq48Cyj+QHkR/o1ZT7SB9d6RBCbHvjBP6vE
+        pjuPrvFGH+RIuC682zxgCRmSUw==
+X-Google-Smtp-Source: ABdhPJxS4NuiWgStxReQaqrCgjRgur8btsR+rcYdpUwTL+R6piVjHKBkqTSX3xRrZt2GL5n2A94dIQ==
+X-Received: by 2002:a2e:891a:0:b0:246:293f:875e with SMTP id d26-20020a2e891a000000b00246293f875emr16364977lji.204.1646135034865;
+        Tue, 01 Mar 2022 03:43:54 -0800 (PST)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id d11-20020ac25ecb000000b004433d2e6d22sm1443791lfq.132.2022.03.01.03.43.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 03:43:54 -0800 (PST)
+Message-ID: <d51717a2-0a50-f2fb-0d2d-e233c6e75d4b@linaro.org>
+Date:   Tue, 1 Mar 2022 14:43:50 +0300
 MIME-Version: 1.0
-References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org> <20220301094608.118879-2-ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220301094608.118879-2-ammarfaizi2@gnuweeb.org>
-From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Date:   Tue, 1 Mar 2022 18:33:54 +0700
-X-Gmail-Original-Message-ID: <CAOG64qPgTv5tQNknuG9d-=oL2EPQQ1ys7xu2FoBpNLyzv1qYzA@mail.gmail.com>
-Message-ID: <CAOG64qPgTv5tQNknuG9d-=oL2EPQQ1ys7xu2FoBpNLyzv1qYzA@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] x86/delay: Fix the wrong asm constraint in `delay_loop()`
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>, x86@kernel.org,
-        stable@vger.kernel.org, Jiri Hladky <hladky.jiri@googlemail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2 5/7] PCI: qcom: Add SM8150 SoC support
+Content-Language: en-GB
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     bhupesh.linux@gmail.com, lorenzo.pieralisi@arm.com,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        svarbanov@mm-sol.com, bhelgaas@google.com,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org, sboyd@kernel.org,
+        mturquette@baylibre.com, linux-clk@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>
+References: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
+ <20220301072511.117818-6-bhupesh.sharma@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220301072511.117818-6-bhupesh.sharma@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 4:46 PM Ammar Faizi wrote:
-> Fortunately, the constraint violation that's fixed by patch 1 doesn't
-> yield any bug due to the nature of System V ABI. Should we backport
-> this?
+On 01/03/2022 10:25, Bhupesh Sharma wrote:
+> The PCIe IP (rev 1.5.0) on SM8150 SoC is similar to the one used on
+> SM8250. Hence the support is added reusing the members of ops_2_7_0.
+> 
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>   drivers/pci/controller/dwc/pcie-qcom.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index c19cd506ed3f..66fbc0234888 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -1487,6 +1487,17 @@ static const struct qcom_pcie_ops ops_1_9_0 = {
+>   	.config_sid = qcom_pcie_config_sid_sm8250,
+>   };
+>   
+> +/* Qcom IP rev.: 1.5.0 */
+> +static const struct qcom_pcie_ops ops_1_5_0 = {
+> +	.get_resources = qcom_pcie_get_resources_2_7_0,
+> +	.init = qcom_pcie_init_2_7_0,
+> +	.deinit = qcom_pcie_deinit_2_7_0,
+> +	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
+> +	.post_init = qcom_pcie_post_init_2_7_0,
+> +	.post_deinit = qcom_pcie_post_deinit_2_7_0,
+> +	.config_sid = qcom_pcie_config_sid_sm8250,
+> +};
+> +
 
-hi sir, it might also be interesting to know that even if it never be
-inlined, it's still potential to break.
+This duplicates the ops_1_9_0, doesn't it?
+I'd suggest to reuse 1.9.0 structure and add a comment that it's also 
+used for 1.5.0.
 
-for example this code (https://godbolt.org/z/xWMTxhTET)
+>   static const struct qcom_pcie_cfg apq8084_cfg = {
+>   	.ops = &ops_1_0_0,
+>   };
+> @@ -1511,6 +1522,10 @@ static const struct qcom_pcie_cfg sdm845_cfg = {
+>   	.ops = &ops_2_7_0,
+>   };
+>   
+> +static const struct qcom_pcie_cfg sm8150_cfg = {
+> +	.ops = &ops_1_5_0,
+> +};
+> +
+>   static const struct qcom_pcie_cfg sm8250_cfg = {
+>   	.ops = &ops_1_9_0,
+>   };
+> @@ -1626,6 +1641,7 @@ static const struct of_device_id qcom_pcie_match[] = {
+>   	{ .compatible = "qcom,pcie-ipq4019", .data = &ipq4019_cfg },
+>   	{ .compatible = "qcom,pcie-qcs404", .data = &ipq4019_cfg },
+>   	{ .compatible = "qcom,pcie-sdm845", .data = &sdm845_cfg },
+> +	{ .compatible = "qcom,pcie-sm8150", .data = &sm8150_cfg },
+>   	{ .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
+>   	{ .compatible = "qcom,pcie-sc8180x", .data = &sm8250_cfg },
+>   	{ .compatible = "qcom,pcie-sc7280", .data = &sc7280_cfg },
 
-  __attribute__((__noinline__)) static void x(int a)
-  {
-      asm("xorl\t%%r8d, %%r8d"::"a"(a));
-  }
 
-  extern int p(void);
-
-  int f(void)
-  {
-      int ret = p();
-      x(ret);
-      return ret;
-  }
-
-translates to this asm
-
-  x:
-          movl    %edi, %eax
-          xorl    %r8d, %r8d
-          ret
-  f:
-          subq    $8, %rsp
-          call    p
-          movl    %eax, %r8d
-          movl    %eax, %edi
-          call    x
-          movl    %r8d, %eax
-          addq    $8, %rsp
-          ret
-
-See the %r8d? It should be clobbered by a function call too. But since
-no one tells the compiler that we clobber %r8d, it assumes %r8d never
-changes after that call. The compiler thinks x() is static and will
-not clobber %r8d, even the ABI says %r8d will be clobbered by a
-function call. So i think it should be backported to the stable
-kernel, it's still a fix
-
--- Viro
+-- 
+With best wishes
+Dmitry
