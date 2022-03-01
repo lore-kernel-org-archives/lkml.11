@@ -2,203 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8098C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F740C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236829AbiCASIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S236833AbiCASKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:10:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiCASIF (ORCPT
+        with ESMTP id S232297AbiCASKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:08:05 -0500
-X-Greylist: delayed 1231 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 10:07:23 PST
-Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.144.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CCE383
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:07:21 -0800 (PST)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 014E1178997
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 11:46:50 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id P6YLnjux1b6UBP6YLnX1oA; Tue, 01 Mar 2022 11:44:49 -0600
-X-Authority-Reason: nr=8
-Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:40036 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nP6YK-0035ji-VU; Tue, 01 Mar 2022 11:44:49 -0600
-Message-ID: <c132609d-3eeb-9d8a-c06d-2171ff4c83f2@kernel.org>
-Date:   Tue, 1 Mar 2022 18:44:46 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, paulmck@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, mtosatti@redhat.com
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
- <20220228221154.GN4285@paulmck-ThinkPad-P17-Gen-1>
- <1b388cdc409fdfae75ef2280674d8211e5b6194e.camel@redhat.com>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <1b388cdc409fdfae75ef2280674d8211e5b6194e.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 95.232.30.176
-X-Source-L: No
-X-Exim-ID: 1nP6YK-0035ji-VU
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:40036
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 8
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+        Tue, 1 Mar 2022 13:10:03 -0500
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4A45501
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:09:21 -0800 (PST)
+Received: by mail-pf1-x449.google.com with SMTP id n135-20020a628f8d000000b004e16d5bdcdbso10216638pfd.20
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 10:09:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=c0dbKsIdJk+qHikmULBiKTfiJVqKnwC4QHGDZyjez5c=;
+        b=c0CY58qwtC+TXIekm9RwFv9mu85r2tPUGknQ7lP4mK62Dv4iMMRx2WwvSmym01I/rt
+         x4a6ZJclsNaz5N4C9aAN1fTg3nik/jMjRCN73yPx/fcUzal7hJfreK83kZc1NY0MZB8d
+         EVJ5QjIoD9KxKwfsA+8JKkej0did5a3WXbLWwN8dsYyndAwDQx6OXWDTJHo5LnA6Vgxu
+         IQjaqRQeuuKMxfjT0X9hu5QyWkWFwifmszCxuDSnaYBgYLDf8fhU2Ip32/r41UnVH3Su
+         cAjn4su1Pwdt+j2mgeQqJOJ/z9T8D8s/rO0Ku6ZgWJjzH3C60V6N8sBqCdpXtVzALVJh
+         JN5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=c0dbKsIdJk+qHikmULBiKTfiJVqKnwC4QHGDZyjez5c=;
+        b=lmPa8hpl/i5dtx9TUo+XfyotH37LUUDJlkpCvDXOWyfSJQEMpghA7eo/i1KKTFiAps
+         fajrnd8/kyGCrG/iZ9IYFNhs65TfUYDBkTa3bkNuY++C+cULAlkpEpZL8LcY9hhaor6i
+         tco/+m7p2QXwPPnozQZjFI5BZJPlQfpvIaCaelvvFHD/gxh/L1dRa/LKnzIRXW0m9GTu
+         7Ql3DA+AsWFkhhbzMhTlEamjaAiltruFl7NpZNIJeGINkB4HENS0KQ286EsJtvzkjGQW
+         yjAJJQoIz9frjzopECVq/KKpDZ5xnbAz79z4bCaAPXXeaEKpOW4Bp/DSJMdpiOLdrCre
+         xSqw==
+X-Gm-Message-State: AOAM531BoC93tcjleD5r64j387KB0C+l4/ZOI6ifApdwGjRIShqOFmI7
+        EsACmh0IJtv+lURB6rbehjfyy8zoVcAirg==
+X-Google-Smtp-Source: ABdhPJz3IEoUnP+YY4bGnTx41NXJkSuyhuQFFA6sFxSnDvKBjPMaNwdb8qpS6y54oVGPkAvATMxVOHwB6qwIAA==
+X-Received: from shakeelb.svl.corp.google.com ([2620:15c:2cd:202:6e75:6cb3:9d81:deae])
+ (user=shakeelb job=sendgmr) by 2002:a17:902:860a:b0:14b:341e:5ffb with SMTP
+ id f10-20020a170902860a00b0014b341e5ffbmr26428871plo.6.1646158160480; Tue, 01
+ Mar 2022 10:09:20 -0800 (PST)
+Date:   Tue, 1 Mar 2022 10:09:17 -0800
+In-Reply-To: <YhzeCkXEvga7+o/A@bombadil.infradead.org>
+Message-Id: <20220301180917.tkibx7zpcz2faoxy@google.com>
+Mime-Version: 1.0
+References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com> <YhzeCkXEvga7+o/A@bombadil.infradead.org>
+Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Vasily Averin <vvs@virtuozzo.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Vlastimil Babka <vbabka@suse.cz>, NeilBrown <neilb@suse.de>,
+        Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 11:00, Nicolas Saenz Julienne wrote:
-> On Mon, 2022-02-28 at 14:11 -0800, Paul E. McKenney wrote:
->> On Mon, Feb 28, 2022 at 03:14:23PM +0100, Nicolas Saenz Julienne wrote:
->>> At the moment running osnoise on an isolated CPU and a PREEMPT_RCU
->>> kernel might have the side effect of extending grace periods too much.
->>> This will eventually entice RCU to schedule a task on the isolated CPU
->>> to end the overly extended grace period, adding unwarranted noise to the
->>> CPU being traced in the process.
->>>
->>> So, check if we're the only ones running on this isolated CPU and that
->>> we're on a PREEMPT_RCU setup. If so, let's force quiescent states in
->>> between measurements.
->>>
->>> Non-PREEMPT_RCU setups don't need to worry about this as osnoise main
->>> loop's cond_resched() will go though a quiescent state for them.
->>>
->>> Note that this same exact problem is what extended quiescent states were
->>> created for. But adapting them to this specific use-case isn't trivial
->>> as it'll imply reworking entry/exit and dynticks/context tracking code.
->>>
->>> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
->>> ---
->>>  kernel/trace/trace_osnoise.c | 19 +++++++++++++++++++
->>>  1 file changed, 19 insertions(+)
->>>
->>> diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
->>> index 870a08da5b48..4928358f6e88 100644
->>> --- a/kernel/trace/trace_osnoise.c
->>> +++ b/kernel/trace/trace_osnoise.c
->>> @@ -21,7 +21,9 @@
->>>  #include <linux/uaccess.h>
->>>  #include <linux/cpumask.h>
->>>  #include <linux/delay.h>
->>> +#include <linux/tick.h>
->>>  #include <linux/sched/clock.h>
->>> +#include <linux/sched/isolation.h>
->>>  #include <uapi/linux/sched/types.h>
->>>  #include <linux/sched.h>
->>>  #include "trace.h"
->>> @@ -1295,6 +1297,7 @@ static int run_osnoise(void)
->>>  	struct osnoise_sample s;
->>>  	unsigned int threshold;
->>>  	u64 runtime, stop_in;
->>> +	unsigned long flags;
->>>  	u64 sum_noise = 0;
->>>  	int hw_count = 0;
->>>  	int ret = -1;
->>> @@ -1386,6 +1389,22 @@ static int run_osnoise(void)
->>>  					osnoise_stop_tracing();
->>>  		}
->>>  
->>> +		/*
->>> +		 * Check if we're the only ones running on this nohz_full CPU
->>> +		 * and that we're on a PREEMPT_RCU setup. If so, let's fake a
->>> +		 * QS since there is no way for RCU to know we're not making
->>> +		 * use of it.
->>> +		 *
->>> +		 * Otherwise it'll be done through cond_resched().
->>> +		 */
->>> +		if (IS_ENABLED(CONFIG_PREEMPT_RCU) &&
->>> +		    !housekeeping_cpu(raw_smp_processor_id(), HK_FLAG_MISC) &&
->>> +		    tick_nohz_tick_stopped()) {
->>> +			local_irq_save(flags);
->>> +			rcu_momentary_dyntick_idle();
->>> +			local_irq_restore(flags);
->>
->> What is supposed to happen in this case is that RCU figures out that
->> there is a nohz_full CPU running for an extended period of time in the
->> kernel and takes matters into its own hands.  This goes as follows on
->> a HZ=1000 kernel with default RCU settings:
->>
->> o	At about 20 milliseconds into the grace period, RCU makes
->> 	cond_resched() report quiescent states, among other things.
->> 	As you say, this does not help for CONFIG_PREEMPT=n kernels.
->>
->> o	At about 30 milliseconds into the grace period, RCU forces an
->> 	explicit context switch on the wayward CPU.  This should get
->> 	the CPU's attention even in CONFIG_PREEMPT=y kernels.
->>
->> So what is happening for you instead?
-> 
-> Well, that's exactly what I'm seeing, but it doesn't play well with osnoise.
-> 
-> Here's a simplified view of what the tracer does:
-> 
-> 	time1 = get_time();
-> 	while(1) {
-> 		time2 = get_time();
-> 		if (time2 - time1 > threshold)
-> 			trace_noise();
-> 		cond_resched();
-> 		time1 = time2;
-> 	}
-> 
-> This is pinned to a specific CPU, and in the most extreme cases is expected to
-> take 100% of CPU time. Eventually, some SMI, NMI/interrupt, or process
-> execution will trigger the threshold, and osnoise will provide some nice traces
-> explaining what happened.
-> 
-> RCU forcing a context switch on the wayward CPU is introducing unwarranted
-> noise as it's triggered by the fact we're measuring and wouldn't happen
-> otherwise.
+On Mon, Feb 28, 2022 at 06:36:58AM -0800, Luis Chamberlain wrote:
+> On Mon, Feb 28, 2022 at 10:17:16AM +0300, Vasily Averin wrote:
+> > Following one-liner running inside memcg-limited container consumes
+> > huge number of host memory and can trigger global OOM.
+> >
+> > for i in `seq 1 xxx` ; do ip l a v$i type veth peer name vp$i ; done
+> >
+> > Patch accounts most part of these allocations and can protect host.
+> > ---[cut]---
+> > It is not polished, and perhaps should be splitted.
+> > obviously it affects other kind of netdevices too.
+> > Unfortunately I'm not sure that I will have enough time to handle it  
+> properly
+> > and decided to publish current patch version as is.
+> > OpenVz workaround it by using per-container limit for number of
+> > available netdevices, but upstream does not have any kind of
+> > per-container configuration.
+> > ------
 
-I confirm this, it would be nice to have on osnoise a behavior similar to the
-user-space (in EQS). I was about to send an RFC with a solution for the same
-problem... (continues..)
+> Should this just be a new ucount limit on kernel/ucount.c and have veth
+> use something like inc_ucount(current_user_ns(), current_euid(),  
+> UCOUNT_VETH)?
 
-> 
-> If this were user-space, we'd be in an EQS, which would make this problem go
-> away. An option would be mimicking this behaviour (assuming irq entry/exit code
-> did the right thing):
-> 
-> 	rcu_eqs_enter(); <--
-> 	time1 = get_time();
-> 	while(1) {
-> 		time2 = get_time();
-> 		if (time2 - time1 > threshold)
-> 			trace_noise();
-> 		rcu_eqs_exit(); <--
-> 		cond_resched();
-> 		rcu_eqs_enter(); <--
-> 		time1 = time2;
-> 	}
+> This might be abusing ucounts though, not sure, Eric?
 
-... my patch was something in these lines. I was actually calling using
-rcu_user_enter/exit (or context_tracking_enter/exit), pretending to be in
-user-space. I left the user-mode if any thing from kernel would have to be
-called, like tracepoints or re-sched. I had to keep preemption disabled to avoid
-getting into the scheduler, enabling it in case of need resched. It worked (tm),
-and it was equivalent to having osnoise preemptive.
 
-BUT, it was more intrusive. I would prefer a solution in the lines of the one
-Nicolas are proposing in his patch.
-
--- Danie
-
+For admins of systems running multiple workloads, there is no easy way
+to set such limits for each workload. Some may genuinely need more veth
+than others. From admin's perspective it is preferred to have minimal
+knobs to set and if these objects are charged to memcg then the memcg
+limits would limit them. There was similar situation for inotify
+instances where fs sysctl inotify/max_user_instances already limits the
+inotify instances but we memcg charged them to not worry about setting
+such limits. See ac7b79fd190b ("inotify, memcg: account inotify
+instances to kmemcg").
