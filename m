@@ -2,252 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5577C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235269AbiCAOdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:33:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
+        id S235298AbiCAOdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:33:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiCAOdG (ORCPT
+        with ESMTP id S232542AbiCAOd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:33:06 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E034F449
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:32:23 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id y11so14372514pfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 06:32:23 -0800 (PST)
+        Tue, 1 Mar 2022 09:33:29 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E45947059;
+        Tue,  1 Mar 2022 06:32:47 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id c192so7624058wma.4;
+        Tue, 01 Mar 2022 06:32:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=eOtRz7uwqvvpGVdB7/JDXN6VIkmPBXC91IW15jwGmcU=;
-        b=HnoLWfolcQSFWB3mEvyxtZlXLEYifzyTr676lggHyxkL6dy53ymdlm6Vc7IQ6cFzav
-         H3adyC9CDF9LXL+btATLfe1rxKoPYmKmtZXMf1OZV4sGDcjacA/3jOua4V8POnvTHknD
-         pM6wa5rA3NzHu/QafM9YvRR3wcFr872qhbTFJYwEGvLS9WE4f0fNCS7atIJaNm55Je6E
-         3X3yI2Jof0Y1PLvnWM+7z69m6Jp7MkMQJZrV+4K/3BPTEtaYbTMCI6CfNkLTfmTOL9K9
-         nsqa2ATnDp7oCk2VOMjY2Jm4XILPa6t8zWT6AB8yjbYZifpdSaBQY7yyZAyl5ZD61Htd
-         262Q==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bohhSrnhcAfyQzGT/yWV46WEIYl6Z5VuMJ8D4YNqZ5E=;
+        b=QMHGivAqcKpz8T2VTa4RZTNuyV7KU6HOyUeE2s9LjSzItM9akdENp4bf3105Mknf/W
+         RrOLkxBdrcphtj+PFAZvIe/htW4vxHqhiWt/UHEeOZWRz8wEe8tcLF1vT+VxbjISfeGh
+         psWmV0mbIw3x08irfjp+0FfX4km2GDwzxWxjM5nQZGAgWK6XXu2g/1xltVpoP9ySm+ZL
+         07Sf975wKKs7cycl7GdQ7TporQLEW3JQ0ssPPQwUe9Jzme68fdwpg21sr1uN+BTHAw0X
+         N2Y6LyjPfls543KO0ees+l3DS1Dbh9NiGKw+5mOZC7KvnlDfw0AXCxbo4syC8Dd+KZ19
+         XIwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eOtRz7uwqvvpGVdB7/JDXN6VIkmPBXC91IW15jwGmcU=;
-        b=7AMsUZurzdk7DvXnaFsIqa5bKtHrkuyRMoeyn21V02x/QQgyqJDnw5iZxkbAP4mlhb
-         uKkf4olEGcQNu7lRyeEACcoUM6kW/5fAKhR8QropDpnOMRvfgFeD4x2PIFbDUgxUeYmH
-         jMB4ZK4Pfg4KVOgyAARJMSemjtNG5blksGUuFzRZCBI8nXlIcsZ9CfPYTeiF5tLA5kHJ
-         NsloLthKtZa2eygvByx51J3zQKBYfxqk0TSA4lRFVXy8pntpuEtJX+3/TKVwSB5pw/wj
-         qnJTou4kGUE/Ers5ZUxZQ0lMgS0wXaf2C4kuL1DggXHvVRcwiXqkqWE+ergDXGPCrWEw
-         1kwg==
-X-Gm-Message-State: AOAM533S5ssMe3MOGOusOgfCVZqMzCZGpQBu88kzJoCIpU9RhSy+D5tY
-        zuq5FCKLYK03RDBNSq9BuCCDnJav+xv8p2O5yLw=
-X-Google-Smtp-Source: ABdhPJxy3Efv5wjxMwk05ZULSks28z+OmahtT5ghxTdbVXmtuZUXdvE1wbS3lmCJT0jT+Yx2wZi8n+JnIGwZsPK6Ubc=
-X-Received: by 2002:a65:5a06:0:b0:375:81c9:74b1 with SMTP id
- y6-20020a655a06000000b0037581c974b1mr22205369pgs.122.1646145143311; Tue, 01
- Mar 2022 06:32:23 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bohhSrnhcAfyQzGT/yWV46WEIYl6Z5VuMJ8D4YNqZ5E=;
+        b=yICr+ACtuH2Eozsv484LrvCmQYunZHWOijx0XCn4HwEuj/ylG+NYxPwdK4U76teeOl
+         nTBI5icJVY4i1FOIVlir1ESxrpIZBBwTtTd+6R7mQkVMJ/SjA+NFfY1e8Z+NEg3zB66N
+         KLVm1qWwoZ2hmKhK0a9+uDs9fvtuNt0AWxoX8puT2tCDg7I6CnnM2MBCG06+7nRD77wR
+         GPhbQgVg3WhLee9Odr5yqWxXw5Z1aupajfMUcYvq2EjiDj3tOi5wjwF7IsWGAuXpuyRZ
+         karOwXpF4vFBcJPB5d3h73b9Aa2MuAoK0X2kbXxUBmtjZtHGh+JOTv15NJGlJus8nfsz
+         bqKg==
+X-Gm-Message-State: AOAM531Ka3H4yG7HsTN1JHSFCJicn/8nZ+6x8lLW4xPeg+PHOuA+woMw
+        8TOMU6wG2DXDN7lL10LaqrejHp2Fg8A=
+X-Google-Smtp-Source: ABdhPJxuvPUZqW89og/pYmTf8T5VJbP1z0uumjHagrIaJ7Mn2PhHGVeo6b7PcIIMPY8dtoLlmGmJUg==
+X-Received: by 2002:a1c:740c:0:b0:381:4821:7bfc with SMTP id p12-20020a1c740c000000b0038148217bfcmr12471585wmc.101.1646145165927;
+        Tue, 01 Mar 2022 06:32:45 -0800 (PST)
+Received: from [192.168.0.118] (88-113-28-27.elisa-laajakaista.fi. [88.113.28.27])
+        by smtp.gmail.com with ESMTPSA id m6-20020a5d56c6000000b001edb64e69cdsm13863905wrw.15.2022.03.01.06.32.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 06:32:45 -0800 (PST)
+Message-ID: <56454560-5f62-05b9-1a24-3f51a305140e@gmail.com>
+Date:   Tue, 1 Mar 2022 16:32:44 +0200
 MIME-Version: 1.0
-References: <20220218122019.130274-1-matenajakub@gmail.com>
- <20220218122019.130274-3-matenajakub@gmail.com> <20220218195047.bplrholzx4h2id2i@revolver>
-In-Reply-To: <20220218195047.bplrholzx4h2id2i@revolver>
-From:   =?UTF-8?Q?Jakub_Mat=C4=9Bna?= <matenajakub@gmail.com>
-Date:   Tue, 1 Mar 2022 15:31:00 +0100
-Message-ID: <CABsDya+vtfKAbEjA-33_yTQXOgSj6T_whcqB=p3=ZkvCTTHGFA@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/4] [PATCH 2/4] mm: adjust page offset in mremap
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "mgorman@techsingularity.net" <mgorman@techsingularity.net>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "hughd@google.com" <hughd@google.com>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "riel@surriel.com" <riel@surriel.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH for-5.18/uclogic 0/9] DIGImend patches, part II
+Content-Language: en-US
+To:     Jiri Kosina <jikos@kernel.org>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220219100157.41920-1-jose.exposito89@gmail.com>
+ <nycvar.YFH.7.76.2203011529020.11721@cbobk.fhfr.pm>
+From:   Nikolai Kondrashov <spbnick@gmail.com>
+In-Reply-To: <nycvar.YFH.7.76.2203011529020.11721@cbobk.fhfr.pm>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 8:50 PM Liam Howlett <liam.howlett@oracle.com> wrot=
-e:
->
-> * Jakub Mat=C4=9Bna <matenajakub@gmail.com> [220218 07:21]:
-> > Adjust page offset of a VMA when it's moved to a new location by mremap=
-.
-> > This is made possible for all VMAs that do not share their anonymous
-> > pages with other processes. Previously this was possible only for not
-> > yet faulted VMAs.
-> > When the page offset does not correspond to the virtual address
-> > of the anonymous VMA any merge attempt with another VMA will fail.
->
-> I don't know enough to fully answer this but I think this may cause
-> issues with rmap?  I would think the anon vma lock is necessary but I
-> may be missing something.
+On 3/1/22 16:29, Jiri Kosina wrote:
+> On Sat, 19 Feb 2022, José Expósito wrote:
+> 
+>> Hi everyone,
+>>
+>> This series is a follow up to [1], kindly reviewed and applied
+>> by Jiří in hid.git#for-5.18/uclogic.
+>>
+>> It might look a little bit longer than desired, but most of the
+>> patches are code simplification and refactoring in preparation
+>> for the last patch which adds support for multiple frame input
+>> devices.
+>>
+>> Thank you very much in advance to maintainers for reviewing it,
+>> José Expósito
+>>
+>> [1] https://lore.kernel.org/linux-input/nycvar.YFH.7.76.2202161642180.11721@cbobk.fhfr.pm/T/
+>>
+>> Nikolai Kondrashov (9):
+>>    HID: uclogic: Remove pen usage masking
+>>    HID: uclogic: Replace pen_frame_flag with subreport_list
+>>    HID: uclogic: Switch to matching subreport bytes
+>>    HID: uclogic: Specify total report size to buttonpad macro
+>>    HID: uclogic: Use different constants for frame report IDs
+>>    HID: uclogic: Use "frame" instead of "buttonpad"
+>>    HID: uclogic: Put version first in rdesc namespace
+>>    HID: uclogic: Define report IDs before their descriptors
+>>    HID: uclogic: Support multiple frame input devices
+>>
+>>   drivers/hid/hid-uclogic-core.c   |  79 +++++++------
+>>   drivers/hid/hid-uclogic-params.c | 195 ++++++++++++++-----------------
+>>   drivers/hid/hid-uclogic-params.h |  86 +++++++-------
+>>   drivers/hid/hid-uclogic-rdesc.c  |  53 ++++-----
+>>   drivers/hid/hid-uclogic-rdesc.h  |  38 +++---
+>>   5 files changed, 221 insertions(+), 230 deletions(-)
+> 
+> Now queued in hid.git#for-5.18/uclogic.
 
-Lock ordering for memory management is specified at the beginning of
-mm/rmap.c file and implies that in order to lock anon_vma->rwsem, you
-first have to lock mm->mmap_lock. mm->mmap_lock is locked in mremap
-syscall via mmap_write_lock_killable(). Moreover in the newly
-introduced function update_faulted_pgoff() there is a condition that
-checks if the vma does not share some physical pages with other
-processes. And therefore other processes shouldn't interfere with the
-locks either.
+Thank you for your work, José, and for your reviews Jiri!
 
->
-> >
-> > Signed-off-by: Jakub Mat=C4=9Bna <matenajakub@gmail.com>
-> > ---
-> >  mm/mmap.c | 101 ++++++++++++++++++++++++++++++++++++++++++++++++++----
-> >  1 file changed, 95 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/mm/mmap.c b/mm/mmap.c
-> > index b55e11f20571..8d253b46b349 100644
-> > --- a/mm/mmap.c
-> > +++ b/mm/mmap.c
-> > @@ -3224,6 +3224,91 @@ int insert_vm_struct(struct mm_struct *mm, struc=
-t vm_area_struct *vma)
-> >       return 0;
-> >  }
-> >
-> > +bool rbst_no_children(struct anon_vma *av, struct rb_node *node)
-> > +{
-> > +     struct anon_vma_chain *model;
-> > +     struct anon_vma_chain *avc;
-> > +
-> > +     if (node =3D=3D NULL) /* leaf node */
-> > +             return true;
-> > +     avc =3D container_of(node, typeof(*(model)), rb);
-> > +     if (avc->vma->anon_vma !=3D av)
-> > +             /*
-> > +              * Inequality implies avc belongs
-> > +              * to a VMA of a child process
-> > +              */
-> > +             return false;
-> > +     return (rbst_no_children(av, node->rb_left) &&
-> > +     rbst_no_children(av, node->rb_right));
-> > +}
-> > +
-> > +/*
-> > + * Check if none of the VMAs connected to the given
-> > + * anon_vma via anon_vma_chain are in child relationship
-> > + */
-> > +bool rbt_no_children(struct anon_vma *av)
-> > +{
-> > +     struct rb_node *root_node;
-> > +
-> > +     if (av =3D=3D NULL || av->degree <=3D 1) /* Higher degree might n=
-ot necessarily imply children */
-> > +             return true;
-> > +     root_node =3D av->rb_root.rb_root.rb_node;
-> > +     return rbst_no_children(av, root_node);
-> > +}
-> > +
-> > +/**
-> > + * update_faulted_pgoff() - Update faulted pages of a vma
-> > + * @vma: VMA being moved
-> > + * @addr: new virtual address
-> > + * @pgoff: pointer to pgoff which is updated
-> > + * If the vma and its pages are not shared with another process, updat=
-e
-> > + * the new pgoff and also update index parameter (copy of the pgoff) i=
-n
-> > + * all faulted pages.
-> > + */
-> > +bool update_faulted_pgoff(struct vm_area_struct *vma, unsigned long ad=
-dr, pgoff_t *pgoff)
-> > +{
-> > +     unsigned long pg_iter =3D 0;
-> > +     unsigned long pg_iters =3D (vma->vm_end - vma->vm_start) >> PAGE_=
-SHIFT;
-> > +
-> > +     /* 1.] Check vma is not shared with other processes */
-> > +     if (vma->anon_vma->root !=3D vma->anon_vma || !rbt_no_children(vm=
-a->anon_vma))
-> > +             return false;
-> > +
-> > +     /* 2.] Check all pages are not shared */
-> > +     for (; pg_iter < pg_iters; ++pg_iter) {
-> > +             bool pages_not_shared =3D true;
-> > +             unsigned long shift =3D pg_iter << PAGE_SHIFT;
-> > +             struct page *phys_page =3D follow_page(vma, vma->vm_start=
- + shift, FOLL_GET);
-> > +
-> > +             if (phys_page =3D=3D NULL)
-> > +                     continue;
-> > +
-> > +             /* Check page is not shared with other processes */
-> > +             if (page_mapcount(phys_page) > 1)
-> > +                     pages_not_shared =3D false;
-> > +             put_page(phys_page);
-> > +             if (!pages_not_shared)
-> > +                     return false;
-> > +     }
-> > +
-> > +     /* 3.] Update index in all pages to this new pgoff */
-> > +     pg_iter =3D 0;
-> > +     *pgoff =3D addr >> PAGE_SHIFT;
-> > +
-> > +     for (; pg_iter < pg_iters; ++pg_iter) {
-> > +             unsigned long shift =3D pg_iter << PAGE_SHIFT;
-> > +             struct page *phys_page =3D follow_page(vma, vma->vm_start=
- + shift, FOLL_GET);
-> > +
-> > +             if (phys_page =3D=3D NULL)
-> > +                     continue;
-> > +             lock_page(phys_page);
-> > +             phys_page->index =3D *pgoff + pg_iter;
-> > +             unlock_page(phys_page);
-> > +             put_page(phys_page);
-> > +     }
-> > +     return true;
-> > +}
-> > +
-> >  /*
-> >   * Copy the vma structure to a new location in the same mm,
-> >   * prior to moving page table entries, to effect an mremap move.
-> > @@ -3237,15 +3322,19 @@ struct vm_area_struct *copy_vma(struct vm_area_=
-struct **vmap,
-> >       struct mm_struct *mm =3D vma->vm_mm;
-> >       struct vm_area_struct *new_vma, *prev;
-> >       struct rb_node **rb_link, *rb_parent;
-> > -     bool faulted_in_anon_vma =3D true;
-> > +     bool anon_pgoff_updated =3D false;
-> >
-> >       /*
-> > -      * If anonymous vma has not yet been faulted, update new pgoff
-> > +      * Try to update new pgoff for anonymous vma
-> >        * to match new location, to increase its chance of merging.
-> >        */
-> > -     if (unlikely(vma_is_anonymous(vma) && !vma->anon_vma)) {
-> > -             pgoff =3D addr >> PAGE_SHIFT;
-> > -             faulted_in_anon_vma =3D false;
-> > +     if (unlikely(vma_is_anonymous(vma))) {
-> > +             if (!vma->anon_vma) {
-> > +                     pgoff =3D addr >> PAGE_SHIFT;
-> > +                     anon_pgoff_updated =3D true;
-> > +             } else {
-> > +                     anon_pgoff_updated =3D update_faulted_pgoff(vma, =
-addr, &pgoff);
-> > +             }
-> >       }
-> >
-> >       if (find_vma_links(mm, addr, addr + len, &prev, &rb_link, &rb_par=
-ent))
-> > @@ -3271,7 +3360,7 @@ struct vm_area_struct *copy_vma(struct vm_area_st=
-ruct **vmap,
-> >                        * safe. It is only safe to keep the vm_pgoff
-> >                        * linear if there are no pages mapped yet.
-> >                        */
-> > -                     VM_BUG_ON_VMA(faulted_in_anon_vma, new_vma);
-> > +                     VM_BUG_ON_VMA(!anon_pgoff_updated, new_vma);
-> >                       *vmap =3D vma =3D new_vma;
-> >               }
-> >               *need_rmap_locks =3D (new_vma->vm_pgoff <=3D vma->vm_pgof=
-f);
-> > --
-> > 2.34.1
-> >
+Nick
