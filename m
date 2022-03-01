@@ -2,130 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56833C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49284C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbiCAON6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        id S235213AbiCAOP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:15:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235195AbiCAONy (ORCPT
+        with ESMTP id S232090AbiCAOPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:13:54 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664077B546;
-        Tue,  1 Mar 2022 06:13:12 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id h15so22163121edv.7;
-        Tue, 01 Mar 2022 06:13:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XbBh6y93WJCYOvDM+EJo5FnNHZVWpJseZ0yP8iYWZjM=;
-        b=fqZEtVsw5rl7Bz7p190YAW0lU17YEGBHKeYRlulUChvlYfA9iWrdOg/S5o0HRtufm1
-         2OCQfBKCTZVS948bFOJZL6d0OxZ/IzPmkHoSCQW0xXSuUaTizzmU8kUqNOepxqb1sXkw
-         0ziB0E7drug+XroNZAJciOBFtw6TSpXipHhawLAihu4s/TcHC601OmEWVl96vQ6pJ+bK
-         MFvhc/W74C/HKCt1mt5ujCiS6JSegf92fxZ+y8Zrif4ZYFgSZETA2mi6z7OpHY5pr33t
-         CRJB4q/LpKba0PfvCjd0fRjNYrsclJCiQDYhRCVKJNgACv7FEsE5tijsdVZkV1YDjzrt
-         d4QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XbBh6y93WJCYOvDM+EJo5FnNHZVWpJseZ0yP8iYWZjM=;
-        b=2QlmWi20FQmCmSFrJ4WBSkWWRWlCAEBcPfnx5cQZbTeoJxdeSq3JkGSwSmc4JRM5tu
-         QVrcwBe2vw1mLdCJmfVCdN20GxuYxqIAU4d8hPSrF4UsOil8lks/ZKT5pwh7FbDuPH18
-         8WapY6+zdoQbpwIPFYA5uuLWGkF5VIehm8IBtgQDgx1iMHVRnD1Bc0Kte1Xxg3o8Hy5j
-         luGEtd/oz5WN7Bspd195fyYu3DwV5VkLY5bcaVT4hbV7yvimzwOh++c+0bKzwoCnxzgT
-         AJ56et/Ak/3oL0UJkgO2FvLgdffKswBlJ7qnQXpp3AtqPt6M4VldARGW8ULTaWDm6poM
-         QGTA==
-X-Gm-Message-State: AOAM530P5MP4ug8VzC1afBEb+a6Q0nAxAyoEDML5CaU4rlQGf0fm9vk0
-        8cFM3kj0N4EashlZU/TC7CCvKFSkVsFeJQ==
-X-Google-Smtp-Source: ABdhPJw8aOpymS6iF6Ox0SQpfa+KhaPOqAMVl/aiX/VlJCy1CcCch+rEnnvQbu68VYUp7C27sUIxcg==
-X-Received: by 2002:a05:6402:11ce:b0:412:f162:28e8 with SMTP id j14-20020a05640211ce00b00412f16228e8mr24577969edw.341.1646143990829;
-        Tue, 01 Mar 2022 06:13:10 -0800 (PST)
-Received: from anparri.mshome.net ([87.13.191.110])
-        by smtp.gmail.com with ESMTPSA id q15-20020a1709060e4f00b006cdf4535cf2sm5341883eji.67.2022.03.01.06.13.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 06:13:10 -0800 (PST)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [PATCH] Drivers: hv: vmbus: Deactivate sysctl_record_panic_msg by default in isolated guests
-Date:   Tue,  1 Mar 2022 15:11:35 +0100
-Message-Id: <20220301141135.2232-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 1 Mar 2022 09:15:55 -0500
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50027B546
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:15:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1646144114; x=1677680114;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3g6eocEvwM/SZQuy0tditVfU8hMIWb2DcnPeQGqJviE=;
+  b=pLAzGjeqYs2Pthx4W9jX5MkQA6yTzfU+FrC2B4gorTuu+COgVaezARrd
+   NNs9nw25y5i2De0VBvViNR/QCwMpu44LHaaBozwQ5BIPbhw2xe76rdWir
+   pakf228WlffuxBbrqHtZVRzf+rXICQFpFiIEHk7BaRkgrJ5DahSFDNaO8
+   OZlArkUjbTsU5npPVujkaaeYVaczGNsiEORGEBxM3DyEGNCaj2Jf7FpZe
+   g0u1h+FqwI/BnYXNetjpG9ZEZBN1UWzzz5q5pOfRl2ejGml99fLYvjeZw
+   NAwsX3Er4593gFyLnq/WAI/cowZmZuLc4rUnyWWBIfOxWQSYDm/LPgu1C
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,146,1643644800"; 
+   d="scan'208";a="193127223"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 01 Mar 2022 22:15:13 +0800
+IronPort-SDR: +RFIMzGC4fUdpcdYIh0RIC8ZuQnCMliViXXNdAGeS4eMUBNxznwe9VaRY5rJnPiSt2Rf3dfncx
+ oPcJGDNx77CemyRHT2Pt6wEsAlcV9Kd96BtyjVM2SYdRVqzJwqjvSGaTHK++gMDbuSAsC4Cr7q
+ kyPkqK3OrlqzckGZiKB83pNye1TEr4njK2JRkv9tCZjy7fxKEXTeNCRQ87/e1OWEbebZf0fgMj
+ HEHm+IBJe2cbCBIIgjlQbn95e9f7xWm1DhdLFGhnVEbLJBEhaPkVxUo9NrPZXjD38GqhDeyk0Q
+ eoiBGW5eMDlZhGxyQ+NdbOyO
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 05:46:38 -0800
+IronPort-SDR: pKnYw4zc0ok1/clWeGRahmvxd0Orrto8RiAiy7RUY/yCNW5/U3BEGRrxwmBH6ZgwCMapLgFjG1
+ B55KCRG2Fjh0jjnAX7fK5v0gz3OdfD0OToE0995oQdOsJsur5HLDOt6ln51NBkWb9ANa48etmp
+ 1N5w9W35Ucdw4ApfdFQWBp5x9w1WV4xSnt8yuCVVvrvrqohEE9kcehsubBI9Px2KBDBvBR4Ngb
+ KnqVM+/O/3zJj6Qg6YIg+u53by7NWnGR5VKGHSM2zSw9/SOIZuQnOzxCLUC3obtqEp6cXck2qD
+ KrM=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 06:15:14 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4K7K5Y6RBlz1SHwl
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:15:13 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1646144113; x=1648736114; bh=3g6eocEvwM/SZQuy0tditVfU8hMIWb2DcnP
+        eQGqJviE=; b=rHvBtNKTJoa7w2DKPDeeiqUfa37f0gxLanjn6h1E7MVHhx4LUy8
+        rwGFux9BBvfd3Gq1lX6Nfh26Anqbq7GBWf2mPxnkJ+Ibxn5RcSBI4A9S5jO0DssD
+        7gCgUWeCKjbOhe3yJzN9VD67o0kVfxpb7k/DubUHvluzv1OEsf+UjQga990TmKHb
+        6Paddtl6VuKBjd98PZEPPMjFa0JAvSUwrK4ocw0FdqzGq6cEagfI4t4Wvp/MVJ3/
+        eXdaTUTluyQ1BM4LFuRnVysW45uEW+y2B/QC8oTBgrkfF9fHuFY7/gSaxqcdZDMr
+        RP6TzReuiwfWs9a0cEAK0Fn3ecBQGtK79dA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id d-avMcA-VQF4 for <linux-kernel@vger.kernel.org>;
+        Tue,  1 Mar 2022 06:15:13 -0800 (PST)
+Received: from [10.112.1.94] (c02drav6md6t.wdc.com [10.112.1.94])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4K7K5W6wKDz1Rvlx;
+        Tue,  1 Mar 2022 06:15:11 -0800 (PST)
+Message-ID: <925e48e5-87ab-09b1-3524-4b9914f0b88d@opensource.wdc.com>
+Date:   Tue, 1 Mar 2022 16:15:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH 2/2] ata: ahci: Protect users from setting policies their
+ drives don't support
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, hdegoede@redhat.com
+References: <20220228213302.2915071-1-mario.limonciello@amd.com>
+ <20220228213302.2915071-2-mario.limonciello@amd.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220228213302.2915071-2-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hv_panic_page might contain guest-sensitive information, do not dump it
-over to Hyper-V by default in isolated guests.
+On 2022/02/28 23:33, Mario Limonciello wrote:
+> As the default low power policy applies to more chipsets and drives, it's
+> important to make sure that drives actually support the policy that a user
+> selected in their kernel configuration.
+> 
+> If the drive doesn't support slumber, don't let the default policies
+> dependent upon slumber (`min_power` or `min_power_with_partial`) affect the
+> disk.
+> 
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> Changes from RFC v1 -> PATCH v1:
+> * Move the warning and protection from drives that don't support slumber further
+>   into the calling path.
+>  drivers/ata/libahci.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
+> index 0ed484e04fd6..9dee721ed1fe 100644
+> --- a/drivers/ata/libahci.c
+> +++ b/drivers/ata/libahci.c
+> @@ -785,7 +785,15 @@ static int ahci_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
+>  		pp->intr_mask &= ~PORT_IRQ_PHYRDY;
+>  		writel(pp->intr_mask, port_mmio + PORT_IRQ_MASK);
+>  
+> -		sata_link_scr_lpm(link, policy, false);
+> +		if (policy >= ATA_LPM_MIN_POWER_WITH_PARTIAL &&
+> +		   !(hpriv->cap & HOST_CAP_SSC)) {
 
-While at it, update some comments in hyperv_{panic,die}_event().
+Wouldn't it be safer to have the HOST_CAP_SSC check inside sata_link_scr_lpm() ?
+There are other caller sites...
 
-Reported-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
----
- drivers/hv/vmbus_drv.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+> +			struct pci_dev *pdev = to_pci_dev(ap->host->dev);
+> +
+> +			dev_warn(&pdev->dev,
+> +				 "This drive doesn't support slumber; ignoring SATA policy\n"> +		} else {
+> +			sata_link_scr_lpm(link, policy, false);
+> +		}
+>  	}
+>  
+>  	if (hpriv->cap & HOST_CAP_ALPM) {
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 12a2b37e87f30..a963b970ffb2f 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -77,8 +77,8 @@ static int hyperv_panic_event(struct notifier_block *nb, unsigned long val,
- 
- 	/*
- 	 * Hyper-V should be notified only once about a panic.  If we will be
--	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
--	 * the notification here.
-+	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
-+	 * here.
- 	 */
- 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE
- 	    && hyperv_report_reg()) {
-@@ -100,8 +100,8 @@ static int hyperv_die_event(struct notifier_block *nb, unsigned long val,
- 
- 	/*
- 	 * Hyper-V should be notified only once about a panic.  If we will be
--	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
--	 * the notification here.
-+	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
-+	 * here.
- 	 */
- 	if (hyperv_report_reg())
- 		hyperv_report_panic(regs, val, true);
-@@ -1546,14 +1546,20 @@ static int vmbus_bus_init(void)
- 	if (ret)
- 		goto err_connect;
- 
-+	if (hv_is_isolation_supported())
-+		sysctl_record_panic_msg = 0;
-+
- 	/*
- 	 * Only register if the crash MSRs are available
- 	 */
- 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
- 		u64 hyperv_crash_ctl;
- 		/*
--		 * Sysctl registration is not fatal, since by default
--		 * reporting is enabled.
-+		 * Panic message recording (sysctl_record_panic_msg)
-+		 * is enabled by default in non-isolated guests and
-+		 * disabled by default in isolated guests; the panic
-+		 * message recording won't be available in isolated
-+		 * guests should the following registration fail.
- 		 */
- 		hv_ctl_table_hdr = register_sysctl_table(hv_root_table);
- 		if (!hv_ctl_table_hdr)
+
 -- 
-2.25.1
-
+Damien Le Moal
+Western Digital Research
