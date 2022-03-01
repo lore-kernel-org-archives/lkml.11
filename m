@@ -2,147 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 844C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A21CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238023AbiCAVPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:15:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S238444AbiCAVPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:15:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232430AbiCAVPO (ORCPT
+        with ESMTP id S229744AbiCAVPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:15:14 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D125C347
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 13:14:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646169272; x=1677705272;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WRbNCLlAB9hSATwWO4r0Bsd4Q26nHNiL+p3iTmhVtDA=;
-  b=VtBMNa9N+dnwURKrcJUDJSG5Huxw6ouZ3LUVXlR9XNoBIMlhiVfvsqAg
-   z6XY+FAVTHInXxsSMLFw8GiKlhaTPHIBk4pjG5NDh91TDRYrnsJx62pVa
-   mU2NPgy/DTOmMq5Vol/NNCzRZhrnUkZFLUwYZ8xFclBNI7plP8YCPw9iD
-   q13KJcpHBLoJOEofgErIq8xH0nvvXpJ6sV3iRk3jJClaf9ohNf1Is0Yhg
-   n9PipL1mSFPYBnClpM8Rt0ctMnsQofTrFTMQwLJOpUHpRSKxKCLwEffS5
-   P/R+9DdiBekZv2EFEHpmmcvGyw4R5Mj6XYn/Nthk7XYOW3L4LelAEyaOU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="253434803"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="253434803"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 13:14:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="709223456"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 01 Mar 2022 13:14:30 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP9pF-00012X-O8; Tue, 01 Mar 2022 21:14:29 +0000
-Date:   Wed, 2 Mar 2022 05:13:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_linecards 38/39]
- drivers/net/netdevsim/dev.c:119:57: error: passing argument 4 of
- 'devlink_linecard_device_create' from incompatible pointer type
-Message-ID: <202203020522.M9GYd0HL-lkp@intel.com>
+        Tue, 1 Mar 2022 16:15:38 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E567660A9C
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 13:14:55 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id bk29so5175558wrb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 13:14:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=21ZpNKZmtS6JPBiLSHjJqzNPL83E2JLLr9bEtvwDEDQ=;
+        b=N36JrrJ95ywm/orOhQxmlD2cenBh7/qOWIj80Xh/pqxDJbOzgFJkN/NBq6JrMUJA5E
+         Ket39SuYBMCgMNmzNL27D0ndZ5xiDOrej/f4pu+tyzTcPaOAKcat1fmzzIUQTSfKFozA
+         J5igyhIAK3nrXF2DiHap/utxdulPzBRi1ZLfEdEM4D66OBOTcfaOTdo8a8vJM+lmMorp
+         qa+cKfduNHANXkmKTiv+fqZ/hmTXj/OLD+YnPOGDLMJUnlpVQfX57VB9zv2+cs5UxaAu
+         JDlz/pMJEddC9Ox5kn1RYSi3pHNcb0f61FfK/2azMPfQw5M0MFg8V8CQhUVMO5u6AOYp
+         ARcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=21ZpNKZmtS6JPBiLSHjJqzNPL83E2JLLr9bEtvwDEDQ=;
+        b=li0JYmbZVNTM/+zHIEvWJcuGZ4lPBA0jEXAU1XR4XksYm8cQGTKzvqs4VCr+t+d58p
+         SMzJKjJKYD4CfA+REUSQoQEMgI3hdX1z0VEk5GqmqxL83JmGxjeqAG4wzl8XrTt2m70I
+         TowJN4pKNSMESWDXKSrW2c+Jg30bBuRcliuE+7An1L7kufCaiIcnLFSlaeq8weqcx+LR
+         1ud4L3x5pRb3J9EVjEjgksuL2hd3cXAPz9oOqRRDjGbD+gX5P8C1MxCteXhU3zMNwaNY
+         4Bsgj9FZj+vTYAK3kAE3Ej/sH8YTmB+AlCqutKeXnCi5cdiurcksxixzR7JED28tWD2e
+         qEBg==
+X-Gm-Message-State: AOAM532akW63vXYVxRnkhWiXXuXaQlENrQMmrr5vQSW9WtVInYEbu5En
+        7yxbAvvjqRTNmTHXNdtq2ztEjc5NfhJ/Gg==
+X-Google-Smtp-Source: ABdhPJz/NzJQfpV+F5/ncYyb4EOEOL40IlDTOJLKtBg9iwn/LvVqEHH3566ZJ78yn36Uyq3VlQ5oEQ==
+X-Received: by 2002:a05:6000:1565:b0:1ea:6673:c0b5 with SMTP id 5-20020a056000156500b001ea6673c0b5mr20429412wrz.469.1646169294438;
+        Tue, 01 Mar 2022 13:14:54 -0800 (PST)
+Received: from ?IPV6:2a01:e34:ed2f:f020:49e8:f41b:b2a3:3a55? ([2a01:e34:ed2f:f020:49e8:f41b:b2a3:3a55])
+        by smtp.googlemail.com with ESMTPSA id az37-20020a05600c602500b0038144e509dfsm3630394wmb.20.2022.03.01.13.14.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 13:14:53 -0800 (PST)
+Message-ID: <548c9794-12be-f5f0-0cd8-649df695afd9@linaro.org>
+Date:   Tue, 1 Mar 2022 22:14:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] clocksource/drivers/arm_arch_timer: Use event stream
+ scaling when available
+Content-Language: en-US
+To:     Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
+        Mark Rutland <mark.rutland@arm.com>
+References: <20220203170502.2694422-1-maz@kernel.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220203170502.2694422-1-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   fcef7b383481be9b69822d4d795df70f382f78f1
-commit: 6db26604520f23b4189cb7979bfceea51678df22 [38/39] TMP: devlink device type
-config: arc-randconfig-r021-20220301 (https://download.01.org/0day-ci/archive/20220302/202203020522.M9GYd0HL-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/6db26604520f23b4189cb7979bfceea51678df22
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout 6db26604520f23b4189cb7979bfceea51678df22
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/netdevsim/
+On 03/02/2022 18:05, Marc Zyngier wrote:
+> With FEAT_ECV and the 1GHz counter, it is pretty likely that the
+> event stream divider doesn't fit in the field that holds the
+> divider value (we only have 4 bits to describe counter bits [15:0]
+> 
+> Thankfully, FEAT_ECV also provides a scaling mechanism to switch
+> the field to cover counter bits [23:8] instead.
+> 
+> Enable this on arm64 when ECV is available (32bit doesn't have
+> any detection infrastructure and is unlikely to be run on an
+> ARMv8.6 system anyway).
+> 
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/net/netdevsim/dev.c: In function 'nsim_dev_linecard_devices_create':
->> drivers/net/netdevsim/dev.c:119:57: error: passing argument 4 of 'devlink_linecard_device_create' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     119 |                                                         nsim_dev_linecard);
-         |                                                         ^~~~~~~~~~~~~~~~~
-         |                                                         |
-         |                                                         struct nsim_dev_linecard *
-   In file included from drivers/net/netdevsim/dev.c:29:
-   include/net/devlink.h:1580:44: note: expected 'const char *' but argument is of type 'struct nsim_dev_linecard *'
-    1580 |                                const char *type, void *priv);
-         |                                ~~~~~~~~~~~~^~~~
->> drivers/net/netdevsim/dev.c:117:26: error: too few arguments to function 'devlink_linecard_device_create'
-     117 |                 device = devlink_linecard_device_create(nsim_dev_linecard->devlink_linecard,
-         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/net/netdevsim/dev.c:29:
-   include/net/devlink.h:1577:1: note: declared here
-    1577 | devlink_linecard_device_create(struct devlink_linecard *linecard,
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Applied, thanks
 
 
-vim +/devlink_linecard_device_create +119 drivers/net/netdevsim/dev.c
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
-d75afab460832e Jiri Pirko 2021-05-05  100  
-d75afab460832e Jiri Pirko 2021-05-05  101  static int
-d75afab460832e Jiri Pirko 2021-05-05  102  nsim_dev_linecard_devices_create(struct nsim_dev_linecard *nsim_dev_linecard)
-d75afab460832e Jiri Pirko 2021-05-05  103  {
-d75afab460832e Jiri Pirko 2021-05-05  104  	struct devlink_linecard_device *device;
-d75afab460832e Jiri Pirko 2021-05-05  105  	char *component_name;
-d75afab460832e Jiri Pirko 2021-05-05  106  	int err;
-d75afab460832e Jiri Pirko 2021-05-05  107  	int i;
-d75afab460832e Jiri Pirko 2021-05-05  108  
-d75afab460832e Jiri Pirko 2021-05-05  109  	snprintf(nsim_dev_linecard->device_component_name,
-d75afab460832e Jiri Pirko 2021-05-05  110  		 sizeof(nsim_dev_linecard->device_component_name), "lc%u_dev0",
-d75afab460832e Jiri Pirko 2021-05-05  111  		 nsim_dev_linecard->linecard_index);
-d75afab460832e Jiri Pirko 2021-05-05  112  	component_name = nsim_dev_linecard->device_component_name;
-d75afab460832e Jiri Pirko 2021-05-05  113  
-d75afab460832e Jiri Pirko 2021-05-05  114  	for (i = 0; i < NSIM_DEV_LINECARD_DEVICE_COUNT; i++) {
-d75afab460832e Jiri Pirko 2021-05-05  115  		if (i > 0)
-d75afab460832e Jiri Pirko 2021-05-05  116  			component_name = NULL;
-d75afab460832e Jiri Pirko 2021-05-05 @117  		device = devlink_linecard_device_create(nsim_dev_linecard->devlink_linecard,
-d75afab460832e Jiri Pirko 2021-05-05  118  							i, component_name,
-d75afab460832e Jiri Pirko 2021-05-05 @119  							nsim_dev_linecard);
-d75afab460832e Jiri Pirko 2021-05-05  120  		if (IS_ERR(device)) {
-d75afab460832e Jiri Pirko 2021-05-05  121  			err = PTR_ERR(device);
-d75afab460832e Jiri Pirko 2021-05-05  122  			goto rollback;
-d75afab460832e Jiri Pirko 2021-05-05  123  		}
-d75afab460832e Jiri Pirko 2021-05-05  124  		nsim_dev_linecard->devlink_device[i] = device;
-d75afab460832e Jiri Pirko 2021-05-05  125  	}
-d75afab460832e Jiri Pirko 2021-05-05  126  	return 0;
-d75afab460832e Jiri Pirko 2021-05-05  127  
-d75afab460832e Jiri Pirko 2021-05-05  128  rollback:
-d75afab460832e Jiri Pirko 2021-05-05  129  	for (i--; i >= 0; i--) {
-d75afab460832e Jiri Pirko 2021-05-05  130  		device = nsim_dev_linecard->devlink_device[i];
-d75afab460832e Jiri Pirko 2021-05-05  131  		devlink_linecard_device_destroy(nsim_dev_linecard->devlink_linecard,
-d75afab460832e Jiri Pirko 2021-05-05  132  						device);
-d75afab460832e Jiri Pirko 2021-05-05  133  	}
-d75afab460832e Jiri Pirko 2021-05-05  134  	return err;
-d75afab460832e Jiri Pirko 2021-05-05  135  }
-d75afab460832e Jiri Pirko 2021-05-05  136  
-
-:::::: The code at line 119 was first introduced by commit
-:::::: d75afab460832ea5abcbfe1d3e7107a44e648046 netdevsim: create couple of devices on each linecard
-
-:::::: TO: Jiri Pirko <jiri@nvidia.com>
-:::::: CC: Jiri Pirko <jiri@nvidia.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
