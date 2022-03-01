@@ -2,314 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0497C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:51:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233113AbiCAHvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
+        id S233129AbiCAHvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:51:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiCAHvI (ORCPT
+        with ESMTP id S232923AbiCAHvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:51:08 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072F165839;
-        Mon, 28 Feb 2022 23:50:28 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id d3so19053914wrf.1;
-        Mon, 28 Feb 2022 23:50:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ncaBgOYHVHyX562hJ+dSZXG5SoGXqG/UuIq2nR2m4Ds=;
-        b=posku0yAYAZ8Q7U6hzwy/v5OpkmWndRqp33Jjkoaw/Oq7onxRCi7jD1qn1P329zn4u
-         3nBjiUhHmSpgrmqMsjAXqkzmvmLIEiEigZRHFAgwztMqKPK0cLQ3TQQh/2PZIcRAGsP2
-         gcqqS004c9CIK614nvAnivYjXiNHr7ZoWqnxoE6W8y+XBQmmVUnzLnC906QPhIAy29Ju
-         VRw5yWLIBu5BUI+6TIWDRJNWCgGlctbnPhFx1WwEVjs521ccmOYip3IE0QOteKOBIkYF
-         bpcmMotTmLeBTV7MSVVGL2GiLO9/SY/1xGLUzg3xPPrFqEYXUtAO1qMqyMe0z5NybcTo
-         h7tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ncaBgOYHVHyX562hJ+dSZXG5SoGXqG/UuIq2nR2m4Ds=;
-        b=txvzDatlET0kbH1abB1mDhoaWubtM5j53CmfqeI0SMV5y4CwKQMa3QGrXcdxPPUL85
-         404q1A+rdQby4YGMZRgQ4Rltz/Hr1GhTCqyVxQlp1H7DiA+5hcv0bX8Mh9dzUEnoTvBo
-         aekM9LYQlzWq4MIVzH5l86gZxnKim5j0zlsR6IhAA8fzKeKJlovM/7ENoWDDVEr1lDDW
-         RQqa7COtkWkS9RlAdtKPIvdkrQwZIaP8boqfgq03zvB+mN5jYZW+osZpSTC9hTICSt52
-         bMSE2nVfG97I/IDFibrbHUZ5LF+z1+6kvlmg2E6W4HSCVL3+t9PqQfGjWOWZsI6D1jbS
-         qHGQ==
-X-Gm-Message-State: AOAM5328j6XV7Lon1NkYbuOo0D0UtYz7Nxcqs9Wrt3lmxqKzoEWKDeqK
-        pNVanYLFbpQ/KBIwY7zq7HI=
-X-Google-Smtp-Source: ABdhPJyemxdHJ9Az+Ep1C+iGVaYqqNCM/xE0+JQuhKHn+ThMhopwCbRS4EE9kztTc3Kgfso04bPDbA==
-X-Received: by 2002:adf:90e2:0:b0:1e3:f5a:553c with SMTP id i89-20020adf90e2000000b001e30f5a553cmr18027194wri.476.1646121026453;
-        Mon, 28 Feb 2022 23:50:26 -0800 (PST)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id r1-20020a5d4941000000b001ed89dcacbbsm12622004wrs.23.2022.02.28.23.50.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 23:50:25 -0800 (PST)
-Message-ID: <908437cd-1f9c-2ef2-eb70-94e409d252e0@gmail.com>
-Date:   Tue, 1 Mar 2022 08:50:24 +0100
+        Tue, 1 Mar 2022 02:51:54 -0500
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF7970F71;
+        Mon, 28 Feb 2022 23:51:11 -0800 (PST)
+Received: from relay11.mail.gandi.net (unknown [217.70.178.231])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id C52A4C3D50;
+        Tue,  1 Mar 2022 07:40:13 +0000 (UTC)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2B2C310000D;
+        Tue,  1 Mar 2022 07:40:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646120409;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1EOlbUxAApC61mQjvw+lG70+JM2jHWLUjBcqvnLcepA=;
+        b=EWUY1TKvGS6Yg129zF29NgHJHMwcv48rJCLCe7SF45JHcNNriVOQo+vcGiYixEAaHnyulB
+        nJQBl068EP/pSVzbkdxbgXCJZTn/Woy6xox0qwrhuWnLDJmO7Aw8fafuMklMsuzENOIIXz
+        c+TC7F7dcVRu1QNFnUnAFY2l+9/i9oBUcQ4iFhctYdJL7TClStx6/rANhA1Sbvyn0M96zz
+        DN43uNBfzPSoxhjSP8ns2qwAGgi1xkMICNqykUP4WLVTs0I1l9IOPWWY8T3PooNnoadHUN
+        InLV/E29BXUcvgd0jZP/wxq0rm/fa2yidd9Or23IERKtnX+02I184mza7r59qQ==
+Date:   Tue, 1 Mar 2022 08:40:01 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Another pass removing cases of 'allOf'
+ containing a '$ref'
+Message-ID: <20220301084001.3771855e@xps13>
+In-Reply-To: <20220228213802.1639658-1-robh@kernel.org>
+References: <20220228213802.1639658-1-robh@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [v5] arm64: dts: mediatek: Add mt8192 power domains controller
-Content-Language: en-US
-To:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        srv_heupstream@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Weiyi Lu <weiyi.lu@mediatek.com>
-References: <20210825010426.30303-1-chun-jie.chen@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20210825010426.30303-1-chun-jie.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Rob,
 
+robh@kernel.org wrote on Mon, 28 Feb 2022 15:38:02 -0600:
 
-On 25/08/2021 03:04, Chun-Jie Chen wrote:
-> Add power domains controller node for SoC mt8192
-> 
-> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-> Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-
-Applied thanks!
-
+> Another pass at removing unnecessary use of 'allOf' with a '$ref'.
+>=20
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords.
+>=20
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+> Cc: Richard Weinberger <richard@nod.at>
+> Cc: Vignesh Raghavendra <vigneshr@ti.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-mtd@lists.infradead.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-spi@vger.kernel.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
-> This patch is base on v5.14-rc1,
-> series "Mediatek MT8192 clock support"[1] and [2].
-> No changes compare v4
-> 
-> [1] https://patchwork.kernel.org/project/linux-mediatek/list/?series=521127
-> [2] https://patchwork.kernel.org/project/linux-mediatek/patch/20210727023205.20319-2-chun-jie.chen@mediatek.com/
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 201 +++++++++++++++++++++++
->   1 file changed, 201 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index c7c7d4e017ae..a0084a7a5bcd 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -9,6 +9,7 @@
->   #include <dt-bindings/interrupt-controller/arm-gic.h>
->   #include <dt-bindings/interrupt-controller/irq.h>
->   #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
-> +#include <dt-bindings/power/mt8192-power.h>
->   
->   / {
->   	compatible = "mediatek,mt8192";
-> @@ -301,6 +302,206 @@
->   			#interrupt-cells = <2>;
->   		};
->   
-> +		scpsys: syscon@10006000 {
-> +			compatible = "syscon", "simple-mfd";
-> +			reg = <0 0x10006000 0 0x1000>;
-> +			#power-domain-cells = <1>;
-> +
-> +			/* System Power Manager */
-> +			spm: power-controller {
-> +				compatible = "mediatek,mt8192-power-controller";
-> +				#address-cells = <1>;
-> +				#size-cells = <0>;
-> +				#power-domain-cells = <1>;
-> +
-> +				/* power domain of the SoC */
-> +				power-domain@MT8192_POWER_DOMAIN_AUDIO {
-> +					reg = <MT8192_POWER_DOMAIN_AUDIO>;
-> +					clocks = <&topckgen CLK_TOP_AUD_INTBUS_SEL>,
-> +						 <&infracfg CLK_INFRA_AUDIO_26M_B>,
-> +						 <&infracfg CLK_INFRA_AUDIO>;
-> +					clock-names = "audio", "audio1", "audio2";
-> +					mediatek,infracfg = <&infracfg>;
-> +					#power-domain-cells = <0>;
-> +				};
-> +
-> +				power-domain@MT8192_POWER_DOMAIN_CONN {
-> +					reg = <MT8192_POWER_DOMAIN_CONN>;
-> +					clocks = <&infracfg CLK_INFRA_PMIC_CONN>;
-> +					clock-names = "conn";
-> +					mediatek,infracfg = <&infracfg>;
-> +					#power-domain-cells = <0>;
-> +				};
-> +
-> +				power-domain@MT8192_POWER_DOMAIN_MFG0 {
-> +					reg = <MT8192_POWER_DOMAIN_MFG0>;
-> +					clocks = <&topckgen CLK_TOP_MFG_PLL_SEL>;
-> +					clock-names = "mfg";
-> +					#address-cells = <1>;
-> +					#size-cells = <0>;
-> +					#power-domain-cells = <1>;
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_MFG1 {
-> +						reg = <MT8192_POWER_DOMAIN_MFG1>;
-> +						mediatek,infracfg = <&infracfg>;
-> +						#address-cells = <1>;
-> +						#size-cells = <0>;
-> +						#power-domain-cells = <1>;
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_MFG2 {
-> +							reg = <MT8192_POWER_DOMAIN_MFG2>;
-> +							#power-domain-cells = <0>;
-> +						};
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_MFG3 {
-> +							reg = <MT8192_POWER_DOMAIN_MFG3>;
-> +							#power-domain-cells = <0>;
-> +						};
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_MFG4 {
-> +							reg = <MT8192_POWER_DOMAIN_MFG4>;
-> +							#power-domain-cells = <0>;
-> +						};
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_MFG5 {
-> +							reg = <MT8192_POWER_DOMAIN_MFG5>;
-> +							#power-domain-cells = <0>;
-> +						};
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_MFG6 {
-> +							reg = <MT8192_POWER_DOMAIN_MFG6>;
-> +							#power-domain-cells = <0>;
-> +						};
-> +					};
-> +				};
-> +
-> +				power-domain@MT8192_POWER_DOMAIN_DISP {
-> +					reg = <MT8192_POWER_DOMAIN_DISP>;
-> +					clocks = <&topckgen CLK_TOP_DISP_SEL>,
-> +						 <&mmsys CLK_MM_SMI_INFRA>,
-> +						 <&mmsys CLK_MM_SMI_COMMON>,
-> +						 <&mmsys CLK_MM_SMI_GALS>,
-> +						 <&mmsys CLK_MM_SMI_IOMMU>;
-> +					clock-names = "disp", "disp-0", "disp-1", "disp-2",
-> +						      "disp-3";
-> +					mediatek,infracfg = <&infracfg>;
-> +					#address-cells = <1>;
-> +					#size-cells = <0>;
-> +					#power-domain-cells = <1>;
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_IPE {
-> +						reg = <MT8192_POWER_DOMAIN_IPE>;
-> +						clocks = <&topckgen CLK_TOP_IPE_SEL>,
-> +							 <&ipesys CLK_IPE_LARB19>,
-> +							 <&ipesys CLK_IPE_LARB20>,
-> +							 <&ipesys CLK_IPE_SMI_SUBCOM>,
-> +							 <&ipesys CLK_IPE_GALS>;
-> +						clock-names = "ipe", "ipe-0", "ipe-1", "ipe-2",
-> +							      "ipe-3";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#power-domain-cells = <0>;
-> +					};
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_ISP {
-> +						reg = <MT8192_POWER_DOMAIN_ISP>;
-> +						clocks = <&topckgen CLK_TOP_IMG1_SEL>,
-> +							 <&imgsys CLK_IMG_LARB9>,
-> +							 <&imgsys CLK_IMG_GALS>;
-> +						clock-names = "isp", "isp-0", "isp-1";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#power-domain-cells = <0>;
-> +					};
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_ISP2 {
-> +						reg = <MT8192_POWER_DOMAIN_ISP2>;
-> +						clocks = <&topckgen CLK_TOP_IMG2_SEL>,
-> +							 <&imgsys2 CLK_IMG2_LARB11>,
-> +							 <&imgsys2 CLK_IMG2_GALS>;
-> +						clock-names = "isp2", "isp2-0", "isp2-1";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#power-domain-cells = <0>;
-> +					};
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_MDP {
-> +						reg = <MT8192_POWER_DOMAIN_MDP>;
-> +						clocks = <&topckgen CLK_TOP_MDP_SEL>,
-> +							 <&mdpsys CLK_MDP_SMI0>;
-> +						clock-names = "mdp", "mdp-0";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#power-domain-cells = <0>;
-> +					};
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_VENC {
-> +						reg = <MT8192_POWER_DOMAIN_VENC>;
-> +						clocks = <&topckgen CLK_TOP_VENC_SEL>,
-> +							 <&vencsys CLK_VENC_SET1_VENC>;
-> +						clock-names = "venc", "venc-0";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#power-domain-cells = <0>;
-> +					};
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_VDEC {
-> +						reg = <MT8192_POWER_DOMAIN_VDEC>;
-> +						clocks = <&topckgen CLK_TOP_VDEC_SEL>,
-> +							 <&vdecsys_soc CLK_VDEC_SOC_VDEC>,
-> +							 <&vdecsys_soc CLK_VDEC_SOC_LAT>,
-> +							 <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
-> +						clock-names = "vdec", "vdec-0", "vdec-1", "vdec-2";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#address-cells = <1>;
-> +						#size-cells = <0>;
-> +						#power-domain-cells = <1>;
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_VDEC2 {
-> +							reg = <MT8192_POWER_DOMAIN_VDEC2>;
-> +							clocks = <&vdecsys CLK_VDEC_VDEC>,
-> +								 <&vdecsys CLK_VDEC_LAT>,
-> +								 <&vdecsys CLK_VDEC_LARB1>;
-> +							clock-names = "vdec2-0", "vdec2-1",
-> +								      "vdec2-2";
-> +							#power-domain-cells = <0>;
-> +						};
-> +					};
-> +
-> +					power-domain@MT8192_POWER_DOMAIN_CAM {
-> +						reg = <MT8192_POWER_DOMAIN_CAM>;
-> +						clocks = <&topckgen CLK_TOP_CAM_SEL>,
-> +							 <&camsys CLK_CAM_LARB13>,
-> +							 <&camsys CLK_CAM_LARB14>,
-> +							 <&camsys CLK_CAM_CCU_GALS>,
-> +							 <&camsys CLK_CAM_CAM2MM_GALS>;
-> +						clock-names = "cam", "cam-0", "cam-1", "cam-2",
-> +							      "cam-3";
-> +						mediatek,infracfg = <&infracfg>;
-> +						#address-cells = <1>;
-> +						#size-cells = <0>;
-> +						#power-domain-cells = <1>;
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_CAM_RAWA {
-> +							reg = <MT8192_POWER_DOMAIN_CAM_RAWA>;
-> +							clocks = <&camsys_rawa CLK_CAM_RAWA_LARBX>;
-> +							clock-names = "cam_rawa-0";
-> +							#power-domain-cells = <0>;
-> +						};
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_CAM_RAWB {
-> +							reg = <MT8192_POWER_DOMAIN_CAM_RAWB>;
-> +							clocks = <&camsys_rawb CLK_CAM_RAWB_LARBX>;
-> +							clock-names = "cam_rawb-0";
-> +							#power-domain-cells = <0>;
-> +						};
-> +
-> +						power-domain@MT8192_POWER_DOMAIN_CAM_RAWC {
-> +							reg = <MT8192_POWER_DOMAIN_CAM_RAWC>;
-> +							clocks = <&camsys_rawc CLK_CAM_RAWC_LARBX>;
-> +							clock-names = "cam_rawc-0";
-> +							#power-domain-cells = <0>;
-> +						};
-> +					};
-> +				};
-> +			};
-> +		};
-> +
->   		apmixedsys: syscon@1000c000 {
->   			compatible = "mediatek,mt8192-apmixedsys", "syscon";
->   			reg = <0 0x1000c000 0 0x1000>;
+>  .../bindings/connector/usb-connector.yaml         |  3 +--
+>  .../bindings/display/brcm,bcm2711-hdmi.yaml       |  3 +--
+>  .../bindings/display/bridge/adi,adv7511.yaml      |  5 ++---
+>  .../bindings/display/bridge/synopsys,dw-hdmi.yaml |  5 ++---
+>  .../bindings/display/panel/display-timings.yaml   |  3 +--
+>  .../devicetree/bindings/display/ste,mcde.yaml     |  4 ++--
+>  .../devicetree/bindings/input/adc-joystick.yaml   |  9 ++++-----
+>  .../bindings/leds/cznic,turris-omnia-leds.yaml    |  3 +--
+>  .../devicetree/bindings/leds/leds-lp50xx.yaml     |  3 +--
+>  .../devicetree/bindings/mfd/google,cros-ec.yaml   | 12 ++++--------
+>  .../devicetree/bindings/mtd/nand-controller.yaml  |  8 +++-----
+>  .../bindings/mtd/rockchip,nand-controller.yaml    |  3 +--
+
+For MTD bindings:
+
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+Thanks,
+Miqu=C3=A8l
