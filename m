@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0615C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbiCAUTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:19:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
+        id S233885AbiCAUTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238157AbiCAUSE (ORCPT
+        with ESMTP id S238238AbiCAUSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:18:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFE08AE64;
-        Tue,  1 Mar 2022 12:17:08 -0800 (PST)
+        Tue, 1 Mar 2022 15:18:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7EC5FFA;
+        Tue,  1 Mar 2022 12:17:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08F836170E;
-        Tue,  1 Mar 2022 20:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 032FAC340EE;
-        Tue,  1 Mar 2022 20:17:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7B1E8CE1E66;
+        Tue,  1 Mar 2022 20:17:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5AABC36AE3;
+        Tue,  1 Mar 2022 20:17:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165827;
-        bh=HbSeXkCCNcIiCPTKco1bU66sLMchExDVmSqGybBsPP0=;
+        s=k20201202; t=1646165837;
+        bh=CUyZj62DQefLTzMMGF+hDyJGKchgnq4fyRxIIaIvKME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLg6hjwKPboPVfHYQs95K9T3lVHEeH82LQevRGtnR6mn2aLa/YXtvtdILmHSFxNVy
-         rAKAs7GBQqLboApIXBuE79MsYwCvbmasnIe6ZAP3m464SReQE+FwILP1SNtrBTeK20
-         C2+NZTKAIoIT5ebRpq9Gl0IaK/3Z/Ykyp+xJaHhjskbWX7rWaPu+ibxKUwKtOA6vi7
-         R5RXw8IpClnLREz52G3RwgC2HQFZ3canIEVnBBKJ/DRmJ4F0A6xhH2HuMz9ltC3UBi
-         NjjytzH2yjznWgjDlA0hGYczvAuRanQ48e/Hl7AahZSdp9tuxXBXfR64BlNVJU1cXg
-         qh0+g9MNQfmEg==
+        b=cwGh1T204qLbleTSwVpI2LAxI7MkNc1BllnV5Q2WOUiZFNg2j3JiDhYJGur5XGb8k
+         F9k7WKMGEjpqeFPmZ/mofDQRAn2qQi3l0XRMnO3vjDtCkLTxsFphBl7amNawJr3wsa
+         eG5clj2K3RfcrhSm7RtIoUGlyHLfsAHa16LOhogs2NGwZLOROudWP7n7Qk/elYgqyr
+         zmmBoGdGSQLPMBUuaAJUR9wuj1cSv7iDWf5nEQYBV5jwIcCAc2l5plE9ZBz5CD/Wac
+         haGcx3xLLfHP5LYjVIovyDvx4wqUcyvGS15d3q5Ey/TPzybFCCVXLqSjduXOLtFBC+
+         ipD12+qno2GrA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jon Lin <jon.lin@rock-chips.com>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, heiko@sntech.de,
-        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 08/23] spi: rockchip: terminate dma transmission when slave abort
-Date:   Tue,  1 Mar 2022 15:16:07 -0500
-Message-Id: <20220301201629.18547-8-sashal@kernel.org>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/23] x86/kvm: Don't use pv tlb/ipi/sched_yield if on 1 vCPU
+Date:   Tue,  1 Mar 2022 15:16:09 -0500
+Message-Id: <20220301201629.18547-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
@@ -52,38 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Lin <jon.lin@rock-chips.com>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-[ Upstream commit 80808768e41324d2e23de89972b5406c1020e6e4 ]
+[ Upstream commit ec756e40e271866f951d77c5e923d8deb6002b15 ]
 
-After slave abort, all DMA should be stopped, or it will affect the
-next transmission and maybe abort again.
+Inspired by commit 3553ae5690a (x86/kvm: Don't use pvqspinlock code if
+only 1 vCPU), on a VM with only 1 vCPU, there is no need to enable
+pv tlb/ipi/sched_yield and we can save the memory for __pv_cpu_mask.
 
-Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/20220216014028.8123-3-jon.lin@rock-chips.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1645171838-2855-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rockchip.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kernel/kvm.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index 4f65ba3dd19c2..c6a1bb09be056 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -585,6 +585,12 @@ static int rockchip_spi_slave_abort(struct spi_controller *ctlr)
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index b656456c3a944..811c7aaf23aac 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -457,19 +457,22 @@ static bool pv_tlb_flush_supported(void)
  {
- 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
+ 	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
+ 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
+-		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
++		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
++		(num_possible_cpus() != 1));
+ }
  
-+	if (atomic_read(&rs->state) & RXDMA)
-+		dmaengine_terminate_sync(ctlr->dma_rx);
-+	if (atomic_read(&rs->state) & TXDMA)
-+		dmaengine_terminate_sync(ctlr->dma_tx);
-+	atomic_set(&rs->state, 0);
-+	spi_enable_chip(rs, false);
- 	rs->slave_abort = true;
- 	spi_finalize_current_transfer(ctlr);
+ static bool pv_ipi_supported(void)
+ {
+-	return kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI);
++	return (kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI) &&
++	       (num_possible_cpus() != 1));
+ }
  
+ static bool pv_sched_yield_supported(void)
+ {
+ 	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
+ 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
+-	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
++	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
++	    (num_possible_cpus() != 1));
+ }
+ 
+ #define KVM_IPI_CLUSTER_SIZE	(2 * BITS_PER_LONG)
 -- 
 2.34.1
 
