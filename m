@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238187AbiCAUZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:25:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
+        id S234864AbiCAUZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:25:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238696AbiCAUXp (ORCPT
+        with ESMTP id S238699AbiCAUXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE4B7EB2D;
+        Tue, 1 Mar 2022 15:23:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE9C4092F;
         Tue,  1 Mar 2022 12:21:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EDA2B81D4B;
-        Tue,  1 Mar 2022 20:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEAB7C340EE;
-        Tue,  1 Mar 2022 20:20:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F343360B62;
+        Tue,  1 Mar 2022 20:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5754C340EE;
+        Tue,  1 Mar 2022 20:20:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166056;
-        bh=mYOW8nySUsb+Cg+OgPAYDtJqcyQT9cKYqnUBarEV7Wg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fTmxDfn+TRNPd6wWX/5Ed8MpDdh0aJaIIo+wVkhO60fPV57Mw/y06JXvJUpfqmXgT
-         l85xpoPS9Y9jE//kHViigw6Cx9NrHD1keIZINidMPtC8EEXsp6OMEXdgCj/hwmiYG6
-         tGrZqQEUh8yVmQz9N/78Ed7Lsz5AqlgjJsCj/XDEj/hxoUxk+X+Juh15i7KZ0YtdkJ
-         6sGbKs42gd6/OqCbqGbDGpsdLz8e69rPZ23ZecJqowCNtPf5TYcdBtZGEYQhs5Qq4H
-         c4mGye1pjg7WJEKv/Bvl3NLqhf1TrH3RcuTCcd1tt/X4AQ9E1Tksr2XhtF5Lz4Tv5T
-         CbU4j9AxEeuQA==
+        s=k20201202; t=1646166038;
+        bh=6u5hYmnVqzpjLai+66w0PPoKJevf0lUcfY+US3gukLs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=APXBf5BDjidGgtcoqz7mSLkoct3N5I0FfAFLE7WlFQaHbHGkSH5b8+O5JkB+uLJKd
+         CG7xE3p1W3T/D4+ARL2Ne477K1U38YLKsKERxrv6Uy43RCMojunkrTO2MHJvUoIS13
+         8Npjkf1od5xIyZMtMd8nR3maz7Qt6Vdq6djO7QWYhUrPDK/Fsh7dk0qqhoGE6UjD99
+         9YFM7DRIDVUW4Rbj1sNtQJ1QUgsaPDpkZLMXb23auDQ+sadV5tcM5o9VpempbaoejM
+         84a/DGK5W1oGoFpQmOwlLH1JgRZJHpHTzFuukRgPKvt7xUjLToqWjEN5hHNHHQ3PIB
+         6xcLtXHjY274A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     suresh kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        atenart@kernel.org, edumazet@google.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 1/7] net-sysfs: add check for netdevice being present to speed_show
-Date:   Tue,  1 Mar 2022 15:20:39 -0500
-Message-Id: <20220301202046.19220-1-sashal@kernel.org>
+Cc:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jann Horn <jannh@google.com>, Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 10/11] selftest/vm: fix map_fixed_noreplace test failure
+Date:   Tue,  1 Mar 2022 15:19:43 -0500
+Message-Id: <20220301201951.19066-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301201951.19066-1-sashal@kernel.org>
+References: <20220301201951.19066-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,76 +55,179 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 
-[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
+[ Upstream commit f39c58008dee7ab5fc94c3f1995a21e886801df0 ]
 
-When bringing down the netdevice or system shutdown, a panic can be
-triggered while accessing the sysfs path because the device is already
-removed.
+On the latest RHEL the test fails due to executable mapped at 256MB
+address
 
-    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
-    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
-    ...
-    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
-    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
+     # ./map_fixed_noreplace
+    mmap() @ 0x10000000-0x10050000 p=0xffffffffffffffff result=File exists
+    10000000-10010000 r-xp 00000000 fd:04 34905657                           /root/rpmbuild/BUILD/kernel-5.14.0-56.el9/linux-5.14.0-56.el9.ppc64le/tools/testing/selftests/vm/map_fixed_noreplace
+    10010000-10020000 r--p 00000000 fd:04 34905657                           /root/rpmbuild/BUILD/kernel-5.14.0-56.el9/linux-5.14.0-56.el9.ppc64le/tools/testing/selftests/vm/map_fixed_noreplace
+    10020000-10030000 rw-p 00010000 fd:04 34905657                           /root/rpmbuild/BUILD/kernel-5.14.0-56.el9/linux-5.14.0-56.el9.ppc64le/tools/testing/selftests/vm/map_fixed_noreplace
+    10029b90000-10029bc0000 rw-p 00000000 00:00 0                            [heap]
+    7fffbb510000-7fffbb750000 r-xp 00000000 fd:04 24534                      /usr/lib64/libc.so.6
+    7fffbb750000-7fffbb760000 r--p 00230000 fd:04 24534                      /usr/lib64/libc.so.6
+    7fffbb760000-7fffbb770000 rw-p 00240000 fd:04 24534                      /usr/lib64/libc.so.6
+    7fffbb780000-7fffbb7a0000 r--p 00000000 00:00 0                          [vvar]
+    7fffbb7a0000-7fffbb7b0000 r-xp 00000000 00:00 0                          [vdso]
+    7fffbb7b0000-7fffbb800000 r-xp 00000000 fd:04 24514                      /usr/lib64/ld64.so.2
+    7fffbb800000-7fffbb810000 r--p 00040000 fd:04 24514                      /usr/lib64/ld64.so.2
+    7fffbb810000-7fffbb820000 rw-p 00050000 fd:04 24514                      /usr/lib64/ld64.so.2
+    7fffd93f0000-7fffd9420000 rw-p 00000000 00:00 0                          [stack]
+    Error: couldn't map the space we need for the test
 
-    crash> bt
-    ...
-    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
-    ...
-     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
-        [exception RIP: dma_pool_alloc+0x1ab]
-        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
-        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
-        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
-        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
-        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
-        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
-        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
-    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
-    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
-    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
-    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
-    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
-    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
-    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
-    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
-    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
-    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
-    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
-    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
-    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
-    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
-    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
-    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
-    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
+Fix this by finding a free address using mmap instead of hardcoding
+BASE_ADDRESS.
 
-    crash> net_device.state ffff89443b0c0000
-      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
-
-To prevent this scenario, we also make sure that the netdevice is present.
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20220217083417.373823-1-aneesh.kumar@linux.ibm.com
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Jann Horn <jannh@google.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/net-sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../selftests/vm/map_fixed_noreplace.c        | 49 ++++++++++++++-----
+ 1 file changed, 37 insertions(+), 12 deletions(-)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index e5dc04cb55992..7a11b2d90975d 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -203,7 +203,7 @@ static ssize_t speed_show(struct device *dev,
- 	if (!rtnl_trylock())
- 		return restart_syscall();
+diff --git a/tools/testing/selftests/vm/map_fixed_noreplace.c b/tools/testing/selftests/vm/map_fixed_noreplace.c
+index d91bde5112686..eed44322d1a63 100644
+--- a/tools/testing/selftests/vm/map_fixed_noreplace.c
++++ b/tools/testing/selftests/vm/map_fixed_noreplace.c
+@@ -17,9 +17,6 @@
+ #define MAP_FIXED_NOREPLACE 0x100000
+ #endif
  
--	if (netif_running(netdev)) {
-+	if (netif_running(netdev) && netif_device_present(netdev)) {
- 		struct ethtool_link_ksettings cmd;
+-#define BASE_ADDRESS	(256ul * 1024 * 1024)
+-
+-
+ static void dump_maps(void)
+ {
+ 	char cmd[32];
+@@ -28,18 +25,46 @@ static void dump_maps(void)
+ 	system(cmd);
+ }
  
- 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
++static unsigned long find_base_addr(unsigned long size)
++{
++	void *addr;
++	unsigned long flags;
++
++	flags = MAP_PRIVATE | MAP_ANONYMOUS;
++	addr = mmap(NULL, size, PROT_NONE, flags, -1, 0);
++	if (addr == MAP_FAILED) {
++		printf("Error: couldn't map the space we need for the test\n");
++		return 0;
++	}
++
++	if (munmap(addr, size) != 0) {
++		printf("Error: couldn't map the space we need for the test\n");
++		return 0;
++	}
++	return (unsigned long)addr;
++}
++
+ int main(void)
+ {
++	unsigned long base_addr;
+ 	unsigned long flags, addr, size, page_size;
+ 	char *p;
+ 
+ 	page_size = sysconf(_SC_PAGE_SIZE);
+ 
++	//let's find a base addr that is free before we start the tests
++	size = 5 * page_size;
++	base_addr = find_base_addr(size);
++	if (!base_addr) {
++		printf("Error: couldn't map the space we need for the test\n");
++		return 1;
++	}
++
+ 	flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE;
+ 
+ 	// Check we can map all the areas we need below
+ 	errno = 0;
+-	addr = BASE_ADDRESS;
++	addr = base_addr;
+ 	size = 5 * page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 
+@@ -60,7 +85,7 @@ int main(void)
+ 	printf("unmap() successful\n");
+ 
+ 	errno = 0;
+-	addr = BASE_ADDRESS + page_size;
++	addr = base_addr + page_size;
+ 	size = 3 * page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -80,7 +105,7 @@ int main(void)
+ 	 *     +4 |  free  | new
+ 	 */
+ 	errno = 0;
+-	addr = BASE_ADDRESS;
++	addr = base_addr;
+ 	size = 5 * page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -101,7 +126,7 @@ int main(void)
+ 	 *     +4 |  free  |
+ 	 */
+ 	errno = 0;
+-	addr = BASE_ADDRESS + (2 * page_size);
++	addr = base_addr + (2 * page_size);
+ 	size = page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -121,7 +146,7 @@ int main(void)
+ 	 *     +4 |  free  | new
+ 	 */
+ 	errno = 0;
+-	addr = BASE_ADDRESS + (3 * page_size);
++	addr = base_addr + (3 * page_size);
+ 	size = 2 * page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -141,7 +166,7 @@ int main(void)
+ 	 *     +4 |  free  |
+ 	 */
+ 	errno = 0;
+-	addr = BASE_ADDRESS;
++	addr = base_addr;
+ 	size = 2 * page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -161,7 +186,7 @@ int main(void)
+ 	 *     +4 |  free  |
+ 	 */
+ 	errno = 0;
+-	addr = BASE_ADDRESS;
++	addr = base_addr;
+ 	size = page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -181,7 +206,7 @@ int main(void)
+ 	 *     +4 |  free  |  new
+ 	 */
+ 	errno = 0;
+-	addr = BASE_ADDRESS + (4 * page_size);
++	addr = base_addr + (4 * page_size);
+ 	size = page_size;
+ 	p = mmap((void *)addr, size, PROT_NONE, flags, -1, 0);
+ 	printf("mmap() @ 0x%lx-0x%lx p=%p result=%m\n", addr, addr + size, p);
+@@ -192,7 +217,7 @@ int main(void)
+ 		return 1;
+ 	}
+ 
+-	addr = BASE_ADDRESS;
++	addr = base_addr;
+ 	size = 5 * page_size;
+ 	if (munmap((void *)addr, size) != 0) {
+ 		dump_maps();
 -- 
 2.34.1
 
