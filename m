@@ -2,130 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF05C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55343C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234212AbiCAKZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:25:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
+        id S234225AbiCAKZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:25:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234127AbiCAKY7 (ORCPT
+        with ESMTP id S234165AbiCAKZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:24:59 -0500
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 02:24:18 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3477358830;
-        Tue,  1 Mar 2022 02:24:17 -0800 (PST)
-Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MmU9X-1o6Xg02KI5-00iRlQ; Tue, 01 Mar 2022 11:19:13 +0100
-Received: by mail-wr1-f47.google.com with SMTP id j17so19731748wrc.0;
-        Tue, 01 Mar 2022 02:19:13 -0800 (PST)
-X-Gm-Message-State: AOAM532h+TSsT7XvTtltQpow3PwSn4+2uzT8xgz1pYiE3i8l451g41cf
-        UNXRvarmF9I01/AqayURu6IwTnPEVV950GaoALM=
-X-Google-Smtp-Source: ABdhPJzzPOquGV619/Ft2Hlid0sPxXMa9f5QyUk3acsgXWRETaM+gTfyx5RKFPDTTgU6lhKUdNltea8NVoyAewfh61A=
-X-Received: by 2002:a5d:63c2:0:b0:1ef:840e:e139 with SMTP id
- c2-20020a5d63c2000000b001ef840ee139mr11569532wrw.192.1646129952971; Tue, 01
- Mar 2022 02:19:12 -0800 (PST)
+        Tue, 1 Mar 2022 05:25:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6812059383
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:24:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646130258;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=n4x9XMBl4+PDcJH0WYTd/mxQmBLZ1Jz9DQ+RKwvFd+c=;
+        b=BMW/QILmLIuwhGUZKwVSXnpKLlfomUtw6ErGaF4T2dUvVy6RYT5ewaUKOWoibkKCkH8q63
+        i9psGDb8ribAYoPjo3xaMtzSbNH58mg+a5YVQpLY+TuZ/i9ao8b+R1ZzyLvumJ4xlIS93D
+        dRqJpTxqhfgR5qEv52z4ckprVXuJd+E=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-592-_LpRQ2gPOR2lz2ZEqGYgvQ-1; Tue, 01 Mar 2022 05:24:17 -0500
+X-MC-Unique: _LpRQ2gPOR2lz2ZEqGYgvQ-1
+Received: by mail-pf1-f198.google.com with SMTP id h128-20020a625386000000b004f10a219a98so9557062pfb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 02:24:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n4x9XMBl4+PDcJH0WYTd/mxQmBLZ1Jz9DQ+RKwvFd+c=;
+        b=ia0bFldGkBWZrKiGNiqdlDZdv9s1GQ9v6GsDOA5hT7cqNl0afa0nEM/01nIJz4Hoha
+         Vxo6yDGdsV0t2fRYWzL6pBgaHdPcIGZSBezLsRWS2sHb+aS3r5Djc79HVciaOG6H73On
+         2Nh5WyR07v9yxeKMIXJIgGU1Y8m3r/AuKCeKpFe/H9OgsNVrO1B5cq6+ZBuGGpSkxsPs
+         BljvgXj+aeCyncJpxscl6mo2dCqIyVIcDV+AYeGRiodJHSK6NCZM6vRyoUXeFsiN25TS
+         9BfN8NIHpnkC8QXrLyyya9Sf9y44mD2DeQh3HJjZd7VJGursLQe1pCXbWIeog1aIodKn
+         LP+g==
+X-Gm-Message-State: AOAM533UeecwVQQZfkDq+ttWYz5CNYSYnfqMeLq0tll8QxsiNnvl0Clh
+        Wlk5bhOHVemVLfCODKVYlOiPJA8BhWQ3GlLPPcFU/SOqG0rdHsCVB82wvI2+9N4DHEnDUq1d47q
+        50Mr4AstLdM69I3f1dj/My1PZt9XoEZpHs51wmytF
+X-Received: by 2002:a17:90a:dac2:b0:1bd:fecf:6bd1 with SMTP id g2-20020a17090adac200b001bdfecf6bd1mr5438293pjx.113.1646130255904;
+        Tue, 01 Mar 2022 02:24:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyRiyUvQuNCG0CWeOIgtG4PltzTvJEIrudhTzB+/LMvoxrlGu5P89HlGkwPMXIg4WNmID92uFtp/3ZRNtEFwW0=
+X-Received: by 2002:a17:90a:dac2:b0:1bd:fecf:6bd1 with SMTP id
+ g2-20020a17090adac200b001bdfecf6bd1mr5438260pjx.113.1646130255539; Tue, 01
+ Mar 2022 02:24:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20220226110338.77547-1-chenhuacai@loongson.cn>
- <20220226110338.77547-10-chenhuacai@loongson.cn> <CAMj1kXHWRZcjF9H2jZ+p-HNuXyPs-=9B8WiYLsrDJGpipgKo_w@mail.gmail.com>
- <YhupaVZvbipgke2Z@kroah.com> <CAAhV-H6hmvyniHP-CMxtOopRHp6XYaF58re13snMrk_Umj+wSQ@mail.gmail.com>
- <CAMj1kXFa447Z21q3uu0UFExDDDG9Y42ZHtiUppu6QpuNA_5bhA@mail.gmail.com>
- <CAAhV-H7X+Txq4HaaF49QZ9deD=Dwx_GX-2E9q_nA8P76ZRDeXg@mail.gmail.com>
- <CAMj1kXGH1AtL8_KbFkK+FRgWQPzPm1dCdvEF0A2KksREGTSeCg@mail.gmail.com>
- <CAAhV-H6fdJwbVG_m0ZL_JGROKCrCbc-fKpj3dnOowaEUA+3ujQ@mail.gmail.com>
- <CAK8P3a2hr2rjyLpkeG1EKiOVGrY4UCB61OHGj5nzft-KCS3jYA@mail.gmail.com>
- <CAMj1kXHGG80LdNUUA+Ug1VBXWuvtPxKpqnuChg2N=6Hf2EhY7g@mail.gmail.com> <CAAhV-H6dxkdmDizd+ZVhJ_zHZ9RK8QjKU-3U-CaovLiNbEVpbg@mail.gmail.com>
-In-Reply-To: <CAAhV-H6dxkdmDizd+ZVhJ_zHZ9RK8QjKU-3U-CaovLiNbEVpbg@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 1 Mar 2022 11:18:56 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2wF2XA8wCFtP9RNTNQf3W9D8fKOuQ704yE+dRSS5aCVw@mail.gmail.com>
-Message-ID: <CAK8P3a2wF2XA8wCFtP9RNTNQf3W9D8fKOuQ704yE+dRSS5aCVw@mail.gmail.com>
-Subject: Re: [PATCH V6 09/22] LoongArch: Add boot and setup routines
-To:     Huacai Chen <chenhuacai@gmail.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-efi <linux-efi@vger.kernel.org>
+References: <20220218215531.1.I5dbf50eb1a7a6734ee727bda4a8573358c6d3ec0@changeid>
+ <Yh3LC8WtLdgQNyQI@google.com>
+In-Reply-To: <Yh3LC8WtLdgQNyQI@google.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Tue, 1 Mar 2022 11:24:04 +0100
+Message-ID: <CAO-hwJL2vn7-CzHAE_0S7_04oPjyfopKTD=5srwPQY0nXTxusQ@mail.gmail.com>
+Subject: Re: [PATCH v3] HID: Add mapping for KEY_DICTATE
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     William Mahon <wmahon@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        William Mahon <wmahon@google.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:XStCGZX/ROQSePDe1dyXr69F8I2kJSDcoRYdgl9fhDF89FNNCW1
- nl7YRK11Fp/q7Y2u5OU7dCpbyI0QK7AQ9lUDGcY0XS7/J3ubQpMAGQA7zTGx1I8haebHYrh
- Al/vYhQKudbTknC/RGK+Q07kfD3/1SETShIQeF6bkDlvbciFXCm1ftcmZvuAEm8HSodfAP5
- KlQpqVR5YoPF1QJu6+RbA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9IFbU8ZQfYw=:X3PrtjVhlasVZ4xhIuFgqS
- R846WvDKkxFkaQq8faDAZlJJr4vCSNQygFIGKs9/SQRVyjiCahjK7OznSWWDKPvrmWUdYPBlV
- /DFUEoWDV4F4zCynGjzruVcV/zgvTwyDPx/jt36L4Ej+m3GvSqfH0faZC2GYOl7rvpupYvaoh
- HnETPwquGI/+P3JZa+kclWRQuGJ5uNlvGEXetauIMpZBb21V5QEGAtZRl0cEY6f3WlLHd2KwS
- UuUv0xvCsYHsGjYq+FRGeI+QWOoI3KjJ3trcxM32quHX6gmGlygpqe+VSQnJiygGldXzObWe2
- ZyRqsAKx3CjezilRrJhm744CtfXjxf500DT669nClml+zMghEhBjOhO8iT9N0WYlgMxkNnhKH
- 1d1gYeLVmyXmo75eNKHj/VAeq0P/PYrV6qyHQImBbzFAudXZQfcvC97Xzl/7TaP5BeOVMOKJx
- kp5mTm/Wl7whgeIkS1JTtjBVubif1t/aKNIXs3WrM/cFTy8jDJW/axfBTAann8sOxVUFNSXmO
- 9fCzAKIrOdgvMWt5B1lIUwupQ6xcsPxLgUybsQ1/I4JRSDAWJ3AuGYvx290BpM/A94SjN0b4k
- Fo2Bxh9b3lntP0AD2Iwl5mBd7jfEswUpGkoorY9YG1TmEvzXQkfmjtvp3APeNMy2bE5iUt0+t
- qjv+17daBS/GHKNwx8b2EzUtUcBrWhqSte8+pz1K96oGsXft+fzzELAY7yB8i/PhyIW4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 5:17 AM Huacai Chen <chenhuacai@gmail.com> wrote:
-> On Mon, Feb 28, 2022 at 7:35 PM Ard Biesheuvel <ardb@kernel.org> wrote:
-> > On Mon, 28 Feb 2022 at 12:24, Arnd Bergmann <arnd@arndb.de> wrote:
-> > > On Mon, Feb 28, 2022 at 11:42 AM Huacai Chen <chenhuacai@gmail.com> wrote:
-> > > Can't you just use the UEFI protocol for kernel entry regardless
-> > > of the bootloader? It seems odd to use a different protocol for loading
-> > > grub and the kernel, especially if that means you end up having to
-> > > support both protocols inside of u-boot and grub, in order to chain-load
-> > > a uefi application like grub.
-> > >
+On Tue, Mar 1, 2022 at 8:28 AM Dmitry Torokhov
+<dmitry.torokhov@gmail.com> wrote:
+>
+> On Fri, Feb 18, 2022 at 09:59:08PM +0000, William Mahon wrote:
+> > Numerous keyboards are adding dictate keys which allows for text
+> > messages to be dictated by a microphone.
 > >
-> > I think this would make sense. Now that the EFI stub has generic
-> > support for loading the initrd via a UEFI specific protocol (of which
-> > u-boot already carries an implementation), booting via UEFI only would
-> > mean that no Linux boot protocol would need to be defined outside of
-> > the kernel at all (i.e., where to load the kernel, where to put the
-> > command line, where to put the initrd, other arch specific rules etc
-> > etc) UEFI already supports both ACPI and DT boot
+> > This patch adds a new key definition KEY_DICTATE and maps 0x0c/0x0d8
+> > usage code to this new keycode. Additionally hid-debug is adjusted to
+> > recognize this new usage code as well.
 >
-> After one night thinking, I agree with Ard that we can use RISCV-style
-> fdt to support the raw elf kernel at present, and add efistub support
-> after new UEFI SPEC released.
+> Jiri, Benjamin, OK for me to pick it up?
 
-I think that is the opposite of what Ard and I discussed above.
+If you are happy with the mapping:
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-> If I'm right, it seems that RISC-V passes a0 (hartid) and a1 (fdt
-> pointer, which contains cmdline, initrd, etc.) to the raw elf kernel.
-> And in my opinion, the main drawback of current LoongArch method
-> (a0=argc a1=argv a2=bootparamsinterface pointer) is it uses a
-> non-standard method to pass kernel args and initrd. So, can the below
-> new solution be acceptable?
+(and yes, please take it through your tree, same for the other one).
+
+Cheers,
+Benjamin
+
 >
-> a0=bootparamsinterface pointer (the same as a2 in current method)
-> a1=fdt pointer (contains cmdline, initrd, etc., like RISC-V, I think
-> this is the standard method)
+> >
+> > Signed-off-by: William Mahon <wmahon@google.com>
+> > ---
+> >
+> >  drivers/hid/hid-debug.c                | 1 +
+> >  drivers/hid/hid-input.c                | 1 +
+> >  include/uapi/linux/input-event-codes.h | 1 +
+> >  3 files changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/hid/hid-debug.c b/drivers/hid/hid-debug.c
+> > index 26c31d759914..8aa68416b1d7 100644
+> > --- a/drivers/hid/hid-debug.c
+> > +++ b/drivers/hid/hid-debug.c
+> > @@ -969,6 +969,7 @@ static const char *keys[KEY_MAX + 1] = {
+> >       [KEY_ASSISTANT] = "Assistant",
+> >       [KEY_KBD_LAYOUT_NEXT] = "KbdLayoutNext",
+> >       [KEY_EMOJI_PICKER] = "EmojiPicker",
+> > +     [KEY_DICTATE] = "Dictate",
+> >       [KEY_BRIGHTNESS_MIN] = "BrightnessMin",
+> >       [KEY_BRIGHTNESS_MAX] = "BrightnessMax",
+> >       [KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
+> > diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+> > index 112901d2d8d2..ce2b75a67cb8 100644
+> > --- a/drivers/hid/hid-input.c
+> > +++ b/drivers/hid/hid-input.c
+> > @@ -992,6 +992,7 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
+> >               case 0x0cd: map_key_clear(KEY_PLAYPAUSE);       break;
+> >               case 0x0cf: map_key_clear(KEY_VOICECOMMAND);    break;
+> >
+> > +             case 0x0d8: map_key_clear(KEY_DICTATE);         break;
+> >               case 0x0d9: map_key_clear(KEY_EMOJI_PICKER);    break;
+> >
+> >               case 0x0e0: map_abs_clear(ABS_VOLUME);          break;
+> > diff --git a/include/uapi/linux/input-event-codes.h b/include/uapi/linux/input-event-codes.h
+> > index 225ec87d4f22..4db5d41848e4 100644
+> > --- a/include/uapi/linux/input-event-codes.h
+> > +++ b/include/uapi/linux/input-event-codes.h
+> > @@ -612,6 +612,7 @@
+> >  #define KEY_ASSISTANT                0x247   /* AL Context-aware desktop assistant */
+> >  #define KEY_KBD_LAYOUT_NEXT  0x248   /* AC Next Keyboard Layout Select */
+> >  #define KEY_EMOJI_PICKER     0x249   /* Show/hide emoji picker (HUTRR101) */
+> > +#define KEY_DICTATE          0x24a   /* Start or Stop Voice Dictation Session (HUTRR99) */
+> >
+> >  #define KEY_BRIGHTNESS_MIN           0x250   /* Set Brightness to Minimum */
+> >  #define KEY_BRIGHTNESS_MAX           0x251   /* Set Brightness to Maximum */
+> > --
+> > 2.35.1.473.g83b2b277ed-goog
+> >
+>
+> --
+> Dmitry
+>
 
-It would seem more logical to me to keep those details as part of the
-interface between the EFI stub and the kernel, rather than the
-documented boot interface.
-
-You said that there is already grub support using the UEFI
-loader, so I assume you have a working draft of the boot
-protocol. Are there still open questions about the interface
-definition for that preventing you from using it as the only
-way to enter the kernel from a bootloader?
-
-        Arnd
