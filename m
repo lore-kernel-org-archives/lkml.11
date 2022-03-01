@@ -2,99 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39155C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiCAVVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:21:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
+        id S238562AbiCAVXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:23:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbiCAVVQ (ORCPT
+        with ESMTP id S231721AbiCAVX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:21:16 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD429427E5;
-        Tue,  1 Mar 2022 13:20:34 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id x18so15462123pfh.5;
-        Tue, 01 Mar 2022 13:20:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zcBTrbjX0+CQjxp9R0yaPxHqWIjrxSKZgC3PETeJRJM=;
-        b=ZO7Mf+4TigphNBTs6SJUAhkcnXzlmJPgGqbVEklYhU6sh8glYJ1ENl6k56PTgoBWEF
-         3l5N/zwvacRlLHlXOKzkmEC2WgEpBY9mYQ2WCyB7D/21wjJCDfrYj3WhD0N7NBsJcUE+
-         4XefI9+Hp0sZloIYBARtBhjIEIRcyCQcfcOLVLKKp9NdUb0Gjl23a7W+Qf8bRoiUQ22L
-         7UUA8lEMycjfGGDY9OMJPsc3nux26dbh3DBPL1P+SF7OQEBKDgZEQ1FIggibpMBuwNLV
-         xipMJ4BRBLp2vpiXTHdcQgvGZbySDtyoiMezvINZ7Io5aqemBhJQkFjfhd98gWwEpiVF
-         L4Qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zcBTrbjX0+CQjxp9R0yaPxHqWIjrxSKZgC3PETeJRJM=;
-        b=IR/eTCCUj+ci55ZdnJmbRjyVZhEnFOfayWIwOf40rB+xxVlfpm0fgj5EgRPzOQmYtu
-         HGBJRN0gcIGeoeY/JYgbgg6mLZBCOXbvLtRem7rZrkkrO1hAUYRwIW8epPWIchylAWFC
-         RQWg/Q27pffqkbMrLnoUdWUPdoJI/YSPJv6y/nlNe3JR3033DkkcMYpn3hJ+T8YdbydX
-         KN+K1kLuiopLQq0f54i53xJJfL067HGDJuqcf0RUrPkBjtv/rj+4Nepv84QZ8LuEJpoN
-         mxIADfn2fSmwpGenQ/adCHoTd/PY12TDqkwfssQL6esfbGyzcMd5A6RH9u5o8VLpmfDk
-         Wk+g==
-X-Gm-Message-State: AOAM531JB68nJT47pQyIPc5wkgooj4cXgkDIvlfml/K5bWfQlmgQQ6px
-        hK+GrojDnmdH23f7KO7IBy0=
-X-Google-Smtp-Source: ABdhPJwHnV9jlJdDpc+Aek6kzoMn7NO58plC1DnzLvnLDuB9dFcDlgCDrupshh2g+/fk0Yv/BKOz5g==
-X-Received: by 2002:a63:d252:0:b0:363:271c:fe63 with SMTP id t18-20020a63d252000000b00363271cfe63mr23520447pgi.524.1646169634332;
-        Tue, 01 Mar 2022 13:20:34 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id v189-20020a6389c6000000b00372e3b6fe90sm13949702pgd.55.2022.03.01.13.20.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 13:20:33 -0800 (PST)
-Message-ID: <f5af24df-ceca-16ca-af85-38435130a9de@gmail.com>
-Date:   Tue, 1 Mar 2022 13:20:27 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] thermal: brcmstb_thermal: Interrupt is optional
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Markus Mayer <mmayer@broadcom.com>,
-        "maintainer:BROADCOM STB AVS TMON DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        "open list:BROADCOM STB AVS TMON DRIVER" <linux-pm@vger.kernel.org>,
-        "moderated list:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20210426213647.704823-1-f.fainelli@gmail.com>
- <933c889e-dee0-4fc3-bf1a-b3655cabbb28@gmail.com>
- <7359c3c1-8928-d448-e503-13f587cbb567@linaro.org>
- <2f8da2c7-98c5-4061-2e16-42b7fd4f9694@gmail.com>
- <f6f61340-24b1-770e-6b8d-9b47218a87be@linaro.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <f6f61340-24b1-770e-6b8d-9b47218a87be@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 1 Mar 2022 16:23:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD9719C0D;
+        Tue,  1 Mar 2022 13:22:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A387EB81DB9;
+        Tue,  1 Mar 2022 21:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D66FC340EE;
+        Tue,  1 Mar 2022 21:22:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646169763;
+        bh=2ThIYJUboftWJtEkVuCmm8qttmiUF0uXJz8iNhPvKlc=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Rmb9ubCIKI8Az60WV3Y3tRl1icAEIs2TIrZ98dUB/3PjiasLV8TIcadGHs18yqj2S
+         EzMX6xl582Sm2Gtro/1AbaaLSetXrVcYmXo17oxH31FN0sfhvcb4WDF9CONvceerzs
+         3RGK/1J+MITovOrWs4bodrNZ7/gVNQFvrDvdMc7Z34S6KBuCLGi5Jsrsx0OhtCcJF9
+         jIKt2aeFuqF1jzUQmceQwvnPThNPRmkJpVoG3ym5NyKK+fw5uA3ccn7kIIK0tU2UeU
+         dHZUmfajFPAoB5E5viLZlHZrdkRiNAjDyrvjyx+KIdGQ7WdP444mT6MgL43sbmsQk3
+         Q9mbe74R8rPzw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 482E7E6D4BB;
+        Tue,  1 Mar 2022 21:22:43 +0000 (UTC)
+Subject: Re: [GIT PULL] KVM changes for 5.17-rc7
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220301130815.151511-1-pbonzini@redhat.com>
+References: <20220301130815.151511-1-pbonzini@redhat.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220301130815.151511-1-pbonzini@redhat.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+X-PR-Tracked-Commit-Id: ece32a75f003464cad59c26305b4462305273d70
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: fb184c4af9b9f4563e7a126219389986a71d5b5b
+Message-Id: <164616976328.25768.4740704337539258559.pr-tracker-bot@kernel.org>
+Date:   Tue, 01 Mar 2022 21:22:43 +0000
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The pull request you sent on Tue,  1 Mar 2022 08:08:15 -0500:
 
+> https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
 
-On 3/1/2022 12:47 PM, Daniel Lezcano wrote:
-> On 01/03/2022 19:05, Florian Fainelli wrote:
->>
->>
->> On 9/17/2021 12:51 AM, Daniel Lezcano wrote:
->>>
->>> Applied, thanks
->>
->> Was it applied? I still cannot find it in linux-next or Linus' tree.
-> I thought it was :/
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/fb184c4af9b9f4563e7a126219389986a71d5b5b
 
-No worries, I just resent it:
+Thank you!
 
-https://lore.kernel.org/lkml/20220301181412.2008044-1-f.fainelli@gmail.com/
 -- 
-Florian
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
