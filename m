@@ -2,149 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233714AbiCAJX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:23:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
+        id S233618AbiCAJYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:24:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232384AbiCAJXX (ORCPT
+        with ESMTP id S230074AbiCAJYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:23:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF47AE7B;
-        Tue,  1 Mar 2022 01:22:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15785B81855;
-        Tue,  1 Mar 2022 09:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0972C340EE;
-        Tue,  1 Mar 2022 09:22:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646126559;
-        bh=ZpG11DD4kp9h4/beH993WEeMr4LguyKwWCvtJOaP/8Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AnDeyLB9EgfvQl+AhT8DrwEAFMRcAPKHtHDA+fV+HVqwv7K95N7zFGRi+C02gLXXw
-         s5r1eCRjv7MhkHR4z/ahqeB4jJXrLfkNGguy50QZ/En2FgqadneXBA/W5x/T5mJGUK
-         gqzit1E5G3zEbf4tWBZE6EuDHtjxx4Bqvr8hMJLK4eTzgfIPTERMFMriwGyEHBL4hM
-         kA0sp8o7K59oEvKW5QRUZoDcuIpYLoKYoNwfP7S8LvVV3vaxjZ9JZX05FD4O8oeJ5U
-         oMQUkxOfqnivmB4BXGvg8TLkEcLrCa9882/+SJGvQewS9fD6KBH/lWHDiRbD1BqHN2
-         nb4eVLfQxbbEQ==
-Date:   Tue, 1 Mar 2022 10:22:32 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        Eric Paris <eparis@parisplace.org>,
-        James Morris <jmorris@namei.org>,
-        John Johansen <john.johansen@canonical.com>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Paul Moore <paul@paul-moore.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Steve French <sfrench@samba.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@linux.microsoft.com>
-Subject: Re: [PATCH v1] fs: Fix inconsistent f_mode
-Message-ID: <20220301092232.wh7m3fxbe7hyxmcu@wittgenstein>
-References: <20220228215935.748017-1-mic@digikod.net>
+        Tue, 1 Mar 2022 04:24:35 -0500
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BC9E093
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:23:53 -0800 (PST)
+X-QQ-mid: bizesmtp73t1646126609twc082qa
+Received: from localhost.localdomain (unknown [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 01 Mar 2022 17:23:24 +0800 (CST)
+X-QQ-SSF: 0140000000800050D000B00B0000000
+X-QQ-FEAT: dpyQmELDBxGKbuakA6l8ljWpsjY69dFAv/8RDBqxadSZx5WofEUutzrOtsWDE
+        +IZzV12LWxeMkEeUxu1RkKJ+S8wlAsdBviHVUdC2YJvpo3YN1MAq27cbanglTNVWXolTvNB
+        /fo/TP//5N6GMlyy380x7tLBZab7Ix8ygitW1Jg29M+Rww1rAPJbygAC2JkhiWvdPbariAr
+        nP21RbQv3vEF3D/7TxrFf2AtEcG+thXpFAQHX1eCkfp3g/vwRj+A1vPVDHj9shj7ra4EcaJ
+        Gzva7GGzAZAJJsnTyPCWDLyYLVdHsfhSbNsTUk1wBG82wTOEsIYgvEgEpd/0iLgne2uE1V3
+        809Q/s4XhuUVk+5tXM1ED7/IxSroQoPSlEezWSP4A2GqgoURCY=
+X-QQ-GoodBg: 2
+From:   Zhen Ni <nizhen@uniontech.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org, tiwai@suse.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Zhen Ni <nizhen@uniontech.com>
+Subject: [PATCH] Asoc: au1x: Use devm_snd_soc_register_component()
+Date:   Tue,  1 Mar 2022 17:23:22 +0800
+Message-Id: <20220301092322.5523-1-nizhen@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220228215935.748017-1-mic@digikod.net>
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 10:59:35PM +0100, Mickaël Salaün wrote:
-> From: Mickaël Salaün <mic@linux.microsoft.com>
-> 
-> While transitionning to ACC_MODE() with commit 5300990c0370 ("Sanitize
-> f_flags helpers") and then fixing it with commit 6d125529c6cb ("Fix
-> ACC_MODE() for real"), we lost an open flags consistency check.  Opening
-> a file with O_WRONLY | O_RDWR leads to an f_flags containing MAY_READ |
-> MAY_WRITE (thanks to the ACC_MODE() helper) and an empty f_mode.
-> Indeed, the OPEN_FMODE() helper transforms 3 (an incorrect value) to 0.
-> 
-> Fortunately, vfs_read() and vfs_write() both check for FMODE_READ, or
-> respectively FMODE_WRITE, and return an EBADF error if it is absent.
-> Before commit 5300990c0370 ("Sanitize f_flags helpers"), opening a file
-> with O_WRONLY | O_RDWR returned an EINVAL error.  Let's restore this safe
-> behavior.
+Using devm_snd_soc_register_component()
+instead of snd_soc_register_component()
 
-That specific part seems a bit risky at first glance. Given that the
-patch referenced is from 2009 this means we've been allowing O_WRONLY |
-O_RDWR to succeed for almost 13 years now.
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+---
+ sound/soc/au1x/ac97c.c    | 2 +-
+ sound/soc/au1x/i2sc.c     | 2 +-
+ sound/soc/au1x/psc-ac97.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-> 
-> To make it consistent with ACC_MODE(), this patch also changes
-> OPEN_FMODE() to return FMODE_READ | FMODE_WRITE for O_WRONLY | O_RDWR.
-> This may help protect from potential spurious issues.
-> 
-> This issue could result in inconsistencies with AppArmor, Landlock and
-> SELinux, but the VFS checks would still forbid read and write accesses.
-> Tomoyo uses the ACC_MODE() transformation which is correct, and Smack
-> doesn't check the file mode.  Filesystems using OPEN_FMODE() should also
-> be protected by the VFS checks.
-> 
-> Fixes: 5300990c0370 ("Sanitize f_flags helpers")
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: Casey Schaufler <casey@schaufler-ca.com>
-> Cc: Darrick J. Wong <djwong@kernel.org>
-> Cc: Eric Paris <eparis@parisplace.org>
-> Cc: John Johansen <john.johansen@canonical.com>
-> Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-> Cc: Miklos Szeredi <miklos@szeredi.hu>
-> Cc: Paul Moore <paul@paul-moore.com>
-> Cc: Stephen Smalley <stephen.smalley.work@gmail.com>
-> Cc: Steve French <sfrench@samba.org>
-> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
-> Link: https://lore.kernel.org/r/20220228215935.748017-1-mic@digikod.net
-> ---
->  fs/file_table.c    | 3 +++
->  include/linux/fs.h | 5 +++--
->  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/fs/file_table.c b/fs/file_table.c
-> index 7d2e692b66a9..b936f69525d0 100644
-> --- a/fs/file_table.c
-> +++ b/fs/file_table.c
-> @@ -135,6 +135,9 @@ static struct file *__alloc_file(int flags, const struct cred *cred)
->  	struct file *f;
->  	int error;
->  
-> +	if ((flags & O_ACCMODE) == O_ACCMODE)
-> +		return ERR_PTR(-EINVAL);
-> +
->  	f = kmem_cache_zalloc(filp_cachep, GFP_KERNEL);
->  	if (unlikely(!f))
->  		return ERR_PTR(-ENOMEM);
-> diff --git a/include/linux/fs.h b/include/linux/fs.h
-> index e2d892b201b0..83bc5aaf1c41 100644
-> --- a/include/linux/fs.h
-> +++ b/include/linux/fs.h
-> @@ -3527,8 +3527,9 @@ int __init list_bdev_fs_names(char *buf, size_t size);
->  #define __FMODE_NONOTIFY	((__force int) FMODE_NONOTIFY)
->  
->  #define ACC_MODE(x) ("\004\002\006\006"[(x)&O_ACCMODE])
-> -#define OPEN_FMODE(flag) ((__force fmode_t)(((flag + 1) & O_ACCMODE) | \
-> -					    (flag & __FMODE_NONOTIFY)))
-> +#define OPEN_FMODE(flag) ((__force fmode_t)( \
-> +			(((flag + 1) & O_ACCMODE) ?: O_ACCMODE) | \
-> +			(flag & __FMODE_NONOTIFY)))
->  
->  static inline bool is_sxid(umode_t mode)
->  {
-> 
-> base-commit: 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
-> -- 
-> 2.35.1
-> 
+diff --git a/sound/soc/au1x/ac97c.c b/sound/soc/au1x/ac97c.c
+index 3b1700e665f5..795bba756585 100644
+--- a/sound/soc/au1x/ac97c.c
++++ b/sound/soc/au1x/ac97c.c
+@@ -275,7 +275,7 @@ static int au1xac97c_drvprobe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = snd_soc_register_component(&pdev->dev, &au1xac97c_component,
++	ret = devm_snd_soc_register_component(&pdev->dev, &au1xac97c_component,
+ 					 &au1xac97c_dai_driver, 1);
+ 	if (ret)
+ 		return ret;
+diff --git a/sound/soc/au1x/i2sc.c b/sound/soc/au1x/i2sc.c
+index 740d4e052e4d..a3c9d52ef337 100644
+--- a/sound/soc/au1x/i2sc.c
++++ b/sound/soc/au1x/i2sc.c
+@@ -265,7 +265,7 @@ static int au1xi2s_drvprobe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, ctx);
+ 
+-	return snd_soc_register_component(&pdev->dev, &au1xi2s_component,
++	return devm_snd_soc_register_component(&pdev->dev, &au1xi2s_component,
+ 					  &au1xi2s_dai_driver, 1);
+ }
+ 
+diff --git a/sound/soc/au1x/psc-ac97.c b/sound/soc/au1x/psc-ac97.c
+index 05eb36991f14..3f60313822e7 100644
+--- a/sound/soc/au1x/psc-ac97.c
++++ b/sound/soc/au1x/psc-ac97.c
+@@ -411,7 +411,7 @@ static int au1xpsc_ac97_drvprobe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = snd_soc_register_component(&pdev->dev, &au1xpsc_ac97_component,
++	ret = devm_snd_soc_register_component(&pdev->dev, &au1xpsc_ac97_component,
+ 					 &wd->dai_drv, 1);
+ 	if (ret)
+ 		return ret;
+-- 
+2.20.1
+
+
+
