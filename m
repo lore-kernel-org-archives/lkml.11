@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A70ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 494C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235992AbiCAQHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:07:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        id S236000AbiCAQHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:07:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235973AbiCAQHd (ORCPT
+        with ESMTP id S236013AbiCAQHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:07:33 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C847AA1BE6;
-        Tue,  1 Mar 2022 08:06:51 -0800 (PST)
+        Tue, 1 Mar 2022 11:07:47 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CA6AC91D;
+        Tue,  1 Mar 2022 08:07:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646150811; x=1677686811;
+  t=1646150824; x=1677686824;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EDeLj7g5kIXPl1C5YsiICem8wH4k1axrRuEnaTGCSNY=;
-  b=AOm3jD237oRGag/YzfLQsDfLPLGYenMQicpBFsBjHyEoo3MksdLh8vwd
-   z6xG3Pzg1rgdkfHiV5pobifB8Fi5cPL6Ol9iANFsUgW7p05d99/gz4JDc
-   FLEvCqqJ5oOz33sv8db2JYgoRc2//Njy2QCnjKDc/eVqIOvIYgHoYfuNi
-   3yrST/139Qlrrxhu8W7h04oP/hZBMizFLUJhlXMlVdhfMqpVHF1gmbiK5
-   hMn1mJPPc7OdLYP3cQrrlG/ZnhEKsnTAb35vfIZGwuh1guvUmUKFgs+Be
-   YkGYpD0N3l4UvMShrtwXgPieVia/TpXuRaVY84WNKK5Qi5q0R/de398q1
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="313882991"
+  bh=hRh2SjknJ5JBtOZ2co7ZjEevgpRiwVpG4mTh8FguEAw=;
+  b=fQGe35J3g0L4bk72Cki4tLJi7NlBgU7mzaCBgsVqWM1zUgSTroDcxIX6
+   6eDfxE/eU/1OG8COO7BOdhrIZUFY5zctpdMFLogit1TwKjlyr2OOdudMk
+   aJS4GiWbfzGfrBEVLM16LENIJjw8nHM8w5NA6WWdimvncHaZ3RjO7HISW
+   kiXLkk/g1HxMZQ2cD4UAjC8cLpjQp4ehIMNS/OdzHFR4NuKQj8qmq1dE+
+   kKo1UewW1vaxuXt1y1aUqnn8RqPGsbxuwm3TUDWUdyyfn8lDgS4zni0cp
+   I7gKuhUAajhz2JyQrsdtJABi4Ej/NjZMcqK3Bh6trs9xC3e5iKBBk5sJ8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253091596"
 X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="313882991"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 08:06:35 -0800
+   d="scan'208";a="253091596"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 08:06:35 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="709111607"
+   d="scan'208";a="493154440"
 Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 01 Mar 2022 08:06:31 -0800
+  by orsmga003.jf.intel.com with ESMTP; 01 Mar 2022 08:06:31 -0800
 Received: from kbuild by 2146afe809fb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nP51D-0000ff-7e; Tue, 01 Mar 2022 16:06:31 +0000
-Date:   Wed, 2 Mar 2022 00:06:25 +0800
+        id 1nP51D-0000fi-8J; Tue, 01 Mar 2022 16:06:31 +0000
+Date:   Wed, 2 Mar 2022 00:06:07 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Meng Tang <tangmeng@uniontech.com>, mcgrof@kernel.org,
         keescook@chromium.org, yzaikin@google.com, ebiederm@xmission.com,
@@ -51,7 +51,7 @@ Cc:     kbuild-all@lists.01.org, nixiaoming@huawei.com,
         sujiaxun@uniontech.com, linux-kernel@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>
 Subject: Re: [PATCH v2 1/2] fs/proc: optimize exactly register one ctl_table
-Message-ID: <202203020000.IeIVyxMv-lkp@intel.com>
+Message-ID: <202203012347.yd56xhtd-lkp@intel.com>
 References: <20220301115341.30101-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -75,8 +75,8 @@ https://git-scm.com/docs/git-format-patch]
 
 url:    https://github.com/0day-ci/linux/commits/Meng-Tang/fs-proc-optimize-exactly-register-one-ctl_table/20220301-195515
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git sysctl-next
-config: alpha-buildonly-randconfig-r001-20220301 (https://download.01.org/0day-ci/archive/20220302/202203020000.IeIVyxMv-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
+config: nds32-allnoconfig (https://download.01.org/0day-ci/archive/20220301/202203012347.yd56xhtd-lkp@intel.com/config)
+compiler: nds32le-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -86,7 +86,7 @@ reproduce (this is a W=1 build):
         git checkout d9e9a410cf46b383390d668770fff70540e27528
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash fs/proc/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash fs/proc/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
