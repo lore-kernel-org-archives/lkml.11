@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49301C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C25BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238001AbiCAU0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:26:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
+        id S238377AbiCAU0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:26:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239112AbiCAUYa (ORCPT
+        with ESMTP id S239163AbiCAUYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:24:30 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFD0A8EEE;
-        Tue,  1 Mar 2022 12:22:02 -0800 (PST)
+        Tue, 1 Mar 2022 15:24:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960AC90CEA;
+        Tue,  1 Mar 2022 12:22:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AC714CE1EC9;
-        Tue,  1 Mar 2022 20:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3DCC340EE;
-        Tue,  1 Mar 2022 20:21:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEE43B81D4B;
+        Tue,  1 Mar 2022 20:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592C5C340EE;
+        Tue,  1 Mar 2022 20:22:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166115;
-        bh=zTG1k1vysBnYvsVHPSxToBqW0AedjF15Tk77ur3IC8M=;
+        s=k20201202; t=1646166129;
+        bh=mw2xiBHC6MTelNrcFcAoX333abKycd68WsMm6emhTSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NXWxrs91iiNL4csa+LB1zuUldsIkUxBfVL2N46Yk9n1/H+IFjjffgd15bP9hOwevi
-         Fsm/pFGqZ3AhQNxpp6HeXf8F4nEC8+kZE+alyvTUEPDsNlelEIbnzTP9SIdvexF6J2
-         BD4oBSk9kwTS1Gfdd15ZVWU+j+bsKZ6Yjg40nfO7q6gmGDsGC4BLbBqWduAeV3E0+k
-         gKbFl7FAZ1NDJMvSh+MLQiRf+o8GOvnPtFu+27XBgUncQWR7HFu/CPb6BUMi6opBlB
-         fp5ls3wSkUunemzmqy+217Xe9PtHGnEZu6EFtxN61tyyj4KvyZtcTdv/qS9A3FxvBq
-         4fClfvX9G8i/A==
+        b=Ys1bTT3ab15acqy7rN7bU97aq1Mc8rOdxcl/Px1jpZ1m/BFPCcH907KZ/AsCskVG0
+         IXyWw5HjogNXDCfhKR7VYL2uy4CMnR6HXHnJe18f5h9if0+jMSiwzvDiyeYIWNy1Ry
+         CMNTdnf2F6mQm33M79bRNuUVO9JH4zG4j8zuc2+CwjWUy8FZL3c2c1FBEJ+7/Z9Hve
+         FCjlkK3sFsOHi0H6tMZXXyF+fMD0oNxcWxB3jtidE3SPaXRVDmLLOJFA+Pd0dMpdoM
+         7FihWypeTMLB9I25Wuyf0TC7JJYXnVBYETOXn2LBV5hBNNQJ77jKPEQ50fRiGbNPlu
+         8nc24AYO0o2JQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
-        davem@davemloft.net, xen-devel@lists.xenproject.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 4/7] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
-Date:   Tue,  1 Mar 2022 15:21:25 -0500
-Message-Id: <20220301202131.19318-4-sashal@kernel.org>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, gthelen@google.com,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 7/7] selftests/memfd: clean up mapping in mfd_fail_write
+Date:   Tue,  1 Mar 2022 15:21:28 -0500
+Message-Id: <20220301202131.19318-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301202131.19318-1-sashal@kernel.org>
 References: <20220301202131.19318-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,52 +55,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: Mike Kravetz <mike.kravetz@oracle.com>
 
-[ Upstream commit 0f4558ae91870692ce7f509c31c9d6ee721d8cdc ]
+[ Upstream commit fda153c89af344d21df281009a9d046cf587ea0f ]
 
-This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
+Running the memfd script ./run_hugetlbfs_test.sh will often end in error
+as follows:
 
-The 'hotplug-status' node should not be removed as long as the vif
-device remains configured. Otherwise the xen-netback would wait for
-re-running the network script even if it was already called (in case of
-the frontent re-connecting). But also, it _should_ be removed when the
-vif device is destroyed (for example when unbinding the driver) -
-otherwise hotplug script would not configure the device whenever it
-re-appear.
+    memfd-hugetlb: CREATE
+    memfd-hugetlb: BASIC
+    memfd-hugetlb: SEAL-WRITE
+    memfd-hugetlb: SEAL-FUTURE-WRITE
+    memfd-hugetlb: SEAL-SHRINK
+    fallocate(ALLOC) failed: No space left on device
+    ./run_hugetlbfs_test.sh: line 60: 166855 Aborted                 (core dumped) ./memfd_test hugetlbfs
+    opening: ./mnt/memfd
+    fuse: DONE
 
-Moving removal of the 'hotplug-status' node was a workaround for nothing
-calling network script after xen-netback module is reloaded. But when
-vif interface is re-created (on xen-netback unbind/bind for example),
-the script should be called, regardless of who does that - currently
-this case is not handled by the toolstack, and requires manual
-script call. Keeping hotplug-status=connected to skip the call is wrong
-and leads to not configured interface.
+If no hugetlb pages have been preallocated, run_hugetlbfs_test.sh will
+allocate 'just enough' pages to run the test.  In the SEAL-FUTURE-WRITE
+test the mfd_fail_write routine maps the file, but does not unmap.  As a
+result, two hugetlb pages remain reserved for the mapping.  When the
+fallocate call in the SEAL-SHRINK test attempts allocate all hugetlb
+pages, it is short by the two reserved pages.
 
-More discussion at
-https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+Fix by making sure to unmap in mfd_fail_write.
 
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Link: https://lore.kernel.org/r/20220222001817.2264967-1-marmarek@invisiblethingslab.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lkml.kernel.org/r/20220219004340.56478-1-mike.kravetz@oracle.com
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netback/xenbus.c | 1 +
+ tools/testing/selftests/memfd/memfd_test.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 9092b55e087f1..df2e1ec9e6248 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -499,6 +499,7 @@ static void backend_disconnect(struct backend_info *be)
- 		unsigned int queue_index;
+diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
+index 845e5f67b6f02..cf4c5276eb06a 100644
+--- a/tools/testing/selftests/memfd/memfd_test.c
++++ b/tools/testing/selftests/memfd/memfd_test.c
+@@ -416,6 +416,7 @@ static void mfd_fail_write(int fd)
+ 			printf("mmap()+mprotect() didn't fail as expected\n");
+ 			abort();
+ 		}
++		munmap(p, mfd_def_size);
+ 	}
  
- 		xen_unregister_watchers(vif);
-+		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
- #ifdef CONFIG_DEBUG_FS
- 		xenvif_debugfs_delif(vif);
- #endif /* CONFIG_DEBUG_FS */
+ 	/* verify PUNCH_HOLE fails */
 -- 
 2.34.1
 
