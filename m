@@ -2,96 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3851C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE3FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234613AbiCALlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 06:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43428 "EHLO
+        id S234624AbiCALo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 06:44:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbiCALlu (ORCPT
+        with ESMTP id S234616AbiCALoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 06:41:50 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1412939B8
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 03:41:09 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-37-mgVLvuYEMc62HB_eDoossw-1; Tue, 01 Mar 2022 11:41:07 +0000
-X-MC-Unique: mgVLvuYEMc62HB_eDoossw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Tue, 1 Mar 2022 11:41:06 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Tue, 1 Mar 2022 11:41:06 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
-        'Segher Boessenkool' <segher@kernel.crashing.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Subject: RE: [PATCH] net: Remove branch in csum_shift()
-Thread-Topic: [PATCH] net: Remove branch in csum_shift()
-Thread-Index: AQHYHyQqmTo4K/pb5UWdDmTfE7rfRayQxWFwgABxD4CAAIxicIAYqtUAgAAE/lCAAAowAIAABVwg
-Date:   Tue, 1 Mar 2022 11:41:06 +0000
-Message-ID: <10309fa64833418a980a8d950d037357@AcuMS.aculab.com>
-References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
- <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
- <20220213091619.GY614@gate.crashing.org>
- <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
- <de560db6-d29a-8565-857b-b42ae35f80f8@csgroup.eu>
- <9cdb4a5243d342efb562bc61d0c1bfcb@AcuMS.aculab.com>
- <c616f9a6-c9db-d3a7-1b23-f827732566bb@csgroup.eu>
-In-Reply-To: <c616f9a6-c9db-d3a7-1b23-f827732566bb@csgroup.eu>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 1 Mar 2022 06:44:23 -0500
+X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 03:43:42 PST
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A9B55BD1;
+        Tue,  1 Mar 2022 03:43:42 -0800 (PST)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+        by gnuweeb.org (Postfix) with ESMTPSA id 342487EDA6;
+        Tue,  1 Mar 2022 11:34:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1646134448;
+        bh=wMwH0Esa7+9XDQnRseGQt8XVBoPkgTDDTk0Y4Mory9w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ozNH5t1JqCXZkK+2cROun6P2rSOAmspGKECltAFEdVniA8sbDxBzMgW9oPNrpGbh1
+         NzNz/TGh51LiBjUbwxMk2BAGleNmweGzvJtzI5rjcyW9hJNzJtnuI9g4+MDq2FZ5Vo
+         rgTlebg9O99wGVDzAEBeeeAo+j5Rz07B5wdCfpk+Oa6zAAgpGx8mNgxkV/YhPicZaM
+         cn/02HjPudmVAufa15GpcnRKYf4oERNNDAA9eUpyKIO+ePrWCAPMNgSXq7MefOFk9m
+         jk+NmDVNv+zkyYKXul9xoMT5pad3v5vz3wDl5qSaQb16gkihZtgm00mJboSlrR0kcJ
+         iu+wAfbinm4qw==
+Received: by mail-lf1-f42.google.com with SMTP id j7so26338916lfu.6;
+        Tue, 01 Mar 2022 03:34:08 -0800 (PST)
+X-Gm-Message-State: AOAM533FqFQyYydoYGquVgR9KCPMq3HBLnKQDjWeIBGvsXLDIWrbb1sR
+        8MonECnOBtNR92BRkVfdQg7q1YouKo8fXPcFd/4=
+X-Google-Smtp-Source: ABdhPJx/og7d59BUuP9SzoT81fyxcdFHHXnA6Zmocol8wG52eI7x4l9kVQJ+3a3dLhPtZKivoBAxuF+VBA9iz/o4cMQ=
+X-Received: by 2002:a05:6512:1190:b0:443:ff19:e685 with SMTP id
+ g16-20020a056512119000b00443ff19e685mr14888853lfr.70.1646134446046; Tue, 01
+ Mar 2022 03:34:06 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org> <20220301094608.118879-2-ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220301094608.118879-2-ammarfaizi2@gnuweeb.org>
+From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Date:   Tue, 1 Mar 2022 18:33:54 +0700
+X-Gmail-Original-Message-ID: <CAOG64qPgTv5tQNknuG9d-=oL2EPQQ1ys7xu2FoBpNLyzv1qYzA@mail.gmail.com>
+Message-ID: <CAOG64qPgTv5tQNknuG9d-=oL2EPQQ1ys7xu2FoBpNLyzv1qYzA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] x86/delay: Fix the wrong asm constraint in `delay_loop()`
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>, x86@kernel.org,
+        stable@vger.kernel.org, Jiri Hladky <hladky.jiri@googlemail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQ2hyaXN0b3BoZSBMZXJveQ0KPiBTZW50OiAwMSBNYXJjaCAyMDIyIDExOjE1DQouLi4N
-Cj4gTG9va3MgbGlrZSBBUk0gYWxzbyBkb2VzIGJldHRlciBjb2RlIHdpdGggdGhlIGdlbmVyaWMg
-aW1wbGVtZW50YXRpb24gYXMNCj4gaXQgc2VlbXMgdG8gaGF2ZSBzb21lIGxvb2tpbmcgbGlrZSBj
-b25kaXRpb25hbCBpbnN0cnVjdGlvbnMgJ3Jvcm5lJyBhbmQNCj4gJ3N0cm5lJy4NCg0KSW4gYXJt
-MzIgKGFuZCBJIHRoaW5rIGFybTY0KSBldmVyeSBpbnN0cnVjdGlvbiBpcyBjb25kaXRpb25hbC4N
-Cg0KPiBzdGF0aWMgX19hbHdheXNfaW5saW5lIF9fd3N1bSBjc3VtX3NoaWZ0KF9fd3N1bSBzdW0s
-IGludCBvZmZzZXQpDQo+IHsNCj4gCS8qIHJvdGF0ZSBzdW0gdG8gYWxpZ24gaXQgd2l0aCBhIDE2
-YiBib3VuZGFyeSAqLw0KPiAJaWYgKG9mZnNldCAmIDEpDQo+ICAgICAgMWQyODoJZTIxMDIwMDEg
-CWFuZHMJcjIsIHIwLCAjMQ0KPiAgICAgIDFkMmM6CWU1OGQzMDA0IAlzdHIJcjMsIFtzcCwgIzRd
-DQo+ICAgKiBAd29yZDogdmFsdWUgdG8gcm90YXRlDQo+ICAgKiBAc2hpZnQ6IGJpdHMgdG8gcm9s
-bA0KPiAgICovDQo+IHN0YXRpYyBpbmxpbmUgX191MzIgcm9yMzIoX191MzIgd29yZCwgdW5zaWdu
-ZWQgaW50IHNoaWZ0KQ0KPiB7DQo+IAlyZXR1cm4gKHdvcmQgPj4gKHNoaWZ0ICYgMzEpKSB8ICh3
-b3JkIDw8ICgoLXNoaWZ0KSAmIDMxKSk7DQo+ICAgICAgMWQzMDoJMTFhMDM0NjMgCXJvcm5lCXIz
-LCByMywgIzgNCj4gICAgICAxZDM0OgkxNThkMzAwNCAJc3RybmUJcjMsIFtzcCwgIzRdDQo+IAlp
-ZiAodW5saWtlbHkoaW92X2l0ZXJfaXNfcGlwZShpKSkpDQoNClRoZXJlIGlzIGEgc3BhcmUgJ3N0
-cicgdGhhdCBhIG1pbm9yIGNvZGUgY2hhbmdlIHdvdWxkDQpwcm9iYWJseSByZW1vdmUuDQpMaWtl
-bHkgbm90IGhlbHBlZCBieSByZWdpc3RlcnMgYmVpbmcgc3BpbGxlZCB0byBzdGFjay4NCg0KSVNU
-UiBhcm0zMiBoYXZpbmcgYSByZWFzb25hYmxlIG51bWJlciBvZiByZWdpc3RlcnMgYW5kIHRoZW4N
-CmEgd2hvbGUgbG9hZCBvZiB0aGVtIGJlaW5nIHN0b2xlbiBieSB0aGUgaW1wbGVtZW50YXRpb24u
-DQooSSdtIHN1cmUgSSByZW1lbWJlciBzdGFjayBsaW1pdCBhbmQgdGhyZWFkIGJhc2UuLi4pDQpT
-byB0aGUgY29tcGlsZXIgZG9lc24ndCBnZXQgdGhhdCBtYW55IHRvIHBsYXkgd2l0aC4NCg0KTm90
-IHF1aXRlIGFzIGJhZCBhcyBuaW9zMiAtIHdoZXJlIHIyIGFuZCByMyBhcmUgJ3Jlc2VydmVkIGZv
-cg0KdGhlIGFzc2VtYmxlcicgKGFzIHRoZXkgcHJvYmFibHkgYXJlIG9uIE1JUFMpIGJ1dCB0aGUg
-bmlvczINCmFzc2VtYmxlciBkb2Vzbid0IGV2ZXIgbmVlZCB0byB1c2UgdGhlbSENCg0KPiAuLi4N
-Cj4gT2ssIHNvIHRoZSBzb2x1dGlvbiB3b3VsZCBiZSB0byBoYXZlIGFuIGFyY2ggc3BlY2lmaWMg
-dmVyc2lvbiBvZg0KPiBjc3VtX3NoaWZ0KCkgaW4gdGhlIHNhbWUgcHJpbmNpcGxlIGFzIGNzdW1f
-YWRkKCkuDQoNClByb2JhYmx5Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExh
-a2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQs
-IFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Tue, Mar 1, 2022 at 4:46 PM Ammar Faizi wrote:
+> Fortunately, the constraint violation that's fixed by patch 1 doesn't
+> yield any bug due to the nature of System V ABI. Should we backport
+> this?
 
+hi sir, it might also be interesting to know that even if it never be
+inlined, it's still potential to break.
+
+for example this code (https://godbolt.org/z/xWMTxhTET)
+
+  __attribute__((__noinline__)) static void x(int a)
+  {
+      asm("xorl\t%%r8d, %%r8d"::"a"(a));
+  }
+
+  extern int p(void);
+
+  int f(void)
+  {
+      int ret = p();
+      x(ret);
+      return ret;
+  }
+
+translates to this asm
+
+  x:
+          movl    %edi, %eax
+          xorl    %r8d, %r8d
+          ret
+  f:
+          subq    $8, %rsp
+          call    p
+          movl    %eax, %r8d
+          movl    %eax, %edi
+          call    x
+          movl    %r8d, %eax
+          addq    $8, %rsp
+          ret
+
+See the %r8d? It should be clobbered by a function call too. But since
+no one tells the compiler that we clobber %r8d, it assumes %r8d never
+changes after that call. The compiler thinks x() is static and will
+not clobber %r8d, even the ABI says %r8d will be clobbered by a
+function call. So i think it should be backported to the stable
+kernel, it's still a fix
+
+-- Viro
