@@ -2,225 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98798C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A48C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232656AbiCAQtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:49:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
+        id S232217AbiCAQvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:51:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236316AbiCAQrr (ORCPT
+        with ESMTP id S229509AbiCAQvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:47:47 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDF1F41334;
-        Tue,  1 Mar 2022 08:47:01 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9C2DF1042;
-        Tue,  1 Mar 2022 08:47:00 -0800 (PST)
-Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BF2A3F73D;
-        Tue,  1 Mar 2022 08:47:00 -0800 (PST)
-Date:   Tue, 1 Mar 2022 16:46:58 +0000
-From:   Ionela Voinescu <ionela.voinescu@arm.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Giovanni Gherdovich <ggherdovich@suse.cz>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sean Kelley <skelley@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 2/3] arch_topology: obtain cpu capacity using
- information from CPPC
-Message-ID: <Yh5OAsYVBWWko+CH@arm.com>
-References: <20210824105651.28660-1-ionela.voinescu@arm.com>
- <20210824105651.28660-3-ionela.voinescu@arm.com>
- <CAJZ5v0hkgWQqOzfdv4kr6rxz9eMsOgHkMYj0cZpO7yC+=SnQfg@mail.gmail.com>
- <20210826175138.GA22165@arm.com>
- <CAJZ5v0i9Ys67E8TvWzJG+NaODKsEMsJiHrF9KM77Lk4L-3OOsA@mail.gmail.com>
+        Tue, 1 Mar 2022 11:51:02 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B656254
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:50:20 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 221GIHGi016548;
+        Tue, 1 Mar 2022 16:49:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pp1; bh=Gh0GqLspMvTvwvXYAgolNSAveiOEEAf2SSkZXzSi8ME=;
+ b=Yx2Cou9K7z1Wp8dPzRyH8xfQk5W6HFswFvzmhy7mEosE9TkQQYGvcn0Ar3QBttPFI8Ts
+ yDaEtr6Tx5wIkOanTOk0fRyVtbgOrPByJooigTEzzVyKUtKgsYIerx0jMkgHOpV6Bxdq
+ W9iDfwG4szK2g2ewZeisgV/Xk2qmH2/44sGWhbIGVBRZatDNfuK3LIL7HdoMOUfydioN
+ bGPo5OUfzg4qD/ScXuVHHX1IGaTnHM+KbFE45BDOXyAXfoMvoKxHy4GX3GSswHfkuxSl
+ vMw80HeVJRsrokVPKqivk4IydFpC42ufE9EA43Y9KeWKAuFfyx2aoxZD6/3ismLck4aq UA== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehpd4st0a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 16:49:54 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 221Gc1qW008913;
+        Tue, 1 Mar 2022 16:49:53 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma03dal.us.ibm.com with ESMTP id 3egfss48tk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 16:49:53 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 221GndGu14418500
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Mar 2022 16:49:39 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E6E48AE067;
+        Tue,  1 Mar 2022 16:49:38 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 422D1AE066;
+        Tue,  1 Mar 2022 16:49:38 +0000 (GMT)
+Received: from localhost (unknown [9.65.81.114])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
+        Tue,  1 Mar 2022 16:49:38 +0000 (GMT)
+From:   Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, mopsfelder@gmail.com,
+        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
+        "Erhard F ." <erhard_f@mailbox.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Nick Child <nick.child@ibm.com>
+Subject: [PATCH] powerpc/64s: Fix build failure when CONFIG_PPC_64S_HASH_MMU is not set
+Date:   Tue,  1 Mar 2022 13:48:43 -0300
+Message-Id: <20220301164843.29170-1-muriloo@linux.ibm.com>
+X-Mailer: git-send-email 2.35.1
+Content-Type: text/plain; charset="utf-8"
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: ehXpSUCSWPVpdlCeQ3AGqPVG_BFouthc
+X-Proofpoint-GUID: ehXpSUCSWPVpdlCeQ3AGqPVG_BFouthc
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0i9Ys67E8TvWzJG+NaODKsEMsJiHrF9KM77Lk4L-3OOsA@mail.gmail.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-01_07,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ impostorscore=0 mlxscore=0 mlxlogscore=999 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 suspectscore=0 priorityscore=1501 adultscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2203010087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rafael,
+The following build failure occurs when CONFIG_PPC_64S_HASH_MMU is not set:
 
-Apologies for the delay.
+    arch/powerpc/kernel/setup_64.c: In function ‘setup_per_cpu_areas’:
+    arch/powerpc/kernel/setup_64.c:811:21: error: ‘mmu_linear_psize’ undeclared (first use in this function); did you mean ‘mmu_virtual_psize’?
+      811 |                 if (mmu_linear_psize == MMU_PAGE_4K)
+          |                     ^~~~~~~~~~~~~~~~
+          |                     mmu_virtual_psize
+    arch/powerpc/kernel/setup_64.c:811:21: note: each undeclared identifier is reported only once for each function it appears in
 
-On Thursday 26 Aug 2021 at 20:32:52 (+0200), Rafael J. Wysocki wrote:
-> On Thu, Aug 26, 2021 at 7:51 PM Ionela Voinescu <ionela.voinescu@arm.com> wrote:
-> >
-> > Thanks for the review, Rafael!
-> >
-> > On Wednesday 25 Aug 2021 at 19:54:26 (+0200), Rafael J. Wysocki wrote:
-> > > On Tue, Aug 24, 2021 at 12:57 PM Ionela Voinescu
-> > > <ionela.voinescu@arm.com> wrote:
-> > > >
-> > > > Define topology_init_cpu_capacity_cppc() to use highest performance
-> > > > values from _CPC objects to obtain and set maximum capacity information
-> > > > for each CPU. acpi_cppc_processor_probe() is a good point at which to
-> > > > trigger the initialization of CPU (u-arch) capacity values, as at this
-> > > > point the highest performance values can be obtained from each CPU's
-> > > > _CPC objects. Architectures can therefore use this functionality
-> > > > through arch_init_invariance_cppc().
-> > > >
-> > > > The performance scale used by CPPC is a unified scale for all CPUs in
-> > > > the system. Therefore, by obtaining the raw highest performance values
-> > > > from the _CPC objects, and normalizing them on the [0, 1024] capacity
-> > > > scale, used by the task scheduler, we obtain the CPU capacity of each
-> > > > CPU.
-> > > >
-> > > > While an ACPI Notify(0x85) could alert about a change in the highest
-> > > > performance value, which should in turn retrigger the CPU capacity
-> > > > computations, this notification is not currently handled by the ACPI
-> > > > processor driver. When supported, a call to arch_init_invariance_cppc()
-> > > > would perform the update.
-> > > >
-> > > > Signed-off-by: Ionela Voinescu <ionela.voinescu@arm.com>
-> > > > Tested-by: Valentin Schneider <valentin.schneider@arm.com>
-> > > > Cc: Sudeep Holla <sudeep.holla@arm.com>
-> > > > ---
-> > > >  drivers/base/arch_topology.c  | 37 +++++++++++++++++++++++++++++++++++
-> > > >  include/linux/arch_topology.h |  4 ++++
-> > > >  2 files changed, 41 insertions(+)
-> > > >
-> > > > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> > > > index 921312a8d957..358e22cd629e 100644
-> > > > --- a/drivers/base/arch_topology.c
-> > > > +++ b/drivers/base/arch_topology.c
-> > > > @@ -306,6 +306,43 @@ bool __init topology_parse_cpu_capacity(struct device_node *cpu_node, int cpu)
-> > > >         return !ret;
-> > > >  }
-> > > >
-> > > > +#ifdef CONFIG_ACPI_CPPC_LIB
-> > > > +#include <acpi/cppc_acpi.h>
-> > > > +
-> > > > +void topology_init_cpu_capacity_cppc(void)
-> > > > +{
-> > > > +       struct cppc_perf_caps perf_caps;
-> > > > +       int cpu;
-> > > > +
-> > > > +       if (likely(acpi_disabled || !acpi_cpc_valid()))
-> > > > +               return;
-> > > > +
-> > > > +       raw_capacity = kcalloc(num_possible_cpus(), sizeof(*raw_capacity),
-> > > > +                              GFP_KERNEL);
-> > > > +       if (!raw_capacity)
-> > > > +               return;
-> > > > +
-> > > > +       for_each_possible_cpu(cpu) {
-> > > > +               if (!cppc_get_perf_caps(cpu, &perf_caps)) {
-> > > > +                       raw_capacity[cpu] = perf_caps.highest_perf;
-> > >
-> > > From experience, I would advise doing some sanity checking on the
-> > > per_caps values before using them here.
-> > >
-> >
-> > cppc_get_perf_caps() already returns -EFAULT if highest_perf is 0, and
-> > I'm not sure if I can make any other assumptions about what a sane
-> > highest_perf value would need to be here.
-> 
-> Well, it cannot be less than lowest_perf or nominal_perf or
-> guaranteed_perf, for instance.
-> 
+Move the declaration of mmu_linear_psize outside of CONFIG_PPC_64S_HASH_MMU
+ifdef.
 
-True! I'll push a v3 with this change tomorrow, after I rebase and
-re-test on 5.17-rc6.
+Fixes: 387e220a2e5e (powerpc/64s: Move hash MMU support code under CONFIG_PPC_64S_HASH_MMU)
+Reported-by: Erhard F. <erhard_f@mailbox.org>
+Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Fabiano Rosas <farosas@linux.ibm.com>
+Cc: Nick Child <nick.child@ibm.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215567
+---
+ arch/powerpc/include/asm/book3s/64/mmu.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I've not checked for guaranteed performance as according to the
-specification it's optional and it's designed to be between lowest_perf and
-nominal_perf. If guaranteed performance is/will be used anywhere, it should
-have its own validation against lower/nominal/highest.
+diff --git a/arch/powerpc/include/asm/book3s/64/mmu.h b/arch/powerpc/include/asm/book3s/64/mmu.h
+index ba5b1becf518..006cbec70ffe 100644
+--- a/arch/powerpc/include/asm/book3s/64/mmu.h
++++ b/arch/powerpc/include/asm/book3s/64/mmu.h
+@@ -202,7 +202,6 @@ static inline struct subpage_prot_table *mm_ctx_subpage_prot(mm_context_t *ctx)
+ /*
+  * The current system page and segment sizes
+  */
+-extern int mmu_linear_psize;
+ extern int mmu_virtual_psize;
+ extern int mmu_vmalloc_psize;
+ extern int mmu_io_psize;
+@@ -213,6 +212,7 @@ extern int mmu_io_psize;
+ #define mmu_virtual_psize MMU_PAGE_4K
+ #endif
+ #endif
++extern int mmu_linear_psize;
+ extern int mmu_vmemmap_psize;
+ 
+ /* MMU initialization */
+-- 
+2.35.1
 
-Therefore I think checking that we have a highest_perf value higher or equal
-to both nominal_perf and lowest_perf is the right balance in validation.
-
-> > Did you have anything else in mind for sanity checking?
-> >
-> > > Also note that highest_perf may not be sustainable, so would using
-> > > highest_perf as raw_capacity[] always work as expected?
-> > >
-> >
-> > Yes, in my opinion using it is better than the alternative, using the
-> > nominal performance value. This highest performance value helps obtain
-> > the maximum capacity of a CPU on a scale [0, 1024] when referenced to
-> > the highest performance of the biggest CPU in the system. There is no
-> > assumption in the task scheduler that this capacity is sustainable.
-> 
-> That's true, but there are consequences if it is the case.  Namely,
-> you may find that the big CPUs run at the highest performance for a
-> small fraction of time, so most of the time they may appear to be
-> underutilized no matter how many tasks are packed on them, which then
-> will influence the utilization metrics of those tasks.
-> 
-
-Yes, there are no perfect solutions, and whether one exposes nominal or
-highest performance there will be consequences. But I think the task
-scheduler has progressed to cope better with unavailable capacity.
-
-For example, after the PELT changes at [1], CPUs won't seem underutilized
-if they are always running, even if they are not running at the highest
-frequency. Before these changes to PELT, the utilization of a CPU was
-capped to the current capacity of the CPU. So in that case, if the
-nominal_perf was 70% of highest_perf and the CPU was only running at
-nominal_freq, its utilization could not exceed 716 (big CPU). But after
-[1] if the CPU had no idle time, it does exceed 716 and could be marked
-as overutilized. That utilization doesn't really have a meaning (we
-don't know how utilized the CPU would have been if it would have run at
-boosted frequencies) but it does not have to, as long as it signals the
-need of an action: migrate tasks to another CPU, possibly disable EAS.
-
-[1]
-https://lore.kernel.org/lkml/tip-23127296889fe84b0762b191b5d041e8ba6f2599@git.kernel.org/
-
-> It may be better to use guaranteed_perf or some value between it at
-> the highest for this reason.
-> 
-
-Guaranteed performance is a tricky one:
-"
-Guaranteed Performance Register conveys to OSPM a Guaranteed Performance
-level, which is the current maximum sustained performance level of a
-processor, taking into account all known external constraints (power
-budgeting, thermal constraints, AC vs DC power source, etc.). All
-processors are expected to be able to sustain their guaranteed
-performance levels simultaneously. The guaranteed performance level is
-required to fall in the range [Lowest Performance, Nominal performance],
-inclusive.
-"
-
-In my experience everyone interprets this differently and therefore
-platform providers could populate this vastly differently. One could
-argue that the only true guaranteed performance is the lowest
-performance as it's the only one potentially sustainable under any power
-and especially thermal conditions. As well one could argue that it could
-be closer or equal to nominal performance, but that is the case only if
-one considers thermal effects unlikely. Therefore it may be that it's
-highly unreliable as a generic source of capacity information.
-
-
-Therefore, I'm still leaning towards keeping the use of highest_perf in
-this case due to the scheduler's ability to cope with unavailable
-capacity but also because it reflects better u-arch differences between
-CPUs.
-
-Thank you,
-Ionela.
-
-> > Using lower values (nominal performance) would shorten the scale and
-> > make smaller CPUs seem bigger than they are. Also, using highest
-> > performance gives a better indication of micro-architectural
-> > differences in performance between CPUs, which plays a role in scaling
-> > utilization, even if some of the performance levels are not sustainable
-> > (which is platform dependent).
