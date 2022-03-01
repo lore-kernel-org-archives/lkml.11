@@ -2,183 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C264C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 00:25:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B17C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 00:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231753AbiCAA0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 19:26:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55104 "EHLO
+        id S231782AbiCAA3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 19:29:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiCAA0U (ORCPT
+        with ESMTP id S231236AbiCAA3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 19:26:20 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2064CD48
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 16:25:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646094340; x=1677630340;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=F60nCeJxhMM1qvPB/Mi0kNCoGRaaxp9NNgVcv/Ja1v4=;
-  b=DXuS9uBhXr9rKjQYIPljFDpLOzOdpiq5skOwN7wnV64WkK+BUjbUF8fw
-   59L8dlkI982/PrV/bubwwq8YTskH8F+NevYsRX6sWauUtqNZF2hrR12jX
-   FlZfxD67sxkQ3qKC+n7CAJ5xWVad0J20rsO0dX0KselsmXZMr1McK7EOn
-   UtjgBa8Q1J6EmUlwFTBR07PbLlPiUqR7Ls9epqqli81rE2sVCVzQ9XxxU
-   6OPPR0O1pX7Q7FCfmxUj9VD4n5to7gAo/eLB9lH2v9OjI1ro63GKdFCuB
-   Nkjk4emB7pXODvBElv7Uzk+HOtLAqb/g38IQLqgX3koBM1frV7ciV85+J
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253212641"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="253212641"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 16:25:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="510297676"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 28 Feb 2022 16:25:38 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOqKf-0007w0-C9; Tue, 01 Mar 2022 00:25:37 +0000
-Date:   Tue, 1 Mar 2022 08:24:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Wang Qing <wangqing@vivo.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:netdev/net-next/master 81/85]
- drivers/net/hamradio/dmascc.c:1357:83: error: expected ')' before '{' token
-Message-ID: <202203010813.uYqLFxOY-lkp@intel.com>
+        Mon, 28 Feb 2022 19:29:14 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B95053B70
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 16:28:34 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 9D04B219A5;
+        Tue,  1 Mar 2022 00:28:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646094512; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ipnEaaVXGjuPjbjYUko5rS7uGNP4HYCYa0ctgBOY/t0=;
+        b=CI80451YJ3vFV81nQZrQtSXk3JDBcHNPYUgd/GcfK/Tc6m/F1WBK72vu6tVTbuis3mIMRg
+        osAcsfU18GgV0S81cgmIJXxocy7Kc1h7cqhwf/esP3R+A1WIo4v5wx5x8uT3vn+BQqAD46
+        xtnCKclHnfrCXUwlirNspZYryuHCiQ0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646094512;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ipnEaaVXGjuPjbjYUko5rS7uGNP4HYCYa0ctgBOY/t0=;
+        b=qePXbAq5X41KUF0JSLYLQgJjKxepd3IPmR+7c4WH8VqdqJDOORa2/MgJ8rvjHrrXrD2POT
+        Dh3O7dPB9KSH8HDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 41A20139FF;
+        Tue,  1 Mar 2022 00:28:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id iPFCD7BoHWIMPQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 01 Mar 2022 00:28:32 +0000
+Message-ID: <d1bf599d-d680-192c-e7b8-12af7f4f5430@suse.cz>
+Date:   Tue, 1 Mar 2022 01:28:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] mm/slub: initialize stack depot in boot process
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, Marco Elver <elver@google.com>
+Cc:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Faiyaz Mohammed <faiyazm@codeaurora.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Zqiang <qiang.zhang@windriver.com>
+References: <Yhzlw0GGBeuCALJp@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <Yhzlw0GGBeuCALJp@ip-172-31-19-208.ap-northeast-1.compute.internal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block netdev/net-next/master
-head:   0b9e69e1a1e4d60473486d15217845ae1e151d4a
-commit: 61c4fb9c4d09dfb6f33690169560862d5d0e42f7 [81/85] net: hamradio: use time_is_after_jiffies() instead of open coding it
-config: alpha-buildonly-randconfig-r005-20220227 (https://download.01.org/0day-ci/archive/20220301/202203010813.uYqLFxOY-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/61c4fb9c4d09dfb6f33690169560862d5d0e42f7
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block netdev/net-next/master
-        git checkout 61c4fb9c4d09dfb6f33690169560862d5d0e42f7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/hamradio/
+On 2/28/22 16:09, Hyeonggon Yoo wrote:
+> commit ba10d4b46655 ("mm/slub: use stackdepot to save stack trace in
+> objects") initializes stack depot while creating cache if SLAB_STORE_USER
+> flag is set.
+> 
+> This can make kernel crash because a cache can be created in various
+> contexts. For example if user sets slub_debug=U, kernel crashes
+> because create_boot_cache() calls stack_depot_init(), which tries to
+> allocate hash table using memblock_alloc() if slab is not available.
+> But memblock is also not available at that time.
+> 
+> This patch solves the problem by initializing stack depot early
+> in boot process if SLAB_STORE_USER debug flag is set globally
+> or the flag is set to at least one cache.
+> 
+> [ elver@google.com: initialize stack depot depending on slub_debug
+>   parameter instead of allowing stack_depot_init() can be called
+>   in kmem_cache_init() for simplicity. ]
+> 
+> Link: https://lkml.org/lkml/2022/2/28/238
+> Fixes: ba10d4b46655 ("mm/slub: use stackdepot to save stack trace in objects")
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I think a much easier approach would be to do this checking in
+setup_slub_debug(). There we may either detect SLAB_STORE_USER in
+global_flags, or check the flags returned by parse_slub_debug_flags() in the
+while (str) cycle, in the 'else' case where slab_list is present. Both cases
+would just set some variable that stack_depot_early_init() (the
+!CONFIG_STACKDEPOT_ALWAYS_INIT version, or a newly consolidated one) would
+check. So that would be another way to request the stack_depot_init() at a
+well-defined point of boot, similar to CONFIG_STACKDEPOT_ALWAYS_INIT.
+Because setup_slub_debug() is called by __setup, which is processed from
+start_kernel() -> parse_args() before mm_init() -> stack_depot_early_init().
 
-All errors (new ones prefixed by >>):
+> ---
+>  include/linux/slab.h |  1 +
+>  init/main.c          |  1 +
+>  mm/slab.c            |  4 ++++
+>  mm/slob.c            |  4 ++++
+>  mm/slub.c            | 28 +++++++++++++++++++++++++---
+>  5 files changed, 35 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/slab.h b/include/linux/slab.h
+> index 37bde99b74af..023f3f71ae35 100644
+> --- a/include/linux/slab.h
+> +++ b/include/linux/slab.h
+> @@ -139,6 +139,7 @@ struct mem_cgroup;
+>  /*
+>   * struct kmem_cache related prototypes
+>   */
+> +void __init kmem_cache_init_early(void);
+>  void __init kmem_cache_init(void);
+>  bool slab_is_available(void);
+>  
+> diff --git a/init/main.c b/init/main.c
+> index 65fa2e41a9c0..4fdb7975a085 100644
+> --- a/init/main.c
+> +++ b/init/main.c
+> @@ -835,6 +835,7 @@ static void __init mm_init(void)
+>  	kfence_alloc_pool();
+>  	report_meminit();
+>  	stack_depot_early_init();
+> +	kmem_cache_init_early();
+>  	mem_init();
+>  	mem_init_print_info();
+>  	kmem_cache_init();
+> diff --git a/mm/slab.c b/mm/slab.c
+> index ddf5737c63d9..80a6d01aab06 100644
+> --- a/mm/slab.c
+> +++ b/mm/slab.c
+> @@ -1196,6 +1196,10 @@ static void __init set_up_node(struct kmem_cache *cachep, int index)
+>  	}
+>  }
+>  
+> +void __init kmem_cache_init_early(void)
+> +{
+> +}
+> +
+>  /*
+>   * Initialisation.  Called after the page allocator have been initialised and
+>   * before smp_init().
+> diff --git a/mm/slob.c b/mm/slob.c
+> index 60c5842215f1..00e323af8be4 100644
+> --- a/mm/slob.c
+> +++ b/mm/slob.c
+> @@ -715,6 +715,10 @@ struct kmem_cache kmem_cache_boot = {
+>  	.align = ARCH_KMALLOC_MINALIGN,
+>  };
+>  
+> +void __init kmem_cache_init_early(void)
+> +{
+> +}
+> +
+>  void __init kmem_cache_init(void)
+>  {
+>  	kmem_cache = &kmem_cache_boot;
+> diff --git a/mm/slub.c b/mm/slub.c
+> index a74afe59a403..40bcd18143b6 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -4221,9 +4221,6 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+>  	s->remote_node_defrag_ratio = 1000;
+>  #endif
+>  
+> -	if (s->flags & SLAB_STORE_USER && IS_ENABLED(CONFIG_STACKDEPOT))
+> -		stack_depot_init();
+> -
+>  	/* Initialize the pre-computed randomized freelist if slab is up */
+>  	if (slab_state >= UP) {
+>  		if (init_cache_random_seq(s))
+> @@ -4810,6 +4807,31 @@ static struct kmem_cache * __init bootstrap(struct kmem_cache *static_cache)
+>  	return s;
+>  }
+>  
+> +/* Initialize stack depot if needed */
+> +void __init kmem_cache_init_early(void)
+> +{
+> +#ifdef CONFIG_STACKDEPOT
+> +	slab_flags_t block_flags;
+> +	char *next_block;
+> +	char *slab_list;
+> +
+> +	if (slub_debug & SLAB_STORE_USER)
+> +		goto init_stack_depot;
+> +
+> +	next_block = slub_debug_string;
+> +	while (next_block) {
+> +		next_block = parse_slub_debug_flags(next_block, &block_flags, &slab_list, false);
+> +		if (block_flags & SLAB_STORE_USER)
+> +			goto init_stack_depot;
+> +	}
+> +
+> +	return;
+> +
+> +init_stack_depot:
+> +	stack_depot_init();
+> +#endif
+> +}
+> +
+>  void __init kmem_cache_init(void)
+>  {
+>  	static __initdata struct kmem_cache boot_kmem_cache,
 
-   drivers/net/hamradio/dmascc.c: In function 'es_isr':
->> drivers/net/hamradio/dmascc.c:1357:83: error: expected ')' before '{' token
-    1357 |                     time_is_after_jiffies(priv->tx_start + priv->param.txtimeout) {
-         |                                                                                   ^
-   drivers/net/hamradio/dmascc.c:1356:20: note: to match this '('
-    1356 |                 if (priv->tx_count &&
-         |                    ^
->> drivers/net/hamradio/dmascc.c:1364:9: error: expected expression before '}' token
-    1364 |         }
-         |         ^
-
-
-vim +1357 drivers/net/hamradio/dmascc.c
-
-  1305	
-  1306	
-  1307	static void es_isr(struct scc_priv *priv)
-  1308	{
-  1309		int i, rr0, drr0, res;
-  1310		unsigned long flags;
-  1311	
-  1312		/* Read status, reset interrupt bit (open latches) */
-  1313		rr0 = read_scc(priv, R0);
-  1314		write_scc(priv, R0, RES_EXT_INT);
-  1315		drr0 = priv->rr0 ^ rr0;
-  1316		priv->rr0 = rr0;
-  1317	
-  1318		/* Transmit underrun (2.4.9.6). We can't check the TxEOM flag, since
-  1319		   it might have already been cleared again by AUTOEOM. */
-  1320		if (priv->state == TX_DATA) {
-  1321			/* Get remaining bytes */
-  1322			i = priv->tx_tail;
-  1323			if (priv->param.dma >= 0) {
-  1324				disable_dma(priv->param.dma);
-  1325				flags = claim_dma_lock();
-  1326				res = get_dma_residue(priv->param.dma);
-  1327				release_dma_lock(flags);
-  1328			} else {
-  1329				res = priv->tx_len[i] - priv->tx_ptr;
-  1330				priv->tx_ptr = 0;
-  1331			}
-  1332			/* Disable DREQ / TX interrupt */
-  1333			if (priv->param.dma >= 0 && priv->type == TYPE_TWIN)
-  1334				outb(0, priv->card_base + TWIN_DMA_CFG);
-  1335			else
-  1336				write_scc(priv, R1, EXT_INT_ENAB | WT_FN_RDYFN);
-  1337			if (res) {
-  1338				/* Update packet statistics */
-  1339				priv->dev->stats.tx_errors++;
-  1340				priv->dev->stats.tx_fifo_errors++;
-  1341				/* Other underrun interrupts may already be waiting */
-  1342				write_scc(priv, R0, RES_EXT_INT);
-  1343				write_scc(priv, R0, RES_EXT_INT);
-  1344			} else {
-  1345				/* Update packet statistics */
-  1346				priv->dev->stats.tx_packets++;
-  1347				priv->dev->stats.tx_bytes += priv->tx_len[i];
-  1348				/* Remove frame from FIFO */
-  1349				priv->tx_tail = (i + 1) % NUM_TX_BUF;
-  1350				priv->tx_count--;
-  1351				/* Inform upper layers */
-  1352				netif_wake_queue(priv->dev);
-  1353			}
-  1354			/* Switch state */
-  1355			write_scc(priv, R15, 0);
-  1356			if (priv->tx_count &&
-> 1357			    time_is_after_jiffies(priv->tx_start + priv->param.txtimeout) {
-  1358				priv->state = TX_PAUSE;
-  1359				start_timer(priv, priv->param.txpause, 0);
-  1360			} else {
-  1361				priv->state = TX_TAIL;
-  1362				start_timer(priv, priv->param.txtail, 0);
-  1363			}
-> 1364		}
-  1365	
-  1366		/* DCD transition */
-  1367		if (drr0 & DCD) {
-  1368			if (rr0 & DCD) {
-  1369				switch (priv->state) {
-  1370				case IDLE:
-  1371				case WAIT:
-  1372					priv->state = DCD_ON;
-  1373					write_scc(priv, R15, 0);
-  1374					start_timer(priv, priv->param.dcdon, 0);
-  1375				}
-  1376			} else {
-  1377				switch (priv->state) {
-  1378				case RX_ON:
-  1379					rx_off(priv);
-  1380					priv->state = DCD_OFF;
-  1381					write_scc(priv, R15, 0);
-  1382					start_timer(priv, priv->param.dcdoff, 0);
-  1383				}
-  1384			}
-  1385		}
-  1386	
-  1387		/* CTS transition */
-  1388		if ((drr0 & CTS) && (~rr0 & CTS) && priv->type != TYPE_TWIN)
-  1389			tm_isr(priv);
-  1390	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
