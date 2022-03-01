@@ -2,167 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB747C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54263C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238402AbiCAUty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:49:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
+        id S238410AbiCAUv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:51:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238399AbiCAUtw (ORCPT
+        with ESMTP id S230415AbiCAUvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:49:52 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8187331DCD
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:49:09 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 221Jcf1i026322;
-        Tue, 1 Mar 2022 20:48:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=pp1; bh=NzmemcIvh2KgUCy7fzhsxYkFZy2vGLqre8sjxZP5R68=;
- b=kF+4eIyayhrSMpnvBFd//l22qlJpx1ZYHeY8mAf6EQrsTZItnjbcIWpzkdXTkEdYOYLT
- KEk9g/cwDBspW8qO9WbWREyOHAuYSGPlJ4JKmn7wBLZ9TqBiN9FzDrzYQHfuEwmQ0Txr
- pfsWDCNFfsasAaH4z7uQp4ej12SI00XVADKkvWEk6bMh1LrOoH5qwbNU0OVXBkyR7hPP
- 5jqKsGF328/pjh1ZhSFZAei7r/j6VjEB7NJfmgnwwVDc1em+ruqIQfYIeudctnBf0y7z
- yCRv34VBvQ83usRvF01hNUpePwZ4UARtNpTVt9VzO217mga831ttQMLBbt93syS2m3jS vg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehqp2vg3j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Mar 2022 20:48:28 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 221Kf5oc013621;
-        Tue, 1 Mar 2022 20:48:28 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehqp2vg38-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Mar 2022 20:48:27 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 221Km4sK021560;
-        Tue, 1 Mar 2022 20:48:27 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma03dal.us.ibm.com with ESMTP id 3egfss5ubs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Mar 2022 20:48:26 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 221KmNoX47907140
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 1 Mar 2022 20:48:23 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 01CCBAE067;
-        Tue,  1 Mar 2022 20:48:23 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5484EAE066;
-        Tue,  1 Mar 2022 20:48:22 +0000 (GMT)
-Received: from localhost (unknown [9.65.81.114])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Tue,  1 Mar 2022 20:48:22 +0000 (GMT)
-From:   Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-To:     linuxppc-dev@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, mopsfelder@gmail.com,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
-        "Erhard F ." <erhard_f@mailbox.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Nick Child <nick.child@ibm.com>
-Subject: [PATCH v2] powerpc/64s: Fix build failure when CONFIG_PPC_64S_HASH_MMU is not set
-Date:   Tue,  1 Mar 2022 17:47:43 -0300
-Message-Id: <20220301204743.45133-1-muriloo@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
-Content-Type: text/plain; charset="utf-8"
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: at-I7ZtJdSHfDzVpnXQa3viA3xdvEebj
-X-Proofpoint-ORIG-GUID: mprGZymhnLIFYLdSyAXV8aPK4MB-unCr
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 1 Mar 2022 15:51:24 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6255D26102
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:50:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646167843; x=1677703843;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rkyXUz1vj1mqzAK3zAiAgdUNAFAz9kvv/ECi26k+bGc=;
+  b=Oa7u2aWMf3oSa9rutgDdi4+lhEtHK3df0fbWUPmEI6MWNkuUz9ZK0pUM
+   JEWKjljOt6c++DSBFDpv0wOKBq7pm8GFHIoDbmLyWz/hkDkaFng/yc/dZ
+   KnlMMQ2h/19IuwudAhInfxN2vOAUJ7NA7yZE1wx7I75LrJGfceHrZjKk/
+   5rQD/ppeuxi2cWiWDZF47AuNHGL9hOVKgQYFd4SMwIWOGTk+oRcSJv7jt
+   4DGtVC3u5qYqbFR+UK2ziQ8KbGssrCsM/EnbXxahiJip/rrTWJ/Gd2d7C
+   C8wfjKVegRjItnrUq7Dz5rWUONr9WCIbiDFYyfDlpgnbNUa2zDWUyZeGC
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="233209533"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="233209533"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 12:50:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="641416373"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 01 Mar 2022 12:50:41 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 84C1B183; Tue,  1 Mar 2022 22:50:58 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 1/1] mfd: intel-lpss: Provide an SSP type to the driver
+Date:   Tue,  1 Mar 2022 22:50:56 +0200
+Message-Id: <20220301205056.79810-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-01_07,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- spamscore=0 mlxlogscore=999 suspectscore=0 lowpriorityscore=0
- impostorscore=0 malwarescore=0 adultscore=0 phishscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203010103
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following build failure occurs when CONFIG_PPC_64S_HASH_MMU is not
-set:
+The SPI driver wants to know the exact type of the controller.
+Provide this information to it, hence it allows to fix the
+Intel Cannon Lake and others in the future.
 
-    arch/powerpc/kernel/setup_64.c: In function ‘setup_per_cpu_areas’:
-    arch/powerpc/kernel/setup_64.c:811:21: error: ‘mmu_linear_psize’ undeclared (first use in this function); did you mean ‘mmu_virtual_psize’?
-      811 |                 if (mmu_linear_psize == MMU_PAGE_4K)
-          |                     ^~~~~~~~~~~~~~~~
-          |                     mmu_virtual_psize
-    arch/powerpc/kernel/setup_64.c:811:21: note: each undeclared identifier is reported only once for each function it appears in
-
-Move the declaration of mmu_linear_psize outside of
-CONFIG_PPC_64S_HASH_MMU ifdef.
-
-After the above is fixed, it fails later with the following error:
-
-    ld: arch/powerpc/kexec/file_load_64.o: in function `.arch_kexec_kernel_image_probe':
-    file_load_64.c:(.text+0x1c1c): undefined reference to `.add_htab_mem_range'
-
-Fix that, too, by conditioning add_htab_mem_range() symbol to
-CONFIG_PPC_64S_HASH_MMU.
-
-Fixes: 387e220a2e5e (powerpc/64s: Move hash MMU support code under CONFIG_PPC_64S_HASH_MMU)
-Reported-by: Erhard F. <erhard_f@mailbox.org>
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Fabiano Rosas <farosas@linux.ibm.com>
-Cc: Nick Child <nick.child@ibm.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215567
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v1: https://lore.kernel.org/linuxppc-dev/20220301164843.29170-1-muriloo@linux.ibm.com/
+ drivers/mfd/intel-lpss-acpi.c | 41 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 38 insertions(+), 3 deletions(-)
 
- arch/powerpc/include/asm/book3s/64/mmu.h | 2 +-
- arch/powerpc/include/asm/kexec_ranges.h  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/powerpc/include/asm/book3s/64/mmu.h b/arch/powerpc/include/asm/book3s/64/mmu.h
-index ba5b1becf518..006cbec70ffe 100644
---- a/arch/powerpc/include/asm/book3s/64/mmu.h
-+++ b/arch/powerpc/include/asm/book3s/64/mmu.h
-@@ -202,7 +202,6 @@ static inline struct subpage_prot_table *mm_ctx_subpage_prot(mm_context_t *ctx)
- /*
-  * The current system page and segment sizes
-  */
--extern int mmu_linear_psize;
- extern int mmu_virtual_psize;
- extern int mmu_vmalloc_psize;
- extern int mmu_io_psize;
-@@ -213,6 +212,7 @@ extern int mmu_io_psize;
- #define mmu_virtual_psize MMU_PAGE_4K
- #endif
- #endif
-+extern int mmu_linear_psize;
- extern int mmu_vmemmap_psize;
+diff --git a/drivers/mfd/intel-lpss-acpi.c b/drivers/mfd/intel-lpss-acpi.c
+index f2ea6540a01e..a143c8dca2d9 100644
+--- a/drivers/mfd/intel-lpss-acpi.c
++++ b/drivers/mfd/intel-lpss-acpi.c
+@@ -15,11 +15,22 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
++#include <linux/pxa2xx_ssp.h>
  
- /* MMU initialization */
-diff --git a/arch/powerpc/include/asm/kexec_ranges.h b/arch/powerpc/include/asm/kexec_ranges.h
-index 7a90000f8d15..f83866a19e87 100644
---- a/arch/powerpc/include/asm/kexec_ranges.h
-+++ b/arch/powerpc/include/asm/kexec_ranges.h
-@@ -9,7 +9,7 @@ struct crash_mem *realloc_mem_ranges(struct crash_mem **mem_ranges);
- int add_mem_range(struct crash_mem **mem_ranges, u64 base, u64 size);
- int add_tce_mem_ranges(struct crash_mem **mem_ranges);
- int add_initrd_mem_range(struct crash_mem **mem_ranges);
--#ifdef CONFIG_PPC_BOOK3S_64
-+#ifdef CONFIG_PPC_64S_HASH_MMU
- int add_htab_mem_range(struct crash_mem **mem_ranges);
- #else
- static inline int add_htab_mem_range(struct crash_mem **mem_ranges)
+ #include "intel-lpss.h"
+ 
++static const struct property_entry spt_spi_properties[] = {
++	PROPERTY_ENTRY_U32("intel,spi-pxa2xx-type", LPSS_SPT_SSP),
++	{ }
++};
++
++static const struct software_node spt_spi_node = {
++	.properties = spt_spi_properties,
++};
++
+ static const struct intel_lpss_platform_info spt_info = {
+ 	.clk_rate = 120000000,
++	.swnode = &spt_spi_node,
+ };
+ 
+ static const struct property_entry spt_i2c_properties[] = {
+@@ -53,8 +64,18 @@ static const struct intel_lpss_platform_info spt_uart_info = {
+ 	.swnode = &uart_node,
+ };
+ 
++static const struct property_entry bxt_spi_properties[] = {
++	PROPERTY_ENTRY_U32("intel,spi-pxa2xx-type", LPSS_BXT_SSP),
++	{ }
++};
++
++static const struct software_node bxt_spi_node = {
++	.properties = bxt_spi_properties,
++};
++
+ static const struct intel_lpss_platform_info bxt_info = {
+ 	.clk_rate = 100000000,
++	.swnode = &bxt_spi_node,
+ };
+ 
+ static const struct property_entry bxt_i2c_properties[] = {
+@@ -89,6 +110,20 @@ static const struct intel_lpss_platform_info apl_i2c_info = {
+ 	.swnode = &apl_i2c_node,
+ };
+ 
++static const struct property_entry cnl_spi_properties[] = {
++	PROPERTY_ENTRY_U32("intel,spi-pxa2xx-type", LPSS_CNL_SSP),
++	{ }
++};
++
++static const struct software_node cnl_spi_node = {
++	.properties = cnl_spi_properties,
++};
++
++static const struct intel_lpss_platform_info cnl_info = {
++	.clk_rate = 120000000,
++	.swnode = &cnl_spi_node,
++};
++
+ static const struct intel_lpss_platform_info cnl_i2c_info = {
+ 	.clk_rate = 216000000,
+ 	.swnode = &spt_i2c_node,
+@@ -108,8 +143,8 @@ static const struct acpi_device_id intel_lpss_acpi_ids[] = {
+ 	{ "INT3449", (kernel_ulong_t)&spt_uart_info },
+ 	{ "INT344A", (kernel_ulong_t)&spt_uart_info },
+ 	/* CNL */
+-	{ "INT34B0", (kernel_ulong_t)&spt_info },
+-	{ "INT34B1", (kernel_ulong_t)&spt_info },
++	{ "INT34B0", (kernel_ulong_t)&cnl_info },
++	{ "INT34B1", (kernel_ulong_t)&cnl_info },
+ 	{ "INT34B2", (kernel_ulong_t)&cnl_i2c_info },
+ 	{ "INT34B3", (kernel_ulong_t)&cnl_i2c_info },
+ 	{ "INT34B4", (kernel_ulong_t)&cnl_i2c_info },
+@@ -119,7 +154,7 @@ static const struct acpi_device_id intel_lpss_acpi_ids[] = {
+ 	{ "INT34B8", (kernel_ulong_t)&spt_uart_info },
+ 	{ "INT34B9", (kernel_ulong_t)&spt_uart_info },
+ 	{ "INT34BA", (kernel_ulong_t)&spt_uart_info },
+-	{ "INT34BC", (kernel_ulong_t)&spt_info },
++	{ "INT34BC", (kernel_ulong_t)&cnl_info },
+ 	/* BXT */
+ 	{ "80860AAC", (kernel_ulong_t)&bxt_i2c_info },
+ 	{ "80860ABC", (kernel_ulong_t)&bxt_info },
 -- 
-2.35.1
+2.34.1
 
