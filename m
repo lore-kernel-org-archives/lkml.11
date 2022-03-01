@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2955EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A08BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236276AbiCAQrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:47:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52390 "EHLO
+        id S236290AbiCAQrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:47:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236126AbiCAQrd (ORCPT
+        with ESMTP id S236266AbiCAQrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:47:33 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B55DDF90
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:46:51 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id c23so19134150ioi.4
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:46:51 -0800 (PST)
+        Tue, 1 Mar 2022 11:47:36 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB0A427F9
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:46:54 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id 9so12973247ily.11
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:46:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lhV/42e6eHfwU41W+fsYtA842umTK2PqsPSs56IFY9s=;
-        b=b0XFOPQQtftOUKQtzQ1SczPNAL06mxzYyK81asDMfPHqm9i4vsleWJKbkJTJ2toh9V
-         LqvUC9Efzp9mUwked5iUQutUoT/CMi0Wt/BI/qydVgSdTff37ajJrEWsApuv/ryKtZHf
-         b1Ib+obI3LvAckFehII201hkxYJqay1FwVREroYt2kj7XH1LqEm3F9MKHP++RKxfRHP1
-         lZq2IALqhVVYAZMs+9ikBcsH6pHf1TTYmYzxyjAqBaNCIPWr3rgC3viNVzK5vG1E+8Ej
-         fwHRsKEEqnjrQfalzrCRZkReHG0hV2evFHB/kaYf90P2XOS7BO9eLgrqd+GmfKuGX9/b
-         ylDg==
+        bh=z8u4MF+f5/cGlLGB0/vAj9alSkuZujSqlEVmUNGHTX4=;
+        b=EoKe1Vmlza53p81HMtpffi/FybfHcwZEbuj/YR2K3DkCNQ8dNkbtA0D9ABl/k5l3CT
+         iGyWhO/JC3xToc7WdDDe0J+ymBPPVaDNKXdQWnDoeKbt0KlRdtLDXXvQ5HSCTvDwPVzx
+         ti+sbATfop4sNR8TEufa/jTcJ+HVvV1fANPunTC4VWAIpR0vZkosU5xD2ut9CmD9uJHI
+         aIALlS8bGfvMoC6BLuRrKwww+3/sdpVpBhcVl/CQfvcn/H6oJY06xsn13OjGB8qV0RUY
+         Kg1qEE/FBSjxSN/b6N6YsuuMx0aFX3nWar49uUGKCDkOzaSm3Ym1QpmVJLghds3pYZt9
+         PPsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lhV/42e6eHfwU41W+fsYtA842umTK2PqsPSs56IFY9s=;
-        b=d6ng8LI0ZnwOYJUr7Lni5p/RaVrvQp09SkuosfMmCbnp807xGZIQX/0wBx81T8SEQo
-         J70kEpIFRuFoOlwKu4T5hvxshoLKCCQAhp89WWUavAkESPpgsBauecMxhrckDFaxjveF
-         b/fh3/wFEgr3PoUKr8diWUrAWEAIor/X4l14RleS5WF2c5Hy3uK25cN6Mc9IPWiIoqCe
-         GTcMpK1hg7KReDl3KI43PILNlzm5VHAALDmgsUYZQozl6tyjvylzTwck4ITW0tK2YChV
-         YY3Bd91TSAiL/lka6VH7dbef2ktnnin8LfsHTmjNDh6weQYascARJdukvivHxRVvuxxZ
-         8eqw==
-X-Gm-Message-State: AOAM531sKgKdUOQpMzYHSUXH3I7lLSWUZzkttxFy9m9dM7ODouA3uc9L
-        oV+4947MPgb01jlhlh9w1w4=
-X-Google-Smtp-Source: ABdhPJyltdv3uPBpXYxkeLyl2Z38goOsdaSeZwkXpBk8K+/sV1GWBrbjawEOplTOJ0R7R48B4/v/jg==
-X-Received: by 2002:a02:a905:0:b0:314:9cc6:c1fc with SMTP id n5-20020a02a905000000b003149cc6c1fcmr22042511jam.220.1646153210854;
-        Tue, 01 Mar 2022 08:46:50 -0800 (PST)
+        bh=z8u4MF+f5/cGlLGB0/vAj9alSkuZujSqlEVmUNGHTX4=;
+        b=YhPkomnQXAOTaNfjmtK7WJL8fPw8fquUxa5Gv5KdahIsz1gwe5T/R26bAd1yXwqpz6
+         BACHNmXf/A4utOfUgIM6gPMDyI3y9lw9CWrQ5ZtyXb0d9Fp50DYV+V1QoP2B/bF4rP/4
+         b0eXJomXaBjGM3+8Z8xoXMLJxHRmoQYc68tw3K6ze02m69lYVjldpSPuMBaKca8XMvyP
+         aHdEe0TOabCvNmcxfJ5PVpfQ0qAI7Moc1RpvCiwZqCFsqDS+Fw0Iietp8BINCOcKcOOk
+         hkWwrzsH0QbduQ0OnmAn82Xvum5DOE6AahKJ2kJpIAyHUn9PyHGHOTPIMXEEMCh84d7I
+         KnvQ==
+X-Gm-Message-State: AOAM533j+lsxgA3FOs+loQvqoEo5mDa0sFhd0Lc1yRlX+M7Y0Z7mecjV
+        F4FdtNToPwve44Zv4IJSBY0=
+X-Google-Smtp-Source: ABdhPJxK5WeEUVyEuTuND3j4vG/YJnSaxYEpQFY4ZNpRm7OJTrBmY08zUwihDnew7RXNG33rQR7jMw==
+X-Received: by 2002:a05:6e02:1bc3:b0:2c1:a992:9ffa with SMTP id x3-20020a056e021bc300b002c1a9929ffamr25168133ilv.124.1646153213496;
+        Tue, 01 Mar 2022 08:46:53 -0800 (PST)
 Received: from frodo.hsd1.co.comcast.net ([2601:284:8204:2010::f10e])
-        by smtp.googlemail.com with ESMTPSA id o3-20020a6b5a03000000b00640a33c5b0dsm7272411iob.17.2022.03.01.08.46.50
+        by smtp.googlemail.com with ESMTPSA id o3-20020a6b5a03000000b00640a33c5b0dsm7272411iob.17.2022.03.01.08.46.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 08:46:50 -0800 (PST)
+        Tue, 01 Mar 2022 08:46:53 -0800 (PST)
 From:   Jim Cromie <jim.cromie@gmail.com>
 To:     jbaron@akamai.com, gregkh@linuxfoundation.org,
         daniel.vetter@ffwll.ch, seanpaul@chromium.org, robdclark@gmail.com,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         amd-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org,
         intel-gfx@lists.freedesktop.org
-Cc:     Jim Cromie <jim.cromie@gmail.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH 02/13] dyndbg: add class_id field and query support
-Date:   Tue,  1 Mar 2022 09:46:18 -0700
-Message-Id: <20220301164629.3814634-3-jim.cromie@gmail.com>
+Cc:     Jim Cromie <jim.cromie@gmail.com>
+Subject: [PATCH 05/13] dyndbg: improve change-info to have old and new
+Date:   Tue,  1 Mar 2022 09:46:21 -0700
+Message-Id: <20220301164629.3814634-6-jim.cromie@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220301164629.3814634-1-jim.cromie@gmail.com>
 References: <20220301164629.3814634-1-jim.cromie@gmail.com>
@@ -68,302 +67,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DRM defines/uses 10 enum drm_debug_category's to create exclusive
-classes of debug messages.  To support this directly in dynamic-debug,
-add the following:
+move site.flag update after the v4pr_info("change") message, and
+improve the message to print both old and new flag values.
 
-- struct _ddebug.class_id:4 - 4 bits is enough
-- define _DPRINTK_SITE_UNCLASSED 15 - see below
+Heres new form:
+  dyndbg: changed net/ipv4/tcp.c:2424 [tcp]tcp_recvmsg_locked pT -> _
 
-and the query support:
-- struct _ddebug_query.class_id
-- ddebug_parse_query	- looks for "class" keyword, then calls..
-- parse_class		- accepts uint: 0-15, sets query.class_id and marker
-- vpr_info_dq		- displays new field
-- ddebug_proc_show	- append column with "cls:%d" if !UNCLASSED
-
-With the patch, this command enables current/unclassed callsites:
-
-  #> echo drm class 15 +p > /proc/dynamic_debug/control
-
-parse_class() accepts 0 .. _DPRINTK_SITE_UNCLASSED, which allows the
->control interface to explicitly manipulate unclassed callsites.
-
-After parsing keywords, ddebug_parse_query() sets .class_id=15, iff it
-wasnt explicitly set.  This allows future classed/categorized
-callsites to be untouched by legacy (class unaware) queries.
-
-DEFINE_DYNAMIC_DEBUG_METADATA gets _CLS(cls,) suffix and arg, and
-initializes the new .class_id=cls field.  The old name gets the default.
-
-Then, these _CLS(cls,...) modifications are repeated up through the
-stack of *dynamic_func_call* macros that use the METADATA initializer,
-so as to actually supply the category into it.
-
-NOTES:
-
-_DPRINTK_SITE_UNCLASSED: this symbol is used to initialize all
-existing/unclassed pr-debug callsites.  Normally, the default would be
-zero, but DRM_UT_CORE "uses" that value, in the sense that 0 is
-exposed as a bit position in drm.debug.  Using 15 allows identity
-mapping from category to class, avoiding fiddly offsets.
-
-CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
-
-fixup class-id preset
-
-fix2
 ---
- .../admin-guide/dynamic-debug-howto.rst       |  7 +++
- include/linux/dynamic_debug.h                 | 54 ++++++++++++++-----
- lib/dynamic_debug.c                           | 48 ++++++++++++++---
- 3 files changed, 88 insertions(+), 21 deletions(-)
+ lib/dynamic_debug.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/admin-guide/dynamic-debug-howto.rst b/Documentation/admin-guide/dynamic-debug-howto.rst
-index a89cfa083155..8ef8d7dcd140 100644
---- a/Documentation/admin-guide/dynamic-debug-howto.rst
-+++ b/Documentation/admin-guide/dynamic-debug-howto.rst
-@@ -35,6 +35,7 @@ Dynamic debug has even more useful features:
-    - line number (including ranges of line numbers)
-    - module name
-    - format string
-+   - class number:0-15
- 
-  * Provides a debugfs control file: ``<debugfs>/dynamic_debug/control``
-    which can be read to display the complete list of known debug
-@@ -143,6 +144,7 @@ against.  Possible keywords are:::
- 		 'module' string |
- 		 'format' string |
- 		 'line' line-range
-+		 'class' integer:[0-15]
- 
-   line-range ::= lineno |
- 		 '-'lineno |
-@@ -217,6 +219,11 @@ line
- 	line -1605          // the 1605 lines from line 1 to line 1605
- 	line 1600-          // all lines from line 1600 to the end of the file
- 
-+class
-+    This expects a single integer in range: 0-15.
-+    15 is used/reserved for existing/unclassed callsites,
-+    and is defaulted in unless specified to >control
-+
- The flags specification comprises a change operation followed
- by one or more flag characters.  The change operation is one
- of the characters::
-diff --git a/include/linux/dynamic_debug.h b/include/linux/dynamic_debug.h
-index dce631e678dd..d4b48f3cc6e8 100644
---- a/include/linux/dynamic_debug.h
-+++ b/include/linux/dynamic_debug.h
-@@ -6,6 +6,8 @@
- #include <linux/jump_label.h>
- #endif
- 
-+#include <linux/build_bug.h>
-+
- /*
-  * An instance of this structure is created in a special
-  * ELF section at every dynamic debug callsite.  At runtime,
-@@ -21,6 +23,9 @@ struct _ddebug {
- 	const char *filename;
- 	const char *format;
- 	unsigned int lineno:18;
-+#define CLS_BITS 4
-+	unsigned int class_id:CLS_BITS;
-+#define _DPRINTK_SITE_UNCLASSED		((1 << CLS_BITS) - 1)
- 	/*
- 	 * The flags field controls the behaviour at the callsite.
- 	 * The bits here are changed dynamically when the user
-@@ -87,7 +92,7 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
- 			 const struct ib_device *ibdev,
- 			 const char *fmt, ...);
- 
--#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt)		\
-+#define DEFINE_DYNAMIC_DEBUG_METADATA_CLS(name, cls, fmt)	\
- 	static struct _ddebug  __aligned(8)			\
- 	__section("__dyndbg") name = {				\
- 		.modname = KBUILD_MODNAME,			\
-@@ -96,8 +101,14 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
- 		.format = (fmt),				\
- 		.lineno = __LINE__,				\
- 		.flags = _DPRINTK_FLAGS_DEFAULT,		\
-+		.class_id = cls,				\
- 		_DPRINTK_KEY_INIT				\
--	}
-+	};							\
-+	BUILD_BUG_ON_MSG(cls > _DPRINTK_SITE_UNCLASSED,		\
-+			 "classid value overflow")
-+
-+#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt)		\
-+	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(name, _DPRINTK_SITE_UNCLASSED, fmt)
- 
- #ifdef CONFIG_JUMP_LABEL
- 
-@@ -128,18 +139,26 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
- 
- #endif /* CONFIG_JUMP_LABEL */
- 
--#define __dynamic_func_call(id, fmt, func, ...) do {	\
--	DEFINE_DYNAMIC_DEBUG_METADATA(id, fmt);		\
--	if (DYNAMIC_DEBUG_BRANCH(id))			\
--		func(&id, ##__VA_ARGS__);		\
-+#define __dynamic_func_call_cls(id, cls, fmt, func, ...) do {	\
-+	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(id, cls, fmt);	\
-+	if (DYNAMIC_DEBUG_BRANCH(id))				\
-+		func(&id, ##__VA_ARGS__);			\
- } while (0)
- 
--#define __dynamic_func_call_no_desc(id, fmt, func, ...) do {	\
--	DEFINE_DYNAMIC_DEBUG_METADATA(id, fmt);			\
--	if (DYNAMIC_DEBUG_BRANCH(id))				\
--		func(__VA_ARGS__);				\
-+#define __dynamic_func_call_no_desc_cls(id, cls, fmt, func, ...) do {	\
-+	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(id, cls, fmt);		\
-+	if (DYNAMIC_DEBUG_BRANCH(id))					\
-+		func(__VA_ARGS__);					\
- } while (0)
- 
-+#define __dynamic_func_call(id, fmt, func, ...)				\
-+	__dynamic_func_call_cls(id, _DPRINTK_SITE_UNCLASSED,		\
-+				fmt, func, ##__VA_ARGS__)
-+
-+#define __dynamic_func_call_no_desc(id, fmt, func, ...)			\
-+	__dynamic_func_call_no_desc_cls(id, _DPRINTK_SITE_UNCLASSED,	\
-+					fmt, func, ##__VA_ARGS__)
-+
- /*
-  * "Factory macro" for generating a call to func, guarded by a
-  * DYNAMIC_DEBUG_BRANCH. The dynamic debug descriptor will be
-@@ -148,15 +167,24 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
-  * the varargs. Note that fmt is repeated in invocations of this
-  * macro.
-  */
-+#define _dynamic_func_call_cls(cls, fmt, func, ...)			\
-+	__dynamic_func_call_cls(__UNIQUE_ID(ddebug), cls, fmt, func, ##__VA_ARGS__)
- #define _dynamic_func_call(fmt, func, ...)				\
--	__dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-+	_dynamic_func_call_cls(_DPRINTK_SITE_UNCLASSED, fmt, func, ##__VA_ARGS__)
-+
- /*
-  * A variant that does the same, except that the descriptor is not
-  * passed as the first argument to the function; it is only called
-  * with precisely the macro's varargs.
-  */
--#define _dynamic_func_call_no_desc(fmt, func, ...)	\
--	__dynamic_func_call_no_desc(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-+#define _dynamic_func_call_no_desc_cls(fmt, cat, func, ...)		\
-+	__dynamic_func_call_no_desc_cls(__UNIQUE_ID(ddebug), cat,	\
-+					fmt, func, ##__VA_ARGS__)
-+
-+#define _dynamic_func_call_no_desc(fmt, func, ...)			\
-+	__dynamic_func_call_no_desc_cls(__UNIQUE_ID(ddebug),		\
-+					_DPRINTK_SITE_UNCLASSED,	\
-+					fmt, func, ##__VA_ARGS__)
- 
- #define dynamic_pr_debug(fmt, ...)				\
- 	_dynamic_func_call(fmt,	__dynamic_pr_debug,		\
 diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-index a56c1286ffa4..ee2129becacc 100644
+index 60b2572e64f0..ab93b370d489 100644
 --- a/lib/dynamic_debug.c
 +++ b/lib/dynamic_debug.c
-@@ -55,6 +55,8 @@ struct ddebug_query {
- 	const char *function;
- 	const char *format;
- 	unsigned int first_lineno, last_lineno;
-+	unsigned int class_id;
-+	unsigned int class_marked:1;
- };
+@@ -158,7 +158,7 @@ static int ddebug_change(const struct ddebug_query *query,
+ 	struct ddebug_table *dt;
+ 	unsigned int newflags;
+ 	unsigned int nfound = 0;
+-	struct flagsbuf fbuf;
++	struct flagsbuf fbuf, nbuf;
  
- struct ddebug_iter {
-@@ -134,13 +136,13 @@ static void vpr_info_dq(const struct ddebug_query *query, const char *msg)
- 			fmtlen--;
+ 	/* search for matching ddebugs */
+ 	mutex_lock(&ddebug_lock);
+@@ -223,11 +223,12 @@ static int ddebug_change(const struct ddebug_query *query,
+ 				static_branch_enable(&dp->key.dd_key_true);
+ 			}
+ #endif
++			v4pr_info("changed %s:%d [%s]%s %s -> %s\n",
++				  trim_prefix(dp->filename), dp->lineno,
++				  dt->mod_name, dp->function,
++				  ddebug_describe_flags(dp->flags, &fbuf),
++				  ddebug_describe_flags(newflags, &nbuf));
+ 			dp->flags = newflags;
+-			v4pr_info("changed %s:%d [%s]%s =%s\n",
+-				 trim_prefix(dp->filename), dp->lineno,
+-				 dt->mod_name, dp->function,
+-				 ddebug_describe_flags(dp->flags, &fbuf));
+ 		}
  	}
- 
--	v3pr_info("%s: func=\"%s\" file=\"%s\" module=\"%s\" format=\"%.*s\" lineno=%u-%u\n",
--		 msg,
--		 query->function ?: "",
--		 query->filename ?: "",
--		 query->module ?: "",
--		 fmtlen, query->format ?: "",
--		 query->first_lineno, query->last_lineno);
-+	v3pr_info("%s: func=\"%s\" file=\"%s\" module=\"%s\" format=\"%.*s\" lineno=%u-%u class=%u\n",
-+		  msg,
-+		  query->function ?: "",
-+		  query->filename ?: "",
-+		  query->module ?: "",
-+		  fmtlen, query->format ?: "",
-+		  query->first_lineno, query->last_lineno, query->class_id);
- }
- 
- /*
-@@ -170,6 +172,10 @@ static int ddebug_change(const struct ddebug_query *query,
- 		for (i = 0; i < dt->num_ddebugs; i++) {
- 			struct _ddebug *dp = &dt->ddebugs[i];
- 
-+			/* match against the class_id, either given or default */
-+			if (query->class_id != dp->class_id)
-+				continue;
-+
- 			/* match against the source filename */
- 			if (query->filename &&
- 			    !match_wildcard(query->filename, dp->filename) &&
-@@ -308,6 +314,21 @@ static inline int parse_lineno(const char *str, unsigned int *val)
- 	return 0;
- }
- 
-+static inline int parse_class(struct ddebug_query *query, const char *str)
-+{
-+	int rc;
-+	unsigned int val;
-+
-+	rc = kstrtouint(str, 10, &val);
-+	if (rc < 0 || val > _DPRINTK_SITE_UNCLASSED) {
-+		pr_err("expecting class:[0-%d], not %s\n", _DPRINTK_SITE_UNCLASSED, str);
-+		return -EINVAL;
-+	}
-+	query->class_id = val;
-+	query->class_marked = 1;
-+	return 0;
-+}
-+
- static int parse_linerange(struct ddebug_query *query, const char *first)
- {
- 	char *last = strchr(first, '-');
-@@ -421,6 +442,9 @@ static int ddebug_parse_query(char *words[], int nwords,
- 		} else if (!strcmp(keyword, "line")) {
- 			if (parse_linerange(query, arg))
- 				return -EINVAL;
-+		} else if (!strcmp(keyword, "class")) {
-+			if (parse_class(query, arg))
-+				return -EINVAL;
- 		} else {
- 			pr_err("unknown keyword \"%s\"\n", keyword);
- 			return -EINVAL;
-@@ -428,6 +452,10 @@ static int ddebug_parse_query(char *words[], int nwords,
- 		if (rc)
- 			return rc;
- 	}
-+	/* post-validate the query, set default */
-+	if (!query->class_marked)
-+		query->class_id = _DPRINTK_SITE_UNCLASSED;
-+
- 	vpr_info_dq(query, "parsed");
- 	return 0;
- }
-@@ -900,7 +928,11 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
- 		   iter->table->mod_name, dp->function,
- 		   ddebug_describe_flags(dp->flags, &flags));
- 	seq_escape(m, dp->format, "\t\r\n\"");
--	seq_puts(m, "\"\n");
-+	seq_puts(m, "\"");
-+
-+	if (dp->class_id != _DPRINTK_SITE_UNCLASSED)
-+		seq_printf(m, " cls:%u", dp->class_id);
-+	seq_puts(m, "\n");
- 
- 	return 0;
- }
+ 	mutex_unlock(&ddebug_lock);
 -- 
 2.35.1
 
