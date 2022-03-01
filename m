@@ -2,145 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E343AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233996AbiCAJpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:45:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S233992AbiCAJpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:45:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233982AbiCAJpF (ORCPT
+        with ESMTP id S234023AbiCAJpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:45:05 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E57B6005C;
-        Tue,  1 Mar 2022 01:44:18 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nOz3I-0003z9-00; Tue, 01 Mar 2022 10:44:16 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id A90D6C2860; Tue,  1 Mar 2022 10:09:58 +0100 (CET)
-Date:   Tue, 1 Mar 2022 10:09:58 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Hauke Mehrtens <hauke@hauke-m.de>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, dmaengine@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH] MIPS: Remove TX39XX support
-Message-ID: <20220301090958.GA6517@alpha.franken.de>
-References: <20220222090435.62571-1-tsbogend@alpha.franken.de>
+        Tue, 1 Mar 2022 04:45:12 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E038BF28
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:44:29 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id bn33so21097183ljb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 01:44:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tjQCk98JCF7B3SGsqfK7HCesLKkHD86YZukO/DPNtQ0=;
+        b=a8275fH6+9IRL38qqLDpyS1w3TvaCjlAatrh/47PQJbn4W9iIUucAQap9bigDyxECn
+         TXaLOGyZ8vmF2KfxrLtFGMbL5xvYfDic9jf5mRMMfkkRR7Aybbrgh+tf+R6j/jj/lp4L
+         uCUr0PvhEU0tGNaiPU9hT+w4+Op4ut5G5kMZnISMemoP4168OXOfw3jvBdq8JP1eoWq5
+         proOhu5a2wmS5TdyBmY1plpSlnDUBG4ZO3Y+ZVYUWCg2oPG82YYwJxJ0G0ZJvfphr2ZA
+         lNZQx/+ln4Ri5Yx37fm7l3jukl/i/7u/bCVcl0JY5Gv7mEpBKJJeu4xt2bHWs2p8eoHC
+         +00Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tjQCk98JCF7B3SGsqfK7HCesLKkHD86YZukO/DPNtQ0=;
+        b=qG3QCpl+SOAI0O2r6IwOUmrMbD1A7U5UEhOYlcwFvmuXfpOf/Jg3AiF1ns620OUTMl
+         mSl70zPA+4YtJLFdKg0eZyFZP7nY7wjbMfYON/XCxqPXS7K5L/XNDj/ekL+qjkWtUdqF
+         /eERGm9XAmdrv1ESnHikxdMTkiftRMa87C+1sHkkZFRnnt38Qec2f4e+j0tiltfmKynr
+         HUccJTA7cvQIbq+WhUWcu8sFhsLC/j2xPhbAde0rgYh0/a+Ot7O0EncVcDF59N/IuBLd
+         XH9FOaIIxEQfy42ERe7ug7YAgU5KZnD3zdz4XAM/NTn2y8gfdaB0AV+BFQX/nNfDOhgE
+         H6zQ==
+X-Gm-Message-State: AOAM530yq3Ds+0x/VEhT0js5ln5yWoG3HGZ3+AEBZkeA6yM+iaeyw7J+
+        DS61LuBwKcieCSfSYRSVDK+jrxRBG9stp6tZlCnopNYhD/ijCA==
+X-Google-Smtp-Source: ABdhPJyupqbG0bQBQuInFjyG0YrLQq20BUN2lbd8XOqgYzbsx/NwNLqnc9QaRAEmfHcJbhpij1nqLzfCko4SgKUaGbQ=
+X-Received: by 2002:a2e:86d4:0:b0:246:40eb:2c18 with SMTP id
+ n20-20020a2e86d4000000b0024640eb2c18mr17093954ljj.16.1646127867471; Tue, 01
+ Mar 2022 01:44:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222090435.62571-1-tsbogend@alpha.franken.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220223080323.3717853-1-s.hauer@pengutronix.de> <20220223080858.GJ9136@pengutronix.de>
+In-Reply-To: <20220223080858.GJ9136@pengutronix.de>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 1 Mar 2022 10:43:50 +0100
+Message-ID: <CAPDyKFpyCepZ_J4LNZzz-g90RLT1mVDMbQ-gNKweM8YnEWXqdg@mail.gmail.com>
+Subject: Re: [PATCH] PM: domains: use dev_err_probe() to simplify error handling
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     linux-pm@vger.kernel.org, Kevin Hilman <khilman@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Kernel@pengutronix.de,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 10:04:28AM +0100, Thomas Bogendoerfer wrote:
-> No (active) developer owns this hardware, so let's remove Linux support.
-> 
-> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> ---
->  arch/mips/Kbuild.platforms                    |   1 -
->  arch/mips/Kconfig                             |  24 +-
->  arch/mips/Makefile                            |   1 -
->  arch/mips/configs/jmr3927_defconfig           |  50 ---
->  arch/mips/include/asm/cpu-features.h          |   3 -
->  arch/mips/include/asm/cpu-type.h              |   6 -
->  arch/mips/include/asm/cpu.h                   |   6 -
->  arch/mips/include/asm/isadep.h                |   2 +-
->  .../asm/mach-ath25/cpu-feature-overrides.h    |   1 -
->  .../asm/mach-ath79/cpu-feature-overrides.h    |   1 -
->  .../asm/mach-au1x00/cpu-feature-overrides.h   |   1 -
->  .../asm/mach-bcm47xx/cpu-feature-overrides.h  |   1 -
->  .../cpu-feature-overrides.h                   |   1 -
->  .../asm/mach-cobalt/cpu-feature-overrides.h   |   1 -
->  .../asm/mach-dec/cpu-feature-overrides.h      |   1 -
->  .../asm/mach-ingenic/cpu-feature-overrides.h  |   1 -
->  .../asm/mach-ip27/cpu-feature-overrides.h     |   1 -
->  .../asm/mach-ip30/cpu-feature-overrides.h     |   1 -
->  .../falcon/cpu-feature-overrides.h            |   1 -
->  .../mach-loongson2ef/cpu-feature-overrides.h  |   1 -
->  .../mach-loongson64/cpu-feature-overrides.h   |   1 -
->  .../mt7620/cpu-feature-overrides.h            |   1 -
->  .../mt7621/cpu-feature-overrides.h            |   1 -
->  .../rt288x/cpu-feature-overrides.h            |   1 -
->  .../rt305x/cpu-feature-overrides.h            |   1 -
->  .../rt3883/cpu-feature-overrides.h            |   1 -
->  .../asm/mach-rc32434/cpu-feature-overrides.h  |   1 -
->  arch/mips/include/asm/mach-tx39xx/ioremap.h   |  25 --
->  .../include/asm/mach-tx39xx/mangle-port.h     |  24 -
->  arch/mips/include/asm/mach-tx39xx/spaces.h    |  17 -
->  arch/mips/include/asm/stackframe.h            |   6 +-
->  arch/mips/include/asm/txx9/boards.h           |   3 -
->  arch/mips/include/asm/txx9/jmr3927.h          | 179 --------
->  arch/mips/include/asm/txx9/tx3927.h           | 341 ---------------
->  arch/mips/include/asm/txx9irq.h               |   4 -
->  arch/mips/include/asm/txx9tmr.h               |   4 -
->  arch/mips/include/asm/vermagic.h              |   2 -
->  arch/mips/kernel/Makefile                     |   1 -
->  arch/mips/kernel/cpu-probe.c                  |  23 -
->  arch/mips/kernel/cpu-r3k-probe.c              |  22 -
->  arch/mips/kernel/entry.S                      |   2 +-
->  arch/mips/kernel/genex.S                      |   4 +-
->  arch/mips/kernel/idle.c                       |  10 -
->  arch/mips/kernel/irq_txx9.c                   |  13 -
->  arch/mips/kernel/proc.c                       |   2 -
->  arch/mips/kernel/process.c                    |   2 +-
->  arch/mips/lib/Makefile                        |   1 -
->  arch/mips/lib/r3k_dump_tlb.c                  |   4 -
->  arch/mips/mm/Makefile                         |   1 -
->  arch/mips/mm/c-tx39.c                         | 414 ------------------
->  arch/mips/mm/cache.c                          |   5 -
->  arch/mips/mm/tlb-r3k.c                        |  40 +-
->  arch/mips/pci/Makefile                        |   2 -
->  arch/mips/pci/fixup-jmr3927.c                 |  79 ----
->  arch/mips/pci/ops-tx3927.c                    | 231 ----------
->  arch/mips/txx9/Kconfig                        |  18 -
->  arch/mips/txx9/Makefile                       |   6 -
->  arch/mips/txx9/Platform                       |   3 -
->  arch/mips/txx9/generic/Makefile               |   1 -
->  arch/mips/txx9/generic/irq_tx3927.c           |  25 --
->  arch/mips/txx9/generic/setup.c                |  55 ---
->  arch/mips/txx9/generic/setup_tx3927.c         | 136 ------
->  arch/mips/txx9/jmr3927/Makefile               |   6 -
->  arch/mips/txx9/jmr3927/irq.c                  | 128 ------
->  arch/mips/txx9/jmr3927/prom.c                 |  52 ---
->  arch/mips/txx9/jmr3927/setup.c                | 223 ----------
->  drivers/dma/Kconfig                           |   2 +-
->  drivers/watchdog/Kconfig                      |   2 +-
->  68 files changed, 18 insertions(+), 2212 deletions(-)
->  delete mode 100644 arch/mips/configs/jmr3927_defconfig
->  delete mode 100644 arch/mips/include/asm/mach-tx39xx/ioremap.h
->  delete mode 100644 arch/mips/include/asm/mach-tx39xx/mangle-port.h
->  delete mode 100644 arch/mips/include/asm/mach-tx39xx/spaces.h
->  delete mode 100644 arch/mips/include/asm/txx9/jmr3927.h
->  delete mode 100644 arch/mips/include/asm/txx9/tx3927.h
->  delete mode 100644 arch/mips/mm/c-tx39.c
->  delete mode 100644 arch/mips/pci/fixup-jmr3927.c
->  delete mode 100644 arch/mips/pci/ops-tx3927.c
->  delete mode 100644 arch/mips/txx9/generic/irq_tx3927.c
->  delete mode 100644 arch/mips/txx9/generic/setup_tx3927.c
->  delete mode 100644 arch/mips/txx9/jmr3927/Makefile
->  delete mode 100644 arch/mips/txx9/jmr3927/irq.c
->  delete mode 100644 arch/mips/txx9/jmr3927/prom.c
->  delete mode 100644 arch/mips/txx9/jmr3927/setup.c
+On Wed, 23 Feb 2022 at 09:09, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+>
+> On Wed, Feb 23, 2022 at 09:03:23AM +0100, Sascha Hauer wrote:
+> > From: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> >
+> > dev_err_probe() can reduce code size, makes the code easier to read
+> > and has the added benefit of recording the defer reason for later
+> > read out. Use it where appropriate.
+> >
+> > This also fixes an issue, where an error message in __genpd_dev_pm_attach
+> > was not terminated by a line break.
+> >
+> > Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> > ---
+> >  drivers/base/power/domain.c | 21 ++++++---------------
+> >  1 file changed, 6 insertions(+), 15 deletions(-)
+>
+> And of course:
+>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 
-applied to mips-next.
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Thomas.
+Next time, please add me on the to-list, otherwise it's likely that I
+will fail to review your patch.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Kind regards
+Uffe
+
+>
+> Sascha
+>
+> >
+> > diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+> > index 5db704f02e712..29428ae91349d 100644
+> > --- a/drivers/base/power/domain.c
+> > +++ b/drivers/base/power/domain.c
+> > @@ -2248,12 +2248,8 @@ int of_genpd_add_provider_simple(struct device_node *np,
+> >       /* Parse genpd OPP table */
+> >       if (genpd->set_performance_state) {
+> >               ret = dev_pm_opp_of_add_table(&genpd->dev);
+> > -             if (ret) {
+> > -                     if (ret != -EPROBE_DEFER)
+> > -                             dev_err(&genpd->dev, "Failed to add OPP table: %d\n",
+> > -                                     ret);
+> > -                     return ret;
+> > -             }
+> > +             if (ret)
+> > +                     return dev_err_probe(&genpd->dev, ret, "Failed to add OPP table\n");
+> >
+> >               /*
+> >                * Save table for faster processing while setting performance
+> > @@ -2312,9 +2308,8 @@ int of_genpd_add_provider_onecell(struct device_node *np,
+> >               if (genpd->set_performance_state) {
+> >                       ret = dev_pm_opp_of_add_table_indexed(&genpd->dev, i);
+> >                       if (ret) {
+> > -                             if (ret != -EPROBE_DEFER)
+> > -                                     dev_err(&genpd->dev, "Failed to add OPP table for index %d: %d\n",
+> > -                                             i, ret);
+> > +                             dev_err_probe(&genpd->dev, ret,
+> > +                                           "Failed to add OPP table for index %d\n", i);
+> >                               goto error;
+> >                       }
+> >
+> > @@ -2672,12 +2667,8 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
+> >       ret = genpd_add_device(pd, dev, base_dev);
+> >       mutex_unlock(&gpd_list_lock);
+> >
+> > -     if (ret < 0) {
+> > -             if (ret != -EPROBE_DEFER)
+> > -                     dev_err(dev, "failed to add to PM domain %s: %d",
+> > -                             pd->name, ret);
+> > -             return ret;
+> > -     }
+> > +     if (ret < 0)
+> > +             return dev_err_probe(dev, ret, "failed to add to PM domain %s\n", pd->name);
+> >
+> >       dev->pm_domain->detach = genpd_dev_pm_detach;
+> >       dev->pm_domain->sync = genpd_dev_pm_sync;
+> > --
+> > 2.30.2
+> >
+> >
+> >
+>
+> --
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
