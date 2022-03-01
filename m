@@ -2,193 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiCAIyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:54:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
+        id S233034AbiCAI4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:56:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233638AbiCAIyl (ORCPT
+        with ESMTP id S229956AbiCAI4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:54:41 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32E5527D8
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 00:54:00 -0800 (PST)
+        Tue, 1 Mar 2022 03:56:36 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94000527D8
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 00:55:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646124840; x=1677660840;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Is7PELDrfcn7EzisRyWYLhNpJlmmAB/6lqn+KL4wNd4=;
-  b=GMddQADaZVvOq3+nIrAJvivL+VFysOwq7xoSiX3ihF3I5weFmbANdv21
-   cZZurdWCz2Qn0wlfX1t0FfqYRVRLKYSdLKGBnl5dr8ZKbn1RKwPi2P+Pv
-   +pVA6sQ3j6XRst4cnSUb8NJ5G7j9isJAF48002VKCmU2CSzXMgqxTTa22
-   ADdMfq1VQDTJ//N9aBk/6DoqbuTS81VdwVbt//9a4vpobvA44KzXhmXMb
-   lCiytfcPFL181ZP1zzSMLWFMJfKAONgmNIIYVByoZQLiyuHkrmlE6Jkk3
-   wlLjuRT5kOqVk2kndCOl6SFheKXXfNAkGg3FUMRS/Q2K3imrab5xieQcG
+  t=1646124956; x=1677660956;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=q9CSw9+KwZyY3pFgpvMt2nuLZL9noym1PdGJ279DFHI=;
+  b=PzBF8XmzjXIzYqei0mnallmT7KCC+3vfLf+srmkIgbB4/324q2zBvlJq
+   kgOUXZfYXnaqDQGveAQp6hh4mwSBAiHygE+SqzNkIKFTlqWewNZb4OLtE
+   UihiOHZStDxfyvwNF1FmNGBQazlf5R3bYJHe52oyOZHfffCTuwEX0hyIB
+   0cvWD9WOuAumKBvCt4ucnS5YHVpI7a4zpP9wrdejxcAncf880J6BgSpNV
+   iQp90Uns9y1FB9NCN49s7iqmJJe49A+iVEOD+WUOe3aaREkuGy2XjtI+O
+   iXI90LmYkz6vDrygOkRvIyy1zkfi5ZD2ip98zctdi8gQirx+zwNRJUXad
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253018801"
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="316305201"
 X-IronPort-AV: E=Sophos;i="5.90,145,1643702400"; 
-   d="scan'208";a="253018801"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 00:53:58 -0800
+   d="scan'208";a="316305201"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 00:55:56 -0800
 X-IronPort-AV: E=Sophos;i="5.90,145,1643702400"; 
-   d="scan'208";a="550627144"
-Received: from yhuang6-desk2.sh.intel.com ([10.239.13.11])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 00:53:52 -0800
-From:   Huang Ying <ying.huang@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+   d="scan'208";a="534814602"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.11])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 00:55:52 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         Feng Tang <feng.tang@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Oscar Salvador <osalvador@suse.de>,
         Michal Hocko <mhocko@suse.com>,
         Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
         Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
         Wei Xu <weixugc@google.com>,
+        Oscar Salvador <osalvador@suse.de>,
         Shakeel Butt <shakeelb@google.com>,
-        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-Subject: [PATCH -V14 3/3] memory tiering: skip to scan fast memory
-Date:   Tue,  1 Mar 2022 16:53:29 +0800
-Message-Id: <20220301085329.3210428-4-ying.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220301085329.3210428-1-ying.huang@intel.com>
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: Re: [PATCH -V14 0/3] NUMA balancing: optimize memory placement for
+ memory tiering system
 References: <20220301085329.3210428-1-ying.huang@intel.com>
+Date:   Tue, 01 Mar 2022 16:55:51 +0800
+In-Reply-To: <20220301085329.3210428-1-ying.huang@intel.com> (Huang Ying's
+        message of "Tue, 1 Mar 2022 16:53:26 +0800")
+Message-ID: <87zgma127c.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the NUMA balancing isn't used to optimize the page placement among
-sockets but only among memory types, the hot pages in the fast memory
-node couldn't be migrated (promoted) to anywhere.  So it's unnecessary
-to scan the pages in the fast memory node via changing their PTE/PMD
-mapping to be PROT_NONE.  So that the page faults could be avoided
-too.
+Hi, Andrew,
 
-In the test, if only the memory tiering NUMA balancing mode is enabled, the
-number of the NUMA balancing hint faults for the DRAM node is reduced to
-almost 0 with the patch.  While the benchmark score doesn't change
-visibly.
+There are no any code change in this new version.  I just revised the
+patch description based on comments.
 
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Mel Gorman <mgorman@techsingularity.net>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Wei Xu <weixugc@google.com>
-Cc: Shakeel Butt <shakeelb@google.com>
-Cc: zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org
----
- mm/huge_memory.c | 30 +++++++++++++++++++++---------
- mm/mprotect.c    | 13 ++++++++++++-
- 2 files changed, 33 insertions(+), 10 deletions(-)
-
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 406a3c28c026..9ce126cb0cfd 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -34,6 +34,7 @@
- #include <linux/oom.h>
- #include <linux/numa.h>
- #include <linux/page_owner.h>
-+#include <linux/sched/sysctl.h>
- 
- #include <asm/tlb.h>
- #include <asm/pgalloc.h>
-@@ -1766,17 +1767,28 @@ int change_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 	}
- #endif
- 
--	/*
--	 * Avoid trapping faults against the zero page. The read-only
--	 * data is likely to be read-cached on the local CPU and
--	 * local/remote hits to the zero page are not interesting.
--	 */
--	if (prot_numa && is_huge_zero_pmd(*pmd))
--		goto unlock;
-+	if (prot_numa) {
-+		struct page *page;
-+		/*
-+		 * Avoid trapping faults against the zero page. The read-only
-+		 * data is likely to be read-cached on the local CPU and
-+		 * local/remote hits to the zero page are not interesting.
-+		 */
-+		if (is_huge_zero_pmd(*pmd))
-+			goto unlock;
- 
--	if (prot_numa && pmd_protnone(*pmd))
--		goto unlock;
-+		if (pmd_protnone(*pmd))
-+			goto unlock;
- 
-+		page = pmd_page(*pmd);
-+		/*
-+		 * Skip scanning top tier node if normal numa
-+		 * balancing is disabled
-+		 */
-+		if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_NORMAL) &&
-+		    node_is_toptier(page_to_nid(page)))
-+			goto unlock;
-+	}
- 	/*
- 	 * In case prot_numa, we are under mmap_read_lock(mm). It's critical
- 	 * to not clear pmd intermittently to avoid race with MADV_DONTNEED
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index 0138dfcdb1d8..2fe03e695c81 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -29,6 +29,7 @@
- #include <linux/uaccess.h>
- #include <linux/mm_inline.h>
- #include <linux/pgtable.h>
-+#include <linux/sched/sysctl.h>
- #include <asm/cacheflush.h>
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
-@@ -83,6 +84,7 @@ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
- 			 */
- 			if (prot_numa) {
- 				struct page *page;
-+				int nid;
- 
- 				/* Avoid TLB flush if possible */
- 				if (pte_protnone(oldpte))
-@@ -109,7 +111,16 @@ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
- 				 * Don't mess with PTEs if page is already on the node
- 				 * a single-threaded process is running on.
- 				 */
--				if (target_node == page_to_nid(page))
-+				nid = page_to_nid(page);
-+				if (target_node == nid)
-+					continue;
-+
-+				/*
-+				 * Skip scanning top tier node if normal numa
-+				 * balancing is disabled
-+				 */
-+				if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_NORMAL) &&
-+				    node_is_toptier(nid))
- 					continue;
- 			}
- 
--- 
-2.30.2
-
+Best Regards,
+Huang, Ying
