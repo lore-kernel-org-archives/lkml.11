@@ -2,142 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0497C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 505B5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233129AbiCAHvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
+        id S233136AbiCAHwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:52:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiCAHvy (ORCPT
+        with ESMTP id S232923AbiCAHwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:51:54 -0500
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF7970F71;
-        Mon, 28 Feb 2022 23:51:11 -0800 (PST)
-Received: from relay11.mail.gandi.net (unknown [217.70.178.231])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id C52A4C3D50;
-        Tue,  1 Mar 2022 07:40:13 +0000 (UTC)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2B2C310000D;
-        Tue,  1 Mar 2022 07:40:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646120409;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1EOlbUxAApC61mQjvw+lG70+JM2jHWLUjBcqvnLcepA=;
-        b=EWUY1TKvGS6Yg129zF29NgHJHMwcv48rJCLCe7SF45JHcNNriVOQo+vcGiYixEAaHnyulB
-        nJQBl068EP/pSVzbkdxbgXCJZTn/Woy6xox0qwrhuWnLDJmO7Aw8fafuMklMsuzENOIIXz
-        c+TC7F7dcVRu1QNFnUnAFY2l+9/i9oBUcQ4iFhctYdJL7TClStx6/rANhA1Sbvyn0M96zz
-        DN43uNBfzPSoxhjSP8ns2qwAGgi1xkMICNqykUP4WLVTs0I1l9IOPWWY8T3PooNnoadHUN
-        InLV/E29BXUcvgd0jZP/wxq0rm/fa2yidd9Or23IERKtnX+02I184mza7r59qQ==
-Date:   Tue, 1 Mar 2022 08:40:01 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Another pass removing cases of 'allOf'
- containing a '$ref'
-Message-ID: <20220301084001.3771855e@xps13>
-In-Reply-To: <20220228213802.1639658-1-robh@kernel.org>
-References: <20220228213802.1639658-1-robh@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 1 Mar 2022 02:52:06 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939FB7E597
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:51:25 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K78Xb2Zb5zBrMb;
+        Tue,  1 Mar 2022 15:49:35 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Mar 2022 15:51:23 +0800
+Subject: Re: [PATCH -V13 2/3] NUMA balancing: optimize page placement for
+ memory tiering system
+To:     "Huang, Ying" <ying.huang@intel.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Feng Tang <feng.tang@intel.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220221084529.1052339-1-ying.huang@intel.com>
+ <20220221084529.1052339-3-ying.huang@intel.com>
+ <4652446e-2089-a3c4-fbdb-321322887392@huawei.com>
+ <874k4i2mp5.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <d777f1d7-7649-72be-8b77-420f17e35c0f@huawei.com>
+Date:   Tue, 1 Mar 2022 15:51:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <874k4i2mp5.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+On 2022/3/1 14:47, Huang, Ying wrote:
+> Miaohe Lin <linmiaohe@huawei.com> writes:
+> 
+>> On 2022/2/21 16:45, Huang Ying wrote:
+>>> With the advent of various new memory types, some machines will have
+>>> multiple types of memory, e.g. DRAM and PMEM (persistent memory).  The
+>>> memory subsystem of these machines can be called memory tiering
+>>> system, because the performance of the different types of memory are
+>>> usually different.
+>>>
+>>> In such system, because of the memory accessing pattern changing etc,
+>>> some pages in the slow memory may become hot globally.  So in this
+>>> patch, the NUMA balancing mechanism is enhanced to optimize the page
+>>> placement among the different memory types according to hot/cold
+>>> dynamically.
+>>>
+>>> In a typical memory tiering system, there are CPUs, fast memory and
+>>> slow memory in each physical NUMA node.  The CPUs and the fast memory
+>>> will be put in one logical node (called fast memory node), while the
+>>> slow memory will be put in another (faked) logical node (called slow
+>>> memory node).  That is, the fast memory is regarded as local while the
+>>> slow memory is regarded as remote.  So it's possible for the recently
+>>> accessed pages in the slow memory node to be promoted to the fast
+>>> memory node via the existing NUMA balancing mechanism.
+>>>
+>>> The original NUMA balancing mechanism will stop to migrate pages if
+>>> the free memory of the target node becomes below the high watermark.
+>>> This is a reasonable policy if there's only one memory type.  But this
+>>> makes the original NUMA balancing mechanism almost do not work to
+>>> optimize page placement among different memory types.  Details are as
+>>> follows.
+>>>
+>>> It's the common cases that the working-set size of the workload is
+>>> larger than the size of the fast memory nodes.  Otherwise, it's
+>>> unnecessary to use the slow memory at all.  So, there are almost
+>>> always no enough free pages in the fast memory nodes, so that the
+>>> globally hot pages in the slow memory node cannot be promoted to the
+>>> fast memory node.  To solve the issue, we have 2 choices as follows,
+>>>
+>>> a. Ignore the free pages watermark checking when promoting hot pages
+>>>    from the slow memory node to the fast memory node.  This will
+>>>    create some memory pressure in the fast memory node, thus trigger
+>>>    the memory reclaiming.  So that, the cold pages in the fast memory
+>>>    node will be demoted to the slow memory node.
+>>>
+>>> b. Make kswapd of the fast memory node to reclaim pages until the free
+>>>    pages are a little more than the high watermark (named as promo
+>>>    watermark).  Then, if the free pages of the fast memory node reaches
+>>>    high watermark, and some hot pages need to be promoted, kswapd of the
+>>>    fast memory node will be waken up to demote more cold pages in the
+>>>    fast memory node to the slow memory node.  This will free some extra
+>>>    space in the fast memory node, so the hot pages in the slow memory
+>>>    node can be promoted to the fast memory node.
+>>>
+>>> The choice "a" may create high memory pressure in the fast memory
+>>> node.  If the memory pressure of the workload is high, the memory
+>>> pressure may become so high that the memory allocation latency of the
+>>> workload is influenced, e.g. the direct reclaiming may be triggered.
+>>>
+>>> The choice "b" works much better at this aspect.  If the memory
+>>> pressure of the workload is high, the hot pages promotion will stop
+>>> earlier because its allocation watermark is higher than that of the
+>>
+>> Many thanks for your path. The patch looks good to me but I have a question.
+>> WMARK_PROMO is only used inside pgdat_balanced when NUMA_BALANCING_MEMORY_TIERING
+>> is set. So its allocation watermark seems to be as same as the normal memory
+>> allocation. How should I understand the above sentence? Am I miss something?
+> 
+> Before allocating pages for promotion, the watermark of the fast node
+> will be checked (please refer to migrate_balanced_pgdat()).  If the
+> watermark is going to be lower than the high watermark, promotion will
+> abort.
 
-robh@kernel.org wrote on Mon, 28 Feb 2022 15:38:02 -0600:
+I see. The hot pages promotion watermark is "nr_migrate_pages" more than that of the
+normal memory allocation not "_watermark[WMARK_PROMO] - _watermark[WMARK_HIGH]".
 
-> Another pass at removing unnecessary use of 'allOf' with a '$ref'.
->=20
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords.
->=20
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Sam Ravnborg <sam@ravnborg.org>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-> Cc: Richard Weinberger <richard@nod.at>
-> Cc: Vignesh Raghavendra <vigneshr@ti.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-input@vger.kernel.org
-> Cc: linux-leds@vger.kernel.org
-> Cc: linux-mtd@lists.infradead.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-phy@lists.infradead.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: linux-remoteproc@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-spi@vger.kernel.org
-> Cc: linux-usb@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/connector/usb-connector.yaml         |  3 +--
->  .../bindings/display/brcm,bcm2711-hdmi.yaml       |  3 +--
->  .../bindings/display/bridge/adi,adv7511.yaml      |  5 ++---
->  .../bindings/display/bridge/synopsys,dw-hdmi.yaml |  5 ++---
->  .../bindings/display/panel/display-timings.yaml   |  3 +--
->  .../devicetree/bindings/display/ste,mcde.yaml     |  4 ++--
->  .../devicetree/bindings/input/adc-joystick.yaml   |  9 ++++-----
->  .../bindings/leds/cznic,turris-omnia-leds.yaml    |  3 +--
->  .../devicetree/bindings/leds/leds-lp50xx.yaml     |  3 +--
->  .../devicetree/bindings/mfd/google,cros-ec.yaml   | 12 ++++--------
->  .../devicetree/bindings/mtd/nand-controller.yaml  |  8 +++-----
->  .../bindings/mtd/rockchip,nand-controller.yaml    |  3 +--
+Many thanks for your kindly explanation. :)
 
-For MTD bindings:
+> 
+> Best Regards,
+> Huang, Ying
+> .
+> 
 
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
-
-Thanks,
-Miqu=C3=A8l
