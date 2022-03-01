@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56911C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbiCAU1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:27:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        id S238503AbiCAU1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:27:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238578AbiCAUXj (ORCPT
+        with ESMTP id S238762AbiCAUXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:39 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F100EA2793;
-        Tue,  1 Mar 2022 12:20:41 -0800 (PST)
+        Tue, 1 Mar 2022 15:23:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF29F41335;
+        Tue,  1 Mar 2022 12:21:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9C6A6CE1E9B;
-        Tue,  1 Mar 2022 20:20:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCCDC340EF;
-        Tue,  1 Mar 2022 20:20:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BF93609ED;
+        Tue,  1 Mar 2022 20:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75004C340EF;
+        Tue,  1 Mar 2022 20:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166008;
-        bh=sbXCVpY0a7prHY8+RsKwmTuNwYTovLLEo/H7BmSeMkE=;
+        s=k20201202; t=1646166067;
+        bh=LdBoeu9mj9shzPDjHJYW6XKN8aDkUhRaD9CdjahmhBI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fiSv1R0+mcPGzCqJO0raF9v/FwVV7/Z5ulTzwxj9EdyLEP/PhC2BD1WtQtUg6mOYw
-         q2C8XaMN1SIRj58u87QfUcf1vOeZ4og6PpmnkzdeWQ6UJkffWqXktWMdFXL5lJ3d+K
-         +XAl33wP1WmBAfPScTuhCr9LSUYUSDUPCvQhRJOvBpCJyhAlR+CX9oGhPiZ0hfQFr1
-         d1H6yBSj+bC9GmtC8vOMVWF++IH2rCdv3K9ns81odfxOdW0rLAqcUgMS2CpKyRPUyF
-         KgLeLAstFz/SLOQKMDbbOwLe+WI8mT/L7toopMBgADheHGwLzzx4vJEVofLDLlREY9
-         QdkJhjg8Ixn3g==
+        b=T6KYSBOirt6sHywNyAPeaGF/29m5UiY1KamQze1BH7ChfTfgsBKo4NrmY10ch9UnJ
+         oRg6IQfti+dxmOFdrpbev/yXD92fwOwDk1jLoeAtzfkYVsZgDhkuk+vdM6Jna9RZ00
+         ZzGbyxrP91w+nhyP88+6vgEa9iPXGJPAW6upu81BRjKOAMxRcHTzP+9TVXX+ZOT7jr
+         vk48APQafbgnLlSweIyAaZ7aTglMIBERhTlHqndRzuH36ULCQEULz1SPc9/AcM9IGG
+         IS4vfMG4C7W2TSMdVYsWjG9mqs4CMqQhuz4Yx410rROrTVXKYvD5e37bay0ZCKYPK5
+         foHWYFBmh7TPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     suresh kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        atenart@kernel.org, edumazet@google.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/11] net-sysfs: add check for netdevice being present to speed_show
-Date:   Tue,  1 Mar 2022 15:19:36 -0500
-Message-Id: <20220301201951.19066-3-sashal@kernel.org>
+Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 3/7] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
+Date:   Tue,  1 Mar 2022 15:20:41 -0500
+Message-Id: <20220301202046.19220-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201951.19066-1-sashal@kernel.org>
-References: <20220301201951.19066-1-sashal@kernel.org>
+In-Reply-To: <20220301202046.19220-1-sashal@kernel.org>
+References: <20220301202046.19220-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,76 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: Shreeya Patel <shreeya.patel@collabora.com>
 
-[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
+[ Upstream commit ae42f9288846353982e2eab181fb41e7fd8bf60f ]
 
-When bringing down the netdevice or system shutdown, a panic can be
-triggered while accessing the sysfs path because the device is already
-removed.
+We are racing the registering of .to_irq when probing the
+i2c driver. This results in random failure of touchscreen
+devices.
 
-    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
-    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
-    ...
-    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
-    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
+Following explains the race condition better.
 
-    crash> bt
-    ...
-    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
-    ...
-     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
-        [exception RIP: dma_pool_alloc+0x1ab]
-        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
-        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
-        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
-        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
-        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
-        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
-        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
-    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
-    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
-    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
-    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
-    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
-    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
-    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
-    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
-    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
-    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
-    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
-    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
-    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
-    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
-    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
-    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
-    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
+[gpio driver] gpio driver registers gpio chip
+[gpio consumer] gpio is acquired
+[gpio consumer] gpiod_to_irq() fails with -ENXIO
+[gpio driver] gpio driver registers irqchip
+gpiod_to_irq works at this point, but -ENXIO is fatal
 
-    crash> net_device.state ffff89443b0c0000
-      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
+We could see the following errors in dmesg logs when gc->to_irq is NULL
 
-To prevent this scenario, we also make sure that the netdevice is present.
+[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
+[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
 
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To avoid this situation, defer probing until to_irq is registered.
+Returning -EPROBE_DEFER would be the first step towards avoiding
+the failure of devices due to the race in registration of .to_irq.
+Final solution to this issue would be to avoid using gc irq members
+until they are fully initialized.
+
+This issue has been reported many times in past and people have been
+using workarounds like changing the pinctrl_amd to built-in instead
+of loading it as a module or by adding a softdep for pinctrl_amd into
+the config file.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/net-sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpiolib.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index bcad7028bbf45..ad45f13a0370b 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -212,7 +212,7 @@ static ssize_t speed_show(struct device *dev,
- 	if (!rtnl_trylock())
- 		return restart_syscall();
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 12472b84a71ca..b66e3f2ca1b1e 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -3327,6 +3327,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
  
--	if (netif_running(netdev)) {
-+	if (netif_running(netdev) && netif_device_present(netdev)) {
- 		struct ethtool_link_ksettings cmd;
- 
- 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
+ 		return retirq;
+ 	}
++#ifdef CONFIG_GPIOLIB_IRQCHIP
++	if (gc->irq.chip) {
++		/*
++		 * Avoid race condition with other code, which tries to lookup
++		 * an IRQ before the irqchip has been properly registered,
++		 * i.e. while gpiochip is still being brought up.
++		 */
++		return -EPROBE_DEFER;
++	}
++#endif
+ 	return -ENXIO;
+ }
+ EXPORT_SYMBOL_GPL(gpiod_to_irq);
 -- 
 2.34.1
 
