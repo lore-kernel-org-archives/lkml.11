@@ -2,125 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC36C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238017AbiCAUUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:20:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S236632AbiCAUUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:20:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237813AbiCAUSl (ORCPT
+        with ESMTP id S237953AbiCAUSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:18:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94C193CA65
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:17:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646165878;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M1914MzJ/T9hp/vAg8C07YWWHfVVw2QqOeY8vtrYeMI=;
-        b=XiVA5QPiwCyirf22OnPCiH+uV4dOQDM78BvEL32zyWPwLCApNDFvsPfAyOrOpNjgGJje5h
-        +qAjJVynZT1F7bslV2iq8bnyR/DKW1TYHyoh0r7NOYaqvrsV+ShAlzPg9ZteGVNtlyMe/0
-        oeWHupOARr7n/gel8WvldJ2F/HOUZmY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-529-RGsMWovINTOHGRN9n_4QKg-1; Tue, 01 Mar 2022 15:17:57 -0500
-X-MC-Unique: RGsMWovINTOHGRN9n_4QKg-1
-Received: by mail-wr1-f69.google.com with SMTP id t8-20020adfa2c8000000b001e8f6889404so3758498wra.0
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:17:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M1914MzJ/T9hp/vAg8C07YWWHfVVw2QqOeY8vtrYeMI=;
-        b=3HXRgFybqUREIapKPBDAHenZMytDCivtSh8Va5stw4iP/sqLjL5XC/PjDMTYZqgz5A
-         JXqqgDgY+zd219PFZI0qIZVvrg/7gxw/VCKAkBGCtHQtpQnHi9c2gF2MmqoQ5QRhuwD2
-         6BPNcOC7ylH3+f8NXXWJGe+X92ALqUO8Z+MN93Ca7WrYeKR2m9BsoFdbjzwuz5TZBjCm
-         3tQ/1gGbwtpxnpG9XKug6YlbPFF77lkKx8jrrUbFjGk03n+EnIrxXaCJrWXAreQ6Pn8/
-         io1xOtrEN7g2mW2jSv2ryI5hKKQ/8jbJm+B8gjrFqj/7FTHVs+DfrsV/RvsFXR8zV1x7
-         Dyew==
-X-Gm-Message-State: AOAM533tYdAXRqUlQw0AcwINguJ7bNLg8nk14DU5/6DrFXh5WYsxFQfZ
-        OsOK2936bLTIq8BwWzZeqOiH8iK2j6YlhPbWy8cx6WJkcW3U8GvvbrB/RZvpBl2HSx/8oamudmQ
-        9YWsvIw84NX6xrzp1ayWCZOjH
-X-Received: by 2002:a5d:64c8:0:b0:1ef:8e7b:b9 with SMTP id f8-20020a5d64c8000000b001ef8e7b00b9mr12007714wri.182.1646165876353;
-        Tue, 01 Mar 2022 12:17:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLCbSzpwlVz70VTYSeQFCuiRW62d5XvnKnwwgwNQZKeyjs7PvmxN7o8nVlDzHjHMbAB+FOcQ==
-X-Received: by 2002:a5d:64c8:0:b0:1ef:8e7b:b9 with SMTP id f8-20020a5d64c8000000b001ef8e7b00b9mr12007705wri.182.1646165876141;
-        Tue, 01 Mar 2022 12:17:56 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id h9-20020adff189000000b001ea913352c9sm14590055wro.100.2022.03.01.12.17.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 12:17:55 -0800 (PST)
-Message-ID: <ab4f9fab-1137-72f8-5020-f4041d2b4c06@redhat.com>
-Date:   Tue, 1 Mar 2022 21:17:53 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH AUTOSEL 5.15 06/23] kvm: x86: Disable KVM_HC_CLOCK_PAIRING
- if tsc is in always catchup mode
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Anton Romanov <romanton@google.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
+        Tue, 1 Mar 2022 15:18:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A36F3DDD6;
+        Tue,  1 Mar 2022 12:18:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCF5361764;
+        Tue,  1 Mar 2022 20:18:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2002FC340EE;
+        Tue,  1 Mar 2022 20:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646165882;
+        bh=pw0Qj8vjosGWO4vo4tauge3HBJo809oseTBs39UMTuE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KHAGf/B8QH90/Ba7i60IjQtmaoPSJVbHFBwhp2w6ftD1c1EkxmOoUXSG+bEaI5VbX
+         9nfaSFQe/npJ1IBPaZXzzedJ4azBajOXIXyO0SY0rxqvPv0Y6nC0fBkRb1/wlszNNT
+         HE7NbmdetzuGRDqlQH5ckDe1KuD+/hOUTuIr7RbcyIJJPddnebzABJLI5PsRdayNFH
+         O+q8Hwg1u/EALhXpegotjJMzmzVjgVqh9UfQ0ouBNmArfx1VHMCDn24j4YGRLT+s5j
+         h0ezFxAV96V+6LvtnQB0L/2OVJMMGQDo/CcfVkyU456jvMFJ6QQD2nNhTUFhx5L8pK
+         Y3b9fiLoD6c6g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        Michael Brown <mbrown@fensystems.co.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
+        davem@davemloft.net, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 18/23] Revert "xen-netback: Check for hotplug-status existence before watching"
+Date:   Tue,  1 Mar 2022 15:16:17 -0500
+Message-Id: <20220301201629.18547-18-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
- <20220301201629.18547-6-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220301201629.18547-6-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 21:16, Sasha Levin wrote:
-> From: Anton Romanov <romanton@google.com>
-> 
-> [ Upstream commit 3a55f729240a686aa8af00af436306c0cd532522 ]
-> 
-> If vcpu has tsc_always_catchup set each request updates pvclock data.
-> KVM_HC_CLOCK_PAIRING consumers such as ptp_kvm_x86 rely on tsc read on
-> host's side and do hypercall inside pvclock_read_retry loop leading to
-> infinite loop in such situation.
-> 
-> v3:
->      Removed warn
->      Changed return code to KVM_EFAULT
-> v2:
->      Added warn
-> 
-> Signed-off-by: Anton Romanov <romanton@google.com>
-> Message-Id: <20220216182653.506850-1-romanton@google.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   arch/x86/kvm/x86.c | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 33cb065181248..c804122bb6e3a 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -8657,6 +8657,13 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
->   	if (clock_type != KVM_CLOCK_PAIRING_WALLCLOCK)
->   		return -KVM_EOPNOTSUPP;
->   
-> +	/*
-> +	 * When tsc is in permanent catchup mode guests won't be able to use
-> +	 * pvclock_read_retry loop to get consistent view of pvclock
-> +	 */
-> +	if (vcpu->arch.tsc_always_catchup)
-> +		return -KVM_EOPNOTSUPP;
-> +
->   	if (!kvm_get_walltime_and_clockread(&ts, &cycle))
->   		return -KVM_EOPNOTSUPP;
->   
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+[ Upstream commit e8240addd0a3919e0fd7436416afe9aa6429c484 ]
+
+This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
+
+The reasoning in the commit was wrong - the code expected to setup the
+watch even if 'hotplug-status' didn't exist. In fact, it relied on the
+watch being fired the first time - to check if maybe 'hotplug-status' is
+already set to 'connected'. Not registering a watch for non-existing
+path (which is the case if hotplug script hasn't been executed yet),
+made the backend not waiting for the hotplug script to execute. This in
+turns, made the netfront think the interface is fully operational, while
+in fact it was not (the vif interface on xen-netback side might not be
+configured yet).
+
+This was a workaround for 'hotplug-status' erroneously being removed.
+But since that is reverted now, the workaround is not necessary either.
+
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Reviewed-by: Michael Brown <mbrown@fensystems.co.uk>
+Link: https://lore.kernel.org/r/20220222001817.2264967-2-marmarek@invisiblethingslab.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/xen-netback/xenbus.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index 3fad58d22155b..990360d75cb64 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -824,15 +824,11 @@ static void connect(struct backend_info *be)
+ 	xenvif_carrier_on(be->vif);
+ 
+ 	unregister_hotplug_status_watch(be);
+-	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
+-		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
+-					   NULL, hotplug_status_changed,
+-					   "%s/%s", dev->nodename,
+-					   "hotplug-status");
+-		if (err)
+-			goto err;
++	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
++				   hotplug_status_changed,
++				   "%s/%s", dev->nodename, "hotplug-status");
++	if (!err)
+ 		be->have_hotplug_status_watch = 1;
+-	}
+ 
+ 	netif_tx_wake_all_queues(be->vif->dev);
+ 
+-- 
+2.34.1
 
