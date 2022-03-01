@@ -2,248 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB64C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 399C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235637AbiCAPTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:19:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37204 "EHLO
+        id S235636AbiCAPUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:20:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235626AbiCAPTe (ORCPT
+        with ESMTP id S235610AbiCAPUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:19:34 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B682E0BF;
-        Tue,  1 Mar 2022 07:18:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646147932; x=1677683932;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=b9ZaCMYU7AMRZzESuVXMPojdYou2JKYQcNtOccNCo/s=;
-  b=KUHcPUkFe85CRdMeLp86jqNL0NApEWM7Nsd1UBn1I59okJtICP+McHDc
-   JtM5uso8MSqvDuF4vdqWNbzwtkjhXWIR/Z6TkxBM2P2/k60AchEx+BiAl
-   k4xZdj7JMhTDDDDdDpOmeTXzjVhjXWgxyvcyGn79VUDhaansHCMi38j5z
-   E=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 01 Mar 2022 07:18:52 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 07:18:52 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 1 Mar 2022 07:18:51 -0800
-Received: from deesin-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 1 Mar 2022 07:18:49 -0800
-From:   Deepak Kumar Singh <quic_deesin@quicinc.com>
-To:     <bjorn.andersson@linaro.org>, <quic_clew@quicinc.com>,
-        <mathieu.poirier@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>,
-        Deepak Kumar Singh <quic_deesin@quicinc.com>,
-        Andy Gross <agross@kernel.org>
-Subject: [PATCH V5 2/2] soc: qcom: smem: validate fields of shared structures
-Date:   Tue, 1 Mar 2022 20:48:33 +0530
-Message-ID: <1646147913-15791-2-git-send-email-quic_deesin@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646147913-15791-1-git-send-email-quic_deesin@quicinc.com>
-References: <1646147913-15791-1-git-send-email-quic_deesin@quicinc.com>
+        Tue, 1 Mar 2022 10:20:02 -0500
+Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4E5119C2C;
+        Tue,  1 Mar 2022 07:19:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KI0KE
+        HorC5jY80LfL4ZopJ7TIk5kxEutZ4yF14mxFls=; b=HvxCPnP7M1ZyqtHKWiV1Z
+        1rv07jtezRywjd3izoymUPqj7QqIg+sKD6YJrKrm5wTWZT+1Zq+AL+2bjWIDHW/6
+        m97LmajxZ5qUc7U3JMrBq7RK7roeQQGP/mAWBRE9Ru5o/3EJh20uaE0ooAYVYu4q
+        QLofvWzXpM9lKiz312nI90=
+Received: from localhost (unknown [113.87.88.41])
+        by smtp10 (Coremail) with SMTP id DsCowAAXkDlDOR5iGr3YAg--.1317S2;
+        Tue, 01 Mar 2022 23:18:28 +0800 (CST)
+From:   wudaemon <wudaemon@163.com>
+To:     davem@davemloft.net, kuba@kernel.org, m.grzeschik@pengutronix.de,
+        chenhao288@hisilicon.com, arnd@arndb.de
+Cc:     wudaemon@163.com, shenyang39@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] net: ksz884x: use time_before in netdev_open for compatibility and remove static variable
+Date:   Tue,  1 Mar 2022 15:18:08 +0000
+Message-Id: <20220301151808.2855-1-wudaemon@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsCowAAXkDlDOR5iGr3YAg--.1317S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tF45Gr48CF4fZF1DuF15Arb_yoW8WrWDpa
+        yUAay0yr48W3WjgayDA34kZF15G3y8Ka4xKFyxt34S9w17KryYyFs5KrWYyw45GrZ3XF1S
+        v3yvyF9rCas3Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pMmhF-UUUUU=
+X-Originating-IP: [113.87.88.41]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisAS2bVUMRrqbIAAAsx
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Structures in shared memory that can be modified by remote
-processors may have untrusted values, they should be validated
-before use.
+use time_before instead of direct compare for compatibility and remove the static next_jiffies variable
 
-Adding proper validation before using fields of shared
-structures.
-
-Signed-off-by: Deepak Kumar Singh <quic_deesin@quicinc.com>
+Signed-off-by: wudaemon <wudaemon@163.com>
 ---
- drivers/soc/qcom/smem.c | 79 ++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 69 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/micrel/ksz884x.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
-index 2dde9b6..7733989 100644
---- a/drivers/soc/qcom/smem.c
-+++ b/drivers/soc/qcom/smem.c
-@@ -367,13 +367,18 @@ static int qcom_smem_alloc_private(struct qcom_smem *smem,
- 	struct smem_partition_header *phdr;
- 	size_t alloc_size;
- 	void *cached;
-+	void *p_end;
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index d024983815da..ce4f5c99c1ac 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -5225,7 +5225,6 @@ static irqreturn_t netdev_intr(int irq, void *dev_id)
+  * Linux network device functions
+  */
  
- 	phdr = (struct smem_partition_header __force *)part->virt_base;
-+	p_end = (void *)phdr + part->size;
+-static unsigned long next_jiffies;
  
- 	hdr = phdr_to_first_uncached_entry(phdr);
- 	end = phdr_to_last_uncached_entry(phdr);
- 	cached = phdr_to_last_cached_entry(phdr);
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ static void netdev_netpoll(struct net_device *dev)
+@@ -5411,10 +5410,12 @@ static int netdev_open(struct net_device *dev)
+ 	struct dev_info *hw_priv = priv->adapter;
+ 	struct ksz_hw *hw = &hw_priv->hw;
+ 	struct ksz_port *port = &priv->port;
++	unsigned long next_jiffies;
+ 	int i;
+ 	int p;
+ 	int rc = 0;
  
-+	if (WARN_ON((void *)end > p_end || cached > p_end))
-+		return -EINVAL;
-+
- 	while (hdr < end) {
- 		if (hdr->canary != SMEM_PRIVATE_CANARY)
- 			goto bad_canary;
-@@ -383,6 +388,9 @@ static int qcom_smem_alloc_private(struct qcom_smem *smem,
- 		hdr = uncached_entry_next(hdr);
- 	}
++	next_jiffies = jiffies;
+ 	priv->multicast = 0;
+ 	priv->promiscuous = 0;
  
-+	if (WARN_ON((void *)hdr > p_end))
-+		return -EINVAL;
-+
- 	/* Check that we don't grow into the cached region */
- 	alloc_size = sizeof(*hdr) + ALIGN(size, 8);
- 	if ((void *)hdr + alloc_size > cached) {
-@@ -501,6 +509,8 @@ static void *qcom_smem_get_global(struct qcom_smem *smem,
- 	struct smem_header *header;
- 	struct smem_region *region;
- 	struct smem_global_entry *entry;
-+	u64 entry_offset;
-+	u32 e_size;
- 	u32 aux_base;
- 	unsigned i;
+@@ -5428,7 +5429,7 @@ static int netdev_open(struct net_device *dev)
+ 		if (rc)
+ 			return rc;
+ 		for (i = 0; i < hw->mib_port_cnt; i++) {
+-			if (next_jiffies < jiffies)
++			if (time_before(next_jiffies, jiffies))
+ 				next_jiffies = jiffies + HZ * 2;
+ 			else
+ 				next_jiffies += HZ * 1;
+@@ -6563,6 +6564,7 @@ static void mib_read_work(struct work_struct *work)
+ 	struct dev_info *hw_priv =
+ 		container_of(work, struct dev_info, mib_read);
+ 	struct ksz_hw *hw = &hw_priv->hw;
++	unsigned long next_jiffies;
+ 	struct ksz_port_mib *mib;
+ 	int i;
  
-@@ -515,9 +525,16 @@ static void *qcom_smem_get_global(struct qcom_smem *smem,
- 		region = &smem->regions[i];
- 
- 		if ((u32)region->aux_base == aux_base || !aux_base) {
-+			e_size = le32_to_cpu(entry->size);
-+			entry_offset = le32_to_cpu(entry->offset);
-+
-+			if (WARN_ON(e_size + entry_offset > region->size))
-+				return ERR_PTR(-EINVAL);
-+
- 			if (size != NULL)
--				*size = le32_to_cpu(entry->size);
--			return region->virt_base + le32_to_cpu(entry->offset);
-+				*size = e_size;
-+
-+			return region->virt_base + entry_offset;
- 		}
- 	}
- 
-@@ -531,8 +548,12 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
- {
- 	struct smem_private_entry *e, *end;
- 	struct smem_partition_header *phdr;
-+	void *item_ptr, *p_end;
-+	u32 padding_data;
-+	u32 e_size;
- 
- 	phdr = (struct smem_partition_header __force *)part->virt_base;
-+	p_end = (void *)phdr + part->size;
- 
- 	e = phdr_to_first_uncached_entry(phdr);
- 	end = phdr_to_last_uncached_entry(phdr);
-@@ -542,36 +563,65 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
- 			goto invalid_canary;
- 
- 		if (le16_to_cpu(e->item) == item) {
--			if (size != NULL)
--				*size = le32_to_cpu(e->size) -
--					le16_to_cpu(e->padding_data);
-+			if (size != NULL) {
-+				e_size = le32_to_cpu(e->size);
-+				padding_data = le16_to_cpu(e->padding_data);
-+
-+				if (WARN_ON(e_size > part->size || padding_data > e_size))
-+					return ERR_PTR(-EINVAL);
-+
-+				*size = e_size - padding_data;
-+			}
-+
-+			item_ptr = uncached_entry_to_item(e);
-+			if (WARN_ON(item_ptr > p_end))
-+				return ERR_PTR(-EINVAL);
- 
--			return uncached_entry_to_item(e);
-+			return item_ptr;
- 		}
- 
- 		e = uncached_entry_next(e);
- 	}
- 
-+	if (WARN_ON((void *)e > p_end))
-+		return ERR_PTR(-EINVAL);
-+
- 	/* Item was not found in the uncached list, search the cached list */
- 
- 	e = phdr_to_first_cached_entry(phdr, part->cacheline);
- 	end = phdr_to_last_cached_entry(phdr);
- 
-+	if (WARN_ON((void *)e < (void *)phdr || (void *)end > p_end))
-+		return ERR_PTR(-EINVAL);
-+
- 	while (e > end) {
- 		if (e->canary != SMEM_PRIVATE_CANARY)
- 			goto invalid_canary;
- 
- 		if (le16_to_cpu(e->item) == item) {
--			if (size != NULL)
--				*size = le32_to_cpu(e->size) -
--					le16_to_cpu(e->padding_data);
-+			if (size != NULL) {
-+				e_size = le32_to_cpu(e->size);
-+				padding_data = le16_to_cpu(e->padding_data);
-+
-+				if (WARN_ON(e_size > part->size || padding_data > e_size))
-+					return ERR_PTR(-EINVAL);
-+
-+				*size = e_size - padding_data;
-+			}
- 
--			return cached_entry_to_item(e);
-+			item_ptr = cached_entry_to_item(e);
-+			if (WARN_ON(item_ptr < (void *)phdr))
-+				return ERR_PTR(-EINVAL);
-+
-+			return item_ptr;
- 		}
- 
- 		e = cached_entry_next(e, part->cacheline);
- 	}
- 
-+	if (WARN_ON((void *)e < (void *)phdr))
-+		return ERR_PTR(-EINVAL);
-+
- 	return ERR_PTR(-ENOENT);
- 
- invalid_canary:
-@@ -648,14 +698,23 @@ int qcom_smem_get_free_space(unsigned host)
- 		phdr = part->virt_base;
- 		ret = le32_to_cpu(phdr->offset_free_cached) -
- 		      le32_to_cpu(phdr->offset_free_uncached);
-+
-+		if (ret > le32_to_cpu(part->size))
-+			return -EINVAL;
- 	} else if (__smem->global_partition.virt_base) {
- 		part = &__smem->global_partition;
- 		phdr = part->virt_base;
- 		ret = le32_to_cpu(phdr->offset_free_cached) -
- 		      le32_to_cpu(phdr->offset_free_uncached);
-+
-+		if (ret > le32_to_cpu(part->size))
-+			return -EINVAL;
- 	} else {
- 		header = __smem->regions[0].virt_base;
- 		ret = le32_to_cpu(header->available);
-+
-+		if (ret > __smem->regions[0].size)
-+			return -EINVAL;
- 	}
- 
- 	return ret;
 -- 
-2.7.4
+2.25.1
 
