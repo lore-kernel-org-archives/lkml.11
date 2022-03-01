@@ -2,72 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 607D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235916AbiCAPtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:49:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
+        id S235913AbiCAPu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:50:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235908AbiCAPtK (ORCPT
+        with ESMTP id S233824AbiCAPu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:49:10 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0904C3EA92
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:48:29 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id v2-20020a7bcb42000000b0037b9d960079so1524615wmj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 07:48:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Q5q+I3mRSPToISMhreZ/pZhh32DUa17y+Sq8nIfcv54=;
-        b=fiO0sPTAx7mXH7nL3kpxA5yMywFvku03CQdOpmNm8atk6l/Uo5iBG5UhlFRWTwoe+P
-         7mG3abfuf3qcSrDsS9NpfpOG3Ht0ZTTtHbHtKMo+mulkZnAAssOu675prvAZCH89mOiL
-         /XzxSEifSYeh+RpGRU1Pcn7/C4jU/nU2cYMptDEYHWLo2jIaKbu+cLxC/tVMSCNeCxbk
-         bs1rcCwnJoS4LXsfcwaRUChelbpRW7b0jk1EE2tstxGQmgWIVQjrN8UmGc24+wjaSXMJ
-         zR7awKnkBQlstDArR6XVXVLbeyvhy7s5/F8cGRJ/+PrV8qXfTS9TCE34s27Vb/mVdJZV
-         xSIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Q5q+I3mRSPToISMhreZ/pZhh32DUa17y+Sq8nIfcv54=;
-        b=D1OZKNk1LxqKWl45xP+kTlT9ihqdRLKvnGeYsJYCIdMYxggeA/zqPa0UIjytbgLtqV
-         Q5CJDfIpchpoYXLFsY//kiEedNJi7BCYcSN+qxBTOYWMr8M6hOyE0FMPXb1kQD1BDQIZ
-         5TFfrU/ECMJWJ1CvNSucfSjFolN5l8w2GTT3Uit1WVIHfcUtn4xSi8BDmETr6uVd7i7r
-         ripZt4A/pghcPZn8pJ6lq491Nd1WuPZ8dVIqZlh0bDfOGy46CM8ioFo1X++/SciaLU9S
-         DZ3YWw9pJw6yoa9xUmZSVkjd3nW7aqwzlqEM/JZehuQ3FXNulJXLqWDjnNxjXjrSNgbm
-         bl6g==
-X-Gm-Message-State: AOAM530JmnD3AoqSY9xjnxYPSGP7Jtw/HGbsSDghLEMK5AxQuYVo5Fop
-        9F/uWGr8wG3Cw4YNW3dt3nU=
-X-Google-Smtp-Source: ABdhPJwrd6S4GE89Dxm3+Tyi9IZxfFX0Ja2PhFVNG4k5xsd9tvqnez1pTu1/laiuOf2T7nyxdSsmOA==
-X-Received: by 2002:a7b:c14c:0:b0:381:32fb:a128 with SMTP id z12-20020a7bc14c000000b0038132fba128mr17184573wmi.116.1646149707545;
-        Tue, 01 Mar 2022 07:48:27 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm13440259wrw.49.2022.03.01.07.48.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 07:48:27 -0800 (PST)
-Date:   Tue, 1 Mar 2022 16:48:25 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: boot flooded with unwind: Index not found
-Message-ID: <Yh5ASXVoWoMj7/Rr@Red>
+        Tue, 1 Mar 2022 10:50:27 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B348465F5
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:49:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZdRx/1DXGgxAEKibLBKrBbS6gSz9WiPqg2uGs+P6fS4=; b=YkDlN4KfV4wMBwk/FyRAKFlvN0
+        yzKguLu7NTFntQ7M1Ssi9FS29Q9pTZnTJ7sshhQK3np0DKgzkWXp+OOe+ihAXwpNmxzHOfbenKqda
+        2pLI007bDEZ8ZlL6ltE+djUDDIPHU7Wb8Ey483ZItdbjTVg9rkpWCp0ruxu4MzloKbpIHtJabYWVe
+        j/bbIzM9B2Ty+w0Wuh7pLcPjKZHiOFA34MSTG5++o5QTin60ocXoezTocNU5defNVRJzl+XmK/eyJ
+        yjlUt9U7aq5OWDlFLSGe6V8mRtpp86ZMDeRRNnBVhCgFXVQbaWTBqwQ5CmI/Qu1ZpUQW+UbYbFm9p
+        CulDj8fw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57582)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nP4kw-0001TV-6q; Tue, 01 Mar 2022 15:49:42 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nP4kv-0007IW-KK; Tue, 01 Mar 2022 15:49:41 +0000
+Date:   Tue, 1 Mar 2022 15:49:41 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: boot flooded with unwind: Index not found
+Message-ID: <Yh5AlfprVAZvJDJA@shell.armlinux.org.uk>
+References: <Yh5ASXVoWoMj7/Rr@Red>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Yh5ASXVoWoMj7/Rr@Red>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello
+On Tue, Mar 01, 2022 at 04:48:25PM +0100, Corentin Labbe wrote:
+> Hello
+> 
+> I booted today linux-next (20220301) and my boot is flooded with:
+> [    0.000000] unwind: Index not found c0f0c440
+> [    0.000000] unwind: Index not found 00000000
+> [    0.000000] unwind: Index not found c0f0c440
+> [    0.000000] unwind: Index not found 00000000
+> 
+> This happen on a sun8i-a83t-bananapi-m3
 
-I booted today linux-next (20220301) and my boot is flooded with:
-[    0.000000] unwind: Index not found c0f0c440
-[    0.000000] unwind: Index not found 00000000
-[    0.000000] unwind: Index not found c0f0c440
-[    0.000000] unwind: Index not found 00000000
+Have you enabled vmapped stacks?
 
-This happen on a sun8i-a83t-bananapi-m3
-
-Regards
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
