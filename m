@@ -2,146 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C693CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5045BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234840AbiCAMrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:47:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
+        id S234821AbiCAMue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:50:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232206AbiCAMrW (ORCPT
+        with ESMTP id S231386AbiCAMud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:47:22 -0500
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DBC898F75;
-        Tue,  1 Mar 2022 04:46:41 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2d07ae0b1c4so143018507b3.11;
-        Tue, 01 Mar 2022 04:46:41 -0800 (PST)
+        Tue, 1 Mar 2022 07:50:33 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722F39318A;
+        Tue,  1 Mar 2022 04:49:52 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id p8so14110301pfh.8;
+        Tue, 01 Mar 2022 04:49:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fNYxb0caqFJflVe0lFiSRpMQbq4T7re3mr98tPyMuVo=;
-        b=DORDBK+OJopp5XZDr6HfOMo/j0vGvwW4iR9plo/nRoxkVlxirWPLuod9CUyzZQEfYF
-         QMp1jPOB0BiN9GnnNUvbfjIzr2UGb7gAt/OVaq3eeIIUPFMlqGmNXcHtmoPpz6YjqBhU
-         v1HKfQiLle1O4AS5KSpGMAP4rD5pFcdVW7aP0+1LB80mPoedNOXL78WsxvkXUFTsAgFG
-         kk5TqxfCnOq3wo9oxr3ZnNho3lyZtt/lIBRtgKCt7KkhoEZPxhQVYwrn9RYAyFsTOxfx
-         RMwJ27OFEewB1EF02ls7lRGfvPvOoG48KpJjL8dBgd/6gaBpqb2rzPGDiDrQw1YTwH2E
-         YGhw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hIkTawNE48vxd1UfJnuejiaVGdnJ+bvfpuNmqFHDU1Y=;
+        b=YdGPuKWb4tm6kp1cE1tVsBGFHpk129c368SFydDXdLuDzPkikjr3QoyAAIi16xGx/d
+         zHiXvTjfuFvGxiuE8ZU2+YMPsHLf1sAKfa1cRZ6SG4N9lrf0qwA07qTZB+gmsUjNk4mQ
+         d3qfU5b98eQbcUBo6CKfdCcCc+NLRu92IIRRZSJbWV5aBKeKqWc0mlmj8VfeIh31nvyL
+         odhM/6Ihd5pUw3p/6Yj0AMbhOZ2eSc4PC6wk22PRgG18A+AyA3yXE528fXOzN/rAxT6Y
+         lzLhhU/KudinidH3seOLqwxG75BwKXGQ/jQIWl8SXBRjhCROVl7D+4ezAoQxS2ywK1+7
+         5zfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fNYxb0caqFJflVe0lFiSRpMQbq4T7re3mr98tPyMuVo=;
-        b=u8IqJm/TuJU7QEcR/HN/Eq3k5Ci46kYyVHkb09iLWTJmCRf7srNYqn2Rxds8P5mmM0
-         rma5uuGoylu3v0H4Nd5SR8fmPOY+OEXaMzYjjCCzhCD2XTEjyMm61DvaxG2coDRxFpkS
-         OxcUrDdUYdt9aHrrGYcrvbON7dzsmBbtPbvgy6dhYeEQuee8okfdxKOoIX9U6btAqFKi
-         ttGO/rFswn1QzIbPkwk8L3sl3L852tudxKpLlSxy2RAQZXE/nrWun3/wSAoCBl034IpG
-         UDOCvVONRupLpuJFDWrXyZrrYcpD9g1p0q8NURwoAspfKcG1Y8f3igBgvBoOveHOpRRQ
-         34Gg==
-X-Gm-Message-State: AOAM531f+8BQAiXDgFuglR4SnDtLdcP1NjqW5GiE0OCJPT0yh7FGWUE3
-        il9sBkqnE0jghyxoVTxWryp2K6gogVsQZubnIKk=
-X-Google-Smtp-Source: ABdhPJxf5FpLziaFlmJ5Pr6hxG+fTN8jkthHfFVs81qUqpxpu+9OJnZ6uScFADTXcxf0WK0pd0r+PCOvNd9GvTdLEaI=
-X-Received: by 2002:a81:3807:0:b0:2d8:2ed:1d19 with SMTP id
- f7-20020a813807000000b002d802ed1d19mr24305957ywa.519.1646138800565; Tue, 01
- Mar 2022 04:46:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hIkTawNE48vxd1UfJnuejiaVGdnJ+bvfpuNmqFHDU1Y=;
+        b=HlDmv+yoNyywLcrank46MKQSso+MlvxtufjSCbsuTF1li5VNSWWw2QOdmay+TqdwZM
+         /9LSCS6IK2/vGR28pqhou3TpEjTdzpDeMg+N6nGqh2/7hzN+x3E1R4xRWcGhZ00rT1k5
+         +qD3QH2jf+yd9QZt3zTdvv3tkCgwBSCcj3jz+SG6fk51hP8OkB7n4Awc8oom1x/Knctx
+         UdOgoUh1vyZD90kACVueJBkn9tMnz1bP4eXXwVyoNe6exCU7nyzuSp7PHwYLzUb5FJNW
+         t6HcZb5p2x/zn4vCCUb3cyDbNS4gq7OBR5vDDVFpKqmuOjva63bpvjMC5ZkIFOXYHcRh
+         +vTQ==
+X-Gm-Message-State: AOAM5328qu4Ukc0ue/hFCBcUYJS5JZD9Iw7jJkv0iBvi2/qy1U8UZTZz
+        42zCFb3dS4giT/FmQi6wVaw=
+X-Google-Smtp-Source: ABdhPJy3kd18BXQ2G6PTaZCp2dThZJbNI67UD5cd1pm/J1dXl84UzYbQA3DskahUEuuo8u1qqjn0mw==
+X-Received: by 2002:a63:cf01:0:b0:374:2979:8407 with SMTP id j1-20020a63cf01000000b0037429798407mr21080578pgg.521.1646138992038;
+        Tue, 01 Mar 2022 04:49:52 -0800 (PST)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id u19-20020a056a00099300b004e16e381696sm17532252pfg.195.2022.03.01.04.49.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 04:49:51 -0800 (PST)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] KVM: x86/mmu: Passing up the error state of mmu_alloc_shadow_roots()
+Date:   Tue,  1 Mar 2022 20:49:41 +0800
+Message-Id: <20220301124941.48412-1-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220228223642.1136229-1-pgwipeout@gmail.com> <c12e74b7-0bef-ac7a-20c1-2a17ddd050dd@arm.com>
- <CAMdYzYq0A4FitRGe49fxvjbwLUCi_KGwCtfz7pmayt_dK=r32w@mail.gmail.com> <54b24f3d-3762-abbd-5ac4-dc5728f2fe4e@arm.com>
-In-Reply-To: <54b24f3d-3762-abbd-5ac4-dc5728f2fe4e@arm.com>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Tue, 1 Mar 2022 07:46:29 -0500
-Message-ID: <CAMdYzYp=Po08pap9w5s8PV0mKfFZSPSOhM1U1AUdrRkYV-FRZQ@mail.gmail.com>
-Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: avoid logspam when cd-broken
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Jaehoon Chung <jh80.chung@samsung.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, linux-mmc@vger.kernel.org,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 7:38 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-03-01 11:49, Peter Geis wrote:
-> > On Tue, Mar 1, 2022 at 6:23 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> >>
-> >> On 2022-02-28 22:36, Peter Geis wrote:
-> >>> The dw_mmc-rockchip driver drops a large amound of logspam constantly
-> >>> when the cd-broken flag is enabled.
-> >>> Set the warning to be debug ratelimited in this case.
-> >>
-> >> Isn't this just papering over some fundamental problem with the clock?
-> >> If it's failing to set the expected rate for communicating with a card,
-> >> then presumably that's an issue for correct operation in general? The
-> >> fact that polling for a card makes a lot more of that communication
-> >> happen seems unrelated :/
-> >
-> > Good Morning,
-> >
-> > This only happens when a card is not inserted, so communication cannot happen.
->
-> Well, I suppose there's a philosophical question in there about whether
-> shouting into the void counts as "communication", but AFAIR what the
-> polling function does is power up the controller, send a command, and
-> see if it gets a response.
->
-> If the clock can't be set to the proper rate for low-speed discovery,
-> some or all cards may not be detected properly. Conversely if it is
-> already at a slow enough rate for discovery but can't be set higher once
-> a proper communication mode has been established, data transfer
-> performance will be terrible. Either way, it is not OK in general for
-> clk_set_rate() to fail, hence the warning. You have a clock driver problem.
+From: Like Xu <likexu@tencent.com>
 
-Alright, I'll look into this.
-It seems only extremely low clock speeds fail and I know rockchip
-chips have a hard time with extremely low clock rates.
-I'll trace out where the failure is happening.
+Just like on the optional mmu_alloc_direct_roots() path, once shadow
+path reaches "r = -EIO" somewhere, the caller needs to know the actual
+state in order to enter error handling and avoid something worse.
 
-Thanks!
+Fixes: 4a38162ee9f1 ("KVM: MMU: load PDPTRs outside mmu_lock")
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ arch/x86/kvm/mmu/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> Cheers,
-> Robin.
->
-> > I found it while lighting off the SoQuartz module.
-> > As it is pin compatible with the RPi CM4, and the CM4 does not have a
-> > card detect line, sdmmc is non functional without cd-broken.
-> > This led to the fun spew when there wasn't a card inserted as this
-> > function is called every poll tick.
-> >
-> > Thanks,
-> > Peter
-> >
-> >>
-> >> Robin.
-> >>
-> >>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> >>> ---
-> >>>    drivers/mmc/host/dw_mmc-rockchip.c | 9 +++++++--
-> >>>    1 file changed, 7 insertions(+), 2 deletions(-)
-> >>>
-> >>> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
-> >>> index 95d0ec0f5f3a..d0ebf0afa42a 100644
-> >>> --- a/drivers/mmc/host/dw_mmc-rockchip.c
-> >>> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
-> >>> @@ -50,8 +50,13 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
-> >>>                cclkin = ios->clock * RK3288_CLKGEN_DIV;
-> >>>
-> >>>        ret = clk_set_rate(host->ciu_clk, cclkin);
-> >>> -     if (ret)
-> >>> -             dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
-> >>> +     if (ret) {
-> >>> +             /* this screams when card detection is broken */
-> >>> +             if (host->slot->mmc->caps & MMC_CAP_NEEDS_POLL)
-> >>> +                     dev_dbg_ratelimited(host->dev, "failed to set rate %uHz\n", ios->clock);
-> >>> +             else
-> >>> +                     dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
-> >>> +     }
-> >>>
-> >>>        bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
-> >>>        if (bus_hz != host->bus_hz) {
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index b2c1c4eb6007..304bfdc50fea 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3533,7 +3533,7 @@ static int mmu_alloc_shadow_roots(struct kvm_vcpu *vcpu)
+ out_unlock:
+ 	write_unlock(&vcpu->kvm->mmu_lock);
+ 
+-	return 0;
++	return r;
+ }
+ 
+ static int mmu_alloc_special_roots(struct kvm_vcpu *vcpu)
+-- 
+2.35.1
+
