@@ -2,114 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70045C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236429AbiCARN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 12:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
+        id S236355AbiCARPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 12:15:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235479AbiCARNw (ORCPT
+        with ESMTP id S234538AbiCARPe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 12:13:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1BAA4838D
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:13:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646154789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hPN5JwUatfJhVFBiHuO8MPmnVXIce6kUOc4BGm1YEvY=;
-        b=d3N22ec8rGS5gq3geyXf8fR+AIjJXtCK8JGU6hB8QvsUQN4QXAG/KuVMaJi465c++mQL0e
-        Or4j1P01mw+TIfpjZfyDwugKweT3PpsTSOWULZtqHkj9HyF7kPV4EGiyrDxZQXb7zSEaSj
-        vSr1abdHR7FWCjeFdqWuCmGto3jac0Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-22-wm-lAGIKMsiuE7i1ljBKFA-1; Tue, 01 Mar 2022 12:13:06 -0500
-X-MC-Unique: wm-lAGIKMsiuE7i1ljBKFA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B8B18824FA7;
-        Tue,  1 Mar 2022 17:13:04 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 59C7E2ED78;
-        Tue,  1 Mar 2022 17:13:01 +0000 (UTC)
-Message-ID: <2fddbfd6b6e68f3f8e972536c27a87ffadbe1911.camel@redhat.com>
-Subject: Re: [PATCH 1/4] KVM: x86: mark synthetic SMM vmexit as SVM_EXIT_SW
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org
-Date:   Tue, 01 Mar 2022 19:13:00 +0200
-In-Reply-To: <Yh5KTtLhRyfmx/ZF@google.com>
-References: <20220301135526.136554-1-mlevitsk@redhat.com>
-         <20220301135526.136554-2-mlevitsk@redhat.com> <Yh5KTtLhRyfmx/ZF@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Tue, 1 Mar 2022 12:15:34 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6DF21ADAB;
+        Tue,  1 Mar 2022 09:14:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646154892; x=1677690892;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=xfA3Q2rNoGikcOpleBBhk8TcVgjijI+nX7d6AMT5f50=;
+  b=jyJl5hVibsqZxkkVWbDzPzDH/dOfeRAo5euiKg1bdYMWcZc7dcBfl+Pl
+   N0srpjWCPTvPITzojJFPoxOpQDrA2gf4Ajx/7GJ2xRyHs1rQqozoQO8qQ
+   +NM2pqcJRkD313U5j1lwXpCWgZkAc66EZJsUiS+Dch46zWcYgvGvwfDWO
+   E7Oe89XY3K6K1OdLGFDlSUJ34ARVbg9DDMtuyDBpinIbWGbiB8gNOsbOy
+   q1QziYvLQ8EhLl0IGthh7UCiAPfNZSY48TRelkAxzDXLfVYfoiO6harc5
+   MvqCM6BFakXYN8OvkvCWW3MtN+RjIBrdKO+OMTbY7VRXNGKhta7E1JZmv
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="253113949"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="253113949"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 09:14:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="550809589"
+Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.151])
+  by orsmga008.jf.intel.com with SMTP; 01 Mar 2022 09:14:46 -0800
+Received: by stinkbox (sSMTP sendmail emulation); Tue, 01 Mar 2022 19:14:46 +0200
+Date:   Tue, 1 Mar 2022 19:14:46 +0200
+From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][V2] drm/i915: make a handful of read-only arrays static
+ const
+Message-ID: <Yh5UhnaGMFFM1Nxs@intel.com>
+References: <20220223120923.239867-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220223120923.239867-1-colin.i.king@gmail.com>
+X-Patchwork-Hint: comment
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-01 at 16:31 +0000, Sean Christopherson wrote:
-> On Tue, Mar 01, 2022, Maxim Levitsky wrote:
-> > Use a dummy unused vmexit reason to mark the 'VM exit' that is happening
-> > when kvm exits to handle SMM, which is not a real VM exit.
+On Wed, Feb 23, 2022 at 12:09:23PM +0000, Colin Ian King wrote:
+> Don't populate the read-only arrays on the stack but instead make
+> them static const and signed 8 bit ints. Also makes the object code a
+> little smaller.  Reformat the statements to clear up checkpatch warning.
 > 
-> Why not use "62h VMEXIT_SMI"?
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Because VMEXIT_SMI is real vmexit which happens when L1 intercepts #SMI
-And here nested_svm_vmexit is abused to just exit guest mode without vmexit.
+Thanks. Pushed to drm-intel-next.
 
+> ---
 > 
-> > This makes it a bit easier to read the KVM trace, and avoids
-> > other potential problems.
+> V2: Make arrays signed 8 bit integers as requested by Ville Syrjälä
 > 
-> What other potential problems?
-
-The fact that we have a stale VM exit reason in vmcb without this
-patch which can be in theory consumed somewhere down the road.
-
-This stale vm exit reason also appears in the tracs which is
-very misleading.
-
-Best regards,
-	Maxim Levitsky
-
+> ---
+>  drivers/gpu/drm/i915/display/intel_vdsc.c | 16 ++++++++++++----
+>  1 file changed, 12 insertions(+), 4 deletions(-)
 > 
-> > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > ---
-> >  arch/x86/kvm/svm/svm.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> > index 7038c76fa8410..c08fd7f4f3414 100644
-> > --- a/arch/x86/kvm/svm/svm.c
-> > +++ b/arch/x86/kvm/svm/svm.c
-> > @@ -4218,7 +4218,7 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
-> >  	svm->vmcb->save.rsp = vcpu->arch.regs[VCPU_REGS_RSP];
-> >  	svm->vmcb->save.rip = vcpu->arch.regs[VCPU_REGS_RIP];
-> >  
-> > -	ret = nested_svm_vmexit(svm);
-> > +	ret = nested_svm_simple_vmexit(svm, SVM_EXIT_SW);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > -- 
-> > 2.26.3
-> > 
+> diff --git a/drivers/gpu/drm/i915/display/intel_vdsc.c b/drivers/gpu/drm/i915/display/intel_vdsc.c
+> index 3faea903b9ae..d49f66237ec3 100644
+> --- a/drivers/gpu/drm/i915/display/intel_vdsc.c
+> +++ b/drivers/gpu/drm/i915/display/intel_vdsc.c
+> @@ -378,10 +378,18 @@ calculate_rc_params(struct rc_parameters *rc,
+>  {
+>  	int bpc = vdsc_cfg->bits_per_component;
+>  	int bpp = vdsc_cfg->bits_per_pixel >> 4;
+> -	int ofs_und6[] = { 0, -2, -2, -4, -6, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12 };
+> -	int ofs_und8[] = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12 };
+> -	int ofs_und12[] = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12 };
+> -	int ofs_und15[] = { 10, 8, 6, 4, 2, 0, -2, -4, -6, -8, -10, -10, -12, -12, -12 };
+> +	static const s8 ofs_und6[] = {
+> +		0, -2, -2, -4, -6, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12
+> +	};
+> +	static const s8 ofs_und8[] = {
+> +		2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12
+> +	};
+> +	static const s8 ofs_und12[] = {
+> +		2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12
+> +	};
+> +	static const s8 ofs_und15[] = {
+> +		10, 8, 6, 4, 2, 0, -2, -4, -6, -8, -10, -10, -12, -12, -12
+> +	};
+>  	int qp_bpc_modifier = (bpc - 8) * 2;
+>  	u32 res, buf_i, bpp_i;
+>  
+> -- 
+> 2.34.1
 
-
+-- 
+Ville Syrjälä
+Intel
