@@ -2,141 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 833DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4641BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235479AbiCAQzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:55:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
+        id S235637AbiCAQ46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232880AbiCAQzQ (ORCPT
+        with ESMTP id S229825AbiCAQ4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:55:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECE36321;
-        Tue,  1 Mar 2022 08:54:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9ECEEB8184F;
-        Tue,  1 Mar 2022 16:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 740C1C340EE;
-        Tue,  1 Mar 2022 16:54:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646153672;
-        bh=9NZHNm5f//UknLBQJi8aC7uw9czFahxKr+dcDCmFUCE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DAkNpCOltDdkG4CouhQG0dgkdaSG+j0l1C23qUMaLCvWXveml1Bg7Um3AS0uTmR33
-         Z6yOKIMrLwUHhvy7GfU7WOAEAtARrMJKtdVhHwmHcp7horUQosHtlsFQg5gqUan1XR
-         d0UrTqoxcw3w/XKYLhEEWVhXQ7H8JYmTb7SDLzdNRBXWyJxPAlb+dnJgJnWL5npNeW
-         63xbWytUOsFzaJrkFx9qyR2Ew31u64F7qX9wHQeu3E2JtobC2y8ZxWIiMP3vYgRqh9
-         YRCHyXZxC8WdH460sGtTP9MnHQr6LhQQVgrUVnzWBfQKx4zeBp6yrIhS3qsDwpWV90
-         YFYdZxrdVrO4w==
-Date:   Tue, 1 Mar 2022 09:54:26 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] treewide: use -Wdeclaration-after-statement
-Message-ID: <Yh5PwhYav2OOxnZV@dev-arch.archlinux-ax161>
-References: <20220301145233.3689119-1-arnd@kernel.org>
- <20220301145233.3689119-2-arnd@kernel.org>
+        Tue, 1 Mar 2022 11:56:55 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8A160F4
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:56:13 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id t5so5719961pfg.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:56:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=f5MQggBxdZ8lhJMoW8sZBNRF0A6bMvBQ7KGlaa1mElM=;
+        b=Hpr31JSpl9gDEeu3tZzed090pVBm2YQ6j/clb0mb44Lo4JlyoQCc6hRGJd4IMPQY5F
+         cGR4O4E24d5QZN43NFb1XSq/l4CgVbZC9YRU6kkVNp+vcu17OXnprzFxlkzCqr8M9w9I
+         snmauyge+aMOisb9kdb29TGybMqDAQuUIcokB+EkqpTeMwQ+cs4DY60ggkvqAiA9UNCf
+         rD/ijG119Ig3Hn4XNLxSLKc/OtjACoLxu4tL/IWc3fPmRdRH8SEGkFYkke+lvsRjVAwW
+         hLGLD1qcwhxYWsYroE8eDfcIqo+c5tYz9dJ653XfAd8PlPjy194x7RGk7+S6c6o2L0w8
+         6XEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=f5MQggBxdZ8lhJMoW8sZBNRF0A6bMvBQ7KGlaa1mElM=;
+        b=Yhwyg0OJ5ojk0SfEO3BttaDs//9bfsX+LuNMUq9UzcFmFzMRK7+kACfbo5krVlQ+66
+         dQsO0VIuDi/EmB9fNzdnqVJuUMaXnVR5/TxYBfXnacJah7tYtLV4ooej24rLMv4yLAfE
+         o4Hf1qjG9lLMCNpVzGPFx+V6KzA47y0uVVWjfPco89znvAPoSoGUx1M40NR181F+a/Ka
+         IZG9fbcLyF73xoaGIvE5fAjZdEUYtRNvUxqNmiyPE07g5q26qiTuCeR0U2UgBZ4ddamC
+         88YpLNAQHcWZevtD3HyaISaEjTaQXVx1CZICCfrcxIA5eu6oqIlhhr7OxV12eDa4U4qG
+         lz6A==
+X-Gm-Message-State: AOAM532LtZU+85Dw3LT2lK4R0V/vPEyOn3NsWNpY5MTUIHyRuqvnWSya
+        5suwH6ySshYYdPoHfBUkgqUXlg==
+X-Google-Smtp-Source: ABdhPJxSMdN2Be+c/CTYH6J/sqMogimTKOSutSxPfFUPKygB/d+95Ao+R0h699MNvWMBlMDR5vkkww==
+X-Received: by 2002:a05:6a00:238a:b0:4f3:fbf3:e611 with SMTP id f10-20020a056a00238a00b004f3fbf3e611mr15213646pfc.11.1646153772268;
+        Tue, 01 Mar 2022 08:56:12 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id d15-20020a17090ab30f00b001b8e65326b3sm2474768pjr.9.2022.03.01.08.56.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 08:56:11 -0800 (PST)
+Date:   Tue, 1 Mar 2022 16:56:07 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org
+Subject: Re: [PATCH 4/4] KVM: x86: lapic: don't allow to set non default apic
+ id when not using x2apic api
+Message-ID: <Yh5QJ4dJm63fC42n@google.com>
+References: <20220301135526.136554-1-mlevitsk@redhat.com>
+ <20220301135526.136554-5-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220301145233.3689119-2-arnd@kernel.org>
+In-Reply-To: <20220301135526.136554-5-mlevitsk@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 03:52:32PM +0100, Arnd Bergmann wrote:
-> From: Mark Rutland <mark.rutland@arm.com>
-> 
-> In a subsequent patch we'll move the kernel from using `-std=gnu89` to
-> `-std=gnu11`, permitting the use of additional C11 features such as
-> for-loop initial declarations.
-> 
-> One contentious aspect of C99 is that it permits mixed declarations and
-> code, and for now at least, it seems preferable to enforce that
-> declarations must come first.
-> 
-> These warnings were already disabled in the kernel itself, but not
-> for KBUILD_USERCFLAGS or the compat VDSO on arch/arm64, which uses
-> a separate set of CFLAGS.
-> 
-> This patch fixes an existing violation in modpost.c, which is not
-> reported because of the missing flag in KBUILD_USERCFLAGS:
-> 
-> | scripts/mod/modpost.c: In function ‘match’:
-> | scripts/mod/modpost.c:837:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-> |   837 |   const char *endp = p + strlen(p) - 1;
-> |       |   ^~~~~
-> 
-> Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> [arnd: don't add a duplicate flag to the default set, update changelog]
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Please, please post standalone patches/fixes as standalone patches/fixes.  And in
+general, keep series to one topic.  There is very real value in following the
+established and documented process, e.g. avoids creating artificial dependencies
+where a changes works only because of an "unrelated" patch earlier in the series.
+And for us reviewers, it helps tremendously as it means I can scan just the cover
+letter for a series to prioritize review accordingly.  Bundling things together
+means I have to scan through every patch to triage the series..
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+On Tue, Mar 01, 2022, Maxim Levitsky wrote:
+> Fix a loop hole in setting the apic state that didn't check if
 
+Heh, "loophole", took me a second to figure out there was no literal loop. :-)
+
+> apic id == vcpu_id when x2apic is enabled but userspace is using
+> a older variant of the ioctl which didn't had 32 bit apic ids.
+> 
+> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 > ---
->  Makefile                          | 3 ++-
->  arch/arm64/kernel/vdso32/Makefile | 1 +
->  scripts/mod/modpost.c             | 4 +++-
->  3 files changed, 6 insertions(+), 2 deletions(-)
+>  arch/x86/kvm/lapic.c | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
 > 
-> diff --git a/Makefile b/Makefile
-> index 94fa9a849a7a..37ef6a555dcd 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -432,7 +432,8 @@ HOSTCXX	= g++
->  endif
+> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> index 80a2020c4db40..8d35f56c64020 100644
+> --- a/arch/x86/kvm/lapic.c
+> +++ b/arch/x86/kvm/lapic.c
+> @@ -2618,15 +2618,14 @@ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+>  		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
+>  		u64 icr;
 >  
->  export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
-> -			      -O2 -fomit-frame-pointer -std=gnu89
-> +			    -O2 -fomit-frame-pointer -std=gnu89 \
-> +			    -Wdeclaration-after-statement
->  export KBUILD_USERLDFLAGS :=
->  
->  KBUILD_HOSTCFLAGS   := $(KBUILD_USERCFLAGS) $(HOST_LFS_CFLAGS) $(HOSTCFLAGS)
-> diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
-> index 9378ea055bf2..ed181bedbffc 100644
-> --- a/arch/arm64/kernel/vdso32/Makefile
-> +++ b/arch/arm64/kernel/vdso32/Makefile
-> @@ -68,6 +68,7 @@ VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
->                 -fno-strict-aliasing -fno-common \
->                 -Werror-implicit-function-declaration \
->                 -Wno-format-security \
-> +               -Wdeclaration-after-statement \
->                 -std=gnu11
->  VDSO_CFLAGS  += -O2
->  # Some useful compiler-dependent flags from top-level Makefile
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 6bfa33217914..fe693304b120 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -833,8 +833,10 @@ static int match(const char *sym, const char * const pat[])
->  {
->  	const char *p;
->  	while (*pat) {
-> +		const char *endp;
+> -		if (vcpu->kvm->arch.x2apic_format) {
+> -			if (*id != vcpu->vcpu_id)
+> -				return -EINVAL;
+> -		} else {
+> -			if (set)
+> -				*id >>= 24;
+> -			else
+> -				*id <<= 24;
+> -		}
+> +		if (!vcpu->kvm->arch.x2apic_format && set)
+> +			*id >>= 24;
 > +
->  		p = *pat++;
-> -		const char *endp = p + strlen(p) - 1;
-> +		endp = p + strlen(p) - 1;
+> +		if (*id != vcpu->vcpu_id)
+> +			return -EINVAL;
+
+This breaks backwards compability, userspace will start failing where it previously
+succeeded.  It doesn't even require a malicious userspace, e.g. if userspace creates
+a vCPU with a vcpu_id > 255 vCPUs, the shift will truncate and cause failure.  It'll
+obviously do weird things, but this code is 5.5 years old, I don't think it's worth
+trying to close a loophole that doesn't harm KVM.
+
+If we provide a way for userspace to opt into disallowiong APICID != vcpu_id, we
+can address this further upstream, e.g. reject vcpu_id > 255 without x2apic_format.
+
+> +
+> +		if (!vcpu->kvm->arch.x2apic_format && !set)
+> +			*id <<= 24;
 >  
->  		/* "*foo*" */
->  		if (*p == '*' && *endp == '*') {
+>  		/*
+>  		 * In x2APIC mode, the LDR is fixed and based on the id.  And
 > -- 
-> 2.29.2
-> 
+> 2.26.3
 > 
