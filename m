@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235942AbiCAU0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59512 "EHLO
+        id S232772AbiCAU0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:26:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238517AbiCAUXU (ORCPT
+        with ESMTP id S238814AbiCAUXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D3986E31;
-        Tue,  1 Mar 2022 12:20:35 -0800 (PST)
+        Tue, 1 Mar 2022 15:23:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F3AA6451;
+        Tue,  1 Mar 2022 12:21:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE34760B47;
-        Tue,  1 Mar 2022 20:20:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31139C340EE;
-        Tue,  1 Mar 2022 20:20:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 195D4B81D4B;
+        Tue,  1 Mar 2022 20:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B30C340F1;
+        Tue,  1 Mar 2022 20:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166027;
-        bh=MqtP/Imy0BEHmQw5F9Yule8qbJc9LXHaH82WdVKlA3U=;
+        s=k20201202; t=1646166076;
+        bh=2Vzk2YwMAxcJNg8Rm+jvnFFtDs7ThSFhX2BqVrZ51qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AV42EJSjOhTmeVKKhVLjdOnh8Slcmij3nIWpwPZ2NsS3J0XcTCBGZS0LP8+ifjUWg
-         nKWqoooqIK1UkYbLPqMfI8gv1hxqHvDmL34dHrv/m8Jenq7F74euyCI/qtHva5/T80
-         1qZgg4pOxhDilR2NtOifq4VhRRKws+b9pLznnkGjz627dCaT7QK2bMZy6crrexPI7L
-         0o3+OZccQ0+taKe38SItG6sE7qsCUcXnbwE0AwNr0hUOk7OAAyUMDBWf40X6t9wQT3
-         mm6EqIuL/1sg3JXsUdAcc1rLzG0JZPmKVuA3zf+qyG/ubqJgkLA6EAN9kCZ6FSuvM6
-         x4j/QFagaSsZA==
+        b=s6tBqiNjjpaShVM2/hLDqSkz66ePssOER49OmyquP39Tq6m2BI2YapFbHlwUFzxCi
+         kn1fd2AEx/TEPMsuXdS+/pCmJ2yci+YGf4XMddrcLm4lq/k8hOTs7Xv3nthX1Kl4t1
+         7Lq59r4cr0r8w9YqP32gIE66aeYSUcJe5st8M3MY2q4PVkWd2FhU6WNmtBnwZh4Nbm
+         G4duiclmwVtLv0SKoj99DjRM5h+Cuv8wwoPS2PvlEMW8efRhJa/SN50yLNluv0+VbH
+         yAxayxO1mwWx7Ff+FxCAZHwZEd/0gLmOsSC0vPn0x1AFtKB7+6pOgocyhoNAYpbbgo
+         uBiPKjFuD/4Zw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
@@ -41,12 +41,12 @@ Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
         Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
         davem@davemloft.net, xen-devel@lists.xenproject.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 07/11] Revert "xen-netback: Check for hotplug-status existence before watching"
-Date:   Tue,  1 Mar 2022 15:19:40 -0500
-Message-Id: <20220301201951.19066-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 5/7] Revert "xen-netback: Check for hotplug-status existence before watching"
+Date:   Tue,  1 Mar 2022 15:20:43 -0500
+Message-Id: <20220301202046.19220-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201951.19066-1-sashal@kernel.org>
-References: <20220301201951.19066-1-sashal@kernel.org>
+In-Reply-To: <20220301202046.19220-1-sashal@kernel.org>
+References: <20220301202046.19220-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
@@ -89,10 +89,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 0fe0fbd83ce4a..44e353dd2ba19 100644
+index 6b678ab0a31f7..6d7fb0a956452 100644
 --- a/drivers/net/xen-netback/xenbus.c
 +++ b/drivers/net/xen-netback/xenbus.c
-@@ -980,15 +980,11 @@ static void connect(struct backend_info *be)
+@@ -1044,15 +1044,11 @@ static void connect(struct backend_info *be)
  	xenvif_carrier_on(be->vif);
  
  	unregister_hotplug_status_watch(be);
