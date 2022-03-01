@@ -2,104 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235199AbiCAN4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:56:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41238 "EHLO
+        id S233676AbiCAN5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:57:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235198AbiCAN4n (ORCPT
+        with ESMTP id S229736AbiCAN5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:56:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54918A0BDC
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:56:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646142960;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tI3lcF3SMMWiuDSlZvS+v6w9gqEgscSUK6B6ANT7DHI=;
-        b=AN48ADfmUwmD38rlLYVsOIsypW05H746SYMCoSeI7hxwvYphWyL4UIPbStN4B3UAzsJ8Av
-        BIhDu42FzJR5ESjCsiYdfhhO7cH4cM1GYzT0ZMZfN2F1VEdLFW3J+U5W/G2OjOtG0KB9Bx
-        dnNXfS0lNU+xc78OyJSZmZL2N8wHJqo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-176-OW6ztaohN_q3XJ6UXAc1BQ-1; Tue, 01 Mar 2022 08:55:57 -0500
-X-MC-Unique: OW6ztaohN_q3XJ6UXAc1BQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55B9C180A08B;
-        Tue,  1 Mar 2022 13:55:54 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AF7461057FD1;
-        Tue,  1 Mar 2022 13:55:50 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Jim Mattson <jmattson@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 4/4] KVM: x86: lapic: don't allow to set non default apic id when not using x2apic api
-Date:   Tue,  1 Mar 2022 15:55:26 +0200
-Message-Id: <20220301135526.136554-5-mlevitsk@redhat.com>
-In-Reply-To: <20220301135526.136554-1-mlevitsk@redhat.com>
-References: <20220301135526.136554-1-mlevitsk@redhat.com>
+        Tue, 1 Mar 2022 08:57:17 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CCE49F6EA;
+        Tue,  1 Mar 2022 05:56:36 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 66ABA1042;
+        Tue,  1 Mar 2022 05:56:36 -0800 (PST)
+Received: from [10.57.39.47] (unknown [10.57.39.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA0353F70D;
+        Tue,  1 Mar 2022 05:56:34 -0800 (PST)
+Message-ID: <b10031aa-8e49-70b3-b498-8aa6b7021fbb@arm.com>
+Date:   Tue, 1 Mar 2022 13:56:29 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2] iommu/iova: Reset max32_alloc_size after cleaning
+ rcache in the fail path
+Content-Language: en-GB
+To:     yf.wang@mediatek.com
+Cc:     wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+        Libo.Kang@mediatek.com, iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, Ning.Li@mediatek.com,
+        matthias.bgg@gmail.com, stable@vger.kernel.org, will@kernel.org
+References: <20220301014246.5011-1-yf.wang@mediatek.com>
+ <20220301015919.5116-1-yf.wang@mediatek.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220301015919.5116-1-yf.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a loop hole in setting the apic state that didn't check if
-apic id == vcpu_id when x2apic is enabled but userspace is using
-a older variant of the ioctl which didn't had 32 bit apic ids.
+On 2022-03-01 01:59, yf.wang--- via iommu wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
+> 
+> In alloc_iova_fast function, if __alloc_and_insert_iova_range fail,
+> alloc_iova_fast will try flushing rcache and retry alloc iova, but
+> this has an issue:
+> 
+> Since __alloc_and_insert_iova_range fail will set the current alloc
+> iova size to max32_alloc_size (iovad->max32_alloc_size = size),
+> when the retry is executed into the __alloc_and_insert_iova_range
+> function, the retry action will be blocked by the check condition
+> (size >= iovad->max32_alloc_size) and goto iova32_full directly,
+> causes the action of retry regular alloc iova in
+> __alloc_and_insert_iova_range to not actually be executed.
+> 
+> Based on the above, so need reset max32_alloc_size before retry alloc
+> iova when alloc iova fail, that is set the initial dma_32bit_pfn value
+> of iovad to max32_alloc_size, so that the action of retry alloc iova
+> in __alloc_and_insert_iova_range can be executed.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/lapic.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+Have you observed this making any difference in practice?
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 80a2020c4db40..8d35f56c64020 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2618,15 +2618,14 @@ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
- 		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
- 		u64 icr;
- 
--		if (vcpu->kvm->arch.x2apic_format) {
--			if (*id != vcpu->vcpu_id)
--				return -EINVAL;
--		} else {
--			if (set)
--				*id >>= 24;
--			else
--				*id <<= 24;
--		}
-+		if (!vcpu->kvm->arch.x2apic_format && set)
-+			*id >>= 24;
-+
-+		if (*id != vcpu->vcpu_id)
-+			return -EINVAL;
-+
-+		if (!vcpu->kvm->arch.x2apic_format && !set)
-+			*id <<= 24;
- 
- 		/*
- 		 * In x2APIC mode, the LDR is fixed and based on the id.  And
--- 
-2.26.3
+Given that both free_cpu_cached_iovas() and free_global_cached_iovas() 
+call iova_magazine_free_pfns(), which calls remove_iova(), which calls 
+__cached_rbnode_delete_update(), I'm thinking no...
 
+Robin.
+
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> Cc: <stable@vger.kernel.org> # 5.10.*
+> ---
+> v2: Cc stable@vger.kernel.org
+>      1. This patch needs to be merged stable branch, add stable@vger.kernel.org
+>         in mail list.
+> 
+> ---
+>   drivers/iommu/iova.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index b28c9435b898..0c085ae8293f 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -453,6 +453,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>   retry:
+>   	new_iova = alloc_iova(iovad, size, limit_pfn, true);
+>   	if (!new_iova) {
+> +		unsigned long flags;
+>   		unsigned int cpu;
+>   
+>   		if (!flush_rcache)
+> @@ -463,6 +464,12 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>   		for_each_online_cpu(cpu)
+>   			free_cpu_cached_iovas(cpu, iovad);
+>   		free_global_cached_iovas(iovad);
+> +
+> +		/* Reset max32_alloc_size after flushing rcache for retry */
+> +		spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+> +		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+> +		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> +
+>   		goto retry;
+>   	}
+>   
+> 
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
