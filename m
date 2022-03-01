@@ -2,213 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE84C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 505C9C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbiCAJFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:05:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51182 "EHLO
+        id S233595AbiCAJGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiCAJFD (ORCPT
+        with ESMTP id S229776AbiCAJGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:05:03 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773E67ED83;
-        Tue,  1 Mar 2022 01:04:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=jd5F7P7PXYQdauJMDTmuMe8admyVYY+mS/WVsu1CbVc=; b=KXWMkoBoXptBxbWMTW49W8dU9K
-        7JePlrJsk3xIX1k7nTxRhnLbFwgJxLZeYDdHSitecrS0NvcEvoGu+gi/9w8HTQzsO+H2fBWNGrcA9
-        6GBojfDzS+fPuSf79m9fQxl79x/+0YtQkqSwS06dCnnE5FFDzx0/A4mO27wjehiHJG8j3imBu/K5t
-        KgLvixXUmlw0pHHXzti0A6TAYhcGpxFPsrgYbRniijtjClCp29oOSieSRPBbhzx1T0TMzLFqoPaRq
-        ZQo7MW+F2dylKmuSVJMNo4J3SruI+ADXJGLp2B9esTHnO8uFXURZlpHfgHYWcRd8BPFRoWOee8DKY
-        YRbM42EA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOyQG-00ED68-Ea; Tue, 01 Mar 2022 09:03:56 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C6E7030017F;
-        Tue,  1 Mar 2022 10:03:54 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AF0052024C933; Tue,  1 Mar 2022 10:03:54 +0100 (CET)
-Date:   Tue, 1 Mar 2022 10:03:54 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
-        bpf@vger.kernel.org, Radoslaw Burny <rburny@google.com>
-Subject: Re: [PATCH 2/4] locking: Apply contention tracepoints in the slow
- path
-Message-ID: <Yh3heodejlBiwqLj@hirez.programming.kicks-ass.net>
-References: <20220301010412.431299-1-namhyung@kernel.org>
- <20220301010412.431299-3-namhyung@kernel.org>
+        Tue, 1 Mar 2022 04:06:19 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290C289319;
+        Tue,  1 Mar 2022 01:05:38 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B84BD21637;
+        Tue,  1 Mar 2022 09:05:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646125536; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wGg057MYVvEAycP3sfZdyFUbrSVStkSu0yUPk3uN7Bk=;
+        b=PJoZmxdWQDxzOd6JDIbAkU3p3tENb3df9iSpKNeHZYe93Q99vfTMJarHj+aETJi22OlE5Q
+        efK+c6N9PbE136rXo1pky4rH41gSHXh2m7J9RwIyMmRpO8MczpWn87pP2o6nC4Fl5P54lt
+        Me2wF3cUpDucfbZcglIKYCU5DXTsEoQ=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 76159A3B88;
+        Tue,  1 Mar 2022 09:05:36 +0000 (UTC)
+Date:   Tue, 1 Mar 2022 10:05:35 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Daniel Dao <dqminh@cloudflare.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] memcg: async flush memcg stats from perf sensitive
+ codepaths
+Message-ID: <Yh3h33W45+YaMo92@dhcp22.suse.cz>
+References: <20220226002412.113819-1-shakeelb@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301010412.431299-3-namhyung@kernel.org>
+In-Reply-To: <20220226002412.113819-1-shakeelb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 05:04:10PM -0800, Namhyung Kim wrote:
+On Fri 25-02-22 16:24:12, Shakeel Butt wrote:
+> Daniel Dao has reported [1] a regression on workloads that may trigger
+> a lot of refaults (anon and file). The underlying issue is that flushing
+> rstat is expensive. Although rstat flush are batched with (nr_cpus *
+> MEMCG_BATCH) stat updates, it seems like there are workloads which
+> genuinely do stat updates larger than batch value within short amount of
+> time. Since the rstat flush can happen in the performance critical
+> codepaths like page faults, such workload can suffer greatly.
+> 
+> The easiest fix for now is for performance critical codepaths trigger
+> the rstat flush asynchronously. This patch converts the refault codepath
+> to use async rstat flush. In addition, this patch has premptively
+> converted mem_cgroup_wb_stats and shrink_node to also use the async
+> rstat flush as they may also similar performance regressions.
 
-> @@ -171,9 +172,12 @@ bool __sched __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
->  	if (try)
->  		return false;
->  
-> +	trace_contention_begin(sem, _RET_IP_,
-> +			       LCB_F_READ | LCB_F_PERCPU | TASK_UNINTERRUPTIBLE);
+Why do we need to trigger flushing in the first place from those paths.
+Later in the thread you are saying there is a regular flushing done
+every 2 seconds. What would happen if these paths didn't flush at all?
+Also please note that WQ context can be overwhelmed by other work so
+these flushes can happen much much later.
 
-That is a bit unwieldy, isn't it ?
-
->  	preempt_enable();
->  	percpu_rwsem_wait(sem, /* .reader = */ true);
->  	preempt_disable();
-> +	trace_contention_end(sem);
->  
->  	return true;
->  }
-> @@ -224,8 +228,13 @@ void __sched percpu_down_write(struct percpu_rw_semaphore *sem)
->  	 * Try set sem->block; this provides writer-writer exclusion.
->  	 * Having sem->block set makes new readers block.
->  	 */
-> -	if (!__percpu_down_write_trylock(sem))
-> +	if (!__percpu_down_write_trylock(sem)) {
-> +		unsigned int flags = LCB_F_WRITE | LCB_F_PERCPU | TASK_UNINTERRUPTIBLE;
-> +
-> +		trace_contention_begin(sem, _RET_IP_, flags);
->  		percpu_rwsem_wait(sem, /* .reader = */ false);
-> +		trace_contention_end(sem);
-> +	}
->  
->  	/* smp_mb() implied by __percpu_down_write_trylock() on success -- D matches A */
->  
-
-Wouldn't it be easier to stick all that inside percpu_rwsem_wait() and
-have it only once? You can even re-frob the wait loop such that the
-tracepoint can use current->__state or something.
-
-diff --git a/kernel/locking/percpu-rwsem.c b/kernel/locking/percpu-rwsem.c
-index c9fdae94e098..ca01f8ff88e5 100644
---- a/kernel/locking/percpu-rwsem.c
-+++ b/kernel/locking/percpu-rwsem.c
-@@ -154,13 +154,16 @@ static void percpu_rwsem_wait(struct percpu_rw_semaphore *sem, bool reader)
- 	}
- 	spin_unlock_irq(&sem->waiters.lock);
- 
-+	set_current_state(TASK_UNINTERRUPTIBLE);
-+	trace_contention_begin(sem, _RET_IP_, LCB_F_PERCPU | LCB_F_WRITE*!reader);
- 	while (wait) {
--		set_current_state(TASK_UNINTERRUPTIBLE);
- 		if (!smp_load_acquire(&wq_entry.private))
- 			break;
- 		schedule();
-+		set_current_state(TASK_UNINTERRUPTIBLE);
- 	}
- 	__set_current_state(TASK_RUNNING);
-+	trace_contention_end(sem);
- }
- 
- bool __sched __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
-
-> diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-> index 8555c4efe97c..e49f5d2a232b 100644
-> --- a/kernel/locking/rtmutex.c
-> +++ b/kernel/locking/rtmutex.c
-> @@ -24,6 +24,8 @@
->  #include <linux/sched/wake_q.h>
->  #include <linux/ww_mutex.h>
->  
-> +#include <trace/events/lock.h>
-> +
->  #include "rtmutex_common.h"
->  
->  #ifndef WW_RT
-> @@ -1652,10 +1654,16 @@ static int __sched rt_mutex_slowlock(struct rt_mutex_base *lock,
->  static __always_inline int __rt_mutex_lock(struct rt_mutex_base *lock,
->  					   unsigned int state)
->  {
-> +	int ret;
-> +
->  	if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
->  		return 0;
->  
-> -	return rt_mutex_slowlock(lock, NULL, state);
-> +	trace_contention_begin(lock, _RET_IP_, LCB_F_RT | state);
-> +	ret = rt_mutex_slowlock(lock, NULL, state);
-> +	trace_contention_end(lock);
-> +
-> +	return ret;
->  }
->  #endif /* RT_MUTEX_BUILD_MUTEX */
->  
-> @@ -1718,9 +1726,11 @@ static __always_inline void __sched rtlock_slowlock(struct rt_mutex_base *lock)
->  {
->  	unsigned long flags;
->  
-> +	trace_contention_begin(lock, _RET_IP_, LCB_F_RT | TASK_RTLOCK_WAIT);
->  	raw_spin_lock_irqsave(&lock->wait_lock, flags);
->  	rtlock_slowlock_locked(lock);
->  	raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
-> +	trace_contention_end(lock);
->  }
-
-Same, if you do it one level in, you can have the tracepoint itself look
-at current->__state. Also, you seem to have forgotten to trace the
-return value. Now you can't tell if the lock was acquired, or was denied
-(ww_mutex) or we were interrupted.
-
-diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 8555c4efe97c..18b9f4bf6f34 100644
---- a/kernel/locking/rtmutex.c
-+++ b/kernel/locking/rtmutex.c
-@@ -1579,6 +1579,8 @@ static int __sched __rt_mutex_slowlock(struct rt_mutex_base *lock,
- 
- 	set_current_state(state);
- 
-+	trace_contention_begin(lock, _RET_IP_, LCB_F_RT);
-+
- 	ret = task_blocks_on_rt_mutex(lock, waiter, current, ww_ctx, chwalk);
- 	if (likely(!ret))
- 		ret = rt_mutex_slowlock_block(lock, ww_ctx, state, NULL, waiter);
-@@ -1601,6 +1603,9 @@ static int __sched __rt_mutex_slowlock(struct rt_mutex_base *lock,
- 	 * unconditionally. We might have to fix that up.
- 	 */
- 	fixup_rt_mutex_waiters(lock);
-+
-+	trace_contention_end(lock, ret);
-+
- 	return ret;
- }
- 
-@@ -1683,6 +1688,8 @@ static void __sched rtlock_slowlock_locked(struct rt_mutex_base *lock)
- 	/* Save current state and set state to TASK_RTLOCK_WAIT */
- 	current_save_and_set_rtlock_wait_state();
- 
-+	trace_contention_begin(lock, _RET_IP_, LCB_F_RT);
-+
- 	task_blocks_on_rt_mutex(lock, &waiter, current, NULL, RT_MUTEX_MIN_CHAINWALK);
- 
- 	for (;;) {
-@@ -1703,6 +1710,8 @@ static void __sched rtlock_slowlock_locked(struct rt_mutex_base *lock)
- 		set_current_state(TASK_RTLOCK_WAIT);
- 	}
- 
-+	trace_contention_end(lock, 0);
-+
- 	/* Restore the task state */
- 	current_restore_rtlock_saved_state();
- 
+So in other words why does async work (that can happen at any time
+without any control) make more sense than no flushing?
+-- 
+Michal Hocko
+SUSE Labs
