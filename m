@@ -2,119 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D46FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B232C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234607AbiCALfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 06:35:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53970 "EHLO
+        id S234601AbiCALgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 06:36:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234295AbiCALf1 (ORCPT
+        with ESMTP id S229603AbiCALgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 06:35:27 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E928691AD3;
-        Tue,  1 Mar 2022 03:34:46 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id bd1so13181044plb.13;
-        Tue, 01 Mar 2022 03:34:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=aWgEFJTpYXNiaEJiWv3F+tbzx+IqWWKw7jaIBciD8Os=;
-        b=aZenmRcKS+72f0iaWCAWfTCKuiegNfIDv/B5+b8zu6mriIGbqlEHrnVmRXLkUAdP4l
-         6T5E3AdPtPWAJNoOBlkx3DvA4q5DYk0QSwO7+CfXjMZjvniJwdCzPgTHyv8b4EgdvsS5
-         dBnR+gohco3QQCLx+TycKAvezaGxweKGMdggmunuSpk/sIILKbMPTwLL2+h9AFvQ9q3V
-         35D+o1DI14QvOktkzQLGmkYY+pBNLYBlxjKKNna2/K4JuF9BHKndbYva24v0ZpKUUGD2
-         s3rzi8WF8ONdK7QR5htLoJoWzhuYNrM4+85rnirf3eNnlodVZJJLp1Oxp1ABVEG/LV+/
-         xfmg==
+        Tue, 1 Mar 2022 06:36:45 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B679091AD4
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 03:36:01 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 176AB3F1A7
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 11:36:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646134560;
+        bh=FR+SbHRa0KC8qQpAb/sagwLABgKAHd7lv9qTbcr0XM0=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Q8iO6kBWTS8gsLGw+O0aetXjEQItnmRenQdKR6JylMt9w/ghPdhMIdCaXJUk4PmHN
+         Bs0yAvcR8w6/ZpRBV0oQhVoZhQSARgvVti4oxUGRXr6psilKuvNlLl1cGNFHOVY1l3
+         kdmzj7O09W8DUMhfnYtAWQuqf5dZmM0QiOEhEKJDQxMm+bhn79g5sRBFgunYBSdz+e
+         jIcgi2zU+gFm6ZpKt59vL87RtDQ05i2tzmauukGnnDOIdsDYwYBgsNMWdIK45Uzmc0
+         GMeI7dOFHargywAvvONpFrvyH/O+GEAElsOAPWOQI9nuLN1JMn2TQWJRgo2WkVCiOu
+         b1TenU+3r6gow==
+Received: by mail-ej1-f72.google.com with SMTP id hq34-20020a1709073f2200b006d677c94909so3575362ejc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 03:36:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=aWgEFJTpYXNiaEJiWv3F+tbzx+IqWWKw7jaIBciD8Os=;
-        b=P0OJ844zLj+PofqX+Vk7/aSR5l/cCXv4mP5aabOVjW0qoovbSUiDZD0Z3v8FAnA2vi
-         Gyq9XYROuogBh2HTmFWrJqpoiZ81ko2eah9Y6hMVCDisHKvLb+aoZRIs7eq1shu9pnhQ
-         dsEXY9b88qdnfMikOoolCO65ZkerZOY+hR9wTU8UBARh4dLpQOT83b8jsmBYG1xNCxJi
-         5H1GuOdz53lLEZoLWpWfg1SwTcny2D9vEGeVN9WOxYYGaiIEqZhuhyLpTuL1NQIYbm8f
-         /zs1fhI23JDffDs+cHs7vx4Fqlh20oYuDnCLkYrrA3FvHqnawME6v3ta9ED1igBPoVfP
-         l9NQ==
-X-Gm-Message-State: AOAM531urTIKz5EAvjp/XYHAlj6KTH+AAsrmd26RAAHc1OoiUgpa+XY6
-        I4NbPo63gizz4MXHmx8Z83I0LGPFp+fnzA==
-X-Google-Smtp-Source: ABdhPJwXbt6uatXc9SN0Qdbkjvc/d0cGc37tlZ9ZEuA4/UQXUJQLcM5LqrZabJXlP3EDSH/mJMubYg==
-X-Received: by 2002:a17:903:120e:b0:151:71e4:dadf with SMTP id l14-20020a170903120e00b0015171e4dadfmr6536841plh.48.1646134486464;
-        Tue, 01 Mar 2022 03:34:46 -0800 (PST)
-Received: from ubuntu.huawei.com ([119.3.119.18])
-        by smtp.googlemail.com with ESMTPSA id d4-20020a17090a8d8400b001bc386dc44bsm1963828pjo.23.2022.03.01.03.34.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 03:34:45 -0800 (PST)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     arnd@arndb.de, jakobkoschel@gmail.com, jannh@google.com,
-        keescook@chromium.org, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, torvalds@linux-foundation.org,
-        xiam0nd.tong@gmail.com
-Subject: Re: [PATCH 3/6] kernel: remove iterator use outside the loop
-Date:   Tue,  1 Mar 2022 19:34:36 +0800
-Message-Id: <20220301113436.5513-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <Yh34XhiUg6T/14kF@kroah.com>
-References: <Yh34XhiUg6T/14kF@kroah.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FR+SbHRa0KC8qQpAb/sagwLABgKAHd7lv9qTbcr0XM0=;
+        b=hZZiDEzt1y5mOhFPX66vyhQBGVkiPjxcNWx2uNOQOPn0MQEkQoI0UEvzQtFd+Uv1jX
+         8LN3r/BveTyN3K/vUFDpA9N6FQVgoO9QsTTeshFBXz/VLue7Ru97Yd6obUhQRRKbMnZl
+         0P0AGZXsO30S92cFVUKrHTv8ZIDTzVVty8NPRtaIelyxrtfmyhWwOcoWv7JerBgPWW1k
+         dk3YT8iGyFCkgrTXeqaH7t2/UJRHtB0NPU1ek4BYmDhRVFO7FORWXLe1oGklqyx69lno
+         Tu4CezY5J0cBtI81yTPQllCxLT81hA0tkP6YSruPTTFIgWgWJ+nKaAntpUk1Nlmze8bB
+         rZTQ==
+X-Gm-Message-State: AOAM5318/m/QEaaQnx3Z3Q5U69lPs/RfRB9rbL6ssxvMb7VtEJXzRpBp
+        fXBZDJiI9UpTMLZTQjiaCdW9sVWVTaYMpqzMKFW8V8XJfZhIM3lJSuirTlRLDknjW8Y2ycmZ2xg
+        rnOspOXqb66xpVLeBAwl69hUCYos4mM70T6XUDS7ezQ==
+X-Received: by 2002:aa7:d2da:0:b0:410:b9f1:ff35 with SMTP id k26-20020aa7d2da000000b00410b9f1ff35mr24361358edr.217.1646134559805;
+        Tue, 01 Mar 2022 03:35:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxO1Re57fRymXGOQld9AekbmcAN8BBIo9RFZ7jtwa+7Mxv++/eT4zsN40e6JUE1cz8Fwj5FFQ==
+X-Received: by 2002:aa7:d2da:0:b0:410:b9f1:ff35 with SMTP id k26-20020aa7d2da000000b00410b9f1ff35mr24361344edr.217.1646134559639;
+        Tue, 01 Mar 2022 03:35:59 -0800 (PST)
+Received: from [192.168.0.136] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id gg38-20020a17090689a600b006ba4896f2d7sm5253927ejc.140.2022.03.01.03.35.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 03:35:59 -0800 (PST)
+Message-ID: <02d97f5a-b711-6e7e-abd5-ab2387dc3bca@canonical.com>
+Date:   Tue, 1 Mar 2022 12:35:58 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V1] arm64: dts: qcom: sc7280: Add GCC hardware register dt
+ entry
+Content-Language: en-US
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        adrian.hunter@intel.com, ulf.hansson@linaro.org, robh+dt@kernel.org
+Cc:     quic_asutoshd@quicinc.com, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1646133123-22256-1-git-send-email-quic_c_sbhanu@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1646133123-22256-1-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 1 Mar 2022 11:41:34 +0100, greg k-h wrote:
-> On Tue, Mar 01, 2022 at 03:58:36PM +0800, Xiaomeng Tong wrote:
-> > Demonstrations for:
-> >  - list_for_each_entry_inside
-> >  - list_for_each_entry_continue_inside
-> >  - list_for_each_entry_safe_continue_inside
->
-> This changelog does not make much sense at all.  Why are you making
-> these changes and how are we to review them?  Same for the others in
-> this series.
+On 01/03/2022 12:12, Shaik Sajida Bhanu wrote:
+> Add GCC hardware register dt entry for eMMC and SD card.
+
+Aren't you adding reset, not a hardware register? The same in subject.
+
 > 
-> confused,
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index c07765d..2b8461d 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -881,6 +881,9 @@
+>  			mmc-hs400-1_8v;
+>  			mmc-hs400-enhanced-strobe;
+>  
+> +			/* Add dt entry for gcc hw reset */
 
-I'm sorry for have created the confusion. I made this patch to remove
-the use of iterator (in this patch is "ext", "cur", "aux", "q") outside
-the list_for_each_entry* loop, using the new *_inside macros instead
-which are introduced in PATCH v2, and to prove the effectiveness of
-the new macros.
+This comment seems unrelated and duplicating commit msg. Basically you
+wrote same sentence four times: subject, commit msg and twice here...
 
-The detail for create_mem_extents patch:
+> +			resets = <&gcc GCC_SDCC1_BCR>;
+> +			reset-names = "core_reset";
+>  			sdhc1_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+> @@ -2686,6 +2689,9 @@
+>  
+>  			qcom,dll-config = <0x0007642c>;
+>  
+> +			/* Add dt entry for gcc hw reset */
 
-1. remove the iterator use outside the loop:
--		struct mem_extent *ext, *cur, *aux;
+Ditto.
 
-2. declare a ptr outside the loop and set NULL:
-+		struct mem_extent *me = NULL;
+> +			resets = <&gcc GCC_SDCC2_BCR>;
+> +			reset-names = "core_reset";
+>  			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
 
-3. repace list_for_each_entry with list_for_each_entry_inside, and pass
-   a new argument (struct mem_extent) as the struct type.
-+		list_for_each_entry_inside(ext, struct mem_extent, list, hook)
-
-4. when we hit the break in list_for_each_entry, record the found iterator
-   for lately use:
-+			if (zone_start <= ext->end) {
-+				me = ext;
- 				break;
-+			}
-
-5. when we miss the break, the "me" is NULL and can be used to determine if
-   we already found the "ext". And replace every "ext" use after the loop
-   with "me".
--		if (&ext->hook == list || zone_end < ext->start) {
-+		if (!me || zone_end < me->start) {
-
-
-6. repace list_for_each_entry_safe_continue with
-   list_for_each_entry_safe_continue_inside, and pass a new argument (me)
-   as the iterator to start/continue with.
--		list_for_each_entry_safe_continue(cur, aux, list, hook) {
-+		list_for_each_entry_safe_continue_inside(cur, aux, me, list, hook) {
 
 Best regards,
---
-Xiaomeng Tong
+Krzysztof
