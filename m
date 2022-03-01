@@ -2,112 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0162AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 02:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E73F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 02:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231838AbiCACxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 21:53:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
+        id S231855AbiCACzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 21:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231299AbiCACxP (ORCPT
+        with ESMTP id S229943AbiCACzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 21:53:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49D054990F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 18:52:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646103154;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wtwD31/3vxlTAO3x0e3WlhDgfN73zgYlAP/xJTtBWTk=;
-        b=I6+7+QxHdZ8J/6p05l/OV96/ElySf2JaNBZI+2Y9khVD7dfsBdjXc53WU8WIsXh/n4q95K
-        3QK493xshUFAPHYtLJzQrqdWxopbNDAjNIXyO+wVr4Up+XAva0ECwd/Rqlyt5e7I1No/m+
-        XtWR64s66OX3f7OyRFClnTIXa4oq25E=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-297-d36KGS1MNPO9DJvbJ9_NdQ-1; Mon, 28 Feb 2022 21:52:33 -0500
-X-MC-Unique: d36KGS1MNPO9DJvbJ9_NdQ-1
-Received: by mail-qt1-f198.google.com with SMTP id a6-20020a05622a02c600b002dd2d38f153so6307952qtx.17
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 18:52:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wtwD31/3vxlTAO3x0e3WlhDgfN73zgYlAP/xJTtBWTk=;
-        b=RVPWIS77mCVUK0jJU/OedCNY3fVPiaqVa8xkU4+m85v/8498lPn4S8NuxJZNOsPpDr
-         l6l6ox/14vKUmbLH4XWXuD+/suXuCjuHGoqJahB+Z0WhI0qkqUEZ1m9swmjccnaEDcqO
-         aAibFPZbeZumpunmq46JGDODr4XSPo0VVZwkgY8nbLX/n9mkmhqQ6yGTtffMEsrwLKpS
-         VmdcRDdKiUvYW6ieMhimOiCjAdDdyPZCki7NUcyc2i2ZkMN9f9q4QcTragkar/B3u/Vm
-         d0GXYPrh5WMf/c6GK09rv0knHVLLKzV1ND1KBQgtCjY0uI9eF1y2OACIDNEtX9JSwJNv
-         s40g==
-X-Gm-Message-State: AOAM533W+6Q8GE7XV3X+jUcTiQ9m7dM8KI3o6rm52Y7F+AOdaV5XBZeW
-        faDdTWhLkLtsyYWMEheAK9Cp59ewtefYBit1lQWBQwNjd0hWoZdW7OKfrjDKXDGZTLjjIKp+r1d
-        HwfX0IKUpAvEZodOjFCUdSJJZ
-X-Received: by 2002:ae9:d842:0:b0:547:b883:932d with SMTP id u63-20020ae9d842000000b00547b883932dmr12459345qkf.646.1646103152638;
-        Mon, 28 Feb 2022 18:52:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy3IyXCmmpTR5dLhhN0LNYcofK/4TPhGco8CWp5Hk9TKdbj8OZ9i5OKyRghyBv/atBgK0FT8w==
-X-Received: by 2002:ae9:d842:0:b0:547:b883:932d with SMTP id u63-20020ae9d842000000b00547b883932dmr12459338qkf.646.1646103152413;
-        Mon, 28 Feb 2022 18:52:32 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id j10-20020ac85f8a000000b002dde6288fa7sm8383230qta.83.2022.02.28.18.52.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 18:52:31 -0800 (PST)
-From:   trix@redhat.com
-To:     roan@protonic.nl, jic23@kernel.org, lars@metafoo.de,
-        nathan@kernel.org, ndesaulniers@google.com
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] iio: scd4x: check return of scd4x_write_and_fetch
-Date:   Mon, 28 Feb 2022 18:52:23 -0800
-Message-Id: <20220301025223.223223-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Mon, 28 Feb 2022 21:55:01 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B68F2F00B;
+        Mon, 28 Feb 2022 18:54:16 -0800 (PST)
+X-UUID: c89f52d5a4f64ae984fa7867e84596d3-20220301
+X-UUID: c89f52d5a4f64ae984fa7867e84596d3-20220301
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1464772391; Tue, 01 Mar 2022 10:54:08 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 1 Mar 2022 10:54:07 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 1 Mar
+ 2022 10:54:06 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 1 Mar 2022 10:54:06 +0800
+Message-ID: <5f257ac1fbc46a28f220dbd0b8bb70002fb9a1cb.camel@mediatek.com>
+Subject: Re: [3/4] dt-bindings: reset: mt8186: add DSI reset bit for MMSYS
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
+        <runyang.chen@mediatek.com>, <linux-watchdog@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 1 Mar 2022 10:54:06 +0800
+In-Reply-To: <YhkDPe3KuaRW6b2Y@robh.at.kernel.org>
+References: <20220216014505.28428-1-rex-bc.chen@mediatek.com>
+         <20220216014505.28428-4-rex-bc.chen@mediatek.com>
+         <YhkDPe3KuaRW6b2Y@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Hello Rob,
 
-Clang static analysis reports this problem
-scd4x.c:474:10: warning: The left operand of '==' is a
-  garbage value
-  if (val == 0xff) {
-      ~~~ ^
-val is only set from a successful call to scd4x_write_and_fetch()
-So check it's return.
+Thanks for your review.
+I will do this in next version.
 
-Fixes: 49d22b695cbb ("drivers: iio: chemical: Add support for Sensirion SCD4x CO2 sensor")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
-v2: rework return on error logic to be similar to existing code
+BRs,
+Rex
 
- drivers/iio/chemical/scd4x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/chemical/scd4x.c b/drivers/iio/chemical/scd4x.c
-index 20d4e7584e923..37143b5526ee6 100644
---- a/drivers/iio/chemical/scd4x.c
-+++ b/drivers/iio/chemical/scd4x.c
-@@ -471,12 +471,15 @@ static ssize_t calibration_forced_value_store(struct device *dev,
- 	ret = scd4x_write_and_fetch(state, CMD_FRC, arg, &val, sizeof(val));
- 	mutex_unlock(&state->lock);
- 
-+	if (ret)
-+		return ret;
-+
- 	if (val == 0xff) {
- 		dev_err(dev, "forced calibration has failed");
- 		return -EINVAL;
- 	}
- 
--	return ret ?: len;
-+	return len;
- }
- 
- static IIO_DEVICE_ATTR_RW(calibration_auto_enable, 0);
--- 
-2.26.3
+On Fri, 2022-02-25 at 10:26 -0600, Rob Herring wrote:
+> On Wed, Feb 16, 2022 at 09:45:04AM +0800, Rex-BC Chen wrote:
+> > Add DSI software reset bit which is controlled by MMSYS for MT8186.
+> > 
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >  include/dt-bindings/reset/mt8186-resets.h | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/include/dt-bindings/reset/mt8186-resets.h
+> > b/include/dt-bindings/reset/mt8186-resets.h
+> > index 36e5764e2e6c..5f850370c42c 100644
+> > --- a/include/dt-bindings/reset/mt8186-resets.h
+> > +++ b/include/dt-bindings/reset/mt8186-resets.h
+> > @@ -30,4 +30,7 @@
+> >  #define MT8186_TOPRGU_IMG2_SW_RST				22
+> >  #define MT8186_TOPRGU_SW_RST_NUM				23
+> >  
+> > +/* MMSYS resets */
+> > +#define MT8186_MMSYS_SW0_RST_B_DISP_DSI0			19
+> 
+> This can just be squashed into the previous patch.
+> 
+> > +
+> >  #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8186 */
+> > -- 
+> > 2.18.0
+> > 
+> > 
 
