@@ -2,111 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8AD9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:14:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236859AbiCASOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:14:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
+        id S236881AbiCASOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:14:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235929AbiCASOd (ORCPT
+        with ESMTP id S235929AbiCASOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:14:33 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B327A24BDA
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:13:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646158432; x=1677694432;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eyJL07c9fgvnRU+ZPSiuOTMVvgv6cbmEG2Rg/8bgmzU=;
-  b=dvJt3JmuexlpQCckiJaJytkxILOkEuKmFGjcREw3K5uD/mpq314Oj/R9
-   DOxZndLmKPNXrlzvw4nGlI1yguHXFfzTJ3tekXzZ0A8VermW04JF/UV/i
-   8lTQbdDMJuoUZa4Vvj9GQmm6N/CnRc2bMLyPkevOBSaxK3n3AgNjITaMp
-   lv0CVYZxYsJLBDhayBLS715RrhTmWEHiUFGBYwvCC17xggp0IAAyY/cH/
-   6sAiZGmuD0kz0qNYW/QpxSWBz86/yunVIM64WpMOD/uncMZitxoQqlNMF
-   5bnPVgdRceoJyu96OY42ge3za/MmHAkaXbVaJE3UpST77aGF9Zqbdp/p3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="252937935"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="252937935"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 10:13:52 -0800
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="535003514"
-Received: from bklinvil-mobl.amr.corp.intel.com (HELO localhost) ([10.212.48.220])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 10:13:52 -0800
-Date:   Tue, 1 Mar 2022 10:13:51 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V8 42/44] dax: Stray access protection for
- dax_direct_access()
-Message-ID: <Yh5iX0WEKrwCg3/H@iweiny-desk3>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-43-ira.weiny@intel.com>
- <CAPcyv4gDBnUQCe7BSWzccWGfcPZRza3PSBLqReBQgobSf09JGA@mail.gmail.com>
+        Tue, 1 Mar 2022 13:14:51 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5764A5A589
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:14:09 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id g1so15021215pfv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 10:14:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=N36sF4HUer+rUuc5VxWx2NxZT2Mje9G1bKhkVtQFmow=;
+        b=O9Pc4FRhQaHO8JwtvKmEa7P/p93QhIWPziYnJxBP3SmXkKfXwbS/+UXcAcizlZe2qE
+         5++D1AzgFSiNA6GVcHz58RghXwcZj0T+stAg2S8I6BdGwjnEpqEP1SHJlTJIwhdk7I/A
+         Km+JuAoSqO/aabb7J1BxN3aslickTdbOZI2Hw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N36sF4HUer+rUuc5VxWx2NxZT2Mje9G1bKhkVtQFmow=;
+        b=NQBhV9krPEnsto82Fmm0RyMkKaaLgBfivKQEZdxCYWGHN6QOSYGxItKC7a4g+pc5FW
+         HMwU7gZSiDBEoJ0aamTwtefdtZzVEnluLvbxShcSQVzZY2PYhKlGYKDHKl1+QdbnXHiX
+         F2iGsDU5q18sUpfhsP0n2rh+Wg58MOxXTIm2IBxb3Rhu6lEOfFQzWwVExWBmsIF8qJof
+         INLbaKwmFkdZ0b0Ob9bxoDc0EhhoVERw5TfwRxfXgYmPkh6EECJcs4WvVA7FqE+xSAwk
+         WGEm8/GZdEhF8bHB7m5NZg7InbkjusCcEjuzgpyPtZmTgfVjXIg5ESI8UBVY6Wa84Tvi
+         IVRg==
+X-Gm-Message-State: AOAM531joqms+a+AKqQHsgkPeior2rmlij6oaa5yUi7Rpywh4U/IDp0v
+        8XT8JaT3X2y4JDLsmdxhU55COADXc7EXRA==
+X-Google-Smtp-Source: ABdhPJwl/oZl7jTR8Xbiy0diMdVywUoBtjuUV8iCsVjT5dJdX8x+nPRIiFjmEv3Xm0s1V2wXWPjOfA==
+X-Received: by 2002:a62:d156:0:b0:4cd:fd21:e406 with SMTP id t22-20020a62d156000000b004cdfd21e406mr28741951pfl.44.1646158448831;
+        Tue, 01 Mar 2022 10:14:08 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id nn10-20020a17090b38ca00b001bc3a60b324sm2540095pjb.46.2022.03.01.10.14.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 10:14:08 -0800 (PST)
+Date:   Tue, 1 Mar 2022 10:14:07 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <202203011008.AA0B5A2D@keescook>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com>
+ <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+ <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+ <Yh0tl3Lni4weIMkl@casper.infradead.org>
+ <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
+ <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
+ <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPcyv4gDBnUQCe7BSWzccWGfcPZRza3PSBLqReBQgobSf09JGA@mail.gmail.com>
+In-Reply-To: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 09:19:58PM -0800, Dan Williams wrote:
-> On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
-> >
-> > From: Ira Weiny <ira.weiny@intel.com>
-> >
-> > dax_direct_access() provides a way to obtain the direct map address of
-> > PMEM memory.  Coordinate PKS protection with dax_direct_access() of
-> > protected devmap pages.
-> >
-> > Introduce 3 new dax_operation calls .map_protected .mk_readwrite and
-> > .mk_noaccess. These 3 calls do not have to be implemented by the dax
-> > provider if no protection is implemented.
-> >
-> > Threads of execution can use dax_mk_{readwrite,noaccess}() to relax the
-> > protection of the dax device and allow direct use of the kaddr returned
-> > from dax_direct_access().  The dax_mk_{readwrite,noaccess}() calls only
-> > need to be used to guard actual access to the memory.  Other uses of
-> > dax_direct_access() do not need to use these guards.
-> >
-> > For users who require a permanent address to the dax device such as the
-> > DM write cache.  dax_map_protected() indicates that the dax device has
-> > additional protections and that user should create it's own permanent
-> > mapping of the memory.  Update the DM write cache code to create this
-> > permanent mapping.
-> >
-> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> [..]
-> > diff --git a/include/linux/dax.h b/include/linux/dax.h
-> > index 9fc5f99a0ae2..261af298f89f 100644
-> > --- a/include/linux/dax.h
-> > +++ b/include/linux/dax.h
-> > @@ -30,6 +30,10 @@ struct dax_operations {
-> >                         sector_t, sector_t);
-> >         /* zero_page_range: required operation. Zero page range   */
-> >         int (*zero_page_range)(struct dax_device *, pgoff_t, size_t);
-> > +
-> > +       bool (*map_protected)(struct dax_device *dax_dev);
-> > +       void (*mk_readwrite)(struct dax_device *dax_dev);
-> > +       void (*mk_noaccess)(struct dax_device *dax_dev);
-> 
-> So the dax code just recently jettisoned -the >copy_{to,from}_iter()
-> ops and it would be shame to grow more ops. Given that the
-> implementation is pgmap generic I think all that is needed is way to
-> go from a daxdev to a pgmap and then use the pgmap helpers directly
-> rather than indirecting through the pmem driver just to get the pgmap.
+On Mon, Feb 28, 2022 at 04:45:11PM -0800, Linus Torvalds wrote:
+> Really. The "-Wshadow doesn't work on the kernel" is not some new
+> issue, because you have to do completely insane things to the source
+> code to enable it.
 
-Ok done.
+The first big glitch with -Wshadow was with shadowed global variables.
+GCC 4.8 fixed that, but it still yells about shadowed functions. What
+_almost_ works is -Wshadow=local. At first glace, all the warnings
+look solvable, but then one will eventually discover __wait_event()
+and associated macros that mix when and how deeply it intentionally
+shadows variables. :)
 
-dax_device now has knowledge of the pgmap which was pretty clean.
+Another way to try to catch misused shadow variables is
+-Wunused-but-set-varible, but it, too, has tons of false positives.
 
-Ira
+I tried to capture some of the rationale and research here:
+https://github.com/KSPP/linux/issues/152
+
+-- 
+Kees Cook
