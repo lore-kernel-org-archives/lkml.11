@@ -2,132 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D871AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80824C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234754AbiCAMi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:38:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
+        id S234790AbiCAMjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:39:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234794AbiCAMiY (ORCPT
+        with ESMTP id S234065AbiCAMjD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:38:24 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF70C30F60;
-        Tue,  1 Mar 2022 04:37:37 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id g26so1314876ybj.10;
-        Tue, 01 Mar 2022 04:37:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eDhnSrogQYYZ/PDz/FJ1mmPBu5LlPYyHGz4zly3ela0=;
-        b=nix2l333nSPrpKfbmKrEr8yuHirrIsI6H6Q4h1MjwAIfVBJN0KOmGeEUIlLlZmr9h3
-         zuSDaWKW249d9KHqXfxd9d4amX99aiDg66S6ahNJ3RgHgf33clravY6Ra94MxSus5yi5
-         X2qeNaVppLL7BCcHmJqXAwQagR+VjFPlCcJjZJ6GU6AvDC0rRu63L8lQlIBAudcmOxwn
-         0E9MANioUadr4BD7f+PAvQYO4zULO2vGEhfzFsUGYlLq/prNWHZaJxENrbdf3RXSy8BB
-         pC0B+8tcMBX8rAteUBi5tfRkJpdFu3FVHLreGXL5idYUKFtWyfJHXu5WUD6wgFxhO8Z3
-         tFFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eDhnSrogQYYZ/PDz/FJ1mmPBu5LlPYyHGz4zly3ela0=;
-        b=64+c4cGL4yF8AVz3twvA21SohpoV9WHVSXywTvOWX05xlZhooM2qQRHK/c9J+8d19h
-         0lHMFqNUPmnOjGrKaJavTiRpV/JxqLqIvObt8K+Yf1SQS4/HHlYlnObE3mfonf7nHRUU
-         5n21MbdgEMUf/nP0xvR7yMrZtTFpIhgwmJIzJFMaUT8mPVYZp+PZiL/laOFrM+/AE7+2
-         unmexLw4S2uu8SEYxRy6LyDwyrYU4dsGGkzFR19/8CJcK6vSQ2r14qmtKZu78g44UzpR
-         9s5Z4eUUwnS0jdqnd+Y98amFluHRXWfPEYzEJ4WMZLZ9w404u+4l7D7YLwqyyRwI0EYN
-         M9tw==
-X-Gm-Message-State: AOAM532ANbpggjHUft5ajkCJ415v55RIeixMiLDFyLo8h5MATU6jXi6Z
-        J1O9skugEoSp3jTWNrptzZkS6DAvg3yiY6vhrZo=
-X-Google-Smtp-Source: ABdhPJyPGQ1BAYl5MPLZJ0Ym3NE3dFAFBwfJXZm/Vv7mnJozErV8YETJjcrqQ6OZgFYgN+/FDxDgQ2+UfyhwuiDV52k=
-X-Received: by 2002:a05:6902:4e2:b0:611:19fc:a30 with SMTP id
- w2-20020a05690204e200b0061119fc0a30mr22644183ybs.431.1646138256813; Tue, 01
- Mar 2022 04:37:36 -0800 (PST)
+        Tue, 1 Mar 2022 07:39:03 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B63372983B;
+        Tue,  1 Mar 2022 04:38:22 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7F42DED1;
+        Tue,  1 Mar 2022 04:38:22 -0800 (PST)
+Received: from [10.57.39.47] (unknown [10.57.39.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1BD743F70D;
+        Tue,  1 Mar 2022 04:38:20 -0800 (PST)
+Message-ID: <54b24f3d-3762-abbd-5ac4-dc5728f2fe4e@arm.com>
+Date:   Tue, 1 Mar 2022 12:38:17 +0000
 MIME-Version: 1.0
-References: <20220227230817.31094-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <TYBPR01MB5341A5DC3BBB4AA59668AF87D8019@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <CAMuHMdX5yW3_3ydFXZBsOd+s-23-3dCfcgCxi8g_VEg0XPYnDA@mail.gmail.com>
-In-Reply-To: <CAMuHMdX5yW3_3ydFXZBsOd+s-23-3dCfcgCxi8g_VEg0XPYnDA@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 1 Mar 2022 12:37:11 +0000
-Message-ID: <CA+V-a8uuuQiij4iZvRvTKsqYmdTgEFcKZAMTJJMQv0Er=xRG2g@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: phy: renesas,usb2-phy: Document RZ/V2L phy bindings
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: avoid logspam when cd-broken
+Content-Language: en-GB
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Jaehoon Chung <jh80.chung@samsung.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>, linux-mmc@vger.kernel.org,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220228223642.1136229-1-pgwipeout@gmail.com>
+ <c12e74b7-0bef-ac7a-20c1-2a17ddd050dd@arm.com>
+ <CAMdYzYq0A4FitRGe49fxvjbwLUCi_KGwCtfz7pmayt_dK=r32w@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAMdYzYq0A4FitRGe49fxvjbwLUCi_KGwCtfz7pmayt_dK=r32w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert and Shimoda-san,
+On 2022-03-01 11:49, Peter Geis wrote:
+> On Tue, Mar 1, 2022 at 6:23 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2022-02-28 22:36, Peter Geis wrote:
+>>> The dw_mmc-rockchip driver drops a large amound of logspam constantly
+>>> when the cd-broken flag is enabled.
+>>> Set the warning to be debug ratelimited in this case.
+>>
+>> Isn't this just papering over some fundamental problem with the clock?
+>> If it's failing to set the expected rate for communicating with a card,
+>> then presumably that's an issue for correct operation in general? The
+>> fact that polling for a card makes a lot more of that communication
+>> happen seems unrelated :/
+> 
+> Good Morning,
+> 
+> This only happens when a card is not inserted, so communication cannot happen.
 
-Thank you for the review.
+Well, I suppose there's a philosophical question in there about whether 
+shouting into the void counts as "communication", but AFAIR what the 
+polling function does is power up the controller, send a command, and 
+see if it gets a response.
 
-On Mon, Feb 28, 2022 at 2:35 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> On Mon, Feb 28, 2022 at 3:18 AM Yoshihiro Shimoda
-> <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > From: Lad Prabhakar, Sent: Monday, February 28, 2022 8:08 AM
-> > >
-> > > Document USB phy bindings for RZ/V2L SoC. RZ/V2L USB phy is identical to
-> > > one found on the RZ/G2L SoC. No driver changes are required as generic
-> > > compatible string "renesas,rzg2l-usb2-phy" will be used as a fallback.
-> > >
-> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > > b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > > index 3a6e1165419c..4c475be413ef 100644
-> > > --- a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > > +++ b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > > @@ -33,6 +33,7 @@ properties:
-> > >        - items:
-> > >            - enum:
-> > >                - renesas,usb2-phy-r9a07g044 # RZ/G2{L,LC}
-> > > +              - renesas,usb2-phy-r9a07g054 # RZ/V2L
-> > >            - const: renesas,rzg2l-usb2-phy  # RZ/G2L family
-> >
-> > The "# RZ/G2L family" is not suitable now. I think removing
-> > the comment is better like "renesas,rcar-gen3-usb2-phy".
->
-> Indeed.
->
-Agreed, I will drop it and resend a v2.
+If the clock can't be set to the proper rate for low-speed discovery, 
+some or all cards may not be detected properly. Conversely if it is 
+already at a slow enough rate for discovery but can't be set higher once 
+a proper communication mode has been established, data transfer 
+performance will be terrible. Either way, it is not OK in general for 
+clk_set_rate() to fail, hence the warning. You have a clock driver problem.
 
 Cheers,
-Prabhakar
+Robin.
 
-> > I don't have the RZ/V2L- documentation. So, I cannot check
-> > whether the RZ/V2L is the same specification with RZ/G2{L,LC}.
-> > But I trust you. So, after the comment was removed,
->
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+> I found it while lighting off the SoQuartz module.
+> As it is pin compatible with the RPi CM4, and the CM4 does not have a
+> card detect line, sdmmc is non functional without cd-broken.
+> This led to the fun spew when there wasn't a card inserted as this
+> function is called every poll tick.
+> 
+> Thanks,
+> Peter
+> 
+>>
+>> Robin.
+>>
+>>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+>>> ---
+>>>    drivers/mmc/host/dw_mmc-rockchip.c | 9 +++++++--
+>>>    1 file changed, 7 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
+>>> index 95d0ec0f5f3a..d0ebf0afa42a 100644
+>>> --- a/drivers/mmc/host/dw_mmc-rockchip.c
+>>> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
+>>> @@ -50,8 +50,13 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
+>>>                cclkin = ios->clock * RK3288_CLKGEN_DIV;
+>>>
+>>>        ret = clk_set_rate(host->ciu_clk, cclkin);
+>>> -     if (ret)
+>>> -             dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
+>>> +     if (ret) {
+>>> +             /* this screams when card detection is broken */
+>>> +             if (host->slot->mmc->caps & MMC_CAP_NEEDS_POLL)
+>>> +                     dev_dbg_ratelimited(host->dev, "failed to set rate %uHz\n", ios->clock);
+>>> +             else
+>>> +                     dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
+>>> +     }
+>>>
+>>>        bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
+>>>        if (bus_hz != host->bus_hz) {
