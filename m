@@ -2,70 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43861C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236611AbiCARpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 12:45:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35722 "EHLO
+        id S236640AbiCARp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 12:45:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232482AbiCARpc (ORCPT
+        with ESMTP id S236614AbiCARpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 12:45:32 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042032BD6;
-        Tue,  1 Mar 2022 09:44:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=x8QboE68qufGVCeh7eGFRudjtwH2eRrn2yzIYOD5Vgw=; b=c+eqLUh4cgb5zqr11iFm9AZnmi
-        Az+zXe+HI8JwYuwddDIEUrK+6pj89VqZ1zXyDWCxMXCqgukYtTSbZ6vZcSYc+w5pTSSfcBc+jAZYF
-        VkjhXX3c63bV892yWwICRDsLtO8mae1whZyrP+gdP7PklZzVviEmf+ux3H8d0KQ20ptp+nC7VKXVu
-        OAt2wpQdQ0ce47qSwj54FTZ7C5udFJ8usFEcEO59Uu8WCY2ZKg4lUW8gYEDh783WnEmNftT6npfTD
-        6eyqy94I8K5j3NL75Ayjji3npsZ0p29/YReuXtVRXgcJH72TbDwrbCrK6Q/tB6YA0pyC41bS3dj2z
-        O9JxlSrQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nP6Y5-0006Vm-SA; Tue, 01 Mar 2022 17:44:33 +0000
-Date:   Tue, 1 Mar 2022 09:44:33 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Meng Tang <tangmeng@uniontech.com>
-Cc:     keescook@chromium.org, yzaikin@google.com, ebiederm@xmission.com,
-        willy@infradead.org, nixiaoming@huawei.com, nizhen@uniontech.com,
-        zhanglianjie@uniontech.com, sujiaxun@uniontech.com,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] fs/proc: optimize exactly register one ctl_table
-Message-ID: <Yh5bgYQM9a0ox95a@bombadil.infradead.org>
-References: <20220301115341.30101-1-tangmeng@uniontech.com>
+        Tue, 1 Mar 2022 12:45:52 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326632AC6C;
+        Tue,  1 Mar 2022 09:45:11 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id r10so21748083wrp.3;
+        Tue, 01 Mar 2022 09:45:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LCKZuqBaQrqVvcLu/EUZDoUvEFQ31pI7qQ+wygT5714=;
+        b=GgdmWlO6xVaLOUNuLj+YvNsSoAlTqMq+dOrCyEjLKS+ZFbI2FQbSkpU2ikDfOzkS63
+         fgIHsSAFVJRTiXxioBvPS3Fj5Spj2nIxhcf2L7R24GTdQHbeGQvQjtZgzBZ/HE+QNYJA
+         iHjXoDqknYBPfOULvIzlb2BeMyItKLFDk0d9hVXJe3mtde2171/FtAcKiIgiAURpFuOU
+         /epZze29QyzrVoZGY1GgRHXmkgHyQuzsLFB/cP1oufq80EOxPWTAQ7xwZD4ElrD/Ck99
+         ptIoFxorgkey4MAKh+JiiQMTS+K3YJlcQf+6XnCZcc8xtgx2W05S2wMssyHlyn/TMk7/
+         DN6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LCKZuqBaQrqVvcLu/EUZDoUvEFQ31pI7qQ+wygT5714=;
+        b=H/UPYG/ks8na1TXBmlSUxf279velAzY15/vcuX0RsP8lsn3THLwmdpStSbu7rFDJeP
+         ZyMuJdyUQDU1y036DxZLLBayBQyKb2BtvVrdMyzNOP7vpg9wLd6uCqSTxgwqO+mmf6D+
+         4mtS/euVvuAZq9h1L6EUlPfIi34D/vbe1FmgB/FJ7Q1yAZfLaZcftl/fhvmnBDEVAfSq
+         Ib7jbcvikcSQwsXyuDdt5l3TmzoAo7DMpaflxr+i3vkzr64SjmostX58z/mUBgSUosDG
+         v9NUdKzfhOL8mqlFnC2tbNZQhtKw9oHA/s/V9M3m2IPeqm9J5gM0ApA221o4YYtB3+je
+         LbBw==
+X-Gm-Message-State: AOAM533EDXIJ0qJ+Gvv7Z/sYx8rwPTe0nYj8LjLBaAWfhyVQArG41qAf
+        Imy+3y9ruEb14+BklZYRFtdjGDgSxj6Ah6ZwQ1g=
+X-Google-Smtp-Source: ABdhPJwQNgpFjfl73NGhoHP4atwM/20R77juX1EAsRkGpJfhZO7TsJePIDQE5ElT3fRCwE7agOirdL04RUfznC8bUXE=
+X-Received: by 2002:a5d:44c7:0:b0:1ed:e11c:9b73 with SMTP id
+ z7-20020a5d44c7000000b001ede11c9b73mr19967467wrr.574.1646156709718; Tue, 01
+ Mar 2022 09:45:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301115341.30101-1-tangmeng@uniontech.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+References: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
+ <YgZD8vPqB7ISpRpZ@kroah.com> <654d620b-9e14-c47f-b48c-762dc0bd32a1@quicinc.com>
+ <Ygdb63FrorUsX/Hg@kroah.com> <b9156bde-137c-2fac-19e0-b205ab4d6016@quicinc.com>
+ <7db7d01fcf5a3edce61161769c0e6eb1541237bf.camel@sipsolutions.net>
+ <2add9ba7-7bc8-bd1d-1963-61e8154b0e3c@quicinc.com> <989efb15-cc5e-8f6d-c313-118f01498e33@quicinc.com>
+ <8fa2f879e33e4e42b76e21c6fbdcb023@AcuMS.aculab.com>
+In-Reply-To: <8fa2f879e33e4e42b76e21c6fbdcb023@AcuMS.aculab.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Tue, 1 Mar 2022 09:45:39 -0800
+Message-ID: <CAF6AEGtNGJanJ9f2pkjst50yPSWGJPo5nDkcZZgq=BkRWMq4yg@mail.gmail.com>
+Subject: Re: [PATCH] devcoredump: increase the device delete timeout to 10 mins
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        "khsieh@codeaurora.org" <khsieh@codeaurora.org>,
+        "nganji@codeaurora.org" <nganji@codeaurora.org>,
+        "seanpaul@chromium.org" <seanpaul@chromium.org>,
+        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
+        "aravindh@codeaurora.org" <aravindh@codeaurora.org>,
+        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 07:53:40PM +0800, Meng Tang wrote:
-> Sysctls are being moved out of kernel/sysctl.c and out to
-> their own respective subsystems / users to help with easier
-> maintance and avoid merge conflicts. But when we move just
-> one entry and to its own new file the last entry for this
-> new file must be empty, so we are essentialy bloating the
-> kernel one extra empty entry per each newly moved sysctl.
-> 
-> To help with this, this adds support for registering just
-> one ctl_table, therefore not bloating the kernel when we
-> move a single ctl_table to its own file.
-> 
-> Suggested-by: Matthew Wilcox <willy@infradead.org>
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+On Mon, Feb 28, 2022 at 10:49 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Abhinav Kumar
+> > Sent: 28 February 2022 21:38
+> ...
+> > We also did some profiling around how much increasing the block size
+> > helps and here is the data:
+> >
+> > Block size    cost
+> >
+> > 4KB           229s
+> > 8KB            86s
+>
+> You must have an O(n^2) operation in there - find it.
 
-Please extend the commit log to justify why we have to add
-so much code, you mentioned it to me before, now just please
-write that in the commit log.
+The problem is how the devcoredump/sysfs interface works, which
+results in "re-rendering" the output for each block.. it's fine for
+moderate size sysfs files, but scales quite badly once you get into
+couple MB size sysfs files.
 
-Can you really not add helpers first so that these helpers
-are used by both paths?
+It could be fixed by having some way to keep state across successive
+read callbacks.
 
-  Luis
+BR,
+-R
+
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
