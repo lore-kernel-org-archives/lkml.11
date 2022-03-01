@@ -2,85 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 159F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234866AbiCAM4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:56:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
+        id S234873AbiCAM6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:58:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiCAM4W (ORCPT
+        with ESMTP id S230415AbiCAM6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:56:22 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBF78A318
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 04:55:40 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 1 Mar 2022 07:58:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0629F13DF1;
+        Tue,  1 Mar 2022 04:58:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K7HKk1xG8z4xPt;
-        Tue,  1 Mar 2022 23:55:38 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1646139338;
-        bh=3gAUw2bljeQgo+EIP3uDFWmam1knQZu7pffpGmaV4fk=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=dlVJsWZXk+G/5EIS6pOP76i9u12kyE3/AwRjYtkWQDUaSChKkxstgICysnR1WNgZi
-         7CrNqGb+0B5EdXQSh+3R7DzUA3c9CiOXS0Ozj5tDNG2V/e/ikkI83Ngdq/ndgw/TZQ
-         7yBJwtiN3X6oP638JzaoGKtuLi/MwoiZYogkr+9sLMKkiEL5waISY3OIbY6WdEX7QL
-         YTgis/hp3vihz82rnv2XaKrdagoQDFgQbv3vmvkv33Ard89MNdONaFr9K/IeUu8cTf
-         nrC6NDS5xQ1EPCapfFcHV6tZ0Zp/dsam/3TJ0jzg0BeBvZkoHuZ5gvEWWl0Wu83saW
-         04qgfukwQbWQQ==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Hangyu Hua <hbh25y@gmail.com>, benh@kernel.crashing.org,
-        paulus@samba.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: Re: [PATCH] powerpc: kernel: fix a refcount leak in format_show()
-In-Reply-To: <20220228091103.39749-1-hbh25y@gmail.com>
-References: <20220228091103.39749-1-hbh25y@gmail.com>
-Date:   Tue, 01 Mar 2022 23:55:35 +1100
-Message-ID: <87o82pomrc.fsf@mpe.ellerman.id.au>
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF166B818D4;
+        Tue,  1 Mar 2022 12:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80B30C340EE;
+        Tue,  1 Mar 2022 12:57:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646139477;
+        bh=r75Uzu8npn39r4huc5vp0QUopdOSRjOWjwUwuLTzzJI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XIT+/WNf0MDXISpteczFZnD/f5tbZVR5uIq6Fzan3pquU0MfcU2IlMQBIKrq5m3DH
+         s05RAN2ZmV4eeHhA7iRpGps69DTryLghWkCd2obVPwOitVKTfoGzx5brGkwcc4V5ac
+         lIaJdrBkf43/9lTEBqmsHa5gOW0p8Q5M5Yn4bWeeoBSTzxp5ayhA42Ksn4NbsWpy8w
+         21I+89A7bmhKxJeMPoDrYSlw/iI8KsqwK7sTypVXXgn43DZPQ8k5qFnemRPsArJLVE
+         bLEAPzJUvirns5poA7Ssfq07ww27IK9aGNYzBqkIsUquTCorTUbZTuMCwg4b/+95JG
+         S+ZyQocZGKwRA==
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     linux-sgx@vger.kernel.org
+Cc:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jethro Beekman <jethro@fortanix.com>,
+        linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND
+        64-BIT))
+Subject: [PATCH v5] x86/sgx: Free backing memory after faulting the enclave page
+Date:   Tue,  1 Mar 2022 13:58:36 +0100
+Message-Id: <20220301125836.3430-1-jarkko@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hangyu Hua <hbh25y@gmail.com> writes:
-> node needs to be dropped when of_property_read_string fails. So an earlier call
-> to of_node_put is required here.
+There is a limited amount of SGX memory (EPC) on each system.  When that
+memory is used up, SGX has its own swapping mechanism which is similar
+in concept but totally separate from the core mm/* code.  Instead of
+swapping to disk, SGX swaps from EPC to normal RAM.  That normal RAM
+comes from a shared memory pseudo-file and can itself be swapped by the
+core mm code.  There is a hierarchy like this:
 
-That's true but ...
+	EPC <-> shmem <-> disk
 
-> diff --git a/arch/powerpc/kernel/secvar-sysfs.c b/arch/powerpc/kernel/secvar-sysfs.c
-> index a0a78aba2083..cd0fa7028d86 100644
-> --- a/arch/powerpc/kernel/secvar-sysfs.c
-> +++ b/arch/powerpc/kernel/secvar-sysfs.c
-> @@ -30,13 +30,12 @@ static ssize_t format_show(struct kobject *kobj, struct kobj_attribute *attr,
->  		return -ENODEV;
+After data is swapped back in from shmem to EPC, the shmem backing
+storage needs to be freed.  Currently, the backing shmem is not freed.
+This effectively wastes the shmem while the enclave is running.  The
+memory is recovered when the enclave is destroyed and the backing
+storage freed.
 
-There's also a reference leak there ^
+Sort this out by freeing memory with shmem_truncate_range(), as soon as
+a page is faulted back to the EPC.  In addition, free the memory for
+PCMD pages as soon as all PCMD's in a page have been marked as unused
+by zeroing its contents.
 
-So if you're going to touch this code I'd like you to fix both reference
-leaks in a single patch please.
+Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+---
+v5:
+* Encapsulated file offset calculation for PCMD struct.
+* Replaced "magic number" PAGE_SIZE with sizeof(struct sgx_secs) to make
+  the offset calculation more self-documentative.
+v4:
+* Sanitized the offset calculations.
+v3:
+* Resend.
+v2:
+* Rewrite commit message as proposed by Dave.
+* Truncate PCMD pages (Dave).
+---
+ arch/x86/kernel/cpu/sgx/encl.c | 57 ++++++++++++++++++++++++++++------
+ 1 file changed, 48 insertions(+), 9 deletions(-)
 
-Having the error cases set rc and then goto "out" which does the
-of_node_put() is the obvious solution I think.
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 8be6f0592bdc..3d2ed8d27747 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -12,6 +12,30 @@
+ #include "encls.h"
+ #include "sgx.h"
+ 
++/*
++ * Calculate byte offset of a PCMD struct associated with an enclave page. PCMD's
++ * follow right after the EPC data in the backing storage. In addition to the
++ * visible enclave pages, there's one extra page slot for SECS, before PCMD
++ * structs.
++ */
++static inline pgoff_t sgx_encl_get_backing_page_pcmd_offset(struct sgx_encl *encl,
++							    unsigned long page_index)
++{
++	pgoff_t epc_end_off = encl->size + sizeof(struct sgx_secs);
++
++	return epc_end_off + page_index * sizeof(struct sgx_pcmd);
++}
++
++/*
++ * Free a page from the backing storage in the given page index.
++ */
++static inline void sgx_encl_truncate_backing_page(struct sgx_encl *encl, unsigned long page_index)
++{
++	struct inode *inode = file_inode(encl->backing);
++
++	shmem_truncate_range(inode, PFN_PHYS(page_index), PFN_PHYS(page_index) + PAGE_SIZE - 1);
++}
++
+ /*
+  * ELDU: Load an EPC page as unblocked. For more info, see "OS Management of EPC
+  * Pages" in the SDM.
+@@ -22,9 +46,11 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ {
+ 	unsigned long va_offset = encl_page->desc & SGX_ENCL_PAGE_VA_OFFSET_MASK;
+ 	struct sgx_encl *encl = encl_page->encl;
++	pgoff_t page_index, page_pcmd_off;
+ 	struct sgx_pageinfo pginfo;
+ 	struct sgx_backing b;
+-	pgoff_t page_index;
++	bool pcmd_page_empty;
++	u8 *pcmd_page;
+ 	int ret;
+ 
+ 	if (secs_page)
+@@ -32,14 +58,16 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ 	else
+ 		page_index = PFN_DOWN(encl->size);
+ 
++	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
++
+ 	ret = sgx_encl_lookup_backing(encl, page_index, &b);
+ 	if (ret)
+ 		return ret;
+ 
+ 	pginfo.addr = encl_page->desc & PAGE_MASK;
+ 	pginfo.contents = (unsigned long)kmap_atomic(b.contents);
+-	pginfo.metadata = (unsigned long)kmap_atomic(b.pcmd) +
+-			  b.pcmd_offset;
++	pcmd_page = kmap_atomic(b.pcmd);
++	pginfo.metadata = (unsigned long)pcmd_page + b.pcmd_offset;
+ 
+ 	if (secs_page)
+ 		pginfo.secs = (u64)sgx_get_epc_virt_addr(secs_page);
+@@ -55,11 +83,24 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ 		ret = -EFAULT;
+ 	}
+ 
+-	kunmap_atomic((void *)(unsigned long)(pginfo.metadata - b.pcmd_offset));
++	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
++
++	/*
++	 * The area for the PCMD in the page was zeroed above.  Check if the
++	 * whole page is now empty meaning that all PCMD's have been zeroed:
++	 */
++	pcmd_page_empty = !memchr_inv(pcmd_page, 0, PAGE_SIZE);
++
++	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
+ 
+ 	sgx_encl_put_backing(&b, false);
+ 
++	sgx_encl_truncate_backing_page(encl, page_index);
++
++	if (pcmd_page_empty)
++		sgx_encl_truncate_backing_page(encl, PFN_DOWN(page_pcmd_off));
++
+ 	return ret;
+ }
+ 
+@@ -583,7 +624,7 @@ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
+ static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 				struct sgx_backing *backing)
+ {
+-	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
++	pgoff_t page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+ 	struct page *contents;
+ 	struct page *pcmd;
+ 
+@@ -591,7 +632,7 @@ static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 	if (IS_ERR(contents))
+ 		return PTR_ERR(contents);
+ 
+-	pcmd = sgx_encl_get_backing_page(encl, pcmd_index);
++	pcmd = sgx_encl_get_backing_page(encl, PFN_DOWN(page_pcmd_off));
+ 	if (IS_ERR(pcmd)) {
+ 		put_page(contents);
+ 		return PTR_ERR(pcmd);
+@@ -600,9 +641,7 @@ static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 	backing->page_index = page_index;
+ 	backing->contents = contents;
+ 	backing->pcmd = pcmd;
+-	backing->pcmd_offset =
+-		(page_index & (PAGE_SIZE / sizeof(struct sgx_pcmd) - 1)) *
+-		sizeof(struct sgx_pcmd);
++	backing->pcmd_offset = page_pcmd_off & (PAGE_SIZE - 1);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
 
-cheers
-
->  	rc = of_property_read_string(node, "format", &format);
-> +	of_node_put(node);
->  	if (rc)
->  		return rc;
->  
->  	rc = sprintf(buf, "%s\n", format);
->  
-> -	of_node_put(node);
-> -
->  	return rc;
->  }
->  
-> -- 
-> 2.25.1
