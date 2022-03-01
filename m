@@ -2,88 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6ED3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A333FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbiCAMZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:25:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
+        id S234739AbiCAM0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiCAMZt (ORCPT
+        with ESMTP id S229687AbiCAM0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:25:49 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 067F84BB9B;
-        Tue,  1 Mar 2022 04:25:07 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B48BCED1;
-        Tue,  1 Mar 2022 04:25:06 -0800 (PST)
-Received: from [10.57.5.157] (unknown [10.57.5.157])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C8D213F70D;
-        Tue,  1 Mar 2022 04:25:04 -0800 (PST)
-Message-ID: <a2871e71-02af-198f-3944-d6565f3cd5f9@arm.com>
-Date:   Tue, 1 Mar 2022 12:23:54 +0000
+        Tue, 1 Mar 2022 07:26:02 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F617B562
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 04:25:21 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 487CF1F39D;
+        Tue,  1 Mar 2022 12:25:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646137520; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=58pWrGNCbwEBIMex3Topa9R1mdmxkD1Mk0Xgo6Zbo/s=;
+        b=KQW+YQPOrAc1caEACK0RU+FH+BQI6M4ZpALD+E2Flze2qBvvCf0zWjXsox82Jttx5voHeb
+        taqy0vcGyKHIUOFEXPF/q4+rvN6C4r43Wk+CJWOSj3cocSh6fG+uD97ei9vxa7Zs5LoI4M
+        LtdwitajE3g0vvnZVLTnJN8ubs1zlyg=
+Received: from suse.cz (pathway.suse.cz [10.100.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 2A92CA3B88;
+        Tue,  1 Mar 2022 12:25:20 +0000 (UTC)
+Date:   Tue, 1 Mar 2022 13:25:20 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, mhocko@suse.com,
+        peterz@infradead.org, guro@fb.com, shakeelb@google.com,
+        minchan@kernel.org, timmurray@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kernel-team@android.com
+Subject: Re: [RFC 1/1] mm: page_alloc: replace mm_percpu_wq with kthreads in
+ drain_all_pages
+Message-ID: <20220301122520.GB23924@pathway.suse.cz>
+References: <20220225012819.1807147-1-surenb@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [PATCH v5] cpuidle: sunplus: Create cpuidle driver for sunplus
- sp7021
-To:     =?UTF-8?B?RWR3aW4gQ2hpdSDpgrHlnoLls7A=?= <edwin.chiu@sunplus.com>
-Cc:     Edwin Chiu <edwinchiu0505tw@gmail.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
-References: <cover.1645427180.git.edwinchiu0505tw@gmail.com>
- <1628e048220f066204b8ac27f3cedf7f3cc02963.1645427180.git.edwinchiu0505tw@gmail.com>
- <20220221105151.6rvyoqyvj6ehhtnj@bogus>
- <7b09a22cc178439aa41a752af936313d@sphcmbx02.sunplus.com.tw>
-Content-Language: en-US
-Organization: ARM
-In-Reply-To: <7b09a22cc178439aa41a752af936313d@sphcmbx02.sunplus.com.tw>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225012819.1807147-1-surenb@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 09:18:31AM +0000, Edwin Chiu 邱垂峰 wrote:
-> > 
-> > You really don't need a cpuidle driver to just WFI for any states.
-> > Add the driver when you have something non WFI in the suspend function.
-> >
-
-This is still valid and you haven't responded to this.
-
-> > > +static const struct of_device_id sp7021_idle_state_match[] = {
-> > > +	{ .compatible = "arm,idle-state", .data = sp7021_cpu_spc },
-> > > +	{ },
-> > > +};
-> > 
-> > This is better than adding new driver like you did in previous version.
-> > 
-> > I did a quick check but couldn't figure out. How do cpus get switched ON
-> > or OFF on this platform(for example during CPU hotplug) ?.
-> > 
+On Thu 2022-02-24 17:28:19, Suren Baghdasaryan wrote:
+> Sending as an RFC to confirm if this is the right direction and to
+> clarify if other tasks currently executed on mm_percpu_wq should be
+> also moved to kthreads. The patch seems stable in testing but I want
+> to collect more performance data before submitting a non-RFC version.
 > 
-> In this patch, I just want to submit cpuidle function.
-> So there have no cpu hotplug function now.
+> 
+> Currently drain_all_pages uses mm_percpu_wq to drain pages from pcp
+> list during direct reclaim. The tasks on a workqueue can be delayed
+> by other tasks in the workqueues using the same per-cpu worker pool.
+> This results in sizable delays in drain_all_pages when cpus are highly
+> contended.
+> Memory management operations designed to relieve memory pressure should
+> not be allowed to block by other tasks, especially if the task in direct
+> reclaim has higher priority than the blocking tasks.
+> Replace the usage of mm_percpu_wq with per-cpu low priority FIFO
+> kthreads to execute draining tasks.
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
+The patch looks good to me. See few comments below about things
+where I was in doubts. But I do not see any real problem with
+this approach.
 
-You need to document the binding now for both idle and hotplug. You
-can't mix and match. You can either use PSCI or custom "sunplus,sc-smp"
-for both cpu on/off and suspend. So you must document it now even if you
-don't plan to support hotplug now. And when you add later, you must use
-the same method.
+> ---
+>  mm/page_alloc.c | 84 ++++++++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 70 insertions(+), 14 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 3589febc6d31..c9ab2cf4b05b 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -2209,6 +2210,58 @@ _deferred_grow_zone(struct zone *zone, unsigned int order)
+>  
+>  #endif /* CONFIG_DEFERRED_STRUCT_PAGE_INIT */
+>  
+> +static void drain_local_pages_func(struct kthread_work *work);
+> +
+> +static int alloc_drain_worker(unsigned int cpu)
+> +{
+> +	struct pcpu_drain *drain;
+> +
+> +	mutex_lock(&pcpu_drain_mutex);
+> +	drain = per_cpu_ptr(&pcpu_drain, cpu);
+> +	drain->worker = kthread_create_worker_on_cpu(cpu, 0, "pg_drain/%u", cpu);
+> +	if (IS_ERR(drain->worker)) {
+> +		drain->worker = NULL;
+> +		pr_err("Failed to create pg_drain/%u\n", cpu);
+> +		goto out;
+> +	}
+> +	/* Ensure the thread is not blocked by normal priority tasks */
+> +	sched_set_fifo_low(drain->worker->task);
+> +	kthread_init_work(&drain->work, drain_local_pages_func);
+> +out:
+> +	mutex_unlock(&pcpu_drain_mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +static int free_drain_worker(unsigned int cpu)
+> +{
+> +	struct pcpu_drain *drain;
+> +
+> +	mutex_lock(&pcpu_drain_mutex);
+> +	drain = per_cpu_ptr(&pcpu_drain, cpu);
+> +	kthread_cancel_work_sync(&drain->work);
 
-However, you still don't need this driver for just WFI, so please
-explain why you think otherwise. Until then, you still won't get ACK
-from my side.
+I do see not how CPU down was handled in the original code.
 
--- 
-Regards,
-Sudeep
+Note that workqueues call unbind_workers() when a CPU
+is going down. The pending work items might be proceed
+on another CPU. From this POV, the new code looks more
+safe.
+
+> +	kthread_destroy_worker(drain->worker);
+> +	drain->worker = NULL;
+> +	mutex_unlock(&pcpu_drain_mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +static void __init init_drain_workers(void)
+> +{
+> +	unsigned int cpu;
+> +
+> +	for_each_online_cpu(cpu)
+> +		alloc_drain_worker(cpu);
+
+I though whether this need to be called under cpus_read_lock();
+And I think that the code should be safe as it is. There
+is this call chain:
+
+  + kernel_init_freeable()
+    + page_alloc_init_late()
+      + init_drain_workers()
+
+It is called after smp_init() but before the init process
+is executed. I guess that nobody could trigger CPU hotplug
+at this state. So there there is no need to synchronize
+against it.
+
+> +
+> +	if (cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+> +					"page_alloc/drain:online",
+> +					alloc_drain_worker,
+> +					free_drain_worker)) {
+> +		pr_err("page_alloc_drain: Failed to allocate a hotplug state\n");
+
+I am not sure if there are any special requirements about the
+ordering vs. other CPU hotplug operations.
+
+Just note that the per-CPU workqueues are started/stopped
+via CPUHP_AP_WORKQUEUE_ONLINE. They are available slightly
+earlier before CPUHP_AP_ONLINE_DYN when the CPU is being
+enabled.
+
+> +	}
+> +}
+> +
+>  void __init page_alloc_init_late(void)
+>  {
+>  	struct zone *zone;
+
+Best Regards,
+Petr
