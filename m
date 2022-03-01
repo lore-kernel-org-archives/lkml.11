@@ -2,370 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F80C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231990AbiCABFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 20:05:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        id S231653AbiCABFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 20:05:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231938AbiCABFJ (ORCPT
+        with ESMTP id S232039AbiCABFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 20:05:09 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC41D10B5;
-        Mon, 28 Feb 2022 17:04:29 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id l9so11738587pls.6;
-        Mon, 28 Feb 2022 17:04:29 -0800 (PST)
+        Mon, 28 Feb 2022 20:05:36 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C575DB849
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:04:47 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id u20so24355954lff.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:04:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3gFbnjPO5BppYFMj5w1roPmhQ+QxHohBl6chbdLG//Y=;
-        b=CXmgh4qlkuelcapoCZgjZF28iLW/v4m5kJWYg6rBRfsU5DUl5zh4Mx0gPu3iOMz3kO
-         sFQGFd6OZidgbTw+ycrtlKVIoJ04jfEm903MrXEYb3Ye7g8rQzwtMP5SxCnM/8O2DcYG
-         KT1ai0FZQmQft3xfOcmZianVXTgsQBzqqS4NTWjXOvprzJIkqfWaPbmFidCLpGuiO50q
-         RoTpV49RiE9neuzCuiAgVSmktEJDNMl7oCrFaTPLX20NjLpELw8YKLCpL3ObHKWUeW2G
-         LT5UEgsot4rHvhExuMyojkcNhWk92zSSn+9rxU18DRtd+BuKHdncxbZO23c99eMzeWOG
-         +71w==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+UrwimTIhzKiU9pJv3o5X6bf+6FXMWBGxz+Z+GIIGDc=;
+        b=avIYh8aQ2dDobwKAVUmxzj/7dS14/rGtEVGY0pMiaJUsHbP3qIU6kno3XMfBz/RlQM
+         DBr9tOtZ8iqO/uKNwSujAwo9mle8zBl2HT1HDuvvvRH+Bqr8BYPzCJojUUOk2VYbR5wW
+         hMzIeM3di7snjNNfrAaBZvtX47IfluwYB/RPY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=3gFbnjPO5BppYFMj5w1roPmhQ+QxHohBl6chbdLG//Y=;
-        b=tUXCjdh1FqzxPU90BCz2mfKWP4zQqT0qGoFW3x09sfyCw3rU0DMTm48WQLAJG9tMYK
-         rmO8oguHEmsCLs3eSkp5izSR0jEwZznGRmhiyc8oJc0WTLxdrP9g9sE9UPXmEuz+Hl45
-         5pKBS8v63JKyBUs05MpXDgCg/Tbb5viFJ89PtzypijONQ1Y87xIFINrgSE83fjKAtVxR
-         FsGOKZtoTwTT00CVewxJoPIOhtoQLC3dYbQszXWOO2lBPq1kwHSd8UZt7vT09sVytOjH
-         mIuXJHgBQ3uM+oK3+hKs3aWzjWu2Tzfs/ojmX30KYrsG2CVtE8AgiQfIzrX06uf9KQXC
-         QdZg==
-X-Gm-Message-State: AOAM530TPcYNr9knwXBqP4rrJU0QJCmDsEZZa+dS9Okh4WSUbnq5m0qY
-        kEAaEujQ1Bx4GB/H+6pu0LE=
-X-Google-Smtp-Source: ABdhPJwuQUOhH5HgWMT6ym5KV9IIXSrqjClUjSJJjUuczVfQIokubn+Ue0IR3NYj+iLFUgDjahxybg==
-X-Received: by 2002:a17:902:e949:b0:14b:1f32:e926 with SMTP id b9-20020a170902e94900b0014b1f32e926mr23813235pll.170.1646096668567;
-        Mon, 28 Feb 2022 17:04:28 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:3540:726c:585a:8796:a60a])
-        by smtp.gmail.com with ESMTPSA id cv15-20020a17090afd0f00b001bedcbca1a9sm83861pjb.57.2022.02.28.17.04.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 17:04:28 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
-        bpf@vger.kernel.org, Radoslaw Burny <rburny@google.com>
-Subject: [PATCH 4/4] locking/rwsem: Pass proper call-site ip
-Date:   Mon, 28 Feb 2022 17:04:12 -0800
-Message-Id: <20220301010412.431299-5-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-In-Reply-To: <20220301010412.431299-1-namhyung@kernel.org>
-References: <20220301010412.431299-1-namhyung@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+UrwimTIhzKiU9pJv3o5X6bf+6FXMWBGxz+Z+GIIGDc=;
+        b=yaur6Y7bhbKfA7ThE/pwsYLefDAbc3UwqoKdc9KGx4HtN0R2sLtY5huWsudV3onrpk
+         l49OUKQ9i/PD7yzS8mtfreE8a2xAO7s5bWgFd5vtqf/WdRKpOBJCoa19A6paYH+QU2KL
+         1eOPff4qBUW5j6FfR6smr99l5lgESUsQMBv5SHJFehHJchKY0a5mqVxzdsuap4GqdY2/
+         EdZYRcl8XV1M27Wz+hj5QiewCPqMYWMrJSa7HW/Ho893fJzHCPF4j9+1N/A8txJrTKCS
+         zaYjeqC8drEjSbRQvz/8KcdHtLWByrPVYrs2HLbN8keyB5LDT74A+v5Alfq1nSy7Wf5X
+         oeaA==
+X-Gm-Message-State: AOAM532IEeNOxQfAf0qDt0KKrvtP1KAZNgnAbJesHuNLdc2Ze4tjaZ18
+        Bo8vB3cwtzfjhWlCtT3ipsE3C+C4W2lV4Onagcg=
+X-Google-Smtp-Source: ABdhPJzJ2Xwwlh+Ho717gG4h5gV0YCF1uw9+QLVQ3jWcumRt0A3Ro9nUKy9dSIw0G1GBhGyD0c9cAg==
+X-Received: by 2002:ac2:5e8e:0:b0:43f:ed00:423a with SMTP id b14-20020ac25e8e000000b0043fed00423amr14941285lfq.668.1646096685242;
+        Mon, 28 Feb 2022 17:04:45 -0800 (PST)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
+        by smtp.gmail.com with ESMTPSA id u20-20020ac248b4000000b0044341a3cd34sm1214801lfg.124.2022.02.28.17.04.44
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 17:04:45 -0800 (PST)
+Received: by mail-lj1-f182.google.com with SMTP id p20so19856763ljo.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:04:44 -0800 (PST)
+X-Received: by 2002:a05:6512:3042:b0:437:96f5:e68a with SMTP id
+ b2-20020a056512304200b0043796f5e68amr14803965lfb.449.1646096282839; Mon, 28
+ Feb 2022 16:58:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+ <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+ <Yh0tl3Lni4weIMkl@casper.infradead.org> <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
+ <Yh1aMm3hFe/j9ZbI@casper.infradead.org> <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
+In-Reply-To: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 28 Feb 2022 16:57:46 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whqJmCZ+VHTJPwsHYc1YNNEvWS7=ukqGKfBxcBYAToAkw@mail.gmail.com>
+Message-ID: <CAHk-=whqJmCZ+VHTJPwsHYc1YNNEvWS7=ukqGKfBxcBYAToAkw@mail.gmail.com>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For some reason, __down_read_common() was not inlined in my system.
-So I can only see its caller down_read() in the tracepoint.  It should
-pass an IP of the actual caller.  Let's add a new variants of
-LOCK_CONTENDED macro to pass _RET_IP_ to the lock function and make
-rwsem down functions take an ip argument
+On Mon, Feb 28, 2022 at 4:45 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Yeah, except that's ugly beyond belief, plus it's literally not what
+> we do in the kernel.
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- include/linux/lockdep.h | 29 ++++++++++++++++-
- kernel/locking/rwsem.c  | 69 ++++++++++++++++++++++-------------------
- 2 files changed, 65 insertions(+), 33 deletions(-)
+(Of course, I probably shouldn't have used 'min()' as an example,
+because that is actually one of the few places where we do exactly
+that, using our __UNIQUE_ID() macros. Exactly because people _have_
+tried to do -Wshadow when doing W=2).
 
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 467b94257105..6aca885f356c 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -453,7 +453,16 @@ do {								\
- 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
- 		lock(_lock);					\
- 	}							\
--	lock_acquired(&(_lock)->dep_map, _RET_IP_);			\
-+	lock_acquired(&(_lock)->dep_map, _RET_IP_);		\
-+} while (0)
-+
-+#define LOCK_CONTENDED_IP(_lock, try, lock)			\
-+do {								\
-+	if (!try(_lock)) {					\
-+		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
-+		lock(_lock, _RET_IP_);				\
-+	}							\
-+	lock_acquired(&(_lock)->dep_map, _RET_IP_);		\
- } while (0)
- 
- #define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
-@@ -468,6 +477,18 @@ do {								\
- 	____err;						\
- })
- 
-+#define LOCK_CONTENDED_RETURN_IP(_lock, try, lock)		\
-+({								\
-+	int ____err = 0;					\
-+	if (!try(_lock)) {					\
-+		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
-+		____err = lock(_lock, _RET_IP_);		\
-+	}							\
-+	if (!____err)						\
-+		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
-+	____err;						\
-+})
-+
- #else /* CONFIG_LOCK_STAT */
- 
- #define lock_contended(lockdep_map, ip) do {} while (0)
-@@ -476,9 +497,15 @@ do {								\
- #define LOCK_CONTENDED(_lock, try, lock) \
- 	lock(_lock)
- 
-+#define LOCK_CONTENDED_IP(_lock, try, lock) \
-+	lock(_lock, _RET_IP_)
-+
- #define LOCK_CONTENDED_RETURN(_lock, try, lock) \
- 	lock(_lock)
- 
-+#define LOCK_CONTENDED_RETURN_IP(_lock, try, lock) \
-+	lock(_lock, _RET_IP_)
-+
- #endif /* CONFIG_LOCK_STAT */
- 
- #ifdef CONFIG_PROVE_LOCKING
-diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index a1a17af7f747..eafb0faaed0d 100644
---- a/kernel/locking/rwsem.c
-+++ b/kernel/locking/rwsem.c
-@@ -1207,13 +1207,14 @@ static struct rw_semaphore *rwsem_downgrade_wake(struct rw_semaphore *sem)
- /*
-  * lock for reading
-  */
--static inline int __down_read_common(struct rw_semaphore *sem, int state)
-+static inline int __down_read_common(struct rw_semaphore *sem, int state,
-+				     unsigned long ip)
- {
- 	long count;
- 	void *ret;
- 
- 	if (!rwsem_read_trylock(sem, &count)) {
--		trace_contention_begin(sem, _RET_IP_, LCB_F_READ | state);
-+		trace_contention_begin(sem, ip, LCB_F_READ | state);
- 		ret = rwsem_down_read_slowpath(sem, count, state);
- 		trace_contention_end(sem);
- 
-@@ -1224,19 +1225,19 @@ static inline int __down_read_common(struct rw_semaphore *sem, int state)
- 	return 0;
- }
- 
--static inline void __down_read(struct rw_semaphore *sem)
-+static inline void __down_read(struct rw_semaphore *sem, unsigned long ip)
- {
--	__down_read_common(sem, TASK_UNINTERRUPTIBLE);
-+	__down_read_common(sem, TASK_UNINTERRUPTIBLE, ip);
- }
- 
--static inline int __down_read_interruptible(struct rw_semaphore *sem)
-+static inline int __down_read_interruptible(struct rw_semaphore *sem, unsigned long ip)
- {
--	return __down_read_common(sem, TASK_INTERRUPTIBLE);
-+	return __down_read_common(sem, TASK_INTERRUPTIBLE, ip);
- }
- 
--static inline int __down_read_killable(struct rw_semaphore *sem)
-+static inline int __down_read_killable(struct rw_semaphore *sem, unsigned long ip)
- {
--	return __down_read_common(sem, TASK_KILLABLE);
-+	return __down_read_common(sem, TASK_KILLABLE, ip);
- }
- 
- static inline int __down_read_trylock(struct rw_semaphore *sem)
-@@ -1259,12 +1260,13 @@ static inline int __down_read_trylock(struct rw_semaphore *sem)
- /*
-  * lock for writing
-  */
--static inline int __down_write_common(struct rw_semaphore *sem, int state)
-+static inline int __down_write_common(struct rw_semaphore *sem, int state,
-+				      unsigned long ip)
- {
- 	void *ret;
- 
- 	if (unlikely(!rwsem_write_trylock(sem))) {
--		trace_contention_begin(sem, _RET_IP_, LCB_F_WRITE | state);
-+		trace_contention_begin(sem, ip, LCB_F_WRITE | state);
- 		ret = rwsem_down_write_slowpath(sem, state);
- 		trace_contention_end(sem);
- 
-@@ -1275,14 +1277,14 @@ static inline int __down_write_common(struct rw_semaphore *sem, int state)
- 	return 0;
- }
- 
--static inline void __down_write(struct rw_semaphore *sem)
-+static inline void __down_write(struct rw_semaphore *sem, unsigned long ip)
- {
--	__down_write_common(sem, TASK_UNINTERRUPTIBLE);
-+	__down_write_common(sem, TASK_UNINTERRUPTIBLE, ip);
- }
- 
--static inline int __down_write_killable(struct rw_semaphore *sem)
-+static inline int __down_write_killable(struct rw_semaphore *sem, unsigned long ip)
- {
--	return __down_write_common(sem, TASK_KILLABLE);
-+	return __down_write_common(sem, TASK_KILLABLE, ip);
- }
- 
- static inline int __down_write_trylock(struct rw_semaphore *sem)
-@@ -1397,17 +1399,17 @@ void __init_rwsem(struct rw_semaphore *sem, const char *name,
- }
- EXPORT_SYMBOL(__init_rwsem);
- 
--static inline void __down_read(struct rw_semaphore *sem)
-+static inline void __down_read(struct rw_semaphore *sem, unsigned long ip)
- {
- 	rwbase_read_lock(&sem->rwbase, TASK_UNINTERRUPTIBLE);
- }
- 
--static inline int __down_read_interruptible(struct rw_semaphore *sem)
-+static inline int __down_read_interruptible(struct rw_semaphore *sem, unsigned long ip)
- {
- 	return rwbase_read_lock(&sem->rwbase, TASK_INTERRUPTIBLE);
- }
- 
--static inline int __down_read_killable(struct rw_semaphore *sem)
-+static inline int __down_read_killable(struct rw_semaphore *sem, unsigned long ip)
- {
- 	return rwbase_read_lock(&sem->rwbase, TASK_KILLABLE);
- }
-@@ -1422,12 +1424,12 @@ static inline void __up_read(struct rw_semaphore *sem)
- 	rwbase_read_unlock(&sem->rwbase, TASK_NORMAL);
- }
- 
--static inline void __sched __down_write(struct rw_semaphore *sem)
-+static inline void __sched __down_write(struct rw_semaphore *sem, unsigned long ip)
- {
- 	rwbase_write_lock(&sem->rwbase, TASK_UNINTERRUPTIBLE);
- }
- 
--static inline int __sched __down_write_killable(struct rw_semaphore *sem)
-+static inline int __sched __down_write_killable(struct rw_semaphore *sem, unsigned long ip)
- {
- 	return rwbase_write_lock(&sem->rwbase, TASK_KILLABLE);
- }
-@@ -1472,7 +1474,7 @@ void __sched down_read(struct rw_semaphore *sem)
- 	might_sleep();
- 	rwsem_acquire_read(&sem->dep_map, 0, 0, _RET_IP_);
- 
--	LOCK_CONTENDED(sem, __down_read_trylock, __down_read);
-+	LOCK_CONTENDED_IP(sem, __down_read_trylock, __down_read);
- }
- EXPORT_SYMBOL(down_read);
- 
-@@ -1481,7 +1483,8 @@ int __sched down_read_interruptible(struct rw_semaphore *sem)
- 	might_sleep();
- 	rwsem_acquire_read(&sem->dep_map, 0, 0, _RET_IP_);
- 
--	if (LOCK_CONTENDED_RETURN(sem, __down_read_trylock, __down_read_interruptible)) {
-+	if (LOCK_CONTENDED_RETURN_IP(sem, __down_read_trylock,
-+				     __down_read_interruptible)) {
- 		rwsem_release(&sem->dep_map, _RET_IP_);
- 		return -EINTR;
- 	}
-@@ -1495,7 +1498,8 @@ int __sched down_read_killable(struct rw_semaphore *sem)
- 	might_sleep();
- 	rwsem_acquire_read(&sem->dep_map, 0, 0, _RET_IP_);
- 
--	if (LOCK_CONTENDED_RETURN(sem, __down_read_trylock, __down_read_killable)) {
-+	if (LOCK_CONTENDED_RETURN_IP(sem, __down_read_trylock,
-+				     __down_read_killable)) {
- 		rwsem_release(&sem->dep_map, _RET_IP_);
- 		return -EINTR;
- 	}
-@@ -1524,7 +1528,7 @@ void __sched down_write(struct rw_semaphore *sem)
- {
- 	might_sleep();
- 	rwsem_acquire(&sem->dep_map, 0, 0, _RET_IP_);
--	LOCK_CONTENDED(sem, __down_write_trylock, __down_write);
-+	LOCK_CONTENDED_IP(sem, __down_write_trylock, __down_write);
- }
- EXPORT_SYMBOL(down_write);
- 
-@@ -1536,8 +1540,8 @@ int __sched down_write_killable(struct rw_semaphore *sem)
- 	might_sleep();
- 	rwsem_acquire(&sem->dep_map, 0, 0, _RET_IP_);
- 
--	if (LOCK_CONTENDED_RETURN(sem, __down_write_trylock,
--				  __down_write_killable)) {
-+	if (LOCK_CONTENDED_RETURN_IP(sem, __down_write_trylock,
-+				     __down_write_killable)) {
- 		rwsem_release(&sem->dep_map, _RET_IP_);
- 		return -EINTR;
- 	}
-@@ -1596,7 +1600,7 @@ void down_read_nested(struct rw_semaphore *sem, int subclass)
- {
- 	might_sleep();
- 	rwsem_acquire_read(&sem->dep_map, subclass, 0, _RET_IP_);
--	LOCK_CONTENDED(sem, __down_read_trylock, __down_read);
-+	LOCK_CONTENDED_IP(sem, __down_read_trylock, __down_read);
- }
- EXPORT_SYMBOL(down_read_nested);
- 
-@@ -1605,7 +1609,8 @@ int down_read_killable_nested(struct rw_semaphore *sem, int subclass)
- 	might_sleep();
- 	rwsem_acquire_read(&sem->dep_map, subclass, 0, _RET_IP_);
- 
--	if (LOCK_CONTENDED_RETURN(sem, __down_read_trylock, __down_read_killable)) {
-+	if (LOCK_CONTENDED_RETURN_IP(sem, __down_read_trylock,
-+				     __down_read_killable)) {
- 		rwsem_release(&sem->dep_map, _RET_IP_);
- 		return -EINTR;
- 	}
-@@ -1618,14 +1623,14 @@ void _down_write_nest_lock(struct rw_semaphore *sem, struct lockdep_map *nest)
- {
- 	might_sleep();
- 	rwsem_acquire_nest(&sem->dep_map, 0, 0, nest, _RET_IP_);
--	LOCK_CONTENDED(sem, __down_write_trylock, __down_write);
-+	LOCK_CONTENDED_IP(sem, __down_write_trylock, __down_write);
- }
- EXPORT_SYMBOL(_down_write_nest_lock);
- 
- void down_read_non_owner(struct rw_semaphore *sem)
- {
- 	might_sleep();
--	__down_read(sem);
-+	__down_read(sem, _RET_IP_);
- 	__rwsem_set_reader_owned(sem, NULL);
- }
- EXPORT_SYMBOL(down_read_non_owner);
-@@ -1634,7 +1639,7 @@ void down_write_nested(struct rw_semaphore *sem, int subclass)
- {
- 	might_sleep();
- 	rwsem_acquire(&sem->dep_map, subclass, 0, _RET_IP_);
--	LOCK_CONTENDED(sem, __down_write_trylock, __down_write);
-+	LOCK_CONTENDED_IP(sem, __down_write_trylock, __down_write);
- }
- EXPORT_SYMBOL(down_write_nested);
- 
-@@ -1643,8 +1648,8 @@ int __sched down_write_killable_nested(struct rw_semaphore *sem, int subclass)
- 	might_sleep();
- 	rwsem_acquire(&sem->dep_map, subclass, 0, _RET_IP_);
- 
--	if (LOCK_CONTENDED_RETURN(sem, __down_write_trylock,
--				  __down_write_killable)) {
-+	if (LOCK_CONTENDED_RETURN_IP(sem, __down_write_trylock,
-+				     __down_write_killable)) {
- 		rwsem_release(&sem->dep_map, _RET_IP_);
- 		return -EINTR;
- 	}
--- 
-2.35.1.574.g5d30c73bfb-goog
-
+                 Linus
