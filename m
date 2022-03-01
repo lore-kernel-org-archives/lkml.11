@@ -2,65 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 188E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9178C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235508AbiCAPCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:02:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
+        id S235512AbiCAPDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:03:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiCAPCW (ORCPT
+        with ESMTP id S234347AbiCAPDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:02:22 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9414D9E56E;
-        Tue,  1 Mar 2022 07:01:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C8C66CE1C48;
-        Tue,  1 Mar 2022 15:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD23EC340F2;
-        Tue,  1 Mar 2022 15:01:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646146898;
-        bh=fsaZzr0CCCP6M/dr2U1LFsH9eaJK6vbc1eqyfSLb/Z8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=VkPclI6kDUJ0dLw1WIhtpq7EdjRgXY70C5RVnwiqdU/+UFEPxxC5BjXKYf9ihkZrC
-         fb/6pohUXMZ0QY0a64QXnE7DE9ePCNLNYaq8cutbtCXjTnKg7ITZ+kPA/xLFgc9/nY
-         mZjiy3k3CVqC6ych2388Aub3rFIFf5uImJCgdnD0GNIc8/5XK6acYilRnOIkuaxEls
-         bMmmWXQ79IwyZ4LI7Y1vMvf9Z6VlBsTyrIb+KtdVcUjWwarOM2n8AjOowQAoWc9M//
-         h3TyDOGoS6D/H/z6igGBC+vb/IGolYHKaN6EaumaBsoQ6lpjyga3pd7npiiDk4JzWP
-         vKXae5E0Djlng==
-Date:   Tue, 1 Mar 2022 09:01:36 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warnings after merge of the pci tree
-Message-ID: <20220301150136.GA609359@bhelgaas>
+        Tue, 1 Mar 2022 10:03:07 -0500
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B40A252D;
+        Tue,  1 Mar 2022 07:02:26 -0800 (PST)
+Received: by mail-yb1-f174.google.com with SMTP id j2so27825235ybu.0;
+        Tue, 01 Mar 2022 07:02:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WFDfDJO6ZGSp0wOxPcBF1+Lx0Ev5xgBLaqunI+gbJ+w=;
+        b=ei0GyHu3+yNeOZC8D80ONNfyKcF9PLhBzqrI6R70jED/OwQTF0jJkUtowKZgM3l3EA
+         QmrHxjz3Jg08pwsaLIm9qhc+GYymitVVapI+dTfB99l7Wb/XLfVHxux/3pu9j/tstHUK
+         6bVt8UMq9d7skDYB3NRfzJqOH0qtVb+RedjDO1nxsEqJRFHpFKJS/Ux0dBMaSYPIImdO
+         Nmgvs+c+qpcrG2N0DDFUG5GyYc8ub6wXGAwVKzZk2p8rp18MK8ysTdoCLE5go0f9i6lY
+         hfl1v1aKoH4xAKCUEIcr0a6wxHShn32pgs2JRX/Yfo8HoXqpIsR1s+5N0aryu23beZmK
+         HqPA==
+X-Gm-Message-State: AOAM5316bSJbnU6E8XJE1wlfkCccmq6nAmM8dBk+EEMXoKL74Qvf5lcn
+        UujDtRufJkAyUSwy0lb/i1E+hMqRnYea2tGKjgs=
+X-Google-Smtp-Source: ABdhPJwzl9rPgcYo3NaPbsfsE79SyzPg9BoEMnp1SxTesYIFS0znZ9/UAaPrMu/8PfymoJTBJTiOrqWhGQoJte9LTro=
+X-Received: by 2002:a25:3f47:0:b0:628:7571:b07d with SMTP id
+ m68-20020a253f47000000b006287571b07dmr3914531yba.622.1646146945404; Tue, 01
+ Mar 2022 07:02:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301135938.4c664beb@canb.auug.org.au>
+References: <20220225064815.444571-1-shawnguo@kernel.org> <CAPDyKFq195ptPe1i71mcQG+VLvLWgrYD0kF8ZNV-KLOqS0td4g@mail.gmail.com>
+In-Reply-To: <CAPDyKFq195ptPe1i71mcQG+VLvLWgrYD0kF8ZNV-KLOqS0td4g@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 1 Mar 2022 16:02:14 +0100
+Message-ID: <CAJZ5v0jAbGDEVz4OYwhnqZErOm1xuGVnr2ufkYXv6x3LCq4QxA@mail.gmail.com>
+Subject: Re: [PATCH] PM: domains: Fix sleep-in-atomic bug caused by genpd_debug_remove()
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Kevin Hilman <khilman@kernel.org>,
+        Thierry Strudel <tstrudel@google.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shawn Guo <shawn.guo@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 01:59:38PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the pci tree, today's linux-next build (htmldocs) produced
-> these warnings:
-> 
-> Error: Cannot open file drivers/gpu/vga/vgaarb.c
-> Error: Cannot open file drivers/gpu/vga/vgaarb.c
-> 
-> Introduced by commit
-> 
->   d6e1898bfa5b ("PCI/VGA: Move vgaarb to drivers/pci")
-> 
-> The reference in Documentation/gpu/vgaarbiter.rst needs to be updated.
+On Tue, Mar 1, 2022 at 11:38 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> On Fri, 25 Feb 2022 at 07:48, Shawn Guo <shawnguo@kernel.org> wrote:
+> >
+> > From: Shawn Guo <shawn.guo@linaro.org>
+> >
+> > When a genpd with GENPD_FLAG_IRQ_SAFE gets removed, the following
+> > sleep-in-atomic bug will be seen, as genpd_debug_remove() will be called
+> > with a spinlock being held.
+> >
+> > [    0.029183] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1460
+> > [    0.029204] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1, name: swapper/0
+> > [    0.029219] preempt_count: 1, expected: 0
+> > [    0.029230] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc4+ #489
+> > [    0.029245] Hardware name: Thundercomm TurboX CM2290 (DT)
+> > [    0.029256] Call trace:
+> > [    0.029265]  dump_backtrace.part.0+0xbc/0xd0
+> > [    0.029285]  show_stack+0x3c/0xa0
+> > [    0.029298]  dump_stack_lvl+0x7c/0xa0
+> > [    0.029311]  dump_stack+0x18/0x34
+> > [    0.029323]  __might_resched+0x10c/0x13c
+> > [    0.029338]  __might_sleep+0x4c/0x80
+> > [    0.029351]  down_read+0x24/0xd0
+> > [    0.029363]  lookup_one_len_unlocked+0x9c/0xcc
+> > [    0.029379]  lookup_positive_unlocked+0x10/0x50
+> > [    0.029392]  debugfs_lookup+0x68/0xac
+> > [    0.029406]  genpd_remove.part.0+0x12c/0x1b4
+> > [    0.029419]  of_genpd_remove_last+0xa8/0xd4
+> > [    0.029434]  psci_cpuidle_domain_probe+0x174/0x53c
+> > [    0.029449]  platform_probe+0x68/0xe0
+> > [    0.029462]  really_probe+0x190/0x430
+> > [    0.029473]  __driver_probe_device+0x90/0x18c
+> > [    0.029485]  driver_probe_device+0x40/0xe0
+> > [    0.029497]  __driver_attach+0xf4/0x1d0
+> > [    0.029508]  bus_for_each_dev+0x70/0xd0
+> > [    0.029523]  driver_attach+0x24/0x30
+> > [    0.029534]  bus_add_driver+0x164/0x22c
+> > [    0.029545]  driver_register+0x78/0x130
+> > [    0.029556]  __platform_driver_register+0x28/0x34
+> > [    0.029569]  psci_idle_init_domains+0x1c/0x28
+> > [    0.029583]  do_one_initcall+0x50/0x1b0
+> > [    0.029595]  kernel_init_freeable+0x214/0x280
+> > [    0.029609]  kernel_init+0x2c/0x13c
+> > [    0.029622]  ret_from_fork+0x10/0x20
+> >
+> > It doesn't seem necessary to call genpd_debug_remove() with the lock, so
+> > move it out from locking to fix the problem.
+> >
+> > Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
+> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+>
+> Thanks for fixing this!
+>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Fixed, thanks!
+Applied as 5.18 material.
+
+> Rafael, I think we should tag this for stable kernels too.
+
+Done.
+
+Thanks!
