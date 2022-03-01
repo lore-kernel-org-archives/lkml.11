@@ -2,96 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF29EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60560C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233133AbiCAHxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:53:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        id S233147AbiCAHxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:53:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiCAHxT (ORCPT
+        with ESMTP id S233139AbiCAHx3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:53:19 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8DF3E0FD;
-        Mon, 28 Feb 2022 23:52:36 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id p9so18993671wra.12;
-        Mon, 28 Feb 2022 23:52:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QgCQToL8Lxm+3TwetMYVdeOe6DqGsRMNEoAu1Q0sX+Q=;
-        b=Msr+Hdu9PMBLEomg31EkVjWkx3w3yOPysT2gAqSsy1Q8nTjFwVq5fEbEWtj3XQfw3Z
-         wMwbYkeUhIY4R3e6edyqcz31O0ayYBQBeTF9mfI0KdFDK4ix/14+r91r9UN2lMhMgIUo
-         tDRCl2FLV/pL+h6THIresY/D+6F9qhrlKH9j+cwyWurGztms0gn39cBZKr2FJ0hC6JqC
-         JYlnREcZjjSoUNB+nTruURcr8p4TR3yf18qqtGf7vf/VdB/OHqtftki4oYuae8/SztBA
-         SFPvyV2QxBecnvHvAvu9Uunxik32gNB5/6isELdv+ooSqK8z2SLFe0d9Sr9bpY4QBiu7
-         31Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QgCQToL8Lxm+3TwetMYVdeOe6DqGsRMNEoAu1Q0sX+Q=;
-        b=yurCVAHy7QY3Eya/sgx2LpQjIHNNHon9gP5cRrokAZKba2D4e6jgEPrNwetYD1Hrzx
-         9IXDVyXaKe5gKOBgHSXIPiLwJjKPMgfejkn7rX/MhIBQq1t1cjUCk9VG3VtZ6iSMMzyD
-         Sb9Apzm9RnLqtzTT8kNvSHRvLWQC1uC4iX7wKcyNorUXSAxiy9myIY+9kxtC+gKEhwuW
-         tRH53UVsMvi/WVLZpTg0ocujX3EqbfDV63Y+/Vkp8CDIte5WUWA36ugqSuv/hGe5PCxr
-         T4nApqFPusEoqtw66rz19zaxxi4dhtn/+o45A0kz7g0LkRGj6nwRfNCITxc64hQTkLJO
-         EyBw==
-X-Gm-Message-State: AOAM531BoLvZIWPVsDyejONcVMyljBxnTPOAQg4oOJYLsjHeujIHvYb0
-        UGhh7aVUSv6O0gE+FANS5lc=
-X-Google-Smtp-Source: ABdhPJzVpzmSMCRiuFoBWFG4z44NNPbssCQl1YdBpK/b+IG5izDPFtRvAM2Rl+lb0blw3AIeZ7Vk3Q==
-X-Received: by 2002:a05:6000:8d:b0:1ed:9ed7:c915 with SMTP id m13-20020a056000008d00b001ed9ed7c915mr18482884wrx.543.1646121154834;
-        Mon, 28 Feb 2022 23:52:34 -0800 (PST)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id n10-20020a5d598a000000b001efab095615sm7602985wri.29.2022.02.28.23.52.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 23:52:34 -0800 (PST)
-Message-ID: <95f33dbd-4388-20ec-1e4c-ac323de9d18a@gmail.com>
-Date:   Tue, 1 Mar 2022 08:52:33 +0100
+        Tue, 1 Mar 2022 02:53:29 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A7C48306;
+        Mon, 28 Feb 2022 23:52:48 -0800 (PST)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K78Zv1RX4z67kNj;
+        Tue,  1 Mar 2022 15:51:35 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Mar 2022 08:52:46 +0100
+Received: from [10.47.86.223] (10.47.86.223) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Tue, 1 Mar
+ 2022 07:52:45 +0000
+Message-ID: <a1c25161-9e43-ddce-4131-cf73ad52917c@huawei.com>
+Date:   Tue, 1 Mar 2022 07:52:44 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 0/2] Add PMIC wrapper support for Mediatek MT8186 SoC
- IC
-Content-Language: en-US
-To:     Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org
-Cc:     angelogioacchino.delregno@collabora.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220207083034.15327-1-johnson.wang@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220207083034.15327-1-johnson.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] docs: fix 'make htmldocs' warning in perf
+To:     Wan Jiabing <wanjiabing@vivo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Qi Liu <liuqi115@huawei.com>, Will Deacon <will@kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jiabing.wan@qq.com>
+References: <20220228031700.1669086-1-wanjiabing@vivo.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220228031700.1669086-1-wanjiabing@vivo.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.86.223]
+X-ClientProxiedBy: lhreml708-chm.china.huawei.com (10.201.108.57) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 28/02/2022 03:16, Wan Jiabing wrote:
+> Fix following 'make htmldocs' warnings:
+> ./Documentation/admin-guide/perf/hisi-pcie-pmu.rst: WARNING:
+> document isn't included in any toctree
+> 
+> Fixes: c8602008e247 ("docs: perf: Add description for HiSilicon PCIe PMU driver")
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 
+Regardless of nit, below:
 
-On 07/02/2022 09:30, Johnson Wang wrote:
-> This series add PMIC wrapper support for Mediatek MT8186 SoC IC
-> 
-> Changes since v2:
-> - Replace meaningless suffix _V2 with _MT8186 because
->    these IPs are only for MT8186 SoC.
-> - Remove not used capability PWRAP_CAP_MONITOR_V2.
-> 
-> Changes since v1:
-> - Fix the conditional logic in pwrap_probe() function.
-> 
-> Johnson Wang (2):
->    soc: mediatek: pwrap: add pwrap driver for MT8186 SoC
->    dt-bindings: mediatek: add compatible for MT8186 pwrap
-> 
->   .../bindings/soc/mediatek/pwrap.txt           |  1 +
->   drivers/soc/mediatek/mtk-pmic-wrap.c          | 71 +++++++++++++++++++
->   2 files changed, 72 insertions(+)
-> 
+Reviewed-by: John Garry <john.garry@huawei.com>
 
-Series applied, thanks!
+> ---
+>   Documentation/admin-guide/perf/index.rst | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/admin-guide/perf/index.rst b/Documentation/admin-guide/perf/index.rst
+> index 5a8f2529a033..69b23f087c05 100644
+> --- a/Documentation/admin-guide/perf/index.rst
+> +++ b/Documentation/admin-guide/perf/index.rst
+> @@ -8,6 +8,7 @@ Performance monitor support
+>      :maxdepth: 1
+>   
+>      hisi-pmu
+> +   hisi-pcie-pmu
+
+nit: we might prefer alphabetic ordering, but we don't have it fully ATM 
+elsewhere
+
+>      imx-ddr
+>      qcom_l2_pmu
+>      qcom_l3_pmu
+
