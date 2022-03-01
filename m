@@ -2,95 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C52FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 158C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:45:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233478AbiCAIo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59390 "EHLO
+        id S233462AbiCAIqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:46:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbiCAIo4 (ORCPT
+        with ESMTP id S229532AbiCAIqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:44:56 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD9F7DA84;
-        Tue,  1 Mar 2022 00:44:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Ada8xpo23wBI1pn03oUM0wmOJBiudB2NMaqAB+HG05s=; b=mWdnCWfHHw4SvGH/OxiIK0T/Wj
-        BhWT1rlS3oKQnPYWAOvMAyc346EtkfGkty3jEvzzDSRzrHJoxui2ywx+xDrnlrulV+Mcqf8pHeL54
-        IHK5LKW/xnw842B4j+9eEvq3ZZYqFJscSwIfy0m+tZEp9VMp1rqTI5t7EVXVIPFw0ac5Ja1KDpH/2
-        HGeGQFED0ZSugTPa2JUxhJMqg5iCSPnlfTwwsV0wFM2ahMHU40VL7rI6SuAqv2kLN01xQ4oRM3cCa
-        uLQ1IpJt0J5TqOLZama4B+2juAN3mvT0yvSUE27uZtYoKFN7gSpUYjvMjahxDppPRQpS1qC+Lb5BI
-        Ip7EXerw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOy6k-00EClk-P6; Tue, 01 Mar 2022 08:43:46 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6BA8F30017F;
-        Tue,  1 Mar 2022 09:43:44 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 29C742024C933; Tue,  1 Mar 2022 09:43:44 +0100 (CET)
-Date:   Tue, 1 Mar 2022 09:43:44 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
-        bpf@vger.kernel.org, Radoslaw Burny <rburny@google.com>
-Subject: Re: [PATCH 2/4] locking: Apply contention tracepoints in the slow
- path
-Message-ID: <Yh3cwBloddIGvCjU@hirez.programming.kicks-ass.net>
-References: <20220301010412.431299-1-namhyung@kernel.org>
- <20220301010412.431299-3-namhyung@kernel.org>
+        Tue, 1 Mar 2022 03:46:06 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14ED7CDE5;
+        Tue,  1 Mar 2022 00:45:23 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K79ks30wnzBrNC;
+        Tue,  1 Mar 2022 16:43:33 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Mar 2022 16:45:21 +0800
+Subject: Re: [PATCH 1/8] sched: coredump.h: clarify the use of MMF_VM_HUGEPAGE
+To:     Yang Shi <shy828301@gmail.com>
+CC:     <linux-mm@kvack.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-ext4@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vbabka@suse.cz>,
+        <kirill.shutemov@linux.intel.com>, <songliubraving@fb.com>,
+        <riel@surriel.com>, <willy@infradead.org>, <ziy@nvidia.com>,
+        <akpm@linux-foundation.org>, <tytso@mit.edu>,
+        <adilger.kernel@dilger.ca>, <darrick.wong@oracle.com>
+References: <20220228235741.102941-1-shy828301@gmail.com>
+ <20220228235741.102941-2-shy828301@gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <cfaefe6f-dd51-1595-a23c-1aa5dc8350ff@huawei.com>
+Date:   Tue, 1 Mar 2022 16:45:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301010412.431299-3-namhyung@kernel.org>
+In-Reply-To: <20220228235741.102941-2-shy828301@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 05:04:10PM -0800, Namhyung Kim wrote:
-> @@ -80,7 +81,9 @@ static inline void queued_read_lock(struct qrwlock *lock)
->  		return;
->  
->  	/* The slowpath will decrement the reader count, if necessary. */
-> +	LOCK_CONTENTION_BEGIN(lock, LCB_F_READ);
->  	queued_read_lock_slowpath(lock);
-> +	LOCK_CONTENTION_END(lock);
->  }
->  
->  /**
-> @@ -94,7 +97,9 @@ static inline void queued_write_lock(struct qrwlock *lock)
->  	if (likely(atomic_try_cmpxchg_acquire(&lock->cnts, &cnts, _QW_LOCKED)))
->  		return;
->  
-> +	LOCK_CONTENTION_BEGIN(lock, LCB_F_WRITE);
->  	queued_write_lock_slowpath(lock);
-> +	LOCK_CONTENTION_END(lock);
->  }
+On 2022/3/1 7:57, Yang Shi wrote:
+> MMF_VM_HUGEPAGE is set as long as the mm is available for khugepaged by
+> khugepaged_enter(), not only when VM_HUGEPAGE is set on vma.  Correct
+> the comment to avoid confusion.
+> 
+> Signed-off-by: Yang Shi <shy828301@gmail.com>
+> ---
+>  include/linux/sched/coredump.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/sched/coredump.h b/include/linux/sched/coredump.h
+> index 4d9e3a656875..4d0a5be28b70 100644
+> --- a/include/linux/sched/coredump.h
+> +++ b/include/linux/sched/coredump.h
+> @@ -57,7 +57,8 @@ static inline int get_dumpable(struct mm_struct *mm)
+>  #endif
+>  					/* leave room for more dump flags */
+>  #define MMF_VM_MERGEABLE	16	/* KSM may merge identical pages */
+> -#define MMF_VM_HUGEPAGE		17	/* set when VM_HUGEPAGE is set on vma */
+> +#define MMF_VM_HUGEPAGE		17	/* set when mm is available for
+> +					   khugepaged */
 
-> @@ -82,7 +83,9 @@ static __always_inline void queued_spin_lock(struct qspinlock *lock)
->  	if (likely(atomic_try_cmpxchg_acquire(&lock->val, &val, _Q_LOCKED_VAL)))
->  		return;
->  
-> +	LOCK_CONTENTION_BEGIN(lock, 0);
->  	queued_spin_lock_slowpath(lock, val);
-> +	LOCK_CONTENTION_END(lock);
->  }
+I think this comment could be written in one line. Anyway, this patch looks good to me.
+Thanks.
 
-Can you please stick that _inside_ the slowpath? You really don't want
-to inline that.
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+
+>  /*
+>   * This one-shot flag is dropped due to necessity of changing exe once again
+>   * on NFS restore
+> 
+
