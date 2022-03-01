@@ -2,72 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85548C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08949C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiCAIek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:34:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        id S233470AbiCAIew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:34:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbiCAIee (ORCPT
+        with ESMTP id S233407AbiCAIeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:34:34 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1174831212;
-        Tue,  1 Mar 2022 00:33:53 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id e10so1620153wro.13;
-        Tue, 01 Mar 2022 00:33:52 -0800 (PST)
+        Tue, 1 Mar 2022 03:34:36 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58CB31215
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 00:33:55 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id m6so1977688wrr.10
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 00:33:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FrB0xiqh0R3+CodGDBFzoTSka3oB+8cQkeH+HR2pscY=;
-        b=ZItHWuNisDbCn4VCnfN3PKVkjPdVF+MoXs5DozzoMvhf0aBhvosMiy0km1eXBhToT1
-         /gqZUncEzz3+2DTwVKa0q/mmyxYDKZe6vXnFF3nsKB3kiCVqr+rosbRkcwwYFHh3M3ZO
-         HX/Z4f94DWdBgpEK2BmHXDdDTXZtOgMKyaoY12Wss61GWovvyVUOZ8si/c13Fw37Exrm
-         nTxnJ6Z8+a0eDuu6M9aoBhw8xwlFhVco65Rr3XzWuIS8ScASDU9FRtNMmbwH/e6+zFK5
-         poNZRAsJfWPm046gB+BIDgJ939FLnBgl5lQ7R5A2qJMxs4IITyMfMHKYukPlWKC2yVSO
-         bkRA==
+        bh=sSORGTi0IoA/DfZkQJS5hbRydSHYhg9vgr1wsIug+aQ=;
+        b=ja8zfW7ZO8t42SOrxjYk/1g1OiNSp6I3dw6entoB8N01FASu2pCL58f84IP5GU0V60
+         mpJiaHLcQoMKYglRXYwoMgKufxHd1Rt05Gh3UXxHz6Gg02tgfH4xG7lkJG8QftbNUCY6
+         dKMnOZ/I8ZT2FsKNSO6yUJRJ3A3khe7zKm2R6aN+OXT3k3fHDQFe8p9qtHvo+kepXOyk
+         Cv9dAdehjwlAxdT6W6ulfXGR0L8HeeUm+ivjepPX/ibULH+1yKvQsUKggFOizYZ8uDYp
+         3SiILaMfiNVIroJxUT7jxmpWl29BV6GFnms25HfRp6AvuuxncqOhVtHqx0dnDPfvnW24
+         H4Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=FrB0xiqh0R3+CodGDBFzoTSka3oB+8cQkeH+HR2pscY=;
-        b=J9JEwu7Mu2j8d+jRA1zguSBphH+i/ncHjaa2MLJV0XpDWwWFLDI/ZM8ZnLdN/lwXCq
-         JlYT8rZpiICeWaL53q+9/YbFK9KDRmAOC0cMpvfe4HeKv6mD5nRkawhyy96eSt/9YbRc
-         jnh9qbs7VbXILRTt8FC5NxtDt3eltz0xzsDtKd9nP4u/bhY3vwQLc2zf9Hix4ZKMaIHL
-         iA5f9qqJxxABeM8ny3zSW7b3v1jX7MDTmVs8IrIlFiguddI6Hu9NjjOiDVXpC3ZA8Hgt
-         BX/9/1IumHEksA/3G3OlWEtICIRJwfGDlsOb4KakOP7s9zfZd2EfkLKwHYjkVAcR2RH4
-         TlUQ==
-X-Gm-Message-State: AOAM53081xjaxNc4O0b+WQiVolLzg0LdZ9xxk4eT7YXU2diN1i1WLYeC
-        jcDoUvPm8yttNAYQ+TrdRlRLsF3xP6ApwQ==
-X-Google-Smtp-Source: ABdhPJwbWC+RcE86K4AHZ/JXpplW/TP2HIkLpzmuGhlduFpPsZSLMAwwvijlKgZkmiRctKd58ozcKQ==
-X-Received: by 2002:adf:9141:0:b0:1e3:1379:4cc6 with SMTP id j59-20020adf9141000000b001e313794cc6mr19398453wrj.249.1646123631557;
-        Tue, 01 Mar 2022 00:33:51 -0800 (PST)
+        bh=sSORGTi0IoA/DfZkQJS5hbRydSHYhg9vgr1wsIug+aQ=;
+        b=RWeJcgmu3dSX71RNuOSX2l/4Vmd4ST2j5HC9uaUWr7CsXwYEXyZUWw73Ygg6eT+3gz
+         9mDYv5cmu1wJjMtXrNLESOrFG1Vl5siLkMeLWX5rMadDaviUzn9vt58cP0QJ4dV8es7L
+         muaw7H8Cbbv6+xlczsOXj7USWykVuBIjjKkrnYLoWTNGri74Yf52lBw5cPXiqg2kbeWC
+         EwXz5JcyrHpJMzNrJZJGrSxm4JH20NaO27Us2td6yU6R/g31W0ICPVKGcX+TOepSKUKp
+         qXNzJ+PdGGWA3JKrTgmM/uJMYEC9vk8cHnVTW4VsGPxy4zrCNraAVx56YNy6DC4guUdn
+         VCow==
+X-Gm-Message-State: AOAM531BfazjRdOcN0i8X21skdA79xbWafbDwxuw0x1ozIQmqXG8LK7s
+        AiSoD85lt5QGK99ktmcho28=
+X-Google-Smtp-Source: ABdhPJxtzVKIx0WMPTgOyRFRV+vczvtzK4cPKqRKOBPW2MGsNpFQqh2cqt61LACCM47DKeJhbom5ew==
+X-Received: by 2002:a5d:6885:0:b0:1ed:c0bc:c205 with SMTP id h5-20020a5d6885000000b001edc0bcc205mr18801977wru.683.1646123634238;
+        Tue, 01 Mar 2022 00:33:54 -0800 (PST)
 Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id i15-20020a05600c354f00b00381753c67a8sm1919606wmq.26.2022.03.01.00.33.50
+        by smtp.gmail.com with ESMTPSA id m12-20020a7bcb8c000000b003811afe1d45sm1700654wmi.37.2022.03.01.00.33.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 00:33:51 -0800 (PST)
-Message-ID: <d229ad74-b530-af2b-2e01-a60e525186d4@gmail.com>
-Date:   Tue, 1 Mar 2022 08:30:10 +0100
+        Tue, 01 Mar 2022 00:33:53 -0800 (PST)
+Message-ID: <09ce5aab-0cc6-5903-8238-551085abd739@gmail.com>
+Date:   Tue, 1 Mar 2022 08:35:22 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [v6 3/3] arm64: dts: mt8183: add jpeg enc node for mt8183
+Subject: Re: [PATCH v2,0/2] Add mmsys reset control for MT8186
 Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-media@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     chunkuang.hu@kernel.org, jitao.shi@mediatek.com,
+        xinlei.lee@mediatek.com, angelogioacchino.delregno@collabora.com,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        yong.wu@mediatek.com
-References: <20211206130425.184420-1-hsinyi@chromium.org>
- <20211206130425.184420-3-hsinyi@chromium.org>
- <aa54361f-6a8f-a616-640a-b9a098d82cba@collabora.com>
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220217082626.15728-1-rex-bc.chen@mediatek.com>
 From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <aa54361f-6a8f-a616-640a-b9a098d82cba@collabora.com>
+In-Reply-To: <20220217082626.15728-1-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -76,16 +73,28 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 17/02/2022 10:41, AngeloGioacchino Del Regno wrote:
-> Il 06/12/21 14:04, Hsin-Yi Wang ha scritto:
->> From: Maoguang Meng <maoguang.meng@mediatek.com>
->>
->> Add jpeg encoder device tree node.
->>
->> Signed-off-by: Maoguang Meng <maoguang.meng@mediatek.com>
->> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+On 17/02/2022 09:26, Rex-BC Chen wrote:
+> v2:
+> 1. Change variable type from unsigned int to u16.
 > 
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> v1:
+> 1. Add a new variable in mmsys driver data to control different register
+>     offset for different SoCs.
+> 2. Add MT8183 reset register offset.
+> 3. Add mmsys reset control for MT8186.
+> 
+> This series is based on mmsys patch for MT8186 on [1].
+> [1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220216084831.14883-4-rex-bc.chen@mediatek.com/
+> 
+> Rex-BC Chen (2):
+>    soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver data
+>    soc: mediatek: mmsys: add mmsys reset control for MT8186
+> 
+>   drivers/soc/mediatek/mt8183-mmsys.h | 2 ++
+>   drivers/soc/mediatek/mt8186-mmsys.h | 2 ++
+>   drivers/soc/mediatek/mtk-mmsys.c    | 7 +++++--
+>   drivers/soc/mediatek/mtk-mmsys.h    | 3 +--
+>   4 files changed, 10 insertions(+), 4 deletions(-)
 > 
 
-Applied, thanks!
+Series applied, thanks!
