@@ -2,167 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8474CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CD2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235460AbiCARjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 12:39:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
+        id S236609AbiCARk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 12:40:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235202AbiCARjm (ORCPT
+        with ESMTP id S232659AbiCARkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 12:39:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED241AF0F;
-        Tue,  1 Mar 2022 09:39:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B0E5B81BE8;
-        Tue,  1 Mar 2022 17:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF433C340EE;
-        Tue,  1 Mar 2022 17:38:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646156338;
-        bh=ReB1AHIDSVDCmRMjQGBl11DT4sgFf0L/LuSK3Y+v9w8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=dDgu84yJwqG2+6gzd9hDjEKwYgEr308ungqc4SZb3ZnxQqf3kh/fMbAKKcm1y5lkl
-         el1IlJzIVvIVMLZzUqbJO9B0F8GQXXb3IV/fW6Cs1Vqui1g1o3NGTUwBE6P7bsZFbP
-         gS5SewkmDb6rRF7tWbpAFHPC2J5vH2IC6tRxSQ7o0M+dohCgxo+6mFld8tRU0Bh1Vs
-         Lhewoo+Xq9EeNYra03QUScexi9RDVBf8cIgbhdqvXzwdOXr7mu1bLi9PHHVjaB5XC3
-         PqfhHnO1cBWA05UsJ7ysn8CLtxvtvaBIU2jK3qBta8sz56DChnNV8d0SmJmt4vs+Yk
-         rrArPmfOE4Ejw==
-Date:   Tue, 1 Mar 2022 11:38:56 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Surendrakumar Upadhyay, TejaskumarX" 
-        <tejaskumarx.surendrakumar.upadhyay@intel.com>,
-        "Meena, Mahesh" <mahesh.meena@intel.com>,
-        linux-pci@vger.kernel.org, Krzysztof Wilczynski <kw@linux.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: Re: [PATCH] PCI: vmd: Prevent recursive locking on interrupt
- allocation
-Message-ID: <20220301173856.GA633200@bhelgaas>
+        Tue, 1 Mar 2022 12:40:24 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CDA2C667;
+        Tue,  1 Mar 2022 09:39:42 -0800 (PST)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 221GWQaM030543;
+        Tue, 1 Mar 2022 17:39:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-transfer-encoding : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=lVphAfAGNSx6WqOrRVbBUPCmy70SqB2EwHHA61Z5dwY=;
+ b=eGrXWS4gG/rrG0WlNsqThaOnCLK3R5Q1WmRmNBBCCb8B3RzZ9MpnAdNEAQpnSF9SxgHP
+ qiCgK/WWLJDmea0WRXBgaUNgW7Dk/pEM5oU2rl7twveKs248cdw26RcSwIQh1u1Yyy6L
+ h9yKpy1AHKYGum/eeIZ4Jo2W+WqJ/8SOVVrVo1JG5PRi9NKjunvAP5S0FgnHHbxCGAMh
+ HgEFAPrwlfHMrsFThgYQG+fAWHz8uP4tfQrwQz1QlajnyKewRro6Z5zBgPxZ2PQd2xrN
+ nUzVRZsu+5iQmsEApag4U58+a+mom5/6zOUG234jq4BGYmZ6xoZnkPjdm4BhPuxn+nwN 5g== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3eh1k43hvj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Mar 2022 17:39:06 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 221Hb72p059897;
+        Tue, 1 Mar 2022 17:39:05 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2108.outbound.protection.outlook.com [104.47.70.108])
+        by aserp3020.oracle.com with ESMTP id 3efc14xcvg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Mar 2022 17:39:05 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AThiphVVH1ROYkDbKHM83ITXWMPCmVoJH1YYivwb9BBDm8IjcN5ibb/ry30xHtXDLhCUJQ5NuZEhBX8gixQvk5aaBOUd6tUMEWkFdGqDQPLM6xCcRCh3MgUTy9ZrhM+cEHKQCq9wpUL6B+Ro0iDIShKpukIMq89P90aE/bV5MYbpylzRnMygHwF6Jlx+lYkg40Kwz0NS7DMrLW1c/o8PiB+J1iCiwJOz9kbdD18xtLV/EiXVo/K54FM8RbCls1Re7BHMU8CPrwa+h30DBW+8qqk7RLtRb9JIM2OhgPlIJYJ0rvTNUv1QTSPNSeR6cSPXrljV9Mt1PLvdl+oV4n75cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lVphAfAGNSx6WqOrRVbBUPCmy70SqB2EwHHA61Z5dwY=;
+ b=D105cL1Mapv78Xs2Gp4yLF4n31ceUXY+8lYLxjKIYZ6JldEoLl1p8d+mel3qOuTAXX3DS+UNlonbs6Jh7wsjPlK9B5UiIlr2qcVMwKnLKrN+pDLymZoxT+WGIwf+E/bLZQEzE0Ps5eQyAW2evjs9McWfIVoSbtoed6QcVMvahl26nN5pFX2RPtfM04kN3ikPz6LF6wVzzi6qpfw/8FIVaXEP6aLWFO27Ae5ygJNSI+KybrKGqxPtVTKO4xCuJWdra1Z4rEP7dNgf7jKaLukN6VNUU0bOPyBKKeHAvsUyiOrLeP5b3QQJHSnbFW00kixStMKGsxNTmvXJ1hlsu15WNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lVphAfAGNSx6WqOrRVbBUPCmy70SqB2EwHHA61Z5dwY=;
+ b=OTNFI1uhdCCw8T/pWZPEVjDdvhf4gehYItcbCjN+qCy1nt4Qf/r8rCHxAg4A2Nq+4wqGDPSpwpydySbOlu6TAiTlwLa3Nt8u0xfWOI3VnuWV8rsLsZ1RijbmZhQrRTT8Yx2/bcC+Tfl68xUh6kgKSbOh4NLlF85nuVVFC0WPwts=
+Received: from CH2PR10MB4150.namprd10.prod.outlook.com (2603:10b6:610:ac::13)
+ by DM6PR10MB2795.namprd10.prod.outlook.com (2603:10b6:5:70::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Tue, 1 Mar
+ 2022 17:39:01 +0000
+Received: from CH2PR10MB4150.namprd10.prod.outlook.com
+ ([fe80::49ae:9ccb:2e59:8150]) by CH2PR10MB4150.namprd10.prod.outlook.com
+ ([fe80::49ae:9ccb:2e59:8150%4]) with mapi id 15.20.5017.027; Tue, 1 Mar 2022
+ 17:39:01 +0000
+From:   Eric Snowberg <eric.snowberg@oracle.com>
+To:     zohar@linux.ibm.com, jarkko@kernel.org, dhowells@redhat.com,
+        dwmw2@infradead.org
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        jmorris@namei.org, serge@hallyn.com, eric.snowberg@oracle.com,
+        stefanb@linux.ibm.com, nayna@linux.ibm.com,
+        mic@linux.microsoft.com, konrad.wilk@oracle.com,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH 0/4] Add CA enforcement in the machine keyring 
+Date:   Tue,  1 Mar 2022 12:36:47 -0500
+Message-Id: <20220301173651.3435350-1-eric.snowberg@oracle.com>
+X-Mailer: git-send-email 2.27.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SA0PR11CA0194.namprd11.prod.outlook.com
+ (2603:10b6:806:1bc::19) To CH2PR10MB4150.namprd10.prod.outlook.com
+ (2603:10b6:610:ac::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh5W9WHNH2FNu4hG@e123427-lin.cambridge.arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ea4f40d1-bd1f-4996-48c4-08d9fbaa5f10
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2795:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB279555A2606F69ADF4A353C887029@DM6PR10MB2795.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hmVg1C/t5sdpvT46+vPXap3PbHM75rAUv2Qjz3P6LJrzBoi9QhgS6COju9wuKgX+LaPcXAsOnC6aYuKGLBF0euIghgYsoLtLiT7e89GSZm3nJcFSeHDDJa5/p5jesTGyw88LVp47DYHXHjCJfIMDJrWT0LcTacEeiiQW35f5+RvWYHuB9BsNHKL4RBcmSCb/xEFsrs930x1B4ryxSdMrHtpFLF9K6A+EPRphtCk41z9AtnNHk5U0tpMYP4m31Vzn2Egkjf9wzFqT9P+M7Krz4oJLMXSGyIvQbJRSpYArluCiZK/FyNJNVKoKJESYIpsfaK+M1axWuR8qFvoCSr4RVwtzfCKGk0iIddz9SjbSeGUCQS5TWHfSQgLxrIZjT3H4XIQFG6XIddguWwHrvAu6S0jssYHW71qZUl8k5GqdZskbsyzZhyje6unpZL+IDUC5ULjsTp77ndLT6g1V0O0BgTSWAoKvKw1L6apIXkuvuTXSJHNyKbng1UySJabBE4ePaTZGnPqMGnY7VkmjQtowpWxCFQDtRMHogCKEjEpZd5ZC/0qrDQ1nmfEmifGOG9XzY4IXYLEjVq6wjqARLljWLECbcb33qFVVKgxhZnOMi3VPzz8DTTmuiNlIk0dkt2Q8H5ztnM152qJzye+oy4oG6zI9SaVc0QLQFowxIxliVG3P/J+Mx5ob/xlNJFj0vSJU0ifJxW3L+6BCDNAYvX+xPw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4150.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(1076003)(6512007)(6666004)(6506007)(52116002)(508600001)(2616005)(36756003)(86362001)(316002)(4743002)(26005)(66946007)(4326008)(66476007)(66556008)(8676002)(186003)(44832011)(8936002)(6486002)(5660300002)(38350700002)(38100700002)(2906002)(7416002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L2/q2rx5Y6OZurhpZu7FrAmfvyU1fi80JfACffOJmQep3VljLWNOSyROaE9F?=
+ =?us-ascii?Q?e9NjjaKPlGzQ9UQbBiFoZ1GTYLTyGjCZWZD1MPIo2fLsKfCvtl8VsZRhbOe9?=
+ =?us-ascii?Q?PYwSjnNtOt1OKyAV3GWRz2edZGSE0Zbfij3IYKf97jTsDh8Vg/DbdCDvq+UY?=
+ =?us-ascii?Q?andFP/evaNvU5KYrbc71MUj74evsgiwvPq+g+2H6Z7CtjEyXmxUXcjsBU9PU?=
+ =?us-ascii?Q?IM08mOjeGrKjYvFW80WXGGU0BpPoM7IoB9cKdhDd8Z2syWygZ5vkdRB04VYg?=
+ =?us-ascii?Q?Zkg437jPqXcG4Ot1y7HICZQYmH2aqHKuuVheG14aEnOv8j+9Z+m5PMziHOli?=
+ =?us-ascii?Q?uhPe5d/26VKQ6vj3lPMeSSk0uK3AqiMWMn81euPAdjPmiW/1YRe6gX2+LuzS?=
+ =?us-ascii?Q?HnUMrUU/Cf1JK9qXb5gVgxH+4zJbmVPCvMsNCvS8P8zqc31vYsnRnXvMaGLi?=
+ =?us-ascii?Q?dfFNMN87ghhmQIMgNSFOzA7RBNhG5ZvL9U+pa4sLRIJyvTtazmyV3gfTuvch?=
+ =?us-ascii?Q?/YD9sKh5h36OWYLkLIAsIndeUDBqWUADcU1ZPJcVyRui2Dckygaq55DnRw5j?=
+ =?us-ascii?Q?B5T7T48IcZ3KmPPClkIhyHsEt60KEMivYbnLD5UGi8vf9U+0jj9erGgq3GSN?=
+ =?us-ascii?Q?r+J9O/p1Nt94YpNh1I1Yi+ERfprPDfIN9TilNfh5IO5TWOOI6hl+QYAvgAqS?=
+ =?us-ascii?Q?Lt8h18kGJuWbBpByk4NA7tadv6V3HErpqsRWhZHlqDu5ZqzLRrFUXyVWUD6y?=
+ =?us-ascii?Q?xY7q9OTWQd9lAZvUzV9FZyHxS4WrUdY9Xm6acu9lHdx/oZ0xB39ugUjEWB5D?=
+ =?us-ascii?Q?lKbtBtR/S5Tfi0kEs19e3L4SIhzRZDcyzahSsaU+bbejj9KQMPgojMTPjYJ9?=
+ =?us-ascii?Q?dA1evE9VyGJZIPkmZ1a9e4XpT81YxR5BvT1sRoCfKMD6Y+8K8KxveJQUeaMC?=
+ =?us-ascii?Q?m1E1EGIKXh3f3cDfP1cJaba3REr/VtEumCbPg5tzWXeTz/iflbaOtYLxRZsl?=
+ =?us-ascii?Q?aR6ayix44OkX0Q00dM/7qlT31n3zJxgwOxrBWJD6N/7ApLjrc8skR9/15PjX?=
+ =?us-ascii?Q?ks2WqipzOC9xyfl9ghNU6sFNpEQlXFcLc4eBo1hQQGv1pUcN95DQnYo1uZYp?=
+ =?us-ascii?Q?bs1hDmt2AYch/YXyBt3f1O/tF3r4wsRhzoaANvekSny887Ct1HUAvCpYyg+4?=
+ =?us-ascii?Q?omafyqX6J6e9dfXt85iHXksOoOihf7q2gfzxuE38o+GVUUgDh8kI3vQiWnmg?=
+ =?us-ascii?Q?P5SzMNdBULT+shRK2mtYmAqX0HGis31vs7cxcWdDy6MpTvlVuPZyLQjsH5i6?=
+ =?us-ascii?Q?PLMn2wUxzs69i8IsbFKOJt2QbrSAXCPGLL76roKJzNe5ZyiNzna8YjpX5VjA?=
+ =?us-ascii?Q?ui09DPSgGmzCV5DXFl1Pql/Rd43Op6aVQzRUHrz24tfjIBhZE+7a6ovaNlDS?=
+ =?us-ascii?Q?Tq9NexLEB+JPfZQ09YvBRRlY//zAPTyDUBgtLrfRN6Wv5TQIfrr53DOvRhQq?=
+ =?us-ascii?Q?oWPb1xJQCaY74RRe0if+6GO35DjWm18+SHoL7/nYlDciemUZBrtRy4m0k6Gq?=
+ =?us-ascii?Q?lXoEVV1w+CLU/EUVXapOSjuRN/o8riFHQRbOFAoHuHBQGLd932zYmxliLPKb?=
+ =?us-ascii?Q?fkdj6MM7BW+4SbmEy2BPnOZ1TPHTUmRKF+SpFNvf041PHCE5KoDEMGYTLCSK?=
+ =?us-ascii?Q?wi8EaQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea4f40d1-bd1f-4996-48c4-08d9fbaa5f10
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4150.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2022 17:39:01.0987
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +FYeT5uXPczwMMgCCAUYlfsUHG7wg1QkSUTwOb7HkojkwSsz65lTrDmDAiMxxD6mFgCotphyuNhkOv7pftSn/9kVvnM6TAI35BtFalH7Ha0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2795
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10273 signatures=685966
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 phishscore=0
+ bulkscore=0 adultscore=0 spamscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2203010091
+X-Proofpoint-ORIG-GUID: tllySOMCSmvuZsykntHe2uz4FGtT6hSg
+X-Proofpoint-GUID: tllySOMCSmvuZsykntHe2uz4FGtT6hSg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 05:25:09PM +0000, Lorenzo Pieralisi wrote:
-> On Sun, Feb 13, 2022 at 02:54:05PM +0100, Thomas Gleixner wrote:
-> > Tejas reported the following recursive locking issue:
-> > 
-> >  swapper/0/1 is trying to acquire lock:
-> >  ffff8881074fd0a0 (&md->mutex){+.+.}-{3:3}, at: msi_get_virq+0x30/0xc0
-> >  
-> >  but task is already holding lock:
-> >  ffff8881017cd6a0 (&md->mutex){+.+.}-{3:3}, at: __pci_enable_msi_range+0xf2/0x290
-> >  
-> >  stack backtrace:
-> >   __mutex_lock+0x9d/0x920
-> >   msi_get_virq+0x30/0xc0
-> >   pci_irq_vector+0x26/0x30
-> >   vmd_msi_init+0xcc/0x210
-> >   msi_domain_alloc+0xbf/0x150
-> >   msi_domain_alloc_irqs_descs_locked+0x3e/0xb0
-> >   __pci_enable_msi_range+0x155/0x290
-> >   pci_alloc_irq_vectors_affinity+0xba/0x100
-> >   pcie_port_device_register+0x307/0x550
-> >   pcie_portdrv_probe+0x3c/0xd0
-> >   pci_device_probe+0x95/0x110
-> > 
-> > This is caused by the VMD MSI code which does a lookup of the Linux
-> > interrupt number for an VMD managed MSI[X] vector. The lookup function
-> > tries to acquire the already held mutex.
-> > 
-> > Avoid that by caching the Linux interrupt number at initialization time
-> > instead of looking it up over and over.
-> > 
-> > Fixes: 82ff8e6b78fc ("PCI/MSI: Use msi_get_virq() in pci_get_vector()")
-> > Reported-by: "Surendrakumar Upadhyay, TejaskumarX" <tejaskumarx.surendrakumar.upadhyay@intel.com>
-> > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> 
-> Bjorn, this is a fix for a patch we merged in the last cycle,
-> if possible we should be sending it before v5.17 is released,
-> please.
+A key added to the IMA keyring must be signed by a key contained in either the
+built-in trusted or secondary trusted keyring. IMA also requires these keys 
+to be a CA. The only option for an end-user to add their own CA is to compile
+it into the kernel themselves or to use the insert-sys-cert.  Many end-users 
+do not want to compile their own kernels.  With the insert-sys-cert option, 
+there are missing upstream changes. 
 
-Agreed.  I think Thomas merged 82ff8e6b78fc, and it looks like he's
-just merged this fix to irq/urgent of tip, so I think this should be
-already taken care of:
+Currently, all Machine Owner Keys (MOK) load into the machine keyring.  Add 
+a new Kconfig option to only allow CA keys into the machine keyring.  When 
+compiled with the new INTEGRITY_MACHINE_KEYRING_CA_ENFORCED Kconfig, non CA 
+keys will load into the platform keyring instead. This will allow the end-
+user to enroll their own CA key into the machine keyring for use with IMA.
 
-  https://lore.kernel.org/r/164542867635.16921.13795049956787158926.tip-bot2@tip-bot2
+These patches are based on Jarkko's linux-tpmdd tree.
+git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
 
-> >  drivers/pci/controller/vmd.c |   14 +++++++-------
-> >  1 file changed, 7 insertions(+), 7 deletions(-)
-> > 
-> > --- a/drivers/pci/controller/vmd.c
-> > +++ b/drivers/pci/controller/vmd.c
-> > @@ -99,11 +99,13 @@ struct vmd_irq {
-> >   * @srcu:	SRCU struct for local synchronization.
-> >   * @count:	number of child IRQs assigned to this vector; used to track
-> >   *		sharing.
-> > + * @virq:	The underlying VMD Linux interrupt number
-> >   */
-> >  struct vmd_irq_list {
-> >  	struct list_head	irq_list;
-> >  	struct srcu_struct	srcu;
-> >  	unsigned int		count;
-> > +	unsigned int		virq;
-> >  };
-> >  
-> >  struct vmd_dev {
-> > @@ -253,7 +255,6 @@ static int vmd_msi_init(struct irq_domai
-> >  	struct msi_desc *desc = arg->desc;
-> >  	struct vmd_dev *vmd = vmd_from_bus(msi_desc_to_pci_dev(desc)->bus);
-> >  	struct vmd_irq *vmdirq = kzalloc(sizeof(*vmdirq), GFP_KERNEL);
-> > -	unsigned int index, vector;
-> >  
-> >  	if (!vmdirq)
-> >  		return -ENOMEM;
-> > @@ -261,10 +262,8 @@ static int vmd_msi_init(struct irq_domai
-> >  	INIT_LIST_HEAD(&vmdirq->node);
-> >  	vmdirq->irq = vmd_next_irq(vmd, desc);
-> >  	vmdirq->virq = virq;
-> > -	index = index_from_irqs(vmd, vmdirq->irq);
-> > -	vector = pci_irq_vector(vmd->dev, index);
-> >  
-> > -	irq_domain_set_info(domain, virq, vector, info->chip, vmdirq,
-> > +	irq_domain_set_info(domain, virq, vmdirq->irq->virq, info->chip, vmdirq,
-> >  			    handle_untracked_irq, vmd, NULL);
-> >  	return 0;
-> >  }
-> > @@ -685,7 +684,8 @@ static int vmd_alloc_irqs(struct vmd_dev
-> >  			return err;
-> >  
-> >  		INIT_LIST_HEAD(&vmd->irqs[i].irq_list);
-> > -		err = devm_request_irq(&dev->dev, pci_irq_vector(dev, i),
-> > +		vmd->irqs[i].virq = pci_irq_vector(dev, i);
-> > +		err = devm_request_irq(&dev->dev, vmd->irqs[i].virq,
-> >  				       vmd_irq, IRQF_NO_THREAD,
-> >  				       vmd->name, &vmd->irqs[i]);
-> >  		if (err)
-> > @@ -969,7 +969,7 @@ static int vmd_suspend(struct device *de
-> >  	int i;
-> >  
-> >  	for (i = 0; i < vmd->msix_count; i++)
-> > -		devm_free_irq(dev, pci_irq_vector(pdev, i), &vmd->irqs[i]);
-> > +		devm_free_irq(dev, vmd->irqs[i].virq, &vmd->irqs[i]);
-> >  
-> >  	return 0;
-> >  }
-> > @@ -981,7 +981,7 @@ static int vmd_resume(struct device *dev
-> >  	int err, i;
-> >  
-> >  	for (i = 0; i < vmd->msix_count; i++) {
-> > -		err = devm_request_irq(dev, pci_irq_vector(pdev, i),
-> > +		err = devm_request_irq(dev, vmd->irqs[i].virq,
-> >  				       vmd_irq, IRQF_NO_THREAD,
-> >  				       vmd->name, &vmd->irqs[i]);
-> >  		if (err)
+
+Eric Snowberg (4):
+  KEYS: Create static version of public_key_verify_signature
+  X.509: Parse Basic Constraints for CA
+  KEYS: CA link restriction
+  integrity: restrict INTEGRITY_KEYRING_MACHINE to restrict_link_by_ca
+
+ certs/system_keyring.c                        |  9 ++--
+ crypto/asymmetric_keys/restrict.c             | 43 +++++++++++++++++++
+ crypto/asymmetric_keys/x509_cert_parser.c     |  9 ++++
+ include/crypto/public_key.h                   | 25 +++++++++++
+ include/keys/system_keyring.h                 |  3 +-
+ security/integrity/Kconfig                    | 21 +++++++++
+ security/integrity/Makefile                   |  1 +
+ security/integrity/digsig.c                   | 14 ++++--
+ security/integrity/integrity.h                |  3 +-
+ .../platform_certs/keyring_handler.c          |  4 +-
+ 10 files changed, 123 insertions(+), 9 deletions(-)
+
+
+base-commit: c9e54f38976a1c0ec69c0a6208b3fd55fceb01d1
+-- 
+2.27.0
+
