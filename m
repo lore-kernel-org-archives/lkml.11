@@ -2,159 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76702C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BF5C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237917AbiCAUSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:18:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S237968AbiCAUSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:18:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237997AbiCAURw (ORCPT
+        with ESMTP id S238014AbiCAURx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:17:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F23E89317;
-        Tue,  1 Mar 2022 12:16:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24BC2B81D17;
-        Tue,  1 Mar 2022 20:16:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C46C340EE;
-        Tue,  1 Mar 2022 20:16:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165804;
-        bh=s5v3aJ4Hatm+c5hU9aGN5lqd1epV2EFt5fKUeQ2bViM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f8L55RLwv2lVHQjW50iDaUDGKNnGVjVupe88rjQv8xIDAmfu0iRIzm6En2DIUFgXw
-         BLqybHT9CpxMwdgzRu9me9QYZtwsZ+U9Y4YjjGy3kuDk3DTHEJJO4xNbqyc74LDjGY
-         3dZuCB1re1zfB4TpS8NdzHi8uwx8hrSV+5tSVdOztKqFFoy01Z3iFm4NZivUsk1d5a
-         oeybn2pe/1Cr05FIRnCIkuDs0FHDBzxSvfTDJ+ZpyIV/TKGPxhNvdJpu9n4PyUBWga
-         Yw+llytXCa/9LRd4EbHxTkIiXM9MCrH5ASeaxE950hYJTbRe5jMabo4d/xm89jWslp
-         fXepy/OWHbFZw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Halil Pasic <pasic@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, corbet@lwn.net,
-        m.szyprowski@samsung.com, linux-doc@vger.kernel.org,
-        iommu@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.15 02/23] swiotlb: fix info leak with DMA_FROM_DEVICE
-Date:   Tue,  1 Mar 2022 15:16:01 -0500
-Message-Id: <20220301201629.18547-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
-References: <20220301201629.18547-1-sashal@kernel.org>
+        Tue, 1 Mar 2022 15:17:53 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A2189CC3
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:16:49 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id d23so28745672lfv.13
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:16:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IVJCWuEom0kHlh/OKXDsN3qCzQx/9M9wC7RTfclR0WE=;
+        b=BpAEsMmHbz6DldI3lrXW/NoVL9h7Y1Bb3g4jW8C7mdmGyS8h6DJzcjMNPCcb5i0eTv
+         U7LBxmxLpMxQLSdiNBGQ/nOQ2K++bwghf8WSxi5cejyHlrOc1Q0Y3NIYV/Er9JexFbTd
+         wZkpV/0FlL02n71JKK++Oi+26AojFvTWPs3FE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IVJCWuEom0kHlh/OKXDsN3qCzQx/9M9wC7RTfclR0WE=;
+        b=xIbO+0yaWkbHRomW+q+CuAhH54/dwJpxYs/VBu7oQ3NuZxfYs00ph6sEd0VKGeW1lU
+         5UppwrMrPIIMEn2iq3GT8b/18/y1MpZn6Hsww2k17RtXKnyAqJ5sNHQNF14kNiCo5eOf
+         GqrWWha+3uv946pc3if5F5iGRzl0BHvspUwtjkVEvQLwLGV9u3gBCxUG3e178WBGL/mM
+         jh7KZcJ4I51pk62Fc7yTCn12+bUWzGBGoV3wt9wa3Gzeqi36+2qZufWH1U8JGneHPiuI
+         f/IDMK7DFENG/5JhtDDkjygVZqhq5PDGWKAFFw/9YxqesoHkVvklRQTvLQIiBBmVLMNd
+         a4xw==
+X-Gm-Message-State: AOAM530NFd4nunb3bBSgxt3rDKiiQVL4xLPwFgo7PCRVbmywSoqIf9+W
+        jOJiq84e8SXn3s7SAXdH+7jbUBdcdrn6iTX56Jg=
+X-Google-Smtp-Source: ABdhPJzle4beAQadMnWFBgNCs+o9H/6ibm+EG5RNOsy7EhdfUL4eor1ZXrqLb/XmrCHxZqydcweUYg==
+X-Received: by 2002:ac2:5fc2:0:b0:443:82cf:9603 with SMTP id q2-20020ac25fc2000000b0044382cf9603mr16488968lfg.142.1646165807502;
+        Tue, 01 Mar 2022 12:16:47 -0800 (PST)
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
+        by smtp.gmail.com with ESMTPSA id u8-20020ac251c8000000b004458c1d1462sm1393738lfm.142.2022.03.01.12.16.45
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 12:16:45 -0800 (PST)
+Received: by mail-lf1-f50.google.com with SMTP id g39so28747519lfv.10
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:16:45 -0800 (PST)
+X-Received: by 2002:ac2:5313:0:b0:443:99c1:7e89 with SMTP id
+ c19-20020ac25313000000b0044399c17e89mr16012940lfh.531.1646165804889; Tue, 01
+ Mar 2022 12:16:44 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
+In-Reply-To: <202203020135.5duGpXM2-lkp@intel.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 12:16:28 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+Message-ID: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
+To:     kernel test robot <lkp@intel.com>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, kbuild-all@lists.01.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Halil Pasic <pasic@linux.ibm.com>
+On Tue, Mar 1, 2022 at 10:00 AM kernel test robot <lkp@intel.com> wrote:
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
 
-[ Upstream commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e ]
+So that's potentially an interesting warning, but this email doesn't
+actually tell *where* that warning happens.
 
-The problem I'm addressing was discovered by the LTP test covering
-cve-2018-1000204.
+I'm not entirely sure why this warning is new to this '-std=gnu11'
+change, but it's intriguing.
 
-A short description of what happens follows:
-1) The test case issues a command code 00 (TEST UNIT READY) via the SG_IO
-   interface with: dxfer_len == 524288, dxdfer_dir == SG_DXFER_FROM_DEV
-   and a corresponding dxferp. The peculiar thing about this is that TUR
-   is not reading from the device.
-2) In sg_start_req() the invocation of blk_rq_map_user() effectively
-   bounces the user-space buffer. As if the device was to transfer into
-   it. Since commit a45b599ad808 ("scsi: sg: allocate with __GFP_ZERO in
-   sg_build_indirect()") we make sure this first bounce buffer is
-   allocated with GFP_ZERO.
-3) For the rest of the story we keep ignoring that we have a TUR, so the
-   device won't touch the buffer we prepare as if the we had a
-   DMA_FROM_DEVICE type of situation. My setup uses a virtio-scsi device
-   and the  buffer allocated by SG is mapped by the function
-   virtqueue_add_split() which uses DMA_FROM_DEVICE for the "in" sgs (here
-   scatter-gather and not scsi generics). This mapping involves bouncing
-   via the swiotlb (we need swiotlb to do virtio in protected guest like
-   s390 Secure Execution, or AMD SEV).
-4) When the SCSI TUR is done, we first copy back the content of the second
-   (that is swiotlb) bounce buffer (which most likely contains some
-   previous IO data), to the first bounce buffer, which contains all
-   zeros.  Then we copy back the content of the first bounce buffer to
-   the user-space buffer.
-5) The test case detects that the buffer, which it zero-initialized,
-  ain't all zeros and fails.
+Instead it then gives the location for another warning:
 
-One can argue that this is an swiotlb problem, because without swiotlb
-we leak all zeros, and the swiotlb should be transparent in a sense that
-it does not affect the outcome (if all other participants are well
-behaved).
+>    arch/mips/pci/pci-rc32434.c: In function 'rc32434_pcibridge_init':
+>    arch/mips/pci/pci-rc32434.c:111:22: warning: variable 'dummyread' set but not used [-Wunused-but-set-variable]
+>      111 |         unsigned int dummyread, pcicntlval;
+>          |                      ^~~~~~~~~
 
-Copying the content of the original buffer into the swiotlb buffer is
-the only way I can think of to make swiotlb transparent in such
-scenarios. So let's do just that if in doubt, but allow the driver
-to tell us that the whole mapped buffer is going to be overwritten,
-in which case we can preserve the old behavior and avoid the performance
-impact of the extra bounce.
+but that wasn't the new one (and that 'dummyread' is obviously
+_intentionally_ set but not used, as implied by the name).
 
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- Documentation/core-api/dma-attributes.rst | 8 ++++++++
- include/linux/dma-mapping.h               | 8 ++++++++
- kernel/dma/swiotlb.c                      | 3 ++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+Is there some place to actually see the full log (or some way to get a
+better pointer to just the new warning) to see that actual shift
+overflow thing?
 
-diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
-index 1887d92e8e926..17706dc91ec9f 100644
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
-+
-+DMA_ATTR_OVERWRITE
-+------------------
-+
-+This is a hint to the DMA-mapping subsystem that the device is expected to
-+overwrite the entire mapped size, thus the caller does not require any of the
-+previous buffer contents to be preserved. This allows bounce-buffering
-+implementations to optimise DMA_FROM_DEVICE transfers.
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index dca2b1355bb13..6150d11a607e1 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,6 +61,14 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
-+/*
-+ * This is a hint to the DMA-mapping subsystem that the device is expected
-+ * to overwrite the entire mapped size, thus the caller does not require any
-+ * of the previous buffer contents to be preserved. This allows
-+ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-+ */
-+#define DMA_ATTR_OVERWRITE		(1UL << 10)
-+
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 87c40517e8227..aca0690550e2f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -579,7 +579,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(mem->start, index) + offset;
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
-+	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
-+	    dir == DMA_BIDIRECTIONAL))
- 		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
--- 
-2.34.1
-
+              Linus
