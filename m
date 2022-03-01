@@ -2,133 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A77C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C15C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231838AbiCABKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 20:10:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
+        id S231321AbiCABLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 20:11:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbiCABKC (ORCPT
+        with ESMTP id S231629AbiCABLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 20:10:02 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1481F2AF8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:09:22 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id bq11so20006327edb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:09:22 -0800 (PST)
+        Mon, 28 Feb 2022 20:11:08 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674FB5F6D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:10:28 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id hw13so28289566ejc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:10:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XQU+v0ncJKQsq8KVJD+e40cIco7m2GBd4rHARca/WR4=;
-        b=0jmzKwCWF4tyUOMYPO79E8fZ5IPNMaa8ViRAkdhJVQ+rpvYnB807H9RFMUbcIp7BZU
-         gZHQ1rDBx3PK62BLmbBlNNAT3jyzYaL4Q2y1jktn63TwPT5ab7vdpiN4MQeP1MOCyfW/
-         1hrpDZVGloDoRW/S3YgB7ZGNi+EX7JpeqF+27/Xd6NI08vCg4fnWr5/UMmQ3YP+rWN2q
-         yIGHsrbeKMCBBBgIhh1S5ZwIKqOb+wr4/4iLEbQ7SulNvHeNpE2lVCx7J+vfXvAVBYuU
-         4/QobemQ3yboRwLVKSLl98uQ/+1XfxEHp6My70akJWohmiB80lkECn8ozqFNVuNZKksq
-         Vmzg==
+        bh=BbqDwcjXsXCL6kTMj0YCp6PGwzr/251RPmtgzCoFEyg=;
+        b=Ik+NVh3CPD8GsoJYQqmUUGgp15DF5ACPGNAA3aEa+OtKST1rLe5gBLLmayjH3liIyT
+         zYsDmk39c7rHmGbFKJ4PImoNKy5RX5cy1kfe2mXgGT1zSW4ymL3cmNbnY7EaK9CpzaUe
+         bj+bd/arywMdD8u8U+Xuwf26B5pjNxrE1+n/8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XQU+v0ncJKQsq8KVJD+e40cIco7m2GBd4rHARca/WR4=;
-        b=6RuADMGBir72F78G4SnKdURaBNCmLZzV/0dQU4eMivvtwJC10Ml87EO9i6gVPdGLjm
-         dULrRGIplS7CV3lANjdLTjcMDgai0WMfn5g26odz+ycIGu4/MvvRMxWiWDrM9S2kpFT6
-         1ocyILCsuL7qX35D/R9YJ66MMx6P/u/AqxHkqQy4YavZ7esGf9GfOPs2e47KN1U1R2KF
-         WbSr2noRRBwvI/ZUNdt/JHVA5b+8sAMe5pgQHKLqP5VO8rGKKN8IVY0UgdcqOe9T4jkn
-         TTqvb/c6PqQAHbLMgrFzwTs6k1X2+n0C6DCtqUCzxLLPu/KcqxXGt7/W4fdo2V9DEqIu
-         eCbQ==
-X-Gm-Message-State: AOAM533eVkrrwfGfgMZuiIt5BsI1nDHITY5Qmg2dXEPNyD63V4u1dPo4
-        ZYhNOiTBr7Dmx86yYhVmM03JHwtOfnMws4v2HLQ0
-X-Google-Smtp-Source: ABdhPJyMYQib71KmGDawe2Sa6f6s4SJDfyMQRJedtkVd+Ib0jlueXrtB/26onK1/CMnUCdwxIX5WHVCU4U1exe/oGNQ=
-X-Received: by 2002:a05:6402:1e8e:b0:412:cfd8:4d12 with SMTP id
- f14-20020a0564021e8e00b00412cfd84d12mr21942842edf.343.1646096960582; Mon, 28
- Feb 2022 17:09:20 -0800 (PST)
+        bh=BbqDwcjXsXCL6kTMj0YCp6PGwzr/251RPmtgzCoFEyg=;
+        b=49FyQ+MOjmFVR7k7u9JxlDfenp9r7K7H8A6pwypGPwLuiJRXLYcak/CDGomzHXORDo
+         Z63P3bBBCoopziaQwPrBSI0ZucH1AP8r1qeeZSsuZxF4qX5kConaWabGIdsG9wzcjeWD
+         Lbg/GKKaUjmWgjApKMTsqSsC35lXj8G001bgp/mSON2IxuxG3uBYD3PHbThLRIhEcytN
+         P8js6Js8n2ALgc7mlIg2mGkbtWOghG2XAiWcwhEgRbvfSPzI0vhnbifviSubpR6pHPOP
+         RfYAQFALsj9BjZz15YZKwjiBnVkysw5W4l3LqG6jXlV8ahqbGFbmKsdLonAm2sM7tmHU
+         kZMQ==
+X-Gm-Message-State: AOAM530n41JrR5EejFuk3gT5T0SmAZ8yysZISXg2Pxi3Yt9ye1DgAUq8
+        36ihent7TJfsR1RS9aGRUbjzCPKovA0BppuD
+X-Google-Smtp-Source: ABdhPJzxzfBpUxm+TCLQLxaR8GLE6FG88snbyOjd2PUV74pyMJUGXR2IhJezd3BMJujT3X3UHkzqJg==
+X-Received: by 2002:a17:906:f87:b0:6d6:dd04:147b with SMTP id q7-20020a1709060f8700b006d6dd04147bmr2495479ejj.80.1646097026688;
+        Mon, 28 Feb 2022 17:10:26 -0800 (PST)
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
+        by smtp.gmail.com with ESMTPSA id y12-20020a50eb8c000000b00410f02e577esm6849368edr.7.2022.02.28.17.10.24
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 17:10:25 -0800 (PST)
+Received: by mail-wr1-f42.google.com with SMTP id i8so964177wrr.8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:10:24 -0800 (PST)
+X-Received: by 2002:a5d:62cb:0:b0:1ef:5d3f:7b56 with SMTP id
+ o11-20020a5d62cb000000b001ef5d3f7b56mr14343243wrv.513.1646097024460; Mon, 28
+ Feb 2022 17:10:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20211117015806.2192263-1-dvander@google.com> <CAOQ4uxjjapFeOAFGLmsXObdgFVYLfNer-rnnee1RR+joxK3xYg@mail.gmail.com>
- <Yao51m9EXszPsxNN@redhat.com> <CAOQ4uxjk4piLyx67Ena-FfypDVWzRqVN0xmFUXXPYa+SC4Q-vQ@mail.gmail.com>
- <YapjNRrjpDu2a5qQ@redhat.com>
-In-Reply-To: <YapjNRrjpDu2a5qQ@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 28 Feb 2022 20:09:09 -0500
-Message-ID: <CAHC9VhQTUgBRBEz_wFX8daSA70nGJCJLXj8Yvcqr5+DHcfDmwA@mail.gmail.com>
-Subject: Re: [PATCH v19 0/4] overlayfs override_creds=off & nested get xattr fix
-To:     Vivek Goyal <vgoyal@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>,
-        David Anderson <dvander@google.com>
-Cc:     Mark Salyzyn <salyzyn@android.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>, selinux@vger.kernel.org,
-        paulmoore@microsoft.com, Luca.Boccassi@microsoft.com
+References: <1644591438-6514-1-git-send-email-quic_srivasam@quicinc.com> <1644591438-6514-3-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <1644591438-6514-3-git-send-email-quic_srivasam@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 28 Feb 2022 17:10:12 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=Xm7UVXX9NQfKs+BymsZpG+aoYqvXXRL5WhJjEZRqi7ug@mail.gmail.com>
+Message-ID: <CAD=FV=Xm7UVXX9NQfKs+BymsZpG+aoYqvXXRL5WhJjEZRqi7ug@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] arm64: dts: qcom: sc7280: Add lpass cpu node
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Rohit kumar <rohitkr@codeaurora.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Judy Hsiao <judyhsiao@chromium.org>,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I wanted to try and bring this thread back from the dead (?) as I
-believe the use-case is still valid and worth supporting.  Some more
-brief comments below ...
+Hi,
 
-On Fri, Dec 3, 2021 at 1:34 PM Vivek Goyal <vgoyal@redhat.com> wrote:
-> I am not sure. In the early version of patches I think argument was
-> that do not switch to mounter's creds and use caller's creds on
-> underlying filesystem as well. And each caller will be privileged
-> enough to be able to perform the operation.
-
-The basic idea is that we can now build Linux systems with enough
-access control granularity such that a given process can have the
-necessary privileges to mount a filesystem, but not necessarily access
-all of the data on the filesystem, while other processes, with
-different access rights, are allowed to read and write data on the
-mounted filesystem.  Granted, this is a bit different from how things
-are usually done, but in my opinion it's a valid and interesting use
-case in that it allows us to remove unneeded access rights from
-historically very privileged system startup services/scripts: the
-service that runs to mount my homedir shouldn't be allowed to access
-my files just to mount the directory.
-
-Unfortunately, this idea falls apart when we attempt to use overlayfs
-due to the clever/usual way it caches the mounting processes
-credentials and uses that in place of the current process' credentials
-when accessing certain parts of the underlying filesystems.  The
-current overlayfs implementation assumes that the mounter will always
-be more privileged than the processes accessing the filesystem, it
-would be nice if we could build a mechanism that didn't have this
-assumption baked into the implementation.
-
-This patchset may not have been The Answer, but surely there is
-something we can do to support this use-case.
-
-> Our take was that how is this model better because in current model
-> only mounter needs to be privileged while in this new model each
-> caller will have to be privileged. But Android guys seemed to be ok
-> with that. So has this assumption changed since early days. If callers
-> are privileged, then vfs_getxattr() on underlying filesystem for
-> overaly internal xattrs should succeed and there is no need for this
-> change.
+On Fri, Feb 11, 2022 at 6:57 AM Srinivasa Rao Mandadapu
+<quic_srivasam@quicinc.com> wrote:
 >
-> I suspect patches have evolved since then and callers are not as
-> privileged as we expect them to and that's why we are bypassing this
-> check on all overlayfs internal trusted xattrs? This definitely requires
-> much close scrutiny. My initial reaction is that this sounds very scary.
+> @@ -1750,6 +1751,64 @@
+>                         #clock-cells = <1>;
+>                 };
 >
-> In general I would think overlayfs should not bypass the check on
-> underlying fs. Either checks should be done in mounter's context or
-> caller's context (depending on override_creds=on/off).
->
-> Thanks
-> Vivek
+> +               lpass_cpu: audio-subsystem@3260000 {
+> +                       compatible = "qcom,sc7280-lpass-cpu";
+> +                       reg = <0 0x3260000 0 0xC000>,
+> +                             <0 0x3280000 0 0x29000>,
+> +                             <0 0x3340000 0 0x29000>,
+> +                             <0 0x336C000 0 0x3000>,
+> +                             <0 0x3987000 0 0x68000>,
+> +                             <0 0x3B00000 0 0x29000>;
 
--- 
-paul-moore.com
+Lower case hex, please. ...and pad the address to 8 digits here (just
+don't do it in the unit address in the node name).
+
+
+> +                       reg-names = "lpass-rxtx-cdc-dma-lpm",
+> +                                   "lpass-rxtx-lpaif",
+> +                                   "lpass-va-lpaif",
+> +                                   "lpass-va-cdc-dma-lpm",
+> +                                   "lpass-hdmiif",
+> +                                   "lpass-lpaif";
+
+The order of "reg" and "reg-names" needs to match the bindings
+exactly. It's almost certainly easier to change your device tree since
+the bindings have already landed.
+
+That means that "lpass-hdmiif" will be first. ...and it will also
+change your node name since the first "reg" listed will now be
+3987000.
+
+
+> +                       iommus = <&apps_smmu 0x1820 0>,
+> +                                <&apps_smmu 0x1821 0>,
+> +                                <&apps_smmu 0x1832 0>;
+> +                       status = "disabled";
+> +
+> +                       power-domains = <&rpmhpd SC7280_LCX>;
+> +                       power-domain-names = "lcx";
+
+power-domain-names is not in the bindings.
+
+
+> +                       required-opps = <&rpmhpd_opp_nom>;
+> +
+> +                       clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
+> +                                <&lpasscore LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
+> +                                <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM_CLK>,
+> +                                <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
+> +                                <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
+> +                                <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
+> +                                <&lpasscore LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
+> +                                <&lpasscore LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
+> +                                <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
+> +                       clock-names = "aon_cc_audio_hm_h",
+> +                                     "core_cc_sysnoc_mport_core",
+> +                                     "audio_cc_codec_mem",
+> +                                     "audio_cc_codec_mem0",
+> +                                     "audio_cc_codec_mem1",
+> +                                     "audio_cc_codec_mem2",
+> +                                     "core_cc_ext_if0_ibit",
+> +                                     "core_cc_ext_if1_ibit",
+> +                                     "aon_cc_va_mem0";
+
+Clocks do not match bindings.
+
+
+> +                       #sound-dai-cells = <1>;
+> +                       #address-cells = <1>;
+> +                       #size-cells = <0>;
+> +
+> +                       interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>;
+> +
+> +                       interrupt-names = "lpass-irq-lpaif",
+> +                                         "lpass-irq-vaif",
+> +                                         "lpass-irq-rxtxif",
+> +                                         "lpass-irq-hdmi";
+
+interrupt-names ordering does not match bindings.
+
+
+-Doug
