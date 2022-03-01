@@ -2,166 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DDAC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 304CAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233967AbiCAJmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:42:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
+        id S233986AbiCAJpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:45:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233957AbiCAJlz (ORCPT
+        with ESMTP id S233977AbiCAJpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:41:55 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9288BE12
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:41:13 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id c14so17768351ioa.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 01:41:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MU2HWPXy4mAk2gUeuMPfPjZpOmd7MfczuTjNa/BKYeM=;
-        b=J5tf+w9wJrpI84ECFWJeCND7fgEugL1Y44J/PeJZI5J8YWiyX+HtHV4sQLIs8Lv9MP
-         AiUX5b0cP+UUp70Ks5gg6JCXGhXNEB31VGMNwDkGqc4ab+pW5kH6WmTWwpL+CKmhYNqt
-         hYeXF8Y3fWhW9T+GCnaXz+kYm7c1vnceiDEm4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MU2HWPXy4mAk2gUeuMPfPjZpOmd7MfczuTjNa/BKYeM=;
-        b=eFeWnwE4wQzhdXGNraonyHxm6E10PBju5Yv8HJpdsajZqBqnMS4/oEZ6T+L5uSQNzV
-         RRWuUSLwelos0Lj+GDPvmjlrgVkDB2HxdeBVbXHK1bgHOOW8li+2tGVLRdDrX/3R1ShR
-         eiW2S8fFz/cK5t486IkpmTkmcTSvWa9hsQxH9rp9FeUIn7cD7wJ0JDOex+sHNlRaSirP
-         6r7RDZDh48bpg5PzVtRYwfIsS/T8E+1CZQjb6EbiV9r44C8DV5VQ5vbDUKNtTJ3cTWZM
-         9FpGmLTpj3cMCzGZZmzD/nWUxduGcDJhA6PNHuo0DVmWtGgRFG+BkbcLlWmEPw1JrzVv
-         pOLA==
-X-Gm-Message-State: AOAM533rMHWdvPkypl+MZO740/ztSur/sCDafv0+EiyOm9lPdH+MYpWn
-        7Pg8bqVmxDCQ4JgyAkq1Lqi8wx8UReQC/LI8v1q42w==
-X-Google-Smtp-Source: ABdhPJxj9kVmLDPb5TzfYODF4nrClsQQz+30NgAHek1PNbHF0Q1C9hdcWEyqYC4IdVu0LWbB+6deHxoZYu2hC0zKG8s=
-X-Received: by 2002:a02:95a2:0:b0:30f:61cc:346f with SMTP id
- b31-20020a0295a2000000b0030f61cc346fmr20276611jai.273.1646127672760; Tue, 01
- Mar 2022 01:41:12 -0800 (PST)
+        Tue, 1 Mar 2022 04:45:05 -0500
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F79360D83;
+        Tue,  1 Mar 2022 01:44:18 -0800 (PST)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nOz3I-0003z9-01; Tue, 01 Mar 2022 10:44:16 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id E43C2C28F0; Tue,  1 Mar 2022 10:10:56 +0100 (CET)
+Date:   Tue, 1 Mar 2022 10:10:56 +0100
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Cc:     John Crispin <john@phrozen.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: ralink: mt7621: use bitwise NOT instead of logical
+Message-ID: <20220301091056.GB6517@alpha.franken.de>
+References: <20220301011507.15494-1-ilya.lipnitskiy@gmail.com>
 MIME-Version: 1.0
-References: <20220227093434.2889464-1-jhubbard@nvidia.com> <20220227093434.2889464-7-jhubbard@nvidia.com>
- <CAJfpegsDkpdCQiPmfKfX_b4-bkkj5N5vRhseifEH6woJ7r0S6A@mail.gmail.com> <f0b158dc-5b01-67aa-1f49-331bf1ff2bfd@nvidia.com>
-In-Reply-To: <f0b158dc-5b01-67aa-1f49-331bf1ff2bfd@nvidia.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Tue, 1 Mar 2022 10:41:01 +0100
-Message-ID: <CAJfpegvcX4n3Ac5ekNNKGRh-cDGjSjX3CuS7+SOWvfksii-UEw@mail.gmail.com>
-Subject: Re: [PATCH 6/6] fuse: convert direct IO paths to use FOLL_PIN
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     jhubbard.send.patches@gmail.com, Jens Axboe <axboe@kernel.dk>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@infradead.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301011507.15494-1-ilya.lipnitskiy@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Feb 2022 at 22:16, John Hubbard <jhubbard@nvidia.com> wrote:
->
-> On 2/28/22 07:59, Miklos Szeredi wrote:
-> > On Sun, 27 Feb 2022 at 10:34, <jhubbard.send.patches@gmail.com> wrote:
-> >>
-> >> From: John Hubbard <jhubbard@nvidia.com>
-> >>
-> >> Convert the fuse filesystem to support the new iov_iter_get_pages()
-> >> behavior. That routine now invokes pin_user_pages_fast(), which means
-> >> that such pages must be released via unpin_user_page(), rather than via
-> >> put_page().
-> >>
-> >> This commit also removes any possibility of kernel pages being handled,
-> >> in the fuse_get_user_pages() call. Although this may seem like a steep
-> >> price to pay, Christoph Hellwig actually recommended it a few years ago
-> >> for nearly the same situation [1].
-> >
-> > This might work for O_DIRECT, but fuse has this mode of operation
-> > which turns normal "buffered" I/O into direct I/O.  And that in turn
-> > will break execve of such files.
-> >
-> > So AFAICS we need to keep kvec handing in some way.
-> >
->
-> Thanks for bringing that up! Do you have any hints for me, to jump start
+On Mon, Feb 28, 2022 at 05:15:07PM -0800, Ilya Lipnitskiy wrote:
+> It was the intention to reverse the bits, not make them all zero by
+> using logical NOT operator.
+> 
+> Fixes: cc19db8b312a ("MIPS: ralink: mt7621: do memory detection on KSEG1")
+> Suggested-by: Chuanhong Guo <gch981213@gmail.com>
+> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+> ---
+>  arch/mips/ralink/mt7621.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/mips/ralink/mt7621.c b/arch/mips/ralink/mt7621.c
+> index 12c8808e0dea..fb0565bc34fd 100644
+> --- a/arch/mips/ralink/mt7621.c
+> +++ b/arch/mips/ralink/mt7621.c
+> @@ -69,7 +69,7 @@ static bool __init mt7621_addr_wraparound_test(phys_addr_t size)
+>  	__raw_writel(MT7621_MEM_TEST_PATTERN, dm);
+>  	if (__raw_readl(dm) != __raw_readl(dm + size))
+>  		return false;
+> -	__raw_writel(!MT7621_MEM_TEST_PATTERN, dm);
+> +	__raw_writel(~MT7621_MEM_TEST_PATTERN, dm);
+>  	return __raw_readl(dm) == __raw_readl(dm + size);
+>  }
+>  
+> -- 
+> 2.35.1
 
-How about just leaving that special code in place?   It bypasses page
-refs and directly copies to the kernel buffer, so it should not have
-any affect on the user page code.
+applied to mips-fixes
 
-> a deeper look? And especially, sample programs that exercise this?
+Thomas.
 
-Here's one:
-# uncomment as appropriate:
-#sudo dnf install fuse3-devel
-#sudo apt install libfuse3-dev
-
-cat <<EOF > fuse-dio-exec.c
-#define FUSE_USE_VERSION 31
-#include <fuse.h>
-#include <errno.h>
-#include <unistd.h>
-
-static const char *filename = "/bin/true";
-
-static int test_getattr(const char *path, struct stat *stbuf,
-             struct fuse_file_info *fi)
-{
-    return lstat(filename, stbuf) == -1 ? -errno : 0;
-}
-
-static int test_open(const char *path, struct fuse_file_info *fi)
-{
-    int res;
-
-    res = open(filename, fi->flags);
-    if (res == -1)
-        return -errno;
-
-    fi->fh = res;
-    fi->direct_io = 1;
-    return 0;
-}
-
-static int test_read(const char *path, char *buf, size_t size, off_t offset,
-              struct fuse_file_info *fi)
-{
-    int res = pread(fi->fh, buf, size, offset);
-    return res == -1 ? -errno : res;
-}
-
-static int test_release(const char *path, struct fuse_file_info *fi)
-{
-    close(fi->fh);
-    return 0;
-}
-
-static const struct fuse_operations test_oper = {
-    .getattr    = test_getattr,
-    .open        = test_open,
-    .release    = test_release,
-    .read        = test_read,
-};
-
-int main(int argc, char *argv[])
-{
-    return fuse_main(argc, argv, &test_oper, NULL);
-}
-EOF
-
-gcc -W fuse-dio-exec.c `pkg-config fuse3 --cflags --libs` -o fuse-dio-exec
-touch /tmp/true
-
-#run test:
-./fuse-dio-exec /tmp/true
-/tmp/true
-umount /tmp/true
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
