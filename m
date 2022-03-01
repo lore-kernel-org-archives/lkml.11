@@ -2,115 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38147C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 04:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F182FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 04:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232234AbiCAETd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 23:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
+        id S232237AbiCAETl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 23:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbiCAET3 (ORCPT
+        with ESMTP id S232246AbiCAETg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 23:19:29 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3327DE0A2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 20:18:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646108329; x=1677644329;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kYk0NIeN07oIgNEFzajamTRQ277JdfYIBg6vulnaCQo=;
-  b=MhkyrT4Y9fblLuvcIg2PcaabNkRkRlSZgu02748Oce/Pv7WEvng1o3F5
-   DetqL2i8x8rFH4bzFMLNQ7iDKYy/vub5w+uOwtzz7Bjz9vrk5dW5ZFdYN
-   OFo7WSASzqXCRleSmsAuSQycx9RCDkbt1kQNyEwhtgk9HgyhuK5FART+I
-   wHrhfsWLhjIL64JOdhwdulNnBd9VabmduCbk9xKOv5oSpulf0XmmDBlne
-   ZZKs/S1FC1XV7RGOZoYeXZCDm2gt5pxhPMOYx3fpCn2xBXu0NPnkcmQS4
-   OoCDaBViieJ6dWYYZnLoi7BHGLx3c9chAfTRvTp7D23AQDXA1lgw9WSUo
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252784682"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="252784682"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 20:18:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="778326839"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Feb 2022 20:18:47 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOtyI-00086J-J2; Tue, 01 Mar 2022 04:18:46 +0000
-Date:   Tue, 1 Mar 2022 12:18:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>
-Subject: drivers/irqchip/irq-xilinx-intc.c:127:14: warning: no previous
- prototype for 'xintc_get_irq'
-Message-ID: <202203011058.VcuVhghd-lkp@intel.com>
+        Mon, 28 Feb 2022 23:19:36 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17311FD3A;
+        Mon, 28 Feb 2022 20:18:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=SNG8dsJKnqg4yoB1IAs+5+zuDlU3R1ic4tYvheuBHLI=; b=BIJf36tfAUXQXZqcOnbeAxttFX
+        jFYQv0XXdHsIqDASqvzeCHFWihKYilk3cBB7YnenzeaqjtnWquPL2Fw2mclByXwyKXocnLBPj/MCX
+        RaBePffOxZitWR550+mebrZDyIePhbYVH0r8PHLVLJcQx24hXPGUVuFzs6eBqsxmapMTWV5dPeUOv
+        eNLkIn+YKoTteSp0QOkIc8uZW4AlOG4kySu/x+4CVBm28T0TzNfjGU8zpoKzPkyZzXMzw/b14XGcK
+        mTSNmUW4cjUWIdFr5LGTpKGAdsPHshNUie5Tz1iOkAOHpuzMM5XNAoc7gkQiVOqLXFUI9cQd1xprT
+        kRtI7Whg==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOtyQ-00Er1X-42; Tue, 01 Mar 2022 04:18:54 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ard Biesheuvel <ardb@kernel.org>, linux-efi@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>,
+        Octavian Purdila <octavian.purdila@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Matt Fleming <matt@codeblueprint.co.uk>
+Subject: [PATCH] efi: fix return value of __setup handlers
+Date:   Mon, 28 Feb 2022 20:18:51 -0800
+Message-Id: <20220301041851.12459-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Robert,
+When "dump_apple_properties" is used on the kernel boot command line,
+it causes an Unknown parameter message and the string is added to init's
+argument strings:
 
-First bad commit (maybe != root cause):
+  Unknown kernel command line parameters "dump_apple_properties
+    BOOT_IMAGE=/boot/bzImage-517rc6 efivar_ssdt=newcpu_ssdt", will be
+    passed to user space.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   719fce7539cd3e186598e2aed36325fe892150cf
-commit: debf69cfd4c618c7036a13cc4edd1faf87ce7d53 irqchip/xilinx: Expose Kconfig option for Zynq/ZynqMP
-date:   10 months ago
-config: arm64-randconfig-r031-20220227 (https://download.01.org/0day-ci/archive/20220301/202203011058.VcuVhghd-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=debf69cfd4c618c7036a13cc4edd1faf87ce7d53
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout debf69cfd4c618c7036a13cc4edd1faf87ce7d53
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/tegra/ drivers/irqchip/
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+     dump_apple_properties
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     efivar_ssdt=newcpu_ssdt
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Similarly when "efivar_ssdt=somestring" is used, it is added to the
+Unknown parameter message and to init's environment strings, polluting
+them (see examples above).
 
-All warnings (new ones prefixed by >>):
+Change the return value of the __setup functions to 1 to indicate
+that the __setup options have been handled.
 
->> drivers/irqchip/irq-xilinx-intc.c:127:14: warning: no previous prototype for 'xintc_get_irq' [-Wmissing-prototypes]
-     127 | unsigned int xintc_get_irq(void)
-         |              ^~~~~~~~~~~~~
-
-
-vim +/xintc_get_irq +127 drivers/irqchip/irq-xilinx-intc.c
-
-67862a3c47fcfc9 Mubin Sayyed 2020-03-17  126  
-4cea749d56bec94 Marc Zyngier 2020-03-30 @127  unsigned int xintc_get_irq(void)
-4cea749d56bec94 Marc Zyngier 2020-03-30  128  {
-4cea749d56bec94 Marc Zyngier 2020-03-30  129  	unsigned int irq = -1;
-4cea749d56bec94 Marc Zyngier 2020-03-30  130  	u32 hwirq;
-4cea749d56bec94 Marc Zyngier 2020-03-30  131  
-4cea749d56bec94 Marc Zyngier 2020-03-30  132  	hwirq = xintc_read(primary_intc, IVR);
-4cea749d56bec94 Marc Zyngier 2020-03-30  133  	if (hwirq != -1U)
-4cea749d56bec94 Marc Zyngier 2020-03-30  134  		irq = irq_find_mapping(primary_intc->root_domain, hwirq);
-4cea749d56bec94 Marc Zyngier 2020-03-30  135  
-4cea749d56bec94 Marc Zyngier 2020-03-30  136  	pr_debug("irq-xilinx: hwirq=%d, irq=%d\n", hwirq, irq);
-4cea749d56bec94 Marc Zyngier 2020-03-30  137  
-4cea749d56bec94 Marc Zyngier 2020-03-30  138  	return irq;
-4cea749d56bec94 Marc Zyngier 2020-03-30  139  }
-4cea749d56bec94 Marc Zyngier 2020-03-30  140  
-
-:::::: The code at line 127 was first introduced by commit
-:::::: 4cea749d56bec9409f3bd126d2b2f949dc6c66e2 Revert "irqchip/xilinx: Enable generic irq multi handler"
-
-:::::: TO: Marc Zyngier <maz@kernel.org>
-:::::: CC: Marc Zyngier <maz@kernel.org>
-
+Fixes: 58c5475aba67 ("x86/efi: Retrieve and assign Apple device properties")
+Fixes: 475fb4e8b2f4 ("efi / ACPI: load SSTDs from EFI variables")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: linux-efi@vger.kernel.org
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Octavian Purdila <octavian.purdila@intel.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Matt Fleming <matt@codeblueprint.co.uk>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/firmware/efi/apple-properties.c |    2 +-
+ drivers/firmware/efi/efi.c              |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- linux-next-20220228.orig/drivers/firmware/efi/apple-properties.c
++++ linux-next-20220228/drivers/firmware/efi/apple-properties.c
+@@ -24,7 +24,7 @@ static bool dump_properties __initdata;
+ static int __init dump_properties_enable(char *arg)
+ {
+ 	dump_properties = true;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("dump_apple_properties", dump_properties_enable);
+--- linux-next-20220228.orig/drivers/firmware/efi/efi.c
++++ linux-next-20220228/drivers/firmware/efi/efi.c
+@@ -212,7 +212,7 @@ static int __init efivar_ssdt_setup(char
+ 		memcpy(efivar_ssdt, str, strlen(str));
+ 	else
+ 		pr_warn("efivar_ssdt: name too long: %s\n", str);
+-	return 0;
++	return 1;
+ }
+ __setup("efivar_ssdt=", efivar_ssdt_setup);
+ 
