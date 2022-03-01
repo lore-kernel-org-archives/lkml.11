@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D0DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC6DC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238208AbiCAUZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:25:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        id S238271AbiCAUZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:25:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238516AbiCAUXU (ORCPT
+        with ESMTP id S238548AbiCAUXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:20 -0500
+        Tue, 1 Mar 2022 15:23:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61274A1BFE;
-        Tue,  1 Mar 2022 12:20:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FDEA2532;
+        Tue,  1 Mar 2022 12:20:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B05161774;
-        Tue,  1 Mar 2022 20:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6199FC340EF;
-        Tue,  1 Mar 2022 20:19:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 329EA60B5B;
+        Tue,  1 Mar 2022 20:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F6FC340EE;
+        Tue,  1 Mar 2022 20:20:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165983;
-        bh=C2gVusAzpCqCwnwtR7+nknRoDf14P33R8WTa1LeBgbM=;
+        s=k20201202; t=1646166002;
+        bh=kW4eneYh7QtO52uhohixRI5r/Y8sRpEttiz/pqhpL4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVecV5DBXKpn82WQayy0nPXB+YPWrd5CFHFYv7FYt4fbk49hEzcxdO3mwmMYmDOwv
-         xXgaPO33MVQgugaW7LKspAoPUG0icxP0lY2CgaUOHr4dh7QuXVfvTihfaozNhmAsPo
-         k0dBSayr1ToMv+zOdplY92a53nNS38PLHtn6NMDRbYVPnJMhRWOfkkmpO0/TPAekH8
-         PLx7pVf38WpVUn+BX/ioytmksboYcpmgMnHBWcw6yeL5VLTSkCKsm01P/StD7hqpZ8
-         6mC6eev4P121NtTRhLRiCqcjMNRnj5AyQSjwG4VCVL+O1MriCnCaazJtECcw5y7k8G
-         bxYrqMuLsJXHg==
+        b=ozYTZOagGaJWCX3OH9jLuIP+PelQCtJplbdaJEZyPDRn/rjq5CvPDxCMkAwrhvNFS
+         naqth4N4SkaWxo8gv4zLJxzhAOw+tSo1tgtaP0NnM2RW8AE5CT2rDZZACgTrozNpMB
+         pAtBVVZzLZ+T8hyTXZ8rGMzre0SNbdml45VizXtvhE+1oN50DKzX/wRhirC9qt3AIg
+         syTbx37s+NRvSKmwK1fPQAQXVbLFDbJ/AHQyl15XGsRigYTdQX60RYspiACKPUbAd/
+         OO6KT9Z4udBJSJi9Cy36VvEUWRUj+LNhH/RoOLDZktN2JthMu8eydWJpkIgRO156cQ
+         oMLDPn/HT63FQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, gthelen@google.com,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 14/14] selftests/memfd: clean up mapping in mfd_fail_write
-Date:   Tue,  1 Mar 2022 15:18:26 -0500
-Message-Id: <20220301201833.18841-14-sashal@kernel.org>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/11] KVM: Fix lockdep false negative during host resume
+Date:   Tue,  1 Mar 2022 15:19:35 -0500
+Message-Id: <20220301201951.19066-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201833.18841-1-sashal@kernel.org>
-References: <20220301201833.18841-1-sashal@kernel.org>
+In-Reply-To: <20220301201951.19066-1-sashal@kernel.org>
+References: <20220301201951.19066-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,55 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-[ Upstream commit fda153c89af344d21df281009a9d046cf587ea0f ]
+[ Upstream commit 4cb9a998b1ce25fad74a82f5a5c45a4ef40de337 ]
 
-Running the memfd script ./run_hugetlbfs_test.sh will often end in error
-as follows:
+I saw the below splatting after the host suspended and resumed.
 
-    memfd-hugetlb: CREATE
-    memfd-hugetlb: BASIC
-    memfd-hugetlb: SEAL-WRITE
-    memfd-hugetlb: SEAL-FUTURE-WRITE
-    memfd-hugetlb: SEAL-SHRINK
-    fallocate(ALLOC) failed: No space left on device
-    ./run_hugetlbfs_test.sh: line 60: 166855 Aborted                 (core dumped) ./memfd_test hugetlbfs
-    opening: ./mnt/memfd
-    fuse: DONE
+   WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
+   CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
+   RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
+   Call Trace:
+    <TASK>
+    syscore_resume+0x90/0x340
+    suspend_devices_and_enter+0xaee/0xe90
+    pm_suspend.cold+0x36b/0x3c2
+    state_store+0x82/0xf0
+    kernfs_fop_write_iter+0x1b6/0x260
+    new_sync_write+0x258/0x370
+    vfs_write+0x33f/0x510
+    ksys_write+0xc9/0x160
+    do_syscall_64+0x3b/0xc0
+    entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-If no hugetlb pages have been preallocated, run_hugetlbfs_test.sh will
-allocate 'just enough' pages to run the test.  In the SEAL-FUTURE-WRITE
-test the mfd_fail_write routine maps the file, but does not unmap.  As a
-result, two hugetlb pages remain reserved for the mapping.  When the
-fallocate call in the SEAL-SHRINK test attempts allocate all hugetlb
-pages, it is short by the two reserved pages.
+lockdep_is_held() can return -1 when lockdep is disabled which triggers
+this warning. Let's use lockdep_assert_not_held() which can detect
+incorrect calls while holding a lock and it also avoids false negatives
+when lockdep is disabled.
 
-Fix by making sure to unmap in mfd_fail_write.
-
-Link: https://lkml.kernel.org/r/20220219004340.56478-1-mike.kravetz@oracle.com
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/memfd/memfd_test.c | 1 +
- 1 file changed, 1 insertion(+)
+ virt/kvm/kvm_main.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
-index 334a7eea20042..fba322d1c67a1 100644
---- a/tools/testing/selftests/memfd/memfd_test.c
-+++ b/tools/testing/selftests/memfd/memfd_test.c
-@@ -455,6 +455,7 @@ static void mfd_fail_write(int fd)
- 			printf("mmap()+mprotect() didn't fail as expected\n");
- 			abort();
- 		}
-+		munmap(p, mfd_def_size);
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index f31976010622f..adda0c6672b56 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -4427,9 +4427,7 @@ static int kvm_suspend(void)
+ static void kvm_resume(void)
+ {
+ 	if (kvm_usage_count) {
+-#ifdef CONFIG_LOCKDEP
+-		WARN_ON(lockdep_is_held(&kvm_count_lock));
+-#endif
++		lockdep_assert_not_held(&kvm_count_lock);
+ 		hardware_enable_nolock(NULL);
  	}
- 
- 	/* verify PUNCH_HOLE fails */
+ }
 -- 
 2.34.1
 
