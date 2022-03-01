@@ -2,115 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E246C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31607C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236333AbiCARBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 12:01:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
+        id S235353AbiCARCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 12:02:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235293AbiCARBd (ORCPT
+        with ESMTP id S232394AbiCARCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 12:01:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAC21AD82;
-        Tue,  1 Mar 2022 09:00:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E9FA60FCD;
-        Tue,  1 Mar 2022 17:00:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A3DC340EE;
-        Tue,  1 Mar 2022 17:00:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646154051;
-        bh=h907ipPkeeK8P2nHj6SjBPg75fPHts99jpm7hU3oTe4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uejxuz68JNN+P/Ws/LbTy+IcncnwZTwo3NQso7ZdH7w978wfAVW3186wDBd9SzsvQ
-         kNm3lkRQv5WwuJB/zW5sCTRZw66PNcdHW0Y8xqQzw6dI5HVsJZofimyKsKGnA23U26
-         pm1v1ubbzy45uxc1q1rpOavS/mjiXtwgBo5eyrEsQLMhAHhiNWjvnMUZHulkbiDtey
-         zoovisI+XRC+c3rMe9bDqCkk4dhfLZA9Sz+xxGcMKgexowZ1PBAjwmUFgxDEf7BIU3
-         +QI1xlshWc56KtdACRoQy2cp54d1DnemenhEjTrXbUzW6dj/1IqTUJWR7wl21ymGDK
-         /6i415XEZ/Tqg==
-Date:   Tue, 1 Mar 2022 10:00:45 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS
-Message-ID: <Yh5RPeqikTtoUS80@dev-arch.archlinux-ax161>
-References: <20220301145233.3689119-1-arnd@kernel.org>
- <20220301145233.3689119-3-arnd@kernel.org>
+        Tue, 1 Mar 2022 12:02:47 -0500
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11651DA6B
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:02:02 -0800 (PST)
+Received: by mail-qv1-xf32.google.com with SMTP id x3so17092123qvd.8
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 09:02:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/YNxm/fT1wA6TvRS9qleTg179AoKUDQbNyeBLEv308Y=;
+        b=Pk8emi8eXbpNcoPmgag6OikmEnmUWl9pfmiMWBo8hxZaRqUiMAlvItwaBMzs0+GGbT
+         EAKIdEXDglJL6w3HRJHsShOUU3vG+wefz1TzEcaw6pk/FZ2dEiYzmr0kqIbu69k+q6+E
+         9wg11Xi3zuJu/Fo4fGe1xYwPgKLqswXQE+o4B3EqpveROMC/LJITv/KpzisLFGy9uKdG
+         OsGFFHDziCi436AySIa+XjrrOi3UlBho2WSeYfuVNLvEjH/HVpobbI18NbzZrC3+jqy+
+         ThLSiUgz9J0dUO82C8Ndi641vp2xlBArmPzSS/uNz6ayUfjFwI6KZHNDmoE+7s6BbiFI
+         g4vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/YNxm/fT1wA6TvRS9qleTg179AoKUDQbNyeBLEv308Y=;
+        b=nDVaC3sG+F+jfoSOfloaRg7MfvFb+6X30jNc9waZVGDVJgsPKah6L6swd8chqNmZtJ
+         JCoJWJDO1mqZVsuM5ZelxL1UzhVat2s2WsJQqZjYweiEjttahkk4YkNYiWBrr5ycI/RM
+         0MD6BVeEmduSwnBV99Ykm0I9xL3+yp3qFA+c4tWnHvsJBuvNM2PKwQEC1aZebldq7yZ0
+         Zn8xR/CY1VJ/UwEyR5FtL/rkvUOVby2JgWs1Lyomu+B+Z0CHug7CSH5XvcdppKMXS9IE
+         airvYMBfU/wnmvpDt46X7+JTBPfOZbLrtJNkoTTF4oMDhENFZgaW99hZFhUeLOP0/ABr
+         aXtw==
+X-Gm-Message-State: AOAM533rje+VoHqEwq5ouuRXzRaJsHbcLWT5w9g0TbfWNIKCT7ynWxDA
+        JS+PC2Hnn8HGMfLAPcsH2d6DGNPc3NAmSA==
+X-Google-Smtp-Source: ABdhPJyeZAKY+uez2oE88Qa3pAqSUAtD+BKnu6VN+tWop9PJKgFbX/h4Ho7mTaCC6jQ8OTpMFzL0jw==
+X-Received: by 2002:a05:6214:2aa6:b0:432:9dd8:ccb0 with SMTP id js6-20020a0562142aa600b004329dd8ccb0mr17544059qvb.53.1646154122053;
+        Tue, 01 Mar 2022 09:02:02 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id w8-20020ae9e508000000b0064905055a5esm6731838qkf.92.2022.03.01.09.02.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 09:02:01 -0800 (PST)
+Date:   Tue, 1 Mar 2022 12:02:01 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: add myself as a memcg co-maintainer as well
+Message-ID: <Yh5RiUMegXf92ivM@cmpxchg.org>
+References: <20220224060148.4092228-1-shakeelb@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301145233.3689119-3-arnd@kernel.org>
+In-Reply-To: <20220224060148.4092228-1-shakeelb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 03:52:33PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Wed, Feb 23, 2022 at 10:01:48PM -0800, Shakeel Butt wrote:
+> I have been contributing and reviewing to the memcg codebase for last
+> couple of years. So, making it official.
 > 
-> As we change the C language standard for the kernel from gnu89 to
-> gnu11, it makes sense to also update the version for user space
-> compilation.
-> 
-> Some users have older native compilers than what they use for
-> kernel builds, so I considered using gnu99 as the default version
-> for wider compatibility with gcc-4.6 and earlier.
-> 
-> However, testing with older compilers showed that we already require
-> HOSTCC version 5.1 as well because a lot of host tools include
-> linux/compiler.h that uses __has_attribute():
-> 
->   CC      tools/objtool/exec-cmd.o
-> In file included from tools/include/linux/compiler_types.h:36:0,
->                  from tools/include/linux/compiler.h:5,
->                  from exec-cmd.c:2:
-> tools/include/linux/compiler-gcc.h:19:5: error: "__has_attribute" is not defined [-Werror=undef]
+> Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Cc: Michal Hocko <mhocko@kernel.org>
+> Cc: Roman Gushchin <roman.gushchin@linux.dev>
 
-For what it's worth, I think this is a bug:
+It's already been sent to Linux, but for the record
 
-https://lore.kernel.org/r/c1b1a299-c60d-28a4-07ab-1ecd211d6da9@i-love.sakura.ne.jp/
-https://lore.kernel.org/r/20220102120201.594408-1-xu.xin16@zte.com.cn/
-
-I never got clear feedback on resolving it from the first thread and
-nobody bothered to pick up the second patch.
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Nobody has yelled that loud though, so this is probably fine.
-
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
-> ---
->  Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index 37ef6a555dcd..7c9be7f1ccd4 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -432,7 +432,7 @@ HOSTCXX	= g++
->  endif
->  
->  export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
-> -			    -O2 -fomit-frame-pointer -std=gnu89 \
-> +			    -O2 -fomit-frame-pointer -std=gnu11 \
->  			    -Wdeclaration-after-statement
->  export KBUILD_USERLDFLAGS :=
->  
-> -- 
-> 2.29.2
-> 
-> 
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
