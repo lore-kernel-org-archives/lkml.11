@@ -2,414 +2,300 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 175E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 06:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93592C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 06:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231889AbiCAG3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 01:29:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
+        id S232527AbiCAG3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 01:29:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiCAG27 (ORCPT
+        with ESMTP id S232609AbiCAG3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 01:28:59 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CED532D8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 22:28:17 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K76ff2m10z9sMH;
-        Tue,  1 Mar 2022 14:24:42 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 1 Mar 2022 14:28:14 +0800
-Subject: Re: [PATCH -V13 2/3] NUMA balancing: optimize page placement for
- memory tiering system
-To:     Huang Ying <ying.huang@intel.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Feng Tang <feng.tang@intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
-        Wei Xu <weixugc@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Shakeel Butt <shakeelb@google.com>,
-        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220221084529.1052339-1-ying.huang@intel.com>
- <20220221084529.1052339-3-ying.huang@intel.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <4652446e-2089-a3c4-fbdb-321322887392@huawei.com>
-Date:   Tue, 1 Mar 2022 14:28:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 1 Mar 2022 01:29:10 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CBC57B36;
+        Mon, 28 Feb 2022 22:28:27 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so728559wmp.5;
+        Mon, 28 Feb 2022 22:28:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=pWn16AqiLrfX1zebjhB5rEinNun20KnuW9bQckIBJC8=;
+        b=TgTuw2EwRUTqgMpH6oWu/LUo4Tj0DaFq2gazb8ukk2M3E5/N/ABnZq0JN+mM815Ir9
+         vcgeDnECaVsw5QKgVp2TQprmJ75xfE7Q6Z46b7RN/DNTKR7QWx+YdLObRbto2cx62b76
+         U2Eizso9FS2bTMBrKswDzRbpOry/gMiKnA0EbBCVm7muvxnd8HShq6B1E7K9lYPJcGA2
+         ufdDL0oUpRNchJdWw4xSxScgUuh60nKzX5uqHuna+MBM6k52Efm5kO3D+4Qs++AxWTY1
+         66sbxn9PxSVef8cZmyoJn7blrikHWzY2mf89TbTVevUvJahlgApgW6lbAfNhWvftwYEr
+         GInQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pWn16AqiLrfX1zebjhB5rEinNun20KnuW9bQckIBJC8=;
+        b=tXhUMKpCEIpLZkJbYWwJwl6w2BOxkmgt6FmzILtHoSXUR2BFtgWNoaepdTQJ1UtZQp
+         3yPfvxmTkEkLWz2r+MZpwdSLEZ6pJZzhmBDcjDjwYZzpFKEqaQk7YkBMarEErO8CM58s
+         HF3Az6BXyaTG7Qu2ZdwPB9UWX5AJVu4dekQUrbDE7vCQXYIqatHQNnReUQ3jBWe2R7bB
+         xbrHH045MW2OJEUPfpULX0Q0HdmWRupWTuCAxRPDB+IAz9ZsKTIA3i+Z2Q6KAwIZMiRv
+         T/K6JN5NLno55x93AIefWQQKpmh7KyYzy/ezpjbsNL0BQHGFbkGKWJgDGT0kexe+7bD0
+         kSXQ==
+X-Gm-Message-State: AOAM532rdixdAL8dXyjMsOCjzgiFOP+r2L/G8nHWOnqid66v5FDyBV6M
+        qqT312h0L83H+db4KH9a1zjpvWZ6VGdv6XD0E3g=
+X-Google-Smtp-Source: ABdhPJw5lGRgmvJqRxK5pgVS2VyC04FiWUkY4OzVfoIcOgkPNqK2YKMpbei0S4C0NMIQ0+vl+S9PndX5tVzQcUVaQyw=
+X-Received: by 2002:a05:600c:42d6:b0:380:ed47:43e8 with SMTP id
+ j22-20020a05600c42d600b00380ed4743e8mr15770755wme.61.1646116106338; Mon, 28
+ Feb 2022 22:28:26 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220221084529.1052339-3-ying.huang@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220106125947.139523-1-gengcixi@gmail.com> <20220106125947.139523-4-gengcixi@gmail.com>
+ <CADBw62pBCdrbRspTV9Yck4DP8DE=ECGmEtD74NOtm1YRT3DM8w@mail.gmail.com>
+ <CAF12kFu6O-gfiqp4j24zxC_GqCwJ2Q5KGYYaCtnagmUFB_bsVg@mail.gmail.com>
+ <CADBw62rSdWN-L8HbnyMrUNp=x0pDdKR6MyKO4yfu00MnrN4L-g@mail.gmail.com>
+ <CAF12kFvUfykKfeRAJACFRk31pmEBQEPw402x0JN4i1uv0EK1zg@mail.gmail.com>
+ <CADBw62pmtbzr78c9J20cFbNRuTrntGg_E8TH_g=LciCVGYrYqQ@mail.gmail.com>
+ <CAF12kFtV_dpHukd2v0UwSoAFsDbNXZLPSnSSK9dqq7hnoJh9UQ@mail.gmail.com> <20220225101942.00002f43@Huawei.com>
+In-Reply-To: <20220225101942.00002f43@Huawei.com>
+From:   Cixi Geng <gengcixi@gmail.com>
+Date:   Tue, 1 Mar 2022 14:27:50 +0800
+Message-ID: <CAF12kFtQH3_EsPBnDgBL59tYZ6wintgt9yceS2tUiB1Pv8qjgQ@mail.gmail.com>
+Subject: Re: [PATCH 3/7] iio: adc: sc27xx: structure adjuststment and optimization
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Baolin Wang <baolin.wang7@gmail.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, jic23@kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?5pyx546J5piOIChZdW1pbmcgWmh1LzExNDU3KQ==?= 
+        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/21 16:45, Huang Ying wrote:
-> With the advent of various new memory types, some machines will have
-> multiple types of memory, e.g. DRAM and PMEM (persistent memory).  The
-> memory subsystem of these machines can be called memory tiering
-> system, because the performance of the different types of memory are
-> usually different.
-> 
-> In such system, because of the memory accessing pattern changing etc,
-> some pages in the slow memory may become hot globally.  So in this
-> patch, the NUMA balancing mechanism is enhanced to optimize the page
-> placement among the different memory types according to hot/cold
-> dynamically.
-> 
-> In a typical memory tiering system, there are CPUs, fast memory and
-> slow memory in each physical NUMA node.  The CPUs and the fast memory
-> will be put in one logical node (called fast memory node), while the
-> slow memory will be put in another (faked) logical node (called slow
-> memory node).  That is, the fast memory is regarded as local while the
-> slow memory is regarded as remote.  So it's possible for the recently
-> accessed pages in the slow memory node to be promoted to the fast
-> memory node via the existing NUMA balancing mechanism.
-> 
-> The original NUMA balancing mechanism will stop to migrate pages if
-> the free memory of the target node becomes below the high watermark.
-> This is a reasonable policy if there's only one memory type.  But this
-> makes the original NUMA balancing mechanism almost do not work to
-> optimize page placement among different memory types.  Details are as
-> follows.
-> 
-> It's the common cases that the working-set size of the workload is
-> larger than the size of the fast memory nodes.  Otherwise, it's
-> unnecessary to use the slow memory at all.  So, there are almost
-> always no enough free pages in the fast memory nodes, so that the
-> globally hot pages in the slow memory node cannot be promoted to the
-> fast memory node.  To solve the issue, we have 2 choices as follows,
-> 
-> a. Ignore the free pages watermark checking when promoting hot pages
->    from the slow memory node to the fast memory node.  This will
->    create some memory pressure in the fast memory node, thus trigger
->    the memory reclaiming.  So that, the cold pages in the fast memory
->    node will be demoted to the slow memory node.
-> 
-> b. Make kswapd of the fast memory node to reclaim pages until the free
->    pages are a little more than the high watermark (named as promo
->    watermark).  Then, if the free pages of the fast memory node reaches
->    high watermark, and some hot pages need to be promoted, kswapd of the
->    fast memory node will be waken up to demote more cold pages in the
->    fast memory node to the slow memory node.  This will free some extra
->    space in the fast memory node, so the hot pages in the slow memory
->    node can be promoted to the fast memory node.
-> 
-> The choice "a" may create high memory pressure in the fast memory
-> node.  If the memory pressure of the workload is high, the memory
-> pressure may become so high that the memory allocation latency of the
-> workload is influenced, e.g. the direct reclaiming may be triggered.
-> 
-> The choice "b" works much better at this aspect.  If the memory
-> pressure of the workload is high, the hot pages promotion will stop
-> earlier because its allocation watermark is higher than that of the
-
-Many thanks for your path. The patch looks good to me but I have a question.
-WMARK_PROMO is only used inside pgdat_balanced when NUMA_BALANCING_MEMORY_TIERING
-is set. So its allocation watermark seems to be as same as the normal memory
-allocation. How should I understand the above sentence? Am I miss something?
-
-Many thanks. :)
-
-> normal memory allocation.  So in this patch, choice "b" is
-> implemented.  A new zone watermark (WMARK_PROMO) is added.  Which is
-> larger than the high watermark and can be controlled via
-> watermark_scale_factor.
-> 
-> In addition to the original page placement optimization among sockets,
-> the NUMA balancing mechanism is extended to be used to optimize page
-> placement according to hot/cold among different memory types.  So the
-> sysctl user space interface (numa_balancing) is extended in a backward
-> compatible way as follow, so that the users can enable/disable these
-> functionality individually.
-> 
-> The sysctl is converted from a Boolean value to a bits field.  The
-> definition of the flags is,
-> 
-> - 0: NUMA_BALANCING_DISABLED
-> - 1: NUMA_BALANCING_NORMAL
-> - 2: NUMA_BALANCING_MEMORY_TIERING
-> 
-> We have tested the patch with the pmbench memory accessing benchmark
-> with the 80:20 read/write ratio and the Gauss access address
-> distribution on a 2 socket Intel server with Optane DC Persistent
-> Memory Model.  The test results shows that the pmbench score can
-> improve up to 95.9%.
-> 
-> Thanks Andrew Morton to help fix the document format error.
-> 
-> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-> Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Michal Hocko <mhocko@suse.com>
-> Cc: Rik van Riel <riel@surriel.com>
-> Cc: Mel Gorman <mgorman@techsingularity.net>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: Yang Shi <shy828301@gmail.com>
-> Cc: Zi Yan <ziy@nvidia.com>
-> Cc: Wei Xu <weixugc@google.com>
-> Cc: Oscar Salvador <osalvador@suse.de>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Cc: zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-mm@kvack.org
-> ---
->  Documentation/admin-guide/sysctl/kernel.rst | 29 ++++++++++++++-------
->  include/linux/mmzone.h                      |  1 +
->  include/linux/sched/sysctl.h                | 10 +++++++
->  kernel/sched/core.c                         | 21 ++++++++++++---
->  kernel/sysctl.c                             |  2 +-
->  mm/migrate.c                                | 16 ++++++++++--
->  mm/page_alloc.c                             |  3 ++-
->  mm/vmscan.c                                 |  6 ++++-
->  8 files changed, 70 insertions(+), 18 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
-> index d359bcfadd39..fdfd2b684822 100644
-> --- a/Documentation/admin-guide/sysctl/kernel.rst
-> +++ b/Documentation/admin-guide/sysctl/kernel.rst
-> @@ -595,16 +595,23 @@ Documentation/admin-guide/kernel-parameters.rst).
->  numa_balancing
->  ==============
->  
-> -Enables/disables automatic page fault based NUMA memory
-> -balancing. Memory is moved automatically to nodes
-> -that access it often.
-> +Enables/disables and configures automatic page fault based NUMA memory
-> +balancing.  Memory is moved automatically to nodes that access it often.
-> +The value to set can be the result of ORing the following:
->  
-> -Enables/disables automatic NUMA memory balancing. On NUMA machines, there
-> -is a performance penalty if remote memory is accessed by a CPU. When this
-> -feature is enabled the kernel samples what task thread is accessing memory
-> -by periodically unmapping pages and later trapping a page fault. At the
-> -time of the page fault, it is determined if the data being accessed should
-> -be migrated to a local memory node.
-> += =================================
-> +0 NUMA_BALANCING_DISABLED
-> +1 NUMA_BALANCING_NORMAL
-> +2 NUMA_BALANCING_MEMORY_TIERING
-> += =================================
-> +
-> +Or NUMA_BALANCING_NORMAL to optimize page placement among different
-> +NUMA nodes to reduce remote accessing.  On NUMA machines, there is a
-> +performance penalty if remote memory is accessed by a CPU. When this
-> +feature is enabled the kernel samples what task thread is accessing
-> +memory by periodically unmapping pages and later trapping a page
-> +fault. At the time of the page fault, it is determined if the data
-> +being accessed should be migrated to a local memory node.
->  
->  The unmapping of pages and trapping faults incur additional overhead that
->  ideally is offset by improved memory locality but there is no universal
-> @@ -615,6 +622,10 @@ faults may be controlled by the `numa_balancing_scan_period_min_ms,
->  numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms,
->  numa_balancing_scan_size_mb`_, and numa_balancing_settle_count sysctls.
->  
-> +Or NUMA_BALANCING_MEMORY_TIERING to optimize page placement among
-> +different types of memory (represented as different NUMA nodes) to
-> +place the hot pages in the fast memory.  This is implemented based on
-> +unmapping and page fault too.
->  
->  numa_balancing_scan_period_min_ms, numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms, numa_balancing_scan_size_mb
->  ===============================================================================================================================
-> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-> index 44bd054ca12b..06bc55db19bf 100644
-> --- a/include/linux/mmzone.h
-> +++ b/include/linux/mmzone.h
-> @@ -342,6 +342,7 @@ enum zone_watermarks {
->  	WMARK_MIN,
->  	WMARK_LOW,
->  	WMARK_HIGH,
-> +	WMARK_PROMO,
->  	NR_WMARK
->  };
->  
-> diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-> index c19dd5a2c05c..b5eec8854c5a 100644
-> --- a/include/linux/sched/sysctl.h
-> +++ b/include/linux/sched/sysctl.h
-> @@ -23,6 +23,16 @@ enum sched_tunable_scaling {
->  	SCHED_TUNABLESCALING_END,
->  };
->  
-> +#define NUMA_BALANCING_DISABLED		0x0
-> +#define NUMA_BALANCING_NORMAL		0x1
-> +#define NUMA_BALANCING_MEMORY_TIERING	0x2
-> +
-> +#ifdef CONFIG_NUMA_BALANCING
-> +extern int sysctl_numa_balancing_mode;
-> +#else
-> +#define sysctl_numa_balancing_mode	0
-> +#endif
-> +
->  /*
->   *  control realtime throttling:
->   *
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index fcf0c180617c..c25348e9ae3a 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -4280,7 +4280,9 @@ DEFINE_STATIC_KEY_FALSE(sched_numa_balancing);
->  
->  #ifdef CONFIG_NUMA_BALANCING
->  
-> -void set_numabalancing_state(bool enabled)
-> +int sysctl_numa_balancing_mode;
-> +
-> +static void __set_numabalancing_state(bool enabled)
->  {
->  	if (enabled)
->  		static_branch_enable(&sched_numa_balancing);
-> @@ -4288,13 +4290,22 @@ void set_numabalancing_state(bool enabled)
->  		static_branch_disable(&sched_numa_balancing);
->  }
->  
-> +void set_numabalancing_state(bool enabled)
-> +{
-> +	if (enabled)
-> +		sysctl_numa_balancing_mode = NUMA_BALANCING_NORMAL;
-> +	else
-> +		sysctl_numa_balancing_mode = NUMA_BALANCING_DISABLED;
-> +	__set_numabalancing_state(enabled);
-> +}
-> +
->  #ifdef CONFIG_PROC_SYSCTL
->  int sysctl_numa_balancing(struct ctl_table *table, int write,
->  			  void *buffer, size_t *lenp, loff_t *ppos)
->  {
->  	struct ctl_table t;
->  	int err;
-> -	int state = static_branch_likely(&sched_numa_balancing);
-> +	int state = sysctl_numa_balancing_mode;
->  
->  	if (write && !capable(CAP_SYS_ADMIN))
->  		return -EPERM;
-> @@ -4304,8 +4315,10 @@ int sysctl_numa_balancing(struct ctl_table *table, int write,
->  	err = proc_dointvec_minmax(&t, write, buffer, lenp, ppos);
->  	if (err < 0)
->  		return err;
-> -	if (write)
-> -		set_numabalancing_state(state);
-> +	if (write) {
-> +		sysctl_numa_balancing_mode = state;
-> +		__set_numabalancing_state(state);
-> +	}
->  	return err;
->  }
->  #endif
-> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-> index 5ae443b2882e..c90a564af720 100644
-> --- a/kernel/sysctl.c
-> +++ b/kernel/sysctl.c
-> @@ -1689,7 +1689,7 @@ static struct ctl_table kern_table[] = {
->  		.mode		= 0644,
->  		.proc_handler	= sysctl_numa_balancing,
->  		.extra1		= SYSCTL_ZERO,
-> -		.extra2		= SYSCTL_ONE,
-> +		.extra2		= SYSCTL_FOUR,
->  	},
->  #endif /* CONFIG_NUMA_BALANCING */
->  	{
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index cdeaf01e601a..08ca9b9b142e 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -51,6 +51,7 @@
->  #include <linux/oom.h>
->  #include <linux/memory.h>
->  #include <linux/random.h>
-> +#include <linux/sched/sysctl.h>
->  
->  #include <asm/tlbflush.h>
->  
-> @@ -2034,16 +2035,27 @@ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
->  {
->  	int page_lru;
->  	int nr_pages = thp_nr_pages(page);
-> +	int order = compound_order(page);
->  
-> -	VM_BUG_ON_PAGE(compound_order(page) && !PageTransHuge(page), page);
-> +	VM_BUG_ON_PAGE(order && !PageTransHuge(page), page);
->  
->  	/* Do not migrate THP mapped by multiple processes */
->  	if (PageTransHuge(page) && total_mapcount(page) > 1)
->  		return 0;
->  
->  	/* Avoid migrating to a node that is nearly full */
-> -	if (!migrate_balanced_pgdat(pgdat, nr_pages))
-> +	if (!migrate_balanced_pgdat(pgdat, nr_pages)) {
-> +		int z;
-> +
-> +		if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING))
-> +			return 0;
-> +		for (z = pgdat->nr_zones - 1; z >= 0; z--) {
-> +			if (populated_zone(pgdat->node_zones + z))
-> +				break;
-> +		}
-> +		wakeup_kswapd(pgdat->node_zones + z, 0, order, ZONE_MOVABLE);
->  		return 0;
-> +	}
->  
->  	if (isolate_lru_page(page))
->  		return 0;
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 3589febc6d31..295b8f1fc31d 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -8474,7 +8474,8 @@ static void __setup_per_zone_wmarks(void)
->  
->  		zone->watermark_boost = 0;
->  		zone->_watermark[WMARK_LOW]  = min_wmark_pages(zone) + tmp;
-> -		zone->_watermark[WMARK_HIGH] = min_wmark_pages(zone) + tmp * 2;
-> +		zone->_watermark[WMARK_HIGH] = low_wmark_pages(zone) + tmp;
-> +		zone->_watermark[WMARK_PROMO] = high_wmark_pages(zone) + tmp;
->  
->  		spin_unlock_irqrestore(&zone->lock, flags);
->  	}
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index 6dd8f455bb82..199b8aadbdd6 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -56,6 +56,7 @@
->  
->  #include <linux/swapops.h>
->  #include <linux/balloon_compaction.h>
-> +#include <linux/sched/sysctl.h>
->  
->  #include "internal.h"
->  
-> @@ -3988,7 +3989,10 @@ static bool pgdat_balanced(pg_data_t *pgdat, int order, int highest_zoneidx)
->  		if (!managed_zone(zone))
->  			continue;
->  
-> -		mark = high_wmark_pages(zone);
-> +		if (sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING)
-> +			mark = wmark_pages(zone, WMARK_PROMO);
-> +		else
-> +			mark = high_wmark_pages(zone);
->  		if (zone_watermark_ok_safe(zone, order, mark, highest_zoneidx))
->  			return true;
->  	}
-> 
-
+Jonathan Cameron <Jonathan.Cameron@huawei.com> =E4=BA=8E2022=E5=B9=B42=E6=
+=9C=8825=E6=97=A5=E5=91=A8=E4=BA=94 18:19=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Wed, 23 Feb 2022 20:46:08 +0800
+> Cixi Geng <gengcixi@gmail.com> wrote:
+>
+> > Baolin Wang <baolin.wang7@gmail.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=8810=
+=E6=97=A5=E5=91=A8=E5=9B=9B 16:07=E5=86=99=E9=81=93=EF=BC=9A
+> > >
+> > > On Mon, Jan 24, 2022 at 4:07 PM Cixi Geng <gengcixi@gmail.com> wrote:
+> > > >
+> > > > Baolin Wang <baolin.wang7@gmail.com> =E4=BA=8E2022=E5=B9=B41=E6=9C=
+=8817=E6=97=A5=E5=91=A8=E4=B8=80 14:15=E5=86=99=E9=81=93=EF=BC=9A
+> > > > >
+> > > > > On Thu, Jan 13, 2022 at 9:54 AM Cixi Geng <gengcixi@gmail.com> wr=
+ote:
+> > > > > >
+> > > > > > Baolin Wang <baolin.wang7@gmail.com> =E4=BA=8E2022=E5=B9=B41=E6=
+=9C=887=E6=97=A5=E5=91=A8=E4=BA=94 15:03=E5=86=99=E9=81=93=EF=BC=9A
+> > > > > > >
+> > > > > > > On Thu, Jan 6, 2022 at 9:00 PM Cixi Geng <gengcixi@gmail.com>=
+ wrote:
+> > > > > > > >
+> > > > > > > > From: Cixi Geng <cixi.geng1@unisoc.com>
+> > > > > > > >
+> > > > > > > > Introduce one variant device data structure to be compatibl=
+e
+> > > > > > > > with SC2731 PMIC since it has different scale and ratio cal=
+culation
+> > > > > > > > and so on.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> > > > > > > > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> > > > > > > > ---
+> > > > > > > >  drivers/iio/adc/sc27xx_adc.c | 94 ++++++++++++++++++++++++=
+++++++------
+> > > > > > > >  1 file changed, 79 insertions(+), 15 deletions(-)
+> > > > > > > >
+> > > > > > > > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc=
+/sc27xx_adc.c
+> > > > > > > > index aee076c8e2b1..d2712e54ee79 100644
+> > > > > > > > --- a/drivers/iio/adc/sc27xx_adc.c
+> > > > > > > > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > > > > > > > @@ -12,9 +12,9 @@
+> > > > > > > >  #include <linux/slab.h>
+> > > > > > > >
+> > > > > > > >  /* PMIC global registers definition */
+> > > > > > > > -#define SC27XX_MODULE_EN               0xc08
+> > > > > > > > +#define SC2731_MODULE_EN               0xc08
+> > > > > > > >  #define SC27XX_MODULE_ADC_EN           BIT(5)
+> > > > > > > > -#define SC27XX_ARM_CLK_EN              0xc10
+> > > > > > > > +#define SC2731_ARM_CLK_EN              0xc10
+> > > > > > > >  #define SC27XX_CLK_ADC_EN              BIT(5)
+> > > > > > > >  #define SC27XX_CLK_ADC_CLK_EN          BIT(6)
+> > > > > > > >
+> > > > > > > > @@ -78,6 +78,23 @@ struct sc27xx_adc_data {
+> > > > > > > >         int channel_scale[SC27XX_ADC_CHANNEL_MAX];
+> > > > > > > >         u32 base;
+> > > > > > > >         int irq;
+> > > > > > > > +       const struct sc27xx_adc_variant_data *var_data;
+> > > > > > > > +};
+> > > > > > > > +
+> > > > > > > > +/*
+> > > > > > > > + * Since different PMICs of SC27xx series can have differe=
+nt
+> > > > > > > > + * address and ratio, we should save ratio config and base
+> > > > > > > > + * in the device data structure.
+> > > > > > > > + */
+> > > > > > > > +struct sc27xx_adc_variant_data {
+> > > > > > > > +       u32 module_en;
+> > > > > > > > +       u32 clk_en;
+> > > > > > > > +       u32 scale_shift;
+> > > > > > > > +       u32 scale_mask;
+> > > > > > > > +       const struct sc27xx_adc_linear_graph *bscale_cal;
+> > > > > > > > +       const struct sc27xx_adc_linear_graph *sscale_cal;
+> > > > > > > > +       void (*init_scale)(struct sc27xx_adc_data *data);
+> > > > > > > > +       int (*get_ratio)(int channel, int scale);
+> > > > > > > >  };
+> > > > > > > >
+> > > > > > > >  struct sc27xx_adc_linear_graph {
+> > > > > > > > @@ -103,6 +120,16 @@ static struct sc27xx_adc_linear_graph =
+small_scale_graph =3D {
+> > > > > > > >         100, 341,
+> > > > > > > >  };
+> > > > > > > >
+> > > > > > > > +static const struct sc27xx_adc_linear_graph sc2731_big_sca=
+le_graph_calib =3D {
+> > > > > > > > +       4200, 850,
+> > > > > > > > +       3600, 728,
+> > > > > > > > +};
+> > > > > > > > +
+> > > > > > > > +static const struct sc27xx_adc_linear_graph sc2731_small_s=
+cale_graph_calib =3D {
+> > > > > > > > +       1000, 838,
+> > > > > > > > +       100, 84,
+> > > > > > > > +};
+> > > > > > >
+> > > > > > > The original big_scale_graph_calib and small_scale_graph_cali=
+b are for
+> > > > > > > SC2731 PMIC, why add new structure definition for SC2731?
+> > > > > > >
+> > > > > > > > +
+> > > > > > > >  static const struct sc27xx_adc_linear_graph big_scale_grap=
+h_calib =3D {
+> > > > > > > >         4200, 856,
+> > > > > > > >         3600, 733,
+> > > > > > > > @@ -130,11 +157,11 @@ static int sc27xx_adc_scale_calibrati=
+on(struct sc27xx_adc_data *data,
+> > > > > > > >         size_t len;
+> > > > > > > >
+> > > > > > > >         if (big_scale) {
+> > > > > > > > -               calib_graph =3D &big_scale_graph_calib;
+> > > > > > > > +               calib_graph =3D data->var_data->bscale_cal;
+> > > > > > > >                 graph =3D &big_scale_graph;
+> > > > > > > >                 cell_name =3D "big_scale_calib";
+> > > > > > > >         } else {
+> > > > > > > > -               calib_graph =3D &small_scale_graph_calib;
+> > > > > > > > +               calib_graph =3D data->var_data->sscale_cal;
+> > > > > > > >                 graph =3D &small_scale_graph;
+> > > > > > > >                 cell_name =3D "small_scale_calib";
+> > > > > > > >         }
+> > > > > > > > @@ -160,7 +187,7 @@ static int sc27xx_adc_scale_calibration=
+(struct sc27xx_adc_data *data,
+> > > > > > > >         return 0;
+> > > > > > > >  }
+> > > > > > > >
+> > > > > > > > -static int sc27xx_adc_get_ratio(int channel, int scale)
+> > > > > > > > +static int sc2731_adc_get_ratio(int channel, int scale)
+> > > > > > > >  {
+> > > > > > > >         switch (channel) {
+> > > > > > > >         case 1:
+> > > > > > > > @@ -185,6 +212,21 @@ static int sc27xx_adc_get_ratio(int ch=
+annel, int scale)
+> > > > > > > >         return SC27XX_VOLT_RATIO(1, 1);
+> > > > > > > >  }
+> > > > > > > >
+> > > > > > > > +/*
+> > > > > > > > + * According to the datasheet set specific value on some c=
+hannel.
+> > > > > > > > + */
+> > > > > > > > +static void sc2731_adc_scale_init(struct sc27xx_adc_data *=
+data)
+> > > > > > > > +{
+> > > > > > > > +       int i;
+> > > > > > > > +
+> > > > > > > > +       for (i =3D 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
+> > > > > > > > +               if (i =3D=3D 5)
+> > > > > > > > +                       data->channel_scale[i] =3D 1;
+> > > > > > > > +               else
+> > > > > > > > +                       data->channel_scale[i] =3D 0;
+> > > > > > > > +       }
+> > > > > > > > +}
+> > > > > > >
+> > > > > > > This is unnecessary I think, please see sc27xx_adc_write_raw(=
+) that
+> > > > > > > can set the channel scale.
+> > > > > > Did you mean that all the PMIC's scale_init function should put=
+ into
+> > > > > > the sc27xx_adc_write_raw?
+> > > > >
+> > > > > No.
+> > > > >
+> > > > > > but the scale_init is all different by each PMIC, if implemente=
+d in
+> > > > > > the write_raw, will add a lot of
+> > > > > > if or switch_case branch
+> > > > >
+> > > > > What I mean is we should follow the original method to set the ch=
+annel
+> > > > > scale by iio_info. Please also refer to other drivers how ot hand=
+le
+> > > > > the channel scale.
+> > > > Hi Baolin,  I understand the adc_write_raw() function is the method=
+ to set
+> > > > channal scale for the userspace, we can change the channel scale by=
+ write
+> > > > a value on a user code. did i understand right?
+> > > > out  scale_init is to set scale value when the driver probe stage, =
+and I also
+> > > > did not found other adc driver use the adc_write_raw() during the d=
+river
+> > > >  initialization phase.
+> > >
+> > > Hi Jonathan,
+> > >
+> > > How do you think about the method in this patch to set the channel
+> > > scale? Thanks.
+> > >
+> > Hi Jonathan,
+> > Could you have a loot at this patch ,and give some advice about the
+> > method to set the channel scale? Thanks very much.
+>
+> Hi, thanks for poking me on this - I'd missed the question buried deep in=
+ the thread!
+>
+> Anyhow, I don't quite follow the discussion but think it could be focused
+> on one of 2 questions...
+>
+> 1) Does setting an initial default make sense?
+>    Yes, this is an acceptable thing to do if there is a particular set of=
+ defaults
+>    and there is no risk of regressions (i.e. the device wasn't previously=
+ supported
+>    with different defaults).
+> 2) Should you use the write_raw callback to actually do the setting?
+>    Probably not as it has a set of parameters that don't make as much sen=
+se from within
+>    the driver.  It 'might' make sense to have a common _set() function fo=
+r this
+>    feature which is called both in this initialization case and from the =
+write_raw()
+>    function however as that could do bounds checking etc in one common pl=
+ace.
+>    However, it is very simple here, so perhaps not necessary.
+>
+> Jonathan
+>
+Hi Jonathan, thanks for your comment !
+And Baolin, I will send a new verision for the patches tto keep the
+scale_init and
+fix other issues . thanks!
+> > > --
+> > > Baolin Wang
+>
