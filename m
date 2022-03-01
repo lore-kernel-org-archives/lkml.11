@@ -2,83 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87EF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 05:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FA6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 05:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbiCAFgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 00:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59364 "EHLO
+        id S232478AbiCAFie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 00:38:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiCAFfx (ORCPT
+        with ESMTP id S232462AbiCAFia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 00:35:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F2970F48;
-        Mon, 28 Feb 2022 21:35:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30C3A61030;
-        Tue,  1 Mar 2022 05:35:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C4AC340EE;
-        Tue,  1 Mar 2022 05:35:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646112911;
-        bh=yulE+IPxlxYpmFDBcItH84VTpVmoVAp0vgR2CalT8kg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IQD7RnFkDQQL95isKBUCzdpglKb0EPoZWgJ5GdfK615LtXWMBtGWte16tgVW6xvfu
-         waqMQe6yTk3QCbkfLUHhzMJvzGYIiAXdozqBKboqXRlP8CC2rsfCcqNl9TdHPdcYdB
-         ioVYeAb5LnbdsEvBVepDl0n7MAr9ogEfopbHxSocbX9ejgymlGVLj/8eBuGnX/u5pJ
-         ad5isNMNwTewzqRltc3UZrgS2v25Nd44aDg4Rqrz5nuGsTIBAheWOjMSk0BKvcoPLb
-         VlR9VRjsTRuGFhiB2Y3ICl+ri9FSiO4AwNpsBIMpMSg/qtGhYqyT6TXum/lFsZkp5/
-         QlnI/2U0YbspQ==
-Date:   Mon, 28 Feb 2022 21:35:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, bjorn.andersson@linaro.org, mka@chromium.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, lkp@intel.com,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: ipa: add an interconnect dependency
-Message-ID: <20220228213509.64434f4b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220226195747.231133-1-elder@linaro.org>
-References: <20220226195747.231133-1-elder@linaro.org>
+        Tue, 1 Mar 2022 00:38:30 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35EF381AB;
+        Mon, 28 Feb 2022 21:37:46 -0800 (PST)
+X-UUID: 97f890f3bd68439f904396e3ca5fd55e-20220301
+X-UUID: 97f890f3bd68439f904396e3ca5fd55e-20220301
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1233094046; Tue, 01 Mar 2022 13:37:36 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 1 Mar 2022 13:37:35 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 1 Mar 2022 13:37:35 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <p.zabel@pengutronix.de>
+CC:     <runyang.chen@mediatek.com>, <linux-watchdog@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH 2/3] dt-bindings: reset: mt8186: add reset-controller header file
+Date:   Tue, 1 Mar 2022 13:37:32 +0800
+Message-ID: <20220301053733.24755-3-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220301053733.24755-1-rex-bc.chen@mediatek.com>
+References: <20220301053733.24755-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 26 Feb 2022 13:57:47 -0600 Alex Elder wrote:
-> In order to function, the IPA driver very clearly requires the
-> interconnect framework to be enabled in the kernel configuration.
-> State that dependency in the Kconfig file.
-> 
-> This became a problem when CONFIG_COMPILE_TEST support was added.
-> Non-Qualcomm platforms won't necessarily enable CONFIG_INTERCONNECT.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 38a4066f593c5 ("net: ipa: support COMPILE_TEST")
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
->  drivers/net/ipa/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-> index d037682fb7adb..3e0da1e764718 100644
-> --- a/drivers/net/ipa/Kconfig
-> +++ b/drivers/net/ipa/Kconfig
-> @@ -2,6 +2,7 @@ config QCOM_IPA
->  	tristate "Qualcomm IPA support"
->  	depends on NET && QCOM_SMEM
->  	depends on ARCH_QCOM || COMPILE_TEST
-> +	depends on INTERCONNECT
->  	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
->  	select QCOM_MDT_LOADER if ARCH_QCOM
->  	select QCOM_SCM
+From: Runyang Chen <runyang.chen@mediatek.com>
 
-Looks like this patch was based on a tree without the QCOM_AOSS_QMP
-dependency patch, please rebase and repost.
+1. Add toprgu reset-controller header file for MT8186.
+2. Add DSI software reset bit which is controlled in MMSYS for MT8186.
+
+Signed-off-by: Runyang Chen <runyang.chen@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+---
+ include/dt-bindings/reset/mt8186-resets.h | 36 +++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+ create mode 100644 include/dt-bindings/reset/mt8186-resets.h
+
+diff --git a/include/dt-bindings/reset/mt8186-resets.h b/include/dt-bindings/reset/mt8186-resets.h
+new file mode 100644
+index 000000000000..5f850370c42c
+--- /dev/null
++++ b/include/dt-bindings/reset/mt8186-resets.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/*
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Runyang Chen <runyang.chen@mediatek.com>
++ */
++
++#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8186
++#define _DT_BINDINGS_RESET_CONTROLLER_MT8186
++
++#define MT8186_TOPRGU_INFRA_SW_RST				0
++#define MT8186_TOPRGU_MM_SW_RST					1
++#define MT8186_TOPRGU_MFG_SW_RST				2
++#define MT8186_TOPRGU_VENC_SW_RST				3
++#define MT8186_TOPRGU_VDEC_SW_RST				4
++#define MT8186_TOPRGU_IMG_SW_RST				5
++#define MT8186_TOPRGU_DDR_SW_RST				6
++#define MT8186_TOPRGU_INFRA_AO_SW_RST				8
++#define MT8186_TOPRGU_CONNSYS_SW_RST				9
++#define MT8186_TOPRGU_APMIXED_SW_RST				10
++#define MT8186_TOPRGU_PWRAP_SW_RST				11
++#define MT8186_TOPRGU_CONN_MCU_SW_RST				12
++#define MT8186_TOPRGU_IPNNA_SW_RST				13
++#define MT8186_TOPRGU_WPE_SW_RST				14
++#define MT8186_TOPRGU_ADSP_SW_RST				15
++#define MT8186_TOPRGU_AUDIO_SW_RST				17
++#define MT8186_TOPRGU_CAM_MAIN_SW_RST				18
++#define MT8186_TOPRGU_CAM_RAWA_SW_RST				19
++#define MT8186_TOPRGU_CAM_RAWB_SW_RST				20
++#define MT8186_TOPRGU_IPE_SW_RST				21
++#define MT8186_TOPRGU_IMG2_SW_RST				22
++#define MT8186_TOPRGU_SW_RST_NUM				23
++
++/* MMSYS resets */
++#define MT8186_MMSYS_SW0_RST_B_DISP_DSI0			19
++
++#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8186 */
+-- 
+2.18.0
+
