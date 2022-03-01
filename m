@@ -2,112 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC28BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234837AbiCAMe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:34:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        id S234783AbiCAMfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:35:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234794AbiCAMem (ORCPT
+        with ESMTP id S233475AbiCAMfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:34:42 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ECA97BB7
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 04:34:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646138040; x=1677674040;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YvuB2Ay0dLnc800oXNRcutbEZNg7vLBu/3a/pjG1aOE=;
-  b=izTfY8YgQUGuzaw636wp/15i7p/ByI4S1ca1YF5Vxib+4DoN91YVRott
-   baF10rvuwkI17htv4v9Dl587QqO31Rr5Lieb2HJ29eSNGTdM5TXvOG+jK
-   fljMcvebFc7bp9rR3ZQNLgCDIMwgSycPAkmqQtcYb+fl40jqVqfh4MfNT
-   cEVLLpfvpsN95Il1v6CpelBgtrbqaun8USibUpt0VM8tSGaHG8h10kYjA
-   Pb4FCKaUdXT8C4hRELIcPzUeRIuut5oolgMggem9ay4yEexgzErKlkSDF
-   7waUj4n/k3iq0trhfU5XqRCS7w4h99BTwODA5u3+tgEoOO6PhMgSKdWfi
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,146,1643698800"; 
-   d="scan'208";a="155253494"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Mar 2022 05:34:00 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 1 Mar 2022 05:33:59 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 1 Mar 2022 05:33:58 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 7/7] clocksource/drivers/timer-microchip-pit64b: fix compilation warnings
-Date:   Tue, 1 Mar 2022 14:34:49 +0200
-Message-ID: <20220301123449.2816625-8-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220301123449.2816625-1-claudiu.beznea@microchip.com>
-References: <20220301123449.2816625-1-claudiu.beznea@microchip.com>
+        Tue, 1 Mar 2022 07:35:18 -0500
+Received: from ni.piap.pl (ni.piap.pl [195.187.100.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F33097BAD;
+        Tue,  1 Mar 2022 04:34:30 -0800 (PST)
+Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
+        by ni.piap.pl (Postfix) with ESMTPSA id 67F41C3F2A54;
+        Tue,  1 Mar 2022 13:34:28 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 67F41C3F2A54
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
+        t=1646138068; bh=Upk6FCKfHLUjo081LeWtb4iS+Al74dKX2WaYB56S9xo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=kXYIsJ80HZokbCGHnuV2OFIkxix+CA3DMXYWfvgWcHU3RNN7Hr5+i3M2rzLz/hxMG
+         pCIbWjt5jhEh7jb/ogvQ5lLrtV5TU086PUfetRWksya/uv6W5Nb6V0IXwZ03IBA83N
+         xNdi/RU0jSCkllUrb+BGFJNs1d41WTd7OJdWS6PA=
+From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sakari Ailus <sakari.ailus@iki.fi>,
+        Joe Perches <joe@perches.com>
+Subject: Re: [PATCH v8 2/2] On Semi AR0521 sensor driver
+References: <m3pmn66pie.fsf@t19.piap.pl> <m3h78i6p4t.fsf@t19.piap.pl>
+        <20220301093107.ihokyp4xptkzpbpc@uno.localdomain>
+Sender: khalasa@piap.pl
+Date:   Tue, 01 Mar 2022 13:34:28 +0100
+In-Reply-To: <20220301093107.ihokyp4xptkzpbpc@uno.localdomain> (Jacopo Mondi's
+        message of "Tue, 1 Mar 2022 10:31:07 +0100")
+Message-ID: <m38rtt7sx7.fsf@t19.piap.pl>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-KLMS-Rule-ID: 3
+X-KLMS-Message-Action: skipped
+X-KLMS-AntiSpam-Status: not scanned, whitelist
+X-KLMS-AntiPhishing: not scanned, whitelist
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following compilation warnings:
-timer-microchip-pit64b.c:68: warning: cannot understand function prototype: 'struct mchp_pit64b_clkevt '
-timer-microchip-pit64b.c:82: warning: cannot understand function prototype: 'struct mchp_pit64b_clksrc '
-timer-microchip-pit64b.c:283: warning: Function parameter or member 'timer' not described in 'mchp_pit64b_init_mode'
-timer-microchip-pit64b.c:283: warning: Function parameter or member 'max_rate' not described in 'mchp_pit64b_init_mode'
+Jacopo Mondi <jacopo@jmondi.org> writes:
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/clocksource/timer-microchip-pit64b.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> In subject
+>
+> "media: i2c:"
+>
+> Same for 1/2 where permutation of "media: dt-bindings: i2c:" are used
+> when adding bindings for media i2c drivers.
 
-diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
-index f50705698283..5ce206723700 100644
---- a/drivers/clocksource/timer-microchip-pit64b.c
-+++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -46,7 +46,7 @@
- 
- #define MCHP_PIT64B_NAME		"pit64b"
- 
--/**
-+/*
-  * struct mchp_pit64b_timer - PIT64B timer data structure
-  * @base: base address of PIT64B hardware block
-  * @pclk: PIT64B's peripheral clock
-@@ -60,7 +60,7 @@ struct mchp_pit64b_timer {
- 	u32		mode;
- };
- 
--/**
-+/*
-  * mchp_pit64b_clkevt - PIT64B clockevent data structure
-  * @timer: PIT64B timer
-  * @clkevt: clockevent
-@@ -74,7 +74,7 @@ struct mchp_pit64b_clkevt {
- 	((struct mchp_pit64b_timer *)container_of(x,\
- 		struct mchp_pit64b_clkevt, clkevt))
- 
--/**
-+/*
-  * mchp_pit64b_clksrc - PIT64B clocksource data structure
-  * @timer: PIT64B timer
-  * @clksrc: clocksource
-@@ -244,7 +244,7 @@ static void __init mchp_pit64b_pres_compute(u32 *pres, u32 clk_rate,
- 		*pres = MCHP_PIT64B_PRES_MAX - 1;
- }
- 
--/**
-+/*
-  * mchp_pit64b_init_mode - prepare PIT64B mode register value to be used at
-  *			   runtime; this includes prescaler and SGCLK bit
-  *
--- 
-2.32.0
+You know, it's rather hard to know all these tiny requirements. Let
+alone get them right all the time.
 
+>> +	pm_runtime_set_active(&client->dev);
+>> +	pm_runtime_enable(&client->dev);
+>> +	pm_runtime_idle(&client->dev);
+>
+> Do you have an _idle() callback ? This seems a no-op to me, or am I
+> mistaken ? (runtime_pm is still cryptic to me sometimes)
+
+Do you mean only the pm_runtime_idle()? Sakari just requested I add it.
+
+> Can't you just remove power_on() if it's not needed ?
+
+It wouldn't work without CONFIG_PM then, would it?
+
+> There still are a few checkpatch warnings which might be worth
+> considering  but nothing huge.
+
+Do you mean this?
+
+WARNING: Block comments use * on subsequent lines
+#411: FILE: drivers/media/i2c/ar0521.c:351:
++               /* Reset gain, the sensor may produce all white pixels with=
+out
++                  this */
+
+WARNING: Block comments use a trailing */ on a separate line
+#411: FILE: drivers/media/i2c/ar0521.c:351:
++                  this */
+
+... which are about a single comment which I had to wrap to fit in 80
+columns, hardly a block comment by my standards. Not to mention Linus
+saying...
+--=20
+Krzysztof "Chris" Ha=C5=82asa
+
+Sie=C4=87 Badawcza =C5=81ukasiewicz
+Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
+Al. Jerozolimskie 202, 02-486 Warszawa
