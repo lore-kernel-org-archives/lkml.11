@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C605C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD55C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235720AbiCAUU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:20:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S238067AbiCAUU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:20:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238015AbiCAUS5 (ORCPT
+        with ESMTP id S238019AbiCAURx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:18:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3882D3FBDB;
-        Tue,  1 Mar 2022 12:18:07 -0800 (PST)
+        Tue, 1 Mar 2022 15:17:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E43189CF0;
+        Tue,  1 Mar 2022 12:16:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA3D61763;
-        Tue,  1 Mar 2022 20:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02A4AC340F2;
-        Tue,  1 Mar 2022 20:18:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36E4EB81CB4;
+        Tue,  1 Mar 2022 20:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 823E7C340F2;
+        Tue,  1 Mar 2022 20:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165886;
-        bh=/UQX7PDAgZm+2XBb1KJevOgdGQXGHiW7vLKQqRymvpU=;
+        s=k20201202; t=1646165807;
+        bh=92awyDG6T52IsdsbSeDSnL7mpT5M1S2TkLHv3GFwsBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBsaJWC7vcEPtAGUvHswaRG6nrg4U0MET5mhVFtRjYXSv3XGiMs3xtw76MnriyZMI
-         LBqUtAlO/Zh4jIZA+9M/QELkYetZ90Wtd5haQoGKu86OlfqH/wyN4gK9maJaOwwn1b
-         BpRzn3k4GVrllBk5r/5CV7S1neW2RZVA/Um2zyZNfCJ61z2imznqkwHoePwvdOSCpC
-         k2OZKQFlujrx2msAKaNWhjDpZ6GC9jb5dZTMss7mLCTXtl0PVSDyvmxrhYVdYn01aX
-         HRXYirMGJNC80Fx9gRviSwDzd3J6/PikQFXadoYpDBrMRegk3gEgEnEkHb5d+aYJAF
-         kpeeDihyz3XaA==
+        b=D5yiinFSioV0poc1zX9OSgbFCWbus+Wp7djFS+QBY53PzqTWy91DhcnhFaWBwswLA
+         raYlJeY5XV5ciFG5YD0jn96sxSkSWbD8Lzl4Ri8zFTd7VSa364Aux1N2+ukYouhqiJ
+         4Vae+CEkCR9j5MkDpBT8f/BREueA00Hy3TEG0s16yH9ye6G78vmW8QAc0qg6Xmqv/V
+         qBp3CcBf6/piAXQntoo8nkFG3NgxRxxafvwDPe/HJ5P2OA1nIuYgIlRuDTk4plsZm3
+         YrsvzrnWsYOlNMhH+D5Pvq8aFWLEL0UsB5cKR0KzeEFGxy/DZZPj1RYXHcHUr0KOfv
+         qZ2umRkkGBC2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Niels Dossche <niels.dossche@ugent.be>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/23] ipv6: prevent a possible race condition with lifetimes
-Date:   Tue,  1 Mar 2022 15:16:18 -0500
-Message-Id: <20220301201629.18547-19-sashal@kernel.org>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 03/23] usb: dwc3: pci: add support for the Intel Raptor Lake-S
+Date:   Tue,  1 Mar 2022 15:16:02 -0500
+Message-Id: <20220301201629.18547-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
@@ -54,45 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
+[ Upstream commit 038438a25c45d5ac996e95a22fa9e76ff3d1f8c7 ]
 
-valid_lft, prefered_lft and tstamp are always accessed under the lock
-"lock" in other places. Reading these without taking the lock may result
-in inconsistencies regarding the calculation of the valid and preferred
-variables since decisions are taken on these fields for those variables.
+This patch adds the necessary PCI ID for Intel Raptor Lake-S
+devices.
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
-Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220214141948.18637-1-heikki.krogerus@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/dwc3/dwc3-pci.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index c6e1989ab2ed9..01cbfb4321eec 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4996,6 +4996,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
- 		goto error;
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 7ff8fc8f79a9b..4e69a9d829f23 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -43,6 +43,7 @@
+ #define PCI_DEVICE_ID_INTEL_ADLP		0x51ee
+ #define PCI_DEVICE_ID_INTEL_ADLM		0x54ee
+ #define PCI_DEVICE_ID_INTEL_ADLS		0x7ae1
++#define PCI_DEVICE_ID_INTEL_RPLS		0x7a61
+ #define PCI_DEVICE_ID_INTEL_TGL			0x9a15
+ #define PCI_DEVICE_ID_AMD_MR			0x163a
  
-+	spin_lock_bh(&ifa->lock);
- 	if (!((ifa->flags&IFA_F_PERMANENT) &&
- 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
- 		preferred = ifa->prefered_lft;
-@@ -5017,6 +5018,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 		preferred = INFINITY_LIFE_TIME;
- 		valid = INFINITY_LIFE_TIME;
- 	}
-+	spin_unlock_bh(&ifa->lock);
+@@ -409,6 +410,9 @@ static const struct pci_device_id dwc3_pci_id_table[] = {
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ADLS),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
  
- 	if (!ipv6_addr_any(&ifa->peer_addr)) {
- 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
++	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_RPLS),
++	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
++
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+ 
 -- 
 2.34.1
 
