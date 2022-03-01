@@ -2,90 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5818DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07518C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235714AbiCAPep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:34:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
+        id S235749AbiCAPfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:35:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbiCAPen (ORCPT
+        with ESMTP id S234279AbiCAPfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:34:43 -0500
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583902B278;
-        Tue,  1 Mar 2022 07:34:02 -0800 (PST)
-Received: by mail-oi1-f174.google.com with SMTP id s5so16509747oic.10;
-        Tue, 01 Mar 2022 07:34:02 -0800 (PST)
+        Tue, 1 Mar 2022 10:35:41 -0500
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB083652FD;
+        Tue,  1 Mar 2022 07:35:00 -0800 (PST)
+Received: by mail-oi1-f181.google.com with SMTP id z7so16532668oid.4;
+        Tue, 01 Mar 2022 07:35:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=DZMJhlazRxfiZZMLqWDvXZ/jU6J34RFBtjvG+CX9Qvo=;
-        b=m6PEbxOLQ93mW8Vz5txTJrg/wxUo0R/c+FsqdfRHmqgKvFZ9MGqnUu3ycWzfDXm5fy
-         ugbUrm/u8oiooMhF9PZIvOhs09eg4Pmxxgg7tO95pZKCW1GbGKYsb1jjITmO1jP5utVN
-         2ATBTKIVdJKp4NA0vpgWB9jmIIzmqjb6zrp/bd0fsmXiX/2UByYiMrMDcYInK/DaEFlD
-         SzmiLPIylB1rVVICSD4hJg6IKLWwh8e8NYbn3/uFOAX1ltXI5ubZwSe/JVYlsgyZ90M9
-         D7uQpn5lnAeBv87pmwZKh7CS2FgHOcyWrdQj5tRsLrqBchBBWrVVG5vDUJh79cbwaADd
-         a1aw==
-X-Gm-Message-State: AOAM531iI+yRRPvzNGN6qZMiM2M/sNoWBpRGW8Iwv19axxhI8Gk5pLe4
-        QBPIfTYXmbanMyoaQSjmdJcxuNqgug==
-X-Google-Smtp-Source: ABdhPJyX5GznUyW/6kq2K9kPRxLyMQ6vU2vmLih0ec/ihrobd/pIAkPZC2Ry2gH0Kl4Q+e2ptvmJTw==
-X-Received: by 2002:a05:6808:2211:b0:2d4:a1de:9c05 with SMTP id bd17-20020a056808221100b002d4a1de9c05mr13160764oib.137.1646148841596;
-        Tue, 01 Mar 2022 07:34:01 -0800 (PST)
+        bh=VY7TwHjaayfX9tcJSbTXDc7mPcPeZN4TyVLpmamqtFU=;
+        b=Uya+qz/p6ebYXruj8fe6jrNY2GZspVcq9pvcZcSlvD/X9CxLvBu60lUUMOJNr/aMeX
+         8J8cLCfU/idATIgsqs6sinb+nqAq2Qhu1unWYP4XGdaAz3rgFibo2JKjYTzia0mHioF3
+         xRjHDpFtKTrm7l97osEKzhQZ7WJFeKc3si+jRGtcb/plUqGNzXmqBqRjXD/MunfyMo4a
+         TPrnO0SM3ZyVqjE2GZiAV8mrWVyBPB4SzcriCkCse7wjI88Lqib8O5MvXujhKxDYhBa+
+         0EiFtMBM7Vzg9YVzZ2BzHfhCJnI1/zKLzlTPWHsw6cQEO0wffM/n+WjcfSsxr8O3kOsY
+         yJNA==
+X-Gm-Message-State: AOAM533KpwU9EMXxYHc2Y1Yhi0Aycl1IGph6IvN4BSCk56T0tJTycivf
+        PbA9NiIZker4hdTYALjGkvbSfALOmQ==
+X-Google-Smtp-Source: ABdhPJw/Je/G1Ac+6gh2zKlFSCICDWXhicb+NRZiW80kmeelNMxF+DFQ00IVKwo989LFPyMVnZTTkw==
+X-Received: by 2002:a05:6808:1a29:b0:2d7:58b0:15be with SMTP id bk41-20020a0568081a2900b002d758b015bemr13438680oib.97.1646148900075;
+        Tue, 01 Mar 2022 07:35:00 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id u12-20020a056808114c00b002d72b6e5676sm8528947oiu.29.2022.03.01.07.34.00
+        by smtp.gmail.com with ESMTPSA id k25-20020a9d7019000000b005af14095afdsm6631897otj.0.2022.03.01.07.34.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 07:34:00 -0800 (PST)
-Received: (nullmailer pid 1286582 invoked by uid 1000);
-        Tue, 01 Mar 2022 15:33:59 -0000
-Date:   Tue, 1 Mar 2022 09:33:59 -0600
+        Tue, 01 Mar 2022 07:34:58 -0800 (PST)
+Received: (nullmailer pid 1288269 invoked by uid 1000);
+        Tue, 01 Mar 2022 15:34:57 -0000
+Date:   Tue, 1 Mar 2022 09:34:57 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Chris Brandt <chris.brandt@renesas.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH] dt-bindings: net: can: renesas,rcar-canfd: Document
- RZ/V2L SoC
-Message-ID: <Yh4855Np63fEUl4G@robh.at.kernel.org>
-References: <20220227213250.23637-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Rob Herring <robh+dt@kernel.org>,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        devicetree@vger.kernel.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: i2c: renesas,riic: Document RZ/V2L SoC
+Message-ID: <Yh49IbR4B0m+kh1f@robh.at.kernel.org>
+References: <20220227214747.24819-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220227213250.23637-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220227214747.24819-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 09:32:50PM +0000, Lad Prabhakar wrote:
-> Document RZ/V2L CANFD bindings. RZ/V2L CANFD is identical to one found on
-> the RZ/G2L SoC. No driver changes are required as generic compatible
-> string "renesas,rzg2l-canfd" will be used as a fallback.
+On Sun, 27 Feb 2022 21:47:47 +0000, Lad Prabhakar wrote:
+> Document RZ/V2L I2C bindings. RZ/V2L I2C is identical to one found on
+> the RZ/G2L SoC. No driver changes are required as RZ/G2L compatible
+> string "renesas,riic-rz" will be used as a fallback.
 > 
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 > ---
-> DTSI changes [0] have been posted as part of separate series.
+> DTSI changes have been posted as part of series [0].
 > 
-> [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
-> 20220227203744.18355-4-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> [0] https://patchwork.kernel.org/project/linux-renesas-soc/
+> patch/20220227203744.18355-6-prabhakar.mahadev-lad.rj@bp.renesas.com/
 > ---
->  .../devicetree/bindings/net/can/renesas,rcar-canfd.yaml          | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/i2c/renesas,riic.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-The patch wouldn't apply, but I don't see the problem other than the 
-sha hashes are not from a known base. Please send patches against a 
-known rcX (rc1 is preferred) unless you have some other dependency. And 
-document that dependency.
-
-Anyways, it is applied manually now.
-
-Rob
+Applied, thanks!
