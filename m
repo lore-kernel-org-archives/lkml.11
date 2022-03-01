@@ -2,109 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB6AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231992AbiCABti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 20:49:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
+        id S232140AbiCABuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 20:50:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232030AbiCABtb (ORCPT
+        with ESMTP id S232055AbiCABti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 20:49:31 -0500
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6C35C86B;
-        Mon, 28 Feb 2022 17:48:47 -0800 (PST)
-Received: from droid01-cd.amlogic.com (10.98.11.200) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Tue, 1 Mar 2022
- 09:48:43 +0800
-From:   Shunzhou Jiang <shunzhou.jiang@amlogic.com>
-To:     <shunzhou.jiang@amlogic.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <narmstrong@baylibre.com>, <khilman@baylibre.com>,
-        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
-        <jianxin.pan@amlogic.com>
-Subject: [PATCH V5 2/2] soc: s4: Add support for power domains controller
-Date:   Tue, 1 Mar 2022 09:48:37 +0800
-Message-ID: <20220301014837.801642-3-shunzhou.jiang@amlogic.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301014837.801642-1-shunzhou.jiang@amlogic.com>
-References: <20220301014837.801642-1-shunzhou.jiang@amlogic.com>
+        Mon, 28 Feb 2022 20:49:38 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73B85BD3A
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:48:56 -0800 (PST)
+X-UUID: 71c0d92509264925bc3dadf911b7d004-20220301
+X-UUID: 71c0d92509264925bc3dadf911b7d004-20220301
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1344401544; Tue, 01 Mar 2022 09:48:48 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 1 Mar 2022 09:48:47 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 1 Mar 2022 09:48:46 +0800
+From:   <yf.wang@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
+        Yunfei Wang <yf.wang@mediatek.com>
+Subject: [PATCH] iommu/iova: Reset max32_alloc_size after cleaning rcache in the fail path
+Date:   Tue, 1 Mar 2022 09:42:43 +0800
+Message-ID: <20220301014246.5011-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.98.11.200]
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support s4 Power controller. In s4, power control
-registers are in secure domain, and should be accessed by smc.
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Signed-off-by: Shunzhou Jiang <shunzhou.jiang@amlogic.com>
----
-V1->V2: fix spelling error, patchset use cover-letter
-v2->V3: add power domain always on reason
-v3->V4: clear vpu and usb power domaon always on
-V4->v5: add review owner in patchset
----
- drivers/soc/amlogic/meson-secure-pwrc.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+In alloc_iova_fast function, if __alloc_and_insert_iova_range fail,
+alloc_iova_fast will try flushing rcache and retry alloc iova, but
+this has an issue:
 
-diff --git a/drivers/soc/amlogic/meson-secure-pwrc.c b/drivers/soc/amlogic/meson-secure-pwrc.c
-index 59bd195fa9c9..a10a417a87db 100644
---- a/drivers/soc/amlogic/meson-secure-pwrc.c
-+++ b/drivers/soc/amlogic/meson-secure-pwrc.c
-@@ -11,6 +11,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm_domain.h>
- #include <dt-bindings/power/meson-a1-power.h>
-+#include <dt-bindings/power/meson-s4-power.h>
- #include <linux/arm-smccc.h>
- #include <linux/firmware/meson/meson_sm.h>
- #include <linux/module.h>
-@@ -119,6 +120,18 @@ static struct meson_secure_pwrc_domain_desc a1_pwrc_domains[] = {
- 	SEC_PD(RSA,	0),
- };
+Since __alloc_and_insert_iova_range fail will set the current alloc
+iova size to max32_alloc_size (iovad->max32_alloc_size = size),
+when the retry is executed into the __alloc_and_insert_iova_range
+function, the retry action will be blocked by the check condition
+(size >= iovad->max32_alloc_size) and goto iova32_full directly,
+causes the action of retry regular alloc iova in
+__alloc_and_insert_iova_range to not actually be executed.
+
+Based on the above, so need reset max32_alloc_size before retry alloc
+iova when alloc iova fail, that is set the initial dma_32bit_pfn value
+of iovad to max32_alloc_size, so that the action of retry alloc iova
+in __alloc_and_insert_iova_range can be executed.
+
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/iova.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index b28c9435b898..0c085ae8293f 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -453,6 +453,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ retry:
+ 	new_iova = alloc_iova(iovad, size, limit_pfn, true);
+ 	if (!new_iova) {
++		unsigned long flags;
+ 		unsigned int cpu;
  
-+static struct meson_secure_pwrc_domain_desc s4_pwrc_domains[] = {
-+	SEC_PD(S4_DOS_HEVC,	0),
-+	SEC_PD(S4_DOS_VDEC,	0),
-+	SEC_PD(S4_VPU_HDMI,	0),
-+	SEC_PD(S4_USB_COMB,	0),
-+	SEC_PD(S4_GE2D,		0),
-+	/* ETH is for ethernet online wakeup, and should be always on */
-+	SEC_PD(S4_ETH,		GENPD_FLAG_ALWAYS_ON),
-+	SEC_PD(S4_DEMOD,	0),
-+	SEC_PD(S4_AUDIO,	0),
-+};
+ 		if (!flush_rcache)
+@@ -463,6 +464,12 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 		for_each_online_cpu(cpu)
+ 			free_cpu_cached_iovas(cpu, iovad);
+ 		free_global_cached_iovas(iovad);
 +
- static int meson_secure_pwrc_probe(struct platform_device *pdev)
- {
- 	int i;
-@@ -187,11 +200,20 @@ static struct meson_secure_pwrc_domain_data meson_secure_a1_pwrc_data = {
- 	.count = ARRAY_SIZE(a1_pwrc_domains),
- };
++		/* Reset max32_alloc_size after flushing rcache for retry */
++		spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
++		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
++		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
++
+ 		goto retry;
+ 	}
  
-+static struct meson_secure_pwrc_domain_data meson_secure_s4_pwrc_data = {
-+	.domains = s4_pwrc_domains,
-+	.count = ARRAY_SIZE(s4_pwrc_domains),
-+};
-+
- static const struct of_device_id meson_secure_pwrc_match_table[] = {
- 	{
- 		.compatible = "amlogic,meson-a1-pwrc",
- 		.data = &meson_secure_a1_pwrc_data,
- 	},
-+	{
-+		.compatible = "amlogic,meson-s4-pwrc",
-+		.data = &meson_secure_s4_pwrc_data,
-+	},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, meson_secure_pwrc_match_table);
 -- 
-2.34.1
+2.18.0
 
