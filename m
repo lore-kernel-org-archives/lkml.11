@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82530C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B198C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236352AbiCASAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:00:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
+        id S236763AbiCASCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:02:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiCASAk (ORCPT
+        with ESMTP id S229583AbiCASCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:00:40 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D2B3ED3F;
-        Tue,  1 Mar 2022 09:59:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646157599; x=1677693599;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YNeHmdRGaQLAxxHHm0icgDjR5GUsQ65k7RpZGnymZEg=;
-  b=ZIKfiSUr6pnV2g0oIyYmSRBOitP06Ck+5Iz/UpMqin5CxxFpsCyV1Hvl
-   ta0S7k/2XfapLMI5SnYznWb+yzoSui//U7iYIrnT5AWRlXsnbAzcn/41u
-   W7Wa9NSxxI4IS/1zgTNSYe93ucQQG8g9f7/5p3kxM+7LQJxUfw8g9+Fcc
-   xIlsqre/x8d4Mael1SJ62zy/GZjQnlmxPa35yb5FVm8RH1Nw56wn0p22B
-   7sqh2Cx933/HE0fMmEfemLFLF9fP8queiWBo7C6huK1UK94Q+LUL4mF3D
-   yzQzblFjayIrKnrd4iUXiD/CsasAJfqypvCZyKcsxRTtwpvfV/wzK6Osu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="240613341"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="240613341"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 09:59:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="507891417"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 01 Mar 2022 09:59:55 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP6mx-0000ps-3d; Tue, 01 Mar 2022 17:59:55 +0000
-Date:   Wed, 2 Mar 2022 01:59:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        torvalds@linux-foundation.org
-Cc:     kbuild-all@lists.01.org, arnd@arndb.de, jakobkoschel@gmail.com,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        keescook@chromium.org, jannh@google.com,
-        linux-kbuild@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
-Message-ID: <202203020135.5duGpXM2-lkp@intel.com>
-References: <20220301075839.4156-2-xiam0nd.tong@gmail.com>
+        Tue, 1 Mar 2022 13:02:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C83FBF6;
+        Tue,  1 Mar 2022 10:01:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63942613E2;
+        Tue,  1 Mar 2022 18:01:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 548CEC340EE;
+        Tue,  1 Mar 2022 18:01:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646157679;
+        bh=BlXx4FNNlsIl9zw8EoTTYqALDbRkuyGZS0mdHI4RoMA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iEFkSTkWwXpMp7vsR4QZ/EJ3Oib4ZpUNZYzzsAzhylm2ksEYMVzN2682Dqakg9wuh
+         5oD7D1L1KC35go81Ztkp8huNYQkMEDQlk348/XbQ5/vNFcVbnbq0T6c5zi6A5K0B/i
+         F5W/Q68bc/YoS97YzoNhuopdow5scGqyEfK7IKq0=
+Date:   Tue, 1 Mar 2022 19:01:17 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-hyperv@vger.kernel.org,
+        linux-crypto@vger.kernel.org, graf@amazon.com,
+        mikelley@microsoft.com, adrian@parity.io, lersek@redhat.com,
+        berrange@redhat.com, linux@dominikbrodowski.net, jannh@google.com,
+        mst@redhat.com, rafael@kernel.org, len.brown@intel.com,
+        pavel@ucw.cz, linux-pm@vger.kernel.org, colmmacc@amazon.com,
+        tytso@mit.edu, arnd@arndb.de
+Subject: Re: propagating vmgenid outward and upward
+Message-ID: <Yh5fbe71BTT6xc8h@kroah.com>
+References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301075839.4156-2-xiam0nd.tong@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Yh4+9+UpanJWAIyZ@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xiaomeng,
+On Tue, Mar 01, 2022 at 04:42:47PM +0100, Jason A. Donenfeld wrote:
+> The easy way, and the way that I think I prefer, would be to just have a
+> sync notifier_block for this, just like we have with
+> register_pm_notifier(). From my perspective, it'd be simplest to just
+> piggy back on the already existing PM notifier with an extra event,
+> PM_POST_VMFORK, which would join the existing set of 7, following
+> PM_POST_RESTORE. I think that'd be coherent. However, if the PM people
+> don't want to play ball, we could always come up with our own
+> notifier_block. But I don't see the need. Plus, WireGuard *already*
+> uses the PM notifier for clearing keys, so code-wise for my use case,
+> that'd amount adding another case for PM_POST_VMFORK, in addition to the
+> currently existing PM_HIBERNATION_PREPARE and PM_SUSPEND_PREPARE cases,
+> which all would be treated the same way. Ezpz. So if that sounds like an
+> interesting thing to the PM people, I think I'd like to propose a patch
+> for that, possibly even for 5.18, given that it'd be very straight-
+> forward.
 
-Thank you for the patch! Perhaps something to improve:
+A notifier block like this makes sense, but why tie onto the PM_ stuff?
+This isn't power management issues, it's a system-wide change that I am
+sure others will want to know about that doesn't reflect any power
+changes.
 
-[auto build test WARNING on linux/master]
-[also build test WARNING on vkoul-dmaengine/next soc/for-next linus/master v5.17-rc6 next-20220301]
-[cannot apply to hnaz-mm/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+As much as I hate adding new notifiers in the kernel, that might be all
+you need here.
 
-url:    https://github.com/0day-ci/linux/commits/Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
-config: mips-rb532_defconfig (https://download.01.org/0day-ci/archive/20220302/202203020135.5duGpXM2-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/84ec4077430a7e8c23ea1ebc7b69e254fda25cb1
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-        git checkout 84ec4077430a7e8c23ea1ebc7b69e254fda25cb1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
+thanks,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
-   arch/mips/pci/pci-rc32434.c: In function 'rc32434_pcibridge_init':
-   arch/mips/pci/pci-rc32434.c:111:22: warning: variable 'dummyread' set but not used [-Wunused-but-set-variable]
-     111 |         unsigned int dummyread, pcicntlval;
-         |                      ^~~~~~~~~
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+greg k-h
