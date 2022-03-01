@@ -2,125 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E63C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3189CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbiCAH0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
+        id S232901AbiCAH0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:26:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbiCAH0Z (ORCPT
+        with ESMTP id S232871AbiCAH00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:26:25 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44A07B558
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:25:44 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id r8so169091wma.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:25:44 -0800 (PST)
+        Tue, 1 Mar 2022 02:26:26 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0387B57E
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:25:45 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id v5-20020a17090ac90500b001bc40b548f9so1366484pjt.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:25:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lgShEMbe7vRdrN6QBiEdN6/EREpU6sk6kDTuE/CbUr8=;
-        b=6tCeTF8VnbDBKafChKUsHY1xHg3YBEdEWOhdMctYjjI4TLxZnqROGWyTQbcOk+GTHS
-         05w/0hIuQfeh6ujJOyRC/82r/0+1CEi+/zjdijQCJIq13i/jHWzhcodRkdyKZiF1a8Kt
-         FIEQ5i70fzLupBu2lzyp9oOeM9v30LofaIq+M4TgGjjaj7jcIiBz/jZ4SsfbGgFQ9Ypk
-         9Y9VgLNWUOe30bOqyEyb71K3YREYy5i1KiCqYnbOrdSNaqMIU3GW7UjnDGWqdNa46R7i
-         PDMl0orncBt6FGGVGqX0Ma0lw1vo6U1Bhqm1vclKj3kgVf6Tvu6yKaT4aJ/dD+PDE/jR
-         p/Cw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=QR6ESE2OAl/bWxT4TTgx26HVZoBHd22PyQQgfFHvaEM=;
+        b=QYUVG1XxsSiq+9WIQTSiT00AJtOjabF3YJUaIFMuZtrtG55j6M/bvKPpIEuge2fu7s
+         yyPqARG8xvjSnnjA4aFRy9Ybn7cNil1eIyB+9+PWO3CWh0DIRMO/8+5X7h2yOrDeUnPV
+         KBNdKG7hWpYKGCD7tIeQoYqRfy715d3/QDwz3Q/qv5ydXOC2L/CGMycRcl13Ml2Rkz++
+         rSYcGEq9ETY1PysoGmkoUPtG3VVGhGgs72qdA1sPlo0o6DIwK/u+dqn8Mns2YEwOUv4t
+         2wJupyVTgV+1iHo9eJwaq8nhXkrYZvDH/we/cIWGKayxogBdfq5uT28P+7KwiYi6+d69
+         wEMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lgShEMbe7vRdrN6QBiEdN6/EREpU6sk6kDTuE/CbUr8=;
-        b=7vOrp4KBAazr5gjxRyOfuaCZjE19ev2Ux0G61LvYo0taFmi2I3Uw+21CJFj3FwDUYA
-         /qPcIcGTe7zYQtfnOrpzZ6h9P3IO8X85ot6Lavg9T0AWedTxOmmBuGEw5pnIceh+ZQFP
-         mCMagl7WZOEK0gXxIHhYSlbPVRKeMUlnJ4+mJ8ajiNgd8y1i7S9rQYz9TypSI221pKb9
-         XiiZJgkIkHLTIjw8WNbI/X4E4+RWw5TcoJdPwY1JkcuGJzRD96+VeJHD7GCCbH+Bwg2w
-         7SCRBWYFhKweDsHjT2uGEkkBNZX8ZdO9Il/wL96bkvMMvfh9lxW8KkBxmQzSIIwx/D/O
-         f/IA==
-X-Gm-Message-State: AOAM5339ew1Kr5ywsxxXkDSdmJAGiepYhGZd828LndVL29E/juCU/FZm
-        5tMhE08nKBN7Y6AkXmZ2oUQTRQ==
-X-Google-Smtp-Source: ABdhPJyNbAr8Cf69lwIdgo4F56uDduS8cdEXP5PZvZfdLySabeTKIbqqWZ+VviQg2Dl9lc2TQrfkDA==
-X-Received: by 2002:a05:600c:a0a:b0:350:564b:d55e with SMTP id z10-20020a05600c0a0a00b00350564bd55emr15650054wmp.124.1646119543122;
-        Mon, 28 Feb 2022 23:25:43 -0800 (PST)
-Received: from ?IPV6:2001:861:44c0:66c0:f9e4:b6da:2b53:5858? ([2001:861:44c0:66c0:f9e4:b6da:2b53:5858])
-        by smtp.gmail.com with ESMTPSA id j7-20020a05600c1c0700b0037c2c6d2a91sm1793781wms.2.2022.02.28.23.25.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 23:25:42 -0800 (PST)
-Message-ID: <849a95fd-ae81-9a3b-0c06-dd7826af9eb2@baylibre.com>
-Date:   Tue, 1 Mar 2022 08:25:41 +0100
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QR6ESE2OAl/bWxT4TTgx26HVZoBHd22PyQQgfFHvaEM=;
+        b=BUlA2ig1DcwNjGGn+tLzwTucTRMi9ABH4m5+gBxesrDgIx8R80IfYv6nE7EUnHDUwr
+         ZlV2xGtrAKSgj5ZZUzZVDKGfEDufRmtAZDuS5JA61e6WtUAWGD/thMybZWyd0zeCK9ng
+         sW4bTVX7giZTyAXgItXfsaYoMeL8RtJ2X5qDPt9U9o0YpDtO7YNXcRIsH6pEcH+rKgCs
+         N8mZ3ji7NlIFl7SdpxUtu6F4OlECZY+jJb9wutKar4C1xNK8cljjZiKVql3w/7daqA8v
+         5Ev5wwVHSdvt4DzcDdbiXpgqzu0FFP+pVETP/Npylf8JOUOiNtnSCBX4c7ZFhex+ydhj
+         FCxg==
+X-Gm-Message-State: AOAM533s56/PZDu8j84GQLNdoyn4hMjd+yF3pcUmqdgHaMXSN8/EpSzy
+        p5E9LnmjQrbJDUTEdoou5+N6Zw==
+X-Google-Smtp-Source: ABdhPJzPRrnJXmCmZDOwh2M8DI71z41lCJTCgimaM0nvCHg3AeKt3NcTCUEthhMISD0z4qbOr0RnHg==
+X-Received: by 2002:a17:902:e5c3:b0:14f:a4ff:34b8 with SMTP id u3-20020a170902e5c300b0014fa4ff34b8mr23792224plf.24.1646119544920;
+        Mon, 28 Feb 2022 23:25:44 -0800 (PST)
+Received: from localhost.localdomain ([223.179.136.225])
+        by smtp.gmail.com with ESMTPSA id m6-20020a62f206000000b004e152bc0527sm15680445pfh.153.2022.02.28.23.25.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 23:25:44 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        lorenzo.pieralisi@arm.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
+        bhelgaas@google.com, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, sboyd@kernel.org, mturquette@baylibre.com,
+        linux-clk@vger.kernel.org
+Subject: [PATCH v2 3/7] clk: qcom: gcc: Add PCIE_0_GDSC and PCIE_1_GDSC for SM8150
+Date:   Tue,  1 Mar 2022 12:55:07 +0530
+Message-Id: <20220301072511.117818-4-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
+References: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH V7 0/6] Use CCF to describe the UART baud rate clock
-Content-Language: fr
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220225073922.3947-1-yu.tu@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-In-Reply-To: <20220225073922.3947-1-yu.tu@amlogic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Add the PCIE_0_GDSC and PCIE_1_GDSC defines for SM8150,
+so that dts files can use the same.
 
-Le 25/02/2022 à 08:39, Yu Tu a écrit :
-> Using the common Clock code to describe the UART baud rate
-> clock makes it easier for the UART driver to be compatible
-> with the baud rate requirements of the UART IP on different
-> meson chips. Add Meson S4 SoC compatible.
-> 
-> The test method:
-> Start the console and run the following commands in turn:
-> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600.
-> 
-> Since most SoCs are too old, I was able to find all the platforms myself
-> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with
-> G12A and S4.
-> 
-> Yu Tu (6):
->    tty: serial: meson: Move request the register region to probe
->    tty: serial: meson: Use devm_ioremap_resource to get register mapped
->      memory
->    tty: serial: meson: Describes the calculation of the UART baud rate
->      clock using a clock frame
->    tty: serial: meson: Make some bit of the REG5 register writable
->    tty: serial: meson: The system stuck when you run the stty command on
->      the console to change the baud rate
->    tty: serial: meson: Added S4 SOC compatibility
-> 
-> V6 -> V7: To solve the system stuck when you run the stty command on
-> the console to change the baud rate.
-> V5 -> V6: Change error format as discussed in the email.
-> V4 -> V5: Change error format.
-> V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
-> in the email.
-> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
-> the DTS before it can be deleted
-> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
-> discussed in the email
-> 
-> Link:https://lore.kernel.org/linux-amlogic/20220118030911.12815-4-yu.tu@amlogic.com/
-> 
->   drivers/tty/serial/meson_uart.c | 221 ++++++++++++++++++++++----------
->   1 file changed, 154 insertions(+), 67 deletions(-)
-> 
-> 
-> base-commit: a603ca60cebff8589882427a67f870ed946b3fc8
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+---
+ include/dt-bindings/clock/qcom,gcc-sm8150.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Could you send the emails To Kevin, Jerome, Martin & me, and put the various lists in CC instead ? otherwise we are not notified when the patch is accepted by the tty maintainer.
-
-Thanks,
-Neil
+diff --git a/include/dt-bindings/clock/qcom,gcc-sm8150.h b/include/dt-bindings/clock/qcom,gcc-sm8150.h
+index 3e1a91876610..ae9c16410420 100644
+--- a/include/dt-bindings/clock/qcom,gcc-sm8150.h
++++ b/include/dt-bindings/clock/qcom,gcc-sm8150.h
+@@ -241,6 +241,8 @@
+ #define GCC_USB_PHY_CFG_AHB2PHY_BCR				28
+ 
+ /* GCC GDSCRs */
++#define PCIE_0_GDSC						0
++#define PCIE_1_GDSC						1
+ #define USB30_PRIM_GDSC                     4
+ #define USB30_SEC_GDSC						5
+ 
+-- 
+2.35.1
 
