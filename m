@@ -2,135 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F80C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F302C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbiCABFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 20:05:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        id S231445AbiCABGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 20:06:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbiCABFg (ORCPT
+        with ESMTP id S230195AbiCABGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 20:05:36 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C575DB849
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:04:47 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id u20so24355954lff.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:04:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+UrwimTIhzKiU9pJv3o5X6bf+6FXMWBGxz+Z+GIIGDc=;
-        b=avIYh8aQ2dDobwKAVUmxzj/7dS14/rGtEVGY0pMiaJUsHbP3qIU6kno3XMfBz/RlQM
-         DBr9tOtZ8iqO/uKNwSujAwo9mle8zBl2HT1HDuvvvRH+Bqr8BYPzCJojUUOk2VYbR5wW
-         hMzIeM3di7snjNNfrAaBZvtX47IfluwYB/RPY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+UrwimTIhzKiU9pJv3o5X6bf+6FXMWBGxz+Z+GIIGDc=;
-        b=yaur6Y7bhbKfA7ThE/pwsYLefDAbc3UwqoKdc9KGx4HtN0R2sLtY5huWsudV3onrpk
-         l49OUKQ9i/PD7yzS8mtfreE8a2xAO7s5bWgFd5vtqf/WdRKpOBJCoa19A6paYH+QU2KL
-         1eOPff4qBUW5j6FfR6smr99l5lgESUsQMBv5SHJFehHJchKY0a5mqVxzdsuap4GqdY2/
-         EdZYRcl8XV1M27Wz+hj5QiewCPqMYWMrJSa7HW/Ho893fJzHCPF4j9+1N/A8txJrTKCS
-         zaYjeqC8drEjSbRQvz/8KcdHtLWByrPVYrs2HLbN8keyB5LDT74A+v5Alfq1nSy7Wf5X
-         oeaA==
-X-Gm-Message-State: AOAM532IEeNOxQfAf0qDt0KKrvtP1KAZNgnAbJesHuNLdc2Ze4tjaZ18
-        Bo8vB3cwtzfjhWlCtT3ipsE3C+C4W2lV4Onagcg=
-X-Google-Smtp-Source: ABdhPJzJ2Xwwlh+Ho717gG4h5gV0YCF1uw9+QLVQ3jWcumRt0A3Ro9nUKy9dSIw0G1GBhGyD0c9cAg==
-X-Received: by 2002:ac2:5e8e:0:b0:43f:ed00:423a with SMTP id b14-20020ac25e8e000000b0043fed00423amr14941285lfq.668.1646096685242;
-        Mon, 28 Feb 2022 17:04:45 -0800 (PST)
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
-        by smtp.gmail.com with ESMTPSA id u20-20020ac248b4000000b0044341a3cd34sm1214801lfg.124.2022.02.28.17.04.44
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 17:04:45 -0800 (PST)
-Received: by mail-lj1-f182.google.com with SMTP id p20so19856763ljo.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:04:44 -0800 (PST)
-X-Received: by 2002:a05:6512:3042:b0:437:96f5:e68a with SMTP id
- b2-20020a056512304200b0043796f5e68amr14803965lfb.449.1646096282839; Mon, 28
- Feb 2022 16:58:02 -0800 (PST)
+        Mon, 28 Feb 2022 20:06:20 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D742B34676
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:05:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646096740; x=1677632740;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=FvpWjlfLHt8/9E7G16301nJTJ1h1zdRaqHADvP/+GEQ=;
+  b=ejcpAvKqI7ztm+Kt9Vnf7V+ht4zbSu351472ContY0yYbhDmEMrFiSLR
+   zRBoY10HzKN4mdLJ+6wvocxyWS0nSEi6AneNmfJlWnV/YOKGeYANXHwo2
+   Q6k4bxk4pKq3dXjptW0unggB1uq2RSWQWqsrblMcw/xYElNZ4ASHIhdPA
+   E08F+xE9zO+/KUY5DW6GPvQxsxxnz0tveEmXt5tCW2v3GZwv0qn+c3sdX
+   Sgq+ICh8EiijXKsp9bP1JJypJsY+Qmn+FxlQWawsY6Ljhwt/A7Nl6yMLf
+   za+SktOR1MQhGOPYwqlJncemq9/m4eYzvqcn33Lvrx0+QzUZcmLc6QIKB
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232996935"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="232996935"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 17:05:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="641084023"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 28 Feb 2022 17:05:39 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOqxO-0007xd-9y; Tue, 01 Mar 2022 01:05:38 +0000
+Date:   Tue, 1 Mar 2022 09:05:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [amir73il:sb_iostats 4/8] include/linux/fs.h:3648:15: error:
+ implicit declaration of function 'percpu_counters_init'; did you mean
+ 'percpu_counter_init'?
+Message-ID: <202203010903.oFHcgc04-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
- <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
- <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
- <Yh0tl3Lni4weIMkl@casper.infradead.org> <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
- <Yh1aMm3hFe/j9ZbI@casper.infradead.org> <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
-In-Reply-To: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Feb 2022 16:57:46 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whqJmCZ+VHTJPwsHYc1YNNEvWS7=ukqGKfBxcBYAToAkw@mail.gmail.com>
-Message-ID: <CAHk-=whqJmCZ+VHTJPwsHYc1YNNEvWS7=ukqGKfBxcBYAToAkw@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 4:45 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Yeah, except that's ugly beyond belief, plus it's literally not what
-> we do in the kernel.
+tree:   https://github.com/amir73il/linux sb_iostats
+head:   ecfdb413f2105083296e9cb45290eb1f01b0ef5c
+commit: 8b022d3080d57a2a42917c1b36d7b4c27a4fac4e [4/8] fs: add iostats counters to struct super_block
+config: xtensa-allyesconfig (https://download.01.org/0day-ci/archive/20220301/202203010903.oFHcgc04-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/amir73il/linux/commit/8b022d3080d57a2a42917c1b36d7b4c27a4fac4e
+        git remote add amir73il https://github.com/amir73il/linux
+        git fetch --no-tags amir73il sb_iostats
+        git checkout 8b022d3080d57a2a42917c1b36d7b4c27a4fac4e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa prepare
 
-(Of course, I probably shouldn't have used 'min()' as an example,
-because that is actually one of the few places where we do exactly
-that, using our __UNIQUE_ID() macros. Exactly because people _have_
-tried to do -Wshadow when doing W=2).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-                 Linus
+All errors (new ones prefixed by >>):
+
+   In file included from include/linux/huge_mm.h:8,
+                    from include/linux/mm.h:697,
+                    from include/linux/pid_namespace.h:7,
+                    from include/linux/ptrace.h:10,
+                    from arch/xtensa/kernel/asm-offsets.c:21:
+   include/linux/fs.h: In function 'sb_iostats_init':
+>> include/linux/fs.h:3648:15: error: implicit declaration of function 'percpu_counters_init'; did you mean 'percpu_counter_init'? [-Werror=implicit-function-declaration]
+    3648 |         err = percpu_counters_init(sb->s_iostats.counter,
+         |               ^~~~~~~~~~~~~~~~~~~~
+         |               percpu_counter_init
+   include/linux/fs.h: In function 'sb_iostats_destroy':
+>> include/linux/fs.h:3666:17: error: implicit declaration of function 'percpu_counters_destroy'; did you mean 'percpu_counter_destroy'? [-Werror=implicit-function-declaration]
+    3666 |                 percpu_counters_destroy(sb->s_iostats.counter,
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~
+         |                 percpu_counter_destroy
+   cc1: some warnings being treated as errors
+   make[2]: *** [scripts/Makefile.build:121: arch/xtensa/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +3648 include/linux/fs.h
+
+  3641	
+  3642	#ifdef CONFIG_FS_IOSTATS
+  3643	/* Initialize per-sb I/O stats */
+  3644	static inline int sb_iostats_init(struct super_block *sb)
+  3645	{
+  3646		int err;
+  3647	
+> 3648		err = percpu_counters_init(sb->s_iostats.counter,
+  3649					   SB_IOSTATS_COUNTERS_NUM, 0, GFP_KERNEL);
+  3650		if (!err) {
+  3651			sb->s_iflags |= SB_I_IOSTATS;
+  3652			sb->s_iostats.start_time = ktime_get_seconds();
+  3653		}
+  3654	
+  3655		return err;
+  3656	}
+  3657	
+  3658	static inline bool sb_has_iostats(struct super_block *sb)
+  3659	{
+  3660		return (sb->s_iflags & SB_I_IOSTATS);
+  3661	}
+  3662	
+  3663	static inline void sb_iostats_destroy(struct super_block *sb)
+  3664	{
+  3665		if (sb_has_iostats(sb))
+> 3666			percpu_counters_destroy(sb->s_iostats.counter,
+  3667						SB_IOSTATS_COUNTERS_NUM);
+  3668	}
+  3669	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
