@@ -2,82 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A2CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF77C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235821AbiCAPjH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:39:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
+        id S234643AbiCAPjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:39:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbiCAPjF (ORCPT
+        with ESMTP id S235352AbiCAPjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:39:05 -0500
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330DC3F889;
-        Tue,  1 Mar 2022 07:38:24 -0800 (PST)
-Received: by mail-oo1-f51.google.com with SMTP id u47-20020a4a9732000000b00316d0257de0so22965838ooi.7;
-        Tue, 01 Mar 2022 07:38:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IgFdAQ+7rpP01kxtGmU2BZRc0yJm0gPUU3cLLc8Jk3I=;
-        b=J7PeG/lQ3o2cNCZf6zJh2Nj3BiJRvcUFaJOcqfEZnyloqc/pCfPv3u19Uk+JmO6vND
-         BIuViC2kaz8pNSL6blPPjp4T6P9CRfgxxbMPqZTwNX+kiUg4R+clDN+8LgFxc1EsDMdz
-         oCDhD1OKxLukW8AuhEJ1INpDh1P/xBb/YJ7XlpBhsZy5l7vYP6HAsMPwYN60fbqcdobw
-         g0rLAv++iLEwdRVcppfcY8HfYJOCYKuDcSp79jXc+/JuUmpMZpd3PuMsAVj4MSUsRZEI
-         X5xWxp/PH6xBjuG6KKwfdKFN3lHFG7rJTYkVk/g891qPGGICoT/O/xa9fRVdFMTRkwTF
-         asTQ==
-X-Gm-Message-State: AOAM531uXBpNfdA20TLMz3ZSCgyRmMlxZuxlULYCxQCmu+PKnDZdxwzM
-        v4qC4PHUR1YDmudxfPSBjQ==
-X-Google-Smtp-Source: ABdhPJxnILQc7GonthpI4taLLpmtwW7NoXOejQ9ut/CquT/SyVavj3WgIPY3n6l9AQJxHWqwjh4Qzg==
-X-Received: by 2002:a05:6870:4392:b0:d7:844:3d99 with SMTP id r18-20020a056870439200b000d708443d99mr8431062oah.56.1646149103443;
-        Tue, 01 Mar 2022 07:38:23 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x10-20020a4a2a4a000000b0031bf0818df1sm6273831oox.4.2022.03.01.07.38.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 07:38:22 -0800 (PST)
-Received: (nullmailer pid 1294204 invoked by uid 1000);
-        Tue, 01 Mar 2022 15:38:21 -0000
-Date:   Tue, 1 Mar 2022 09:38:21 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>, linux-usb@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: usb: renesas,usbhs: Document RZ/V2L bindings
-Message-ID: <Yh497cZIqQFrc/Mi@robh.at.kernel.org>
-References: <20220227231531.32279-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Tue, 1 Mar 2022 10:39:44 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF492A9E24
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:39:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646149143; x=1677685143;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9B/nSIhnKpaShmw0MZ4KZdnrjCBOGcE0PdYVSUSa3e4=;
+  b=W3pA5syJg6ZytglhDpIQUB0z0g0vg1Rmxgx9BPoNOb9IkP8/xbEfGUaP
+   N2K8m45Dqo53K4PqVQqzmKG5Q2EsFTOFfrGlzi2hGP18ze8At2mz8oJM5
+   3gOLE3eJcL8bcONiex+s5BSq71vKjTQSOYKCxyjzp4o/s0MyJgzhVQhOk
+   s4fjWXrVL3RapaLMAg78q+uHdrbQB8TToZMHY4RzaAg/f8LJ5mWQ7WXw/
+   Eu2JW9gR79fif9Rj1iidwUgoMcjdjQJ2X8OtL/g/hYgokg3oeQgakbjVg
+   DJmbBpbyFS4B5RW4WkLEkYNyA7kTXy/TUs+oDnrhU1KqElAZ44fAT5P2m
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252889562"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="252889562"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 07:39:03 -0800
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="630050458"
+Received: from bklinvil-mobl.amr.corp.intel.com (HELO localhost) ([10.212.48.220])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 07:39:02 -0800
+Date:   Tue, 1 Mar 2022 07:39:02 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Yu, Fenghua" <fenghua.yu@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V8 30/44] mm/pkeys: Test setting a PKS key in a custom
+ fault callback
+Message-ID: <Yh4+Fjs2yhbWux9C@iweiny-desk3>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-31-ira.weiny@intel.com>
+ <20abc6a0b79e4fe9f60b16a1f3371f0676e77b82.camel@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220227231531.32279-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20abc6a0b79e4fe9f60b16a1f3371f0676e77b82.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Feb 2022 23:15:31 +0000, Lad Prabhakar wrote:
-> Document RZ/V2L (R9A07G054) SoC bindings. USBHS block is identical to one
-> found on RZ/A2 SoC. No driver changes are required as generic compatible
-> string "renesas,rza2-usbhs" will be used as a fallback.
+On Mon, Jan 31, 2022 at 04:55:47PM -0800, Edgecombe, Rick P wrote:
+> On Thu, 2022-01-27 at 09:54 -0800, ira.weiny@intel.com wrote:
+> > Add a test which does this.
+> >
+> >         $ echo 5 > /sys/kernel/debug/x86/run_pks
+> >         $ cat /sys/kernel/debug/x86/run_pks
+> >         PASS
 > 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> DTSi changes have been posted as part of series [0].
+> Hmm, when I run this on qemu TCG, I get:
 > 
-> [0] https://patchwork.kernel.org/project/linux-renesas-soc/
-> cover/20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-> ---
->  Documentation/devicetree/bindings/usb/renesas,usbhs.yaml | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> root@(none):/# echo 5 > /sys/kernel/debug/x86/run_pks
+> [   29.438159] pks_test: Failed to see the callback
+> root@(none):/# cat /sys/kernel/debug/x86/run_pks
+> FAIL
 > 
+> I think it's a problem with the test though. The generated code is not
+> expecting fault_callback_ctx.callback_seen to get changed in the
+> exception. The following fixed it for me:
+> 
+> diff --git a/lib/pks/pks_test.c b/lib/pks/pks_test.c
+> index 1528df0bb283..d979d2afe921 100644
+> --- a/lib/pks/pks_test.c
+> +++ b/lib/pks/pks_test.c
+> @@ -570,6 +570,7 @@ static bool run_fault_clear_test(void)
+>         /* fault */
+>         memcpy(test_page, ctx->data, 8);
+> 
+> +       barrier();
+>         if (!fault_callback_ctx.callback_seen) {
+>                 pr_err("Failed to see the callback\n");
+>                 rc = false;
+> 
+> But, I wonder if volatile is also needed on the read to be fully
+> correct. I usually have to consult the docs when I deal with that
+> stuff...
 
-Applied, thanks!
+I was not able to reproduce this.  However, I've done a lot of reading and I
+think you are correct that the barrier is needed.  I thought WRITE_ONCE was
+sufficient and I had used it in other calls but I missed it here.
+
+As part of the test rework I've added a call to barrier() for all the tests.
+In addition I've simplified, and hopefully clarified, which variables are
+being shared with the fault handler.
+
+Thanks for the testing and review!
+Ira
