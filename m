@@ -2,244 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D230FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiCAJZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:25:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
+        id S233723AbiCAJ02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:26:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiCAJZQ (ORCPT
+        with ESMTP id S229518AbiCAJ0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:25:16 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1034552B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:24:35 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2219AOJp018450;
-        Tue, 1 Mar 2022 09:24:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=SiUsJ1DXW6hxS+hdywKpSldhFIimq7TO7KWzL6I9/BM=;
- b=qenEXEHrRyE1WUEQy1Jobt2NeT8/tppv6s0nkKTCizkbsKN3X69LyefXnqSxr/3j0iAM
- 48fu7IoPJWXu4Zcz+MA8959Ej6YVUSGysEClvbg6X+Hr10+HzzYFtd/DclmOaN51O5gg
- d1B1wwuE6bQiTQ74brtgVSJnOMR7+yyl524442yamtF44UKRfu7VT1a17rL7ayU3Q16j
- SzdG4dViv9nlqlej61fkdFyYLPYrTQ/GEspv6zS2X4iRme5hLvwXfSJVNCCaUGyngd3N
- ndEay3Su6P2SJ4dKk/z62ToaeIKfXMxHOVtaEotxeOjeVs8o9co5XUSiyXMy40nZ1qKY fg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehfru9ce9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Mar 2022 09:24:18 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2219Cj0T027397;
-        Tue, 1 Mar 2022 09:24:17 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehfru9cdf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Mar 2022 09:24:17 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2219HW3f027814;
-        Tue, 1 Mar 2022 09:24:15 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3efbu9252w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Mar 2022 09:24:15 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2219OCEe17367336
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 1 Mar 2022 09:24:12 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B70B54C050;
-        Tue,  1 Mar 2022 09:24:12 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C6CEE4C052;
-        Tue,  1 Mar 2022 09:24:10 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.148.186.94])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue,  1 Mar 2022 09:24:10 +0000 (GMT)
-Date:   Tue, 1 Mar 2022 11:23:48 +0200
-From:   Mike Rapoport <rppt@linux.ibm.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Oliver Glitta <glittao@gmail.com>,
-        Faiyaz Mohammed <faiyazm@codeaurora.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Marco Elver <elver@google.com>,
-        Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: Re: [PATCH 0/5] SLUB debugfs improvements based on stackdepot
-Message-ID: <Yh3mJJya4xCXvcNl@linux.ibm.com>
-References: <20220225180318.20594-1-vbabka@suse.cz>
- <YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <f194f876-1c46-f3ae-573e-d3ddd6dcf4cc@suse.cz>
- <Yh0+Jld+sDy1Hkdb@ip-172-31-19-208.ap-northeast-1.compute.internal>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh0+Jld+sDy1Hkdb@ip-172-31-19-208.ap-northeast-1.compute.internal>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: q2Wjh4QaMz10uDTwH4W41tNznZ3kFpqg
-X-Proofpoint-GUID: aitNhXh253_qIzmEJ0Kvc6Y2-L6GjGcg
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 1 Mar 2022 04:26:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392896AA65
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:25:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBA1CB81855
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD7DC340EE;
+        Tue,  1 Mar 2022 09:25:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646126742;
+        bh=PBRGer/QifePZvXIkO8YwafXH3wl9OoKR3+OKNX7UZI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BlOiZlvZdwnAzG2CPvTFckv5zB8WUQdTwZ0vWPIDfLeUJgWa7PZ0CV7Yy/HvpFdO+
+         G0K2tCRWA3kNG+Z0QxQHgnoYv++plQh8+cFCwWhpuhzrqSzj0GyLcAHtJTR+vqj/5C
+         /Frl4+TTPDfMeObadRfEpZObcACzTuq9JXxKDb5JyMR10XIHI7OfxGfQSvn+iQjZMJ
+         UiigAJwTm08vDwhQa0b+tdR+/y3MENwUTkIyct10f0dFJsDYy3IKT3IpfrlO4qRFru
+         HltJmtEVNMXWdWMhkVSYIkfVQfzE2iOJTisM1mh13wJbFKdGN2kiiQXNokV+KYinA/
+         QtRrcmtILVpmA==
+Received: by pali.im (Postfix)
+        id 2C06AC77; Tue,  1 Mar 2022 10:25:39 +0100 (CET)
+Date:   Tue, 1 Mar 2022 10:25:39 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: marvell: armada-37xx: Remap IO space to bus
+ address 0x0
+Message-ID: <20220301092539.lru7hsaqxrjqz32r@pali>
+References: <20220218212526.16021-1-pali@kernel.org>
+ <87o82r0zjh.fsf@BL-laptop>
+ <875yoz0wpw.fsf@BL-laptop>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-28_10,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- phishscore=0 clxscore=1015 impostorscore=0 malwarescore=0
- priorityscore=1501 mlxlogscore=999 lowpriorityscore=0 spamscore=0
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203010044
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <875yoz0wpw.fsf@BL-laptop>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Monday 28 February 2022 17:42:03 Gregory CLEMENT wrote:
+> > Hello Pali,
+> >
+> >> Remap PCI I/O space to the bus address 0x0 in the Armada 37xx
+> >> device-tree in order to support legacy I/O port based cards which have
+> >> hardcoded I/O ports in low address space.
+> >>
+> >> Some legacy PCI I/O based cards do not support 32-bit I/O addressing.
+> >>
+> >> Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
+> >> 'ranges' DT property") this driver can work with I/O windows which
+> >> have
+> >
+> > Should we add a "Fixes: 64f160e19e92 ("PCI: aardvark: Configure PCIe
+> > resources from 'ranges' DT property")" tag ?
+> 
+> Waiting for your confirmation I tried to applied it but it failed.
+> 
+> Did you base this patch on v5.17-rc1 ?
+> 
+> Gregory
 
-On Mon, Feb 28, 2022 at 09:27:02PM +0000, Hyeonggon Yoo wrote:
-> On Mon, Feb 28, 2022 at 08:10:18PM +0100, Vlastimil Babka wrote:
-> > On 2/26/22 08:19, Hyeonggon Yoo wrote:
-> > > On Fri, Feb 25, 2022 at 07:03:13PM +0100, Vlastimil Babka wrote:
-> > >> Hi,
-> > >> 
-> > >> this series combines and revives patches from Oliver's last year
-> > >> bachelor thesis (where I was the advisor) that make SLUB's debugfs
-> > >> files alloc_traces and free_traces more useful.
-> > >> The resubmission was blocked on stackdepot changes that are now merged,
-> > >> as explained in patch 2.
-> > >> 
-> > > 
-> > > Hello. I just started review/testing this series.
-> > > 
-> > > it crashed on my system (arm64)
-> > 
-> > Hmm, interesting. On x86_64 this works for me and stackdepot is allocated
-> > from memblock. arm64 must have memblock freeing happen earlier or something.
-> > (CCing memblock experts)
-> > 
-> > > I ran with boot parameter slub_debug=U, and without KASAN.
-> > > So CONFIG_STACKDEPOT_ALWAYS_INIT=n.
-> > > 
-> > > void * __init memblock_alloc_try_nid(
-> > >                         phys_addr_t size, phys_addr_t align,
-> > >                         phys_addr_t min_addr, phys_addr_t max_addr,
-> > >                         int nid)
-> > > {
-> > >         void *ptr;
-> > > 
-> > >         memblock_dbg("%s: %llu bytes align=0x%llx nid=%d from=%pa max_addr=%pa %pS\n",
-> > >                      __func__, (u64)size, (u64)align, nid, &min_addr,
-> > >                      &max_addr, (void *)_RET_IP_);
-> > >         ptr = memblock_alloc_internal(size, align,
-> > >                                            min_addr, max_addr, nid, false);
-> > >         if (ptr)
-> > >                 memset(ptr, 0, size); <--- Crash Here
-> > > 
-> > >         return ptr;
-> > > }
-> > > 
-> > > It crashed during create_boot_cache() -> stack_depot_init() ->
-> > > memblock_alloc().
-> > > 
-> > > I think That's because, in kmem_cache_init(), both slab and memblock is not
-> > > available. (AFAIU memblock is not available after mem_init() because of
-> > > memblock_free_all(), right?)
-> > 
-> > Hm yes I see, even in x86_64 version mem_init() calls memblock_free_all().
-> > But then, I would expect stack_depot_init() to detect that memblock_alloc()
-> > returns NULL, we print ""Stack Depot hash table allocation failed,
-> > disabling" and disable it. Instead it seems memblock_alloc() returns
-> > something that's already potentially used by somebody else? Sounds like a bug?
-> 
-> 
-> By the way, I fixed this by allowing stack_depot_init() to be called in
-> kmem_cache_init() too [1] and Marco suggested that calling
-> stack_depot_init() depending on slub_debug parameter for simplicity. [2]
-> 
-> I would prefer [2], Would you take a look?
-> 
-> [1] https://lkml.org/lkml/2022/2/27/31
-> 
-> [2] https://lkml.org/lkml/2022/2/28/717
+Hello! This change is breaking booting of Turris Mox kernel with older
+bootloader due to bugs in bootloader. So it is not possible to remap
+PCI I/O space for turris-mox.dts file. I will send a new version of this
+patch just for 37xx.dtsi file and add a comment into turris-mox.dts file
+it is not possible here.
 
-I'm still looking at stack_depot_init() callers, but I think it's possible
-to make stack_depot_early_init() a proper function that calls
-memblock_alloc() and only use stack_depot_init() when slab is actually
-available.
- 
-> > > Thanks!
-> > > 
-> > > /*
-> > >  * Set up kernel memory allocators
-> > >  */
-> > > static void __init mm_init(void)
-> > > {
-> > >         /*
-> > >          * page_ext requires contiguous pages,
-> > >          * bigger than MAX_ORDER unless SPARSEMEM.
-> > >          */
-> > >         page_ext_init_flatmem();
-> > >         init_mem_debugging_and_hardening();
-> > >         kfence_alloc_pool();
-> > >         report_meminit();
-> > >         stack_depot_early_init();
-> > >         mem_init();
-> > >         mem_init_print_info();
-> > >         kmem_cache_init();
-> > >         /*
-> > >          * page_owner must be initialized after buddy is ready, and also after
-> > >          * slab is ready so that stack_depot_init() works properly
-> > >          */)
-> > > 
-> > >> Patch 1 is a new preparatory cleanup.
-> > >> 
-> > >> Patch 2 originally submitted here [1], was merged to mainline but
-> > >> reverted for stackdepot related issues as explained in the patch.
-> > >> 
-> > >> Patches 3-5 originally submitted as RFC here [2]. In this submission I
-> > >> have omitted the new file 'all_objects' (patch 3/3 in [2]) as it might
-> > >> be considered too intrusive so I will postpone it for later. The docs
-> > >> patch is adjusted accordingly.
-> > >> 
-> > >> Also available in git, based on v5.17-rc1:
-> > >> https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slub-stackdepot-v1
-> > >> 
-> > >> I'd like to ask for some review before I add this to the slab tree.
-> > >> 
-> > >> [1] https://lore.kernel.org/all/20210414163434.4376-1-glittao@gmail.com/
-> > >> [2] https://lore.kernel.org/all/20210521121127.24653-1-glittao@gmail.com/
-> > >> 
-> > >> Oliver Glitta (4):
-> > >>   mm/slub: use stackdepot to save stack trace in objects
-> > >>   mm/slub: aggregate and print stack traces in debugfs files
-> > >>   mm/slub: sort debugfs output by frequency of stack traces
-> > >>   slab, documentation: add description of debugfs files for SLUB caches
-> > >> 
-> > >> Vlastimil Babka (1):
-> > >>   mm/slub: move struct track init out of set_track()
-> > >> 
-> > >>  Documentation/vm/slub.rst |  61 +++++++++++++++
-> > >>  init/Kconfig              |   1 +
-> > >>  mm/slub.c                 | 152 +++++++++++++++++++++++++-------------
-> > >>  3 files changed, 162 insertions(+), 52 deletions(-)
-> > >> 
-> > >> -- 
-> > >> 2.35.1
-> > >> 
-> > >> 
-> > > 
-> > 
+> >
+> > Gregory
+> >
+> >> a different address for CPU than for PCI bus (unless there is some
+> >> conflict with other A37xx mapping), without needing additional support
+> >> for this in the firmware.
+> >>
+> >> Note that DDR on A37xx is mapped to bus address 0x0 and that mapping of
+> >> I/O space can be set to address 0x0 too because MEM space and I/O space
+> >> are separate and so they do not conflict.
+> >>
+> >> Signed-off-by: Pali Rohár <pali@kernel.org>
+> >> Reported-by: Arnd Bergmann <arnd@arndb.de>
+> >> ---
+> >>  arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 2 +-
+> >>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi           | 2 +-
+> >>  2 files changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+> >> index 6581092c2c90..7d1b9153a901 100644
+> >> --- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+> >> +++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+> >> @@ -163,7 +163,7 @@
+> >>  	 */
+> >>  	#address-cells = <3>;
+> >>  	#size-cells = <2>;
+> >> -	ranges = <0x81000000 0 0xe8000000   0 0xe8000000   0 0x01000000   /* Port 0 IO */
+> >> +	ranges = <0x81000000 0 0x00000000   0 0xe8000000   0 0x01000000   /* Port 0 IO */
+> >>  		  0x82000000 0 0xe9000000   0 0xe9000000   0 0x07000000>; /* Port 0 MEM */
+> >>  
+> >>  	/* enabled by U-Boot if PCIe module is present */
+> >> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+> >> index 549c3f7c5b27..a099b7787429 100644
+> >> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+> >> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+> >> @@ -515,7 +515,7 @@
+> >>  			 * (totaling 127 MiB) for MEM.
+> >>  			 */
+> >>  			ranges = <0x82000000 0 0xe8000000   0 0xe8000000   0 0x07f00000   /* Port 0 MEM */
+> >> -				  0x81000000 0 0xeff00000   0 0xeff00000   0 0x00100000>; /* Port 0 IO*/
+> >> +				  0x81000000 0 0x00000000   0 0xeff00000   0 0x00100000>; /* Port 0 IO */
+> >>  			interrupt-map-mask = <0 0 0 7>;
+> >>  			interrupt-map = <0 0 0 1 &pcie_intc 0>,
+> >>  					<0 0 0 2 &pcie_intc 1>,
+> >> -- 
+> >> 2.20.1
+> >>
+> >
+> > -- 
+> > Gregory Clement, Bootlin
+> > Embedded Linux and Kernel engineering
+> > http://bootlin.com
+> >
+> > _______________________________________________
+> > linux-arm-kernel mailing list
+> > linux-arm-kernel@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
 > -- 
-> Thank you, You are awesome!
-> Hyeonggon :-)
-
--- 
-Sincerely yours,
-Mike.
+> Gregory Clement, Bootlin
+> Embedded Linux and Kernel engineering
+> http://bootlin.com
