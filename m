@@ -2,176 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 23:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E27C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 23:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233017AbiCAXMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 18:12:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
+        id S238466AbiCAXMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 18:12:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238502AbiCAXLx (ORCPT
+        with ESMTP id S238502AbiCAXMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 18:11:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7E090FF9;
-        Tue,  1 Mar 2022 15:11:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 764506146F;
-        Tue,  1 Mar 2022 23:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BA8C340EE;
-        Tue,  1 Mar 2022 23:10:58 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PZWdJMvP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646176257;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r94wKsnq6K6ND+X220Ovab4Du6A3foJxGdJh9sRmxh4=;
-        b=PZWdJMvP7n2f1PXzoh3oU+xY+PZFzyyvsm0lKHqtwO9U3E9mHjtqaDthbhA81EZn9f5Fz0
-        aEdPHaZipArVvlP4dHNvOT2G8261DJvChMlbVUhm7mgXctVyU5FbpXZNo5VbwWa7Eaeyaf
-        IX55Cu8fBSiMH0l6aFX+z7/orXFmNNg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 358d3e1e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 1 Mar 2022 23:10:57 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, Alexander Graf <graf@amazon.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 3/3] wireguard: device: clear keys on VM fork
-Date:   Wed,  2 Mar 2022 00:10:38 +0100
-Message-Id: <20220301231038.530897-4-Jason@zx2c4.com>
-In-Reply-To: <20220301231038.530897-1-Jason@zx2c4.com>
-References: <20220301231038.530897-1-Jason@zx2c4.com>
+        Tue, 1 Mar 2022 18:12:33 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE0246B20
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 15:11:51 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id i11so29493925lfu.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 15:11:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ojIOUCrgcIak8ZCc1skMdXRKcTVmt9Elm/o+1+I6jGA=;
+        b=fmg4LXx5HRB2mrrWsHndl76rC2chdk1sBRQyNWtz+o2V+K2vg9psF6vr/ppax24roG
+         0IEY6nkgVM6qwn95jhK4YeupoNeTj8/flkbxBQUDmf863ReCVguQlY3gsMWixLyIz8Mx
+         ewpCP9yjbapnom8xtoCAmNy70uRnweYHKzlsw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ojIOUCrgcIak8ZCc1skMdXRKcTVmt9Elm/o+1+I6jGA=;
+        b=gsNovRAHDATVRXPeMU9W/HUPR/6oqt7HFIBeF59Dw0qiekeG8Jt5CiYnMTG89Nl6tp
+         dJDic/XoApsTOH8h+niQSqmOXZArGbmhRFAeA0mVP6+fogTXmp2/JIC0yFbJ189Tge/B
+         wxtFvq0EijNyh0ALCL7qwlvYoXV7fZMC4bf4QL1zVibjHV88lkmRUQfr2O1G7hSuHop8
+         XCRy2synVL9SiELw/oTiWG1qIilfi5s/Oo2eZYTUGWvldArjJChIg0MzTroVWf7T1jKG
+         HVpF+eflqbEqyxhspPdjFecaabn3AdymQ2pccgl2mpxmDEHjavwbiO/v58ToM912hZdS
+         EzyQ==
+X-Gm-Message-State: AOAM531GRk7VIRE4Z2hBOIHlSPoob+G2YDMAlcujHMeZmeJmrHulqvzJ
+        tVP1vSdfE3/f3iOe86TLOfas1ryoVhIDGAN60JY=
+X-Google-Smtp-Source: ABdhPJxCj6FBdFzWhzBXyyk447ko+LAmeq+Hy1uN6Qttr+UdmQoaVzEUl4av45UZU/Qh+MHEe4pJSA==
+X-Received: by 2002:a05:6512:a8b:b0:43c:81fb:8b26 with SMTP id m11-20020a0565120a8b00b0043c81fb8b26mr16854358lfu.479.1646176309228;
+        Tue, 01 Mar 2022 15:11:49 -0800 (PST)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id x11-20020a2ea7cb000000b002460c9b20b4sm2219489ljp.139.2022.03.01.15.11.48
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 15:11:49 -0800 (PST)
+Received: by mail-lf1-f54.google.com with SMTP id m14so29465003lfu.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 15:11:48 -0800 (PST)
+X-Received: by 2002:a2e:924d:0:b0:246:370c:5618 with SMTP id
+ v13-20020a2e924d000000b00246370c5618mr18436468ljg.358.1646175815802; Tue, 01
+ Mar 2022 15:03:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com> <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
+ <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org> <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
+ <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com> <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
+In-Reply-To: <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 15:03:19 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
+Message-ID: <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+To:     David Laight <David.Laight@aculab.com>
+Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        "linux1394-devel@lists.sourceforge.net" 
+        <linux1394-devel@lists.sourceforge.net>,
+        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        "v9fs-developer@lists.sourceforge.net" 
+        <v9fs-developer@lists.sourceforge.net>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mike Rapoport <rppt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a virtual machine forks, it's important that WireGuard clear
-existing sessions so that different plaintext is not transmitted using
-the same key+nonce, which can result in catastrophic cryptographic
-failure. To accomplish this, we simply hook into the newly added vmfork
-notifier, which can use the same notification function we're already
-using for PM notifications.
+On Tue, Mar 1, 2022 at 2:58 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> Can it be resolved by making:
+> #define list_entry_is_head(pos, head, member) ((pos) == NULL)
+> and double-checking that it isn't used anywhere else (except in
+> the list macros themselves).
 
-As a bonus, it turns out that, like the vmfork registration function,
-the PM registration function is stubbed out when CONFIG_PM_SLEEP is not
-set, so we can actually just remove the maze of ifdefs, which makes it
-really quite clean to support both notifiers at once.
+Well, yes, except for the fact that then the name is entirely misleading...
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Hi Jakub,
+And somebody possibly uses it together with list_first_entry() etc, so
+it really is completely broken to mix that change with the list
+traversal change.
 
-I wasn't planning on sending other WireGuard changes to net-next this
-cycle, and this one here depends on previous things in my random.git
-tree. Is it okay with you if I take this through my tree rather than
-net-next? Alternatively, I could send it through net after rc1 if you'd
-prefer that. Or we could just wait for 5.19, but that seems a long way's
-off.
+             Linus
 
-Thanks,
-Jason
-
- drivers/net/wireguard/device.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-index a46067c38bf5..22cc27c221f8 100644
---- a/drivers/net/wireguard/device.c
-+++ b/drivers/net/wireguard/device.c
-@@ -59,7 +59,10 @@ static int wg_open(struct net_device *dev)
- 	return ret;
- }
- 
--#ifdef CONFIG_PM_SLEEP
-+static int wg_pm_notification(struct notifier_block *nb, unsigned long action, void *data);
-+static struct notifier_block pm_notifier = { .notifier_call = wg_pm_notification };
-+static struct notifier_block vm_notifier = { .notifier_call = wg_pm_notification };
-+
- static int wg_pm_notification(struct notifier_block *nb, unsigned long action,
- 			      void *data)
- {
-@@ -70,10 +73,10 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action,
- 	 * its normal operation rather than as a somewhat rare event, then we
- 	 * don't actually want to clear keys.
- 	 */
--	if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
-+	if (nb == &pm_notifier && (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID)))
- 		return 0;
- 
--	if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
-+	if (nb == &pm_notifier && action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
- 		return 0;
- 
- 	rtnl_lock();
-@@ -91,9 +94,6 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action,
- 	return 0;
- }
- 
--static struct notifier_block pm_notifier = { .notifier_call = wg_pm_notification };
--#endif
--
- static int wg_stop(struct net_device *dev)
- {
- 	struct wg_device *wg = netdev_priv(dev);
-@@ -424,16 +424,18 @@ int __init wg_device_init(void)
- {
- 	int ret;
- 
--#ifdef CONFIG_PM_SLEEP
- 	ret = register_pm_notifier(&pm_notifier);
- 	if (ret)
- 		return ret;
--#endif
- 
--	ret = register_pernet_device(&pernet_ops);
-+	ret = register_random_vmfork_notifier(&vm_notifier);
- 	if (ret)
- 		goto error_pm;
- 
-+	ret = register_pernet_device(&pernet_ops);
-+	if (ret)
-+		goto error_vm;
-+
- 	ret = rtnl_link_register(&link_ops);
- 	if (ret)
- 		goto error_pernet;
-@@ -442,10 +444,10 @@ int __init wg_device_init(void)
- 
- error_pernet:
- 	unregister_pernet_device(&pernet_ops);
-+error_vm:
-+	unregister_random_vmfork_notifier(&vm_notifier);
- error_pm:
--#ifdef CONFIG_PM_SLEEP
- 	unregister_pm_notifier(&pm_notifier);
--#endif
- 	return ret;
- }
- 
-@@ -453,8 +455,7 @@ void wg_device_uninit(void)
- {
- 	rtnl_link_unregister(&link_ops);
- 	unregister_pernet_device(&pernet_ops);
--#ifdef CONFIG_PM_SLEEP
-+	unregister_random_vmfork_notifier(&vm_notifier);
- 	unregister_pm_notifier(&pm_notifier);
--#endif
- 	rcu_barrier();
- }
--- 
-2.35.1
-
+               Linus
