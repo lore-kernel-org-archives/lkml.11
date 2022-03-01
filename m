@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E966C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E93C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235397AbiCAUcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
+        id S237648AbiCAUcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:32:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238323AbiCAUby (ORCPT
+        with ESMTP id S237370AbiCAUcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:31:54 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CB7B12EC
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:28:56 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id t14so23407338ljh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:28:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xd7zhNWTAbsjcup8ovj0bhbEUHVo9VN2YG5iXSmKuGY=;
-        b=AXUNohphNBaqg4Ym0QvnB7ovOxC0qHBwQQTkvDU09LsSmaqliomVWRZBWSH9rA/NdX
-         mggO8k84CHtaDmY5vc6klMZugRCimckzfjt5ruN87TRJQCG97xdfs7M+rGBCx/iITiho
-         m3WSdHrV71StH8wJGQD2H6zmXpefAi4NA1HM50JkQz1wBh8FPbo2JL0PJbfCiWj+flF5
-         VPizIjc+dyyhgd2d0QTocmiEr7TKxUjrxGCsDGzMcimHkmBPd+NZjW2RI4B879m3tzhe
-         7OsVy6+c5Q5sdBrzGsalxEeXKu7lIv3BuaHd0Vn77MJW4nH68YFqeea7l79i24g7mXhe
-         HpWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xd7zhNWTAbsjcup8ovj0bhbEUHVo9VN2YG5iXSmKuGY=;
-        b=M5FDkRxCBI8lF2S6kJEJWQ9mAhwy6eEcSOr4kR7DxH3Ddz/yOyMC+in119e9cNCve/
-         iMGFvK7qYxh/sSa88hSZKYEj7Ple6fseVgEfh38l4qub0bmd4cH09OBKOCFtVql0Ije8
-         DFOREe5TJ8gLsE8u6BwTyKyYsNXKODUQPtx15fcuLqEUEbX9CM71WD0AMn8IdFj0LQi6
-         Z60pAy6+J99y76DN5vJ/g+7ygOElcmvLpJwJqIXy3LATJUdZT6yqApI7+sFJJUFE0AVO
-         F12BXl2WG7nlt8xllU7Ys4U/5rJJcvpYOcdJvaNS5vm9GpHRjZIUH1TuI8ZjL6F4imPZ
-         9x8w==
-X-Gm-Message-State: AOAM533QE70P1di27UkTStO/+QCoM4e7XO8XCDHjC2/TQ99Dk6MJCEiE
-        A86wF/hUtO70CsdlsPCJ9p073LlGPZs/ugn0r7Pmbw==
-X-Google-Smtp-Source: ABdhPJz45aoPYRnC0P6aRihQR7uE1J/WWQWC3IT9GukIQheAZ9K3oSg9y9PHLUJG3F+nspjRI+QY5wqfA1AwR9GjK5Q=
-X-Received: by 2002:a05:651c:1542:b0:233:8ff5:eb80 with SMTP id
- y2-20020a05651c154200b002338ff5eb80mr18018505ljp.352.1646166529822; Tue, 01
- Mar 2022 12:28:49 -0800 (PST)
+        Tue, 1 Mar 2022 15:32:46 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1930CB0A;
+        Tue,  1 Mar 2022 12:32:01 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 76E0A1F44A0C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646166719;
+        bh=30KWDp2GNK/sf6NE9GWC366W39fquqf0+OV7OW587yY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PfybGxvTAmNXQegyu9H4FbwjrKojrvsOFSQyPxT8iuDkBIg92ncD1k2RPh5oEoR3l
+         amaskfUhltQKdLtaXsUb1STAu+WVJn7tWQCcHcK7gMJodK6c77UFizhdXpd50VY7GI
+         HSD68GE7UFE/coOMRB5SHwdFaRLuqN4POmckGbTM8TgoNlZW+6pSXMdrd3TEJhjUUr
+         KiBXQvjXpM/sVLN9kVtceOH69UiO0y+PrqgXp0tBkM2eVByvHXpqmnvmigs0cy4KrQ
+         //N5oNH3yehsZJK8mpqP/+VvQwefp6sQmDyma16WKI/Vk+qqh4HVPw3weQxCPQu3uU
+         XcY6M+aybPSNQ==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 1/2] arm: dts: mediatek: Format mediatek,larbs as an array of phandles
+Date:   Tue,  1 Mar 2022 15:31:46 -0500
+Message-Id: <20220301203147.1143782-1-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220301145233.3689119-1-arnd@kernel.org> <20220301145233.3689119-2-arnd@kernel.org>
- <CAKwvOdnkfuT_w_0RNCb+WTKJ+282zLKmhB9UNG=D-UFz9VkUng@mail.gmail.com>
- <CAKwvOdn-PrCUPe2WzLv18AH3=9DjtFES+r=M1DhoQivy8sHm-g@mail.gmail.com> <CAHk-=wh4OdQANe7TLYGdPWUub0MEdbGDr72wpATHxypaSEGAyg@mail.gmail.com>
-In-Reply-To: <CAHk-=wh4OdQANe7TLYGdPWUub0MEdbGDr72wpATHxypaSEGAyg@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 1 Mar 2022 12:28:38 -0800
-Message-ID: <CAKwvOd=TpqiSSh3yqQ2Z44nJArBACvfohVCgd6Ej32rGQMvShA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] treewide: use -Wdeclaration-after-statement
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Marco Elver <elver@google.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        llvm@lists.linux.dev,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 12:20 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Mar 1, 2022 at 12:06 PM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
-> >
-> > That said, there's a few additional places that reset KBUILD_CFLAGS.
->
-> Yeah, the boot code and vdso code often sets its own private flags,
-> because it's _so_ different.
->
-> The generic kernel CFLAGS often don't work at all, because that code
-> may be doing some truly horrendous things.
->
-> So I agree that this may not catch all the kernel code, but I don't
-> think it's much of a problem.
+Commit 39bd2b6a3783 ("dt-bindings: Improve phandle-array schemas")
+updated the mediatek,larbs property in the mediatek,iommu.yaml
+dt-binding to make it clearer that the phandles passed to the property
+are independent, rather than subsequent arguments to the first phandle.
 
-Agreed; they can still mirror the style imposed by
--Wdeclaration-after-statement like the rest of the codebase though.
+Update the mediatek,larbs property in the arm Devicetrees to use the
+same formatting. This change doesn't impact any behavior: the compiled
+dtb is exactly the same. It does however fix the warnings generated by
+dtbs_check.
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+---
+v1: https://lore.kernel.org/linux-mediatek/20220225225315.80220-1-nfraprado@collabora.com/
+
+Changes in v2:
+- Split arm and arm64 changes into separate commits
+
+ arch/arm/boot/dts/mt2701.dtsi  | 2 +-
+ arch/arm/boot/dts/mt7623n.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
+index 4776f85d6d5b..64722285228c 100644
+--- a/arch/arm/boot/dts/mt2701.dtsi
++++ b/arch/arm/boot/dts/mt2701.dtsi
+@@ -222,7 +222,7 @@ iommu: mmsys_iommu@10205000 {
+ 		interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&infracfg CLK_INFRA_M4U>;
+ 		clock-names = "bclk";
+-		mediatek,larbs = <&larb0 &larb1 &larb2>;
++		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>;
+ 		#iommu-cells = <1>;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/mt7623n.dtsi b/arch/arm/boot/dts/mt7623n.dtsi
+index bcb0846e29fd..f9e031621c80 100644
+--- a/arch/arm/boot/dts/mt7623n.dtsi
++++ b/arch/arm/boot/dts/mt7623n.dtsi
+@@ -107,7 +107,7 @@ iommu: mmsys_iommu@10205000 {
+ 		interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&infracfg CLK_INFRA_M4U>;
+ 		clock-names = "bclk";
+-		mediatek,larbs = <&larb0 &larb1 &larb2>;
++		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>;
+ 		#iommu-cells = <1>;
+ 	};
+ 
 -- 
-Thanks,
-~Nick Desaulniers
+2.35.1
+
