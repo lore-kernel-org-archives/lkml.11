@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C78EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235598AbiCAPYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:24:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
+        id S232250AbiCAPY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232250AbiCAPYl (ORCPT
+        with ESMTP id S235635AbiCAPYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:24:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0DA3EBBE;
-        Tue,  1 Mar 2022 07:24:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BC45616AC;
-        Tue,  1 Mar 2022 15:24:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53CA6C340F0;
-        Tue,  1 Mar 2022 15:23:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646148239;
-        bh=H8InDEF3XW6EnD8MeXWjCxgu9Q/FK190kWhwHDJaj8A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H6NUanA3HRwo76slofFpH8WtqTE7X4VRtO7hJwxJN/dD3yGpAS2448XRbvQ5S9Elw
-         cePWVe+ZbMX1//lJDNGuyV06OcZDcO1NdRX4mK/JtUVAVBapV9jhGFzP7qXv5Kpk+y
-         bUYT5sQSs3MMDMHjRZudslLo5LvKiSVyuGvXsukPU8xAKqfc3RbcAX31xEaSmlYS8z
-         JDYkdFLD6OflOPy8ufdbzbCHBQXf4qK93l7rvKlF2Zjzspt+Y0DrizeVb1sgP8zFPg
-         98skrXArzQ40TadadRjBM2DEBSBM48bSHGximsaylrQnLj4/8+Yh82xPoJwViCyIrZ
-         bpDK6YGPmFz1Q==
-Date:   Tue, 1 Mar 2022 16:23:56 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Xu Wang <vulab@iscas.ac.cn>
-Cc:     qii.wang@mediatek.com, matthias.bgg@gmail.com,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] i2c: mediatek: remove redundant null check
-Message-ID: <Yh46jPyQaExz0Xua@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Xu Wang <vulab@iscas.ac.cn>, qii.wang@mediatek.com,
-        matthias.bgg@gmail.com, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200930084233.53085-1-vulab@iscas.ac.cn>
+        Tue, 1 Mar 2022 10:24:52 -0500
+X-Greylist: delayed 316 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 07:24:09 PST
+Received: from pokefinder.org (sauhun.de [88.99.104.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AFCD18A6E9;
+        Tue,  1 Mar 2022 07:24:08 -0800 (PST)
+Received: from localhost (35-123-142-46.pool.kielnet.net [46.142.123.35])
+        by pokefinder.org (Postfix) with ESMTPSA id 9657B2C00BF;
+        Tue,  1 Mar 2022 16:18:52 +0100 (CET)
+Date:   Tue, 1 Mar 2022 16:18:52 +0100
+From:   Wolfram Sang <wsa@the-dreams.de>
+To:     Kewei Xu <kewei.xu@mediatek.com>
+Cc:     matthias.bgg@gmail.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        leilk.liu@mediatek.com, qii.wang@mediatek.com,
+        liguo.zhang@mediatek.com, caiyu.chen@mediatek.com,
+        housong.zhang@mediatek.com, yuhan.wei@mediatek.com,
+        ryan-jh.yu@mediatek.com, david-yh.chiu@mediatek.com
+Subject: Re: [PATCH v10,1/1] i2c: mediatek: modify bus speed calculation
+ formula
+Message-ID: <Yh45XIAnC9mQNqyr@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa@the-dreams.de>,
+        Kewei Xu <kewei.xu@mediatek.com>, matthias.bgg@gmail.com,
+        robh+dt@kernel.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        srv_heupstream@mediatek.com, leilk.liu@mediatek.com,
+        qii.wang@mediatek.com, liguo.zhang@mediatek.com,
+        caiyu.chen@mediatek.com, housong.zhang@mediatek.com,
+        yuhan.wei@mediatek.com, ryan-jh.yu@mediatek.com,
+        david-yh.chiu@mediatek.com
+References: <1645100563-59441-1-git-send-email-kewei.xu@mediatek.com>
+ <1645100563-59441-2-git-send-email-kewei.xu@mediatek.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DFAqbdottttrwCWu"
+        protocol="application/pgp-signature"; boundary="GUdQBt0v2xcPs6AE"
 Content-Disposition: inline
-In-Reply-To: <20200930084233.53085-1-vulab@iscas.ac.cn>
+In-Reply-To: <1645100563-59441-2-git-send-email-kewei.xu@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---DFAqbdottttrwCWu
+--GUdQBt0v2xcPs6AE
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 30, 2020 at 08:42:33AM +0000, Xu Wang wrote:
-> Because clk_disable_unprepare already checked NULL clock parameter,
-> so the additional checks are unnecessary, just remove it
+On Thu, Feb 17, 2022 at 08:22:43PM +0800, Kewei Xu wrote:
+> When clock-div is 0 or greater than 1, the bus speed
+> calculated by the old speed calculation formula will be
+> larger than the target speed. So we update the formula.
 >=20
-> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collab=
+ora.com>
 
-Missed Qii Wang's ack so far, sorry. Applied to for-next, thanks!
+Applied to for-next, thanks!
 
 
---DFAqbdottttrwCWu
+--GUdQBt0v2xcPs6AE
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIeOogACgkQFA3kzBSg
-KbZfxRAAqkBiWxzxphWUAK/0YEAg5hksVJDpRGzv+KQzCLt4VxeOS0fcltsz4PlS
-+1zF27icgR2bd6KdMoHO+AoKUhyUwUYHV8m5FAhGyiYdJKEiYMiY9pgxc3Gp1NeO
-JXiU3KrBKYu4LsuzG+SEsRlU9CRHvSZoRiDcLwwsZwhZkgatq5bXASphmCAWjOif
-TgpRBDyICwm1HwHxlf0wuQzTTRxCHc7s49ntiwRUnDa1jcAjeJ+JC7oGwWXmDqa0
-UBewHULIn4QirpU//eLI/sJIMmHGIzeaOe2UYGr1cVYL0bs/wOWtx/yxr1HcgUpz
-CljWQtmCUNuJRXsmgCC85NrGJDZXI90fCvJwfQW3eV44XLVeQdywqpvKo7kL5Agx
-J5lt3dXNbukqJR8a0kzeUVgVsV0feujgggnpXLxIw+K7+jXfh7Cq+0tZsilKdR5x
-3oyz3bTNksE2HCXvjtDlyn0fLoHkc50eX4YwRXyVmcQCC2+rziBD5JvCKtuKZ+jb
-w8Di73R66Rt0TKzmUsxIV2467wUEnv65WZHTcleWUhlk6IRa1jRj1OB5VNgs2IMX
-ChgXAY9RRTAO/O8S/2IPfP/lTWmdDWGSUrTJ/0FjGIUCS8+4lQdEmuXj2BcJwCzY
-sVBNjKgwEVnWaB0aF8kBkIDJ4zCZYwwBMkZrN41AjKj/OHdk2a8=
-=IYnt
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIeOVwACgkQFA3kzBSg
+KbY+Ag/8DKZF6+5v+fhOkRi1ryNi19EnaO8Gxu81up/6Z0iJUqpNit5DTeWAa0r2
+j/HUbLyFI9eXU+UBTSPF0Bf6FClRQYyV2fATBGPz5THXgg+893RgcSvKKauFv19l
+u0SnOFaK9RbIAc3dwRbARNrfD9aaXOriLdbRHhYwmIImaIQLs4Z4yCI49HfvCGnW
+/duo+0aP+3TWbKKNJLJiV2UhepW0cUg5ksyo5myAHxafV6DgPplry1Tl5fCku3L3
+RGLmHG8b5IECvbj2NYVWGsss6zTE1zCCJAmF80hJvmprzwpnN+HSCCKmwRoRafPT
+lOUInQlQmGBxkbFYu8HeNM6EWUIONlto1H6ZAEer0gJVn1B9lzdTjuxBTsnO7IPH
+x2vYseUH1mKRcfPGMlJS/q40v4jF1Q5eU+gbptjxPcwF0q6KLYw9Wxfl0Kx/TQ2V
+Ne3uc/z8+MkjBebwSZkYCc9ZiL00cBADaEWd3J4F+MYuJeY8Dl/JMDQdup60khDE
+4x+RZoodR2t6KvgEz7GdnBFqE4dA9RXuamQxYZqP46vzC/ogJ7Xzfg3UiD+651M1
+HjL4LRCHbVXl3etzVvRxItNjEKP9CLM8xGZ5JDhI90qHPCz9gl8+9GHVLTiZdqZO
+HtDVW2SD8bihM92LKMcrxCibRJ3frQ9LbfyhYeo94tsLUCYALAk=
+=M8Mv
 -----END PGP SIGNATURE-----
 
---DFAqbdottttrwCWu--
+--GUdQBt0v2xcPs6AE--
