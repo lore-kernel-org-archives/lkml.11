@@ -2,148 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D3DC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 00:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B48C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 00:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231865AbiCAAqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 19:46:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38900 "EHLO
+        id S231902AbiCAArK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 19:47:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231868AbiCAAqW (ORCPT
+        with ESMTP id S231651AbiCAArH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 19:46:22 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8922DE3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 16:45:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646095542; x=1677631542;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=A1M2o61/sQ2bPl3vTO7eHWNh6H9JFtsdHmHIpBkcMBk=;
-  b=PxP/4ECqV4amcKiGiLAglqRd6lcWain3d0jbDKeKhWPG6PYUw/W9l9td
-   AStkFFiIWAGx6jpbxs+CmRZaUyW7H510i3gkBoYQUD6g5srHXxgCoCLj6
-   hJDcsAwCFNdu2IWT9rOKXWEflm+QnX2tphW4lK3ftTx2Nq7cVdE0HoPQd
-   RL2Lf6nZDSCAsiIHYo+xmla5AhaS9C5M0E26jSngvSXU+IMEtSw4SFfup
-   xmUGjh3yt4xvbkdlgiOxMhGCV7vY5Wag1bU2R8Eq50xVkj70TQYLA0lwo
-   ZUUtU7WmGZMMlhXUDcmkha6rhYVYzPGx5s5PlFfp+HplrryibNKVIJuto
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="277686284"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="277686284"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 16:45:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="629832301"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Feb 2022 16:45:38 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOqe1-0007wg-Vr; Tue, 01 Mar 2022 00:45:37 +0000
-Date:   Tue, 1 Mar 2022 08:45:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [amir73il:sb_iostats 3/8] fs/nfsd/export.c:337:16: error: implicit
- declaration of function 'percpu_counters_init'; did you mean
- 'percpu_counter_init'?
-Message-ID: <202203010840.WX3EvHHw-lkp@intel.com>
+        Mon, 28 Feb 2022 19:47:07 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329601CFDA;
+        Mon, 28 Feb 2022 16:46:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=6kLooZJqwGGXeVVaSJP06IJVzbhf/g8lxAgwKUZTKkQ=; b=OibTSq6yzv7ONGW8VvnYgQrrEv
+        5KZXpoYlNennpum1jNu3fUeCUaZ2uwA/+/EN6S3kvydscWR3ai3JyrE0HPVnxvL+eGn7YwpvXsSnK
+        1kuvYe+9VOZ95TkqbuzuYkt6yAW62u4M5e6g+B1J3Vki69gIekQVJEsSQbVcMYDdubwggu2gty4pj
+        igK7cLFtxs4QDUrIoboG6GrFtKtvd4YR9y1x9B9/W06Cj2QDNrfWMAHbrID3RrI97sRxyL2x44AMJ
+        of9dpt7+ltreM13WOu7kWxDDmRsi/vufxKYAtItg5XvSCk+eJCXgNiNa2aG6+1UgFUHjsxn1M3B/h
+        X0sVMgHw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOqeh-0094bj-Vo; Tue, 01 Mar 2022 00:46:20 +0000
+Message-ID: <1e91ecfb-0432-8c0c-e537-49954313abff@infradead.org>
+Date:   Mon, 28 Feb 2022 16:46:13 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: mmotm 2022-02-28-14-45 uploaded
+ (drivers/tty/serial/sunplus-uart.c:)
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>
+References: <20220228224600.44415C340EE@smtp.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220228224600.44415C340EE@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/amir73il/linux sb_iostats
-head:   ecfdb413f2105083296e9cb45290eb1f01b0ef5c
-commit: ec86002f8d5abb285345a931587f2f554d995825 [3/8] lib/percpu_counter: add helpers for arrays of counters
-config: alpha-defconfig (https://download.01.org/0day-ci/archive/20220301/202203010840.WX3EvHHw-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/amir73il/linux/commit/ec86002f8d5abb285345a931587f2f554d995825
-        git remote add amir73il https://github.com/amir73il/linux
-        git fetch --no-tags amir73il sb_iostats
-        git checkout ec86002f8d5abb285345a931587f2f554d995825
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash fs/nfsd/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   fs/nfsd/export.c: In function 'export_stats_init':
->> fs/nfsd/export.c:337:16: error: implicit declaration of function 'percpu_counters_init'; did you mean 'percpu_counter_init'? [-Werror=implicit-function-declaration]
-     337 |         return percpu_counters_init(stats->counter, EXP_STATS_COUNTERS_NUM, 0,
-         |                ^~~~~~~~~~~~~~~~~~~~
-         |                percpu_counter_init
-   fs/nfsd/export.c: In function 'export_stats_reset':
->> fs/nfsd/export.c:343:9: error: implicit declaration of function 'percpu_counters_set'; did you mean 'percpu_counter_set'? [-Werror=implicit-function-declaration]
-     343 |         percpu_counters_set(stats->counter, EXP_STATS_COUNTERS_NUM, 0);
-         |         ^~~~~~~~~~~~~~~~~~~
-         |         percpu_counter_set
-   fs/nfsd/export.c: In function 'export_stats_destroy':
->> fs/nfsd/export.c:348:9: error: implicit declaration of function 'percpu_counters_destroy'; did you mean 'percpu_counter_destroy'? [-Werror=implicit-function-declaration]
-     348 |         percpu_counters_destroy(stats->counter, EXP_STATS_COUNTERS_NUM);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~
-         |         percpu_counter_destroy
-   fs/nfsd/export.c: In function 'exp_rootfh':
-   fs/nfsd/export.c:980:34: warning: variable 'inode' set but not used [-Wunused-but-set-variable]
-     980 |         struct inode            *inode;
-         |                                  ^~~~~
-   cc1: some warnings being treated as errors
---
-   fs/nfsd/nfscache.c: In function 'nfsd_reply_cache_stats_init':
->> fs/nfsd/nfscache.c:159:16: error: implicit declaration of function 'nfsd_percpu_counters_init'; did you mean 'percpu_counter_init'? [-Werror=implicit-function-declaration]
-     159 |         return nfsd_percpu_counters_init(nn->counter, NFSD_NET_COUNTERS_NUM);
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~
-         |                percpu_counter_init
-   fs/nfsd/nfscache.c: In function 'nfsd_reply_cache_stats_destroy':
->> fs/nfsd/nfscache.c:164:9: error: implicit declaration of function 'nfsd_percpu_counters_destroy'; did you mean 'percpu_counter_destroy'? [-Werror=implicit-function-declaration]
-     164 |         nfsd_percpu_counters_destroy(nn->counter, NFSD_NET_COUNTERS_NUM);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         percpu_counter_destroy
-   cc1: some warnings being treated as errors
---
-   fs/nfsd/stats.c: In function 'nfsd_stat_counters_init':
->> fs/nfsd/stats.c:89:16: error: implicit declaration of function 'percpu_counters_init'; did you mean 'percpu_counter_init'? [-Werror=implicit-function-declaration]
-      89 |         return percpu_counters_init(nfsdstats.counter, NFSD_STATS_COUNTERS_NUM,
-         |                ^~~~~~~~~~~~~~~~~~~~
-         |                percpu_counter_init
-   fs/nfsd/stats.c: In function 'nfsd_stat_counters_destroy':
->> fs/nfsd/stats.c:95:9: error: implicit declaration of function 'percpu_counters_destroy'; did you mean 'percpu_counter_destroy'? [-Werror=implicit-function-declaration]
-      95 |         percpu_counters_destroy(nfsdstats.counter, NFSD_STATS_COUNTERS_NUM);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~
-         |         percpu_counter_destroy
-   cc1: some warnings being treated as errors
 
 
-vim +337 fs/nfsd/export.c
+On 2/28/22 14:45, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2022-02-28-14-45 has been uploaded to
+> 
+>    https://www.ozlabs.org/~akpm/mmotm/
+> 
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> https://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> https://ozlabs.org/~akpm/mmotm/series
 
-   333	
-   334	static int export_stats_init(struct export_stats *stats)
-   335	{
-   336		stats->start_time = ktime_get_seconds();
- > 337		return percpu_counters_init(stats->counter, EXP_STATS_COUNTERS_NUM, 0,
-   338					    GFP_KERNEL);
-   339	}
-   340	
-   341	static void export_stats_reset(struct export_stats *stats)
-   342	{
- > 343		percpu_counters_set(stats->counter, EXP_STATS_COUNTERS_NUM, 0);
-   344	}
-   345	
-   346	static void export_stats_destroy(struct export_stats *stats)
-   347	{
- > 348		percpu_counters_destroy(stats->counter, EXP_STATS_COUNTERS_NUM);
-   349	}
-   350	
+on x86_64 or i386:
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+when CONFIG_SERIAL_SUNPLUS_CONSOLE is not set:
+
+../drivers/tty/serial/sunplus-uart.c:574:12: error: ‘sunplus_uart_console’ undeclared here (not in a function); did you mean ‘sunplus_uart_ops’?
+  .cons  = &sunplus_uart_console,
+            ^~~~~~~~~~~~~~~~~~~~
+
+
+
+-- 
+~Randy
