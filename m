@@ -2,157 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 350B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 23:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 23:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234220AbiCAXDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 18:03:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
+        id S235300AbiCAXHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 18:07:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiCAXDx (ORCPT
+        with ESMTP id S232903AbiCAXHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 18:03:53 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA8C4C7AD
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 15:03:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646175791; x=1677711791;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ii8JBJeLg2PZQUVBI4MgCp2a7JXr5znlB/EJirm3SKc=;
-  b=MazvfaFopk1Sg2py9/MaHLcBKJoJ9kCbjd53C0JnwafLcG42oHO975og
-   awPPO907+46/EaKDTIe7gJPWWucp8cWM93p6kPy50vnvaRXjZ6nWvGKPL
-   IWSKlCCZcHdWoHR9Wsa17zN3fVbqZ5i5jKiXlgwLYHjpDA2/mMhGCncaK
-   nt0J5gsV1cHa0rGXu+yOYus1m39hFsfgiPqT/0BdU/1RP9mS7InX6rwwI
-   bHTED2okv6XOt74vbPyUAwXJ9nbM8Sevj/B+9nqD5scp5iXNdlu3SRlTI
-   T4KmQCPR4n4OrwXxswYO/GeVRiBaOiHR+stGD78M/0YM6nHouqGIe5R9C
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="316477355"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="316477355"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 15:03:10 -0800
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="641458346"
-Received: from bklinvil-mobl.amr.corp.intel.com (HELO localhost) ([10.212.48.220])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 15:03:10 -0800
-Date:   Tue, 1 Mar 2022 15:03:09 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V8 41/44] kmap: Ensure kmap works for devmap pages
-Message-ID: <Yh6mLd8ORTcLx18A@iweiny-desk3>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-42-ira.weiny@intel.com>
- <CAPcyv4h1Q6H6_VApe3eFhEwe0McqbrFGRmy9rzFSPP0ATsTeTw@mail.gmail.com>
- <Yh535Zqe/GtuF/Xh@iweiny-desk3>
- <CAPcyv4g+Cbqk5bev8=SNz-8EwzofER0HrTzUiJ87ygdWSsXAiA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPcyv4g+Cbqk5bev8=SNz-8EwzofER0HrTzUiJ87ygdWSsXAiA@mail.gmail.com>
+        Tue, 1 Mar 2022 18:07:48 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D8790FDC
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 15:07:05 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d6994a6942so141738587b3.17
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 15:07:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Gphaz8yRmmQrIgPvoKCS1z/czEcFXqMqBlv+2jwkLbU=;
+        b=IUqL9eaFqp69S0y/rjgH5In3o9ObULAP5VkGmkE+p3N2nzchDtJIlQzt0Q1SH+Ghwm
+         61ULqzEeEyk8qAoAnPaByoOigrDmIpWCtI8nNLmSq9o2cQUjLnYGHMVkJEJYyPoCYdGT
+         89sV8m+BKO1UQUlEQszbPzAKwztjXcXTcy933SW5M8l70MccjZjZAaDDiXaz0InG/jBw
+         4clW0PAYz055ErW5p9CTKgFcn4X0QwxcfDtcU/HYLzRPqTLS0bQcxfFIvVqeZ/21R/pU
+         wus5/a38CMKNLPKDRqdxjV0GHRXrcB9M8V+ap1n/QEemtCpugus5A0agFcqz8Yza2ept
+         hUqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Gphaz8yRmmQrIgPvoKCS1z/czEcFXqMqBlv+2jwkLbU=;
+        b=NBg6gO47flyp99fESOwV3i93M68wBsz3eGk8sowxWc7tvRMYGlh6fmF14K9TIBu/iu
+         W3Vb2f98mcRzHo4ZqCOwRsg6bcqln/RqokbBBOJxsXcuXaQG39DCmcBg9d0hbpLFp5Cu
+         vKFXiLIXl9s8EzxDDebaI39I1k6G9Wij/RGjWy+gDmfeOfXhJZ4P6rGQ/Ba3S55TeXPr
+         eAqdzWxMLo3/VDatnSjZxRfvmyVnin885v1khDmfRUgcAf8s+NEt+F1Pd8sr2ni8Kah6
+         4JbiJBA/LnqNVMYXA7TZMbdiZeFEBo+Sj2qi3CX3GgZI5UON2axJRqKPeFNp+njdUGIq
+         3ttg==
+X-Gm-Message-State: AOAM530Aulf4ISU4ZwpGBP0AH0P32jNSsqXnbTZjGmCscJTVE8Vg7/96
+        ao3JB3fKIexj4mAX971jxLMwDC3oWwXnDO8GT1fSthEYzzlkMdvAyCpQ/2h/66WhA0UqsukRJ0J
+        z20dR9MO/orN8fyBYveS/r/aB+WrAfbCgbznWYK0X48SjH/SeycU4LrM0i5zXWGu56iCnrQ==
+X-Google-Smtp-Source: ABdhPJzRzFU6Sqba4/dwmyfmPshaGSeD1OBzy2Hy4vhU7KEbBICJzNC7A76mwOrqOppk477fe9wTUl+/gCk=
+X-Received: from colette.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:306])
+ (user=ctshao job=sendgmr) by 2002:a25:a342:0:b0:622:7818:7374 with SMTP id
+ d60-20020a25a342000000b0062278187374mr26565207ybi.251.1646176024654; Tue, 01
+ Mar 2022 15:07:04 -0800 (PST)
+Date:   Tue,  1 Mar 2022 23:06:28 +0000
+Message-Id: <20220301230629.1892828-1-ctshao@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
+Subject: [PATCH] config: Using HOSTPKG_CONFIG prefix for pkg-config
+From:   Chun-Tse Shao <ctshao@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ctshao@google.com, rostedt@goodmis.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kbuild@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 12:05:27PM -0800, Dan Williams wrote:
-> On Tue, Mar 1, 2022 at 11:45 AM Ira Weiny <ira.weiny@intel.com> wrote:
-> >
-> > On Fri, Feb 04, 2022 at 01:07:10PM -0800, Dan Williams wrote:
-> > > On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
-> > > >
-> > > > From: Ira Weiny <ira.weiny@intel.com>
-> > > >
-> > > > Users of devmap pages should not have to know that the pages they are
-> > > > operating on are special.
-> > >
-> > > How about get straight to the point without any ambiguous references:
-> > >
-> > > Today, kmap_{local_page,atomic} handles granting access to HIGHMEM
-> > > pages without the caller needing to know if the page is HIGHMEM, or
-> > > not. Use that existing infrastructure to grant access to PKS/PGMAP
-> > > access protected pages.
-> >
-> > This sounds better.  Thanks.
-> >
-> > >
-> > > > Co-opt the kmap_{local_page,atomic}() to mediate access to PKS protected
-> > > > pages via the devmap facility.  kmap_{local_page,atomic}() are both
-> > > > thread local mappings so they work well with the thread specific
-> > > > protections available.
-> > > >
-> > > > kmap(), on the other hand, allows for global mappings to be established,
-> > > > Which is incompatible with the underlying PKS facility.
-> > >
-> > > Why is kmap incompatible with PKS? I know why, but this is a claim
-> > > without evidence. If you documented that in a previous patch, there's
-> > > no harm and copying and pasting into this one. A future git log user
-> > > will thank you for not making them go to lore to try to find the one
-> > > patch with the  details.
-> >
-> > Good point.
-> >
-> > > Extra credit for creating a PKS theory of
-> > > operation document with this detail, unless I missed that?
-> >
-> > Well...  I've documented and mentioned the thread-local'ness of PKS a lot but
-> > I'm pretty close to all of this so it is hard for me to remember where and to
-> > what degree that is documented.  I've already reworked the PKS documentation a
-> > bit.  So I'll review that.
-> >
-> > >
-> > > > For this reason
-> > > > kmap() is not supported.  Rather than leave the kmap mappings to fault
-> > > > at random times when users may access them,
-> > >
-> > > Is that a problem?
-> >
-> > No.
-> 
-> What I meant was how random is random and is it distinguishable from
-> direct page_address() usage where there is no explicit early failure
-> path?
+In some parts, pkg-config does not use appropriate $BUILDROOT prefix.
+The patch adds HOSTPKG_CONFIG prefix for pkg-config to fix the issue.
 
-Ok you've convinced me.  I'll drop this.
+Signed-off-by: Chun-Tse Shao <ctshao@google.com>
+---
+ Makefile               | 3 ++-
+ scripts/Makefile       | 4 ++--
+ scripts/dtc/Makefile   | 6 +++---
+ tools/objtool/Makefile | 4 ++--
+ 4 files changed, 9 insertions(+), 8 deletions(-)
 
-> 
-> >
-> > > This instrumentation is also insufficient for
-> > > legitimate usages of page_address().
-> >
-> > True.  Although with this protection those access' are no longer legitimate.
-> > And it sounds like it may be worth putting a call in page_address() as well.
-> >
-> > > Might as well rely on the kernel
-> > > developer community being able to debug PKS WARN() splats back to the
-> > > source because that will need to be done regardless, given kmap() is
-> > > not the only source of false positive access violations.
-> >
-> > I disagree but I'm happy to drop pgmap_protection_flag_invalid() if that is the
-> > consensus.
-> >
-> > The reason I disagree is that it is generally better to catch errors early
-> > rather than later.  Furthermore, this does not change the permissions.  Which
-> > means the actual invalid access will also get flagged at the point of use.
-> > This allows more debugging information for the user.
-> >
-> > Do you feel that strongly about removing pgmap_protection_flag_invalid()?
-> 
-> You haven't convinced me that it matters yet. Do you have an example
-> of a kmap() pointer dereference PKS splat where it's not clear from
-> the backtrace from the fault handler that a kmap path was involved?
-> 
-> At a minimum if it stays it seems like something that should be
-> wrapped by VM_WARN_ON_ONCE_PAGE() like other page relative memory
-> debugging extra checks that get disabled by CONFIG_DEBUG_VM, but the
-> assertion that "early is better" needs evidence that "later is too
-> ambiguous".
+diff --git a/Makefile b/Makefile
+index daeb5c88b50b..f6c5bef7e141 100644
+--- a/Makefile
++++ b/Makefile
+@@ -430,6 +430,7 @@ else
+ HOSTCC	= gcc
+ HOSTCXX	= g++
+ endif
++HOSTPKG_CONFIG	= pkg-config
+ 
+ export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
+ 			      -O2 -fomit-frame-pointer -std=gnu89
+@@ -525,7 +526,7 @@ KBUILD_LDFLAGS_MODULE :=
+ KBUILD_LDFLAGS :=
+ CLANG_FLAGS :=
+ 
+-export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
++export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC HOSTPKG_CONFIG
+ export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS LEX YACC AWK INSTALLKERNEL
+ export PERL PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
+ export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD
+diff --git a/scripts/Makefile b/scripts/Makefile
+index ce5aa9030b74..f084f08ed176 100644
+--- a/scripts/Makefile
++++ b/scripts/Makefile
+@@ -14,8 +14,8 @@ hostprogs-always-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE)	+= insert-sys-cert
+ HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
+ HOSTLDLIBS_sorttable = -lpthread
+ HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+-HOSTCFLAGS_sign-file.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+-HOSTLDLIBS_sign-file = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
++HOSTCFLAGS_sign-file.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
++HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+ 
+ ifdef CONFIG_UNWINDER_ORC
+ ifeq ($(ARCH),x86_64)
+diff --git a/scripts/dtc/Makefile b/scripts/dtc/Makefile
+index 95aaf7431bff..743fc08827ea 100644
+--- a/scripts/dtc/Makefile
++++ b/scripts/dtc/Makefile
+@@ -18,7 +18,7 @@ fdtoverlay-objs	:= $(libfdt) fdtoverlay.o util.o
+ # Source files need to get at the userspace version of libfdt_env.h to compile
+ HOST_EXTRACFLAGS += -I $(srctree)/$(src)/libfdt
+ 
+-ifeq ($(shell pkg-config --exists yaml-0.1 2>/dev/null && echo yes),)
++ifeq ($(shell $(HOSTPKG_CONFIG) --exists yaml-0.1 2>/dev/null && echo yes),)
+ ifneq ($(CHECK_DT_BINDING)$(CHECK_DTBS),)
+ $(error dtc needs libyaml for DT schema validation support. \
+ 	Install the necessary libyaml development package.)
+@@ -27,9 +27,9 @@ HOST_EXTRACFLAGS += -DNO_YAML
+ else
+ dtc-objs	+= yamltree.o
+ # To include <yaml.h> installed in a non-default path
+-HOSTCFLAGS_yamltree.o := $(shell pkg-config --cflags yaml-0.1)
++HOSTCFLAGS_yamltree.o := $(shell $(HOSTPKG_CONFIG) --cflags yaml-0.1)
+ # To link libyaml installed in a non-default path
+-HOSTLDLIBS_dtc	:= $(shell pkg-config yaml-0.1 --libs)
++HOSTLDLIBS_dtc	:= $(shell $(HOSTPKG_CONFIG) yaml-0.1 --libs)
+ endif
+ 
+ # Generated files need one more search path to include headers in source tree
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index 92ce4fce7bc7..549acc5859e9 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -19,8 +19,8 @@ LIBSUBCMD		= $(LIBSUBCMD_OUTPUT)libsubcmd.a
+ OBJTOOL    := $(OUTPUT)objtool
+ OBJTOOL_IN := $(OBJTOOL)-in.o
+ 
+-LIBELF_FLAGS := $(shell pkg-config libelf --cflags 2>/dev/null)
+-LIBELF_LIBS  := $(shell pkg-config libelf --libs 2>/dev/null || echo -lelf)
++LIBELF_FLAGS := $(shell $(HOSTPKG_CONFIG) libelf --cflags 2>/dev/null)
++LIBELF_LIBS  := $(shell $(HOSTPKG_CONFIG) libelf --libs 2>/dev/null || echo -lelf)
+ 
+ all: $(OBJTOOL)
+ 
+-- 
+2.35.1.574.g5d30c73bfb-goog
 
-I'll drop this.  It is easier to just leave it out.
-
-Ira
