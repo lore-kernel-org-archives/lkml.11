@@ -2,250 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 293FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbiCAQac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:30:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60132 "EHLO
+        id S236205AbiCAQbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:31:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232401AbiCAQa2 (ORCPT
+        with ESMTP id S235233AbiCAQbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:30:28 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6006D275DC;
-        Tue,  1 Mar 2022 08:29:44 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id B0924A67;
-        Tue,  1 Mar 2022 17:29:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646152182;
-        bh=ZTptEoLAl3UyfzBHD6+Fgbbupt9ZGagky9FrUGnPFA4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d47FOsnrBS3NN+ygT7InhuPgv5PKnjjLOeU7IxJvgHY2GVI+Z9TrcGGiXFGrJUUmN
-         I+jrnfmW4uemRv/nMuD6QTIV5duQDU9NkfmOm1mORiBkkEMYqEYXhg/LLsOgIzMcQv
-         XlGLTj5UJ7y12iJN+Pf4XaziGdYn3EoLULHYpI4Y=
-Date:   Tue, 1 Mar 2022 18:29:31 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] PM: runtime: Have devm_pm_runtime_enable() handle
- pm_runtime_dont_use_autosuspend()
-Message-ID: <Yh5J6yYyTaKldlO+@pendragon.ideasonboard.com>
-References: <20220223083441.1.I925ce9fa12992a58caed6b297e0171d214866fe7@changeid>
- <CAPDyKFrDncw0D2ccw9GJS+oRdm2kROJh25OV9pMs+992vQV-cQ@mail.gmail.com>
- <Yh36R817IjCw2dMb@pendragon.ideasonboard.com>
- <CAPDyKFrchzHnph9zg55yCbpQ5hu9P=ZOdcuigyqC_4yYjFs10Q@mail.gmail.com>
+        Tue, 1 Mar 2022 11:31:17 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429C13F8B9;
+        Tue,  1 Mar 2022 08:30:36 -0800 (PST)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 221EConE021768;
+        Tue, 1 Mar 2022 16:30:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : message-id : references : date : in-reply-to : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=yZFEYd5Fy6g9Lsnx1DIVUbNWknvqmQIqvSTFVD5qdDU=;
+ b=kjUIvDFEZxOYyX2oDRZ5ivScwG8a1XTcWFuHImOg/PHqrZRFYZscBN9EbVdo1iyZ6ZfJ
+ /eg32mqhZdPMn/jt1ax+A8awYb/D6G5l3N/48OV1fTduVANNIwn0fJFT4y+L5PHmIy8Q
+ s52gKrL60V+XwilS+7Xsqmr5Q9dbt38kDwRbJmlWDGrRvGOTWxnGDtpYDe2HoZVvKYjM
+ /wVDN6L610+vkdtszyu5lCq2As2TL7XBfnwqAjLKok5QB/QZ+EW12RoUsBhR8NTwvytI
+ O3TqHAmovL2v3+ig6ZYif06TgJcOn9CBAu8Ed3LRPH0v7ofm3vFJKxaHasOQXBRFU8vm /Q== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ehdaysjnk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Mar 2022 16:30:29 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 221GK7Js056858;
+        Tue, 1 Mar 2022 16:30:28 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2048.outbound.protection.outlook.com [104.47.66.48])
+        by userp3030.oracle.com with ESMTP id 3ef9axqm98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 01 Mar 2022 16:30:28 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HZ6T+mCjOIahHTvUTXLSdk+r34y4c9Zv8HtMqDaqakJ92Ln1rC7j5EhunrJweeDUoyRpDOlEBGmJJJfYmASxrORE9NJIKazspBrDz0cUokMnJmbXZXHbiHzCvccpFpLEFqDBpcNBvFhmz6eG9yoYgD4kQSDpR6F822NOUZ6itawvpcFlZJIedezS1CvOiJWaV9e/9G8QdCsL9CKY0YgEUhLJkwC3bv6XCNWU4TShUA6umawIKNKlPTd2VcGs/1ILkF9Y995ZHBD6URGRMxMacA7voDhGhwK0cxJSh6u+Dz6spO91LhrsLdb2B3SZaC9C+d7feDmi3OtnzoUtnTCHQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yZFEYd5Fy6g9Lsnx1DIVUbNWknvqmQIqvSTFVD5qdDU=;
+ b=nZB4ZVxQr7hq5eJ3CEnQ+dcfsr/Q86HCMXGWsAr/BKXZfs4+pzMvbTwanHMsMZ+RrNKewUqPxrrGiZrmYchBhDQyKSldbBIbMKfRCfrBxBPkog+FcYoTYswnkWmv2FW49rM8LgKikgeXTaaxg1rb7HglCzi8qLC1pwTSDghegq/nkkI7jCODzzBchaGqvgotIpr5Vf6sVH+S+6NdyXERfy7dMChWHuqEBL5guhVg2Ngurqgpaj7ZcxSBBlaYkL7swT66oy/5T5eQNPYLC1rFzH82ldZTE6vnw+vPYgJOvDKlLnMYPR0tYAucXMdpumYCdeGUQ4rZwJkUlJ4EIpZ6Kw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yZFEYd5Fy6g9Lsnx1DIVUbNWknvqmQIqvSTFVD5qdDU=;
+ b=cn4gy8skyVFXGdzbpcJlyXfDCd8EOiqXK3kee+LNM6VLJgCgYJISkZhTw3AfVPqQPbKRV8zhGzilUDaEOYr5GklMrqdv1kMsWsxkQo22jJr6dSn9/lC5DuGHed0hhHoqgE2ick6xEpIzaFtXX/LUiH6AptKPzeCcSD2vfSjJcvY=
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
+ by CY4PR10MB1862.namprd10.prod.outlook.com (2603:10b6:903:125::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Tue, 1 Mar
+ 2022 16:30:25 +0000
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0]) by PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0%6]) with mapi id 15.20.5017.027; Tue, 1 Mar 2022
+ 16:30:25 +0000
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] virtio-blk: Assign discard_granularity
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <yq1k0dd4pde.fsf@ca-mkp.ca.oracle.com>
+References: <20220224093802.11348-1-akihiko.odaki@gmail.com>
+        <YhypTNtWpcgh3gb2@stefanha-x1.localdomain>
+        <e306700c-3153-9422-974c-1f5f10e232d6@gmail.com>
+Date:   Tue, 01 Mar 2022 11:30:23 -0500
+In-Reply-To: <e306700c-3153-9422-974c-1f5f10e232d6@gmail.com> (Akihiko Odaki's
+        message of "Tue, 1 Mar 2022 14:43:55 +0900")
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR03CA0331.namprd03.prod.outlook.com
+ (2603:10b6:a03:39c::6) To PH0PR10MB4759.namprd10.prod.outlook.com
+ (2603:10b6:510:3d::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFrchzHnph9zg55yCbpQ5hu9P=ZOdcuigyqC_4yYjFs10Q@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c83d37a5-722d-4190-2c3d-08d9fba0ca42
+X-MS-TrafficTypeDiagnostic: CY4PR10MB1862:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR10MB1862400E19C03DC40084B94F8E029@CY4PR10MB1862.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eUa8QpazFh2SWGmCFN7mrSqNFPIYy9SY2Eg5fkDvrd1zIlz3wNfvivmO12/lx2BCPbq0T/aYA8rFIR3VyY3DB80JOYJ2s3TteV1Dg6LAuL+bbAVf8jWnQ7OiwGNnWGknucoIXT52fjY2kku9QUHf54+Lg1pVFLXzICeUTCoEIvBmxQmSp5o1I0yVDazgYbSAEeQ8MI5Lo876KmAM3EqHy6HVellW+ya6C8B04sjMUWsnTzXdOXWi2RJHl9VnHY06puQjP/R96pb1WWB1tnvYBtnjkRd3x07h8mRY+vfMS5QD0CFlyiCZstY3v0xxUmlOfuzvAiQTtnsBawAPg2L0Yix2zvMyGzC69LuekDO0RLVyTlxcC2wVwyjn0W7gyTeuLg5Fuw2tPceaxcb495GvjEQQZxtizCDJdwi+c5gWWDuj/MB2ahaDWt2500n1eqHIot0/Y2A5YxdNTIi0KIcWGfy+JdVxxLlQI8OHPbvdeq3FxunOjdtAB8nvHC9EPMWHdcTyxG/JfSCmFmPWYK9Wf+gPGsm0e9Q+9x6sN9TUvIzdRG/1MdgqW9vBO66mLAX8BaZMIOSXHCquKJWnFHSHllHNQ0VrBTXrby4FWEMUfhePOKJ8xzS1ybxJrjnG4QKauqj+N+T/hBmwd2z0w637M2ACfVzkAWf5HBtdOr1S6aQ1rz8QcEKfXdb8MBwX2iHwwA6oUDe4LSPYmCyiL7dc+w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(4744005)(8936002)(36916002)(316002)(52116002)(186003)(6506007)(26005)(6512007)(6916009)(54906003)(83380400001)(66556008)(4326008)(8676002)(66476007)(38350700002)(2906002)(508600001)(66946007)(6486002)(5660300002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pEaMEpxb6flHy1tRmh4WY81POADyAk0hFRU9wAv46s1RGe9pl6G/jsQw3/uR?=
+ =?us-ascii?Q?2Bg2egUQ9gdeognkKnEsY5KjTzjOs66C2q+Uw1NsjA+YZP9Bp0PRU6fUOf5/?=
+ =?us-ascii?Q?9CqDtW2nGjkA7SM66oTlI86oZiB2PfeFwH0y4E/FXTmeTh9Cg+P0XPOcEPc9?=
+ =?us-ascii?Q?fbLtAK81ENn5tA2LkJ+Q4pc4DkjYHGzL/LlwBcJfUqNYk90THS5TMDepbnPy?=
+ =?us-ascii?Q?dzNbJjNKI1atCwjZxD5+1uBUOAJYrfVTCPNvvs0KAfOLObOZv8Fuh4AaYbRC?=
+ =?us-ascii?Q?Sx+iZDmK4oQZfk2z5T0wHKIcKYKk/7XsYMTCguGIR9kkmAW+EjeA2qaVkLnu?=
+ =?us-ascii?Q?eby9hlTtCJTHDcz5/xDDvLnQ9uvsDdos3FgQ+GYUcnwLsfn83LtJgl80rWen?=
+ =?us-ascii?Q?J3MJekxnoIcyHK7f2/THNlyLLvNpjN8PKdEtFB0ROgD79K7arpFp6Xun1K4G?=
+ =?us-ascii?Q?ajapcmOupE3XXSeURpJFGnBbKGMxh17dbOW8ZhDjxLNlrQKb1VNX3vulXpNv?=
+ =?us-ascii?Q?oVltEbVdoZOPWOqRSIfOeE15X0roSBgnaDOcEtwrU9Rzzqar0VFATDa5mCdB?=
+ =?us-ascii?Q?NPO+tDmQjqWkQhvzvwkz0EXP29xxQP9FTnnReiqFduofXcAiSFWsnm5M/SRh?=
+ =?us-ascii?Q?2kXJoRxBnfst/eNY6JHbkmAJ5XwVJ5JATK+Mf5B/vjcZG6LGEPccvA0mJHP6?=
+ =?us-ascii?Q?vqvesy/nI9OFIY86j6sECOGVRpyz3L4azvBeVOCp0A91CErETcY2dOZ3Mkwd?=
+ =?us-ascii?Q?EYAKFPiUa3bRBYV6s6dpwPg6K/5XjXqxD2jpHZhtCRY+Rk0un/BYMMWEVXxX?=
+ =?us-ascii?Q?c7m0HWcsG+OUft2o9LxHOl68UV1uJ2CmCpns9Hkfd3XH6/z+5gzl0cETDeVk?=
+ =?us-ascii?Q?DSGh/bSTeYqD9d8+1jEFgoVX8xoiNpsYvHcA8uwQJlEz4GcxpDhRzjUiTPDD?=
+ =?us-ascii?Q?nrtVxgLGi30ZCCR+wc3GvxGI/Tnbs1m6FrqDhqYWahYL94npS2af2ZXPeGRw?=
+ =?us-ascii?Q?S8J+IWHUGe03PJQb7qGns7johtxqLjRNRyJ3W7XTswmWdUwDG5BEC1TyBEpZ?=
+ =?us-ascii?Q?nsW+BcQimpSVarXuHwNneRMQywNshNuxIArPVjjPH1TcQ+xBWXgTi5U6UEc5?=
+ =?us-ascii?Q?JAYxjJsZxpx7RYzEqvL9GxGcraLjXI4fdsf9Cj6IVSMCH7ewYfNaYQGa0/q2?=
+ =?us-ascii?Q?OjITzopoxAFhEDAwRuayZ/jgxH3sWnZ+zBreCvHO+1tCFZEL0oiTNZC3ciUf?=
+ =?us-ascii?Q?WRpjwzIwmNKHahL4lj7zswmwRr/k2HQ+BxrQ6FVyKf8/iw3tdMMc4+CPS52O?=
+ =?us-ascii?Q?H5bNdrT6h3o+4/4ySoBwWV6WKfzs1+cpfs1Jn8oMOd/ENLL6wxzKfq0qxj08?=
+ =?us-ascii?Q?QsEmLmD7YoWKli83QZw7ISu7/OBPQ81r7Ab1Nw4Eequ2c4tCDe1cEd42iP3W?=
+ =?us-ascii?Q?2hCSLh1PuRtAdt/0mdq1sOsjZxt/idQdOMd8SP0R4PozVEDBBK3X611sanyI?=
+ =?us-ascii?Q?yUKmG7Qn9QkNaohIu3Pyc2vvjjDkmckdn7C9w8CXCvX1nHO7+OFI7F3S7BDY?=
+ =?us-ascii?Q?6X1WQ1aPUo+alnhGxF1qQUlUPDArgjcO5sMAeBQo0lRu+4sOg3WLhtXqQXrk?=
+ =?us-ascii?Q?YhOJlbKrDT+gDAApCARspk1dbGfwIvBWdh0D1LgZPiV4rgaXk3iQXz/p2GZR?=
+ =?us-ascii?Q?v5LZbQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c83d37a5-722d-4190-2c3d-08d9fba0ca42
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2022 16:30:25.7871
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: m7EC1J0T6rOmelESaBcvnDWn12L3rMh+H3WmQKmQT6IYm01QDC7z6CGzm/vbPhLANa7XqWAXlf9clvVU4J2Rwpe0VYIgpEDy1en9AiqOEMM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1862
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10273 signatures=685966
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 malwarescore=0
+ mlxscore=0 phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=941
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2203010087
+X-Proofpoint-GUID: pXB-YClmdUvMVhNIgwhqB0xpGp6ozR-F
+X-Proofpoint-ORIG-GUID: pXB-YClmdUvMVhNIgwhqB0xpGp6ozR-F
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ulf,
 
-On Tue, Mar 01, 2022 at 12:18:02PM +0100, Ulf Hansson wrote:
-> On Tue, 1 Mar 2022 at 11:49, Laurent Pinchart wrote:
-> > On Tue, Mar 01, 2022 at 11:26:46AM +0100, Ulf Hansson wrote:
-> > > On Wed, 23 Feb 2022 at 17:35, Douglas Anderson wrote:
-> > > >
-> > > > The PM Runtime docs say:
-> > > >   Drivers in ->remove() callback should undo the runtime PM changes done
-> > > >   in ->probe(). Usually this means calling pm_runtime_disable(),
-> > > >   pm_runtime_dont_use_autosuspend() etc.
-> > > >
-> > > > From grepping code, it's clear that many people aren't aware of the
-> > > > need to call pm_runtime_dont_use_autosuspend().
-> > >
-> > > Well, I admit it's good practice that they should take care of this.
-> > >
-> > > However, it doesn't really matter to keep the autosuspend turned on
-> > > when runtime PM becomes disabled, I think. When the driver gets probed
-> > > again, it will most likely call pm_runtime_use_autosuspend() again,
-> > > which should work fine, right?
-> >
-> > For the probe path I agree, but are there valid use cases where, at
-> > runtime, a driver would disable runtime PM and re-enable it a bit later
-> > ? If so, we need to ensure this won't disable auto-suspend.
-> 
-> I am not sure I fully understand whether there is a problem.
-> 
-> Can you perhaps write the sequence of the runtime PM calls that may
-> cause an issue?
+Akihiko,
 
-Simply
+> I'd like to leave this patch as is since I cannot deny the possibility
+> that the host has a different alignment offset for discarding and
+> other operations.
 
-	pm_runtime_disable();
-	/* Do something that requires runtime PM to be disabled */
-	pm_runtime_enable();
+That's correct.
 
-at runtime (not at probe or remove time). If probe() has enabled
-auto-suspend, we don't want the above sequence to disable it. What I'm
-not sure is if there are any valid use cases for the above sequence.
+SCSI explicitly reports separate values for physical block alignment and
+"discard" alignment. The queue limits reflect this distinction.
 
-> > > > When brainstorming solutions, one idea that came up was to leverage
-> > > > the new-ish devm_pm_runtime_enable() function. The idea here is that:
-> > > > * When the devm action is called we know that the driver is being
-> > > >   removed. It's the perfect time to undo the use_autosuspend.
-> > > > * The code of pm_runtime_dont_use_autosuspend() already handles the
-> > > >   case of being called when autosuspend wasn't enabled.
-> > >
-> > > Hmm, I am hesitating to extend devm_pm_runtime_enable(), as it
-> > > currently makes it look too simple to turn off things at ->remove()
-> > > for runtime PM. While in fact it's more complicated.
-> > >
-> > > A bigger problem, for example, is that a driver calls
-> > > pm_runtime_put_sync() during ->remove(), relying on that it actually
-> > > ends up calling its ->runtime_suspend() callback to turn off various
-> > > specific resources for the device. And in fact there are no guarantees
-> > > that will happen - and when it doesn't, the next time the driver's
-> > > ->probe() runs, things are likely to be really screwed up.
-> > >
-> > > To cover this case, one could use the below code in the ->remove() callback:
-> > >
-> > > ...
-> > > pm_runtime_get_sync();
-> > >
-> > > "turn off resources for the devices - like calling
-> > > clk_disable_unprepare(), for example"
-> > >
-> > > pm_runtime_disable();
-> > > pm_runtime_put_noidle();
-> > > ...
-> > >
-> > > In this example, it would be too late to call pm_runtime_disable()
-> > > through the pm_runtime_disable_action().
-> >
-> > My experience with runtime PM is that it's hard to use, at least if you
-> > want to get it right :-) That's especially the case if a driver wants to
-> > support both CONFIG_PM and !CONFIG_PM. Here's an example at probe time:
-> >
-> >         /*
-> >          * We need the driver to work in the event that CONFIG_PM is disabled in
-> >          * the kernel, so power up and verify the chip now. In the event that
-> >          * CONFIG_PM is disabled this will leave the chip on, so that streaming
-> >          * will work.
-> >          */
-> >         ret = ov5693_sensor_powerup(ov5693);
-> >         if (ret)
-> >                 goto err_media_entity_cleanup;
-> >
-> >         ret = ov5693_detect(ov5693);
-> >         if (ret)
-> >                 goto err_powerdown;
-> >
-> >         pm_runtime_set_active(&client->dev);
-> >         pm_runtime_get_noresume(&client->dev);
-> >         pm_runtime_enable(&client->dev);
-> >
-> >         ret = v4l2_async_register_subdev_sensor(&ov5693->sd);
-> >         if (ret) {
-> >                 dev_err(&client->dev, "failed to register V4L2 subdev: %d",
-> >                         ret);
-> >                 goto err_pm_runtime;
-> >         }
-> >
-> >         pm_runtime_set_autosuspend_delay(&client->dev, 1000);
-> >         pm_runtime_use_autosuspend(&client->dev);
-> >         pm_runtime_put_autosuspend(&client->dev);
-> >
-> > And the corresponding code at remove time:
-> >
-> >         /*
-> >          * Disable runtime PM. In case CONFIG_PM is disabled in the kernel,
-> >          * make sure to turn power off manually.
-> >          */
-> >         pm_runtime_disable(&client->dev);
-> >         if (!pm_runtime_status_suspended(&client->dev))
-> >                 ov5693_sensor_powerdown(ov5693);
-> >         pm_runtime_set_suspended(&client->dev);
-> >
-> > And of course there's no documentation that explains all this, so there
-> > are endless variations of patterns originating from cargo-cult
-> > programming.
-> >
-> > I don't know what the right solution is, but we need to move towards an
-> > easier to use API if we want drivers to get it right. Any step in that
-> > direction would be welcome.
-> 
-> Yep, I fully agree with you, while it's not an easy task. At least the
-> example above looks fine to me. :-)
+While it is not super common for these two to be different, it does
+happen. There are several disk arrays that do not have an internal
+allocation unit (discard granularity) which is a power of two, for
+instance.
 
-It took me several days to figure out how to get it right. Most
-developers don't bother, so we end up with drivers broken in different
-ways :-S
-
-> Recently I noticed that some drivers are calling
-> pm_runtime_force_suspend() at ->remove(). This works fine in quite
-> many cases, but it wouldn't solve the case when CONFIG_PM is unset.
-> 
-> Perhaps we should explore adding a new API, along the lines of
-> pm_runtime_force_suspend(), but make it specific for the ->remove()
-> path, and in some way make it work for when CONFIG_PM is unset too.
-
-I'm all for an improved API for drivers that would make the above
-simpler. And documentation too, Documentation/power/runtime_pm.rst is
-more of a documentation of the runtime PM core than the driver API.
-There are some useful tips for drivers, but they're lost in a sea of
-difficult to understand and/or irrelevant information (and there's also
-a tiny bit of information in Documentation/driver-api/pm/devices.rst).
-We're missing a document targetted at driver authors.
-
-> > > > Suggested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> > > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > > > ---
-> > > >
-> > > >  drivers/base/power/runtime.c | 5 +++++
-> > > >  include/linux/pm_runtime.h   | 4 ++++
-> > > >  2 files changed, 9 insertions(+)
-> > > >
-> > > > diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-> > > > index 2f3cce17219b..d4059e6ffeae 100644
-> > > > --- a/drivers/base/power/runtime.c
-> > > > +++ b/drivers/base/power/runtime.c
-> > > > @@ -1476,11 +1476,16 @@ EXPORT_SYMBOL_GPL(pm_runtime_enable);
-> > > >
-> > > >  static void pm_runtime_disable_action(void *data)
-> > > >  {
-> > > > +       pm_runtime_dont_use_autosuspend(data);
-> > > >         pm_runtime_disable(data);
-> > > >  }
-> > > >
-> > > >  /**
-> > > >   * devm_pm_runtime_enable - devres-enabled version of pm_runtime_enable.
-> > > > + *
-> > > > + * NOTE: this will also handle calling pm_runtime_dont_use_autosuspend() for
-> > > > + * you at driver exit time if needed.
-> > > > + *
-> > > >   * @dev: Device to handle.
-> > > >   */
-> > > >  int devm_pm_runtime_enable(struct device *dev)
-> > > > diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> > > > index 9f09601c465a..2bff6a10095d 100644
-> > > > --- a/include/linux/pm_runtime.h
-> > > > +++ b/include/linux/pm_runtime.h
-> > > > @@ -567,6 +567,10 @@ static inline void pm_runtime_disable(struct device *dev)
-> > > >   * Allow the runtime PM autosuspend mechanism to be used for @dev whenever
-> > > >   * requested (or "autosuspend" will be handled as direct runtime-suspend for
-> > > >   * it).
-> > > > + *
-> > > > + * NOTE: It's important to undo this with pm_runtime_dont_use_autosuspend()
-> > > > + * at driver exit time unless your driver initially enabled pm_runtime
-> > > > + * with devm_pm_runtime_enable() (which handles it for you).
-> > > >   */
-> > > >  static inline void pm_runtime_use_autosuspend(struct device *dev)
-> > > >  {
+I am not particularly happy that we have to deal with two distinct types
+of alignment in the stack but that is the reality of the hardware we
+have to support.
 
 -- 
-Regards,
-
-Laurent Pinchart
+Martin K. Petersen	Oracle Linux Engineering
