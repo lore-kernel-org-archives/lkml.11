@@ -2,99 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 399C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8925EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235636AbiCAPUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:20:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        id S235639AbiCAPUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:20:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235610AbiCAPUC (ORCPT
+        with ESMTP id S234154AbiCAPUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:20:02 -0500
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4E5119C2C;
-        Tue,  1 Mar 2022 07:19:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KI0KE
-        HorC5jY80LfL4ZopJ7TIk5kxEutZ4yF14mxFls=; b=HvxCPnP7M1ZyqtHKWiV1Z
-        1rv07jtezRywjd3izoymUPqj7QqIg+sKD6YJrKrm5wTWZT+1Zq+AL+2bjWIDHW/6
-        m97LmajxZ5qUc7U3JMrBq7RK7roeQQGP/mAWBRE9Ru5o/3EJh20uaE0ooAYVYu4q
-        QLofvWzXpM9lKiz312nI90=
-Received: from localhost (unknown [113.87.88.41])
-        by smtp10 (Coremail) with SMTP id DsCowAAXkDlDOR5iGr3YAg--.1317S2;
-        Tue, 01 Mar 2022 23:18:28 +0800 (CST)
-From:   wudaemon <wudaemon@163.com>
-To:     davem@davemloft.net, kuba@kernel.org, m.grzeschik@pengutronix.de,
-        chenhao288@hisilicon.com, arnd@arndb.de
-Cc:     wudaemon@163.com, shenyang39@huawei.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] net: ksz884x: use time_before in netdev_open for compatibility and remove static variable
-Date:   Tue,  1 Mar 2022 15:18:08 +0000
-Message-Id: <20220301151808.2855-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 1 Mar 2022 10:20:48 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9743E0EB
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:20:06 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id r65so95691wma.2
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 07:20:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RNJbl7QnMaZHEdtpLJkjMDRJiXx7D4kOmJTqeX5y70k=;
+        b=q6E+iU2XlbDNXAYZWnPf50rPIht37/jkRm9royBk+AJcyVqBTb7Gt5ZuvGjzfqqCqe
+         z793MVf2Aii7E4//Sj1HqjL0IRC9pwaJFXYUNhaHxZVspnEupnzo5s75huu3UWjJQZzp
+         0gFECRKA36n05FCgtpCSNWbwliO7n3JvuDMLuVt4V0GIp4jMlcfFbSO4c7K0OJHlPgad
+         7XQjONpB+QCS4wPIjYsM7tCcRdOLXkKyQ5pLukc2n104OTVxMyJQH18b3tblCv75F2v7
+         Bfg8wZYzZ441ndUowrrFvoAUGFWWJKQ0/q3MALwdQqkL90Iql5mJ/H5zVzzTLbVr7S2E
+         fq/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RNJbl7QnMaZHEdtpLJkjMDRJiXx7D4kOmJTqeX5y70k=;
+        b=Kuk4BxhEU/2r6hZ9eBC3gAEXpfcr8m1nbHYH+UxpD12P816sOuprztz6z39Oacdw53
+         EsJ1tt1/KGSIQMbv4/jZTTZ6/vGLipOsbgqGuUQSvu2jD71UrrX2GaRsihMpGZumjge7
+         2rIND3IYSq8Wx27hbXbZ0rjOaQ58mPryOtEmk+bizyq/0UYRva6wXRWs4dq1KGhX91kW
+         GThJK2WLoGnWXyVsovstXS88mPiTuLoXgSNdx0touT2MMNTcn6bRP4DIlzXmAruGStX5
+         mP3D1AXSii6ek5QcjrcLHM3Us20DDVKlin6g4wnn4GbN8hPUFqytOPl+QsOJN18KyBXw
+         +PcA==
+X-Gm-Message-State: AOAM533LuoJ+LhZwFYsGq1chYel1KpZypTmgEyV4oYBpGnM7KyZPN4n2
+        JlhGH2xp4zzlBPb5eaJGlHs=
+X-Google-Smtp-Source: ABdhPJwwHoAsmZ8g/+CJWiQlouGQfJxCYoXkWtii8W5cSPPbm9HFKETEu0x/vVOeb/Mc9HZbavaSiw==
+X-Received: by 2002:a05:600c:19cf:b0:381:7ab1:46ef with SMTP id u15-20020a05600c19cf00b003817ab146efmr6053227wmq.104.1646148005388;
+        Tue, 01 Mar 2022 07:20:05 -0800 (PST)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id u4-20020adfdb84000000b001e8d8ac5394sm14714533wri.110.2022.03.01.07.20.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 07:20:04 -0800 (PST)
+Message-ID: <53df3112-869c-e05c-4b6e-0c6db60a536d@gmail.com>
+Date:   Tue, 1 Mar 2022 16:20:03 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowAAXkDlDOR5iGr3YAg--.1317S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tF45Gr48CF4fZF1DuF15Arb_yoW8WrWDpa
-        yUAay0yr48W3WjgayDA34kZF15G3y8Ka4xKFyxt34S9w17KryYyFs5KrWYyw45GrZ3XF1S
-        v3yvyF9rCas3Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pMmhF-UUUUU=
-X-Originating-IP: [113.87.88.41]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisAS2bVUMRrqbIAAAsx
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2,0/2] Add mmsys reset control for MT8186
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     chunkuang.hu@kernel.org, jitao.shi@mediatek.com,
+        xinlei.lee@mediatek.com, angelogioacchino.delregno@collabora.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220217082626.15728-1-rex-bc.chen@mediatek.com>
+ <09ce5aab-0cc6-5903-8238-551085abd739@gmail.com>
+ <31507af7c67640fa8161b13a4f279fea1a050f55.camel@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <31507af7c67640fa8161b13a4f279fea1a050f55.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-use time_before instead of direct compare for compatibility and remove the static next_jiffies variable
+Hi Rex,
 
-Signed-off-by: wudaemon <wudaemon@163.com>
----
- drivers/net/ethernet/micrel/ksz884x.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+On 01/03/2022 12:13, Rex-BC Chen wrote:
+> Hello Matthias,
+> 
+> Thanks for accepting my patches, but I didn't see this patch [1]
+> in v5.17-next/soc.
+> There will be build error if [1] is not included while [2] is applied.
+> The sw0_rst_offset is declared in [2].
+> 
+> If I have mistake, please let me know.
 
-diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-index d024983815da..ce4f5c99c1ac 100644
---- a/drivers/net/ethernet/micrel/ksz884x.c
-+++ b/drivers/net/ethernet/micrel/ksz884x.c
-@@ -5225,7 +5225,6 @@ static irqreturn_t netdev_intr(int irq, void *dev_id)
-  * Linux network device functions
-  */
- 
--static unsigned long next_jiffies;
- 
- #ifdef CONFIG_NET_POLL_CONTROLLER
- static void netdev_netpoll(struct net_device *dev)
-@@ -5411,10 +5410,12 @@ static int netdev_open(struct net_device *dev)
- 	struct dev_info *hw_priv = priv->adapter;
- 	struct ksz_hw *hw = &hw_priv->hw;
- 	struct ksz_port *port = &priv->port;
-+	unsigned long next_jiffies;
- 	int i;
- 	int p;
- 	int rc = 0;
- 
-+	next_jiffies = jiffies;
- 	priv->multicast = 0;
- 	priv->promiscuous = 0;
- 
-@@ -5428,7 +5429,7 @@ static int netdev_open(struct net_device *dev)
- 		if (rc)
- 			return rc;
- 		for (i = 0; i < hw->mib_port_cnt; i++) {
--			if (next_jiffies < jiffies)
-+			if (time_before(next_jiffies, jiffies))
- 				next_jiffies = jiffies + HZ * 2;
- 			else
- 				next_jiffies += HZ * 1;
-@@ -6563,6 +6564,7 @@ static void mib_read_work(struct work_struct *work)
- 	struct dev_info *hw_priv =
- 		container_of(work, struct dev_info, mib_read);
- 	struct ksz_hw *hw = &hw_priv->hw;
-+	unsigned long next_jiffies;
- 	struct ksz_port_mib *mib;
- 	int i;
- 
--- 
-2.25.1
+Thanks for the info. That was actually my mistake. Should be fixed by now.
 
+Thanks a lot!
+Matthias
+
+> Thanks!
+> 
+> [1]:
+> https://patchwork.kernel.org/project/linux-mediatek/patch/20220217082626.15728-2-rex-bc.chen@mediatek.com/
+> 
+> [2]:
+> https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/commit/?h=v5.17-next/soc&id=831785f0e5b919c29e1bc5f9a74e9ebd38289e24
+> 
+> BRs,
+> Rex
+> On Tue, 2022-03-01 at 08:35 +0100, Matthias Brugger wrote:
+>>
+>> On 17/02/2022 09:26, Rex-BC Chen wrote:
+>>> v2:
+>>> 1. Change variable type from unsigned int to u16.
+>>>
+>>> v1:
+>>> 1. Add a new variable in mmsys driver data to control different
+>>> register
+>>>      offset for different SoCs.
+>>> 2. Add MT8183 reset register offset.
+>>> 3. Add mmsys reset control for MT8186.
+>>>
+>>> This series is based on mmsys patch for MT8186 on [1].
+>>> [1]:
+>>> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-mediatek/patch/20220216084831.14883-4-rex-bc.chen@mediatek.com/__;!!CTRNKA9wMg0ARbw!wp2uW6phbST6ySpYRlb7iwmATAVkkCL1JBau9dCwhXj8KRasrAWnLd1EUT9gLE-oF9Yq$
+>>>   
+>>>
+>>> Rex-BC Chen (2):
+>>>     soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver data
+>>>     soc: mediatek: mmsys: add mmsys reset control for MT8186
+>>>
+>>>    drivers/soc/mediatek/mt8183-mmsys.h | 2 ++
+>>>    drivers/soc/mediatek/mt8186-mmsys.h | 2 ++
+>>>    drivers/soc/mediatek/mtk-mmsys.c    | 7 +++++--
+>>>    drivers/soc/mediatek/mtk-mmsys.h    | 3 +--
+>>>    4 files changed, 10 insertions(+), 4 deletions(-)
+>>>
+>>
+>> Series applied, thanks!
+> 
