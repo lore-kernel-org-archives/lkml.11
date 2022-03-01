@@ -2,109 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25839C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3274EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235720AbiCAPZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:25:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        id S235726AbiCAPZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:25:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235657AbiCAPZ0 (ORCPT
+        with ESMTP id S235666AbiCAPZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:25:26 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314678BE0C;
-        Tue,  1 Mar 2022 07:24:45 -0800 (PST)
-Date:   Tue, 01 Mar 2022 15:24:42 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646148283;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FgqIQu/w7rPa846Zp4oSmI/zW0SECYHzIYadGlqu5zk=;
-        b=d5IXsbOZoVt/BSJTQWDM38vvY91ni2GoMV8zbx+QgWkuIniAKffab0aVZ7048vSekwn+9C
-        07lEoObHXL0R9Cla5n+4xRnbcDAPIrCka/tFDKqWxgEmJaQK/y5rWZnJKpfsrS+hfuEjKu
-        rhInbOISCoxbu3zB1/qFcr6VSM+bejbgBw4RHTf7bcwk8102Im/J6hNhQgsHasMXlGj3u/
-        LQS+iLh/UofzC9fyqeCmxE8kbkYMSuGXxsgCRGlBNidt6V9zRtEXj3fRu+4zt93xgaKMcG
-        KQk4IB2f2VRApPR/q91wtU7OMUag7/0tll8hdo4+9JA3qY33fZ2bsLNSGN/s7Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646148283;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FgqIQu/w7rPa846Zp4oSmI/zW0SECYHzIYadGlqu5zk=;
-        b=kBGbKwr13l37fO2RCTUeTCVImqECI71rmuR/CRXRRa9KQpP6+16lAx/Glb4gVEOOAzd0R/
-        MLeMgOAN8xJI1jAA==
-From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/cpuacct: Fix charge percpu cpuusage
-Cc:     Minye Zhu <zhuminye@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220220051426.5274-1-zhouchengming@bytedance.com>
-References: <20220220051426.5274-1-zhouchengming@bytedance.com>
+        Tue, 1 Mar 2022 10:25:28 -0500
+Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846C58A6EA;
+        Tue,  1 Mar 2022 07:24:46 -0800 (PST)
+Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
+        by mxout2.routing.net (Postfix) with ESMTP id 4F9195FD74;
+        Tue,  1 Mar 2022 15:24:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1646148284;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EgKR4jh/nFy9Q8P9zxOcbItrMHn/g3ym5IeVT0hhCDk=;
+        b=KwlTPSe7/z2GJh18srISs5N8k+W2fGP9DM2Opuvtf3bK7Av4gXC+VQB88Q3dY7aI01IAQd
+        ckT6Nqc4KI8b08iKRH7jfrV/z5uYs3Fs4G7OCqrKjChCAynQeWRQ20NjWEiXz8f5vobSCu
+        PO5Bv3Bj6FlZab/+KlgygDzL85M6G6U=
+Received: from localhost.localdomain (fttx-pool-80.245.77.190.bambit.de [80.245.77.190])
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id C46001005DD;
+        Tue,  1 Mar 2022 15:24:42 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     devicetree@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH v4 0/5] Add sata nodes to rk356x
+Date:   Tue,  1 Mar 2022 16:24:16 +0100
+Message-Id: <20220301152421.57281-1-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <164614828279.16921.6828134750682486610.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 638c7878-d4fe-4eb7-bd79-5d758478ea67
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Commit-ID:     248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd
-Gitweb:        https://git.kernel.org/tip/248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd
-Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Sun, 20 Feb 2022 13:14:24 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 01 Mar 2022 16:18:37 +01:00
+This Series converts the binding for ahci-platform to yaml and adds
+sata nodes to rockchip rk356x device trees.
 
-sched/cpuacct: Fix charge percpu cpuusage
+v4:
+  YAML binding:
+  - fix min vs. max
+  - fix indention of examples
+  - move up sata-common.yaml
+  - reorder compatible
+  - add descriptions/maxitems
+  - fix compatible-structure
+  - fix typo in example achi vs. ahci
+  - add clock-names and reg-names
+  DTS-Patches:
+  - drop newline in dts
+  - re-add clock-names
+  - add soc specific compatible
+  - fix sata nodename in arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
+v3:
+  - add conversion to sata-series
+  - fix some errors in dt_binding_check and dtbs_check
+  - move to unevaluated properties = false
+  - add power-domain to yaml
+  - move sata0 to rk3568.dtsi
+  - drop clock-names and interrupt-names
 
-The cpuacct_account_field() is always called by the current task
-itself, so it's ok to use __this_cpu_add() to charge the tick time.
+Frank Wunderlich (5):
+  dt-bindings: Convert ahci-platform DT bindings to yaml
+  arm64: dts: broadcom: Fix sata nodename
+  dt-bindings: Add power-domains property to ahci-platform
+  dt-bindings: Add rk3568-dwc3-ahci compatible
+  arm64: dts: rockchip: Add sata nodes to rk356x
 
-But cpuacct_charge() maybe called by update_curr() in load_balance()
-on a random CPU, different from the CPU on which the task is running.
-So __this_cpu_add() will charge that cputime to a random incorrect CPU.
+ .../devicetree/bindings/ata/ahci-platform.txt |  79 --------
+ .../bindings/ata/ahci-platform.yaml           | 169 ++++++++++++++++++
+ .../boot/dts/broadcom/northstar2/ns2.dtsi     |   2 +-
+ arch/arm64/boot/dts/rockchip/rk3568.dtsi      |  14 ++
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      |  28 +++
+ 5 files changed, 212 insertions(+), 80 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/ata/ahci-platform.txt
+ create mode 100644 Documentation/devicetree/bindings/ata/ahci-platform.yaml
 
-Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
-Reported-by: Minye Zhu <zhuminye@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Tejun Heo <tj@kernel.org>
-Link: https://lore.kernel.org/r/20220220051426.5274-1-zhouchengming@bytedance.com
----
- kernel/sched/cpuacct.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+-- 
+2.25.1
 
-diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
-index 3d06c5e..3078005 100644
---- a/kernel/sched/cpuacct.c
-+++ b/kernel/sched/cpuacct.c
-@@ -334,12 +334,13 @@ static struct cftype files[] = {
-  */
- void cpuacct_charge(struct task_struct *tsk, u64 cputime)
- {
-+	unsigned int cpu = task_cpu(tsk);
- 	struct cpuacct *ca;
- 
- 	rcu_read_lock();
- 
- 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
--		__this_cpu_add(*ca->cpuusage, cputime);
-+		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
- 
- 	rcu_read_unlock();
- }
