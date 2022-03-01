@@ -2,119 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235759AbiCAPgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:36:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S235782AbiCAPgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:36:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234279AbiCAPgI (ORCPT
+        with ESMTP id S235763AbiCAPgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:36:08 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C313A94C7
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:35:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646148927; x=1677684927;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7VsJK1X3C2AZhqBg1w2nTjKQFwowVApnFt7DX9FwtCA=;
-  b=XZBve0MWO0FkZ3sycp9ovh2TuM6eu85xgXLUNEpNxh/GNm38/g3GLjKE
-   UUcuvk1+IqTr8rDymmE2BsTrnluyA4OTeIZ3pqqokJ2yOEjZEpsNvULec
-   cHA50aXhxDIUt+oBQ25hKoc3zqAIN9s4mO4pPr+J4TOFD891qI1gN2F6D
-   BH6dcIg0hI30nGvhzVce8POyNyWKxNxN0wDBu3AB12zmZEcaIcGej2L35
-   zsfn+tOQxfL8+1T42Tm9W61IpEPQSpjHuOWWdVIyn0IRZey5CAGDlCNzz
-   1Qe0xaOnHXwIzjMCAzlAW117f+SnKyFeRezHwRXVXcWR163+gdXoOp66w
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="236663377"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="236663377"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 07:35:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="493144449"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 01 Mar 2022 07:35:25 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP4X6-0000cu-FJ; Tue, 01 Mar 2022 15:35:24 +0000
-Date:   Tue, 1 Mar 2022 23:34:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        Alex Elder <elder@linaro.org>
-Subject: [mani-mhi:mhi-next 12/30] drivers/bus/mhi/host/../common.h:278:15:
- warning: type qualifiers ignored on function return type
-Message-ID: <202203012357.0m19fbpl-lkp@intel.com>
+        Tue, 1 Mar 2022 10:36:14 -0500
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF889A9976;
+        Tue,  1 Mar 2022 07:35:31 -0800 (PST)
+Received: by mail-ot1-f52.google.com with SMTP id l21-20020a056830239500b005afd2a7eaa2so9647230ots.9;
+        Tue, 01 Mar 2022 07:35:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p9+B3rwm2FRmUHYugNPrh2s7Ox5TZPPsbWIJUn8Olyk=;
+        b=a5fPN0fAsBgPO+S42i5Xm1b4SQyc3Q5h3+rd99YedJtGoUWxsBgO6lOHLu2CVimrtx
+         J8tiEI1XD0Ma3NUq9fxMbNIfVdvyqHhfK8liuzNXD39h7z8XmEAcjnOtxtiFHz4Wb6t7
+         khH29n2TkJLOjbYVI5VNuqZr8Ee22e0H907elXjkS4WJ9TOqUsWN+SxVQxQtWS59Kutd
+         l3S5MB/EsF8myQxReaxO1O9CES9x/taI0FmD+GjpQhM5cFOnmYyZ8n0FhhdQiCi3E20/
+         WwKeeDtOWzdWN7jhcyUaVL8Fu6bAz+EfdLHPRnh65sxiVW4uHEybupyp3lgyR9NVnVln
+         huZg==
+X-Gm-Message-State: AOAM533GDnE/wlN4Bqer1Fi3/CheKeUfo7V5ONBJ5SEFJauO00daJHyQ
+        C4EEQ/YJ5/yzdCuyUAp5fA==
+X-Google-Smtp-Source: ABdhPJzIu/fU31pUN2P41QKbMEvoWDJQcVzYI8t7f9ROGjwBDYoLMhHNIvqlVXC1duTP29Vytk+2Lw==
+X-Received: by 2002:a05:6830:1687:b0:5ad:4b8f:a3bf with SMTP id k7-20020a056830168700b005ad4b8fa3bfmr12511602otr.365.1646148931167;
+        Tue, 01 Mar 2022 07:35:31 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id a69-20020a4a4c48000000b0031bec1608fbsm6359117oob.17.2022.03.01.07.35.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 07:35:30 -0800 (PST)
+Received: (nullmailer pid 1289289 invoked by uid 1000);
+        Tue, 01 Mar 2022 15:35:29 -0000
+Date:   Tue, 1 Mar 2022 09:35:29 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-kernel@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-renesas-soc@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        devicetree@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Chris Brandt <chris.brandt@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH] dt-bindings: timer: renesas: ostm: Document Renesas
+ RZ/V2L OSTM
+Message-ID: <Yh49QXQ2phIoIFJp@robh.at.kernel.org>
+References: <20220227224845.27348-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220227224845.27348-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git mhi-next
-head:   b85d0d28ed263a5421f698d5c7bd513c7b6d8b97
-commit: ed97144182117586712c8036ded0bab36898eae0 [12/30] bus: mhi: Make mhi_state_str[] array static inline and move to common.h
-config: arc-randconfig-r043-20220301 (https://download.01.org/0day-ci/archive/20220301/202203012357.0m19fbpl-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git/commit/?id=ed97144182117586712c8036ded0bab36898eae0
-        git remote add mani-mhi https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git
-        git fetch --no-tags mani-mhi mhi-next
-        git checkout ed97144182117586712c8036ded0bab36898eae0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/bus/
+On Sun, 27 Feb 2022 22:48:44 +0000, Lad Prabhakar wrote:
+> Document the General Timer Module(a.k.a OSTM) found on the RZ/V2L SoC.
+> OSTM module is identical to one found RZ/G2L SoC. No driver changes are
+> required as generic compatible string "renesas,ostm" will be used as a
+> fallback.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> DTSI changes have been posted as part of series [0]
+> 
+> [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
+> 20220227203744.18355-8-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> ---
+>  Documentation/devicetree/bindings/timer/renesas,ostm.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/bus/mhi/host/internal.h:10,
-                    from drivers/bus/mhi/host/init.c:21:
->> drivers/bus/mhi/host/../common.h:278:15: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
-     278 | static inline const char * const mhi_state_str(enum mhi_state state)
-         |               ^~~~~
-
-
-vim +278 drivers/bus/mhi/host/../common.h
-
-   277	
- > 278	static inline const char * const mhi_state_str(enum mhi_state state)
-   279	{
-   280		switch (state) {
-   281		case MHI_STATE_RESET:
-   282			return "RESET";
-   283		case MHI_STATE_READY:
-   284			return "READY";
-   285		case MHI_STATE_M0:
-   286			return "M0";
-   287		case MHI_STATE_M1:
-   288			return "M1";
-   289		case MHI_STATE_M2:
-   290			return "M2";
-   291		case MHI_STATE_M3:
-   292			return "M3";
-   293		case MHI_STATE_M3_FAST:
-   294			return "M3 FAST";
-   295		case MHI_STATE_BHI:
-   296			return "BHI";
-   297		case MHI_STATE_SYS_ERR:
-   298			return "SYS ERROR";
-   299		default:
-   300			return "Unknown state";
-   301		}
-   302	};
-   303	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Applied, thanks!
