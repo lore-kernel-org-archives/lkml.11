@@ -2,102 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9AEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D97C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236477AbiCARWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 12:22:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        id S236480AbiCARWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 12:22:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236470AbiCARWT (ORCPT
+        with ESMTP id S233345AbiCARWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 12:22:19 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B185C13F7F
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:21:37 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id i11so22910736eda.9
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 09:21:37 -0800 (PST)
+        Tue, 1 Mar 2022 12:22:54 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDFF2DABD
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:22:13 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id 139so14910986pge.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 09:22:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4kKl8QGooJd4blFxXWK5FL64wYyB/9eBiL1aDG5cnC0=;
-        b=NqTQCDYuexrHCqcYN7yvD/vWOHnaDLIia6bWQYHUYOxhWU+2MBAr1DuF9IxxVWG9NL
-         4jk0G1dPP/rlDhCuRgrHzmPRTrAlRVIOMzIAnl2X8fogbZf3su4YMFi6ImkUUtRjCRQN
-         4m/umqkWZpXsYVobFC0jDrwgo09g8qIg5Lm5M=
+        bh=YmI3sf8/z6VNUU3GK/NGwjBSNbHziWiyj48Jpew7XtE=;
+        b=C700QmEoBAgxezGfjxaTykOtQq9AzNdkKWgr6GfKkxBZjNHSkQx/Mizw9hkK8BEprw
+         2eqMUBw9IOSfWY7ReSAarzzv99FflP1gmSxiiMPvvSO78RtzZrl1Urlfyv2b1BcYuazX
+         HToJYqV/m/iPLvCPzfztlEG81/e7Jwl1jiw0XwjA6n9hAdjK6tYO+9hbqEvbTWfJxj28
+         4L4xvaLLyKJmQcSzoM9NWe7AWVEKH+30FVJPlF4IbEF0SE0zbqS1eFSYgdUXhsunTQWI
+         nG2w0993cECeAKZuwovO0PEMlYgbzcUz0N+ntOzD52NZimEQjjigU0rsEe69yk1GyI9s
+         vtww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4kKl8QGooJd4blFxXWK5FL64wYyB/9eBiL1aDG5cnC0=;
-        b=8NwF4b7ZN4ynwZ2Oy5oqFD4soZccSsZ7/Kr3Vt10iloMe+bGySr+x9GPYDPLJug56W
-         SXbgzBX9D4PIxciIISzXQOxg/iMK2m0l1y2XY0L8XqijSYSXh0mJWWiNIlDabHbmHKA5
-         +9Crqszd/0JAZCxV0oMaGxx1Cuww98CbwIW5Fs1NBvYB9QFxTRWXav7bHZcCH1k1AQlq
-         Hdmtf4K2GrsCkQl2Ooc1IFxySg6kaEhpBRNWSNxv+iLJhl7TXJ5SLIE1mk7cfk7Y7/A3
-         nO+vuLQwY7YjLShsq3FmwNsAMvWFkFTYk87HbQyiSY9eLICCqhiL30iAFJ4UEEReT8vF
-         AaRw==
-X-Gm-Message-State: AOAM530rjh/CcBsBoEWNcpYeFqRg3OC6M5FcOFqOCsxP2UCQjrCWSPDz
-        oQnXIb3W1ge6Ha4DdCgTKIdlJHnDPiyr/zM5
-X-Google-Smtp-Source: ABdhPJw6+Uhgf3eVVtSkGHZzfCi1szpd+1spQP8AG326M77N2LnNekpivNe/5jHhJhenRedjhO8RGQ==
-X-Received: by 2002:a05:6402:c10:b0:40f:33cd:a39 with SMTP id co16-20020a0564020c1000b0040f33cd0a39mr25437530edb.234.1646155295892;
-        Tue, 01 Mar 2022 09:21:35 -0800 (PST)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id cq9-20020a056402220900b00413c9ab6377sm2087898edb.27.2022.03.01.09.21.34
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 09:21:34 -0800 (PST)
-Received: by mail-wr1-f54.google.com with SMTP id ay10so3782181wrb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 09:21:34 -0800 (PST)
-X-Received: by 2002:a5d:64ea:0:b0:1ea:8148:6b97 with SMTP id
- g10-20020a5d64ea000000b001ea81486b97mr19720919wri.679.1646155293603; Tue, 01
- Mar 2022 09:21:33 -0800 (PST)
+        bh=YmI3sf8/z6VNUU3GK/NGwjBSNbHziWiyj48Jpew7XtE=;
+        b=dKPiQD0ItE7I/nkUsS+0/NCyXrzruqn9iTGAsaqE94NewwSEJ+D8/Opxrr26shojcF
+         LT2QNTcBAGtcK31Fd7Xjch/Z/fQCZ9hPal4LmOELozDIouw8ZyjHfFBbGeJt4FxGf4XS
+         3S+ebpwey62FPZH+Km92uhYh6HZalZwlvgsRkiIWhNntN311CvnxBLyCohWOMNa/Xasx
+         UIVwlaoSnArzk30eK9K1YqXRwWAZmUncuAfCEPyNUdE8J7tx+BSUudzKsUJfSMjdAlUf
+         oiNYBjEt+QLj+3HNmPmHLVF3mTy+5xkpAD/2lJU4z3Q7ZQKo5AMfFsRC87mJJtQBV9x9
+         Ntag==
+X-Gm-Message-State: AOAM533UPiuXkFhB0R05WOofTIeaqC26CuhX88W8uFu3T+orJsxLE2bl
+        M11erPMMlspgrM4HeX/bAM6ro9+iLrwufVJmNu5Kbg==
+X-Google-Smtp-Source: ABdhPJybeDiL39InkiZ7SRlRZFj7cyMX1L8QoV/jWQ3P2+kJGQ6zY14rMiTLgeiB9iu0H8NmbZm1Gh+gGvwDoEAuwZU=
+X-Received: by 2002:a63:5148:0:b0:373:c8d7:f23f with SMTP id
+ r8-20020a635148000000b00373c8d7f23fmr22407754pgl.509.1646155333223; Tue, 01
+ Mar 2022 09:22:13 -0800 (PST)
 MIME-Version: 1.0
-References: <1645509309-16142-1-git-send-email-quic_c_skakit@quicinc.com> <1645509309-16142-3-git-send-email-quic_c_skakit@quicinc.com>
-In-Reply-To: <1645509309-16142-3-git-send-email-quic_c_skakit@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 1 Mar 2022 09:21:20 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=Xj377iCjfXz-MA31y7+=nMMH8bsP4ZC13ao0BOCfNd4A@mail.gmail.com>
-Message-ID: <CAD=FV=Xj377iCjfXz-MA31y7+=nMMH8bsP4ZC13ao0BOCfNd4A@mail.gmail.com>
-Subject: Re: [PATCH V4 2/4] leds: Add pm8350c support to Qualcomm LPG driver
-To:     Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        linux-leds@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+References: <20220224060148.4092228-1-shakeelb@google.com> <Yh5RiUMegXf92ivM@cmpxchg.org>
+In-Reply-To: <Yh5RiUMegXf92ivM@cmpxchg.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 1 Mar 2022 09:22:02 -0800
+Message-ID: <CALvZod4ZSrhGTNhEXc8JfT0r=v1tNBXsQc6Be-cOLi1UFzzoQQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: add myself as a memcg co-maintainer as well
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Mar 1, 2022 at 9:02 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Wed, Feb 23, 2022 at 10:01:48PM -0800, Shakeel Butt wrote:
+> > I have been contributing and reviewing to the memcg codebase for last
+> > couple of years. So, making it official.
+> >
+> > Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> > Cc: Johannes Weiner <hannes@cmpxchg.org>
+> > Cc: Michal Hocko <mhocko@kernel.org>
+> > Cc: Roman Gushchin <roman.gushchin@linux.dev>
+>
+> It's already been sent to Linux, but for the record
+>
+> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
 
-On Mon, Feb 21, 2022 at 9:55 PM Satya Priya <quic_c_skakit@quicinc.com> wrote:
->
-> Add pm8350c compatible and lpg_data to the driver.
->
-> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-> ---
-> Changes in V2:
->  - Added const for lpg_channel_data[] struct.
->
-> Changes in V3:
->  - Correct the num_channels and add respective base addresses.
->
-> Changes in V4:
->  - Remove .pwm_9bit_mask, add .triled_base and .triled_mask.
->
->  drivers/leds/rgb/leds-qcom-lpg.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-
-Tested-by: Douglas Anderson <dianders@chromium.org>
-
-I'm very interested in knowing if there's anything blocking this patch
-(and the one from Bjorn that it depends on) from landing. Thanks! :-)
-
--Doug
+Thanks all.
