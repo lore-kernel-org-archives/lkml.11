@@ -2,94 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234708AbiCAMUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:20:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50578 "EHLO
+        id S234709AbiCAMV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234707AbiCAMU1 (ORCPT
+        with ESMTP id S233039AbiCAMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:20:27 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64CB8B6DC
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 04:19:46 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id u3so26831484ybh.5
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 04:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=g2ZNVVCbLbWFvHoFdGGw62aXjqOkohSTObIxoEgWGUA=;
-        b=gix1vsY2RfCg5rYq4KwA43bmZ3RwluQY2zRNMsUm3HFjGzu6kXGzw8E5AnFbdH1W4W
-         JmuUAniBKPQLTsDZhs0ShrkyYXN4tP1Xd07Uf/DuHqPkVJ1Sgu73p+ie4VmDyCBXbOAZ
-         DxI9hW087f7paMRXscpnr4TKGnKrd06W8nEccLJojJP+czW5WoNHQGKebjZmuoKxXLnw
-         IHW015G6V7IPJ6hEDgUlXywPATd//YdwfU4l8YGW8Zu8qegZY+7D7NccaNrl34Nayy3B
-         wrqmLzOx3+zufEdsX8ch8BRM046OZStZwhCPInE7PbaXxDryokYJKi7tjUv4yOcPfcCg
-         vxNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=g2ZNVVCbLbWFvHoFdGGw62aXjqOkohSTObIxoEgWGUA=;
-        b=Av/yiyphilZDc1JIgOUC1+bX4WNhcWNLpBQtzYhbtOOIWzjn61GkrXCNTuHN6ICd0g
-         IYKb8VrlRnJiyrKV8ohnl+UJmUwcKvxzTj32ENGo2lr/7RVcHs7X1l/OzZ+T3EKep8+H
-         DYxRVC+lgjEQaOLe1TOPgEMbSFEguEVjOrd+xB/eDIEYDSIIlBhuUC3dmf9aV3Dba2rj
-         zqIrFAT6RCLacMb15MPJIMUdKT1V7jnf7cLn1gNqv6cPeUOAEp0pfkSI3gqWYXq/IvGw
-         LEeM7MOTbByjlMP/yv0bvSrdY0qEEmxKh+felUAVpL+fX0KqpdhsdYg+VZzWM15X/uhg
-         GMMQ==
-X-Gm-Message-State: AOAM53134O/Q/RCfqi9XrnBcULpcZJU0pa6rdRvwWyvfCBzkQDicx3Dg
-        yywLMS8GNCyGcHyYVFVm7E9eacrNISXvOAhJHIe3/ItldTZlokOX
-X-Google-Smtp-Source: ABdhPJxir7Iw04CbEhZhYBqHEUpAGK0Kl6rlU9aXJwfJs8ZPFHXTW0ItNAj1KDgiIQcsP7+MLdr1dyrz0vdBDp7plfc=
-X-Received: by 2002:a25:c592:0:b0:628:9263:38ba with SMTP id
- v140-20020a25c592000000b00628926338bamr215069ybe.291.1646137185832; Tue, 01
- Mar 2022 04:19:45 -0800 (PST)
+        Tue, 1 Mar 2022 07:21:25 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A7957170;
+        Tue,  1 Mar 2022 04:20:43 -0800 (PST)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K7GWx17dbzdZj5;
+        Tue,  1 Mar 2022 20:19:25 +0800 (CST)
+Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Mar 2022 20:20:41 +0800
+Received: from huawei.com (10.175.124.27) by dggpemm500004.china.huawei.com
+ (7.185.36.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 1 Mar
+ 2022 20:20:40 +0800
+From:   Laibin Qiu <qiulaibin@huawei.com>
+To:     <tj@kernel.org>, <axboe@kernel.dk>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next v2] blk-throttle: Set BIO_THROTTLED when bio has been throttled
+Date:   Tue, 1 Mar 2022 20:39:19 +0800
+Message-ID: <20220301123919.2381579-1-qiulaibin@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 1 Mar 2022 13:19:34 +0100
-Message-ID: <CACRpkdZmax=QpwnfgOJOR-5P3wTyKegaDn=VvhVOYz_AChc7bw@mail.gmail.com>
-Subject: Question on expiring HRtimer in-kernel
-To:     linux-power <linux-power@fi.rohmeurope.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>
-Cc:     Sebastian Reichel <sre@kernel.org>,
-        Code Kipper <codekipper@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500004.china.huawei.com (7.185.36.219)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have a problem with a premature expiring HRtimer.
+1.In current process, all bio will set the BIO_THROTTLED flag
+after __blk_throtl_bio().
 
-The HRtimer hrtimer_set_expires_range() is used in two places in
-the upstream kernel:
-kernel/futex/core.c
-drivers/power/supply/ab8500_chargalg.c
+2.If bio needs to be throttled, it will start the timer and
+stop submit bio directly. Bio will submit in
+blk_throtl_dispatch_work_fn() when the timer expires.But in
+the current process, if bio is throttled. The BIO_THROTTLED
+will be set to bio after timer start. If the bio has been
+completed, it may cause use-after-free blow.
 
-Now I am testing the code in the latter, and it has seen some
-bitrot since merged in 2012. Maybe it was correct at one point.
-The timer is started like this:
+BUG: KASAN: use-after-free in blk_throtl_bio+0x12f0/0x2c70
+Read of size 2 at addr ffff88801b8902d4 by task fio/26380
 
-    hrtimer_init(&di->safety_timer, CLOCK_REALTIME, HRTIMER_MODE_ABS);
-(...)
-    hrtimer_set_expires_range(&di->safety_timer,
-        ktime_set(timer_expiration * ONE_HOUR_IN_SECONDS, 0),
-        ktime_set(FIVE_MINUTES_IN_SECONDS, 0));
-    hrtimer_start_expires(&di->safety_timer, HRTIMER_MODE_REL);
+ dump_stack+0x9b/0xce
+ print_address_description.constprop.6+0x3e/0x60
+ kasan_report.cold.9+0x22/0x3a
+ blk_throtl_bio+0x12f0/0x2c70
+ submit_bio_checks+0x701/0x1550
+ submit_bio_noacct+0x83/0xc80
+ submit_bio+0xa7/0x330
+ mpage_readahead+0x380/0x500
+ read_pages+0x1c1/0xbf0
+ page_cache_ra_unbounded+0x471/0x6f0
+ do_page_cache_ra+0xda/0x110
+ ondemand_readahead+0x442/0xae0
+ page_cache_async_ra+0x210/0x300
+ generic_file_buffered_read+0x4d9/0x2130
+ generic_file_read_iter+0x315/0x490
+ blkdev_read_iter+0x113/0x1b0
+ aio_read+0x2ad/0x450
+ io_submit_one+0xc8e/0x1d60
+ __se_sys_io_submit+0x125/0x350
+ do_syscall_64+0x2d/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-What the author wanted to achieve is a very definitive callback in one
-hour relative to now +/- 5 min, and that is one hour later in the
-physical world,
-as this deals with battery charging.
+Allocated by task 26380:
+ kasan_save_stack+0x19/0x40
+ __kasan_kmalloc.constprop.2+0xc1/0xd0
+ kmem_cache_alloc+0x146/0x440
+ mempool_alloc+0x125/0x2f0
+ bio_alloc_bioset+0x353/0x590
+ mpage_alloc+0x3b/0x240
+ do_mpage_readpage+0xddf/0x1ef0
+ mpage_readahead+0x264/0x500
+ read_pages+0x1c1/0xbf0
+ page_cache_ra_unbounded+0x471/0x6f0
+ do_page_cache_ra+0xda/0x110
+ ondemand_readahead+0x442/0xae0
+ page_cache_async_ra+0x210/0x300
+ generic_file_buffered_read+0x4d9/0x2130
+ generic_file_read_iter+0x315/0x490
+ blkdev_read_iter+0x113/0x1b0
+ aio_read+0x2ad/0x450
+ io_submit_one+0xc8e/0x1d60
+ __se_sys_io_submit+0x125/0x350
+ do_syscall_64+0x2d/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-However sometimes this fires almost immediately rather than in an hour.
+Freed by task 0:
+ kasan_save_stack+0x19/0x40
+ kasan_set_track+0x1c/0x30
+ kasan_set_free_info+0x1b/0x30
+ __kasan_slab_free+0x111/0x160
+ kmem_cache_free+0x94/0x460
+ mempool_free+0xd6/0x320
+ bio_free+0xe0/0x130
+ bio_put+0xab/0xe0
+ bio_endio+0x3a6/0x5d0
+ blk_update_request+0x590/0x1370
+ scsi_end_request+0x7d/0x400
+ scsi_io_completion+0x1aa/0xe50
+ scsi_softirq_done+0x11b/0x240
+ blk_mq_complete_request+0xd4/0x120
+ scsi_mq_done+0xf0/0x200
+ virtscsi_vq_done+0xbc/0x150
+ vring_interrupt+0x179/0x390
+ __handle_irq_event_percpu+0xf7/0x490
+ handle_irq_event_percpu+0x7b/0x160
+ handle_irq_event+0xcc/0x170
+ handle_edge_irq+0x215/0xb20
+ common_interrupt+0x60/0x120
+ asm_common_interrupt+0x1e/0x40
 
-My first thought is to pass HRTIMER_MODE_REL also to init as
-hrtimer_set_expires_range() could make things happen immediately
-if we have ABS set, but this is all just intuitive.
+Fix this by move BIO_THROTTLED set into the queue_lock.
 
-Any hints? Better ways to create a definitive event in one hour?
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+---
+ block/blk-throttle.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yours,
-Linus Walleij
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index a3b3ebc72dd4..9d4ad9317509 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -2145,13 +2145,14 @@ bool __blk_throtl_bio(struct bio *bio)
+ 	}
+ 
+ out_unlock:
+-	spin_unlock_irq(&q->queue_lock);
+ 	bio_set_flag(bio, BIO_THROTTLED);
+ 
+ #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
+ 	if (throttled || !td->track_bio_latency)
+ 		bio->bi_issue.value |= BIO_ISSUE_THROTL_SKIP_LATENCY;
+ #endif
++	spin_unlock_irq(&q->queue_lock);
++
+ 	rcu_read_unlock();
+ 	return throttled;
+ }
+-- 
+2.22.0
+
