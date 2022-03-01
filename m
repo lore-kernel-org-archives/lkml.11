@@ -2,103 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88DE5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AD5C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbiCAO0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:26:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S235245AbiCAO0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:26:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbiCAO0S (ORCPT
+        with ESMTP id S231732AbiCAO0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:26:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3386B0BF
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:25:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55919614B5
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 14:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C7C7C340EE;
-        Tue,  1 Mar 2022 14:25:36 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="aUiJBE2P"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646144734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gkM5iHhxynbNhKrPibaH6Olh8PkRIzYLh5eU8djjz7s=;
-        b=aUiJBE2PsPyY7LoGKedLpKFxa8Q0DzNm5AYmhXbjdiPuMF9zy/X+2txrQGyXW+gzd7ddRc
-        Luu9f7+cYxGtcnYhK7Mj9dbeFdty9xxPTBgnJn3saDivcqTaoKzBlxnucCoErUT4u51DhX
-        yPXrgQrglnL4Cq3fktFalpEhS1cC6mA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a6a3dd8f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 1 Mar 2022 14:25:34 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH] random: do not export add_vmfork_randomness() unless needed
-Date:   Tue,  1 Mar 2022 15:25:28 +0100
-Message-Id: <20220301142528.243059-1-Jason@zx2c4.com>
+        Tue, 1 Mar 2022 09:26:44 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC5A6E4C9;
+        Tue,  1 Mar 2022 06:26:02 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A216C2110B;
+        Tue,  1 Mar 2022 14:26:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646144761;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=igSUBiGP75gcwuKKcw5IrELkytjlsx5b26P1/uxLTDI=;
+        b=m4GhdnjslealexAP/oRzJR1pak++pQpgQY4kGvEzjaC3YgUl6DX+wndyUWZb7LLrMlUDUL
+        bDXGGES3NylgjPmmsF6g4hclkisVsizYxF7LUGh4WuoXDGkJOvlIsbr9g2ywdN4oZ/N8I5
+        Egd3FZTeVFhYl7SEjKJmrYj0gjJMsmc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646144761;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=igSUBiGP75gcwuKKcw5IrELkytjlsx5b26P1/uxLTDI=;
+        b=AS2kmChYl/LTYbL9BGHDEoAKkBtbDX0SK3ZHu2HGLBKbGwSLvwAIOHJkcZ711kpgGAIw50
+        0JidFyRYjfU/SpDg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 600F3A3B81;
+        Tue,  1 Mar 2022 14:26:01 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id E36AEDA80E; Tue,  1 Mar 2022 15:22:09 +0100 (CET)
+Date:   Tue, 1 Mar 2022 15:22:09 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Jens Axboe <axboe@kernel.dk>, Coly Li <colyli@suse.de>,
+        Mike Snitzer <snitzer@redhat.com>, Song Liu <song@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Phillip Lougher <phillip@squashfs.org.uk>,
+        linux-block@vger.kernel.org, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
+        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org
+Subject: Re: [PATCH 1/5] btrfs: simplify ->flush_bio handling
+Message-ID: <20220301142209.GN12643@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Coly Li <colyli@suse.de>,
+        Mike Snitzer <snitzer@redhat.com>, Song Liu <song@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
+        Phillip Lougher <phillip@squashfs.org.uk>,
+        linux-block@vger.kernel.org, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
+        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org
+References: <20220301084552.880256-1-hch@lst.de>
+ <20220301084552.880256-2-hch@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301084552.880256-2-hch@lst.de>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since add_vmfork_randomness() is only called from vmgenid.o, we can
-guard it in CONFIG_VMGENID, similarly to how we do with
-add_disk_randomness() and CONFIG_BLOCK. If we ever have multiple things
-calling into add_vmfork_randomness(), we can add another shared Kconfig
-symbol for that, but for now, this is good enough. Even though
-add_vmfork_randomess() is a pretty small function, removing it means
-that there are only calls to crng_reseed(false) and none to
-crng_reseed(true), which means the compiler can constant propagate it
-and simply crng_reseed().
+On Tue, Mar 01, 2022 at 10:45:48AM +0200, Christoph Hellwig wrote:
+> @@ -6962,16 +6961,6 @@ struct btrfs_device *btrfs_alloc_device(struct btrfs_fs_info *fs_info,
+>  	if (!dev)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	/*
+> -	 * Preallocate a bio that's always going to be used for flushing device
+> -	 * barriers and matches the device lifespan
+> -	 */
+> -	dev->flush_bio = bio_kmalloc(GFP_KERNEL, 0);
+> -	if (!dev->flush_bio) {
+> -		kfree(dev);
+> -		return ERR_PTR(-ENOMEM);
+> -	}
+> -
+>  	INIT_LIST_HEAD(&dev->dev_list);
+>  	INIT_LIST_HEAD(&dev->dev_alloc_list);
+>  	INIT_LIST_HEAD(&dev->post_commit_list);
+> diff --git a/fs/btrfs/volumes.h b/fs/btrfs/volumes.h
+> index 005c9e2a491a1..9af7b6211920c 100644
+> --- a/fs/btrfs/volumes.h
+> +++ b/fs/btrfs/volumes.h
+> @@ -117,7 +117,7 @@ struct btrfs_device {
+>  	u64 commit_bytes_used;
+>  
+>  	/* for sending down flush barriers */
+> -	struct bio *flush_bio;
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c  | 2 ++
- include/linux/random.h | 2 ++
- 2 files changed, 4 insertions(+)
+Please add this comment to the struct member declaration:
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 99cf9e829d1e..662b7edb3b7a 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1169,6 +1169,7 @@ void add_bootloader_randomness(const void *buf, size_t size)
- }
- EXPORT_SYMBOL_GPL(add_bootloader_randomness);
- 
-+#ifdef CONFIG_VMGENID
- /*
-  * Handle a new unique VM ID, which is unique, not secret, so we
-  * don't credit it, but we do immediately force a reseed after so
-@@ -1183,6 +1184,7 @@ void add_vmfork_randomness(const void *unique_vm_id, size_t size)
- 	}
- }
- EXPORT_SYMBOL_GPL(add_vmfork_randomness);
-+#endif
- 
- struct fast_pool {
- 	union {
-diff --git a/include/linux/random.h b/include/linux/random.h
-index 117468f3a92e..e6225ac98572 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -34,7 +34,9 @@ extern void add_input_randomness(unsigned int type, unsigned int code,
- extern void add_interrupt_randomness(int irq) __latent_entropy;
- extern void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				       size_t entropy);
-+#ifdef CONFIG_VMGENID
- extern void add_vmfork_randomness(const void *unique_vm_id, size_t size);
-+#endif
- 
- extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
--- 
-2.35.1
+	/* Bio used for flushing device barriers */
 
+> +	struct bio flush_bio;
+
+Otherwise
+
+Reviewed-by: David Sterba <dsterba@suse.com>
+
+Thanks.
