@@ -2,95 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF05C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234098AbiCAKYt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
+        id S234212AbiCAKZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:25:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiCAKYr (ORCPT
+        with ESMTP id S234127AbiCAKY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:24:47 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540D956222
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:24:06 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A67CA3F1CA
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:24:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646130244;
-        bh=Xjhp/CXOOSUteuBUcGQJQGfNTsSZQGbcPmAbNzxC4NQ=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=MZCxDQ/CnvCAHxh3L87F9sSvqUAHig+8AKQpvR5rwtRGzHVWF9V1k9g6aDiDVOQUK
-         Ytxa3qa4ds1Y6P1dgePbRC15A4ccJE2WSxuV58ydAOZ1uC6BQPl80ZZazi5VGG3DC8
-         n8XP3WXZAB7kNicsji8lFQeF4zZnDdi8Qdj9R9sKsJle8Be7AVn1oxBfP9O4xbmPUT
-         hRwCxWB2R/fVzAjBXVKEJCKWv+fC2jv5EK/ClDhaQEQkHgEl9x9Nur31f0oUPqabwn
-         LI0gYRFwz2whX/o0v8Zh7i6W4ONnmL5dBogD73UgqjQQaWZ1u4HwLKNpgbm+5KL+Xi
-         dha17QMl3FlYQ==
-Received: by mail-ed1-f69.google.com with SMTP id l14-20020a056402344e00b0041593c729adso496509edc.18
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 02:24:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Xjhp/CXOOSUteuBUcGQJQGfNTsSZQGbcPmAbNzxC4NQ=;
-        b=sqMj8aOA2cA2zY+7bQOBN+RwH4fIvEpi3+1h3WAmS9vcg2Z45I4ZqGxjXxcsMafGa1
-         SgwC4P79JMuH6XOk9YpFOQgl91TrPvAnGKTZx7jzZl4IaQrPEaX5siHggkML/FlKdpXP
-         25pgfRy0S6SYtW1BWlGwUd8HkT1k7kFc73ZcI3+J4r59Zy0uUeS0wsri8xwFcyB2g3Ud
-         8lita1NUcvcpUOERtpXzHVunIW/qvHpaGC8MnNHkLJMMNjRxk9h0xkdp3UZh4jwJI5l0
-         0+JwzwoaLEEYCXw3iaBwRF++D7sCvnBawkcvABwQ9KiGIw3CZ2NRKrD8RU96sWar3+/j
-         Pi5w==
-X-Gm-Message-State: AOAM531gS2nvr2LrT820+FazxP9W3QttmXuNc/mSCsB/XUKtk/QsR48S
-        1+NMsU4rQ7yZmnL2AFhkZJTRB+MnypwIMjqfaZ+Gw/+osp3oHpIyKjJQPabojx1jmPF6VuMcDvX
-        6F5Qcg3P7fmocK2G6myR+0EzZmJJy4RkZuF4mdeGR/g==
-X-Received: by 2002:a17:907:a088:b0:6d6:f8f9:b15a with SMTP id hu8-20020a170907a08800b006d6f8f9b15amr824007ejc.203.1646130244354;
-        Tue, 01 Mar 2022 02:24:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxWe/UtN8F4RzBRq5b4m/3WBqmFuFUYvz/vZz9tEnuqk0rT7rK+KwECBeH8+rP48tkDqNED8w==
-X-Received: by 2002:a17:907:a088:b0:6d6:f8f9:b15a with SMTP id hu8-20020a170907a08800b006d6f8f9b15amr823986ejc.203.1646130244136;
-        Tue, 01 Mar 2022 02:24:04 -0800 (PST)
-Received: from [192.168.0.136] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006b2511ea97dsm5174727ejc.42.2022.03.01.02.24.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 02:24:03 -0800 (PST)
-Message-ID: <c7fea223-b958-deea-70b2-a649e3cc0ec4@canonical.com>
-Date:   Tue, 1 Mar 2022 11:24:02 +0100
+        Tue, 1 Mar 2022 05:24:59 -0500
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 02:24:18 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3477358830;
+        Tue,  1 Mar 2022 02:24:17 -0800 (PST)
+Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MmU9X-1o6Xg02KI5-00iRlQ; Tue, 01 Mar 2022 11:19:13 +0100
+Received: by mail-wr1-f47.google.com with SMTP id j17so19731748wrc.0;
+        Tue, 01 Mar 2022 02:19:13 -0800 (PST)
+X-Gm-Message-State: AOAM532h+TSsT7XvTtltQpow3PwSn4+2uzT8xgz1pYiE3i8l451g41cf
+        UNXRvarmF9I01/AqayURu6IwTnPEVV950GaoALM=
+X-Google-Smtp-Source: ABdhPJzzPOquGV619/Ft2Hlid0sPxXMa9f5QyUk3acsgXWRETaM+gTfyx5RKFPDTTgU6lhKUdNltea8NVoyAewfh61A=
+X-Received: by 2002:a5d:63c2:0:b0:1ef:840e:e139 with SMTP id
+ c2-20020a5d63c2000000b001ef840ee139mr11569532wrw.192.1646129952971; Tue, 01
+ Mar 2022 02:19:12 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net/nfc/nci: use memset avoid infoleaks
-Content-Language: en-US
-To:     Lv Ruyi <cgel.zte@gmail.com>
-Cc:     chi.minghao@zte.com.cn, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        zealci@zte.com.cn
-References: <664af071-badf-5cc9-c065-c702b0c8a13d@canonical.com>
- <20220301093424.2053471-1-lv.ruyi@zte.com.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220301093424.2053471-1-lv.ruyi@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220226110338.77547-1-chenhuacai@loongson.cn>
+ <20220226110338.77547-10-chenhuacai@loongson.cn> <CAMj1kXHWRZcjF9H2jZ+p-HNuXyPs-=9B8WiYLsrDJGpipgKo_w@mail.gmail.com>
+ <YhupaVZvbipgke2Z@kroah.com> <CAAhV-H6hmvyniHP-CMxtOopRHp6XYaF58re13snMrk_Umj+wSQ@mail.gmail.com>
+ <CAMj1kXFa447Z21q3uu0UFExDDDG9Y42ZHtiUppu6QpuNA_5bhA@mail.gmail.com>
+ <CAAhV-H7X+Txq4HaaF49QZ9deD=Dwx_GX-2E9q_nA8P76ZRDeXg@mail.gmail.com>
+ <CAMj1kXGH1AtL8_KbFkK+FRgWQPzPm1dCdvEF0A2KksREGTSeCg@mail.gmail.com>
+ <CAAhV-H6fdJwbVG_m0ZL_JGROKCrCbc-fKpj3dnOowaEUA+3ujQ@mail.gmail.com>
+ <CAK8P3a2hr2rjyLpkeG1EKiOVGrY4UCB61OHGj5nzft-KCS3jYA@mail.gmail.com>
+ <CAMj1kXHGG80LdNUUA+Ug1VBXWuvtPxKpqnuChg2N=6Hf2EhY7g@mail.gmail.com> <CAAhV-H6dxkdmDizd+ZVhJ_zHZ9RK8QjKU-3U-CaovLiNbEVpbg@mail.gmail.com>
+In-Reply-To: <CAAhV-H6dxkdmDizd+ZVhJ_zHZ9RK8QjKU-3U-CaovLiNbEVpbg@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 1 Mar 2022 11:18:56 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2wF2XA8wCFtP9RNTNQf3W9D8fKOuQ704yE+dRSS5aCVw@mail.gmail.com>
+Message-ID: <CAK8P3a2wF2XA8wCFtP9RNTNQf3W9D8fKOuQ704yE+dRSS5aCVw@mail.gmail.com>
+Subject: Re: [PATCH V6 09/22] LoongArch: Add boot and setup routines
+To:     Huacai Chen <chenhuacai@gmail.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-efi <linux-efi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:XStCGZX/ROQSePDe1dyXr69F8I2kJSDcoRYdgl9fhDF89FNNCW1
+ nl7YRK11Fp/q7Y2u5OU7dCpbyI0QK7AQ9lUDGcY0XS7/J3ubQpMAGQA7zTGx1I8haebHYrh
+ Al/vYhQKudbTknC/RGK+Q07kfD3/1SETShIQeF6bkDlvbciFXCm1ftcmZvuAEm8HSodfAP5
+ KlQpqVR5YoPF1QJu6+RbA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:9IFbU8ZQfYw=:X3PrtjVhlasVZ4xhIuFgqS
+ R846WvDKkxFkaQq8faDAZlJJr4vCSNQygFIGKs9/SQRVyjiCahjK7OznSWWDKPvrmWUdYPBlV
+ /DFUEoWDV4F4zCynGjzruVcV/zgvTwyDPx/jt36L4Ej+m3GvSqfH0faZC2GYOl7rvpupYvaoh
+ HnETPwquGI/+P3JZa+kclWRQuGJ5uNlvGEXetauIMpZBb21V5QEGAtZRl0cEY6f3WlLHd2KwS
+ UuUv0xvCsYHsGjYq+FRGeI+QWOoI3KjJ3trcxM32quHX6gmGlygpqe+VSQnJiygGldXzObWe2
+ ZyRqsAKx3CjezilRrJhm744CtfXjxf500DT669nClml+zMghEhBjOhO8iT9N0WYlgMxkNnhKH
+ 1d1gYeLVmyXmo75eNKHj/VAeq0P/PYrV6qyHQImBbzFAudXZQfcvC97Xzl/7TaP5BeOVMOKJx
+ kp5mTm/Wl7whgeIkS1JTtjBVubif1t/aKNIXs3WrM/cFTy8jDJW/axfBTAann8sOxVUFNSXmO
+ 9fCzAKIrOdgvMWt5B1lIUwupQ6xcsPxLgUybsQ1/I4JRSDAWJ3AuGYvx290BpM/A94SjN0b4k
+ Fo2Bxh9b3lntP0AD2Iwl5mBd7jfEswUpGkoorY9YG1TmEvzXQkfmjtvp3APeNMy2bE5iUt0+t
+ qjv+17daBS/GHKNwx8b2EzUtUcBrWhqSte8+pz1K96oGsXft+fzzELAY7yB8i/PhyIW4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/03/2022 10:34, Lv Ruyi wrote:
-> hello sir
-> 
-> I think this way: On 64-bit systems, struct nci_set_config_param has 
-> an added padding of 7 bytes between struct members id and len. Even 
-> though all struct members are initialized, the 7-byte hole will 
-> contain data from the kernel stack. 
-> 
+On Tue, Mar 1, 2022 at 5:17 AM Huacai Chen <chenhuacai@gmail.com> wrote:
+> On Mon, Feb 28, 2022 at 7:35 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+> > On Mon, 28 Feb 2022 at 12:24, Arnd Bergmann <arnd@arndb.de> wrote:
+> > > On Mon, Feb 28, 2022 at 11:42 AM Huacai Chen <chenhuacai@gmail.com> wrote:
+> > > Can't you just use the UEFI protocol for kernel entry regardless
+> > > of the bootloader? It seems odd to use a different protocol for loading
+> > > grub and the kernel, especially if that means you end up having to
+> > > support both protocols inside of u-boot and grub, in order to chain-load
+> > > a uefi application like grub.
+> > >
+> >
+> > I think this would make sense. Now that the EFI stub has generic
+> > support for loading the initrd via a UEFI specific protocol (of which
+> > u-boot already carries an implementation), booting via UEFI only would
+> > mean that no Linux boot protocol would need to be defined outside of
+> > the kernel at all (i.e., where to load the kernel, where to put the
+> > command line, where to put the initrd, other arch specific rules etc
+> > etc) UEFI already supports both ACPI and DT boot
+>
+> After one night thinking, I agree with Ard that we can use RISCV-style
+> fdt to support the raw elf kernel at present, and add efistub support
+> after new UEFI SPEC released.
 
-That's reasonable. This explanation should be mentioned in the commit
-msg. Also just initialize the array to 0, instead of separate memset call.
+I think that is the opposite of what Ard and I discussed above.
 
+> If I'm right, it seems that RISC-V passes a0 (hartid) and a1 (fdt
+> pointer, which contains cmdline, initrd, etc.) to the raw elf kernel.
+> And in my opinion, the main drawback of current LoongArch method
+> (a0=argc a1=argv a2=bootparamsinterface pointer) is it uses a
+> non-standard method to pass kernel args and initrd. So, can the below
+> new solution be acceptable?
+>
+> a0=bootparamsinterface pointer (the same as a2 in current method)
+> a1=fdt pointer (contains cmdline, initrd, etc., like RISC-V, I think
+> this is the standard method)
 
-Best regards,
-Krzysztof
+It would seem more logical to me to keep those details as part of the
+interface between the EFI stub and the kernel, rather than the
+documented boot interface.
+
+You said that there is already grub support using the UEFI
+loader, so I assume you have a working draft of the boot
+protocol. Are there still open questions about the interface
+definition for that preventing you from using it as the only
+way to enter the kernel from a bootloader?
+
+        Arnd
