@@ -2,192 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2032C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B70C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234201AbiCAKMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:12:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
+        id S234098AbiCAKNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:13:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233723AbiCAKMU (ORCPT
+        with ESMTP id S232359AbiCAKNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:12:20 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70AD8CD9F
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:11:39 -0800 (PST)
-Date:   Tue, 01 Mar 2022 10:11:37 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646129498;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pRangvu5RLboKHIye5cT1C5tqZ2xo+0UuANkfhLKFwM=;
-        b=2fHRgp6m6wGnmscqaCzEIkJ+rACQuCvm86dKXUAj++M6y/C7iYmsGg5RDOHk5hyxii7wwv
-        hWE7d/Ge64Iq5mdWLb/5WEuAUHGm2yxhR+QZN2oj9Fl7kkB3U8/xiJHo8YgBshYZkQWQRL
-        WdxIW6pV/mn7jud5hwgNpLPupjTEFzdydNFG5qpQeKYK3MjcrrU9RFiRppFgZvPgfjZkeG
-        a1jnO4YrYQPhCkPPyG6zrXUfeCkh2wpYxXpP0dILDgnENtfPzlxs3LM9PB7hsb3zaCfe4z
-        Kk75/lRYFJ9V4ib/uqFMEGSjiFSpUMVaRGACTSlgVsKlDgHRRKAxaVOFjDh5Sw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646129498;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pRangvu5RLboKHIye5cT1C5tqZ2xo+0UuANkfhLKFwM=;
-        b=v9+IJJL0gX4hgGYHet6llSxYdlzaYXtzbZiI1Srq1uZAdlcgH3QZZaX+oaKmVkxRdA3tSO
-        yZZ02JseGEDExrBA==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>, tglx@linutronix.de
-In-Reply-To: <20220224101226.88373-2-maz@kernel.org>
-References: <20220224101226.88373-2-maz@kernel.org>
+        Tue, 1 Mar 2022 05:13:22 -0500
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B658240A20;
+        Tue,  1 Mar 2022 02:12:39 -0800 (PST)
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 1 Mar
+ 2022 18:12:37 +0800
+Message-ID: <4712c41c-fc9f-e8d1-c233-a6c2de0c23dd@amlogic.com>
+Date:   Tue, 1 Mar 2022 18:12:36 +0800
 MIME-Version: 1.0
-Message-ID: <164612949730.16921.4244489669028892146.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V7 0/6] Use CCF to describe the UART baud rate clock
+Content-Language: en-US
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220225073922.3947-1-yu.tu@amlogic.com>
+ <1j8rtvxnkv.fsf@starbuckisacylon.baylibre.com>
+ <d0da38f1-72c1-d111-2d0d-2bfa2faf1a1d@amlogic.com>
+ <1jilsyvyz9.fsf@starbuckisacylon.baylibre.com>
+ <0054cf2f-f09d-5b01-d6ca-0dc877a757c3@amlogic.com>
+ <c23fe6e7-879a-fab6-71ba-fcebdaf7ae37@baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <c23fe6e7-879a-fab6-71ba-fcebdaf7ae37@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+Hi Neil,
+	Thank you very much for your advice.
 
-Commit-ID:     8d4c998919320206f8832dc413e23fdd27ef2274
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/8d4c998919320206f8832dc413e23fdd27ef2274
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Thu, 24 Feb 2022 10:12:22 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 01 Mar 2022 10:06:24 
+On 2022/3/1 17:27, Neil Armstrong wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> Hi,
+> 
+> On 01/03/2022 10:01, Yu Tu wrote:
+>> Hi Jerome,
+>>
+>> On 2022/3/1 16:36, Jerome Brunet wrote:
+>>> [ EXTERNAL EMAIL ]
+>>>
+>>>
+>>> On Tue 01 Mar 2022 at 13:54, Yu Tu <yu.tu@amlogic.com> wrote:
+>>>
+>>>> Hi Jerome,
+>>>>
+>>>> On 2022/2/28 18:59, Jerome Brunet wrote:
+>>>>> [ EXTERNAL EMAIL ]
+>>>>>
+>>>>> On Fri 25 Feb 2022 at 15:39, Yu Tu <yu.tu@amlogic.com> wrote:
+>>>>>
+>>>>>> Using the common Clock code to describe the UART baud rate
+>>>>>> clock makes it easier for the UART driver to be compatible
+>>>>>> with the baud rate requirements of the UART IP on different
+>>>>>> meson chips. Add Meson S4 SoC compatible.
+>>>>>>
+>>>>>> The test method:
+>>>>>> Start the console and run the following commands in turn:
+>>>>>> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600.
+>>>>>>
+>>>>>> Since most SoCs are too old, I was able to find all the platforms 
+>>>>>> myself
+>>>>>> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with
+>>>>>> G12A and S4.
+>>>>> GXL based board are still very common an easy to come by.
+>>>>> I'm quite surprised that you are unable to test on this SoC family
+>>>> The fact of the matter is that the S4 is our end-2020 chip, the G12A is
+>>>> five years old, and the GXL is seven years old. If you must ask for a
+>>>> test, I will report this problem to the leadership to coordinate 
+>>>> resources.
+>>>
+>>> The age of the SoC is irrelevant. SoCs don't get deprecated based on age
+>>> in mainline. It is not just GXL, same goes for meson8.
+>>>
+>>> These SoCs are actively used. Boards with these SoCs are still sold and
+>>> easily available. See the VIM1 or the Libretech boards.
+>>>
+>>> Breaking things for the the users of these SoCs is not acceptable.
+>>> So yes, looking at your series, I strongly recommend you do more tests.
+>>>
+>> You have a point there. Let's go back to the root of the problem. I 
+>> aim to increase S4. The S4 uses 12MHZ to calculate baud. That's all.
+>> Change it to CCF as you suggested. The changes are so large that you 
+>> ask to test all the chips.
+>> I also mentioned last time that using CCF would lead to a longer drive 
+>> probe time and affect the board startup time. If this problem is not 
+>> solved, can we reject the way you suggest using CCF?
+> 
+> I have a much simpler proposal (non-tested):
+> 
+I can test it for you. But if you need to add S4 chips. Again, we need 
+to add a judgment. Is that acceptable to you?
 
-irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
+What we've been talking about for a long time is how to make the least 
+changes and the least impact for the S4.
 
-PDC_NO_PARENT_IRQ is pretty pointless, as all it indicates is
-that the PDC terminates the interrupt hierarchy. Which is
-exactly the same as not having a mapping in the GIC space.
-This is also bad practice to treat the absence of a hwirq
-as a hwirq itself.
-
-Just explicitly use the region mapping pointer, and drop
-the definition.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
-Link: https://lore.kernel.org/r/20220224101226.88373-2-maz@kernel.org
----
- drivers/irqchip/qcom-pdc.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 173e652..3b214c4 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -30,14 +30,14 @@
- #define IRQ_ENABLE_BANK		0x10
- #define IRQ_i_CFG		0x110
- 
--#define PDC_NO_PARENT_IRQ	~0UL
--
- struct pdc_pin_region {
- 	u32 pin_base;
- 	u32 parent_base;
- 	u32 cnt;
- };
- 
-+#define pin_to_hwirq(r, p)	((r)->parent_base + (p) - (r)->pin_base)
-+
- static DEFINE_RAW_SPINLOCK(pdc_lock);
- static void __iomem *pdc_base;
- static struct pdc_pin_region *pdc_region;
-@@ -186,19 +186,17 @@ static struct irq_chip qcom_pdc_gic_chip = {
- 	.irq_set_affinity	= irq_chip_set_affinity_parent,
- };
- 
--static irq_hw_number_t get_parent_hwirq(int pin)
-+static struct pdc_pin_region *get_pin_region(int pin)
- {
- 	int i;
--	struct pdc_pin_region *region;
- 
- 	for (i = 0; i < pdc_region_cnt; i++) {
--		region = &pdc_region[i];
--		if (pin >= region->pin_base &&
--		    pin < region->pin_base + region->cnt)
--			return (region->parent_base + pin - region->pin_base);
-+		if (pin >= pdc_region[i].pin_base &&
-+		    pin < pdc_region[i].pin_base + pdc_region[i].cnt)
-+			return &pdc_region[i];
- 	}
- 
--	return PDC_NO_PARENT_IRQ;
-+	return NULL;
- }
- 
- static int qcom_pdc_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
-@@ -221,7 +219,8 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- {
- 	struct irq_fwspec *fwspec = data;
- 	struct irq_fwspec parent_fwspec;
--	irq_hw_number_t hwirq, parent_hwirq;
-+	struct pdc_pin_region *region;
-+	irq_hw_number_t hwirq;
- 	unsigned int type;
- 	int ret;
- 
-@@ -234,8 +233,8 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (ret)
- 		return ret;
- 
--	parent_hwirq = get_parent_hwirq(hwirq);
--	if (parent_hwirq == PDC_NO_PARENT_IRQ)
-+	region = get_pin_region(hwirq);
-+	if (!region)
- 		return irq_domain_disconnect_hierarchy(domain->parent, virq);
- 
- 	if (type & IRQ_TYPE_EDGE_BOTH)
-@@ -247,7 +246,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 	parent_fwspec.fwnode      = domain->parent->fwnode;
- 	parent_fwspec.param_count = 3;
- 	parent_fwspec.param[0]    = 0;
--	parent_fwspec.param[1]    = parent_hwirq;
-+	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
- 	parent_fwspec.param[2]    = type;
- 
- 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
-@@ -265,7 +264,8 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- {
- 	struct irq_fwspec *fwspec = data;
- 	struct irq_fwspec parent_fwspec;
--	irq_hw_number_t hwirq, parent_hwirq;
-+	struct pdc_pin_region *region;
-+	irq_hw_number_t hwirq;
- 	unsigned int type;
- 	int ret;
- 
-@@ -281,8 +281,8 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (ret)
- 		return ret;
- 
--	parent_hwirq = get_parent_hwirq(hwirq);
--	if (parent_hwirq == PDC_NO_PARENT_IRQ)
-+	region = get_pin_region(hwirq);
-+	if (!region)
- 		return irq_domain_disconnect_hierarchy(domain->parent, virq);
- 
- 	if (type & IRQ_TYPE_EDGE_BOTH)
-@@ -294,7 +294,7 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- 	parent_fwspec.fwnode      = domain->parent->fwnode;
- 	parent_fwspec.param_count = 3;
- 	parent_fwspec.param[0]    = 0;
--	parent_fwspec.param[1]    = parent_hwirq;
-+	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
- 	parent_fwspec.param[2]    = type;
- 
- 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
+The fact is that Amlogic has recommended 12MHz for baud rates for all 
+chips starting with the G12A. I really doubt whether the G12A/B and SM1 
+were tested before. So if we want to upload subsequent Amlogic chips, 
+not only the S4 needs to solve the 12MHz problem, but other chips can't 
+get around this area.
+> ============><===================================================
+> diff --git a/drivers/tty/serial/meson_uart.c 
+> b/drivers/tty/serial/meson_uart.c
+> index 45e00d928253..eda3fdad60d1 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -76,6 +76,12 @@
+>   #define AML_UART_POLL_USEC        5
+>   #define AML_UART_TIMEOUT_USEC        10000
+> 
+> +struct meson_uart_data {
+> +    struct clk    *clk_pclk;
+> +    struct clk    *clk_xtal;
+> +    struct clk    *clk_baud;
+> +};
+> +
+>   static struct uart_driver meson_uart_driver;
+> 
+>   static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+> @@ -293,16 +299,17 @@ static int meson_uart_startup(struct uart_port *port)
+> 
+>   static void meson_uart_change_speed(struct uart_port *port, unsigned 
+> long baud)
+>   {
+> +    struct meson_uart_data *private_data = port->private_data;
+>       u32 val;
+> 
+>       while (!meson_uart_tx_empty(port))
+>           cpu_relax();
+> 
+> -    if (port->uartclk == 24000000) {
+> -        val = ((port->uartclk / 3) / baud) - 1;
+> +    if (clk_is_match(private_data->clk_baud, private_data->clk_xtal)) {
+> +        val = ((clk_get_rate(private_data->clk_baud) / 3) / baud) - 1;
+>           val |= AML_UART_BAUD_XTAL;
+>       } else {
+> -        val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
+> +        val = ((clk_get_rate(private_data->clk_baud) * 10 / (baud * 4) 
+> + 5) / 10) - 1;
+>       }
+>       val |= AML_UART_BAUD_USE;
+>       writel(val, port->membase + AML_UART_REG5);
+> @@ -666,31 +673,26 @@ static inline struct clk 
+> *meson_uart_probe_clock(struct device *dev,
+>   }
+> 
+>   static int meson_uart_probe_clocks(struct platform_device *pdev,
+> -                   struct uart_port *port)
+> +                   struct meson_uart_data *private_data)
+>   {
+> -    struct clk *clk_xtal = NULL;
+> -    struct clk *clk_pclk = NULL;
+> -    struct clk *clk_baud = NULL;
+> -
+> -    clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
+> -    if (IS_ERR(clk_pclk))
+> -        return PTR_ERR(clk_pclk);
+> +    private_data->clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
+> +    if (IS_ERR(private_data->clk_pclk))
+> +        return PTR_ERR(private_data->clk_pclk);
+> 
+> -    clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
+> -    if (IS_ERR(clk_xtal))
+> -        return PTR_ERR(clk_xtal);
+> +    private_data->clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
+> +    if (IS_ERR(private_data->clk_xtal))
+> +        return PTR_ERR(private_data->clk_xtal);
+> 
+> -    clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
+> -    if (IS_ERR(clk_baud))
+> -        return PTR_ERR(clk_baud);
+> -
+> -    port->uartclk = clk_get_rate(clk_baud);
+> +    private_data->clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
+> +    if (IS_ERR(private_data->clk_baud))
+> +        return PTR_ERR(private_data->clk_baud);
+> 
+>       return 0;
+>   }
+> 
+>   static int meson_uart_probe(struct platform_device *pdev)
+>   {
+> +    struct meson_uart_data *private_data;
+>       struct resource *res_mem;
+>       struct uart_port *port;
+>       u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+> @@ -714,6 +716,11 @@ static int meson_uart_probe(struct platform_device 
+> *pdev)
+>       if (pdev->id < 0 || pdev->id >= AML_UART_PORT_NUM)
+>           return -EINVAL;
+> 
+> +    private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
+> +                    GFP_KERNEL);
+> +    if (!private_data)
+> +        return -ENOMEM;
+> +
+>       res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>       if (!res_mem)
+>           return -ENODEV;
+> @@ -733,7 +740,7 @@ static int meson_uart_probe(struct platform_device 
+> *pdev)
+>       if (!port)
+>           return -ENOMEM;
+> 
+> -    ret = meson_uart_probe_clocks(pdev, port);
+> +    ret = meson_uart_probe_clocks(pdev, private_data);
+>       if (ret)
+>           return ret;
+> 
+> @@ -749,6 +756,7 @@ static int meson_uart_probe(struct platform_device 
+> *pdev)
+>       port->x_char = 0;
+>       port->ops = &meson_uart_ops;
+>       port->fifosize = fifosize;
+> +    port->private_data = private_data;
+> 
+>       meson_ports[pdev->id] = port;
+>       platform_set_drvdata(pdev, port);
+> ============><===================================================
+> 
+> Neil
+> 
+>>>>>
+>>>>>>
+>>>>>> Yu Tu (6):
+>>>>>>     tty: serial: meson: Move request the register region to probe
+>>>>>>     tty: serial: meson: Use devm_ioremap_resource to get register 
+>>>>>> mapped
+>>>>>>       memory
+>>>>>>     tty: serial: meson: Describes the calculation of the UART baud 
+>>>>>> rate
+>>>>>>       clock using a clock frame
+>>>>>>     tty: serial: meson: Make some bit of the REG5 register writable
+>>>>>>     tty: serial: meson: The system stuck when you run the stty 
+>>>>>> command on
+>>>>>>       the console to change the baud rate
+>>>>>>     tty: serial: meson: Added S4 SOC compatibility
+>>>>>>
+>>>>>> V6 -> V7: To solve the system stuck when you run the stty command on
+>>>>>> the console to change the baud rate.
+>>>>>> V5 -> V6: Change error format as discussed in the email.
+>>>>>> V4 -> V5: Change error format.
+>>>>>> V3 -> V4: Change CCF to describe the UART baud rate clock as 
+>>>>>> discussed
+>>>>>> in the email.
+>>>>>> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it 
+>>>>>> must change
+>>>>>> the DTS before it can be deleted
+>>>>>> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some 
+>>>>>> changes as
+>>>>>> discussed in the email
+>>>>>>
+>>>>>> Link:https://lore.kernel.org/linux-amlogic/20220118030911.12815-4-yu.tu@amlogic.com/ 
+>>>>>>
+>>>>>>
+>>>>>>    drivers/tty/serial/meson_uart.c | 221 
+>>>>>> ++++++++++++++++++++++----------
+>>>>>>    1 file changed, 154 insertions(+), 67 deletions(-)
+>>>>>>
+>>>>>>
+>>>>>> base-commit: a603ca60cebff8589882427a67f870ed946b3fc8
+>>>>>
+>>>
+> 
