@@ -2,81 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D39CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C90C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238468AbiCAVPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:15:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34508 "EHLO
+        id S238519AbiCAVQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238473AbiCAVPs (ORCPT
+        with ESMTP id S236632AbiCAVQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:15:48 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3F228AE6A;
-        Tue,  1 Mar 2022 13:15:06 -0800 (PST)
-Received: from mail-wr1-f44.google.com ([209.85.221.44]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mf0Nm-1nr4vT01Iw-00gZTN; Tue, 01 Mar 2022 22:15:05 +0100
-Received: by mail-wr1-f44.google.com with SMTP id bk29so5176100wrb.4;
-        Tue, 01 Mar 2022 13:15:04 -0800 (PST)
-X-Gm-Message-State: AOAM533T2PJZ0bXLcQ0Wx6xpkNfgq76avtl9Z3mvIUHFHpEylg2/zici
-        Gxej40H+vt+4urfco9MpOKXvXXxAzmkvnU7oNR0=
-X-Google-Smtp-Source: ABdhPJx5ed75xOYOqXWUFnTe2HbqlLYQT/i2bugoE3zanHbb3BgbR9ZtPWPu8dxYwnBDZQYhbksi06SlEg4363p0VtQ=
-X-Received: by 2002:adf:90c1:0:b0:1e4:ad27:22b9 with SMTP id
- i59-20020adf90c1000000b001e4ad2722b9mr20842737wri.219.1646169304578; Tue, 01
- Mar 2022 13:15:04 -0800 (PST)
+        Tue, 1 Mar 2022 16:16:10 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB61B60DBD
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 13:15:28 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id 29so23545465ljv.10
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 13:15:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AFFQZ5G9629SYwN4GslubcgtNOJHtDCYyH5rTLKNhPs=;
+        b=J7SNKN4+VaeirWCC/sELTWGxD9feSOxwo5q96qWEAmukJiV3VyojWYDxtxuMGxCyR3
+         YrpHXPdAb07nriCJ8cCpxklbaMU6iL5ozLyyOZQ0PKB6soH/RogNt2jYscdgsizouIbx
+         qbKugFzE7mJwHl02BxHXOCWjpLGFgeV/WWue0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AFFQZ5G9629SYwN4GslubcgtNOJHtDCYyH5rTLKNhPs=;
+        b=H9SQvAG7TEbgxvGO13ay8EfYb0I0Xp2dyvKHajAYFRBL0ee8Rr6U13MlQG5ZheshDP
+         jSFRPiU4YIF6fg/MZeXWDJiR6F3qwkamFxxtf6oivb3VVv0gUWbx8hZqNlEjosUqaWGJ
+         A8YMjJRhvPsbYAjkOJOaj97gQBRXUoAonMIZ72+K6uV3oHumVHFY8gNDECZZkJHBaTjw
+         2aFvrMn1HvpFHinpL39drdLGhnDHnClk2rGUlHHtxY6mxsTB/F2paaTAZLf00df+Gt7F
+         DlDOsU4q+OdKerVFuxw9JsIS98Mqovy/4Xe0R48veio8og19/UF7BFtu2QokPHhXeb65
+         ap7A==
+X-Gm-Message-State: AOAM5300aW2mXwGfzh63PUMXTpXiNe/mx03MZJQeSqGEAxOVw+n+bigA
+        8+BcVfsxoAWAlPYJvpTY+4nI8Wfvg3PUrppxbBQ=
+X-Google-Smtp-Source: ABdhPJwyVN5Kth5cba44bZmNVoOOeKinhxQ95/PdAsnVxS94TvSLOXHaT2HzKu/jWh2Cn3u4FZ9oKQ==
+X-Received: by 2002:a05:651c:516:b0:247:a27c:60fd with SMTP id o22-20020a05651c051600b00247a27c60fdmr2091600ljp.73.1646169326821;
+        Tue, 01 Mar 2022 13:15:26 -0800 (PST)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
+        by smtp.gmail.com with ESMTPSA id y23-20020ac255b7000000b004304710b837sm1671668lfg.135.2022.03.01.13.15.23
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 13:15:23 -0800 (PST)
+Received: by mail-lj1-f174.google.com with SMTP id e8so23619913ljj.2
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 13:15:23 -0800 (PST)
+X-Received: by 2002:a2e:3013:0:b0:246:2ca9:365e with SMTP id
+ w19-20020a2e3013000000b002462ca9365emr18180017ljw.291.1646169323173; Tue, 01
+ Mar 2022 13:15:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20220302075602.0ea0de3d@canb.auug.org.au> <20220302075708.73e2d8b2@canb.auug.org.au>
-In-Reply-To: <20220302075708.73e2d8b2@canb.auug.org.au>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 1 Mar 2022 22:14:48 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1Vq7=BokX24O_9AfhRZR8zXLC3BRzyBceAnDgx0mnTag@mail.gmail.com>
-Message-ID: <CAK8P3a1Vq7=BokX24O_9AfhRZR8zXLC3BRzyBceAnDgx0mnTag@mail.gmail.com>
-Subject: Re: linux-next: Signed-off-by missing for commit in the arm-soc tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        ARM <linux-arm-kernel@lists.infradead.org>,
+References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
+ <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+ <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com> <CAHk-=wiFbzpyt1-9ZAigFYU7R8g9mEgJho3w7yGYe0h-W==nsw@mail.gmail.com>
+In-Reply-To: <CAHk-=wiFbzpyt1-9ZAigFYU7R8g9mEgJho3w7yGYe0h-W==nsw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 13:15:06 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiuZGzc2UaNVPr6rZnK7buvaQWfadZMcDXavE=MeCXw3g@mail.gmail.com>
+Message-ID: <CAHk-=wiuZGzc2UaNVPr6rZnK7buvaQWfadZMcDXavE=MeCXw3g@mail.gmail.com>
+Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kernel test robot <lkp@intel.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        kbuild-all@lists.01.org, Jakob Koschel <jakobkoschel@gmail.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:uKX+Ctcp0ACODbHowwAmw0FFoLb7WJrWrwT8qPuzsTVeuE7Eksq
- IERjFHDpGHv1Jjc19djVTKlK2aSHZ8I8ZktJIacqrfewadHv/fIVNWQptpDsuvlkERGdXzJ
- 8pXDV4lys6N5DiS204NhCmvf1BP8O+SB9ZjLHsY+fVDan1es0ClUJ27oMk79xWVEnKd+1Bs
- 5uBljGEk9FwU29C+XGSMg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QvnO9JxdjaE=:wqFvs27ue0Q5OaADQJh7HE
- uuC+X+TA1PAUHXyr9bnFgp84LpbCdTo83o4sT1+rGMXMjVzLHj8uLksRkr6Iu3UK79YMkDfwl
- rvqxC3MiDLzY6weOis2ZiBjRjSUmJQrZzd6iMomGz0agL6ycL2WI1ye7p9gYtgb6eQ7hFkAC5
- b91hsVoxwA+lbFBSiTz0MII1Rcg/tyjP0/RG+S2XKeIS/ypgUVhRRKjPj3revEIFuZxHE5bdR
- TazJ+bIXtscXMQcvigajv9hCoyyp4Q0pPB6yZbn/W6jdGOcYPDnkKrz42uGAj8M6XSqmEsesa
- ahIO3ZDI+8j8Hij54kNlkPi8dmHqGXFp/QVUiHnjp9ZIwZmcc5z5MGNukRnAACj/DdLcqMRap
- gb9aH6Hqcv09RHCFtiLGRz4Nj3bqJ/E+eN+Abon9MT8qHUV7gycote66aJDmEZPqA2rj1ye5D
- 3YJ9vzsEtsVs7JmhJMuiVh/GfkbBCaMEFki0nC6zrm6pUvqoJ2UAj5Bxh051PQha/1CWOahD4
- DutZeIy2+riWiuorxsnNl8UrySP2tHApEO/l4Gq/40xA/x5KdYcAqdPBgZJoiNzaYYu7mC2bL
- 7h/26gsgOlqsU9OWTjaUyFvTemqu6bMn0E+eIjthKLXPsgYARNWyDRLywBpiG0jN+Rr9YIw1U
- ngSSRX4b54qm3NTRD8tg7lnBcsNiUh8eY2oUgjvIgI2CPEfxvnVbOkpHAZ7BJoCNrqQ/+kf81
- ia8ziXcKBTMse9ab8IOK3EnHHboh3mdHFwqwNmQdTUKWym8WTmnFJ0UAEzT4nZ8PvkYj4WFBw
- 3iO6lAlrDTa5q5sp3TxkGzNKwkhhsxR4IjEFxOkg5P4rZaBRRw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 9:57 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Tue, Mar 1, 2022 at 1:04 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Hi all,
->
-> On Wed, 2 Mar 2022 07:56:02 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > Commit
-> >
-> >   8fcc54796bdf ("arm64: dts: armada-3720-turris-mox: Add missing ethernet0 alias")
-> >
-> > is missing a Signed-off-by from its committer.
->
-> That is actually in the arm-soc-fixes tree.
+> Yeah, looks like that "<< 16" is likely just wrong.
 
-Thanks, I updated the arm/fixes branch now to correct this. The for-next
-branch still contains both commits, but only the new one is going to be
-part of the branches I send to Linus.
+.. and perhaps more importantly, I guess that means that -Wshift-overflow is
 
-        Arnd
+ (a) somehow new to -std=gnu11
+
+ (b) possibly a lot more relevant and good than that
+-Wshift-negative-value thing was
+
+doing some grepping, it seems like we have never had that
+'-Wshift-overflow' even in any extra warnings.
+
+And trying it myself (keeping -std=gnu89), enabling it doesn't report
+anything on a x86-64 allmodconfig build.
+
+So I think this is likely a good new warning that -std=gnu11 brought
+in by accident. No false positives that I can see, and one report for
+a MIPS bug that looks real (but admittedly not a "sky-is-falling" one
+;)
+
+There's apparently a '-Wshift-overflow=2' mode too, but that warns
+about things that change the sign bit, ie expressions like
+
+        1<<31
+
+warns.
+
+And I would not be in the least surprised if we had a ton of those
+kinds of things all over (but I didn't check).
+
+So the plain -Wshift-overflow seems to work just fine, and while it's
+surprising that it got enabled by gnu11, I think it's all good.
+
+Famous last words.
+
+                     Linus
