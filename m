@@ -2,135 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B876C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F40C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234265AbiCAK4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:56:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
+        id S234447AbiCAK4z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:56:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbiCAK4J (ORCPT
+        with ESMTP id S234302AbiCAK4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:56:09 -0500
+        Tue, 1 Mar 2022 05:56:54 -0500
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 548C06582F;
-        Tue,  1 Mar 2022 02:55:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60F4D8BF14;
+        Tue,  1 Mar 2022 02:56:13 -0800 (PST)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E8396ED1;
-        Tue,  1 Mar 2022 02:55:27 -0800 (PST)
-Received: from [10.57.71.121] (unknown [10.57.71.121])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B2333F73D;
-        Tue,  1 Mar 2022 02:55:24 -0800 (PST)
-Subject: Re: [PATCH 2/2] perf arm-spe: Parse more SPE fields and store source
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Ali Saidi <alisaidi@amazon.com>, acme@kernel.org,
-        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
-        benh@kernel.crashing.org, james.clark@arm.com,
-        john.garry@huawei.com, jolsa@redhat.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
-        peterz@infradead.org, will@kernel.org
-References: <b1b3697d-4a0a-d041-5cbd-e08fec9e658c@arm.com>
- <20220128210245.4628-1-alisaidi@amazon.com>
- <7eca7a1d-a5a2-2aab-b3cf-5d83cb8ccf4f@arm.com>
- <20220212041927.GA763461@leoy-ThinkPad-X240s>
- <9266bfb6-341c-1d9c-e96f-c9f856a5ffb6@arm.com>
- <20220227132019.GA107053@leoy-ThinkPad-X240s>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <923cb8b4-f854-e7bb-9bb3-e5b871f64d5d@arm.com>
-Date:   Tue, 1 Mar 2022 10:54:33 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F7FBED1;
+        Tue,  1 Mar 2022 02:56:13 -0800 (PST)
+Received: from [10.57.39.47] (unknown [10.57.39.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 701873F73D;
+        Tue,  1 Mar 2022 02:56:10 -0800 (PST)
+Message-ID: <4e4bb61a-377e-1ec9-5998-214055ef0a78@arm.com>
+Date:   Tue, 1 Mar 2022 10:56:05 +0000
 MIME-Version: 1.0
-In-Reply-To: <20220227132019.GA107053@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v7 0/7] arm64: Default to 32-bit wide ZONE_DMA
+Content-Language: en-GB
+To:     Matt Flax <flatmax@gmail.com>, nsaenzjulienne@suse.de
+Cc:     ardb@kernel.org, catalin.marinas@arm.com,
+        devicetree@vger.kernel.org, guohanjun@huawei.com, hch@lst.de,
+        iommu@lists.linux-foundation.org, jeremy.linton@arm.com,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-riscv@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com,
+        robh+dt@kernel.org, will@kernel.org,
+        Matt Flax <flatmax@flatmax.com>
+References: <20201119175400.9995-1-nsaenzjulienne@suse.de>
+ <20220301030031.4025282-1-flatmax@flatmax.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220301030031.4025282-1-flatmax@flatmax.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Leo,
+Hi Matt,
 
-Thanks for taking the time, and sorry for the late reply
+On 2022-03-01 03:00, Matt Flax wrote:
+> Hi All,
+> 
+> It seems that the ZONE_DMA changes have broken the operation of Rochip rk3399 chipsets from v5.10.22 onwards.
+> 
+> It isn't clear what needs to be changed to get any of these boards up and running again. Any pointers on how/what to change ?
 
-On 27/02/2022 13:20, Leo Yan wrote:
-> On Mon, Feb 21, 2022 at 08:41:43PM +0000, German Gomez wrote:
->
-> [...]
->
->> Some comments:
->>
->> # ARM_SPE_OP_ATOMIC
->>
->> This might be a hack, but can we not represent it as both LD&SR as the
->> atomic op would combine both?
->>
->> data_src.mem_op = PERF_MEM_OP_LOAD | PERF_MEM_OP_STORE;
-> BTH, I don't understand well for this question, but let me explain a
-> bit:
->
-> We cannot use 'LOAD | STORE' to present the atomic operation.  Please
-> see Armv8 ARM section D10.2.7 Operation Type packet, it would give out
-> more details.  Atomic operation is an extra attribution for a load or
-> store operations, it could be an atomic load or store, or
-> load-acquire/store-release instructions, or
-> load-exclusive/store-exclusive instructions.
+Your firmware/bootloader setup is mismatched. If you're using the 
+downstream Rockchip blob for BL31, you need to reserve or remove the 
+memory range 0x8400000-0x9600000 to match the behaviour of the original 
+Android BSP U-Boot. The downstream firmware firewalls this memory off 
+for the Secure world such that any attempt to touch it from Linux 
+results in a fatal SError fault as below. Any apparent correlation with 
+the ZONE_DMA changes will simply be because they've affected the 
+behaviour of the page allocator, such that it's more likely to reach 
+into the affected range of memory.
 
-I will check, thanks.
+Cheers,
+Robin.
 
-My thinking was that atomics perform some load-modify-store operation
-hence why I suggested combining LOAD&STORE flags. But I admit didn't try
-running the instructions myself so I didn't check the actual records.
-
-> [...]
->
->> # ARM_SPE_OP_SVE_SG
->>
->> (I'm sorry if this is too far out of scope of the original patch. Let
->> me know if you would prefer to discuss it on a separate channel)
->>
->> On a separate note, I'm also looking at incorporating some of the SVE
->> bits in the perf samples.
->>
->> For this, do you think it makes sense to have two mem_* categories in
->> perf_mem_data_src:
->>
->> mem_vector (2 bits)
->> - simd
->> - other (SVE in arm64)
-> I think we can define below vector types:
->
-> PERF_MEM_VECTOR_SIMD
-> PERF_MEM_VECTOR_SVE
->
-> The tricky thing is "other"... Based on the description for "Operation
-> Type packet payload (Other)" in the Armv8 Arm, I think we even need to
-> add an extra operation type PERF_MEM_OP_OTHER and assign it to
-> data_src.mem_op field.
->
->> mem_src (1 bit)
->> - sparse (scatter/gather loads/stores in SVE, as well as simd)
-> How about the naming "mem_attr" for new field and define two
-> attributions:
->
-> PERF_MEM_ATTR_SPARSE  -> Gather/Scatter operation
-> PERF_MEM_ATTR_PRED    -> Predicated operation
->
-> Just remind, we cannot only approve within Arm related developers,
-> it's good to seek more wider review from other Arch developers when
-> you send new patch set.
-
-Agree. On second thought, the mention of sve seems very arch-specific
-for this...
-
-Recently the idea of adding arch-specific flags to the branch entries
-was mentioned in [1]. Perhaps we could suggest something similar for
-this. Or leave simd/sve as a perf-tool-only feature for now.
-
-[1] https://lore.kernel.org/all/Ygv4cmO%2Fzb3qO48q@robh.at.kernel.org/
-
->
-> Thanks,
-> Leo
+> An easy test for debugging is to run stress :
+> 
+> stress --cpu 4 --io 4 --vm 2 --vm-bytes 128M
+> 
+> stress: info: [255] dispatching hogs: 4 cpu, 4 io, 2 vm, 0 hdd
+> [    8.070280] SError Interrupt on CPU4, code 0xbf000000 -- SError
+> [    8.070286] CPU: 4 PID: 261 Comm: stress Not tainted 5.10.21 #1
+> [    8.070289] Hardware name: FriendlyElec NanoPi M4 (DT)
+> [    8.070293] pstate: 00000005 (nzcv daif -PAN -UAO -TCO BTYPE=--)
+> [    8.070296] pc : clear_page+0x14/0x28
+> [    8.070298] lr : clear_subpage+0x50/0x90
+> [    8.070302] sp : ffff800012abbc40
+> [    8.070305] x29: ffff800012abbc40 x28: ffff000000f68000
+> [    8.070313] x27: 0000000000000000 x26: ffff000001f38e40
+> [    8.070320] x25: ffff8000114fd000 x24: 0000000000000000
+> [    8.070326] x23: 0000000000000000 x22: 0000000000001000
+> [    8.070334] x21: 0000ffffa7e00000 x20: fffffe0000010000
+> [    8.070341] x19: ffff000000f68000 x18: 0000000000000000
+> [    8.070348] x17: 0000000000000000 x16: 0000000000000000
+> [    8.070354] x15: 0000000000000002 x14: 0000000000000001
+> [    8.070361] x13: 0000000000075879 x12: 00000000000000c0
+> [    8.070368] x11: ffff80006c46a000 x10: 0000000000000200
+> [    8.070374] x9 : 0000000000000000 x8 : 0000000000000010
+> [    8.070381] x7 : ffff00007db800a0 x6 : ffff800011b899c0
+> [    8.070387] x5 : 0000000000000000 x4 : ffff00007db800f7
+> [    8.070394] x3 : 0000020000200000 x2 : 0000000000000004
+> [    8.070401] x1 : 0000000000000040 x0 : ffff0000085ff4c0
+> [    8.070409] Kernel panic - not syncing: Asynchronous SError Interrupt
+> [    8.070412] CPU: 4 PID: 261 Comm: stress Not tainted 5.10.21 #1
+> [    8.070415] Hardware name: FriendlyElec NanoPi M4 (DT)
+> [    8.070418] Call trace:
+> [    8.070420]  dump_backtrace+0x0/0x1b0
+> [    8.070423]  show_stack+0x18/0x70
+> [    8.070425]  dump_stack+0xd0/0x12c
+> [    8.070428]  panic+0x16c/0x334
+> [    8.070430]  nmi_panic+0x8c/0x90
+> [    8.070433]  arm64_serror_panic+0x78/0x84
+> [    8.070435]  do_serror+0x64/0x70
+> [    8.070437]  el1_error+0x88/0x108
+> [    8.070440]  clear_page+0x14/0x28
+> [    8.070443]  clear_huge_page+0x74/0x210
+> [    8.070445]  do_huge_pmd_anonymous_page+0x1b0/0x7c0
+> [    8.070448]  handle_mm_fault+0xdac/0x1290
+> [    8.070451]  do_page_fault+0x130/0x3a0
+> [    8.070453]  do_translation_fault+0xb0/0xc0
+> [    8.070456]  do_mem_abort+0x44/0xb0
+> [    8.070458]  el0_da+0x28/0x40
+> [    8.070461]  el0_sync_handler+0x168/0x1b0
+> [    8.070464]  el0_sync+0x174/0x180
+> [    8.070508] SError Interrupt on CPU0, code 0xbf000000 -- SError
+> [    8.070511] CPU: 0 PID: 258 Comm: stress Not tainted 5.10.21 #1
+> [    8.070515] Hardware name: FriendlyElec NanoPi M4 (DT)
+> [    8.070518] pstate: 80000000 (Nzcv daif -PAN -UAO -TCO BTYPE=--)
+> [    8.070520] pc : 0000aaaacec22e98
+> [    8.070523] lr : 0000aaaacec22d84
+> [    8.070525] sp : 0000ffffe67a8620
+> [    8.070528] x29: 0000ffffe67a8620 x28: 0000000000000003
+> [    8.070534] x27: 0000aaaacec34000 x26: 0000ffffaeb42610
+> [    8.070541] x25: 0000ffffa69af010 x24: 0000aaaacec23a98
+> [    8.070547] x23: 0000aaaacec35010 x22: 0000aaaacec35000
+> [    8.070554] x21: 0000000000001000 x20: ffffffffffffffff
+> [    8.070560] x19: 0000000008000000 x18: 0000000000000000
+> [    8.070567] x17: 0000000000000000 x16: 0000000000000000
+> [    8.070573] x15: 0000000000000000 x14: 0000000000000000
+> [    8.070580] x13: 0000000000008000 x12: 0000000000000000
+> [    8.070587] x11: 0000000000000020 x10: 0000000000000030
+> [    8.070593] x9 : 000000000000000a x8 : 00000000000000de
+> [    8.070599] x7 : 0000000000200000 x6 : 000000000000021b
+> [    8.070606] x5 : 0000000000000000 x4 : ffffffffffffffff
+> [    8.070613] x3 : 0000000000000000 x2 : 0000ffffaeb47000
+> [    8.070619] x1 : 000000000000005a x0 : 0000000000a58000
+> [    8.070629] SMP: stopping secondary CPUs
+> [    8.070632] Kernel Offset: disabled
+> [    8.070634] CPU features: 0x0240022,6100600c
+> [    8.070637] Memory Limit: none
+> 
+> 
