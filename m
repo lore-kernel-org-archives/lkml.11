@@ -2,226 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D009C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 00:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 583E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 00:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231847AbiCAAg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 19:36:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        id S231867AbiCAAoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 19:44:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiCAAgW (ORCPT
+        with ESMTP id S229943AbiCAAnz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 19:36:22 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2097.outbound.protection.outlook.com [40.107.220.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C15660CE5;
-        Mon, 28 Feb 2022 16:35:42 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XioZOmKz01YX2QKPkvn//p+5MptwiYycd1P4C+tfi/olrrpLiuO7F6yCoJ9/UrGOiMIQQ6Q9rDafBfxrB+e1PlBkgoGtIerU8pklh3ceZbdLAosIJCnf2cUzH31M9k+Rb0ZVryGCGS/M5XKrRYgfRIjyK470qP4wjeRW93IFP8C1TCVenpcyTEf0n0m83md1PI4PSsK+JFFHtZdZd+03AEGY1/snl7lpWrkv1iXvFkUHSDNM/vmaSTtkIb7V+WbwbPcPGoiQwiNydw51+KbRCh7Mnzsd6SkRbNAzSzHKLKWp+2/s7fagJnPTV9saLt/6rGt5ElhrH2KPcMsjmqOUhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8EIylm2qdnYHk2YylpL+1jmqE6/GDlYz1S7OUI30k7s=;
- b=E394tMLC6pq67BkvokjUctv3HwNJdXhplK04Y3DOOeV+6O2gNH8juuBvJe4N0jCsJuIIWKRWLUlx4Kzea4V/nIQj55zE+jqJVu+Q080os12iolbCYFqf5NMIbsQYT3jYX7aUMDa8MEwJ9eP8G0dDNQMg/pG6xCyVzXIYcSZku34mHvSDcvhdR7HjYS+HdwH8j1qZj/g0cNdyIi5/nM5bFN3gZwYfi9uYvflZk5FWn042aWezy8z+neXyKxW7US1tVHIfRfvobAWJSJx9IjXeHpRmFIix/SIUU4SJadZdhJ90yC8TTX5xZOq3ZEPanZiV3nB13kMKqgswpeKQIuUsWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
+        Mon, 28 Feb 2022 19:43:55 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04C8FEA
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 16:43:15 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id h15so19926656edv.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 16:43:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8EIylm2qdnYHk2YylpL+1jmqE6/GDlYz1S7OUI30k7s=;
- b=i6U3PMWhPfkgu59lG803PZyUl17SYTMv3mOaQ/23+e0WsAcsBhVX5o08zavJsIFPvRoFfWyKphwPpBe66IGF71x8RVPQS4M7WBRz+0hnhNHLUt5fcjOpGhy7lGz88htJ7J0+rRSvMXMLu0iMD52or0g82WGFwC9H/TyZw3UuYqo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SA0PR01MB6329.prod.exchangelabs.com (2603:10b6:806:ee::12) by
- BL0PR01MB5219.prod.exchangelabs.com (2603:10b6:208:33::25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5017.22; Tue, 1 Mar 2022 00:35:40 +0000
-Received: from SA0PR01MB6329.prod.exchangelabs.com
- ([fe80::7cd6:6594:ce3c:6941]) by SA0PR01MB6329.prod.exchangelabs.com
- ([fe80::7cd6:6594:ce3c:6941%9]) with mapi id 15.20.5017.027; Tue, 1 Mar 2022
- 00:35:40 +0000
-From:   Darren Hart <darren@os.amperecomputing.com>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Arm <linux-arm-kernel@lists.infradead.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "D . Scott Phillips" <scott@os.amperecomputing.com>,
-        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
-        stable@vger.kernel.org
-Subject: [PATCH 1/1] arm64: smp: Skip MC sched domain on SoCs with no LLC
-Date:   Mon, 28 Feb 2022 16:29:00 -0800
-Message-Id: <84e7cb911936f032318b6b376cf88009c90d93d5.1646094455.git.darren@os.amperecomputing.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1646094455.git.darren@os.amperecomputing.com>
-References: <cover.1646094455.git.darren@os.amperecomputing.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH2PR05CA0066.namprd05.prod.outlook.com
- (2603:10b6:610:38::43) To SA0PR01MB6329.prod.exchangelabs.com
- (2603:10b6:806:ee::12)
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m0MAbTN1Y6pcTXHq3VvIxavRgKJUC69UdeyGhzHOmlU=;
+        b=V9ynyBmQCAeq2ATQEZeYFbKM5pp36qFZfK7wlDqGJnvmcQ2zlgHCNB1pbFAwXK2bID
+         1W+0UEIJTPQ4nP68mNKAGE/NRcKBTR4Kr1uaukOaaHs8SI8ICQxPO+CCjuFUqeByvCag
+         RvUKcGarRWpZ7wMt7ruxSFV77l7mZs9bGgtXHzBZ7U5qvF9bxpenL2pDl0kBM+C90GXg
+         Pqh634ex+khgm5kNDCiihBI5WwEuFEdxh5aqsSNUgNnDPgJAT/dLdqvJyhsZxw8boJij
+         mPt0pX5EZ2FLjl0D7KUiWMM3oHclrU3RV624u6OnLUyLajb6SQnyo14DYqs2xSLsuGFF
+         CU6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m0MAbTN1Y6pcTXHq3VvIxavRgKJUC69UdeyGhzHOmlU=;
+        b=yin/VilbeXB6F5jxoA0XuKM8Ly15+xard1TlBInfMua+phC/3fNImtskt2aM2Sz1s9
+         8dWKgXAYOW8r3RYa0W5x2O+f7iM6ZXdGSaunL66ORQc+TEubGjY1V5wRJQTfUEMSSJDX
+         SuSNPbYbVk3Ebxo5IxZRiaVUxqKXhgQ3JmMyFiIzx5AY0woAIbzj4pr7vbOv+ybU5jJ2
+         bE1EWecbdUNPRZ5hw4Y95CWf9oIXgYmVScOpcFxR0Rgt+STstS2iNHE2MDd3ZIr9Ni0y
+         ZyMN9C8fFqIu6OfNB+GcaDpIGOfMwfWwmobLv4Imvn3d/Wkp5bDhOxqkLAJa3kA7LnV1
+         g7Cw==
+X-Gm-Message-State: AOAM533Rhmka4KljQngdB96giKmYyuu+sdNjVfkWQS90s1mkCwge1Cyr
+        NPAHIrAi1j+Eg/HO08ScnBJT3rqaLsTNUxmhXQkSag==
+X-Google-Smtp-Source: ABdhPJxcPItZ/GtHpnZLpmkWclj4NyLxqdPa5npyeb/mCni2P97zG/EgdGK67M4cT0SBzBuAgcf2MG0k495afoQeJQI=
+X-Received: by 2002:a05:6402:518b:b0:412:80a3:fb6e with SMTP id
+ q11-20020a056402518b00b0041280a3fb6emr22909696edd.84.1646095394168; Mon, 28
+ Feb 2022 16:43:14 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e6ae8d2e-a3e0-440b-8672-08d9fb1b6993
-X-MS-TrafficTypeDiagnostic: BL0PR01MB5219:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR01MB52193D777CB302AE354C5338F7029@BL0PR01MB5219.prod.exchangelabs.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VvahVvEj7PK6U/JUv4KVMnESttjRn6tde03zC+sCRfC1so1PgnlFkGu4uvED6hUf4fRX2vhN04RybQPzkGr2paXFZ1koT/iXwX6gumTzJinkhEf47wjwHros1AinP+FUHZ+MbnYHi7sPQyaSn3QmEAVbmAChDabt682ciGy3ZNpX8ieKVN2SYNqgcyH4ZjHUkyoz9zrM7oj7VaZ9v8L238r76vunPqKl5MveAJfMHdtMEejZc8e9i9ZLdW71Kbr7G448oNRfatmI2jm+V502ckRY1sX98ROWsHPZAfhuK40xxCTsCeGLkajlEO17+Z7i57NXrBvkvA9LSqorAYsXKxxARhxwSSiopWalXyL7nmpHBSGaFW+9SYESMhaiXBrs5xqwlYNO5rwkLVDku5RE9jrjfLZ+MVUNxljB8vg6tsUEP3mGXfi8rMFx4Dj/yPp44Anj+ttdHnCtif5GfVELMa4MnaQ7ofAIv50/pYiUddg/tG6+YYrtP9N/f+CGQ2tXaR3fI+XxG0eqiQQhEE2lzEV0/uMcOHEMT8zblu2aDoh8h2+37LRJJqBB71Ls6WhS38jTS3npF/3fwLwqSbqEROlyCuT9tsJKXdNWyK9+1OJh1JFUukUY3CjpY6B23k0LNh1wXgMSl9nEle6lIFj+yKdidK1O3WGKse9+bHIVCkf9BXSxJK8K8zXHK2g04u+VBeDY0fIJ8R/keQyLSQ8X5g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA0PR01MB6329.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(6029001)(4636009)(366004)(26005)(186003)(6512007)(5660300002)(8936002)(2616005)(38350700002)(38100700002)(83380400001)(52116002)(508600001)(6486002)(6666004)(6506007)(110136005)(316002)(54906003)(4326008)(8676002)(86362001)(66476007)(66556008)(66946007)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xiE9QeEe7HWvZz4Dl3v7xNWaDYGidvQihVCFAtPmiJwXJk3W4L+KN3Nmv4bk?=
- =?us-ascii?Q?n3ccl8ZzyXDHw7bz8NG1PWLAfcQItCHeGh2EfHAXJnfuvdUSkLvwherxHdWM?=
- =?us-ascii?Q?257+L9tdaxkH1kBHN9DJzK3CymptSuasmoGpzji9Vlcx3VCM50Vdfyo6I46T?=
- =?us-ascii?Q?b9gHhmHb3Bb6YE8AAFDO718jm2S8qrU56zl/dso89tIRATLJLtUkWWB9Yvsj?=
- =?us-ascii?Q?ySPlm/dqBDVYq1YbAO4tUAl2mJ3VMBqMqjjOQain5ckLfu+ix4nMtabmlEoK?=
- =?us-ascii?Q?lhQXW3OiU5qgxjWnQtMXIkoi6+q1lcKAPkYwT/revQ6auFh4FhcJ3cYgySc2?=
- =?us-ascii?Q?vzSIDLUiAytFGE7n9lJ8SqV2vx1oyf9Ja04DbP3KV/QrSBvKsFMWU4G+4pgt?=
- =?us-ascii?Q?qbZZ8EBheP6MGj32YfF1hOosviY3F+8z58OTeyg3moYB3nE9wgxTc13/ZYlh?=
- =?us-ascii?Q?ZxBletaq2VVE3xPouAZYyF1ZDpdWuKsdNNFuhiUJO4i/Wm8h17tdSF2yfR1d?=
- =?us-ascii?Q?/otW6NGT6rK9KIAChRwtBn96fPy94u4BhHgWwh1PUz+MC5knuyk7OhWK2C6p?=
- =?us-ascii?Q?VWjMxuKNIkfuCiCKAfnjlUaxTVRVpAIDOIX1fMA8Hkp7rJRwdPJ1VudL/wDk?=
- =?us-ascii?Q?UXEmAZ7DTH8aIgDmbkg51xfF+4OrvAFqYouaeLqmQb4Ygb60Jqo3QvFm7Q4i?=
- =?us-ascii?Q?A8pG8QQ37nhCW0Dc2SIj7Bwfiku0nmLFD7Gm8rf0E4njTN4XSAHEHYiibvQN?=
- =?us-ascii?Q?61QHNK3PKSCEG9sCzhPE6YezgJgX2BTWz32xPBI5u4MOjtq33C4uJt0p0mol?=
- =?us-ascii?Q?zgK/RTneVya8kWVzqeXEmNPHwFEMVAiIT4Pd2w8pSO9zpET7x1uTOt2ZT1Et?=
- =?us-ascii?Q?ItPLHrmpruG1kJ21cwnqnd3R4gq3mIWts7R/k5sa6RdwozSHUvQpYlTJsuno?=
- =?us-ascii?Q?2obIQ8UqFgIQ945z51etQU5B5b4Ml2XADQscS0ztL0Jtr1IjGi+Aulpf0w21?=
- =?us-ascii?Q?eNJQNsArkY49gblFxmO4FW2zJ01xjAwnD7gWyt8ffxv4og/B3DdjfpPsb2RM?=
- =?us-ascii?Q?7m2yVHOHcKgmjBeBwELfCt5/aWeAcJGCb6zHGr9XkXcxpUB7yyhZ4ZdBgTOT?=
- =?us-ascii?Q?jGWVM2xvFE1IYnLbfY28PdbxnUC38r4MU3SnRjZ3cpLx0n7tbkoMwV3f5iNn?=
- =?us-ascii?Q?CCsl5BdwF8DqODj94eWnScZgX1D5sNhvkvHingXzftSGb+1yk9OfezrO+FG2?=
- =?us-ascii?Q?fBLBYUijHDaNQBiqzkHlk8CnzMdAIs7obREHq5yTlB9uGTltFoJmU9ZFc6Ql?=
- =?us-ascii?Q?k4dtX4syg7ZfteeITIuVVFLdzhaQjUO9eULREtj3XDjiAVFKHfExp1+SMqGY?=
- =?us-ascii?Q?U9CRK9UlOnoR8udIqNJOfZ6Qe8abHu1uAhAhOg3fHENhXjnHSMLZDld1tDa+?=
- =?us-ascii?Q?TYX+el4Aii6rfKJfeXqjhHWe8ddjznpczDhILxnEvrbWHQv3xAwCCYNcAQoB?=
- =?us-ascii?Q?qIpt/rweOcqQaKRV10YOAq9xnKQRGCQnvTGHw5uCZPabfLbvPq3/stWksYZs?=
- =?us-ascii?Q?19JAk2PJtec6jF+ifBeICiVswJzAWCPi6fr+Hf5kWt0ZMMLKhSZqrNVoXDG6?=
- =?us-ascii?Q?eEpSPWVcnQUxnduGynKCguJEoLJYh2lYyXSjSZGlz7Xfn2ffjagTHIoVfsuz?=
- =?us-ascii?Q?sozEPJ5W0WEzPDo1MmXP+iq7tbjCN/g4QwjtCY1rmVt2dKIuP0zA85ZS1swU?=
- =?us-ascii?Q?u7HHAfJtFw=3D=3D?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6ae8d2e-a3e0-440b-8672-08d9fb1b6993
-X-MS-Exchange-CrossTenant-AuthSource: SA0PR01MB6329.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2022 00:35:40.5317
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tNXSmz1BSwAbiVgb8C4QwE1n/HLA9pJuOlpBJFo0sNu84CGqR9S+UF3kAOEKGSj9YbUh2Q6fhHulfAJDqCdej+YGeEMzzZ2N2rh0BtgGkJKoyQkDZGHkKbKBVMYJ5GHd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR01MB5219
+References: <20220226001546.360188-1-seanjc@google.com> <20220226001546.360188-22-seanjc@google.com>
+In-Reply-To: <20220226001546.360188-22-seanjc@google.com>
+From:   Ben Gardon <bgardon@google.com>
+Date:   Mon, 28 Feb 2022 16:43:03 -0800
+Message-ID: <CANgfPd-pRRoAD3=eWgFOVmaHJnpnbUhwT84p4oJp1NovhxUCow@mail.gmail.com>
+Subject: Re: [PATCH v3 21/28] KVM: x86/mmu: Zap roots in two passes to avoid
+ inducing RCU stalls
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        kvm <kvm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        David Matlack <dmatlack@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
-Control Unit, but have no shared CPU-side last level cache.
+On Fri, Feb 25, 2022 at 4:16 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> When zapping a TDP MMU root, perform the zap in two passes to avoid
+> zapping an entire top-level SPTE while holding RCU, which can induce RCU
+> stalls.  In the first pass, zap SPTEs at PG_LEVEL_1G, and then
+> zap top-level entries in the second pass.
+>
+> With 4-level paging, zapping a PGD that is fully populated with 4kb leaf
+> SPTEs take up to ~7 or so seconds (time varies based on kernel config,
+> number of (v)CPUs, etc...).  With 5-level paging, that time can balloon
+> well into hundreds of seconds.
+>
+> Before remote TLB flushes were omitted, the problem was even worse as
+> waiting for all active vCPUs to respond to the IPI introduced significant
+> overhead for VMs with large numbers of vCPUs.
+>
+> By zapping 1gb SPTEs (both shadow pages and hugepages) in the first pass,
+> the amount of work that is done without dropping RCU protection is
+> strictly bounded, with the worst case latency for a single operation
+> being less than 100ms.
+>
+> Zapping at 1gb in the first pass is not arbitrary.  First and foremost,
+> KVM relies on being able to zap 1gb shadow pages in a single shot when
+> when repacing a shadow page with a hugepage.  Zapping a 1gb shadow page
+> that is fully populated with 4kb dirty SPTEs also triggers the worst case
+> latency due writing back the struct page accessed/dirty bits for each 4kb
+> page, i.e. the two-pass approach is guaranteed to work so long as KVM can
+> cleany zap a 1gb shadow page.
+>
+>   rcu: INFO: rcu_sched self-detected stall on CPU
+>   rcu:     52-....: (20999 ticks this GP) idle=7be/1/0x4000000000000000
+>                                           softirq=15759/15759 fqs=5058
+>    (t=21016 jiffies g=66453 q=238577)
+>   NMI backtrace for cpu 52
+>   Call Trace:
+>    ...
+>    mark_page_accessed+0x266/0x2f0
+>    kvm_set_pfn_accessed+0x31/0x40
+>    handle_removed_tdp_mmu_page+0x259/0x2e0
+>    __handle_changed_spte+0x223/0x2c0
+>    handle_removed_tdp_mmu_page+0x1c1/0x2e0
+>    __handle_changed_spte+0x223/0x2c0
+>    handle_removed_tdp_mmu_page+0x1c1/0x2e0
+>    __handle_changed_spte+0x223/0x2c0
+>    zap_gfn_range+0x141/0x3b0
+>    kvm_tdp_mmu_zap_invalidated_roots+0xc8/0x130
+>    kvm_mmu_zap_all_fast+0x121/0x190
+>    kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
+>    kvm_page_track_flush_slot+0x5c/0x80
+>    kvm_arch_flush_shadow_memslot+0xe/0x10
+>    kvm_set_memslot+0x172/0x4e0
+>    __kvm_set_memory_region+0x337/0x590
+>    kvm_vm_ioctl+0x49c/0xf80
+>
+> Reported-by: David Matlack <dmatlack@google.com>
+> Cc: Ben Gardon <bgardon@google.com>
+> Cc: Mingwei Zhang <mizhang@google.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
 
-cpu_coregroup_mask() will return a cpumask with weight 1, while
-cpu_clustergroup_mask() will return a cpumask with weight 2.
+Reviewed-by: Ben Gardon <bgardon@google.com>
 
-As a result, build_sched_domain() will BUG() once per CPU with:
+Nice. This is very well explained in the comments and commit
+description. Thanks for fixing this.
 
-BUG: arch topology borken
-     the CLS domain not a subset of the MC domain
-
-The MC level cpumask is then extended to that of the CLS child, and is
-later removed entirely as redundant. This sched domain topology is an
-improvement over previous topologies, or those built without
-SCHED_CLUSTER, particularly for certain latency sensitive workloads.
-With the current scheduler model and heuristics, this is a desirable
-default topology for Ampere Altra and Altra Max system.
-
-Introduce an alternate sched domain topology for arm64 without the MC
-level and test for llc_sibling weight 1 across all CPUs to enable it.
-
-Do this in arch/arm64/kernel/smp.c (as opposed to
-arch/arm64/kernel/topology.c) as all the CPU sibling maps are now
-populated and we avoid needing to extend the drivers/acpi/pptt.c API to
-detect the cluster level being above the cpu llc level. This is
-consistent with other architectures and provides a readily extensible
-mechanism for other alternate topologies.
-
-The final sched domain topology for a 2 socket Ampere Altra system is
-unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
-
-For CPU0:
-
-CONFIG_SCHED_CLUSTER=y
-CLS  [0-1]
-DIE  [0-79]
-NUMA [0-159]
-
-CONFIG_SCHED_CLUSTER is not set
-DIE  [0-79]
-NUMA [0-159]
-
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Barry Song <song.bao.hua@hisilicon.com>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: D. Scott Phillips <scott@os.amperecomputing.com>
-Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
-Cc: <stable@vger.kernel.org> # 5.16.x
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
----
- arch/arm64/kernel/smp.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
-
-diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-index 27df5c1e6baa..3597e75645e1 100644
---- a/arch/arm64/kernel/smp.c
-+++ b/arch/arm64/kernel/smp.c
-@@ -433,6 +433,33 @@ static void __init hyp_mode_check(void)
- 	}
- }
- 
-+static struct sched_domain_topology_level arm64_no_mc_topology[] = {
-+#ifdef CONFIG_SCHED_SMT
-+	{ cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
-+#endif
-+
-+#ifdef CONFIG_SCHED_CLUSTER
-+	{ cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
-+#endif
-+
-+	{ cpu_cpu_mask, SD_INIT_NAME(DIE) },
-+	{ NULL, },
-+};
-+
-+static void __init update_sched_domain_topology(void)
-+{
-+	int cpu;
-+
-+	for_each_possible_cpu(cpu) {
-+		if (cpu_topology[cpu].llc_id != -1 &&
-+		    cpumask_weight(&cpu_topology[cpu].llc_sibling) > 1)
-+			return;
-+	}
-+
-+	pr_info("No LLC siblings, using No MC sched domains topology\n");
-+	set_sched_topology(arm64_no_mc_topology);
-+}
-+
- void __init smp_cpus_done(unsigned int max_cpus)
- {
- 	pr_info("SMP: Total of %d processors activated.\n", num_online_cpus());
-@@ -440,6 +467,7 @@ void __init smp_cpus_done(unsigned int max_cpus)
- 	hyp_mode_check();
- 	apply_alternatives_all();
- 	mark_linear_text_alias_ro();
-+	update_sched_domain_topology();
- }
- 
- void __init smp_prepare_boot_cpu(void)
--- 
-2.31.1
-
+> ---
+>  arch/x86/kvm/mmu/tdp_mmu.c | 51 +++++++++++++++++++++++++-------------
+>  1 file changed, 34 insertions(+), 17 deletions(-)
+>
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index b838cfa984ad..ec28a88c6376 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -802,14 +802,36 @@ static inline gfn_t tdp_mmu_max_gfn_host(void)
+>         return 1ULL << (shadow_phys_bits - PAGE_SHIFT);
+>  }
+>
+> -static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+> -                            bool shared)
+> +static void __tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+> +                              bool shared, int zap_level)
+>  {
+>         struct tdp_iter iter;
+>
+>         gfn_t end = tdp_mmu_max_gfn_host();
+>         gfn_t start = 0;
+>
+> +       for_each_tdp_pte_min_level(iter, root, zap_level, start, end) {
+> +retry:
+> +               if (tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
+> +                       continue;
+> +
+> +               if (!is_shadow_present_pte(iter.old_spte))
+> +                       continue;
+> +
+> +               if (iter.level > zap_level)
+> +                       continue;
+> +
+> +               if (!shared)
+> +                       tdp_mmu_set_spte(kvm, &iter, 0);
+> +               else if (tdp_mmu_set_spte_atomic(kvm, &iter, 0))
+> +                       goto retry;
+> +       }
+> +}
+> +
+> +static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+> +                            bool shared)
+> +{
+> +
+>         /*
+>          * The root must have an elevated refcount so that it's reachable via
+>          * mmu_notifier callbacks, which allows this path to yield and drop
+> @@ -827,22 +849,17 @@ static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+>         rcu_read_lock();
+>
+>         /*
+> -        * No need to try to step down in the iterator when zapping an entire
+> -        * root, zapping an upper-level SPTE will recurse on its children.
+> +        * To avoid RCU stalls due to recursively removing huge swaths of SPs,
+> +        * split the zap into two passes.  On the first pass, zap at the 1gb
+> +        * level, and then zap top-level SPs on the second pass.  "1gb" is not
+> +        * arbitrary, as KVM must be able to zap a 1gb shadow page without
+> +        * inducing a stall to allow in-place replacement with a 1gb hugepage.
+> +        *
+> +        * Because zapping a SP recurses on its children, stepping down to
+> +        * PG_LEVEL_4K in the iterator itself is unnecessary.
+>          */
+> -       for_each_tdp_pte_min_level(iter, root, root->role.level, start, end) {
+> -retry:
+> -               if (tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
+> -                       continue;
+> -
+> -               if (!is_shadow_present_pte(iter.old_spte))
+> -                       continue;
+> -
+> -               if (!shared)
+> -                       tdp_mmu_set_spte(kvm, &iter, 0);
+> -               else if (tdp_mmu_set_spte_atomic(kvm, &iter, 0))
+> -                       goto retry;
+> -       }
+> +       __tdp_mmu_zap_root(kvm, root, shared, PG_LEVEL_1G);
+> +       __tdp_mmu_zap_root(kvm, root, shared, root->role.level);
+>
+>         rcu_read_unlock();
+>  }
+> --
+> 2.35.1.574.g5d30c73bfb-goog
+>
