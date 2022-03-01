@@ -2,99 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D796CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 03:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D01C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 03:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbiCADgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 22:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41036 "EHLO
+        id S232085AbiCADhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 22:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiCADgg (ORCPT
+        with ESMTP id S229625AbiCADhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 22:36:36 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECDF3614F;
-        Mon, 28 Feb 2022 19:35:56 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id c9so12451902pll.0;
-        Mon, 28 Feb 2022 19:35:56 -0800 (PST)
+        Mon, 28 Feb 2022 22:37:23 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080143614F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 19:36:43 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id g1so12982294pfv.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 19:36:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=hp4t2uw0/sPgnHFofQlHvuw9mmi+UuEE/SFLLt4hTuw=;
-        b=Pv2oB0lHPU53DlZEWc3HQnbprZRc+OarkESkbAYQhbqrkZZYWQDt8mI0J5MbXmXHY2
-         Vli1HEkJ8u7M3YZH3HF5GaEWhFNg0nD/Npg4Y5yhN1YyxF3B3zpKFoHI9SDpkOtZ/tOs
-         jxys4Qg0+p6G4Jo+BMBtqBEcwXIcRWQUWriotjDG6EAncqoKRx3JXi/vj3aFr+IpmVjC
-         FOMmCpDgvaV6kb9RtitJW77SzXH0xWHti2PYA/uIbQP8ppYqGJ5hmad5H0jHaUVL08MQ
-         hPmvgkNOVl57bjlbD7nx5i7B/6Lt9H6etc+LCvBJ70Lj6NsS6+j742XSGuWC9esWP65b
-         AV6Q==
+        bh=yuF96zzT57twduJlHeKSD6TkuFieUVPnAsmNC4IsGOc=;
+        b=gPI++ctiPbeOLDXHs2JCiOGa5xjh9jv/2cq+ReN80iq+oluvWXc6V2SliGXEJdyNlg
+         wFKwEl6crL/rzy5g76d53W93Pnm7BY28bUvD7CS0S2yPCAFa8xe0hGEwJbbwQFmuvLfY
+         oYz9vKATTF3DnzAWsegi9S8eiKRvI+kFsEZ0RdvsU/yd6hgv03eqIyI4quwquZqm6i4q
+         pB8YYc1tcrXDPsKMqnDMuL8QLPBrE7ZWdXH4qnqEUpASo/+Z1qfysyLEUbM2ysqMqjXk
+         sYp8/ha3IbCm3/D23uiUzcTPkQO2WKs0GJwlaAlXouwGG9oO/Bxp5Xsj/nzGKSvZYl4f
+         JgLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=hp4t2uw0/sPgnHFofQlHvuw9mmi+UuEE/SFLLt4hTuw=;
-        b=Ra90NIW39uFDHYaZRMRRWkYxfKacHkIJr00d8ZwidJovozyQkLMtNTOzASPypixMB2
-         E0IsMv+fIGCZ75/q1jKUo9QuVpCkrJk8svQLtQHMdRym3MGsN+n+1FRGp94tih5bsqiQ
-         zCtM0rrJv4Qh2TvJDcOTnFX+Lg89DH+WCGQ+8X2Ar1S22jYEpCLJ7V7ZMV4BoVOwXC/R
-         FBWZ/K4jhATHOFqNEG+ta3ep26nYxFwoqOdZx9aiqO/InPv/jhBwggPHCojr9Bq6f6IP
-         fcwl6aNNs9rwj47wJacZiuepfXcJoMSp5VS6EkEMzSfLSeqKBi8bqd8V7djyuMTRXIl0
-         NF8Q==
-X-Gm-Message-State: AOAM532fTq1xNcwNfGm2SI8rmgxzq1/zFYi5PJSD9T7Ec3wAal3f90sl
-        dNy6J4ApkyN3RymABgMA96A=
-X-Google-Smtp-Source: ABdhPJwgvQYs1aylJoUqiDY6UpYCzi1VMR41xneuFI53OM39Qi3zfktNU1RjMAYGvip4+5h4z/EP2w==
-X-Received: by 2002:a17:902:d706:b0:14d:b09a:a0b with SMTP id w6-20020a170902d70600b0014db09a0a0bmr24432587ply.52.1646105756154;
-        Mon, 28 Feb 2022 19:35:56 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id 17-20020a056a00071100b004f0f941d1e8sm14257058pfl.24.2022.02.28.19.35.54
+        bh=yuF96zzT57twduJlHeKSD6TkuFieUVPnAsmNC4IsGOc=;
+        b=rfVmQErcauUlPwUGnswKswHIcrPczsocEGAHmapI//fiXqOFvmYaJxBo33ndfZ024j
+         TPWDRWI3ipk8aJr0XC17zPSagElLkj4OWuAEMnVJVlo4loNIFHZh4cIK20WMtxcoe7RA
+         Jz7kpQFNkNl3d4Hu6eL0KX7AJ7icTsM85SXUNq+WVK1zZ3W8/DW1k8RSUBvHPub7W0Nt
+         EkvnXNpJZYthO4B0DMTdoduXISEXcafy8q/zumHOyu26nRkUAvDpY6RnD8QkNszgKzj3
+         lAP1Kq2IM9U3thy1L71E4ZAybLC778D4cVguVyUwuLaO8m1TTJQxTTS1O+qWWjq2Qa6/
+         fjzw==
+X-Gm-Message-State: AOAM532WLVfz8zJ8SarpWa3BPdqZAR5Zqow7HjyAfNVewZQ87+c8FUYv
+        y7+9mE0cd7SKEfkPoQ5YcKiZbw==
+X-Google-Smtp-Source: ABdhPJywg+Sm8GNjdeMS62YMjsjTrpLvsDf+jafMIIarrfWMp6kDAFDQHsKYHROqVQdwlVoPNp5p1A==
+X-Received: by 2002:a05:6a00:a8f:b0:4e1:2619:11a2 with SMTP id b15-20020a056a000a8f00b004e1261911a2mr25071872pfl.53.1646105802445;
+        Mon, 28 Feb 2022 19:36:42 -0800 (PST)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id u37-20020a056a0009a500b004e1414d69besm15344351pfg.151.2022.02.28.19.36.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 19:35:55 -0800 (PST)
-Message-ID: <1b40b00d-c408-9040-7267-0325ddd72a72@gmail.com>
-Date:   Mon, 28 Feb 2022 19:35:53 -0800
+        Mon, 28 Feb 2022 19:36:41 -0800 (PST)
+Message-ID: <4100a868-c5bd-91dd-0c45-a92fb1344b12@kernel.dk>
+Date:   Mon, 28 Feb 2022 20:36:40 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 5.16 000/164] 5.16.12-rc1 review
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] nvme-pci: trigger disk activity LED
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220228172359.567256961@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Enzo Matsumiya <ematsumiya@suse.de>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-nvme@lists.infradead.org,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Sagi Grimberg <sagi@grimberg.me>, linux-kernel@vger.kernel.org
+References: <20220227234258.24619-1-ematsumiya@suse.de>
+ <20220228092215.GA8549@lst.de>
+ <36cfd242-6bb0-0af6-0faf-946c79baa378@kernel.dk>
+ <20220301033001.tozk6cakdznww6wi@cyberdelia>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220301033001.tozk6cakdznww6wi@cyberdelia>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/28/2022 9:22 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.12 release.
-> There are 164 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 2/28/22 8:30 PM, Enzo Matsumiya wrote:
+> On 02/28, Jens Axboe wrote:
+>> On 2/28/22 2:22 AM, Christoph Hellwig wrote:
+>>> I don't think we should add code to the absolutel fast path for
+>>> blinkenlights.
+>>
+>> Agree. It'd be a lot better to put the cost on the led trigger
+>> side, and not need anything in the fast path for block devices.
+>> Monitor disk stats, or something like that.
 > 
-> Responses should be made by Wed, 02 Mar 2022 17:20:16 +0000.
-> Anything received after that time might be too late.
+> There's been at least 4 attempts to do so, as far as I'm aware (one of
+> them being mine). All got rejected due to the complexity it introduced,
+> that's how I ended up with this one-liner.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.12-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Performance-wise, I'm understand the problems, but according to ftrace,
+> ledtrig_disk_activity() adds an average of 0.2us overhead, whether an
+> LED is assigned or not. Is that really unacceptable?
 
-On ARCH_BRCMSTb using 32-bit and 64-bit ARM kernels:
+On fast devices, we can complete a full IO in ~3us. If it's 6-7% of
+overhead for that case, then yes, that is definitely unacceptable.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+It's as much the principle of it. If it can be done in such a way that a
+feature that almost nobody would use doesn't add to the fast path, then
+it should be done that way.
+
+What kind of frequency does this need to be toggled at? Surely not
+hundreds of thousands or even million times per second? If it's suitably
+low, then a registration scheme and a running timer would be a much
+better idea. Each time the timer triggers, check devices you are
+interested in and toggle the LED based on that. No fast path additions
+for that, and it keeps the cost at zero for folks that don't need an LED
+trigger for drive activity.
+
+> If so, would introducing a CONFIG_NVME_LED (default =n) and wrap that
+> call around it make it better? Then at least there's a chance to inform
+> users that desires this feature about performance costs.
+
+Doesn't really help, because then distros turn it on and we're back
+where we would be if we didn't have a config option...
+
 -- 
-Florian
+Jens Axboe
+
