@@ -2,257 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6112C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A43BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbiCAB11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 20:27:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60202 "EHLO
+        id S229939AbiCABcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 20:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiCAB1X (ORCPT
+        with ESMTP id S229781AbiCABcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 20:27:23 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A788BCF5;
-        Mon, 28 Feb 2022 17:26:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646098003; x=1677634003;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=W0/EHxfz/6Tlchl0IZZvUXnUObXdh0ufI9V1QGUN19E=;
-  b=RPcXNOszFI+ClTsZPv7FWhtTDCehO424FF/RxxNehn44VWz6Mz94jTgs
-   te5MQUjra1CEJ2Rjxr66dUdpLPCp0po9dUni+Wu7xMWuRFWCTNgkqa0DY
-   e4dvuXjJPArq75xwBrBTLDOZrS+z4LulXfSrUEejhwcDm7vyB26kLqPUK
-   eB7DOCEp/1ZGYceSKRIu9sESfi9jB3TSilESC0gs3x1iia/Y5yaKKGEh3
-   U3krI/UAzELv7Bzp+RhFrq01EstgOmnZijTfGewYiRy6FSI3IWZFUfOKi
-   KVQ8/ya/x9hzWiN++5ubG/u8gSyau3rfkkE2e/1TDSznBUPUucYcDvtJs
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253221374"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="253221374"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 17:26:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="492931197"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 17:26:40 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOrHj-0007yk-Fs; Tue, 01 Mar 2022 01:26:39 +0000
-Date:   Tue, 1 Mar 2022 09:26:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Corentin Labbe <clabbe@baylibre.com>, heiko@sntech.de,
-        herbert@gondor.apana.org.au, krzysztof.kozlowski@canonical.com,
-        robh+dt@kernel.org
-Cc:     kbuild-all@lists.01.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: Re: [PATCH 10/16] crypto: rockchip: rework by using crypto_engine
-Message-ID: <202203010927.TpnG5TzB-lkp@intel.com>
-References: <20220228194037.1600509-11-clabbe@baylibre.com>
+        Mon, 28 Feb 2022 20:32:43 -0500
+X-Greylist: delayed 313 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 17:32:02 PST
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4131FF06
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:32:01 -0800 (PST)
+Received: from mxde.zte.com.cn (unknown [10.35.8.63])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4K702t401Mz1FPMg
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:46 +0800 (CST)
+Received: from mxus.zte.com.cn (unknown [10.207.168.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxde.zte.com.cn (FangMail) with ESMTPS id 4K702c2gSmzB5kdn
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:32 +0800 (CST)
+Received: from mxhk.zte.com.cn (unknown [192.168.250.137])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxus.zte.com.cn (FangMail) with ESMTPS id 4K702X6pChzdmX8m
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:28 +0800 (CST)
+Received: from mxct.zte.com.cn (unknown [192.168.251.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4K702T1vNzz8PxDy
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:25 +0800 (CST)
+Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4K702Q4kt9z8fkWd;
+        Tue,  1 Mar 2022 09:26:22 +0800 (CST)
+Received: from szxlzmapp05.zte.com.cn ([10.5.230.85])
+        by mse-fl2.zte.com.cn with SMTP id 2211Q6Ev061421;
+        Tue, 1 Mar 2022 09:26:07 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from fox-cloudhost8.localdomain (unknown [10.234.72.110])
+        by smtp (Zmail) with SMTP;
+        Tue, 1 Mar 2022 09:26:06 +0800
+X-Zmail-TransId: 3e81621d762e002-92466
+From:   Yi Wang <wang.yi59@zte.com.cn>
+To:     mst@redhat.com
+Cc:     jasowang@redhat.com, elic@nvidia.com, xieyongji@bytedance.com,
+        sgarzare@redhat.com, wuzongyong@linux.alibaba.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
+        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: [PATCH] vdpa: fix use-after-free on vp_vdpa_remove
+Date:   Tue,  1 Mar 2022 17:10:59 +0800
+Message-Id: <20220301091059.46869-1-wang.yi59@zte.com.cn>
+X-Mailer: git-send-email 2.33.0.rc0.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228194037.1600509-11-clabbe@baylibre.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 2211Q6Ev061421
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 621D7655.000 by FangMail milter!
+X-FangMail-Envelope: 1646098006/4K702t401Mz1FPMg/621D7655.000/10.35.8.63/[10.35.8.63]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 621D7655.000/4K702t401Mz1FPMg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Corentin,
+From: Zhang Min <zhang.min9@zte.com.cn>
 
-I love your patch! Perhaps something to improve:
+When vp_vdpa driver is unbind, vp_vdpa is freed in vdpa_unregister_device
+and then vp_vdpa->mdev.pci_dev is dereferenced in vp_modern_remove,
+triggering use-after-free.
 
-[auto build test WARNING on rockchip/for-next]
-[also build test WARNING on herbert-cryptodev-2.6/master herbert-crypto-2.6/master v5.17-rc6 next-20220228]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Call Trace of unbinding driver free vp_vdpa :
+do_syscall_64
+  vfs_write
+    kernfs_fop_write_iter
+      device_release_driver_internal
+        pci_device_remove
+          vp_vdpa_remove
+            vdpa_unregister_device
+              kobject_release
+                device_release
+                  kfree
 
-url:    https://github.com/0day-ci/linux/commits/Corentin-Labbe/crypto-rockchip-permit-to-pass-self-tests/20220301-035430
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mmind/linux-rockchip.git for-next
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20220301/202203010927.TpnG5TzB-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/7e5f8e4a5f09473643937e0ecff342bf336793fb
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Corentin-Labbe/crypto-rockchip-permit-to-pass-self-tests/20220301-035430
-        git checkout 7e5f8e4a5f09473643937e0ecff342bf336793fb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/crypto/rockchip/
+Call Trace of dereference vp_vdpa->mdev.pci_dev:
+vp_modern_remove
+  pci_release_selected_regions
+    pci_release_region
+      pci_resource_len
+        pci_resource_end
+          (dev)->resource[(bar)].end
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/device.h:15,
-                    from drivers/crypto/rockchip/rk3288_crypto_skcipher.c:11:
-   drivers/crypto/rockchip/rk3288_crypto_skcipher.c: In function 'rk_cipher_run':
->> drivers/crypto/rockchip/rk3288_crypto_skcipher.c:383:40: warning: format '%x' expects argument of type 'unsigned int', but argument 12 has type 'long unsigned int' [-Wformat=]
-     383 |                 dev_dbg(ctx->dev->dev, "LEN=%d/%d/%u ivsize=%d mode=%x n=%d BI=%d todo=%u way=%x\n",
-         |                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:129:41: note: in definition of macro 'dev_printk'
-     129 |                 _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
-         |                                         ^~~
-   include/linux/dev_printk.h:163:45: note: in expansion of macro 'dev_fmt'
-     163 |                 dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
-         |                                             ^~~~~~~
-   drivers/crypto/rockchip/rk3288_crypto_skcipher.c:383:17: note: in expansion of macro 'dev_dbg'
-     383 |                 dev_dbg(ctx->dev->dev, "LEN=%d/%d/%u ivsize=%d mode=%x n=%d BI=%d todo=%u way=%x\n",
-         |                 ^~~~~~~
-   drivers/crypto/rockchip/rk3288_crypto_skcipher.c:383:96: note: format string is defined here
-     383 |                 dev_dbg(ctx->dev->dev, "LEN=%d/%d/%u ivsize=%d mode=%x n=%d BI=%d todo=%u way=%x\n",
-         |                                                                                               ~^
-         |                                                                                                |
-         |                                                                                                unsigned int
-         |                                                                                               %lx
-   drivers/crypto/rockchip/rk3288_crypto_skcipher.c: In function 'rk_ablk_exit_tfm':
-   drivers/crypto/rockchip/rk3288_crypto_skcipher.c:474:31: warning: unused variable 'ctx' [-Wunused-variable]
-     474 |         struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
-         |                               ^~~
-
-
-vim +383 drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-
-   311	
-   312	static int rk_cipher_run(struct crypto_engine *engine, void *async_req)
-   313	{
-   314		struct skcipher_request *areq = container_of(async_req, struct skcipher_request, base);
-   315		struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
-   316		struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
-   317		struct rk_cipher_rctx *rctx = skcipher_request_ctx(areq);
-   318		struct scatterlist *sgs, *sgd;
-   319		int err = 0;
-   320		int n = 0;
-   321		int ivsize = crypto_skcipher_ivsize(tfm);
-   322		int offset;
-   323		u8 iv[AES_BLOCK_SIZE];
-   324		u8 biv[AES_BLOCK_SIZE];
-   325		u8 *ivtouse = areq->iv;
-   326		unsigned int len = areq->cryptlen;
-   327		unsigned int todo;
-   328	
-   329		ivsize = crypto_skcipher_ivsize(tfm);
-   330		if (areq->iv && crypto_skcipher_ivsize(tfm) > 0) {
-   331			if (rctx->mode & RK_CRYPTO_DEC) {
-   332				offset = areq->cryptlen - ivsize;
-   333				scatterwalk_map_and_copy(rctx->backup_iv, areq->src,
-   334							 offset, ivsize, 0);
-   335			}
-   336		}
-   337	
-   338		sgs = areq->src;
-   339		sgd = areq->dst;
-   340	
-   341		while (sgs && sgd && len) {
-   342			if (!sgs->length) {
-   343				sgs = sg_next(sgs);
-   344				sgd = sg_next(sgd);
-   345				continue;
-   346			}
-   347			if (rctx->mode & RK_CRYPTO_DEC) {
-   348				/* we backup last block of source to be used as IV at next step */
-   349				offset = sgs->length - ivsize;
-   350				scatterwalk_map_and_copy(biv, sgs, offset, ivsize, 0);
-   351			}
-   352			if (sgs == sgd) {
-   353				err = dma_map_sg(ctx->dev->dev, sgs, 1, DMA_BIDIRECTIONAL);
-   354				if (err <= 0) {
-   355					err = -EINVAL;
-   356					goto theend_iv;
-   357				}
-   358			} else {
-   359				err = dma_map_sg(ctx->dev->dev, sgs, 1, DMA_TO_DEVICE);
-   360				if (err <= 0) {
-   361					err = -EINVAL;
-   362					goto theend_iv;
-   363				}
-   364				err = dma_map_sg(ctx->dev->dev, sgd, 1, DMA_FROM_DEVICE);
-   365				if (err <= 0) {
-   366					err = -EINVAL;
-   367					goto theend_sgs;
-   368				}
-   369			}
-   370			err = 0;
-   371			rk_ablk_hw_init(ctx->dev, areq);
-   372			if (ivsize) {
-   373				if (ivsize == DES_BLOCK_SIZE)
-   374					memcpy_toio(ctx->dev->reg + RK_CRYPTO_TDES_IV_0, ivtouse, ivsize);
-   375				else
-   376					memcpy_toio(ctx->dev->reg + RK_CRYPTO_AES_IV_0, ivtouse, ivsize);
-   377			}
-   378			reinit_completion(&ctx->dev->complete);
-   379			ctx->dev->status = 0;
-   380	
-   381			todo = min(sg_dma_len(sgs), len);
-   382			len -= todo;
- > 383			dev_dbg(ctx->dev->dev, "LEN=%d/%d/%u ivsize=%d mode=%x n=%d BI=%d todo=%u way=%x\n",
-   384				sg_dma_len(sgs), sg_dma_len(sgd), areq->cryptlen,
-   385				ivsize, rctx->mode, n, sgs == sgd,
-   386				todo, rctx->mode & RK_CRYPTO_DEC);
-   387			crypto_dma_start(ctx->dev, sgs, sgd, todo / 4);
-   388			wait_for_completion_interruptible_timeout(&ctx->dev->complete,
-   389								  msecs_to_jiffies(2000));
-   390			if (!ctx->dev->status) {
-   391				dev_err(ctx->dev->dev, "DMA timeout\n");
-   392				err = -EFAULT;
-   393				goto theend;
-   394			}
-   395			if (sgs == sgd) {
-   396				dma_unmap_sg(ctx->dev->dev, sgs, 1, DMA_BIDIRECTIONAL);
-   397			} else {
-   398				dma_unmap_sg(ctx->dev->dev, sgs, 1, DMA_TO_DEVICE);
-   399				dma_unmap_sg(ctx->dev->dev, sgd, 1, DMA_FROM_DEVICE);
-   400			}
-   401			if (rctx->mode & RK_CRYPTO_DEC) {
-   402				memcpy(iv, biv, ivsize);
-   403				ivtouse = iv;
-   404			} else {
-   405				offset = sgd->length - ivsize;
-   406				scatterwalk_map_and_copy(iv, sgd, offset, ivsize, 0);
-   407				ivtouse = iv;
-   408			}
-   409			sgs = sg_next(sgs);
-   410			sgd = sg_next(sgd);
-   411			n++;
-   412		}
-   413	
-   414		if (areq->iv && ivsize > 0) {
-   415			offset = areq->cryptlen - ivsize;
-   416			if (rctx->mode & RK_CRYPTO_DEC) {
-   417				memcpy(areq->iv, rctx->backup_iv, ivsize);
-   418				memzero_explicit(rctx->backup_iv, ivsize);
-   419			} else {
-   420				scatterwalk_map_and_copy(areq->iv, areq->dst, offset,
-   421							 ivsize, 0);
-   422			}
-   423		}
-   424	
-   425	theend:
-   426		local_bh_disable();
-   427		crypto_finalize_skcipher_request(engine, areq, err);
-   428		local_bh_enable();
-   429		return 0;
-   430	
-   431	theend_sgs:
-   432		if (sgs == sgd) {
-   433			dma_unmap_sg(ctx->dev->dev, sgs, 1, DMA_BIDIRECTIONAL);
-   434		} else {
-   435			dma_unmap_sg(ctx->dev->dev, sgs, 1, DMA_TO_DEVICE);
-   436			dma_unmap_sg(ctx->dev->dev, sgd, 1, DMA_FROM_DEVICE);
-   437		}
-   438	theend_iv:
-   439		return err;
-   440	}
-   441	
-
+Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/vdpa/virtio_pci/vp_vdpa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
+index a57e381e830b..cce101e6a940 100644
+--- a/drivers/vdpa/virtio_pci/vp_vdpa.c
++++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
+@@ -533,8 +533,8 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
+ {
+ 	struct vp_vdpa *vp_vdpa = pci_get_drvdata(pdev);
+ 
+-	vdpa_unregister_device(&vp_vdpa->vdpa);
+ 	vp_modern_remove(&vp_vdpa->mdev);
++	vdpa_unregister_device(&vp_vdpa->vdpa);
+ }
+ 
+ static struct pci_driver vp_vdpa_driver = {
+-- 
+2.27.0
