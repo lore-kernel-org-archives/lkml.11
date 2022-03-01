@@ -2,109 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236985AbiCAS2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:28:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
+        id S236997AbiCAS24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:28:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236977AbiCAS2m (ORCPT
+        with ESMTP id S236980AbiCAS2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:28:42 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D841C139
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:27:58 -0800 (PST)
-Date:   Tue, 01 Mar 2022 18:27:54 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646159276;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
+        Tue, 1 Mar 2022 13:28:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DFC265421
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:28:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646159279;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=q2D2STxz7T8Xq/nR5uyA+P9QjoqQeHUiQIWsDf9UHP8=;
-        b=jTQ3a8WfwtmI35js/Lmz5/eegMbGOVEZovwyJGRl2xV0EV8BDrWUpl7gT12o7rHPOZvX9j
-        S1lfglsoij+5FwGqPZp52IxI2IUBPbtRcwBoh+7z5RJvGdVcydAnS6CKzJnZgCkG9X3pVM
-        Avz93LJAkLkTtgEwhVKAfhR9Xzpd3d5h2MMonXGTRTnMbIuysafpto+XBQ2DrGzJhuJrOl
-        bYrEicBd6Onv5RBkqQvT0Bd082Yli4+U7mPK1gxh802TBs8CogXfo0xU+tKlf0vO774wA9
-        NfMdHutelgeBIy6LqX5haEU/JyVHrJK/AAw1vcOcdfd9teWc8+DaOiUvVOo/Fw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646159276;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q2D2STxz7T8Xq/nR5uyA+P9QjoqQeHUiQIWsDf9UHP8=;
-        b=YVMgD5KM8ZD8PLFRD3WzrSob8hBAcluKDYB24XFJHnQh3XAh5vjhn/ItrmEI9UBuz1Mi67
-        M389HHhUwrYIkfCQ==
-From:   "irqchip-bot for Souptick Joarder (HPE)" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/nvic: Release nvic_base upon failure
-Cc:     kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220218163303.33344-1-jrdr.linux@gmail.com>
-References: <20220218163303.33344-1-jrdr.linux@gmail.com>
+        bh=pWwqXFMojK6l0GX9CplhMLt5g8KdQtN+Qa+5duN8pyQ=;
+        b=M9EzmxVlqwcfqIYJgOkwmpeoVuCowBjZHGRIXW3Espnx6YRQsCm+TUjA2PMMhqsBFk03xy
+        WE905G6cbj5XZeRDmQo3uRXZ1hRjh8zfNXN/pAW2+RGQCGNqDMC1vs0N056YtHGhnEs0Pk
+        fj6SCohFpXBmxeNAtAX6EzbV2upA03g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-673-9aCjjUiIOOybODwI7bfHFA-1; Tue, 01 Mar 2022 13:27:56 -0500
+X-MC-Unique: 9aCjjUiIOOybODwI7bfHFA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1E3BD81424A;
+        Tue,  1 Mar 2022 18:27:53 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B216D86C51;
+        Tue,  1 Mar 2022 18:27:45 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        x86@kernel.org, intel-gvt-dev@lists.freedesktop.org,
+        Joerg Roedel <joro@8bytes.org>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>,
+        Jim Mattson <jmattson@google.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        dri-devel@lists.freedesktop.org,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH v3 06/11] KVM: x86: lapic: don't allow to change APIC ID when apic acceleration is enabled
+Date:   Tue,  1 Mar 2022 20:26:34 +0200
+Message-Id: <20220301182639.559568-7-mlevitsk@redhat.com>
+In-Reply-To: <20220301182639.559568-1-mlevitsk@redhat.com>
+References: <20220301182639.559568-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Message-ID: <164615927490.16921.9273664965460113512.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+No normal guest has any reason to change physical APIC IDs, and
+allowing this introduces bugs into APIC acceleration code.
 
-Commit-ID:     e414c25e3399b2b3d7337dc47abccab5c71b7c8f
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/e414c25e3399b2b3d7337dc47abccab5c71b7c8f
-Author:        Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-AuthorDate:    Fri, 18 Feb 2022 22:03:03 +05:30
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 01 Mar 2022 10:19:51 
-
-irqchip/nvic: Release nvic_base upon failure
-
-smatch warning was reported as below ->
-
-smatch warnings:
-drivers/irqchip/irq-nvic.c:131 nvic_of_init()
-warn: 'nvic_base' not released on lines: 97.
-
-Release nvic_base upon failure.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- drivers/irqchip/irq-nvic.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/lapic.c | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
-index ba4759b..9423030 100644
---- a/drivers/irqchip/irq-nvic.c
-+++ b/drivers/irqchip/irq-nvic.c
-@@ -107,6 +107,7 @@ static int __init nvic_of_init(struct device_node *node,
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 80a2020c4db40..ffb5fc6449bc5 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2042,10 +2042,20 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
  
- 	if (!nvic_irq_domain) {
- 		pr_warn("Failed to allocate irq domain\n");
-+		iounmap(nvic_base);
- 		return -ENOMEM;
- 	}
+ 	switch (reg) {
+ 	case APIC_ID:		/* Local APIC ID */
+-		if (!apic_x2apic_mode(apic))
+-			kvm_apic_set_xapic_id(apic, val >> 24);
+-		else
++		if (apic_x2apic_mode(apic)) {
+ 			ret = 1;
++			break;
++		}
++		/*
++		 * Don't allow setting APIC ID with any APIC acceleration
++		 * enabled to avoid unexpected issues
++		 */
++		if (enable_apicv && ((val >> 24) != apic->vcpu->vcpu_id)) {
++			kvm_vm_bugged(apic->vcpu->kvm);
++			break;
++		}
++
++		kvm_apic_set_xapic_id(apic, val >> 24);
+ 		break;
  
-@@ -116,6 +117,7 @@ static int __init nvic_of_init(struct device_node *node,
- 	if (ret) {
- 		pr_warn("Failed to allocate irq chips\n");
- 		irq_domain_remove(nvic_irq_domain);
-+		iounmap(nvic_base);
- 		return ret;
- 	}
+ 	case APIC_TASKPRI:
+@@ -2613,8 +2623,16 @@ int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu)
+ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+ 		struct kvm_lapic_state *s, bool set)
+ {
+-	if (apic_x2apic_mode(vcpu->arch.apic)) {
+-		u32 *id = (u32 *)(s->regs + APIC_ID);
++	u32 *id = (u32 *)(s->regs + APIC_ID);
++
++	if (!apic_x2apic_mode(vcpu->arch.apic)) {
++		/* Don't allow setting APIC ID with any APIC acceleration
++		 * enabled to avoid unexpected issues
++		 */
++		if (enable_apicv && (*id >> 24) != vcpu->vcpu_id)
++			return -EINVAL;
++	} else {
++
+ 		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
+ 		u64 icr;
  
+-- 
+2.26.3
+
