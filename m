@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD70BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235225AbiCAOQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:16:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44968 "EHLO
+        id S235227AbiCAOSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:18:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235216AbiCAOQy (ORCPT
+        with ESMTP id S232871AbiCAOSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:16:54 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EF28EB7B;
-        Tue,  1 Mar 2022 06:16:13 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id y11so14328344pfa.6;
-        Tue, 01 Mar 2022 06:16:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AOmwVd9edsIWjbmnt5Vz1bXusEeT8SvFDTAq62duuU0=;
-        b=cIAys3nROTVgD2GXuegWrU6S65y4slbQMvSByHeXIROlywCNom9+QMTFge+n92J6kn
-         JPgCrFVeluCckR4rrUvTq8j7wRnA/Xa+U5fnGV6enHJ3UXYPkua4bPPgTuzfZ7E2W5SK
-         VIcj1JwPv/y0V3KmAdwF29l7bC5dlWTkQNxCtkw/vD9znr90ULi4k7jjaSFHUnjYD4sO
-         cG/6ArewzoGrOSUZzrWfnZQudXTHWxrUNoCbuAjX0rjQ3dL2ofBv6Wscje2I7pPQ+/TG
-         OHticZF4a6qjB99fa6zMT3oyreegsjXTkQHT8x0auggYwc647kynfJuEpBwI3hq038eX
-         W2aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AOmwVd9edsIWjbmnt5Vz1bXusEeT8SvFDTAq62duuU0=;
-        b=5TJWrXXSMWft7lu1vhxYbwZ78rGG1tjZxZUwr/U/CO05os9IZWJpwb2j3x7QzfxdcH
-         vRgXMXcbyW3XdbUPk4kWFBlBWas+IVg64rxXlAgmE+ZwQwxs24ZzeMGzNb/V0oDNbHfw
-         qjOKgDGGbtlJaWszzXSrCGxKllANPPL1XEUVxpr365qDwkapCHP35EIwsKCN2ChEOGu9
-         NyZe7jjib7cViY53KNk3fXAPDzN29P8W+eX31dhDFgBw0+JeELHwN9Sh7rAAkZZuEsku
-         O1dRC20IXX1rwrp2Yn79JEv2y5gsuE82DuALRGKJ6rILCzJsxqzI+kBHtMF55I9XX2/Z
-         eyAw==
-X-Gm-Message-State: AOAM532KUzOuaSRZ00xYKblp7f2CoqxqpWnDVBqL9YLYgWedqRR+yLAI
-        QKLPMyIMqOTAzPsXJPjb720=
-X-Google-Smtp-Source: ABdhPJwZiguy4a5MTNAk69jnWYUgTNxG+Sg3tlZ+qv5iKbjphYKQSK6WZBInbxKBcESfJS2ZmszILA==
-X-Received: by 2002:a05:6a00:1747:b0:4f3:e449:4416 with SMTP id j7-20020a056a00174700b004f3e4494416mr19326497pfc.5.1646144172642;
-        Tue, 01 Mar 2022 06:16:12 -0800 (PST)
-Received: from localhost.localdomain ([115.27.208.93])
-        by smtp.gmail.com with ESMTPSA id z23-20020aa79597000000b004e1bf2f5818sm18209990pfj.87.2022.03.01.06.16.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Mar 2022 06:16:12 -0800 (PST)
-From:   Yeqi Fu <fufuyqqqqqq@gmail.com>
-To:     ioana.ciornei@nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yeqi Fu <fufuyqqqqqq@gmail.com>,
-        Yongzhi Liu <lyz_cs@pku.edu.cn>
-Subject: [PATCH v1] dpaa2-switch: fix memory leak of dpaa2_switch_acl_entry_add
-Date:   Tue,  1 Mar 2022 22:15:44 +0800
-Message-Id: <20220301141544.13411-1-fufuyqqqqqq@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <a87a691a-62c2-5b42-3be8-ee1161281ad8@suse.de>
-References: <a87a691a-62c2-5b42-3be8-ee1161281ad8@suse.de>
+        Tue, 1 Mar 2022 09:18:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83012671;
+        Tue,  1 Mar 2022 06:17:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EB7D61549;
+        Tue,  1 Mar 2022 14:17:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFA2BC340F9;
+        Tue,  1 Mar 2022 14:17:33 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FxuRFGkE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646144249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wi3i96/wmqMIwx3wn7eIDg7ic4mvqpHlhPzqx/cxrvg=;
+        b=FxuRFGkEk6bsiaMmwLO+GSj9BMSQzNGo3JLCFOX6lFbKZ2Xi+0R5zshySjhYq30vBbZogE
+        KZGsFCX3JMrkaBvJvjVj9lyAL6c9TZCotqgv7FSUZo7lKmmz39cnosYJC1YjOt4dwdFUDH
+        d5gwbmKbElhGAJYDcRwBSXi0Sfqovp8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f2e36451 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 1 Mar 2022 14:17:29 +0000 (UTC)
+Received: by mail-yb1-f177.google.com with SMTP id f5so3653447ybg.9;
+        Tue, 01 Mar 2022 06:17:29 -0800 (PST)
+X-Gm-Message-State: AOAM531sXDsWLQRv5ZcMLyQoI3zk4hyKaRmXNA39kEw5ZTVkwgIrH4KE
+        SanbJnrvJBDYo4Jg+9ccPNYm9vIbfe4ifuwwDuw=
+X-Google-Smtp-Source: ABdhPJy+JE8PV2WW9wy7wujk4BA2IH2XCT1livVxX2BSwxc+6BFGyr7tWjee+U7ChBP6OKDVPnXxw23xb6xo+dT1IF8=
+X-Received: by 2002:a25:b905:0:b0:61e:23e4:949f with SMTP id
+ x5-20020a25b905000000b0061e23e4949fmr24865932ybj.373.1646144246594; Tue, 01
+ Mar 2022 06:17:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210610134459.28541-1-tianjia.zhang@linux.alibaba.com>
+ <20210610134459.28541-2-tianjia.zhang@linux.alibaba.com> <Yh32tEhUgGeSXf/A@zx2c4.com>
+ <52be961d-a00d-785d-8fb1-15b1a17bd74e@linux.alibaba.com> <CAHmME9pvbeGhWD+0N4_nOh-pkWmt7=Q9PDW40QjK8NHiJi7D2w@mail.gmail.com>
+In-Reply-To: <CAHmME9pvbeGhWD+0N4_nOh-pkWmt7=Q9PDW40QjK8NHiJi7D2w@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 1 Mar 2022 15:17:15 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qBzVzBfAYZdTUNM0qW3JtQow4Fcf+hyrOVJQWte_jV2Q@mail.gmail.com>
+Message-ID: <CAHmME9qBzVzBfAYZdTUNM0qW3JtQow4Fcf+hyrOVJQWte_jV2Q@mail.gmail.com>
+Subject: Re: [PATCH 1/3] crypto: sm4 - create SM4 library based on sm4 generic code
+To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Gilad Ben-Yossef <gilad@benyossef.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        "Markku-Juhani O . Saarinen" <mjos@iki.fi>,
+        Jussi Kivilinna <jussi.kivilinna@iki.fi>,
+        X86 ML <x86@kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The error handling branch did not properly free the memory of cmd_buf
-before return, which would cause memory leak. So fix this by adding
-kfree to the error handling branch.
+On Tue, Mar 1, 2022 at 2:22 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> You additional export symbols of those SIMD implementations in
+> arch/crypto/, which is not correct either, since nothing in the tree
+> uses those symbols. Please remove those EXPORT_SYMBOL directives as
+> well. Those functions can be static, and do not need to be declared in
+> the .h file.
 
-Fixes: 1110318d83e8 ("dpaa2-switch: add tc flower hardware offload on ingress traffic")
-Signed-off-by: Yeqi Fu <fufuyqqqqqq@gmail.com>
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c | 2 ++
- 1 file changed, 2 insertions(+)
+Actually, this part isn't quite so, because you share the avx
+implementation in the avx2 implementation. However,
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-index cacd454ac696..4d07aee07f4c 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-@@ -132,6 +132,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
- 						 DMA_TO_DEVICE);
- 	if (unlikely(dma_mapping_error(dev, acl_entry_cfg->key_iova))) {
- 		dev_err(dev, "DMA mapping failed\n");
-+		kfree(cmd_buff);
- 		return -EFAULT;
- 	}
- 
-@@ -142,6 +143,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
- 			 DMA_TO_DEVICE);
- 	if (err) {
- 		dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
-+		kfree(cmd_buff);
- 		return err;
- 	}
- 
--- 
-2.30.1 (Apple Git-130)
+> Yes, and those accelerated implementations are part of the crypto API,
+> and are not used by anything except the crypto API. Hence this should
+> be in crypto/, just like everything else that is /only/ used for the
+> cryto API. lib/crypto/ is for in-kernel users of crypto via normal
+> code paths. sm4.c does not belong in lib/crypto/ and should be moved.
 
+This still holds.
+
+Jason
