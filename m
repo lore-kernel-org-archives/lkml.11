@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B8CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B1A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237470AbiCATrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 14:47:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
+        id S232933AbiCATsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 14:48:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237290AbiCATrP (ORCPT
+        with ESMTP id S237309AbiCATrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 14:47:15 -0500
+        Tue, 1 Mar 2022 14:47:19 -0500
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A2056CA6F;
-        Tue,  1 Mar 2022 11:46:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6039B6D386;
+        Tue,  1 Mar 2022 11:46:34 -0800 (PST)
 Received: from IOURIT-Z4.ntdev.corp.microsoft.com (unknown [192.182.151.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E24D620B83E4;
-        Tue,  1 Mar 2022 11:46:30 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E24D620B83E4
+        by linux.microsoft.com (Postfix) with ESMTPSA id A50C220B4906;
+        Tue,  1 Mar 2022 11:46:32 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A50C220B4906
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1646163991;
-        bh=fmQ3XBJpaf7DICAHb/hnK2O+ZRI4zLXFjWmYVt34tCU=;
+        s=default; t=1646163992;
+        bh=xycBGuQ5kO6X2b4snuPAPfsCyjYl72l3GgpoOwKrg6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jrQUfYB5g/bx42TlApjOhhswlUYo2w7GDseiTl95JDROKWTnbFbg834Px8fNkUbJG
-         +RZH8pVuyvBZuYKNkPk51PwbyuuM1i4DXIIysoTKsXOEk7zhsHKptT+yr0LzInFDe9
-         rEErU9FhmOBpUhuLHB+mCUVLebt0F2l0PahHKiBE=
+        b=DWTS2WFZjXuuS+oDRYzChP1f4tEuEkLq38Vtn0NjnfUeEkiJzzxiwpPDa8EK1Fa5V
+         wukmyAF4XhMJ2q2u194fmgbhq7p+khQKKclIasyN56KP2L+DhV+nLZOFvjjSKlVFLi
+         /sKxR4MI93I9V0FKBIvMBTkqs9Muy9OceC9pHw6c=
 From:   Iouri Tarassov <iourit@linux.microsoft.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, linux-hyperv@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, spronovo@microsoft.com,
         spronovo@linux.microsoft.com, gregkh@linuxfoundation.org
-Subject: [PATCH v3 05/30] drivers: hv: dxgkrnl: Opening of /dev/dxg device and dxgprocess creation
-Date:   Tue,  1 Mar 2022 11:45:52 -0800
-Message-Id: <419b863b2848b9e86382511a2f0f12cf91065578.1646163378.git.iourit@linux.microsoft.com>
+Subject: [PATCH v3 14/30] drivers: hv: dxgkrnl: Creation of hardware queues. Sync object operations to hw queue.
+Date:   Tue,  1 Mar 2022 11:46:01 -0800
+Message-Id: <8c85016f6fde5e10433bb32e421fdec607edd4d9.1646163378.git.iourit@linux.microsoft.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
 References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
@@ -43,380 +43,392 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Implement opening of the device (/dev/dxg) file object and creation of
-dxgprocess objects.
+Implement ioctls for creation/destruction of the hardware queue objects:
+  - LX_DXCREATEHWQUEUE
+  - LX_DXDESTROYHWQUEUE
 
-- Add VM bus messages to create and destroy the host side of a dxgprocess
-object.
+Implement ioctls to submit "signal" and "wait" operations for
+sync objects to hardware queues:
+  - LX_DXSUBMITSIGNALSYNCOBJECTSTOHWQUEUE,
+  - LX_DXSUBMITWAITFORSYNCOBJECTSTOHWQUEUE
 
-- Implement the handle manager, which manages d3dkmthandle handles
-for the internal process objects. The handles are used by a user mode
-client to reference dxgkrnl objects.
+Hardware queues are used when a compute device supports "hardware
+scheduling". This means that the compute device itself schedules execution
+of DMA buffers from hardware queues without CPU intervention. This is as
+oppose to the "packet scheduling" mode where the software scheduler on the
+host schedules DMA buffer execution.
 
-dxgprocess is created for each process, which opens /dev/dxg.
-dxgprocess is ref counted, so the existing dxgprocess objects is used
-for a process, which opens the device object multiple time.
-dxgprocess is destroyed when the file object is released.
-
-A corresponding dxgprocess object is created on the host for every
-dxgprocess object in the guest.
-
-When a dxgkrnl object is created, in most cases the corresponding
-object is created in the host. The VM references the host objects by
-handles (d3dkmthandle). d3dkmthandle values for a host object and
-the corresponding VM object are the same. A host handle is allocated
-first and its value is assigned to the guest object.
+A hardware queue belongs to a dxgcontext object and has an associated
+monitored fence object to track execution progress. The monitored fence
+object has a mapped CPU address to read the fence value by CPU.
 
 Signed-off-by: Iouri Tarassov <iourit@linux.microsoft.com>
 ---
- drivers/hv/dxgkrnl/Makefile     |   2 +-
- drivers/hv/dxgkrnl/dxgkrnl.h    |  40 ++-
- drivers/hv/dxgkrnl/dxgmodule.c  |  67 +++-
- drivers/hv/dxgkrnl/dxgprocess.c |  97 ++++++
- drivers/hv/dxgkrnl/dxgvmbus.c   |  79 +++++
- drivers/hv/dxgkrnl/dxgvmbus.h   |  24 ++
- drivers/hv/dxgkrnl/hmgr.c       | 566 ++++++++++++++++++++++++++++++++
- drivers/hv/dxgkrnl/hmgr.h       | 112 +++++++
- drivers/hv/dxgkrnl/ioctl.c      |  70 ++++
- drivers/hv/dxgkrnl/misc.h       |   1 -
- include/uapi/misc/d3dkmthk.h    |   2 +
- 11 files changed, 1056 insertions(+), 4 deletions(-)
- create mode 100644 drivers/hv/dxgkrnl/dxgprocess.c
- create mode 100644 drivers/hv/dxgkrnl/hmgr.c
- create mode 100644 drivers/hv/dxgkrnl/hmgr.h
+ drivers/hv/dxgkrnl/dxgadapter.c |  96 ++++++++++
+ drivers/hv/dxgkrnl/dxgkrnl.h    |  33 ++++
+ drivers/hv/dxgkrnl/dxgprocess.c |   4 +
+ drivers/hv/dxgkrnl/dxgvmbus.c   | 155 +++++++++++++++
+ drivers/hv/dxgkrnl/dxgvmbus.h   |  20 ++
+ drivers/hv/dxgkrnl/ioctl.c      | 321 ++++++++++++++++++++++++++++++++
+ include/uapi/misc/d3dkmthk.h    |  73 ++++++++
+ 7 files changed, 702 insertions(+)
 
-diff --git a/drivers/hv/dxgkrnl/Makefile b/drivers/hv/dxgkrnl/Makefile
-index 2ed07d877c91..9d821e83448a 100644
---- a/drivers/hv/dxgkrnl/Makefile
-+++ b/drivers/hv/dxgkrnl/Makefile
-@@ -2,4 +2,4 @@
- # Makefile for the hyper-v compute device driver (dxgkrnl).
+diff --git a/drivers/hv/dxgkrnl/dxgadapter.c b/drivers/hv/dxgkrnl/dxgadapter.c
+index cb5575cdc308..cdc057371bfe 100644
+--- a/drivers/hv/dxgkrnl/dxgadapter.c
++++ b/drivers/hv/dxgkrnl/dxgadapter.c
+@@ -758,6 +758,9 @@ struct dxgcontext *dxgcontext_create(struct dxgdevice *device)
+  */
+ void dxgcontext_destroy(struct dxgprocess *process, struct dxgcontext *context)
+ {
++	struct dxghwqueue *hwqueue;
++	struct dxghwqueue *tmp;
++
+ 	pr_debug("%s %p\n", __func__, context);
+ 	context->object_state = DXGOBJECTSTATE_DESTROYED;
+ 	if (context->device) {
+@@ -769,6 +772,10 @@ void dxgcontext_destroy(struct dxgprocess *process, struct dxgcontext *context)
+ 		dxgdevice_remove_context(context->device, context);
+ 		kref_put(&context->device->device_kref, dxgdevice_release);
+ 	}
++	list_for_each_entry_safe(hwqueue, tmp, &context->hwqueue_list_head,
++				 hwqueue_list_entry) {
++		dxghwqueue_destroy(process, hwqueue);
++	}
+ 	kref_put(&context->context_kref, dxgcontext_release);
+ }
  
- obj-$(CONFIG_DXGKRNL)	+= dxgkrnl.o
--dxgkrnl-y		:= dxgmodule.o misc.o dxgadapter.o ioctl.o dxgvmbus.o
-+dxgkrnl-y		:= dxgmodule.o hmgr.o misc.o dxgadapter.o ioctl.o dxgvmbus.o dxgprocess.o
+@@ -795,6 +802,38 @@ void dxgcontext_release(struct kref *refcount)
+ 	vfree(context);
+ }
+ 
++int dxgcontext_add_hwqueue(struct dxgcontext *context,
++			   struct dxghwqueue *hwqueue)
++{
++	int ret = 0;
++
++	down_write(&context->hwqueue_list_lock);
++	if (dxgcontext_is_active(context))
++		list_add_tail(&hwqueue->hwqueue_list_entry,
++			      &context->hwqueue_list_head);
++	else
++		ret = -ENODEV;
++	up_write(&context->hwqueue_list_lock);
++	return ret;
++}
++
++void dxgcontext_remove_hwqueue(struct dxgcontext *context,
++			       struct dxghwqueue *hwqueue)
++{
++	if (hwqueue->hwqueue_list_entry.next) {
++		list_del(&hwqueue->hwqueue_list_entry);
++		hwqueue->hwqueue_list_entry.next = NULL;
++	}
++}
++
++void dxgcontext_remove_hwqueue_safe(struct dxgcontext *context,
++				    struct dxghwqueue *hwqueue)
++{
++	down_write(&context->hwqueue_list_lock);
++	dxgcontext_remove_hwqueue(context, hwqueue);
++	up_write(&context->hwqueue_list_lock);
++}
++
+ struct dxgallocation *dxgallocation_create(struct dxgprocess *process)
+ {
+ 	struct dxgallocation *alloc = vzalloc(sizeof(struct dxgallocation));
+@@ -1177,3 +1216,60 @@ void dxgsyncobject_release(struct kref *refcount)
+ 		vfree(syncobj->host_event);
+ 	vfree(syncobj);
+ }
++
++struct dxghwqueue *dxghwqueue_create(struct dxgcontext *context)
++{
++	struct dxgprocess *process = context->device->process;
++	struct dxghwqueue *hwqueue = vzalloc(sizeof(*hwqueue));
++
++	if (hwqueue) {
++		kref_init(&hwqueue->hwqueue_kref);
++		hwqueue->context = context;
++		hwqueue->process = process;
++		hwqueue->device_handle = context->device->handle;
++		if (dxgcontext_add_hwqueue(context, hwqueue) < 0) {
++			kref_put(&hwqueue->hwqueue_kref, dxghwqueue_release);
++			hwqueue = NULL;
++		} else {
++			kref_get(&context->context_kref);
++		}
++	}
++	return hwqueue;
++}
++
++void dxghwqueue_destroy(struct dxgprocess *process, struct dxghwqueue *hwqueue)
++{
++	pr_debug("%s %p\n", __func__, hwqueue);
++	hmgrtable_lock(&process->handle_table, DXGLOCK_EXCL);
++	if (hwqueue->handle.v) {
++		hmgrtable_free_handle(&process->handle_table,
++				      HMGRENTRY_TYPE_DXGHWQUEUE,
++				      hwqueue->handle);
++		hwqueue->handle.v = 0;
++	}
++	if (hwqueue->progress_fence_sync_object.v) {
++		hmgrtable_free_handle(&process->handle_table,
++				      HMGRENTRY_TYPE_MONITOREDFENCE,
++				      hwqueue->progress_fence_sync_object);
++		hwqueue->progress_fence_sync_object.v = 0;
++	}
++	hmgrtable_unlock(&process->handle_table, DXGLOCK_EXCL);
++
++	if (hwqueue->progress_fence_mapped_address) {
++		dxg_unmap_iospace(hwqueue->progress_fence_mapped_address,
++				  PAGE_SIZE);
++		hwqueue->progress_fence_mapped_address = NULL;
++	}
++	dxgcontext_remove_hwqueue_safe(hwqueue->context, hwqueue);
++
++	kref_put(&hwqueue->context->context_kref, dxgcontext_release);
++	kref_put(&hwqueue->hwqueue_kref, dxghwqueue_release);
++}
++
++void dxghwqueue_release(struct kref *refcount)
++{
++	struct dxghwqueue *hwqueue;
++
++	hwqueue = container_of(refcount, struct dxghwqueue, hwqueue_kref);
++	vfree(hwqueue);
++}
 diff --git a/drivers/hv/dxgkrnl/dxgkrnl.h b/drivers/hv/dxgkrnl/dxgkrnl.h
-index c0fd0bb267f2..61512463baa4 100644
+index 15cacdd43dee..74f412b0d6f5 100644
 --- a/drivers/hv/dxgkrnl/dxgkrnl.h
 +++ b/drivers/hv/dxgkrnl/dxgkrnl.h
-@@ -27,9 +27,11 @@
- #include <linux/pci.h>
- #include <linux/hyperv.h>
- 
-+struct dxgprocess;
- struct dxgadapter;
+@@ -36,6 +36,7 @@ struct dxgresource;
+ struct dxgsharedresource;
+ struct dxgsyncobject;
+ struct dxgsharedsyncobject;
++struct dxghwqueue;
  
  #include "misc.h"
-+#include "hmgr.h"
- #include <uapi/misc/d3dkmthk.h>
- 
- struct dxgk_device_types {
-@@ -137,10 +139,44 @@ struct dxgvmbuschannel *dxgglobal_get_dxgvmbuschannel(void);
- int dxgglobal_acquire_channel_lock(void);
- void dxgglobal_release_channel_lock(void);
- 
-+/*
-+ * The structure represents a process, which opened the /dev/dxg device.
-+ * A corresponding object is created on the host.
-+ */
- struct dxgprocess {
--	/* Placeholder */
-+	/*
-+	 * Process list entry in dxgglobal.
-+	 * Protected by the dxgglobal->plistmutex.
-+	 */
-+	struct list_head	plistentry;
-+	struct task_struct	*process;
-+	pid_t			pid;
-+	pid_t			tgid;
-+	/* how many time the process was opened */
-+	struct kref		process_kref;
-+	/*
-+	 * This handle table is used for all objects except dxgadapter
-+	 * The handle table lock order is higher than the local_handle_table
-+	 * lock
-+	 */
-+	struct hmgrtable	handle_table;
-+	/*
-+	 * This handle table is used for dxgadapter objects.
-+	 * The handle table lock order is lowest.
-+	 */
-+	struct hmgrtable	local_handle_table;
-+	/* Handle of the corresponding objec on the host */
-+	struct d3dkmthandle	host_handle;
- };
- 
-+struct dxgprocess *dxgprocess_create(void);
-+void dxgprocess_destroy(struct dxgprocess *process);
-+void dxgprocess_release(struct kref *refcount);
-+void dxgprocess_ht_lock_shared_down(struct dxgprocess *process);
-+void dxgprocess_ht_lock_shared_up(struct dxgprocess *process);
-+void dxgprocess_ht_lock_exclusive_down(struct dxgprocess *process);
-+void dxgprocess_ht_lock_exclusive_up(struct dxgprocess *process);
-+
- enum dxgadapter_state {
- 	DXGADAPTER_STATE_ACTIVE		= 0,
- 	DXGADAPTER_STATE_STOPPED	= 1,
-@@ -210,6 +246,8 @@ static inline void guid_to_luid(guid_t *guid, struct winluid *luid)
- void dxgvmb_initialize(void);
- int dxgvmb_send_set_iospace_region(u64 start, u64 len,
- 				   struct vmbus_gpadl *shared_mem_gpadl);
-+int dxgvmb_send_create_process(struct dxgprocess *process);
-+int dxgvmb_send_destroy_process(struct d3dkmthandle process);
- int dxgvmb_send_open_adapter(struct dxgadapter *adapter);
- int dxgvmb_send_close_adapter(struct dxgadapter *adapter);
- int dxgvmb_send_get_internal_adapter_info(struct dxgadapter *adapter);
-diff --git a/drivers/hv/dxgkrnl/dxgmodule.c b/drivers/hv/dxgkrnl/dxgmodule.c
-index 5ae57977731c..c79be67b8d56 100644
---- a/drivers/hv/dxgkrnl/dxgmodule.c
-+++ b/drivers/hv/dxgkrnl/dxgmodule.c
-@@ -204,17 +204,80 @@ static void dxgglobal_stop_adapters(void)
- 	dxgglobal_release_adapter_list_lock(DXGLOCK_EXCL);
- }
+ #include "hmgr.h"
+@@ -532,8 +533,32 @@ struct dxgcontext *dxgcontext_create(struct dxgdevice *dev);
+ void dxgcontext_destroy(struct dxgprocess *pr, struct dxgcontext *ctx);
+ void dxgcontext_destroy_safe(struct dxgprocess *pr, struct dxgcontext *ctx);
+ void dxgcontext_release(struct kref *refcount);
++int dxgcontext_add_hwqueue(struct dxgcontext *ctx,
++				       struct dxghwqueue *hq);
++void dxgcontext_remove_hwqueue(struct dxgcontext *ctx, struct dxghwqueue *hq);
++void dxgcontext_remove_hwqueue_safe(struct dxgcontext *ctx,
++				    struct dxghwqueue *hq);
+ bool dxgcontext_is_active(struct dxgcontext *ctx);
  
 +/*
-+ * Returns dxgprocess for the current executing process.
-+ * Creates dxgprocess if it doesn't exist.
++ * The object represent the execution hardware queue of a device.
 + */
-+static struct dxgprocess *dxgglobal_get_current_process(void)
-+{
-+	/*
-+	 * Find the DXG process for the current process.
-+	 * A new process is created if necessary.
-+	 */
-+	struct dxgprocess *process = NULL;
-+	struct dxgprocess *entry = NULL;
++struct dxghwqueue {
++	/* entry in the context hw queue list */
++	struct list_head	hwqueue_list_entry;
++	struct kref		hwqueue_kref;
++	struct dxgcontext	*context;
++	struct dxgprocess	*process;
++	struct d3dkmthandle	progress_fence_sync_object;
++	struct d3dkmthandle	handle;
++	struct d3dkmthandle	device_handle;
++	void			*progress_fence_mapped_address;
++};
 +
-+	mutex_lock(&dxgglobal->plistmutex);
-+	list_for_each_entry(entry, &dxgglobal->plisthead, plistentry) {
-+		/* All threads of a process have the same thread group ID */
-+		if (entry->process->tgid == current->tgid) {
-+			if (kref_get_unless_zero(&entry->process_kref)) {
-+				process = entry;
-+				pr_debug("found dxgprocess");
-+			} else {
-+				pr_debug("process is destroyed");
-+			}
-+			break;
-+		}
-+	}
-+	mutex_unlock(&dxgglobal->plistmutex);
-+
-+	if (process == NULL)
-+		process = dxgprocess_create();
-+
-+	return process;
-+}
++struct dxghwqueue *dxghwqueue_create(struct dxgcontext *ctx);
++void dxghwqueue_destroy(struct dxgprocess *pr, struct dxghwqueue *hq);
++void dxghwqueue_release(struct kref *refcount);
 +
  /*
-  * File operations for the /dev/dxg device
-  */
- 
- static int dxgk_open(struct inode *n, struct file *f)
- {
--	return 0;
-+	int ret = 0;
-+	struct dxgprocess *process;
-+
-+	pr_debug("%s %p %d %d",
-+		     __func__, f, current->pid, current->tgid);
-+
-+
-+	/* Find/create a dxgprocess structure for this process */
-+	process = dxgglobal_get_current_process();
-+
-+	if (process) {
-+		f->private_data = process;
-+	} else {
-+		pr_debug("cannot create dxgprocess for open\n");
-+		ret = -EBADF;
-+	}
-+
-+	pr_debug("%s end %x", __func__, ret);
-+	return ret;
- }
- 
- static int dxgk_release(struct inode *n, struct file *f)
- {
-+	struct dxgprocess *process;
-+
-+	process = (struct dxgprocess *)f->private_data;
-+	pr_debug("%s %p, %p", __func__, f, process);
-+
-+	if (process == NULL)
-+		return -EINVAL;
-+
-+	kref_put(&process->process_kref, dxgprocess_release);
-+
-+	f->private_data = NULL;
- 	return 0;
- }
- 
-@@ -236,6 +299,8 @@ const struct file_operations dxgk_fops = {
- 	.owner = THIS_MODULE,
- 	.open = dxgk_open,
- 	.release = dxgk_release,
-+	.compat_ioctl = dxgk_compat_ioctl,
-+	.unlocked_ioctl = dxgk_unlocked_ioctl,
- 	.write = dxgk_write,
- 	.read = dxgk_read,
- };
+  * A shared resource object is created to track the list of dxgresource objects,
+  * which are opened for the same underlying shared resource.
+@@ -758,6 +783,14 @@ int dxgvmb_send_wait_sync_object_cpu(struct dxgprocess *process,
+ 				     d3dkmt_waitforsynchronizationobjectfromcpu
+ 				     *args,
+ 				     u64 cpu_event);
++int dxgvmb_send_create_hwqueue(struct dxgprocess *process,
++			       struct dxgadapter *adapter,
++			       struct d3dkmt_createhwqueue *args,
++			       struct d3dkmt_createhwqueue *__user inargs,
++			       struct dxghwqueue *hq);
++int dxgvmb_send_destroy_hwqueue(struct dxgprocess *process,
++				struct dxgadapter *adapter,
++				struct d3dkmthandle handle);
+ int dxgvmb_send_query_adapter_info(struct dxgprocess *process,
+ 				   struct dxgadapter *adapter,
+ 				   struct d3dkmt_queryadapterinfo *args);
 diff --git a/drivers/hv/dxgkrnl/dxgprocess.c b/drivers/hv/dxgkrnl/dxgprocess.c
-new file mode 100644
-index 000000000000..2a86ba1b4b1b
---- /dev/null
+index 30af930cc8c0..32aad8bfa1a5 100644
+--- a/drivers/hv/dxgkrnl/dxgprocess.c
 +++ b/drivers/hv/dxgkrnl/dxgprocess.c
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (c) 2019, Microsoft Corporation.
-+ *
-+ * Author:
-+ *   Iouri Tarassov <iourit@linux.microsoft.com>
-+ *
-+ * Dxgkrnl Graphics Driver
-+ * DXGPROCESS implementation
-+ *
-+ */
-+
-+#include "dxgkrnl.h"
-+
-+#undef pr_fmt
-+#define pr_fmt(fmt)	"dxgk: " fmt
-+
-+/*
-+ * Creates a new dxgprocess object
-+ * Must be called when dxgglobal->plistmutex is held
-+ */
-+struct dxgprocess *dxgprocess_create(void)
-+{
-+	struct dxgprocess *process;
-+	int ret;
-+
-+	process = vzalloc(sizeof(struct dxgprocess));
-+	if (process != NULL) {
-+		pr_debug("new dxgprocess created\n");
-+		process->process = current;
-+		process->pid = current->pid;
-+		process->tgid = current->tgid;
-+		ret = dxgvmb_send_create_process(process);
-+		if (ret < 0) {
-+			pr_debug("send_create_process failed\n");
-+			vfree(process);
-+			process = NULL;
-+		} else {
-+			INIT_LIST_HEAD(&process->plistentry);
-+			kref_init(&process->process_kref);
-+
-+			mutex_lock(&dxgglobal->plistmutex);
-+			list_add_tail(&process->plistentry,
-+				      &dxgglobal->plisthead);
-+			mutex_unlock(&dxgglobal->plistmutex);
-+
-+			hmgrtable_init(&process->handle_table, process);
-+			hmgrtable_init(&process->local_handle_table, process);
-+		}
-+	}
-+	return process;
-+}
-+
-+void dxgprocess_destroy(struct dxgprocess *process)
-+{
-+	hmgrtable_destroy(&process->handle_table);
-+	hmgrtable_destroy(&process->local_handle_table);
-+}
-+
-+void dxgprocess_release(struct kref *refcount)
-+{
-+	struct dxgprocess *process;
-+
-+	process = container_of(refcount, struct dxgprocess, process_kref);
-+
-+	mutex_lock(&dxgglobal->plistmutex);
-+	list_del(&process->plistentry);
-+	process->plistentry.next = NULL;
-+	mutex_unlock(&dxgglobal->plistmutex);
-+
-+	dxgprocess_destroy(process);
-+
-+	if (process->host_handle.v)
-+		dxgvmb_send_destroy_process(process->host_handle);
-+	vfree(process);
-+}
-+
-+void dxgprocess_ht_lock_shared_down(struct dxgprocess *process)
-+{
-+	hmgrtable_lock(&process->handle_table, DXGLOCK_SHARED);
-+}
-+
-+void dxgprocess_ht_lock_shared_up(struct dxgprocess *process)
-+{
-+	hmgrtable_unlock(&process->handle_table, DXGLOCK_SHARED);
-+}
-+
-+void dxgprocess_ht_lock_exclusive_down(struct dxgprocess *process)
-+{
-+	hmgrtable_lock(&process->handle_table, DXGLOCK_EXCL);
-+}
-+
-+void dxgprocess_ht_lock_exclusive_up(struct dxgprocess *process)
-+{
-+	hmgrtable_unlock(&process->handle_table, DXGLOCK_EXCL);
-+}
+@@ -278,6 +278,10 @@ struct dxgdevice *dxgprocess_device_by_object_handle(struct dxgprocess *process,
+ 			device_handle =
+ 			    ((struct dxgcontext *)obj)->device_handle;
+ 			break;
++		case HMGRENTRY_TYPE_DXGHWQUEUE:
++			device_handle =
++			    ((struct dxghwqueue *)obj)->device_handle;
++			break;
+ 		default:
+ 			pr_err("invalid handle type: %d\n", t);
+ 			break;
 diff --git a/drivers/hv/dxgkrnl/dxgvmbus.c b/drivers/hv/dxgkrnl/dxgvmbus.c
-index 6b02932819c8..988372c5812e 100644
+index e159b9e70e1c..5d292858edec 100644
 --- a/drivers/hv/dxgkrnl/dxgvmbus.c
 +++ b/drivers/hv/dxgkrnl/dxgvmbus.c
-@@ -495,6 +495,85 @@ int dxgvmb_send_set_iospace_region(u64 start, u64 len,
+@@ -2094,6 +2094,161 @@ int dxgvmb_send_wait_sync_object_gpu(struct dxgprocess *process,
  	return ret;
  }
  
-+int dxgvmb_send_create_process(struct dxgprocess *process)
++int dxgvmb_send_create_hwqueue(struct dxgprocess *process,
++			       struct dxgadapter *adapter,
++			       struct d3dkmt_createhwqueue *args,
++			       struct d3dkmt_createhwqueue *__user inargs,
++			       struct dxghwqueue *hwqueue)
 +{
++	struct dxgkvmb_command_createhwqueue *command = NULL;
++	u32 cmd_size = sizeof(struct dxgkvmb_command_createhwqueue);
 +	int ret;
-+	struct dxgkvmb_command_createprocess *command;
-+	struct dxgkvmb_command_createprocess_return result = { 0 };
-+	struct dxgvmbusmsg msg;
-+	char s[WIN_MAX_PATH];
-+	int i;
++	struct dxgvmbusmsg msg = {.hdr = NULL};
 +
-+	ret = init_message(&msg, NULL, process, sizeof(*command));
++	if (args->priv_drv_data_size > DXG_MAX_VM_BUS_PACKET_SIZE) {
++		pr_err("invalid private driver data size");
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	if (args->priv_drv_data_size)
++		cmd_size += args->priv_drv_data_size - 1;
++
++	ret = init_message(&msg, adapter, process, cmd_size);
 +	if (ret)
-+		return ret;
++		goto cleanup;
 +	command = (void *)msg.msg;
 +
-+	ret = dxgglobal_acquire_channel_lock();
++	command_vgpu_to_host_init2(&command->hdr,
++				   DXGK_VMBCOMMAND_CREATEHWQUEUE,
++				   process->host_handle);
++	command->context = args->context;
++	command->flags = args->flags;
++	command->priv_drv_data_size = args->priv_drv_data_size;
++	if (args->priv_drv_data_size) {
++		ret = copy_from_user(command->priv_drv_data,
++				     args->priv_drv_data,
++				     args->priv_drv_data_size);
++		if (ret) {
++			pr_err("%s failed to copy private data", __func__);
++			ret = -EINVAL;
++			goto cleanup;
++		}
++	}
++
++	ret = dxgvmb_send_sync_msg(msg.channel, msg.hdr, msg.size,
++				   command, cmd_size);
 +	if (ret < 0)
 +		goto cleanup;
 +
-+	command_vm_to_host_init1(&command->hdr, DXGK_VMBCOMMAND_CREATEPROCESS);
-+	command->process = process;
-+	command->process_id = process->process->pid;
-+	command->linux_process = 1;
-+	s[0] = 0;
-+	__get_task_comm(s, WIN_MAX_PATH, process->process);
-+	for (i = 0; i < WIN_MAX_PATH; i++) {
-+		command->process_name[i] = s[i];
-+		if (s[i] == 0)
-+			break;
-+	}
-+
-+	ret = dxgvmb_send_sync_msg(&dxgglobal->channel, msg.hdr, msg.size,
-+				   &result, sizeof(result));
++	ret = ntstatus2int(command->status);
 +	if (ret < 0) {
-+		pr_err("create_process failed %d", ret);
-+	} else if (result.hprocess.v == 0) {
-+		pr_err("create_process returned 0 handle");
-+		ret = -ENOTRECOVERABLE;
-+	} else {
-+		process->host_handle = result.hprocess;
-+		pr_debug("create_process returned %x",
-+			    process->host_handle.v);
++		pr_err("dxgvmb_send_sync_msg failed: %x", command->status.v);
++		goto cleanup;
 +	}
 +
-+	dxgglobal_release_channel_lock();
++	ret = hmgrtable_assign_handle_safe(&process->handle_table, hwqueue,
++					   HMGRENTRY_TYPE_DXGHWQUEUE,
++					   command->hwqueue);
++	if (ret < 0)
++		goto cleanup;
 +
++	ret = hmgrtable_assign_handle_safe(&process->handle_table,
++				NULL,
++				HMGRENTRY_TYPE_MONITOREDFENCE,
++				command->hwqueue_progress_fence);
++	if (ret < 0)
++		goto cleanup;
++
++	hwqueue->handle = command->hwqueue;
++	hwqueue->progress_fence_sync_object = command->hwqueue_progress_fence;
++
++	hwqueue->progress_fence_mapped_address =
++		dxg_map_iospace((u64)command->hwqueue_progress_fence_cpuva,
++				PAGE_SIZE, PROT_READ | PROT_WRITE, true);
++	if (hwqueue->progress_fence_mapped_address == NULL) {
++		ret = -ENOMEM;
++		goto cleanup;
++	}
++
++	ret = copy_to_user(&inargs->queue, &command->hwqueue,
++			   sizeof(struct d3dkmthandle));
++	if (ret < 0) {
++		pr_err("%s failed to copy hwqueue handle", __func__);
++		goto cleanup;
++	}
++	ret = copy_to_user(&inargs->queue_progress_fence,
++			   &command->hwqueue_progress_fence,
++			   sizeof(struct d3dkmthandle));
++	if (ret < 0) {
++		pr_err("%s failed to progress fence", __func__);
++		goto cleanup;
++	}
++	ret = copy_to_user(&inargs->queue_progress_fence_cpu_va,
++			   &hwqueue->progress_fence_mapped_address,
++			   sizeof(inargs->queue_progress_fence_cpu_va));
++	if (ret < 0) {
++		pr_err("%s failed to copy fence cpu va", __func__);
++		goto cleanup;
++	}
++	ret = copy_to_user(&inargs->queue_progress_fence_gpu_va,
++			   &command->hwqueue_progress_fence_gpuva,
++			   sizeof(u64));
++	if (ret < 0) {
++		pr_err("%s failed to copy fence gpu va", __func__);
++		goto cleanup;
++	}
++	if (args->priv_drv_data_size) {
++		ret = copy_to_user(args->priv_drv_data,
++				   command->priv_drv_data,
++				   args->priv_drv_data_size);
++		if (ret < 0)
++			pr_err("%s failed to copy private data", __func__);
++	}
++
++cleanup:
++	if (ret < 0) {
++		pr_err("%s failed %x", __func__, ret);
++		if (hwqueue->handle.v) {
++			hmgrtable_free_handle_safe(&process->handle_table,
++						   HMGRENTRY_TYPE_DXGHWQUEUE,
++						   hwqueue->handle);
++			hwqueue->handle.v = 0;
++		}
++		if (command && command->hwqueue.v)
++			dxgvmb_send_destroy_hwqueue(process, adapter,
++						    command->hwqueue);
++	}
++	free_message(&msg, process);
++	return ret;
++}
++
++int dxgvmb_send_destroy_hwqueue(struct dxgprocess *process,
++				struct dxgadapter *adapter,
++				struct d3dkmthandle handle)
++{
++	int ret;
++	struct dxgkvmb_command_destroyhwqueue *command;
++	struct dxgvmbusmsg msg = {.hdr = NULL};
++
++	ret = init_message(&msg, adapter, process, sizeof(*command));
++	if (ret)
++		goto cleanup;
++	command = (void *)msg.msg;
++
++	command_vgpu_to_host_init2(&command->hdr,
++				   DXGK_VMBCOMMAND_DESTROYHWQUEUE,
++				   process->host_handle);
++	command->hwqueue = handle;
++
++	ret = dxgvmb_send_sync_msg_ntstatus(msg.channel, msg.hdr, msg.size);
 +cleanup:
 +	free_message(&msg, process);
 +	if (ret)
@@ -424,870 +436,498 @@ index 6b02932819c8..988372c5812e 100644
 +	return ret;
 +}
 +
-+int dxgvmb_send_destroy_process(struct d3dkmthandle process)
-+{
-+	int ret;
-+	struct dxgkvmb_command_destroyprocess *command;
-+	struct dxgvmbusmsg msg;
-+
-+	ret = init_message(&msg, NULL, NULL, sizeof(*command));
-+	if (ret)
-+		return ret;
-+	command = (void *)msg.msg;
-+
-+	ret = dxgglobal_acquire_channel_lock();
-+	if (ret < 0)
-+		goto cleanup;
-+	command_vm_to_host_init2(&command->hdr, DXGK_VMBCOMMAND_DESTROYPROCESS,
-+				 process);
-+	ret = dxgvmb_send_sync_msg_ntstatus(&dxgglobal->channel,
-+					    msg.hdr, msg.size);
-+	dxgglobal_release_channel_lock();
-+
-+cleanup:
-+	free_message(&msg, NULL);
-+	if (ret)
-+		pr_debug("err: %s %d", __func__, ret);
-+	return ret;
-+}
-+
- /*
-  * Virtual GPU messages to the host
-  */
+ int dxgvmb_send_query_adapter_info(struct dxgprocess *process,
+ 				   struct dxgadapter *adapter,
+ 				   struct d3dkmt_queryadapterinfo *args)
 diff --git a/drivers/hv/dxgkrnl/dxgvmbus.h b/drivers/hv/dxgkrnl/dxgvmbus.h
-index eda259324588..ddd7b6bf9964 100644
+index d9cc88dee186..a4000b3a1743 100644
 --- a/drivers/hv/dxgkrnl/dxgvmbus.h
 +++ b/drivers/hv/dxgkrnl/dxgvmbus.h
-@@ -14,7 +14,11 @@
- #ifndef _DXGVMBUS_H
- #define _DXGVMBUS_H
- 
-+struct dxgprocess;
-+struct dxgadapter;
-+
- #define DXG_MAX_VM_BUS_PACKET_SIZE	(1024 * 128)
-+#define DXG_VM_PROCESS_NAME_LENGTH	260
- 
- enum dxgkvmb_commandchanneltype {
- 	DXGKVMB_VGPU_TO_HOST,
-@@ -169,6 +173,26 @@ struct dxgkvmb_command_setiospaceregion {
- 	u32				shared_page_gpadl;
+@@ -523,4 +523,24 @@ struct dxgkvmb_command_waitforsyncobjectfromgpu {
+ 	/* struct d3dkmthandle ObjectHandles[object_count] */
  };
  
-+struct dxgkvmb_command_createprocess {
-+	struct dxgkvmb_command_vm_to_host hdr;
-+	void			*process;
-+	u64			process_id;
-+	u16			process_name[DXG_VM_PROCESS_NAME_LENGTH + 1];
-+	u8			csrss_process:1;
-+	u8			dwm_process:1;
-+	u8			wow64_process:1;
-+	u8			linux_process:1;
++/* Returns the same structure */
++struct dxgkvmb_command_createhwqueue {
++	struct dxgkvmb_command_vgpu_to_host hdr;
++	struct ntstatus			status;
++	struct d3dkmthandle		hwqueue;
++	struct d3dkmthandle		hwqueue_progress_fence;
++	void				*hwqueue_progress_fence_cpuva;
++	u64				hwqueue_progress_fence_gpuva;
++	struct d3dkmthandle		context;
++	struct d3dddi_createhwqueueflags flags;
++	u32				priv_drv_data_size;
++	char				priv_drv_data[1];
 +};
 +
-+struct dxgkvmb_command_createprocess_return {
-+	struct d3dkmthandle	hprocess;
++/* The command returns ntstatus */
++struct dxgkvmb_command_destroyhwqueue {
++	struct dxgkvmb_command_vgpu_to_host hdr;
++	struct d3dkmthandle		hwqueue;
 +};
 +
-+// The command returns ntstatus
-+struct dxgkvmb_command_destroyprocess {
-+	struct dxgkvmb_command_vm_to_host hdr;
-+};
-+
- struct dxgkvmb_command_openadapter {
- 	struct dxgkvmb_command_vgpu_to_host hdr;
- 	u32				vmbus_interface_version;
-diff --git a/drivers/hv/dxgkrnl/hmgr.c b/drivers/hv/dxgkrnl/hmgr.c
-new file mode 100644
-index 000000000000..4c012046dcaf
---- /dev/null
-+++ b/drivers/hv/dxgkrnl/hmgr.c
-@@ -0,0 +1,566 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (c) 2019, Microsoft Corporation.
-+ *
-+ * Author:
-+ *   Iouri Tarassov <iourit@linux.microsoft.com>
-+ *
-+ * Dxgkrnl Graphics Driver
-+ * Handle manager implementation
-+ *
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/mutex.h>
-+#include <linux/rwsem.h>
-+
-+#include "misc.h"
-+#include "dxgkrnl.h"
-+#include "hmgr.h"
-+
-+#undef pr_fmt
-+#define pr_fmt(fmt)	"dxgk: " fmt
-+
-+const struct d3dkmthandle zerohandle;
-+
-+/*
-+ * Handle parameters
-+ */
-+#define HMGRHANDLE_INSTANCE_BITS	6
-+#define HMGRHANDLE_INDEX_BITS		24
-+#define HMGRHANDLE_UNIQUE_BITS		2
-+
-+#define HMGRHANDLE_INSTANCE_SHIFT	0
-+#define HMGRHANDLE_INDEX_SHIFT	\
-+	(HMGRHANDLE_INSTANCE_BITS + HMGRHANDLE_INSTANCE_SHIFT)
-+#define HMGRHANDLE_UNIQUE_SHIFT	\
-+	(HMGRHANDLE_INDEX_BITS + HMGRHANDLE_INDEX_SHIFT)
-+
-+#define HMGRHANDLE_INSTANCE_MASK \
-+	(((1 << HMGRHANDLE_INSTANCE_BITS) - 1) << HMGRHANDLE_INSTANCE_SHIFT)
-+#define HMGRHANDLE_INDEX_MASK      \
-+	(((1 << HMGRHANDLE_INDEX_BITS)    - 1) << HMGRHANDLE_INDEX_SHIFT)
-+#define HMGRHANDLE_UNIQUE_MASK     \
-+	(((1 << HMGRHANDLE_UNIQUE_BITS)   - 1) << HMGRHANDLE_UNIQUE_SHIFT)
-+
-+#define HMGRHANDLE_INSTANCE_MAX	((1 << HMGRHANDLE_INSTANCE_BITS) - 1)
-+#define HMGRHANDLE_INDEX_MAX	((1 << HMGRHANDLE_INDEX_BITS) - 1)
-+#define HMGRHANDLE_UNIQUE_MAX	((1 << HMGRHANDLE_UNIQUE_BITS) - 1)
-+
-+/*
-+ * Handle entry
-+ */
-+struct hmgrentry {
-+	union {
-+		void *object;
-+		struct {
-+			u32 prev_free_index;
-+			u32 next_free_index;
-+		};
-+	};
-+	u32 type:HMGRENTRY_TYPE_BITS + 1;
-+	u32 unique:HMGRHANDLE_UNIQUE_BITS;
-+	u32 instance:HMGRHANDLE_INSTANCE_BITS;
-+	u32 destroyed:1;
-+};
-+
-+#define HMGRTABLE_SIZE_INCREMENT	1024
-+#define HMGRTABLE_MIN_FREE_ENTRIES 128
-+#define HMGRTABLE_INVALID_INDEX (~((1 << HMGRHANDLE_INDEX_BITS) - 1))
-+#define HMGRTABLE_SIZE_MAX		0xFFFFFFF
-+
-+static u32 table_size_increment = HMGRTABLE_SIZE_INCREMENT;
-+
-+static u32 get_unique(struct d3dkmthandle h)
+ #endif /* _DXGVMBUS_H */
+diff --git a/drivers/hv/dxgkrnl/ioctl.c b/drivers/hv/dxgkrnl/ioctl.c
+index be9d72c4ae4e..111a63235627 100644
+--- a/drivers/hv/dxgkrnl/ioctl.c
++++ b/drivers/hv/dxgkrnl/ioctl.c
+@@ -880,6 +880,160 @@ dxgk_destroy_context(struct dxgprocess *process, void *__user inargs)
+ 	return ret;
+ }
+ 
++static int
++dxgk_create_hwqueue(struct dxgprocess *process, void *__user inargs)
 +{
-+	return (h.v & HMGRHANDLE_UNIQUE_MASK) >> HMGRHANDLE_UNIQUE_SHIFT;
-+}
-+
-+static u32 get_index(struct d3dkmthandle h)
-+{
-+	return (h.v & HMGRHANDLE_INDEX_MASK) >> HMGRHANDLE_INDEX_SHIFT;
-+}
-+
-+static bool is_handle_valid(struct hmgrtable *table, struct d3dkmthandle h,
-+			    bool ignore_destroyed, enum hmgrentry_type t)
-+{
-+	u32 index = get_index(h);
-+	u32 unique = get_unique(h);
-+	struct hmgrentry *entry;
-+
-+	if (index >= table->table_size) {
-+		pr_err("%s Invalid index %x %d\n", __func__, h.v, index);
-+		return false;
-+	}
-+
-+	entry = &table->entry_table[index];
-+	if (unique != entry->unique) {
-+		pr_err("%s Invalid unique %x %d %d %d %p",
-+			   __func__, h.v, unique, entry->unique,
-+			   index, entry->object);
-+		return false;
-+	}
-+
-+	if (entry->destroyed && !ignore_destroyed) {
-+		pr_err("%s Invalid destroyed", __func__);
-+		return false;
-+	}
-+
-+	if (entry->type == HMGRENTRY_TYPE_FREE) {
-+		pr_err("%s Entry is freed %x %d", __func__, h.v, index);
-+		return false;
-+	}
-+
-+	if (t != HMGRENTRY_TYPE_FREE && t != entry->type) {
-+		pr_err("%s type mismatch %x %d %d", __func__, h.v,
-+			   t, entry->type);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static struct d3dkmthandle build_handle(u32 index, u32 unique, u32 instance)
-+{
-+	struct d3dkmthandle handle;
-+
-+	handle.v = (index << HMGRHANDLE_INDEX_SHIFT) & HMGRHANDLE_INDEX_MASK;
-+	handle.v |= (unique << HMGRHANDLE_UNIQUE_SHIFT) &
-+	    HMGRHANDLE_UNIQUE_MASK;
-+	handle.v |= (instance << HMGRHANDLE_INSTANCE_SHIFT) &
-+	    HMGRHANDLE_INSTANCE_MASK;
-+
-+	return handle;
-+}
-+
-+inline u32 hmgrtable_get_used_entry_count(struct hmgrtable *table)
-+{
-+	DXGKRNL_ASSERT(table->table_size >= table->free_count);
-+	return (table->table_size - table->free_count);
-+}
-+
-+bool hmgrtable_mark_destroyed(struct hmgrtable *table, struct d3dkmthandle h)
-+{
-+	if (!is_handle_valid(table, h, false, HMGRENTRY_TYPE_FREE))
-+		return false;
-+
-+	table->entry_table[get_index(h)].destroyed = true;
-+	return true;
-+}
-+
-+bool hmgrtable_unmark_destroyed(struct hmgrtable *table, struct d3dkmthandle h)
-+{
-+	if (!is_handle_valid(table, h, true, HMGRENTRY_TYPE_FREE))
-+		return true;
-+
-+	DXGKRNL_ASSERT(table->entry_table[get_index(h)].destroyed);
-+	table->entry_table[get_index(h)].destroyed = 0;
-+	return true;
-+}
-+
-+static bool expand_table(struct hmgrtable *table, u32 NumEntries)
-+{
-+	u32 new_table_size;
-+	struct hmgrentry *new_entry;
-+	u32 table_index;
-+	u32 new_free_count;
-+	u32 prev_free_index;
-+	u32 tail_index = table->free_handle_list_tail;
-+
-+	/* The tail should point to the last free element in the list */
-+	if (table->free_count != 0) {
-+		if (tail_index >= table->table_size ||
-+		    table->entry_table[tail_index].next_free_index !=
-+		    HMGRTABLE_INVALID_INDEX) {
-+			pr_err("%s:corruption\n", __func__);
-+			pr_err("tail_index: %x", tail_index);
-+			pr_err("table size: %x", table->table_size);
-+			pr_err("free_count: %d", table->free_count);
-+			pr_err("NumEntries: %x", NumEntries);
-+			return false;
-+		}
-+	}
-+
-+	new_free_count = table_size_increment + table->free_count;
-+	new_table_size = table->table_size + table_size_increment;
-+	if (new_table_size < NumEntries) {
-+		new_free_count += NumEntries - new_table_size;
-+		new_table_size = NumEntries;
-+	}
-+
-+	if (new_table_size > HMGRHANDLE_INDEX_MAX) {
-+		pr_err("%s:corruption\n", __func__);
-+		return false;
-+	}
-+
-+	new_entry = (struct hmgrentry *)
-+	    vzalloc(new_table_size * sizeof(struct hmgrentry));
-+	if (new_entry == NULL) {
-+		pr_err("%s:allocation failed\n", __func__);
-+		return false;
-+	}
-+
-+	if (table->entry_table) {
-+		memcpy(new_entry, table->entry_table,
-+		       table->table_size * sizeof(struct hmgrentry));
-+		vfree(table->entry_table);
-+	} else {
-+		table->free_handle_list_head = 0;
-+	}
-+
-+	table->entry_table = new_entry;
-+
-+	/* Initialize new table entries and add to the free list */
-+	table_index = table->table_size;
-+
-+	prev_free_index = table->free_handle_list_tail;
-+
-+	while (table_index < new_table_size) {
-+		struct hmgrentry *entry = &table->entry_table[table_index];
-+
-+		entry->prev_free_index = prev_free_index;
-+		entry->next_free_index = table_index + 1;
-+		entry->type = HMGRENTRY_TYPE_FREE;
-+		entry->unique = 1;
-+		entry->instance = 0;
-+		prev_free_index = table_index;
-+
-+		table_index++;
-+	}
-+
-+	table->entry_table[table_index - 1].next_free_index =
-+	    (u32) HMGRTABLE_INVALID_INDEX;
-+
-+	if (table->free_count != 0) {
-+		/* Link the current free list with the new entries */
-+		struct hmgrentry *entry;
-+
-+		entry = &table->entry_table[table->free_handle_list_tail];
-+		entry->next_free_index = table->table_size;
-+	}
-+	table->free_handle_list_tail = new_table_size - 1;
-+	if (table->free_handle_list_head == HMGRTABLE_INVALID_INDEX)
-+		table->free_handle_list_head = table->table_size;
-+
-+	table->table_size = new_table_size;
-+	table->free_count = new_free_count;
-+
-+	return true;
-+}
-+
-+void hmgrtable_init(struct hmgrtable *table, struct dxgprocess *process)
-+{
-+	table->process = process;
-+	table->entry_table = NULL;
-+	table->table_size = 0;
-+	table->free_handle_list_head = HMGRTABLE_INVALID_INDEX;
-+	table->free_handle_list_tail = HMGRTABLE_INVALID_INDEX;
-+	table->free_count = 0;
-+	init_rwsem(&table->table_lock);
-+}
-+
-+void hmgrtable_destroy(struct hmgrtable *table)
-+{
-+	if (table->entry_table) {
-+		vfree(table->entry_table);
-+		table->entry_table = NULL;
-+	}
-+}
-+
-+void hmgrtable_lock(struct hmgrtable *table, enum dxglockstate state)
-+{
-+	if (state == DXGLOCK_EXCL)
-+		down_write(&table->table_lock);
-+	else
-+		down_read(&table->table_lock);
-+}
-+
-+void hmgrtable_unlock(struct hmgrtable *table, enum dxglockstate state)
-+{
-+	if (state == DXGLOCK_EXCL)
-+		up_write(&table->table_lock);
-+	else
-+		up_read(&table->table_lock);
-+}
-+
-+struct d3dkmthandle hmgrtable_alloc_handle(struct hmgrtable *table,
-+					   void *object,
-+					   enum hmgrentry_type type,
-+					   bool make_valid)
-+{
-+	u32 index;
-+	struct hmgrentry *entry;
-+	u32 unique;
-+
-+	DXGKRNL_ASSERT(type <= HMGRENTRY_TYPE_LIMIT);
-+	DXGKRNL_ASSERT(type > HMGRENTRY_TYPE_FREE);
-+
-+	if (table->free_count <= HMGRTABLE_MIN_FREE_ENTRIES) {
-+		if (!expand_table(table, 0)) {
-+			pr_err("hmgrtable expand_table failed\n");
-+			return zerohandle;
-+		}
-+	}
-+
-+	if (table->free_handle_list_head >= table->table_size) {
-+		pr_err("hmgrtable corrupted handle table head\n");
-+		return zerohandle;
-+	}
-+
-+	index = table->free_handle_list_head;
-+	entry = &table->entry_table[index];
-+
-+	if (entry->type != HMGRENTRY_TYPE_FREE) {
-+		pr_err("hmgrtable expected free handle\n");
-+		return zerohandle;
-+	}
-+
-+	table->free_handle_list_head = entry->next_free_index;
-+
-+	if (entry->next_free_index != table->free_handle_list_tail) {
-+		if (entry->next_free_index >= table->table_size) {
-+			pr_err("hmgrtable invalid next free index\n");
-+			return zerohandle;
-+		}
-+		table->entry_table[entry->next_free_index].prev_free_index =
-+		    HMGRTABLE_INVALID_INDEX;
-+	}
-+
-+	unique = table->entry_table[index].unique;
-+
-+	table->entry_table[index].object = object;
-+	table->entry_table[index].type = type;
-+	table->entry_table[index].instance = 0;
-+	table->entry_table[index].destroyed = !make_valid;
-+	table->free_count--;
-+	DXGKRNL_ASSERT(table->free_count <= table->table_size);
-+
-+	return build_handle(index, unique, table->entry_table[index].instance);
-+}
-+
-+int hmgrtable_assign_handle_safe(struct hmgrtable *table,
-+				 void *object,
-+				 enum hmgrentry_type type,
-+				 struct d3dkmthandle h)
-+{
++	struct d3dkmt_createhwqueue args;
++	struct dxgdevice *device = NULL;
++	struct dxgcontext *context = NULL;
++	struct dxgadapter *adapter = NULL;
++	struct dxghwqueue *hwqueue = NULL;
 +	int ret;
++	bool device_lock_acquired = false;
 +
-+	hmgrtable_lock(table, DXGLOCK_EXCL);
-+	ret = hmgrtable_assign_handle(table, object, type, h);
-+	hmgrtable_unlock(table, DXGLOCK_EXCL);
++	pr_debug("ioctl: %s", __func__);
++
++	ret = copy_from_user(&args, inargs, sizeof(args));
++	if (ret) {
++		pr_err("%s failed to copy input args", __func__);
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	/*
++	 * The call acquires reference on the device. It is safe to access the
++	 * adapter, because the device holds reference on it.
++	 */
++	device = dxgprocess_device_by_object_handle(process,
++						    HMGRENTRY_TYPE_DXGCONTEXT,
++						    args.context);
++	if (device == NULL) {
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	ret = dxgdevice_acquire_lock_shared(device);
++	if (ret < 0)
++		goto cleanup;
++
++	device_lock_acquired = true;
++
++	hmgrtable_lock(&process->handle_table, DXGLOCK_SHARED);
++	context = hmgrtable_get_object_by_type(&process->handle_table,
++					       HMGRENTRY_TYPE_DXGCONTEXT,
++					       args.context);
++	hmgrtable_unlock(&process->handle_table, DXGLOCK_SHARED);
++
++	if (context == NULL) {
++		pr_err("Invalid context handle %x", args.context.v);
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	hwqueue = dxghwqueue_create(context);
++	if (hwqueue == NULL) {
++		ret = -ENOMEM;
++		goto cleanup;
++	}
++
++	adapter = device->adapter;
++	ret = dxgadapter_acquire_lock_shared(adapter);
++	if (ret < 0) {
++		adapter = NULL;
++		goto cleanup;
++	}
++
++	ret = dxgvmb_send_create_hwqueue(process, adapter, &args,
++					 inargs, hwqueue);
++
++cleanup:
++
++	if (ret < 0 && hwqueue)
++		dxghwqueue_destroy(process, hwqueue);
++
++	if (adapter)
++		dxgadapter_release_lock_shared(adapter);
++
++	if (device_lock_acquired)
++		dxgdevice_release_lock_shared(device);
++
++	if (device)
++		kref_put(&device->device_kref, dxgdevice_release);
++
++	pr_debug("ioctl:%s %s %d", errorstr(ret), __func__, ret);
 +	return ret;
 +}
 +
-+int hmgrtable_assign_handle(struct hmgrtable *table, void *object,
-+			    enum hmgrentry_type type, struct d3dkmthandle h)
++static int dxgk_destroy_hwqueue(struct dxgprocess *process,
++					    void *__user inargs)
 +{
-+	u32 index = get_index(h);
-+	u32 unique = get_unique(h);
-+	struct hmgrentry *entry = NULL;
++	struct d3dkmt_destroyhwqueue args;
++	int ret;
++	struct dxgadapter *adapter = NULL;
++	struct dxgdevice *device = NULL;
++	struct dxghwqueue *hwqueue = NULL;
++	struct d3dkmthandle device_handle = {};
 +
-+	pr_debug("%s %x, %d %p, %p\n",
-+		    __func__, h.v, index, object, table);
++	pr_debug("ioctl: %s", __func__);
 +
-+	if (index >= HMGRHANDLE_INDEX_MAX) {
-+		pr_err("handle index is too big: %x %d", h.v, index);
-+		return -EINVAL;
++	ret = copy_from_user(&args, inargs, sizeof(args));
++	if (ret) {
++		pr_err("%s failed to copy input args", __func__);
++		ret = -EINVAL;
++		goto cleanup;
 +	}
 +
-+	if (index >= table->table_size) {
-+		u32 new_size = index + table_size_increment;
++	hmgrtable_lock(&process->handle_table, DXGLOCK_EXCL);
++	hwqueue = hmgrtable_get_object_by_type(&process->handle_table,
++					       HMGRENTRY_TYPE_DXGHWQUEUE,
++					       args.queue);
++	if (hwqueue) {
++		hmgrtable_free_handle(&process->handle_table,
++				      HMGRENTRY_TYPE_DXGHWQUEUE, args.queue);
++		hwqueue->handle.v = 0;
++		device_handle = hwqueue->device_handle;
++	}
++	hmgrtable_unlock(&process->handle_table, DXGLOCK_EXCL);
 +
-+		if (new_size > HMGRHANDLE_INDEX_MAX)
-+			new_size = HMGRHANDLE_INDEX_MAX;
-+		if (!expand_table(table, new_size)) {
-+			pr_err("failed to expand handle table %d", new_size);
-+			return -ENOMEM;
-+		}
++	if (hwqueue == NULL) {
++		pr_err("invalid hwqueue handle: %x", args.queue.v);
++		ret = -EINVAL;
++		goto cleanup;
 +	}
 +
-+	entry = &table->entry_table[index];
-+
-+	if (entry->type != HMGRENTRY_TYPE_FREE) {
-+		pr_err("the entry is already busy: %d %x",
-+			   entry->type,
-+			   hmgrtable_build_entry_handle(table, index).v);
-+		return -EINVAL;
++	/*
++	 * The call acquires reference on the device. It is safe to access the
++	 * adapter, because the device holds reference on it.
++	 */
++	device = dxgprocess_device_by_handle(process, device_handle);
++	if (device == NULL) {
++		ret = -EINVAL;
++		goto cleanup;
 +	}
 +
-+	if (index != table->free_handle_list_tail) {
-+		if (entry->next_free_index >= table->table_size) {
-+			pr_err("hmgr: invalid next free index %d\n",
-+				   entry->next_free_index);
-+			return -EINVAL;
-+		}
-+		table->entry_table[entry->next_free_index].prev_free_index =
-+		    entry->prev_free_index;
-+	} else {
-+		table->free_handle_list_tail = entry->prev_free_index;
++	adapter = device->adapter;
++	ret = dxgadapter_acquire_lock_shared(adapter);
++	if (ret < 0) {
++		adapter = NULL;
++		goto cleanup;
 +	}
 +
-+	if (index != table->free_handle_list_head) {
-+		if (entry->prev_free_index >= table->table_size) {
-+			pr_err("hmgr: invalid next prev index %d\n",
-+				   entry->prev_free_index);
-+			return -EINVAL;
-+		}
-+		table->entry_table[entry->prev_free_index].next_free_index =
-+		    entry->next_free_index;
-+	} else {
-+		table->free_handle_list_head = entry->next_free_index;
-+	}
++	ret = dxgvmb_send_destroy_hwqueue(process, adapter, args.queue);
 +
-+	entry->prev_free_index = HMGRTABLE_INVALID_INDEX;
-+	entry->next_free_index = HMGRTABLE_INVALID_INDEX;
-+	entry->object = object;
-+	entry->type = type;
-+	entry->instance = 0;
-+	entry->unique = unique;
-+	entry->destroyed = false;
++	dxghwqueue_destroy(process, hwqueue);
 +
-+	table->free_count--;
-+	DXGKRNL_ASSERT(table->free_count <= table->table_size);
-+	return 0;
++cleanup:
++
++	if (adapter)
++		dxgadapter_release_lock_shared(adapter);
++
++	if (device)
++		kref_put(&device->device_kref, dxgdevice_release);
++
++	pr_debug("ioctl:%s %s %d", errorstr(ret), __func__, ret);
++	return ret;
 +}
 +
-+struct d3dkmthandle hmgrtable_alloc_handle_safe(struct hmgrtable *table,
-+						void *obj,
-+						enum hmgrentry_type type,
-+						bool make_valid)
-+{
-+	struct d3dkmthandle h;
-+
-+	hmgrtable_lock(table, DXGLOCK_EXCL);
-+	h = hmgrtable_alloc_handle(table, obj, type, make_valid);
-+	hmgrtable_unlock(table, DXGLOCK_EXCL);
-+	return h;
-+}
-+
-+void hmgrtable_free_handle(struct hmgrtable *table, enum hmgrentry_type t,
-+			   struct d3dkmthandle h)
-+{
-+	struct hmgrentry *entry;
-+	u32 i = get_index(h);
-+
-+	pr_debug("%s: %p %x\n", __func__, table, h.v);
-+
-+	/* Ignore the destroyed flag when checking the handle */
-+	if (is_handle_valid(table, h, true, t)) {
-+		DXGKRNL_ASSERT(table->free_count < table->table_size);
-+		entry = &table->entry_table[i];
-+		entry->unique = 1;
-+		entry->type = HMGRENTRY_TYPE_FREE;
-+		entry->destroyed = 0;
-+		if (entry->unique != HMGRHANDLE_UNIQUE_MAX)
-+			entry->unique += 1;
-+		else
-+			entry->unique = 1;
-+
-+		table->free_count++;
-+		DXGKRNL_ASSERT(table->free_count <= table->table_size);
-+
-+		/*
-+		 * Insert the index to the free list at the tail.
-+		 */
-+		entry->next_free_index = HMGRTABLE_INVALID_INDEX;
-+		entry->prev_free_index = table->free_handle_list_tail;
-+		entry = &table->entry_table[table->free_handle_list_tail];
-+		entry->next_free_index = i;
-+		table->free_handle_list_tail = i;
-+	} else {
-+		pr_err("%s:error: %d %x\n", __func__, i, h.v);
-+	}
-+}
-+
-+void hmgrtable_free_handle_safe(struct hmgrtable *table, enum hmgrentry_type t,
-+				struct d3dkmthandle h)
-+{
-+	hmgrtable_lock(table, DXGLOCK_EXCL);
-+	hmgrtable_free_handle(table, t, h);
-+	hmgrtable_unlock(table, DXGLOCK_EXCL);
-+}
-+
-+struct d3dkmthandle hmgrtable_build_entry_handle(struct hmgrtable *table,
-+						 u32 index)
-+{
-+	DXGKRNL_ASSERT(index < table->table_size);
-+
-+	return build_handle(index, table->entry_table[index].unique,
-+			    table->entry_table[index].instance);
-+}
-+
-+void *hmgrtable_get_object(struct hmgrtable *table, struct d3dkmthandle h)
-+{
-+	if (!is_handle_valid(table, h, false, HMGRENTRY_TYPE_FREE))
-+		return NULL;
-+
-+	return table->entry_table[get_index(h)].object;
-+}
-+
-+void *hmgrtable_get_object_by_type(struct hmgrtable *table,
-+				   enum hmgrentry_type type,
-+				   struct d3dkmthandle h)
-+{
-+	if (!is_handle_valid(table, h, false, type)) {
-+		pr_err("%s invalid handle %x\n", __func__, h.v);
-+		return NULL;
-+	}
-+	return table->entry_table[get_index(h)].object;
-+}
-+
-+void *hmgrtable_get_entry_object(struct hmgrtable *table, u32 index)
-+{
-+	DXGKRNL_ASSERT(index < table->table_size);
-+	DXGKRNL_ASSERT(table->entry_table[index].type != HMGRENTRY_TYPE_FREE);
-+
-+	return table->entry_table[index].object;
-+}
-+
-+static enum hmgrentry_type hmgrtable_get_entry_type(struct hmgrtable *table,
-+						    u32 index)
-+{
-+	DXGKRNL_ASSERT(index < table->table_size);
-+	return (enum hmgrentry_type)table->entry_table[index].type;
-+}
-+
-+enum hmgrentry_type hmgrtable_get_object_type(struct hmgrtable *table,
-+					      struct d3dkmthandle h)
-+{
-+	if (!is_handle_valid(table, h, false, HMGRENTRY_TYPE_FREE))
-+		return HMGRENTRY_TYPE_FREE;
-+
-+	return hmgrtable_get_entry_type(table, get_index(h));
-+}
-+
-+void *hmgrtable_get_object_ignore_destroyed(struct hmgrtable *table,
-+					    struct d3dkmthandle h,
-+					    enum hmgrentry_type type)
-+{
-+	if (!is_handle_valid(table, h, true, type))
-+		return NULL;
-+	return table->entry_table[get_index(h)].object;
-+}
-+
-+bool hmgrtable_next_entry(struct hmgrtable *tbl,
-+			  u32 *index,
-+			  enum hmgrentry_type *type,
-+			  struct d3dkmthandle *handle,
-+			  void **object)
-+{
-+	u32 i;
-+	struct hmgrentry *entry;
-+
-+	for (i = *index; i < tbl->table_size; i++) {
-+		entry = &tbl->entry_table[i];
-+		if (entry->type != HMGRENTRY_TYPE_FREE) {
-+			*index = i + 1;
-+			*object = entry->object;
-+			*handle = build_handle(i, entry->unique,
-+					       entry->instance);
-+			*type = entry->type;
-+			return true;
-+		}
-+	}
-+	return false;
-+}
-diff --git a/drivers/hv/dxgkrnl/hmgr.h b/drivers/hv/dxgkrnl/hmgr.h
-new file mode 100644
-index 000000000000..9ce4f536bf29
---- /dev/null
-+++ b/drivers/hv/dxgkrnl/hmgr.h
-@@ -0,0 +1,112 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/*
-+ * Copyright (c) 2019, Microsoft Corporation.
-+ *
-+ * Author:
-+ *   Iouri Tarassov <iourit@linux.microsoft.com>
-+ *
-+ * Dxgkrnl Graphics Driver
-+ * Handle manager definitions
-+ *
-+ */
-+
-+#ifndef _HMGR_H_
-+#define _HMGR_H_
-+
-+#include "misc.h"
-+
-+struct hmgrentry;
-+
-+/*
-+ * Handle manager table.
-+ *
-+ * Implementation notes:
-+ *   A list of free handles is built on top of the array of table entries.
-+ *   free_handle_list_head is the index of the first entry in the list.
-+ *   m_FreeHandleListTail is the index of an entry in the list, which is
-+ *   HMGRTABLE_MIN_FREE_ENTRIES from the head. It means that when a handle is
-+ *   freed, the next time the handle can be re-used is after allocating
-+ *   HMGRTABLE_MIN_FREE_ENTRIES number of handles.
-+ *   Handles are allocated from the start of the list and free handles are
-+ *   inserted after the tail of the list.
-+ *
-+ */
-+struct hmgrtable {
-+	struct dxgprocess	*process;
-+	struct hmgrentry	*entry_table;
-+	u32			free_handle_list_head;
-+	u32			free_handle_list_tail;
-+	u32			table_size;
-+	u32			free_count;
-+	struct rw_semaphore	table_lock;
-+};
-+
-+/*
-+ * Handle entry data types.
-+ */
-+#define HMGRENTRY_TYPE_BITS 5
-+
-+enum hmgrentry_type {
-+	HMGRENTRY_TYPE_FREE				= 0,
-+	HMGRENTRY_TYPE_DXGADAPTER			= 1,
-+	HMGRENTRY_TYPE_DXGSHAREDRESOURCE		= 2,
-+	HMGRENTRY_TYPE_DXGDEVICE			= 3,
-+	HMGRENTRY_TYPE_DXGRESOURCE			= 4,
-+	HMGRENTRY_TYPE_DXGALLOCATION			= 5,
-+	HMGRENTRY_TYPE_DXGOVERLAY			= 6,
-+	HMGRENTRY_TYPE_DXGCONTEXT			= 7,
-+	HMGRENTRY_TYPE_DXGSYNCOBJECT			= 8,
-+	HMGRENTRY_TYPE_DXGKEYEDMUTEX			= 9,
-+	HMGRENTRY_TYPE_DXGPAGINGQUEUE			= 10,
-+	HMGRENTRY_TYPE_DXGDEVICESYNCOBJECT		= 11,
-+	HMGRENTRY_TYPE_DXGPROCESS			= 12,
-+	HMGRENTRY_TYPE_DXGSHAREDVMOBJECT		= 13,
-+	HMGRENTRY_TYPE_DXGPROTECTEDSESSION		= 14,
-+	HMGRENTRY_TYPE_DXGHWQUEUE			= 15,
-+	HMGRENTRY_TYPE_DXGREMOTEBUNDLEOBJECT		= 16,
-+	HMGRENTRY_TYPE_DXGCOMPOSITIONSURFACEOBJECT	= 17,
-+	HMGRENTRY_TYPE_DXGCOMPOSITIONSURFACEPROXY	= 18,
-+	HMGRENTRY_TYPE_DXGTRACKEDWORKLOAD		= 19,
-+	HMGRENTRY_TYPE_LIMIT		= ((1 << HMGRENTRY_TYPE_BITS) - 1),
-+	HMGRENTRY_TYPE_MONITOREDFENCE	= HMGRENTRY_TYPE_LIMIT + 1,
-+};
-+
-+void hmgrtable_init(struct hmgrtable *tbl, struct dxgprocess *process);
-+void hmgrtable_destroy(struct hmgrtable *tbl);
-+void hmgrtable_lock(struct hmgrtable *tbl, enum dxglockstate state);
-+void hmgrtable_unlock(struct hmgrtable *tbl, enum dxglockstate state);
-+struct d3dkmthandle hmgrtable_alloc_handle(struct hmgrtable *tbl, void *object,
-+				     enum hmgrentry_type t, bool make_valid);
-+struct d3dkmthandle hmgrtable_alloc_handle_safe(struct hmgrtable *tbl,
-+						void *obj,
-+						enum hmgrentry_type t,
-+						bool reserve);
-+int hmgrtable_assign_handle(struct hmgrtable *tbl, void *obj,
-+			    enum hmgrentry_type, struct d3dkmthandle h);
-+int hmgrtable_assign_handle_safe(struct hmgrtable *tbl, void *obj,
-+				 enum hmgrentry_type t, struct d3dkmthandle h);
-+void hmgrtable_free_handle(struct hmgrtable *tbl, enum hmgrentry_type t,
-+			   struct d3dkmthandle h);
-+void hmgrtable_free_handle_safe(struct hmgrtable *tbl, enum hmgrentry_type t,
-+				struct d3dkmthandle h);
-+struct d3dkmthandle hmgrtable_build_entry_handle(struct hmgrtable *tbl,
-+						 u32 index);
-+enum hmgrentry_type hmgrtable_get_object_type(struct hmgrtable *tbl,
-+					      struct d3dkmthandle h);
-+void *hmgrtable_get_object(struct hmgrtable *tbl, struct d3dkmthandle h);
-+void *hmgrtable_get_object_by_type(struct hmgrtable *tbl, enum hmgrentry_type t,
-+				   struct d3dkmthandle h);
-+void *hmgrtable_get_object_ignore_destroyed(struct hmgrtable *tbl,
-+					    struct d3dkmthandle h,
-+					    enum hmgrentry_type t);
-+bool hmgrtable_mark_destroyed(struct hmgrtable *tbl, struct d3dkmthandle h);
-+bool hmgrtable_unmark_destroyed(struct hmgrtable *tbl, struct d3dkmthandle h);
-+void *hmgrtable_get_entry_object(struct hmgrtable *tbl, u32 index);
-+bool hmgrtable_next_entry(struct hmgrtable *tbl,
-+			  u32 *start_index,
-+			  enum hmgrentry_type *type,
-+			  struct d3dkmthandle *handle,
-+			  void **object);
-+
-+#endif
-diff --git a/drivers/hv/dxgkrnl/ioctl.c b/drivers/hv/dxgkrnl/ioctl.c
-index 277e25e5d8c6..fa7fc321addb 100644
---- a/drivers/hv/dxgkrnl/ioctl.c
-+++ b/drivers/hv/dxgkrnl/ioctl.c
-@@ -22,3 +22,73 @@
+ static int
+ get_standard_alloc_priv_data(struct dxgdevice *device,
+ 			     struct d3dkmt_createstandardallocation *alloc_info,
+@@ -1601,6 +1755,165 @@ dxgk_destroy_allocation(struct dxgprocess *process, void *__user inargs)
+ 	return ret;
+ }
  
- #undef pr_fmt
- #define pr_fmt(fmt)	"dxgk: " fmt
-+
-+struct ioctl_desc {
-+	int (*ioctl_callback)(struct dxgprocess *p, void __user *arg);
-+	u32 ioctl;
-+	u32 arg_size;
-+};
-+static struct ioctl_desc ioctls[LX_IO_MAX + 1];
-+
-+static char *errorstr(int ret)
++static int
++dxgk_submit_signal_to_hwqueue(struct dxgprocess *process, void *__user inargs)
 +{
-+	return ret < 0 ? "err" : "";
-+}
++	int ret;
++	struct d3dkmt_submitsignalsyncobjectstohwqueue args;
++	struct dxgdevice *device = NULL;
++	struct dxgadapter *adapter = NULL;
++	struct d3dkmthandle hwqueue = {};
 +
-+/*
-+ * IOCTL processing
-+ * The driver IOCTLs return
-+ * - 0 in case of success
-+ * - positive values, which are Windows NTSTATUS (for example, STATUS_PENDING).
-+ *   Positive values are success codes.
-+ * - Linux negative error codes
-+ */
-+static int dxgk_ioctl(struct file *f, unsigned int p1, unsigned long p2)
-+{
-+	int code = _IOC_NR(p1);
-+	int status;
-+	struct dxgprocess *process;
-+
-+	if (code < 1 || code > LX_IO_MAX) {
-+		pr_err("bad ioctl %x %x %x %x",
-+			   code, _IOC_TYPE(p1), _IOC_SIZE(p1), _IOC_DIR(p1));
-+		return -ENOTTY;
++	pr_debug("ioctl: %s", __func__);
++	ret = copy_from_user(&args, inargs, sizeof(args));
++	if (ret) {
++		pr_err("%s failed to copy input args", __func__);
++		ret = -EINVAL;
++		goto cleanup;
 +	}
-+	if (ioctls[code].ioctl_callback == NULL) {
-+		pr_err("ioctl callback is NULL %x", code);
-+		return -ENOTTY;
++
++	if (args.hwqueue_count > D3DDDI_MAX_BROADCAST_CONTEXT ||
++	    args.hwqueue_count == 0) {
++		pr_err("invalid hwqueue count");
++		ret = -EINVAL;
++		goto cleanup;
 +	}
-+	if (ioctls[code].ioctl != p1) {
-+		pr_err("ioctl mismatch. Code: %x User: %x Kernel: %x",
-+			   code, p1, ioctls[code].ioctl);
-+		return -ENOTTY;
++
++	if (args.object_count > D3DDDI_MAX_OBJECT_SIGNALED ||
++	    args.object_count == 0) {
++		pr_err("invalid number of syn cobject");
++		ret = -EINVAL;
++		goto cleanup;
 +	}
-+	process = (struct dxgprocess *)f->private_data;
-+	if (process->tgid != current->tgid) {
-+		pr_err("Call from a wrong process: %d %d",
-+			   process->tgid, current->tgid);
-+		return -ENOTTY;
++
++	ret = copy_from_user(&hwqueue, args.hwqueues,
++			     sizeof(struct d3dkmthandle));
++	if (ret) {
++		pr_err("%s failed to copy hwqueue handle", __func__);
++		ret = -EINVAL;
++		goto cleanup;
 +	}
-+	status = ioctls[code].ioctl_callback(process, (void *__user)p2);
-+	return status;
++
++	device = dxgprocess_device_by_object_handle(process,
++						    HMGRENTRY_TYPE_DXGHWQUEUE,
++						    hwqueue);
++	if (device == NULL) {
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	adapter = device->adapter;
++	ret = dxgadapter_acquire_lock_shared(adapter);
++	if (ret < 0) {
++		adapter = NULL;
++		goto cleanup;
++	}
++
++	ret = dxgvmb_send_signal_sync_object(process, adapter,
++					     args.flags, 0, zerohandle,
++					     args.object_count, args.objects,
++					     args.hwqueue_count, args.hwqueues,
++					     args.object_count,
++					     args.fence_values, NULL,
++					     zerohandle);
++
++cleanup:
++
++	if (adapter)
++		dxgadapter_release_lock_shared(adapter);
++	if (device)
++		kref_put(&device->device_kref, dxgdevice_release);
++
++	pr_debug("ioctl:%s %s %d", errorstr(ret), __func__, ret);
++	return ret;
 +}
 +
-+long dxgk_compat_ioctl(struct file *f, unsigned int p1, unsigned long p2)
++static int
++dxgk_submit_wait_to_hwqueue(struct dxgprocess *process, void *__user inargs)
 +{
-+	pr_debug("  compat ioctl %x", p1);
-+	return dxgk_ioctl(f, p1, p2);
++	struct d3dkmt_submitwaitforsyncobjectstohwqueue args;
++	struct dxgdevice *device = NULL;
++	struct dxgadapter *adapter = NULL;
++	int ret;
++	struct d3dkmthandle *objects = NULL;
++	u32 object_size;
++	u64 *fences = NULL;
++
++	pr_debug("ioctl: %s", __func__);
++
++	ret = copy_from_user(&args, inargs, sizeof(args));
++	if (ret) {
++		pr_err("%s failed to copy input args", __func__);
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	if (args.object_count > D3DDDI_MAX_OBJECT_WAITED_ON ||
++	    args.object_count == 0) {
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	object_size = sizeof(struct d3dkmthandle) * args.object_count;
++	objects = vzalloc(object_size);
++	if (objects == NULL) {
++		ret = -ENOMEM;
++		goto cleanup;
++	}
++	ret = copy_from_user(objects, args.objects, object_size);
++	if (ret) {
++		pr_err("%s failed to copy objects", __func__);
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	object_size = sizeof(u64) * args.object_count;
++	fences = vzalloc(object_size);
++	if (fences == NULL) {
++		ret = -ENOMEM;
++		goto cleanup;
++	}
++	ret = copy_from_user(fences, args.fence_values, object_size);
++	if (ret) {
++		pr_err("%s failed to copy fence values", __func__);
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	device = dxgprocess_device_by_object_handle(process,
++						    HMGRENTRY_TYPE_DXGHWQUEUE,
++						    args.hwqueue);
++	if (device == NULL) {
++		ret = -EINVAL;
++		goto cleanup;
++	}
++
++	adapter = device->adapter;
++	ret = dxgadapter_acquire_lock_shared(adapter);
++	if (ret < 0) {
++		adapter = NULL;
++		goto cleanup;
++	}
++
++	ret = dxgvmb_send_wait_sync_object_gpu(process, adapter,
++					       args.hwqueue, args.object_count,
++					       objects, fences, false);
++
++cleanup:
++
++	if (objects)
++		vfree(objects);
++	if (fences)
++		vfree(fences);
++	if (adapter)
++		dxgadapter_release_lock_shared(adapter);
++	if (device)
++		kref_put(&device->device_kref, dxgdevice_release);
++
++	pr_debug("ioctl:%s %s %d", errorstr(ret), __func__, ret);
++	return ret;
 +}
 +
-+long dxgk_unlocked_ioctl(struct file *f, unsigned int p1, unsigned long p2)
-+{
-+	pr_debug("   unlocked ioctl %x Code:%d", p1, _IOC_NR(p1));
-+	return dxgk_ioctl(f, p1, p2);
-+}
-+
-+#define SET_IOCTL(callback, v)				\
-+	ioctls[_IOC_NR(v)].ioctl_callback = callback;	\
-+	ioctls[_IOC_NR(v)].ioctl = v
-+
-+void init_ioctls(void)
-+{
-+}
-diff --git a/drivers/hv/dxgkrnl/misc.h b/drivers/hv/dxgkrnl/misc.h
-index 1ff0c0e28332..433b59d3eb23 100644
---- a/drivers/hv/dxgkrnl/misc.h
-+++ b/drivers/hv/dxgkrnl/misc.h
-@@ -31,7 +31,6 @@ extern const struct d3dkmthandle zerohandle;
-  * table_lock
-  * core_lock
-  * device_lock
-- * process->process_mutex
-  * adapter_list_lock
-  * device_mutex
-  */
+ static int
+ dxgk_create_sync_object(struct dxgprocess *process, void *__user inargs)
+ {
+@@ -3271,8 +3584,12 @@ void init_ioctls(void)
+ 		  LX_DXENUMADAPTERS2);
+ 	SET_IOCTL(/*0x15 */ dxgk_close_adapter,
+ 		  LX_DXCLOSEADAPTER);
++	SET_IOCTL(/*0x18 */ dxgk_create_hwqueue,
++		  LX_DXCREATEHWQUEUE);
+ 	SET_IOCTL(/*0x19 */ dxgk_destroy_device,
+ 		  LX_DXDESTROYDEVICE);
++	SET_IOCTL(/*0x1b */ dxgk_destroy_hwqueue,
++		  LX_DXDESTROYHWQUEUE);
+ 	SET_IOCTL(/*0x1d */ dxgk_destroy_sync_object,
+ 		  LX_DXDESTROYSYNCHRONIZATIONOBJECT);
+ 	SET_IOCTL(/*0x31 */ dxgk_signal_sync_object_cpu,
+@@ -3281,6 +3598,10 @@ void init_ioctls(void)
+ 		  LX_DXSIGNALSYNCHRONIZATIONOBJECTFROMGPU);
+ 	SET_IOCTL(/*0x33 */ dxgk_signal_sync_object_gpu2,
+ 		  LX_DXSIGNALSYNCHRONIZATIONOBJECTFROMGPU2);
++	SET_IOCTL(/*0x35 */ dxgk_submit_wait_to_hwqueue,
++		  LX_DXSUBMITWAITFORSYNCOBJECTSTOHWQUEUE);
++	SET_IOCTL(/*0x36 */ dxgk_submit_signal_to_hwqueue,
++		  LX_DXSUBMITSIGNALSYNCOBJECTSTOHWQUEUE);
+ 	SET_IOCTL(/*0x3a */ dxgk_wait_sync_object_cpu,
+ 		  LX_DXWAITFORSYNCHRONIZATIONOBJECTFROMCPU);
+ 	SET_IOCTL(/*0x3b */ dxgk_wait_sync_object_gpu,
 diff --git a/include/uapi/misc/d3dkmthk.h b/include/uapi/misc/d3dkmthk.h
-index 2b9ed954a520..7e2c520abf5f 100644
+index 36466fc18608..0b3cbe8ddcab 100644
 --- a/include/uapi/misc/d3dkmthk.h
 +++ b/include/uapi/misc/d3dkmthk.h
-@@ -54,4 +54,6 @@ struct winluid {
- 	__u32 b;
+@@ -197,6 +197,16 @@ struct d3dkmt_createcontextvirtual {
+ 	struct d3dkmthandle		context;
  };
  
-+#define LX_IO_MAX 0x45
++struct d3dddi_createhwqueueflags {
++	union {
++		struct {
++			__u32		disable_gpu_timeout:1;
++			__u32		reserved:31;
++		};
++		__u32			value;
++	};
++};
 +
- #endif /* _D3DKMTHK_H */
+ enum d3dkmdt_gdisurfacetype {
+ 	_D3DKMDT_GDISURFACE_INVALID				= 0,
+ 	_D3DKMDT_GDISURFACE_TEXTURE				= 1,
+@@ -690,6 +700,61 @@ struct d3dddi_openallocationinfo2 {
+ 	__u64			reserved[6];
+ };
+ 
++struct d3dkmt_createhwqueue {
++	struct d3dkmthandle	context;
++	struct d3dddi_createhwqueueflags flags;
++	__u32			priv_drv_data_size;
++	__u32			reserved;
++#ifdef __KERNEL__
++	void			*priv_drv_data;
++#else
++	__u64			priv_drv_data;
++#endif
++	struct d3dkmthandle	queue;
++	struct d3dkmthandle	queue_progress_fence;
++#ifdef __KERNEL__
++	void			*queue_progress_fence_cpu_va;
++#else
++	__u64			queue_progress_fence_cpu_va;
++#endif
++	__u64			queue_progress_fence_gpu_va;
++};
++
++struct d3dkmt_destroyhwqueue {
++	struct d3dkmthandle	queue;
++};
++
++struct d3dkmt_submitwaitforsyncobjectstohwqueue {
++	struct d3dkmthandle	hwqueue;
++	__u32			object_count;
++#ifdef __KERNEL__
++	struct d3dkmthandle	*objects;
++	__u64			*fence_values;
++#else
++	__u64			objects;
++	__u64			fence_values;
++#endif
++};
++
++struct d3dkmt_submitsignalsyncobjectstohwqueue {
++	struct d3dddicb_signalflags	flags;
++	__u32				hwqueue_count;
++#ifdef __KERNEL__
++	struct d3dkmthandle		*hwqueues;
++#else
++	__u64				hwqueues;
++#endif
++	__u32				object_count;
++	__u32				reserved;
++#ifdef __KERNEL__
++	struct d3dkmthandle		*objects;
++	__u64				*fence_values;
++#else
++	__u64				objects;
++	__u64				fence_values;
++#endif
++};
++
+ struct d3dkmt_opensyncobjectfromnthandle2 {
+ 	__u64			nt_handle;
+ 	struct d3dkmthandle	device;
+@@ -835,6 +900,10 @@ struct d3dkmt_enumadapters3 {
+ 	_IOWR(0x47, 0x14, struct d3dkmt_enumadapters2)
+ #define LX_DXCLOSEADAPTER		\
+ 	_IOWR(0x47, 0x15, struct d3dkmt_closeadapter)
++#define LX_DXCREATEHWQUEUE		\
++	_IOWR(0x47, 0x18, struct d3dkmt_createhwqueue)
++#define LX_DXDESTROYHWQUEUE		\
++	_IOWR(0x47, 0x1b, struct d3dkmt_destroyhwqueue)
+ #define LX_DXDESTROYDEVICE		\
+ 	_IOWR(0x47, 0x19, struct d3dkmt_destroydevice)
+ #define LX_DXDESTROYSYNCHRONIZATIONOBJECT \
+@@ -845,6 +914,10 @@ struct d3dkmt_enumadapters3 {
+ 	_IOWR(0x47, 0x32, struct d3dkmt_signalsynchronizationobjectfromgpu)
+ #define LX_DXSIGNALSYNCHRONIZATIONOBJECTFROMGPU2 \
+ 	_IOWR(0x47, 0x33, struct d3dkmt_signalsynchronizationobjectfromgpu2)
++#define LX_DXSUBMITSIGNALSYNCOBJECTSTOHWQUEUE \
++	_IOWR(0x47, 0x35, struct d3dkmt_submitsignalsyncobjectstohwqueue)
++#define LX_DXSUBMITWAITFORSYNCOBJECTSTOHWQUEUE \
++	_IOWR(0x47, 0x36, struct d3dkmt_submitwaitforsyncobjectstohwqueue)
+ #define LX_DXWAITFORSYNCHRONIZATIONOBJECTFROMCPU \
+ 	_IOWR(0x47, 0x3a, struct d3dkmt_waitforsynchronizationobjectfromcpu)
+ #define LX_DXWAITFORSYNCHRONIZATIONOBJECTFROMGPU \
 -- 
 2.35.1
 
