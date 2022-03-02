@@ -2,144 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18560C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245384AbiCBVjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:39:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S245378AbiCBVjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:39:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245391AbiCBVi7 (ORCPT
+        with ESMTP id S239247AbiCBVjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:38:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707A23337E
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:38:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 107C9B82259
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 21:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5451C004E1;
-        Wed,  2 Mar 2022 21:38:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646257092;
-        bh=g4DzPR2qSUJXqRfb/f7rxMQQp/kvG6FI0vWSvh2wP08=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=U4uKAxL0L8oPtTpxRl3k9qSWcmRgLrwDFlcFDQmVAIOIWukkufYPCAGM8vuY5K0oQ
-         D87WTw0C1wDlgPfbFZChCR31EbxgLKEY/mPb0+UDcSyv+dqF9B/+3AdVLfcyA+4j/C
-         VTHSoICeNaByN5glbRR2eoHUzvlB69ATNZYSIvtJpN6xghw6p8fkZcf2QT2NnoefYj
-         5PZ8POvwyxvlaw1Zu5gYBCEVyr4TyLpTyW/i2SKtqXlsXsLSfMyUKsZaOYrqRm3Bs4
-         y7bm5mk7qLNoCyQ9n2MEizsqkmmzxlyP2b3y2S0hgiVTQcpw08Ha6Xfm0/1ejSTKUJ
-         XRd3/BZXaC7CA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 57C555C08A0; Wed,  2 Mar 2022 13:38:12 -0800 (PST)
-Date:   Wed, 2 Mar 2022 13:38:12 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Chen, Rong A" <rong.a.chen@intel.com>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [kbuild-all] Re: [paulmck-rcu:dev.2022.02.17a 73/73] make[3]:
- *** No rule to make target 'kernel/rcu/typesafe.o', needed by
- 'kernel/rcu/built-in.a'.
-Message-ID: <20220302213812.GY4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <202202220308.TNib9D2v-lkp@intel.com>
- <20220221214736.GE4285@paulmck-ThinkPad-P17-Gen-1>
- <b481fd02-7b4f-7752-8852-d1a61b4916f1@intel.com>
- <20220222145349.GH4285@paulmck-ThinkPad-P17-Gen-1>
- <19aa4b7f-d2ef-b94f-026e-1a0318f7f50c@intel.com>
+        Wed, 2 Mar 2022 16:39:21 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCF735DD2
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:38:37 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so3556498ooi.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 13:38:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wAluUivNSRI0mrtPJNKUEXcouPOkO+X3IXT465oBrOw=;
+        b=ACoMsJ2Mn/SOG3Ze7RxKSgj5WSgeDliONFFe/Zacv8MMyTD+5zX1YRwy8BT2NSTWOv
+         vWrDxXwWKD16SLaDbAvoKwM+He8s8J930uuTlPJ5LIdaXe7Ne7x8jW4nv7tohThlKf4g
+         ylsLgmIqgkoJ1LbJ6Gj1NS91PpCGn9pewcS1Rs1qkQf24pLPpcpq137W0ae3sBDu2FX0
+         Vo4nbzalqW8o0gE2L94prKFRD61N2KwfgYKo2iiKPq7gky7ITNT3sHKESacetDMcSGgU
+         vgLwyhSnDu3DLR0IHrBUehjE3hvpo2hRDZ4ZsiWi9H/ss86zr5FNvnaqQ9nXQkjF0cgw
+         8Wig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wAluUivNSRI0mrtPJNKUEXcouPOkO+X3IXT465oBrOw=;
+        b=LQHKq1tUQKFuMiuexcDZ8IG28xPBxTCCDg5kXoM9DbU/dAeJrIxngKK2gPAHK0L2Vl
+         lstqWiDVYYtl21xLDZ4Z6DXjNArPJqaAeMFQjGgOuCnZzPSPW02uuPKsgHDUj25Ci6/p
+         M0A5lue1nqal0tO+XkGcMKii3zI75lSSaBFLubTT1wK7UAHJbnYf0O/6pzmuwM6gTB/w
+         nk831A6+omTMkoWLvbTKHBN4M4jFj46bRCDR5Unl+nEbcR1UyIfoBGJtRu3hMWOGqvwz
+         /8yWYmmmlRvGG7Q5AhLsJShGC9rwBIMbZhNcKJQkwD+Sw1oiA05k4VUD2Fu0EvE1DmtO
+         qI5w==
+X-Gm-Message-State: AOAM531Yb5cyHxDNXRFjwhmH5ddMjjcvGaF7s77/qzqrtttgloDY+twe
+        lx2y+jJnXhJ9rS4wahYYfwU=
+X-Google-Smtp-Source: ABdhPJyXeYXONnVXkUqChLuC1mmm3Ye7mTwg0kIZZfs3SJeTlobZacBugYfKSzTmJSUI2rOxPJD0og==
+X-Received: by 2002:a05:6870:54ce:b0:d6:efb6:5fe1 with SMTP id g14-20020a05687054ce00b000d6efb65fe1mr1577880oan.25.1646257117221;
+        Wed, 02 Mar 2022 13:38:37 -0800 (PST)
+Received: from localhost.localdomain ([181.23.87.56])
+        by smtp.gmail.com with ESMTPSA id s12-20020a0568302a8c00b005b010d92dadsm69132otu.69.2022.03.02.13.38.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 13:38:36 -0800 (PST)
+From:   Gaston Gonzalez <gascoar@gmail.com>
+To:     linux-staging@lists.linux.dev
+Cc:     gregkh@linuxfoundation.org, nsaenz@kernel.org,
+        stefan.wahren@i2se.com, ojaswin98@gmail.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, gascoar@gmail.com
+Subject: [PATCH 2/2] staging: vchiq_arm: add prototype of function vchiq_platform_init()
+Date:   Wed,  2 Mar 2022 18:36:38 -0300
+Message-Id: <b74ac90e869f71a98a04b834c4f3b5ab37bb38ea.1646255044.git.gascoar@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1646255044.git.gascoar@gmail.com>
+References: <cover.1646255044.git.gascoar@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <19aa4b7f-d2ef-b94f-026e-1a0318f7f50c@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 06:14:52PM +0800, Chen, Rong A wrote:
-> 
-> 
-> On 2/22/2022 10:53 PM, Paul E. McKenney wrote:
-> > On Tue, Feb 22, 2022 at 04:30:40PM +0800, Chen, Rong A wrote:
-> > > 
-> > > 
-> > > On 2/22/2022 5:47 AM, Paul E. McKenney wrote:
-> > > > On Tue, Feb 22, 2022 at 03:05:27AM +0800, kernel test robot wrote:
-> > > > > Hi Paul,
-> > > > > 
-> > > > > First bad commit (maybe != root cause):
-> > > > > 
-> > > > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.02.17a
-> > > > > head:   f5b2eaf791ebbd6af881947ab7c40ed70681e534
-> > > > > commit: f5b2eaf791ebbd6af881947ab7c40ed70681e534 [73/73] EXP torture: Add tests demoing SLAB_TYPESAFE_BY_RCU
-> > > > > config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220222/202202220308.TNib9D2v-lkp@intel.com/config)
-> > > > > compiler: arceb-elf-gcc (GCC) 11.2.0
-> > > > > reproduce (this is a W=1 build):
-> > > > >           wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > > > >           chmod +x ~/bin/make.cross
-> > > > >           # https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?id=f5b2eaf791ebbd6af881947ab7c40ed70681e534
-> > > > >           git remote add paulmck-rcu https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
-> > > > >           git fetch --no-tags paulmck-rcu dev.2022.02.17a
-> > > > >           git checkout f5b2eaf791ebbd6af881947ab7c40ed70681e534
-> > > > >           # save the config file to linux build tree
-> > > > >           mkdir build_dir
-> > > > >           COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
-> > > > > 
-> > > > > If you fix the issue, kindly add following tag as appropriate
-> > > > > Reported-by: kernel test robot <lkp@intel.com>
-> > > > > 
-> > > > > All errors (new ones prefixed by >>):
-> > > > > 
-> > > > > > > make[3]: *** No rule to make target 'kernel/rcu/typesafe.o', needed by 'kernel/rcu/built-in.a'.
-> > > > >      make[3]: Target '__build' not remade because of errors.
-> > > > 
-> > > > This is the only commit involving kernel/rcu/typesafe.o, so...
-> > > > 
-> > > > One the one hand, I do not plan to upstream this, so maybe it doesn't
-> > > > matter.
-> > > > 
-> > > > I have been building this using the rcutorture scripting for some time,
-> > > > same RCU-related .config as you are using.  But when I pulled it into
-> > > > a clone in a neighboring directory, it failed just as it did for you.
-> > > > The problem was that the update to kernel/rcu/Makefile somehow didn't
-> > > > come across, so this line was missing:
-> > > > 
-> > > > 	obj-$(CONFIG_RCU_TYPESAFE_TEST) += typesafe.o
-> > > > 
-> > > > Which of course explains the build failure.
-> > > > 
-> > > > I blew away that clone and re-cloned it.  And it still failed, both
-> > > > with "make" from the commandline and under rcutorture.
-> > > > 
-> > > > Hahahahahahaahaha!!!
-> > > > 
-> > > > I forgot "git add kernel/rcu/typesafe.c".
-> > > > 
-> > > > There is now a new typesafe.2022.02.21a tag with this file added.
-> > > > 
-> > > > Good catch!  That file happened to still be lying around.  The first
-> > > > "git reset --hard" would have destroyed.  Thank you!!!
-> > > > 
-> > > > And with that fixed, my clone now builds correctly.  Does this fix
-> > > > it for you?
-> > > 
-> > > Hi Paul,
-> > > 
-> > > I can't find the tag 'typesafe.2022.02.21a' from https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/refs/tags
-> > 
-> > That would be because I failed to push it out.  :-/
-> > 
-> > Which I just now did, apologies for my confusion.
-> > 
-> > 							Thanx, Paul
-> 
-> Hi Paul,
-> 
-> I have tested the tag, yes, it's fixed.
+Fix "no previous prototype" W=1 warning by adding the prototype of the
+function vchiq_platform_init().
 
-Very good, and thank you!
+Note: vchiq_platform_init() is only called once in vchiq_probe(), so
+presumably should be static function. However, making the function
+static breaks the build.
 
-May I add your Tested-by?
+Signed-off-by: Gaston Gonzalez <gascoar@gmail.com>
+---
+ drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-							Thanx, Paul
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h
+index 2aa46b119a46..d72edaf7e5e9 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h
+@@ -122,6 +122,8 @@ vchiq_instance_get_trace(struct vchiq_instance *instance);
+ extern void
+ vchiq_instance_set_trace(struct vchiq_instance *instance, int trace);
+ 
++int vchiq_platform_init(struct platform_device *pdev, struct vchiq_state *state);
++
+ #if IS_ENABLED(CONFIG_VCHIQ_CDEV)
+ 
+ extern void
+-- 
+2.35.1
+
