@@ -2,169 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C46C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 04:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E56C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 04:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239415AbiCBEVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 23:21:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
+        id S239422AbiCBEXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 23:23:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbiCBEVF (ORCPT
+        with ESMTP id S233030AbiCBEXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 23:21:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3E21C920;
-        Tue,  1 Mar 2022 20:20:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6264617A5;
-        Wed,  2 Mar 2022 04:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B58C004E1;
-        Wed,  2 Mar 2022 04:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646194822;
-        bh=GI/ZKKrRYWBhNT3gVPHoQ7zlrKpoYFQqagorYrklqDQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R0/qPcJr1GiFQ2mLQN0GK16GP9tJv8biYfGAeDODvy8Dotnb1GKV8qpsUKexUoeoS
-         m8yPthsXvmxwE/sHlO3s/N7DU8s40gFSk21SubDkxsRvFZbU5dTDBctPSopAMKN5zF
-         os6NCH2GiRsvcCfUwFk97vjhkZmK0+vaLja5/uyIZ0b6r/O5PTX862X4qMDyNTqyja
-         N8zHo+Gal/HuhmxJwyliKYUWwyZ6CySlgS/xkuff1jycOyUdv2ZoR1yK5QypUNeemX
-         pcjtmSXKKA4wF9f6x8ZEzm7El1DqfuPtSQBjbn/5/3ggNlVvmWSEpHxZ7RZHxJ43T3
-         nuWXGt54/1Vxw==
-Date:   Wed, 2 Mar 2022 05:21:06 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Nayna <nayna@linux.vnet.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        dhowells@redhat.com, zohar@linux.ibm.com,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, Nayna Jain <nayna@linux.ibm.com>
-Subject: Re: [PATCH v8 0/3] integrity: support including firmware ".platform"
- keys at build time
-Message-ID: <Yh7wst/WbOzI82s/@iki.fi>
-References: <20220111183647.977037-1-nayna@linux.ibm.com>
- <YhLIhJF0aWZt+8op@iki.fi>
- <0a87bb3b-574c-6e8e-2f8f-49e42d71ab8c@linux.vnet.ibm.com>
+        Tue, 1 Mar 2022 23:23:14 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E945FAE;
+        Tue,  1 Mar 2022 20:22:30 -0800 (PST)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2222acwJ001848;
+        Wed, 2 Mar 2022 04:22:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : message-id : references : date : in-reply-to : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=lRfqt23968NaeLy54gpWa7Qcgr6/LoKev19x13OfQWY=;
+ b=XXoGxHbzWuZW246W2ctJgiKztUL9Fa8L0SBnseSLfCrq6oye5RYHMDKp1n9WdXDV9e08
+ iJpO/lpbWyom42Ay9VayTgfoiLW/WVVDjQhn5qAggdrZk31vUWa+IU89Os5GrEgzOWTy
+ a8FkpjzVAKKTwepJoCKMUszMz7p8TQcgCSdDpggwv+yquwQN2efxRwabmcrMIE8QTCXQ
+ u0YgiM4kbW5JXIQ8fcaPcwK5rWtvFMppwBr22AK1B43ynXxfGABUCrCOw7MnxgozhvEM
+ MypXM74/2vQ7+/dc2AnaG2fIL0k8wjlMdkSLTEwTc1hKa/L5GT6nYpVOqhAOgiKXeDlU Cg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3eh1k44r5w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 02 Mar 2022 04:22:28 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2224G1DH080552;
+        Wed, 2 Mar 2022 04:22:27 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2176.outbound.protection.outlook.com [104.47.55.176])
+        by userp3030.oracle.com with ESMTP id 3ef9ayun48-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 02 Mar 2022 04:22:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tlqj8kg2WYESFpV96uE19xjVgVcScAMJy+JwMhnvOo38zlWXLMGAYgabYgdqoel9TtzihFbYdi8K+6sCWepbIDCwCrUXkmX/oGo5MjqS1IdTyvd8ZcPnoxRzP64/S6u+sNhYojWFyJK9xPlaq3JbpTeyKZY3LHakh3aowIfQ+p84e+C/oMRO6FKsj0Dp+F2eDpcOS8yIaTa3WTn3H5LJO6v3S9JsDsGEX9uMikVCoM/9WjvvWjjwaeun7F8tLQTZthdMqR3ixI4ZNTjWoYrgJ0uS1t3aZG3cLo90+4QDWD7eACxSufwTE0g/AhX9Ua+8uThjiTbdeVirDfyPp73yyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lRfqt23968NaeLy54gpWa7Qcgr6/LoKev19x13OfQWY=;
+ b=eYTG1v+FhlZvRChgCkOfEzg4HkPZbWuVz2FxYbA27P2lOqjKOlhHgqbBg2ZrzC9xtF1e7atRjjrPliasmoGLoVLWW5ygJBSqq9heQzjLs6tAfeNLHeOIMiWWFbdbv74eyz0BqnYF/vUzorBREwEAn+cnWzyf0Ljv9Z6WWRygUp8C+NMCCWtpXrmDyjpiYCQdFIs8OYF6H9NtwCy8nBaTa7PCj1f8BZ9+AWpuRCMDZYUQhBvXkV0ihF82CCsZw36zKZf7ztH0yVANlIM5YgiJNY+dUIxeseJ/pgwglcJ9ZFmynMesJyZh/zIvNBX+P8mUaqK3PYynPbLkWPzx++PDQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lRfqt23968NaeLy54gpWa7Qcgr6/LoKev19x13OfQWY=;
+ b=a5B+oE+hkB9KFNMAydRegCroQywqKXU8WkhjgyjWvhdExi4M3KdLz5M6RcZxRb167luZS38ByncYaPzX5DIxBBYzhe73JrJcbrbFi/JA/CsApl6NMmGETNs+g3wF7uE7cu8xrH/j7NrVGvbWl0Il98pOk1XRb6hfTktBX6mulq8=
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
+ by CH2PR10MB4295.namprd10.prod.outlook.com (2603:10b6:610:a6::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 2 Mar
+ 2022 04:22:24 +0000
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0]) by PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0%8]) with mapi id 15.20.5038.014; Wed, 2 Mar 2022
+ 04:22:24 +0000
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] scsi: wd719x: Return proper error code when
+ dma_set_mask() fails
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <yq14k4h0yrv.fsf@ca-mkp.ca.oracle.com>
+References: <1646060055-11361-1-git-send-email-zheyuma97@gmail.com>
+Date:   Tue, 01 Mar 2022 23:22:21 -0500
+In-Reply-To: <1646060055-11361-1-git-send-email-zheyuma97@gmail.com> (Zheyu
+        Ma's message of "Mon, 28 Feb 2022 14:54:15 +0000")
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR20CA0003.namprd20.prod.outlook.com
+ (2603:10b6:a03:1f4::16) To PH0PR10MB4759.namprd10.prod.outlook.com
+ (2603:10b6:510:3d::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0a87bb3b-574c-6e8e-2f8f-49e42d71ab8c@linux.vnet.ibm.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c068ea91-8221-48e0-df0a-08d9fc04405a
+X-MS-TrafficTypeDiagnostic: CH2PR10MB4295:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR10MB42952F38EBA49752007319C38E039@CH2PR10MB4295.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HJ9aAMzVIfR6NFshib/lxpNH0nz6zGVRRHmsD/USmW3SG+zI+QX7jJ4AS4xCMflJwJnYbnsIqrSY0zbBi+b5cCp5X7Y6u5Toghm3Om+wSpKqHyvRrHv60TNAvuw8k8JxILnfbIEPxGPDWXMRKwIKcQ4I3TjccPDR3KjNN6680M1cSwv+qOOpXPY9Gqpzr4meyIUwRzf/lLbEmbfru7+kyIuIrH6qcmF7ESyTQnJI3doWEzjkI/K+mlTsC8BaOJbibhjKZmXcZDu8Vpm4wXQkgcyYqRip9iUfw38IJMGVSGPFpRaATg+W7mcuIF++cSthYhqbhaj0Td1qjuav9vlVl/PoHx5YZjhcw6Y2AUsPB+cB63KxyVJ8D482jZDPg48EB0YmV9si/jfYYbl3Ltlrvf7RS1a0X+N1Np8Yf0vI5jBBPNsj2oMI49g3UvroVyANBAt37jDmIwSy2ACTOmYVEKVVzm3UdRgbYV+seXefTz1M4bPS/oTNpF2q20xTnumKxQBzni3+DE3ojQfXX8voQB/lHZVFHg1k4rHCJCOd3MKVlo0KTNNLGT+axip3tGFFqLVl2LmG2ZPd0eiHXX2uy0RmzOYvWyFB42Hq6Yw6FUw4gqgPUeT66e5nmmnRxM4EpQzgEjAV27UlqWLbAXj15KWPBanWXxf2QekC8o6i1qL/wxPEUg8sNY8WHHqD1FXcjaedUL+Ljivw81wPG8/HdQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(558084003)(6486002)(8936002)(38350700002)(86362001)(38100700002)(5660300002)(4326008)(316002)(6916009)(8676002)(83380400001)(26005)(186003)(2906002)(66556008)(66946007)(66476007)(6666004)(6512007)(52116002)(36916002)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vQPlDNnqeMWKJjcZykJW5sEaJpy6f99N7JQhJrXu1qToytndITG1MTQ24d9x?=
+ =?us-ascii?Q?wwmT7O0ZsqoyR3FfuGDXcAcS6yJU/MteEWDB/GTBSKJnugNyFMKFS7EQnZbC?=
+ =?us-ascii?Q?QzhVltH9gHnCWVtwV2XalqyA2/F9qSuFUt6FCRY0ihdpeWWkPTVnWmNFXpOI?=
+ =?us-ascii?Q?rrM0zVuPtucQGRrVpibc/0AYz4EfZjXubEJedFJikJoOT6QktByf9VirAyp0?=
+ =?us-ascii?Q?2TbFw6IIB1rBlVd+XLD5hkEM4DDEo7aEEA+GHF6Ftq4ZtIe901WUnAu+vK5e?=
+ =?us-ascii?Q?wraaDSSSnVRXIinpEbIfSFLvfum5kTdSI2fF5C3O9nnChcvp/fN/6bBncRol?=
+ =?us-ascii?Q?Ok9teGzbXGKYaafTiUWEcIt+S9UTEkDjBdDRqNv22I5efO84XsweL+ldHy2p?=
+ =?us-ascii?Q?6RoE1v5uqO6p/gBYAb6hEot/+YmETl44lQ9ZMxcTk7zntYd95H3rRRIJJ2M1?=
+ =?us-ascii?Q?fHf7StW7hh1vVU/GcLgqD1HAsoJtJMUKB884oUyJ+pYw6TfoljFP+In4NPcS?=
+ =?us-ascii?Q?qtxCriNrPpLhDgluSSQmUnREyUF3EK6p+j7OUsQRgOjfrgihrv7oyPmf+2Qa?=
+ =?us-ascii?Q?GJ1O2nDKQVUkuLvaKgjFmWUa5dXmb6y+mBJxqscnKv2SI6zUP/b/FTRNflOQ?=
+ =?us-ascii?Q?RNPed5q2zwI3ptznc2C9kjaw1JZwip+dloV1ue8hHwhMXmOO5riWiCnPbrKQ?=
+ =?us-ascii?Q?O8JdKimkq9GIKnFbwxwhNVoKqbli4+pDJjOG5KfztWlhcY48EUssfE317TZr?=
+ =?us-ascii?Q?TpDUFL320AY23IgMqrgXSEu03IAwzmgghRROT2ieP6hiNKMdMURO3ceJD4eu?=
+ =?us-ascii?Q?/o+1aUBnHG36RObDWwmdplkxNUw6a1EzViqt5EIhT+N5vnmkoJ71vVWWsZxg?=
+ =?us-ascii?Q?zvj/cki3XX5/DPTkND/AoHE7h5+nEBDNLZ1nXo1yJLdFDGOI9npnq/xv6Fne?=
+ =?us-ascii?Q?fF2qjtw3XMGHUqQYfQvuGDCJq69uDjUBixPBRiPjmBnJWEJ8oj40KTRy4etX?=
+ =?us-ascii?Q?uP7Rt4J3yXQyNjI84lQQImcArMG3++kCYbDgeVyvtJ1JI1t0/sHw0OfShL8+?=
+ =?us-ascii?Q?px4PZ5/+RZ/JogLBbsAmARGdrF0XXeE034EBC75XIviH8nFui0EnLkGQz/wP?=
+ =?us-ascii?Q?rQI2N8sF4mCF9INLp3KjdL6D4gkj5KLH+OPIUGHklIcFJ64ku2fx6HBW+zid?=
+ =?us-ascii?Q?BnWp1g7uDneqvOtmS+LNUQFftwUmUsF/q2ivZ1lcBAe4HOZ7u9ekaN8vTV0F?=
+ =?us-ascii?Q?nVeVV86Vgq2pdAMto10UGuUWQXvAFBojy+4gkzqM2tqdbXSH5l6xqfbjQWwG?=
+ =?us-ascii?Q?mC3znPczmbI6umHOYfMfYKvc98jzLP8Te6NT3FOXWkN095Gp6WqIInDkrnG7?=
+ =?us-ascii?Q?r7yhVxwkUgOl8hq2XlfPM9AmotBk94rkQA0HKxBHMz7zEVYFiGSQLDgNKVXs?=
+ =?us-ascii?Q?nofwnBRQG90fUCghBl7eTyGTS6Sr66sSes+wYeY2NF1i/fImdJOXnvjIUVBW?=
+ =?us-ascii?Q?4xLqsS9ibf3iyvYCEp2/lN8hBIC5Pz1sLwAS5+eIdotQ/3858miNY9iN8sbt?=
+ =?us-ascii?Q?K+mFRXNCI+oZil0Dp/q3vxZBhWh7jJJJyfXJtVaQEGH42z5gOADZI93ycJtP?=
+ =?us-ascii?Q?UqQ2kHfmPrQDk7+Wkf1qQmifHDGeFgsDMejYBRcdOmHwMre3xfnsKl/9ltQt?=
+ =?us-ascii?Q?6eCdUg=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c068ea91-8221-48e0-df0a-08d9fc04405a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 04:22:24.0651
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y2WFlB8bIwyQb4lu/mQbZpKS0AZlP4ZTcD7sBt1kjkn7CZNkQXMBTGuG4HgydmwBrbOTy0l1uUrfLnvCvlvk5lYg5eykBXj81DA+DE8l0k4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4295
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10273 signatures=685966
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 malwarescore=0
+ mlxscore=0 phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=809
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2203020018
+X-Proofpoint-ORIG-GUID: OzMsC3ZUe4HFzeWM_u1Xol_Y0ksnnSsX
+X-Proofpoint-GUID: OzMsC3ZUe4HFzeWM_u1Xol_Y0ksnnSsX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 08:33:55AM -0500, Nayna wrote:
-> 
-> On 2/20/22 18:02, Jarkko Sakkinen wrote:
-> > On Tue, Jan 11, 2022 at 01:36:44PM -0500, Nayna Jain wrote:
-> > > Some firmware support secure boot by embedding static keys to verify the
-> > > Linux kernel during boot. However, these firmware do not expose an
-> > > interface for the kernel to load firmware keys onto the ".platform"
-> > > keyring, preventing the kernel from verifying the kexec kernel image
-> > > signature.
-> > > 
-> > > This patchset exports load_certificate_list() and defines a new function
-> > > load_builtin_platform_cert() to load compiled in certificates onto the
-> > > ".platform" keyring.
-> > > 
-> > > Changelog:
-> > > 
-> > > v8:
-> > > * Includes Jarkko's feedback on patch description and removed Reported-by
-> > > for Patch 1.
-> > > 
-> > > v7:
-> > > * Incldues Jarkko's feedback on patch description for Patch 1 and 3.
-> > > 
-> > > v6:
-> > > * Includes Jarkko's feedback:
-> > >   * Split Patch 2 into two.
-> > >   * Update Patch description.
-> > > 
-> > > v5:
-> > > * Renamed load_builtin_platform_cert() to load_platform_certificate_list()
-> > > and config INTEGRITY_PLATFORM_BUILTIN_KEYS to INTEGRITY_PLATFORM_KEYS, as
-> > > suggested by Mimi Zohar.
-> > > 
-> > > v4:
-> > > * Split into two patches as per Mimi Zohar and Dimitri John Ledkov
-> > > recommendation.
-> > > 
-> > > v3:
-> > > * Included Jarkko's feedback
-> > >   ** updated patch description to include approach.
-> > >   ** removed extern for function declaration in the .h file.
-> > > * Included load_certificate_list() within #ifdef CONFIG_KEYS condition.
-> > > 
-> > > v2:
-> > > * Fixed the error reported by kernel test robot
-> > > * Updated patch description based on Jarkko's feedback.
-> > > 
-> > > Nayna Jain (3):
-> > >    certs: export load_certificate_list() to be used outside certs/
-> > >    integrity: make integrity_keyring_from_id() non-static
-> > >    integrity: support including firmware ".platform" keys at build time
-> > > 
-> > >   certs/Makefile                                |  5 ++--
-> > >   certs/blacklist.c                             |  1 -
-> > >   certs/common.c                                |  2 +-
-> > >   certs/common.h                                |  9 -------
-> > >   certs/system_keyring.c                        |  1 -
-> > >   include/keys/system_keyring.h                 |  6 +++++
-> > >   security/integrity/Kconfig                    | 10 +++++++
-> > >   security/integrity/Makefile                   | 17 +++++++++++-
-> > >   security/integrity/digsig.c                   |  2 +-
-> > >   security/integrity/integrity.h                |  6 +++++
-> > >   .../integrity/platform_certs/platform_cert.S  | 23 ++++++++++++++++
-> > >   .../platform_certs/platform_keyring.c         | 26 +++++++++++++++++++
-> > >   12 files changed, 92 insertions(+), 16 deletions(-)
-> > >   delete mode 100644 certs/common.h
-> > >   create mode 100644 security/integrity/platform_certs/platform_cert.S
-> > > 
-> > > -- 
-> > > 2.27.0
-> > To sort out tree conflicts: what if I pick these patches? They look fine
-> > to me now. I can try to fix the possible merge conflicts and you can check
-> > them before I make a PR.
-> 
-> Sounds good. Thanks !!
-> 
-> Thanks & Regards,
-> 
->      - Nayna
-> 
 
-Sorry that this comes so later but would it possible for you to fix this
-conflict against my tree and send v10 with just that change:
+Zheyu,
 
-$ git diff
-diff --cc include/keys/system_keyring.h
-index 91e080efb918,d3f914d9a632..000000000000
---- a/include/keys/system_keyring.h
-+++ b/include/keys/system_keyring.h
-@@@ -10,12 -10,11 +10,20 @@@
-  
-  #include <linux/key.h>
-  
-++<<<<<<< HEAD
- +enum blacklist_hash_type {
- +      /* TBSCertificate hash */
- +      BLACKLIST_HASH_X509_TBS = 1,
- +      /* Raw data hash */
- +      BLACKLIST_HASH_BINARY = 2,
- +};
-++=======
-+ #ifdef CONFIG_KEYS
-+ int load_certificate_list(const u8 cert_list[],
-+                         const unsigned long list_size,
-+                         const struct key *keyring);
-+ #endif
-++>>>>>>> certs: export load_certificate_list() to be used outside certs/
-  
-I somehow lost your response to the jungle and found it only now :-(
+> During the process of driver probing, the probe function should return
+> < 0 for failure, otherwise, the kernel will treat value >= 0 as
+> success.
 
-I'm still happy to include this to the PR.
+Applied to 5.18/scsi-staging, thanks!
 
-BR, Jarkko
+-- 
+Martin K. Petersen	Oracle Linux Engineering
