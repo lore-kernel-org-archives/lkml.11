@@ -2,93 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E43EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239042AbiCBCLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 21:11:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
+        id S239045AbiCBCLd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 21:11:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiCBCLH (ORCPT
+        with ESMTP id S231734AbiCBCLb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 21:11:07 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C2AA6512;
-        Tue,  1 Mar 2022 18:10:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B9D85CE20CB;
-        Wed,  2 Mar 2022 02:10:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63914C340EE;
-        Wed,  2 Mar 2022 02:10:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646187022;
-        bh=U/4xh9QWn0bXibryx90ssRbqx36g3p2I2thEq7GTMCA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pVsWhWV7BIZYQF2Kwu6QyzAUJ/vzzeq1zqk8T+YySwRKjcg0Xk2SK6YCOFWR2+aZO
-         AOCOqics4mI+YL9ur5c4LWbP5H8v4+TpUdydbqolTlybvWXnr7zWXkAarYWRGOZjof
-         Rtp5c0N7Cm0nIVuMNrj8LqDcbkdsj4tENObCwfmkJ7rkvo/ViGwv1uT4BEwTRL+Jxd
-         CA1Nw2Z58JPF4Afbjrc2c+Hk0FOJLo8sQm5IreVuXwjYt/+TN8jfNdiWYgnMpVogKI
-         yqzsr7jBOVh1/HpJUrfPU351igwoY/nD2ECr/OFe4yj8yoK21pIGrmmt3eXAOuzL7y
-         iegcfO/rgo7Eg==
-Date:   Wed, 2 Mar 2022 03:11:06 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <Yh7SOgqdFxJdVPMq@iki.fi>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
- <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
- <YhLhoMFPyOFZ2fsX@iki.fi>
- <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
- <Yhy/GvJegnTqYdq6@iki.fi>
- <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
- <Yh4fGORDaJyVrJQW@iki.fi>
- <Yh4i4hVcnfZ8QDAl@iki.fi>
- <2d2d3471-78ce-9faa-daf6-138078f5ffaa@intel.com>
- <Yh7Q5fbOtr+6YWaS@iki.fi>
+        Tue, 1 Mar 2022 21:11:31 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0CA5B3DA;
+        Tue,  1 Mar 2022 18:10:49 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id u61so413596ybi.11;
+        Tue, 01 Mar 2022 18:10:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C60qY1W15wmEGzg0Fz5ufhX0jdSdAi/q3wBV4TnaYjQ=;
+        b=S+7owdLkkRm9npwuBQoYTXaNBSfly6aAAo0D34rlrWOfTgJxNLyjHujx32fG9LhDXV
+         QEGWN4bBqQR1lQNeerH1wR06cftfZ9OFV5J39/pHt5i+I9wGKuqXTaat1f+NwxRarcfw
+         aCI3XnTb7JNju2j0Z2YLw/9vD7xRBV0EiC7pL9VxunydQKJxfK/sgL401ybAww+m7cus
+         okfhJVHyHYiK5fHxdOodvS8JC3arL6X1YljlirOP34rEbncpCEyhXNDPtXlPAsFU7DN1
+         F+f6eyh4ecYbYRKcsAowISBXscOHsyZPgCow8wSsvaWNa3d1bspiF7bZZuAOCjn93J/V
+         6uvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C60qY1W15wmEGzg0Fz5ufhX0jdSdAi/q3wBV4TnaYjQ=;
+        b=TVVVk+1reo2v/BrgabyZefLPsyHfxnE29dgsuYUzDXFpEjuee9J2FIyfz1WhnyUQY5
+         EGcWxNrOOGM7AgpBjM3tgRctgTYEUaJ948MId3NY5ymnPzPblJLMsnFtjz5z/mZh1Noq
+         +S9SBqpjOSlOpS52bFWD6rWD6WPhtQhdYfByxksjjBiKHQ4JJeSAYTNWZ/MYzQw993za
+         QJ5ndmljMgIyRB2UhmkC48sQKV0eGmwOq10vh3R7ESEc7UzI82zw9MIGtrFjtYdQuRbK
+         /tHrZsm/tbSfyxO8X5BNBfRkCm9D+U2Y/7+SxSHDtR/IulbIIup2TbiF1q8gtOtP0IiK
+         ur7g==
+X-Gm-Message-State: AOAM530UopvYiWxvfpetkIlHtO1L2Vc8gS7ih1zfPE531FzqYhSd4Cd0
+        9UfrOIPQuC0QQiZ2TiPmb/SksO8Ina87t604deg=
+X-Google-Smtp-Source: ABdhPJysAYqmPDrRSXgywEUWgHLhQEhcXeq5Z4WOZrQs7C7dEnCx1oI9LnvuiBNmZH1e/E+3/0b1cpopto+MCsWzhG8=
+X-Received: by 2002:a05:6902:83:b0:61a:709b:d841 with SMTP id
+ h3-20020a056902008300b0061a709bd841mr25970895ybs.140.1646187048420; Tue, 01
+ Mar 2022 18:10:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh7Q5fbOtr+6YWaS@iki.fi>
+References: <20220225125553.1185108-1-benchuanggli@gmail.com>
+ <20220225125553.1185108-2-benchuanggli@gmail.com> <CAPDyKFq5MdGWefVW6Uwe74Ef5giW+68qRS2hmXNmHLqpfqav8A@mail.gmail.com>
+ <4b35e465-626a-7218-ed9a-4e5cf28c1ccc@intel.com>
+In-Reply-To: <4b35e465-626a-7218-ed9a-4e5cf28c1ccc@intel.com>
+From:   Ben Chuang <benchuanggli@gmail.com>
+Date:   Wed, 2 Mar 2022 10:10:37 +0800
+Message-ID: <CACT4zj9AxpOuDn-1fFAgY7Y-X_w+OHisASpa6tUBHQZuSExjFQ@mail.gmail.com>
+Subject: Re: [PATCH] mmc: sdhci-pci-gli: Add runtime PM for GL9763E
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        greg.tu@genesyslogic.com.tw,
+        Ben Chuang <ben.chuang@genesyslogic.com.tw>,
+        SeanHY.Chen@genesyslogic.com.tw,
+        Kevin Chang <kevin.chang@lcfuturecenter.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 03:05:25AM +0100, Jarkko Sakkinen wrote:
-> > The work that follows this series aimed to do the integration with user
-> > space policy.
-> 
-> What do you mean by "user space policy" anyway exactly? I'm sorry but I
-> just don't fully understand this.
-> 
-> It's too big of a risk to accept this series without X taken care of. Patch
-> series should neither have TODO nor TBD comments IMHO. I don't want to ack
-> a series based on speculation what might happen in the future.
+Hi,
 
-If I accept this, then I'm kind of pre-acking code that I have no idea what
-it looks like, can it be acked, or am I doing the right thing for the
-kernel by acking this. 
+On Tue, Mar 1, 2022 at 6:05 PM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> On 28/02/2022 19:03, Ulf Hansson wrote:
+> > On Fri, 25 Feb 2022 at 13:56, Ben Chuang <benchuanggli@gmail.com> wrote:
+> >>
+> >> From: Ben Chuang <ben.chuang@genesyslogic.com.tw>
+> >>
+> >> Add runtime PM for GL9763E and disable PLL in runtime suspend. So power
+> >> gated of upstream port can be enabled.
+> >>
+> >> Signed-off-by: Ben Chuang <ben.chuang@genesyslogic.com.tw>
+> >> Tested-by: Kevin Chang <kevin.chang@lcfuturecenter.com>
+> >> ---
+> >>  drivers/mmc/host/sdhci-pci-gli.c | 54 ++++++++++++++++++++++++++++++++
+> >>  1 file changed, 54 insertions(+)
+> >>
+> >> diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
+> >> index 97035d77c18c..cf99b6af792d 100644
+> >> --- a/drivers/mmc/host/sdhci-pci-gli.c
+> >> +++ b/drivers/mmc/host/sdhci-pci-gli.c
+> >> @@ -873,6 +873,55 @@ static void gli_set_gl9763e(struct sdhci_pci_slot *slot)
+> >>         pci_write_config_dword(pdev, PCIE_GLI_9763E_VHS, value);
+> >>  }
+> >>
+> >> +#ifdef CONFIG_PM
+> >> +static int gl9763e_runtime_suspend(struct sdhci_pci_chip *chip)
+> >> +{
+> >> +       struct sdhci_pci_slot *slot = chip->slots[0];
+> >> +       struct sdhci_host *host = slot->host;
+> >> +       u16 clock;
+> >> +
+> >> +       clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
+> >> +       clock &= ~(SDHCI_CLOCK_PLL_EN | SDHCI_CLOCK_CARD_EN);
+> >> +       sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
+> >> +
+> >> +       return 0;
+> >> +}
+> >> +
+> >> +static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
+> >> +{
+> >> +       struct sdhci_pci_slot *slot = chip->slots[0];
+> >> +       struct sdhci_host *host = slot->host;
+> >> +       ktime_t timeout;
+> >> +       u16 clock;
+> >> +
+> >> +       clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
+> >> +
+> >> +       clock |= SDHCI_CLOCK_PLL_EN;
+> >> +       clock &= ~SDHCI_CLOCK_INT_STABLE;
+> >> +       sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
+> >> +
+> >> +       timeout = ktime_add_ms(ktime_get(), 150);
+> >> +       while (1) {
+> >> +               bool timedout = ktime_after(ktime_get(), timeout);
+> >> +
+> >> +               clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
+> >> +               if (clock & SDHCI_CLOCK_INT_STABLE)
+> >> +                       break;
+> >> +               if (timedout) {
+> >> +                       pr_err("%s: PLL clock never stabilised.\n",
+> >> +                              mmc_hostname(host->mmc));
+> >> +                       sdhci_dumpregs(host);
+> >> +                       break;
+> >> +               }
+> >> +               udelay(10);
+> >> +       }
+>
+> Could use something like read_poll_timeout() here e.g.
+>
+>         if (read_poll_timeout(sdhci_readw, clk, (clk & SDHCI_CLOCK_INT_STABLE),
+>                               1000, 150000, false, host, SDHCI_CLOCK_CONTROL)) {
+>                 pr_err("%s: PLL clock never stabilised.\n",
+>                        mmc_hostname(host->mmc));
+>                 sdhci_dumpregs(host);
+>         }
+>
+>
 
-It's unfortunately force majeure situation for me. I simply could not ack
-this, whether I want it or not.
+Thanks for the tip. I will prepare the next patch.
 
-BR, Jarkko
+> >> +       clock |= SDHCI_CLOCK_CARD_EN;
+> >> +       sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
+> >> +
+> >> +       return 0;
+> >> +}
+> >
+> > Both functions above look very similar to what sdhci_set_clock() does.
+> > Can you use that, rather than open coding the above?
+> >
+
+The codes turn on/off the clock but it doesn't change the clock.
+Using sdhci_set_clock()  needs to store the clock value because it
+clears the clock.
+
+> > Other than that, I would appreciate it if Adrian could have a look at
+> > this too. For example, I wonder if perhaps
+> > sdhci_runtime_suspend|resume_host() should be called in these paths
+> > too.
+>
+> Assuming the host controller does not lose state information, it should be fine.
+>
+
+Yes, the host always has aux. power and keep state.
+
+Thank you both for your comments.
+
+> >
+> >> +#endif
+> >> +
+> >>  static int gli_probe_slot_gl9763e(struct sdhci_pci_slot *slot)
+> >>  {
+> >>         struct pci_dev *pdev = slot->chip->pdev;
+> >> @@ -982,6 +1031,11 @@ const struct sdhci_pci_fixes sdhci_gl9763e = {
+> >>  #ifdef CONFIG_PM_SLEEP
+> >>         .resume         = sdhci_cqhci_gli_resume,
+> >>         .suspend        = sdhci_cqhci_gli_suspend,
+> >> +#endif
+> >> +#ifdef CONFIG_PM
+> >> +       .runtime_suspend = gl9763e_runtime_suspend,
+> >> +       .runtime_resume  = gl9763e_runtime_resume,
+> >> +       .allow_runtime_pm = true,
+> >>  #endif
+> >>         .add_host       = gl9763e_add_host,
+> >>  };
+> >> --
+> >> 2.35.1
+> >>
+> >
+> > Kind regards
+> > Uffe
+>
+
+Best regards,
+Ben
