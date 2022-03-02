@@ -2,92 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A03EBC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A50FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244266AbiCBRwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:52:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
+        id S244273AbiCBRxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236917AbiCBRwJ (ORCPT
+        with ESMTP id S232822AbiCBRxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:52:09 -0500
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E86E2D1E2;
-        Wed,  2 Mar 2022 09:51:26 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id i5so2437915oih.1;
-        Wed, 02 Mar 2022 09:51:26 -0800 (PST)
+        Wed, 2 Mar 2022 12:53:31 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35395DFDF;
+        Wed,  2 Mar 2022 09:52:48 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id j2so2420859oie.7;
+        Wed, 02 Mar 2022 09:52:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DHY7VhQT9qgEOgLNTzp5elUV+Jbj7LJzyVtU0MTV7u0=;
+        b=g0Sypa3YZdvUNqPWk96PKSCJoH/f25NWGfg49/dnqFxSTEzr1DvRckN9/3j6eV4E+J
+         Lz5L8MUGvA5B+UHdHqg9a3xgDErG3VWm13D15YVZqqvxbyjZhc+5KquLgzC/UV2xWnup
+         933KBI3pNA1IIT6OZBgxG6ZYz1gkcSztHgd4aQxfhuYMc0Uixh90wTvizaW6qWPGVkjb
+         My0mQ5FcZzfQHVHRUAhcW3Ef0bD3vzfv+SOMcV8wShZ/MOes6+Gy7hmlAnj0meu0Ugdy
+         +4TqXbihb1abqPz7Ikc+1c1bo0yoKJmJsaiqv1YdjbATVWTvTOZEJWbztqPdJMV7xNMH
+         UfnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GFF/t9fk//sx7LHwN7dlkkdLpRIX0g7zkDB/NfrGhNs=;
-        b=28/9Ledkegy2oYhjb7MU9fHpn9cY86840I0J+eft0GAdKOIUWMuBYtldgMkYwQByOd
-         SNq41ndNFsGdVX5Hfdp7MW23eueVqm7CxxA4I5zgozELfoW2zX55aHK366rAAQACHjFV
-         7ts6Ji6cWmCMRA3DYtxN77fbCtAeHYYW9KQSlzmiyk5zlnl+WMhyL205qe8Vegaft7BL
-         wSi2Jd4+G7f1o7EZXzGdafmYBNfXJ8b/ePtcdGYl1dh8uVSavkj7vhX7MHnlgki+diul
-         e43PJOwaJPR0xhuSIsXJwI3+QVhu1EIOjcRuYhhZDEchB/8oooGjwa1IFlIWBGqqnzQo
-         icIA==
-X-Gm-Message-State: AOAM5335kP7QW4WbbSbvTCKedWwjIYzZ7UuqzMpKNgzs3Hu+Sja0dWbL
-        bHzyWzRVCr8ihIsmxPkY0A==
-X-Google-Smtp-Source: ABdhPJzp4n9WySV+E8mkfq2VuWX+XkhyWRTeGtDGbTY2pp+hLqJV3uRkCT9mqniVOdzkKTRtxFjkLw==
-X-Received: by 2002:a05:6808:4c:b0:2d7:8451:feb2 with SMTP id v12-20020a056808004c00b002d78451feb2mr937798oic.100.1646243485492;
-        Wed, 02 Mar 2022 09:51:25 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id b15-20020a05687061cf00b000d17a5f0ee6sm7397001oah.11.2022.03.02.09.51.24
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=DHY7VhQT9qgEOgLNTzp5elUV+Jbj7LJzyVtU0MTV7u0=;
+        b=3Vy3SMQHifTU02lfQrnBckGaUB8f/qmc1M3aMfalDOE9kkaKOH25JJHNIMPi+N9nxR
+         x2rqGFGb9G6jAFEumKDNaVkE8wPWdgkCrSGL4MjTiK4GkMYw4pkwgdgtibWEVWNxPV/+
+         yNCONQd/jZM5UC+IQHcHCk9SWCoHGSIdxy8olS02Ep0Z6xhl0WLJRw8weWLURKTTNaGX
+         nBfbistakosGonzSerabzE4s/NOQGH60yDHJe6Q3vLSs7ZFMrS2P2ief5lk1gN2WXzNW
+         mMxzsTz86BHt6eeE4tuxX90BUjSuXKlsJ15gJxNDIE/ZZyQW9xb7uZjGBJoK12jE0XEz
+         q9Dw==
+X-Gm-Message-State: AOAM532yR/VNlXDU5MbBsmDC2vnlHpE6mFrQxXFWAy6gJTtbq/gmtoXM
+        3Nu+FnCxiTfL4vyht74KcDE=
+X-Google-Smtp-Source: ABdhPJynHpROhEGrP3XoKGr8nXoImP0Gk3bV0Le6WzH86xThLA4c7sYZmfBOVPsWKAeZ8J5UYiQ62w==
+X-Received: by 2002:a05:6808:13c6:b0:2cf:84a3:fdfa with SMTP id d6-20020a05680813c600b002cf84a3fdfamr915319oiw.55.1646243567518;
+        Wed, 02 Mar 2022 09:52:47 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id bl26-20020a056808309a00b002d4f48e3799sm10233983oib.12.2022.03.02.09.52.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 09:51:24 -0800 (PST)
-Received: (nullmailer pid 3955040 invoked by uid 1000);
-        Wed, 02 Mar 2022 17:51:23 -0000
-Date:   Wed, 2 Mar 2022 11:51:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ashish Mhetre <amhetre@nvidia.com>
-Cc:     krzysztof.kozlowski@canonical.com, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, digetx@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, vdumpa@nvidia.com, Snikam@nvidia.com
-Subject: Re: [Patch v4 2/4] dt-bindings: memory: Update reg maxitems for
- tegra186
-Message-ID: <Yh+um1TSNWK8P6GY@robh.at.kernel.org>
-References: <1646210609-21943-1-git-send-email-amhetre@nvidia.com>
- <1646210609-21943-3-git-send-email-amhetre@nvidia.com>
+        Wed, 02 Mar 2022 09:52:46 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 2 Mar 2022 09:52:42 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Marcello Sylvester Bauer <sylv@sylv.io>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-kernel@vger.kernel.org,
+        linux-hwmon@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
+Subject: Re: [PATCH v4 0/3] Support XDPE112
+Message-ID: <20220302175242.GA2522403@roeck-us.net>
+References: <cover.1646214248.git.sylv@sylv.io>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1646210609-21943-3-git-send-email-amhetre@nvidia.com>
+In-Reply-To: <cover.1646214248.git.sylv@sylv.io>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 02:13:27PM +0530, Ashish Mhetre wrote:
-> >From tegra186 onwards, memory controller support multiple channels.
-> Reg items are updated with address and size of these channels.
-> Tegra186 has overall 5 memory controller channels. Tegra194 and tegra234
-> have overall 17 memory controller channels each.
-> There is 1 reg item for memory controller stream-id registers.
-> So update the reg maxItems to 18 in tegra186 devicetree documentation.
+On Wed, Mar 02, 2022 at 10:49:18AM +0100, Marcello Sylvester Bauer wrote:
+> Add support for Infineon Multi-phase XDPE112 family regulator. The main
+> difference to the XDPE122 family is it uses a different format for
+> voltage out. Add the required logic to the existing xdpe12284 driver
+> accordingly.
+> 
+> Changes in v4:
+> - move VOUT_MODE format detection into identify function
+> 
+> Changes in v3:
+> - detect VOUT_MODE during probing
+> - set xdpe122_identify/xdpe122_read_word_data only if VOUT is vid
+> 
+> Changes in v2:
+> - rebase on current hwmon-next branch
+> 
+> Marcello Sylvester Bauer (3):
+>   dt-bindings: trivial-devices: Add xdpe11280
+>   hwmon (xdpe12284): Add support for xdpe11280
+>   hwmon (xdpe12284): Add regulator support
+> 
+>  .../devicetree/bindings/trivial-devices.yaml  |  2 ++
+>  Documentation/hwmon/xdpe12284.rst             | 12 ++++---
+>  drivers/hwmon/pmbus/Kconfig                   |  6 ++++
+>  drivers/hwmon/pmbus/xdpe12284.c               | 32 +++++++++++++++++--
+>  4 files changed, 45 insertions(+), 7 deletions(-)
+> 
 
-Some of this needs to be in 'description' for 'reg'.
+Series applied to hwmon-next.
 
-> 
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> ---
->  .../devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml      | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
-> index 13c4c82..eb7ed00 100644
-> --- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
-> +++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
-> @@ -35,7 +35,7 @@ properties:
->  
->    reg:
->      minItems: 1
-> -    maxItems: 3
-> +    maxItems: 18
->  
->    interrupts:
->      items:
-> -- 
-> 2.7.4
-> 
+Thanks,
+Guenter
+
