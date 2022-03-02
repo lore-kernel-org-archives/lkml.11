@@ -2,142 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75321C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC876C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241919AbiCBQ0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:26:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
+        id S240930AbiCBQ1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:27:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234241AbiCBQ0o (ORCPT
+        with ESMTP id S241220AbiCBQ1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 11:26:44 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C413B76E33
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:26:00 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646238359;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=m7NOla583Dkc2hPJm4Geje9sBORuvB2xZD1bf3QcRf0=;
-        b=Qy+3zIMLj+7Rr1DQ41rQCdAwVFuQGyDYXVmWIRf0EIDo24k2KHuegBQEmHY2ThGiOo4vu1
-        e3rpbuhWvBbdDs0yxbaH+AsfAPXlSyeBNI3vXBNsVLeHYiPygQTRblS1kfadDSayLZ8i1P
-        u5HXrFIy1r81I3DR+0OnBRpqb193e3JVoWUEGiYa9xKzI7UtyFvH5HDYdV2kNaDYbFRTkl
-        +y9Roxk/TB1cT56WkNYGkhKlOvp4Vtez0c/EyUSSdZobpnA0rv5ed+rTNb/GP9e2mk4aeq
-        DflBSwptsNJfrgfENNEo1YUin+gsrsPh9V+RdJaN31E/37y5fRucynfba7iccw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646238359;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=m7NOla583Dkc2hPJm4Geje9sBORuvB2xZD1bf3QcRf0=;
-        b=Du14RPYMtbTfQ/71wH5f9Vcj+4qABQOtVVN3bp1MLQnAY4J+MVhvu0+jU7nITIiFh5tGx+
-        LCxAyEp1paHscgBg==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH printk v1 07/13] printk: move buffer definitions into
- console_emit_next_record() caller
-In-Reply-To: <Yg0iA/McHYWK6d4D@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-8-john.ogness@linutronix.de>
- <Yg0iA/McHYWK6d4D@alley>
-Date:   Wed, 02 Mar 2022 17:31:58 +0106
-Message-ID: <87pmn4gw2x.fsf@jogness.linutronix.de>
+        Wed, 2 Mar 2022 11:27:10 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83FA9E9E6
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:26:26 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id ay10so3628615wrb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 08:26:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4lZEInqzBQdxmom04rLGOTBOINe87ZHTNK8A1MHNUYM=;
+        b=zNY/A3DvXSSHSOLKYTxwjW4mjiSxKTe2DFTa9drWsknJ9Gobo/rAHMhdkBLLnUF8it
+         qObkZaPUtzMcW0vv80UyqbGn/5SqEJm5CWtnqtNf416LbLOH03IHCDcalJaCaNnQqmxa
+         n7JOmOog5D44bHsXOE9UR4UELZJ0fyDRKRw2sg464T2pSOZ/8YSImYpJ3+7w/18AZrm/
+         QVjeS2JlyxOhcZTWDhqbC0p+x8FcyzIDVLtpp9OSPqij50FzVjYaVMJ8SxAgdZHfT7RG
+         faSL3/PPKB61LMyU9PIhxtaqQqPnmwi8mqwaM9f4L8E7gFTt3Hft0K5TWhEtuzuGZbds
+         unrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4lZEInqzBQdxmom04rLGOTBOINe87ZHTNK8A1MHNUYM=;
+        b=dvic50vgM3kGDC2TAkQbf2LCK343TQ4Yzc3uusScqWBhjMppZ3O09he1ZTa2KrzzTK
+         buKalzgDLkjGhTmjriYutFoEeUajASx8mT8o01KDMzKPSzJuYHzYWDLCNE6ECbPYIy7I
+         2yI3oKy0ceAK+Qy0VAItRZ171q1F6yQbH1NbVuIaoH/sjfjiLf2Q9CYuWcECWkdFxS4F
+         VL/eJcS9VNDf1rmsjdlMeKzSK9j3aCdkT9BntVk3wT2evWa6ng1K0HUOe2VR8W8sDFpC
+         b+ZrwTgamAo+dsOGDTF9trUaVgIk2Pun06IBF3DaNL0mMugwaFG1eOHp8Jcyr5EgaKo4
+         dy4A==
+X-Gm-Message-State: AOAM5330UsDwhUbJOH9Am/vW7plzuXRgo+2qMl3dkhSqoA19VShCrKq5
+        TFgOZ7FPcJ9dpL5mKY/WQ4NtKw==
+X-Google-Smtp-Source: ABdhPJxbCsWQrJHmYbdS8sJGQSK+IN5/SW7XDx1ANefT8UUiw7YoiSlpX6p5XW4Wc6Ducn8hIA0qbA==
+X-Received: by 2002:a5d:52d2:0:b0:1ef:e22d:18ba with SMTP id r18-20020a5d52d2000000b001efe22d18bamr10036216wrv.30.1646238385454;
+        Wed, 02 Mar 2022 08:26:25 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id g22-20020a1c4e16000000b003817614d4adsm6068399wmh.12.2022.03.02.08.26.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 08:26:24 -0800 (PST)
+Date:   Wed, 2 Mar 2022 16:26:22 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     mcgrof@kernel.org, christophe.leroy@csgroup.eu, pmladek@suse.com,
+        cl@linux.com, mbenes@suse.cz, akpm@linux-foundation.org,
+        jeyu@kernel.org, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, void@manifault.com,
+        atomlin@atomlin.com, allen.lkml@gmail.com, joe@perches.com,
+        msuchanek@suse.de, oleksandr@natalenko.name,
+        jason.wessel@windriver.com
+Subject: Re: [PATCH v9 13/14] module: Move kdb_modules list out of core code
+Message-ID: <20220302162622.z5wxbdmxh2pqh6cb@maple.lan>
+References: <20220228234322.2073104-1-atomlin@redhat.com>
+ <20220228234322.2073104-14-atomlin@redhat.com>
+ <20220302161917.gx5icfszakoye4uh@maple.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302161917.gx5icfszakoye4uh@maple.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-16, Petr Mladek <pmladek@suse.com> wrote:
->> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
->> index 822b7b6ad6d1..02bde45c1149 100644
->> --- a/kernel/printk/printk.c
->> +++ b/kernel/printk/printk.c
->> @@ -2597,13 +2611,13 @@ static bool console_emit_next_record(struct console *con, bool *handover)
->>  		goto skip;
->>  	}
->>  
->> -	if (con->flags & CON_EXTENDED) {
->> -		write_text = &ext_text[0];
->> -		len = info_print_ext_header(ext_text, sizeof(ext_text), r.info);
->> -		len += msg_print_ext_body(ext_text + len, sizeof(ext_text) - len,
->> +	if (ext_text) {
->> +		write_text = ext_text;
->> +		len = info_print_ext_header(ext_text, CONSOLE_EXT_LOG_MAX, r.info);
->> +		len += msg_print_ext_body(ext_text + len, CONSOLE_EXT_LOG_MAX - len,
->>  					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
->>  	} else {
->> -		write_text = &text[0];
->> +		write_text = text;
->>  		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
->
-> @text and @ext_text buffers are never used at the same time. It might
-> be enough to use a single text[CONSOLE_EXT_LOG_MAX] buffer. It would
-> even slightly simplify the code.
+On Wed, Mar 02, 2022 at 04:19:17PM +0000, Daniel Thompson wrote:
+> On Mon, Feb 28, 2022 at 11:43:21PM +0000, Aaron Tomlin wrote:
+> > No functional change.
+> > 
+> > This patch migrates kdb_modules list to core kdb code
+> > since the list of added/or loaded modules is no longer
+> > private.
+> > 
+> > Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> > Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+> > ---
+> >  kernel/debug/kdb/kdb_main.c    | 5 +++++
+> >  kernel/debug/kdb/kdb_private.h | 4 ----
+> >  kernel/module/main.c           | 4 ----
+> >  3 files changed, 5 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+> > index 0852a537dad4..5369bf45c5d4 100644
+> > --- a/kernel/debug/kdb/kdb_main.c
+> > +++ b/kernel/debug/kdb/kdb_main.c
+> > @@ -59,6 +59,11 @@ EXPORT_SYMBOL(kdb_grepping_flag);
+> >  int kdb_grep_leading;
+> >  int kdb_grep_trailing;
+> >  
+> > +#ifdef CONFIG_MODULES
+> > +extern struct list_head modules;
 
-No, they _are_ used at the same time.
+Actually thinking a bit harder and trying
+`git grep '#include .*[.][.]' kernel/` (which finds some prior art) I
+wonder if we even want the extern or whether
+`#include "../../module/internal.h"` would be more robust.
 
-r.text_buf is @text. msg_print_ext_body() takes @ext_text and
-&r.text_buf[0]. Unfortunately msg_print_ext_body() does not work "in
-place" like record_print_text() does.
 
->> @@ -2650,6 +2664,9 @@ static bool console_emit_next_record(struct console *con, bool *handover)
->>   */
->>  static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
->>  {
->> +	static char dropped_text[DROPPED_TEXT_MAX];
->> +	static char ext_text[CONSOLE_EXT_LOG_MAX];
->> +	static char text[CONSOLE_LOG_MAX];
->
-> These buffers are for printing from console_unlock(). The same buffers
-> will need to be allocated for each console in the kthreads.
->
-> It might make sense to allocate these buffers in register_console()
-> and store the pointers in struct console.
->
-> Well, we might need extra buffers for atomic console drivers and
-> diffent contexts that would be used during panic. But maybe
-> they can be allocated in register_console() as well.
+Daniel.
 
-register_console() happens quite early. But my plan for v2 is to make
-them global static variables and allocate them on the first
-register_console().
 
->>  	bool any_usable = false;
->>  	struct console *con;
->>  	bool any_progress;
->> @@ -2667,7 +2684,16 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
->>  				continue;
->>  			any_usable = true;
->>  
->> -			progress = console_emit_next_record(con, handover);
->> +			if (con->flags & CON_EXTENDED) {
->> +				/* Extended consoles do not print "dropped messages". */
->> +				progress = console_emit_next_record(con, &text[0],
->
-> IMHO, &text[0] buffer is not used for extended consoles.
-
-Yes. msg_print_ext_body() needs it.
-
->> +								    &ext_text[0], NULL,
->> +								    handover);
->> +			} else {
->> +				progress = console_emit_next_record(con, &text[0],
->> +								    NULL, &dropped_text[0],
->> +								    handover);
->> +			}
->>  			if (*handover)
->>  				return true;
->
-> I do not resist on allocating the buffers in register_console(). I am
-> not sure if it would really makes things easier.
-
-I'll give it a try for v2.
-
-John
+> > +static struct list_head *kdb_modules = &modules; /* kdb needs the list of modules */
+> 
+> If modules is no longer static then why do we kdb_modules at all?
+> kdb_modules is used exactly once and it can now simply be replaced
+> with &modules.
+> 
+> 
+> Daniel.
