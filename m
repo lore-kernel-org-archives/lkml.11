@@ -2,133 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20422C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA37C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242235AbiCBNbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 08:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        id S242251AbiCBNbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 08:31:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237407AbiCBNbl (ORCPT
+        with ESMTP id S242236AbiCBNbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 08:31:41 -0500
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 90AC9BA76B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 05:30:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=iMaVXwk3iG
-        rh60WLRmIvGc+VdwFYNW0mHH3SCrZ7WO8=; b=v/G8PjMjWUihvkpKtwrOY3Yq7k
-        Xmd9dva8SrKjgb4bH0MCUdvRzJ2tbak1EKdW0fWs3sFcGiiKaOOc5H7g4Zq+hL2y
-        3AJv2Lg+QdwDSwIZ/ofJzc9MZdAi41RDdS7heG60XJKxoDs0mc9NBDeCDQOas7Cq
-        sRWTbqtBXQNju7Ce4=
-Received: from localhost.localdomain (unknown [10.102.225.84])
-        by app1 (Coremail) with SMTP id XAUFCgCnvMBWcR9iqJhcCg--.35820S4;
-        Wed, 02 Mar 2022 21:30:03 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        linux-mtd@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH v3] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
-Date:   Wed,  2 Mar 2022 21:27:59 +0800
-Message-Id: <20220302132758.3820-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 2 Mar 2022 08:31:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C58AAC4E3B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 05:31:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646227860;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vpr93uN6MxOxe9fXO/50h3J2w847QD18h7MxHrR4EFI=;
+        b=NGQm8ZbhFRxrUVDBZXxx3n+z53fJ+MJAZPwIHtTZmFNxd2vViZhac9+4GPDuRx1kcxEwX/
+        YVdqbNbJn5beFo15ALgpMDguTSNnBCT7OCq5aA+q0VQKCqZMXCMzg4kgMM5LBYNo8CWDbl
+        4T1pxBFFJe/nd8nuPWcyV5AIrpI1sRI=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-655-W1Tnvd8TNo63aMFbWzX46g-1; Wed, 02 Mar 2022 08:30:59 -0500
+X-MC-Unique: W1Tnvd8TNo63aMFbWzX46g-1
+Received: by mail-wm1-f71.google.com with SMTP id v125-20020a1cac83000000b0037e3d70e7e1so1944924wme.1
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 05:30:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vpr93uN6MxOxe9fXO/50h3J2w847QD18h7MxHrR4EFI=;
+        b=oQBm9mKh1FMxmrv4rGf5gPc46Ic8KUDjIX+MwwbmZbPgbkPW03TDP3DNJcg1Wp0GfF
+         ZrZekEjCCN2OtZmZ2uJmlDCVwZWUTBdCM8y2l+vcxo1cgQT4MndpG2aLvTHP6Lnv96so
+         HqSON8lA8RnGrt0Do50sxSz5NgXZqkkfHskHQbzoigb+IUOEDBN4rnI9iRl1CHncEuHS
+         KcC2gzxmvx+hLcRVrIwISeIKHbLRYdHv283WPbOSQVqgdqp/XZ5KmYiciEUarxGrdLD8
+         u6jj62GO3bUyZuCGTpM5Awux5JTF02P2UmjXnJ9Uh6GuCU45QFmPvXphMB+SEuZFBb4r
+         307w==
+X-Gm-Message-State: AOAM531MmtGYW6GlhrktLtEDt0ubcnZI+gfkNPEBW6XIshPaEZdqqel4
+        Mwas4QvrqbL69j4s+ytwTOb/GN6sSH8OzE8n1CtJ8FPIznY/fpq9viI3m/1VW+rn5tjdAXKRYcJ
+        sglli+QA9Xxu13xtmiwe9Sll9
+X-Received: by 2002:a5d:4089:0:b0:1f0:4819:61ba with SMTP id o9-20020a5d4089000000b001f0481961bamr706809wrp.307.1646227857898;
+        Wed, 02 Mar 2022 05:30:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyB5w9pGnsT+Lg3Clzc3lJA6rrR//BxxGl8wdCoogL6jR5Pnb1QZrgmJ3q8QCWDn1myvFVNdQ==
+X-Received: by 2002:a5d:4089:0:b0:1f0:4819:61ba with SMTP id o9-20020a5d4089000000b001f0481961bamr706789wrp.307.1646227857681;
+        Wed, 02 Mar 2022 05:30:57 -0800 (PST)
+Received: from redhat.com ([2a10:8006:355c:0:48d6:b937:2fb9:b7de])
+        by smtp.gmail.com with ESMTPSA id bi6-20020a05600c3d8600b00381590dbb25sm9721486wmb.3.2022.03.02.05.30.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 05:30:56 -0800 (PST)
+Date:   Wed, 2 Mar 2022 08:30:54 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220302082021-mutt-send-email-mst@kernel.org>
+References: <20220302075421.2131221-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XAUFCgCnvMBWcR9iqJhcCg--.35820S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zw47ZF4DGrW7uF4rZw47urg_yoW8trykpF
-        WUJFW3ZFWUtFs3ZF12kayxuF1rZ3WkJFyUG3yqqa4xZ3ZxXa4jkryYqr10vFyUCFyfuF17
-        ZF47t3W8CF1UGFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9K14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK6svPMxAIw28IcxkI7VAKI48JMx
-        C20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAF
-        wI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20x
-        vE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v2
-        0xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
-        v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUOrcfUUUUU
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAQ4NEFKp48tIbgAAsn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302075421.2131221-1-lee.jones@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reference counting issue happens in several error handling paths
-on a refcounted object "nc->dmac". In these paths, the function simply
-returns the error code, forgetting to balance the reference count of
-"nc->dmac", increased earlier by dma_request_channel(), which may
-cause refcount leaks.
+On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
+> vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> to vhost_get_vq_desc().  All we have to do is take the same lock
+> during virtqueue clean-up and we mitigate the reported issues.
+> 
+> Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> 
+> Cc: <stable@vger.kernel.org>
+> Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/vhost/vhost.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 59edb5a1ffe28..bbaff6a5e21b8 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -693,6 +693,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>  	int i;
+>  
+>  	for (i = 0; i < dev->nvqs; ++i) {
+> +		mutex_lock(&dev->vqs[i]->mutex);
+>  		if (dev->vqs[i]->error_ctx)
+>  			eventfd_ctx_put(dev->vqs[i]->error_ctx);
+>  		if (dev->vqs[i]->kick)
+> @@ -700,6 +701,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>  		if (dev->vqs[i]->call_ctx.ctx)
+>  			eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
+>  		vhost_vq_reset(dev, dev->vqs[i]);
+> +		mutex_unlock(&dev->vqs[i]->mutex);
+>  	}
 
-Fix it by decrementing the refcount of specific object in those error
-paths.
+So this is a mitigation plan but the bug is still there though
+we don't know exactly what it is.  I would prefer adding something like
+WARN_ON(mutex_is_locked(vqs[i]->mutex) here - does this make sense?
 
-Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
----
-V2 -> V3: Removed redundant lines
-V1 -> V2: Rewrited the error handling block
----
- drivers/mtd/nand/raw/atmel/nand-controller.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
-index f3276ee9e4fe..3dc4a4bacde5 100644
---- a/drivers/mtd/nand/raw/atmel/nand-controller.c
-+++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
-@@ -2060,13 +2060,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	nc->mck = of_clk_get(dev->parent->of_node, 0);
- 	if (IS_ERR(nc->mck)) {
- 		dev_err(dev, "Failed to retrieve MCK clk\n");
--		return PTR_ERR(nc->mck);
-+		ret = PTR_ERR(nc->mck);
-+		goto out_release_dma;
- 	}
- 
- 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
- 	if (!np) {
- 		dev_err(dev, "Missing or invalid atmel,smc property\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_release_dma;
- 	}
- 
- 	nc->smc = syscon_node_to_regmap(np);
-@@ -2074,10 +2076,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	if (IS_ERR(nc->smc)) {
- 		ret = PTR_ERR(nc->smc);
- 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
--		return ret;
-+		goto out_release_dma;
- 	}
- 
- 	return 0;
-+
-+out_release_dma:
-+	if (nc->caps->has_dma && !atmel_nand_avoid_dma && nc->dmac)
-+		dma_release_channel(nc->dmac);
-+
-+	return ret;
- }
- 
- static int
--- 
-2.25.1
+
+>  	vhost_dev_free_iovecs(dev);
+>  	if (dev->log_ctx)
+> -- 
+> 2.35.1.574.g5d30c73bfb-goog
 
