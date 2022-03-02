@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB37C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240059AbiCBITp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51438 "EHLO
+        id S240062AbiCBIWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:22:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235476AbiCBITm (ORCPT
+        with ESMTP id S233090AbiCBIWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:19:42 -0500
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455B637BF2
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:19:00 -0800 (PST)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2db2add4516so8403817b3.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:19:00 -0800 (PST)
+        Wed, 2 Mar 2022 03:22:21 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9100EB8234
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:21:38 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id j12so1760146ybh.8
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:21:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=atOhUCKt1iNHeGULDxxyHd5Ye93aTurT561sTor+wwk=;
-        b=UfpqrlNeV8QfcsKl+6EUXinBdkP8H6zxJRyw+c9ua2pryonEjbDZZqNXIyYcCPkdpL
-         lu0/qLKih9YBlC3e4V4WvNw3i9uuZLx/vMPFdaXewq9kiQzhV/R40LpFbnV6RUZcYN25
-         L2rM/kU7c3YUFgI6hiKKRWKTuQ1CriE843acY=
+        bh=c0JEyvT4sRgBeuNX2LNvd5n4DsQZeLFTyxYihUMzHKM=;
+        b=gG8Evc6NzK22q0g35QqXRb3TUYTC/6aIy14Wcb9wYeA/FK6C/owoQ6qE/reZ2FxKjG
+         jNE/whE3+7OncF09l5PPD/LTeQIYb8Cf40M5FTNA6/AK5ljfnZ7oK4rZYCsJL6ePvAeg
+         zOaYcON7uBXijDR23d9gE4vG2uYmkA327GuF8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=atOhUCKt1iNHeGULDxxyHd5Ye93aTurT561sTor+wwk=;
-        b=YHLh0rVOA9mi/aiDvOtWoaJB1NhYG3Gy0KwRyE9RxkmYq2a9owvLoR0rrHSbOaiW27
-         Kpcg+at3zWRcroSnYeQpfv7dVF1068BViWtY87JZI/23WHcK7dR2/eBh5RrQBZZC92fi
-         U18Q1LyOpiis8ERJSKzq8Zp1r1Bnlw+mkS2qPgb1YfbVf/7z4F2Y7o9NcLB9OuOrr9W7
-         G/GGUZ7L+uOr1kV95IfRwfEid08c2Dm05ymMf9mR0bPcWfUZ6oUASPQ+hhXfbiKpy81P
-         63y0gpj12/2vzuMPPGk265I/hKx7gCCke2R5DIwz+lfN/AtYD3FQMUBZQWOVBOeEmWUc
-         ZauA==
-X-Gm-Message-State: AOAM533USD9N9XWhZRQIKitgNCDTLwP7xYAj+p6UhO9fV1abUepfvW2q
-        uT6ej7EPC4GxVb8kkbTyaOqALUmdf8vuEPJQSTkRbycs19o=
-X-Google-Smtp-Source: ABdhPJzvda6h0GVBzSzY9PX/SwfJGHPvt6tyXw3+GbJKops158/VF3L6GKAtZE93eje4ejQpI5LRumtLevq8N4uK7Lk=
-X-Received: by 2002:a81:6e44:0:b0:2d0:b675:a0 with SMTP id j65-20020a816e44000000b002d0b67500a0mr28364295ywc.352.1646209139543;
- Wed, 02 Mar 2022 00:18:59 -0800 (PST)
+        bh=c0JEyvT4sRgBeuNX2LNvd5n4DsQZeLFTyxYihUMzHKM=;
+        b=qqxp+r0Mow4qlTT24oubWalF56UQYRH4+vbgoD7shg+yWDWpn8d0+8pGfsY9hHSH24
+         jPGexqW2Wg6SLfBpNGPA/ga62bZ/KFvdlZW9FoOykAnXQ0aJYldSCn9X05NW7lCGNHdN
+         HE78fHCDGByyHFbcjOQEphNm0fjvz9xBnlHAlRGMub7rHXqNH1X3JZGTt6MN7YmYU52w
+         3/PVn553bflxkvDIJDuRLWaSdOYVRlonf3RwCjZd1dN2la+h1Li7KOQtfpDhz9kwFe9Y
+         3v5DFZeYREz69I5GHiVVU9hruljHbmQkTukWUo2fQmldv6JAzcRatDpEQLHOA+3PQQ4s
+         wx0Q==
+X-Gm-Message-State: AOAM531lLes2BnMFSD6I5nW+GLRyeH377wMfgWCfNq3SyR5n0RM5KxMm
+        BPsH8GIZdW0hlZ8S8NZWKJhYZhy+6wHfCLQ2sZifRuaoGwg=
+X-Google-Smtp-Source: ABdhPJxngj7bqTtU+kHzTH8YKDlxhC4TIDYb8jPFRKCeGt3hWnobuDPa98/M1pFHj1eOducxWK7gNHsUughJdOa4DI4=
+X-Received: by 2002:a25:f904:0:b0:628:a84d:a105 with SMTP id
+ q4-20020a25f904000000b00628a84da105mr551866ybe.53.1646209297827; Wed, 02 Mar
+ 2022 00:21:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20220219092533.12596-1-linmiaohe@huawei.com> <20220219092533.12596-3-linmiaohe@huawei.com>
-In-Reply-To: <20220219092533.12596-3-linmiaohe@huawei.com>
+References: <20220219092533.12596-1-linmiaohe@huawei.com> <20220219092533.12596-4-linmiaohe@huawei.com>
+In-Reply-To: <20220219092533.12596-4-linmiaohe@huawei.com>
 From:   Vitaly Wool <vitaly.wool@konsulko.com>
-Date:   Wed, 2 Mar 2022 09:18:48 +0100
-Message-ID: <CAM4kBB+PGgRqmkXOVCv+Cvv8CAE_apK5n9asL6JSfuxeS5-RcQ@mail.gmail.com>
-Subject: Re: [PATCH 2/9] mm/z3fold: remove obsolete comment in z3fold_alloc
+Date:   Wed, 2 Mar 2022 09:21:26 +0100
+Message-ID: <CAM4kBBL3ZDTnB4bWLRZSow1jaAeVwuJx4rbnzsVdy06p1Fnf-A@mail.gmail.com>
+Subject: Re: [PATCH 3/9] mm/z3fold: minor clean up for z3fold_free
 To:     Miaohe Lin <linmiaohe@huawei.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Linux-MM <linux-mm@kvack.org>,
@@ -59,31 +60,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Sat, Feb 19, 2022 at 10:26 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
 >
-> The highmem pages are supported since commit f1549cb5ab2b ("mm/z3fold.c:
-> allow __GFP_HIGHMEM in z3fold_alloc"). Remove the residual comment.
+> Use put_z3fold_header() to pair with get_z3fold_header. Also fix the wrong
+> comments. Minor readability improvement.
 >
 > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
 Reviewed-by: Vitaly Wool <vitaly.wool@konsulko.com>
-
 > ---
->  mm/z3fold.c | 3 ---
->  1 file changed, 3 deletions(-)
+>  mm/z3fold.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 >
 > diff --git a/mm/z3fold.c b/mm/z3fold.c
-> index e86aafea6599..87689f50f709 100644
+> index 87689f50f709..eb89271aea83 100644
 > --- a/mm/z3fold.c
 > +++ b/mm/z3fold.c
-> @@ -1064,9 +1064,6 @@ static void z3fold_destroy_pool(struct z3fold_pool *pool)
->   * performed first. If no suitable free region is found, then a new page is
->   * allocated and added to the pool to satisfy the request.
+> @@ -1187,9 +1187,9 @@ static int z3fold_alloc(struct z3fold_pool *pool, size_t size, gfp_t gfp,
+>   * @handle:    handle associated with the allocation returned by z3fold_alloc()
 >   *
-> - * gfp should not set __GFP_HIGHMEM as highmem pages cannot be used
-> - * as z3fold pool pages.
-> - *
->   * Return: 0 if success and handle is set, otherwise -EINVAL if the size or
->   * gfp arguments are invalid or -ENOMEM if the pool was unable to allocate
->   * a new page.
+>   * In the case that the z3fold page in which the allocation resides is under
+> - * reclaim, as indicated by the PG_reclaim flag being set, this function
+> - * only sets the first|last_chunks to 0.  The page is actually freed
+> - * once both buddies are evicted (see z3fold_reclaim_page() below).
+> + * reclaim, as indicated by the PAGE_CLAIMED flag being set, this function
+> + * only sets the first|middle|last_chunks to 0.  The page is actually freed
+> + * once all buddies are evicted (see z3fold_reclaim_page() below).
+>   */
+>  static void z3fold_free(struct z3fold_pool *pool, unsigned long handle)
+>  {
+> @@ -1247,7 +1247,7 @@ static void z3fold_free(struct z3fold_pool *pool, unsigned long handle)
+>         }
+>         if (page_claimed) {
+>                 /* the page has not been claimed by us */
+> -               z3fold_page_unlock(zhdr);
+> +               put_z3fold_header(zhdr);
+>                 return;
+>         }
+>         if (test_and_set_bit(NEEDS_COMPACTING, &page->private)) {
 > --
 > 2.23.0
 >
