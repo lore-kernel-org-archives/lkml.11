@@ -2,148 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29828C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8DD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240467AbiCBJZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 04:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
+        id S240493AbiCBJZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 04:25:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240455AbiCBJZh (ORCPT
+        with ESMTP id S240469AbiCBJZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 04:25:37 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A77E09A;
-        Wed,  2 Mar 2022 01:24:54 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id x18so1395430pfh.5;
-        Wed, 02 Mar 2022 01:24:54 -0800 (PST)
+        Wed, 2 Mar 2022 04:25:45 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86606A2510;
+        Wed,  2 Mar 2022 01:24:57 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id kt27so2445237ejb.0;
+        Wed, 02 Mar 2022 01:24:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ogow4DiJjDktRfj4hcio5HqKMsSdPYDh3kYUtkpLBD0=;
-        b=lingdd6g7q8/UiV48cU4Vyvp0EvmSgJciUFxe5a5cOud+7ZqKFtjqRTq050oPfJEoS
-         uos95crCxAFnySkP7Gzo9EX+DMV0YvtDiU16etjaUCcis6ARd0SmzYIpMzCtnQx9ZIuP
-         QRCSh0+2/SBvvJ73l+qKZXvBKamttACEO1cOr8joyaSWDPVzImdBRutShfUxHIApO9+j
-         vtDxGDiLrLyDZ7lrJb3Pgr43Hn+56ylqqhmm5M5sRhgNLRgNEziZ6mxXIQl2Uw4eIfb/
-         II56FZ/3KXwUYSIqNSJUfDdkwtHEPRdoRLHV0Hxxc2DkHY1bGn38fQBRzDdY6GpoNDx8
-         IF4g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=sIH+XDr0bcmAnSp6r3s95jesa/YkHfKfM8EvZG2x2jo=;
+        b=hsEF+EI2f/RYm/JUPs5oa2IZ2CZKuZpD4CJzPSyORMsbaDMnWp3DfRlMKqPj8JtZVi
+         anq67h7VOcM4sIpbWPxDDScpzx/H60AyP2jz/xk1p1AWJ2b76Qle5lpRibmjhahNK8Qd
+         Q7brsKclZaRyQPIYUF9v+Me/p5Aknf2rDEL+cC9etK5k8xNnJ1vks4LH3Of18ieYNGOR
+         IaLxKYHcUxJQI8k0iC6gQO+0CxLha9AeOJ2e7wS3AyH6r05EwI1v2UMd3DS67bndzW50
+         BKZXMwjw8JNnRxzYAJ8UfCJFwSrXpSH5KThqTGibnHCM4xpeGZHlOeIVlU0lJ/SCBMRM
+         CMIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Ogow4DiJjDktRfj4hcio5HqKMsSdPYDh3kYUtkpLBD0=;
-        b=MRpZsvwRgcgEaFOqw575D+iV6Cngr3HtzcV37DUzj7VlOw6SPf3gBqXFjPivVXRJey
-         ogdRLnG+LOkbHM7cAI6E5sBcLxw68Hc6KqqZsQ+QoeYiUhc42kg0nDoOpQBNXYfdpV7K
-         8zZ/nb2wCVBIs8AeVw/gH3NPCKpsezarNADuOhSNjpGKpOrbSmV4OWCjE4xnD3s3H3Gm
-         dTQgf6l7qQ9Kq2GGXVTQE4WwEEwpX2NNnoT6F5IGW7d/bWbMdQowxewxl0S2mSDkk86D
-         qyLFjuFpoINAJPB2W2lBZcq1lxqKbNZzySmmEMbKZIp0+1QAos7dpp3wj5rYHQX920Vx
-         BziA==
-X-Gm-Message-State: AOAM530jxVwGW+ivzMJ0bG6QeG9AznDPUQO2uaHZp7ACu60BkYsoLcsX
-        p/c5N0/dx7tQtH1tenm3SNk=
-X-Google-Smtp-Source: ABdhPJx+eXTu+5IPKHxuqlJY7ZgWlcuuRD5Zk9LmMPCBlrtqE+s9rjTw0bk6RdbOhX9DruZmHhFxgA==
-X-Received: by 2002:a63:d47:0:b0:373:598c:e0aa with SMTP id 7-20020a630d47000000b00373598ce0aamr25225085pgn.243.1646213094357;
-        Wed, 02 Mar 2022 01:24:54 -0800 (PST)
-Received: from localhost.localdomain ([112.78.94.140])
-        by smtp.gmail.com with ESMTPSA id q22-20020a056a00085600b004f397d1f3b5sm21351153pfk.171.2022.03.02.01.24.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=sIH+XDr0bcmAnSp6r3s95jesa/YkHfKfM8EvZG2x2jo=;
+        b=Iyya5hAMAT+36dKnMYu5Y/2cDEXA/7PYS1XYLzFVbcu5nwdRxU8LSyFA6P4LSgHT2p
+         IRmxewsi8FgjiJUh14oxoOKShmj0RPTbRnPrIyqDk8ueuZ9kVv/kBYbw57TsHZQhQEbm
+         gSZfS3o8RkdwBHVm8mSOKFTl3PPLBnHZ0zCXkQ/R9DlRbtvnGEDyPnDhrS8ShSYOdevJ
+         CDn/un2qGzFQIYa9VdYpSscwmZUQXiRHZM6/1ntbaY0PokqAOf9KEa+/mQY1SSllIHFi
+         8Kvtu9FLzuI2gIPYcQd2YE0sNaQ3eJF9dpzcd4rJ+ktPNm5cbu8oAMexAQ2pH84jptCj
+         v7Jg==
+X-Gm-Message-State: AOAM532Oa9GEgwsNAaEBPBCYtW9WapIgBFvi3RKYM4HZ/V3s7LZOEh0m
+        B45kKM47jwa4hsK+vfNnzPU=
+X-Google-Smtp-Source: ABdhPJyeQXm9LWD3RXtqVhCpGaC2+7E5F6tWlrf4CiE3RYx+9cku+hvfEypndrYXp0tlrBL6eAOGqA==
+X-Received: by 2002:a17:906:d7aa:b0:6cf:1fb3:2986 with SMTP id pk10-20020a170906d7aa00b006cf1fb32986mr22427009ejb.594.1646213096003;
+        Wed, 02 Mar 2022 01:24:56 -0800 (PST)
+Received: from tom-desktop (net-188-217-57-126.cust.vodafonedsl.it. [188.217.57.126])
+        by smtp.gmail.com with ESMTPSA id b6-20020a50e386000000b00410d64cb3e4sm8545376edm.75.2022.03.02.01.24.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 01:24:53 -0800 (PST)
-From:   Medad CChien <medadyoung@gmail.com>
-X-Google-Original-From: Medad CChien <ctcchien@nuvoton.com>
-To:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
-        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
-        benjaminfair@google.com, yuenn@google.com, venture@google.com,
-        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
-        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
-        tali.perry1@gmail.com
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Medad CChien <ctcchien@nuvoton.com>
-Subject: [PATCH v2 2/3] dt-bindings: edac: npcm-edac.yaml
-Date:   Wed,  2 Mar 2022 17:24:33 +0800
-Message-Id: <20220302092434.16625-3-ctcchien@nuvoton.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220302092434.16625-1-ctcchien@nuvoton.com>
-References: <20220302092434.16625-1-ctcchien@nuvoton.com>
+        Wed, 02 Mar 2022 01:24:55 -0800 (PST)
+Date:   Wed, 2 Mar 2022 10:24:53 +0100
+From:   Tommaso Merciai <tomm.merciai@gmail.com>
+To:     Richard Leitner <richard.leitner@linux.dev>
+Cc:     Pavel Machek <pavel@denx.de>, Sasha Levin <sashal@kernel.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        richard.leitner@skidata.com, linux-usb@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.10 04/23] usb: usb251xb: add boost-up property
+ support
+Message-ID: <20220302092453.GA4465@tom-desktop>
+References: <20220215152957.581303-1-sashal@kernel.org>
+ <20220215152957.581303-4-sashal@kernel.org>
+ <20220220101256.GC7321@amd>
+ <Yhy+pvprwSx4zdCG@ltleri2>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yhy+pvprwSx4zdCG@ltleri2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the device tree bindings for the EDAC driver npcm-edac.
+On Mon, Feb 28, 2022 at 01:23:02PM +0100, Richard Leitner wrote:
+> Hi,
+> 
+> On Sun, Feb 20, 2022 at 11:12:57AM +0100, Pavel Machek wrote:
+> > Hi!
+> > 
+> > > From: Tommaso Merciai <tomm.merciai@gmail.com>
+> > > 
+> > > [ Upstream commit 5c2b9c61ae5d8ad0a196d33b66ce44543be22281 ]
+> > > 
+> > > Add support for boost-up register of usb251xb hub.
+> > > boost-up property control USB electrical drive strength
+> > > This register can be set:
+> > > 
+> > >  - Normal mode -> 0x00
+> > >  - Low         -> 0x01
+> > >  - Medium      -> 0x10
+> > >  - High        -> 0x11
+> > > 
+> > > (Normal Default)
+> > > 
+> > > References:
+> > >  - http://www.mouser.com/catalog/specsheets/2514.pdf p29
+> > 
+> > Should the boost-up property be documented somewhere in the kernel
+> > tree? We normally do that for device tree properties. And we normally
+> > have properties used somewhere in the device tree. What is going on here?
+> 
+> AFAIK this patch was dropped for all stable releases, so this specific
+> AUTOSEL message/thread is obsolete.
+> 
+> Nonetheless the DT documentation is also missing on master. Therefore
+> I guess it should be provided asap 😉
+> 
+> Tommaso, can you provide a patch?
 
-Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
----
- .../devicetree/bindings/edac/npcm-edac.yaml   | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/edac/npcm-edac.yaml
+Hi All,
+Sorry for delay, but I'm quite busy in these days.
+Yes I can provide a patch about documentation in the
+next days.
 
-diff --git a/Documentation/devicetree/bindings/edac/npcm-edac.yaml b/Documentation/devicetree/bindings/edac/npcm-edac.yaml
-new file mode 100644
-index 000000000000..936e9787ec80
---- /dev/null
-+++ b/Documentation/devicetree/bindings/edac/npcm-edac.yaml
-@@ -0,0 +1,62 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/edac/npcm-edac.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Nuvoton NPCM Memory Controller EDAC
-+
-+maintainers:
-+  - Medad CChien <ctcchien@nuvoton.com>
-+
-+description: |
-+  The Nuvoton BMC SoC supports DDR4 memory with and without ECC (error
-+  correction check).
-+
-+  The memory controller supports single bit error correction, double bit
-+  error detection (in-line ECC in which a section (1/8th) of the
-+  memory device used to store data is used for ECC storage).
-+
-+  Note, the bootloader must configure ECC mode for the memory controller.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - nuvoton,npcm8xx-memory-controller
-+      - nuvoton,npcm7xx-memory-controller
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    minItems: 1
-+    items:
-+      - description: uncorrectable error interrupt
-+      - description: correctable error interrupt
-+
-+  interrupt-names:
-+    minItems: 1
-+    items:
-+      - const: ue
-+      - const: ce
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    ahb {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+        mc: memory-controller@f0824000 {
-+            compatible = "nuvoton,npcm7xx-memory-controller";
-+            reg = <0x0 0xf0824000 0x0 0x1000>;
-+            interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
-+
--- 
-2.17.1
+Regards,
+Tommaso
 
+> 
+> regards;rl
+> 
+> > 
+> > Best regards,
+> > 							Pavel
