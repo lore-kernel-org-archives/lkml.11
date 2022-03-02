@@ -2,36 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE29DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241891AbiCBMr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 07:47:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
+        id S241902AbiCBMra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 07:47:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbiCBMrZ (ORCPT
+        with ESMTP id S241892AbiCBMr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 07:47:25 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9C67807D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 04:46:41 -0800 (PST)
+        Wed, 2 Mar 2022 07:47:27 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3ADC1C96;
+        Wed,  2 Mar 2022 04:46:44 -0800 (PST)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K7v4v6c5wz4xcP;
-        Wed,  2 Mar 2022 23:46:39 +1100 (AEDT)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K7v4t5npwz4xZ5;
+        Wed,  2 Mar 2022 23:46:38 +1100 (AEDT)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-In-Reply-To: <ddcb422102a37eb45f57694c7ef0ec6187964dff.1644742951.git.christophe.leroy@csgroup.eu>
-References: <ddcb422102a37eb45f57694c7ef0ec6187964dff.1644742951.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH] powerpc: Don't allow the use of EMIT_BUG_ENTRY with BUGFLAG_WARNING
-Message-Id: <164622487604.2052779.15267979527677516590.b4-ty@ellerman.id.au>
-Date:   Wed, 02 Mar 2022 23:41:16 +1100
+To:     Anders Roxell <anders.roxell@linaro.org>, mpe@ellerman.id.au
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Arnd Bergmann <arnd@arndb.de>, stable@vger.kernel.org
+In-Reply-To: <20220224162215.3406642-1-anders.roxell@linaro.org>
+References: <20220224162215.3406642-1-anders.roxell@linaro.org>
+Subject: Re: [PATCHv2 1/3] powerpc: lib: sstep: fix 'sthcx' instruction
+Message-Id: <164622491295.2052779.4708365470490989992.b4-ty@ellerman.id.au>
+Date:   Wed, 02 Mar 2022 23:41:52 +1100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -39,21 +37,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Feb 2022 10:02:41 +0100, Christophe Leroy wrote:
-> Warnings in assembly must use EMIT_WARN_ENTRY in order to generate
-> the necessary entry in exception table.
+On Thu, 24 Feb 2022 17:22:13 +0100, Anders Roxell wrote:
+> Looks like there been a copy paste mistake when added the instruction
+> 'stbcx' twice and one was probably meant to be 'sthcx'.
+> Changing to 'sthcx' from 'stbcx'.
 > 
-> Check in EMIT_BUG_ENTRY that flags don't include BUGFLAG_WARNING.
 > 
-> This change avoids problems like the one fixed by
-> commit fd1eaaaaa686 ("powerpc/64s: Use EMIT_WARN_ENTRY for SRR debug
-> warnings").
-> 
-> [...]
 
 Applied to powerpc/next.
 
-[1/1] powerpc: Don't allow the use of EMIT_BUG_ENTRY with BUGFLAG_WARNING
-      https://git.kernel.org/powerpc/c/38a1756861b8fc2ea9afb93e231194c642a4e261
+[1/3] powerpc: lib: sstep: fix 'sthcx' instruction
+      https://git.kernel.org/powerpc/c/a633cb1edddaa643fadc70abc88f89a408fa834a
+[2/3] powerpc: fix build errors
+      https://git.kernel.org/powerpc/c/8667d0d64dd1f84fd41b5897fd87fa9113ae05e3
+[3/3] powerpc: lib: sstep: fix build errors
+      https://git.kernel.org/powerpc/c/8219d31effa7be5dbc7ff915d7970672e028c701
 
 cheers
