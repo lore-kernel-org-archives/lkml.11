@@ -2,157 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A41CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE68BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbiCBRQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:16:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        id S243722AbiCBRQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:16:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243522AbiCBRQM (ORCPT
+        with ESMTP id S238424AbiCBRQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:16:12 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6BFCB66B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:15:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646241319; x=1677777319;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JPgNcN3yRPkWhdAdp6hz0bJtkS6p6GHR+izGPZ6HtW0=;
-  b=bWiy3WGOUkwangoqODvaZvq1HiULbo4W+bJHZLkg40SovWXBNAzQaUWf
-   Uy1E6tlF53pLx9rzGdSXFyo87Qc2gx5z6D9ANU75fIYBWLNBVVeUXixgt
-   42Rt3wJJdATvGQ1v57Pk4C0RhxF5SYsgCqylW6/lI4NFCNHW87CIhljpB
-   9lJhbwNi3Ay5uH2ktZMW2HGANZH+3Xnw1AnpXHNvlVJICnLjjgXOOKfQB
-   Lc9bgJ44ga08VwP75lyGfFoD5uzktergEV9/Svz95Yn+8jq1NIEZDHlI/
-   4WRnAz2/alr3TYiegErO5IRX9EA3CZ6XjyO8RjMuSBQAKrgVbSMISVJeE
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="278129942"
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="278129942"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:15:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="535466041"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 02 Mar 2022 09:15:17 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPSZI-0001dq-QF; Wed, 02 Mar 2022 17:15:16 +0000
-Date:   Thu, 3 Mar 2022 01:14:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/fscache-next 36/39]
- fs/netfs/io.c:630:2: warning: variable 'ret' is used uninitialized whenever
- 'if' condition is false
-Message-ID: <202203030120.FpZOVtN6-lkp@intel.com>
+        Wed, 2 Mar 2022 12:16:41 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620905D5D8
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:15:57 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 48F563F60D
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:15:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646241355;
+        bh=EKSGShIhKvoK9zwcFMq838fSSTiayEwZ3ipXrxgEB/Q=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=pJiK3ddbnE13L8HNJnYWsGFZ+bicSw/M5Mshl5XMXTW2eggkbIVqw0+qyiKsX06kv
+         TdPTQdrCvpGZpZwp3194KqxeaTSBP19WSfh22OVJ3QXGW+NJloJJoHHl9yOLYJWvH/
+         zLxYp2RF4+Xr6Hkd+CajBBnn+8T2Q+IXoMceBbAN395cn6d9EpzLg2IAJ3y7gRbESO
+         f2LnCai/3VYkmoKYSbY6fEuIOijv2Jnk3M7QqXLhsYnDQcnPURo7+22jBWRQmmv+vI
+         zgdSQxhu0sbfaS7c4vx60jw7C0ylXwdcvbMEQ/UdKn0BFZuN9l2G92XvDBG6XEm2jK
+         ttblF/IalGPGg==
+Received: by mail-ed1-f72.google.com with SMTP id y10-20020a056402358a00b00410deddea4cso1351634edc.16
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:15:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EKSGShIhKvoK9zwcFMq838fSSTiayEwZ3ipXrxgEB/Q=;
+        b=q70Jlmijt6j9QRIUUE0ivBLZCu9XVJEQp63EfDNyhXJoEDOn70F3x0Inoxi7aGgccZ
+         eOWD3WRAcwHeByiyrUv+4lxK0J0dqRXm/vd1U/oT+Kj5nHANSKueMi8fII6L+apj65Ac
+         zwQtg2CClKU8xpj4TLgJTAscS/871rVgFOCcopQm8NanXn4icUr3dY/RxkLBZW7mrWxI
+         pKYzMdgJcb/PwFo9nUFcfvFeAAiFk+/4R2fINjmQvNg37wEdUias635pQr+Xr24CKxAp
+         P8KlNRX447fkUnlszNGoXesmJJ4q3vBMn57zqsGbTANHJ5htx5L4jrEmAYEQY2ubWWbJ
+         I1uQ==
+X-Gm-Message-State: AOAM531yC4lPl67R+1yo16IxF9pNAjao8n7hIPfo1p4QE8YgIftcrIrp
+        ptRQ7381mNJtglHUqi3dmIDrEkP+Np2scmOcNJxQSxIfVuDIV4ECq8zg5Mn7v3ZIWOuP7Gdrb5C
+        5oZBzok3Q8ukqzq/WM4BimfwV9SCXZoNZr2grJnDOIA==
+X-Received: by 2002:a05:6402:4409:b0:412:aac5:4e48 with SMTP id y9-20020a056402440900b00412aac54e48mr30144301eda.75.1646241354542;
+        Wed, 02 Mar 2022 09:15:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyshWOBq1tAX3kqXMid9eJHgfLGLM4EqtCg2H9ww9e3j6/bhPCgqw6Uo5bi9vMfnFz7flevSQ==
+X-Received: by 2002:a05:6402:4409:b0:412:aac5:4e48 with SMTP id y9-20020a056402440900b00412aac54e48mr30144280eda.75.1646241354329;
+        Wed, 02 Mar 2022 09:15:54 -0800 (PST)
+Received: from [192.168.0.137] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id d23-20020a1709067a1700b006d0ebe4af89sm6523442ejo.20.2022.03.02.09.15.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 09:15:53 -0800 (PST)
+Message-ID: <762e2778-99e9-f458-167d-909550db2f3c@canonical.com>
+Date:   Wed, 2 Mar 2022 18:15:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/3] dt-bindings: clock: add QCOM SM6125 display clock
+ bindings
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Pavel Dubrova <pashadubrova@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220226200911.230030-1-marijn.suijten@somainline.org>
+ <20220226200911.230030-3-marijn.suijten@somainline.org>
+ <ea5d34c6-fe75-c096-d5b2-6a327c9d0ae5@canonical.com>
+ <62ebb074-b8de-0dc3-2bbc-e43dca9d2ced@linaro.org>
+ <05310308-b0ff-56a0-83ac-855b1b795936@canonical.com>
+ <20220302125417.iu52rvdxrmo25wwt@SoMainline.org>
+ <2b1f7c07-3cc9-9637-4621-3c5e0e09a65e@canonical.com>
+ <Yh+D1cHuRNQqnHf+@ripper>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <Yh+D1cHuRNQqnHf+@ripper>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+On 02/03/2022 15:48, Bjorn Andersson wrote:
+> On Wed 02 Mar 05:51 PST 2022, Krzysztof Kozlowski wrote:
+> 
+>> On 02/03/2022 13:54, Marijn Suijten wrote:
+>>> On 2022-02-28 10:23:19, Krzysztof Kozlowski wrote:
+>>>> On 27/02/2022 22:43, Dmitry Baryshkov wrote:
+>>>>> On 27/02/2022 13:03, Krzysztof Kozlowski wrote:
+>>>>>> On 26/02/2022 21:09, Marijn Suijten wrote:
+>>>>>>> From: Martin Botka <martin.botka@somainline.org>
+>>>>>>>
+>>>>>>> Add device tree bindings for display clock controller for
+>>>>>>> Qualcomm Technology Inc's SM6125 SoC.
+>>>>>>>
+>>>>>>> Signed-off-by: Martin Botka <martin.botka@somainline.org>
+>>>>>>> ---
+>>>>>>>   .../bindings/clock/qcom,dispcc-sm6125.yaml    | 87 +++++++++++++++++++
+>>>>>>>   .../dt-bindings/clock/qcom,dispcc-sm6125.h    | 41 +++++++++
+>>>>>>>   2 files changed, 128 insertions(+)
+>>>>>>>   create mode 100644 Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
+>>>>>>>   create mode 100644 include/dt-bindings/clock/qcom,dispcc-sm6125.h
+>>>>>>>
+>>>>>>> diff --git a/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
+>>>>>>> new file mode 100644
+>>>>>>> index 000000000000..3465042d0d9f
+>>>>>>> --- /dev/null
+>>>>>>> +++ b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
+>>>>>>> @@ -0,0 +1,87 @@
+>>>>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>>>>>> +%YAML 1.2
+>>>>>>> +---
+>>>>>>> +$id: http://devicetree.org/schemas/clock/qcom,dispcc-sm6125.yaml#
+>>>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>>>>>> +
+>>>>>>> +title: Qualcomm Display Clock Controller Binding for SM6125
+>>>>>>> +
+>>>>>>> +maintainers:
+>>>>>>> +  - Martin Botka <martin.botka@somainline.org>
+>>>>>>> +
+>>>>>>> +description: |
+>>>>>>> +  Qualcomm display clock control module which supports the clocks and
+>>>>>>> +  power domains on SM6125.
+>>>>>>> +
+>>>>>>> +  See also:
+>>>>>>> +    dt-bindings/clock/qcom,dispcc-sm6125.h
+>>>>>>> +
+>>>>>>> +properties:
+>>>>>>> +  compatible:
+>>>>>>> +    enum:
+>>>>>>> +      - qcom,sm6125-dispcc
+>>>>>>> +
+>>>>>>> +  clocks:
+>>>>>>> +    items:
+>>>>>>> +      - description: Board XO source
+>>>>>>> +      - description: Byte clock from DSI PHY0
+>>>>>>> +      - description: Pixel clock from DSI PHY0
+>>>>>>> +      - description: Pixel clock from DSI PHY1
+>>>>>>> +      - description: Link clock from DP PHY
+>>>>>>> +      - description: VCO DIV clock from DP PHY
+>>>>>>> +      - description: AHB config clock from GCC
+>>>>>>> +
+>>>>>>> +  clock-names:
+>>>>>>> +    items:
+>>>>>>> +      - const: bi_tcxo
+>>>>>>> +      - const: dsi0_phy_pll_out_byteclk
+>>>>>>> +      - const: dsi0_phy_pll_out_dsiclk
+>>>>>>> +      - const: dsi1_phy_pll_out_dsiclk
+>>>>>>> +      - const: dp_phy_pll_link_clk
+>>>>>>> +      - const: dp_phy_pll_vco_div_clk
+>>>>>>> +      - const: cfg_ahb_clk
+>>>>>>> +
+>>>>>>> +  '#clock-cells':
+>>>>>>> +    const: 1
+>>>>>>> +
+>>>>>>> +  '#power-domain-cells':
+>>>>>>> +    const: 1
+>>>>>>> +
+>>>>>>> +  reg:
+>>>>>>> +    maxItems: 1
+>>>>>>> +
+>>>>>>> +required:
+>>>>>>> +  - compatible
+>>>>>>> +  - reg
+>>>>>>> +  - clocks
+>>>>>>> +  - clock-names
+>>>>>>> +  - '#clock-cells'
+>>>>>>> +  - '#power-domain-cells'
+>>>>>>> +
+>>>>>>> +additionalProperties: false
+>>>>>>> +
+>>>>>>> +examples:
+>>>>>>> +  - |
+>>>>>>> +    #include <dt-bindings/clock/qcom,rpmcc.h>
+>>>>>>> +    #include <dt-bindings/clock/qcom,gcc-sm6125.h>
+>>>>>>> +    clock-controller@5f00000 {
+>>>>>>> +      compatible = "qcom,sm6125-dispcc";
+>>>>>>> +      reg = <0x5f00000 0x20000>;
+>>>>>>> +      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
+>>>>>>> +               <&dsi0_phy 0>,
+>>>>>>> +               <&dsi0_phy 1>,
+>>>>>>> +               <0>,
+>>>>>>
+>>>>>> This does not look like a valid phandle. This clock is required, isn't it?
+>>>
+>>> I remember it being used like this before, though upon closer inspection
+>>> only qcom,gcc-msm8998.yaml uses it as example.
+>>>
+>>> The clock should be optional, in that case it is perhaps desired to omit
+>>> it from clock-names instead, or pretend there's a `dsi1_phy 1`?
+>>
+>> I propose to omit it.
+>>
+> 
+> The wire is there, it's only optional because we don't have the other
+> side represented in DT yet.
+> 
+> I believe we started filling out 0s like this because omitting elements
+> that are not yet possible to fill out means that the order will change
+> as we add more functions, something Rob has objected to. Further more as
+> we add more functions the existing dts will fail validation, even though
+> the hardware hasn't changed.
+> 
+> 
+> That said, even though we don't have the other piece on this particular
+> platform we do know where this signal comes from. So we should be able
+> to have a valid (or at least strongly plausible) example in the binding
+> - and then fill out the dts with 0s to keep validation happy until the
+> other pieces are filled out.
 
-First bad commit (maybe != root cause):
+So based on this, this clock is not actually optional and the bindings
+should stay like this. The example should be more-or-less complete, so
+there is not much sense to have there clock "0". DTS is of course different.
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/fscache-next
-head:   78e12b114b9c804d4b1eef16b6df1112cde6a960
-commit: ad9e5adb388f358027a51032b3944913d98f7866 [36/39] netfs: Rename rename read_helper.c to io.c
-config: hexagon-buildonly-randconfig-r006-20220302 (https://download.01.org/0day-ci/archive/20220303/202203030120.FpZOVtN6-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/ad9e5adb388f358027a51032b3944913d98f7866
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/fscache-next
-        git checkout ad9e5adb388f358027a51032b3944913d98f7866
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/netfs/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> fs/netfs/io.c:630:2: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (sync) {
-           ^~~~~~~~~
-   include/linux/compiler.h:56:28: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:30: note: expanded from macro '__trace_if_var'
-   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/io.c:655:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   fs/netfs/io.c:630:2: note: remove the 'if' if its condition is always true
-           if (sync) {
-           ^~~~~~~~~~
-   include/linux/compiler.h:56:23: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                         ^
-   fs/netfs/io.c:604:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   1 warning generated.
-
-
-vim +630 fs/netfs/io.c
-
-3d3c95046742e4 fs/netfs/read_helper.c David Howells 2020-05-13  595  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  596  /*
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  597   * Begin the process of reading in a chunk of data, where that data may be
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  598   * stitched together from multiple sources, including multiple servers and the
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  599   * local cache.
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  600   */
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  601  int netfs_begin_read(struct netfs_io_request *rreq, bool sync)
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  602  {
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  603  	unsigned int debug_index = 0;
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  604  	int ret;
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  605  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  606  	_enter("R=%x %llx-%llx",
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  607  	       rreq->debug_id, rreq->start, rreq->start + rreq->len - 1);
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  608  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  609  	if (rreq->len == 0) {
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  610  		pr_err("Zero-sized read [R=%x]\n", rreq->debug_id);
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  611  		netfs_put_request(rreq, false, netfs_rreq_trace_put_zero_len);
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  612  		return -EIO;
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  613  	}
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  614  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  615  	rreq->work.func = netfs_rreq_work;
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  616  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  617  	if (sync)
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  618  		netfs_get_request(rreq, netfs_rreq_trace_get_hold);
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  619  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  620  	/* Chop the read into slices according to what the cache and the netfs
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  621  	 * want and submit each one.
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  622  	 */
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  623  	atomic_set(&rreq->nr_outstanding, 1);
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  624  	do {
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  625  		if (!netfs_rreq_submit_slice(rreq, &debug_index))
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  626  			break;
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  627  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  628  	} while (rreq->submitted < rreq->len);
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  629  
-c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02 @630  	if (sync) {
-
-:::::: The code at line 630 was first introduced by commit
-:::::: c19a5d31b470e0a7dea07a71bb7b98a916b449e9 netfs: Add a function to consolidate beginning a read
-
-:::::: TO: David Howells <dhowells@redhat.com>
-:::::: CC: David Howells <dhowells@redhat.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+BR,
+Krzysztof
