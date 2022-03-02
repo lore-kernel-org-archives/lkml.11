@@ -2,207 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29226C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 353D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245398AbiCBVki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:40:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
+        id S245400AbiCBVkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:40:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238722AbiCBVkc (ORCPT
+        with ESMTP id S245394AbiCBVkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:40:32 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59170CA316
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:39:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646257188; x=1677793188;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=288nTnHU1heIoBqRJG2x5bM7aPN2dJSWejDk5g+kUiE=;
-  b=LdnL7WEnSEF4otlgvmOTEKG5E4GcYZ5tCLZu9JG12JfFADH/qL7r8qSO
-   /Bfsv10ko5w6Akzt0W4CHx5hkTP5mUDtSisRIfJ8ZUCW4aWXS4OtEgLbE
-   BBz6cN4qtaqc61Rv7oRuHtiZaUJDWMzpvzd/TwShGgyMoktumSTXv13qO
-   8c+nwVsFD+teNpHKPQrG8I3HBpF7k6ADMHRIc0rH8LyKzYRG0O3PLq3sp
-   kP7cacTKeYFMt6Hhix5KEvI7UniyWJzABx7VPQY72PylObjJPwBGIX6Ut
-   4QIQ51JxJBku+Xrs/kuKWX6Dra+H6R1MNmNbufV0pXWp6ctiupOa6oMOz
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="252340385"
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="252340385"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 13:39:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="641854042"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 02 Mar 2022 13:39:45 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPWhF-0001wz-2c; Wed, 02 Mar 2022 21:39:45 +0000
-Date:   Thu, 3 Mar 2022 05:38:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roman Kiryanov <rkir@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Lingfeng Yang <lfy@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/deprecated/android-4.4-p-release
- 8768/9922] drivers/platform/goldfish/goldfish_pipe_v2.c:814:21: warning:
- format '%llx' expects argument of type 'long long unsigned int', but
- argument 4 has type 'dma_addr_t {aka unsigned int}'
-Message-ID: <202203030511.uZ7gsNlS-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 2 Mar 2022 16:40:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DB5CA710;
+        Wed,  2 Mar 2022 13:39:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9A0FB8223F;
+        Wed,  2 Mar 2022 21:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528C7C004E1;
+        Wed,  2 Mar 2022 21:39:55 +0000 (UTC)
+From:   Clark Williams <williams@redhat.com>
+Subject: [ANNOUNCE] 5.15.25-rt33
+Date:   Wed, 02 Mar 2022 21:36:15 -0000
+Message-ID: <164625697532.2377441.9278541632521957793@puck.lan>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Wagner <daniel.wagner@suse.com>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Clark Williams <williams@redhat.com>,
+        Pavel Machek <pavel@denx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Roman,
+Hello RT-list!
 
-FYI, the error/warning still remains.
+I'm pleased to announce the 5.15.25-rt33 stable release.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/deprecated/android-4.4-p-release
-head:   c159ade87311501e4e4b40eb2f35aa5607732957
-commit: 3702e76fb6e907cc75887fe5780fe160946e7c68 [8768/9922] goldfish: pipe: ANDROID: Add DMA support
-config: i386-randconfig-a012-20211118 (https://download.01.org/0day-ci/archive/20220303/202203030511.uZ7gsNlS-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/3702e76fb6e907cc75887fe5780fe160946e7c68
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/deprecated/android-4.4-p-release
-        git checkout 3702e76fb6e907cc75887fe5780fe160946e7c68
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/goldfish/
+This release contains a backport of the following commits from the 5.17.y-rt tree:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+ac9c70a245d28	genirq: Provide generic_handle_irq_safe()
+7e44f2d97e9c2	i2c: core: Use generic_handle_irq_safe() in i2c_handle_smbus_host_notify().
+8ea8588239d64	i2c: cht-wc: Use generic_handle_irq_safe().
+87ebe41b420c6	misc: hi6421-spmi-pmic: Use generic_handle_irq_safe().
+a6efcd21ca31e	mfd: ezx-pcap: Use generic_handle_irq_safe().
+dda02de93749e	net: usb: lan78xx: Use generic_handle_irq_safe().
+37801f96e1f0e	staging: greybus: gpio: Use generic_handle_irq_safe().
 
-All warnings (new ones prefixed by >>):
+You can get this release via the git tree at:
 
-   In file included from include/linux/printk.h:277:0,
-                    from drivers/platform/goldfish/goldfish_pipe_v2.c:49:
-   drivers/platform/goldfish/goldfish_pipe_v2.c: In function 'goldfish_pipe_dma_release_host':
->> drivers/platform/goldfish/goldfish_pipe_v2.c:814:21: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t {aka unsigned int}' [-Wformat=]
-      dev_dbg(pdev_dev, "Last ref for dma region @ 0x%llx\n",
-                        ^
-       dma->phys_begin);
-       ~~~~~~            
-   include/linux/dynamic_debug.h:86:39: note: in definition of macro 'dynamic_dev_dbg'
-      __dynamic_dev_dbg(&descriptor, dev, fmt, \
-                                          ^~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:814:3: note: in expansion of macro 'dev_dbg'
-      dev_dbg(pdev_dev, "Last ref for dma region @ 0x%llx\n",
-      ^~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:824:3: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t {aka unsigned int}' [-Wformat=]
-      "after delete of dma @ 0x%llx: alloc total %zu\n",
-      ^
-      dma->phys_begin, pipe->dev->dma_alloc_total);
-      ~~~~~~
-   include/linux/dynamic_debug.h:86:39: note: in definition of macro 'dynamic_dev_dbg'
-      __dynamic_dev_dbg(&descriptor, dev, fmt, \
-                                          ^~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:823:2: note: in expansion of macro 'dev_dbg'
-     dev_dbg(pdev_dev,
-     ^~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c: In function 'goldfish_pipe_dma_release_guest':
-   drivers/platform/goldfish/goldfish_pipe_v2.c:847:4: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t {aka unsigned int}' [-Wformat=]
-       "after delete of dma @ 0x%llx: alloc total %zu\n",
-       ^
-       dma->phys_begin, pipe->dev->dma_alloc_total);
-       ~~~~~~
-   include/linux/dynamic_debug.h:86:39: note: in definition of macro 'dynamic_dev_dbg'
-      __dynamic_dev_dbg(&descriptor, dev, fmt, \
-                                          ^~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:846:3: note: in expansion of macro 'dev_dbg'
-      dev_dbg(pdev_dev,
-      ^~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c: In function 'goldfish_pipe_dma_alloc_locked':
-   drivers/platform/goldfish/goldfish_pipe_v2.c:956:20: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 6 has type 'dma_addr_t {aka unsigned int}' [-Wformat=]
-     dev_dbg(pdev_dev, "%s: got v/p addrs "
-                       ^
-   drivers/platform/goldfish/goldfish_pipe_v2.c:960:3:
-      dma->phys_begin,
-      ~~~~~~            
-   include/linux/dynamic_debug.h:86:39: note: in definition of macro 'dynamic_dev_dbg'
-      __dynamic_dev_dbg(&descriptor, dev, fmt, \
-                                          ^~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:956:2: note: in expansion of macro 'dev_dbg'
-     dev_dbg(pdev_dev, "%s: got v/p addrs "
-     ^~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:957:12: note: format string is defined here
-      "%p 0x%llx sz %zu total alloc %zu\n",
-            ~~~^
-            %x
-   In file included from include/linux/printk.h:277:0,
-                    from drivers/platform/goldfish/goldfish_pipe_v2.c:49:
-   drivers/platform/goldfish/goldfish_pipe_v2.c: In function 'goldfish_dma_mmap_locked':
-   drivers/platform/goldfish/goldfish_pipe_v2.c:982:20: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t {aka unsigned int}' [-Wformat=]
-     dev_dbg(pdev_dev, "Mapping dma at 0x%llx\n", dma->phys_begin);
-                       ^                          ~~~~~~
-   include/linux/dynamic_debug.h:86:39: note: in definition of macro 'dynamic_dev_dbg'
-      __dynamic_dev_dbg(&descriptor, dev, fmt, \
-                                          ^~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:982:2: note: in expansion of macro 'dev_dbg'
-     dev_dbg(pdev_dev, "Mapping dma at 0x%llx\n", dma->phys_begin);
-     ^~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:1003:20: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t {aka unsigned int}' [-Wformat=]
-     dev_dbg(pdev_dev, "goldfish_dma_mmap for host vaddr 0x%llx succeeded\n",
-                       ^
-      dma->phys_begin);
-      ~~~~~~            
-   include/linux/dynamic_debug.h:86:39: note: in definition of macro 'dynamic_dev_dbg'
-      __dynamic_dev_dbg(&descriptor, dev, fmt, \
-                                          ^~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:1003:2: note: in expansion of macro 'dev_dbg'
-     dev_dbg(pdev_dev, "goldfish_dma_mmap for host vaddr 0x%llx succeeded\n",
-     ^~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c: At top level:
-   drivers/platform/goldfish/goldfish_pipe_v2.c:1059:6: warning: no previous declaration for 'goldfish_dma_ioctl_getoff' [-Wmissing-declarations]
-    long goldfish_dma_ioctl_getoff(struct goldfish_pipe *pipe, unsigned long arg)
-         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c:1096:6: warning: no previous declaration for 'goldfish_dma_ioctl_create_region' [-Wmissing-declarations]
-    long goldfish_dma_ioctl_create_region(struct goldfish_pipe *pipe,
-         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/platform/goldfish/goldfish_pipe_v2.c: In function 'transfer_max_buffers':
-   drivers/platform/goldfish/goldfish_pipe_v2.c:407:1: warning: the frame size of 1384 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    }
-    ^
-   arch/x86/include/asm/bitops.h: Assembler messages:
-   arch/x86/include/asm/bitops.h:206: Warning: no instruction mnemonic suffix given and no register operands; using default for `bts'
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
+
+  branch: v5.15-rt
+  Head SHA1: e9e1ef73da553f7b8f8dc135229a97c7ad3b4ad4
+
+Or to build 5.15.25-rt33 directly, the following patches should be applied:
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.15.25.xz
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/patch-5.15.25-rt33.patch.xz
 
 
-vim +814 drivers/platform/goldfish/goldfish_pipe_v2.c
+You can also build from 5.15.25-rt32 by applying the incremental patch:
 
-   802	
-   803	static void goldfish_pipe_dma_release_host(struct goldfish_pipe *pipe)
-   804	{
-   805		struct goldfish_dma_context *dma = pipe->dma;
-   806		struct device *pdev_dev;
-   807	
-   808		if (!dma)
-   809			return;
-   810	
-   811		pdev_dev = pipe->dev->pdev_dev;
-   812	
-   813		if (dma->dma_vaddr) {
- > 814			dev_dbg(pdev_dev, "Last ref for dma region @ 0x%llx\n",
-   815				dma->phys_begin);
-   816	
-   817			pipe->command_buffer->dma_maphost_params.dma_paddr =
-   818				dma->phys_begin;
-   819			pipe->command_buffer->dma_maphost_params.sz = dma->dma_size;
-   820			goldfish_pipe_cmd(pipe, PIPE_CMD_DMA_HOST_UNMAP);
-   821		}
-   822	
-   823		dev_dbg(pdev_dev,
-   824			"after delete of dma @ 0x%llx: alloc total %zu\n",
-   825			dma->phys_begin, pipe->dev->dma_alloc_total);
-   826	}
-   827	
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/incr/patch-5.15.25-rt32-rt33.patch.xz
 
+Enjoy!
+Clark
+
+Changes from v5.15.25-rt32:
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+Clark Williams (1):
+      Linux 5.15.25-rt33
+
+Sebastian Andrzej Siewior (7):
+      genirq: Provide generic_handle_irq_safe().
+      i2c: core: Use generic_handle_irq_safe() in i2c_handle_smbus_host_notify().
+      i2c: cht-wc: Use generic_handle_irq_safe().
+      misc: hi6421-spmi-pmic: Use generic_handle_irq_safe().
+      mfd: ezx-pcap: Use generic_handle_irq_safe().
+      net: usb: lan78xx: Use generic_handle_irq_safe().
+      staging: greybus: gpio: Use generic_handle_irq_safe().
+---
+drivers/i2c/busses/i2c-cht-wc.c | 11 ++---------
+ drivers/i2c/i2c-core-base.c     |  2 +-
+ drivers/mfd/ezx-pcap.c          |  4 +---
+ drivers/misc/hi6421v600-irq.c   |  6 +++---
+ drivers/net/usb/lan78xx.c       |  7 ++-----
+ drivers/staging/greybus/gpio.c  |  5 +----
+ include/linux/irqdesc.h         |  1 +
+ kernel/irq/irqdesc.c            | 23 +++++++++++++++++++++++
+ localversion-rt                 |  2 +-
+ 9 files changed, 35 insertions(+), 26 deletions(-)
+---
