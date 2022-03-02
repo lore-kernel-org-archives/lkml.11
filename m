@@ -2,117 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242251AbiCBTsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 14:48:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
+        id S242315AbiCBTsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 14:48:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240701AbiCBTsE (ORCPT
+        with ESMTP id S241759AbiCBTsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 14:48:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0329D834D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:47:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C9DD616D6
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:47:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42703C004E1;
-        Wed,  2 Mar 2022 19:47:18 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 14:47:16 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        alexei.starovoitov@gmail.com, alyssa.milburn@intel.com,
-        andrew.cooper3@citrix.com, hjl.tools@gmail.com,
-        joao@overdrivepizza.com, jpoimboe@redhat.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, mbenes@suse.cz, ndesaulniers@google.com,
-        samitolvanen@google.com, x86@kernel.org
-Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
-Message-ID: <20220302144716.1772020c@gandalf.local.home>
-In-Reply-To: <20220302110138.6d2abcec@gandalf.local.home>
-References: <20220224145138.952963315@infradead.org>
-        <20220224151322.714815604@infradead.org>
-        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
-        <20220224105847.5c899324@gandalf.local.home>
-        <20220225103449.6084e5314273556f35107cd9@kernel.org>
-        <20220224211919.0612a3f6@rorschach.local.home>
-        <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
-        <20220225083647.12ceb54b@gandalf.local.home>
-        <1646159447.ngbqgzj71t.naveen@linux.ibm.com>
-        <20220301142016.22e787fb@gandalf.local.home>
-        <Yh9vF8REB1JlhQCJ@hirez.programming.kicks-ass.net>
-        <20220302110138.6d2abcec@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 2 Mar 2022 14:48:20 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EEB11158
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:47:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646250455; x=1677786455;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=TXrrJddB4SOQCFhrejLi5KP1GkQ56qVMjaTRt8qYBPc=;
+  b=NvE0iGCPtYqDtG5rsnJPyFVcBh8tA2waSsdpkCJG2/bh84GfiVF8auPM
+   FuyLoPttG0U3QunMKNaItcfQCD1SbjjUPOSGReA3l7s2C4+v2L2ur6B8q
+   Y/o2OiQ+GgVCGYGmZjdK9k+pX2mpQGwXOCT7Jjg6DSQS2NkHJa75+pl6f
+   pMjnEtp45zS0ybt1eX6wQhfkRCzmH+mp/ojT+Cvk5S7XUU6p+oRkS70qA
+   FgkaEkmY+wemgYBfw94/sUtaeUx24YrhU/76lawEo/YRino5pDl0s+aFQ
+   8+zO+grI0hPywRiECEB3kN88W5MrKZ6al8oS+TCv454/xE6YEFfT816Ra
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="252321161"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="252321161"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 11:47:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="511130508"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 02 Mar 2022 11:47:33 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPUwf-0001qn-6Y; Wed, 02 Mar 2022 19:47:33 +0000
+Date:   Thu, 3 Mar 2022 03:47:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sebastian Ott <sebott@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>
+Subject: com90xx.c:undefined reference to `iounmap'
+Message-ID: <202203030347.uFXSRjNB-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 11:01:38 -0500
-Steven Rostedt <rostedt@goodmis.org> wrote:
+Hi Sebastian,
 
-> On Wed, 2 Mar 2022 14:20:23 +0100
-> Peter Zijlstra <peterz@infradead.org> wrote:
-> 
-> > Like so, or is something else needed?
-> > 
-> > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> > index 68ecd3e35342..d1b30b5c5c23 100644
-> > --- a/kernel/trace/ftrace.c
-> > +++ b/kernel/trace/ftrace.c
-> > @@ -4980,7 +4980,8 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-> >  {
-> >  	struct ftrace_func_entry *entry;
-> >  
-> > -	if (!ftrace_location(ip))
-> > +	ip = ftrace_location(ip);
-> > +	if (!ip)
-> >  		return -EINVAL;  
-> 
-> This could possibly work. I'd have to test all this though.
-> 
-> I probably could just take this patch and try it out. You can remove the
-> "x86/ibt" from the subject, as this patch may be a requirement for that
-> (include that in the commit log), but it is has no changes to x86/ibt
-> specifically.
-> 
+FYI, the error/warning still remains.
 
-Note, I just pulled this patch, and I hit this warning:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   fb184c4af9b9f4563e7a126219389986a71d5b5b
+commit: 71ba41c9b1d91042960e9d92a5c8f52dc8531eda s390/pci: provide support for MIO instructions
+date:   2 years, 10 months ago
+config: s390-randconfig-r044-20220109 (https://download.01.org/0day-ci/archive/20220303/202203030347.uFXSRjNB-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=71ba41c9b1d91042960e9d92a5c8f52dc8531eda
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 71ba41c9b1d91042960e9d92a5c8f52dc8531eda
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
 
-WARNING: CPU: 0 PID: 6965 at arch/x86/kernel/kprobes/core.c:205 recover_probed_instruction+0x8f/0xa0
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-static unsigned long
-__recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
-{
-        struct kprobe *kp;
-        unsigned long faddr;
+All errors (new ones prefixed by >>):
 
-        kp = get_kprobe((void *)addr);
-        faddr = ftrace_location(addr);
-        /*
-         * Addresses inside the ftrace location are refused by
-         * arch_check_ftrace_location(). Something went terribly wrong
-         * if such an address is checked here.
-         */
-        if (WARN_ON(faddr && faddr != addr))  <<---- HERE
-                return 0UL;
-        /*
-         * Use the current code if it is not modified by Kprobe
-         * and it cannot be modified by ftrace.
-         */
-        if (!kp && !faddr)
-                return addr;
+   s390-linux-ld: drivers/dma/qcom/hidma.o: in function `hidma_probe':
+   hidma.c:(.text+0x128a): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: hidma.c:(.text+0x12bc): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/dma/ti/edma.o: in function `edma_probe':
+   edma.c:(.text+0x1472): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/dma/ti/omap-dma.o: in function `omap_dma_probe':
+   omap-dma.c:(.text+0x52): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/char/hw_random/exynos-trng.o: in function `exynos_trng_probe':
+   exynos-trng.c:(.text+0x23a): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: drivers/char/hw_random/meson-rng.o:meson-rng.c:(.text+0x7c): more undefined references to `devm_ioremap_resource' follow
+   s390-linux-ld: drivers/net/arcnet/com90xx.o: in function `com90xx_exit':
+>> com90xx.c:(.exit.text+0x5a): undefined reference to `iounmap'
+   s390-linux-ld: drivers/net/arcnet/com90xx.o: in function `check_mirror':
+>> com90xx.c:(.init.text+0x4c): undefined reference to `ioremap'
+>> s390-linux-ld: com90xx.c:(.init.text+0x6e): undefined reference to `iounmap'
+   s390-linux-ld: drivers/net/arcnet/com90xx.o: in function `com90xx_found':
+>> com90xx.c:(.init.text+0xe6): undefined reference to `iounmap'
+   s390-linux-ld: com90xx.c:(.init.text+0x1ba): undefined reference to `iounmap'
+>> s390-linux-ld: com90xx.c:(.init.text+0x2d4): undefined reference to `ioremap'
+   s390-linux-ld: com90xx.c:(.init.text+0x3a2): undefined reference to `iounmap'
+   s390-linux-ld: drivers/net/arcnet/com90xx.o: in function `com90xx_probe':
+   com90xx.c:(.init.text+0x652): undefined reference to `ioremap'
+   s390-linux-ld: com90xx.c:(.init.text+0x6ae): undefined reference to `iounmap'
+   s390-linux-ld: com90xx.c:(.init.text+0x8d4): undefined reference to `iounmap'
+   s390-linux-ld: drivers/net/arcnet/arc-rimi.o: in function `arc_rimi_exit':
+>> arc-rimi.c:(.exit.text+0x2e): undefined reference to `iounmap'
+   s390-linux-ld: drivers/net/arcnet/arc-rimi.o: in function `arcrimi_found':
+>> arc-rimi.c:(.init.text+0xb6): undefined reference to `ioremap'
+>> s390-linux-ld: arc-rimi.c:(.init.text+0x136): undefined reference to `iounmap'
+   s390-linux-ld: arc-rimi.c:(.init.text+0x29e): undefined reference to `iounmap'
+>> s390-linux-ld: arc-rimi.c:(.init.text+0x326): undefined reference to `ioremap'
+   s390-linux-ld: arc-rimi.c:(.init.text+0x3e4): undefined reference to `iounmap'
+   s390-linux-ld: drivers/net/arcnet/arc-rimi.o: in function `check_mirror':
+>> arc-rimi.c:(.text.unlikely+0x4c): undefined reference to `ioremap'
+>> s390-linux-ld: arc-rimi.c:(.text.unlikely+0x6e): undefined reference to `iounmap'
+   s390-linux-ld: drivers/pcmcia/cistpl.o: in function `set_cis_map':
+   cistpl.c:(.text+0x220): undefined reference to `iounmap'
+   s390-linux-ld: cistpl.c:(.text+0x232): undefined reference to `ioremap'
+   s390-linux-ld: cistpl.c:(.text+0x288): undefined reference to `ioremap'
+   s390-linux-ld: cistpl.c:(.text+0x29e): undefined reference to `iounmap'
+   s390-linux-ld: drivers/pcmcia/cistpl.o: in function `release_cis_mem':
+   cistpl.c:(.text+0xce4): undefined reference to `iounmap'
+   s390-linux-ld: drivers/watchdog/sirfsoc_wdt.o: in function `sirfsoc_wdt_probe':
+   sirfsoc_wdt.c:(.text+0x116): undefined reference to `devm_ioremap_resource'
 
-I guess this patch needs kprobe updates.
-
-I'll pull down the latest tip and test that code.
-
--- Steve
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
