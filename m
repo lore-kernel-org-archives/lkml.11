@@ -2,120 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C38BCC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241392AbiCBLPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52408 "EHLO
+        id S241359AbiCBLPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241337AbiCBLOv (ORCPT
+        with ESMTP id S241344AbiCBLOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Mar 2022 06:14:51 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CAC606ED
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:14:07 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0E4DF3F5F3
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:14:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646219646;
-        bh=c/HrBEq7VXD/vzB2plWQqXVKzKIhpuLhlwaapBvCoq4=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=ZZvYRDF/TkkrYLNl3TiNcu+DN92urcmu0P7BgYyvNvSRA/KAQuj0+hbSgwOakKROo
-         O1F0AbDAy6rsHiBpJL2UPgxo2ILfehkBEzPZFZSlhSdKGbc72dV1+/gCl5frakWkpY
-         uyZDAt86+K4VaKSZHLty4FtVShq5tmihkIWPsr0s4vKYbYtj/XgSdf8fU0VBFn7f6l
-         4cP9lD4XKZPWakf1WJMr2ldMA1DtZ3QTaNbz5Ek3EtHBCkgacI1eYg8nK8i7RwORoB
-         v5QnDLow7gVyZNbZSSGOetk6GdIpxLCrVnCiQZ4lq7EQJy2QIDmLgTawkmzznz1p6a
-         RiCrgHLE4Rr/Q==
-Received: by mail-ed1-f69.google.com with SMTP id f9-20020a0564021e8900b00412d0a6ef0dso806036edf.11
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 03:14:06 -0800 (PST)
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EF660AAF;
+        Wed,  2 Mar 2022 03:14:07 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id p8so1643110pfh.8;
+        Wed, 02 Mar 2022 03:14:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nirOxkhTtOqrukVcFgpCOAp8FbBAO2shJfP6XS8Zkbg=;
+        b=crvxCU50UaIUgXmLL+2szMSRYsN12nUPfLrAxqiDX4Qq9npWOzUyriwRwPtRg3ay1A
+         r+OuHNTf58OnrXGDn5aZLm9vaRegL/ArbOmm0juVbIDSvLMvGHiEwvyrIX2qHjuyEz2X
+         b51MrjNjgBJl79KWvSu01tcznqb6eBLVlX6Ce53wsNQvU0IAuZgjLetmCvZNk+g4EIVq
+         xbcK/KWzDcAJVfgPjzqEUui92w9hXrdIhEnytmEjR0xNX8Im7i4EySI4j+HXsPfQf9sE
+         yew87eZnOcw2qbg1HjD2DyXgqLMByE2ecaQMaSJT2YpSF/H5sCb+I+OvlnWdbo2qByqn
+         Jigg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=c/HrBEq7VXD/vzB2plWQqXVKzKIhpuLhlwaapBvCoq4=;
-        b=AjvZfLTzlucnzDZkS7tEPx+XllnuBEv8zaamY67w7dtKLX3tCKnszdKkdzC1fAoUiI
-         sPaLzQ61nX451pX+l/x50yF6DdTunhpcZoHR8Hb9j5bJhXsy5YLvTBfQ7B+XGlY7TOO9
-         4J/Ox++ZFF4fK5BMqQ0/Y1fF7p6J1ly6+t9IMJxvEGvZgqpfKaYy29e/5XbpCc4S2za8
-         u9L6fl6zIM1l8Q1xJzATViXCGOZQOP3YoBCWFytawjejES/MWAneK6W3e2f0d+FQdqmr
-         nevs0fMBAI/EfPrxbjyCvlLshw8sR31ECiMYW8NVaNeHlwFCRETkHSJY8GdQ0qOfSGZ5
-         VrlA==
-X-Gm-Message-State: AOAM533JLmcPpjDFGTD/1ki6LEZ4pb8KIFJjw4XghZxW+EBOqs7bHU30
-        U4CqruC+BPGS8LpU83ZqydGrG4ZN9kELa4J9poHoEQQ5W0AR97tSI53Fve6VN8b1nTlFe6KB46j
-        hNY9ZeLQczmP1BYyVfROBK5xo5fn7IbqFjgK2qW0MuA==
-X-Received: by 2002:a17:907:a41f:b0:6d6:f925:1696 with SMTP id sg31-20020a170907a41f00b006d6f9251696mr4947753ejc.62.1646219645739;
-        Wed, 02 Mar 2022 03:14:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw4eItwRYHbFhHJecp/z62mEUFQa+5CGvwbfF4FEcKbfj5pKDOx0k/F7sIT5mVv7fPze2379A==
-X-Received: by 2002:a17:907:a41f:b0:6d6:f925:1696 with SMTP id sg31-20020a170907a41f00b006d6f9251696mr4947744ejc.62.1646219645563;
-        Wed, 02 Mar 2022 03:14:05 -0800 (PST)
-Received: from [192.168.0.136] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id vl11-20020a17090730cb00b006d8121d0fc4sm857414ejb.138.2022.03.02.03.14.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Mar 2022 03:14:04 -0800 (PST)
-Message-ID: <c13930a5-85ab-5a2c-54e5-15fc5bc87b17@canonical.com>
-Date:   Wed, 2 Mar 2022 12:14:03 +0100
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nirOxkhTtOqrukVcFgpCOAp8FbBAO2shJfP6XS8Zkbg=;
+        b=V4d5nqFSENrxVq96oF8ZdR7iVCZfdZs/HXD3bUU0jObRa/F4FYah5wqb6Z9eZlP4l8
+         Wa/CHZHxMkU8Qqw8HFDw2e1Sn0znZZs4Hg3pzs8CQYe5dTxUvPboNVBAJrygVlOik7YU
+         OAAeTDDU3h1pEpZE7BYaGbnlnwxQST6nK15fk5jvbmAoBLIuXjY1rnIdPP8hIOV9d6RZ
+         guqdLvoJal5SdOnCOOu+J72R4jZpfRvGNIQffG1SIG8fupN9rIZKvG3X5OYCvXdwdFQj
+         O8EJKy1WGkKBNyZx1TzOjHQNgL0Fx3aWWBOeRrbpb17v2OUm3z5mRMZTAu3DlRx2TNAz
+         YLvg==
+X-Gm-Message-State: AOAM533GmKGQPUqO5qgnEU9Q7lx+23d8/HUmnl0WSgeYY5RDkIqmUdjX
+        iRTkNSEc0GJlaCVCNuWZZ8k=
+X-Google-Smtp-Source: ABdhPJzwy+v7a/GQS42AVYm3JF3eKqXGxQNqD/eGV8caSeX2uMW6wrCiwI2eoDLLjKp5oOyF66WALw==
+X-Received: by 2002:a63:5f14:0:b0:373:9e86:44d3 with SMTP id t20-20020a635f14000000b003739e8644d3mr25358045pgb.416.1646219647322;
+        Wed, 02 Mar 2022 03:14:07 -0800 (PST)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id v22-20020a17090ad59600b001b7deb42251sm4681847pju.15.2022.03.02.03.14.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 03:14:07 -0800 (PST)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        Like Xu <likexu@tencent.com>
+Subject: [PATCH v2 09/12] KVM: x86/pmu: Replace pmc_perf_hw_id() with perf_get_hw_event_config()
+Date:   Wed,  2 Mar 2022 19:13:31 +0800
+Message-Id: <20220302111334.12689-10-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220302111334.12689-1-likexu@tencent.com>
+References: <20220302111334.12689-1-likexu@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] serial: samsung: Add samsung_early_read to support early
- kgdboc
-Content-Language: en-US
-To:     Woody Lin <woodylin@google.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, markcheng@google.com
-References: <20220302101925.210810-1-woodylin@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220302101925.210810-1-woodylin@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/03/2022 11:19, Woody Lin wrote:
-> The 'kgdboc_earlycon_init' looks for boot console that has both .read
-> and .write callbacks. Adds 'samsung_early_read' to samsung_tty.c's early
-> console to support kgdboc.
-> 
-> Signed-off-by: Woody Lin <woodylin@google.com>
-> ---
->  drivers/tty/serial/samsung_tty.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index d002a4e48ed9..eeb30d016ff1 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -2949,6 +2949,7 @@ static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
->  
->  struct samsung_early_console_data {
->  	u32 txfull_mask;
-> +	u32 rxfifo_mask;
->  };
->  
->  static void samsung_early_busyuart(struct uart_port *port)
-> @@ -2983,6 +2984,26 @@ static void samsung_early_write(struct console *con, const char *s,
->  	uart_console_write(&dev->port, s, n, samsung_early_putc);
->  }
->  
-> +static int samsung_early_read(struct console *con, char *s, unsigned int n)
-> +{
-> +	struct earlycon_device *dev = con->data;
-> +	struct samsung_early_console_data *data = dev->port.private_data;
+From: Like Xu <likexu@tencent.com>
 
-This can be const.
+With the help of perf_get_hw_event_config(), KVM could query the correct
+EVENTSEL_{EVENT, UMASK} pair of a kernel-generic hw event directly from
+the different *_perfmon_event_map[] by the kernel's pre-defined perf_hw_id.
 
-Rest looks ok.
+Also extend the bit range of the comparison field to
+AMD64_RAW_EVENT_MASK_NB to prevent AMD from
+defining EventSelect[11:8] into perfmon_event_map[] one day.
 
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ arch/x86/kvm/pmu.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 00e1660c10ca..9fb7d29e5fdd 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -472,13 +472,8 @@ static void kvm_pmu_incr_counter(struct kvm_pmc *pmc)
+ static inline bool eventsel_match_perf_hw_id(struct kvm_pmc *pmc,
+ 	unsigned int perf_hw_id)
+ {
+-	u64 old_eventsel = pmc->eventsel;
+-	unsigned int config;
+-
+-	pmc->eventsel &= (ARCH_PERFMON_EVENTSEL_EVENT | ARCH_PERFMON_EVENTSEL_UMASK);
+-	config = kvm_x86_ops.pmu_ops->pmc_perf_hw_id(pmc);
+-	pmc->eventsel = old_eventsel;
+-	return config == perf_hw_id;
++	return !((pmc->eventsel ^ perf_get_hw_event_config(perf_hw_id)) &
++		AMD64_RAW_EVENT_MASK_NB);
+ }
+ 
+ static inline bool cpl_is_matched(struct kvm_pmc *pmc)
+-- 
+2.35.1
+
