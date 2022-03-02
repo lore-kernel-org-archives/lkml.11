@@ -2,228 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 522D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD06C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229491AbiCBXsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:48:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
+        id S229636AbiCBXsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiCBXsD (ORCPT
+        with ESMTP id S229637AbiCBXsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:48:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1CF17185A;
-        Wed,  2 Mar 2022 15:47:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3278B82259;
-        Wed,  2 Mar 2022 23:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA1D5C004E1;
-        Wed,  2 Mar 2022 23:47:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646264823;
-        bh=iNqELq+lX+h6oGIXCLQayAVdk7lzG1NGvnedGOzYkkM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RTYDe4ktdxhZsPRhExKj5tzN1nAbRVZrUpiXPL2JtIpf2z/I5dM3rN/1hplrrHVs/
-         AUUE+VpS6cjgBRyL66ETXfgZwMZAYlZPgDbdWIDa65uq/AxQlf6oG9J9RWutENDa0o
-         JHHftuSm5ZOPYgoGkP591g+wjyXgKK4yZnaK9ZJHlbBAiVQE63iEGuokIK6nUFN1bo
-         RG3Yiz6cY6KfcrZwCa2dsWYIkiI1oEgeaUI1Fn4LFh3SGmg1IkY7WRVNAVZ/j7wXGM
-         Ri3ihv+umpKM4bgUArI+aDAWp5qB1oWbM1js+cB/KBgtkh2ZZh7Q4NtKvdNxLpbAff
-         socg10N3TsW5Q==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>, llvm@lists.linux.dev,
-        linux-kbuild@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH] kbuild: Allow a suffix with $(LLVM)
-Date:   Wed,  2 Mar 2022 16:44:01 -0700
-Message-Id: <20220302234400.782002-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 2 Mar 2022 18:48:17 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A844108BCF
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:46:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646264789; x=1677800789;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rZgD0e7StjysBcKfEnwI4/9mWixjUGri4p/xVp8Ksq0=;
+  b=EnO7yoFh/7wtA7Vhc/G8PYChlpq0xw3Dbd34sd448hYcOrpZ3Yz9VKv2
+   QG7fz0S7snlflR8sb94a9XcDlHwAgtIiYNWooL5MmofECloAmACiEe3lX
+   m7o7sPx/gGZcCoSdva85Wl53wRQnd16+HJLG4HyQWZ8R1aJ0ZaAT9T1pB
+   Dh0gPncTxcTKqpB17BSL6AQCmJLBvJwTx1JF6O1II2A6/u2J7BHtXuHUQ
+   nQtCN0SC0ilAN9Woa5K1KlICOE39BBMv+h6hl0XD/7EALTjhc+S6M6oHT
+   Ipnn9p7dRHE2I/YsUOsDOqkVTa4se0f4OSy1QupSntu8BfkM3gK4G2oup
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="316745004"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="316745004"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:33:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="686295716"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 02 Mar 2022 15:33:00 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPYSp-00024x-M5; Wed, 02 Mar 2022 23:32:59 +0000
+Date:   Thu, 3 Mar 2022 07:32:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [frederic-dynticks:rcu/context-tracking 14/19]
+ kernel/rcu/tree.c:634:6: error: redefinition of '__rcu_irq_enter_check_tick'
+Message-ID: <202203030727.5aqUHWC6-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The LLVM make variable allows a developer to quickly switch between the
-GNU and LLVM tools. However, it does not handle versioned binaries, such
-as the ones shipped by Debian, as LLVM=1 just defines the tool variables
-with the unversioned binaries.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking
+head:   e4eaff86ec91c1cbde9a113cf5232dac9f897337
+commit: 5a91f02835a27bd066154ab87408505806710e19 [14/19] rcu/context-tracking: Move RCU-dynticks internal functions to context_tracking
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220303/202203030727.5aqUHWC6-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=5a91f02835a27bd066154ab87408505806710e19
+        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+        git fetch --no-tags frederic-dynticks rcu/context-tracking
+        git checkout 5a91f02835a27bd066154ab87408505806710e19
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-There was some discussion during the review of the patch that introduces
-LLVM=1 around versioned binaries, ultimately coming to the conclusion
-that developers can just add the folder that contains the unversioned
-binaries to their PATH, as Debian's versioned suffixed binaries are
-really just symlinks to the unversioned binaries in /usr/lib/llvm-#/bin:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-$ realpath /usr/bin/clang-14
-/usr/lib/llvm-14/bin/clang
+All errors (new ones prefixed by >>):
 
-$ PATH=/usr/lib/llvm-14/bin:$PATH make ... LLVM=1
+>> kernel/rcu/tree.c:634:6: error: redefinition of '__rcu_irq_enter_check_tick'
+     634 | void __rcu_irq_enter_check_tick(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/interrupt.h:11,
+                    from kernel/rcu/tree.c:26:
+   include/linux/hardirq.h:19:20: note: previous definition of '__rcu_irq_enter_check_tick' was here
+      19 | static inline void __rcu_irq_enter_check_tick(void) { }
+         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from kernel/rcu/tree.c:4457:
+   kernel/rcu/tree_plugin.h:932:13: error: static declaration of 'rcu_preempt_deferred_qs' follows non-static declaration
+     932 | static void rcu_preempt_deferred_qs(struct task_struct *t)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/rcupdate.h:227,
+                    from include/linux/rcupdate_wait.h:9,
+                    from kernel/rcu/tree.c:25:
+   include/linux/rcutree.h:63:6: note: previous declaration of 'rcu_preempt_deferred_qs' was here
+      63 | void rcu_preempt_deferred_qs(struct task_struct *t);
+         |      ^~~~~~~~~~~~~~~~~~~~~~~
+   In file included from kernel/rcu/tree.c:4457:
+   kernel/rcu/tree_plugin.h:932:13: warning: 'rcu_preempt_deferred_qs' defined but not used [-Wunused-function]
+     932 | static void rcu_preempt_deferred_qs(struct task_struct *t)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~
 
-However, that can be cumbersome to developers who are constantly testing
-series with different toolchains and versions. It is simple enough to
-support these versioned binaries directly in the Kbuild system by
-allowing the developer to specify the version suffix with LLVM=, which
-is shorter than the above suggestion:
 
-$ make ... LLVM=-14
+vim +/__rcu_irq_enter_check_tick +634 kernel/rcu/tree.c
 
-It does not change the meaning of LLVM=1 (which will continue to use
-unversioned binaries) and it does not add too much additional complexity
-to the existing $(LLVM) code, while allowing developers to quickly test
-their series with different versions of the whole LLVM suite of tools.
+07325d4a90d2d84 kernel/rcu/tree.c Thomas Gleixner  2020-05-21  607  
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  608  /**
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  609   * __rcu_irq_enter_check_tick - Enable scheduler tick on CPU if RCU needs it.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  610   *
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  611   * The scheduler tick is not normally enabled when CPUs enter the kernel
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  612   * from nohz_full userspace execution.  After all, nohz_full userspace
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  613   * execution is an RCU quiescent state and the time executing in the kernel
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  614   * is quite short.  Except of course when it isn't.  And it is not hard to
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  615   * cause a large system to spend tens of seconds or even minutes looping
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  616   * in the kernel, which can cause a number of problems, include RCU CPU
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  617   * stall warnings.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  618   *
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  619   * Therefore, if a nohz_full CPU fails to report a quiescent state
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  620   * in a timely manner, the RCU grace-period kthread sets that CPU's
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  621   * ->rcu_urgent_qs flag with the expectation that the next interrupt or
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  622   * exception will invoke this function, which will turn on the scheduler
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  623   * tick, which will enable RCU to detect that CPU's quiescent states,
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  624   * for example, due to cond_resched() calls in CONFIG_PREEMPT=n kernels.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  625   * The tick will be disabled once a quiescent state is reported for
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  626   * this CPU.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  627   *
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  628   * Of course, in carefully tuned systems, there might never be an
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  629   * interrupt or exception.  In that case, the RCU grace-period kthread
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  630   * will eventually cause one to happen.  However, in less carefully
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  631   * controlled environments, this function allows RCU to get what it
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  632   * needs without creating otherwise useless interruptions.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  633   */
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21 @634  void __rcu_irq_enter_check_tick(void)
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  635  {
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  636  	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  637  
+6dbce04d8417ae7 kernel/rcu/tree.c Peter Zijlstra   2020-11-16  638  	// If we're here from NMI there's nothing to do.
+6dbce04d8417ae7 kernel/rcu/tree.c Peter Zijlstra   2020-11-16  639  	if (in_nmi())
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  640  		return;
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  641  
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  642  	RCU_LOCKDEP_WARN(rcu_dynticks_curr_cpu_in_eqs(),
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  643  			 "Illegal rcu_irq_enter_check_tick() from extended quiescent state");
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  644  
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  645  	if (!tick_nohz_full_cpu(rdp->cpu) ||
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  646  	    !READ_ONCE(rdp->rcu_urgent_qs) ||
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  647  	    READ_ONCE(rdp->rcu_forced_tick)) {
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  648  		// RCU doesn't need nohz_full help from this CPU, or it is
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  649  		// already getting that help.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  650  		return;
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  651  	}
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  652  
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  653  	// We get here only when not in an extended quiescent state and
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  654  	// from interrupts (as opposed to NMIs).  Therefore, (1) RCU is
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  655  	// already watching and (2) The fact that we are in an interrupt
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  656  	// handler and that the rcu_node lock is an irq-disabled lock
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  657  	// prevents self-deadlock.  So we can safely recheck under the lock.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  658  	// Note that the nohz_full state currently cannot change.
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  659  	raw_spin_lock_rcu_node(rdp->mynode);
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  660  	if (rdp->rcu_urgent_qs && !rdp->rcu_forced_tick) {
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  661  		// A nohz_full CPU is in the kernel and RCU needs a
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  662  		// quiescent state.  Turn on the tick!
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  663  		WRITE_ONCE(rdp->rcu_forced_tick, true);
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  664  		tick_dep_set_cpu(rdp->cpu, TICK_DEP_BIT_RCU);
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  665  	}
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  666  	raw_spin_unlock_rcu_node(rdp->mynode);
+aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  667  }
+64db4cfff99c04c kernel/rcutree.c  Paul E. McKenney 2008-12-18  668  
 
-Link: https://lore.kernel.org/r/20200317215515.226917-1-ndesaulniers@google.com/
-Link: https://lore.kernel.org/r/20220224151322.072632223@infradead.org/
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+:::::: The code at line 634 was first introduced by commit
+:::::: aaf2bc50df1f4bfc6857fc601fc7b21d5a18c6a1 rcu: Abstract out rcu_irq_enter_check_tick() from rcu_nmi_enter()
+
+:::::: TO: Paul E. McKenney <paulmck@kernel.org>
+:::::: CC: Ingo Molnar <mingo@kernel.org>
+
 ---
-
-RFC -> v1: https://lore.kernel.org/r/Yh%2FegU1LZudfrgVy@dev-arch.thelio-3990X/
-
-* Tidy up commit message slightly.
-
-* Add tags.
-
-* Add links to prior discussions for context.
-
-* Add change to tools/testing/selftests/lib.mk.
-
-I would like for this to go through the Kbuild tree, please ack as
-necessary.
-
- Documentation/kbuild/llvm.rst  |  7 +++++++
- Makefile                       | 24 ++++++++++++++----------
- tools/scripts/Makefile.include | 20 ++++++++++++--------
- tools/testing/selftests/lib.mk |  6 +++++-
- 4 files changed, 38 insertions(+), 19 deletions(-)
-
-diff --git a/Documentation/kbuild/llvm.rst b/Documentation/kbuild/llvm.rst
-index d32616891dcf..5805a8473a36 100644
---- a/Documentation/kbuild/llvm.rst
-+++ b/Documentation/kbuild/llvm.rst
-@@ -60,6 +60,13 @@ They can be enabled individually. The full list of the parameters: ::
- 	  OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf \
- 	  HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld
- 
-+If your LLVM tools have a suffix and you prefer to test an explicit version rather
-+than the unsuffixed executables, use ``LLVM=<suffix>``. For example: ::
-+
-+	make LLVM=-14
-+
-+will use ``clang-14``, ``ld.lld-14``, etc.
-+
- The integrated assembler is enabled by default. You can pass ``LLVM_IAS=0`` to
- disable it.
- 
-diff --git a/Makefile b/Makefile
-index a82095c69fdd..963840c00eae 100644
---- a/Makefile
-+++ b/Makefile
-@@ -424,8 +424,12 @@ HOST_LFS_LDFLAGS := $(shell getconf LFS_LDFLAGS 2>/dev/null)
- HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
- 
- ifneq ($(LLVM),)
--HOSTCC	= clang
--HOSTCXX	= clang++
-+ifneq ($(LLVM),1)
-+LLVM_SFX := $(LLVM)
-+endif
-+
-+HOSTCC	= clang$(LLVM_SFX)
-+HOSTCXX	= clang++$(LLVM_SFX)
- else
- HOSTCC	= gcc
- HOSTCXX	= g++
-@@ -444,14 +448,14 @@ KBUILD_HOSTLDLIBS   := $(HOST_LFS_LIBS) $(HOSTLDLIBS)
- # Make variables (CC, etc...)
- CPP		= $(CC) -E
- ifneq ($(LLVM),)
--CC		= clang
--LD		= ld.lld
--AR		= llvm-ar
--NM		= llvm-nm
--OBJCOPY		= llvm-objcopy
--OBJDUMP		= llvm-objdump
--READELF		= llvm-readelf
--STRIP		= llvm-strip
-+CC		= clang$(LLVM_SFX)
-+LD		= ld.lld$(LLVM_SFX)
-+AR		= llvm-ar$(LLVM_SFX)
-+NM		= llvm-nm$(LLVM_SFX)
-+OBJCOPY		= llvm-objcopy$(LLVM_SFX)
-+OBJDUMP		= llvm-objdump$(LLVM_SFX)
-+READELF		= llvm-readelf$(LLVM_SFX)
-+STRIP		= llvm-strip$(LLVM_SFX)
- else
- CC		= $(CROSS_COMPILE)gcc
- LD		= $(CROSS_COMPILE)ld
-diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
-index 79d102304470..ab3b2a7dcc94 100644
---- a/tools/scripts/Makefile.include
-+++ b/tools/scripts/Makefile.include
-@@ -52,11 +52,15 @@ define allow-override
- endef
- 
- ifneq ($(LLVM),)
--$(call allow-override,CC,clang)
--$(call allow-override,AR,llvm-ar)
--$(call allow-override,LD,ld.lld)
--$(call allow-override,CXX,clang++)
--$(call allow-override,STRIP,llvm-strip)
-+ifneq ($(LLVM),1)
-+LLVM_SFX := $(LLVM)
-+endif
-+
-+$(call allow-override,CC,clang$(LLVM_SFX))
-+$(call allow-override,AR,llvm-ar$(LLVM_SFX))
-+$(call allow-override,LD,ld.lld$(LLVM_SFX))
-+$(call allow-override,CXX,clang++$(LLVM_SFX))
-+$(call allow-override,STRIP,llvm-strip$(LLVM_SFX))
- else
- # Allow setting various cross-compile vars or setting CROSS_COMPILE as a prefix.
- $(call allow-override,CC,$(CROSS_COMPILE)gcc)
-@@ -69,9 +73,9 @@ endif
- CC_NO_CLANG := $(shell $(CC) -dM -E -x c /dev/null | grep -Fq "__clang__"; echo $$?)
- 
- ifneq ($(LLVM),)
--HOSTAR  ?= llvm-ar
--HOSTCC  ?= clang
--HOSTLD  ?= ld.lld
-+HOSTAR  ?= llvm-ar$(LLVM_SFX)
-+HOSTCC  ?= clang$(LLVM_SFX)
-+HOSTLD  ?= ld.lld$(LLVM_SFX)
- else
- HOSTAR  ?= ar
- HOSTCC  ?= gcc
-diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-index a40add31a2e3..b3ab713537c6 100644
---- a/tools/testing/selftests/lib.mk
-+++ b/tools/testing/selftests/lib.mk
-@@ -1,7 +1,11 @@
- # This mimics the top-level Makefile. We do it explicitly here so that this
- # Makefile can operate with or without the kbuild infrastructure.
- ifneq ($(LLVM),)
--CC := clang
-+ifneq ($(LLVM),1)
-+LLVM_SFX := $(LLVM)
-+endif
-+
-+CC := clang$(LLVM_SFX)
- else
- CC := $(CROSS_COMPILE)gcc
- endif
-
-base-commit: 55de8686df7ed2b5237867b130e30c728bbd9db4
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
