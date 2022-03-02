@@ -2,30 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D333EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E539C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242872AbiCBQhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:37:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        id S242927AbiCBQhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:37:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238232AbiCBQhc (ORCPT
+        with ESMTP id S242765AbiCBQhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Mar 2022 11:37:32 -0500
 Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6ADCEA00
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64634CEA04
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:49 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
         t=1646239006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yCGVn7r00QMuSI8V6gqxIK+E2Lf9e3kHr+j6afAS6Vw=;
-        b=Pw56LxQwUnnzUUyfCn+zD5iB/Yufs+PrCWRQWBChTqj0u6vbtBk7Wc9jO7UAE4YBh8z0eS
-        HfHWdWM4GHiM0xaVGb4TNNniiNsPmCmhkLMtubL6WsogGoHsPqlpRc8dVNQ+Cts8WtGSAZ
-        hOte/7TwHHWIjycI/tHU9kP6pOdlcPA=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=u21KV9s2q5sfOslEpw/sDzZbvsgVEVjrwLfohbEqpJg=;
+        b=OCYrJ0Dskjlu+HYjjFC97sPKj6F0lIMr+23nFt90d7yM5h0clSM+2Pu8RNAmPRlE3EBI2l
+        T7qBpnA9NFvU0vwQSEa9iraxP+Gi8yJcYugpQuWF1Xty+8qE/EAHXAjMQ0f8qBZBo4cU91
+        5kU0eNx02/50A/TPERPno6NbvxGbf4Q=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -36,11 +35,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm 01/22] kasan: drop addr check from describe_object_addr
-Date:   Wed,  2 Mar 2022 17:36:21 +0100
-Message-Id: <761f8e5a6ee040d665934d916a90afe9f322f745.1646237226.git.andreyknvl@google.com>
-In-Reply-To: <cover.1646237226.git.andreyknvl@google.com>
-References: <cover.1646237226.git.andreyknvl@google.com>
+Subject: [PATCH mm 00/22] kasan: report clean-ups and improvements
+Date:   Wed,  2 Mar 2022 17:36:20 +0100
+Message-Id: <cover.1646237226.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -51,28 +48,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-describe_object_addr() used to be called with NULL addr in the early
-days of KASAN. This no longer happens, so drop the check.
+A number of clean-up patches for KASAN reporting code.
 
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- mm/kasan/report.c | 3 ---
- 1 file changed, 3 deletions(-)
+Most are non-functional and only improve readability.
 
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index f64352008bb8..607a8c2e4674 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -162,9 +162,6 @@ static void describe_object_addr(struct kmem_cache *cache, void *object,
- 	       " which belongs to the cache %s of size %d\n",
- 		object, cache->name, cache->object_size);
- 
--	if (!addr)
--		return;
--
- 	if (access_addr < object_addr) {
- 		rel_type = "to the left";
- 		rel_bytes = object_addr - access_addr;
+The patches go on top of mm.
+
+Andrey Konovalov (22):
+  kasan: drop addr check from describe_object_addr
+  kasan: more line breaks in reports
+  kasan: rearrange stack frame info in reports
+  kasan: improve stack frame info in reports
+  kasan: print basic stack frame info for SW_TAGS
+  kasan: simplify async check in end_report
+  kasan: simplify kasan_update_kunit_status and call sites
+  kasan: check CONFIG_KASAN_KUNIT_TEST instead of CONFIG_KUNIT
+  kasan: move update_kunit_status to start_report
+  kasan: move disable_trace_on_warning to start_report
+  kasan: split out print_report from __kasan_report
+  kasan: simplify kasan_find_first_bad_addr call sites
+  kasan: restructure kasan_report
+  kasan: merge __kasan_report into kasan_report
+  kasan: call print_report from kasan_report_invalid_free
+  kasan: move and simplify kasan_report_async
+  kasan: rename kasan_access_info to kasan_report_info
+  kasan: add comment about UACCESS regions to kasan_report
+  kasan: respect KASAN_BIT_REPORTED in all reporting routines
+  kasan: reorder reporting functions
+  kasan: move and hide kasan_save_enable/restore_multi_shot
+  kasan: disable LOCKDEP when printing reports
+
+ include/linux/kasan.h     |   4 -
+ mm/kasan/kasan.h          |  44 ++++--
+ mm/kasan/report.c         | 312 ++++++++++++++++++++++----------------
+ mm/kasan/report_generic.c |  34 ++---
+ mm/kasan/report_hw_tags.c |   1 +
+ mm/kasan/report_sw_tags.c |  15 ++
+ mm/kasan/report_tags.c    |   2 +-
+ 7 files changed, 241 insertions(+), 171 deletions(-)
+
 -- 
 2.25.1
 
