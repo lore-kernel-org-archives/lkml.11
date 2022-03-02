@@ -2,101 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 03:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 03:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239243AbiCBDJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 22:09:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47916 "EHLO
+        id S239228AbiCBDJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 22:09:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239242AbiCBDJV (ORCPT
+        with ESMTP id S235556AbiCBDJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 22:09:21 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E54AF1C8;
-        Tue,  1 Mar 2022 19:08:36 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id jr3so522064qvb.11;
-        Tue, 01 Mar 2022 19:08:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RQqrwFMPY5plGbddCnC14E9lxWyrfbG5ICWPNwpm/RM=;
-        b=LmkJ4nzw/MELoRSNtv7sEIw35ccww6Tr7FyTGDd77VlakAkiEf6KMriBzFgjV3Dh9Q
-         ut5EUs7nLlaXU+ZX7vCFbfbG67wFgGQivXloO/LKKkeV+6+Gx/XzBcFDm/J8GRFK6Sgj
-         0DXOgdx/5jCtBgbbAvUzH5vOYvFSe71JlODdY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RQqrwFMPY5plGbddCnC14E9lxWyrfbG5ICWPNwpm/RM=;
-        b=Qe29JwMNQbMEvvZSp9mQW4/OaifwY6VRDskHPQ336wDQnIqkT/pRiouXlmqOSvICDX
-         p57/SZ2KUKIRUKPyismM/h3NJoul72uHX32n4E+9xdApPQaJTxTCjyAfmgR/jfkBnQ0U
-         aiZc1CClUFsnBZE1M7PMUxm2vS8kerOrWI+UFBR5fPZqzPV3a5HReOKeoWZrFbwH1sz1
-         FEZ9bpF914jOyzoqYz+G0DcUfyT1d6zO2CU2qhYVFT3HN/eacf5H/mAlu/NC8pQXJPa/
-         YZyYNK2WYxdqWnISKpvyH6cSjp6CPjkxjhpLFNQDmKrYcKSRBhHBLF80xlhdoUiQc4z6
-         Krmw==
-X-Gm-Message-State: AOAM532qyJ/UHl+IGxKde1t2Fx/SRFwFeez6dgaTY3XorOKNTn81JOSO
-        atScgPJpGVa9UCk3gtEEfAAcKY014zG9oiqZTc8=
-X-Google-Smtp-Source: ABdhPJztD0vIx1Wl0A9xT1RwV7lGsUr0ZEEv3QSKFr9EnK8lyK9xuR0wpsW6Xg66ZqVBWQ9OL8JSmp1eGkx1vZcag5k=
-X-Received: by 2002:a05:6214:19c4:b0:432:8bd1:d8d7 with SMTP id
- j4-20020a05621419c400b004328bd1d8d7mr19678222qvc.65.1646190515132; Tue, 01
- Mar 2022 19:08:35 -0800 (PST)
+        Tue, 1 Mar 2022 22:09:41 -0500
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D37911C35
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 19:08:59 -0800 (PST)
+Received: from twspam01.aspeedtech.com (localhost [127.0.0.2] (may be forged))
+        by twspam01.aspeedtech.com with ESMTP id 2222fMYJ029343
+        for <linux-kernel@vger.kernel.org>; Wed, 2 Mar 2022 10:41:22 +0800 (GMT-8)
+        (envelope-from tommy_huang@aspeedtech.com)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 2222eJP7029206;
+        Wed, 2 Mar 2022 10:40:19 +0800 (GMT-8)
+        (envelope-from tommy_huang@aspeedtech.com)
+Received: from tommy0527-VirtualBox.aspeedtech.com (192.168.2.141) by
+ TWMBX02.aspeed.com (192.168.0.24) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 2 Mar 2022 10:49:40 +0800
+From:   Tommy Haung <tommy_huang@aspeedtech.com>
+To:     <joel@jms.id.au>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <robh+dt@kernel.org>, <andrew@aj.id.au>,
+        <linux-aspeed@lists.ozlabs.org>, <dri-devel@lists.freedesktop.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH v6 0/5] Add Aspeed AST2600 soc display support
+Date:   Wed, 2 Mar 2022 10:49:25 +0800
+Message-ID: <20220302024930.18758-1-tommy_huang@aspeedtech.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220302024930.18758-1-tommy_huang@aspeedtech.com> <20220302024930.18758-6-tommy_huang@aspeedtech.com>
-In-Reply-To: <20220302024930.18758-6-tommy_huang@aspeedtech.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 2 Mar 2022 03:08:22 +0000
-Message-ID: <CACPK8XcsLBrJo7W5y3sE_jGy9j4e6MPNcB26bJ4SB1ZhVuka+A@mail.gmail.com>
-Subject: Re: [PATCH v6 5/5] ARM: dtsi: aspeed: Modified gfx reset control
-To:     Tommy Haung <tommy_huang@aspeedtech.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [192.168.2.141]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 2222eJP7029206
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 at 02:50, Tommy Haung <tommy_huang@aspeedtech.com> wrote:
->
-> Remove the ast2500-gfx from aspeed-g6.dtsi.
-> In the AST2600, the ASPEED_RESET_CRT1 is replaced by
-> ASPEED_RESET_GRAPHICS. This is no differnce between these two reset
-> behavior but reigster location is changed. The HW controller states
-> and FW programming resgiter will be reset by CRT reset controller bit
-> (SCU040[13]). And another part HW controller will be reset by
-> Graphics controller bit (SCU040[26]). These two reset bit need be
-> de-assert then the SOC display will be active.
->
-> Signed-off-by: Tommy Haung <tommy_huang@aspeedtech.com>
+v6:
+  Remove some unnecessary reset patch.
+  Refine patch format.
+  Add detail explain of SOC display reset bits.
 
-You don't need this patch; the change should be part of the patch that
-introduces the node. I'll fix that up when applying.
+v5:
+  Add lost reset define.
 
-> ---
->  arch/arm/boot/dts/aspeed-g6.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-> index e38c3742761b..7cc99bc68558 100644
-> --- a/arch/arm/boot/dts/aspeed-g6.dtsi
-> +++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-> @@ -352,7 +352,7 @@
->                         };
->
->                         gfx: display@1e6e6000 {
-> -                               compatible = "aspeed,ast2600-gfx", "aspeed,ast2500-gfx", "syscon";
-> +                               compatible = "aspeed,ast2600-gfx", "syscon";
->                                 reg = <0x1e6e6000 0x1000>;
->                                 reg-io-width = <4>;
->                                 clocks = <&syscon ASPEED_CLK_GATE_D1CLK>;
-> --
-> 2.17.1
->
+v4:
+  Add necessary reset control for ast2600.
+  Add chip caps for futher use.
+  These code are test on AST2500 and AST2600 by below steps.
+
+  1. Add below config to turn VT and LOGO on.
+
+	CONFIG_TTY=y
+	CONFIG_VT=y
+	CONFIG_CONSOLE_TRANSLATIONS=y
+	CONFIG_VT_CONSOLE=y
+	CONFIG_VT_CONSOLE_SLEEP=y
+	CONFIG_HW_CONSOLE=y
+	CONFIG_VT_HW_CONSOLE_BINDING=y
+	CONFIG_UNIX98_PTYS=y
+	CONFIG_LDISC_AUTOLOAD=y
+	CONFIG_DEVMEM=y
+	CONFIG_DUMMY_CONSOLE=y
+	CONFIG_FRAMEBUFFER_CONSOLE=y
+	CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
+	CONFIG_LOGO=y
+	CONFIG_LOGO_LINUX_CLUT224=y
+
+  2. The Linux logo will be shown on the screen, when the BMC boot in Linux.
+
+v3:
+  Refine the patch for clear separate purpose.
+  Skip to send devicetree patch
+
+v2:
+  Remove some unnecessary patch.
+  Refine for reviwer request.
+
+v1:
+  First add patch.
+
+Joel Stanley (2):
+  ARM: dts: aspeed: Add GFX node to AST2600
+  ARM: dts: aspeed: ast2600-evb: Enable GFX device
+
+Tommy Haung (3):
+  drm/aspeed: Update INTR_STS handling
+  drm/aspeed: Add AST2600 chip support
+  ARM: dtsi: aspeed: Modified gfx reset control
+
+ arch/arm/boot/dts/aspeed-ast2600-evb.dts | 18 ++++++++++++++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi         | 11 +++++++++++
+ drivers/gpu/drm/aspeed/aspeed_gfx.h      |  1 +
+ drivers/gpu/drm/aspeed/aspeed_gfx_drv.c  | 15 ++++++++++++++-
+ 4 files changed, 44 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
+
