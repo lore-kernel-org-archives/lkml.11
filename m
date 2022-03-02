@@ -2,78 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C54AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbiCBXwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:52:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
+        id S229728AbiCBXxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:53:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiCBXwa (ORCPT
+        with ESMTP id S229731AbiCBXwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:52:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3315963BC2
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:51:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCBC460AC9
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 23:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21B2BC004E1;
-        Wed,  2 Mar 2022 23:34:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1646264074;
-        bh=cBDUYSR0eSGUbg7hhpGZJrrV34Qa8/yXz+XpHML8nss=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1JgUhuuJ/QdaNR6BRFyaTi/ih7S/l6BxWJXA4fT24VBaELET4VCQ9vB71VbPFT/GS
-         dyeDNzKASdloj8ZLaW7y7Jy3FTu5nuSqQZdDnRYPa1Lnq265vm4xVSNFKco51K7+LP
-         FxiI+rdxk6OH7GnAii5jnvynPZAl2pRTk2jyEC3Q=
-Date:   Wed, 2 Mar 2022 15:34:33 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     wangjianxing <wangjianxing@loongson.cn>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] mm/page_alloc: add scheduling point to
- free_unref_page_list
-Message-Id: <20220302153433.719caef31bd9e99319c5e6a2@linux-foundation.org>
-In-Reply-To: <20220302013825.2290315-1-wangjianxing@loongson.cn>
-References: <20220302013825.2290315-1-wangjianxing@loongson.cn>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Wed, 2 Mar 2022 18:52:47 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54B4B1A802;
+        Wed,  2 Mar 2022 15:52:02 -0800 (PST)
+Received: from [192.168.1.17] (unknown [192.182.151.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 8952E20B7178;
+        Wed,  2 Mar 2022 15:27:56 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8952E20B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646263676;
+        bh=5KvOsKwug+N0UsgvLNjMfAoBITxIY5JfWuFek8c6W6I=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=N9dJI5zEX5kl97tkKa4n/yyeKwGJSfbPRAjJRdRj2cYT0nvf7a5CWWu5WO2ahrD3X
+         BBrg5BYPR2rNIwfmni5dyoOL5gK3KVGc6I5IbM/zQkn1Zbiua4k2zM+uj+NVZSu/qW
+         oN8LIYkoxJZyUJdS3hD0OYDnm1Spjh/PsMGUCfJY=
+Message-ID: <6b691648-96ce-f28e-436e-f5eb4137e73b@linux.microsoft.com>
+Date:   Wed, 2 Mar 2022 15:27:56 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 02/30] drivers: hv: dxgkrnl: Driver initialization and
+ loading
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
+        spronovo@linux.microsoft.com
+References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
+ <739cf89e71ff72436d7ca3f846881dfb45d07a6a.1646163378.git.iourit@linux.microsoft.com>
+ <Yh6F9cG6/SV6Fq8Q@kroah.com>
+From:   Iouri Tarassov <iourit@linux.microsoft.com>
+In-Reply-To: <Yh6F9cG6/SV6Fq8Q@kroah.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  1 Mar 2022 20:38:25 -0500 wangjianxing <wangjianxing@loongson.cn> wrote:
 
-> free a large list of pages maybe cause rcu_sched starved on
-> non-preemptible kernels
-> 
-> rcu: rcu_sched kthread starved for 5359 jiffies! g454793 f0x0
-> RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=19
-> [...]
-> Call Trace:
->   free_unref_page_list+0x19c/0x270
->   release_pages+0x3cc/0x498
->   tlb_flush_mmu_free+0x44/0x70
->   zap_pte_range+0x450/0x738
->   unmap_page_range+0x108/0x240
->   unmap_vmas+0x74/0xf0
->   unmap_region+0xb0/0x120
->   do_munmap+0x264/0x438
->   vm_munmap+0x58/0xa0
->   sys_munmap+0x10/0x20
->   syscall_common+0x24/0x38
+On 3/1/2022 12:45 PM, Greg KH wrote:
+> On Tue, Mar 01, 2022 at 11:45:49AM -0800, Iouri Tarassov wrote:
+> > - Create skeleton and add basic functionality for the
+> > hyper-v compute device driver (dxgkrnl).
+> > 
+> > +
+> > +#undef pr_fmt
+> > +#define pr_fmt(fmt)	"dxgk: " fmt
+>
+> Use the dev_*() print functions, you are a driver, and you always have a
+> pointer to a struct device.  There's no need to ever call pr_*().
+>
 
-Thanks.
+There is no struct device during module initialization until the
+/dev/dxg device is created. Is it ok to use pr_* functions in this case?
+Should dev_*(NULL,...) be used? I see other drivers use the pr_*
+functions in this case (mips.c as an example).
 
-How did this large list of pages come about?
 
-Will people be seeing this message in upstream kernels, or is it
-specific to some caller code which you have added?
+Thanks
 
-Please always include details such as this so that others can determine
-whether the fix should be backported into -stable kernels.
+Iouri
 
+> thanks,
+>
+> greg k-h
