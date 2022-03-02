@@ -2,165 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12256C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABAFC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240203AbiCBIbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:31:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
+        id S240206AbiCBIbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240177AbiCBIaq (ORCPT
+        with ESMTP id S240221AbiCBIa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:30:46 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C357B91F4
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:29:55 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id e2so938164pls.10
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:29:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4hzepAOQTsZTnVcr4QPZkWOiCoYklQmYHIbKFxu1/40=;
-        b=BHUW+N1Ur7UISy6INaVLWByZSyogvV+wzA1z7v+CiybCHBc+N8nc1LoUx9B/gbMwk8
-         HIxbxIEXNDbK6hfHZimmn14xUJYqq3yIVmG70INxE2KYfLl4KmUNNh9XfTB7LkU3YpoV
-         FG8rJke6cX1AZ2UNkxOr9wCCg9VWLMfZ5ewsd/xbWM2tDR4yezKnqBpsuxXvnOn7EZIa
-         cGtrTwXg+9wcFTsu2uis6l8DW1Civ6IoXbVOGDJpqxQ+17Wz2WPYDrgF6vrr7l0UtmwZ
-         3063ZCy+GqpkS/YiXnDcw0ssHDJXt9k86JVDTmf2n/tlC+Ntv50DXrHDr7skXOtprb2j
-         vqOg==
+        Wed, 2 Mar 2022 03:30:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84BDABB091
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:30:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646209812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4ju3TXslkK4ikbzwJYtvQpU2DB+d0S/w2MnovYNUeUk=;
+        b=LSDk0QzDGFTMZo8ie3l84Q8M5k37KeUt7+akkIqbjXt+JAaP9BAXHH5SbpOvlI01PrH+mX
+        uUo4HY55LRvCq05WZZmjm7DFQesBwmZG+2Xo+OFTFjXSDjH5DEGLfcgJINxEPZof9KDhRk
+        2aiEzMKzYzseINDxBJTLyA6LS6DJEgA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-265-BJWJmFMzOvqqzocvxGAWPg-1; Wed, 02 Mar 2022 03:30:11 -0500
+X-MC-Unique: BJWJmFMzOvqqzocvxGAWPg-1
+Received: by mail-wm1-f72.google.com with SMTP id h19-20020a05600c351300b0038141cf26deso568942wmq.8
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:30:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4hzepAOQTsZTnVcr4QPZkWOiCoYklQmYHIbKFxu1/40=;
-        b=NazH/xtvuvxWu7flAq0wZlJ8w6swWBhr2Ofa4GzKBEw94yY1qTeD4Sulfs9gYpoWft
-         5ToozWt5ix+iNY0zT9Grzfm72BsxVKAQpDmDRAeDbgEEqiAduCbH0jIuvuFB8B9Qw1xP
-         7Z5pDvwERwdatz9C78ccMKE4l95bl/mVvYOA+2gWm1VowyMwv8D5mOpMV/Lgqpgl1yf/
-         vV7AYwJBLD2lgFLWowrDIr93aCA7LVlQisb4Mlc4sSOHV+K9xzIFZytUqK4h/McytS+8
-         NZag1EthF2kOpVjH9G1SbgZUxzxDU0FjT0mxvojmcivtAMx37WGtRfnRlwnw0pXbX2kd
-         KQ0w==
-X-Gm-Message-State: AOAM532flJHJyfUH5V70BaIrvnypCTQRdOVtl/10SNbaOLC1SkBEY1Sb
-        pD/bNplHRmMSuntCqFkCi8o6hg==
-X-Google-Smtp-Source: ABdhPJyz4uqOwKQjoCqmWeCnPA8FTI71YHNESq0Oi6Zb6fkSHMg74TLKOucvxJxvZaZ9ZDbR40TJ5g==
-X-Received: by 2002:a17:90a:c901:b0:1be:ce4d:7cee with SMTP id v1-20020a17090ac90100b001bece4d7ceemr9400545pjt.213.1646209794788;
-        Wed, 02 Mar 2022 00:29:54 -0800 (PST)
-Received: from FVFYT0MHHV2J.bytedance.net ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id a20-20020a056a000c9400b004f396b965a9sm20922228pfv.49.2022.03.02.00.29.46
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4ju3TXslkK4ikbzwJYtvQpU2DB+d0S/w2MnovYNUeUk=;
+        b=T1fjvu0G+WoQWIqdavJcoNbizg2P7Nal9pVi/P7Oxmj+BngQ/2I3yflUiKMGMh8CyT
+         eb50HS3H/6hEO3u7mT5e0e15BVBgFMHolqsBZXpcKV7KK7l+QPzCFdnZFHji24sHlgaP
+         k+YhSF7JsQ1rZX61+JSzRGSSBrkr4MF4Ayj48Kw0Naan3q4V8QVLxH19grehy6DCuaXB
+         EirsyhPjitbqpNFTYH/OCf5D0rAU/IJkWWR4+cLaXxjkrLnfkA4gssmqKEwdcVaPmbRJ
+         FrYd2kgPZtdhpKXApdU3mA4cG8OIa79bxKvZkJpMFPts04+jrizUdcLzt4iuTt+Lagjp
+         n/AQ==
+X-Gm-Message-State: AOAM533FLHhEaK4zvGphOyzhCPOxiGAMgQxwNILBSL5ya3gVp6iDN29k
+        LE3oxVqoCEmSYHSgL9n15Szl53WyM7+PAznagw4f30yyFQXjFIvhsYZa1LdhxPnncbzGKrTltIi
+        0QIRia2Fx6mtJZ7by0Sa0rN29
+X-Received: by 2002:a05:600c:587:b0:381:b2:89b0 with SMTP id o7-20020a05600c058700b0038100b289b0mr20467125wmd.114.1646209810405;
+        Wed, 02 Mar 2022 00:30:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyUFCa8ddS38oq9IT6e/yWdwiarFYl14hc8Iyy/vjPTuHZpDyCAzWiVC6dCDT5EWZ3tUieAJg==
+X-Received: by 2002:a05:600c:587:b0:381:b2:89b0 with SMTP id o7-20020a05600c058700b0038100b289b0mr20467105wmd.114.1646209810176;
+        Wed, 02 Mar 2022 00:30:10 -0800 (PST)
+Received: from redhat.com ([2a10:8006:355c:0:48d6:b937:2fb9:b7de])
+        by smtp.gmail.com with ESMTPSA id f4-20020a5d4dc4000000b001d8e67e5214sm16454314wru.48.2022.03.02.00.30.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 00:29:54 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
-        hch@infradead.org
-Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v4 6/6] mm: remove range parameter from follow_invalidate_pte()
-Date:   Wed,  2 Mar 2022 16:27:18 +0800
-Message-Id: <20220302082718.32268-7-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220302082718.32268-1-songmuchun@bytedance.com>
-References: <20220302082718.32268-1-songmuchun@bytedance.com>
+        Wed, 02 Mar 2022 00:30:09 -0800 (PST)
+Date:   Wed, 2 Mar 2022 03:30:06 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Laszlo Ersek <lersek@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        QEMU Developers <qemu-devel@nongnu.org>,
+        linux-hyperv@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        adrian@parity.io,
+        Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: propagating vmgenid outward and upward
+Message-ID: <20220302031738-mutt-send-email-mst@kernel.org>
+References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
+ <223f858c-34c5-3ccd-b9e8-7585a976364d@redhat.com>
+ <Yh5JwK6toc/zBNL7@zx2c4.com>
+ <20220301121419-mutt-send-email-mst@kernel.org>
+ <CAHmME9qieLUDVoPYZPo=N8NCL1T-RzQ4p7kCFv3PKFUkhWZPsw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9qieLUDVoPYZPo=N8NCL1T-RzQ4p7kCFv3PKFUkhWZPsw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only user (DAX) of range parameter of follow_invalidate_pte()
-is gone, it safe to remove the range paramter and make it static
-to simlify the code.
+On Tue, Mar 01, 2022 at 07:37:06PM +0100, Jason A. Donenfeld wrote:
+> Hi Michael,
+> 
+> On Tue, Mar 1, 2022 at 6:17 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > Hmm okay, so it's a performance optimization... some batching then? Do
+> > you really need to worry about every packet? Every 64 packets not
+> > enough?  Packets are after all queued at NICs etc, and VM fork can
+> > happen after they leave wireguard ...
+> 
+> Unfortunately, yes, this is an "every packet" sort of thing -- if the
+> race is to be avoided in a meaningful way. It's really extra bad:
+> ChaCha20 and AES-CTR work by xoring a secret stream of bytes with
+> plaintext to produce a ciphertext. If you use that same secret stream
+> and xor it with a second plaintext and transmit that too, an attacker
+> can combine the two different ciphertexts to learn things about the
+> original plaintext.
+> 
+> But, anyway, it seems like the race is here to stay given what we have
+> _currently_ available with the virtual hardware. That's why I'm
+> focused on trying to get something going that's the least bad with
+> what we've currently got, which is racy by design. How vitally
+> important is it to have something that doesn't race in the far future?
+> I don't know, really. It seems plausible that that ACPI notifier
+> triggers so early that nothing else really even has a chance, so the
+> race concern is purely theoretical. But I haven't tried to measure
+> that so I'm not sure.
+> 
+> Jason
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- include/linux/mm.h |  3 ---
- mm/memory.c        | 23 +++--------------------
- 2 files changed, 3 insertions(+), 23 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c9bada4096ac..be7ec4c37ebe 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1871,9 +1871,6 @@ void free_pgd_range(struct mmu_gather *tlb, unsigned long addr,
- 		unsigned long end, unsigned long floor, unsigned long ceiling);
- int
- copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma);
--int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
--			  struct mmu_notifier_range *range, pte_t **ptepp,
--			  pmd_t **pmdpp, spinlock_t **ptlp);
- int follow_pte(struct mm_struct *mm, unsigned long address,
- 	       pte_t **ptepp, spinlock_t **ptlp);
- int follow_pfn(struct vm_area_struct *vma, unsigned long address,
-diff --git a/mm/memory.c b/mm/memory.c
-index cc6968dc8e4e..278ab6d62b54 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4964,9 +4964,8 @@ int __pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address)
- }
- #endif /* __PAGETABLE_PMD_FOLDED */
- 
--int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
--			  struct mmu_notifier_range *range, pte_t **ptepp,
--			  pmd_t **pmdpp, spinlock_t **ptlp)
-+static int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
-+				 pte_t **ptepp, pmd_t **pmdpp, spinlock_t **ptlp)
- {
- 	pgd_t *pgd;
- 	p4d_t *p4d;
-@@ -4993,31 +4992,17 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- 		if (!pmdpp)
- 			goto out;
- 
--		if (range) {
--			mmu_notifier_range_init(range, MMU_NOTIFY_CLEAR, 0,
--						NULL, mm, address & PMD_MASK,
--						(address & PMD_MASK) + PMD_SIZE);
--			mmu_notifier_invalidate_range_start(range);
--		}
- 		*ptlp = pmd_lock(mm, pmd);
- 		if (pmd_huge(*pmd)) {
- 			*pmdpp = pmd;
- 			return 0;
- 		}
- 		spin_unlock(*ptlp);
--		if (range)
--			mmu_notifier_invalidate_range_end(range);
- 	}
- 
- 	if (pmd_none(*pmd) || unlikely(pmd_bad(*pmd)))
- 		goto out;
- 
--	if (range) {
--		mmu_notifier_range_init(range, MMU_NOTIFY_CLEAR, 0, NULL, mm,
--					address & PAGE_MASK,
--					(address & PAGE_MASK) + PAGE_SIZE);
--		mmu_notifier_invalidate_range_start(range);
--	}
- 	ptep = pte_offset_map_lock(mm, pmd, address, ptlp);
- 	if (!pte_present(*ptep))
- 		goto unlock;
-@@ -5025,8 +5010,6 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- 	return 0;
- unlock:
- 	pte_unmap_unlock(ptep, *ptlp);
--	if (range)
--		mmu_notifier_invalidate_range_end(range);
- out:
- 	return -EINVAL;
- }
-@@ -5055,7 +5038,7 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- int follow_pte(struct mm_struct *mm, unsigned long address,
- 	       pte_t **ptepp, spinlock_t **ptlp)
- {
--	return follow_invalidate_pte(mm, address, NULL, ptepp, NULL, ptlp);
-+	return follow_invalidate_pte(mm, address, ptepp, NULL, ptlp);
- }
- EXPORT_SYMBOL_GPL(follow_pte);
- 
+I got curious, and wrote a dumb benchmark:
+
+
+#include <stdio.h>
+#include <assert.h>
+#include <limits.h>
+#include <string.h>
+
+struct lng {
+	unsigned long long l1;
+	unsigned long long l2;
+};
+
+struct shrt {
+	unsigned long s;
+};
+
+
+struct lng l = { 1, 2 };
+struct shrt s = { 3 };
+
+static void test1(volatile struct shrt *sp)
+{
+	if (sp->s != s.s) {
+		printf("short mismatch!\n");
+		s.s = sp->s;
+	}
+}
+static void test2(volatile struct lng *lp)
+{
+	if (lp->l1 != l.l1 || lp->l2 != l.l2) {
+		printf("long mismatch!\n");
+		l.l1 = lp->l1;
+		l.l2 = lp->l2;
+	}
+}
+
+int main(int argc, char **argv)
+{
+	volatile struct shrt sv = { 4 };
+	volatile struct lng lv = { 5, 6 };
+
+	if (argc > 1) {
+		printf("test 1\n");
+		for (int i = 0; i < 10000000; ++i) 
+			test1(&sv);
+	} else {
+		printf("test 2\n");
+		for (int i = 0; i < 10000000; ++i)
+			test2(&lv);
+	}
+	return 0;
+}
+
+
+Results (built with -O2, nothing fancy):
+
+[mst@tuck ~]$ perf stat -r 1000 ./a.out 1 > /dev/null
+
+ Performance counter stats for './a.out 1' (1000 runs):
+
+              5.12 msec task-clock:u              #    0.945 CPUs utilized            ( +-  0.07% )
+                 0      context-switches:u        #    0.000 /sec                   
+                 0      cpu-migrations:u          #    0.000 /sec                   
+                52      page-faults:u             #   10.016 K/sec                    ( +-  0.07% )
+        20,190,800      cycles:u                  #    3.889 GHz                      ( +-  0.01% )
+        50,147,371      instructions:u            #    2.48  insn per cycle           ( +-  0.00% )
+        20,032,224      branches:u                #    3.858 G/sec                    ( +-  0.00% )
+             1,604      branch-misses:u           #    0.01% of all branches          ( +-  0.26% )
+
+        0.00541882 +- 0.00000847 seconds time elapsed  ( +-  0.16% )
+
+[mst@tuck ~]$ perf stat -r 1000 ./a.out > /dev/null
+
+ Performance counter stats for './a.out' (1000 runs):
+
+              7.75 msec task-clock:u              #    0.947 CPUs utilized            ( +-  0.12% )
+                 0      context-switches:u        #    0.000 /sec                   
+                 0      cpu-migrations:u          #    0.000 /sec                   
+                52      page-faults:u             #    6.539 K/sec                    ( +-  0.07% )
+        30,205,916      cycles:u                  #    3.798 GHz                      ( +-  0.01% )
+        80,147,373      instructions:u            #    2.65  insn per cycle           ( +-  0.00% )
+        30,032,227      branches:u                #    3.776 G/sec                    ( +-  0.00% )
+             1,621      branch-misses:u           #    0.01% of all branches          ( +-  0.23% )
+
+        0.00817982 +- 0.00000965 seconds time elapsed  ( +-  0.12% )
+
+
+So yes, the overhead is higher by 50% which seems a lot but it's from a
+very small number, so I don't see why it's a show stopper, it's not by a
+factor of 10 such that we should sacrifice safety by default. Maybe a
+kernel flag that removes the read replacing it with an interrupt will
+do.
+
+In other words, premature optimization is the root of all evil.
+
 -- 
-2.11.0
+MST
 
