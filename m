@@ -2,115 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 844F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 06:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2653CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 06:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239708AbiCBG3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 01:29:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
+        id S239068AbiCBGfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 01:35:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231644AbiCBG3v (ORCPT
+        with ESMTP id S231644AbiCBGfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 01:29:51 -0500
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F39943DA50;
-        Tue,  1 Mar 2022 22:29:07 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowACHjPCeDh9iXMcDAg--.17642S2;
-        Wed, 02 Mar 2022 14:28:50 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     kuninori.morimoto.gx@renesas.com
-Cc:     broonie@kernel.org, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, f.suligoi@asem.it,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v3] ASoC: fsi: Add check for clk_enable
-Date:   Wed,  2 Mar 2022 14:28:44 +0800
-Message-Id: <20220302062844.46869-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 2 Mar 2022 01:35:53 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3940C5F8C4;
+        Tue,  1 Mar 2022 22:35:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646202908; x=1677738908;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZgpAzsRRmmqaeIEgyxC5au07eT1Knh2iifyDRqim7xk=;
+  b=Z94En1SWgzIBVy5nvrxkPo+R8H0vx44PaWWuVM2iox0r0l6BV05W5dlI
+   3lG/gwlHHKLK00389UK7kW7xnk45B3r+LsSVBH8zanL5FWMM6QNPH/UiG
+   emVSr+8Cp6hV4RIXOWlIHJ1GdBzSu7byS7HSi3OayHU7g/V5oRIOVxfOh
+   PHKm2ELDk4mg9IGX+pYGyR1cMkEP4E32I/DSJyhyJi/toSPtfaR52VFxV
+   4KmfEEwplIuGS0l9r7h86OUbeXDpjULF0bBgfUqXXFLFBhuGWI1MK4ib7
+   29u4AH/HYN/HANJrvvyqGiQ2vHGg9rzrhGBZ3eqALO4rs/Yiq3lMFz6lt
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="253517439"
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="253517439"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 22:35:07 -0800
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="508091341"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 22:35:01 -0800
+Date:   Wed, 2 Mar 2022 14:45:57 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Zeng Guang <guang.zeng@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>
+Subject: Re: [PATCH v6 7/9] KVM: VMX: enable IPI virtualization
+Message-ID: <20220302064556.GA18820@gao-cwp>
+References: <20220225082223.18288-1-guang.zeng@intel.com>
+ <20220225082223.18288-8-guang.zeng@intel.com>
+ <0e9a22e90256ed289d90956f720f36d870c92d2a.camel@redhat.com>
+ <20220301092144.GA32619@gao-cwp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowACHjPCeDh9iXMcDAg--.17642S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xr47tF15uFW3uw4kKFW7Arb_yoWkuFc_Aa
-        1jg39Iqw15urWfCasrJr4UJ34j9r4UZF1UGryIqF1ftayUJr15ur4UZr9Yvrn0qw1a9as3
-        A3WDZr4xArW3CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb38FF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6r47MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjfUnuWlDUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301092144.GA32619@gao-cwp>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+>>>  static void init_vmcs(struct vcpu_vmx *vmx)
+>>>  {
+>>> +	struct kvm_vcpu *vcpu = &vmx->vcpu;
+>>> +	struct kvm_vmx *kvm_vmx = to_kvm_vmx(vcpu->kvm);
+>>> +
+>>>  	if (nested)
+>>>  		nested_vmx_set_vmcs_shadowing_bitmap();
+>>>  
+>>> @@ -4431,7 +4460,7 @@ static void init_vmcs(struct vcpu_vmx *vmx)
+>>>  	if (cpu_has_tertiary_exec_ctrls())
+>>>  		tertiary_exec_controls_set(vmx, vmx_tertiary_exec_control(vmx));
+>>>  
+>>> -	if (kvm_vcpu_apicv_active(&vmx->vcpu)) {
+>>> +	if (kvm_vcpu_apicv_active(vcpu)) {
+>>
+>>here too (pre-existing), I also not 100% sure that kvm_vcpu_apicv_active
+>>should be used. I haven't studied APICv code that much to be 100% sure.
+>
 
-Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog:
+On second thoughts, I think you are correct. Below VMCS fields 
+(i.e, EIO_EXIT_BITMAP0/1/2, POSTED_INTR_NV/DESC_ADDR) should be configured as
+long as the VM can enable APICv, particularly considering
+vmx_refresh_apicv_exec_ctrl() doesn't configure these VMCS fields when APICv
+gets activated.
 
-v1 -> v2
+This is a latent bug in KVM. We will fix it with a separate patch.
 
-* Change 1. Seperate the error handler.
+>I think kvm_vcpu_apicv_active is better.
+>
+>The question is: If CPU supports a VMX feature (APICv), but it isn't enabled
+>now, is it allowed to configure VMCS fields defined by the feature?  Would CPU
+>ignore the values written to the fields or retain them after enabling the
+>feature later?
 
-v2 -> v3
+This concern is invalid. SDM doesn't mention any ordering requirement about
+configuring a feature's vm-execution bit and other VMCS fields introduced for
+the feature. Please disregard my original remark.
 
-* Change 1. Revert disable_xck and disable_ick.
----
- sound/soc/sh/fsi.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
-index cdf3b7f69ba7..e9a1eb6bdf66 100644
---- a/sound/soc/sh/fsi.c
-+++ b/sound/soc/sh/fsi.c
-@@ -816,14 +816,27 @@ static int fsi_clk_enable(struct device *dev,
- 			return ret;
- 		}
- 
--		clk_enable(clock->xck);
--		clk_enable(clock->ick);
--		clk_enable(clock->div);
-+		ret = clk_enable(clock->xck);
-+		if (ret)
-+			goto err;
-+		ret = clk_enable(clock->ick);
-+		if (ret)
-+			goto disable_xck;
-+		ret = clk_enable(clock->div);
-+		if (ret)
-+			goto disable_ick;
- 
- 		clock->count++;
- 	}
- 
- 	return ret;
-+
-+disable_ick:
-+	clk_disable(clock->ick);
-+disable_xck:
-+	clk_disable(clock->xck);
-+err:
-+	return ret;
- }
- 
- static int fsi_clk_disable(struct device *dev,
--- 
-2.25.1
-
+>
+>Personally, KVM shouldn't rely on CPU's behavior in this case. So, It is better
+>for KVM to write below VMCS fields only if APICv is enabled.
+>
+>>
+>>
+>>>  		vmcs_write64(EOI_EXIT_BITMAP0, 0);
+>>>  		vmcs_write64(EOI_EXIT_BITMAP1, 0);
+>>>  		vmcs_write64(EOI_EXIT_BITMAP2, 0);
+>>> @@ -4441,6 +4470,13 @@ static void init_vmcs(struct vcpu_vmx *vmx)
+>>>  
+>>>  		vmcs_write16(POSTED_INTR_NV, POSTED_INTR_VECTOR);
+>>>  		vmcs_write64(POSTED_INTR_DESC_ADDR, __pa((&vmx->pi_desc)));
+>>> +
+>>> +		if (enable_ipiv) {
+>>> +			WRITE_ONCE(kvm_vmx->pid_table[vcpu->vcpu_id],
+>>> +				__pa(&vmx->pi_desc) | PID_TABLE_ENTRY_VALID);
+>>> +			vmcs_write64(PID_POINTER_TABLE, __pa(kvm_vmx->pid_table));
+>>> +			vmcs_write16(LAST_PID_POINTER_INDEX, kvm_vmx->pid_last_index);
+>>> +		}
+>>>  	}
