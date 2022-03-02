@@ -2,158 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57181C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242149AbiCBQsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:48:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
+        id S243444AbiCBQuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:50:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241049AbiCBQss (ORCPT
+        with ESMTP id S242753AbiCBQuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 11:48:48 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1318C50E19
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:48:04 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K80RQ4bLwz9sSR;
-        Wed,  2 Mar 2022 17:48:02 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ojv3flF-hEnn; Wed,  2 Mar 2022 17:48:02 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K80RP3v1Kz9sSN;
-        Wed,  2 Mar 2022 17:48:01 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 208A88B76D;
-        Wed,  2 Mar 2022 17:48:01 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id O_1AzIOzJJwo; Wed,  2 Mar 2022 17:48:01 +0100 (CET)
-Received: from [172.25.230.108] (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id CB7358B763;
-        Wed,  2 Mar 2022 17:48:00 +0100 (CET)
-Message-ID: <a120fa0c-4d00-ed4c-cffa-0df1fb5abb2b@csgroup.eu>
-Date:   Wed, 2 Mar 2022 17:48:00 +0100
+        Wed, 2 Mar 2022 11:50:04 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019F4CA73B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:49:21 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso1644165wmr.1
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 08:49:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=IecOz5iKn2Rc7yD1b1vqfvTpVOYHa2wL2PoxDv2Qr/w=;
+        b=VIpMijEI/uc7QRXHd8OO4zobB3xGHjz4KThVMq514TNw8RwXRYNSQBSrVjnHjxY/O3
+         l2zH6Fnc4g7cXglDba8qa97Y60BjqOi/08Td2ssOClPjgo2nZjxZ5uM6JK9LNl67aDQX
+         gUSqG+T8ucekupVq7KheTANlEi90R6HHLHrmK6xVXJROxoYMuVMd51xKMMPnh2UJLPox
+         cVRcZ2YIOo3Y4OzB4SDJuF87jLQ7x42oV9w3qB/s1UXjEkj6bKqen/wgYWVukInOW5g2
+         NiTjge+zSAtBPJp5ddERJiqnrLi83eYLRdF2Miz0jbs/TDPeruRJXTDi23qQWPGymHYs
+         D9vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=IecOz5iKn2Rc7yD1b1vqfvTpVOYHa2wL2PoxDv2Qr/w=;
+        b=AWHc38p/ATLaAPqG2wKJxnL03ghUMr5RKx9kGDhueOn8dJqVOHBGK4g2LzrWXVa608
+         nKyH5PlOFh6AAQIf8c2SF0LEmpJYJew0g3P79FShCrRTyPexNZN1D6zrtMFwdjxPWfq1
+         JCsVgOBjcUHvSI/Ls9nsCwO2VC9qYOYPXO01qPjrwKpPBb5ocGohciNOn4Pi5EW1EJWK
+         XGM22hfECygBU3sQN8d80quaUfkqWt0vDax0Uchfdi2GCeWQazgB7fcRR/UzNHipOSpn
+         ktLzbYfcukfr9v+tfvhusLegt9s0fSNW2fapZxUfuEjcFWB2kmIX4F0W5WfEINLI1746
+         gLag==
+X-Gm-Message-State: AOAM532ta90s6YhB3jrVG8qQ1P0O5UBqAtYItH2UUiZG9NttNn7VZjqx
+        7ZSrOsW6JclEkCmJi30XjB3Yzw==
+X-Google-Smtp-Source: ABdhPJyfbodKVJwvZA9sMWbjL8XK8jIc29C/7YVF8TlsJ7M4ci3plCbQeVXpYLBlRnsDqwXOYk/BBw==
+X-Received: by 2002:a1c:4603:0:b0:381:19fe:280b with SMTP id t3-20020a1c4603000000b0038119fe280bmr524853wma.67.1646239759465;
+        Wed, 02 Mar 2022 08:49:19 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id n15-20020a05600c4f8f00b003842f011bc5sm2707823wmq.2.2022.03.02.08.49.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 08:49:18 -0800 (PST)
+Date:   Wed, 2 Mar 2022 16:49:17 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <Yh+gDZUbgBRx/1ro@google.com>
+References: <20220302075421.2131221-1-lee.jones@linaro.org>
+ <20220302082021-mutt-send-email-mst@kernel.org>
+ <Yh93k2ZKJBIYQJjp@google.com>
+ <20220302095045-mutt-send-email-mst@kernel.org>
+ <Yh+F1gkCGoYF2lMV@google.com>
+ <CAGxU2F4cUDrMzoHH1NT5_ivxBPgEE8HOzP5s_Bt5JURRaSsLdQ@mail.gmail.com>
+ <20220302112945-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] powerpc/vdso64: link vdso64 with linker
-Content-Language: fr-FR
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>
-Cc:     Christophe Leroy <christophe.leroy@c-s.fr>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Fangrui Song <maskray@google.com>,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org
-References: <20200901222523.1941988-1-ndesaulniers@google.com>
- <20200901222523.1941988-2-ndesaulniers@google.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-In-Reply-To: <20200901222523.1941988-2-ndesaulniers@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220302112945-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
 
-
-Le 02/09/2020 à 00:25, Nick Desaulniers a écrit :
-> Rather than invoke the compiler as the driver, use the linker. That way
-> we can check --orphan-handling=warn support correctly, as cc-ldoption
-> was removed in
-> commit 055efab3120b ("kbuild: drop support for cc-ldoption").
+> On Wed, Mar 02, 2022 at 05:28:31PM +0100, Stefano Garzarella wrote:
+> > On Wed, Mar 2, 2022 at 3:57 PM Lee Jones <lee.jones@linaro.org> wrote:
+> > >
+> > > On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+> > >
+> > > > On Wed, Mar 02, 2022 at 01:56:35PM +0000, Lee Jones wrote:
+> > > > > On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+> > > > >
+> > > > > > On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
+> > > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > > > > > > to vhost_get_vq_desc().  All we have to do is take the same lock
+> > > > > > > during virtqueue clean-up and we mitigate the reported issues.
+> > > > > > >
+> > > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > > > > > >
+> > > > > > > Cc: <stable@vger.kernel.org>
+> > > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > > > > ---
+> > > > > > >  drivers/vhost/vhost.c | 2 ++
+> > > > > > >  1 file changed, 2 insertions(+)
+> > > > > > >
+> > > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > > > > > index 59edb5a1ffe28..bbaff6a5e21b8 100644
+> > > > > > > --- a/drivers/vhost/vhost.c
+> > > > > > > +++ b/drivers/vhost/vhost.c
+> > > > > > > @@ -693,6 +693,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > > > > >         int i;
+> > > > > > >
+> > > > > > >         for (i = 0; i < dev->nvqs; ++i) {
+> > > > > > > +               mutex_lock(&dev->vqs[i]->mutex);
+> > > > > > >                 if (dev->vqs[i]->error_ctx)
+> > > > > > >                         eventfd_ctx_put(dev->vqs[i]->error_ctx);
+> > > > > > >                 if (dev->vqs[i]->kick)
+> > > > > > > @@ -700,6 +701,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > > > > >                 if (dev->vqs[i]->call_ctx.ctx)
+> > > > > > >                         eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
+> > > > > > >                 vhost_vq_reset(dev, dev->vqs[i]);
+> > > > > > > +               mutex_unlock(&dev->vqs[i]->mutex);
+> > > > > > >         }
+> > > > > >
+> > > > > > So this is a mitigation plan but the bug is still there though
+> > > > > > we don't know exactly what it is.  I would prefer adding something like
+> > > > > > WARN_ON(mutex_is_locked(vqs[i]->mutex) here - does this make sense?
+> > > > >
+> > > > > As a rework to this, or as a subsequent patch?
+> > > >
+> > > > Can be a separate patch.
+> > > >
+> > > > > Just before the first lock I assume?
+> > > >
+> > > > I guess so, yes.
+> > >
+> > > No problem.  Patch to follow.
+> > >
+> > > I'm also going to attempt to debug the root cause, but I'm new to this
+> > > subsystem to it might take a while for me to get my head around.
+> > 
+> > IIUC the root cause should be the same as the one we solved here:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a58da53ffd70294ebea8ecd0eb45fd0d74add9f9
+> > 
+> > The worker was not stopped before calling vhost_dev_cleanup(). So while 
+> > the worker was still running we were going to free memory or initialize 
+> > fields while it was still using virtqueue.
 > 
-> Painstakingly compared the output between `objdump -a` before and after
-> this change. Now function symbols have the correct type of FUNC rather
-> than NONE, and the entry is slightly different (which doesn't matter for
-> the vdso). Binary size is the same.
-> 
-> Fixes: commit f2af201002a8 ("powerpc/build: vdso linker warning for orphan sections")
-> Link: https://lore.kernel.org/lkml/CAKwvOdnn3wxYdJomvnveyD_njwRku3fABWT_bS92duihhywLJQ@mail.gmail.com/
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> Right, and I agree but it's not the root though, we do attempt to stop all workers.
 
-Is this change still necessary ? If so please rebase as we have changed 
-the structure of VDSO source files (Only one directory common to 32 and 64).
+Exactly.  This is what happens, but the question I'm going to attempt
+to answer is *why* does this happen.
 
-Christophe
-
-> ---
->   arch/powerpc/include/asm/vdso.h         | 17 ++---------------
->   arch/powerpc/kernel/vdso64/Makefile     |  8 ++++++--
->   arch/powerpc/kernel/vdso64/vdso64.lds.S |  1 -
->   3 files changed, 8 insertions(+), 18 deletions(-)
-> 
-> diff --git a/arch/powerpc/include/asm/vdso.h b/arch/powerpc/include/asm/vdso.h
-> index 2ff884853f97..11b2ecf49f79 100644
-> --- a/arch/powerpc/include/asm/vdso.h
-> +++ b/arch/powerpc/include/asm/vdso.h
-> @@ -24,19 +24,7 @@ int vdso_getcpu_init(void);
->   
->   #else /* __ASSEMBLY__ */
->   
-> -#ifdef __VDSO64__
-> -#define V_FUNCTION_BEGIN(name)		\
-> -	.globl name;			\
-> -	name:				\
-> -
-> -#define V_FUNCTION_END(name)		\
-> -	.size name,.-name;
-> -
-> -#define V_LOCAL_FUNC(name) (name)
-> -#endif /* __VDSO64__ */
-> -
-> -#ifdef __VDSO32__
-> -
-> +#if defined(__VDSO32__) || defined (__VDSO64__)
->   #define V_FUNCTION_BEGIN(name)		\
->   	.globl name;			\
->   	.type name,@function; 		\
-> @@ -46,8 +34,7 @@ int vdso_getcpu_init(void);
->   	.size name,.-name;
->   
->   #define V_LOCAL_FUNC(name) (name)
-> -
-> -#endif /* __VDSO32__ */
-> +#endif /* __VDSO{32|64}__ */
->   
->   #endif /* __ASSEMBLY__ */
->   
-> diff --git a/arch/powerpc/kernel/vdso64/Makefile b/arch/powerpc/kernel/vdso64/Makefile
-> index 38c317f25141..7ea3ce537d0a 100644
-> --- a/arch/powerpc/kernel/vdso64/Makefile
-> +++ b/arch/powerpc/kernel/vdso64/Makefile
-> @@ -32,9 +32,13 @@ $(obj)/%.so: OBJCOPYFLAGS := -S
->   $(obj)/%.so: $(obj)/%.so.dbg FORCE
->   	$(call if_changed,objcopy)
->   
-> +ldflags-y := -shared -soname linux-vdso64.so.1 \
-> +	$(call ld-option, --eh-frame-hdr) \
-> +	$(call ld-option, --orphan-handling=warn) -T
-> +
->   # actual build commands
-> -quiet_cmd_vdso64ld = VDSO64L $@
-> -      cmd_vdso64ld = $(CC) $(c_flags) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) $(call cc-ldoption, -Wl$(comma)--orphan-handling=warn)
-> +quiet_cmd_vdso64ld = LD      $@
-> +      cmd_vdso64ld = $(cmd_ld)
->   
->   # install commands for the unstripped file
->   quiet_cmd_vdso_install = INSTALL $@
-> diff --git a/arch/powerpc/kernel/vdso64/vdso64.lds.S b/arch/powerpc/kernel/vdso64/vdso64.lds.S
-> index 4e3a8d4ee614..58c33b704b6a 100644
-> --- a/arch/powerpc/kernel/vdso64/vdso64.lds.S
-> +++ b/arch/powerpc/kernel/vdso64/vdso64.lds.S
-> @@ -11,7 +11,6 @@ OUTPUT_FORMAT("elf64-powerpcle", "elf64-powerpcle", "elf64-powerpcle")
->   OUTPUT_FORMAT("elf64-powerpc", "elf64-powerpc", "elf64-powerpc")
->   #endif
->   OUTPUT_ARCH(powerpc:common64)
-> -ENTRY(_start)
->   
->   SECTIONS
->   {
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
