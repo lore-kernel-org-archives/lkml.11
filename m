@@ -2,31 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 685EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243346AbiCBQir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:38:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
+        id S243382AbiCBQiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:38:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240513AbiCBQii (ORCPT
+        with ESMTP id S242840AbiCBQii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Mar 2022 11:38:38 -0500
-X-Greylist: delayed 66 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 08:37:54 PST
 Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D482F29CBC
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:37:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6856D2B261
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:37:55 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646239072;
+        t=1646239073;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RoJ6KhPXk7RwGdhLlSmay7OZIFNg6mxUpxpaIs64SPw=;
-        b=He6aO0JgCTzTNVfaICfLABWtZP0A3y0+aj6FYlfvf+mgRQAkTl3GWU/Tn7dKzAUWBQXWBe
-        +5zV/8vXVNGiqruB3+klAWFioEYzmvGtBvAdTQqj8mMmuKz+GYYFtA2GylRDOYdKUN8grK
-        ylTRltogUO+0CElKwAb2CS42S8905Es=
+        bh=swbTnyAsWMCMrpYXsiQkz6QMlKhIbhxptnYL52Z/im0=;
+        b=ZVIurZ/9fvOAIOeiHUu/51xa78T1S/EHbzaNuZFvr3Srvw8s0IvbIDUTTKHU5Gu1lJOxjk
+        ErkFaSBxK5IA9zzvUzW0UfjElafHDIE7JrnZlrAYQnAs4Dz/71sspxvUR5aLoZkM4KKxR4
+        ikwGE2jqH2t6ZZKqmGUUwGZ7eIfyuOA=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -37,9 +36,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm 07/22] kasan: simplify kasan_update_kunit_status and call sites
-Date:   Wed,  2 Mar 2022 17:36:27 +0100
-Message-Id: <dac26d811ae31856c3d7666de0b108a3735d962d.1646237226.git.andreyknvl@google.com>
+Subject: [PATCH mm 09/22] kasan: move update_kunit_status to start_report
+Date:   Wed,  2 Mar 2022 17:36:29 +0100
+Message-Id: <cae5c845a0b6f3c867014e53737cdac56b11edc7.1646237226.git.andreyknvl@google.com>
 In-Reply-To: <cover.1646237226.git.andreyknvl@google.com>
 References: <cover.1646237226.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -52,95 +51,140 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-- Rename kasan_update_kunit_status() to update_kunit_status()
-  (the function is static).
-
-- Move the IS_ENABLED(CONFIG_KUNIT) to the function's
-  definition instead of duplicating it at call sites.
-
-- Obtain and check current->kunit_test within the function.
+Instead of duplicating calls to update_kunit_status() in every error
+report routine, call it once in start_report(). Pass the sync flag
+as an additional argument to start_report().
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/report.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ mm/kasan/report.c | 75 +++++++++++++++++++++--------------------------
+ 1 file changed, 34 insertions(+), 41 deletions(-)
 
 diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 2d892ec050be..59db81211b8a 100644
+index 93543157d3e1..0b6c8a14f0ea 100644
 --- a/mm/kasan/report.c
 +++ b/mm/kasan/report.c
-@@ -357,24 +357,31 @@ static bool report_enabled(void)
+@@ -98,13 +98,40 @@ static void print_error_description(struct kasan_access_info *info)
+ 			info->access_addr, current->comm, task_pid_nr(current));
  }
  
- #if IS_ENABLED(CONFIG_KUNIT)
--static void kasan_update_kunit_status(struct kunit *cur_test, bool sync)
++#if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
 +static void update_kunit_status(bool sync)
- {
++{
 +	struct kunit *test;
- 	struct kunit_resource *resource;
- 	struct kunit_kasan_status *status;
- 
--	resource = kunit_find_named_resource(cur_test, "kasan_status");
++	struct kunit_resource *resource;
++	struct kunit_kasan_status *status;
++
 +	test = current->kunit_test;
 +	if (!test)
 +		return;
- 
-+	resource = kunit_find_named_resource(test, "kasan_status");
- 	if (!resource) {
--		kunit_set_failure(cur_test);
-+		kunit_set_failure(test);
- 		return;
- 	}
- 
- 	status = (struct kunit_kasan_status *)resource->data;
- 	WRITE_ONCE(status->report_found, true);
- 	WRITE_ONCE(status->sync_fault, sync);
 +
- 	kunit_put_resource(resource);
- }
--#endif /* IS_ENABLED(CONFIG_KUNIT) */
++	resource = kunit_find_named_resource(test, "kasan_status");
++	if (!resource) {
++		kunit_set_failure(test);
++		return;
++	}
++
++	status = (struct kunit_kasan_status *)resource->data;
++	WRITE_ONCE(status->report_found, true);
++	WRITE_ONCE(status->sync_fault, sync);
++
++	kunit_put_resource(resource);
++}
 +#else
 +static void update_kunit_status(bool sync) { }
 +#endif
++
+ static DEFINE_SPINLOCK(report_lock);
  
+-static void start_report(unsigned long *flags)
++static void start_report(unsigned long *flags, bool sync)
+ {
+-	/*
+-	 * Make sure we don't end up in loop.
+-	 */
++	/* Update status of the currently running KASAN test. */
++	update_kunit_status(sync);
++	/* Make sure we don't end up in loop. */
+ 	kasan_disable_current();
+ 	spin_lock_irqsave(&report_lock, *flags);
+ 	pr_err("==================================================================\n");
+@@ -356,33 +383,6 @@ static bool report_enabled(void)
+ 	return !test_and_set_bit(KASAN_BIT_REPORTED, &kasan_flags);
+ }
+ 
+-#if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
+-static void update_kunit_status(bool sync)
+-{
+-	struct kunit *test;
+-	struct kunit_resource *resource;
+-	struct kunit_kasan_status *status;
+-
+-	test = current->kunit_test;
+-	if (!test)
+-		return;
+-
+-	resource = kunit_find_named_resource(test, "kasan_status");
+-	if (!resource) {
+-		kunit_set_failure(test);
+-		return;
+-	}
+-
+-	status = (struct kunit_kasan_status *)resource->data;
+-	WRITE_ONCE(status->report_found, true);
+-	WRITE_ONCE(status->sync_fault, sync);
+-
+-	kunit_put_resource(resource);
+-}
+-#else
+-static void update_kunit_status(bool sync) { }
+-#endif
+-
  void kasan_report_invalid_free(void *object, unsigned long ip)
  {
-@@ -383,10 +390,7 @@ void kasan_report_invalid_free(void *object, unsigned long ip)
+ 	unsigned long flags;
+@@ -390,9 +390,7 @@ void kasan_report_invalid_free(void *object, unsigned long ip)
  
  	object = kasan_reset_tag(object);
  
--#if IS_ENABLED(CONFIG_KUNIT)
--	if (current->kunit_test)
--		kasan_update_kunit_status(current->kunit_test, true);
--#endif /* IS_ENABLED(CONFIG_KUNIT) */
-+	update_kunit_status(true);
- 
- 	start_report(&flags);
+-	update_kunit_status(true);
+-
+-	start_report(&flags);
++	start_report(&flags, true);
  	pr_err("BUG: KASAN: double-free or invalid-free in %pS\n", (void *)ip);
-@@ -402,10 +406,7 @@ void kasan_report_async(void)
+ 	kasan_print_tags(tag, object);
+ 	pr_err("\n");
+@@ -406,9 +404,7 @@ void kasan_report_async(void)
  {
  	unsigned long flags;
  
--#if IS_ENABLED(CONFIG_KUNIT)
--	if (current->kunit_test)
--		kasan_update_kunit_status(current->kunit_test, false);
--#endif /* IS_ENABLED(CONFIG_KUNIT) */
-+	update_kunit_status(false);
- 
- 	start_report(&flags);
+-	update_kunit_status(false);
+-
+-	start_report(&flags);
++	start_report(&flags, false);
  	pr_err("BUG: KASAN: invalid-access\n");
-@@ -424,10 +425,7 @@ static void __kasan_report(unsigned long addr, size_t size, bool is_write,
+ 	pr_err("Asynchronous mode enabled: no access details available\n");
+ 	pr_err("\n");
+@@ -425,9 +421,8 @@ static void __kasan_report(unsigned long addr, size_t size, bool is_write,
  	void *untagged_addr;
  	unsigned long flags;
  
--#if IS_ENABLED(CONFIG_KUNIT)
--	if (current->kunit_test)
--		kasan_update_kunit_status(current->kunit_test, true);
--#endif /* IS_ENABLED(CONFIG_KUNIT) */
-+	update_kunit_status(true);
- 
+-	update_kunit_status(true);
+-
  	disable_trace_on_warning();
++	start_report(&flags, true);
  
+ 	tagged_addr = (void *)addr;
+ 	untagged_addr = kasan_reset_tag(tagged_addr);
+@@ -442,8 +437,6 @@ static void __kasan_report(unsigned long addr, size_t size, bool is_write,
+ 	info.is_write = is_write;
+ 	info.ip = ip;
+ 
+-	start_report(&flags);
+-
+ 	print_error_description(&info);
+ 	if (addr_has_metadata(untagged_addr))
+ 		kasan_print_tags(get_tag(tagged_addr), info.first_bad_addr);
 -- 
 2.25.1
 
