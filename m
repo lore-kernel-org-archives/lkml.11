@@ -2,139 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242102AbiCBNFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 08:05:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
+        id S242113AbiCBNF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 08:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242044AbiCBNE7 (ORCPT
+        with ESMTP id S242088AbiCBNFV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 08:04:59 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47020C2483;
-        Wed,  2 Mar 2022 05:04:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646226256; x=1677762256;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=zRkmD/3/0Ciauk5yzlPVMvJbgpl1+ykhnwt0BbO+vNA=;
-  b=rsesroQ9HOmnLBiIjdqwcSobuBDd0OSvefEVU+IV7c4lh7jezOt1UI3a
-   fQtn+b8KCChIZMEN4WABEjpJ2iLpbGO6oXzbc6Fhv3IMxuqv4U6JqVbuF
-   y/xv8U9OhLpp0sd1KStxzA5Lg+OaV1K3QMOZa1EMzdZprIBNSydm0PM+t
-   Q=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 02 Mar 2022 05:04:16 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 02 Mar 2022 05:04:14 -0800
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 02 Mar 2022 18:33:52 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 39B36587B; Wed,  2 Mar 2022 18:33:51 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     adrian.hunter@intel.com, quic_riteshh@quicinc.com,
-        asutoshd@quicinc.com, ulf.hansson@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, linux-mmc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_vbadigan@quicinc.com, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-Subject: [PATCH V4 1/7] mmc: core: Capture eMMC and SD card errors
-Date:   Wed,  2 Mar 2022 18:33:41 +0530
-Message-Id: <1646226227-32429-2-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646226227-32429-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1646226227-32429-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        Wed, 2 Mar 2022 08:05:21 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D68FC4289
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 05:04:31 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nPOeY-0004N5-BG; Wed, 02 Mar 2022 14:04:26 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-5c51-3418-45e9-21d0.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5c51:3418:45e9:21d0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5F06B40CC0;
+        Wed,  2 Mar 2022 13:04:23 +0000 (UTC)
+Date:   Wed, 2 Mar 2022 14:04:23 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     kernel test robot <yujie.liu@intel.com>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arunachalam Santhanam <Arunachalam.Santhanam@in.bosch.com>,
+        linux-can <linux-can@vger.kernel.org>
+Subject: Re: drivers/net/can/usb/etas_es58x/es58x_fd.c:174:8: warning:
+ Uninitialized variable: rx_event_msg [uninitvar]
+Message-ID: <20220302130423.ddd2ulldffpo5lb2@pengutronix.de>
+References: <202203021333.mMJpWPzx-lkp@intel.com>
+ <5f13b914-e309-49ee-4f98-c81780c478b9@intel.com>
+ <20220302103219.kvpfhc6qz42t3pvv@pengutronix.de>
+ <CAMZ6Rq+HR=j2mD97etTgSapOix96P=pK70bTr9HeJu2Mjkn3+g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="56xh6vvo7owhvdci"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6Rq+HR=j2mD97etTgSapOix96P=pK70bTr9HeJu2Mjkn3+g@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add changes to capture eMMC and SD card errors.
-This is useful for debug and testing.
 
-Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-Signed-off-by: Ram Prakash Gupta <quic_rampraka@quicinc.com>
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
----
- drivers/mmc/core/core.c  |  6 ++++++
- include/linux/mmc/host.h | 23 +++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+--56xh6vvo7owhvdci
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
-index 368f104..f3679ed 100644
---- a/drivers/mmc/core/core.c
-+++ b/drivers/mmc/core/core.c
-@@ -2242,6 +2242,12 @@ void mmc_rescan(struct work_struct *work)
- 		if (freqs[i] <= host->f_min)
- 			break;
- 	}
-+
-+	/*
-+	 * Ignore the command timeout errors observed during
-+	 * the card init as those are excepted.
-+	 */
-+	host->err_stats[MMC_ERR_CMD_TIMEOUT] = 0;
- 	mmc_release_host(host);
- 
-  out:
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index 7afb57c..3b7f1e5 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -93,6 +93,23 @@ struct mmc_clk_phase_map {
- 
- struct mmc_host;
- 
-+enum mmc_err_stat {
-+	MMC_ERR_CMD_TIMEOUT,
-+	MMC_ERR_CMD_CRC,
-+	MMC_ERR_DAT_TIMEOUT,
-+	MMC_ERR_DAT_CRC,
-+	MMC_ERR_AUTO_CMD,
-+	MMC_ERR_ADMA,
-+	MMC_ERR_TUNING,
-+	MMC_ERR_CMDQ_RED,
-+	MMC_ERR_CMDQ_GCE,
-+	MMC_ERR_CMDQ_ICCE,
-+	MMC_ERR_REQ_TIMEOUT,
-+	MMC_ERR_CMDQ_REQ_TIMEOUT,
-+	MMC_ERR_ICE_CFG,
-+	MMC_ERR_MAX,
-+};
-+
- struct mmc_host_ops {
- 	/*
- 	 * It is optional for the host to implement pre_req and post_req in
-@@ -500,6 +517,7 @@ struct mmc_host {
- 
- 	/* Host Software Queue support */
- 	bool			hsq_enabled;
-+	u32                     err_stats[MMC_ERR_MAX];
- 
- 	unsigned long		private[] ____cacheline_aligned;
- };
-@@ -635,6 +653,11 @@ static inline enum dma_data_direction mmc_get_dma_dir(struct mmc_data *data)
- 	return data->flags & MMC_DATA_WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
- }
- 
-+static inline void mmc_debugfs_err_stats_inc(struct mmc_host *host,
-+		enum mmc_err_stat stat) {
-+	host->err_stats[stat] += 1;
-+}
-+
- int mmc_send_tuning(struct mmc_host *host, u32 opcode, int *cmd_error);
- int mmc_send_abort_tuning(struct mmc_host *host, u32 opcode);
- int mmc_get_ext_csd(struct mmc_card *card, u8 **new_ext_csd);
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+On 02.03.2022 21:49:27, Vincent MAILHOL wrote:
+> > I think it's possible to assign rx_event_msg before the
+> > es58x_check_msg_len().
+>=20
+> Yes, I will do so. Even if this is a false positive, this pattern
+> can be misleading. e.g. during a code review, this does indeed
+> look incorrect at first glance.
+>=20
+> Also, doing such change would be consistent with was is done in
+> other functions:
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/etas_e=
+s58x/es58x_fd.c#L210
+>=20
+> This not being a bug fix, is it fine to send it to net-next?
 
+ACK
+
+> Or do you see a need to backport this?
+
+Don't think so.
+
+> > I think (hope?) the compiler will not optimize
+> > anything away. :)
+>=20
+> With a function call and a return statement, the compiler would
+> need to be severely defective to try to optimize this away :)
+
+I was thinking of this:
+
+| void *foo =3D bar->baz;
+|=20
+| if (!bar)
+|         return;
+|=20
+| printf("%p", foo);
+
+There were/are compilers that optimize the bar NULL pointer check away,
+because bar has already been de-referenced.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--56xh6vvo7owhvdci
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIfa1QACgkQrX5LkNig
+0123Qgf/RpK66S6/00nnYIK17FjG95rGgcEjTFYWj2ir4Ovuaw3GujZW1y0abN82
+TnG3X6EFnNHYVbf3U7KGYku+YJ/OvD5wsNY9/Cuvl1fK+ttCb89nO4CxeEmFarI9
+xErdeT656hGzVi3saAQEHSaE/JHedk2F61P8ncwm63z5U9r9nKN63bwqi/2S2j+s
+cJbv3LXbmUR473wZVgyZBXEC3JDM9KJ+PHo1g6RskySTtC6l1dx5La0gs8v72kqi
+X74fvgcJBXkCR/xppPhl1Iu7EwHt1xdZUI9YnPdeCF0EBa2ODK4jRGBJPolpj00i
+IadoT7WOi5iyhJmh1oNvZ1t4aWrbqQ==
+=wr6A
+-----END PGP SIGNATURE-----
+
+--56xh6vvo7owhvdci--
