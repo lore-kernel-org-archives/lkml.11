@@ -2,91 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AADC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F009DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239661AbiCBJOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 04:14:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34972 "EHLO
+        id S240365AbiCBJPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 04:15:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234297AbiCBJOo (ORCPT
+        with ESMTP id S234297AbiCBJPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 04:14:44 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC895AD124;
-        Wed,  2 Mar 2022 01:14:01 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id AD8CE1F3A3;
-        Wed,  2 Mar 2022 09:14:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646212440; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iGHUhCKOcL2n+qE6pqmO8+pq2D/DVGIVQ+mXRoLijqs=;
-        b=qvuvP3EhWuPyXu9sMldVsa/vfPluJhI6BG/09ApuutwLo2e5Le7xXS0ewEG4POuNOybSil
-        TRcNJrLYcLY1mi9kVTRXkR+ZHSp4jNMXm6/ZhUpdirt7P1eTlG+gHm/6rjeniY1Cw69zKc
-        yUM5ixk4GoJPB3lUz7cuCIL3ngox0+Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646212440;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iGHUhCKOcL2n+qE6pqmO8+pq2D/DVGIVQ+mXRoLijqs=;
-        b=2kigCNPQ+fQ+7VQ2rUnjbbn1LEzipYFTcvqL8SjD9maOmC8Mi2gLkohXdrEWBhgUZ6wooy
-        9bQSWnOHHvFhQQCQ==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 45D2BA3B81;
-        Wed,  2 Mar 2022 09:14:00 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 10:14:00 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     cgel.zte@gmail.com
-cc:     mcgrof@kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] module: avoid calling synchronize_rcu()
-In-Reply-To: <20220302011306.2054550-1-lv.ruyi@zte.com.cn>
-Message-ID: <alpine.LSU.2.21.2203021012250.5895@pobox.suse.cz>
-References: <20220302011306.2054550-1-lv.ruyi@zte.com.cn>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Wed, 2 Mar 2022 04:15:33 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEABEAD139;
+        Wed,  2 Mar 2022 01:14:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646212490; x=1677748490;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=C5LMruo8BLbuP0C5+2OgoMCHK0E8sfbsi+OabOpXTzE=;
+  b=I7AqbMAYOVcpnfTpnq1ribohmsCbr5d/vcdirXauaO8lmtncP9BafIj0
+   2cnU+aifrKoSAlNXA+9LiDfoSaqnzkiI4KAA6f9BR4IwRt9B8EKA8Qwpy
+   Os57W3C3f2Ew5bWdTEv71lf3qhWUBdeXPLgqdsKv/YSkK/m2dFRMQCdbf
+   6TDVXieYhZNBdVEHovJ6JynM13t3NYkznuAGcnpti7IhINkP3kkHaEMBD
+   PX3lDjkGtRWhXKLE7H8D4G8eD3oudsQ4hmfIfp65/O1JFGxGPQh5UT+Lg
+   cWYvChJKdJnKi0hMgrxnWxbxYsgxznyRxXXx6Y3iV+J8arW7oJNvsCe9x
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="316570330"
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="316570330"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 01:14:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="576043355"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 02 Mar 2022 01:14:48 -0800
+To:     Henry Lin <henryl@nvidia.com>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <2e5f4998-71bc-1fd5-8a82-b7392e4f7615@linux.intel.com>
+ <20220302065106.85021-1-henryl@nvidia.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v3] xhci: fix runtime PM imbalance in USB2 resume
+Message-ID: <1c41cf52-df45-baba-fdfc-03545cefcbcf@linux.intel.com>
+Date:   Wed, 2 Mar 2022 11:16:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220302065106.85021-1-henryl@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Wed, 2 Mar 2022, cgel.zte@gmail.com wrote:
-
-> From: Lv Ruyi (CGEL ZTE) <lv.ruyi@zte.com.cn>
+On 2.3.2022 8.51, Henry Lin wrote:
+> A race between system resume and device-initiated resume may result in
+> runtime PM imbalance on USB2 root hub. If a device-initiated resume
+> starts and system resume xhci_bus_resume() directs U0 before hub driver
+> sees the resuming device in RESUME state, device-initiated resume will
+> not be finished in xhci_handle_usb2_port_link_resume(). In this case,
+> usb_hcd_end_port_resume() call is missing.
 > 
-> Kfree_rcu() usually results in even simpler code than does 
-> synchronize_rcu() without synchronize_rcu()'s multi-millisecond
-> latency, so replace synchronize_rcu() with kfree_rcu().
+> This changes calls usb_hcd_end_port_resume() if resuming device reaches
+> U0 to keep runtime PM balance.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi (CGEL ZTE) <lv.ruyi@zte.com.cn>
+> Fixes: a231ec41e6f6 ("xhci: refactor U0 link state handling in get_port_status")
+> Signed-off-by: Henry Lin <henryl@nvidia.com>
 > ---
->  kernel/module.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/kernel/module.c b/kernel/module.c
-> index 6cea788fd965..767b5f9e5819 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -4138,8 +4138,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
->   ddebug_cleanup:
->  	ftrace_release_mod(mod);
->  	dynamic_debug_remove(mod, info->debug);
-> -	synchronize_rcu();
-> -	kfree(mod->args);
-> +	kfree_rcu(mod->args);
 
-this has been proposed already. synchronize_rcu() and kfree() here are not 
-really tied together. See the discussion at 
-https://lore.kernel.org/all/alpine.LSU.2.21.2111301132220.3922@pobox.suse.cz/T/#u
+Thanks, adding to queue
 
-Regards
-Miroslav
+-Mathias
