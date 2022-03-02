@@ -2,142 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 044ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiCCAAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
+        id S229817AbiCCAAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:00:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiCCAAU (ORCPT
+        with ESMTP id S229811AbiCCAAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:00:20 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07073496A7
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:59:36 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso6219120pjj.2
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 15:59:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ckCBduCU8rIC3xMm3IAzUST/V5HZeQGdJRo5tI2p308=;
-        b=KxhA+CG1r0bDnPfRKPRFC4gWUhhykeI8AD5VmSGys12v1gnCr1jqlAXuyRGCQEa5xu
-         MbxFpEqZObEdVp9jxGfe67+QSPDRS3eTe7Knh2vk8ZwqewwaTmNiZmbGTB/JCDGJrzt0
-         Kr7KUS9mo0vj05w/YDjQlaHpwIy5/BKQoglm9GVlHLe0e4jDc9EG8M1vN6BPd19TwktT
-         pHCwVpH0nat/DKrUdcH21H5XA8rHzH3vn0zpKjYPLfTLOEMlOaAZ0yu03RSIvjMik4iU
-         sFJFW8xyL7nOO3FV/nd6fHVCtBIXYCUvAn3UTVbbMXXgOaEBUf210V2B8LzHhtVXpqXm
-         CD6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ckCBduCU8rIC3xMm3IAzUST/V5HZeQGdJRo5tI2p308=;
-        b=3IJrxt8GzTE1OWC4GKNIAddk92QcBZgNPMAEgQItjqlIDSNNPy6sR4nN6emtzeGuYt
-         YX6yQJVg5rUu5w+V6NlTdCuR/hDxXQtFHBlOPgn3HQAJXFfBiDrGdU+aQ9+tELK4gOqa
-         qbf+YcaKVXv84HG/X6/ty/Kh47lF/KjMZxAkGapm/vZEsqCtu2UtEuqQ/99SWaw9drt8
-         Bd+VhuaXTU4MRUzNaP7wo0WYEKnpPs6pA6LOfw1f5KQ2h2l1s5XOiZmZPVsYCf0JnmeS
-         +SW5LOkfDzU5+ouLOI0xyXNYhTLTTtT0OhBcz8W/AiOaVZByRXuASHsbrG/i++T6gexp
-         PywA==
-X-Gm-Message-State: AOAM533UB9xRo4szV3BTga/7A6DSG2n1SOFW0TvacIAvT/XHnxtZJ5bS
-        wn8Bpj0BPxZXMO/C5R1K4nhZiQ==
-X-Google-Smtp-Source: ABdhPJwnOxGOxT+j0GWCzApEGE5efrNfWQ84mPA2upSypv5fvtV9FoH1ielmix1ygb7LhabIpUzT8A==
-X-Received: by 2002:a17:902:8306:b0:14f:a386:6a44 with SMTP id bd6-20020a170902830600b0014fa3866a44mr33123916plb.140.1646265575211;
-        Wed, 02 Mar 2022 15:59:35 -0800 (PST)
-Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
-        by smtp.gmail.com with ESMTPSA id c18-20020a056a000ad200b004cdccd3da08sm299171pfl.44.2022.03.02.15.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 15:59:34 -0800 (PST)
-Date:   Wed, 2 Mar 2022 23:59:30 +0000
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v3 04/28] KVM: x86/mmu: Formalize TDP MMU's (unintended?)
- deferred TLB flush logic
-Message-ID: <YiAE4ju0a3MWXr31@google.com>
-References: <20220226001546.360188-1-seanjc@google.com>
- <20220226001546.360188-5-seanjc@google.com>
+        Wed, 2 Mar 2022 19:00:25 -0500
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C44749F97;
+        Wed,  2 Mar 2022 15:59:40 -0800 (PST)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nPXur-0006BG-Kw; Thu, 03 Mar 2022 09:57:54 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 03 Mar 2022 10:57:53 +1200
+Date:   Thu, 3 Mar 2022 10:57:53 +1200
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     mpm@selenic.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/7] hwrng: atmel - add runtime pm support
+Message-ID: <Yh/2ca39ikM+pcTa@gondor.apana.org.au>
+References: <20220221075928.563806-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220226001546.360188-5-seanjc@google.com>
+In-Reply-To: <20220221075928.563806-1-claudiu.beznea@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022, Sean Christopherson wrote:
-> Explicitly ignore the result of zap_gfn_range() when putting the last
-> reference to a TDP MMU root, and add a pile of comments to formalize the
-> TDP MMU's behavior of deferring TLB flushes to alloc/reuse.  Note, this
-> only affects the !shared case, as zap_gfn_range() subtly never returns
-> true for "flush" as the flush is handled by tdp_mmu_zap_spte_atomic().
+On Mon, Feb 21, 2022 at 09:59:21AM +0200, Claudiu Beznea wrote:
+> Hi,
 > 
-> Putting the root without a flush is ok because even if there are stale
-> references to the root in the TLB, they are unreachable because KVM will
-> not run the guest with the same ASID without first flushing (where ASID
-> in this context refers to both SVM's explicit ASID and Intel's implicit
-> ASID that is constructed from VPID+PCID+EPT4A+etc...).
+> This series adds runtime PM support for atmel-rng driver. Along with
+> this some cleanup and fixes patches were added to the series.
 > 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Mingwei Zhang <mizhang@google.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c     |  8 ++++++++
->  arch/x86/kvm/mmu/tdp_mmu.c | 10 +++++++++-
->  2 files changed, 17 insertions(+), 1 deletion(-)
+> Thank you,
+> Claudiu Beznea
 > 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 80607513a1f2..5a931c89d27b 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -5069,6 +5069,14 @@ int kvm_mmu_load(struct kvm_vcpu *vcpu)
->  	kvm_mmu_sync_roots(vcpu);
->  
->  	kvm_mmu_load_pgd(vcpu);
-> +
-> +	/*
-> +	 * Flush any TLB entries for the new root, the provenance of the root
-> +	 * is unknown.  In theory, even if KVM ensures there are no stale TLB
-> +	 * entries for a freed root, in theory, an out-of-tree hypervisor could
-> +	 * have left stale entries.  Flushing on alloc also allows KVM to skip
-> +	 * the TLB flush when freeing a root (see kvm_tdp_mmu_put_root()).
-> +	 */
->  	static_call(kvm_x86_flush_tlb_current)(vcpu);
->  out:
->  	return r;
-> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-> index 12866113fb4f..e35bd88d92fd 100644
-> --- a/arch/x86/kvm/mmu/tdp_mmu.c
-> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-> @@ -93,7 +93,15 @@ void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
->  	list_del_rcu(&root->link);
->  	spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
->  
-> -	zap_gfn_range(kvm, root, 0, -1ull, false, false, shared);
-> +	/*
-> +	 * A TLB flush is not necessary as KVM performs a local TLB flush when
-> +	 * allocating a new root (see kvm_mmu_load()), and when migrating vCPU
-> +	 * to a different pCPU.  Note, the local TLB flush on reuse also
-> +	 * invalidates any paging-structure-cache entries, i.e. TLB entries for
-> +	 * intermediate paging structures, that may be zapped, as such entries
-> +	 * are associated with the ASID on both VMX and SVM.
-> +	 */
-> +	(void)zap_gfn_range(kvm, root, 0, -1ull, false, false, shared);
+> Claudiu Beznea (7):
+>   hwrng: atmel - add wait for ready support on read
+>   hwrng: atmel - disable trng on failure path
+>   hwrng: atmel - rename enable/disable functions to init/cleanup
+>   hwrng: atmel - move set of TRNG_HALFR in atmel_trng_init()
+>   hwrng: atmel - use __maybe_unused and pm_ptr() for pm ops
+>   hwrng: atmel - add runtime pm support
+>   hwrng: atmel - remove extra line
+> 
+>  drivers/char/hw_random/atmel-rng.c | 148 ++++++++++++++++++-----------
+>  1 file changed, 91 insertions(+), 57 deletions(-)
 
-Understood that we could avoid the TLB flush here. Just curious why the
-"(void)" is needed here? Is it for compile time reason?
->  
->  	call_rcu(&root->rcu_head, tdp_mmu_free_sp_rcu_callback);
->  }
-> -- 
-> 2.35.1.574.g5d30c73bfb-goog
-> 
+All applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
