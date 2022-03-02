@@ -2,139 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C69D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A81C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240589AbiCBUib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:38:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
+        id S243372AbiCBUjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:39:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238537AbiCBUi2 (ORCPT
+        with ESMTP id S242725AbiCBUi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:38:28 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903E6DEE1
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:37:42 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id d62so3254216iog.13
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:37:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PITAejhp5addOJEECsyAFsn+IidGaNKUeolD2o1Iu5Q=;
-        b=PoBC/43YZvGUMmCXr2U3UCSYQxPgqcU2t4h5MEKI6iwqEMFsHCmUklvmf2xpDvKuKr
-         +6Y5Vuw70YmFaOt+w6k3rZEffAV0jBSRp9LaMm98pBQ8bLBWFpjFGRvjX9pY1ltp0ZGv
-         QIqxQhwoiXJF6iB0zQNfXl1y10DWNmej/4M4E=
+        Wed, 2 Mar 2022 15:38:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26E321FA6C
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:38:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646253494;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nMsfn4Rs0wG7spUhGbyLnPRwbrnVAsF3QEAbPCpAwa0=;
+        b=N/0AO/A+zAjeM1EVWvjs+Z0nFpDP/EsK4AawLZChMTeWojNQfx1Of5RirQIfMniFg8ghd6
+        k8YvbEkXc/rfLgndxoKs1tzEg8uR2ZnaXAqh2m9KMJ42B1OVqeWXrJBf0uuKqwfFndFsu8
+        GPiAFqTQN0sFBovm1fWXiQ0uBh5ZgKs=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-202-Nue3MOgTPJioLVc9RK0ALw-1; Wed, 02 Mar 2022 15:38:13 -0500
+X-MC-Unique: Nue3MOgTPJioLVc9RK0ALw-1
+Received: by mail-wr1-f72.google.com with SMTP id p9-20020adf9589000000b001e333885ac1so1050385wrp.10
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:38:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PITAejhp5addOJEECsyAFsn+IidGaNKUeolD2o1Iu5Q=;
-        b=A4fFGvs5KRJjKL6S8JIBb4r2FSi86KuI/NzThAZJ7k4jGThX9k+OOmh84evT9Z9RL8
-         504YppQaFWRjwvEmafS5UUF9riGlqVl9tH+X0ugN7S3D0ooMknWASkvULdIXMlFoemB4
-         GGeTtps3zanlg3Z5/Hnl+gaxqJBXrnJLslzKDtcOGwHBigDQkTKBDsWsWAPbffkw95I3
-         PNHTjLCv9oMXfXgbx2dv2TR7xk70xUza6lSThFORuOvbcrD9E9p5e/sa/CgnkGBaYszR
-         Z+TvmfOQKI5J7K5nqueT8LGdlcnqRpTUW3MekQR/Zmjyx5gaRQ0FuJ0atQIhkfabYtuD
-         NaGg==
-X-Gm-Message-State: AOAM532m2AdYwGrjJZw//TNb67+OdoJ9G8n0YsB17IV4SY3OkHqL3A4U
-        ucF1xA1hYlkIHCYGHY/RWHH2d2+P0JVw6A==
-X-Google-Smtp-Source: ABdhPJzRu57z9GBWfBxja1vTPSY3jTMIRK8EFabp100S34hq0f1Dxgzs3NiV4xUkAE8YR1vi+aMukw==
-X-Received: by 2002:a02:ccac:0:b0:314:2074:fec4 with SMTP id t12-20020a02ccac000000b003142074fec4mr26963338jap.41.1646253462175;
-        Wed, 02 Mar 2022 12:37:42 -0800 (PST)
-Received: from google.com (h24-56-189-219.arvdco.broadband.dynamic.tds.net. [24.56.189.219])
-        by smtp.gmail.com with ESMTPSA id s13-20020a056e0218cd00b002c5f74a97d6sm51472ilu.39.2022.03.02.12.37.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:37:41 -0800 (PST)
-Date:   Wed, 2 Mar 2022 13:37:40 -0700
-From:   Raul E Rangel <rrangel@chromium.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     "Anand K. Mistry" <amistry@google.com>, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] x86: Add a prompt for HPET_EMULATE_RTC
-Message-ID: <Yh/VlNy1owvTh979@google.com>
-References: <20210429155950.v2.1.I2392cf11fb353d10459958100b69d93346fa167c@changeid>
- <87bl9se07w.ffs@nanos.tec.linutronix.de>
- <CAATStaMkJ_xdkHutcgH2bmZiO3z6fKoLNrP5=Q3XUsNTpvHP5g@mail.gmail.com>
- <87zgxbhr17.ffs@nanos.tec.linutronix.de>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=nMsfn4Rs0wG7spUhGbyLnPRwbrnVAsF3QEAbPCpAwa0=;
+        b=Nj647pMa8m8WQjgh9aOSn79Ie2KNZg5biBxB7Tt3OHqDp4oDSggEVJvVXgQEvHend4
+         eF4AFr/Uc2Y57cjrGc99f6WOGt/Wz8oeRlqlkbR39fxBAuGVQDSrfFIryPbT1iaWbK4q
+         ZRRpI+6cbfInDK+TpaTK8kMBA6NGJBzspyWDJmZBW6oJYImJX9V28G2NAqBDoxSNUcQh
+         FUBcyt2CPhmKojkXIyXI+mlL9jd9/bM3O1rYAj/Pgjn3PzNjU1peQtoBgO5FJMKg07oB
+         bu/gzXdWhzg78w29cDVQcwDUjyQ9ejj51DlPb4SNWzg83ZU1nzRmwm4hgbjj3f5+fuuF
+         K6cA==
+X-Gm-Message-State: AOAM531dMUWJWcBSmENzEH1B4vjdZwnnr6D95q6Kr0JKs3sP49nx+iey
+        XLVx6R9PjcodrpsRsNvC6J6rM7W9OTLnhDxL1rYpjrEKsvbTuBBhNvrHWj6LXAE4msDvItHSeP5
+        W2OaDL/5wgMNqiKqUqDqzs5cA
+X-Received: by 2002:a05:6000:2c9:b0:1f0:49aa:d347 with SMTP id o9-20020a05600002c900b001f049aad347mr1084981wry.453.1646253492115;
+        Wed, 02 Mar 2022 12:38:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy9nsVwmkEM6/m/0SMuz52ZfnM1DW3UGN+YBkJuzcILW720TEYWY5MncvxoFHCV5hIHl1XqBA==
+X-Received: by 2002:a05:6000:2c9:b0:1f0:49aa:d347 with SMTP id o9-20020a05600002c900b001f049aad347mr1084964wry.453.1646253491815;
+        Wed, 02 Mar 2022 12:38:11 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:be00:9509:b3b1:97e2:ef4c? (p200300cbc709be009509b3b197e2ef4c.dip0.t-ipconnect.de. [2003:cb:c709:be00:9509:b3b1:97e2:ef4c])
+        by smtp.gmail.com with ESMTPSA id p190-20020a1c29c7000000b00381227166b2sm68644wmp.41.2022.03.02.12.38.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 12:38:11 -0800 (PST)
+Message-ID: <fb895ba3-9d7e-7421-d5c6-f5e7a2d1231a@redhat.com>
+Date:   Wed, 2 Mar 2022 21:38:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87zgxbhr17.ffs@nanos.tec.linutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220224122614.94921-1-david@redhat.com>
+ <20220224122614.94921-13-david@redhat.com>
+ <20220302165559.GU219866@nvidia.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH RFC 12/13] mm/gup: trigger FAULT_FLAG_UNSHARE when
+ R/O-pinning a possibly shared anonymous page
+In-Reply-To: <20220302165559.GU219866@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 04, 2021 at 09:55:16AM +0200, Thomas Gleixner wrote:
-> On Tue, May 04 2021 at 11:21, Anand K. Mistry wrote:
-> > On Mon, 3 May 2021 at 17:38, Thomas Gleixner <tglx@linutronix.de> wrote:
-> >> On Thu, Apr 29 2021 at 16:00, Anand K. Mistry wrote:
-> >>
-> >> > This does two things:
-> >> > 1. Makes the option visible in menuconfig, allowing the user to easily
-> >> >    disable this option
-> >> > 2. Allows olddefconfig to respect the option if it is set in the old
-> >> >    .config file
-> >>
-> >> Well, it's pretty clear WHAT it does, but there is absolutely no
-> >> reasoning WHY this knob is needed in the first place.
-> >
-> > Without this option, 'make oldolddefconfig' ignores the option in the
-> > old .confg file and just sets it to the calculated default for the
-> > platform. An easy way to test this is to do 'make defconfig' on
-> > x86-64, set CONFIG_HPET_EMULATE_RTC=n in the generated .config, and
-> > run 'make olddefconfig'. Without this patch, olddefconfig will ignore
-> > the set option and overwrite it with CONFIG_HPET_EMULATE_RTC=y.
+On 02.03.22 17:55, Jason Gunthorpe wrote:
+> On Thu, Feb 24, 2022 at 01:26:13PM +0100, David Hildenbrand wrote:
+>> Whenever GUP currently ends up taking a R/O pin on an anonymous page that
+>> might be shared -- mapped R/O and !PageAnonExclusive() -- any write fault
+>> on the page table entry will end up replacing the mapped anonymous page
+>> due to COW, resulting in the GUP pin no longer being consistent with the
+>> page actually mapped into the page table.
+>>
+>> The possible ways to deal with this situation are:
+>>  (1) Ignore and pin -- what we do right now.
+>>  (2) Fail to pin -- which would be rather surprising to callers and
+>>      could break user space.
+>>  (3) Trigger unsharing and pin the now exclusive page -- reliable R/O
+>>      pins.
 > 
-> Rightfully so because it's a functional correctness issue. When HPET is
-> enabled in legacy mode it takes over the RTC interrupt line, which makes
-> RTC alarms disfunctional and therefore we have to emulate it. 
-> 
-> So, no.
-> 
-> > So, part of the why is that this enables the use of olddefconfig with
-> > the CONFIG_HPET_EMULATE_RTC option. The other part of why is that my
-> > team uses 'make olddefconfig' by providing a base config and then
-> > using olddefconfig to fill in the unset values with defaults to make a
-> > complete config file for a kernel build. I'd like to disable RTC
-> > emulation on a particular platform, but I can't use a config option to
-> > do it without this patch because 'make olddefconfig' will just ignore
-> > the option.
-> 
-> You can like to disable it, but that does not make it more correct. See
-> above. If your platform does not have RTC_DRV_CMOS then you have to
-> disable that which will also clear CONFIG_HPET_EMULATE_RTC.
 
-So on recent AMD Chromebooks we have disabled the RTC emulation by
-setting rtc-cmos.use_acpi_alarm=1.
+Hi Jason,
 
-* https://chromium-review.googlesource.com/c/chromiumos/overlays/board-overlays/+/3472221
-* https://chromium-review.googlesource.com/c/chromiumos/overlays/board-overlays/+/2355073
+> How does this mesh with the common FOLL_FORCE|FOLL_WRITE|FOLL_PIN
+> pattern used for requesting read access? Can they be converted to
+> just FOLL_WRITE|FOLL_PIN after this?
 
-It looks like recent Intel platforms have also disabled the RTC
-emulation.
+Interesting question, I thought about this in detail yet, let me give it
+a try:
 
-* https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/kernel/v5.15/drivers/rtc/rtc-cmos.c;l=1202
 
-One thing I've been wondering is why is the legacy mode enabled
-unconditionally by the kernel?
+IIRC, the sole purpose of FOLL_FORCE in the context of R/O pins is to
+enforce the eventual COW -- meaning we COW (via FOLL_WRITE) even if we
+don't have the permissions to write (via FOLL_FORCE), to make sure we
+most certainly have an exclusive anonymoous page in a MAP_PRIVATE mapping.
 
-* https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/kernel/v5.15/arch/x86/kernel/hpet.c;l=1096
+Dropping only the FOLL_FORCE would make the FOLL_WRITE request fail if
+the mapping is currently !VM_WRITE (but is VM_MAYWRITE), so that
+wouldn't work.
 
-If it's not enabled, can we leave it disabled? I know some firmware
-doesn't correctly populate the INT_ROUTE_CAP to describe which IRQs
-are available, but if it is populated can we use it and avoid the 
-RTC HPET emulation layer? I'm not sure what the story is on MSIs or if
-that's a supported use case.
+I recall that we don't allow pinning the zero page ("special pte",
+!vm_normal_page()). So if you have an ordinary MAP_PRIVATE|MAP_ANON
+mapping, you will now only need a "FOLL_READ" and have a reliable pin,
+even if not previously writing to every page.
 
-I have been leaving the INT_ROUTE_CAP register unset on the AMD
-Chromebooks since it's getting ignored by the kernel.
 
+It would we different with other MAP_PRIVATE file mappings I remember:
+
+With FOLL_FORCE|FOLL_WRITE|FOLL_PIN we'd force placement of an anonymous
+page, resulting in the R/O (long-term ?) pin not observing consecutive
+file changes. With a pure FOLL_READ we'd still observe file changes as
+we don't trigger a write fault.
+
+BUT, once we actually write to the private mapping via the page table,
+the GUP pin would go out of sync with the now-anonymous page mapped into
+the page table. However, I'm having a hard time answering what's
+actually expected?
+
+It's really hard to tell what the user wants with MAP_PRIVATE file
+mappings and stumbles over a !anon page (no modifications so far):
+
+(a) I want a R/O pin to observe file modifications.
+(b) I want the R/O pin to *not* observe file modifications but observe
+    my (eventual? if any) private modifications,
+
+Of course, if we already wrote to that page and now have an anon page,
+it's easy: we are already no longer following file changes.
+
+Maybe FOLL_PIN would already do now what we'd expect from a R/O pin --
+(a), maybe not. I'm wondering if FOLL_LONGTERM could give us an
+indication whether (a) or (b) applies.
+
+-- 
 Thanks,
-Raul
 
-> 
-> Thanks,
-> 
->         tglx
+David / dhildenb
+
