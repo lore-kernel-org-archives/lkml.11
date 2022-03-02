@@ -2,76 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D1FC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbiCCAD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:03:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
+        id S230038AbiCCADb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:03:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiCCADV (ORCPT
+        with ESMTP id S229982AbiCCADW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:03:21 -0500
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707EE13F92;
-        Wed,  2 Mar 2022 16:02:33 -0800 (PST)
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 22302EVL025068;
-        Thu, 3 Mar 2022 09:02:15 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 22302EVL025068
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1646265735;
-        bh=q2ESIbL2ur/uVgrpoH1ou7aTk6vOKFdeTWoLHrqeazk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JMlB+b4GTPhYQHieWq1Zxsvae0M4wM63UN3NMxZ89BpjwrCb8dVJcupcNB7oNdsAd
-         RJ0bO0KpSh+EPbLVEwGHua9flll4n9q+a6cPfX3N6B55WyPJ0PVE5jsdsyF8W+mDFM
-         X8DOgQJSuMfhj0ppmN7InVdUqRPjQPYvOIS6hPZnLeSESIIakgO6u9A64pAW5y8d1a
-         QFpARLS6/xGq6btWNlevlSku8xBv5gDPRCCiztlf+GKwiIGMcuFcvGAQbys41/TnLw
-         Qtui/SlPKatuOAs5v0XOWuqN41BcEJkk+GgEq9FLT2Zg9Lzr+Pw9P2oa9AzgvnWoCW
-         5c+eqi5ChCWuA==
-X-Nifty-SrcIP: [209.85.216.53]
-Received: by mail-pj1-f53.google.com with SMTP id z12-20020a17090ad78c00b001bf022b69d6so2179067pju.2;
-        Wed, 02 Mar 2022 16:02:15 -0800 (PST)
-X-Gm-Message-State: AOAM531Md+mzWXEXbtJLaLGBDw8KksXpCo+QMZ8Ab3xtG/vqaW0j6Dhm
-        vdQuaW2EtKZ9bPiUOSJl4l3AROakNuAJH0XYJHI=
-X-Google-Smtp-Source: ABdhPJyQAiBdGbAwXYuJr3tY3nnQBtL+cC/OwcCMGdHg6dkzHq1D+LHcd7w6NBc6K2ZNpe8EqbM7lcxaXCzB5ct6SK8=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr15817258plp.162.1646265734496; Wed, 02
- Mar 2022 16:02:14 -0800 (PST)
+        Wed, 2 Mar 2022 19:03:22 -0500
+X-Greylist: delayed 5810 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 16:02:37 PST
+Received: from smtprelay07.ispgateway.de (smtprelay07.ispgateway.de [134.119.228.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF3B193F5;
+        Wed,  2 Mar 2022 16:02:36 -0800 (PST)
+Received: from [92.206.166.137] (helo=note-book.lan)
+        by smtprelay07.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <git@apitzsch.eu>)
+        id 1nPWIw-0003tE-09; Wed, 02 Mar 2022 22:14:38 +0100
+From:   =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
+To:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
+Subject: [PATCH] ath6kl: add device ID for WLU5150-D81
+Date:   Wed,  2 Mar 2022 22:14:36 +0100
+Message-Id: <20220302211436.8746-1-git@apitzsch.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220218044634.169520-1-masahiroy@kernel.org> <20220218044634.169520-2-masahiroy@kernel.org>
- <YhSa8bOW7sOd1cp0@buildd.core.avm.de>
-In-Reply-To: <YhSa8bOW7sOd1cp0@buildd.core.avm.de>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 3 Mar 2022 09:01:32 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAREW5Wm=LuJZvMzUvAczuSG4UaXyDZvew2xc44ydUZVjA@mail.gmail.com>
-Message-ID: <CAK7LNAREW5Wm=LuJZvMzUvAczuSG4UaXyDZvew2xc44ydUZVjA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] certs: simplify empty certs creation in certs/Makefile
-To:     Nicolas Schier <n.schier@avm.de>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 5:12 PM Nicolas Schier <n.schier@avm.de> wrote:
->
-> On Fri, Feb 18, 2022 at 01:46:34PM +0900, Masahiro Yamada wrote:
-> > To create an empty cert file, we need to pass "" to the extract-cert
-> > tool, which is common for all the three call-sites of cmd_exract_certs.
->
-> Missing a 't' in 'cmd_exract_certs'.
->
-> Reviewed-by: Nicolas Schier <n.schier@avm.de>
->
+This device with a male Mini-B USB connector is part of Panasonic TVs.
 
-Thanks. Fixed the typo, and applied to linux-kbuild.
+Signed-off-by: André Apitzsch <git@apitzsch.eu>
+---
+ drivers/net/wireless/ath/ath6kl/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/wireless/ath/ath6kl/usb.c b/drivers/net/wireless/ath/ath6kl/usb.c
+index aba70f35e574..65e683effdcb 100644
+--- a/drivers/net/wireless/ath/ath6kl/usb.c
++++ b/drivers/net/wireless/ath/ath6kl/usb.c
+@@ -1217,6 +1217,7 @@ static int ath6kl_usb_pm_resume(struct usb_interface *interface)
+ static const struct usb_device_id ath6kl_usb_ids[] = {
+ 	{USB_DEVICE(0x0cf3, 0x9375)},
+ 	{USB_DEVICE(0x0cf3, 0x9374)},
++	{USB_DEVICE(0x04da, 0x390d)},
+ 	{ /* Terminating entry */ },
+ };
+ 
+-- 
+2.35.1
 
---
-Best Regards
-Masahiro Yamada
