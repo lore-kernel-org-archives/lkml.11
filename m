@@ -2,135 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92094C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE378C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244469AbiCBSZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S244522AbiCBS0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:26:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiCBSZa (ORCPT
+        with ESMTP id S232866AbiCBS0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:25:30 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0CAB65D8
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:24:47 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id s14so3500754edw.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:24:46 -0800 (PST)
+        Wed, 2 Mar 2022 13:26:02 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6A1BDE56
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:25:18 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id pj17so1151069ejb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:25:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5mW/DgEYHc6lx5ZGe3709yEtY8pwd8eOROaDalazgpU=;
-        b=hHBVL0nLI4SEFVkQyemKiLQM4To85AQfwckY5ua0yrip8ueb3x8thwVswa/n3Ru31z
-         3YvC6v0eT6CwlPk+t29WSczfspmsXkoHOq63nYXpeYYJ+bLmbQhNS7rhsQEbMTDaQlqf
-         O20SfkZazwLAsM5FpuQ2IrctDoZW0w+yUJy+ltu/4v6kdrBMZtCRacVhkizd5uVSn4eg
-         RWedA5CE8GMQ1fxROa38lwbhjty4csWx1KGli66uwA9MH/dshF6k9Vl3UJ5o2qPX7eNT
-         c1p/YXOa9Ol/Jk/QReVRJnFgkIZV7MSqTeVMx1NVWve6maLsAVV+BO19ls+b10Ub3GzA
-         ajoQ==
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zru33MOIq9u6j5okLf6Dq+iG+dSjlj1psboOqbx3Ln8=;
+        b=Adyt4zxOk04oIJ+Y/gJBinkf33Hoz0xYu9/G8cP+FDRCLqM4hb2Bvn4XF4xX43pmfr
+         xmXrTYN9UmaB0OXxxICbzV9gmpJoQtwiJCMaCiH6orPb5Lh2Vcu0tflFnwPk90CxQ87G
+         f3LRTLVHvUjMYWBeYTM0HworoahgmUvv0NYt/yILtjWKJ+vEA46yn0ZztHGxfgMDT2mK
+         uya2xo1KfEW32bBq9FPe9fsnEA6WwNTCLsy2vOhD73js0hH8EUpQDCckkFLcCuvC1cD/
+         0QsnYrrk2z1QBZ7pFHwu1pC+Eta1oQ8dfZKU9o3TpOAiTPB/SfQkWwqY4sAtcWCpwyiN
+         8x4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5mW/DgEYHc6lx5ZGe3709yEtY8pwd8eOROaDalazgpU=;
-        b=M2XlQWfPitnlS3E4/khsdB5Teevl4macPLTl4GfbFEZVqC1lFntyA98N+LYX5ahH6p
-         iT0Ru0UV/1wZEd7J8Z/t6bTwbng2CImFEh9CeDy7O7VtcyySLL1lHqWbno8mMbp3wU6i
-         0LATY24aEmgcxUNwzIACqNlENlXxb+QFIzSexXYwCFbbU0iASYB6diKtBeBQhgFw/G2V
-         SiLvadCmkiFRhk21q3i3pUzREYGVAzZwqX77vlwcxeQU8wGejD9V8sQOx5MAEz5MQ1kf
-         wxpNUQdFoYKwYTO3P7BLNvQAw81vmPfzeZfVxNt9OqP8NWN7Tl2UNrPTTiaUCVZbSDzv
-         5RtA==
-X-Gm-Message-State: AOAM533iEKAokpkLnSER7ZXsH7ScYGRJclUnakIb3LY/MwR4CoXfouBT
-        /0GTowljmx9Pubjto7GDYOPqghsE9abobnaA9mvBhTTCV/E=
-X-Google-Smtp-Source: ABdhPJwtlmacYkZgfLGIBKLJUts9jln6AiTmfmBKHxSbBSs2UVFp+qpxbXHGPViN2jlIhClwEUpNb8+GHMq4XSXNDGw=
-X-Received: by 2002:a05:6402:2987:b0:414:39b0:7fc1 with SMTP id
- eq7-20020a056402298700b0041439b07fc1mr9800120edb.214.1646245485535; Wed, 02
- Mar 2022 10:24:45 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zru33MOIq9u6j5okLf6Dq+iG+dSjlj1psboOqbx3Ln8=;
+        b=PPx1AhaFizQ1ltiupONEc6SF0Zl9h7YS7FbJvttqW2p1lP1DZ4yCq43HMojkaLFEG0
+         56Tfq5nZ5Yrsh7AiQAQoegXR6LDoTead5gKBfcdry+u6iJVZgmq4G+YLBKO9t3b4+8i+
+         FlNiZclatJ8MWXDw+KvpyajMNTlzIs0gfNXpkV0tRfTwnRBhjTsbdLh11TUxk+ikYIlI
+         qtVjSKTgmomxpzLtwKqO/b/8lKPjFInIyd8Vpc7tKkod7cUlW5ayoz2AcsryLqmLDn42
+         kIfoF8syfrRpFpPp9srFX2Cqhv0SlazIi8EcA1f30kEv+6WkWaRVBNjUIdku2m4jd+Qb
+         Ay5A==
+X-Gm-Message-State: AOAM533vThqBv6LfBtWmGxRXUtfI7yMKxIGQZOug4L1dBZCaIH8wJ4lo
+        VTxjBrc+GRep2wFQTrEYg285OUO7y/Se5w==
+X-Google-Smtp-Source: ABdhPJwa5yyy5dN0BrPZBSZVSzlqjTHHsdlaU7eir7KpsB4BimR1iMy0VYyo36DjkWerqXUGrGEKTg==
+X-Received: by 2002:a17:906:1e0c:b0:6cf:d014:e454 with SMTP id g12-20020a1709061e0c00b006cfd014e454mr24821370ejj.583.1646245517075;
+        Wed, 02 Mar 2022 10:25:17 -0800 (PST)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id eo8-20020a1709069b0800b006ce6eef6836sm6569297ejc.131.2022.03.02.10.25.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 10:25:16 -0800 (PST)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH] bluetooth: hci_event: don't print an error on vendor events
+Date:   Wed,  2 Mar 2022 18:23:52 +0000
+Message-Id: <20220302182352.441352-1-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220302082145.12028-1-linmiaohe@huawei.com>
-In-Reply-To: <20220302082145.12028-1-linmiaohe@huawei.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Wed, 2 Mar 2022 10:24:34 -0800
-Message-ID: <CAHbLzkopyw2BtuWooTf_LGBWkkPdCiVGsFJERsWq8xSEdb=xXw@mail.gmail.com>
-Subject: Re: [PATCH] mm/huge_memory: make is_transparent_hugepage() static
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 12:22 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> It's only used inside the huge_memory.c now. Don't export it and make
-> it static. We can thus reduce the size of huge_memory.o a bit.
->
-> Without this patch:
->    text    data     bss     dec     hex filename
->   32319    2965       4   35288    89d8 mm/huge_memory.o
->
-> With this patch:
->    text    data     bss     dec     hex filename
->   32042    2957       4   35003    88bb mm/huge_memory.o
->
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
+some devices see errors being printed for vendor events, e.g.
 
-Reviewed-by: Yang Shi <shy828301@gmail.com>
+[   75.806141] Bluetooth: hci0: setting up wcn399x
+[   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
+[   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
+[   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
+[   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
+[   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
+[   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
+[   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
+[   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
+[   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+[   77.198451] Bluetooth: hci0: QCA setup on UART is completed
 
-> ---
->  include/linux/huge_mm.h | 6 ------
->  mm/huge_memory.c        | 3 +--
->  2 files changed, 1 insertion(+), 8 deletions(-)
->
-> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
-> index 0734aff8fa19..2999190adc22 100644
-> --- a/include/linux/huge_mm.h
-> +++ b/include/linux/huge_mm.h
-> @@ -183,7 +183,6 @@ unsigned long thp_get_unmapped_area(struct file *filp, unsigned long addr,
->
->  void prep_transhuge_page(struct page *page);
->  void free_transhuge_page(struct page *page);
-> -bool is_transparent_hugepage(struct page *page);
->
->  bool can_split_folio(struct folio *folio, int *pextra_pins);
->  int split_huge_page_to_list(struct page *page, struct list_head *list);
-> @@ -341,11 +340,6 @@ static inline bool transhuge_vma_enabled(struct vm_area_struct *vma,
->
->  static inline void prep_transhuge_page(struct page *page) {}
->
-> -static inline bool is_transparent_hugepage(struct page *page)
-> -{
-> -       return false;
-> -}
-> -
->  #define transparent_hugepage_flags 0UL
->
->  #define thp_get_unmapped_area  NULL
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index b49e1a11df2e..592588825c07 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -533,7 +533,7 @@ void prep_transhuge_page(struct page *page)
->         set_compound_page_dtor(page, TRANSHUGE_PAGE_DTOR);
->  }
->
-> -bool is_transparent_hugepage(struct page *page)
-> +static inline bool is_transparent_hugepage(struct page *page)
->  {
->         if (!PageCompound(page))
->                 return false;
-> @@ -542,7 +542,6 @@ bool is_transparent_hugepage(struct page *page)
->         return is_huge_zero_page(page) ||
->                page[1].compound_dtor == TRANSHUGE_PAGE_DTOR;
->  }
-> -EXPORT_SYMBOL_GPL(is_transparent_hugepage);
->
->  static unsigned long __thp_get_unmapped_area(struct file *filp,
->                 unsigned long addr, unsigned long len,
-> --
-> 2.23.0
->
+Use the quick-return path in hci_event_func() to avoid printing this
+message for vendor events, this reverts to the previous behaviour which
+didn't print an error for vendor events.
+
+Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ net/bluetooth/hci_event.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index fc30f4c03d29..56cc41ea9f31 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -6809,7 +6809,7 @@ static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+ 	const struct hci_ev *ev = &hci_ev_table[event];
+ 	void *data;
+ 
+-	if (!ev->func)
++	if (!ev->func || event == HCI_EV_VENDOR)
+ 		return;
+ 
+ 	if (skb->len < ev->min_len) {
+-- 
+2.35.1
+
