@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06422C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 951BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243112AbiCBOai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:30:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S243127AbiCBOap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243067AbiCBO3o (ORCPT
+        with ESMTP id S243083AbiCBO3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:29:44 -0500
+        Wed, 2 Mar 2022 09:29:52 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A7551E52
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9027356204
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646231304; x=1677767304;
+  t=1646231309; x=1677767309;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=FI7ts3ddWiJt2vgVWaXRndDV9uR/SMBzOmQIiJZCOuA=;
-  b=MjIddxeFchuzMndxuOb208alIknRG/rGHFN+zBc/EiNlCXsll+Aar45Q
-   H+Zjwwcsc22C+dDjPh7Lee4c9gl+N3xZak/tdt6DfQxZgT8QQKnIBUm8l
-   UI0t35VElsSsCycVwX8V5PnsWiIGSzi1GFB5tNPm1PMkUVN3TwuYTMdzd
-   XAADd7PtEfIeIYOOYDp+UQa3ydmwthyLcopbCBiWpVT9NF5IHFj0Q/JGE
-   xsaiWWLuHAKeNaISF7UfphyjSL6xPE3tE7CoW3PJlnIIJQ5dzvnDlSe12
-   2697c/U6fwu5+UzrhEJVgiO30KuygRZTqCJs4EdM7vp+A6TnBukzK6sC9
+  bh=Jw3+L9J/up2HJodxYOGI6M1WsdFVeMG1Qu1QbhliuCY=;
+  b=AvGDh54KbfxoaaL+BCd4/wT6wzGOve/uz/bRh1OpJhiZLkPPhNILksHm
+   2yd3zXWssiTfjgNu3w/rVzBirb5SeP/an7AuvYT2Ri7+66oPxUDvCBN6c
+   LAVKfe+QxL6G3C7u89tQ7sjKTbzjvkQoz7lGixuerldnxMND3ctjZf1bc
+   qfBgTX09rdBAXEGSoc7ORT8hufZAUI4Gb6rt80b0bQoRGnOGkur8yTdJK
+   dNwCs5hKsaz+wWl9AIpvYBmMeOUeEew/92riHsFInXpnAAqlrlqRrlWJK
+   tOS77YCdpwKuSlS93qiGpJRo+so8hgchVzi6dKtFHrVA5UGWIQ1iIYSFX
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233376494"
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233376501"
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="233376494"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:15 -0800
+   d="scan'208";a="233376501"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="551270237"
+   d="scan'208";a="545512488"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 02 Mar 2022 06:28:08 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 02 Mar 2022 06:28:09 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id AC4CD4A7; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
+        id F02295DB; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,9 +52,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 17/30] x86/tdx: Port I/O: add runtime hypercalls
-Date:   Wed,  2 Mar 2022 17:27:53 +0300
-Message-Id: <20220302142806.51844-18-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 23/30] x86/boot: Avoid #VE during boot for TDX platforms
+Date:   Wed,  2 Mar 2022 17:27:59 +0300
+Message-Id: <20220302142806.51844-24-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
 References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
@@ -64,166 +64,185 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Sean Christopherson <seanjc@google.com>
 
-TDX hypervisors cannot emulate instructions directly. This includes
-port I/O which is normally emulated in the hypervisor. All port I/O
-instructions inside TDX trigger the #VE exception in the guest and
-would be normally emulated there.
+There are a few MSRs and control register bits that the kernel
+normally needs to modify during boot. But, TDX disallows
+modification of these registers to help provide consistent security
+guarantees. Fortunately, TDX ensures that these are all in the correct
+state before the kernel loads, which means the kernel does not need to
+modify them.
 
-Use a hypercall to emulate port I/O. Extend the
-tdx_handle_virt_exception() and add support to handle the #VE due to
-port I/O instructions.
+The conditions to avoid are:
 
-String I/O operations are not supported in TDX. Unroll them by declaring
-CC_ATTR_GUEST_UNROLL_STRING_IO confidential computing attribute.
+ * Any writes to the EFER MSR
+ * Clearing CR3.MCE
 
-== Userspace Implications ==
+This theoretically makes the guest boot more fragile. If, for instance,
+EFER was set up incorrectly and a WRMSR was performed, it will trigger
+early exception panic or a triple fault, if it's before early
+exceptions are set up. However, this is likely to trip up the guest
+BIOS long before control reaches the kernel. In any case, these kinds
+of problems are unlikely to occur in production environments, and
+developers have good debug tools to fix them quickly.
 
-The ioperm() facility allows userspace access to I/O instructions like
-inb/outb.  Among other things, this allows writing userspace device
-drivers.
+Change the common boot code to work on TDX and non-TDX systems.
+This should have no functional effect on non-TDX systems.
 
-This series has no special handling for ioperm(). Users will be able to
-successfully request I/O permissions but will induce a #VE on their
-first I/O instruction. If this is undesirable users can enable kernel
-lockdown feature with 'lockdown=integrity' kernel command line option.
-It makes ioperm() fail.
-
-More robust handling of this situation (denying ioperm() in all TDX
-guests) will be addressed in follow-on work.
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/coco/core.c |  7 +++-
- arch/x86/coco/tdx.c  | 79 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 85 insertions(+), 1 deletion(-)
+ arch/x86/Kconfig                     |  1 +
+ arch/x86/boot/compressed/head_64.S   | 20 ++++++++++++++++++--
+ arch/x86/boot/compressed/pgtable.h   |  2 +-
+ arch/x86/kernel/head_64.S            | 28 ++++++++++++++++++++++++++--
+ arch/x86/realmode/rm/trampoline_64.S | 13 ++++++++++++-
+ 5 files changed, 58 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-index 9113baebbfd2..5615b75e6fc6 100644
---- a/arch/x86/coco/core.c
-+++ b/arch/x86/coco/core.c
-@@ -18,7 +18,12 @@ static u64 cc_mask __ro_after_init;
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index d2f45e58e846..98efb35ed7b1 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -886,6 +886,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
+ 	select DYNAMIC_PHYSICAL_MASK
++	select X86_MCE
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index d0c3d33f3542..6d903b2fc544 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -643,12 +643,28 @@ SYM_CODE_START(trampoline_32bit_src)
+ 	movl	$MSR_EFER, %ecx
+ 	rdmsr
+ 	btsl	$_EFER_LME, %eax
++	/* Avoid writing EFER if no change was made (for TDX guest) */
++	jc	1f
+ 	wrmsr
+-	popl	%edx
++1:	popl	%edx
+ 	popl	%ecx
  
- static bool intel_cc_platform_has(enum cc_attr attr)
- {
--	return false;
-+	switch (attr) {
-+	case CC_ATTR_GUEST_UNROLL_STRING_IO:
-+		return true;
-+	default:
-+		return false;
-+	}
- }
- 
- /*
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index e6163e7e3247..1f58375f61df 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -19,6 +19,16 @@
- #define EPT_READ	0
- #define EPT_WRITE	1
- 
-+/* Port I/O direction */
-+#define PORT_READ	0
-+#define PORT_WRITE	1
-+
-+/* See Exit Qualification for I/O Instructions in VMX documentation */
-+#define VE_IS_IO_IN(e)		((e) & BIT(3))
-+#define VE_GET_IO_SIZE(e)	(((e) & GENMASK(2, 0)) + 1)
-+#define VE_GET_PORT_NUM(e)	((e) >> 16)
-+#define VE_IS_IO_STRING(e)	((e) & BIT(4))
-+
- /*
-  * Wrapper for standard use of __tdx_hypercall with no output aside from
-  * return code.
-@@ -312,6 +322,73 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
- 	return true;
- }
- 
-+static bool handle_in(struct pt_regs *regs, int size, int port)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_IO_INSTRUCTION),
-+		.r12 = size,
-+		.r13 = PORT_READ,
-+		.r14 = port,
-+	};
-+	bool success;
-+	u64 mask = GENMASK(BITS_PER_BYTE * size, 0);
-+
++#ifdef CONFIG_X86_MCE
 +	/*
-+	 * Emulate the I/O read via hypercall. More info about ABI can be found
-+	 * in TDX Guest-Host-Communication Interface (GHCI) section titled
-+	 * "TDG.VP.VMCALL<Instruction.IO>".
++	 * Preserve CR4.MCE if the kernel will enable #MC support.
++	 * Clearing MCE may fault in some environments (that also force #MC
++	 * support). Any machine check that occurs before #MC support is fully
++	 * configured will crash the system regardless of the CR4.MCE value set
++	 * here.
 +	 */
-+	success = !__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT);
++	movl	%cr4, %eax
++	andl	$X86_CR4_MCE, %eax
++#else
++	movl	$0, %eax
++#endif
 +
-+	/* Update part of the register affected by the emulated instruction */
-+	regs->ax &= ~mask;
-+	if (success)
-+		regs->ax |= args.r11 & mask;
-+
-+	return success;
-+}
-+
-+static bool handle_out(struct pt_regs *regs, int size, int port)
-+{
-+	u64 mask = GENMASK(BITS_PER_BYTE * size, 0);
-+
+ 	/* Enable PAE and LA57 (if required) paging modes */
+-	movl	$X86_CR4_PAE, %eax
++	orl	$X86_CR4_PAE, %eax
+ 	testl	%edx, %edx
+ 	jz	1f
+ 	orl	$X86_CR4_LA57, %eax
+diff --git a/arch/x86/boot/compressed/pgtable.h b/arch/x86/boot/compressed/pgtable.h
+index 6ff7e81b5628..cc9b2529a086 100644
+--- a/arch/x86/boot/compressed/pgtable.h
++++ b/arch/x86/boot/compressed/pgtable.h
+@@ -6,7 +6,7 @@
+ #define TRAMPOLINE_32BIT_PGTABLE_OFFSET	0
+ 
+ #define TRAMPOLINE_32BIT_CODE_OFFSET	PAGE_SIZE
+-#define TRAMPOLINE_32BIT_CODE_SIZE	0x70
++#define TRAMPOLINE_32BIT_CODE_SIZE	0x80
+ 
+ #define TRAMPOLINE_32BIT_STACK_END	TRAMPOLINE_32BIT_SIZE
+ 
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 9c63fc5988cd..184b7468ea76 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -140,8 +140,22 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 	addq	$(init_top_pgt - __START_KERNEL_map), %rax
+ 1:
+ 
++#ifdef CONFIG_X86_MCE
 +	/*
-+	 * Emulate the I/O write via hypercall. More info about ABI can be found
-+	 * in TDX Guest-Host-Communication Interface (GHCI) section titled
-+	 * "TDG.VP.VMCALL<Instruction.IO>".
++	 * Preserve CR4.MCE if the kernel will enable #MC support.
++	 * Clearing MCE may fault in some environments (that also force #MC
++	 * support). Any machine check that occurs before #MC support is fully
++	 * configured will crash the system regardless of the CR4.MCE value set
++	 * here.
 +	 */
-+	return !_tdx_hypercall(hcall_func(EXIT_REASON_IO_INSTRUCTION), size,
-+			       PORT_WRITE, port, regs->ax & mask);
-+}
++	movq	%cr4, %rcx
++	andl	$X86_CR4_MCE, %ecx
++#else
++	movl	$0, %ecx
++#endif
 +
-+/*
-+ * Emulate I/O using hypercall.
-+ *
-+ * Assumes the IO instruction was using ax, which is enforced
-+ * by the standard io.h macros.
-+ *
-+ * Return True on success or False on failure.
-+ */
-+static bool handle_io(struct pt_regs *regs, u32 exit_qual)
-+{
-+	bool in;
-+	int size, port;
-+
-+	if (VE_IS_IO_STRING(exit_qual))
-+		return false;
-+
-+	in   = VE_IS_IO_IN(exit_qual);
-+	size = VE_GET_IO_SIZE(exit_qual);
-+	port = VE_GET_PORT_NUM(exit_qual);
-+
-+
-+	if (in)
-+		return handle_in(regs, size, port);
-+	else
-+		return handle_out(regs, size, port);
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -361,6 +438,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 		return handle_cpuid(regs);
- 	case EXIT_REASON_EPT_VIOLATION:
- 		return handle_mmio(regs, ve);
-+	case EXIT_REASON_IO_INSTRUCTION:
-+		return handle_io(regs, ve->exit_qual);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
+ 	/* Enable PAE mode, PGE and LA57 */
+-	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
++	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
+ #ifdef CONFIG_X86_5LEVEL
+ 	testl	$1, __pgtable_l5_enabled(%rip)
+ 	jz	1f
+@@ -246,13 +260,23 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 	/* Setup EFER (Extended Feature Enable Register) */
+ 	movl	$MSR_EFER, %ecx
+ 	rdmsr
++	/*
++	 * Preserve current value of EFER for comparison and to skip
++	 * EFER writes if no change was made (for TDX guest)
++	 */
++	movl    %eax, %edx
+ 	btsl	$_EFER_SCE, %eax	/* Enable System Call */
+ 	btl	$20,%edi		/* No Execute supported? */
+ 	jnc     1f
+ 	btsl	$_EFER_NX, %eax
+ 	btsq	$_PAGE_BIT_NX,early_pmd_flags(%rip)
+-1:	wrmsr				/* Make changes effective */
+ 
++	/* Avoid writing EFER if no change was made (for TDX guest) */
++1:	cmpl	%edx, %eax
++	je	1f
++	xor	%edx, %edx
++	wrmsr				/* Make changes effective */
++1:
+ 	/* Setup cr0 */
+ 	movl	$CR0_STATE, %eax
+ 	/* Make changes effective */
+diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+index d380f2d1fd23..e38d61d6562e 100644
+--- a/arch/x86/realmode/rm/trampoline_64.S
++++ b/arch/x86/realmode/rm/trampoline_64.S
+@@ -143,11 +143,22 @@ SYM_CODE_START(startup_32)
+ 	movl	%eax, %cr3
+ 
+ 	# Set up EFER
++	movl	$MSR_EFER, %ecx
++	rdmsr
++	/*
++	 * Skip writing to EFER if the register already has desired
++	 * value (to avoid #VE for the TDX guest).
++	 */
++	cmp	pa_tr_efer, %eax
++	jne	.Lwrite_efer
++	cmp	pa_tr_efer + 4, %edx
++	je	.Ldone_efer
++.Lwrite_efer:
+ 	movl	pa_tr_efer, %eax
+ 	movl	pa_tr_efer + 4, %edx
+-	movl	$MSR_EFER, %ecx
+ 	wrmsr
+ 
++.Ldone_efer:
+ 	# Enable paging and in turn activate Long Mode.
+ 	movl	$CR0_STATE, %eax
+ 	movl	%eax, %cr0
 -- 
 2.34.1
 
