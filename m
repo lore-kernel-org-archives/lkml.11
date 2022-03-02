@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241321AbiCBLPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:15:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
+        id S241368AbiCBLP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:15:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241324AbiCBLOt (ORCPT
+        with ESMTP id S241313AbiCBLOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:14:49 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6756E60AA8;
-        Wed,  2 Mar 2022 03:14:05 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id p17so1262004plo.9;
-        Wed, 02 Mar 2022 03:14:05 -0800 (PST)
+        Wed, 2 Mar 2022 06:14:43 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F76960CDA;
+        Wed,  2 Mar 2022 03:13:57 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id k1so1666034pfu.2;
+        Wed, 02 Mar 2022 03:13:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=epyCD5JOodngCk58+WB9SJFl/4h2CqzFfv4VxTsof4Q=;
-        b=Id+ayrUBZIZvkIK2+whn67yrEM7YOnZ2qplr4gf5gkGDWxJc5kVFkg6dqPvObxfEgu
-         UWEu2a3+nsUMg5kSsYjkNblt823TMb2lDglLmiBljRvHSlQtUqY+IgHZho6s4TeJD0gs
-         apFyrMdYsujCkoE0nu7R5ag0wYkfuAGlrqYeJizlDx08A8Z9fTS9gt5qpsRVSi2GRqSs
-         OsxeHeCzbcsESoy+jjkajBMj/W3MOs5S0tJ+s+fl5+Q9NTC7RLvCLt6r/fJSzwLzLtG/
-         PiLckC8gSNnZvG42LPC1cRsulGwfP0MMpHc+t4QEWZp8hyD6hEd4M9GkvXmG/e1s5Wax
-         viIw==
+        bh=/eugBTlVHHjiLiWyNxaX8yniotcp8FYciUbkKrPu6Ko=;
+        b=DHBPLXwNcNAR4Jzj56gtHWY2AB98daHiMl/bPXsjqbIRBjq/4RCGLDRXPXe09V49zJ
+         BDDmUbs0mp2t57/KdP1E7p+5/IXG8bdFz+TiDFL4EImx/Qpj8JKaaAi61vMHwhUH0Ijy
+         R/MvagH7QcHptwkyFWIph8/ENVIDNVzLs1sVBUFbIp9hRQKa+DkFY4B+e6EQW6S2GdVB
+         Mpdcfje/w9J7d/NtntAmmeHFBFwXNB+I9o4TbYO/r+JmS8VqH4yuTbqIsU/JH+KWa8iZ
+         HOR0dsk0ViJX/1+GvXuJzJPIComDWjunE5MU7ffL+lBrwxHVSStq2z0QHiSHjIdXDSPO
+         +cVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=epyCD5JOodngCk58+WB9SJFl/4h2CqzFfv4VxTsof4Q=;
-        b=UVCxhvn61u839kgq5FDJ5wOgICaeO29bOOOjHmnA30XFMnJnEaS1gt0lwlu+YGbFBv
-         hvvg46lINkkqJopMsJDE7UEZLAI6Qlr+LHjMBuAYeMjrPqkFdQCby91H4Se3/EfKR7zo
-         +gvFYJ942kghsI/7ZG1fbkBIb6IxwplLsEQRaL68ir/kB28KmNIR6OFF4D1ZCBmpyzvD
-         22Rf5alKMvCydmoL892hk7HWbheLsj4fdsAgtzkBmKlzWXHyX1DECn+qvbGZRES8Rs7b
-         yb0NDO5TyId61UuGTLeX4N3MkxUx4MqBSbGEgAIPEnV+gFuHNfsgKuiaa1GCZHJ2pltf
-         nN4A==
-X-Gm-Message-State: AOAM531/EAkARdjVCesj6cPdW9Ur0sUeax4r2IuySaYizHXHIwIJsWgD
-        8hEgwwrGsQKpqzCIVGCP+UQ=
-X-Google-Smtp-Source: ABdhPJxl0CXU3s/Y0tgUbnmO5/ega6Rd6cq8U0g4bQ4kd1qfnYOWdFEyAXaz0HX94G0LDbdi+17w7w==
-X-Received: by 2002:a17:90a:2e0e:b0:1bc:dbe:2d04 with SMTP id q14-20020a17090a2e0e00b001bc0dbe2d04mr26674143pjd.74.1646219644770;
-        Wed, 02 Mar 2022 03:14:04 -0800 (PST)
+        bh=/eugBTlVHHjiLiWyNxaX8yniotcp8FYciUbkKrPu6Ko=;
+        b=SylHNxSFTct156j0EA3WxQiBuCPO/Y7N9obO1GdVPTaV26IHZgakdu5nDlCpiKr2N1
+         71tbYHNqeIJqSuOlP1WHo9bN+LoSqLVPwRspyXA6KETZpLVdiG3HbsRRs9qE5/BP7FFF
+         l47fEik59tux0BESsAo517TO3YE/mXx4Qtk6fhLrYQ2AsxtC9qVYtofH5XpZkMcIC1ne
+         XM9P6xTkmLqqDpV2r0BKzh3A0dj2akOn3rp6AOxYLnHVq7g27PlrcB/RpiY8wRmyda7I
+         HqePlOem+oFlW1zfQiuyiEf7EyvFP9QzibnBCSeQALY5JjkGdXpVeCbaMmfr+mvjn3rR
+         5lhQ==
+X-Gm-Message-State: AOAM530DEuYuOxNNc2S/ltqRndiU5bZg1S6LeGk+wvkKAzRol7G85zPQ
+        pHGR+igrJfPos6QTVj8xb9b9ikm5B0dAsccM
+X-Google-Smtp-Source: ABdhPJyAaYLakEPCTHYvtOh/PtOnSQecqsnC8XvAwKEy/zUNdhCoQ8pPhI/LAUrgCvf/ipOXk2yYVQ==
+X-Received: by 2002:a62:fb0f:0:b0:4f2:6d3f:5ffb with SMTP id x15-20020a62fb0f000000b004f26d3f5ffbmr31971466pfm.55.1646219636974;
+        Wed, 02 Mar 2022 03:13:56 -0800 (PST)
 Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id v22-20020a17090ad59600b001b7deb42251sm4681847pju.15.2022.03.02.03.14.02
+        by smtp.gmail.com with ESMTPSA id v22-20020a17090ad59600b001b7deb42251sm4681847pju.15.2022.03.02.03.13.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 03:14:04 -0800 (PST)
+        Wed, 02 Mar 2022 03:13:56 -0800 (PST)
 From:   Like Xu <like.xu.linux@gmail.com>
 X-Google-Original-From: Like Xu <likexu@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
@@ -56,11 +56,10 @@ Cc:     Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org,
         Wanpeng Li <wanpengli@tencent.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        Like Xu <likexu@tencent.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v2 08/12] perf: x86/core: Add interface to query perfmon_event_map[] directly
-Date:   Wed,  2 Mar 2022 19:13:30 +0800
-Message-Id: <20220302111334.12689-9-likexu@tencent.com>
+        Like Xu <likexu@tencent.com>
+Subject: [PATCH v2 05/12] KVM: x86/pmu: Drop "u8 ctrl, int idx" for reprogram_fixed_counter()
+Date:   Wed,  2 Mar 2022 19:13:27 +0800
+Message-Id: <20220302111334.12689-6-likexu@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220302111334.12689-1-likexu@tencent.com>
 References: <20220302111334.12689-1-likexu@tencent.com>
@@ -72,68 +71,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Like Xu <likexu@tencent.com>
 
-Currently, we have [intel|knc|p4|p6]_perfmon_event_map on the Intel
-platforms and amd_[f17h]_perfmon_event_map on the AMD platforms.
+Since afrer reprogram_fixed_counter() is called, it's bound to assign
+the requested fixed_ctr_ctrl to pmu->fixed_ctr_ctrl, this assignment step
+can be moved forward (the stale value for diff is saved extra early),
+thus simplifying the passing of parameters.
 
-Early clumsy KVM code or other potential perf_event users may have
-hard-coded these perfmon_maps (e.g., arch/x86/kvm/svm/pmu.c), so
-it would not make sense to program a common hardware event based
-on the generic "enum perf_hw_id" once the two tables do not match.
+No functional change intended.
 
-Let's provide an interface for callers outside the perf subsystem to get
-the counter config based on the perfmon_event_map currently in use,
-and it also helps to save bytes.
-
-Cc: Peter Zijlstra <peterz@infradead.org>
 Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- arch/x86/events/core.c            | 11 +++++++++++
- arch/x86/include/asm/perf_event.h |  6 ++++++
- 2 files changed, 17 insertions(+)
+ arch/x86/kvm/pmu.c           | 13 ++++++-------
+ arch/x86/kvm/pmu.h           |  2 +-
+ arch/x86/kvm/vmx/pmu_intel.c | 16 ++++++++--------
+ 3 files changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index e686c5e0537b..e760a1348c62 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -2996,3 +2996,14 @@ void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- 	cap->events_mask_len	= x86_pmu.events_mask_len;
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 7b8a5f973a63..282e6e859c46 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -260,8 +260,11 @@ void reprogram_gp_counter(struct kvm_pmc *pmc)
  }
- EXPORT_SYMBOL_GPL(perf_get_x86_pmu_capability);
-+
-+u64 perf_get_hw_event_config(int hw_event)
-+{
-+	int max = x86_pmu.max_events;
-+
-+	if (hw_event < max)
-+		return x86_pmu.event_map(array_index_nospec(hw_event, max));
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(perf_get_hw_event_config);
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index 8fc1b5003713..822927045406 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -477,6 +477,7 @@ struct x86_pmu_lbr {
- };
+ EXPORT_SYMBOL_GPL(reprogram_gp_counter);
  
- extern void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap);
-+extern u64 perf_get_hw_event_config(int hw_event);
- extern void perf_check_microcode(void);
- extern void perf_clear_dirty_counters(void);
- extern int x86_perf_rdpmc_index(struct perf_event *event);
-@@ -486,6 +487,11 @@ static inline void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- 	memset(cap, 0, sizeof(*cap));
+-void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
++void reprogram_fixed_counter(struct kvm_pmc *pmc)
+ {
++	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
++	int idx = pmc->idx - INTEL_PMC_IDX_FIXED;
++	u8 ctrl = fixed_ctrl_field(pmu->fixed_ctr_ctrl, idx);
+ 	unsigned en_field = ctrl & 0x3;
+ 	bool pmi = ctrl & 0x8;
+ 
+@@ -291,12 +294,8 @@ void reprogram_counter(struct kvm_pmc *pmc)
+ {
+ 	if (pmc_is_gp(pmc))
+ 		reprogram_gp_counter(pmc);
+-	else {
+-		int idx = pmc->idx - INTEL_PMC_IDX_FIXED;
+-		u8 ctrl = fixed_ctrl_field(pmc_to_pmu(pmc)->fixed_ctr_ctrl, idx);
+-
+-		reprogram_fixed_counter(pmc, ctrl, idx);
+-	}
++	else
++		reprogram_fixed_counter(pmc);
+ }
+ EXPORT_SYMBOL_GPL(reprogram_counter);
+ 
+diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+index 4db50c290c62..70a982c3cdad 100644
+--- a/arch/x86/kvm/pmu.h
++++ b/arch/x86/kvm/pmu.h
+@@ -141,7 +141,7 @@ static inline u64 get_sample_period(struct kvm_pmc *pmc, u64 counter_value)
  }
  
-+static inline u64 perf_get_hw_event_config(int hw_event)
-+{
-+	return 0;
-+}
-+
- static inline void perf_events_lapic_init(void)	{ }
- static inline void perf_check_microcode(void) { }
- #endif
+ void reprogram_gp_counter(struct kvm_pmc *pmc);
+-void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int fixed_idx);
++void reprogram_fixed_counter(struct kvm_pmc *pmc);
+ void reprogram_counter(struct kvm_pmc *pmc);
+ 
+ void kvm_pmu_deliver_pmi(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 2eefde7e4b1a..3ddbfdd16cd0 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -37,23 +37,23 @@ static int fixed_pmc_events[] = {1, 0, 7};
+ 
+ static void reprogram_fixed_counters(struct kvm_pmu *pmu, u64 data)
+ {
++	struct kvm_pmc *pmc;
++	u8 old_fixed_ctr_ctrl = pmu->fixed_ctr_ctrl;
+ 	int i;
+ 
++	pmu->fixed_ctr_ctrl = data;
+ 	for (i = 0; i < pmu->nr_arch_fixed_counters; i++) {
+ 		u8 new_ctrl = fixed_ctrl_field(data, i);
+-		u8 old_ctrl = fixed_ctrl_field(pmu->fixed_ctr_ctrl, i);
+-		struct kvm_pmc *pmc;
+-
+-		pmc = get_fixed_pmc(pmu, MSR_CORE_PERF_FIXED_CTR0 + i);
++		u8 old_ctrl = fixed_ctrl_field(old_fixed_ctr_ctrl, i);
+ 
+ 		if (old_ctrl == new_ctrl)
+ 			continue;
+ 
+-		__set_bit(INTEL_PMC_IDX_FIXED + i, pmu->pmc_in_use);
+-		reprogram_fixed_counter(pmc, new_ctrl, i);
+-	}
++		pmc = get_fixed_pmc(pmu, MSR_CORE_PERF_FIXED_CTR0 + i);
+ 
+-	pmu->fixed_ctr_ctrl = data;
++		__set_bit(INTEL_PMC_IDX_FIXED + i, pmu->pmc_in_use);
++		reprogram_fixed_counter(pmc);
++	}
+ }
+ 
+ static struct kvm_pmc *intel_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
 -- 
 2.35.1
 
