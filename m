@@ -2,261 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D5FC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:15:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A41CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243713AbiCBRPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
+        id S231367AbiCBRQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237817AbiCBRPu (ORCPT
+        with ESMTP id S243522AbiCBRQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:15:50 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19AA58E45;
-        Wed,  2 Mar 2022 09:15:06 -0800 (PST)
+        Wed, 2 Mar 2022 12:16:12 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6BFCB66B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:15:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646241306; x=1677777306;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=quZJORXDoBJnmtXWeY1UEG0LMErZNbKWG4uR8GxuM8A=;
-  b=EgFtrQTE2RuXhvw9sRIr3IT+pA0Ncb8f9tiCc0SC60P5NxN5IIJ1lIbG
-   qRXhfI2wJDlspyrIGC0iL/9/1vb/Lqq8nOVou0CScelNSeM2zFz5ZYwQd
-   vRCxbYiuOYMHLgn2p868GOLIzIRhmd1d7Ftp+C+uIAO1rF5yphwxH1nTK
-   BZo8QGgTZGobcAwOhtAkimiecLreyGJPEymFRGwK29ytkPQQTUw1YAXwn
-   7s74MTXIjfdUqEKiu1QGwymv12Ru01fVqM/H0rIJHbiNJzFQB0n0mysA7
-   4izUGN7Nj88HSoNqykEmQlZt68TbXwAcpy2jJWkt8gcliob3VHMqMtNgg
+  t=1646241319; x=1677777319;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JPgNcN3yRPkWhdAdp6hz0bJtkS6p6GHR+izGPZ6HtW0=;
+  b=bWiy3WGOUkwangoqODvaZvq1HiULbo4W+bJHZLkg40SovWXBNAzQaUWf
+   Uy1E6tlF53pLx9rzGdSXFyo87Qc2gx5z6D9ANU75fIYBWLNBVVeUXixgt
+   42Rt3wJJdATvGQ1v57Pk4C0RhxF5SYsgCqylW6/lI4NFCNHW87CIhljpB
+   9lJhbwNi3Ay5uH2ktZMW2HGANZH+3Xnw1AnpXHNvlVJICnLjjgXOOKfQB
+   Lc9bgJ44ga08VwP75lyGfFoD5uzktergEV9/Svz95Yn+8jq1NIEZDHlI/
+   4WRnAz2/alr3TYiegErO5IRX9EA3CZ6XjyO8RjMuSBQAKrgVbSMISVJeE
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="339886271"
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="278129942"
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="339886271"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:15:05 -0800
+   d="scan'208";a="278129942"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:15:19 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="551343768"
-Received: from jbuller-mobl1.ger.corp.intel.com (HELO [10.213.194.231]) ([10.213.194.231])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:14:53 -0800
-Message-ID: <ed52ce3c-0f4a-a1e8-4176-543657d6228d@linux.intel.com>
-Date:   Wed, 2 Mar 2022 17:14:50 +0000
+   d="scan'208";a="535466041"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 02 Mar 2022 09:15:17 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPSZI-0001dq-QF; Wed, 02 Mar 2022 17:15:16 +0000
+Date:   Thu, 3 Mar 2022 01:14:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/fscache-next 36/39]
+ fs/netfs/io.c:630:2: warning: variable 'ret' is used uninitialized whenever
+ 'if' condition is false
+Message-ID: <202203030120.FpZOVtN6-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [Intel-gfx] [PATCH 6/6] treewide: remove check of list iterator
- against head past the loop body
-Content-Language: en-US
-To:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel@lists.freedesktop.org,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx@lists.freedesktop.org, samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-cifs@vger.kernel.org, kvm@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-media@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>, linux-pm@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net, linux-tegra@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-sgx@vger.kernel.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        tipc-discussion@lists.sourceforge.net,
-        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-7-jakobkoschel@gmail.com>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <20220228110822.491923-7-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi David,
 
-On 28/02/2022 11:08, Jakob Koschel wrote:
-> When list_for_each_entry() completes the iteration over the whole list
-> without breaking the loop, the iterator value will be a bogus pointer
-> computed based on the head element.
-> 
-> While it is safe to use the pointer to determine if it was computed
-> based on the head element, either with list_entry_is_head() or
-> &pos->member == head, using the iterator variable after the loop should
-> be avoided.
-> 
-> In preparation to limiting the scope of a list iterator to the list
-> traversal loop, use a dedicated pointer to point to the found element.
-> 
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+First bad commit (maybe != root cause):
 
-[snip until i915 parts]
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/fscache-next
+head:   78e12b114b9c804d4b1eef16b6df1112cde6a960
+commit: ad9e5adb388f358027a51032b3944913d98f7866 [36/39] netfs: Rename rename read_helper.c to io.c
+config: hexagon-buildonly-randconfig-r006-20220302 (https://download.01.org/0day-ci/archive/20220303/202203030120.FpZOVtN6-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/ad9e5adb388f358027a51032b3944913d98f7866
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/fscache-next
+        git checkout ad9e5adb388f358027a51032b3944913d98f7866
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/netfs/
 
->   drivers/gpu/drm/i915/gem/i915_gem_context.c   | 14 +++---
->   .../gpu/drm/i915/gem/i915_gem_execbuffer.c    | 15 ++++---
->   drivers/gpu/drm/i915/gt/intel_ring.c          | 15 ++++---
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-[snip]
+All warnings (new ones prefixed by >>):
 
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_context.c b/drivers/gpu/drm/i915/gem/i915_gem_context.c
-> index 00327b750fbb..80c79028901a 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_context.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_context.c
-> @@ -107,25 +107,27 @@ static void lut_close(struct i915_gem_context *ctx)
->   	radix_tree_for_each_slot(slot, &ctx->handles_vma, &iter, 0) {
->   		struct i915_vma *vma = rcu_dereference_raw(*slot);
->   		struct drm_i915_gem_object *obj = vma->obj;
-> -		struct i915_lut_handle *lut;
-> +		struct i915_lut_handle *lut = NULL;
-> +		struct i915_lut_handle *tmp;
-> 
->   		if (!kref_get_unless_zero(&obj->base.refcount))
->   			continue;
-> 
->   		spin_lock(&obj->lut_lock);
-> -		list_for_each_entry(lut, &obj->lut_list, obj_link) {
-> -			if (lut->ctx != ctx)
-> +		list_for_each_entry(tmp, &obj->lut_list, obj_link) {
-> +			if (tmp->ctx != ctx)
->   				continue;
-> 
-> -			if (lut->handle != iter.index)
-> +			if (tmp->handle != iter.index)
->   				continue;
-> 
-> -			list_del(&lut->obj_link);
-> +			list_del(&tmp->obj_link);
-> +			lut = tmp;
->   			break;
->   		}
->   		spin_unlock(&obj->lut_lock);
-> 
-> -		if (&lut->obj_link != &obj->lut_list) {
-> +		if (lut) {
->   			i915_lut_handle_free(lut);
->   			radix_tree_iter_delete(&ctx->handles_vma, &iter, slot);
+>> fs/netfs/io.c:630:2: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           if (sync) {
+           ^~~~~~~~~
+   include/linux/compiler.h:56:28: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler.h:58:30: note: expanded from macro '__trace_if_var'
+   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   fs/netfs/io.c:655:9: note: uninitialized use occurs here
+           return ret;
+                  ^~~
+   fs/netfs/io.c:630:2: note: remove the 'if' if its condition is always true
+           if (sync) {
+           ^~~~~~~~~~
+   include/linux/compiler.h:56:23: note: expanded from macro 'if'
+   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+                         ^
+   fs/netfs/io.c:604:9: note: initialize the variable 'ret' to silence this warning
+           int ret;
+                  ^
+                   = 0
+   1 warning generated.
 
-Looks okay although personally I would have left lut as is for a smaller 
-diff and introduced a new local like 'found' or 'unlinked'.
 
->   			i915_vma_close(vma);
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-> index 1736efa43339..fda9e3685ad2 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-> @@ -2444,7 +2444,8 @@ static struct i915_request *eb_throttle(struct i915_execbuffer *eb, struct intel
->   {
->   	struct intel_ring *ring = ce->ring;
->   	struct intel_timeline *tl = ce->timeline;
-> -	struct i915_request *rq;
-> +	struct i915_request *rq = NULL;
-> +	struct i915_request *tmp;
-> 
->   	/*
->   	 * Completely unscientific finger-in-the-air estimates for suitable
-> @@ -2460,15 +2461,17 @@ static struct i915_request *eb_throttle(struct i915_execbuffer *eb, struct intel
->   	 * claiming our resources, but not so long that the ring completely
->   	 * drains before we can submit our next request.
->   	 */
-> -	list_for_each_entry(rq, &tl->requests, link) {
-> -		if (rq->ring != ring)
-> +	list_for_each_entry(tmp, &tl->requests, link) {
-> +		if (tmp->ring != ring)
->   			continue;
-> 
-> -		if (__intel_ring_space(rq->postfix,
-> -				       ring->emit, ring->size) > ring->size / 2)
-> +		if (__intel_ring_space(tmp->postfix,
-> +				       ring->emit, ring->size) > ring->size / 2) {
-> +			rq = tmp;
->   			break;
-> +		}
->   	}
-> -	if (&rq->link == &tl->requests)
-> +	if (!rq)
->   		return NULL; /* weird, we will check again later for real */
+vim +630 fs/netfs/io.c
 
-Alternatively, instead of break could simply do "return 
-i915_request_get(rq);" and replace the end of the function after the 
-loop with "return NULL;". A bit smaller diff, or at least less "spread 
-out" over the function, so might be easier to backport stuff touching 
-this area in the future. But looks correct as is.
+3d3c95046742e4 fs/netfs/read_helper.c David Howells 2020-05-13  595  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  596  /*
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  597   * Begin the process of reading in a chunk of data, where that data may be
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  598   * stitched together from multiple sources, including multiple servers and the
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  599   * local cache.
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  600   */
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  601  int netfs_begin_read(struct netfs_io_request *rreq, bool sync)
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  602  {
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  603  	unsigned int debug_index = 0;
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  604  	int ret;
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  605  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  606  	_enter("R=%x %llx-%llx",
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  607  	       rreq->debug_id, rreq->start, rreq->start + rreq->len - 1);
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  608  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  609  	if (rreq->len == 0) {
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  610  		pr_err("Zero-sized read [R=%x]\n", rreq->debug_id);
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  611  		netfs_put_request(rreq, false, netfs_rreq_trace_put_zero_len);
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  612  		return -EIO;
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  613  	}
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  614  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  615  	rreq->work.func = netfs_rreq_work;
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  616  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  617  	if (sync)
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  618  		netfs_get_request(rreq, netfs_rreq_trace_get_hold);
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  619  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  620  	/* Chop the read into slices according to what the cache and the netfs
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  621  	 * want and submit each one.
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  622  	 */
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  623  	atomic_set(&rreq->nr_outstanding, 1);
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  624  	do {
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  625  		if (!netfs_rreq_submit_slice(rreq, &debug_index))
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  626  			break;
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  627  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  628  	} while (rreq->submitted < rreq->len);
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02  629  
+c19a5d31b470e0 fs/netfs/read_helper.c David Howells 2022-03-02 @630  	if (sync) {
 
-> 
->   	return i915_request_get(rq);
-> diff --git a/drivers/gpu/drm/i915/gt/intel_ring.c b/drivers/gpu/drm/i915/gt/intel_ring.c
-> index 2fdd52b62092..4881c4e0c407 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_ring.c
-> +++ b/drivers/gpu/drm/i915/gt/intel_ring.c
-> @@ -191,24 +191,27 @@ wait_for_space(struct intel_ring *ring,
->   	       struct intel_timeline *tl,
->   	       unsigned int bytes)
->   {
-> -	struct i915_request *target;
-> +	struct i915_request *target = NULL;
-> +	struct i915_request *tmp;
->   	long timeout;
-> 
->   	if (intel_ring_update_space(ring) >= bytes)
->   		return 0;
-> 
->   	GEM_BUG_ON(list_empty(&tl->requests));
-> -	list_for_each_entry(target, &tl->requests, link) {
-> -		if (target->ring != ring)
-> +	list_for_each_entry(tmp, &tl->requests, link) {
-> +		if (tmp->ring != ring)
->   			continue;
-> 
->   		/* Would completion of this request free enough space? */
-> -		if (bytes <= __intel_ring_space(target->postfix,
-> -						ring->emit, ring->size))
-> +		if (bytes <= __intel_ring_space(tmp->postfix,
-> +						ring->emit, ring->size)) {
-> +			target = tmp;
->   			break;
-> +		}
->   	}
-> 
-> -	if (GEM_WARN_ON(&target->link == &tl->requests))
-> +	if (GEM_WARN_ON(!target))
->   		return -ENOSPC;
-> 
->   	timeout = i915_request_wait(target,
+:::::: The code at line 630 was first introduced by commit
+:::::: c19a5d31b470e0a7dea07a71bb7b98a916b449e9 netfs: Add a function to consolidate beginning a read
 
-Looks okay as well. Less clear here if there is a clean solution to make 
-the diff smaller so no suggestions. I mean do I dare mention "goto 
-found;" from inside the loop, where the break is, instead of the 
-variable renames.. risky.. :) (And ofc "return -ENOSPC" immediately 
-after the loop.)
+:::::: TO: David Howells <dhowells@redhat.com>
+:::::: CC: David Howells <dhowells@redhat.com>
 
-As a summary changes looks okay, up to you if you want to try to make 
-the diffs smaller or not. It doesn't matter hugely really, all I have is 
-a vague and uncertain "maybe it makes backporting of something, someday 
-easier". So for i915 it is good either way.
-
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com> # i915 bits only
-
-Regards,
-
-Tvrtko
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
