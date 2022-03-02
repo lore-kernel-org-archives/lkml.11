@@ -2,151 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE416C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D18CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244294AbiCBRyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:54:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
+        id S244196AbiCBR4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:56:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244196AbiCBRyJ (ORCPT
+        with ESMTP id S233784AbiCBR4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:54:09 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E804D264
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:53:25 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nPT9l-0004SU-CE; Wed, 02 Mar 2022 18:52:57 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nPT9Y-002Fw7-7a; Wed, 02 Mar 2022 18:52:43 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nPT9W-006XrV-PN; Wed, 02 Mar 2022 18:52:42 +0100
-Date:   Wed, 2 Mar 2022 18:52:42 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Baruch Siach <baruch@tkos.co.il>, linux-kernel@vger.kernel.org,
-        Paul Cercueil <paul@crapouillou.net>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Andy Gross <agross@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Takao Orito <orito.takao@socionext.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s
- character an unsigned char
-Message-ID: <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
-References: <20220302072732.1916-1-jslaby@suse.cz>
+        Wed, 2 Mar 2022 12:56:23 -0500
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5750D006F;
+        Wed,  2 Mar 2022 09:55:39 -0800 (PST)
+Received: by mail-oi1-f176.google.com with SMTP id i5so2450219oih.1;
+        Wed, 02 Mar 2022 09:55:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XtJINkeAad4PNXHAMxkuIw7gJuFm8puZCGopniDrMH4=;
+        b=FtBL0tEspiXcV1L2ZrgyIzdM9/wpHsAdN2aZb9GwXctZoU7xDc1F56BPxyEVp0W137
+         +5/4QDwqVR0j22/caOZLeba7IjTz3lWLNrvKvR9ibkhKh57TzcA4183wlSx9kzruDcj2
+         +Op4EO2tpmfUpxXNx+CVZw2H2Wo2hi/JIc2qtmxVWWZCThS22okuwr4fa9TDEFFPQR+P
+         QnThHy/h0qiO9DqEkLUpe45kWYB7pr3VCprDJe24a+882FqC3rSIsAnzjl4CMq0MudEg
+         1TA3WbK99kqdApogJ6Jb4mMbH32+qJkTWIIDPH6w64x31r4k0MdOO+yZjqQ42aZ84k5T
+         c7dg==
+X-Gm-Message-State: AOAM530a5OFgEPhAk93+us883GQBXBIz8zHqcPGqF+3rBiultmY7LTaf
+        2fo/odrl99oS2+g7ysg1WcZDet2fGQ==
+X-Google-Smtp-Source: ABdhPJxnos+rNy9BWd5srACedG+sKc7rc70EyhHRxtLepxttbdeiiWMGnm0ENW65df34irN3dANC5g==
+X-Received: by 2002:a05:6808:9b8:b0:2d4:cc01:6cad with SMTP id e24-20020a05680809b800b002d4cc016cadmr899444oig.35.1646243739084;
+        Wed, 02 Mar 2022 09:55:39 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id f188-20020a4a58c5000000b0031ccb8272f1sm8189414oob.33.2022.03.02.09.55.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 09:55:38 -0800 (PST)
+Received: (nullmailer pid 3961427 invoked by uid 1000);
+        Wed, 02 Mar 2022 17:55:37 -0000
+Date:   Wed, 2 Mar 2022 11:55:37 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     xinlei.lee@mediatek.com
+Cc:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        lee.jones@linaro.org, matthias.bgg@gmail.com,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        jitao.shi@mediatek.com, allen-kh.cheng@mediatek.com,
+        rex-bc.chen@mediatek.com
+Subject: Re: [PATCH v3,6/6] dt-bindings: pwm: Add compatible for MediaTek
+ MT8186
+Message-ID: <Yh+vmZy8H0CClVEZ@robh.at.kernel.org>
+References: <1646199106-26879-1-git-send-email-xinlei.lee@mediatek.com>
+ <1646199106-26879-7-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hskdw542yop5hfv5"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220302072732.1916-1-jslaby@suse.cz>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <1646199106-26879-7-git-send-email-xinlei.lee@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 02, 2022 at 01:31:46PM +0800, xinlei.lee@mediatek.com wrote:
+> From: Xinlei Lee <xinlei.lee@mediatek.com>
+> 
+> Add dt-binding documentation of pwm for MediaTek MT8186 SoC.
+> 
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+> index 3a5d1cfed94d..053805846cfe 100644
+> --- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+> @@ -21,6 +21,9 @@ properties:
+>            - mediatek,mt6595-disp-pwm
+>            - mediatek,mt8173-disp-pwm
+>            - mediatek,mt8183-disp-pwm
+> +      - items:
+> +          - const: mediatek,mt8186-disp-pwm
+> +          - const: mediatek,mt8183-disp-pwm
 
---hskdw542yop5hfv5
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Combine to 1 entry:
 
-On Wed, Mar 02, 2022 at 08:27:32AM +0100, Jiri Slaby wrote:
-> Currently, uart_console_write->putchar's second parameter (the
-> character) is of type int. It makes little sense, provided uart_console_w=
-rite()
-> accepts the input string as "const char *s" and passes its content -- the
-> characters -- to putchar(). So switch the character's type to unsigned
-> char.
->=20
-> We don't use char as that is signed on some platforms. That would cause
-> troubles for drivers which (implicitly) cast the char to u16 when
-> writing to the device. Sign extension would happen in that case and the
-> value written would be completely different to the provided char. DZ is
-> an example of such a driver -- on MIPS, it uses u16 for dz_out in
-> dz_console_putchar().
+>        - items:
+>            - const: mediatek,mt8192-disp-pwm
 
-I always thought this was bigger than 8bit for hardware that supports
-wider characters. But if that's the case that's completely unsupported,
-there isn't even CS9.
+enum:
+  - mediatek,mt8186-disp-pwm
+  - mediatek,mt8192-disp-pwm
 
-So
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---hskdw542yop5hfv5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIfrucACgkQwfwUeK3K
-7AmopggAnOhPU9WpzjgGeCrJ82M89QE1zHwxLHny10qpp8CNWjSIBp6GIrgxrTA1
-HotBRcS0/boZO+3hvLzTwpU3rQ9Pedgt6hUKfsl5ckcqVrlg0Yp5WZ6+cZEa0NcE
-Y+gkX3jAowpBb3cdrkxyF8REPsUn57S+/tb8H4x7aroUey13AYKjxjEGZMlaWpms
-pNyr/cXJpZhJIp4XvFc7lTydslM8QwH/Y0emW7gR7DLFBUw02MNnw7slIKTHgpjl
-T49NU/ufUTp8FVadiQ8gwzABZLDPgE0+TDxnHEXGqxQtzsN6b76mqNYYOhXtWGM6
-hVjAWQ1lu6zv4vddIa4UgbrfSLWPxQ==
-=MAV/
------END PGP SIGNATURE-----
-
---hskdw542yop5hfv5--
+>            - const: mediatek,mt8183-disp-pwm
+> -- 
+> 2.18.0
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
