@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 167B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDADC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244731AbiCBUt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:49:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50526 "EHLO
+        id S244813AbiCBUuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:50:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244838AbiCBUtf (ORCPT
+        with ESMTP id S244562AbiCBUte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:49:35 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A184DD465
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:35 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id z12-20020a17090ad78c00b001bf022b69d6so1770071pju.2
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:48:35 -0800 (PST)
+        Wed, 2 Mar 2022 15:49:34 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD0076E3A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:28 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id 132so2639856pga.5
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:48:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ezGZS6wKoaDPZZr1vSGSOGCOOXHs/t5LaRnTO/HK9rM=;
-        b=LawSeR1NmUPUaUioLDLVRqBuUyq3N4d67ynn20lLI3i3DZ3CODegap5Yx7zLInYZ/r
-         O8E5M8tCP1pGZ9VUwlv+xv98o9JL8OsaV30TLtKckOZNrYzkWxO3OjkYw+5ETMEVG4ib
-         K2IGe5HzdbqZcgrhpAfHFCC6HvDVOmji0/t9EzKBXtMtqTsQbbvlLgoOnwpSWSRR2v8h
-         GJuxjshLyHG92UAdodKsXzogzMlZC4wnVaurId9t2/7NhZWFFWjuk6S5lMwZuWCIOHrV
-         JLIUQYW/5Qo9fDK5jBeWmreyJmekoOFaYbF9ZEGgMk/veivOmr2veDI4EdWhjvNy3/S6
-         ngtQ==
+        bh=l2yCZ0MwzJLAtB0wdzpP2V0zRLEwcqRB7kcixjR8EmM=;
+        b=fjdZBTlhSpaVYrPZ66957zXOnwQ8S+NBlz4ykN1LkFfbuiZiwTXIl9hckI/+/XA4B6
+         txRJ3Paso2bXVKKK7X0vn21t6QeoWZsZAK3z5B2nI9K5ybzBi8fCKD9XqkJQYSQrI1YE
+         VqYW5jMZopBcklJ1Bk6y3FmbEbHrJfYOtFkq+zR/oRBQymythIh+B16T9FQ63cJDKeiW
+         BISa2TVRZDIWTzii8gp1t2rm+kJCu1jq+CRAITJISvsENdrSQp1SJMClHp3w/xPw3xkI
+         L4Lx1ZeQqXBHL8p5XlluG8Yeu4ro0B7fu1XTngGHSw7m9JeJ3QGWX5b7OuK4qoKFXRm2
+         EChw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ezGZS6wKoaDPZZr1vSGSOGCOOXHs/t5LaRnTO/HK9rM=;
-        b=qYggJ79h7MZ0UG9nQ40pqDikFKcBXRhQVUaCNu1erILc0J8D+KTYBkfivlX8N8nIBS
-         /G7DRiYn0GqpSi545YaPIzeyC8xzaZ9JHrWN9wPrYSg6UBGaBgvB4YgvGLOLzpbFOpn/
-         SQIwGdbuqVR/dJkyfszuWc91rA4+pIbnLv98h89GmqVgn3gKnTZtJ8ksh8WPFOhKMFP8
-         QjdqvmxlJubhrddq89Ar/b4zr7jtL6SOL34DIY3GoWKeYz3IDnXIUxn+ZhcFXJ1JH5p5
-         HQ7eJPI4J8Sf1QNYi3m5qCiqc76I+R+6Iv1pqfwEe0HAvBb5NTfZ/NeBUuRTWNtUS2Em
-         tZwg==
-X-Gm-Message-State: AOAM530uiyUhb1RC6vJaKSiZXp4tJ9LZHQy4sh+XGWHtfBonr/8TZJpH
-        XYFEFG9tXCioVLaRlNYUMnQ=
-X-Google-Smtp-Source: ABdhPJzQJ3VVGTz9pnkt/XW/nXhMX9DaRNvZpdSD6AbdCZsfrAJkHTTFWDXhW9jS3HYgUMIXa+uCzw==
-X-Received: by 2002:a17:902:6bc5:b0:14f:ae30:3b6f with SMTP id m5-20020a1709026bc500b0014fae303b6fmr33142297plt.60.1646254114629;
-        Wed, 02 Mar 2022 12:48:34 -0800 (PST)
+        bh=l2yCZ0MwzJLAtB0wdzpP2V0zRLEwcqRB7kcixjR8EmM=;
+        b=qCzE0CNtESqt2FQrv1YbqApuvbjkStT0CgeZ+YingJyW+K719BJ2MA8xTkCXBFNwDo
+         GojMATk5yBlX3zrRIWBbWdN6imbfnXcapZeRpy/ubqSpqfMuFYBTk5K1EUQ4+HoMjVDt
+         U8JSIuphN9B8Oyu5AoAyCXQFF6g2ssKO74dcI19WlaL5f8AfNGbGLxeVkjEdS6T4fULG
+         o6p8L7L06X2XrrcgypXB2zFJfXkwm+z4DFAVof9Ry260LMkvZ1ThjZkZziJTV1vJWxUC
+         iHZlC3VDEQhdu4zwVuVuDDKs9CKYY4735R1J0mQ3YkIPtZkRxDNabw2sysEFAi3HPhvp
+         fxWg==
+X-Gm-Message-State: AOAM532VReszDa/9BjtnPRMpP+vnGGNRqPPYqqJCSqSEJjtvJgds7/fm
+        u3AFV2gncus6+2xHMLLHCQA=
+X-Google-Smtp-Source: ABdhPJyLq+DPObg9qYBqsbRRyDs4NSTt8YlfmUplm7re8TiGIWZMCnZc7Ru6TWhO8HcrCXLWEI5YoA==
+X-Received: by 2002:a62:770a:0:b0:4e0:2547:9219 with SMTP id s10-20020a62770a000000b004e025479219mr34580040pfc.43.1646254108391;
+        Wed, 02 Mar 2022 12:48:28 -0800 (PST)
 Received: from localhost.localdomain ([103.161.98.179])
-        by smtp.gmail.com with ESMTPSA id bh11-20020a056a00308b00b004f40144cf76sm50905pfb.142.2022.03.02.12.48.31
+        by smtp.gmail.com with ESMTPSA id bh11-20020a056a00308b00b004f40144cf76sm50905pfb.142.2022.03.02.12.48.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:48:34 -0800 (PST)
+        Wed, 02 Mar 2022 12:48:28 -0800 (PST)
 From:   Vihas Makwana <makvihas@gmail.com>
 To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Phillip Potter <phil@philpotter.co.uk>,
@@ -56,9 +56,9 @@ To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Martin Kaiser <martin@kaiser.cx>
 Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 10/16] staging: r8188eu: mark is_basicrate as bool
-Date:   Thu,  3 Mar 2022 02:17:31 +0530
-Message-Id: <20220302204737.49056-11-makvihas@gmail.com>
+Subject: [PATCH 08/16] staging: r8188eu: mark cckrates_included as bool
+Date:   Thu,  3 Mar 2022 02:17:29 +0530
+Message-Id: <20220302204737.49056-9-makvihas@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220302204737.49056-1-makvihas@gmail.com>
 References: <20220302204737.49056-1-makvihas@gmail.com>
@@ -68,26 +68,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mark is_basicrate as bool as it returns true/false.
+Mark cckrates_included as bool as it returns true/false.
 
 Signed-off-by: Vihas Makwana <makvihas@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_wlan_util.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_wlan_util.c   | 2 +-
+ drivers/staging/r8188eu/include/rtw_mlme_ext.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_wlan_util.c b/drivers/staging/r8188eu/core/rtw_wlan_util.c
-index eef8523c3..8e8a82a1e 100644
+index 33c022820..4f58c8970 100644
 --- a/drivers/staging/r8188eu/core/rtw_wlan_util.c
 +++ b/drivers/staging/r8188eu/core/rtw_wlan_util.c
-@@ -167,7 +167,7 @@ static unsigned char ratetbl_val_2wifirate(unsigned char rate)
- 	return val;
- }
+@@ -45,7 +45,7 @@ static u8 rtw_basic_rate_mix[7] = {
+ 	IEEE80211_OFDM_RATE_24MB | IEEE80211_BASIC_RATE_MASK
+ };
  
--static int is_basicrate(struct adapter *padapter, unsigned char rate)
-+static bool is_basicrate(struct adapter *padapter, unsigned char rate)
+-int cckrates_included(unsigned char *rate, int ratelen)
++bool cckrates_included(unsigned char *rate, int ratelen)
  {
- 	int i;
- 	unsigned char val;
+ 	int	i;
+ 
+diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+index 26f31f20e..21c7f020a 100644
+--- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
++++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+@@ -632,7 +632,7 @@ void addba_timer_hdl(struct sta_info *psta);
+ 		_set_timer(&(mlmeext)->link_timer, (ms)); \
+ 	} while (0)
+ 
+-int cckrates_included(unsigned char *rate, int ratelen);
++bool cckrates_included(unsigned char *rate, int ratelen);
+ int cckratesonly_included(unsigned char *rate, int ratelen);
+ 
+ void process_addba_req(struct adapter *padapter, u8 *paddba_req, u8 *addr);
 -- 
 2.30.2
 
