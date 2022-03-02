@@ -2,122 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01136C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241675AbiCBMIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 07:08:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
+        id S241677AbiCBMKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 07:10:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241450AbiCBMIQ (ORCPT
+        with ESMTP id S241450AbiCBMKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 07:08:16 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF831B7BC
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 04:07:32 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 069C61F37E;
-        Wed,  2 Mar 2022 12:07:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646222851; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Eo8d/qlFFmHzEnqL6EKmZWaAlz+V/Y6U9xR47zJcmUY=;
-        b=mpnTEIP6J1FQb1UUKYFMSOUnb3u52cYN9YNW194AD5Cfwuk2tIS6Ua/dsaymEMv5AefFCf
-        Oqk43prmg2hF3nuf9jCle1WIgFjteFGiSzGXsCGNeSJ+O7dbXo0SyX7sIpW1U2iNBIj+mT
-        O+H7O0MYv5xjymbrqrZ4ZfzoZwyQqIQ=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id ABCFAA3B8B;
-        Wed,  2 Mar 2022 12:07:29 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 13:07:29 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     kernel test robot <lkp@intel.com>,
-        Maninder Singh <maninder1.s@samsung.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vaneet Narang <v.narang@samsung.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>
-Subject: Re: [hnaz-mm:master 272/379] lib/vsprintf.c:991:13: warning:
- variable 'modbuildid' set but not used
-Message-ID: <Yh9eAYwI3+sBIIo7@alley>
-References: <202203012040.uFWGm3My-lkp@intel.com>
- <20220301102448.ff9bf910213d705842a2dd45@linux-foundation.org>
+        Wed, 2 Mar 2022 07:10:49 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2137.outbound.protection.outlook.com [40.107.220.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5236E55B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 04:10:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JGoFsWZ+KxAy6w5B4lce2akjQ0Cd+6FVCGzdtxv/iaCCrHXkuO4wG4EQQwnS2zIZsTEPEw7yqTrxd2eDNj2S4e8rJMWD1SRBfrPCSVGtDHuE+ErcwIISUXJE4DZV5StAyjR3VIMMGrRo8trGShx2cJTqvFrzXhXreU7y2TFF3dginkGhGo+N+mEzUBTq2oE4g4H1ZCoBPyqDJizxrBWmknjP8/wAFPM/pUyLySy93ROfKuOWOmshTnLcvFMYG58me5tMbsprAMfBybAjcVVdWf2LruwiuWj1DonqOdVcIqFIHUuPnvgdA34b1RXNZUZ/wocaD8/EEz+63KAY17Kvrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ofADRLsDAC5B9Sfnm/eivt3HMrtkBZu7FnUAOkGdqDA=;
+ b=F+7x3J/2flaYyohT2/buASRXKw/Ms4h4sYV2fzGOHEes5Zh3pmS39ZVuhrufofBlhXNY/W7+FfTCGcncf+5vAU8D5Iq1Ox1hGN1qRgn5WnJAyTUzT9XzJRhC0Js3NpMBsNLPFzSwIlFWXWCjpgiGbih2QPfUUTUK3dtDg+XSkXXexMD5zA5/wAKhzYRLSF8N/ksATeppe5X5STr0V7zJJKNDZeloRD+cfbFeIt43mGtf9ATQFgbvVk8FJR0NrMa5BFLEe0qFaYzIiPSQerJdJQWeFhjGxAwbc1j78/V6Iz7NJUbyT77zSQ4KUcoHsZOuN40+t6CZbQfwEwNuOc5BIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ofADRLsDAC5B9Sfnm/eivt3HMrtkBZu7FnUAOkGdqDA=;
+ b=arz6FCfDlC1FiTiVXUa2gvWT742IdshtAC5c2fj0Gn9NORzJBAZrJYu2c7MLpaCB0sqVyvdAiyZ4xYiVvmrBhXIaemPE5bQRXEY9oRwFp9jIJh1on+nDGHJR4Bfhp4wjQMDZT4AQ5EFpeZyKG4G3mD/h0y2FYW03XrI2pFrhmgA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+ by BN8PR04MB5905.namprd04.prod.outlook.com (2603:10b6:408:a8::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 2 Mar
+ 2022 12:10:02 +0000
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::a865:6d10:c4a9:1142]) by BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::a865:6d10:c4a9:1142%9]) with mapi id 15.20.5038.014; Wed, 2 Mar 2022
+ 12:10:02 +0000
+From:   Xin Ji <xji@analogixsemi.com>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        hsinyi@chromium.org, treapking@google.com,
+        Xin Ji <xji@analogixsemi.com>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/bridge: anx7625: Set downstream sink into normal status
+Date:   Wed,  2 Mar 2022 20:09:25 +0800
+Message-Id: <20220302120925.4153592-1-xji@analogixsemi.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR0302CA0009.apcprd03.prod.outlook.com
+ (2603:1096:202::19) To BY5PR04MB6739.namprd04.prod.outlook.com
+ (2603:10b6:a03:229::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301102448.ff9bf910213d705842a2dd45@linux-foundation.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 41365ec4-eef1-4212-1d6d-08d9fc459400
+X-MS-TrafficTypeDiagnostic: BN8PR04MB5905:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR04MB590556F55B62FAD2DBACC7D7C7039@BN8PR04MB5905.namprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6d7Bcugz1zLFEYR6hKU3j7Vrwz1u1v9ng9d2R7Bv/EFUICCghMM5h8q8NwDwH+a4L14ijSWprOaQjiBkkFri680zz4c/vIg+rcEZ2qpFLumJhJ+Xw5wrduIa+HDSZfVN4zLrgprn3BVAWjbv5qiuBW2VAJvbnurETkLdwvTQGGn6aCk4qwwWai14TY7plYJMpJ5G6W0CLxM0iyEmbB+4eL0STVzmyIINg/zypL0VAmb6WDyW9Do++XRa5d1mgmTDWqiMcGCNDyu5MTVVNAyL6zD3atvKohSXn5WftDwuR8tWKsYTB+X9REiChMkiU9z6+P98GjQzRwEJ6yA+S1IkVsk3a0MmBOAxGThmJBF0nTwMsF0603mu8rqCyePmiKOUTUQCRs1cqN6HttieB14/tY/RlK/f1OTKKoNzlHBOHvf7V9KX26bMfHWypPE4TqUqAZxPY3Sz9ROrBZ1VXe5ya+Dkd3aMbGPY7uQip9rGkHFt8TN+7UH1XvoTHj1hs50fC2X4wcLvZn4YTqJxbdsslpw2EaEgfDQckadY7YqU+Jty3s64UZZSNvptdMGtJ3B3zGvlL6AdSOswzTnEPxgsdHRuoZPJ61uP2vsxAv+N+0tTBY3A1qfV3q+pT2O8qtS1jU9CTVodfCjW36LLAgCClFIrMQyqQvZXxIeo9HvOTihY0zbIlgOWzpBl3jbY8uGt8l2d4mC2LKzZtc3k/dUZng==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(26005)(4326008)(110136005)(1076003)(2616005)(186003)(8676002)(66556008)(66946007)(66476007)(36756003)(86362001)(2906002)(5660300002)(83380400001)(6486002)(8936002)(7416002)(52116002)(38350700002)(38100700002)(55236004)(6666004)(6512007)(6506007)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DZF6AZoekgJFzMRLzR0FthsfMZsfV7+QiPrHWcNXnX9AT0rufICki7qOTteC?=
+ =?us-ascii?Q?3wMNZjqftc1to6AzKjoFqk1E5rQ9E0FhDAjGkOY1K7EbvkCP+hk6T64IZtFQ?=
+ =?us-ascii?Q?uCHdUxefcTE/fHiFCU0ztueBLkH175dL8eGgyhbKLPTYjH0vgRpRQcGX249k?=
+ =?us-ascii?Q?7gH5oODmy4A8MB/grsEYQiDTsUsF2pp25VxJzf9bBe1+a8E2bp2Jp2AmwvJ0?=
+ =?us-ascii?Q?d92xW370YhgtLRmmIsXLKKtwrtuKOkPQZtrlC0phtAm8KeS7fS1BX8SSjdcG?=
+ =?us-ascii?Q?XTh85oBd9H8D0MyRhum9v7rgDczjA2D5C1uwxEzW8MG/w1NoM3XDMXSvo11V?=
+ =?us-ascii?Q?z4XyRPwJdkKvyAO/Sr95TYx1qobtKUVMSHmB6ci/aN7wprORxzRhPBuKpDSN?=
+ =?us-ascii?Q?Whhgtipx29QFN8sn+H20I72keSnHeVl10xfFkeQHqo8mlD+2Qvae9y2P7K2e?=
+ =?us-ascii?Q?fyHWmAC33YVummHxsEconHoKU75ePuk3aL9oCrQ+ExouEBRZgY2SLZl20y7Y?=
+ =?us-ascii?Q?KuPG9x9hdIeaXA2T22lu9r/d1zKyYsycH9/BIKMMY/SXPWPd0/6tZrmO6+4j?=
+ =?us-ascii?Q?MUpAFy5OOCv2b/sDJRFYjokwgTlVr8btC6jZ1BigURVbKtDTZoOp1D3C/ZMJ?=
+ =?us-ascii?Q?t8iZOfXDnF7HyhJBiwDoPjhnQ6LQCAASlzjxIV/iL9uRvUifhF3PHzVJeYd8?=
+ =?us-ascii?Q?5Lp5E3jXC1uzGvuzJeGfcCYMm1tWcy5mu0ZfII8vxB60L7P/Wul4sRyNWYXF?=
+ =?us-ascii?Q?akl2ijnlpC2PGgLy4WAarGDoBQ8wyQEcn0gadRLsy9A/tW62y8LbGp91DZyu?=
+ =?us-ascii?Q?M12Be1MA0cuH6/yr5umGfudx+Ndvfd27n4o3cYwxzr/+0vUBNh1vZ74Ov+b6?=
+ =?us-ascii?Q?kYGmc6SrTRdhLH08TqsfR5GcOV/vbA4FGgQ4JTmwGHAnaZtFO/fXqQjz7+Gf?=
+ =?us-ascii?Q?KfszSnLV/6AogGMXr+G/MMDURRQ5WMhN7Z8uzZuzYAtCo1wOfiL0sK9dDKbd?=
+ =?us-ascii?Q?vEWT9q8q9aKqvZ4DC9fCzMTdjXlR6BlBA0bSnYMSXnsv4oP4vDO6rMUcwDfS?=
+ =?us-ascii?Q?bEyquukk683yVKibcfCKr9qqSzTZaVMGWmHlZeXE9c6+WG956P7JB00ZpFLj?=
+ =?us-ascii?Q?Z4I0X1WNIjjGVXtjnOVC49MObbxbdOCsvvoKYUFQNxTr91tgO63Tt3xILjkS?=
+ =?us-ascii?Q?gLiq3/ubjY04+lxUp/NTGfPG/SphK76tBDctOvBxMvAd6Bv2ES+S2GVkBnEv?=
+ =?us-ascii?Q?ey54EM+tBdfO+ZiXvYKNBOG7bq4dwNqRe5ZCCWJSvLYfCv6ePg81hGQLcvDS?=
+ =?us-ascii?Q?5tCjZE3Z9NPbI9c2pKwRw900Q1O2EHJSZwXM/kLkJsSvlopk7TTRDG4C/IdQ?=
+ =?us-ascii?Q?JP8EwqyZoPQEsJ/oZ3LW+8yKGWrdjZKZN+Lj/wjxdh63pE6YThhj1QyhHVlK?=
+ =?us-ascii?Q?ZuarbNA3mXbUkrSpcepMvGJt0VdoS9nNMuNmu/GZsQH2KHpQS9YlEUmjtI2c?=
+ =?us-ascii?Q?ijYLRyTdpqQMuq1jLeg407MTWhWm+rUFYzKQdtj+zdJXxb0J6Sfpp11keZax?=
+ =?us-ascii?Q?Y9VvWmj9ge2m8YqgZio3fHpD7zKaeBbUXtXPUB/nzVM/L2+JuIObAAjmZAt/?=
+ =?us-ascii?Q?GbGVA1PqY+tVfOXv8Nnk/h0=3D?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41365ec4-eef1-4212-1d6d-08d9fc459400
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 12:10:02.2034
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gWKy9e78ECM4S+ZRyPfRu7TpUerfqBVG/z/QZH6PS+5wzZjXXzLefJ+YYxhzMsdi2+6qY7zJ9GFfZThpaYA37A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR04MB5905
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-03-01 10:24:48, Andrew Morton wrote:
-> On Tue, 1 Mar 2022 20:11:04 +0800 kernel test robot <lkp@intel.com> wrote:
-> 
-> > tree:   https://github.com/hnaz/linux-mm master
-> > head:   a46912c14343fd3269cc133494988af90b377d9f
-> > commit: b314f622e664eb263ea03ef7f4580e37146f123f [272/379] kallsyms: enhance %pS/s/b printing when KALLSYSMS is disabled
-> > config: arm-eseries_pxa_defconfig (https://download.01.org/0day-ci/archive/20220301/202203012040.uFWGm3My-lkp@intel.com/config)
-> > compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # https://github.com/hnaz/linux-mm/commit/b314f622e664eb263ea03ef7f4580e37146f123f
-> >         git remote add hnaz-mm https://github.com/hnaz/linux-mm
-> >         git fetch --no-tags hnaz-mm master
-> >         git checkout b314f622e664eb263ea03ef7f4580e37146f123f
-> >         # save the config file to linux build tree
-> >         mkdir build_dir
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All warnings (new ones prefixed by >>):
-> > 
-> >    lib/vsprintf.c: In function 'sprint_module_info':
-> > >> lib/vsprintf.c:991:13: warning: variable 'modbuildid' set but not used [-Wunused-but-set-variable]
-> >      991 |         int modbuildid = 0;
-> >          |             ^~~~~~~~~~
-> 
-> Do we care about this?  [-Wunused-but-set-variable isn't normally set. 
-> Under what circumstances does it get set in your setup?
-> 
-> I did this:
-> 
-> --- a/lib/vsprintf.c~kallsyms-enhance-%ps-s-b-printing-when-kallsysms-is-disabled-fix
-> +++ a/lib/vsprintf.c
-> @@ -988,7 +988,7 @@ static int sprint_module_info(char *buf,
->  	unsigned long base;
->  	int ret = 0;
->  	const char *modname;
-> -	int modbuildid = 0;
-> +	int modbuildid __maybe_unused = 0;
->  	int len;
->  #if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
->  	const unsigned char *buildid = NULL;
+As downstream sink was set into standby mode while bridge disabled,
+this patch used for setting downstream sink into normal status
+while enable bridge.
 
-Looks good. I would fix this. I am not sure but I guess that there
-are people that try to fix W=1 warnings.
+Signed-off-by: Xin Ji <xji@analogixsemi.com>
+---
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-That said, I would prefer to disable the patch "kallsyms: enhance
-%pS/s/b printing when KALLSYSMS is disabled" for now. There are
-two problems with it:
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index 9aab879a8851..963eaf73ecab 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -919,12 +919,20 @@ static void anx7625_dp_start(struct anx7625_data *ctx)
+ {
+ 	int ret;
+ 	struct device *dev = &ctx->client->dev;
++	u8 data;
+ 
+ 	if (!ctx->display_timing_valid) {
+ 		DRM_DEV_ERROR(dev, "mipi not set display timing yet.\n");
+ 		return;
+ 	}
+ 
++	dev_info(dev, "set downstream sink into normal\n");
++	/* Downstream sink enter into normal mode */
++	data = 1;
++	ret = anx7625_aux_trans(ctx, DP_AUX_NATIVE_WRITE, 0x000600, 1, &data);
++	if (ret < 0)
++		dev_err(dev, "IO error : set sink into normal mode fail\n");
++
+ 	/* Disable HDCP */
+ 	anx7625_write_and(ctx, ctx->i2c.rx_p1_client, 0xee, 0x9f);
+ 
+-- 
+2.25.1
 
-   + It discloses the base address of loaded modules. I am not sure
-     if it is acceptable from the security point of view.
-
-   + It duplicates a lot of code from kallsyms.c. I would like to
-     avoid it.
-
-I have pointed out both problems at
-https://lore.kernel.org/r/YhzywNowPiQm3IN4@alley
-I have to admit that they are hidden between less important comments.
-
-Best Regards,
-Petr
