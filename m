@@ -2,115 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE017C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242044AbiCBNQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 08:16:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
+        id S242112AbiCBNTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 08:19:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241604AbiCBNQH (ORCPT
+        with ESMTP id S236810AbiCBNTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 08:16:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EE0C3C2C
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 05:15:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36F13B81F16
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5E57C004E1;
-        Wed,  2 Mar 2022 13:15:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646226920;
-        bh=Q4H0riTTWP2jL+cmFpHpBq4jbdqrA2hs5QRCXpPCZlY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZzSCnDmB0RPLAN3jOn4eOtyld8lVAahCFIxPQZemiwSkmgsHs8PulyOqkC5mFBGjh
-         Fg7MesUv2wL6EvccPozn7977rZ++P6NBj1TlBn+3qJaFtQLK5SdxxYY8eATUAKGnKh
-         95gw5hlLaqAv8cUskRcQO73ZqerceqaA64k3eeULUrZny6KZT2CpLGP0BVKpB8leqz
-         A8M/HAoxgbbuR1zeI10PIb7tvRH77OqGcJ2oVtkzBdyZ75MtemD7SUFx7wPafNynwF
-         U1pa5I1mSRDgXyiOmhMs06SdkDopr/7gJrqWh56LJnymBPm208we7lUbhcoauuFWQt
-         rYaka5pjdBQSQ==
-Date:   Wed, 2 Mar 2022 14:15:15 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: marvell: armada-37xx: Remap IO space to bus
- address 0x0
-Message-ID: <20220302141515.51340cab@dellmb>
-In-Reply-To: <Yh9ruVkK1gikOuA1@lunn.ch>
-References: <20220218212526.16021-1-pali@kernel.org>
-        <87o82r0zjh.fsf@BL-laptop>
-        <875yoz0wpw.fsf@BL-laptop>
-        <20220301092539.lru7hsaqxrjqz32r@pali>
-        <Yh9ruVkK1gikOuA1@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 2 Mar 2022 08:19:38 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F044D240
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 05:18:53 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id q11so1512169pln.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 05:18:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qK9d2CW5Qjm76cCegwle8ny9+Ev6C07txl5fuKAcuhc=;
+        b=NfQZaZ+q0ThsmrmmiMdQJE5ZqDxPW3SQms7rRu6Rjpb1Xp/TZ30rbx4EAneBfMi/In
+         L0RwOsoQ4+z9AP83cTrpdZsB1/FPKvt9JVDUQTu11QHVXhtiUx8Q/VA8RmRY2OwUojO/
+         xyeshltWB2Ovpmj4dTxG8febqDnclwVD6JVY57Sw+DS4roS5ktML+furTRsrzPzgMQod
+         EsxqnBlwXPljzmQgOwKq322hSjG6MfvMEvhSAJypu1noSulyNAARlSV8ql21DM50GFWa
+         WKvg8nGfZWwPbrGUO2Q4QIV66ZhQeO29SYqasCiKOyMkhlb265k/y00H4uoTV70b2gOk
+         YnbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qK9d2CW5Qjm76cCegwle8ny9+Ev6C07txl5fuKAcuhc=;
+        b=bDEd5KlC0lW5o21O1EtKVkYOm3B8mKp7Axh+vaD0k/vjP/9s64BSCE8fN5/9CPuMaw
+         Qd7UbU6OSOkENO1GvxN093dTWk8R2/V3nd+NA9Ty7hCIPKFhB6GB9iXu4XM1nurmCyeE
+         cwrquZPs/KjA3AiHZ5G83i8LoUFP+2CxRfUWAe/TG3Efbf6/CdAH2KVMGnkax07DgNmf
+         UflqLEtTtxNgJYQWPd5MZcBVfcJhWsNeieucWo3Cthi1VhGgWdiUphvOb6Pfp82+e4PC
+         H9DMoy8naaJJt0ysajNmiqfdKNrSLbZzru+q/urtplkFRUKgYZFihRsdetA/GejRq7OX
+         /K2Q==
+X-Gm-Message-State: AOAM5308IXbNQCSmOjZELu65a3k/34lm3Lt5q4IUUDBSRBv9SrSSsofj
+        /ee2Pya9fVZqYJMT2lNVt/SxnIyRXU6gJVKcREAZAQ==
+X-Google-Smtp-Source: ABdhPJzHllgvusx07u5CjUMpJFy7+fqUKXMPYz4mlr4zSQ8nq4cL6t+YcI+JLAVgOK3OmOA3gjwGDbQpT1+MahuuqTA=
+X-Received: by 2002:a17:90a:fe86:b0:1bc:6935:346 with SMTP id
+ co6-20020a17090afe8600b001bc69350346mr27461224pjb.150.1646227133275; Wed, 02
+ Mar 2022 05:18:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220225152040.31896-1-phil.chang@mediatek.com>
+In-Reply-To: <20220225152040.31896-1-phil.chang@mediatek.com>
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+Date:   Wed, 2 Mar 2022 14:18:41 +0100
+Message-ID: <CAHUa44GDg7hAAFsmeOOkeqi8_1P1Q6jATRdnV9b6S-DhpEEQrA@mail.gmail.com>
+Subject: Re: [PATCH v4] tee: make tee_shm_register_kernel_buf vmalloc supported
+To:     Phil Chang <Phil.Chang@mediatek.com>
+Cc:     sumit.garg@linaro.org, matthias.bgg@gmail.com,
+        op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 14:06:01 +0100
-Andrew Lunn <andrew@lunn.ch> wrote:
+On Fri, Feb 25, 2022 at 4:20 PM Phil Chang <phil.chang@mediatek.com> wrote:
+>
+> In some low-memory devices, it's hard to aquire large-orders pages,
+> this patch allowed user using scatter pages to register shm.
+>
+> Signed-off-by: Phil Chang <phil.chang@mediatek.com>
+> Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+> ---
+>  drivers/tee/optee/call.c |  2 +-
+>  drivers/tee/tee_shm.c    | 35 +++++++++++++++++++++++++----------
+>  2 files changed, 26 insertions(+), 11 deletions(-)
 
-> On Tue, Mar 01, 2022 at 10:25:39AM +0100, Pali Roh=C3=A1r wrote:
-> > On Monday 28 February 2022 17:42:03 Gregory CLEMENT wrote: =20
-> > > > Hello Pali,
-> > > > =20
-> > > >> Remap PCI I/O space to the bus address 0x0 in the Armada 37xx
-> > > >> device-tree in order to support legacy I/O port based cards which =
-have
-> > > >> hardcoded I/O ports in low address space.
-> > > >>
-> > > >> Some legacy PCI I/O based cards do not support 32-bit I/O addressi=
-ng.
-> > > >>
-> > > >> Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resource=
-s from
-> > > >> 'ranges' DT property") this driver can work with I/O windows which
-> > > >> have =20
-> > > >
-> > > > Should we add a "Fixes: 64f160e19e92 ("PCI: aardvark: Configure PCIe
-> > > > resources from 'ranges' DT property")" tag ? =20
-> > >=20
-> > > Waiting for your confirmation I tried to applied it but it failed.
-> > >=20
-> > > Did you base this patch on v5.17-rc1 ?
-> > >=20
-> > > Gregory =20
-> >=20
-> > Hello! This change is breaking booting of Turris Mox kernel with older
-> > bootloader due to bugs in bootloader. =20
->=20
-> Do you know what actually goes wrong?
->=20
-> I've not been involved in the discussion, but looking at the comments
-> above, not changing the space can result in non-working cards. So it
-> does sound like something which in general we want to do. Does the
-> current code assume the bootloader has initialized some registers with
-> specific values? Can that be moved into the driver so it also works
-> with older bootloaders?
+Looks good to me. Unfortunately this is too late for the coming merge
+window, so it's going to be the one after that. Meanwhile it will be
+in linux-next.
 
-No. TF-A may remap CPU PCIe window, and so U-Boot fixes these addresses
-in device-tree. But the fixup function was at first written in such a
-way that it assumes that the ranges propreties contains specific
-values. The proposed DT change, together with the fixup function in
-older U-Boot, will break ranges property to non-functional state.
+Thanks,
+Jens
 
-See corresponding U-Boot patches
 
-https://patchwork.ozlabs.org/project/uboot/patch/20200408172522.18941-5-mar=
-ek.behun@nic.cz/
-https://patchwork.ozlabs.org/project/uboot/patch/20210526155940.26141-5-pal=
-i@kernel.org/
-https://patchwork.ozlabs.org/project/uboot/patch/20220223125232.7974-1-kabe=
-l@kernel.org/
-
-The last patch is not merged yet.
-
-Marek
+>
+> diff --git a/drivers/tee/optee/call.c b/drivers/tee/optee/call.c
+> index bd49ec934060..2082e632adff 100644
+> --- a/drivers/tee/optee/call.c
+> +++ b/drivers/tee/optee/call.c
+> @@ -362,7 +362,7 @@ int optee_check_mem_type(unsigned long start, size_t num_pages)
+>          * Allow kernel address to register with OP-TEE as kernel
+>          * pages are configured as normal memory only.
+>          */
+> -       if (virt_addr_valid(start))
+> +       if (virt_addr_valid(start) || is_vmalloc_addr((void *)start))
+>                 return 0;
+>
+>         mmap_read_lock(mm);
+> diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+> index f31e29e8f1ca..836872467dc6 100644
+> --- a/drivers/tee/tee_shm.c
+> +++ b/drivers/tee/tee_shm.c
+> @@ -23,21 +23,36 @@ static void shm_put_kernel_pages(struct page **pages, size_t page_count)
+>  static int shm_get_kernel_pages(unsigned long start, size_t page_count,
+>                                 struct page **pages)
+>  {
+> -       struct kvec *kiov;
+>         size_t n;
+>         int rc;
+>
+> -       kiov = kcalloc(page_count, sizeof(*kiov), GFP_KERNEL);
+> -       if (!kiov)
+> -               return -ENOMEM;
+> +       if (is_vmalloc_addr((void *)start)) {
+> +               struct page *page;
+>
+> -       for (n = 0; n < page_count; n++) {
+> -               kiov[n].iov_base = (void *)(start + n * PAGE_SIZE);
+> -               kiov[n].iov_len = PAGE_SIZE;
+> -       }
+> +               for (n = 0; n < page_count; n++) {
+> +                       page = vmalloc_to_page((void *)(start + PAGE_SIZE * n));
+> +                       if (!page)
+> +                               return -ENOMEM;
+> +
+> +                       get_page(page);
+> +                       pages[n] = page;
+> +               }
+> +               rc = page_count;
+> +       } else {
+> +               struct kvec *kiov;
+> +
+> +               kiov = kcalloc(page_count, sizeof(*kiov), GFP_KERNEL);
+> +               if (!kiov)
+> +                       return -ENOMEM;
+>
+> -       rc = get_kernel_pages(kiov, page_count, 0, pages);
+> -       kfree(kiov);
+> +               for (n = 0; n < page_count; n++) {
+> +                       kiov[n].iov_base = (void *)(start + n * PAGE_SIZE);
+> +                       kiov[n].iov_len = PAGE_SIZE;
+> +               }
+> +
+> +               rc = get_kernel_pages(kiov, page_count, 0, pages);
+> +               kfree(kiov);
+> +       }
+>
+>         return rc;
+>  }
+> --
+> 2.25.1
+>
