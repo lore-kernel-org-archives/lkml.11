@@ -2,125 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62152C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240001AbiCBKEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 05:04:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
+        id S240804AbiCBKEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 05:04:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237229AbiCBKEF (ORCPT
+        with ESMTP id S236513AbiCBKEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 05:04:05 -0500
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E7B5AEF4;
-        Wed,  2 Mar 2022 02:03:22 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 222A2vmS063787;
-        Wed, 2 Mar 2022 04:02:57 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1646215377;
-        bh=kzmAL4ny+b45rxh4hmDCUUkeFdO+HSD8mHyPXmdqx28=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=jP/E/dCOqyWe+EM99Tf5536jGnNFwZFtO+EukKIujh7KfhMoZiOWoPWxWUucTveM5
-         0o44PJtBJsGIO4nsSo/rRHL+ESqLTr0DIgX8M2MeWsSsEfJS8woKhzJwUm154fNRic
-         8em28FYVPjiu1Xil631fwUzWDzrBjhXfvghoVeew=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 222A2vJD092066
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 2 Mar 2022 04:02:57 -0600
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 2
- Mar 2022 04:02:57 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 2 Mar 2022 04:02:56 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 222A2uoV112376;
-        Wed, 2 Mar 2022 04:02:56 -0600
-Date:   Wed, 2 Mar 2022 15:32:55 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-CC:     <michael@walle.cc>, <broonie@kernel.org>,
-        <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <nicolas.ferre@microchip.com>,
-        <zhengxunli@mxic.com.tw>, <jaimeliao@mxic.com.tw>
-Subject: Re: [PATCH 1/4] spi: spi-mem: Allow specifying the byte order in DTR
- mode
-Message-ID: <20220302100255.gseqjbdyxrgmt3zf@ti.com>
-References: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
- <20220218145900.1440045-2-tudor.ambarus@microchip.com>
+        Wed, 2 Mar 2022 05:04:43 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9D45FF0A;
+        Wed,  2 Mar 2022 02:04:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MRswd6ZptCacQjK6/XLe2KVxiUQWB0BQf/Pn9+5/4s2xNSPU9zayAACTRGWTS2g5FsJyk8BbjX9IRqSdkpH5hHEn0R7WsO4bJ7H0YXezkuoahpIHHaYL+mETYaO/OSixAltyzMuuxKV27Y/GH3CLH0o5y2QE3sescfZG5act1UUk5UpnVLw4tm37WbhG5RyFi4KrG7NJjiL+PoZtBXMAaOa3DZUub6+NrC9B2EmAN7p3lLlXBkmaqHaa02+62e/aoLT53iq+P3e5u7mxsXoCPX0SBJlVaPOQLBC626Bh2LEpPDrQamb2+gliZmBtXoiCSgCEurepgaIMBLB4b0WZ6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wLm0v6IQqjdX2BsCLWA4UheZtoyS8dSurL5MuqKiRbs=;
+ b=APUaNGJFAzGiI5KImMnlNkJv2QShU6BEwNk4mRd1JhU89jDpyfw+PTXf+JbXUC1w3brkFSeK1P0r8fNDDDw6lDRJMtKsDR3EUqCuSenEumx0JjUmOOtpdyBFyDQqX15um1wDJwJtizpCx8Pu5NEPmVhT6c0a+aH5a0X2DEWplQRdy8eS4REyN2Hc2KGU9zmIrclE1a0WxBgLDT1vhEwUAQsnuwOO2Hgv1q5fdIbbm5aJcj9mvd6sbdfsbBMlW2PQNAckmH74luuwhs2CT7BpQftbX+GwXF/EoSnZDtayVaM6OSDFcyyegGMYOCG/M6muxN0M2/H0u1kW7+ebb+rC3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wLm0v6IQqjdX2BsCLWA4UheZtoyS8dSurL5MuqKiRbs=;
+ b=IhRDOElnyLYJgCSOHOLu9VSCdh9GfMeFGAEoFGBWgwbkfvHnCTTs3NmN3mGPTQxPyV4Jh0hSDI9MRoHf8wsgkbCmJ9/L39CKNeIqC+h1kM8CLZtIeCknV6UJbtV/NE7FS0ia7L+ZwlMpBAlJ6ZW0MtqSevT9Ts2l/Mk0jlneKEEeGs69VYR2pEt9qVejidntYVcdle6d1Fmz3fz85WmKaTS7qMWQhgzhMOIlV4NM3ahLL+VyXqdaLtv9e18/7VEChU2CwnEhjkPg5C4Y574H7tzobVg+J/Vj9eq8YoSA005DFJUFxDXvBUCTjSh/kUZTRF86RIKi1ptKCPDQWuYVBg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH0PR12MB5330.namprd12.prod.outlook.com (2603:10b6:610:d5::7)
+ by BL0PR12MB4723.namprd12.prod.outlook.com (2603:10b6:208:8a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 2 Mar
+ 2022 10:03:58 +0000
+Received: from CH0PR12MB5330.namprd12.prod.outlook.com
+ ([fe80::dd23:4505:7f5b:9e86]) by CH0PR12MB5330.namprd12.prod.outlook.com
+ ([fe80::dd23:4505:7f5b:9e86%5]) with mapi id 15.20.5038.014; Wed, 2 Mar 2022
+ 10:03:58 +0000
+Message-ID: <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+Date:   Wed, 2 Mar 2022 12:03:49 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101
+ Thunderbird/98.0
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Content-Language: en-US
+To:     patchwork-bot+netdevbpf@kernel.org,
+        Toms Atteka <cpp.code.lv@gmail.com>
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+From:   Roi Dayan <roid@nvidia.com>
+In-Reply-To: <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM6P194CA0067.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:209:84::44) To CH0PR12MB5330.namprd12.prod.outlook.com
+ (2603:10b6:610:d5::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220218145900.1440045-2-tudor.ambarus@microchip.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 74c36340-b6ff-4860-ff56-08d9fc33f7ca
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4723:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB4723FE7994E638C3BB1131DEB8039@BL0PR12MB4723.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6ooa3KRehJAJR5INBG/KTKfL51vlw9aIuagDEFFeBd/YoTg7k69YrEzwca/3AW3+SWF/R+x6G1rMr21QFu9y+p6ag5m3W+f/fuAOOOD14328+qpTBAglJdlWvQFRLhZFdByOL6YdEZCc5hD2pFCgN4BtvEf3pQ8DmhBgr3z5stZk3gsMKuWeTjTHzvdETM1iFbPhINipHkouKEC45UJ3me0WLRIAiKlykrSf5xqaYeVCC5sCibFj+ifs0zZb4Vl2FW1DkobA/LYN4YiRSg+g6YdI2u/gCShPqcXmcZU8wj4O4xmQQ75m8YTzKfbterbU0j8IiCwzmVy6auUFgf43BmOlClcV5EVSK49R+0b5o6JjHEQtbOkESsCpdh7RTNmodvMF3VjzntK9BkXhjz2Z4ETNY8q2XpWngJqe4GzN7l4qwxDgJS05VJ7FxpHm6A6s40MeTCQE4vWwSJOvmxz+ZSWgOwjAwrNW8Q2lKhzi6Veg/nmfQilT6CDAdM6EbC1DlUjJ5XZzejpZLGJQiK4H9ftugllqWXOuJ5svj1UMjJAvRRtwOLOUkiHEIBehwvmy8sNm1Bl/Ou8k6imBqU91PDAirc9FCajluVd6xOfQu6GaNalWPt+y9ReKQbFFXn8GaqX+ubEHOsoG5lKNjJu9pbFsG6cIX5ybkavRMoOeo7gaztxZoF7tfCSohTjEeSXxiQLieasJfdXZK2h0KFw/F/EBd4k0RYiJH2OkhY8EgAkFc9n63OonofBy1SSo6Jia5/BxH24HOdvrn8/G1aStSChg+fnS2S2mKWsrP1RvJmX2XFxpfIJaGmhKb07MU/FG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR12MB5330.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(6506007)(6666004)(966005)(6486002)(36756003)(53546011)(508600001)(6916009)(8676002)(31686004)(316002)(83380400001)(66476007)(66556008)(66946007)(4326008)(5660300002)(31696002)(8936002)(2906002)(86362001)(26005)(186003)(2616005)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bFhjSW5KQXQwem9NVlFEL0cyc2VCYkZqQXJoOFd0SmNMTkd5aHlWTU54cy9J?=
+ =?utf-8?B?ejRNRVNCcVdRalA3RlNzeG5zdVRMc09SenE3a2M2MUdDV05kczdWRXovSEkw?=
+ =?utf-8?B?b0RSbkZiZ3VGUElCZnhlczYwdlVqb05kbG9TcEZGRWdWb1hSUlZ2bUN2Mzlw?=
+ =?utf-8?B?QmRkMFFTZEFKQm1hQlVYaURwMmhra0Y3THNmRnBDUW82VFNleHJNZmJORXF6?=
+ =?utf-8?B?T2ZtaWthNlNvSXdyYVVMdGtEa2NMUkExZXBvbndGU1d5UEdyQjdmY2kxeDk5?=
+ =?utf-8?B?d3RVcFA2NjZld0hEUGdlRmljU0s1d1VXOXF3OFY4Q2p2RCtFMGM4UDFkcDAz?=
+ =?utf-8?B?QkpIT1hqYkd3cjFGMk80cWtWdS9kUXlRaVJQKzR6OWpIOG1BQ1AvdVRpMHA2?=
+ =?utf-8?B?VTM2Zi91VElDVXpCRlYrSWpmdi9rblEzMUZUWDVpamRKWGNrVGlqWDhpTUs5?=
+ =?utf-8?B?ZGZaclhxUU5ubXpzdWtsUUlzYU0zMlNEMllwYWVtcnloVWZkSlQ1RVlqNi9t?=
+ =?utf-8?B?SnA5cTdUSzdCL3FqY3oyWHltcWJjTG1Da3gyMGQ3eFVGcU5XUHZsbXZhdllj?=
+ =?utf-8?B?VFgvSWg4cEsvV2tQdUtkNWpIRjBUbDhHRXNtTlpycm5qbXZtNUt1RVM2UXBY?=
+ =?utf-8?B?VkYrMTZIK1hwamhFbVRXVmF2UUhqMTA5UTZrbTJ4M2xtUnNQck5ablBkVU5m?=
+ =?utf-8?B?MHhCdjVTQWFteWdxR3hyZDhDcmEvYVhrVEhJenE3T05YZWxBcllSaDVxdVox?=
+ =?utf-8?B?d29FV1Y2T3JFQlFsWE5tMDRGNEY2T1o1S0xTT284K1dEL0RRVFFXMTc0VjVa?=
+ =?utf-8?B?elhyT1plam4rdWFCQy9GcFF0VFJGSEZadU53M251dlMxYk12WTF3NjJSOU90?=
+ =?utf-8?B?cnoyUWFwQ3I0bjYzWFFscFhuOHBTSG14WkhSSnhadUJTV2Vza0lYWE9yc3dH?=
+ =?utf-8?B?Zzd3UEZoMUJXd3NleTZYby9hblA4b2d5M2JVZFNaTThDZE1FdmdQb0F3Zmtu?=
+ =?utf-8?B?c2hJcSsrT09JNnRrSFZjUE82K3VTb3JrblhNUVN0Y1d0S1BtZk9FckJMTmJ6?=
+ =?utf-8?B?L29JWW5TcEtKNGpJSVc4TVNXV2VyMkgvaW9HK3Z2bGJtSnJwOUp3R2VwenVj?=
+ =?utf-8?B?QVo0Q3pxTUVTem1paWJMYm0wM1JMZEdZSGtGTkIyMXNFSkFTbU1IQVBKSVNp?=
+ =?utf-8?B?SDRFTE5WNUlyWnFvMGVqMDFvUnB2bHh6emYrUGNuNEtJbkdJMkVsa0wzZGxW?=
+ =?utf-8?B?UStrd200VDFYVmxzQWlVMmhDTVlLQzIxVmxIMkpDclpzdWpVZFUzbmRXb01L?=
+ =?utf-8?B?WGJzN2hlaC9BOFBEd2lMd1dXdXlkSXN3d280MjVmMlpPWlZLb3JVaDdiN1M5?=
+ =?utf-8?B?V2dLOFhwRnBIMnk2NGJPZjJKSTVERnZWRXRONGR0NHdDd2ljcE5FSG5lSTU4?=
+ =?utf-8?B?T2N1OWh3d2lNQkcwYXpZUFdYMFVCM0dQSGwyUWp0NWdmRjR4c2duZmg5Y2hC?=
+ =?utf-8?B?LzU4QklnUEQveUZ5c1BvazBhQ05YaUVscENkejNDS2ZvNFI0WThRaW1TbUlu?=
+ =?utf-8?B?SXNXT1o4MkJOcDcyRkJBcGxJajVDRllPWkJxTUdBUDVJOVg4Q3ltZVFEcDBY?=
+ =?utf-8?B?VzJiVm0wWFlFTFNYQk5wMGk0UDVTTlJTNGU2b1J3RzN6NVRZR0g4Mk5HOVlK?=
+ =?utf-8?B?Sk11SWt6eXgyNSs2N0J4RXNSb0dDNXdFQnMycWdsZVJoSWVtcUYwL0EvNWhP?=
+ =?utf-8?B?WktXU2pQS2locnhzVWpUaEcrTTAwNHdNSy9ZWlJsUFdzcEdSRktPOWFVSGFG?=
+ =?utf-8?B?KzJnZ1FYL3pDeFdjSm5jUTRPa1JTMWlPek0vK253eGRLN1dBQVpNUDBCS3d1?=
+ =?utf-8?B?Ujk1WXowRlBhbWpTWmJDN293ckdRbFFDNDkrRk4yMHdlWnpUMW5Ibnp0Sjlz?=
+ =?utf-8?B?M2JucmV6ZTR2eE1WZmhhZHJBMFZMZ3JiOEs3ekNNR3BuR2dCSlBJSStOY1Bh?=
+ =?utf-8?B?cVR2cWlHdk41K0E1cnhHT1VQbGxsbGRHSnRyaXZNR1hTQnM3endiUHZKTWo1?=
+ =?utf-8?B?NDFzQ2dFcTZRSEptR20yODdKVkJTWGZ1LzdueEtCZWZiS1pnRHJ3ZC9kc1kz?=
+ =?utf-8?Q?9uro=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74c36340-b6ff-4860-ff56-08d9fc33f7ca
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR12MB5330.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 10:03:58.4049
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BVFaH2Q4tMUZUWO2CByBox+H4xbkYk1H+RZiYZuDJRiUoR0QGpidHgUDc1VkWF/S
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4723
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tudor,
 
-I'm reviewing the code here. I still have not thought through the 
-discussion about Kconfig option yet.
 
-On 18/02/22 04:58PM, Tudor Ambarus wrote:
-> There are NOR flashes (Macronix) that swap the bytes on a 16-bit boundary
-> when configured in DTR mode. The byte order of 16-bit words is swapped
-
-s/DTR mode/ Octal DTR mode/
-
-I don't think this would apply to a 4D-4D-4D flash since it would only 
-transmit one byte per clock cycle.
-
-> when read or written in Double Transfer Rate (DTR) mode compared to
-> Single Transfer Rate (STR) mode. If one writes D0 D1 D2 D3 bytes using
-> 1-1-1 mode, and uses 8D-8D-8D SPI mode for reading, it will read back
-> D1 D0 D3 D2. Swapping the bytes is a bad design decision because this may
-> introduce some endianness problems. It can affect the boot sequence if the
-> entire boot sequence is not handled in either 8D-8D-8D mode or 1-1-1 mode.
-> Fortunately there are controllers that can swap back the bytes at runtime,
-> fixing the endiannesses. Provide a way for the upper layers to specify the
-> byte order in DTR mode.
+On 2022-02-25 12:40 PM, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> ---
->  include/linux/spi/spi-mem.h | 3 +++
->  1 file changed, 3 insertions(+)
+> This patch was applied to netdev/net-next.git (master)
+> by David S. Miller <davem@davemloft.net>:
 > 
-> diff --git a/include/linux/spi/spi-mem.h b/include/linux/spi/spi-mem.h
-> index 85e2ff7b840d..e1878417420c 100644
-> --- a/include/linux/spi/spi-mem.h
-> +++ b/include/linux/spi/spi-mem.h
-> @@ -89,6 +89,8 @@ enum spi_mem_data_dir {
->   * @dummy.dtr: whether the dummy bytes should be sent in DTR mode or not
->   * @data.buswidth: number of IO lanes used to send/receive the data
->   * @data.dtr: whether the data should be sent in DTR mode or not
-> + * @data.dtr_bswap16: whether the byte order of 16-bit words is swapped when
-> + *		      read or written in DTR mode compared to STR mode.
->   * @data.dir: direction of the transfer
->   * @data.nbytes: number of data bytes to send/receive. Can be zero if the
->   *		 operation does not involve transferring data
-> @@ -119,6 +121,7 @@ struct spi_mem_op {
->  	struct {
->  		u8 buswidth;
->  		u8 dtr : 1;
-> +		u8 dtr_bswap16 : 1;
-
-You also need to add this capability to spi_controller_mem_caps and 
-update spi_mem_default_supports_op() to check for it.
-
->  		enum spi_mem_data_dir dir;
->  		unsigned int nbytes;
->  		union {
-> -- 
-> 2.25.1
+> On Wed, 23 Feb 2022 16:54:09 -0800 you wrote:
+>> This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+>> packets can be filtered using ipv6_ext flag.
+>>
+>> Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+>> Acked-by: Pravin B Shelar <pshelar@ovn.org>
+>> ---
+>>   include/uapi/linux/openvswitch.h |   6 ++
+>>   net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
+>>   net/openvswitch/flow.h           |  14 ++++
+>>   net/openvswitch/flow_netlink.c   |  26 +++++-
+>>   4 files changed, 184 insertions(+), 2 deletions(-)
 > 
+> Here is the summary with links:
+>    - [net-next,v8] net: openvswitch: IPv6: Add IPv6 extension header support
+>      https://git.kernel.org/netdev/net-next/c/28a3f0601727
+> 
+> You are awesome, thank you!
 
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Hi,
+
+After the merge of this patch I fail to do ipv6 traffic in ovs.
+Am I missing something?
+
+ovs-vswitchd.log has this msg
+
+2022-03-02T09:52:26.604Z|00013|odp_util(handler1)|WARN|attribute 
+packet_type has length 2 but should have length 4
+
+Thanks,
+Roi
