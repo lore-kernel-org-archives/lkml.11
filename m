@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B66C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B90C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241759AbiCBMVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 07:21:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
+        id S241096AbiCBMZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 07:25:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241727AbiCBMVf (ORCPT
+        with ESMTP id S234874AbiCBMZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 07:21:35 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968AA5BE7E
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 04:20:52 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso1276937pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 04:20:52 -0800 (PST)
+        Wed, 2 Mar 2022 07:25:25 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E218C1C8D;
+        Wed,  2 Mar 2022 04:24:40 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id o8so1477248pgf.9;
+        Wed, 02 Mar 2022 04:24:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vplKU+u5BNo996K8f2xPSiatclDH2lB4T12dOrQIivE=;
-        b=K/EOiYcscZwk3AZTAYctKgHa6T/X/HoWmn9P6qtPVpTOHWomoZPugyFqWlNtT5kieI
-         HQcEBb1VhOJMe0W0MgHN6Ivz2w6n0mg9WRL+EJ8h67RwbWxhEEuAvXeE9rXb+xSsAS2g
-         3xjTB5a5QowTYHuXZvULaTS/PyOq1IdzVVPIeamSowW0bB2daY+6Y6/CpJ4kfluPeTzL
-         zRr7XYUdXQX5hgNqVZ8MFwxm5aULRW2tczjOtLmK3hHu0naFEi8ecYlBl0pVxrpt3+AE
-         oJXqSaDDMOtzBsO9TEg1n7VlqCwjCNUNaQvFp/UOjBBmW5F6Lzbh6+s5oJtGVma42uUi
-         YaSg==
+        bh=cDTg97giT1w4UkqUHDJQChQ0iXlcc4URzPQyrsb+epo=;
+        b=U3lVbRMIfoWU+t87B4a2k2mgM8CkO2PEG90/U3hxRhx5a7LCpwNPQLz9zVBA/aWpc0
+         780KVNWRLuHbVNqjc/IypFEOf2qquswJquVo1gMLLPYXR6MHqFapZefKfFZnmT1SLtio
+         IlPNcfhBuxuCQYoJ0QHT/jcWgxVsXaLmc2WrbT1B38e/ZIHTj6SmL+UhJCAhina6zP5X
+         yNU/f20G6tM0WrKKJX/+nvqm+1l3RvP4gdP/zhtT1Z2YrSndoJaxkhgOkVTFhUwe+YL7
+         5+Nm94CE3vwKc2fHEeWitVKtxuvmCMX5QwiearRNDBkWRYbKbv4aZXfm3wRauu84qtic
+         0ziA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vplKU+u5BNo996K8f2xPSiatclDH2lB4T12dOrQIivE=;
-        b=FWzIf9F8pVfbjIZBPwabLi7fTF6jcypPvxPjD0G4qHCTg7P2B2BYcxtr+Fw5d464Bd
-         0clJtEIVKIJjDSFaj0u9VZvbHv4cbBOveSck14JaT0VJfXwJhVKwS97leWk6WQVCWBIr
-         Shhh/tCavskRaIYY/ayRYGmEs/2C6ycNUI4yKJ6lVHexUMhVgtSH/ln+FReqiCgK5eRe
-         zJDWRDC2yc3pX7iRIxM4qCdT0U/RngFiQOtnAykEWBtenKpxkKCMa9RuQD6KQESl634q
-         BwmT9mG1awqAL1OHee/OXJpVqJxoJQcJZ/c76NU4v64JEMx0oxuWoqSPTFvNCU6rC5Lb
-         Dxlg==
-X-Gm-Message-State: AOAM5316GTmg6GLYbWuTXLWH0ds+wUNfQg6OZI2TroKd7UFk0d+E3tdj
-        YlZ/XHV2qEc9gOUjEALBrFGbKO+oG4Ns9w==
-X-Google-Smtp-Source: ABdhPJwHEKTP96y89UWO+7Wjwb22ouIUUzzweveRMnfLvYDw4WP9tBJO4AhiwPELre3xgi00gpjx0g==
-X-Received: by 2002:a17:902:c111:b0:14f:c841:66e2 with SMTP id 17-20020a170902c11100b0014fc84166e2mr30558022pli.92.1646223651814;
-        Wed, 02 Mar 2022 04:20:51 -0800 (PST)
-Received: from localhost.localdomain (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
-        by smtp.gmail.com with ESMTPSA id na5-20020a17090b4c0500b001bc9301f316sm5046887pjb.42.2022.03.02.04.20.50
+        bh=cDTg97giT1w4UkqUHDJQChQ0iXlcc4URzPQyrsb+epo=;
+        b=5hL8Yd3tKPSdbK16dW0s1hglxR8QCpw30fCIwwN+wYFrn1hETY8Ka+3GnoO7YwmdQl
+         6qCG1xoqTaI5l3YY2vukuPHgws6RGL5ahckdGIBgqmfiZ8dvJfu+imJpkU2GobQ9cISy
+         NuQdsqLtAGog/xMQgSELedIl8HyUNgne50nxyBm4ubd5mB2Ht87mugsEDBLBivj68fJ8
+         o7ui/8l5pHAxAuDXYfUSgi2m43X7mL00fGo9uZWnqhA5p3eyI4RD3216pJ0BpQhQBATd
+         6z8tqoqFXK52+4qGPgXkgIiJXNLqwFL21Um4rOA75iZY0OCFg1Fl0i5UNQ7iFSvNxGd6
+         Znnw==
+X-Gm-Message-State: AOAM532e8pwfKNLE1QWHI5QVMuGvn3NBW5/iZaQEhPLBpVyHumvC1YJc
+        K30HcHUpiG9IvqfuzaKIgw==
+X-Google-Smtp-Source: ABdhPJwEA1XwhWCIzafS1YdEePdYyPSB+32gTHUngKk5ncC0ydYcP6rusXTAUGm49fRiKPBfhlZcIw==
+X-Received: by 2002:a62:ddcc:0:b0:4e1:c248:d4a7 with SMTP id w195-20020a62ddcc000000b004e1c248d4a7mr32718797pff.63.1646223879848;
+        Wed, 02 Mar 2022 04:24:39 -0800 (PST)
+Received: from localhost.localdomain ([8.21.11.252])
+        by smtp.gmail.com with ESMTPSA id gb9-20020a17090b060900b001beecaf986dsm3121105pjb.52.2022.03.02.04.24.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 04:20:51 -0800 (PST)
-From:   Nguyen Dinh Phi <phind.uet@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Nguyen Dinh Phi <phind.uet@gmail.com>
-Subject: [PATCH RESEND] samples/kobject: Use sysfs_emit instead of snprintf
-Date:   Wed,  2 Mar 2022 20:07:59 +0800
-Message-Id: <20220302120759.380932-1-phind.uet@gmail.com>
+        Wed, 02 Mar 2022 04:24:39 -0800 (PST)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     m.grzeschik@pengutronix.de, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH v2] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+Date:   Wed,  2 Mar 2022 20:24:23 +0800
+Message-Id: <20220302122423.4029168-1-zheyuma97@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,59 +62,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert sprintf() to sysfs_emit() in order to check buffer overrun on sysfs
-outputs.
+During driver initialization, the pointer of card info, i.e. the
+variable 'ci' is required. However, the definition of
+'com20020pci_id_table' reveals that this field is empty for some
+devices, which will cause null pointer dereference when initializing
+these devices.
 
-Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+The following log reveals it:
+
+[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
+[    3.975181] Call Trace:
+[    3.976208]  local_pci_probe+0x13f/0x210
+[    3.977248]  pci_device_probe+0x34c/0x6d0
+[    3.977255]  ? pci_uevent+0x470/0x470
+[    3.978265]  really_probe+0x24c/0x8d0
+[    3.978273]  __driver_probe_device+0x1b3/0x280
+[    3.979288]  driver_probe_device+0x50/0x370
+
+Fix this by checking whether the 'ci' is a null pointer first.
+
+Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
- samples/kobject/kobject-example.c | 4 ++--
- samples/kobject/kset-example.c    | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Changes in v2:
+    - Add 'fixes' tag
+---
+ drivers/net/arcnet/com20020-pci.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/samples/kobject/kobject-example.c b/samples/kobject/kobject-example.c
-index 9e383fdbaa00..96678ed73216 100644
---- a/samples/kobject/kobject-example.c
-+++ b/samples/kobject/kobject-example.c
-@@ -28,7 +28,7 @@ static int bar;
- static ssize_t foo_show(struct kobject *kobj, struct kobj_attribute *attr,
- 			char *buf)
- {
--	return sprintf(buf, "%d\n", foo);
-+	return sysfs_emit(buf, "%d\n", foo);
- }
+diff --git a/drivers/net/arcnet/com20020-pci.c b/drivers/net/arcnet/com20020-pci.c
+index 6382e1937cca..c580acb8b1d3 100644
+--- a/drivers/net/arcnet/com20020-pci.c
++++ b/drivers/net/arcnet/com20020-pci.c
+@@ -138,6 +138,9 @@ static int com20020pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
  
- static ssize_t foo_store(struct kobject *kobj, struct kobj_attribute *attr,
-@@ -60,7 +60,7 @@ static ssize_t b_show(struct kobject *kobj, struct kobj_attribute *attr,
- 		var = baz;
- 	else
- 		var = bar;
--	return sprintf(buf, "%d\n", var);
-+	return sysfs_emit(buf, "%d\n", var);
- }
+ 	ci = (struct com20020_pci_card_info *)id->driver_data;
++	if (!ci)
++		return -EINVAL;
++
+ 	priv->ci = ci;
+ 	mm = &ci->misc_map;
  
- static ssize_t b_store(struct kobject *kobj, struct kobj_attribute *attr,
-diff --git a/samples/kobject/kset-example.c b/samples/kobject/kset-example.c
-index c8010f126808..52f1acabd479 100644
---- a/samples/kobject/kset-example.c
-+++ b/samples/kobject/kset-example.c
-@@ -112,7 +112,7 @@ static void foo_release(struct kobject *kobj)
- static ssize_t foo_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
- 			char *buf)
- {
--	return sprintf(buf, "%d\n", foo_obj->foo);
-+	return sysfs_emit(buf, "%d\n", foo_obj->foo);
- }
- 
- static ssize_t foo_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
-@@ -144,7 +144,7 @@ static ssize_t b_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
- 		var = foo_obj->baz;
- 	else
- 		var = foo_obj->bar;
--	return sprintf(buf, "%d\n", var);
-+	return sysfs_emit(buf, "%d\n", var);
- }
- 
- static ssize_t b_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 -- 
 2.25.1
 
