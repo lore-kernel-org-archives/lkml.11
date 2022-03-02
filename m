@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B824AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243582AbiCBRIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
+        id S243566AbiCBRIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:08:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237931AbiCBRII (ORCPT
+        with ESMTP id S243643AbiCBRIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:08:08 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C31CDBA
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:07:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646240842; x=1677776842;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CgIe1kHyv6NI9EgUPct1h95cPeTgztF8ec5o6Q6LPYM=;
-  b=k65FWj57O3gvEjeaQepVjjpwfpU/DCDJIViRJXk/E0bUy47MiRmdZAe2
-   /xa74ylkoyN8L4Ypvns03yMBd6FZSmPx6zKNkd/I4ErYiyZX9WwQLcjqH
-   XSrUeBmEHF+W8kKaZjeW1M6E+o+Gc2fTDUyHZPSKcHFE+HFfZJo2ed6MR
-   07TeYeuSB2I2PMZaONuSASfiZifrw7zKtjETCn1NKMFQtizklHZjLwpoA
-   u7V+qP2UeVVULmTy7BP88FGpiN3OACmkI85rOvjEUcwxdNLBRPLv7NWOx
-   OCkBhYjcUkPkYay6g7Zyf5ODPkOyY3a4ROnUpfJpxsyiO3hritIrR0BFV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="316665026"
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="316665026"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:04:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="576174436"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 02 Mar 2022 09:04:16 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPSOd-0001cs-Qj; Wed, 02 Mar 2022 17:04:15 +0000
-Date:   Thu, 3 Mar 2022 01:04:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Benedict Wong <benedictwong@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Eyal Birger <eyal.birger@gmail.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.9-q-release
- 5921/9999] net/xfrm/xfrm_interface.c:739:13: warning: no previous
- declaration for 'xfrmi_get_link_net'
-Message-ID: <202203030039.jNXm03Zp-lkp@intel.com>
+        Wed, 2 Mar 2022 12:08:18 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1506E5F65;
+        Wed,  2 Mar 2022 09:07:31 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id m6so3799224wrr.10;
+        Wed, 02 Mar 2022 09:07:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+FBEODWlEwE4ZBpRu4pszv+L75J4ftu6Yw0by+ZcvnE=;
+        b=hOrlpj9wIqQtiZ2iI5gabtXozHts++6EWfoyBCd9XE7smYEqH0D0OVdiWv1pcyWOmv
+         drF40iR0EnF9vCeXmIYqfPop33M7aHpNtmCzSt5le3/11zOqSeexGyBz8MgQ4WEPa5oI
+         IAkV+2cfB3IjRsBMxueIpgamXDtArN4GOSuNjFxfLz7eFSSMx7HDIJrnb/ZruGVPRQqm
+         JuXSGImYl/NJQlq9JmPQ6uAcc6mnjQS0l7Y1oTTVRL9RQWBTmnnBopCO4aH4quRq43/G
+         dc2kmxA0iGAwtQmMN6z3smEFOwKvl/1qLFFuPzojfYWvmcG8HPgoK2q2CCBdNQ2VmTBc
+         0fUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+FBEODWlEwE4ZBpRu4pszv+L75J4ftu6Yw0by+ZcvnE=;
+        b=6fuFDZzxWOGkFrJKQQXZuQTGyQ0ou3lpE3/TRfwMqATjtkIn4EUi1gB0XrdHf+lzIq
+         YZy5UCv0CbKZz1z8UHs19ope2G97ZMuWgILV7zB+fJQUxgmuGiw/wtCcrYqASvYBbJtJ
+         hKgpxM4JQWGYfUvatPb/J6K1DQC6Juc3cBOKtRq5p4x+cxswEAy6KV3OX+jCPPnoGiFc
+         UPkJZ3sTlo36y5LJ9RhoR41pkgJ7DofZvwl16u5c1PpvJNHIDxGl1HBkous45aDyyasr
+         O2YXV+245zvIwybjkW1iioiha7arNmPkmeoZ2oTkv22spLzfylBqx7zhWNYBUeH4pYy3
+         Y47w==
+X-Gm-Message-State: AOAM5313enK2e8TWaglWC9Be+NtWfpP6TkmiF+X6VK4klpON7GsBSCBp
+        v39CHqwzHFkzbrt43vGLAijYTENvADe/qg==
+X-Google-Smtp-Source: ABdhPJyDPnbwGRm/gHFADgHnG9mY1P7DvsXiSdJn8zqflakPBj5aWX46fD1EGCCM5wnDqY8YQSkV6A==
+X-Received: by 2002:adf:f201:0:b0:1ed:c254:c1a2 with SMTP id p1-20020adff201000000b001edc254c1a2mr23485713wro.106.1646240849938;
+        Wed, 02 Mar 2022 09:07:29 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l15-20020a05600c4f0f00b0037d62a899b1sm6651200wmq.6.2022.03.02.09.07.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 09:07:29 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] ALSA: echoaudio: remove redundant assignment to variable bytes
+Date:   Wed,  2 Mar 2022 17:07:28 +0000
+Message-Id: <20220302170728.1094633-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steffen,
+The variable bytes is being assigned a value that is never read, it
+is being re-assigned inside a following if block. The assignment is
+redundant and can be removed.
 
-FYI, the error/warning still remains.
+Cleans up clang scan build warning:
+sound/pci/echoaudio/midi.c:211:9: warning: Although the value stored
+to 'bytes' is used in the enclosing expression, the value is never
+actually read from 'bytes' [deadcode.DeadStores]
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.9-q-release
-head:   4be78b108a3a1d1ffbc2367c5a45855715451482
-commit: f5bb9e918c9307843fbb8e6943ebfcdcac08d2f2 [5921/9999] BACKPORT: xfrm: Add virtual xfrm interfaces
-config: i386-debian-10.3 (https://download.01.org/0day-ci/archive/20220303/202203030039.jNXm03Zp-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/f5bb9e918c9307843fbb8e6943ebfcdcac08d2f2
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.9-q-release
-        git checkout f5bb9e918c9307843fbb8e6943ebfcdcac08d2f2
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/xfrm/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/kasan.h:4:0,
-                    from include/linux/slab.h:118,
-                    from include/linux/textsearch.h:8,
-                    from include/linux/skbuff.h:30,
-                    from include/linux/icmp.h:20,
-                    from net/xfrm/xfrm_interface.c:16:
-   include/linux/sched.h:1260:1: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
-    const struct sched_group_energy * const(*sched_domain_energy_f)(int cpu);
-    ^~~~~
->> net/xfrm/xfrm_interface.c:739:13: warning: no previous declaration for 'xfrmi_get_link_net' [-Wmissing-declarations]
-    struct net *xfrmi_get_link_net(const struct net_device *dev)
-                ^~~~~~~~~~~~~~~~~~
-
-
-vim +/xfrmi_get_link_net +739 net/xfrm/xfrm_interface.c
-
-   738	
- > 739	struct net *xfrmi_get_link_net(const struct net_device *dev)
-   740	{
-   741		struct xfrm_if *xi = netdev_priv(dev);
-   742	
-   743		return dev_net(xi->phydev);
-   744	}
-   745	
-
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ sound/pci/echoaudio/midi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/pci/echoaudio/midi.c b/sound/pci/echoaudio/midi.c
+index cb72d27e809e..7be5c3327b16 100644
+--- a/sound/pci/echoaudio/midi.c
++++ b/sound/pci/echoaudio/midi.c
+@@ -208,7 +208,7 @@ static void snd_echo_midi_output_write(struct timer_list *t)
+ 
+ 	/* No interrupts are involved: we have to check at regular intervals
+ 	if the card's output buffer has room for new data. */
+-	sent = bytes = 0;
++	sent = 0;
+ 	spin_lock_irqsave(&chip->lock, flags);
+ 	chip->midi_full = 0;
+ 	if (!snd_rawmidi_transmit_empty(chip->midi_out)) {
+-- 
+2.34.1
+
