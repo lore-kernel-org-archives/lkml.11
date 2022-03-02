@@ -2,138 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E64FC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 770DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243215AbiCBOrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:47:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
+        id S243219AbiCBOrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:47:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240374AbiCBOrH (ORCPT
+        with ESMTP id S230078AbiCBOrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:47:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB695C7C14
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:46:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646232383;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w205eOqOdxeAZdCILUJdCHi/CnhyFtZESdwZqehxcdc=;
-        b=GZYZDlyesE/pp8ODtAnWwaaMpSkl4SvEc6dt0M86vxmzS1/uc47uZlz4cbmfgdl3u9lwNh
-        x+P1Ha9uRcrDyYOVF3mtB1owRJLN1rofnHhn6iiJvwDmyld8JuZMUrIGYXEcPzzs6bPyI0
-        FA+GTAJrcZ/nryT2VGbhRpqlZbeUuCQ=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-pHytAdYXNvSX_cw_wJJNDQ-1; Wed, 02 Mar 2022 09:46:21 -0500
-X-MC-Unique: pHytAdYXNvSX_cw_wJJNDQ-1
-Received: by mail-wm1-f69.google.com with SMTP id j42-20020a05600c1c2a00b00381febe402eso1572173wms.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 06:46:21 -0800 (PST)
+        Wed, 2 Mar 2022 09:47:48 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022EEC7C22
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:47:04 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id u17-20020a056830231100b005ad13358af9so1819251ote.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 06:47:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KbVcfyuITV0rCjQy15u5QkwOfQwIgScVE+BKmiVrwoA=;
+        b=H88glmHUAbMi/OKY83qcwu9WNvTTNiA7uw0ie+Tgy3ay65i+t9Hxo+VMViHDb73zND
+         ok9lVatGf8kTEs565A6u6SwLF8voWppCQgiGNMH0SenNmHPpfg9Nyp2tYESXJJNmR1F9
+         wKxGVVkaL3JscfuiYoqkI5Pk/AJ7D6UbIhFZtCjGLeUBY34KKVFSYWi22UbRs2foojYJ
+         qzyfx36YoDB4ZYteE/L3W6P/NX9vuOdxXd65pVg5lOY67KBlmyuBqhZzQcpIdTkmOsOv
+         ZdDNRmwblMyo84dK8nythducx0z5YcdkiiBVQ/cLOO+RHn2jzgnGtzjIBOnxIAEq+vKI
+         CIWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=w205eOqOdxeAZdCILUJdCHi/CnhyFtZESdwZqehxcdc=;
-        b=cwFJAkQdiUILyMgGfzFcApF3Hu1baIVUgaNXiB7LQdNznyQtNSWWtbLK2ENzZujRjV
-         m536FTjBCvciFbpAotXWLk/WgP8PzpDNOaP8rSVUrHE++VNWpPPu2DfC1DG+AS9bg2q1
-         MLv7CjQRMi0rMZFbYJ9E1SW5GfdlwNJ80cv39IYUKuNoghrjkSufR1fPj66irgSsJFOZ
-         tZhXv+R22LOjnVw7Vqy8Pyw/On6phS0SkZwZIGSwmaffnw887zL8iO2hdHhKIVZP9uqo
-         AT2fdrSfj7eldaAXjWpUqSR0cXqadljdGh6TzdLVnqufIrQYIyok714VeZtssVRtNJ2I
-         IZ1w==
-X-Gm-Message-State: AOAM530yHfVaCYrDAjhQjcbJ9gjQeMxUcOwApOw6PpXMhRMI/3VzjBcW
-        gpoWrTqRUfhGGnUgX4dWmdfdnAqvcqrwnuOZZWuXAjGWDj8VTBB8gIADne/Aa6uGqWBcFq9RAOV
-        7Lh2huE6+FSWUd7jT/54Tram0
-X-Received: by 2002:adf:eb45:0:b0:1ef:6070:7641 with SMTP id u5-20020adfeb45000000b001ef60707641mr20390147wrn.301.1646232380698;
-        Wed, 02 Mar 2022 06:46:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJza4Ib8iRQhbK5h23mGl00nx8utPjoauWdru+z6xmj8vBVgS9w4ICFHCPrxOEOgLj/22uh95g==
-X-Received: by 2002:adf:eb45:0:b0:1ef:6070:7641 with SMTP id u5-20020adfeb45000000b001ef60707641mr20390128wrn.301.1646232380470;
-        Wed, 02 Mar 2022 06:46:20 -0800 (PST)
-Received: from redhat.com ([2a10:8006:355c:0:48d6:b937:2fb9:b7de])
-        by smtp.gmail.com with ESMTPSA id z16-20020a7bc7d0000000b00381004c643asm5677773wmk.30.2022.03.02.06.46.17
+        bh=KbVcfyuITV0rCjQy15u5QkwOfQwIgScVE+BKmiVrwoA=;
+        b=btEPwcTdI7A4L5gvC8ofXvBW2HNjrbNcZQPldIxSHwxWnNse7/ZENZJEOpCrva6C2u
+         CSqfC27g4dtL1POfkJ0RVgQZwtXzn0qk2Sq0qSugbrDQ/Bx9503ZwLzF2An6KWxmoQmf
+         pNsj7afDK78iTU3wYn7uTgEALgFuBdYvWg9BLvt9YujSwA46E55ifZcaRuGFkszVRPY7
+         AFJgW948emoyLbdL1cr1qarJ4Oe5WflMB4nIJXXgNB7QAoAyIcQDyCFUbb/wDfhTH/MS
+         67OZWkK3fPQYJ7UNRjJdRQ5WmOOYHVE7TNU3/JfEU9AlsCIm3RAU3eBzReZOHemsFfOK
+         WNCw==
+X-Gm-Message-State: AOAM5322J1QUOEB/4VQVW8M/+JvE2OQ1ScGk9KRh4VYdUujOcpYgLDt/
+        dpCgDoTk/gtiMHbatg6noQwuJg==
+X-Google-Smtp-Source: ABdhPJzmpGB/PqAl+cZzADllHdqp4RYUVyp9QnOmj759Wmm9lcgY+/R4k555WXUvL+nfqCIujeFAuA==
+X-Received: by 2002:a05:6830:2683:b0:5b0:43c9:8d9 with SMTP id l3-20020a056830268300b005b043c908d9mr2922478otu.368.1646232423304;
+        Wed, 02 Mar 2022 06:47:03 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id bm5-20020a056820188500b0031c42eb457csm7646628oob.43.2022.03.02.06.47.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 06:46:19 -0800 (PST)
-Date:   Wed, 2 Mar 2022 09:46:16 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Laszlo Ersek <lersek@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        QEMU Developers <qemu-devel@nongnu.org>,
-        linux-hyperv@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        adrian@parity.io,
-        Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: propagating vmgenid outward and upward
-Message-ID: <20220302092149-mutt-send-email-mst@kernel.org>
-References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
- <223f858c-34c5-3ccd-b9e8-7585a976364d@redhat.com>
- <Yh5JwK6toc/zBNL7@zx2c4.com>
- <20220301121419-mutt-send-email-mst@kernel.org>
- <CAHmME9qieLUDVoPYZPo=N8NCL1T-RzQ4p7kCFv3PKFUkhWZPsw@mail.gmail.com>
- <20220302031738-mutt-send-email-mst@kernel.org>
- <CAHmME9pf-bjnZuweoLqoFEmPy1OK7ogEgGEAva1T8uVTufhCuw@mail.gmail.com>
- <20220302074503-mutt-send-email-mst@kernel.org>
- <Yh93UZMQSYCe2LQ7@zx2c4.com>
+        Wed, 02 Mar 2022 06:47:02 -0800 (PST)
+Date:   Wed, 2 Mar 2022 06:48:53 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Pavel Dubrova <pashadubrova@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] dt-bindings: clock: add QCOM SM6125 display clock
+ bindings
+Message-ID: <Yh+D1cHuRNQqnHf+@ripper>
+References: <20220226200911.230030-1-marijn.suijten@somainline.org>
+ <20220226200911.230030-3-marijn.suijten@somainline.org>
+ <ea5d34c6-fe75-c096-d5b2-6a327c9d0ae5@canonical.com>
+ <62ebb074-b8de-0dc3-2bbc-e43dca9d2ced@linaro.org>
+ <05310308-b0ff-56a0-83ac-855b1b795936@canonical.com>
+ <20220302125417.iu52rvdxrmo25wwt@SoMainline.org>
+ <2b1f7c07-3cc9-9637-4621-3c5e0e09a65e@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yh93UZMQSYCe2LQ7@zx2c4.com>
+In-Reply-To: <2b1f7c07-3cc9-9637-4621-3c5e0e09a65e@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 02:55:29PM +0100, Jason A. Donenfeld wrote:
-> Hi Michael,
-> 
-> On Wed, Mar 02, 2022 at 07:58:33AM -0500, Michael S. Tsirkin wrote:
-> > > There's also the atomicity aspect, which I think makes your benchmark
-> > > not quite accurate. Those 16 bytes could change between the first and
-> > > second word (or between the Nth and N+1th word for N<=3 on 32-bit).
-> > > What if in that case the word you read second doesn't change, but the
-> > > word you read first did? So then you find yourself having to do a
-> > > hi-lo-hi dance.
-> > > And then consider the 32-bit case, where that's even
-> > > more annoying. This is just one of those things that comes up when you
-> > > compare the semantics of a "large unique ID" and "word-sized counter",
-> > > as general topics. (My suggestion is that vmgenid provide both.)
+On Wed 02 Mar 05:51 PST 2022, Krzysztof Kozlowski wrote:
+
+> On 02/03/2022 13:54, Marijn Suijten wrote:
+> > On 2022-02-28 10:23:19, Krzysztof Kozlowski wrote:
+> >> On 27/02/2022 22:43, Dmitry Baryshkov wrote:
+> >>> On 27/02/2022 13:03, Krzysztof Kozlowski wrote:
+> >>>> On 26/02/2022 21:09, Marijn Suijten wrote:
+> >>>>> From: Martin Botka <martin.botka@somainline.org>
+> >>>>>
+> >>>>> Add device tree bindings for display clock controller for
+> >>>>> Qualcomm Technology Inc's SM6125 SoC.
+> >>>>>
+> >>>>> Signed-off-by: Martin Botka <martin.botka@somainline.org>
+> >>>>> ---
+> >>>>>   .../bindings/clock/qcom,dispcc-sm6125.yaml    | 87 +++++++++++++++++++
+> >>>>>   .../dt-bindings/clock/qcom,dispcc-sm6125.h    | 41 +++++++++
+> >>>>>   2 files changed, 128 insertions(+)
+> >>>>>   create mode 100644 Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
+> >>>>>   create mode 100644 include/dt-bindings/clock/qcom,dispcc-sm6125.h
+> >>>>>
+> >>>>> diff --git a/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
+> >>>>> new file mode 100644
+> >>>>> index 000000000000..3465042d0d9f
+> >>>>> --- /dev/null
+> >>>>> +++ b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
+> >>>>> @@ -0,0 +1,87 @@
+> >>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >>>>> +%YAML 1.2
+> >>>>> +---
+> >>>>> +$id: http://devicetree.org/schemas/clock/qcom,dispcc-sm6125.yaml#
+> >>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>>>> +
+> >>>>> +title: Qualcomm Display Clock Controller Binding for SM6125
+> >>>>> +
+> >>>>> +maintainers:
+> >>>>> +  - Martin Botka <martin.botka@somainline.org>
+> >>>>> +
+> >>>>> +description: |
+> >>>>> +  Qualcomm display clock control module which supports the clocks and
+> >>>>> +  power domains on SM6125.
+> >>>>> +
+> >>>>> +  See also:
+> >>>>> +    dt-bindings/clock/qcom,dispcc-sm6125.h
+> >>>>> +
+> >>>>> +properties:
+> >>>>> +  compatible:
+> >>>>> +    enum:
+> >>>>> +      - qcom,sm6125-dispcc
+> >>>>> +
+> >>>>> +  clocks:
+> >>>>> +    items:
+> >>>>> +      - description: Board XO source
+> >>>>> +      - description: Byte clock from DSI PHY0
+> >>>>> +      - description: Pixel clock from DSI PHY0
+> >>>>> +      - description: Pixel clock from DSI PHY1
+> >>>>> +      - description: Link clock from DP PHY
+> >>>>> +      - description: VCO DIV clock from DP PHY
+> >>>>> +      - description: AHB config clock from GCC
+> >>>>> +
+> >>>>> +  clock-names:
+> >>>>> +    items:
+> >>>>> +      - const: bi_tcxo
+> >>>>> +      - const: dsi0_phy_pll_out_byteclk
+> >>>>> +      - const: dsi0_phy_pll_out_dsiclk
+> >>>>> +      - const: dsi1_phy_pll_out_dsiclk
+> >>>>> +      - const: dp_phy_pll_link_clk
+> >>>>> +      - const: dp_phy_pll_vco_div_clk
+> >>>>> +      - const: cfg_ahb_clk
+> >>>>> +
+> >>>>> +  '#clock-cells':
+> >>>>> +    const: 1
+> >>>>> +
+> >>>>> +  '#power-domain-cells':
+> >>>>> +    const: 1
+> >>>>> +
+> >>>>> +  reg:
+> >>>>> +    maxItems: 1
+> >>>>> +
+> >>>>> +required:
+> >>>>> +  - compatible
+> >>>>> +  - reg
+> >>>>> +  - clocks
+> >>>>> +  - clock-names
+> >>>>> +  - '#clock-cells'
+> >>>>> +  - '#power-domain-cells'
+> >>>>> +
+> >>>>> +additionalProperties: false
+> >>>>> +
+> >>>>> +examples:
+> >>>>> +  - |
+> >>>>> +    #include <dt-bindings/clock/qcom,rpmcc.h>
+> >>>>> +    #include <dt-bindings/clock/qcom,gcc-sm6125.h>
+> >>>>> +    clock-controller@5f00000 {
+> >>>>> +      compatible = "qcom,sm6125-dispcc";
+> >>>>> +      reg = <0x5f00000 0x20000>;
+> >>>>> +      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
+> >>>>> +               <&dsi0_phy 0>,
+> >>>>> +               <&dsi0_phy 1>,
+> >>>>> +               <0>,
+> >>>>
+> >>>> This does not look like a valid phandle. This clock is required, isn't it?
 > > 
-> > I don't see how this matters for any applications at all. Feel free to
-> > present a case that would be race free with a word but not a 16
-> > byte value, I could not imagine one. It's human to err of course.
+> > I remember it being used like this before, though upon closer inspection
+> > only qcom,gcc-msm8998.yaml uses it as example.
+> > 
+> > The clock should be optional, in that case it is perhaps desired to omit
+> > it from clock-names instead, or pretend there's a `dsi1_phy 1`?
 > 
-> Word-size reads happen all at once on systems that Linux supports,
-> whereas this is not the case for 16 bytes (with a few niche exceptions
-> like cmpxchg16b and such). If you read the counter atomically, you can
-> check to see whether it's changed just after encrypting but before
-> transmitting and not transmit if it has changed, and voila, no race.
-> With 16 bytes, synchronization of that read is pretty tricky (though
-> maybe not all together impossible), because, as I mentioned, the first
-> word might have changed by the time you read a matching second word. I'm
-> sure you're familiar with the use of seqlocks in the kernel for solving
-> a somewhat related problem.
+> I propose to omit it.
 > 
-> Jason
 
-I just don't see how "value changed while it was read" is so different
-from "value changed one clock after it was read".  Since we don't detect
-the latter I don't see why we should worry about the former.  What I
-don't have here is how would a code reading the value look.  It might
-help to write some pseudo code to show that, but I'd say it makes more
-sense to just code the read up even just so the overhead of the current
-interface can be roughtly measured.
+The wire is there, it's only optional because we don't have the other
+side represented in DT yet.
 
--- 
-MST
+I believe we started filling out 0s like this because omitting elements
+that are not yet possible to fill out means that the order will change
+as we add more functions, something Rob has objected to. Further more as
+we add more functions the existing dts will fail validation, even though
+the hardware hasn't changed.
 
+
+That said, even though we don't have the other piece on this particular
+platform we do know where this signal comes from. So we should be able
+to have a valid (or at least strongly plausible) example in the binding
+- and then fill out the dts with 0s to keep validation happy until the
+other pieces are filled out.
+
+Regards,
+Bjorn
+
+> > 
+> >>>
+> >>> Not, it's not required for general dispcc support.
+> >>> dispcc uses DSI and DP PHY clocks to provide respective pixel/byte/etc 
+> >>> clocks. However if support for DP is not enabled, the dispcc can work 
+> >>> w/o DP phy clock. Thus we typically add 0 phandles as placeholders for 
+> > 
+> > Is there any semantic difference between omitting the clock from DT (in
+> > clocks= /and/ clock-names=) or setting it to a 0 phandle?
+> 
+> Yes, there is. The DT validation does not check the meaning behind
+> values, so there is no difference between valid phandle/ID and 0. While
+> not having a clock at all is spotted by validation.
+> 
+> > 
+> >>> DSI/DP clock sources and populate them as support for respective 
+> >>> interfaces gets implemented.
+> >>>
+> >>
+> >> Then the clock is optional, isn't it? While not modeling it as optional?
+> > 
+> > It looks like this should be modelled using minItems: then, and
+> > "optional" text/comment? Other clocks are optional as well, we don't
+> > have DSI 1 in downstream SM6125 DT sources and haven't added the DP PLL
+> > in our to-be-upstreamed mainline tree yet.
+> 
+> Are they really optional? Or maybe they should not even be provided?
+> 
+> 
+> Best regards,
+> Krzysztof
