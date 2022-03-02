@@ -2,404 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E81C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 03:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 03:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239351AbiCBD3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 22:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
+        id S239354AbiCBDaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 22:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239332AbiCBD3I (ORCPT
+        with ESMTP id S229792AbiCBDaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 22:29:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168B5B0C75
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 19:28:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75EE7B81EE3
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 299C1C340F2;
-        Wed,  2 Mar 2022 03:28:22 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1nPFf3-00DBjo-1J;
-        Tue, 01 Mar 2022 22:28:21 -0500
-Message-ID: <20220302032820.877781830@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Tue, 01 Mar 2022 22:24:16 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>
-Subject: [PATCH 2/2] tracing: Add sample code for custom trace events
-References: <20220302032414.503960863@goodmis.org>
+        Tue, 1 Mar 2022 22:30:23 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DFFB0D17;
+        Tue,  1 Mar 2022 19:29:40 -0800 (PST)
+Received: by mail-oo1-xc2f.google.com with SMTP id o7-20020a056820040700b003205d5eae6eso12644oou.5;
+        Tue, 01 Mar 2022 19:29:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6Q0bxE67I8y0tNyscEgKpcVLyNoRx4Y38uQCKmsrJXs=;
+        b=Y947JocD2+sMdok3nZr8cn9CnXm1HJHtBdilWI7XGsiHzz0gnVNoW6s9GlC6DCPo8f
+         Hs3+xo9n5QzmKwx5UOu6jbuBvVKgaIU3IhRp1TzH8GXoPgxc/s4KMu4HP/nhYi3apncQ
+         zu1Cd7RJbcX1Jh9Kq4Dw/CMTQj7hvtBi/A/ags+MJPqUdzC2yREUAe73YJIy4Ir1H+/n
+         kwv9pmdrPZtlff3xH41ULkhMu4ZWblUt2VDr37uoq0gVboVn8LE//4Qwily7fjxzhlkC
+         vSGnK+i4ktzKLhZ93hsvIEitS0vDTkgD5mmRr3i3cJkYp126CL78a0tUShM2xg5HLb4f
+         0wDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6Q0bxE67I8y0tNyscEgKpcVLyNoRx4Y38uQCKmsrJXs=;
+        b=A38/NL5lbkPEOH9Bd80aq66uLBk8Is3f/3lAsqXYw36WubMLcJnWLX90HPUlwLLCqt
+         cOFaGAVwYGxghNANTi09VSiX+xLM/t1qVIhJGgNjGuHfsPvc+Vo9i9cV8obzj2UMH73D
+         /4FLWwlyTzI4Z5UiVH4kGclHqUFU89XQEQWUnvlUspvHDLMoNvMYxlPFFUs1QdogrSQN
+         kDb/5JCj4H4QHH0Hr1c1+Qrd9uSZEeRLlGJiVFynrC0yzOGJ9MoQ3gZodN+aOXSitiv/
+         OETgWp79WC5kVpngaovw+JnDl7TH4XAPabBpXaBJMkaK78B1Aw75ME1gmzeRfGCByH+8
+         WpzA==
+X-Gm-Message-State: AOAM531eBlOKwH4SP1yHW8lM+xYJl40qs7lFT24mdIqUYKbLvrl8rNfJ
+        6prMhxoXkdHwtAFH1p0rmtA=
+X-Google-Smtp-Source: ABdhPJy17OB73gebQWHaD3DcjnRxBmx0KdCe+tnIIJ0DXj+s62oFSr9rFn+6UqsMBVq99jXvVqMUKA==
+X-Received: by 2002:a4a:e865:0:b0:318:4b66:ffe0 with SMTP id m5-20020a4ae865000000b003184b66ffe0mr13923364oom.80.1646191780103;
+        Tue, 01 Mar 2022 19:29:40 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.59])
+        by smtp.googlemail.com with ESMTPSA id kw10-20020a056870ac0a00b000d75f1d9b87sm1061411oab.52.2022.03.01.19.29.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 19:29:39 -0800 (PST)
+Message-ID: <2071f8a0-148d-96fa-75b9-8277c2f87287@gmail.com>
+Date:   Tue, 1 Mar 2022 20:29:37 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH net-next v4 4/4] net: tun: track dropped skb via
+ kfree_skb_reason()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
+        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
+References: <20220226084929.6417-1-dongli.zhang@oracle.com>
+ <20220226084929.6417-5-dongli.zhang@oracle.com>
+ <20220301185021.7cba195d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220301185021.7cba195d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On 3/1/22 7:50 PM, Jakub Kicinski wrote:
+> On Sat, 26 Feb 2022 00:49:29 -0800 Dongli Zhang wrote:
+>> +	SKB_DROP_REASON_SKB_PULL,	/* failed to pull sk_buff data */
+>> +	SKB_DROP_REASON_SKB_TRIM,	/* failed to trim sk_buff data */
+> 
+> IDK if these are not too low level and therefore lacking meaning.
+> 
+> What are your thoughts David?
 
-Add sample code to show how to create custom trace events in the tracefs
-directory that can be enabled and modified like any event in tracefs
-(including triggers, histograms, synthetic events and event probes).
+I agree. Not every kfree_skb is worthy of a reason. "Internal
+housekeeping" errors are random and nothing a user / admin can do about
+drops.
 
-The example is creating a custom sched_switch and a sched_waking to limit
-what is recorded:
+IMHO, the value of the reason code is when it aligns with SNMP counters
+(original motivation for this direction) and relevant details like TCP
+or UDP checksum mismatch, packets for a socket that is not open, socket
+is full, ring buffer is full, packets for "other host", etc.
 
-If the custom sched switch only records the prev_prio, next_prio and
-next_pid, it can bring the size from 64 bytes per event, down to just 16
-bytes!
+> 
+> Would it be better to up level the names a little bit and call SKB_PULL
+> something like "HDR_TRUNC" or "HDR_INV" or "HDR_ERR" etc or maybe
+> "L2_HDR_ERR" since in this case we seem to be pulling off ETH_HLEN?
+> 
+> For SKB_TRIM the error comes from allocation failures, there may be
+> a whole bunch of skb helpers which will fail only under mem pressure,
+> would it be better to identify them and return some ENOMEM related
+> reason, since, most likely, those will be noise to whoever is tracking
+> real errors?
+> 
+>>  	SKB_DROP_REASON_DEV_HDR,	/* there is something wrong with
+>>  					 * device driver specific header
+>>  					 */
+>> +	SKB_DROP_REASON_DEV_READY,	/* device is not ready */
+> 
+> What is ready? link is not up? peer not connected? can we expand?
 
-If sched_waking only records the prio and pid of the woken event, it will
-bring the size down from 36 bytes to 12 bytes per event.
-
-This will allow for a much smaller footprint into the ring buffer and keep
-more events from dropping.
-
-Suggested-by: Joel Fernandes <joel@joelfernandes.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- samples/Kconfig                           |   8 +-
- samples/Makefile                          |   1 +
- samples/trace_events/Makefile             |   2 +
- samples/trace_events/trace_custom_sched.c | 280 ++++++++++++++++++++++
- 4 files changed, 290 insertions(+), 1 deletion(-)
- create mode 100644 samples/trace_events/trace_custom_sched.c
-
-diff --git a/samples/Kconfig b/samples/Kconfig
-index 22cc921ae291..10e021c72282 100644
---- a/samples/Kconfig
-+++ b/samples/Kconfig
-@@ -14,7 +14,13 @@ config SAMPLE_TRACE_EVENTS
- 	tristate "Build trace_events examples -- loadable modules only"
- 	depends on EVENT_TRACING && m
- 	help
--	  This build trace event example modules.
-+	  This builds the trace event example module.
-+
-+config SAMPLE_TRACE_CUSTOM_EVENTS
-+	tristate "Build custom trace event example -- loadable modules only"
-+	depends on EVENT_TRACING && m
-+	help
-+	  This builds the custom trace event example module.
- 
- config SAMPLE_TRACE_PRINTK
-         tristate "Build trace_printk module - tests various trace_printk formats"
-diff --git a/samples/Makefile b/samples/Makefile
-index 1ae4de99c983..448343e8faeb 100644
---- a/samples/Makefile
-+++ b/samples/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_SAMPLE_RPMSG_CLIENT)	+= rpmsg/
- subdir-$(CONFIG_SAMPLE_SECCOMP)		+= seccomp
- subdir-$(CONFIG_SAMPLE_TIMER)		+= timers
- obj-$(CONFIG_SAMPLE_TRACE_EVENTS)	+= trace_events/
-+obj-$(CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS) += trace_events/
- obj-$(CONFIG_SAMPLE_TRACE_PRINTK)	+= trace_printk/
- obj-$(CONFIG_SAMPLE_FTRACE_DIRECT)	+= ftrace/
- obj-$(CONFIG_SAMPLE_FTRACE_DIRECT_MULTI) += ftrace/
-diff --git a/samples/trace_events/Makefile b/samples/trace_events/Makefile
-index b78344e7bbed..e98afc447fe1 100644
---- a/samples/trace_events/Makefile
-+++ b/samples/trace_events/Makefile
-@@ -13,3 +13,5 @@
- CFLAGS_trace-events-sample.o := -I$(src)
- 
- obj-$(CONFIG_SAMPLE_TRACE_EVENTS) += trace-events-sample.o
-+
-+obj-$(CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS) += trace_custom_sched.o
-diff --git a/samples/trace_events/trace_custom_sched.c b/samples/trace_events/trace_custom_sched.c
-new file mode 100644
-index 000000000000..5271a567d99b
---- /dev/null
-+++ b/samples/trace_events/trace_custom_sched.c
-@@ -0,0 +1,280 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * event tracer
-+ *
-+ * Copyright (C) 2022 Google Inc, Steven Rostedt <rostedt@goodmis.org>
-+ */
-+
-+#define pr_fmt(fmt) fmt
-+
-+#include <linux/trace_events.h>
-+#include <linux/version.h>
-+#include <linux/module.h>
-+#include <linux/sched.h>
-+#include <trace/events/sched.h>
-+
-+#define THIS_SYSTEM "custom_sched"
-+
-+#define SCHED_PRINT_FMT							\
-+	C("prev_prio=%d next_pid=%d next_prio=%d", REC->prev_prio, REC->next_pid, \
-+	  REC->next_prio)
-+
-+#define SCHED_WAKING_FMT				\
-+	C("pid=%d prio=%d", REC->pid, REC->prio)
-+
-+#undef C
-+#define C(a, b...) a, b
-+
-+static struct trace_event_fields sched_switch_fields[] = {
-+	{
-+		.type = "unsigned short",
-+		.name = "prev_prio",
-+		.size = sizeof(short),
-+		.align = __alignof__(short),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{
-+		.type = "unsigned short",
-+		.name = "next_prio",
-+		.size = sizeof(short),
-+		.align = __alignof__(short),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{
-+		.type = "unsigned int",
-+		.name = "next_prio",
-+		.size = sizeof(int),
-+		.align = __alignof__(int),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{}
-+};
-+
-+struct sched_event {
-+	struct trace_entry	ent;
-+	unsigned short		prev_prio;
-+	unsigned short		next_prio;
-+	unsigned int		next_pid;
-+};
-+
-+static struct trace_event_fields sched_waking_fields[] = {
-+	{
-+		.type = "unsigned int",
-+		.name = "pid",
-+		.size = sizeof(int),
-+		.align = __alignof__(int),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{
-+		.type = "unsigned short",
-+		.name = "prio",
-+		.size = sizeof(short),
-+		.align = __alignof__(short),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{}
-+};
-+
-+struct wake_event {
-+	struct trace_entry	ent;
-+	unsigned int		pid;
-+	unsigned short		prio;
-+};
-+
-+static void sched_switch_probe(void *data, bool preempt, struct task_struct *prev,
-+			       struct task_struct *next)
-+{
-+	struct trace_event_file *trace_file = data;
-+	struct trace_event_buffer fbuffer;
-+	struct sched_event *entry;
-+
-+	if (trace_trigger_soft_disabled(trace_file))
-+		return;
-+
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file,
-+					   sizeof(*entry));
-+
-+	if (!entry)
-+		return;
-+
-+	entry->prev_prio = prev->prio;
-+	entry->next_prio = next->prio;
-+	entry->next_pid = next->pid;
-+
-+	trace_event_buffer_commit(&fbuffer);
-+}
-+
-+static struct trace_event_class sched_switch_class = {
-+	.system			= THIS_SYSTEM,
-+	.reg			= trace_event_reg,
-+	.fields_array		= sched_switch_fields,
-+	.fields			= LIST_HEAD_INIT(sched_switch_class.fields),
-+	.probe			= sched_switch_probe,
-+};
-+
-+static void sched_waking_probe(void *data, struct task_struct *t)
-+{
-+	struct trace_event_file *trace_file = data;
-+	struct trace_event_buffer fbuffer;
-+	struct wake_event *entry;
-+
-+	if (trace_trigger_soft_disabled(trace_file))
-+		return;
-+
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file,
-+					   sizeof(*entry));
-+
-+	if (!entry)
-+		return;
-+
-+	entry->prio = t->prio;
-+	entry->pid = t->pid;
-+
-+	trace_event_buffer_commit(&fbuffer);
-+}
-+
-+static struct trace_event_class sched_waking_class = {
-+	.system			= THIS_SYSTEM,
-+	.reg			= trace_event_reg,
-+	.fields_array		= sched_waking_fields,
-+	.fields			= LIST_HEAD_INIT(sched_waking_class.fields),
-+	.probe			= sched_waking_probe,
-+};
-+
-+static enum print_line_t sched_switch_output(struct trace_iterator *iter, int flags,
-+					     struct trace_event *trace_event)
-+{
-+	struct trace_seq *s = &iter->seq;
-+	struct sched_event *REC = (struct sched_event *)iter->ent;
-+	int ret;
-+
-+	ret = trace_raw_output_prep(iter, trace_event);
-+	if (ret != TRACE_TYPE_HANDLED)
-+		return ret;
-+
-+	trace_seq_printf(s, SCHED_PRINT_FMT);
-+	trace_seq_putc(s, '\n');
-+
-+	return trace_handle_return(s);
-+}
-+
-+static struct trace_event_functions sched_switch_funcs = {
-+	.trace			= sched_switch_output,
-+};
-+
-+static enum print_line_t sched_waking_output(struct trace_iterator *iter, int flags,
-+					     struct trace_event *trace_event)
-+{
-+	struct trace_seq *s = &iter->seq;
-+	struct wake_event *REC = (struct wake_event *)iter->ent;
-+	int ret;
-+
-+	ret = trace_raw_output_prep(iter, trace_event);
-+	if (ret != TRACE_TYPE_HANDLED)
-+		return ret;
-+
-+	trace_seq_printf(s, SCHED_WAKING_FMT);
-+	trace_seq_putc(s, '\n');
-+
-+	return trace_handle_return(s);
-+}
-+
-+static struct trace_event_functions sched_waking_funcs = {
-+	.trace			= sched_waking_output,
-+};
-+
-+#undef C
-+#define C(a, b...) #a "," __stringify(b)
-+
-+static struct trace_event_call sched_switch_call = {
-+	.class			= &sched_switch_class,
-+	.event			= {
-+		.funcs			= &sched_switch_funcs,
-+	},
-+	.print_fmt		= SCHED_PRINT_FMT,
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-+	.module			= THIS_MODULE,
-+#else
-+	.mod			= THIS_MODULE,
-+#endif
-+	.flags			= TRACE_EVENT_FL_TRACEPOINT,
-+};
-+
-+static struct trace_event_call sched_waking_call = {
-+	.class			= &sched_waking_class,
-+	.event			= {
-+		.funcs			= &sched_waking_funcs,
-+	},
-+	.print_fmt		= SCHED_WAKING_FMT,
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
-+	.module			= THIS_MODULE,
-+#else
-+	.mod			= THIS_MODULE,
-+#endif
-+	.flags			= TRACE_EVENT_FL_TRACEPOINT,
-+};
-+
-+static void fct(struct tracepoint *tp, void *priv)
-+{
-+	if (tp->name && strcmp(tp->name, "sched_switch") == 0)
-+		sched_switch_call.tp = tp;
-+	else if (tp->name && strcmp(tp->name, "sched_waking") == 0)
-+		sched_waking_call.tp = tp;
-+}
-+
-+static int add_event(struct trace_event_call *call)
-+{
-+	int ret;
-+
-+	ret = register_trace_event(&call->event);
-+	if (WARN_ON(!ret))
-+		return -ENODEV;
-+
-+	ret = trace_add_event_call(call);
-+	if (WARN_ON(ret))
-+		unregister_trace_event(&call->event);
-+
-+	return ret;
-+}
-+
-+static int __init trace_sched_init(void)
-+{
-+	int ret;
-+
-+	check_trace_callback_type_sched_switch(sched_switch_probe);
-+	check_trace_callback_type_sched_waking(sched_waking_probe);
-+
-+	for_each_kernel_tracepoint(fct, NULL);
-+
-+	ret = add_event(&sched_switch_call);
-+	if (ret)
-+		return ret;
-+
-+	ret = add_event(&sched_waking_call);
-+	if (ret)
-+		trace_remove_event_call(&sched_switch_call);
-+
-+	return ret;
-+}
-+
-+static void __exit trace_sched_exit(void)
-+{
-+	trace_set_clr_event(THIS_SYSTEM, "sched_switch", 0);
-+	trace_set_clr_event(THIS_SYSTEM, "sched_waking", 0);
-+
-+	trace_remove_event_call(&sched_switch_call);
-+	trace_remove_event_call(&sched_waking_call);
-+}
-+
-+module_init(trace_sched_init);
-+module_exit(trace_sched_exit);
-+
-+MODULE_AUTHOR("Steven Rostedt");
-+MODULE_DESCRIPTION("Custom scheduling events");
-+MODULE_LICENSE("GPL");
-+
--- 
-2.34.1
+As I recall in this case it is the tfile for a tun device disappeared -
+ie., a race condition.
