@@ -2,100 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B823C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245429AbiCBVxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:53:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        id S245431AbiCBVzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235341AbiCBVxJ (ORCPT
+        with ESMTP id S235341AbiCBVzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:53:09 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C462A8;
-        Wed,  2 Mar 2022 13:52:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TTmCl82JqLan3QsNgtCR8eCTt45Umy9DiqQwuLlp+nY=; b=KfoYwSU15wZdPny08l3cV8PBZu
-        suXZGirPexQrDgbQX5uGJbU7Df1yJ1ktmLv0jS0sAZKNx+pJdixfgD4R/TDEPqhbqI3BfNt42pheu
-        RjmWCL0DlPB+78SrZXIMGba7JmRb0PQyQQUHkbneh6Acx7Xd1qd6fXDaMXTTVqKiOH3qxy3tAQDOa
-        GvCaN0q6n5SXSqbjf6rmf5n5+sqFBgieDDlbNUI+aO5wXsxAJTiY1flBdSrbSaeah/4c62cT3Q8Hb
-        UXbPO8ixKuUhGo/2c7lCT4NM75T9VeG9xmm8CWBJ8Utbrwowego6iSKFJmRdAIxORzhTRN/ip1tN8
-        MLIdp1Fg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPWt7-004R35-C3; Wed, 02 Mar 2022 21:52:01 +0000
-Date:   Wed, 2 Mar 2022 13:52:01 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        NeilBrown <neilb@suse.de>, Vasily Averin <vvs@virtuozzo.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org
-Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
-Message-ID: <Yh/nAUkt8iZlvQdc@bombadil.infradead.org>
-References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
- <YhzeCkXEvga7+o/A@bombadil.infradead.org>
- <20220301180917.tkibx7zpcz2faoxy@google.com>
- <Yh5lyr8dJXmEoFG6@bombadil.infradead.org>
- <87wnhdwg75.fsf@email.froward.int.ebiederm.org>
- <Yh6PPPqgPxJy+Jvx@bombadil.infradead.org>
- <87ilswwh1x.fsf@email.froward.int.ebiederm.org>
+        Wed, 2 Mar 2022 16:55:07 -0500
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7C35C863;
+        Wed,  2 Mar 2022 13:54:23 -0800 (PST)
+Received: by mail-oi1-f175.google.com with SMTP id z7so3071483oid.4;
+        Wed, 02 Mar 2022 13:54:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FT7qXkd3XFxv8GYIIHo4RitAFBU5L9E0sYaLEAc3SV8=;
+        b=UpGheuEchrK5bQWBykeuE0tbdAOXXV7sNmsdp4zr2p8nWdGdZ2kTAaAUTWo1Lo1Ik8
+         Qw49U2lD+DKvP0jLWcmNr4lj2ry3B517UfdO1DL6wNIHcw4NaOECD7RHq4SJcGqiDGcz
+         vmiM1Kabu7HsiW99EP3kXuDrqj6TkA9vgyjE/WK8xuU5a80UaqLeDxFgZtU2gnQJpYxF
+         0RjkQrSqQuRzjKrYtwgYiBjyGyTbOjpO2TtHlQoCVBZ0dqrJuoha7EkcXt8RCKDl6j2U
+         BsDXyFf++IVPe8Z+RDH49qCCvYjpwYlgF3FGVQ5M5RcEaW34G3uM1iD2N2AlHS948VhP
+         mhmw==
+X-Gm-Message-State: AOAM531Ah8jDEAP9kbfYSokfP6JfoYwHCp6qQCnyLP3e6mY9QxDC1xjc
+        mC56kog8I+uy6wYZcwLZxw==
+X-Google-Smtp-Source: ABdhPJxECvNsWJt/n5xjiUpSjwKgUMd5ZuCLEID3xAjfwZicO5bFYzbFaHZ+FJejuPb9qOGrg3tA6Q==
+X-Received: by 2002:a05:6808:179b:b0:2d9:6b9b:b24e with SMTP id bg27-20020a056808179b00b002d96b9bb24emr1770709oib.149.1646258062522;
+        Wed, 02 Mar 2022 13:54:22 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id i2-20020a056870c1c200b000d7355852b3sm172623oad.19.2022.03.02.13.54.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 13:54:21 -0800 (PST)
+Received: (nullmailer pid 125552 invoked by uid 1000);
+        Wed, 02 Mar 2022 21:54:20 -0000
+Date:   Wed, 2 Mar 2022 15:54:20 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tzung-Bi Shih <tzungbi@google.com>
+Cc:     devicetree@vger.kernel.org, robh+dt@kernel.org,
+        bleung@chromium.org, linux-kernel@vger.kernel.org,
+        chrome-platform@lists.linux.dev, groeck@chromium.org
+Subject: Re: [PATCH 3/5] dt-bindings: add google,cros-kbd-led-backlight
+Message-ID: <Yh/njNrNgy+MWtz0@robh.at.kernel.org>
+References: <20220214053646.3088298-1-tzungbi@google.com>
+ <20220214053646.3088298-4-tzungbi@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87ilswwh1x.fsf@email.froward.int.ebiederm.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <20220214053646.3088298-4-tzungbi@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 08:43:54AM -0600, Eric W. Biederman wrote:
-> Luis Chamberlain <mcgrof@kernel.org> writes:
+On Mon, 14 Feb 2022 13:36:44 +0800, Tzung-Bi Shih wrote:
+> Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+> ---
+>  .../chrome/google,cros-kbd-led-backlight.yaml | 35 +++++++++++++++++++
+>  .../bindings/mfd/google,cros-ec.yaml          |  3 ++
+>  2 files changed, 38 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/chrome/google,cros-kbd-led-backlight.yaml
 > 
-> > On Tue, Mar 01, 2022 at 02:50:06PM -0600, Eric W. Biederman wrote:
-> >> I really have not looked at this pids controller.
-> >> 
-> >> So I am not certain I understand your example here but I hope I have
-> >> answered your question.
-> >
-> > During experimentation with the above stress-ng test case, I saw tons
-> > of thread just waiting to do exit:
-> 
-> You increment the count of concurrent threads after a no return function
-> in do_exit.  Since the increment is never reached the count always goes
-> down and eventually the warning prints.
-> 
-> > diff --git a/kernel/exit.c b/kernel/exit.c
-> > index 80c4a67d2770..653ca7ebfb58 100644
-> > --- a/kernel/exit.c
-> > +++ b/kernel/exit.c
-> > @@ -881,6 +894,9 @@ void __noreturn do_exit(long code)
-> >  
-> >  	lockdep_free_task(tsk);
-> >  	do_task_dead();
-> 
-> The function do_task_dead never returns.
-> 
-> > +
-> > +	atomic_inc(&exit_concurrent_max);
-> > +	wake_up(&exit_wq);
-> >  }
-> >  EXPORT_SYMBOL_GPL(do_exit);
 
-Doh thanks!
-
-  Luis
+Acked-by: Rob Herring <robh@kernel.org>
