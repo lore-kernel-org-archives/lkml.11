@@ -2,235 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243770AbiCBRX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
+        id S243777AbiCBRZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:25:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243767AbiCBRX5 (ORCPT
+        with ESMTP id S239849AbiCBRZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:23:57 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1A9C9A24
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:23:12 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646241790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6P8ltwVCQmRjuFn0TcABJufxoqYaGROP2gDiaqaYdfI=;
-        b=sppZoKYESo+VZhpQZtLd7AsvCKYI6ATnhgG632g3AD0Bg4HKJA/nd5gSZ0kOm3aLd+YSM7
-        cB/I0EnEIYFFX2MGVg0zAhHn3m4hwKfE6z7a+U+2h3BPNYqnJ75YivX+Z5z3c/EfAlK6Le
-        IaR1RuqBNEL94uK5hqgEtIGewIuv7uZeeYEFQkxvV98a/Qw76EzKiy5+j5hs04Nlb0NjnN
-        tY2V6dAlha58Qio09j5m6LXU01FdP6kYmmDXmCq6y7/R8DIqYWJPJY/imrxY3FrscegNwI
-        n/3TnEN+shb3EEsM+O5ie0PoelXjc6bJsVymdkF8Lbr2b8j32lPm5vQhAHu9Mg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646241790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6P8ltwVCQmRjuFn0TcABJufxoqYaGROP2gDiaqaYdfI=;
-        b=ct8B318MmEQpkOLvLr+tacQgeRBqgitaKH7wwGzFem7VEMg8BsxnVlfwZKC2yh/I6byP96
-        R4tjo4BGQH0lJDBQ==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH printk v1 08/13] printk: add pr_flush()
-In-Reply-To: <Yg4fQHlli5L/zLQ6@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-9-john.ogness@linutronix.de>
- <Yg4fQHlli5L/zLQ6@alley>
-Date:   Wed, 02 Mar 2022 18:29:09 +0106
-Message-ID: <87mti8gtfm.fsf@jogness.linutronix.de>
+        Wed, 2 Mar 2022 12:25:52 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFC3CA31A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:25:06 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id bk29so3903028wrb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:25:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bz7qotst5wZ2RH1Ycd9IIg729giMypmnjudyWeu+UwU=;
+        b=lvmC6OwysBVJcR6sJCUrR+wOrgbPj+ANTmN1KXU72r/93w/a8+Hdqgb8MfLsG43iYE
+         zYMxmv0GrzTjXS2FAs2VhCWlRf5n+pYIN590AcBgJ36WqobqzS6erQN+QMF2T+8TDk33
+         DPCZ7tKakr8buBALDa2Iv8OIsfNJbvTneuAs7N5W9Rex4CrI4onp2LZYLTghetUf4JCc
+         tR/VEWRSHJwl243How9otm9mr2PKSNztegqbAjdO5gWLxDRvIXKUZnCP2HdYtIdflf/g
+         Cmffy3GqwRa/C+Ycx0agEajPx9vlD3SIWg6+9NoAkyTlAE+ItKPy3tly4uLagG267KHe
+         xupw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bz7qotst5wZ2RH1Ycd9IIg729giMypmnjudyWeu+UwU=;
+        b=UU/tDsiBjKP2Lu42FEuyIXeaHREW4/DAq6kh1sVYD1kWAHKd1tZ+M1lgWYZjXJwQgc
+         pXe7Dc7uVCwCZnd53UMssL28X8RfJl5orcZzkcZ/GyyTMGnp3VtrLFkJgBTu8oANS/Zz
+         IWH+AUg/WuNAKlUlMsA2htAjV+0NoCPOqPCqh5jZ+Qaak6bb7kO6UumB4uQ6WOPCOEJ+
+         5vBVyKK0WLHLx+yfPKuxzGgy6/dSIUrV8ZjP0Z/PXFCB+VrN4krNCpvVZc/ooLoiPTDd
+         p4XGsdZ8L8H2/89kUbALuIwdBbzCpDAnRV9uL2w5RmeyKRaKPRAa9gWdlos3Dhug14Xo
+         REWw==
+X-Gm-Message-State: AOAM531SOSb996h54XxZNaoZE/nGbHU8lEBUQIK6pm7RWxBaeC5XvuJM
+        K2XeLMEF14uimxkyPzvRnkSX8+4Niy1V7yCRlQjVdg==
+X-Google-Smtp-Source: ABdhPJyvAVYsK6bS1ULRzdVEwTranzJPFva6nkK9r8cZMojwnXMSs7MamfTIXIP3rnb2zflw1aKln/RKLG3YyPjdHWc=
+X-Received: by 2002:adf:ca08:0:b0:1ed:c0bc:c212 with SMTP id
+ o8-20020adfca08000000b001edc0bcc212mr23553444wrh.577.1646241904615; Wed, 02
+ Mar 2022 09:25:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220225033548.1912117-1-kaleshsingh@google.com>
+ <20220225033548.1912117-3-kaleshsingh@google.com> <87v8ww6bl0.wl-maz@kernel.org>
+In-Reply-To: <87v8ww6bl0.wl-maz@kernel.org>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Wed, 2 Mar 2022 09:24:53 -0800
+Message-ID: <CAC_TJvfTZP9+EKFFXQUeGOWJb=WK2Wkd53bPOX2gaz0Gh5o8OA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/8] KVM: arm64: Introduce pkvm_alloc_private_va_range()
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Will Deacon <will@kernel.org>, Quentin Perret <qperret@google.com>,
+        Fuad Tabba <tabba@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-17, Petr Mladek <pmladek@suse.com> wrote:
->> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
->> index 02bde45c1149..1e80fd052bd5 100644
->> --- a/kernel/printk/printk.c
->> +++ b/kernel/printk/printk.c
->> @@ -2802,8 +2804,10 @@ void console_unblank(void)
->>  	if (oops_in_progress) {
->>  		if (down_trylock_console_sem() != 0)
->>  			return;
->> -	} else
->> +	} else {
->> +		pr_flush(1000, true);
+On Tue, Mar 1, 2022 at 11:46 PM Marc Zyngier <maz@kernel.org> wrote:
 >
-> It would make more sense to flush the consoles after they are
-> unblanked. I mean to move this to the end of the function.
-
-Agreed.
-
-> Also it is not obvious why this is not called when oops_in_progress
-> is set. I guess that it is because trylock is needed in this case.
-> It should be handled inside pr_flush().
+> On Fri, 25 Feb 2022 03:34:47 +0000,
+> Kalesh Singh <kaleshsingh@google.com> wrote:
+> >
+> > pkvm_hyp_alloc_private_va_range() can be used to reserve private VA ranges
+> > in the pKVM nVHE hypervisor (). Also update __pkvm_create_private_mapping()
+> > to allow specifying an alignment for the private VA mapping.
+> >
+> > These will be used to implement stack guard pages for pKVM nVHE hypervisor
+> > (in a subsequent patch in the series).
+> >
+> > Credits to Quentin Perret <qperret@google.com> for the idea of moving
+> > private VA allocation out of __pkvm_create_private_mapping()
+> >
+> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> > ---
+> >
+> > Changes in v4:
+> >   - Handle null ptr in pkvm_alloc_private_va_range() and replace
+> >     IS_ERR_OR_NULL checks in callers with IS_ERR checks, per Fuad
+> >   - Fix kernel-doc comments format, per Fuad
+> >   - Format __pkvm_create_private_mapping() prototype args (< 80 col), per Fuad
+> >
+> > Changes in v3:
+> >   - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
+> >
+> > Changes in v2:
+> >   - Allow specifying an alignment for the private VA allocations, per Marc
 >
-> I mean that pr_flush() should internally use trylock when
-> @oops_in_progress is set. It will make it safe even in this
-> mode.
-
-pr_flush() is a might_sleep() function. We agreed on this at
-LPC2019.
-
-Creating a pr_flush() that will directly push out the messages (or
-busy-wait) in non-preemptible contexts is complicated. It might be
-something to attempt for the future, but I would prefer to avoid it at
-this stage.
-
->>  		console_lock();
->> +	}
->>  
->>  	console_locked = 1;
->>  	console_may_schedule = 0;
->> @@ -2869,6 +2873,7 @@ struct tty_driver *console_device(int *index)
->>   */
->>  void console_stop(struct console *console)
->>  {
->> +	pr_flush(1000, true);
+> I probably badly expressed my earlier concern.
 >
-> It would be enough to flush just the given @console.
+> Yes, an alignment is necessary. But how often do we want an alignment
+> that isn't naturally aligned to the size of the allocation (i.e. the
+> power of 2 >= the size of the allocation)? This is what the rest of
+> the kernel does (get_order() and co), and I thing we should follow
+> this.
 
-For v2 I will create an internal __pr_flush() to allow specifying that
-only a single console is flushed. The high level pr_flush() will then
-call __pr_flush() specifying all consoles.
+Hi Marc,
 
-> It might be possible to take over the job from the related
-> kthread and flush it in this context. Well, I am not sure if
-> it is a good idea.
+Thanks for clarifying. I think making the alignment implicitly based
+on the size here will create unnecessary holes where PAGE_SIZE
+alignment would be ok and potentially overflow the private VA space
+earlier. Is it not a concern?
 
-I agree that it might not be a good idea. Let's keep things simple for
-now.
-
->>  	console_lock();
->>  	console->flags &= ~CON_ENABLED;
->>  	console_unlock();
->> @@ -2880,6 +2885,7 @@ void console_start(struct console *console)
->>  	console_lock();
->>  	console->flags |= CON_ENABLED;
->>  	console_unlock();
->> +	pr_flush(1000, true);
+- Kalesh
 >
-> Same here.
-
-OK.
-
->>  }
->>  EXPORT_SYMBOL(console_start);
->>  
->> @@ -3249,6 +3255,71 @@ static int __init printk_late_init(void)
->>  late_initcall(printk_late_init);
->>  
->>  #if defined CONFIG_PRINTK
->> +/**
->> + * pr_flush() - Wait for printing threads to catch up.
->> + *
+> This applies to both this patch and the previous one.
 >
-> Alternative solution would be to take over the job from the kthreads
-> and flush the consoles in this context. Well, I am not sure
-> if it is a good idea or not.
-
-Since pr_flush() is might_sleep() this would be relatively simple. Just
-grab the console mutex and go. My concern is that this task may have
-different scheduling parameters that could negatively affect the
-system. For normal operation, I really would prefer that the designated
-kthreads do the work. If "waiting for the kthreads" turns out to be
-problematic, then maybe we could go down this path.
-
->> + * @timeout_ms:        The maximum time (in ms) to wait.
->> + * @reset_on_progress: Reset the timeout if forward progress is seen.
->> + *
->> + * A value of 0 for @timeout_ms means no waiting will occur. A value of -1
->> + * represents infinite waiting.
->> + *
->> + * If @reset_on_progress is true, the timeout will be reset whenever any
->> + * printer has been seen to make some forward progress.
->> + *
->> + * Context: Process context. May sleep while acquiring console lock.
->> + * Return: true if all enabled printers are caught up.
->> + */
->> +bool pr_flush(int timeout_ms, bool reset_on_progress)
->> +{
->> +	int remaining = timeout_ms;
->> +	struct console *con;
->> +	u64 last_diff = 0;
->> +	u64 printk_seq;
->> +	u64 diff;
->> +	u64 seq;
->> +
->> +	might_sleep();
->> +
->> +	seq = prb_next_seq(prb);
->> +
->> +	for (;;) {
->> +		diff = 0;
->> +
->> +		console_lock();
->> +		for_each_console(con) {
->> +			if (!console_is_usable(con))
->> +				continue;
->> +			printk_seq = con->seq;
->> +			if (printk_seq < seq)
->> +				diff += seq - printk_seq;
->> +		}
->> +		console_unlock();
->> +
->> +		if (diff != last_diff && reset_on_progress)
->> +			remaining = timeout_ms;
->> +
->> +		if (diff == 0 || remaining == 0)
->> +			break;
->> +
->> +		if (remaining < 0) {
->> +			/* no timeout limit */
->> +			msleep(100);
->> +		} else if (remaining < 100) {
->> +			msleep(remaining);
->> +			remaining = 0;
->> +		} else {
->> +			msleep(100);
->> +			remaining -= 100;
->> +		}
->> +
->> +		last_diff = diff;
->> +	}
->> +
->> +	return (diff == 0);
->> +}
->> +EXPORT_SYMBOL(pr_flush);
+> Thanks,
 >
-> Summary:
+>         M.
 >
-> The pr_flush() API and the optional timeout look reasonable to me.
+> --
+> Without deviation from the norm, progress is not possible.
 >
-> Please, handle oops_in_progress in pr_flush() and make it safe in this
-> mode. It will allow to move it at the end of console_unblank() where
-> it makes more sense.
-
-I will add another oops_in_progress check at the end. pr_flush() will
-not be made safe for oops_in_progress. Keep in mind that when
-oops_in_progress is set, direct printing will be active, so there should
-be no need for pr_flush() anyway.
-
-> I do not resist on flushing only the given consoles in console_stop()
-> and console_start(). It is nice to have and can be done later.
-
-It is a simple change. I will do it for v2.
-
-> Also I do not resist on doing the flush in the context of the caller.
-> I am not even sure if it is a good idea. We could play with it
-> later when there are some problems with the current approach
-> in practice.
-
-For now, let's keep it as a waiting function.
-
-John
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
+>
