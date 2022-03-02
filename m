@@ -2,95 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC568C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B45FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238422AbiCBBP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 20:15:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
+        id S238847AbiCBBPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 20:15:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiCBBPZ (ORCPT
+        with ESMTP id S229771AbiCBBP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 20:15:25 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E08457B9
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 17:14:43 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id c7so108597qka.7
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 17:14:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=T0TkFFWcgAksB0r/eiWpvcxH5MHjEqDfjobzCtyWnt4=;
-        b=e5BlFQgu75oQLnkpJb4FsfUxJG+JyX/bm0JpdLwMDTpJB75rrgraCfEQeGrCast3B+
-         mzJkWKRtGPQYnkq7nN3TeOFq7QFm+o4UybKfiE4PsV+YtHxvYA0dV6ux8hBFOQ2tzmsi
-         qnKjdxdWamUx5ARjGGJE3yM3aZI8g3vqywCkww/hPmSdBG3AiHpO0RItvWPhEVEe0TyB
-         WqC6mpBLGn76ws20TyUxytKckE9JgJDN2M2vnnfUyCnULifrD7NkkI0OwCF2osEZaUQS
-         MwSYCMm+S8eD4N3vZYzUoWwHcWRwHdbEEnvQp3MdUw+zH1ipOlyKpm0LojIWGa3rckXU
-         UoRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=T0TkFFWcgAksB0r/eiWpvcxH5MHjEqDfjobzCtyWnt4=;
-        b=wPcsgDNMdu0iypcCAONsv+PJ1SUyIvjTxNz09qxIpIVN8z/GfM1HZl/iW8Fsbuyuwm
-         e5D6EZ/z4QAPAW1sUxIXyUDGArMEh68mp8uXsAA7DQJ9A5tOaKytD2YUXihDhIvXuhov
-         ugoBYFrp/44egK+FOTrmFoNoy1lxV9GWGr3vWzAXWVgikQDWndTdwTK1sNX33mkUNkXZ
-         P2CR5EwUbO+a08bK9GArCsAa2tM9YrwUDzVsPQP8abydmnN4mhKStR9vGSvRL5eIt5ed
-         DojM0iGm7Tr+HoJnO+fbqr4Xwr4Q2/E29SfKCdpeKYl5sLMFCj7zHmk1d580Qer4ZB2Q
-         knnA==
-X-Gm-Message-State: AOAM533huLEA8gy5bXpsB/SB0S7BaAYdHjYNQhN39pvnu7/cPwNCk5N9
-        w8ShxL3Ypx47s9qT542VPJU=
-X-Google-Smtp-Source: ABdhPJyezYxwcR0F1+1iaSAiJqCwx5d3/dCvaoN6S/JKkuTi32iCrCtK8z5qItsWOPPrwQtUqDrJcA==
-X-Received: by 2002:a37:b447:0:b0:649:33c4:bd5e with SMTP id d68-20020a37b447000000b0064933c4bd5emr15256858qkf.342.1646183682470;
-        Tue, 01 Mar 2022 17:14:42 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id bq42-20020a05620a46aa00b006494fb49246sm7427360qkb.86.2022.03.01.17.14.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 17:14:42 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     mingo@redhat.com
-Cc:     juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] sched/topology: avoid calling synchronize_rcu()
-Date:   Wed,  2 Mar 2022 01:14:33 +0000
-Message-Id: <20220302011433.2054613-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 1 Mar 2022 20:15:28 -0500
+X-Greylist: delayed 647 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 17:14:45 PST
+Received: from mail-m121145.qiye.163.com (mail-m121145.qiye.163.com [115.236.121.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22685457B9;
+        Tue,  1 Mar 2022 17:14:45 -0800 (PST)
+Received: from [172.16.12.69] (unknown [58.22.7.114])
+        by mail-m121145.qiye.163.com (Hmail) with ESMTPA id 56030800204;
+        Wed,  2 Mar 2022 09:03:56 +0800 (CST)
+Message-ID: <242bae88-5dde-f005-6580-6024d51e0700@rock-chips.com>
+Date:   Wed, 2 Mar 2022 09:03:56 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Cc:     shawn.lin@rock-chips.com, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: avoid logspam when cd-broken
+Content-Language: en-GB
+To:     Peter Geis <pgwipeout@gmail.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>
+References: <20220228223642.1136229-1-pgwipeout@gmail.com>
+From:   Shawn Lin <shawn.lin@rock-chips.com>
+In-Reply-To: <20220228223642.1136229-1-pgwipeout@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUlKS0tKN1dZLVlBSVdZDwkaFQgSH1lBWUNNSBlWS0pPSkNPSE
+        gZGRgaVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PQw6Iww6MT5RGkwDLxUuARlI
+        DiNPC0tVSlVKTU9NSkNIS0hNQ0NNVTMWGhIXVQgTGgwVVRcSFTsJFBgQVhgTEgsIVRgUFkVZV1kS
+        C1lBWU5DVUlJVUxVSkpPWVdZCAFZQUlCTkg3Bg++
+X-HM-Tid: 0a7f4827b6c1b03akuuu56030800204
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi (CGEL ZTE) <lv.ruyi@zte.com.cn>
+Hi Peter,
 
-Kfree_rcu() usually results in even simpler code than does
-synchronize_rcu() without synchronize_rcu()'s multi-millisecond
-latency, so replace synchronize_rcu() with kfree_rcu().
+在 2022/3/1 6:36, Peter Geis 写道:
+> The dw_mmc-rockchip driver drops a large amound of logspam constantly
+> when the cd-broken flag is enabled.
+> Set the warning to be debug ratelimited in this case.
+> 
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi (CGEL ZTE) <lv.ruyi@zte.com.cn>
----
- kernel/sched/topology.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+May I know which platform did you use?
 
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index 974212620fa1..0ce302b4d732 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1970,8 +1970,7 @@ static void sched_reset_numa(void)
- 	if (distances || masks) {
- 		int i, j;
- 
--		synchronize_rcu();
--		kfree(distances);
-+		kfree_rcu(distances);
- 		for (i = 0; i < nr_levels && masks; i++) {
- 			if (!masks[i])
- 				continue;
--- 
-2.25.1
-
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> ---
+>   drivers/mmc/host/dw_mmc-rockchip.c | 9 +++++++--
+>   1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
+> index 95d0ec0f5f3a..d0ebf0afa42a 100644
+> --- a/drivers/mmc/host/dw_mmc-rockchip.c
+> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
+> @@ -50,8 +50,13 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
+>   		cclkin = ios->clock * RK3288_CLKGEN_DIV;
+>   
+>   	ret = clk_set_rate(host->ciu_clk, cclkin);
+> -	if (ret)
+> -		dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
+> +	if (ret) {
+> +		/* this screams when card detection is broken */
+> +		if (host->slot->mmc->caps & MMC_CAP_NEEDS_POLL)
+> +			dev_dbg_ratelimited(host->dev, "failed to set rate %uHz\n", ios->clock);
+> +		else
+> +			dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
+> +	}
+>   
+>   	bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
+>   	if (bus_hz != host->bus_hz) {
