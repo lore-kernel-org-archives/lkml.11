@@ -2,156 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36232C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4058DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241424AbiCBShP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:37:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
+        id S244670AbiCBShb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:37:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242995AbiCBShM (ORCPT
+        with ESMTP id S242218AbiCBSh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:37:12 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822A6D8371
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:36:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646246187; x=1677782187;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=P0U7Q/yazxD84c4kQUYlKKDrEeJF19pk8j8NIb7iKJU=;
-  b=CsS42kZaV41VnaGg5+hBZVnIGNraSy9gqnhi4/bmujXjGG+JMEbUe+DS
-   is1cOgoZtWTOapLsOKBm08o76ywxOIw+pPVT+EuLAPTx5OdlR70Xaq03n
-   YkSdDrpE9R0Mf+oNK24Xb7hOkiQhu+tekK2j8cgoLKbt5rRYyE6BCVSjG
-   /h9rs2rI+Iaae9iSE/e5/CgsddQm62oHJ4uKemBtsXEyhYZt3pfNxtO/s
-   Lf7la4fkBdLX1VkTYMteetGTgs+MeaeCp8AiXXUIzmd8l4I678YEO3DxC
-   DDiu2dy5G5Gecz7PIhNZrCmW+VF6JLoXr7QF+z2z8gv3oMh3NI3cvMRsT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253670329"
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="253670329"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 10:36:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="508298794"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 02 Mar 2022 10:36:22 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPTpl-0001ju-UR; Wed, 02 Mar 2022 18:36:21 +0000
-Date:   Thu, 3 Mar 2022 02:35:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xuewei Zhang <xueweiz@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: [linux-stable-rc:queue/4.9 3392/9999] kernel/sched/fair.c:4428:1:
- warning: the frame size of 1152 bytes is larger than 1024 bytes
-Message-ID: <202203030251.fqUkx508-lkp@intel.com>
+        Wed, 2 Mar 2022 13:37:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71536D887A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:36:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646246203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dkI26oH12rAI/rcHa+Bb6lkfS1t78b0pEHbqKtN0UIk=;
+        b=JG/AbnL4k5MurG3+LE2PiTDqH5L+zeER9Jm2tfIT76KmxBdHqBZPDDDE/D2TaMcBocLNAm
+        iVmuGIfJkiAmr79H9lhcTggU3EpqthySOUwIw3SXeo9hw/Yv0r3c21SjQnnO57kFjYXTsv
+        waUhITVtQFAaT8Kfd3i6jDtqwJsEPqQ=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-322-CtMbYqwTOPy6N0xzHisYnw-1; Wed, 02 Mar 2022 13:36:42 -0500
+X-MC-Unique: CtMbYqwTOPy6N0xzHisYnw-1
+Received: by mail-wm1-f70.google.com with SMTP id n31-20020a05600c3b9f00b003812242973aso1142211wms.4
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:36:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dkI26oH12rAI/rcHa+Bb6lkfS1t78b0pEHbqKtN0UIk=;
+        b=JexkvcZOZkc1MYI5LawpFPQp1vXgAwSQDwyo/xqx6dAehnXcGvGQOTee6zJxo4OPv+
+         YeG1cfi93eBhuawo3DA+VyYGvHWbSxLe1OHBjlf+ijVXf4lR3FomwbX6GGE/MUjkWvWY
+         kep4WypiVqjJb9K9RFlaQVhlFqnK8TP0u12Cz8A1bZkzFzBsVqt6OnM4U9AIqUliI346
+         3jI4Y++ClAo3lAqrI3FjgcqdhTcd3/a8FhHVTLy2m6RKiQyCsnyLMkzYdHcU9CnWOsSP
+         wWASo/wZroYDqWh08WrwG34ZilFrw7AOFSp60Ts4tP6+KKl2Qhd/f2YX0ofX+svJIVRj
+         jp8A==
+X-Gm-Message-State: AOAM533Stdx/sZHj5YD8FZr+Hr1v1ydXAP8l9UQlkbHYz83UwjIRuX6l
+        EDB9gKg1l37e7D7NPYeDbt/CJX8WvWOMIwN9lsD83y1dUQVFDSmhjsGaTm32FVip+MNZKEEkeFC
+        vMqck67uddEQXAv2jpDMRphyP
+X-Received: by 2002:a7b:cb44:0:b0:381:4dd8:5ec4 with SMTP id v4-20020a7bcb44000000b003814dd85ec4mr931450wmj.12.1646246201232;
+        Wed, 02 Mar 2022 10:36:41 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw0vLxk9UjI8UxS7wBOYxHK0l/sumk1InbU7uquyOLxzs3VdPsMO4Q7v+TvpQSfv85JSO/PCw==
+X-Received: by 2002:a7b:cb44:0:b0:381:4dd8:5ec4 with SMTP id v4-20020a7bcb44000000b003814dd85ec4mr931433wmj.12.1646246201019;
+        Wed, 02 Mar 2022 10:36:41 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.googlemail.com with ESMTPSA id g11-20020a5d554b000000b001f0326a23ddsm2875275wrw.70.2022.03.02.10.36.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 10:36:40 -0800 (PST)
+Message-ID: <764356ef-dd0f-01bd-129c-a821136a4f6e@redhat.com>
+Date:   Wed, 2 Mar 2022 19:36:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 26/28] KVM: selftests: Split out helper to allocate
+ guest mem via memfd
+Content-Language: en-US
+To:     David Woodhouse <dwmw2@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+References: <20220226001546.360188-1-seanjc@google.com>
+ <20220226001546.360188-27-seanjc@google.com>
+ <b41c303fc49e1b31d3e8ef92177a0de2458901bd.camel@infradead.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <b41c303fc49e1b31d3e8ef92177a0de2458901bd.camel@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xuewei,
+On 3/1/22 00:36, David Woodhouse wrote:
+> On Sat, 2022-02-26 at 00:15 +0000, Sean Christopherson wrote:
+>> Extract the code for allocating guest memory via memfd out of
+>> vm_userspace_mem_region_add() and into a new helper, kvm_memfd_alloc().
+>> A future selftest to populate a guest with the maximum amount of guest
+>> memory will abuse KVM's memslots to alias guest memory regions to a
+>> single memfd-backed host region, i.e. needs to back a guest with memfd
+>> memory without a 1:1 association between a memslot and a memfd instance.
+>>
+>> No functional change intended.
+>>
+>> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> 
+> While we're at it, please can we make the whole thing go away and just
+> return failure #ifndef MFD_CLOEXEC, instead of breaking the build on
+> older userspace?
 
-FYI, the error/warning still remains.
+We can just use old school F_SETFD if that's helpful for you.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.9
-head:   443d6630b05c3eaff71448a86e4b776194f317ef
-commit: bdb6fa8234e59dfb1e0136352adf7684ac9c11af [3392/9999] sched/fair: Scale bandwidth quota and period without losing quota/period ratio precision
-config: parisc-randconfig-r004-20220123 (https://download.01.org/0day-ci/archive/20220303/202203030251.fqUkx508-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 7.5.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=bdb6fa8234e59dfb1e0136352adf7684ac9c11af
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/4.9
-        git checkout bdb6fa8234e59dfb1e0136352adf7684ac9c11af
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash kernel/sched/
+Paolo
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   kernel/sched/fair.c: In function 'sched_cfs_period_timer':
->> kernel/sched/fair.c:4428:1: warning: the frame size of 1152 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    }
-    ^
-
-
-vim +4428 kernel/sched/fair.c
-
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4376  
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4377  static enum hrtimer_restart sched_cfs_period_timer(struct hrtimer *timer)
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4378  {
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4379  	struct cfs_bandwidth *cfs_b =
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4380  		container_of(timer, struct cfs_bandwidth, period_timer);
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4381  	int overrun;
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4382  	int idle = 0;
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4383  	int count = 0;
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4384  
-51f2176d74ace4c kernel/sched/fair.c Ben Segall     2014-05-19  4385  	raw_spin_lock(&cfs_b->lock);
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4386  	for (;;) {
-77a4d1a1b9a122c kernel/sched/fair.c Peter Zijlstra 2015-04-15  4387  		overrun = hrtimer_forward_now(timer, cfs_b->period);
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4388  		if (!overrun)
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4389  			break;
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4390  
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4391  		if (++count > 3) {
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4392  			u64 new, old = ktime_to_ns(cfs_b->period);
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4393  
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4394  			/*
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4395  			 * Grow period by a factor of 2 to avoid losing precision.
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4396  			 * Precision loss in the quota/period ratio can cause __cfs_schedulable
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4397  			 * to fail.
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4398  			 */
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4399  			new = old * 2;
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4400  			if (new < max_cfs_quota_period) {
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4401  				cfs_b->period = ns_to_ktime(new);
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4402  				cfs_b->quota *= 2;
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4403  
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4404  				pr_warn_ratelimited(
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4405  	"cfs_period_timer[cpu%d]: period too short, scaling up (new cfs_period_us = %lld, cfs_quota_us = %lld)\n",
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4406  					smp_processor_id(),
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4407  					div_u64(new, NSEC_PER_USEC),
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4408  					div_u64(cfs_b->quota, NSEC_PER_USEC));
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4409  			} else {
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4410  				pr_warn_ratelimited(
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4411  	"cfs_period_timer[cpu%d]: period too short, but cannot scale up without losing precision (cfs_period_us = %lld, cfs_quota_us = %lld)\n",
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4412  					smp_processor_id(),
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4413  					div_u64(old, NSEC_PER_USEC),
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4414  					div_u64(cfs_b->quota, NSEC_PER_USEC));
-bdb6fa8234e59df kernel/sched/fair.c Xuewei Zhang   2019-10-03  4415  			}
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4416  
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4417  			/* reset count so we don't come right back in here */
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4418  			count = 0;
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4419  		}
-33f2a3e176bd508 kernel/sched/fair.c Phil Auld      2019-04-23  4420  
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4421  		idle = do_sched_cfs_period_timer(cfs_b, overrun);
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4422  	}
-4cfafd3082afc70 kernel/sched/fair.c Peter Zijlstra 2015-05-14  4423  	if (idle)
-4cfafd3082afc70 kernel/sched/fair.c Peter Zijlstra 2015-05-14  4424  		cfs_b->period_active = 0;
-51f2176d74ace4c kernel/sched/fair.c Ben Segall     2014-05-19  4425  	raw_spin_unlock(&cfs_b->lock);
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4426  
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4427  	return idle ? HRTIMER_NORESTART : HRTIMER_RESTART;
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25 @4428  }
-029632fbb7b7c9d kernel/sched_fair.c Peter Zijlstra 2011-10-25  4429  
-
-:::::: The code at line 4428 was first introduced by commit
-:::::: 029632fbb7b7c9d85063cc9eb470de6c54873df3 sched: Make separate sched*.c translation units
-
-:::::: TO: Peter Zijlstra <a.p.zijlstra@chello.nl>
-:::::: CC: Ingo Molnar <mingo@elte.hu>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
