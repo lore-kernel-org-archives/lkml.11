@@ -2,101 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244658AbiCBSgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
+        id S240862AbiCBShC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:37:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241828AbiCBSfw (ORCPT
+        with ESMTP id S231497AbiCBSg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:35:52 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53579D8355
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:35:07 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E34501516;
-        Wed,  2 Mar 2022 10:35:06 -0800 (PST)
-Received: from localhost.localdomain (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 563333F73D;
-        Wed,  2 Mar 2022 10:35:04 -0800 (PST)
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Mel Gorman <mgorman@suse.de>, Ben Segall <bsegall@google.com>,
-        Luca Abeni <luca.abeni@santannapisa.it>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] sched/deadline,rt: Remove unused parameter from pick_next_[rt|dl]_entity()
-Date:   Wed,  2 Mar 2022 19:34:33 +0100
-Message-Id: <20220302183433.333029-7-dietmar.eggemann@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220302183433.333029-1-dietmar.eggemann@arm.com>
-References: <20220302183433.333029-1-dietmar.eggemann@arm.com>
+        Wed, 2 Mar 2022 13:36:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95964CA310
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:36:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646246174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=O+z7hfIz3tju9l3ISOjUkJ5y2WlvKCbxrD0GfgR9pWQ=;
+        b=GSvK5PszDoMKB2ap90qPNyg2DMpqo8YN8ptenpRVVh64RHQyedjE0t+nDFbMWJxjX02q02
+        BGxgtvrsWf2BaNUR6I0rcMx7bP+MHJ8f2teFQKNMafmy6Bj3fCcNzRrIECPTCS+/uHdsfr
+        SIDb4eoMBQ1cCZBOfJIptR/T7pmhYYE=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-622-meHCMPrdM9O2dWf988efgQ-1; Wed, 02 Mar 2022 13:36:10 -0500
+X-MC-Unique: meHCMPrdM9O2dWf988efgQ-1
+Received: by mail-wr1-f69.google.com with SMTP id b7-20020a05600003c700b001efac398af7so946911wrg.22
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:36:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=O+z7hfIz3tju9l3ISOjUkJ5y2WlvKCbxrD0GfgR9pWQ=;
+        b=aZ2WWrjwuZz/EKsCddOQiraBEM/dCYnitV8PfqDiAVVV1+Rfbty27768aaQfl3aCrq
+         fvy4kcfu9cvIpgTyNPh8x+91rgBuK3/SWVfkQlnPNHQieeQtCSb8r7zG9MCwGJ8+1sy2
+         VE7bcNNEYi0R7Cu9Lb8XB+tY7sjxfDmsLpkOMKhDJbX9OV0ErOxALbgByy64CMAV1NNS
+         SIwM0KrywUJEREJ8RKbovT7X7/Vcv6iXzqV0ETFHlFGa8ywUpONfB+ZH7p+/CueHLHLL
+         sYMtivZDMzNYOGGTCofBBlYy0rbxM0QDX8kXxMHKfJ15qorV9tgxoBOo6OSwKQs45JyZ
+         epPA==
+X-Gm-Message-State: AOAM533By/OeXCc/JQY0RDn/P6aCMQk831QGKyzDBJpLAdjaRFqnZ41z
+        ur0UpgfCLZRM1+3+tPv4LBBPukkUwu8noNV9pSDSRJI/gFMQyWAxiMihT6i8/9hXPoSTRoFAGIB
+        ZIpayB3eNHBr4u9AJX0H7b1e7
+X-Received: by 2002:a1c:ed18:0:b0:37e:7a1d:a507 with SMTP id l24-20020a1ced18000000b0037e7a1da507mr891231wmh.187.1646246168641;
+        Wed, 02 Mar 2022 10:36:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzK1LyeBTns5xp8BRVl8tBbJ+tsmFf1e/LJyM7IwboRYO6afj8px0VabpMjJzNMLAUJKms2DQ==
+X-Received: by 2002:a1c:ed18:0:b0:37e:7a1d:a507 with SMTP id l24-20020a1ced18000000b0037e7a1da507mr891205wmh.187.1646246168412;
+        Wed, 02 Mar 2022 10:36:08 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.googlemail.com with ESMTPSA id f16-20020adff590000000b001f0122f63e1sm5754207wro.85.2022.03.02.10.36.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 10:36:07 -0800 (PST)
+Message-ID: <43809107-cd8a-21f5-c45b-2f39c1bd037e@redhat.com>
+Date:   Wed, 2 Mar 2022 19:36:04 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 22/28] KVM: x86/mmu: Zap defunct roots via asynchronous
+ worker
+Content-Language: en-US
+To:     David Matlack <dmatlack@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+References: <20220226001546.360188-1-seanjc@google.com>
+ <20220226001546.360188-23-seanjc@google.com>
+ <b9270432-4ee8-be8e-8aa1-4b09992f82b8@redhat.com>
+ <Yh+q59WsjgCdMcP7@google.com>
+ <CALzav=dzqOp-css8kgqHhCLJnbUrUZt+e_YStCj2HFy0oD+vGg@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CALzav=dzqOp-css8kgqHhCLJnbUrUZt+e_YStCj2HFy0oD+vGg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The `struct rq *rq` parameter isn't used. Remove it.
+On 3/2/22 19:33, David Matlack wrote:
+> On Wed, Mar 2, 2022 at 9:35 AM Sean Christopherson <seanjc@google.com> wrote:
+>>
+>> On Wed, Mar 02, 2022, Paolo Bonzini wrote:
+>>> However, I think we now need a module_get/module_put when creating/destroying
+>>> a VM; the workers can outlive kvm_vm_release and therefore any reference
+>>> automatically taken by VFS's fops_get/fops_put.
+>>
+>> Haven't read the rest of the patch, but this caught my eye.  We _already_ need
+>> to handle this scenario.  As you noted, any worker, i.e. anything that takes a
+>> reference via kvm_get_kvm() without any additional guarantee that the module can't
+>> be unloaded is suspect. x86 is mostly fine, though kvm_setup_async_pf() is likely
+>> affected, and other architectures seem to have bugs.
+>>
+>> Google has an internal patch that addresses this.  I believe David is going to post
+>> the fix... David?
+> 
+> This was towards the back of my queue but I can bump it to the front.
+> I'll have the patches out this week.
 
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
----
- kernel/sched/deadline.c | 5 ++---
- kernel/sched/rt.c       | 5 ++---
- 2 files changed, 4 insertions(+), 6 deletions(-)
+Thanks!
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index 93fcef57dd59..11cdc6d0c45f 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1961,8 +1961,7 @@ static void set_next_task_dl(struct rq *rq, struct task_struct *p, bool first)
- 	deadline_queue_push_tasks(rq);
- }
- 
--static struct sched_dl_entity *pick_next_dl_entity(struct rq *rq,
--						   struct dl_rq *dl_rq)
-+static struct sched_dl_entity *pick_next_dl_entity(struct dl_rq *dl_rq)
- {
- 	struct rb_node *left = rb_first_cached(&dl_rq->root);
- 
-@@ -1981,7 +1980,7 @@ static struct task_struct *pick_task_dl(struct rq *rq)
- 	if (!sched_dl_runnable(rq))
- 		return NULL;
- 
--	dl_se = pick_next_dl_entity(rq, dl_rq);
-+	dl_se = pick_next_dl_entity(dl_rq);
- 	BUG_ON(!dl_se);
- 	p = dl_task_of(dl_se);
- 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index b62e7652464b..67039e5d359b 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -1719,8 +1719,7 @@ static inline void set_next_task_rt(struct rq *rq, struct task_struct *p, bool f
- 	rt_queue_push_tasks(rq);
- }
- 
--static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
--						   struct rt_rq *rt_rq)
-+static struct sched_rt_entity *pick_next_rt_entity(struct rt_rq *rt_rq)
- {
- 	struct rt_prio_array *array = &rt_rq->active;
- 	struct sched_rt_entity *next = NULL;
-@@ -1742,7 +1741,7 @@ static struct task_struct *_pick_next_task_rt(struct rq *rq)
- 	struct rt_rq *rt_rq  = &rq->rt;
- 
- 	do {
--		rt_se = pick_next_rt_entity(rq, rt_rq);
-+		rt_se = pick_next_rt_entity(rt_rq);
- 		BUG_ON(!rt_se);
- 		rt_rq = group_rt_rq(rt_se);
- 	} while (rt_rq);
--- 
-2.25.1
+Paolo
 
