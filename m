@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A58EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06422C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243100AbiCBOaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:30:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
+        id S243112AbiCBOai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:30:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235393AbiCBO3u (ORCPT
+        with ESMTP id S243067AbiCBO3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:29:50 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8AB546A2
+        Wed, 2 Mar 2022 09:29:44 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A7551E52
         for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646231304; x=1677767304;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EvrY+fLFyt0AjjIeJc3eqvET5iI6uNtGs7idg2+y+vU=;
-  b=ajG+t/MCMmeHA0rSSocLgr1kMoM4k/yYlMD11EXJIT1cWd49+SA/l/Dh
-   pQVGjO0NBgf2H4uU5Xu0qphLF8ygjZ3wFVsr99XABGyUh/wD00vv1hAAD
-   ezSLYyFw6r5dWl7NUVOUWfzYs4Da5nyZ68kJt8STv8fzY9pJr2fciitb5
-   EzrrISqWldzqXtQB88ZDCFhAVMyS+eZalSkYT/KzeI1ripg4mqa/ZSi/6
-   UM8/q0u/I0mmIa0oGXBTRnXObf2eocHvkZQ+Cnloxc4ehB0ZxBL9vRQ5c
-   sQsqjSgUBStoXajxMP/M12OutqKMvFU4Fw3/BSNKvUHJHRmWaQqM0/XHh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253336392"
+  bh=FI7ts3ddWiJt2vgVWaXRndDV9uR/SMBzOmQIiJZCOuA=;
+  b=MjIddxeFchuzMndxuOb208alIknRG/rGHFN+zBc/EiNlCXsll+Aar45Q
+   H+Zjwwcsc22C+dDjPh7Lee4c9gl+N3xZak/tdt6DfQxZgT8QQKnIBUm8l
+   UI0t35VElsSsCycVwX8V5PnsWiIGSzi1GFB5tNPm1PMkUVN3TwuYTMdzd
+   XAADd7PtEfIeIYOOYDp+UQa3ydmwthyLcopbCBiWpVT9NF5IHFj0Q/JGE
+   xsaiWWLuHAKeNaISF7UfphyjSL6xPE3tE7CoW3PJlnIIJQ5dzvnDlSe12
+   2697c/U6fwu5+UzrhEJVgiO30KuygRZTqCJs4EdM7vp+A6TnBukzK6sC9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233376494"
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="253336392"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:16 -0800
+   d="scan'208";a="233376494"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:15 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="493553207"
+   d="scan'208";a="551270237"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 02 Mar 2022 06:28:09 -0800
+  by orsmga008.jf.intel.com with ESMTP; 02 Mar 2022 06:28:08 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id D98595C0; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
+        id AC4CD4A7; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,12 +51,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 21/30] x86/acpi, x86/boot: Add multiprocessor wake-up support
-Date:   Wed,  2 Mar 2022 17:27:57 +0300
-Message-Id: <20220302142806.51844-22-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 17/30] x86/tdx: Port I/O: add runtime hypercalls
+Date:   Wed,  2 Mar 2022 17:27:53 +0300
+Message-Id: <20220302142806.51844-18-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
 References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
@@ -68,219 +66,164 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-TDX cannot use INIT/SIPI protocol to bring up secondary CPUs because it
-requires assistance from untrusted VMM.
+TDX hypervisors cannot emulate instructions directly. This includes
+port I/O which is normally emulated in the hypervisor. All port I/O
+instructions inside TDX trigger the #VE exception in the guest and
+would be normally emulated there.
 
-For platforms that do not support SIPI/INIT, ACPI defines a wakeup
-model (using mailbox) via MADT multiprocessor wakeup structure. More
-details about it can be found in ACPI specification v6.4, the section
-titled "Multiprocessor Wakeup Structure". If a platform firmware
-produces the multiprocessor wakeup structure, then OS may use this
-new mailbox-based mechanism to wake up the APs.
+Use a hypercall to emulate port I/O. Extend the
+tdx_handle_virt_exception() and add support to handle the #VE due to
+port I/O instructions.
 
-Add ACPI MADT wake structure parsing support for x86 platform and if
-MADT wake table is present, update apic->wakeup_secondary_cpu_64 with
-new API which uses MADT wake mailbox to wake-up CPU.
+String I/O operations are not supported in TDX. Unroll them by declaring
+CC_ATTR_GUEST_UNROLL_STRING_IO confidential computing attribute.
 
-Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+== Userspace Implications ==
+
+The ioperm() facility allows userspace access to I/O instructions like
+inb/outb.  Among other things, this allows writing userspace device
+drivers.
+
+This series has no special handling for ioperm(). Users will be able to
+successfully request I/O permissions but will induce a #VE on their
+first I/O instruction. If this is undesirable users can enable kernel
+lockdown feature with 'lockdown=integrity' kernel command line option.
+It makes ioperm() fail.
+
+More robust handling of this situation (denying ioperm() in all TDX
+guests) will be addressed in follow-on work.
+
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/include/asm/apic.h |   5 ++
- arch/x86/kernel/acpi/boot.c | 118 ++++++++++++++++++++++++++++++++++++
- arch/x86/kernel/apic/apic.c |  10 +++
- 3 files changed, 133 insertions(+)
+ arch/x86/coco/core.c |  7 +++-
+ arch/x86/coco/tdx.c  | 79 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 85 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 35006e151774..bd8ae0a7010a 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -490,6 +490,11 @@ static inline unsigned int read_apic_id(void)
- 	return apic->get_apic_id(reg);
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 9113baebbfd2..5615b75e6fc6 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -18,7 +18,12 @@ static u64 cc_mask __ro_after_init;
+ 
+ static bool intel_cc_platform_has(enum cc_attr attr)
+ {
+-	return false;
++	switch (attr) {
++	case CC_ATTR_GUEST_UNROLL_STRING_IO:
++		return true;
++	default:
++		return false;
++	}
  }
  
-+#ifdef CONFIG_X86_64
-+typedef int (*wakeup_cpu_handler)(int apicid, unsigned long start_eip);
-+extern void acpi_wake_cpu_handler_update(wakeup_cpu_handler handler);
-+#endif
-+
- extern int default_apic_id_valid(u32 apicid);
- extern int default_acpi_madt_oem_check(char *, char *);
- extern void default_setup_apic_routing(void);
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 5b6d1a95776f..99518eac2bbc 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -65,6 +65,15 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
- static bool acpi_support_online_capable;
- #endif
- 
-+#ifdef CONFIG_X86_64
-+/* Physical address of the Multiprocessor Wakeup Structure mailbox */
-+static u64 acpi_mp_wake_mailbox_paddr;
-+/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
-+static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
-+/* Lock to protect mailbox (acpi_mp_wake_mailbox) from parallel access */
-+static DEFINE_SPINLOCK(mailbox_lock);
-+#endif
-+
- #ifdef CONFIG_X86_IO_APIC
  /*
-  * Locks related to IOAPIC hotplug
-@@ -336,6 +345,84 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
- 	return 0;
- }
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index e6163e7e3247..1f58375f61df 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -19,6 +19,16 @@
+ #define EPT_READ	0
+ #define EPT_WRITE	1
  
-+#ifdef CONFIG_X86_64
-+/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
-+static int acpi_wakeup_cpu(int apicid, unsigned long start_ip)
-+{
-+	static physid_mask_t apic_id_wakemap = PHYSID_MASK_NONE;
-+	u8 timeout;
++/* Port I/O direction */
++#define PORT_READ	0
++#define PORT_WRITE	1
 +
-+	/* Remap mailbox memory only for the first call to acpi_wakeup_cpu() */
-+	if (physids_empty(apic_id_wakemap)) {
-+		acpi_mp_wake_mailbox = memremap(acpi_mp_wake_mailbox_paddr,
-+						sizeof(*acpi_mp_wake_mailbox),
-+						MEMREMAP_WB);
-+	}
-+
-+	/*
-+	 * According to the ACPI specification r6.4, section titled
-+	 * "Multiprocessor Wakeup Structure" the mailbox-based wakeup
-+	 * mechanism cannot be used more than once for the same CPU.
-+	 * Skip wakeups if they are attempted more than once.
-+	 */
-+	if (physid_isset(apicid, apic_id_wakemap)) {
-+		pr_err("CPU already awake (APIC ID %x), skipping wakeup\n",
-+		       apicid);
-+		return -EINVAL;
-+	}
-+
-+	spin_lock(&mailbox_lock);
-+
-+	/*
-+	 * Mailbox memory is shared between firmware and OS. Firmware will
-+	 * listen on mailbox command address, and once it receives the wakeup
-+	 * command, CPU associated with the given apicid will be booted.
-+	 *
-+	 * The value of apic_id and wakeup_vector has to be set before updating
-+	 * the wakeup command. To let compiler preserve order of writes, use
-+	 * smp_store_release.
-+	 */
-+	smp_store_release(&acpi_mp_wake_mailbox->apic_id, apicid);
-+	smp_store_release(&acpi_mp_wake_mailbox->wakeup_vector, start_ip);
-+	smp_store_release(&acpi_mp_wake_mailbox->command,
-+			  ACPI_MP_WAKE_COMMAND_WAKEUP);
-+
-+	/*
-+	 * After writing the wakeup command, wait for maximum timeout of 0xFF
-+	 * for firmware to reset the command address back zero to indicate
-+	 * the successful reception of command.
-+	 * NOTE: 0xFF as timeout value is decided based on our experiments.
-+	 *
-+	 * XXX: Change the timeout once ACPI specification comes up with
-+	 *      standard maximum timeout value.
-+	 */
-+	timeout = 0xFF;
-+	while (READ_ONCE(acpi_mp_wake_mailbox->command) && --timeout)
-+		cpu_relax();
-+
-+	/* If timed out (timeout == 0), return error */
-+	if (!timeout) {
-+		/*
-+		 * XXX: Is there a recovery path after timeout is hit?
-+		 * Spec is unclear. Reset command to 0 if timeout is hit.
-+		 */
-+		acpi_mp_wake_mailbox->command = 0;
-+		spin_unlock(&mailbox_lock);
-+		return -EIO;
-+	}
-+
-+	/*
-+	 * If the CPU wakeup process is successful, store the
-+	 * status in apic_id_wakemap to prevent re-wakeup
-+	 * requests.
-+	 */
-+	physid_set(apicid, apic_id_wakemap);
-+
-+	spin_unlock(&mailbox_lock);
-+
-+	return 0;
-+}
-+#endif
- #endif				/*CONFIG_X86_LOCAL_APIC */
- 
- #ifdef CONFIG_X86_IO_APIC
-@@ -1083,6 +1170,29 @@ static int __init acpi_parse_madt_lapic_entries(void)
- 	}
- 	return 0;
- }
-+
-+#ifdef CONFIG_X86_64
-+static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
-+				     const unsigned long end)
-+{
-+	struct acpi_madt_multiproc_wakeup *mp_wake;
-+
-+	if (!IS_ENABLED(CONFIG_SMP))
-+		return -ENODEV;
-+
-+	mp_wake = (struct acpi_madt_multiproc_wakeup *)header;
-+	if (BAD_MADT_ENTRY(mp_wake, end))
-+		return -EINVAL;
-+
-+	acpi_table_print_madt_entry(&header->common);
-+
-+	acpi_mp_wake_mailbox_paddr = mp_wake->base_address;
-+
-+	acpi_wake_cpu_handler_update(acpi_wakeup_cpu);
-+
-+	return 0;
-+}
-+#endif				/* CONFIG_X86_64 */
- #endif				/* CONFIG_X86_LOCAL_APIC */
- 
- #ifdef	CONFIG_X86_IO_APIC
-@@ -1278,6 +1388,14 @@ static void __init acpi_process_madt(void)
- 
- 				smp_found_config = 1;
- 			}
-+
-+#ifdef CONFIG_X86_64
-+			/*
-+			 * Parse MADT MP Wake entry.
-+			 */
-+			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
-+					      acpi_parse_mp_wake, 1);
-+#endif
- 		}
- 		if (error == -EINVAL) {
- 			/*
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index b70344bf6600..3c8f2c797a98 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -2551,6 +2551,16 @@ u32 x86_msi_msg_get_destid(struct msi_msg *msg, bool extid)
- }
- EXPORT_SYMBOL_GPL(x86_msi_msg_get_destid);
- 
-+#ifdef CONFIG_X86_64
-+void __init acpi_wake_cpu_handler_update(wakeup_cpu_handler handler)
-+{
-+	struct apic **drv;
-+
-+	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++)
-+		(*drv)->wakeup_secondary_cpu_64 = handler;
-+}
-+#endif
++/* See Exit Qualification for I/O Instructions in VMX documentation */
++#define VE_IS_IO_IN(e)		((e) & BIT(3))
++#define VE_GET_IO_SIZE(e)	(((e) & GENMASK(2, 0)) + 1)
++#define VE_GET_PORT_NUM(e)	((e) >> 16)
++#define VE_IS_IO_STRING(e)	((e) & BIT(4))
 +
  /*
-  * Override the generic EOI implementation with an optimized version.
-  * Only called during early boot when only one CPU is active and with
+  * Wrapper for standard use of __tdx_hypercall with no output aside from
+  * return code.
+@@ -312,6 +322,73 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
+ 	return true;
+ }
+ 
++static bool handle_in(struct pt_regs *regs, int size, int port)
++{
++	struct tdx_hypercall_args args = {
++		.r10 = TDX_HYPERCALL_STANDARD,
++		.r11 = hcall_func(EXIT_REASON_IO_INSTRUCTION),
++		.r12 = size,
++		.r13 = PORT_READ,
++		.r14 = port,
++	};
++	bool success;
++	u64 mask = GENMASK(BITS_PER_BYTE * size, 0);
++
++	/*
++	 * Emulate the I/O read via hypercall. More info about ABI can be found
++	 * in TDX Guest-Host-Communication Interface (GHCI) section titled
++	 * "TDG.VP.VMCALL<Instruction.IO>".
++	 */
++	success = !__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT);
++
++	/* Update part of the register affected by the emulated instruction */
++	regs->ax &= ~mask;
++	if (success)
++		regs->ax |= args.r11 & mask;
++
++	return success;
++}
++
++static bool handle_out(struct pt_regs *regs, int size, int port)
++{
++	u64 mask = GENMASK(BITS_PER_BYTE * size, 0);
++
++	/*
++	 * Emulate the I/O write via hypercall. More info about ABI can be found
++	 * in TDX Guest-Host-Communication Interface (GHCI) section titled
++	 * "TDG.VP.VMCALL<Instruction.IO>".
++	 */
++	return !_tdx_hypercall(hcall_func(EXIT_REASON_IO_INSTRUCTION), size,
++			       PORT_WRITE, port, regs->ax & mask);
++}
++
++/*
++ * Emulate I/O using hypercall.
++ *
++ * Assumes the IO instruction was using ax, which is enforced
++ * by the standard io.h macros.
++ *
++ * Return True on success or False on failure.
++ */
++static bool handle_io(struct pt_regs *regs, u32 exit_qual)
++{
++	bool in;
++	int size, port;
++
++	if (VE_IS_IO_STRING(exit_qual))
++		return false;
++
++	in   = VE_IS_IO_IN(exit_qual);
++	size = VE_GET_IO_SIZE(exit_qual);
++	port = VE_GET_PORT_NUM(exit_qual);
++
++
++	if (in)
++		return handle_in(regs, size, port);
++	else
++		return handle_out(regs, size, port);
++}
++
+ void tdx_get_ve_info(struct ve_info *ve)
+ {
+ 	struct tdx_module_output out;
+@@ -361,6 +438,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+ 		return handle_cpuid(regs);
+ 	case EXIT_REASON_EPT_VIOLATION:
+ 		return handle_mmio(regs, ve);
++	case EXIT_REASON_IO_INSTRUCTION:
++		return handle_io(regs, ve->exit_qual);
+ 	default:
+ 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
+ 		return false;
 -- 
 2.34.1
 
