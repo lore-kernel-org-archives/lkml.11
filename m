@@ -2,212 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 322ABC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240144AbiCBIaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:30:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
+        id S240155AbiCBIag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240121AbiCBIaS (ORCPT
+        with ESMTP id S240136AbiCBIaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:30:18 -0500
-X-Greylist: delayed 534 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 00:29:33 PST
-Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03934B8B63;
-        Wed,  2 Mar 2022 00:29:33 -0800 (PST)
-Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 0F2306030F;
-        Wed,  2 Mar 2022 09:20:36 +0100 (CET)
-Date:   Wed, 2 Mar 2022 09:20:34 +0100
-From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Huijin Park <huijin.park@samsung.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, Tony Lindgren <tony@atomide.com>
-Subject: Re: [BUG] mmc: core: adjust polling interval for CMD1
-Message-ID: <20220302082034.GA5723@math.uni-bielefeld.de>
-References: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
- <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
+        Wed, 2 Mar 2022 03:30:23 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF77B8B43
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:29:38 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso793698pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:29:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=l/myAdjexodhPdxGEM0MHuk2V1UzL2hIaRiiu46o6gA=;
+        b=5wCqMdPra7WU6QtB0HKKqpqInbC0mjKYJvNn1TUItnMFQQUxMLnPC8gOImTQQjrUJ6
+         lxZPmTjDu1L0Q72qlAPkPaRlENO07rpX9UYXO0FAF59aYEtozl+ZKAWQZ8W3qqRE+ikr
+         SlRgQWIHHhcTtdgRhGo4D22XRHAZBBeblqRndIow0K+xwrQOm5CHH/9Z9ixzQe6h7kFE
+         zNljQhcoRBU9180TzWuXPS9NCuP82R0Fe0PKzpYQqkyaXnxFW5Nt5cxWBJuTk3L4oHxt
+         KISVkpNb+bLAdydzsYyxsQZ+ibl5wXiET/Dx7dQOH8lcVFxHxuZfrkdIRaRw8w+oE5Al
+         xSiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l/myAdjexodhPdxGEM0MHuk2V1UzL2hIaRiiu46o6gA=;
+        b=UUp81c4a94j0+vRA5RhX5pE1U2YNe17aGWoYYOKhMlXM6If1pwS42CzkAbVrVy20ED
+         vvzlUQbQlNzh+iIUIW4X6htQIqASqGv1vD86FMIxD+j17fBkwa5pLYt9Jp2ecRe4QsZq
+         +H6S2m4ZRv+EaX9pdRwHtUduPkpHqe6c25j8yXHMJHWb8o/+0ss8ws/aYdPBxzPBtB6j
+         VADcANCxR8XesgQ48MIBoiCYfQB6GctZk4lZH+TIG4NfOAlgaNHgs0oYWDwnsmuadyp8
+         aeGRmUyhNvPB6rkVQjK/7QGvIwC3SuJBKRwIYbWykfMlwHm36LeXjuYrVvUh7G+QMhV7
+         bsqA==
+X-Gm-Message-State: AOAM530mBhZlwjCM1YNTJewMMnio30XJw29RMPA8CdSiRT3eINl3xgK9
+        iQb+Zcjy4uw/U89j5kZ2GvJejw==
+X-Google-Smtp-Source: ABdhPJzT8ObZdk6+fbYovMIjQEfRPZciRdCbVZminjRSbL7HjS0V45URjs58A3iPwR4mLPclCDR1PA==
+X-Received: by 2002:a17:902:e549:b0:150:2412:c94c with SMTP id n9-20020a170902e54900b001502412c94cmr26221501plf.94.1646209777959;
+        Wed, 02 Mar 2022 00:29:37 -0800 (PST)
+Received: from FVFYT0MHHV2J.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id a20-20020a056a000c9400b004f396b965a9sm20922228pfv.49.2022.03.02.00.29.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 00:29:37 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
+        hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
+        hch@infradead.org
+Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v4 4/6] mm: pvmw: add support for walking devmap pages
+Date:   Wed,  2 Mar 2022 16:27:16 +0800
+Message-Id: <20220302082718.32268-5-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220302082718.32268-1-songmuchun@bytedance.com>
+References: <20220302082718.32268-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ulf Hansson wrote on Tue  1/03/22 14:38:
-> On Thu, 17 Feb 2022 at 21:12, H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> >
-> > Hi,
-> > Jean Rene Dawin did report to me a problem on the Beagle Bone Black starting
-> > with our disto kernel based on v5.17-rc1:
-> >
-> > >> since kernel 5.17-rc1 I noticed slower emmc performance on Beaglebone
-> > >> Black, but didn't check the logs.
-> > >> When I tried to run 5.17.0-rc3-letux+ it booted fine, but during IO
-> > >> traffic there were messages like
-> > >>
-> > >> [  662.529584] mmc1: error -110 doing runtime resume
-> > >> [  669.293590] mmc1: Card stuck being busy! __mmc_poll_for_busy
-> > >>
-> > >> [  739.076072] mmc1: Timeout waiting for hardware interrupt.
-> > >> [  739.145676] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
-> > >> [  739.231053] mmc1: sdhci: Sys addr:  0x00000000 | Version:  0x00003101
-> > >> [  739.316472] mmc1: sdhci: Blk size:  0x00000200 | Blk cnt:  0x00000400
-> > >> [  739.401937] mmc1: sdhci: Argument:  0x00342d30 | Trn mode: 0x00000023
-> > >> [  739.487439] mmc1: sdhci: Present:   0x01f70000 | Host ctl: 0x00000000
-> > >> [  739.573007] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x00000000
-> > >> [  739.658609] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00003c07
-> > >> [  739.744224] mmc1: sdhci: Timeout:   0x00000007 | Int stat: 0x00000002
-> > >> [  739.829896] mmc1: sdhci: Int enab:  0x027f000b | Sig enab: 0x027f000b
-> > >> [  739.915623] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
-> > >> [  740.001394] mmc1: sdhci: Caps:      0x07e10080 | Caps_1:   0x00000000
-> > >> [  740.087208] mmc1: sdhci: Cmd:       0x0000193a | Max curr: 0x00000000
-> > >> [  740.173051] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x00000000
-> > >> [  740.258928] mmc1: sdhci: Resp[2]:   0x00000000 | Resp[3]:  0x00000000
-> > >> [  740.344854] mmc1: sdhci: Host ctl2: 0x00000000
-> > >> [  740.402796] mmc1: sdhci: ============================================
-> > >>
-> > >> and finally IO errors and a corrupted filesystem.
-> > >>
-> > >> 5.17.0-rc4-letux+ shows the same behaviour.
-> >
-> > I checked with my BeagleBoard Black (am3358) and can confirm this observation.
-> > It happens only with the integrated eMMC but not with the µSD connected to
-> > the other mmc interface.
-> >
-> > A git bisect found:
-> >
-> > 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722 is the first bad commit
-> > commit 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722
-> > Author: Huijin Park <huijin.park@samsung.com>
-> > Date:   Thu Nov 4 15:32:31 2021 +0900
-> >
-> >   mmc: core: adjust polling interval for CMD1
-> >
-> >   In mmc_send_op_cond(), loops are continuously performed at the same
-> >   interval of 10 ms.  However the behaviour is not good for some eMMC
-> >   which can be out from a busy state earlier than 10 ms if normal.
-> >
-> >   Rather than fixing about the interval time in mmc_send_op_cond(),
-> >   let's instead convert into using the common __mmc_poll_for_busy().
-> >
-> >   The reason for adjusting the interval time is that it is important
-> >   to reduce the eMMC initialization time, especially in devices that
-> >   use eMMC as rootfs.
-> >
-> >   Test log(eMMC:KLM8G1GETF-B041):
-> >
-> >   before: 12 ms (0.311016 - 0.298729)
-> >   [    0.295823] mmc0: starting CMD0 arg 00000000 flags 000000c0
-> >   [    0.298729] mmc0: starting CMD1 arg 40000080 flags 000000e1<-start
-> >   [    0.311016] mmc0: starting CMD1 arg 40000080 flags 000000e1<-finish
-> >   [    0.311336] mmc0: starting CMD2 arg 00000000 flags 00000007
-> >
-> >   after: 2 ms (0.301270 - 0.298762)
-> >   [    0.295862] mmc0: starting CMD0 arg 00000000 flags 000000c0
-> >   [    0.298762] mmc0: starting CMD1 arg 40000080 flags 000000e1<-start
-> >   [    0.299067] mmc0: starting CMD1 arg 40000080 flags 000000e1
-> >   [    0.299441] mmc0: starting CMD1 arg 40000080 flags 000000e1
-> >   [    0.299879] mmc0: starting CMD1 arg 40000080 flags 000000e1
-> >   [    0.300446] mmc0: starting CMD1 arg 40000080 flags 000000e1
-> >   [    0.301270] mmc0: starting CMD1 arg 40000080 flags 000000e1<-finish
-> >   [    0.301572] mmc0: starting CMD2 arg 00000000 flags 00000007
-> >
-> >   Signed-off-by: Huijin Park <huijin.park@samsung.com>
-> >   Link: https://lore.kernel.org/r/20211104063231.2115-3-huijin.park@samsung.com
-> >   Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> >
-> > Reverting this makes v5.17-rc[1-4] work.
-> >
-> > Any suggestions or fixes?
-> >
-> > BR and thanks,
-> > Nikolaus Schaller
-> >
-> > Reported-by: jdawin@math.uni-bielefeld.de
-> >
-> 
-> Thanks for reporting and bisecting!
-> 
-> What changed with the offending commit is two things:
-> 
-> 1) We are sending the CMD1 more frequently, initially in the loop in
-> the __mmc_poll_for_busy. Step by step, we increase the polling period.
-> 2) We may end up using a slightly shorter total timeout for polling
-> time, compared to what we used before the offending commit.
-> 
-> Hopefully the problem is related to 2), in which case I think the
-> below patch should help. Can you please give it a try?
-> 
-> Kind regards
-> Uffe
-> 
-> From: Ulf Hansson <ulf.hansson@linaro.org>
-> Date: Tue, 1 Mar 2022 14:24:21 +0100
-> Subject: [PATCH] mmc: core: Extend timeout to 2s for MMC_SEND_OP_COND
-> 
-> It looks like the timeout for the MMC_SEND_OP_COND (CMD1) might have become
-> a bit too small due to recent changes. Therefore, let's extend it to 2s,
-> which is probably more inline with its previous value, to fix the reported
-> timeout problems.
-> 
-> While at it, let's add a define for the timeout value, rather than using
-> a hard-coded value for it.
-> 
-> Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-> Cc: Huijin Park <huijin.park@samsung.com>
-> Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> ---
->  drivers/mmc/core/mmc_ops.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-> index d63d1c735335..1f57174b3cf3 100644
-> --- a/drivers/mmc/core/mmc_ops.c
-> +++ b/drivers/mmc/core/mmc_ops.c
-> @@ -21,6 +21,7 @@
-> 
->  #define MMC_BKOPS_TIMEOUT_MS           (120 * 1000) /* 120s */
->  #define MMC_SANITIZE_TIMEOUT_MS                (240 * 1000) /* 240s */
-> +#define MMC_OP_COND_TIMEOUT_MS         2000 /* 2s */
-> 
->  static const u8 tuning_blk_pattern_4bit[] = {
->         0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
-> @@ -232,7 +233,8 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-> ocr, u32 *rocr)
->         cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
->         cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
-> 
-> -       err = __mmc_poll_for_busy(host, 1000, &__mmc_send_op_cond_cb, &cb_data);
-> +       err = __mmc_poll_for_busy(host, MMC_OP_COND_TIMEOUT_MS,
-> +                                 &__mmc_send_op_cond_cb, &cb_data);
->         if (err)
->                 return err;
-> 
-> -- 
-> 2.25.1
+The devmap pages can not use page_vma_mapped_walk() to check if a huge
+devmap page is mapped into a vma.  Add support for walking huge devmap
+pages so that DAX can use it in the next patch.
 
-Hi,
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ mm/page_vma_mapped.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-thanks. But testing with this patch still gives the same errors:
+diff --git a/mm/page_vma_mapped.c b/mm/page_vma_mapped.c
+index 1187f9c1ec5b..f9ffa84adf4d 100644
+--- a/mm/page_vma_mapped.c
++++ b/mm/page_vma_mapped.c
+@@ -210,10 +210,11 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ 		 */
+ 		pmde = READ_ONCE(*pvmw->pmd);
+ 
+-		if (pmd_trans_huge(pmde) || is_pmd_migration_entry(pmde)) {
++		if (pmd_trans_huge(pmde) || pmd_devmap(pmde) ||
++		    is_pmd_migration_entry(pmde)) {
+ 			pvmw->ptl = pmd_lock(mm, pvmw->pmd);
+ 			pmde = *pvmw->pmd;
+-			if (likely(pmd_trans_huge(pmde))) {
++			if (likely(pmd_trans_huge(pmde) || pmd_devmap(pmde))) {
+ 				if (pvmw->flags & PVMW_MIGRATION)
+ 					return not_found(pvmw);
+ 				if (!check_pmd(pmd_pfn(pmde), pvmw))
+-- 
+2.11.0
 
-[   52.259940] mmc1: Card stuck being busy! __mmc_poll_for_busy
-[   52.273380] mmc1: error -110 doing runtime resume
-
-and the system gets stuck eventually.
-
-Regards,
-Jean Rene Dawin
