@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA902C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4638AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243244AbiCBQht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:37:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        id S240398AbiCBQjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:39:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242163AbiCBQhd (ORCPT
+        with ESMTP id S236727AbiCBQjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 11:37:33 -0500
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CE3C4B78
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:50 -0800 (PST)
+        Wed, 2 Mar 2022 11:39:43 -0500
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749B163BCB
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:38:59 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646239008;
+        t=1646239137;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uo3r1XZ2YxXX2Y0KQk7NP/LkQS2+d42pEDKbCuKVO2A=;
-        b=dqtbv/8FM/BpZ36aN0SoEvBbrDqGpQNujrrTiFrcZ/GGK1iACrmtY3v9EpgsqMoF5kVf+V
-        T77/+r0QQUpdIhNtrvEvaDV4gqjloM1z7E8wkpf36GllOgJ+Wk5zA4ChirBxB4zHXCD8Ai
-        ZlMMu+FEdx2HixPTDXf2hhJwnz8Ki+I=
+        bh=GA4CzC5kQCyt9Q46WjPbGlANWaRE9EWTbe6SrvYEjAk=;
+        b=aaBHXo5y2T1+Vm+RNaREb41iINBlTfgGfciO9VaNYAxyxUoq7gYiXaDkPdMoxsduX3sA9g
+        TzAIUkekbB8xhUA3Qo3mXL+z0ndkfEB2sBoCKWQJ2d3hO4mxiEgs5KkR9zFLzvL95BCF95
+        U/IBKTxSoTLvCJszTBkqfdNgKa1YG4o=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -36,9 +36,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm 04/22] kasan: improve stack frame info in reports
-Date:   Wed,  2 Mar 2022 17:36:24 +0100
-Message-Id: <aa613f097c12f7b75efb17f2618ae00480fb4bc3.1646237226.git.andreyknvl@google.com>
+Subject: [PATCH mm 13/22] kasan: restructure kasan_report
+Date:   Wed,  2 Mar 2022 17:36:33 +0100
+Message-Id: <ca28042889858b8cc4724d3d4378387f90d7a59d.1646237226.git.andreyknvl@google.com>
 In-Reply-To: <cover.1646237226.git.andreyknvl@google.com>
 References: <cover.1646237226.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -51,47 +51,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-- Print at least task name and id for reports affecting allocas
-  (get_address_stack_frame_info() does not support them).
-
-- Capitalize first letter of each sentence.
+Restructure kasan_report() to make reviewing the subsequent patches
+easier.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/report_generic.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ mm/kasan/report.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
-index 3751391ff11a..7e03cca569a7 100644
---- a/mm/kasan/report_generic.c
-+++ b/mm/kasan/report_generic.c
-@@ -180,7 +180,7 @@ static void print_decoded_frame_descr(const char *frame_descr)
- 		return;
+diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+index a0d4a9d3f933..41c7966451e3 100644
+--- a/mm/kasan/report.c
++++ b/mm/kasan/report.c
+@@ -457,15 +457,18 @@ static void __kasan_report(void *addr, size_t size, bool is_write,
+ bool kasan_report(unsigned long addr, size_t size, bool is_write,
+ 			unsigned long ip)
+ {
+-	unsigned long flags = user_access_save();
+-	bool ret = false;
++	unsigned long ua_flags = user_access_save();
++	bool ret = true;
  
- 	pr_err("\n");
--	pr_err("this frame has %lu %s:\n", num_objects,
-+	pr_err("This frame has %lu %s:\n", num_objects,
- 	       num_objects == 1 ? "object" : "objects");
+-	if (likely(report_enabled())) {
+-		__kasan_report((void *)addr, size, is_write, ip);
+-		ret = true;
++	if (unlikely(!report_enabled())) {
++		ret = false;
++		goto out;
+ 	}
  
- 	while (num_objects--) {
-@@ -266,13 +266,14 @@ void kasan_print_address_stack_frame(const void *addr)
- 	if (WARN_ON(!object_is_on_stack(addr)))
- 		return;
- 
-+	pr_err("The buggy address belongs to stack of task %s/%d\n",
-+	       current->comm, task_pid_nr(current));
+-	user_access_restore(flags);
++	__kasan_report((void *)addr, size, is_write, ip);
 +
- 	if (!get_address_stack_frame_info(addr, &offset, &frame_descr,
- 					  &frame_pc))
- 		return;
++out:
++	user_access_restore(ua_flags);
  
--	pr_err("\n");
--	pr_err("addr %px is located in stack of task %s/%d at offset %lu in frame:\n",
--	       addr, current->comm, task_pid_nr(current), offset);
-+	pr_err(" and is located at offset %lu in frame:\n", offset);
- 	pr_err(" %pS\n", frame_pc);
- 
- 	if (!frame_descr)
+ 	return ret;
+ }
 -- 
 2.25.1
 
