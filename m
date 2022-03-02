@@ -2,129 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B546C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A203C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbiCCAJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:09:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
+        id S230106AbiCCAJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:09:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiCCAJD (ORCPT
+        with ESMTP id S230075AbiCCAJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:09:03 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4D33E33
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:08:18 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id b5so84953ilj.9
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 16:08:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jiVdJeDoLwQpICgbJfPUxKiHkSDi4LNXBrJ/L+vsKOw=;
-        b=SSZjuQHCwyqlk9e6Fm/9hketAWCO5Am0rg1ge/DMoNXYSFjsC2IJ5GWXs8qQyjpN+R
-         ndZ+np9KbbpyYhUvKTeqHahIUuF30OUpsqa2LNF/+NTgaillMi+7v/rjr0oviRv0q3Br
-         uIXjMWADlr6xgzsKI7sBYja1dFSuzfCel0dEA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jiVdJeDoLwQpICgbJfPUxKiHkSDi4LNXBrJ/L+vsKOw=;
-        b=Gh5zdDPIzdbKzcsoCA0sYbv6iwPNilxy89097Y+lIIPs1I5fAY4bUtE6im69bGBSX5
-         hLskqqDyeJFgHnPeTwOqvElkxGk9fFfcLMia3ZYMh9w5zJ1PExeWDQpsiL5ffZqGt4W0
-         05tRFTnr6oDl8Azi3FeFo5QD/myw4yfCmVa+xaO9dGZSv0QZLsXRY/b2GFzo+iLy7xjy
-         lAZk6zbQZoHYzNMzV+Eb44Q+lUhTLVx/hDjywGS9oFsA9cx9U585wiSA9CCxWrfubptt
-         r0llcdWD7u/EYsqETZfgWc1jU3FIzXgZ9NaXBASc0HwU4FQKnAth3XVY2sLaFe2jpn8T
-         1HlQ==
-X-Gm-Message-State: AOAM533M4LAZL6gfoHDJSmwWOo8GEEPQhpSeZL1CZv9zvJ0BXW5x1DSJ
-        oiSpDwq/lnwW3Y9QFPipdvfIidMcmQQtyQ==
-X-Google-Smtp-Source: ABdhPJxBjvI3yZjCw8B7OkUPODokVsRZvTy4HsVuuQWiFbeQFf4ytA91cVs/RVuc/nlND4+pBJM+EQ==
-X-Received: by 2002:a65:41c3:0:b0:363:5711:e234 with SMTP id b3-20020a6541c3000000b003635711e234mr27821213pgq.386.1646262046040;
-        Wed, 02 Mar 2022 15:00:46 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id lk9-20020a17090b33c900b001bc7c2dfcdbsm112754pjb.37.2022.03.02.15.00.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 15:00:45 -0800 (PST)
-Date:   Wed, 2 Mar 2022 15:00:44 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        joao@overdrivepizza.com, hjl.tools@gmail.com, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v2 01/39] kbuild: Fix clang build
-Message-ID: <202203021459.55F4992@keescook>
-References: <20220224145138.952963315@infradead.org>
- <20220224151322.072632223@infradead.org>
- <CAKwvOdkD2WY=hEHy8_0zs70AGx6LRQwxL5mEZyB30uqpruYJyA@mail.gmail.com>
- <Yh+dMJsH+ZMPfqwD@thelio-3990X>
- <CAKwvOdmouBTe5pH3JoP6EEfwNT5=6WvX3oCEZRxO0Dkf38S14w@mail.gmail.com>
- <Yh/egU1LZudfrgVy@dev-arch.thelio-3990X>
+        Wed, 2 Mar 2022 19:09:14 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E045BD005F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:08:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646266103; x=1677802103;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Ow/G1HUyZJQjbP2PDwC7GvXViqED8DqmZrdYtb6x7pA=;
+  b=QkKOpCok3poebLqOcSZ3NiBQl32sE0zjOMl0U/8g2Nblp1SvnfSik6W6
+   azurWJ0BehzCjWwFQcP58vkYMT9cj+UJ7akdXw3u0TngqOLrP2YxM0sgm
+   bDNaAbkRmuNBd5tt2b2gOcUEomzl32RkaKtQqM8U+lsI6SxcghnrADMJD
+   BmecHzkNAlyRXTsJtdInh5976iC6jtwu+vMkD0nhpSi3laBmNjyxIMih3
+   14cICDUeIQUm4oDbFxMgvdzGC4giUBSsNQIbiOdMBBMCNp5xbMLkEgAlX
+   ecXWITE9vb0Q/hgtuzWfi/3XIAOJltO6C9iMS85maCL8HKEAWzwqFQjDm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253254891"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="253254891"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:01:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="511181734"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 02 Mar 2022 15:00:58 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPXxp-00022P-TT; Wed, 02 Mar 2022 23:00:57 +0000
+Date:   Thu, 3 Mar 2022 07:00:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Badhri Jagan Sridharan <Badhri@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/deprecated/android-4.14-p-release
+ 75/6167] drivers/md/dm-linear.c:104:5: warning: no previous declaration for
+ 'dm_linear_end_io'
+Message-ID: <202203030654.25RQedXH-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yh/egU1LZudfrgVy@dev-arch.thelio-3990X>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 02:15:45PM -0700, Nathan Chancellor wrote:
-> Sounds good, tentative patch attached, it passes all of my testing.
-> There is an instance of $(LLVM) in tools/testing/selftests/lib.mk that I
-> did not touch, as that will presumably have to go through the selftests
-> tree. I can send a separate patch for that later.
+Hi Badhri,
 
-I think it's fine to include that here, just to keep the logic together.
+FYI, the error/warning still remains.
 
-> Peter, is this approach okay with you? If so, would you like to be
-> co-author or should I use a suggested-by tag?
-> 
-> Cheers,
-> Nathan
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/deprecated/android-4.14-p-release
+head:   0ca5d5ac9152d01b3494fb2efb5390319eb9904a
+commit: 539de6b39dcce96f93d6bb19439d00f870f8fa3a [75/6167] ANDROID: dm: android-verity: rebase for 4.9
+config: i386-randconfig-r024-20211019 (https://download.01.org/0day-ci/archive/20220303/202203030654.25RQedXH-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/539de6b39dcce96f93d6bb19439d00f870f8fa3a
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/deprecated/android-4.14-p-release
+        git checkout 539de6b39dcce96f93d6bb19439d00f870f8fa3a
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/md/ kernel/cgroup/ kernel/sched/ kernel/trace/
 
-> From 83219caafbb7dbc2e41e3888ba5079d342aff633 Mon Sep 17 00:00:00 2001
-> From: Nathan Chancellor <nathan@kernel.org>
-> Date: Wed, 2 Mar 2022 13:28:14 -0700
-> Subject: [PATCH] kbuild: Allow a suffix with $(LLVM)
-> 
-> The LLVM variable allows a developer to quickly switch between the GNU
-> and LLVM tools. However, it does not handle versioned binaries, such as
-> the ones shipped by Debian, as LLVM=1 just defines the build variables
-> with the unversioned binaries.
-> 
-> There was some discussion during the review of the patch that introduces
-> LLVM=1 around this, ultimately coming to the conclusion that developers
-> can just add the folder that contains the unversioned binaries to their
-> PATH, as Debian's versioned suffixed binaries are really just symlinks
-> to the unversioned binaries in /usr/lib/llvm-#/bin:
-> 
-> $ realpath /usr/bin/clang-14
-> /usr/lib/llvm-14/bin/clang
-> 
-> $ PATH=/usr/lib/llvm-14/bin:$PATH make ... LLVM=1
-> 
-> However, it is simple enough to support this scheme directly in the
-> Kbuild system by allowing the developer to specify the version suffix
-> with LLVM=, which is shorter than the above suggestion:
-> 
-> $ make ... LLVM=-14
-> 
-> It does not change the meaning of LLVM=1 (which will continue to use
-> unversioned binaries) and it does not add too much additional complexity
-> to the existing $(LLVM) code, while allowing developers to quickly test
-> their series with different versions of the whole LLVM suite of tools.
-> 
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I like it!
+All warnings (new ones prefixed by >>):
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+   drivers/md/dm-linear.c:29:5: warning: no previous declaration for 'dm_linear_ctr' [-Wmissing-declarations]
+    int dm_linear_ctr(struct dm_target *ti, unsigned int argc, char **argv)
+        ^~~~~~~~~~~~~
+   drivers/md/dm-linear.c:72:6: warning: no previous declaration for 'dm_linear_dtr' [-Wmissing-declarations]
+    void dm_linear_dtr(struct dm_target *ti)
+         ^~~~~~~~~~~~~
+   drivers/md/dm-linear.c:97:5: warning: no previous declaration for 'dm_linear_map' [-Wmissing-declarations]
+    int dm_linear_map(struct dm_target *ti, struct bio *bio)
+        ^~~~~~~~~~~~~
+>> drivers/md/dm-linear.c:104:5: warning: no previous declaration for 'dm_linear_end_io' [-Wmissing-declarations]
+    int dm_linear_end_io(struct dm_target *ti, struct bio *bio,
+        ^~~~~~~~~~~~~~~~
+   drivers/md/dm-linear.c:116:6: warning: no previous declaration for 'dm_linear_status' [-Wmissing-declarations]
+    void dm_linear_status(struct dm_target *ti, status_type_t type,
+         ^~~~~~~~~~~~~~~~
+   drivers/md/dm-linear.c:133:5: warning: no previous declaration for 'dm_linear_prepare_ioctl' [-Wmissing-declarations]
+    int dm_linear_prepare_ioctl(struct dm_target *ti,
+        ^~~~~~~~~~~~~~~~~~~~~~~
+   drivers/md/dm-linear.c:150:5: warning: no previous declaration for 'dm_linear_iterate_devices' [-Wmissing-declarations]
+    int dm_linear_iterate_devices(struct dm_target *ti,
+        ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/md/dm-linear.c:158:6: warning: no previous declaration for 'dm_linear_dax_direct_access' [-Wmissing-declarations]
+    long dm_linear_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/md/dm-linear.c:175:8: warning: no previous declaration for 'dm_linear_dax_copy_from_iter' [-Wmissing-declarations]
+    size_t dm_linear_dax_copy_from_iter(struct dm_target *ti, pgoff_t pgoff,
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--- 
-Kees Cook
+
+vim +/dm_linear_end_io +104 drivers/md/dm-linear.c
+
+   103	
+ > 104	int dm_linear_end_io(struct dm_target *ti, struct bio *bio,
+   105				 blk_status_t *error)
+   106	{
+   107		struct linear_c *lc = ti->private;
+   108	
+   109		if (!*error && bio_op(bio) == REQ_OP_ZONE_REPORT)
+   110			dm_remap_zone_report(ti, bio, lc->start);
+   111	
+   112		return DM_ENDIO_DONE;
+   113	}
+   114	EXPORT_SYMBOL_GPL(dm_linear_end_io);
+   115	
+   116	void dm_linear_status(struct dm_target *ti, status_type_t type,
+   117				  unsigned status_flags, char *result, unsigned maxlen)
+   118	{
+   119		struct linear_c *lc = (struct linear_c *) ti->private;
+   120	
+   121		switch (type) {
+   122		case STATUSTYPE_INFO:
+   123			result[0] = '\0';
+   124			break;
+   125	
+   126		case STATUSTYPE_TABLE:
+   127			snprintf(result, maxlen, "%s %llu", lc->dev->name,
+   128					(unsigned long long)lc->start);
+   129			break;
+   130		}
+   131	}
+   132	
+   133	int dm_linear_prepare_ioctl(struct dm_target *ti,
+   134			struct block_device **bdev, fmode_t *mode)
+   135	{
+   136		struct linear_c *lc = (struct linear_c *) ti->private;
+   137		struct dm_dev *dev = lc->dev;
+   138	
+   139		*bdev = dev->bdev;
+   140	
+   141		/*
+   142		 * Only pass ioctls through if the device sizes match exactly.
+   143		 */
+   144		if (lc->start ||
+   145		    ti->len != i_size_read(dev->bdev->bd_inode) >> SECTOR_SHIFT)
+   146			return 1;
+   147		return 0;
+   148	}
+   149	
+   150	int dm_linear_iterate_devices(struct dm_target *ti,
+   151					  iterate_devices_callout_fn fn, void *data)
+   152	{
+   153		struct linear_c *lc = ti->private;
+   154	
+   155		return fn(ti, lc->dev, lc->start, ti->len, data);
+   156	}
+   157	
+ > 158	long dm_linear_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+   159			long nr_pages, void **kaddr, pfn_t *pfn)
+   160	{
+   161		long ret;
+   162		struct linear_c *lc = ti->private;
+   163		struct block_device *bdev = lc->dev->bdev;
+   164		struct dax_device *dax_dev = lc->dev->dax_dev;
+   165		sector_t dev_sector, sector = pgoff * PAGE_SECTORS;
+   166	
+   167		dev_sector = linear_map_sector(ti, sector);
+   168		ret = bdev_dax_pgoff(bdev, dev_sector, nr_pages * PAGE_SIZE, &pgoff);
+   169		if (ret)
+   170			return ret;
+   171		return dax_direct_access(dax_dev, pgoff, nr_pages, kaddr, pfn);
+   172	}
+   173	EXPORT_SYMBOL_GPL(dm_linear_dax_direct_access);
+   174	
+ > 175	size_t dm_linear_dax_copy_from_iter(struct dm_target *ti, pgoff_t pgoff,
+   176			void *addr, size_t bytes, struct iov_iter *i)
+   177	{
+   178		struct linear_c *lc = ti->private;
+   179		struct block_device *bdev = lc->dev->bdev;
+   180		struct dax_device *dax_dev = lc->dev->dax_dev;
+   181		sector_t dev_sector, sector = pgoff * PAGE_SECTORS;
+   182	
+   183		dev_sector = linear_map_sector(ti, sector);
+   184		if (bdev_dax_pgoff(bdev, dev_sector, ALIGN(bytes, PAGE_SIZE), &pgoff))
+   185			return 0;
+   186		return dax_copy_from_iter(dax_dev, pgoff, addr, bytes, i);
+   187	}
+   188	EXPORT_SYMBOL_GPL(dm_linear_dax_copy_from_iter);
+   189	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
