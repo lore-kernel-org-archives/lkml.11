@@ -2,468 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA52C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239203AbiCBCxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 21:53:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        id S231839AbiCBCyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 21:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239153AbiCBCxW (ORCPT
+        with ESMTP id S229618AbiCBCyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 21:53:22 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976A8DE86;
-        Tue,  1 Mar 2022 18:52:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646189558; x=1677725558;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bp46QRO9ZhWM8x67zvEE7CpSORkCePiiXpcbYeeuOo4=;
-  b=jPLrrih9moc0ZNy7RAGFOmyx0Jcip3tOaNuC7scRTPBhBamQu5tw20ES
-   T2WZVfa7DHSzhbnxih+LAcTibUQUlsRsq8HFe3I6/SzvnL3uc4cqg87jC
-   2nUA+X975yUmA7joxGEGy4+bmkECy3qwAg2BOsA7XBzje4NCsYCQeJ0SE
-   ODhbFCseLui8ewVCEs64ADQtmybWD4/GWNeDk3hcM+Ej+3RDh+7wZUHzX
-   W5svNHczf6FiIcN/3ys+kAfVherAArGgsT4K//d3Y8CZUNPZUsqh6GYUK
-   k5T43PCd3hfJ47Pk9n2HTf6UokzNWOmJxGreH3CbKPyv8s2oeDA/Ad4SR
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="277966824"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="277966824"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 18:52:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="593859117"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 01 Mar 2022 18:52:34 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPF6P-0000xb-Tx; Wed, 02 Mar 2022 02:52:33 +0000
-Date:   Wed, 2 Mar 2022 10:52:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        torvalds@linux-foundation.org
-Cc:     kbuild-all@lists.01.org, arnd@arndb.de, jakobkoschel@gmail.com,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        keescook@chromium.org, jannh@google.com,
-        linux-kbuild@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
- outside the loop
-Message-ID: <202203020904.iuHFI2tk-lkp@intel.com>
-References: <20220301075839.4156-3-xiam0nd.tong@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301075839.4156-3-xiam0nd.tong@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 1 Mar 2022 21:54:37 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7AF1C137
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 18:53:55 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 132so442973pga.5
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 18:53:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=W8P0bndC/EUpMARX/RJpbdvGiQxNFSwirs0XwnqDb/A=;
+        b=IWFuVIT7r+I1xmMiUz2WomA8BSB+IYTAB4c1uP5AMvzyKIDcwJDt9KVKnu+6vOdhzP
+         31rpKZs9+i0xR8pJ5AQdUn+3OYOZQs1dKT6hSoEdkeJociVZ2HE51LagHUrE4ZOwLd0V
+         XZjZr6Ux/jlt/Tas5P4KPWK8dPbmHWNH5M5xE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=W8P0bndC/EUpMARX/RJpbdvGiQxNFSwirs0XwnqDb/A=;
+        b=Khr1JHnO2zBaEvd8kMbo1UrPTBe2zk94tv4Qkqq0uuQUIusiA3OwBNSAIakcxMEPlf
+         nOLDkXFzMQayRSaz24dsdaOf1mwTbvOxnHciPxrLb0iovafzghxvEq1asyu1aON4uDK6
+         ZWmlDmEp5dMPirrUxESLrZ0aTXcMrDyPxZ9B/A7iSqbSY/3hT8iXH5e8vdcbNXyMJGly
+         zBzYdsdl5AcfMZ6x1kiGBcA6zPdaRom1OLwBxWBKDPpCG1+anS54GnsPa/HwBmpr/958
+         RShMbeP2xrJOFm8CRNwK3QCimCHwYglPvn/Hm76IyMO4kHd9Qh1qQih5gj7wHcn2grYX
+         5p4w==
+X-Gm-Message-State: AOAM531ZZT/09S+0TX1+WAWsgeCvPUXOjfoEd6SXEK/BYC8j1EJpJDLn
+        zRP3+n6SKxiY1H9BJ4D62X3x7Q==
+X-Google-Smtp-Source: ABdhPJzvjI0hA7Ac49NR4bDqe7iyUYcn1hrZQCl33vMxeFh6wBIS7lVOoP+x4f7iqyyvP5y37nbIXg==
+X-Received: by 2002:a63:9354:0:b0:34d:e4e7:543a with SMTP id w20-20020a639354000000b0034de4e7543amr24321260pgm.48.1646189634923;
+        Tue, 01 Mar 2022 18:53:54 -0800 (PST)
+Received: from dy890235-Precision-Tower-3620.ric.broadcom.net ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id s42-20020a056a0017aa00b004df8133df4asm20117297pfg.179.2022.03.01.18.53.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 18:53:54 -0800 (PST)
+From:   Desmond Yan <desmond.yan@broadcom.com>
+To:     Scott Branden <scott.branden@broadcom.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org,
+        Desmond Yan <desmond.yan@broadcom.com>
+Subject: [PATCH v2 1/1] misc: bcm-vk: Remove viper from device id table
+Date:   Tue,  1 Mar 2022 18:53:40 -0800
+Message-Id: <20220302025340.25602-1-desmond.yan@broadcom.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000072966e05d933643d"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xiaomeng,
+--00000000000072966e05d933643d
 
-Thank you for the patch! Perhaps something to improve:
+As bcm_vk driver is not the production driver for viper, remove
+its pci device id from table.
 
-[auto build test WARNING on linux/master]
-[also build test WARNING on vkoul-dmaengine/next soc/for-next linus/master v5.17-rc6 next-20220301]
-[cannot apply to hnaz-mm/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
-reproduce: make htmldocs
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> include/linux/list.h:931: warning: expecting prototype for list_for_each_entry_safe_reverse_insde(). Prototype was for list_for_each_entry_safe_reverse_inside() instead
-
-vim +931 include/linux/list.h
-
-   557	
-   558	/**
-   559	 * list_next_entry - get the next element in list
-   560	 * @pos:	the type * to cursor
-   561	 * @member:	the name of the list_head within the struct.
-   562	 */
-   563	#define list_next_entry(pos, member) \
-   564		list_entry((pos)->member.next, typeof(*(pos)), member)
-   565	
-   566	/**
-   567	 * list_prev_entry - get the prev element in list
-   568	 * @pos:	the type * to cursor
-   569	 * @member:	the name of the list_head within the struct.
-   570	 */
-   571	#define list_prev_entry(pos, member) \
-   572		list_entry((pos)->member.prev, typeof(*(pos)), member)
-   573	
-   574	/**
-   575	 * list_for_each	-	iterate over a list
-   576	 * @pos:	the &struct list_head to use as a loop cursor.
-   577	 * @head:	the head for your list.
-   578	 */
-   579	#define list_for_each(pos, head) \
-   580		for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
-   581	
-   582	/**
-   583	 * list_for_each_continue - continue iteration over a list
-   584	 * @pos:	the &struct list_head to use as a loop cursor.
-   585	 * @head:	the head for your list.
-   586	 *
-   587	 * Continue to iterate over a list, continuing after the current position.
-   588	 */
-   589	#define list_for_each_continue(pos, head) \
-   590		for (pos = pos->next; !list_is_head(pos, (head)); pos = pos->next)
-   591	
-   592	/**
-   593	 * list_for_each_prev	-	iterate over a list backwards
-   594	 * @pos:	the &struct list_head to use as a loop cursor.
-   595	 * @head:	the head for your list.
-   596	 */
-   597	#define list_for_each_prev(pos, head) \
-   598		for (pos = (head)->prev; !list_is_head(pos, (head)); pos = pos->prev)
-   599	
-   600	/**
-   601	 * list_for_each_safe - iterate over a list safe against removal of list entry
-   602	 * @pos:	the &struct list_head to use as a loop cursor.
-   603	 * @n:		another &struct list_head to use as temporary storage
-   604	 * @head:	the head for your list.
-   605	 */
-   606	#define list_for_each_safe(pos, n, head) \
-   607		for (pos = (head)->next, n = pos->next; \
-   608		     !list_is_head(pos, (head)); \
-   609		     pos = n, n = pos->next)
-   610	
-   611	/**
-   612	 * list_for_each_prev_safe - iterate over a list backwards safe against removal of list entry
-   613	 * @pos:	the &struct list_head to use as a loop cursor.
-   614	 * @n:		another &struct list_head to use as temporary storage
-   615	 * @head:	the head for your list.
-   616	 */
-   617	#define list_for_each_prev_safe(pos, n, head) \
-   618		for (pos = (head)->prev, n = pos->prev; \
-   619		     !list_is_head(pos, (head)); \
-   620		     pos = n, n = pos->prev)
-   621	
-   622	/**
-   623	 * list_entry_is_head - test if the entry points to the head of the list
-   624	 * @pos:	the type * to cursor
-   625	 * @head:	the head for your list.
-   626	 * @member:	the name of the list_head within the struct.
-   627	 */
-   628	#define list_entry_is_head(pos, head, member)				\
-   629		(&pos->member == (head))
-   630	
-   631	/**
-   632	 * list_for_each_entry	-	iterate over list of given type
-   633	 * @pos:	the type * to use as a loop cursor.
-   634	 * @head:	the head for your list.
-   635	 * @member:	the name of the list_head within the struct.
-   636	 */
-   637	#define list_for_each_entry(pos, head, member)				\
-   638		for (pos = list_first_entry(head, typeof(*pos), member);	\
-   639		     !list_entry_is_head(pos, head, member);			\
-   640		     pos = list_next_entry(pos, member))
-   641	
-   642	/**
-   643	 * list_for_each_entry_inside
-   644	 *  - iterate over list of given type and keep iterator inside the loop
-   645	 * @pos:	the type * to use as a loop cursor.
-   646	 * @type:	the type of the container struct this is embedded in.
-   647	 * @head:	the head for your list.
-   648	 * @member:	the name of the list_head within the struct.
-   649	 */
-   650	#define list_for_each_entry_inside(pos, type, head, member)		\
-   651		for (type * pos = list_first_entry(head, type, member);		\
-   652		     !list_entry_is_head(pos, head, member);			\
-   653		     pos = list_next_entry(pos, member))
-   654	
-   655	/**
-   656	 * list_for_each_entry_reverse - iterate backwards over list of given type.
-   657	 * @pos:	the type * to use as a loop cursor.
-   658	 * @head:	the head for your list.
-   659	 * @member:	the name of the list_head within the struct.
-   660	 */
-   661	#define list_for_each_entry_reverse(pos, head, member)			\
-   662		for (pos = list_last_entry(head, typeof(*pos), member);		\
-   663		     !list_entry_is_head(pos, head, member); 			\
-   664		     pos = list_prev_entry(pos, member))
-   665	
-   666	/**
-   667	 * list_for_each_entry_reverse_inside
-   668	 * - iterate backwards over list of given type and keep iterator inside the loop.
-   669	 * @pos:	the type * to use as a loop cursor.
-   670	 * @type:	the type of the container struct this is embedded in.
-   671	 * @head:	the head for your list.
-   672	 * @member:	the name of the list_head within the struct.
-   673	 */
-   674	#define list_for_each_entry_reverse_inside(pos, type, head, member)	\
-   675		for (type * pos = list_last_entry(head, type, member);		\
-   676		     !list_entry_is_head(pos, head, member);			\
-   677		     pos = list_prev_entry(pos, member))
-   678	
-   679	/**
-   680	 * list_prepare_entry - prepare a pos entry for use in list_for_each_entry_continue()
-   681	 * @pos:	the type * to use as a start point
-   682	 * @head:	the head of the list
-   683	 * @member:	the name of the list_head within the struct.
-   684	 *
-   685	 * Prepares a pos entry for use as a start point in list_for_each_entry_continue().
-   686	 */
-   687	#define list_prepare_entry(pos, head, member) \
-   688		((pos) ? : list_entry(head, typeof(*pos), member))
-   689	
-   690	/**
-   691	 * list_for_each_entry_continue - continue iteration over list of given type
-   692	 * @pos:	the type * to use as a loop cursor.
-   693	 * @head:	the head for your list.
-   694	 * @member:	the name of the list_head within the struct.
-   695	 *
-   696	 * Continue to iterate over list of given type, continuing after
-   697	 * the current position.
-   698	 */
-   699	#define list_for_each_entry_continue(pos, head, member) 		\
-   700		for (pos = list_next_entry(pos, member);			\
-   701		     !list_entry_is_head(pos, head, member);			\
-   702		     pos = list_next_entry(pos, member))
-   703	
-   704	/**
-   705	 * list_for_each_entry_continue_inside
-   706	 *  - continue iteration over list of given type and keep iterator inside the loop
-   707	 * @pos:	the type * to use as a loop cursor.
-   708	 * @start:	the given iterator to start with.
-   709	 * @head:	the head for your list.
-   710	 * @member:	the name of the list_head within the struct.
-   711	 *
-   712	 * Continue to iterate over list of given type, continuing after
-   713	 * the current position.
-   714	 */
-   715	#define list_for_each_entry_continue_inside(pos, start, head, member)	\
-   716		for (typeof(*start) *pos = list_next_entry(start, member);	\
-   717		     !list_entry_is_head(pos, head, member);			\
-   718		     pos = list_next_entry(pos, member))
-   719	
-   720	/**
-   721	 * list_for_each_entry_continue_reverse - iterate backwards from the given point
-   722	 * @pos:	the type * to use as a loop cursor.
-   723	 * @head:	the head for your list.
-   724	 * @member:	the name of the list_head within the struct.
-   725	 *
-   726	 * Start to iterate over list of given type backwards, continuing after
-   727	 * the current position.
-   728	 */
-   729	#define list_for_each_entry_continue_reverse(pos, head, member)		\
-   730		for (pos = list_prev_entry(pos, member);			\
-   731		     !list_entry_is_head(pos, head, member);			\
-   732		     pos = list_prev_entry(pos, member))
-   733	
-   734	/**
-   735	 * list_for_each_entry_continue_reverse_inside
-   736	 *  - iterate backwards from the given point and keep iterator inside the loop
-   737	 * @pos:	the type * to use as a loop cursor.
-   738	 * @start:	the given iterator to start with.
-   739	 * @head:	the head for your list.
-   740	 * @member:	the name of the list_head within the struct.
-   741	 *
-   742	 * Start to iterate over list of given type backwards, continuing after
-   743	 * the current position.
-   744	 */
-   745	#define list_for_each_entry_continue_reverse_inside(pos, start, head, member)	\
-   746		for (typeof(*start) *pos = list_prev_entry(start, member);		\
-   747		     !list_entry_is_head(pos, head, member);				\
-   748		     pos = list_prev_entry(pos, member))
-   749	
-   750	/**
-   751	 * list_for_each_entry_from - iterate over list of given type from the current point
-   752	 * @pos:	the type * to use as a loop cursor.
-   753	 * @head:	the head for your list.
-   754	 * @member:	the name of the list_head within the struct.
-   755	 *
-   756	 * Iterate over list of given type, continuing from current position.
-   757	 */
-   758	#define list_for_each_entry_from(pos, head, member) 			\
-   759		for (; !list_entry_is_head(pos, head, member);			\
-   760		     pos = list_next_entry(pos, member))
-   761	
-   762	/**
-   763	 * list_for_each_entry_from_inside
-   764	 *  - iterate over list of given type from the current point and keep iterator inside the loop
-   765	 * @pos:	the type * to use as a loop cursor.
-   766	 * @start:	the given iterator to start with.
-   767	 * @head:	the head for your list.
-   768	 * @member:	the name of the list_head within the struct.
-   769	 *
-   770	 * Iterate over list of given type, continuing from current position.
-   771	 */
-   772	#define list_for_each_entry_from_inside(pos, start, head, member)			\
-   773		for (typeof(*start) *pos = start; !list_entry_is_head(pos, head, member);	\
-   774		     pos = list_next_entry(pos, member))
-   775	
-   776	/**
-   777	 * list_for_each_entry_from_reverse - iterate backwards over list of given type
-   778	 *                                    from the current point
-   779	 * @pos:	the type * to use as a loop cursor.
-   780	 * @head:	the head for your list.
-   781	 * @member:	the name of the list_head within the struct.
-   782	 *
-   783	 * Iterate backwards over list of given type, continuing from current position.
-   784	 */
-   785	#define list_for_each_entry_from_reverse(pos, head, member)		\
-   786		for (; !list_entry_is_head(pos, head, member);			\
-   787		     pos = list_prev_entry(pos, member))
-   788	
-   789	/**
-   790	 * list_for_each_entry_from_reverse_inside
-   791	 *  - iterate backwards over list of given type from the current point
-   792	 *    and keep iterator inside the loop
-   793	 * @pos:	the type * to use as a loop cursor.
-   794	 * @start:	the given iterator to start with.
-   795	 * @head:	the head for your list.
-   796	 * @member:	the name of the list_head within the struct.
-   797	 *
-   798	 * Iterate backwards over list of given type, continuing from current position.
-   799	 */
-   800	#define list_for_each_entry_from_reverse_inside(pos, start, head, member)		\
-   801		for (typeof(*start) *pos = start; !list_entry_is_head(pos, head, member);	\
-   802		     pos = list_prev_entry(pos, member))
-   803	
-   804	/**
-   805	 * list_for_each_entry_safe - iterate over list of given type safe against removal of list entry
-   806	 * @pos:	the type * to use as a loop cursor.
-   807	 * @n:		another type * to use as temporary storage
-   808	 * @head:	the head for your list.
-   809	 * @member:	the name of the list_head within the struct.
-   810	 */
-   811	#define list_for_each_entry_safe(pos, n, head, member)			\
-   812		for (pos = list_first_entry(head, typeof(*pos), member),	\
-   813			n = list_next_entry(pos, member);			\
-   814		     !list_entry_is_head(pos, head, member); 			\
-   815		     pos = n, n = list_next_entry(n, member))
-   816	
-   817	/**
-   818	 * list_for_each_entry_safe_inside
-   819	 *  - iterate over list of given type safe against removal of list entry
-   820	 *    and keep iterator inside the loop
-   821	 * @pos:	the type * to use as a loop cursor.
-   822	 * @n:		another type * to use as temporary storage
-   823	 * @type:	the type of the container struct this is embedded in.
-   824	 * @head:	the head for your list.
-   825	 * @member:	the name of the list_head within the struct.
-   826	 */
-   827	#define list_for_each_entry_safe_inside(pos, n, type, head, member)	\
-   828		for (type * pos = list_first_entry(head, type, member),		\
-   829			*n = list_next_entry(pos, member);			\
-   830		     !list_entry_is_head(pos, head, member);			\
-   831		     pos = n, n = list_next_entry(n, member))
-   832	
-   833	/**
-   834	 * list_for_each_entry_safe_continue - continue list iteration safe against removal
-   835	 * @pos:	the type * to use as a loop cursor.
-   836	 * @n:		another type * to use as temporary storage
-   837	 * @head:	the head for your list.
-   838	 * @member:	the name of the list_head within the struct.
-   839	 *
-   840	 * Iterate over list of given type, continuing after current point,
-   841	 * safe against removal of list entry.
-   842	 */
-   843	#define list_for_each_entry_safe_continue(pos, n, head, member) 		\
-   844		for (pos = list_next_entry(pos, member), 				\
-   845			n = list_next_entry(pos, member);				\
-   846		     !list_entry_is_head(pos, head, member);				\
-   847		     pos = n, n = list_next_entry(n, member))
-   848	
-   849	/**
-   850	 * list_for_each_entry_safe_continue_inside
-   851	 *  - continue list iteration safe against removal and keep iterator inside the loop
-   852	 * @pos:	the type * to use as a loop cursor.
-   853	 * @n:		another type * to use as temporary storage
-   854	 * @start:	the given iterator to start with.
-   855	 * @head:	the head for your list.
-   856	 * @member:	the name of the list_head within the struct.
-   857	 *
-   858	 * Iterate over list of given type, continuing after current point,
-   859	 * safe against removal of list entry.
-   860	 */
-   861	#define list_for_each_entry_safe_continue_inside(pos, n, start, head, member)	\
-   862		for (typeof(*start) *pos = list_next_entry(start, member),		\
-   863			*n = list_next_entry(pos, member);				\
-   864		     !list_entry_is_head(pos, head, member);				\
-   865		     pos = n, n = list_next_entry(n, member))
-   866	
-   867	/**
-   868	 * list_for_each_entry_safe_from - iterate over list from current point safe against removal
-   869	 * @pos:	the type * to use as a loop cursor.
-   870	 * @n:		another type * to use as temporary storage
-   871	 * @head:	the head for your list.
-   872	 * @member:	the name of the list_head within the struct.
-   873	 *
-   874	 * Iterate over list of given type from current point, safe against
-   875	 * removal of list entry.
-   876	 */
-   877	#define list_for_each_entry_safe_from(pos, n, head, member) 			\
-   878		for (n = list_next_entry(pos, member);					\
-   879		     !list_entry_is_head(pos, head, member);				\
-   880		     pos = n, n = list_next_entry(n, member))
-   881	
-   882	/**
-   883	 * list_for_each_entry_safe_from_inside
-   884	 *  - iterate over list from current point safe against removal and keep iterator inside the loop
-   885	 * @pos:	the type * to use as a loop cursor.
-   886	 * @n:		another type * to use as temporary storage
-   887	 * @start:	the given iterator to start with.
-   888	 * @head:	the head for your list.
-   889	 * @member:	the name of the list_head within the struct.
-   890	 *
-   891	 * Iterate over list of given type from current point, safe against
-   892	 * removal of list entry.
-   893	 */
-   894	#define list_for_each_entry_safe_from_inside(pos, n, start, head, member)	\
-   895		for (typeof(*start) *pos = start, *n = list_next_entry(pos, member);	\
-   896		     !list_entry_is_head(pos, head, member);				\
-   897		     pos = n, n = list_next_entry(n, member))
-   898	
-   899	/**
-   900	 * list_for_each_entry_safe_reverse - iterate backwards over list safe against removal
-   901	 * @pos:	the type * to use as a loop cursor.
-   902	 * @n:		another type * to use as temporary storage
-   903	 * @head:	the head for your list.
-   904	 * @member:	the name of the list_head within the struct.
-   905	 *
-   906	 * Iterate backwards over list of given type, safe against removal
-   907	 * of list entry.
-   908	 */
-   909	#define list_for_each_entry_safe_reverse(pos, n, head, member)		\
-   910		for (pos = list_last_entry(head, typeof(*pos), member),		\
-   911			n = list_prev_entry(pos, member);			\
-   912		     !list_entry_is_head(pos, head, member); 			\
-   913		     pos = n, n = list_prev_entry(n, member))
-   914	
-   915	/**
-   916	 * list_for_each_entry_safe_reverse_insde
-   917	 *  - iterate backwards over list safe against removal and keep iterator inside the loop
-   918	 * @pos:	the type * to use as a loop cursor.
-   919	 * @n:		another type * to use as temporary storage
-   920	 * @type:	the type of the struct this is enmbeded in.
-   921	 * @head:	the head for your list.
-   922	 * @member:	the name of the list_head within the struct.
-   923	 *
-   924	 * Iterate backwards over list of given type, safe against removal
-   925	 * of list entry.
-   926	 */
-   927	#define list_for_each_entry_safe_reverse_inside(pos, n, type, head, member)	\
-   928		for (type * pos = list_last_entry(head, type, member),			\
-   929			*n = list_prev_entry(pos, member);				\
-   930		     !list_entry_is_head(pos, head, member);				\
- > 931		     pos = n, n = list_prev_entry(n, member))
-   932	
-
+Signed-off-by: Desmond Yan <desmond.yan@broadcom.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Changes since v1:
+- remove Kconfig option and simply remove viper pci id completely
+---
+drivers/misc/bcm-vk/bcm_vk_dev.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
+index ad639ee85b2a..a16b99bdaa13 100644
+--- a/drivers/misc/bcm-vk/bcm_vk_dev.c
++++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
+@@ -1633,7 +1633,6 @@ static void bcm_vk_shutdown(struct pci_dev *pdev)
+ 
+ static const struct pci_device_id bcm_vk_ids[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_VALKYRIE), },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_VIPER), },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(pci, bcm_vk_ids);
+-- 
+2.17.1
+
+
+--00000000000072966e05d933643d
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+Y3hUv4qpgBHMYL0QOV49hRCEPA9bdA1E2tJZaPTCgQjIBKTXbV/VA5CMlMe/UjOH6nY1hID+c33O
+JjJlS0Q6uDUPv4Xi6hhq1owIm8lcawNZMHODVk3RAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGGRlc21vbmQueWFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUR/AZEnas6F5UTEkX9MSLkmoVu0kw
+DQYJKoZIhvcNAQELBQADggEBACgclyA89UFYSNYkHRyDaRI1Yfn2L/TiNQDFtP5Jd+W/g9Ouqvq9
+uHw8dCd2QCw8piC0g25U7Q/Tcnfu6sydKZBdtTvv1ZlyCFajkHgSVjZJHmdGAPZdfArtBTlLdYux
+VHvqzlQUuX8vTR7zwapU7Q4S3e/wvJljm0qFlEm9iM7c7X6Qev+iYW+cH0a7StliJYAboI8wTeU5
++CRFe63jlAmMwVJgocvWVCzzG9rP+qiMxBVkmg+la+oG0UHXw4aTu+JfvXadtGCFgsfNrJ8Z5do0
+X8qLr2r16JY0XDTgGVsdivp1TA9Rgv+1dAof3Hu3oabaRfztJlUXP4A1TylsLVsxggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxu8RiVGamNIPMsivswDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEhhIAoOCtCBjkxQinNOzVBkrh9yx5Dip7UE
+WJ8X06ufMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMwMjAy
+NTM1NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQCfgEYkS9A18SBB7ifd+qbww17IjP7okuLUaxCSPc2eAe0oo+w+Gf3M
+O9xxVCdBot1n6yNhF+NowrwegHxos1WDRyxZn2Ww16F/tD8QMAOVwUsLAaFJ95sPf0mIQ/QpJiGQ
++pruUjL4KvKqzg8HGBho/WJfCXnm+f3g/B61A0fMJ9prAuFb8RMqKKNV9/QLdZtRA0GLETin4TKl
+DVF6V737mJeYOFl3/yeE3QBawBvRSjqg2sOyjcxy6BXbwtzWEazB66A4QryB3qf+ISH/RIHZLrXR
+viOFtfECpoeizSlomJhFeccx5Pp/u/ASFLx21YSqL3GpqO4IBiNNVd2OEfjI
+--00000000000072966e05d933643d--
