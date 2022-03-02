@@ -2,108 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A73C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF14C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242331AbiCBTsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 14:48:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
+        id S241759AbiCBTsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 14:48:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242313AbiCBTsZ (ORCPT
+        with ESMTP id S242430AbiCBTsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 14:48:25 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AC013D16
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:47:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646250460; x=1677786460;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iGkRRG4zw0fmlssS1NFBroUPfmpKdTzgwRLdPsQz+R8=;
-  b=fOVUGswkRTmnQp+uFBsfTc0tTwb8bkAlNA4baFFfKyacTug7wu+o0I0f
-   m/E8fTI9Vv1vvldabKgXOo1SjVkVx59YB8sB7nt8o1lZPr9Pbbk5s0doD
-   xHqs3mWrctIMMwqxYBf+2SkzhKb/LM56KfZPqNKMIBgbOskTi0srpNZ+t
-   IFfeW4X97CR/JRGq2JAt2DFY4wSFPinpfZjLn09TbQw12vapfUPyu5SVx
-   0jr+fwojXG7OSWK/RVepJptyvGSUQf6BwwH0f89y+nIX6Jt/WsEkpYluO
-   79yXL653/MfL7FKFtYbllDzVjv735D2nslk6CPi6pmsTJb1eqEEJAAGJa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="339922229"
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="339922229"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 11:47:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="641823251"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 02 Mar 2022 11:47:38 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPUwf-0001qp-70; Wed, 02 Mar 2022 19:47:33 +0000
-Date:   Thu, 3 Mar 2022 03:47:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Satya Tangirala <satyat@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-trusty-5.4
- 1704/6879] drivers/scsi/ufs/ufshcd-crypto.c:250:26: warning: no previous
- prototype for 'ufshcd_blk_crypto_mode_num_for_alg_dusize'
-Message-ID: <202203030305.6dFYd0qt-lkp@intel.com>
+        Wed, 2 Mar 2022 14:48:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10E0D3A718
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:47:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646250469;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9ndR+qkKf8IiCmXwP6/0TLhJyNK+iAc9DAT0Oa/pgpY=;
+        b=bEQu/eDpX2c1362jIYKSMea7mUpwv4MazescCBcIAqXlJacy8FV8okttZfNbEle8fO/zKd
+        +9oBTyudOcFqQtKznL8qGWJSt8JwvuUqaUCoaZl4QqM4A7x3KhzLxW5seam0eFqFZZePZX
+        tsC5nLZSrIoCl5Y5atg+2VwrBXQYFHY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-647-WbOJVkcBMIi9ejUU8YJ7zg-1; Wed, 02 Mar 2022 14:47:44 -0500
+X-MC-Unique: WbOJVkcBMIi9ejUU8YJ7zg-1
+Received: by mail-wm1-f71.google.com with SMTP id p35-20020a05600c1da300b0038151176781so1219751wms.7
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 11:47:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9ndR+qkKf8IiCmXwP6/0TLhJyNK+iAc9DAT0Oa/pgpY=;
+        b=R+J5HZfeib0gUhbHYvg5Lx9Zf8BdAbrV1HFFmxUZ2KGzfetmBvRcwRoAouri9mlNSp
+         7SI0Y2cabn4NjH2WwHpOTEPXsLUKurJKBvSMGJWzUuRzaywVrk1twWUbPZMYMg4skfHs
+         5kI9oeU4CCyBh5wNVTV7cSe/wTyvvmDevuWBprv9pYPlwhFsvlTt8uE4Ni95FUQT0hyI
+         kYteciqMJgx8qqAkjatooHDe60Xz6zr+oOz+HqYnlnO4YlfyvxUvtMv/ryQ4eSRKh5wf
+         n8xBOlWhtPUZZk/xPFndEmZmk8jDzGlKT6eAC0CilHwcDvLTAU2zCQodRjILexWWKj09
+         pvAw==
+X-Gm-Message-State: AOAM531X/sJ78Sli6HWt/YiOOrrsyMl88k+5QRHi970oITQnscoRTmDQ
+        yGhckpPMXrUYE/KWise9HA5zx+iA1Cpk5+Cz9u+P7fGLH7Fw5RWp5j2NvZk0klGMzRSjoZ0UkW/
+        zrQHbWFeJuPHk36xW0mkWGMhe
+X-Received: by 2002:adf:a749:0:b0:1ef:7d81:f4cd with SMTP id e9-20020adfa749000000b001ef7d81f4cdmr17935829wrd.133.1646250463116;
+        Wed, 02 Mar 2022 11:47:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJytQkVIbt3RjmxG7srv9p6KdE7ADQdJ/WVQfRQmhaoGILBPTLLpENUyF/E4HqcmI+2MYZN+gw==
+X-Received: by 2002:adf:a749:0:b0:1ef:7d81:f4cd with SMTP id e9-20020adfa749000000b001ef7d81f4cdmr17935812wrd.133.1646250462893;
+        Wed, 02 Mar 2022 11:47:42 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm8935824wmp.44.2022.03.02.11.47.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 11:47:42 -0800 (PST)
+Message-ID: <2ba8497f-ba6d-558b-d782-bb3ee67d23ec@redhat.com>
+Date:   Wed, 2 Mar 2022 20:47:38 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     linux-fbdev@vger.kernel.org, x86@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, David Airlie <airlied@linux.ie>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helge Deller <deller@gmx.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-video@atrey.karlin.mff.cuni.cz,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Mack <daniel@zonque.org>
+References: <20220218093334.24830-1-msuchanek@suse.de>
+ <354f3cfd-bfa0-3ebe-3d67-705423d9294e@suse.de>
+ <20220302193846.GT3113@kunlun.suse.cz>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220302193846.GT3113@kunlun.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Satya,
+Hello,
 
-FYI, the error/warning still remains.
+On 3/2/22 20:38, Michal Suchánek wrote:
+> Hello,
+> 
+> On Wed, Mar 02, 2022 at 08:31:25PM +0100, Thomas Zimmermann wrote:
+>> Hi,
+>>
+>> is this ready to be merged?
+> 
+> The objections raised so far have been addressed in v4.
+>
+> I think this is good to merge.
+>
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-trusty-5.4
-head:   d556bac5a4d65c759ce3c5a7529aef568f05f650
-commit: b7b3af961465d23a733bb44d4a49bb78d4d5b08f [1704/6879] BACKPORT: FROMLIST: Update Inline Encryption from v5 to v6 of patch series
-config: i386-randconfig-r002-20211019 (https://download.01.org/0day-ci/archive/20220303/202203030305.6dFYd0qt-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/b7b3af961465d23a733bb44d4a49bb78d4d5b08f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-trusty-5.4
-        git checkout b7b3af961465d23a733bb44d4a49bb78d4d5b08f
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/mmc/core/ drivers/scsi/ufs/ kernel/power/
+The v4 patches looks good to me and have provided my Reviewed-by to all of them.
+ 
+> Thanks
+> 
+> Michal
+> 
+>>
+-- 
+Best regards,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-All warnings (new ones prefixed by >>):
-
->> drivers/scsi/ufs/ufshcd-crypto.c:250:26: warning: no previous prototype for 'ufshcd_blk_crypto_mode_num_for_alg_dusize' [-Wmissing-prototypes]
-     250 | enum blk_crypto_mode_num ufshcd_blk_crypto_mode_num_for_alg_dusize(
-         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/ufshcd_blk_crypto_mode_num_for_alg_dusize +250 drivers/scsi/ufs/ufshcd-crypto.c
-
-   249	
- > 250	enum blk_crypto_mode_num ufshcd_blk_crypto_mode_num_for_alg_dusize(
-   251						enum ufs_crypto_alg ufs_crypto_alg,
-   252						enum ufs_crypto_key_size key_size)
-   253	{
-   254		/*
-   255		 * This is currently the only mode that UFS and blk-crypto both support.
-   256		 */
-   257		if (ufs_crypto_alg == UFS_CRYPTO_ALG_AES_XTS &&
-   258			key_size == UFS_CRYPTO_KEY_SIZE_256)
-   259			return BLK_ENCRYPTION_MODE_AES_256_XTS;
-   260	
-   261		return BLK_ENCRYPTION_MODE_INVALID;
-   262	}
-   263	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
