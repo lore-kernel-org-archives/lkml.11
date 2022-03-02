@@ -2,74 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30839C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbiCBXqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:46:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
+        id S229581AbiCBXqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiCBXqr (ORCPT
+        with ESMTP id S229568AbiCBXqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:46:47 -0500
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C762239D4E;
-        Wed,  2 Mar 2022 15:45:29 -0800 (PST)
-Received: by mail-oi1-f180.google.com with SMTP id y7so3278394oih.5;
-        Wed, 02 Mar 2022 15:45:29 -0800 (PST)
+        Wed, 2 Mar 2022 18:46:50 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1390A16E7F2;
+        Wed,  2 Mar 2022 15:45:44 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id a1so3171246qta.13;
+        Wed, 02 Mar 2022 15:45:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0UHeOvGnIMNoM6NqeyF78xFos6+YD8GiFF2O+NX+I08=;
+        b=A/8uC4OLZK85x/RsG6wFgeWjAayUjjUSlMWGVzfPxubGvRVyL6+UqPMrijz8hBNBae
+         7+Xma0aYf2Wnr1goOeR8vCpaBIDCURIghfyk8+CPkPm8Wjlh4XrVXzXMmlU7y9LZ5llU
+         Ra7+w69qG+z5lQmzrnsv6xktbsN0B2rEgy1R4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TVwAiWa85hMzvOKS5YqVsqzuP2wtpcfL3Lp/rwM7cLo=;
-        b=8K23GeIOfhOpv9ZFmOgBshxXL5YKvz4as3CZXWrBpdY8/kRnCwlDf2I1KH5E7jEKgd
-         mTxHFMvzSvaRVZo8EWUmzpI76aot50X7kKNkooHKHTt95Ht+8rq6hhH/QZ8d6CZ+lwtl
-         l2ikuKblLOr0FUZLMc/sti30wIoXzVekZNgkyanuVoyIgqPYTJnGSnnUR9ZhiPWeuPPy
-         MuCTp3wh3DRP3opZsSm9baM7J3WHl+rAf/tJwYW4Ldmg08W20wmEnGsQCLWSaUOOBhYu
-         4mWtB944tTH3yJV2l2MzTMwbZB1l85J1L7SvxHv7tLkP3lOkXpXJcjQE47LLF9vOWNuC
-         tSuQ==
-X-Gm-Message-State: AOAM5307URGWwYN4yk1PrR/JY3PLQ2oINURgS4/ympA0uDtXjZ1Y76eL
-        au07jFcRf3N7OOSlKzhweA==
-X-Google-Smtp-Source: ABdhPJxe/GLJSdnuwSrDlaLTvAy6qRBAvzK/N3ff9doZ/bxjytEkDVKgKi94KuMwdbOu6KjZ1it+Lw==
-X-Received: by 2002:a05:6808:bd2:b0:2d7:9ab4:a0a9 with SMTP id o18-20020a0568080bd200b002d79ab4a0a9mr2128835oik.81.1646264728524;
-        Wed, 02 Mar 2022 15:45:28 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id e7-20020a056830200700b005a09222e268sm203009otp.7.2022.03.02.15.45.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 15:45:27 -0800 (PST)
-Received: (nullmailer pid 281569 invoked by uid 1000);
-        Wed, 02 Mar 2022 23:45:26 -0000
-Date:   Wed, 2 Mar 2022 17:45:26 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     linux-arm-kernel@lists.infradead.org, yongqiang.niu@mediatek.com,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, matthias.bgg@gmail.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org, jassisinghbrar@gmail.com
-Subject: Re: [PATCH 2/2] dt-bindings: gce: add gce header file for mt8186
-Message-ID: <YiABlmL55ZJBOPUz@robh.at.kernel.org>
-References: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
- <20220223030138.13939-3-rex-bc.chen@mediatek.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0UHeOvGnIMNoM6NqeyF78xFos6+YD8GiFF2O+NX+I08=;
+        b=eTNnHi78Vt+iU6Ij6novjktAoN44QgzszsL7ET+iLVyojI/f68yJcXPYtWi7daVZpA
+         o3LEMPTtvt2FgyoYxKwd8zj5GbQsRvD0+7ONQzq0ULIunrZw6vAz0EXdRMpW8XAUs6w0
+         /oA5pE0vRbEhfeX5WolzyE4FYnZxCuHfjs7rTEK4SVM3HAkAuGv3jynVfkZ6f/lP+zRD
+         kgF2iLMa8z5XdV30JhYHLVnO1vR+YbtEwWDaKOQzVd9snbXxxbzi0EGWUMVHp+2lEg7O
+         gq1eR3Q7j+rDGjauX5jjuuFK9ZmAmsSigW04aD9t/WybS9qt6gHVOX/Wm3S9NcEnLvTT
+         vi3A==
+X-Gm-Message-State: AOAM5330Lwcrva3gcH/t8S6ULw0iAWHlQ2mqELjtkTgvhnJjI8njb2qG
+        qSarEF4BTsBKveM/FFgSVG7fjWakKC/rjei4/Nv/FShvD2PzUw==
+X-Google-Smtp-Source: ABdhPJwCs5BS/vb/0Gnia8sBd/4fwz2M9pisx/6g/jEojI9HtPhU1m7xtnkyYUd9xlwgdUsE3xPO2rpi1UAXpFZPYeE=
+X-Received: by 2002:a05:622a:1b8d:b0:2c6:59a9:360e with SMTP id
+ bp13-20020a05622a1b8d00b002c659a9360emr25551831qtb.678.1646264303744; Wed, 02
+ Mar 2022 15:38:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223030138.13939-3-rex-bc.chen@mediatek.com>
+References: <20220302173114.927476-1-clg@kaod.org> <20220302173114.927476-5-clg@kaod.org>
+In-Reply-To: <20220302173114.927476-5-clg@kaod.org>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 2 Mar 2022 23:38:10 +0000
+Message-ID: <CACPK8Xc5DMeBnQnVWk4YUsiN7YFsujYh9Qs9okrc8vFvaF28Fw@mail.gmail.com>
+Subject: Re: [PATCH v2 04/10] spi: spi-mem: Add driver for Aspeed SMC controllers
+To:     =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>
+Cc:     linux-spi@vger.kernel.org,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 11:01:38 +0800, Rex-BC Chen wrote:
-> From: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> 
-> Add gce header file to define the gce subsys id, hardware event id and
-> constant for mt8186.
-> 
-> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> ---
->  include/dt-bindings/gce/mt8186-gce.h | 421 +++++++++++++++++++++++++++
->  1 file changed, 421 insertions(+)
->  create mode 100644 include/dt-bindings/gce/mt8186-gce.h
-> 
+On Wed, 2 Mar 2022 at 17:31, C=C3=A9dric Le Goater <clg@kaod.org> wrote:
+>
+> This SPI driver adds support for the Aspeed static memory controllers
+> of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
+>
+>  * AST2600 Firmware SPI Memory Controller (FMC)
+>    . BMC firmware
+>    . 3 chip select pins (CE0 ~ CE2)
+>    . Only supports SPI type flash memory
+>    . different segment register interface
+>    . single, dual and quad mode.
+>
+>  * AST2600 SPI Flash Controller (SPI1 and SPI2)
+>    . host firmware
+>    . 2 chip select pins (CE0 ~ CE1)
+>    . different segment register interface
+>    . single, dual and quad mode.
+>
+>  * AST2500 Firmware SPI Memory Controller (FMC)
+>    . BMC firmware
+>    . 3 chip select pins (CE0 ~ CE2)
+>    . supports SPI type flash memory (CE0-CE1)
+>    . CE2 can be of NOR type flash but this is not supported by the driver
+>    . single, dual mode.
+>
+>  * AST2500 SPI Flash Controller (SPI1 and SPI2)
+>    . host firmware
+>    . 2 chip select pins (CE0 ~ CE1)
+>    . single, dual mode.
+>
+>  * AST2400 New Static Memory Controller (also referred as FMC)
+>    . BMC firmware
+>    . New register set
+>    . 5 chip select pins (CE0 =E2=88=BC CE4)
+>    . supports NOR flash, NAND flash and SPI flash memory.
+>    . single, dual and quad mode.
+>
+> Each controller has a memory range on which flash devices contents are
+> mapped. Each device is assigned a window that can be changed at bootime
+> with the Segment Address Registers.
+>
+> Each SPI flash device can then be accessed in two modes: Command and
+> User. When in User mode, SPI transfers are initiated with accesses to
+> the memory segment of a device. When in Command mode, memory
+> operations on the memory segment of a device generate SPI commands
+> automatically using a Control Register for the settings.
+>
+> This initial patch adds support for User mode. Command mode needs a littl=
+e
+> more work to check that the memory window on the AHB bus fits the device
+> size. It will come later when support for direct mapping is added.
+>
+> Single and dual mode RX transfers are supported. Other types than SPI
+> are not supported.
+>
+> Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+> Signed-off-by: C=C3=A9dric Le Goater <clg@kaod.org>
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
