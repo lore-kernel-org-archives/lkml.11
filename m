@@ -2,99 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DDDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC347C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243932AbiCBSYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
+        id S244135AbiCBSZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiCBSYF (ORCPT
+        with ESMTP id S229606AbiCBSZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:24:05 -0500
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D3E286F9;
-        Wed,  2 Mar 2022 10:23:20 -0800 (PST)
-Received: by mail-wm1-f43.google.com with SMTP id a5-20020a05600c224500b003832be89f25so1812155wmm.2;
-        Wed, 02 Mar 2022 10:23:20 -0800 (PST)
+        Wed, 2 Mar 2022 13:25:01 -0500
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140ED939A2;
+        Wed,  2 Mar 2022 10:24:18 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id 6-20020a4a0906000000b0031d7eb98d31so2866278ooa.10;
+        Wed, 02 Mar 2022 10:24:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NEIn6h+Irt2Serj+ca61KZsU1HkIiucTzhp6nNONDRA=;
-        b=pzjIsEoEXwogSwkuVDQTIvLjMo4h8cy/6IBk9qFGUsGx6SRUcYvdsr0Sou82t2xfJG
-         pBkwMgXH3qlek8FbNJbOF8jE8u94O2rJEBbLbEohanighdPYvhjoIkEoFwBijR2s2O5j
-         dBWOgdq/wbe0wuT7U5O+m4N06TK/fPrC6fxAafQp3K6ug+phPJkjqLh7DqawX3H0C2GA
-         FrDTAQvIz09QDGM0BDUmxz3KGfoGbhOFAAeBV6i0VrkNQ5We81F7mX8ThUh8yESFjR/0
-         T/Idxkir8LBsLuGWM11xTizHlWIN2QXyI+4m6aXxAL35sbxfHiE3mxrSIsSwHLodUiAP
-         qZDQ==
-X-Gm-Message-State: AOAM530WOfkFc74vu4lWk1TNHe56RUDTSIkarGqwVKCSnGjA5bD2P8nB
-        tgwA1/x9RsBD+LpHCBojyFE=
-X-Google-Smtp-Source: ABdhPJyvw/f9Yt4q/MlG3j/oulM4h5JtJF9j1rkmFIxsiq2ReGLrMvnXPcrVnk8yH/R1dHWDbXGBzw==
-X-Received: by 2002:a05:600c:1e1f:b0:381:7817:f5f6 with SMTP id ay31-20020a05600c1e1f00b003817817f5f6mr913504wmb.96.1646245399088;
-        Wed, 02 Mar 2022 10:23:19 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id t14-20020a5d460e000000b001edc107e4f7sm25381686wrq.81.2022.03.02.10.23.18
+        bh=MSJbtF7R3/d/j8mjl9nalZaN2tSNCiNLZKQMPUsm00A=;
+        b=AR9woadp/IjI0xcDaeol3IKHJAe62M0tu1fwrx44V3RXG6RPBuo0pYefTa5ObZXMVx
+         pXa0yOxShb3HWIAYD5lciIceKT75lYFymio1pJR5SUS2naiZyCo9uC5BalL81D+EQSVh
+         DAZdwZZQfuoZvoCfMTiD+F2Gj6sMRXm8/9GtC8BNSgufJQn6cjRniYHiWh6ERCG3C0Xg
+         2B+u8ky8gz7JdhFetZqyyy1nwOHg7xqu1o4CSnr33Z2XfI7YPcLrTNn04ndHFMdY3Tab
+         jADxhCw3nXrvm2TvZeXQhUMAUJ0SzlnCXrfzsAFth6T/cBLqbiEgYwDI587bdaFxwH6r
+         KZow==
+X-Gm-Message-State: AOAM533Tkzjzi+Pfe5/i2SP7xbXnSdum3QrN5TfKz7Rcrp7Quveuy7Aw
+        vDgHwXbDsjZgdaWqqBJBCw==
+X-Google-Smtp-Source: ABdhPJy7Mt26nWBw1w05aNEdWwb5DUxTy93UkULsXG4lm8r9WLxlw9l8jBBWUlYgV2EdElxo/l9zXQ==
+X-Received: by 2002:a05:6870:f713:b0:d2:8adb:aaeb with SMTP id ej19-20020a056870f71300b000d28adbaaebmr891645oab.111.1646245457425;
+        Wed, 02 Mar 2022 10:24:17 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id i28-20020a056808055c00b002d51e377248sm9656272oig.33.2022.03.02.10.24.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 10:23:18 -0800 (PST)
-Date:   Wed, 2 Mar 2022 18:23:16 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Iouri Tarassov <iourit@linux.microsoft.com>
-Cc:     Wei Liu <wei.liu@kernel.org>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        spronovo@microsoft.com, spronovo@linux.microsoft.com,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH v3 26/30] drivers: hv: dxgkrnl: Offer and reclaim
- allocations
-Message-ID: <20220302182316.lcagv5ghum4525rm@liuwe-devbox-debian-v2>
-References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
- <3a6779567438b02566012679f01ebb065e3761db.1646163379.git.iourit@linux.microsoft.com>
- <20220302142517.kgc5o7ufj2yf4cif@liuwe-devbox-debian-v2>
- <fe018236-35b5-3bc1-6984-fca9537e47c7@linux.microsoft.com>
+        Wed, 02 Mar 2022 10:24:16 -0800 (PST)
+Received: (nullmailer pid 4003574 invoked by uid 1000);
+        Wed, 02 Mar 2022 18:24:15 -0000
+Date:   Wed, 2 Mar 2022 12:24:15 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        Chris Brandt <chris.brandt@renesas.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: i2c: renesas,riic: Document RZ/V2L SoC
+Message-ID: <Yh+2T/Mny15X+pOq@robh.at.kernel.org>
+References: <20220301125046.17737-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fe018236-35b5-3bc1-6984-fca9537e47c7@linux.microsoft.com>
+In-Reply-To: <20220301125046.17737-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 10:13:34AM -0800, Iouri Tarassov wrote:
+On Tue, Mar 01, 2022 at 12:50:46PM +0000, Lad Prabhakar wrote:
+> Document RZ/V2L I2C bindings. RZ/V2L I2C is identical to one found on the
+> RZ/G2L and RZ/A SoC's. No driver changes are required as the generic
+> compatible string "renesas,riic-rz" will be used as a fallback.
 > 
-> On 3/2/2022 6:25 AM, Wei Liu wrote:
-> > On Tue, Mar 01, 2022 at 11:46:13AM -0800, Iouri Tarassov wrote:
-> > > Implement ioctls to offer and reclaim compute device allocations:
-> > >   - LX_DXOFFERALLOCATIONS,
-> > >   - LX_DXRECLAIMALLOCATIONS2
-> > > 
-> > > When a user mode driver (UMD) does not need to access an allocation,
-> >
-> > What is a "user mode driver" in this context? Is that something that
-> > runs inside the guest?
+> While at it, drop the comment "# RZ/A or RZ/G2L" for "renesas,riic-rz"
+> compatible string as this will avoid changing the line for every new
+> SoC addition.
 > 
-> Hi Wei,
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v1->v2
+> * Included Ack and RB tags
+> * Dropped the comment from generic string as suggested by Geert.
 > 
-> The user mode driver runs inside the guest. This driver is written by
-> hardware vendors.
-> For example, the NVIDIA's Cuda runtime is considered a user mode driver.
-> The driver
-> provides a specific API to applications (like the Cuda API).
-> 
-> The cover letter explains the design of the virtual compute device
-> paravirtualization
-> model and describes all components, which are involved. I feel that I do
-> not need to
-> include explanation to every patch.
+> v1:
+> https://patchwork.kernel.org/project/linux-renesas-soc/patch/
+> 20220227214747.24819-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> ---
+>  Documentation/devicetree/bindings/i2c/renesas,riic.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-It's fine. I was just asking a question -- I didn't have all the terms
-in my head by the time I got to this patch. There is no need to add the 
-explanation to every patch.
+I already applied v1. I may have missed this because PW stopped getting 
+mail the last 2 days.
 
-Thanks,
-Wei.
-
-> 
-> Thanks
-> Iouri
-> 
+Rob
