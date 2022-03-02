@@ -2,130 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0753C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237981AbiCBLWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:22:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48568 "EHLO
+        id S241313AbiCBLXJ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:23:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiCBLWg (ORCPT
+        with ESMTP id S241411AbiCBLWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:22:36 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C079555B9;
-        Wed,  2 Mar 2022 03:21:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646220113; x=1677756113;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1Htwp0cn4iD5IqoVEZ/IBuMOc0hHGYYNClu//F4PQ/o=;
-  b=ZJFwG1MvaxZmk7M7JlkSt07QQ1VQ3/aXV3+HL5yrc2G1Pq7o43H694uP
-   JdZtO1+0ivbWaKKEPfI8mMZl4Q7HxWe3CtsBAkvK+gry4pEJTJHS2fEke
-   TRTlxc/trSYz4D5PZZLU+mtP6RpeCqLVmWFHnVhZRRrpxoLubydWBpIko
-   3v3gB8+habxpeZvzFaHTLs6spLakHBwr2CMkXKM35663eAMCtTAvuiui8
-   NYOSQxbo67fq1oxJIbO52c7a+jBRuxi3XXd6wO9bbqrb4ASb+OuEO9VLg
-   +TFbjTXoTVILHqev0wVl51Y+hFrQYOK49T6aI0F2HU/yE9pTyY++9eia6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="240790596"
-X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
-   d="scan'208";a="240790596"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 03:21:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
-   d="scan'208";a="686106327"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 02 Mar 2022 03:21:50 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Wed, 02 Mar 2022 13:21:49 +0200
-Date:   Wed, 2 Mar 2022 13:21:49 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] ACPI: bus: Introduce acpi_bus_for_each_dev()
-Message-ID: <Yh9TTb6rBeTAw0iB@kuha.fi.intel.com>
-References: <11943345.O9o76ZdvQC@kreacher>
+        Wed, 2 Mar 2022 06:22:54 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3487657;
+        Wed,  2 Mar 2022 03:22:11 -0800 (PST)
+Date:   Wed, 02 Mar 2022 10:40:07 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v1 3/3] drm/panel : innolux-ej030na and abt-y030xx067a :
+ add .enable and .disable
+To:     Christophe Branchereau <cbranchereau@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org
+Message-Id: <VM548R.0I9BAN681OS83@crapouillou.net>
+In-Reply-To: <20220301153122.20660-4-cbranchereau@gmail.com>
+References: <20220301153122.20660-1-cbranchereau@gmail.com>
+        <20220301153122.20660-4-cbranchereau@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <11943345.O9o76ZdvQC@kreacher>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 08:51:42PM +0100, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> In order to avoid exposing acpi_bus_type to modules, introduce an
-> acpi_bus_for_each_dev() helper for iterating over all ACPI device
-> objects and make typec_link_ports() use it instead of the raw
-> bus_for_each_dev() along with acpi_bus_type.
-> 
-> Having done that, drop the acpi_bus_type export.
-> 
-> No intentional functional impact.
-> 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Hi Christophe,
 
-FWIW:
-
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-
+Le mar., mars 1 2022 at 16:31:22 +0100, Christophe Branchereau 
+<cbranchereau@gmail.com> a écrit :
+> Following the introduction of bridge_atomic_enable in the ingenic
+> drm driver, the crtc is enabled between .prepare and .enable, if
+> it exists.
+> 
+> Add it so the backlight is only enabled after the crtc is, to avoid
+> graphical issues.
+> 
+> Signed-off-by: Christophe Branchereau <cbranchereau@gmail.com>
 > ---
->  drivers/acpi/bus.c              |    7 ++++++-
->  drivers/usb/typec/port-mapper.c |    2 +-
->  include/acpi/acpi_bus.h         |    2 ++
->  3 files changed, 9 insertions(+), 2 deletions(-)
+>  drivers/gpu/drm/panel/panel-abt-y030xx067a.c  | 23 ++++++++++++--
+>  drivers/gpu/drm/panel/panel-innolux-ej030na.c | 31 
+> ++++++++++++++++---
+>  2 files changed, 48 insertions(+), 6 deletions(-)
 > 
-> Index: linux-pm/drivers/acpi/bus.c
-> ===================================================================
-> --- linux-pm.orig/drivers/acpi/bus.c
-> +++ linux-pm/drivers/acpi/bus.c
-> @@ -1043,7 +1043,12 @@ struct bus_type acpi_bus_type = {
->  	.remove		= acpi_device_remove,
->  	.uevent		= acpi_device_uevent,
->  };
-> -EXPORT_SYMBOL_GPL(acpi_bus_type);
-> +
-> +int acpi_bus_for_each_dev(int (*fn)(struct device *, void *), void *data)
+> diff --git a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c 
+> b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
+> index f043b484055b..b5736344e3ec 100644
+> --- a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
+> +++ b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
+> @@ -183,8 +183,6 @@ static int y030xx067a_prepare(struct drm_panel 
+> *panel)
+>  		goto err_disable_regulator;
+>  	}
+> 
+> -	msleep(120);
+> -
+>  	return 0;
+> 
+>  err_disable_regulator:
+> @@ -202,6 +200,25 @@ static int y030xx067a_unprepare(struct drm_panel 
+> *panel)
+>  	return 0;
+>  }
+> 
+> +static int y030xx067a_enable(struct drm_panel *panel)
 > +{
-> +	return bus_for_each_dev(&acpi_bus_type, NULL, data, fn);
-> +}
-> +EXPORT_SYMBOL_GPL(acpi_bus_for_each_dev);
->  
->  /* --------------------------------------------------------------------------
->                               Initialization/Cleanup
-> Index: linux-pm/include/acpi/acpi_bus.h
-> ===================================================================
-> --- linux-pm.orig/include/acpi/acpi_bus.h
-> +++ linux-pm/include/acpi/acpi_bus.h
-> @@ -480,6 +480,8 @@ void acpi_initialize_hp_context(struct a
->  /* acpi_device.dev.bus == &acpi_bus_type */
->  extern struct bus_type acpi_bus_type;
->  
-> +int acpi_bus_for_each_dev(int (*fn)(struct device *, void *), void *data);
+> +	if (panel->backlight) {
+> +		/* Wait for the picture to be ready before enabling backlight */
+> +		msleep(120);
+> +	}
 > +
->  /*
->   * Events
->   * ------
-> Index: linux-pm/drivers/usb/typec/port-mapper.c
-> ===================================================================
-> --- linux-pm.orig/drivers/usb/typec/port-mapper.c
-> +++ linux-pm/drivers/usb/typec/port-mapper.c
-> @@ -59,7 +59,7 @@ int typec_link_ports(struct typec_port *
->  	if (!has_acpi_companion(&con->dev))
->  		return 0;
->  
-> -	bus_for_each_dev(&acpi_bus_type, NULL, &arg, typec_port_match);
-> +	acpi_bus_for_each_dev(typec_port_match, &arg);
->  	if (!arg.match)
->  		return 0;
->  
+> +	return 0;
+> +}
+> +
+> +static int y030xx067a_disable(struct drm_panel *panel)
+> +{
+> +	struct y030xx067a *priv = to_y030xx067a(panel);
+> +
+> +	regmap_clear_bits(priv->map, 0x06, REG06_XPSAVE);
+
+Shouldn't that be balanced by a regmap_set_bits() in the .enable() 
+function?
+
+Cheers,
+-Paul
+
+> +
+> +	return 0;
+> +}
+> +
+>  static int y030xx067a_get_modes(struct drm_panel *panel,
+>  				struct drm_connector *connector)
+>  {
+> @@ -239,6 +256,8 @@ static int y030xx067a_get_modes(struct drm_panel 
+> *panel,
+>  static const struct drm_panel_funcs y030xx067a_funcs = {
+>  	.prepare	= y030xx067a_prepare,
+>  	.unprepare	= y030xx067a_unprepare,
+> +	.enable		= y030xx067a_enable,
+> +	.disable	= y030xx067a_disable,
+>  	.get_modes	= y030xx067a_get_modes,
+>  };
 > 
+> diff --git a/drivers/gpu/drm/panel/panel-innolux-ej030na.c 
+> b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
+> index c558de3f99be..6de7370185cd 100644
+> --- a/drivers/gpu/drm/panel/panel-innolux-ej030na.c
+> +++ b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
+> @@ -80,8 +80,6 @@ static const struct reg_sequence 
+> ej030na_init_sequence[] = {
+>  	{ 0x47, 0x08 },
+>  	{ 0x48, 0x0f },
+>  	{ 0x49, 0x0f },
+> -
+> -	{ 0x2b, 0x01 },
+>  };
+> 
+>  static int ej030na_prepare(struct drm_panel *panel)
+> @@ -109,8 +107,6 @@ static int ej030na_prepare(struct drm_panel 
+> *panel)
+>  		goto err_disable_regulator;
+>  	}
+> 
+> -	msleep(120);
+> -
+>  	return 0;
+> 
+>  err_disable_regulator:
+> @@ -128,6 +124,31 @@ static int ej030na_unprepare(struct drm_panel 
+> *panel)
+>  	return 0;
+>  }
+> 
+> +static int ej030na_enable(struct drm_panel *panel)
+> +{
+> +	struct ej030na *priv = to_ej030na(panel);
+> +
+> +	/* standby off */
+> +	regmap_write(priv->map, 0x2b, 0x01);
+> +
+> +	if (panel->backlight) {
+> +		/* Wait for the picture to be ready before enabling backlight */
+> +		msleep(120);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ej030na_disable(struct drm_panel *panel)
+> +{
+> +	struct ej030na *priv = to_ej030na(panel);
+> +
+> +	/* standby on */
+> +	regmap_write(priv->map, 0x2b, 0x00);
+> +
+> +	return 0;
+> +}
+> +
+>  static int ej030na_get_modes(struct drm_panel *panel,
+>  			     struct drm_connector *connector)
+>  {
+> @@ -165,6 +186,8 @@ static int ej030na_get_modes(struct drm_panel 
+> *panel,
+>  static const struct drm_panel_funcs ej030na_funcs = {
+>  	.prepare	= ej030na_prepare,
+>  	.unprepare	= ej030na_unprepare,
+> +	.enable		= ej030na_enable,
+> +	.disable	= ej030na_disable,
+>  	.get_modes	= ej030na_get_modes,
+>  };
+> 
+> --
+> 2.34.1
 > 
 
--- 
-heikki
+
