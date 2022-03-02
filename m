@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA902C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238656AbiCBQjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:39:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
+        id S243244AbiCBQht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:37:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232862AbiCBQjl (ORCPT
+        with ESMTP id S242163AbiCBQhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 11:39:41 -0500
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E02931369
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:38:58 -0800 (PST)
+        Wed, 2 Mar 2022 11:37:33 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CE3C4B78
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:50 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646239137;
+        t=1646239008;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JGZE0bvysohYUpkupChxa3EWr4j93F81DU4moq+5lLk=;
-        b=pFiF5ZBBKwtr5haHzZ+mlJbBIPwPTTGaaQU/estweYKXFq/g+JBe8ekDyrppDB98msQPnO
-        MZPXUBggNulqGy/S/jMmMd7r0Mufkp/3WPqcCmDVpa+EQXPQm/NWEjD/X8xNgK3Chg+g85
-        0qMysA0AKdryYWdV+sdDRlnH0dqADD4=
+        bh=uo3r1XZ2YxXX2Y0KQk7NP/LkQS2+d42pEDKbCuKVO2A=;
+        b=dqtbv/8FM/BpZ36aN0SoEvBbrDqGpQNujrrTiFrcZ/GGK1iACrmtY3v9EpgsqMoF5kVf+V
+        T77/+r0QQUpdIhNtrvEvaDV4gqjloM1z7E8wkpf36GllOgJ+Wk5zA4ChirBxB4zHXCD8Ai
+        ZlMMu+FEdx2HixPTDXf2hhJwnz8Ki+I=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -36,9 +36,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm 12/22] kasan: simplify kasan_find_first_bad_addr call sites
-Date:   Wed,  2 Mar 2022 17:36:32 +0100
-Message-Id: <a49576f7a23283d786ba61579cb0c5057e8f0b9b.1646237226.git.andreyknvl@google.com>
+Subject: [PATCH mm 04/22] kasan: improve stack frame info in reports
+Date:   Wed,  2 Mar 2022 17:36:24 +0100
+Message-Id: <aa613f097c12f7b75efb17f2618ae00480fb4bc3.1646237226.git.andreyknvl@google.com>
 In-Reply-To: <cover.1646237226.git.andreyknvl@google.com>
 References: <cover.1646237226.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -51,78 +51,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Move the addr_has_metadata() check into kasan_find_first_bad_addr().
+- Print at least task name and id for reports affecting allocas
+  (get_address_stack_frame_info() does not support them).
+
+- Capitalize first letter of each sentence.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/report.c         | 5 +----
- mm/kasan/report_generic.c | 4 ++++
- mm/kasan/report_hw_tags.c | 1 +
- mm/kasan/report_sw_tags.c | 4 ++++
- 4 files changed, 10 insertions(+), 4 deletions(-)
+ mm/kasan/report_generic.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index bb4c29b439b1..a0d4a9d3f933 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -444,10 +444,7 @@ static void __kasan_report(void *addr, size_t size, bool is_write,
- 	start_report(&flags, true);
- 
- 	info.access_addr = addr;
--	if (addr_has_metadata(addr))
--		info.first_bad_addr = kasan_find_first_bad_addr(addr, size);
--	else
--		info.first_bad_addr = addr;
-+	info.first_bad_addr = kasan_find_first_bad_addr(addr, size);
- 	info.access_size = size;
- 	info.is_write = is_write;
- 	info.ip = ip;
 diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
-index 7e03cca569a7..182239ca184c 100644
+index 3751391ff11a..7e03cca569a7 100644
 --- a/mm/kasan/report_generic.c
 +++ b/mm/kasan/report_generic.c
-@@ -34,8 +34,12 @@ void *kasan_find_first_bad_addr(void *addr, size_t size)
- {
- 	void *p = addr;
+@@ -180,7 +180,7 @@ static void print_decoded_frame_descr(const char *frame_descr)
+ 		return;
  
-+	if (!addr_has_metadata(p))
-+		return p;
+ 	pr_err("\n");
+-	pr_err("this frame has %lu %s:\n", num_objects,
++	pr_err("This frame has %lu %s:\n", num_objects,
+ 	       num_objects == 1 ? "object" : "objects");
+ 
+ 	while (num_objects--) {
+@@ -266,13 +266,14 @@ void kasan_print_address_stack_frame(const void *addr)
+ 	if (WARN_ON(!object_is_on_stack(addr)))
+ 		return;
+ 
++	pr_err("The buggy address belongs to stack of task %s/%d\n",
++	       current->comm, task_pid_nr(current));
 +
- 	while (p < addr + size && !(*(u8 *)kasan_mem_to_shadow(p)))
- 		p += KASAN_GRANULE_SIZE;
-+
- 	return p;
- }
+ 	if (!get_address_stack_frame_info(addr, &offset, &frame_descr,
+ 					  &frame_pc))
+ 		return;
  
-diff --git a/mm/kasan/report_hw_tags.c b/mm/kasan/report_hw_tags.c
-index 5dbbbb930e7a..f3d3be614e4b 100644
---- a/mm/kasan/report_hw_tags.c
-+++ b/mm/kasan/report_hw_tags.c
-@@ -17,6 +17,7 @@
+-	pr_err("\n");
+-	pr_err("addr %px is located in stack of task %s/%d at offset %lu in frame:\n",
+-	       addr, current->comm, task_pid_nr(current), offset);
++	pr_err(" and is located at offset %lu in frame:\n", offset);
+ 	pr_err(" %pS\n", frame_pc);
  
- void *kasan_find_first_bad_addr(void *addr, size_t size)
- {
-+	/* Return the same value regardless of whether addr_has_metadata(). */
- 	return kasan_reset_tag(addr);
- }
- 
-diff --git a/mm/kasan/report_sw_tags.c b/mm/kasan/report_sw_tags.c
-index 44577b8d47a7..68724ba3d814 100644
---- a/mm/kasan/report_sw_tags.c
-+++ b/mm/kasan/report_sw_tags.c
-@@ -35,8 +35,12 @@ void *kasan_find_first_bad_addr(void *addr, size_t size)
- 	void *p = kasan_reset_tag(addr);
- 	void *end = p + size;
- 
-+	if (!addr_has_metadata(p))
-+		return p;
-+
- 	while (p < end && tag == *(u8 *)kasan_mem_to_shadow(p))
- 		p += KASAN_GRANULE_SIZE;
-+
- 	return p;
- }
- 
+ 	if (!frame_descr)
 -- 
 2.25.1
 
