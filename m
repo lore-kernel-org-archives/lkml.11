@@ -2,106 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1138C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB58C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243813AbiCBR0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:26:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
+        id S243815AbiCBR0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:26:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243804AbiCBR0H (ORCPT
+        with ESMTP id S243799AbiCBR0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:26:07 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BAACA31A
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:25:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646241923; x=1677777923;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ml4z14gnzaIGJdVw3o8U+TjTp+O57mAV5Dmp1JCgn0E=;
-  b=VLrOVXFB1XW/7dSeWHV7ZoAW80g1dgJUxYBO3EGH9zAjGKKume8EHVxE
-   wkIGkZVNrPoHMkiib6QpOJcAUKwXmhbIZcbOIACUJOp6itScx2D5iO8nL
-   Brs4WpHCm9jan1aqz03loNJi3+QM4oE0cEUZUQ6pQl1uS4gc8ZzWRan0s
-   wP23qzjFb/Nr1TegRdRWUQ5f8YSHpebPS6yM8RZz3NtJgZIZLJpy52RiW
-   n8J2ROjqJgdJueQ8RoTs42PwhwGDkO8FbRQeaZNRTIY67AZzNRZpJ2dEb
-   z8d+Bqse66DAAttklxVKfhu9VhHfFuVgbPhbbBXmJxdt/qzaNEr4NpUkD
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="252289101"
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="252289101"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:25:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="641775600"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 02 Mar 2022 09:25:18 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPSiz-0001ee-Jx; Wed, 02 Mar 2022 17:25:17 +0000
-Date:   Thu, 3 Mar 2022 01:24:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roman Kiryanov <rkir@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/deprecated/android-4.4-p-release
- 9213/9922] drivers/platform/goldfish/goldfish_pipe_v2.c:1161:15: warning:
- right shift count >= width of type
-Message-ID: <202203030136.g7Nn5d2S-lkp@intel.com>
+        Wed, 2 Mar 2022 12:26:17 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA0ACCC6F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:25:31 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id u17-20020a056830231100b005ad13358af9so2231106ote.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:25:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A7p+Sua3vWTnrJZHdXkQWaCDCi1ogBb2wcZTsYiqgV4=;
+        b=kSgjDYJtPfb9ROCmWxhJKur8Uaw3MOy+15dIiLp2BSKjF6NgN4VZPpOm11PH5Q2XrA
+         r7UqQ8AaC5RLrjGi485c5S8PablqMesWLFYHzsnpfcYXW5sH7ojPTvi/b4Wtn1+Lb4LI
+         u8Ki+p4BrjOZDvRVCNP8Yq6NvOGZ/t85CEOYWpgTSqxC7K326FpV9CyYlRyr7Dbr2eNx
+         FAVu6BaRigJcOwFcbBaJDzoIRdc8l5qu53ZMTrJiSXmNLtU9wGjUkOmDJ9OFe1KyB66C
+         FfM9f9NRMOu0nrjn4rjNuOs/xijBjaPfQMoRJ0OArmgDe2qhxEE2dOoW/gkO3qeFidbu
+         eyXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A7p+Sua3vWTnrJZHdXkQWaCDCi1ogBb2wcZTsYiqgV4=;
+        b=oRdD7ByYIslMHm4+gs+8tWZSMRc1wAikovF9imXSLYkbuRPyN+nv5SmASy/FoSrzi6
+         GYPi+KI7hmvI42YgqhCU740ekv4li4mrsRyKVFrJdbfGK7kz/oZ69iotZxAzu8cl89DV
+         IDsOSvA7JZNdvey/R1UnobaqGeYOtCjk3ucdxZY4BRJQzaBfyojsaf0Bm/71zcTKHaN+
+         dXS4uCITowIivWoBgDmg0L0/n423PUM2IpiMKP77bGh5Acx+pBhcxofr5bkNinsJXGFk
+         sCVvOC8n+6ZTSs/ajQAtaM4PCaNWvA4rOIlCqqVW1hd4q7hzYGxa5VV0mqU1Ad9XNNC6
+         mfjQ==
+X-Gm-Message-State: AOAM532uzPhrljZ4N0tiJ+AyLsgIbdbqkk3xek41elTSM/Zrm84XRG1J
+        1KmYJynFndxjzmy3w4SaLTniRFvccfKvIm2WR8fzYw==
+X-Google-Smtp-Source: ABdhPJwwxzHWuf8viqR1OdWBAi0a7r41AOauclraB7d347YvqjAztRTJua35obzbRfApLE3btcmqP+cYlOjzbV8E/Ns=
+X-Received: by 2002:a05:6830:314c:b0:5af:dc8a:d066 with SMTP id
+ c12-20020a056830314c00b005afdc8ad066mr13881461ots.28.1646241930640; Wed, 02
+ Mar 2022 09:25:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220302110508.69053-1-bhupesh.sharma@linaro.org>
+ <20220302110508.69053-3-bhupesh.sharma@linaro.org> <CAA8EJprTiGfEnkPOeDPyobdRGkyzyC6=vHivfQ9zsk22JPjM3w@mail.gmail.com>
+In-Reply-To: <CAA8EJprTiGfEnkPOeDPyobdRGkyzyC6=vHivfQ9zsk22JPjM3w@mail.gmail.com>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Date:   Wed, 2 Mar 2022 22:55:19 +0530
+Message-ID: <CAH=2NtySLVEk_aLdftCS9DcfPS6egUxVAJTZnxjxLPQQnGb4aw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] clk: qcom: gcc: Add emac GDSC support for SM8150
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
+        mturquette@baylibre.com, linux-clk@vger.kernel.org,
+        robh+dt@kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Roman,
+Hi Dmitry,
 
-FYI, the error/warning still remains.
+On Wed, 2 Mar 2022 at 18:00, Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> On Wed, 2 Mar 2022 at 14:05, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
+> >
+> > Add the EMAC GDSC defines and driver structures for SM8150.
+> >
+> > Cc: Stephen Boyd <sboyd@kernel.org>
+> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> > ---
+> >  drivers/clk/qcom/gcc-sm8150.c               | 34 +++++++++++++--------
+> >  include/dt-bindings/clock/qcom,gcc-sm8150.h |  1 +
+> >  2 files changed, 23 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/clk/qcom/gcc-sm8150.c b/drivers/clk/qcom/gcc-sm8150.c
+> > index 245794485719..08ba29e3a835 100644
+> > --- a/drivers/clk/qcom/gcc-sm8150.c
+> > +++ b/drivers/clk/qcom/gcc-sm8150.c
+> > @@ -3448,22 +3448,31 @@ static struct clk_branch gcc_video_xo_clk = {
+> >         },
+> >  };
+> >
+> > +static struct gdsc emac_gdsc = {
+> > +       .gdscr = 0x6004,
+> > +       .pd = {
+> > +               .name = "emac_gdsc",
+> > +       },
+> > +       .pwrsts = PWRSTS_OFF_ON,
+> > +       .flags = POLL_CFG_GDSCR,
+> > +};
+> > +
+> >  static struct gdsc usb30_prim_gdsc = {
+> > -               .gdscr = 0xf004,
+> > -               .pd = {
+> > -                       .name = "usb30_prim_gdsc",
+> > -               },
+> > -               .pwrsts = PWRSTS_OFF_ON,
+> > -               .flags = POLL_CFG_GDSCR,
+> > +       .gdscr = 0xf004,
+> > +       .pd = {
+> > +               .name = "usb30_prim_gdsc",
+> > +       },
+> > +       .pwrsts = PWRSTS_OFF_ON,
+> > +       .flags = POLL_CFG_GDSCR,
+>
+> Please move alignment changes to a separate patch
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/deprecated/android-4.4-p-release
-head:   c159ade87311501e4e4b40eb2f35aa5607732957
-commit: 7e3a6fc483350235bf3446492133d60c292d487c [9213/9922] goldfish: pipe: ANDROID: address must be written as __pa(x), not x
-config: i386-randconfig-r005-20211118 (https://download.01.org/0day-ci/archive/20220303/202203030136.g7Nn5d2S-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/7e3a6fc483350235bf3446492133d60c292d487c
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/deprecated/android-4.4-p-release
-        git checkout 7e3a6fc483350235bf3446492133d60c292d487c
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/goldfish/
+Right, Will fix it in v3.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Regards,
+Bhupesh
 
-All warnings (new ones prefixed by >>):
-
-   drivers/platform/goldfish/goldfish_pipe_v2.c: In function 'write_pa_addr':
->> drivers/platform/goldfish/goldfish_pipe_v2.c:1161:15: warning: right shift count >= width of type [-Wshift-count-overflow]
-     writel(paddr >> 32, porth);
-                  ^~
-   arch/x86/include/asm/bitops.h: Assembler messages:
-   arch/x86/include/asm/bitops.h:206: Warning: no instruction mnemonic suffix given and no register operands; using default for `bts'
-
-
-vim +1161 drivers/platform/goldfish/goldfish_pipe_v2.c
-
-  1155	
-  1156	
-  1157	static void write_pa_addr(void *addr, void __iomem *portl, void __iomem *porth)
-  1158	{
-  1159		const unsigned long paddr = __pa(addr);
-  1160	
-> 1161		writel(paddr >> 32, porth);
-  1162		writel((u32)paddr, portl);
-  1163	}
-  1164	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> >  };
+> >
+> >  static struct gdsc usb30_sec_gdsc = {
+> > -               .gdscr = 0x10004,
+> > -               .pd = {
+> > -                       .name = "usb30_sec_gdsc",
+> > -               },
+> > -               .pwrsts = PWRSTS_OFF_ON,
+> > -               .flags = POLL_CFG_GDSCR,
+> > +       .gdscr = 0x10004,
+> > +       .pd = {
+> > +               .name = "usb30_sec_gdsc",
+> > +       },
+> > +       .pwrsts = PWRSTS_OFF_ON,
+> > +       .flags = POLL_CFG_GDSCR,
+> >  };
+> >
+> >  static struct clk_regmap *gcc_sm8150_clocks[] = {
+> > @@ -3714,6 +3723,7 @@ static const struct qcom_reset_map gcc_sm8150_resets[] = {
+> >  };
+> >
+> >  static struct gdsc *gcc_sm8150_gdscs[] = {
+> > +       [EMAC_GDSC] = &emac_gdsc,
+> >         [USB30_PRIM_GDSC] = &usb30_prim_gdsc,
+> >         [USB30_SEC_GDSC] = &usb30_sec_gdsc,
+> >  };
+> > diff --git a/include/dt-bindings/clock/qcom,gcc-sm8150.h b/include/dt-bindings/clock/qcom,gcc-sm8150.h
+> > index 3e1a91876610..40596b9ded06 100644
+> > --- a/include/dt-bindings/clock/qcom,gcc-sm8150.h
+> > +++ b/include/dt-bindings/clock/qcom,gcc-sm8150.h
+> > @@ -243,5 +243,6 @@
+> >  /* GCC GDSCRs */
+> >  #define USB30_PRIM_GDSC                     4
+> >  #define USB30_SEC_GDSC                                         5
+> > +#define EMAC_GDSC                                              6
+> >
+> >  #endif
+> > --
+> > 2.35.1
+> >
+>
+>
+> --
+> With best wishes
+> Dmitry
