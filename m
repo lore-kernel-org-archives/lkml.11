@@ -2,81 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 05:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A91C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 05:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239330AbiCBFgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 00:36:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
+        id S239591AbiCBFiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 00:38:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiCBFgR (ORCPT
+        with ESMTP id S239597AbiCBFiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 00:36:17 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C048B16D3;
-        Tue,  1 Mar 2022 21:35:34 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 8941D2013B0;
-        Wed,  2 Mar 2022 05:35:31 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 1C34D8084F; Wed,  2 Mar 2022 06:33:38 +0100 (CET)
-Date:   Wed, 2 Mar 2022 06:33:38 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, Alexander Graf <graf@amazon.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH 1/3] random: replace custom notifier chain with standard
- one
-Message-ID: <Yh8Bsk9RSm22Yr8d@owl.dominikbrodowski.net>
-References: <20220301231038.530897-1-Jason@zx2c4.com>
- <20220301231038.530897-2-Jason@zx2c4.com>
+        Wed, 2 Mar 2022 00:38:01 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D85B1A94;
+        Tue,  1 Mar 2022 21:36:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646199412; x=1677735412;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mRwvBAtok3xtIJz4XBlnJPoaxjUEKJHuRLmcYbLZajQ=;
+  b=zg6dgLuZJp5hvBollBi3m/S39MVeDob0WQtSO+GSU5XdpNrZmdx320YW
+   IhRxg+bt79qGDk6vTD2K6u5LymMNDE4kardDmDzd7IK01SYT/d6HwGIYM
+   hz4qun2dRhlTld5zZortE8jzWGtfkj971iiwEJ5X2HZHgwNC0jeAjk2jD
+   4=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 01 Mar 2022 21:36:52 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 21:36:52 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 1 Mar 2022 21:36:51 -0800
+Received: from [10.216.62.30] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 1 Mar 2022
+ 21:36:48 -0800
+Message-ID: <edee4305-77da-039b-1f07-bcdc5d462666@quicinc.com>
+Date:   Wed, 2 Mar 2022 11:06:45 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301231038.530897-2-Jason@zx2c4.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Configure cts sleep pinctrl to
+ bias-disable for sc7280-idp
+Content-Language: en-CA
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <msavaliy@qti.qualcomm.com>,
+        <mka@chromium.org>, <swboyd@chromium.org>, <dianders@chromium.org>
+References: <1644843828-20464-1-git-send-email-quic_vnivarth@quicinc.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <1644843828-20464-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, Mar 02, 2022 at 12:10:36AM +0100 schrieb Jason A. Donenfeld:
->  /*
->   * Delete a previously registered readiness callback function.
->   */
-> -void del_random_ready_callback(struct random_ready_callback *rdy)
-> +int unregister_random_ready_notifier(struct notifier_block *nb)
->  {
->  	unsigned long flags;
-> -	struct module *owner = NULL;
-> -
-> -	spin_lock_irqsave(&random_ready_list_lock, flags);
-> -	if (!list_empty(&rdy->list)) {
-> -		list_del_init(&rdy->list);
-> -		owner = rdy->owner;
-> -	}
-> -	spin_unlock_irqrestore(&random_ready_list_lock, flags);
-> +	int ret;
->  
-> -	module_put(owner);
-> +	spin_lock_irqsave(&random_ready_chain_lock, flags);
-> +	ret = raw_notifier_chain_unregister(&random_ready_chain, nb);
-> +	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
-> +	return ret;
->  }
-> -EXPORT_SYMBOL(del_random_ready_callback);
++Google Reviewers
 
-That doesn't seem to be used anywhere, so I'd suggest removing this function
-altogether.
+Hello Reviewers,
 
-Otherwise:
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+We were wondering if you had a chance to review this patch and provide 
+any comments.
+
+Thank you,
+
+Vijay/
+
+
+
+On 2/14/2022 6:33 PM, Vijaya Krishna Nivarthi wrote:
+> WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+> Change sleep pinctrl configuration to handle same.
+>
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index d623d71..de18319 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -516,10 +516,10 @@
+>   		pins = "gpio28";
+>   		function = "gpio";
+>   		/*
+> -		 * Configure a pull-down on CTS to match the pull of
+> -		 * the Bluetooth module.
+> +		 * Configure a disable on CTS to lower power usage
+> +		 * when BT is turned off.
+>   		 */
+> -		bias-pull-down;
+> +		bias-disable;
+>   	};
+>   
+>   	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
