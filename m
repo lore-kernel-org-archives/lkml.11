@@ -2,190 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C8BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A302EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229478AbiCBXpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:45:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
+        id S229518AbiCBXqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:46:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiCBXpr (ORCPT
+        with ESMTP id S229519AbiCBXqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:45:47 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8A73E5C5;
-        Wed,  2 Mar 2022 15:43:33 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 222Mnb7N008466;
-        Wed, 2 Mar 2022 23:43:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=i5BWb3tqsZ4eoh82ODgmPwJgY+o4LlIyFrdu6rEg8Ak=;
- b=pJtwsLeTgC1Ub+ayC8j8aUk3FRTc3evGdqJgL6RzT6j8vs5Gk7vvIFTpli27VUngJ23w
- eZ5Qg/Z8wY5bRs0zhXtJ7PB8k3dSaByBOe6VYH/aMIWSyIZ4mzhljrZggZdiGnD08ksZ
- SHkJJXclmN4W9woqvwtNK4E0P+Ddpoe4PmysCr5475b+ziDDt/QiPP9SEHrQas7YqJk9
- AoK0lRQdVGPpgDHLzj+MWLB3uFIyoqWYjirNTi8pAdADBoNe8AzQjMmPNtsWfzQI0FDQ
- v5haQDeFLs8gv0fKVJqSr2lBaMQEEdpR885+NPUrEjHlDHJu6blQfvZtBHo+b+XRRaQv Ag== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ejc03g1pr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 23:43:08 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 222NWN4R024561;
-        Wed, 2 Mar 2022 23:43:08 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ejc03g1ph-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 23:43:08 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 222Nb81Y025228;
-        Wed, 2 Mar 2022 23:43:06 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma05wdc.us.ibm.com with ESMTP id 3ej75rmnmf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 23:43:06 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 222Nh5tf34603432
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Mar 2022 23:43:05 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 85205AE066;
-        Wed,  2 Mar 2022 23:43:05 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3AD3DAE05F;
-        Wed,  2 Mar 2022 23:43:04 +0000 (GMT)
-Received: from [9.160.116.147] (unknown [9.160.116.147])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed,  2 Mar 2022 23:43:04 +0000 (GMT)
-Message-ID: <11ab9dfa-494b-5103-5f26-aa6c29567f52@linux.ibm.com>
-Date:   Wed, 2 Mar 2022 18:43:03 -0500
+        Wed, 2 Mar 2022 18:46:01 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD6D239D5C;
+        Wed,  2 Mar 2022 15:43:54 -0800 (PST)
+Received: from [192.168.43.69] (unknown [182.2.41.243])
+        by gnuweeb.org (Postfix) with ESMTPSA id 1DEAD7E6A5;
+        Wed,  2 Mar 2022 23:27:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1646263662;
+        bh=A0wJxlPbC6L5g/52O5FkT+betn2pvQrCWGTRFCIy5gg=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=TfZn8Kq++xUqI9AHW+rba3Ml8VA1cFtpJ/+y9jbgAdML//eyjZyT0eIgzQf2AR677
+         xtQes501LvCiOoVx2OS2LSkTS6+xHOdawqZoF4Z06cJQSMDg8D8S4K3+Nt+8h00nCM
+         cce/fHLpJUg2RJa9xktbajVJjTqkNdiBuVLrKAMIoo3wXrvCjw6GvCe4jkKd6wMxcy
+         jxp8b56394wTwg0mS5VE5/TDSrTQk/2T9ADCCkRLF/ZO53une4ImRGKTRXO5q7CSUH
+         bpsAFuxdbSXLMEfWcQWdd4RvOTj65JM2ObXz/Fo3iXaWpQfvB+xB1EQmIZa2ruD09r
+         19BF0Q3n/Cjdg==
+Message-ID: <109a10da-d1d1-c47a-2f04-31796457f6ff@gnuweeb.org>
+Date:   Thu, 3 Mar 2022 06:27:33 +0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v18 07/18] s390/vfio-ap: refresh guest's APCB by filtering
- APQNs assigned to mdev
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 2/2] x86/mce/amd: Fix memory leak when
+ `threshold_create_bank()` fails
 Content-Language: en-US
-To:     jjherne@linux.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com
-References: <20220215005040.52697-1-akrowiak@linux.ibm.com>
- <20220215005040.52697-8-akrowiak@linux.ibm.com>
- <2b1f788b-5197-f5e8-52cf-58995d758ef7@linux.ibm.com>
-From:   Tony Krowiak <akrowiak@linux.ibm.com>
-In-Reply-To: <2b1f788b-5197-f5e8-52cf-58995d758ef7@linux.ibm.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Yazen Ghannam <yazen.ghannam@amd.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org,
+        x86@kernel.org, stable@vger.kernel.org,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Jiri Hladky <hladky.jiri@googlemail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org>
+ <20220301094608.118879-3-ammarfaizi2@gnuweeb.org>
+ <Yh+oyD/5M3TW5ZMM@yaz-ubuntu>
+ <4371a592-6686-c535-4daf-993dedb43cd4@gnuweeb.org>
+In-Reply-To: <4371a592-6686-c535-4daf-993dedb43cd4@gnuweeb.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: qwP7h1CS1yQLyuuEgo_Weg01A1yRzyDt
-X-Proofpoint-ORIG-GUID: zPYtVih04kZnTT8H_SA9_2e3W9lyBqk4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-02_12,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=999 phishscore=0 adultscore=0 malwarescore=0 mlxscore=0
- suspectscore=0 impostorscore=0 spamscore=0 clxscore=1011 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203020098
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 3/2/22 14:35, Jason J. Herne wrote:
-> On 2/14/22 19:50, Tony Krowiak wrote:
->> Refresh the guest's APCB by filtering the APQNs assigned to the 
->> matrix mdev
->> that do not reference an AP queue device bound to the vfio_ap device
->> driver. The mdev's APQNs will be filtered according to the following 
->> rules:
+On 3/3/22 6:20 AM, Ammar Faizi wrote:
+> On 3/3/22 12:26 AM, Yazen Ghannam wrote:
+>> Hi Ammar,
+> 
+> Hi Yazen,
+> 
+>> ...
+>> The threshold interrupt handler uses this pointer. I think the goal here is to
+>> set this pointer when the list is fully formed and clear this pointer before
+>> making any changes to the list. Otherwise, the interrupt handler will operate
+>> on incomplete data if an interrupt comes in the middle of these updates.
 >>
->> * The APID of each adapter and the APQI of each domain that is not in 
->> the
->> host's AP configuration is filtered out.
->>
->> * The APID of each adapter comprising an APQN that does not reference a
->> queue device bound to the vfio_ap device driver is filtered. The APQNs
->> are derived from the Cartesian product of the APID of each adapter and
->> APQI of each domain assigned to the mdev.
->>
->> The control domains that are not assigned to the host's AP configuration
->> will also be filtered before assigning them to the guest's APCB.
->>
->> Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
->> ---
->>   drivers/s390/crypto/vfio_ap_ops.c | 96 ++++++++++++++++++++++++++++++-
->>   1 file changed, 93 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/s390/crypto/vfio_ap_ops.c 
->> b/drivers/s390/crypto/vfio_ap_ops.c
->> index 4b676a55f203..b67b2f0faeea 100644
->> --- a/drivers/s390/crypto/vfio_ap_ops.c
->> +++ b/drivers/s390/crypto/vfio_ap_ops.c
->> @@ -317,6 +317,63 @@ static void vfio_ap_matrix_init(struct 
->> ap_config_info *info,
->>       matrix->adm_max = info->apxa ? info->Nd : 15;
->>   }
->>   +static void vfio_ap_mdev_filter_cdoms(struct ap_matrix_mdev 
->> *matrix_mdev)
->> +{
->> +    bitmap_and(matrix_mdev->shadow_apcb.adm, matrix_mdev->matrix.adm,
->> +           (unsigned long *)matrix_dev->info.adm, AP_DOMAINS);
->> +}
->> +
->> +/*
->> + * vfio_ap_mdev_filter_matrix - copy the mdev's AP configuration to 
->> the KVM
->> + *                guest's APCB then filter the APIDs that do not
->> + *                comprise at least one APQN that references a
->> + *                queue device bound to the vfio_ap device driver.
->> + *
->> + * @matrix_mdev: the mdev whose AP configuration is to be filtered.
->> + */
->> +static void vfio_ap_mdev_filter_matrix(unsigned long *apm, unsigned 
->> long *aqm,
->> +                       struct ap_matrix_mdev *matrix_mdev)
->> +{
->> +    int ret;
->> +    unsigned long apid, apqi, apqn;
->> +
->> +    ret = ap_qci(&matrix_dev->info);
->> +    if (ret)
->> +        return;
->> +
->> +    vfio_ap_matrix_init(&matrix_dev->info, &matrix_mdev->shadow_apcb);
->
-> Do you need to call vfio_ap_matrix_init here? It seems to me like this 
-> would
-> only be necesarry if apxa could be dynamically added or removed. Here 
-> is a
-> copy of vfio_ap_matrix_init, for reference:
->
-> static void vfio_ap_matrix_init(struct ap_config_info *info,
->                 struct ap_matrix *matrix)
-> {
->     matrix->apm_max = info->apxa ? info->Na : 63;
->     matrix->aqm_max = info->apxa ? info->Nd : 15;
->     matrix->adm_max = info->apxa ? info->Nd : 15;
-> }
->
-> It seems like this should be figured out once and stored when the
-> ap_matrix_mdev struct is first created. Unless I'm wrong, and the 
-> status of
-> apxa can change dynamically, in which case the maximums would need to be
-> updated somewhere.
+>> The changes below should deal with memory leak issue while avoiding a race
+>> with the threshold interrupt. What do you think?
+> 
+> Thanks for taking a look into this. I didn't notice that before. The
+> changes look good to me, extra improvements:
+> 
+> 1) _mce_threshold_remove_device() should be static as we don't use it
+>     in another translation unit.
+> 2) Minor cleanup, we don't need "goto out_err", just early return
+>     directly.
+> 
+> I will fold them in...
+> 
 
-It's an interesting question to which I don't have a definitive answer. 
-I'll run it
-by our architects. On the other hand, making this call here is not entirely
-unreasonable and merely superfluous at worst, but I'll look into it.
+Please review the patch below, if you think it looks good, I will
+send this for the v5 series. I added your sign-off.
 
-Tony K
+ From cae3965734a67d11a5286c612dfddf52398defc8 Mon Sep 17 00:00:00 2001
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Date: Thu, 3 Mar 2022 05:07:38 +0700
+Subject: [PATCH v5 2/2] x86/MCE/AMD: Fix memory leak when `threshold_create_bank()` fails
 
->
->
+In mce_threshold_create_device(), when threshold_create_bank() fails,
+the @bp will be leaked, because mce_threshold_remove_device() will
+not free the @bp. It only frees the @bp when we've already written
+the @bp to the @threshold_banks per-CPU variable, but at the point,
+we haven't.
 
+Fix this by extracting the cleanup part into a new static function
+_mce_threshold_remove_device(), then use it from create and remove
+device function.
+
+Also, eliminate the "goto out_err". Just early return inside the loop
+when we fail.
+
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org # v5.8+
+Fixes: 6458de97fc15 ("x86/mce/amd: Straighten CPU hotplug path")
+Co-authored-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Co-authored-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+  arch/x86/kernel/cpu/mce/amd.c | 31 ++++++++++++++++++-------------
+  1 file changed, 18 insertions(+), 13 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
+index 9f4b508886dd..ac7246a4de08 100644
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -1293,10 +1293,22 @@ static void threshold_remove_bank(struct threshold_bank *bank)
+  	kfree(bank);
+  }
+  
++static void _mce_threshold_remove_device(struct threshold_bank **bp)
++{
++	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
++
++	for (bank = 0; bank < numbanks; bank++) {
++		if (bp[bank]) {
++			threshold_remove_bank(bp[bank]);
++			bp[bank] = NULL;
++		}
++	}
++	kfree(bp);
++}
++
+  int mce_threshold_remove_device(unsigned int cpu)
+  {
+  	struct threshold_bank **bp = this_cpu_read(threshold_banks);
+-	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
+  
+  	if (!bp)
+  		return 0;
+@@ -1307,13 +1319,7 @@ int mce_threshold_remove_device(unsigned int cpu)
+  	 */
+  	this_cpu_write(threshold_banks, NULL);
+  
+-	for (bank = 0; bank < numbanks; bank++) {
+-		if (bp[bank]) {
+-			threshold_remove_bank(bp[bank]);
+-			bp[bank] = NULL;
+-		}
+-	}
+-	kfree(bp);
++	_mce_threshold_remove_device(bp);
+  	return 0;
+  }
+  
+@@ -1350,15 +1356,14 @@ int mce_threshold_create_device(unsigned int cpu)
+  		if (!(this_cpu_read(bank_map) & (1 << bank)))
+  			continue;
+  		err = threshold_create_bank(bp, cpu, bank);
+-		if (err)
+-			goto out_err;
++		if (err) {
++			_mce_threshold_remove_device(bp);
++			return err;
++		}
+  	}
+  	this_cpu_write(threshold_banks, bp);
+  
+  	if (thresholding_irq_en)
+  		mce_threshold_vector = amd_threshold_interrupt;
+  	return 0;
+-out_err:
+-	mce_threshold_remove_device(cpu);
+-	return err;
+  }
+
+-- 
+Ammar Faizi
