@@ -2,224 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 078B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 242DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245172AbiCBVM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:12:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
+        id S245183AbiCBVMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:12:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245104AbiCBVME (ORCPT
+        with ESMTP id S245057AbiCBVMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:12:04 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCFEDD447;
-        Wed,  2 Mar 2022 13:11:18 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 026D41C000B;
-        Wed,  2 Mar 2022 21:11:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646255477;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dkNjQnETPaxd5iuqZJEg5SWaIfkr3ZP63u+W+qEtiX0=;
-        b=KLGkIwlsmaL1HfIt/KrwQ8WCvlfN1r4KkGXGDfpyFJTUQ2Rx/cEypSGDdf5jo9CbmPzYrk
-        y0OYVazaPPBVt7x03ZGXYH3Y7V7wJD8MJSP9MAY7uSER/M/nCXy9ilOhj6URz+KDnxuC5U
-        D0JhMYo3QfIvC5IRm6jhm2ig4OfwXi8+muukp0iinAZWEw6mNJ70NEnXWO+LntfAH9qBMp
-        PB6dTmUw69HNw2QtYm/kvtI/rKG+tDi93O+am7fBFKNxXaXRdc05lffSPKY7foIXpPV0xS
-        2zTVI3/lYG4A9Xtp9To1fX/Aaw0Ssgkkx0eWqiLnHBzAwLmFskgJrO+f1Wegjg==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?K=C3=A9vin=20L=27h=C3=B4pital?= 
-        <kevin.lhopital@bootlin.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Subject: [PATCH NOT FOR MERGE v3 8/8] ARM: dts: sun8i: a83t: bananapi-m3: Enable MIPI CSI-2 with OV8865
-Date:   Wed,  2 Mar 2022 22:11:00 +0100
-Message-Id: <20220302211100.65264-9-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220302211100.65264-1-paul.kocialkowski@bootlin.com>
-References: <20220302211100.65264-1-paul.kocialkowski@bootlin.com>
+        Wed, 2 Mar 2022 16:12:10 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C439DCE2B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:11:23 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id 7-20020a05600c228700b00385fd860f49so1229511wmf.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 13:11:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=E4ln3wZSFy5ygWivBAZ51NJDAFnU2GvQHlM0R2GzsJk=;
+        b=bJIL0p9pOk2OYxkv4MgssHYy583tVP3qI9kh5i+J6fdhzIZaUQ6qV4dRNmXg2nOoAV
+         xGSU6184/6Papd9QxDjUVh2EMscFRMunogHDJshyMBup66uO0h5hs7IC5zmLDZhfDRVz
+         u6jvoIYBvzLyRZ9Pd89jakr/6bSunhJdg+6Msfz/2kbIOIjmQ3281yto6xsdt/h1k1w5
+         zvwxgHvW3BzdVIi2abn69Ple0W+TStSeOSdyRVYxOjxZvmlT0YVbGPsLq0tH98fmrEmY
+         gwKLmyNEPJVwBI+CR/4UeH9aFBn09hn35MDX8HI3/mPBpEW+jJD+dry/n78x1rZ+YD+v
+         9eGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=E4ln3wZSFy5ygWivBAZ51NJDAFnU2GvQHlM0R2GzsJk=;
+        b=SeJGlmIR8otujSjhC8xixi2PRb0avuJm8cp/PssNlgP8xqHXrdylsJ3mfQexGdnvsy
+         iIB6xS9Z0WILa8jYazgxycLyFid7LdlEDvbe4cFcAe0UKe37A4AZvMNyHYwMrqBTrDb8
+         CNsjPAIF/b6mVlxpX1/x0YafRB8TFyiLMFnEjY2r05z3GdmIbgwNqK8PSh/v3SkQB6q8
+         r1wOgXUJopZ2uSbfInNY7HxTfOMoZE4ZBvmRheLQlEkEheCrChh8oGebTO+rSrk1ijLV
+         3oCzOKTmS93VBtquf31aB6Q8U70UNEHB0aq9Z2PibwLsKfLOK1f8xc1MCTGfTqtjTxa7
+         gRKg==
+X-Gm-Message-State: AOAM533zILHCCh/WDfHL/Ll2bw4dUJJC4p8Ndhd2cOEcTwkeZwjruEGM
+        HuTL51AqXL1BHdQWq+IF4eYgIA==
+X-Google-Smtp-Source: ABdhPJwJBTQ00m+t9wxyzB1cXj8n/0LaZCqu4MpcCdI94b0Fd6Skv6Vca/UH6uS9c3TZZ8GgpF704w==
+X-Received: by 2002:a7b:c455:0:b0:380:a646:eb0e with SMTP id l21-20020a7bc455000000b00380a646eb0emr1350654wmi.170.1646255481699;
+        Wed, 02 Mar 2022 13:11:21 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm145776wmp.44.2022.03.02.13.11.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 13:11:21 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     heiko@sntech.de, herbert@gondor.apana.org.au, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, john@metanate.com,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v2 00/18] crypto: rockchip: permit to pass self-tests
+Date:   Wed,  2 Mar 2022 21:10:55 +0000
+Message-Id: <20220302211113.4003816-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kévin L'hôpital <kevin.lhopital@bootlin.com>
+Hello
 
-The Bananapi M3 supports a camera module which includes an OV8865 sensor
-connected via the parallel CSI interface and an OV8865 sensor connected
-via MIPI CSI-2.
+The rockchip crypto driver is broken and do not pass self-tests.
+This serie's goal is to permit to become usable and pass self-tests.
 
-The I2C2 bus is shared by the two sensors as well as the (active-low)
-reset signal, but each sensor has it own shutdown line.
+This whole serie is tested on a rk3328-rock64 with selftests (with
+CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y)
 
-Signed-off-by: Kévin L'hôpital <kevin.lhopital@bootlin.com>
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
----
- arch/arm/boot/dts/sun8i-a83t-bananapi-m3.dts | 102 +++++++++++++++++++
- 1 file changed, 102 insertions(+)
+Regards
 
-diff --git a/arch/arm/boot/dts/sun8i-a83t-bananapi-m3.dts b/arch/arm/boot/dts/sun8i-a83t-bananapi-m3.dts
-index 5a7e1bd5f825..80fd99cf24b2 100644
---- a/arch/arm/boot/dts/sun8i-a83t-bananapi-m3.dts
-+++ b/arch/arm/boot/dts/sun8i-a83t-bananapi-m3.dts
-@@ -85,6 +85,30 @@ led-1 {
- 		};
- 	};
- 
-+	reg_ov8865_avdd: ov8865-avdd {
-+		compatible = "regulator-fixed";
-+		regulator-name = "ov8865-avdd";
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+		vin-supply = <&reg_dldo4>;
-+	};
-+
-+	reg_ov8865_dovdd: ov8865-dovdd {
-+		compatible = "regulator-fixed";
-+		regulator-name = "ov8865-dovdd";
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+		vin-supply = <&reg_dldo4>;
-+	};
-+
-+	reg_ov8865_dvdd: ov8865-dvdd {
-+		compatible = "regulator-fixed";
-+		regulator-name = "ov8865-dvdd";
-+		regulator-min-microvolt = <1200000>;
-+		regulator-max-microvolt = <1200000>;
-+		vin-supply = <&reg_eldo1>;
-+	};
-+
- 	reg_usb1_vbus: reg-usb1-vbus {
- 		compatible = "regulator-fixed";
- 		regulator-name = "usb1-vbus";
-@@ -115,6 +139,23 @@ &cpu100 {
- 	cpu-supply = <&reg_dcdc3>;
- };
- 
-+&csi {
-+	status = "okay";
-+
-+	ports {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		port@1 {
-+			reg = <1>;
-+
-+			csi_in_mipi_csi2: endpoint {
-+				remote-endpoint = <&mipi_csi2_out_csi>;
-+			};
-+		};
-+	};
-+};
-+
- &de {
- 	status = "okay";
- };
-@@ -147,6 +188,36 @@ hdmi_out_con: endpoint {
- 	};
- };
- 
-+&i2c2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c2_pe_pins>;
-+	status = "okay";
-+
-+	ov8865: camera@36 {
-+		compatible = "ovti,ov8865";
-+		reg = <0x36>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&csi_mclk_pin>;
-+		clocks = <&ccu CLK_CSI_MCLK>;
-+		assigned-clocks = <&ccu CLK_CSI_MCLK>;
-+		assigned-clock-rates = <24000000>;
-+		avdd-supply = <&reg_ov8865_avdd>;
-+		dovdd-supply = <&reg_ov8865_dovdd>;
-+		dvdd-supply = <&reg_ov8865_dvdd>;
-+		powerdown-gpios = <&pio 4 17 GPIO_ACTIVE_LOW>; /* PE17 */
-+		reset-gpios = <&pio 4 16 GPIO_ACTIVE_LOW>; /* PE16 */
-+
-+		port {
-+			ov8865_out_mipi_csi2: endpoint {
-+				data-lanes = <1 2 3 4>;
-+				link-frequencies = /bits/ 64 <360000000>;
-+
-+				remote-endpoint = <&mipi_csi2_in_ov8865>;
-+			};
-+		};
-+	};
-+};
-+
- &mdio {
- 	rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
-@@ -154,6 +225,24 @@ rgmii_phy: ethernet-phy@1 {
- 	};
- };
- 
-+&mipi_csi2 {
-+	status = "okay";
-+};
-+
-+&mipi_csi2_in {
-+	mipi_csi2_in_ov8865: endpoint {
-+		data-lanes = <1 2 3 4>;
-+
-+		remote-endpoint = <&ov8865_out_mipi_csi2>;
-+	};
-+};
-+
-+&mipi_csi2_out {
-+	mipi_csi2_out_csi: endpoint {
-+		remote-endpoint = <&csi_in_mipi_csi2>;
-+	};
-+};
-+
- &mmc0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&mmc0_pins>;
-@@ -327,11 +416,24 @@ &reg_dldo3 {
- 	regulator-name = "vcc-pd";
- };
- 
-+&reg_dldo4 {
-+	regulator-always-on;
-+	regulator-min-microvolt = <2800000>;
-+	regulator-max-microvolt = <2800000>;
-+	regulator-name = "avdd-csi";
-+};
-+
- &reg_drivevbus {
- 	regulator-name = "usb0-vbus";
- 	status = "okay";
- };
- 
-+&reg_eldo1 {
-+	regulator-min-microvolt = <1200000>;
-+	regulator-max-microvolt = <1200000>;
-+	regulator-name = "dvdd-csi-r";
-+};
-+
- &reg_fldo1 {
- 	regulator-min-microvolt = <1080000>;
- 	regulator-max-microvolt = <1320000>;
+Changes since v1:
+- select CRYPTO_ENGINE
+- forgot to free fallbacks TFMs
+- fixed kernel test robots warning
+- add the PM patch
+
+Corentin Labbe (18):
+  crypto: rockchip: use dev_err for error message about interrupt
+  crypto: rockchip: do not use uninit variable
+  crypto: rockchip: do not do custom power management
+  crypto: rockchip: fix privete/private typo
+  crypto: rockchip: do not store mode globally
+  crypto: rockchip: add fallback for cipher
+  crypto: rockchip: add fallback for ahash
+  crypto: rockchip: better handle cipher key
+  crypto: rockchip: remove non-aligned handling
+  crypto: rockchip: rework by using crypto_engine
+  crypto: rockhip: do not handle dma clock
+  ARM: dts: rk3288: crypto do not need dma clock
+  crypto: rockchip: rewrite type
+  crypto: rockchip: add debugfs
+  crypto: rockchip: introduce PM
+  arm64: dts: rockchip: add rk3328 crypto node
+  dt-bindings: crypto: convert rockchip-crypto to yaml
+  crypto: rockchip: add myself as maintainer
+
+ .../crypto/rockchip,rk3288-crypto.yaml        |  64 +++
+ .../bindings/crypto/rockchip-crypto.txt       |  28 --
+ MAINTAINERS                                   |   6 +
+ arch/arm/boot/dts/rk3288.dtsi                 |   4 +-
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi      |  11 +
+ drivers/crypto/Kconfig                        |  12 +
+ drivers/crypto/rockchip/rk3288_crypto.c       | 307 +++++-------
+ drivers/crypto/rockchip/rk3288_crypto.h       |  69 ++-
+ drivers/crypto/rockchip/rk3288_crypto_ahash.c | 222 +++++----
+ .../crypto/rockchip/rk3288_crypto_skcipher.c  | 452 +++++++++++-------
+ 10 files changed, 648 insertions(+), 527 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+ delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+
 -- 
-2.35.1
+2.34.1
 
