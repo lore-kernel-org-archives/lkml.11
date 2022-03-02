@@ -2,135 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E65C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A89BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238998AbiCBCER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 21:04:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        id S239003AbiCBCF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 21:05:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiCBCEP (ORCPT
+        with ESMTP id S232069AbiCBCF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 21:04:15 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B525932061
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 18:03:33 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id 12so472408oix.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 18:03:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MVhWLewea9Kbp4+jmYh/qLY6kiLHJdrGhuGIPKoejkU=;
-        b=j8ELH0UmrgvS6wz6hFWYrb/ptIXj4OGBI3/IaaFFymBS4/SwuKvJkbVHGxtUrDuqNl
-         hsRVUnkrI/hS3ZjBNA/xRs6w4ipPsKjosZOLqYfRttj+FFWg6iZAoKACkvXpm4wlE9Nn
-         D5bUXfQGOrXXat87sRQg//iOucEnAnZ+EYa0M=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MVhWLewea9Kbp4+jmYh/qLY6kiLHJdrGhuGIPKoejkU=;
-        b=bX0wQyUIpOpx5KyZLfCy7p7lPv/7RltgX4OjC++5IwIrQ5hb2Ta6crFA8ujbBit2JY
-         ClcsnYl0dhhqc1GBzSr1/GK/UOB6VUvgGtNnJ7EV30eAYPKpST3eRnninEy00zzRxEQg
-         uZdXB/0kX/u7G+/0xxL7L3bU/xiOMThNnVhwzGZG//8+TK2SiOD+bp2SVAriTOW5Cg6+
-         Pc4131njFH8m+pDH4Kj6FnJZpphAGHA10YnLlurIwmx0RtN9y2LESCOdegoMWgNxh/kt
-         nyrughzifC1sINCWevYL4hDmrbJ6Kvi3uHdfumB1MM4RKs+jllvnfgG9yGdfGGjH0zqY
-         Y2lQ==
-X-Gm-Message-State: AOAM533QxG7RJQbJdU2VirVlHGyBd/CdXrfEuHx5uMgX3hPI3vW35CHC
-        RnL1agOoolG/WVJOU7GAnc1HcD21FhXHDg==
-X-Google-Smtp-Source: ABdhPJyR/3aZMin/8me4PfLuoSgNPXdManAbQGr2bVT9bRPaGsuCkQxkTDADAmYJQUGZlA6xpiIndA==
-X-Received: by 2002:a05:6808:9b8:b0:2d4:cc01:6cad with SMTP id e24-20020a05680809b800b002d4cc016cadmr17106963oig.35.1646186612814;
-        Tue, 01 Mar 2022 18:03:32 -0800 (PST)
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com. [209.85.167.181])
-        by smtp.gmail.com with ESMTPSA id bj27-20020a056808199b00b002d49b02cb41sm8891565oib.22.2022.03.01.18.03.29
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 18:03:31 -0800 (PST)
-Received: by mail-oi1-f181.google.com with SMTP id q5so497051oij.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 18:03:29 -0800 (PST)
-X-Received: by 2002:a05:6808:18a3:b0:2d5:7ce7:d456 with SMTP id
- bi35-20020a05680818a300b002d57ce7d456mr17402856oib.77.1646186609133; Tue, 01
- Mar 2022 18:03:29 -0800 (PST)
+        Tue, 1 Mar 2022 21:05:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737AC2A27F;
+        Tue,  1 Mar 2022 18:04:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AD5BB81EEC;
+        Wed,  2 Mar 2022 02:04:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BA1EC340F0;
+        Wed,  2 Mar 2022 02:04:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646186680;
+        bh=i4qQTRUMKVz/Lw2o/GZqlV/+bdva2T20twC9gBHnWnc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N/05FiaYF8YljcgHpY54ApqD9f2xENlBfg90LnaguFJvjcPz2xw7WcbQQeHVvJLGR
+         UzLxqfC8iCZfB3ZwdlHopEkEhWdl0Lnr14OuMPxcyZLNGVasHfYwvEcZJvwgerc3q8
+         baST5dn4j2GkCbbtHB1nhBUXjTRo1kMx6BHn2qYYLnsiVSlaTjrMrCstIrVfT6oSGN
+         8Im1EQUgWGlGOy1r/LOygk/BScjn4QDBeYHFWzxaK6wZ6LU+yIbepQKigqSKegPqD0
+         I66gkkK1bM6+kGdrQY4ZwYxk/09hAvHLd1By4rlhVsYolWs+Mhj1sSjAWUfBfxniWD
+         G7ivxizt7wx/A==
+Date:   Wed, 2 Mar 2022 03:05:25 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <Yh7Q5fbOtr+6YWaS@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <Yhy/GvJegnTqYdq6@iki.fi>
+ <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
+ <Yh4fGORDaJyVrJQW@iki.fi>
+ <Yh4i4hVcnfZ8QDAl@iki.fi>
+ <2d2d3471-78ce-9faa-daf6-138078f5ffaa@intel.com>
 MIME-Version: 1.0
-References: <20220217144136.v3.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
- <20220217144136.v3.2.I48b18ab197c9b649d376cf8cfd934e59d338f86d@changeid> <CAD=FV=UudBo7aZqD8oGHAu94LEYovMtFq7hjwOG2_8yxUeNi_w@mail.gmail.com>
-In-Reply-To: <CAD=FV=UudBo7aZqD8oGHAu94LEYovMtFq7hjwOG2_8yxUeNi_w@mail.gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Tue, 1 Mar 2022 18:03:18 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXPGpJystb0uFNT8f+FSzERC0-YxVfGLRo-U1uoTRMHY6Q@mail.gmail.com>
-Message-ID: <CA+ASDXPGpJystb0uFNT8f+FSzERC0-YxVfGLRo-U1uoTRMHY6Q@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] drm/bridge: analogix_dp: Enable autosuspend
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Sean Paul <sean@poorly.run>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2d2d3471-78ce-9faa-daf6-138078f5ffaa@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 2:10 PM Doug Anderson <dianders@chromium.org> wrote:
-> On Thu, Feb 17, 2022 at 2:42 PM Brian Norris <briannorris@chromium.org> wrote:
-> > --- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-> > +++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-> > @@ -1121,7 +1121,7 @@ static int analogix_dp_get_modes(struct drm_connector *connector)
-> >
-> >                 pm_runtime_get_sync(dp->dev);
-> >                 edid = drm_get_edid(connector, &dp->aux.ddc);
-> > -               pm_runtime_put(dp->dev);
-> > +               pm_runtime_put_autosuspend(dp->dev);
->
-> So I think you can fully get rid of these ones now and rely on the
-> ones in the aux transfer, right?
+On Tue, Mar 01, 2022 at 09:48:48AM -0800, Reinette Chatre wrote:
+> Hi Jarkko,
+> 
+> On 3/1/2022 5:42 AM, Jarkko Sakkinen wrote:
+> >> With EACCEPTCOPY (kudos to Mark S. for reminding me of this version of
+> >> EACCEPT @ chat.enarx.dev) it is possible to make R and RX pages but
+> >> obviously new RX pages are now out of the picture:
+> >>
+> >>
+> >> 	/*
+> >> 	 * Adding a regular page that is architecturally allowed to only
+> >> 	 * be created with RW permissions.
+> >> 	 * TBD: Interface with user space policy to support max permissions
+> >> 	 * of RWX.
+> >> 	 */
+> >> 	prot = PROT_READ | PROT_WRITE;
+> >> 	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
+> >> 	encl_page->vm_max_prot_bits = encl_page->vm_run_prot_bits;
+> >>
+> >> If that TBD is left out to the final version the page augmentation has a
+> >> risk of a API bottleneck, and that risk can realize then also in the page
+> >> permission ioctls.
+> >>
+> >> I.e. now any review comment is based on not fully known territory, we have
+> >> one known unknown, and some unknown unknowns from unpredictable effect to
+> >> future API changes.
+> 
+> The plan to complete the "TBD" in the above snippet was to follow this work
+> with user policy integration at this location. On a high level the plan was
+> for this to look something like:
+> 
+> 
+>  	/*
+>  	 * Adding a regular page that is architecturally allowed to only
+>  	 * be created with RW permissions.
+>  	 * Interface with user space policy to support max permissions
+>  	 * of RWX.
+>  	 */
+>  	prot = PROT_READ | PROT_WRITE;
+>  	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
+> 
+>         if (user space policy allows RWX on dynamically added pages)
+> 	 	encl_page->vm_max_prot_bits = calc_vm_prot_bits(PROT_READ | PROT_WRITE | PROT_EXEC, 0);
+> 	else
+> 		encl_page->vm_max_prot_bits = calc_vm_prot_bits(PROT_READ | PROT_WRITE, 0);
+> 
+> The work that follows this series aimed to do the integration with user
+> space policy.
 
-Yep, good catch.
+What do you mean by "user space policy" anyway exactly? I'm sorry but I
+just don't fully understand this.
 
-> >                 if (edid) {
-> >                         drm_connector_update_edid_property(&dp->connector,
-> >                                                            edid);
-> > @@ -1642,7 +1642,7 @@ static ssize_t analogix_dpaux_transfer(struct drm_dp_aux *aux,
-> >
-> >         ret = analogix_dp_transfer(dp, msg);
-> >  out:
-> > -       pm_runtime_put(dp->dev);
-> > +       pm_runtime_put_autosuspend(dp->dev);
-> >
-> >         return ret;
-> >  }
-> > @@ -1775,6 +1775,8 @@ int analogix_dp_bind(struct analogix_dp_device *dp, struct drm_device *drm_dev)
-> >         if (ret)
-> >                 return ret;
-> >
-> > +       pm_runtime_use_autosuspend(dp->dev);
-> > +       pm_runtime_set_autosuspend_delay(dp->dev, 100);
->
-> It's explicitly listed in the Documentation that you need the
-> corresponding pm_runtime_dont_use_autosuspend(). Specifically, it
-> says:
->
-> > Drivers in ->remove() callback should undo the runtime PM changes done
-> > in ->probe(). Usually this means calling pm_runtime_disable(),
-> > pm_runtime_dont_use_autosuspend() etc.
->
-> Not that it's very common to see anyone actually get it right, but I
-> seem to remember running into an issue when I didn't do it. I think
-> ti-sn65dsi86 still has it wrong since I found out about this later.
-> Need to write a patch up for that... Basically you want to put it
-> right before the two calls in your driver to pm_runtime_disable().
+It's too big of a risk to accept this series without X taken care of. Patch
+series should neither have TODO nor TBD comments IMHO. I don't want to ack
+a series based on speculation what might happen in the future.
 
-Ack.
+> > I think the best way to move forward would be to do EAUG's explicitly with
+> > an ioctl that could also include secinfo for permissions. Then you can
+> > easily do the rest with EACCEPTCOPY inside the enclave.
+> 
+> SGX_IOC_ENCLAVE_ADD_PAGES already exists and could possibly be used for
+> this purpose. It already includes SECINFO which may also be useful if
+> needing to later support EAUG of PT_SS* pages.
 
-Speaking of API misfeatures that we missed: I've failed to call
-pm_runtime_mark_last_busy(). I'll add that in the next rev, for the
-cases where we weren't already calling *_put_sync() (i.e., presumably
-we don't really care to wait around for autosuspend).
+You could also simply add SGX_IOC_ENCLAVE_AUGMENT_PAGES and call it a day.
 
-*gripe* What a silly API. *gripe*
+And if there is plan to extend SGX_IOC_ENCLAVE_ADD_PAGES what is this weird
+thing added to the #PF handler? Why is it added at all then?
 
-Brian
+> How this could work is user space calls SGX_IOC_ENCLAVE_ADD_PAGES
+> after enclave initialization on any memory region within the enclave where
+> pages are planned to be added dynamically. This ioctl() calls EAUG to add the
+> new pages with RW permissions and their vm_max_prot_bits can be set to the
+> permissions found in the included SECINFO. This will support later EACCEPTCOPY
+> as well as SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
+
+I don't like this type of re-use of the existing API.
+
+> The big question is whether communicating user policy after enclave initialization
+> via the SECINFO within SGX_IOC_ENCLAVE_ADD_PAGES is acceptable to all? I would
+> appreciate a confirmation on this direction considering the significant history
+> behind this topic.
+
+I have no idea because I don't know what is user space policy.
+
+> > Putting EAUG to the #PF handler and implicitly call it just too flakky and
+> > hard to make deterministic for e.g. JIT compiler in our use case (not to
+> > mention that JIT is not possible at all because inability to do RX pages).
+> 
+> In this series this is indeed not possible because it lacks the user policy
+> integration. JIT will be possible after user policy integration.
+
+Like this I don't what this series can be used in practice.
+
+Majority of practical use cases for EDMM boil down to having a way to add
+new executable code (not just Enarx).
+
+> Reinette
+
+BR, Jarkko
