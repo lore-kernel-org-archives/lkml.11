@@ -2,76 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7108FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:26:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 581F1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241015AbiCBK0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 05:26:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
+        id S239035AbiCBK2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 05:28:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240979AbiCBK0k (ORCPT
+        with ESMTP id S235643AbiCBK2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 05:26:40 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECECAD122
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 02:25:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=GJ2BhPTfVAxkP4FcHPOJE11vP5WKDPDbfIXXkA1bkvQ=; b=v34sa9cOoRhiCgFv6PAn5chOli
-        bf3v6w2iR3antJq4oO9ETRdLX8YnN2RsO/KhSNP+rjoK9HFnHmg42G1QHASBoxKsQRFCJTGycdpcE
-        w+sxMImLufEnUFD4zvYdgc6visCeWclv8SWhtPHYT4MklQY8aJr8A6lUXZLTL/BFZDUp8SIUkpA/u
-        KIBybGXLlKdgHP32fWOr9XAMGehiG34aufidEGK4XfnpdZXQD1RW/ZTMtW6/QydMAck7PfeQ1X16s
-        tcYAZNjCF2zdfKOwzbI/heQ6YAB3PLitLdlwPgR7ToFKuObkp1F2Imc9Z3OaNXYUud7zOJ6bZy+Ne
-        o/mKE23g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPMAj-00AUKf-V5; Wed, 02 Mar 2022 10:25:30 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 66E0530018E;
-        Wed,  2 Mar 2022 11:25:29 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2872F321EE6E0; Wed,  2 Mar 2022 11:25:29 +0100 (CET)
-Date:   Wed, 2 Mar 2022 11:25:29 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, alexei.starovoitov@gmail.com,
-        naveen.n.rao@linux.vnet.ibm.com
-Subject: Re: [PATCH v2 15/39] x86/ibt,kprobes: Fix more +0 assumptions
-Message-ID: <Yh9GGY0tT/Wwkg8d@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151322.892372059@infradead.org>
- <20220228150705.aab2d654b973109bab070ffe@kernel.org>
- <20220228232513.GH11184@worktop.programming.kicks-ass.net>
- <20220301114905.e11146ad69d6e01998101c3b@kernel.org>
- <Yh3ZQQv8GjtqgUF4@hirez.programming.kicks-ass.net>
- <20220302091150.21daa1b3f153a98206ee8d9a@kernel.org>
+        Wed, 2 Mar 2022 05:28:14 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2C91FD1A;
+        Wed,  2 Mar 2022 02:27:31 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC850139F;
+        Wed,  2 Mar 2022 02:27:31 -0800 (PST)
+Received: from [10.57.21.40] (unknown [10.57.21.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B488C3F70D;
+        Wed,  2 Mar 2022 02:27:29 -0800 (PST)
+Message-ID: <5529d0f7-e81f-4def-0d34-eb3f1801cc45@arm.com>
+Date:   Wed, 2 Mar 2022 10:27:28 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220302091150.21daa1b3f153a98206ee8d9a@kernel.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH] coresight: core: Fix coresight device probe failure issue
+To:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc:     coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>
+References: <20220302080132.20946-1-quic_jinlmao@quicinc.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220302080132.20946-1-quic_jinlmao@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 09:11:50AM +0900, Masami Hiramatsu wrote:
-
-> > But if you really want/need to retain that, then yes, we need that
-> > else branch unconditionally :/
+On 02/03/2022 08:01, Mao Jinlong wrote:
+> It is possibe that probe failure issue happens when the device
+> and its child_device's probe happens at the same time.
+> In coresight_make_links, has_conns_grp is true for parent, but
+> has_conns_grp is false for child device as has_conns_grp is set
+> to true in coresight_create_conns_sysfs_group. The probe of parent
+> device will fail at this condition. Add has_conns_grp check for
+> child device before make the links and make the process from
+> device_register to connection_create be atomic to avoid this
+> probe failure issue.
 > 
-> Thank you,
+> Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Suggested-by: Mike Leach <mike.leach@linaro.org>
+> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+> ---
+>   drivers/hwtracing/coresight/coresight-core.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
+> index 88653d1c06a4..7ce78dddfe31 100644
+> --- a/drivers/hwtracing/coresight/coresight-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-core.c
+> @@ -1382,7 +1382,7 @@ static int coresight_fixup_device_conns(struct coresight_device *csdev)
+>   			continue;
+>   		conn->child_dev =
+>   			coresight_find_csdev_by_fwnode(conn->child_fwnode);
+> -		if (conn->child_dev) {
+> +		if (conn->child_dev && conn->child_dev->has_conns_grp) {
+>   			ret = coresight_make_links(csdev, conn,
+>   						   conn->child_dev);
+>   			if (ret)
+> @@ -1619,6 +1619,7 @@ struct coresight_device *coresight_register(struct coresight_desc *desc)
+>   	csdev->dev.fwnode = fwnode_handle_get(dev_fwnode(desc->dev));
+>   	dev_set_name(&csdev->dev, "%s", desc->name);
+>   
+> +	mutex_lock(&coresight_mutex);
+>   	ret = device_register(&csdev->dev);
+>   	if (ret) {
+>   		put_device(&csdev->dev);
+> @@ -1645,8 +1646,6 @@ struct coresight_device *coresight_register(struct coresight_desc *desc)
+>   		}
+>   	}
+>   
+> -	mutex_lock(&coresight_mutex);
+> -
+>   	ret = coresight_create_conns_sysfs_group(csdev);
+>   	if (!ret)
+>   		ret = coresight_fixup_device_conns(csdev);
+> @@ -1666,6 +1665,7 @@ struct coresight_device *coresight_register(struct coresight_desc *desc)
+>   err_free_csdev:
+>   	kfree(csdev);
+>   err_out:
+> +	mutex_unlock(&coresight_mutex);
 
-That's what I ended up doing in the latest version; I realized that
-irrespective of symbol size, it is required when symbols overlap, as per
-the case mentioned by Naveen.
+This appears to be wrong. We may do an unlock when we didn't lock it in
+the first place.
+Please could you double check. Also, I think it may be neater to move
+the kfree(csdev) to the only user and return straight away from there.
 
-  https://lkml.kernel.org/r/20220301200547.GK11184@worktop.programming.kicks-ass.net
+Cheers
+Suzuki
+
+
+
+
+>   	/* Cleanup the connection information */
+>   	coresight_release_platform_data(NULL, desc->pdata);
+>   	return ERR_PTR(ret);
+
