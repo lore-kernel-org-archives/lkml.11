@@ -2,69 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB99C43219
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbiCCABT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
+        id S229953AbiCCABW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:01:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiCCAA6 (ORCPT
+        with ESMTP id S229869AbiCCABI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:00:58 -0500
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4716D4E392;
-        Wed,  2 Mar 2022 16:00:11 -0800 (PST)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nPXvq-0006D3-JT; Thu, 03 Mar 2022 09:58:55 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 03 Mar 2022 10:58:54 +1200
-Date:   Thu, 3 Mar 2022 10:58:54 +1200
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     trix@redhat.com
-Cc:     dhowells@redhat.com, davem@davemloft.net, dan.j.williams@intel.com,
-        song@kernel.org, xni@redhat.com, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] crypto: cleanup comments
-Message-ID: <Yh/2rshgAKcKY7Wx@gondor.apana.org.au>
-References: <20220221223118.3744238-1-trix@redhat.com>
+        Wed, 2 Mar 2022 19:01:08 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019444FC6E;
+        Wed,  2 Mar 2022 16:00:07 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id 185so2739074qkh.1;
+        Wed, 02 Mar 2022 16:00:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s2VoxRcgzayXC4zVf8d2bV7EKQmBNoz4BFBzN6+8sx8=;
+        b=irtUW00dYBE7kRhx89tLLgo+OiHCquwUTazjhPRpgra/Ng8ZdA8XxCmleB4NvxllKh
+         4pKE6dlj50+3l1NtV4o9/4ebYa6MzILugoiY6A7PIbHurAxsmGNDq+Azak/YPX7TvXqp
+         vWKgPbmVn8eSbnf0s0rlwVptu1i33O5KFWx6cgKlB1Iv/ADRAyqTCutf86BCCCum8X2/
+         Bf0AFz6Uc9OqJ9+suUpqFsrW1IvnGHcoqc6V2ESgWgVivWiJrGD9dv/iy4uRrGM+OgIG
+         JzhbU+mrHknnWfDH4bhT9zMXZNaDWIeBUzcbCDaaOTAZ4EeZTnnWYTbM3mDIlJ1KSgyy
+         PikQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s2VoxRcgzayXC4zVf8d2bV7EKQmBNoz4BFBzN6+8sx8=;
+        b=wCLGp7OUJp/fLsZela7DxIvXWMqB8fMTaKGEFbVYBpJVhW5arTt6ymEBh+LPLVEJoB
+         SBitD97j/9axjRTC5GzF8BYKe0LIwXvp+8KyFUx02QRApxCPyYgOy5yCJBzjSBDR6SEf
+         tzAUuLR/0Dxip33xVNuSNyqvSr4CLSpBewlV4bMI2y8CR3ALVHsIRgnBJrZhjrzDHY4L
+         4QQTfvAlGrKVe5C47SWMfAJBYoQzSMu+s4vXQRXGiG+futo0FRgWFpP5zX+uv9/EYBZv
+         PV9OvMQmw8H+4EplRUvT2mGrKM7g+0Nq+2sILaHvIgXScDwjnhp8el0sXeOJ+NszTQfJ
+         euow==
+X-Gm-Message-State: AOAM530/h/YHG3cvh0tVvANRZMBksuBNc9m19b9MQE+GzLwZzjR/NQWO
+        kfBELprPAxqy7sRyqyySHYOjoL5psvJ9dX7l2+qacind//ASHw==
+X-Google-Smtp-Source: ABdhPJxo/W0o2SxPKcSkXdGg8CN8B7z5+TwZFM+qdHIf07npd47aBOy5NLnFlh9FXRccJ7EOY1O/tmylybId+gaV5XE=
+X-Received: by 2002:a02:aa85:0:b0:314:c152:4c89 with SMTP id
+ u5-20020a02aa85000000b00314c1524c89mr26976369jai.93.1646263965076; Wed, 02
+ Mar 2022 15:32:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221223118.3744238-1-trix@redhat.com>
+References: <20220301165737.672007-1-ytcoode@gmail.com>
+In-Reply-To: <20220301165737.672007-1-ytcoode@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 2 Mar 2022 15:32:34 -0800
+Message-ID: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: Add a check to ensure that page_cnt is non-zero
+To:     Yuntao Wang <ytcoode@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 02:31:18PM -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> For spdx
-> /* */ for *.h, // for *.c
-> Space before spdx tag
-> 
-> Replacements
-> paramenters to parameters
-> aymmetric to asymmetric
-> sigature to signature
-> boudary to boundary
-> compliled to compiled
-> eninges to engines
-> explicity to explicitly
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+On Tue, Mar 1, 2022 at 8:57 AM Yuntao Wang <ytcoode@gmail.com> wrote:
+>
+> The page_cnt parameter is used to specify the number of memory pages
+> allocated for each per-CPU buffer, it must be non-zero and a power of 2.
+>
+> Currently, the __perf_buffer__new() function attempts to validate that
+> the page_cnt is a power of 2 but forgets checking for the case where
+> page_cnt is zero, we can fix it by replacing 'page_cnt & (page_cnt - 1)'
+> with '!is_power_of_2(page_cnt)'.
+>
+> Thus we also don't need to add a check in perf_buffer__new_v0_6_0() to
+> make sure that page_cnt is non-zero and the check for zero in
+> perf_buffer__new_raw_v0_6_0() can also be removed.
+>
+> The code is cleaner and more readable.
+>
+> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
 > ---
->  crypto/asymmetric_keys/signature.c   | 2 +-
->  crypto/asymmetric_keys/x509_parser.h | 2 +-
->  crypto/async_tx/async_xor.c          | 8 ++++----
->  crypto/async_tx/raid6test.c          | 4 ++--
->  crypto/cfb.c                         | 2 +-
->  crypto/dh.c                          | 2 +-
->  crypto/sm2.c                         | 2 +-
->  7 files changed, 11 insertions(+), 11 deletions(-)
+>  tools/lib/bpf/libbpf.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index be6480e260c4..4dd1d82cd5b9 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/filter.h>
+>  #include <linux/list.h>
+>  #include <linux/limits.h>
+> +#include <linux/log2.h>
 
-Patch applied.  Thanks.
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+we don't have this header implemented in Github repo, so this will be
+unnecessary painful
+
+
+>  #include <linux/perf_event.h>
+>  #include <linux/ring_buffer.h>
+>  #include <linux/version.h>
+> @@ -10951,7 +10952,7 @@ struct perf_buffer *perf_buffer__new_raw_v0_6_0(int map_fd, size_t page_cnt,
+>  {
+>         struct perf_buffer_params p = {};
+>
+> -       if (page_cnt == 0 || !attr)
+> +       if (!attr)
+>                 return libbpf_err_ptr(-EINVAL);
+>
+>         if (!OPTS_VALID(opts, perf_buffer_raw_opts))
+> @@ -10992,7 +10993,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+>         __u32 map_info_len;
+>         int err, i, j, n;
+>
+> -       if (page_cnt & (page_cnt - 1)) {
+> +       if (!is_power_of_2(page_cnt)) {
+
+so let's instead just use `page_cnt == 0 || (page_cnt & (page_cnt -
+1))` here explicitly
+
+>                 pr_warn("page count should be power of two, but is %zu\n",
+>                         page_cnt);
+>                 return ERR_PTR(-EINVAL);
+> --
+> 2.35.1
+>
