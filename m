@@ -2,273 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E47C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322ABC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240060AbiCBIaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
+        id S240144AbiCBIaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:30:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240143AbiCBIaM (ORCPT
+        with ESMTP id S240121AbiCBIaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:30:12 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9DAB82F4
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:29:29 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id ay5so968916plb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:29:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5g/0QWFd98PH+GDbIHxo8Dsrvq3fGfzY+G57IkW5WS4=;
-        b=AAVeeC/1N3G5GcQ+K6GvknxUpCVQsZK39/oE0xJ/wgZT1GfB7gPbGuBOafACxBd/c6
-         MkH1O0a51SjPMpZ4wg2yNC3c4zpZ9dE5JglFpUNSIXG0tww4bCfNAXwvDe+a5pT1A/P+
-         9CUnfcNARVTbx0MaJya8bS1PjE/9KiSW76Iaio2gwlTnxUnXAbKEpjLj6kKMXhDjR6b7
-         OefsDv/keodJ7ewbycR7dyDT1rZ4Oos4YZlqHiUed2rus7fSEtveiT6lBZy0JF1vvXVe
-         LKMCP0ft+vVnndO2ogo+gRfdYi8O/h6hMPqKgldeWsB49c0/KdDg4htf5wEE883PpJ0B
-         zUow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5g/0QWFd98PH+GDbIHxo8Dsrvq3fGfzY+G57IkW5WS4=;
-        b=fMcVqt2KRRg+UqHDkAOJmk+LvOvh8vvO3kXHC7aIGPqRXjZGc0Vat6CH95HdgVyAlk
-         uzVF4FggEI4BU8GOiutpJnlgXxgkcEs//jx2E6VvFE5yZzazMWgvkv55J/VQwiZoJRAA
-         utLzIe++rbJB8dXjCCPoczQko1IHmktZGb5Lr1Imj/3CWvtP0jrcRDFdv9iiocg/WKBJ
-         rr5OYy1M8F9dqExNoojs3OVE1fOSpIk788+PwrnulQoh7+xD+V2wK8Alo1mZEwCXTLuc
-         MSbAP2nr3UdCP3gBsw8sgtUrF+KiJiX4Lgb7X/gCc9i7E0GgbPNGgu0JjaG5lupxsMLE
-         AENg==
-X-Gm-Message-State: AOAM533kL1XoN67R+2ahjLWcv96PodSAq3K3tfPoyWWxnib8tldcnFyF
-        0Lw1b91cAgqrYryVFvdlI1FbNw==
-X-Google-Smtp-Source: ABdhPJwYRvyK+lr9AitLQt9EnXiJDHe8rcmZLfe5ZnI1R9iF0WxPL6NhcheQihzz2A5zbJdCIhQ0vg==
-X-Received: by 2002:a17:90a:ab89:b0:1bc:71a7:f93a with SMTP id n9-20020a17090aab8900b001bc71a7f93amr25812348pjq.111.1646209769383;
-        Wed, 02 Mar 2022 00:29:29 -0800 (PST)
-Received: from FVFYT0MHHV2J.bytedance.net ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id a20-20020a056a000c9400b004f396b965a9sm20922228pfv.49.2022.03.02.00.29.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 00:29:29 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
-        hch@infradead.org
-Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v4 3/6] mm: rmap: introduce pfn_mkclean_range() to cleans PTEs
-Date:   Wed,  2 Mar 2022 16:27:15 +0800
-Message-Id: <20220302082718.32268-4-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220302082718.32268-1-songmuchun@bytedance.com>
-References: <20220302082718.32268-1-songmuchun@bytedance.com>
+        Wed, 2 Mar 2022 03:30:18 -0500
+X-Greylist: delayed 534 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 00:29:33 PST
+Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03934B8B63;
+        Wed,  2 Mar 2022 00:29:33 -0800 (PST)
+Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 0F2306030F;
+        Wed,  2 Mar 2022 09:20:36 +0100 (CET)
+Date:   Wed, 2 Mar 2022 09:20:34 +0100
+From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Huijin Park <huijin.park@samsung.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+Subject: Re: [BUG] mmc: core: adjust polling interval for CMD1
+Message-ID: <20220302082034.GA5723@math.uni-bielefeld.de>
+References: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
+ <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page_mkclean_one() is supposed to be used with the pfn that has a
-associated struct page, but not all the pfns (e.g. DAX) have a struct
-page. Introduce a new function pfn_mkclean_range() to cleans the PTEs
-(including PMDs) mapped with range of pfns which has no struct page
-associated with them. This helper will be used by DAX device in the
-next patch to make pfns clean.
+Ulf Hansson wrote on Tue  1/03/22 14:38:
+> On Thu, 17 Feb 2022 at 21:12, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+> >
+> > Hi,
+> > Jean Rene Dawin did report to me a problem on the Beagle Bone Black starting
+> > with our disto kernel based on v5.17-rc1:
+> >
+> > >> since kernel 5.17-rc1 I noticed slower emmc performance on Beaglebone
+> > >> Black, but didn't check the logs.
+> > >> When I tried to run 5.17.0-rc3-letux+ it booted fine, but during IO
+> > >> traffic there were messages like
+> > >>
+> > >> [  662.529584] mmc1: error -110 doing runtime resume
+> > >> [  669.293590] mmc1: Card stuck being busy! __mmc_poll_for_busy
+> > >>
+> > >> [  739.076072] mmc1: Timeout waiting for hardware interrupt.
+> > >> [  739.145676] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+> > >> [  739.231053] mmc1: sdhci: Sys addr:  0x00000000 | Version:  0x00003101
+> > >> [  739.316472] mmc1: sdhci: Blk size:  0x00000200 | Blk cnt:  0x00000400
+> > >> [  739.401937] mmc1: sdhci: Argument:  0x00342d30 | Trn mode: 0x00000023
+> > >> [  739.487439] mmc1: sdhci: Present:   0x01f70000 | Host ctl: 0x00000000
+> > >> [  739.573007] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x00000000
+> > >> [  739.658609] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00003c07
+> > >> [  739.744224] mmc1: sdhci: Timeout:   0x00000007 | Int stat: 0x00000002
+> > >> [  739.829896] mmc1: sdhci: Int enab:  0x027f000b | Sig enab: 0x027f000b
+> > >> [  739.915623] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
+> > >> [  740.001394] mmc1: sdhci: Caps:      0x07e10080 | Caps_1:   0x00000000
+> > >> [  740.087208] mmc1: sdhci: Cmd:       0x0000193a | Max curr: 0x00000000
+> > >> [  740.173051] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x00000000
+> > >> [  740.258928] mmc1: sdhci: Resp[2]:   0x00000000 | Resp[3]:  0x00000000
+> > >> [  740.344854] mmc1: sdhci: Host ctl2: 0x00000000
+> > >> [  740.402796] mmc1: sdhci: ============================================
+> > >>
+> > >> and finally IO errors and a corrupted filesystem.
+> > >>
+> > >> 5.17.0-rc4-letux+ shows the same behaviour.
+> >
+> > I checked with my BeagleBoard Black (am3358) and can confirm this observation.
+> > It happens only with the integrated eMMC but not with the µSD connected to
+> > the other mmc interface.
+> >
+> > A git bisect found:
+> >
+> > 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722 is the first bad commit
+> > commit 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722
+> > Author: Huijin Park <huijin.park@samsung.com>
+> > Date:   Thu Nov 4 15:32:31 2021 +0900
+> >
+> >   mmc: core: adjust polling interval for CMD1
+> >
+> >   In mmc_send_op_cond(), loops are continuously performed at the same
+> >   interval of 10 ms.  However the behaviour is not good for some eMMC
+> >   which can be out from a busy state earlier than 10 ms if normal.
+> >
+> >   Rather than fixing about the interval time in mmc_send_op_cond(),
+> >   let's instead convert into using the common __mmc_poll_for_busy().
+> >
+> >   The reason for adjusting the interval time is that it is important
+> >   to reduce the eMMC initialization time, especially in devices that
+> >   use eMMC as rootfs.
+> >
+> >   Test log(eMMC:KLM8G1GETF-B041):
+> >
+> >   before: 12 ms (0.311016 - 0.298729)
+> >   [    0.295823] mmc0: starting CMD0 arg 00000000 flags 000000c0
+> >   [    0.298729] mmc0: starting CMD1 arg 40000080 flags 000000e1<-start
+> >   [    0.311016] mmc0: starting CMD1 arg 40000080 flags 000000e1<-finish
+> >   [    0.311336] mmc0: starting CMD2 arg 00000000 flags 00000007
+> >
+> >   after: 2 ms (0.301270 - 0.298762)
+> >   [    0.295862] mmc0: starting CMD0 arg 00000000 flags 000000c0
+> >   [    0.298762] mmc0: starting CMD1 arg 40000080 flags 000000e1<-start
+> >   [    0.299067] mmc0: starting CMD1 arg 40000080 flags 000000e1
+> >   [    0.299441] mmc0: starting CMD1 arg 40000080 flags 000000e1
+> >   [    0.299879] mmc0: starting CMD1 arg 40000080 flags 000000e1
+> >   [    0.300446] mmc0: starting CMD1 arg 40000080 flags 000000e1
+> >   [    0.301270] mmc0: starting CMD1 arg 40000080 flags 000000e1<-finish
+> >   [    0.301572] mmc0: starting CMD2 arg 00000000 flags 00000007
+> >
+> >   Signed-off-by: Huijin Park <huijin.park@samsung.com>
+> >   Link: https://lore.kernel.org/r/20211104063231.2115-3-huijin.park@samsung.com
+> >   Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> >
+> > Reverting this makes v5.17-rc[1-4] work.
+> >
+> > Any suggestions or fixes?
+> >
+> > BR and thanks,
+> > Nikolaus Schaller
+> >
+> > Reported-by: jdawin@math.uni-bielefeld.de
+> >
+> 
+> Thanks for reporting and bisecting!
+> 
+> What changed with the offending commit is two things:
+> 
+> 1) We are sending the CMD1 more frequently, initially in the loop in
+> the __mmc_poll_for_busy. Step by step, we increase the polling period.
+> 2) We may end up using a slightly shorter total timeout for polling
+> time, compared to what we used before the offending commit.
+> 
+> Hopefully the problem is related to 2), in which case I think the
+> below patch should help. Can you please give it a try?
+> 
+> Kind regards
+> Uffe
+> 
+> From: Ulf Hansson <ulf.hansson@linaro.org>
+> Date: Tue, 1 Mar 2022 14:24:21 +0100
+> Subject: [PATCH] mmc: core: Extend timeout to 2s for MMC_SEND_OP_COND
+> 
+> It looks like the timeout for the MMC_SEND_OP_COND (CMD1) might have become
+> a bit too small due to recent changes. Therefore, let's extend it to 2s,
+> which is probably more inline with its previous value, to fix the reported
+> timeout problems.
+> 
+> While at it, let's add a define for the timeout value, rather than using
+> a hard-coded value for it.
+> 
+> Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Cc: Huijin Park <huijin.park@samsung.com>
+> Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> ---
+>  drivers/mmc/core/mmc_ops.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+> index d63d1c735335..1f57174b3cf3 100644
+> --- a/drivers/mmc/core/mmc_ops.c
+> +++ b/drivers/mmc/core/mmc_ops.c
+> @@ -21,6 +21,7 @@
+> 
+>  #define MMC_BKOPS_TIMEOUT_MS           (120 * 1000) /* 120s */
+>  #define MMC_SANITIZE_TIMEOUT_MS                (240 * 1000) /* 240s */
+> +#define MMC_OP_COND_TIMEOUT_MS         2000 /* 2s */
+> 
+>  static const u8 tuning_blk_pattern_4bit[] = {
+>         0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
+> @@ -232,7 +233,8 @@ int mmc_send_op_cond(struct mmc_host *host, u32
+> ocr, u32 *rocr)
+>         cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
+>         cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
+> 
+> -       err = __mmc_poll_for_busy(host, 1000, &__mmc_send_op_cond_cb, &cb_data);
+> +       err = __mmc_poll_for_busy(host, MMC_OP_COND_TIMEOUT_MS,
+> +                                 &__mmc_send_op_cond_cb, &cb_data);
+>         if (err)
+>                 return err;
+> 
+> -- 
+> 2.25.1
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- include/linux/rmap.h |  3 +++
- mm/internal.h        | 26 +++++++++++++--------
- mm/rmap.c            | 65 +++++++++++++++++++++++++++++++++++++++++++---------
- 3 files changed, 74 insertions(+), 20 deletions(-)
+Hi,
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index b58ddb8b2220..a6ec0d3e40c1 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -263,6 +263,9 @@ unsigned long page_address_in_vma(struct page *, struct vm_area_struct *);
-  */
- int folio_mkclean(struct folio *);
- 
-+int pfn_mkclean_range(unsigned long pfn, unsigned long nr_pages, pgoff_t pgoff,
-+		      struct vm_area_struct *vma);
-+
- void remove_migration_ptes(struct folio *src, struct folio *dst, bool locked);
- 
- /*
-diff --git a/mm/internal.h b/mm/internal.h
-index f45292dc4ef5..ff873944749f 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -516,26 +516,22 @@ void mlock_page_drain(int cpu);
- extern pmd_t maybe_pmd_mkwrite(pmd_t pmd, struct vm_area_struct *vma);
- 
- /*
-- * At what user virtual address is page expected in vma?
-- * Returns -EFAULT if all of the page is outside the range of vma.
-- * If page is a compound head, the entire compound page is considered.
-+ * * Return the start of user virtual address at the specific offset within
-+ * a vma.
-  */
- static inline unsigned long
--vma_address(struct page *page, struct vm_area_struct *vma)
-+vma_pgoff_address(pgoff_t pgoff, unsigned long nr_pages,
-+		  struct vm_area_struct *vma)
- {
--	pgoff_t pgoff;
- 	unsigned long address;
- 
--	VM_BUG_ON_PAGE(PageKsm(page), page);	/* KSM page->index unusable */
--	pgoff = page_to_pgoff(page);
- 	if (pgoff >= vma->vm_pgoff) {
- 		address = vma->vm_start +
- 			((pgoff - vma->vm_pgoff) << PAGE_SHIFT);
- 		/* Check for address beyond vma (or wrapped through 0?) */
- 		if (address < vma->vm_start || address >= vma->vm_end)
- 			address = -EFAULT;
--	} else if (PageHead(page) &&
--		   pgoff + compound_nr(page) - 1 >= vma->vm_pgoff) {
-+	} else if (pgoff + nr_pages - 1 >= vma->vm_pgoff) {
- 		/* Test above avoids possibility of wrap to 0 on 32-bit */
- 		address = vma->vm_start;
- 	} else {
-@@ -545,6 +541,18 @@ vma_address(struct page *page, struct vm_area_struct *vma)
- }
- 
- /*
-+ * Return the start of user virtual address of a page within a vma.
-+ * Returns -EFAULT if all of the page is outside the range of vma.
-+ * If page is a compound head, the entire compound page is considered.
-+ */
-+static inline unsigned long
-+vma_address(struct page *page, struct vm_area_struct *vma)
-+{
-+	VM_BUG_ON_PAGE(PageKsm(page), page);	/* KSM page->index unusable */
-+	return vma_pgoff_address(page_to_pgoff(page), compound_nr(page), vma);
-+}
-+
-+/*
-  * Then at what user virtual address will none of the range be found in vma?
-  * Assumes that vma_address() already returned a good starting address.
-  */
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 723682ddb9e8..ad5cf0e45a73 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -929,12 +929,12 @@ int folio_referenced(struct folio *folio, int is_locked,
- 	return pra.referenced;
- }
- 
--static bool page_mkclean_one(struct folio *folio, struct vm_area_struct *vma,
--			    unsigned long address, void *arg)
-+static int page_vma_mkclean_one(struct page_vma_mapped_walk *pvmw)
- {
--	DEFINE_FOLIO_VMA_WALK(pvmw, folio, vma, address, PVMW_SYNC);
-+	int cleaned = 0;
-+	struct vm_area_struct *vma = pvmw->vma;
- 	struct mmu_notifier_range range;
--	int *cleaned = arg;
-+	unsigned long address = pvmw->address;
- 
- 	/*
- 	 * We have to assume the worse case ie pmd for invalidation. Note that
-@@ -942,16 +942,16 @@ static bool page_mkclean_one(struct folio *folio, struct vm_area_struct *vma,
- 	 */
- 	mmu_notifier_range_init(&range, MMU_NOTIFY_PROTECTION_PAGE,
- 				0, vma, vma->vm_mm, address,
--				vma_address_end(&pvmw));
-+				vma_address_end(pvmw));
- 	mmu_notifier_invalidate_range_start(&range);
- 
--	while (page_vma_mapped_walk(&pvmw)) {
-+	while (page_vma_mapped_walk(pvmw)) {
- 		int ret = 0;
- 
--		address = pvmw.address;
--		if (pvmw.pte) {
-+		address = pvmw->address;
-+		if (pvmw->pte) {
- 			pte_t entry;
--			pte_t *pte = pvmw.pte;
-+			pte_t *pte = pvmw->pte;
- 
- 			if (!pte_dirty(*pte) && !pte_write(*pte))
- 				continue;
-@@ -964,7 +964,7 @@ static bool page_mkclean_one(struct folio *folio, struct vm_area_struct *vma,
- 			ret = 1;
- 		} else {
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
--			pmd_t *pmd = pvmw.pmd;
-+			pmd_t *pmd = pvmw->pmd;
- 			pmd_t entry;
- 
- 			if (!pmd_dirty(*pmd) && !pmd_write(*pmd))
-@@ -991,11 +991,22 @@ static bool page_mkclean_one(struct folio *folio, struct vm_area_struct *vma,
- 		 * See Documentation/vm/mmu_notifier.rst
- 		 */
- 		if (ret)
--			(*cleaned)++;
-+			cleaned++;
- 	}
- 
- 	mmu_notifier_invalidate_range_end(&range);
- 
-+	return cleaned;
-+}
-+
-+static bool page_mkclean_one(struct folio *folio, struct vm_area_struct *vma,
-+			     unsigned long address, void *arg)
-+{
-+	DEFINE_FOLIO_VMA_WALK(pvmw, folio, vma, address, PVMW_SYNC);
-+	int *cleaned = arg;
-+
-+	*cleaned += page_vma_mkclean_one(&pvmw);
-+
- 	return true;
- }
- 
-@@ -1033,6 +1044,38 @@ int folio_mkclean(struct folio *folio)
- EXPORT_SYMBOL_GPL(folio_mkclean);
- 
- /**
-+ * pfn_mkclean_range - Cleans the PTEs (including PMDs) mapped with range of
-+ *                     [@pfn, @pfn + @nr_pages) at the specific offset (@pgoff)
-+ *                     within the @vma of shared mappings. And since clean PTEs
-+ *                     should also be readonly, write protects them too.
-+ * @pfn: start pfn.
-+ * @nr_pages: number of physically contiguous pages srarting with @pfn.
-+ * @pgoff: page offset that the @pfn mapped with.
-+ * @vma: vma that @pfn mapped within.
-+ *
-+ * Returns the number of cleaned PTEs (including PMDs).
-+ */
-+int pfn_mkclean_range(unsigned long pfn, unsigned long nr_pages, pgoff_t pgoff,
-+		      struct vm_area_struct *vma)
-+{
-+	struct page_vma_mapped_walk pvmw = {
-+		.pfn		= pfn,
-+		.nr_pages	= nr_pages,
-+		.pgoff		= pgoff,
-+		.vma		= vma,
-+		.flags		= PVMW_SYNC,
-+	};
-+
-+	if (invalid_mkclean_vma(vma, NULL))
-+		return 0;
-+
-+	pvmw.address = vma_pgoff_address(pgoff, nr_pages, vma);
-+	VM_BUG_ON_VMA(pvmw.address == -EFAULT, vma);
-+
-+	return page_vma_mkclean_one(&pvmw);
-+}
-+
-+/**
-  * page_move_anon_rmap - move a page to our anon_vma
-  * @page:	the page to move to our anon_vma
-  * @vma:	the vma the page belongs to
--- 
-2.11.0
+thanks. But testing with this patch still gives the same errors:
 
+[   52.259940] mmc1: Card stuck being busy! __mmc_poll_for_busy
+[   52.273380] mmc1: error -110 doing runtime resume
+
+and the system gets stuck eventually.
+
+Regards,
+Jean Rene Dawin
