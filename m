@@ -2,90 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DD0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243183AbiCBOok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:44:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
+        id S243197AbiCBOpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:45:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243179AbiCBOog (ORCPT
+        with ESMTP id S243187AbiCBOpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:44:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF1D60CE3
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:43:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30ECCB81FFC
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 14:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72C6BC340F1;
-        Wed,  2 Mar 2022 14:41:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646232231;
-        bh=nhXXBu0cF26IikhGW2po8nwE/w5P96Wega5gfKm7YOA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Py8eyPMi0Wm4CGiB2MKL+k90uui5vlOSEdCFxzxbywpMz+us1a2rZBE6YMXBO8ZwR
-         TPitOwvYSpRrGKgkXSC5xw2iEHiZOo5trPq9XGIqIL2z8vu8UIAVf0GEKyc3TXQ2RK
-         8JbyEt99+CMo3tcytUcWRNgvCw/+ri7bkLxZVE2icKzwKbY5QiIOvALtnbSZT6TnKV
-         HJx0TiVDHCJep9ltAM6GaE0zsMe1vE6YSsdGHVX2xwwT8qMeXeDmCc497y9mRMTpDS
-         kK2KDPgher4woqro+R9ujI6wM8r3Ze9krSHsUqBLDoaKt2sCeQXhQZjWU/BP3uLBp1
-         uJ/r3XqCiFaTA==
-Date:   Wed, 2 Mar 2022 22:41:14 +0800
-From:   Gao Xiang <xiang@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-erofs@lists.ozlabs.org,
-        Chao Yu <chao@kernel.org>, Yue Hu <huyue2@yulong.com>
-Subject: [GIT PULL] erofs fix for 5.17-rc7
-Message-ID: <Yh+CCr04nTTappWl@hsiangkao-PC>
-Mail-Followup-To: Linus Torvalds <torvalds@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-erofs@lists.ozlabs.org,
-        Chao Yu <chao@kernel.org>, Yue Hu <huyue2@yulong.com>
+        Wed, 2 Mar 2022 09:45:04 -0500
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4680366AD5;
+        Wed,  2 Mar 2022 06:44:20 -0800 (PST)
+Received: from in01.mta.xmission.com ([166.70.13.51]:50778)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nPQDA-00GF8C-Sd; Wed, 02 Mar 2022 07:44:17 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:55716 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nPQD8-005Eiy-SW; Wed, 02 Mar 2022 07:44:16 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        NeilBrown <neilb@suse.de>, Vasily Averin <vvs@virtuozzo.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org
+References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
+        <YhzeCkXEvga7+o/A@bombadil.infradead.org>
+        <20220301180917.tkibx7zpcz2faoxy@google.com>
+        <Yh5lyr8dJXmEoFG6@bombadil.infradead.org>
+        <87wnhdwg75.fsf@email.froward.int.ebiederm.org>
+        <Yh6PPPqgPxJy+Jvx@bombadil.infradead.org>
+Date:   Wed, 02 Mar 2022 08:43:54 -0600
+In-Reply-To: <Yh6PPPqgPxJy+Jvx@bombadil.infradead.org> (Luis Chamberlain's
+        message of "Tue, 1 Mar 2022 13:25:16 -0800")
+Message-ID: <87ilswwh1x.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain
+X-XM-SPF: eid=1nPQD8-005Eiy-SW;;;mid=<87ilswwh1x.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19DnP/IlE2D3X8Ono4RyFyPR6RjJvwkeTc=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Luis Chamberlain <mcgrof@kernel.org> writes:
 
-Could you consider this pull request for 5.17-rc7?
+> On Tue, Mar 01, 2022 at 02:50:06PM -0600, Eric W. Biederman wrote:
+>> I really have not looked at this pids controller.
+>> 
+>> So I am not certain I understand your example here but I hope I have
+>> answered your question.
+>
+> During experimentation with the above stress-ng test case, I saw tons
+> of thread just waiting to do exit:
 
-It's a one-line patch to fix the new ztailpacking feature on > 4GiB
-filesystems because z_idataoff can get trimmed improperly.
+You increment the count of concurrent threads after a no return function
+in do_exit.  Since the increment is never reached the count always goes
+down and eventually the warning prints.
 
-Even if ztailpacking is still a brand new EXPERIMENTAL feature, it'd
-be better to fix the issue as soon as possible to avoid backporting
-unnecessary..
+> diff --git a/kernel/exit.c b/kernel/exit.c
+> index 80c4a67d2770..653ca7ebfb58 100644
+> --- a/kernel/exit.c
+> +++ b/kernel/exit.c
+> @@ -730,11 +730,24 @@ static void check_stack_usage(void)
+>  static inline void check_stack_usage(void) {}
+>  #endif
+>  
+> +/* Approx more than twice max_threads */
+> +#define MAX_EXIT_CONCURRENT (1<<17)
+> +static atomic_t exit_concurrent_max = ATOMIC_INIT(MAX_EXIT_CONCURRENT);
+> +static DECLARE_WAIT_QUEUE_HEAD(exit_wq);
+> +
+>  void __noreturn do_exit(long code)
+>  {
+>  	struct task_struct *tsk = current;
+>  	int group_dead;
+>  
+> +	if (atomic_dec_if_positive(&exit_concurrent_max) < 0) {
+> +		pr_warn_ratelimited("exit: exit_concurrent_max (%u) close to 0 (max : %u), throttling...",
+> +				    atomic_read(&exit_concurrent_max),
+> +				    MAX_EXIT_CONCURRENT);
+> +		wait_event(exit_wq,
+> +			   atomic_dec_if_positive(&exit_concurrent_max) >= 0);
+> +	}
+> +
+>  	/*
+>  	 * We can get here from a kernel oops, sometimes with preemption off.
+>  	 * Start by checking for critical errors.
+> @@ -881,6 +894,9 @@ void __noreturn do_exit(long code)
+>  
+>  	lockdep_free_task(tsk);
+>  	do_task_dead();
 
-The original patch has been in linux-next for a week and no merge
-conflicts. Except that I added a new RVB tag from Chao today.
+The function do_task_dead never returns.
 
-Thanks,
-Gao Xiang
+> +
+> +	atomic_inc(&exit_concurrent_max);
+> +	wake_up(&exit_wq);
+>  }
+>  EXPORT_SYMBOL_GPL(do_exit);
+>  
+> diff --git a/kernel/ucount.c b/kernel/ucount.c
+> index 4f5613dac227..980ffaba1ac5 100644
+> --- a/kernel/ucount.c
+> +++ b/kernel/ucount.c
+> @@ -238,6 +238,8 @@ struct ucounts *inc_ucount(struct user_namespace *ns, kuid_t uid,
+>  		long max;
+>  		tns = iter->ns;
+>  		max = READ_ONCE(tns->ucount_max[type]);
+> +		if (atomic_long_read(&iter->ucount[type]) > max/16)
+> +			cond_resched();
+>  		if (!atomic_long_inc_below(&iter->ucount[type], max))
+>  			goto fail;
+>  	}
 
-The following changes since commit cfb92440ee71adcc2105b0890bb01ac3cddb8507:
-
-  Linux 5.17-rc5 (2022-02-20 13:07:20 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs.git tags/erofs-for-5.17-rc7-fixes
-
-for you to fetch changes up to 22ba5e99b96f1c0dbdfa4f4e1d9751b4c8348541:
-
-  erofs: fix ztailpacking on > 4GiB filesystems (2022-03-02 21:58:45 +0800)
-
-----------------------------------------------------------------
-Change since last update:
-
- - Fix ztailpacking z_idataoff getting trimmed on > 4GiB filesystems.
-
-----------------------------------------------------------------
-Gao Xiang (1):
-      erofs: fix ztailpacking on > 4GiB filesystems
-
- fs/erofs/internal.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Eric
