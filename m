@@ -2,97 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1106C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245378AbiCBVjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:39:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
+        id S245375AbiCBVkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:40:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239247AbiCBVjV (ORCPT
+        with ESMTP id S238722AbiCBVkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:39:21 -0500
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCF735DD2
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:38:37 -0800 (PST)
-Received: by mail-oo1-xc30.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so3556498ooi.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 13:38:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wAluUivNSRI0mrtPJNKUEXcouPOkO+X3IXT465oBrOw=;
-        b=ACoMsJ2Mn/SOG3Ze7RxKSgj5WSgeDliONFFe/Zacv8MMyTD+5zX1YRwy8BT2NSTWOv
-         vWrDxXwWKD16SLaDbAvoKwM+He8s8J930uuTlPJ5LIdaXe7Ne7x8jW4nv7tohThlKf4g
-         ylsLgmIqgkoJ1LbJ6Gj1NS91PpCGn9pewcS1Rs1qkQf24pLPpcpq137W0ae3sBDu2FX0
-         Vo4nbzalqW8o0gE2L94prKFRD61N2KwfgYKo2iiKPq7gky7ITNT3sHKESacetDMcSGgU
-         vgLwyhSnDu3DLR0IHrBUehjE3hvpo2hRDZ4ZsiWi9H/ss86zr5FNvnaqQ9nXQkjF0cgw
-         8Wig==
+        Wed, 2 Mar 2022 16:40:22 -0500
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA4E70067;
+        Wed,  2 Mar 2022 13:39:38 -0800 (PST)
+Received: by mail-ot1-f43.google.com with SMTP id k9-20020a056830242900b005ad25f8ebfdso2854310ots.7;
+        Wed, 02 Mar 2022 13:39:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wAluUivNSRI0mrtPJNKUEXcouPOkO+X3IXT465oBrOw=;
-        b=LQHKq1tUQKFuMiuexcDZ8IG28xPBxTCCDg5kXoM9DbU/dAeJrIxngKK2gPAHK0L2Vl
-         lstqWiDVYYtl21xLDZ4Z6DXjNArPJqaAeMFQjGgOuCnZzPSPW02uuPKsgHDUj25Ci6/p
-         M0A5lue1nqal0tO+XkGcMKii3zI75lSSaBFLubTT1wK7UAHJbnYf0O/6pzmuwM6gTB/w
-         nk831A6+omTMkoWLvbTKHBN4M4jFj46bRCDR5Unl+nEbcR1UyIfoBGJtRu3hMWOGqvwz
-         /8yWYmmmlRvGG7Q5AhLsJShGC9rwBIMbZhNcKJQkwD+Sw1oiA05k4VUD2Fu0EvE1DmtO
-         qI5w==
-X-Gm-Message-State: AOAM531Yb5cyHxDNXRFjwhmH5ddMjjcvGaF7s77/qzqrtttgloDY+twe
-        lx2y+jJnXhJ9rS4wahYYfwU=
-X-Google-Smtp-Source: ABdhPJyXeYXONnVXkUqChLuC1mmm3Ye7mTwg0kIZZfs3SJeTlobZacBugYfKSzTmJSUI2rOxPJD0og==
-X-Received: by 2002:a05:6870:54ce:b0:d6:efb6:5fe1 with SMTP id g14-20020a05687054ce00b000d6efb65fe1mr1577880oan.25.1646257117221;
-        Wed, 02 Mar 2022 13:38:37 -0800 (PST)
-Received: from localhost.localdomain ([181.23.87.56])
-        by smtp.gmail.com with ESMTPSA id s12-20020a0568302a8c00b005b010d92dadsm69132otu.69.2022.03.02.13.38.30
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MJX9/TlWRUJexmSe/ehT+qegDC17Vjxv/vgEF02/DTg=;
+        b=3wws3fmQYLm1xXQxa6yslRabVh+a803WPho4Fiq9gnZ8bjvfoUOcE2gQPOig0rNz51
+         4vNUUzqUOIotepBmb/oSIYZtrNUssDCSVl9BeVVOgwQq/D8XhBmVJzvk/c4z9Dp+kkTZ
+         Av0S4GRwhgWotFINi5j//9eVzI5JVmrplqwLbvXSWZGFZ7cHu3hlGuL6W40RjMphxdo5
+         BLVMbkg0XxXElLmOd+9uB39nnSJLVBRoNFEcy7HEfZG00hyx7d9SSwlgy+wlxZNKYO4O
+         qBHjFN82YtR0sMb83i5glTMHccwGd/kVhISoKbG4WvYyTIk+1En2pplooFGNYHjqihch
+         eEAA==
+X-Gm-Message-State: AOAM530R286wNC9rrIJtSBpBlzfcT0icC8dr8PhckYy2p43SoATTJ38S
+        P+1gaAwp/FCPWveV9lkqgg==
+X-Google-Smtp-Source: ABdhPJySKq5l4R0u6GckGgZImJ9UwaXMIQpwqbIazsIiVgBiSpWJiyT3gmPOL8YgDYkXqu0eYQB4mg==
+X-Received: by 2002:a05:6830:43a0:b0:5af:e328:6bc7 with SMTP id s32-20020a05683043a000b005afe3286bc7mr13972568otv.62.1646257177730;
+        Wed, 02 Mar 2022 13:39:37 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l1-20020a4aa781000000b0031cf8e00738sm81839oom.1.2022.03.02.13.39.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 13:38:36 -0800 (PST)
-From:   Gaston Gonzalez <gascoar@gmail.com>
-To:     linux-staging@lists.linux.dev
-Cc:     gregkh@linuxfoundation.org, nsaenz@kernel.org,
-        stefan.wahren@i2se.com, ojaswin98@gmail.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, gascoar@gmail.com
-Subject: [PATCH 2/2] staging: vchiq_arm: add prototype of function vchiq_platform_init()
-Date:   Wed,  2 Mar 2022 18:36:38 -0300
-Message-Id: <b74ac90e869f71a98a04b834c4f3b5ab37bb38ea.1646255044.git.gascoar@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1646255044.git.gascoar@gmail.com>
-References: <cover.1646255044.git.gascoar@gmail.com>
+        Wed, 02 Mar 2022 13:39:36 -0800 (PST)
+Received: (nullmailer pid 100688 invoked by uid 1000);
+        Wed, 02 Mar 2022 21:39:35 -0000
+Date:   Wed, 2 Mar 2022 15:39:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Robert Marko <robert.marko@sartura.hr>, linus.walleij@linaro.org,
+        brgl@bgdev.pl, p.zabel@pengutronix.de, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org, luka.perkov@sartura.hr
+Subject: Re: [PATCH v10 5/6] dt-bindings: mfd: Add Delta TN48M CPLD drivers
+ bindings
+Message-ID: <Yh/kFzNuvbwA2qeE@robh.at.kernel.org>
+References: <20220131133049.77780-1-robert.marko@sartura.hr>
+ <20220131133049.77780-6-robert.marko@sartura.hr>
+ <Yh8vJNc4D6rA68au@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh8vJNc4D6rA68au@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix "no previous prototype" W=1 warning by adding the prototype of the
-function vchiq_platform_init().
+On Wed, Mar 02, 2022 at 08:47:32AM +0000, Lee Jones wrote:
+> On Mon, 31 Jan 2022, Robert Marko wrote:
+> 
+> > Add binding documents for the Delta TN48M CPLD drivers.
+> > 
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> 
+> This is missing a DT review.
 
-Note: vchiq_platform_init() is only called once in vchiq_probe(), so
-presumably should be static function. However, making the function
-static breaks the build.
+How about this one[1]?
 
-Signed-off-by: Gaston Gonzalez <gascoar@gmail.com>
----
- drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h | 2 ++
- 1 file changed, 2 insertions(+)
+Rob
 
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h
-index 2aa46b119a46..d72edaf7e5e9 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.h
-@@ -122,6 +122,8 @@ vchiq_instance_get_trace(struct vchiq_instance *instance);
- extern void
- vchiq_instance_set_trace(struct vchiq_instance *instance, int trace);
- 
-+int vchiq_platform_init(struct platform_device *pdev, struct vchiq_state *state);
-+
- #if IS_ENABLED(CONFIG_VCHIQ_CDEV)
- 
- extern void
--- 
-2.35.1
-
+[1] https://lore.kernel.org/all/20210719225906.GA2769608@robh.at.kernel.org/
