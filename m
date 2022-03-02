@@ -2,115 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BDAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244426AbiCBUxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:53:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S244820AbiCBUxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242626AbiCBUws (ORCPT
+        with ESMTP id S244780AbiCBUww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:52:48 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFBDA9E1E
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:52:04 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id p17so2613207plo.9
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:52:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1/zjEbSfhRRwQcZ+Urt/JTyvvofyCg2mmN4lvs+NezQ=;
-        b=Oep9w9nuZJVR02ibZvrEcTVkv0YiWk56vRe7ZtORUExSC9xXaEYaPW4RK27O5kGvyw
-         b4DdWZ8EywmcbRx8/foJt0NiNzP04MVr1kyq41Q+6NG2YsRUk1l2yIDKqY8vnFl2LdnQ
-         NwqWJD2CnGnvj295X5nkl6oYxqgwfqhBgsqZM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1/zjEbSfhRRwQcZ+Urt/JTyvvofyCg2mmN4lvs+NezQ=;
-        b=aUSNxRsxiLsB/adzh5KaOZw/BVFA1W1NFhOU7hAlZTuQ+1D6D+zacQNFBsZTFaVB+3
-         jev5bymbVzhegvwAa3uPiLXg7KMaKMNiN5NbHD+fssukDcu9n9SJMKExUIEY4UL3Yb5g
-         zQXg+yy/iHLMazOP8fwqx/uODkG3ykyC/ZzV/jCixl/o894HqZqmgXC0s6z4+8I0uokt
-         c81O+lb2wVxdjfdlxk8lm4MCO+UzSKPB1ynEYfbBjTOBg6hclrOW7yAaeFa7IwKshuhk
-         lUxMBsML59Tf7LoFLOkC5I2fTB+7CB7JC1vKlYTRqW4aMuoeEBelievWVQdOnPZNGBiB
-         M/XQ==
-X-Gm-Message-State: AOAM532lzQP/uNJHrCAe5202uMuP+mhkYyRw7kvwatItjPW4YIJ/2kKV
-        9QnO41SL4OLdTaQ7uWUXAk7vzg==
-X-Google-Smtp-Source: ABdhPJyywT7+4z2Og3DinCge0OBdaL2iq4lk9mSh5O2CZZ5d2WMPgmh0kS9M4Dj9llTUA5VewclR8A==
-X-Received: by 2002:a17:902:8f83:b0:151:5c71:a6e6 with SMTP id z3-20020a1709028f8300b001515c71a6e6mr20427267plo.126.1646254323838;
-        Wed, 02 Mar 2022 12:52:03 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056a000c8c00b004e1a76f0a8asm71669pfv.51.2022.03.02.12.52.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:52:03 -0800 (PST)
-Date:   Wed, 2 Mar 2022 12:52:02 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Eric Biggers <ebiggers@kernel.org>, Adam Langley <agl@google.com>,
-        linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>, keyrings@vger.kernel.org
-Subject: Re: [PATCH 1/1] sign-file: Use OpenSSL provided define to compile
- out deprecated APIs
-Message-ID: <202203021251.1DB0383C@keescook>
-References: <20211005161833.1522737-1-lee.jones@linaro.org>
- <YVyE3Ax1PRtiBwf+@gmail.com>
- <CAL9PXLws4DjvPB=1KNpom3W52pXNauXQ4V==MprDx73YQ1-sgg@mail.gmail.com>
- <YVyKc51r2tfMmQuO@gmail.com>
- <YVyVNkijABL7CxnM@google.com>
+        Wed, 2 Mar 2022 15:52:52 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01357DBD2A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:52:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3YdQNtU09LFdeLx+8RqtwL1hK03bUwsWLy6P+HorXuU=; b=tqUgDKuDXvCleY6xLte/WUS9fn
+        IqW5Wi0hrtFiycNJOPgtVSfTR6yGK8YIjVm+T5HnlZ2DydgRRNuh9nZNy8vK7OgmcMQxS5UcTud9B
+        Rg0lvjR3QakPtbdPdVstufmXRL6ysndsghSIBKUxdCUNxdqvf/J80sLmsVs7ABpAMC4CPejBZAuSb
+        xZPEZQVYmwLZvnC3C5u2CVLZPLvS6DeMgrejN9p36Xq97p91KFD5lVdeJpJy751SuhWCjv5oHpu5O
+        8VhLAUbT6WcpWESs/InkzszsHpwkeAWhNxjwbiJj+hEQcuGWr06KIbVl4zL+5bVksI4GtU08c8gF3
+        GnY4F1qA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPVwg-00AyYg-SO; Wed, 02 Mar 2022 20:51:38 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 833B630017F;
+        Wed,  2 Mar 2022 21:51:36 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3B969203C2E87; Wed,  2 Mar 2022 21:51:36 +0100 (CET)
+Date:   Wed, 2 Mar 2022 21:51:36 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        alexei.starovoitov@gmail.com, alyssa.milburn@intel.com,
+        andrew.cooper3@citrix.com, hjl.tools@gmail.com,
+        joao@overdrivepizza.com, jpoimboe@redhat.com,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, mbenes@suse.cz, ndesaulniers@google.com,
+        samitolvanen@google.com, x86@kernel.org
+Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
+Message-ID: <Yh/Y2FHw90m00owK@hirez.programming.kicks-ass.net>
+References: <20220224105847.5c899324@gandalf.local.home>
+ <20220225103449.6084e5314273556f35107cd9@kernel.org>
+ <20220224211919.0612a3f6@rorschach.local.home>
+ <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
+ <20220225083647.12ceb54b@gandalf.local.home>
+ <1646159447.ngbqgzj71t.naveen@linux.ibm.com>
+ <20220301142016.22e787fb@gandalf.local.home>
+ <Yh9vF8REB1JlhQCJ@hirez.programming.kicks-ass.net>
+ <20220302110138.6d2abcec@gandalf.local.home>
+ <20220302144716.1772020c@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YVyVNkijABL7CxnM@google.com>
+In-Reply-To: <20220302144716.1772020c@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Oct 05, 2021 at 07:11:02PM +0100, Lee Jones wrote:
-> On Tue, 05 Oct 2021, Eric Biggers wrote:
+On Wed, Mar 02, 2022 at 02:47:16PM -0500, Steven Rostedt wrote:
+> Note, I just pulled this patch, and I hit this warning:
 > 
-> > On Tue, Oct 05, 2021 at 10:14:58AM -0700, Adam Langley wrote:
-> > > On Tue, Oct 5, 2021 at 10:01 AM Eric Biggers <ebiggers@kernel.org> wrote:
-> > > > I ran into these same -Wdeprecated-declarations compiler warnings on another
-> > > > project that uses the ENGINE API to access OpenSSL's support for PKCS#11 tokens.
-> > > > The conclusion was that in OpenSSL 3.0, the new API for PKCS#11 support isn't
-> > > > actually ready yet, so we had to keep using the ENGINE API and just add
-> > > > -Wno-deprecated-declarations to the compiler flags.
-> > > >
-> > > > Your patch just removes support for PKCS#11 in that case, which seems
-> > > > undesirable.  (Unless no one is actually using it?)
-> > > 
-> > > The patch removes support when OPENSSL_NO_ENGINE is defined, but
-> > > that's not defined by default in OpenSSL 3.0. (Unless something
-> > > changed recently.)
-> > > 
-> > > When OPENSSL_NO_ENGINE is defined, ENGINE support is not compiled into
-> > > OpenSSL and the headers don't include the functions:
-> > > https://github.com/openssl/openssl/blob/master/include/openssl/engine.h
-> > > .
-> > 
-> > Okay so this patch is actually a build fix for when OpenSSL doesn't include
-> > ENGINE support?
+> WARNING: CPU: 0 PID: 6965 at arch/x86/kernel/kprobes/core.c:205 recover_probed_instruction+0x8f/0xa0
 > 
-> Correct.
+> static unsigned long
+> __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
+> {
+>         struct kprobe *kp;
+>         unsigned long faddr;
 > 
-> > Currently this patch claims that it's removing the use of a
-> > "deprecated" API, which is something entirely different.
-> 
-> I see your point.
-> 
-> Happy to rejig the commit message if that would help.
+>         kp = get_kprobe((void *)addr);
+>         faddr = ftrace_location(addr);
+>         /*
+>          * Addresses inside the ftrace location are refused by
+>          * arch_check_ftrace_location(). Something went terribly wrong
+>          * if such an address is checked here.
+>          */
+>         if (WARN_ON(faddr && faddr != addr))  <<---- HERE
+>                 return 0UL;
 
-*thread necromancy*
+Ha! so a bunch of IRC later I figured out how it is possible you hit
+this with just the patch on and how I legitimately hit this and what to
+do about it.
 
-Hi,
+Your problem seems to be that we got ftrace_location() wrong in that
+lookup_rec()'s end argument is inclusive, hence we need:
 
-These warnings are quite noisy on Fedora rawhide and other distros that
-have moved to OpenSSL 3.0. It's not clear to me from this thread if this
-patch is actually the correct fix?
+	lookup_rec(ip, ip + size - 1)
 
--Kees
+Now, the above thing asserts that:
 
--- 
-Kees Cook
+	ftrace_location(x) == {0, x}
+
+and that is genuinely false in my case, I get x+4 as additional possible
+output. So I think I need the below change to go on top of all I have:
+
+
+diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
+index 7f0ce42f8ff9..4c13406e0bc4 100644
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -198,13 +198,14 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
+ 
+ 	kp = get_kprobe((void *)addr);
+ 	faddr = ftrace_location(addr);
++
+ 	/*
+-	 * Addresses inside the ftrace location are refused by
+-	 * arch_check_ftrace_location(). Something went terribly wrong
+-	 * if such an address is checked here.
++	 * In case addr maps to sym+0 ftrace_location() might return something
++	 * other than faddr. In that case consider it the same as !faddr.
+ 	 */
+-	if (WARN_ON(faddr && faddr != addr))
+-		return 0UL;
++	if (faddr && faddr != addr)
++		faddr = 0;
++
+ 	/*
+ 	 * Use the current code if it is not modified by Kprobe
+ 	 * and it cannot be modified by ftrace.
