@@ -2,213 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A460C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244731AbiCBSsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:48:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S244740AbiCBStO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244726AbiCBSsE (ORCPT
+        with ESMTP id S237825AbiCBStN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:48:04 -0500
-X-Greylist: delayed 899 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 10:47:20 PST
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565ADD5571;
-        Wed,  2 Mar 2022 10:47:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1646245282; bh=r/KWBCXbgbUsx0MROHM9/eZLCf5PfDdjQ920as27D3k=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=D2nwKwiYcjfQ8oI3lQewTctuUi8U4oh8bNo2fgLFtdJlnEEKPqbSl/4HCVSEanMn4
-         3RTuUSTz/1dEi3fgmH0m2GCM16EQNrmAUzX6Vla+Dpc0F7l792PeVNRR/UvsyTUsso
-         fojz0nHmJamBDGby1t7rqGhtVFt8K4DBvXpB8oJKcBu2PlmqUMFBoXUApvB4dNrzaR
-         Y5v4yFqHW07zhDlJnzE1XFZX0IElyreDBbxTF6tncpceXn6DUlqp+Bp5e8TuBukRkS
-         OMABrntTimVnol9CcvJIurAztzqKq5d6vXpigNoE7OfhCX0stZ2hPYVlzZwTKivbp3
-         AWQCNqKfDfS+g==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 293C039B89A;
-        Wed,  2 Mar 2022 18:21:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1646245282; bh=r/KWBCXbgbUsx0MROHM9/eZLCf5PfDdjQ920as27D3k=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=D2nwKwiYcjfQ8oI3lQewTctuUi8U4oh8bNo2fgLFtdJlnEEKPqbSl/4HCVSEanMn4
-         3RTuUSTz/1dEi3fgmH0m2GCM16EQNrmAUzX6Vla+Dpc0F7l792PeVNRR/UvsyTUsso
-         fojz0nHmJamBDGby1t7rqGhtVFt8K4DBvXpB8oJKcBu2PlmqUMFBoXUApvB4dNrzaR
-         Y5v4yFqHW07zhDlJnzE1XFZX0IElyreDBbxTF6tncpceXn6DUlqp+Bp5e8TuBukRkS
-         OMABrntTimVnol9CcvJIurAztzqKq5d6vXpigNoE7OfhCX0stZ2hPYVlzZwTKivbp3
-         AWQCNqKfDfS+g==
-Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi [88.113.46.102])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.mleia.com (Postfix) with ESMTPSA id 16A0B39B811;
-        Wed,  2 Mar 2022 18:21:19 +0000 (UTC)
-Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Michal Simek <michal.simek@xilinx.com>
-References: <20220302072732.1916-1-jslaby@suse.cz>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <9f1f4434-56cb-e8e7-b947-6630752a74c3@mleia.com>
-Date:   Wed, 2 Mar 2022 20:21:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Wed, 2 Mar 2022 13:49:13 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF2A2C1;
+        Wed,  2 Mar 2022 10:48:28 -0800 (PST)
+Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K83695jbNz67Ywb;
+        Thu,  3 Mar 2022 02:48:17 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Wed, 2 Mar 2022 19:48:25 +0100
+Received: from [10.47.84.129] (10.47.84.129) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 2 Mar
+ 2022 18:48:25 +0000
+Message-ID: <6e3bcece-1046-0c2f-78d8-21d5030a8d71@huawei.com>
+Date:   Wed, 2 Mar 2022 18:48:24 +0000
 MIME-Version: 1.0
-In-Reply-To: <20220302072732.1916-1-jslaby@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20220302_182122_201121_FC62FFD6 
-X-CRM114-Status: GOOD (  26.46  )
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v7 01/10] crypto: hisilicon/qm: Move the QM header to
+ include/linux
+To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
+        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
+        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
+        <liulongfang@huawei.com>, <prime.zeng@hisilicon.com>,
+        <jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
+References: <20220302172903.1995-1-shameerali.kolothum.thodi@huawei.com>
+ <20220302172903.1995-2-shameerali.kolothum.thodi@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220302172903.1995-2-shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.84.129]
+X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 9:27 AM, Jiri Slaby wrote:
-> Currently, uart_console_write->putchar's second parameter (the
-> character) is of type int. It makes little sense, provided uart_console_write()
-> accepts the input string as "const char *s" and passes its content -- the
-> characters -- to putchar(). So switch the character's type to unsigned
-> char.
+On 02/03/2022 17:28, Shameer Kolothum wrote:
+> Since we are going to introduce VFIO PCI HiSilicon ACC
+> driver for live migration in subsequent patches, move
+> the ACC QM header file to a common include dir.
 > 
-> We don't use char as that is signed on some platforms. That would cause
-> troubles for drivers which (implicitly) cast the char to u16 when
-> writing to the device. Sign extension would happen in that case and the
-> value written would be completely different to the provided char. DZ is
-> an example of such a driver -- on MIPS, it uses u16 for dz_out in
-> dz_console_putchar().
-> 
-> Note we do the char -> uchar conversion implicitly in
-> uart_console_write(). Provided we do not change size of the data type,
-> sign extension does not happen there, so the problem is void.
-> 
-> This makes the types consistent and unified with the rest of the uart
-> layer, which uses unsigned char in most places already. One exception is
-> xmit_buf, but that is going to be converted later.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Acked-by: Richard Genoud <richard.genoud@gmail.com> [atmel_serial]
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com> [bcm63xx_uart]
-> Acked-by: Tobias Klauser <tklauser@distanz.ch> [altera_*]
-> Cc: Paul Cercueil <paul@crapouillou.net>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Vineet Gupta <vgupta@kernel.org>
-> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: Alexander Shiyan <shc_work@mail.ru>
-> Cc: Baruch Siach <baruch@tkos.co.il>
-> Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Albert Ou <aou@eecs.berkeley.edu>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: Karol Gugala <kgugala@antmicro.com>
-> Cc: Mateusz Holenko <mholenko@antmicro.com>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Jerome Brunet <jbrunet@baylibre.com>
-> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Cc: Taichi Sugaya <sugaya.taichi@socionext.com>
-> Cc: Takao Orito <orito.takao@socionext.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: "Andreas Färber" <afaerber@suse.de>
-> Cc: Manivannan Sadhasivam <mani@kernel.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Peter Korsgaard <peter@korsgaard.com>
-> Cc: Michal Simek <michal.simek@xilinx.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 > ---
+>   drivers/crypto/hisilicon/hpre/hpre.h                         | 2 +-
+>   drivers/crypto/hisilicon/qm.c                                | 2 +-
+>   drivers/crypto/hisilicon/sec2/sec.h                          | 2 +-
+>   drivers/crypto/hisilicon/sgl.c                               | 2 +-
+>   drivers/crypto/hisilicon/zip/zip.h                           | 2 +-
+>   drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h | 0
 
-[snip]
+include/linux/crypto seems a better location. I'm not sure if someone 
+suggested a location already, though.
 
-> diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-> index 54437a087aa0..93140cac1ca1 100644
-> --- a/drivers/tty/serial/lpc32xx_hs.c
-> +++ b/drivers/tty/serial/lpc32xx_hs.c
-> @@ -122,7 +122,7 @@ static void wait_for_xmit_ready(struct uart_port *port)
->   	}
->   }
+>   6 files changed, 5 insertions(+), 5 deletions(-)
+>   rename drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h (100%)
+> 
+> diff --git a/drivers/crypto/hisilicon/hpre/hpre.h b/drivers/crypto/hisilicon/hpre/hpre.h
+> index e0b4a1982ee9..9a0558ed82f9 100644
+> --- a/drivers/crypto/hisilicon/hpre/hpre.h
+> +++ b/drivers/crypto/hisilicon/hpre/hpre.h
+> @@ -4,7 +4,7 @@
+>   #define __HISI_HPRE_H
 >   
-> -static void lpc32xx_hsuart_console_putchar(struct uart_port *port, int ch)
-> +static void lpc32xx_hsuart_console_putchar(struct uart_port *port, unsigned char ch)
->   {
->   	wait_for_xmit_ready(port);
->   	writel((u32)ch, LPC32XX_HSUART_FIFO(port->membase));
+>   #include <linux/list.h>
+> -#include "../qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>   
+>   #define HPRE_SQE_SIZE			sizeof(struct hpre_sqe)
+>   #define HPRE_PF_DEF_Q_NUM		64
+> diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+> index c5b84a5ea350..ed23e1d3fa27 100644
+> --- a/drivers/crypto/hisilicon/qm.c
+> +++ b/drivers/crypto/hisilicon/qm.c
+> @@ -15,7 +15,7 @@
+>   #include <linux/uacce.h>
+>   #include <linux/uaccess.h>
+>   #include <uapi/misc/uacce/hisi_qm.h>
+> -#include "qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>   
+>   /* eq/aeq irq enable */
+>   #define QM_VF_AEQ_INT_SOURCE		0x0
+> diff --git a/drivers/crypto/hisilicon/sec2/sec.h b/drivers/crypto/hisilicon/sec2/sec.h
+> index d97cf02b1df7..c2e9b01187a7 100644
+> --- a/drivers/crypto/hisilicon/sec2/sec.h
+> +++ b/drivers/crypto/hisilicon/sec2/sec.h
+> @@ -4,7 +4,7 @@
+>   #ifndef __HISI_SEC_V2_H
+>   #define __HISI_SEC_V2_H
+>   
+> -#include "../qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>   #include "sec_crypto.h"
+>   
+>   /* Algorithm resource per hardware SEC queue */
+> diff --git a/drivers/crypto/hisilicon/sgl.c b/drivers/crypto/hisilicon/sgl.c
+> index 057273769f26..534687401135 100644
+> --- a/drivers/crypto/hisilicon/sgl.c
+> +++ b/drivers/crypto/hisilicon/sgl.c
+> @@ -3,7 +3,7 @@
+>   #include <linux/dma-mapping.h>
+>   #include <linux/module.h>
+>   #include <linux/slab.h>
+> -#include "qm.h"
+> +#include <linux/hisi_acc_qm.h>
 
-for NXP LPC32xx HS UART:
+alphabetic ordering (ignoring previous point)?
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+>   
+>   #define HISI_ACC_SGL_SGE_NR_MIN		1
+>   #define HISI_ACC_SGL_NR_MAX		256
+> diff --git a/drivers/crypto/hisilicon/zip/zip.h b/drivers/crypto/hisilicon/zip/zip.h
+> index 517fdbdff3ea..3dfd3bac5a33 100644
+> --- a/drivers/crypto/hisilicon/zip/zip.h
+> +++ b/drivers/crypto/hisilicon/zip/zip.h
+> @@ -7,7 +7,7 @@
+>   #define pr_fmt(fmt)	"hisi_zip: " fmt
+>   
+>   #include <linux/list.h>
+> -#include "../qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>   
+>   enum hisi_zip_error_type {
+>   	/* negative compression */
+> diff --git a/drivers/crypto/hisilicon/qm.h b/include/linux/hisi_acc_qm.h
+> similarity index 100%
+> rename from drivers/crypto/hisilicon/qm.h
+> rename to include/linux/hisi_acc_qm.h
 
---
-Best wishes,
-Vladimir
