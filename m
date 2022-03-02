@@ -2,151 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiCBX6h convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
+        id S229876AbiCBX64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:58:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiCBX6e (ORCPT
+        with ESMTP id S229819AbiCBX6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:58:34 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7DD0659D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:57:49 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-214-E8EQuzy4Px6_ZuHM3Sq0SA-1; Wed, 02 Mar 2022 23:57:46 +0000
-X-MC-Unique: E8EQuzy4Px6_ZuHM3Sq0SA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Wed, 2 Mar 2022 23:57:44 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Wed, 2 Mar 2022 23:57:44 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     =?iso-8859-1?Q?=27Uwe_Kleine-K=F6nig=27?= 
-        <u.kleine-koenig@pengutronix.de>, Jiri Slaby <jslaby@suse.cz>
-CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        "Paul Mackerras" <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "Michal Simek" <michal.simek@xilinx.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Alexander Shiyan" <shc_work@mail.ru>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Andy Gross <agross@kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        "Albert Ou" <aou@eecs.berkeley.edu>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Takao Orito <orito.takao@socionext.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        "Palmer Dabbelt" <palmer@dabbelt.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?iso-8859-1?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: RE: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-Thread-Topic: [PATCH v3] serial: make uart_console_write->putchar()'s
- character an unsigned char
-Thread-Index: AQHYLl5tVpWrjMz0S0GPyaCV/1nc9aysw9yA
-Date:   Wed, 2 Mar 2022 23:57:44 +0000
-Message-ID: <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com>
-References: <20220302072732.1916-1-jslaby@suse.cz>
- <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
-In-Reply-To: <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 2 Mar 2022 18:58:52 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5828B22B1E;
+        Wed,  2 Mar 2022 15:58:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646265488; x=1677801488;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8rc56ekTbeKFOC2iDvS+DEuqovVns3lGZWNghGxdVAg=;
+  b=K58o9uRBYY7duBV0u+jYh31vDxU+I046W1LQUrR72tM9GTIg55EGKIRG
+   g9wQ2sLIJuqgOc81lnueCv9qK19KJc8sOFu9ghsR5Tp7du2meoSoMp1xG
+   GNMeddsVdCF4m6tadQwrK7PK2CwqLG8Q8ba8gFD50p0mT3OilmwXz5Pt9
+   yXdA43Y1HxmVSZjisWpOzaMNHfElUX97sysjhbL70AIboLqILB69W1zRK
+   vEpthpy0DDyD5pwGKVkHh4+fR9APIHQ3cpFSn80xMyRvWTgDmRVKGvzch
+   gLiOX0P8160SYjU3at5j/zDuPFMeCBIqvaAh7BuMhL+BZdk2YnT6oDpxI
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251101580"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="251101580"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:12:04 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="630572209"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 02 Mar 2022 15:11:59 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPY8U-00023G-Fz; Wed, 02 Mar 2022 23:11:58 +0000
+Date:   Thu, 3 Mar 2022 07:11:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, zohar@linux.ibm.com,
+        serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: Re: [PATCH v11 26/27] ima: Restrict informational audit messages to
+ init_ima_ns
+Message-ID: <202203030748.dQ8i3hT2-lkp@intel.com>
+References: <20220302134703.1273041-27-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302134703.1273041-27-stefanb@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König
-> Sent: 02 March 2022 17:53
-> 
-> On Wed, Mar 02, 2022 at 08:27:32AM +0100, Jiri Slaby wrote:
-> > Currently, uart_console_write->putchar's second parameter (the
-> > character) is of type int. It makes little sense, provided uart_console_write()
-> > accepts the input string as "const char *s" and passes its content -- the
-> > characters -- to putchar(). So switch the character's type to unsigned
-> > char.
-> >
-> > We don't use char as that is signed on some platforms. That would cause
-> > troubles for drivers which (implicitly) cast the char to u16 when
-> > writing to the device. Sign extension would happen in that case and the
-> > value written would be completely different to the provided char. DZ is
-> > an example of such a driver -- on MIPS, it uses u16 for dz_out in
-> > dz_console_putchar().
-> 
-> I always thought this was bigger than 8bit for hardware that supports
-> wider characters. But if that's the case that's completely unsupported,
-> there isn't even CS9.
+Hi Stefan,
 
-The real problem is that using char (or short) for a function parameter
-or result is very likely to require the compile add code to mask
-the value to 8 (or 16) bits.
+Thank you for the patch! Yet something to improve:
 
-Remember that almost every time you do anything with a signed or unsigned
-char/short variable the compiler has to use the integer promotion rules
-to convert the value to int.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc6]
+[cannot apply to zohar-integrity/next-integrity linux/master jmorris-security/next-testing next-20220302]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-You'll almost certainly get better code if the value is left in an
-int (or unsigned int) variable until the low 8 bits get written to
-a buffer (or hardware register).
+url:    https://github.com/0day-ci/linux/commits/Stefan-Berger/ima-Namespace-IMA-with-audit-support-in-IMA-ns/20220302-215707
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git fb184c4af9b9f4563e7a126219389986a71d5b5b
+config: arm64-randconfig-r006-20220302 (https://download.01.org/0day-ci/archive/20220303/202203030748.dQ8i3hT2-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/0day-ci/linux/commit/781d4b92eee902d5ebcac657814703974f8e8b28
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Stefan-Berger/ima-Namespace-IMA-with-audit-support-in-IMA-ns/20220302-215707
+        git checkout 781d4b92eee902d5ebcac657814703974f8e8b28
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-	David
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+All errors (new ones prefixed by >>):
 
+>> security/integrity/ima/ima_main.c:200:32: error: too many arguments to function call, expected 2, have 3
+                                   ima_update_xattr(ns, iint, file);
+                                   ~~~~~~~~~~~~~~~~           ^~~~
+   security/integrity/ima/ima.h:413:20: note: 'ima_update_xattr' declared here
+   static inline void ima_update_xattr(struct integrity_iint_cache *iint,
+                      ^
+   1 error generated.
+
+
+vim +200 security/integrity/ima/ima_main.c
+
+   176	
+   177	static void ima_check_last_writer(struct ima_namespace *ns,
+   178					  struct integrity_iint_cache *iint,
+   179					  struct inode *inode, struct file *file)
+   180	{
+   181		fmode_t mode = file->f_mode;
+   182		bool update;
+   183	
+   184		if (!(mode & FMODE_WRITE))
+   185			return;
+   186	
+   187		mutex_lock(&iint->mutex);
+   188		if (atomic_read(&inode->i_writecount) == 1) {
+   189			update = test_and_clear_bit(IMA_UPDATE_XATTR,
+   190						    &iint->atomic_flags);
+   191			if (!IS_I_VERSION(inode) ||
+   192			    !inode_eq_iversion(inode, iint->version) ||
+   193			    (iint->flags & IMA_NEW_FILE)) {
+   194				mask_iint_ns_status_flags
+   195						(iint,
+   196						 ~(IMA_DONE_MASK | IMA_NEW_FILE));
+   197				iint->measured_pcrs = 0;
+   198	
+   199				if (update)
+ > 200					ima_update_xattr(ns, iint, file);
+   201			}
+   202		}
+   203		mutex_unlock(&iint->mutex);
+   204	}
+   205	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
