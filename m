@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D06C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 167B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:49:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244673AbiCBUt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:49:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
+        id S244731AbiCBUt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:49:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244975AbiCBUti (ORCPT
+        with ESMTP id S244838AbiCBUtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:49:38 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB6BDD94B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:41 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id i1so2631692plr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:48:41 -0800 (PST)
+        Wed, 2 Mar 2022 15:49:35 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A184DD465
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:35 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id z12-20020a17090ad78c00b001bf022b69d6so1770071pju.2
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:48:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wPdZrUH5dC0tchGf5qzbOv7p7DaHnxymvDfUAfQt99o=;
-        b=AssglXsU9fXqZvcQQMStPSUTOqnOLUBfpeChIVkRC8RJ04DfEN1n4ffaZxZDXr/JqA
-         FKhbYNI+qetaonyUNozQ+w7hZ/3WoB4eB5x/iQkQtXH7WFEnbcy9drt6e7p4O52gby+w
-         xenmmadIDhsIdObouASmKIRDLJc8+B4tiSkb9aFD4g107xbfIZvSc36PqFwAxYl4EfAV
-         21aWQbMLpDxXCJFb/wVVZxdNdjfd/a/EWc81aGQXdw8tmtanEQ/jX5Bff655thN1z+0+
-         C26cZMKevoRieTHgLMQy3p1jW8Rt7o0rLTx23WTRDSzjo/bHDcjpZ93lYX8cvflgbVLl
-         MfAw==
+        bh=ezGZS6wKoaDPZZr1vSGSOGCOOXHs/t5LaRnTO/HK9rM=;
+        b=LawSeR1NmUPUaUioLDLVRqBuUyq3N4d67ynn20lLI3i3DZ3CODegap5Yx7zLInYZ/r
+         O8E5M8tCP1pGZ9VUwlv+xv98o9JL8OsaV30TLtKckOZNrYzkWxO3OjkYw+5ETMEVG4ib
+         K2IGe5HzdbqZcgrhpAfHFCC6HvDVOmji0/t9EzKBXtMtqTsQbbvlLgoOnwpSWSRR2v8h
+         GJuxjshLyHG92UAdodKsXzogzMlZC4wnVaurId9t2/7NhZWFFWjuk6S5lMwZuWCIOHrV
+         JLIUQYW/5Qo9fDK5jBeWmreyJmekoOFaYbF9ZEGgMk/veivOmr2veDI4EdWhjvNy3/S6
+         ngtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wPdZrUH5dC0tchGf5qzbOv7p7DaHnxymvDfUAfQt99o=;
-        b=z0+Vn5/PH4MRLxIRQ97ACu77dHDEuRcm678fHp38/VeQgpWZ8SJSRpk2rIVJfLY2ee
-         2hBnbawi/j7tvOwf/Dgmbq55tO3KOR2HbERPXtu+jtiSQldfnr50mymfT93mlp2wrSvm
-         wXZ3ldfUucAAGduxqznYSQgytN5wf7PR45/BiC3l9akZBloA5sKxgMnHk8STi+imyLZT
-         cR33W+juCEqef/b3jqpGUhzj1izJnRXwsx1koNQ+JcNI+M1SQ5tRWrOzwEYjKrc30+mX
-         6EXhvRN2ZmcBOcnuODdpnrLgExnubtPaZe9xglLNSqyLqiyw5vqxTbgt+OPNwnk0sSqo
-         1amg==
-X-Gm-Message-State: AOAM532XhUMbrBiD3oEq713Omz1E20vMY3agjC1vkLcqiUIy3w+gXYm8
-        R3l2UWwl12Jy0DCpRXpluBWSIm4QKYoUNg==
-X-Google-Smtp-Source: ABdhPJxV4TiR8bEBi8TABZ3dwLLR8EJMJMQJ+fYe8mWXWi1F+cdmXEicbSFUJE6Nnf+gUdc3vLp4pg==
-X-Received: by 2002:a17:902:d4c6:b0:150:15ed:3cd9 with SMTP id o6-20020a170902d4c600b0015015ed3cd9mr31948269plg.2.1646254120907;
-        Wed, 02 Mar 2022 12:48:40 -0800 (PST)
+        bh=ezGZS6wKoaDPZZr1vSGSOGCOOXHs/t5LaRnTO/HK9rM=;
+        b=qYggJ79h7MZ0UG9nQ40pqDikFKcBXRhQVUaCNu1erILc0J8D+KTYBkfivlX8N8nIBS
+         /G7DRiYn0GqpSi545YaPIzeyC8xzaZ9JHrWN9wPrYSg6UBGaBgvB4YgvGLOLzpbFOpn/
+         SQIwGdbuqVR/dJkyfszuWc91rA4+pIbnLv98h89GmqVgn3gKnTZtJ8ksh8WPFOhKMFP8
+         QjdqvmxlJubhrddq89Ar/b4zr7jtL6SOL34DIY3GoWKeYz3IDnXIUxn+ZhcFXJ1JH5p5
+         HQ7eJPI4J8Sf1QNYi3m5qCiqc76I+R+6Iv1pqfwEe0HAvBb5NTfZ/NeBUuRTWNtUS2Em
+         tZwg==
+X-Gm-Message-State: AOAM530uiyUhb1RC6vJaKSiZXp4tJ9LZHQy4sh+XGWHtfBonr/8TZJpH
+        XYFEFG9tXCioVLaRlNYUMnQ=
+X-Google-Smtp-Source: ABdhPJzQJ3VVGTz9pnkt/XW/nXhMX9DaRNvZpdSD6AbdCZsfrAJkHTTFWDXhW9jS3HYgUMIXa+uCzw==
+X-Received: by 2002:a17:902:6bc5:b0:14f:ae30:3b6f with SMTP id m5-20020a1709026bc500b0014fae303b6fmr33142297plt.60.1646254114629;
+        Wed, 02 Mar 2022 12:48:34 -0800 (PST)
 Received: from localhost.localdomain ([103.161.98.179])
-        by smtp.gmail.com with ESMTPSA id bh11-20020a056a00308b00b004f40144cf76sm50905pfb.142.2022.03.02.12.48.38
+        by smtp.gmail.com with ESMTPSA id bh11-20020a056a00308b00b004f40144cf76sm50905pfb.142.2022.03.02.12.48.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:48:40 -0800 (PST)
+        Wed, 02 Mar 2022 12:48:34 -0800 (PST)
 From:   Vihas Makwana <makvihas@gmail.com>
 To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Phillip Potter <phil@philpotter.co.uk>,
@@ -56,9 +56,9 @@ To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Martin Kaiser <martin@kaiser.cx>
 Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 12/16] staging: r8188eu: mark rtl8188eu_xmitframe_complete as bool
-Date:   Thu,  3 Mar 2022 02:17:33 +0530
-Message-Id: <20220302204737.49056-13-makvihas@gmail.com>
+Subject: [PATCH 10/16] staging: r8188eu: mark is_basicrate as bool
+Date:   Thu,  3 Mar 2022 02:17:31 +0530
+Message-Id: <20220302204737.49056-11-makvihas@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220302204737.49056-1-makvihas@gmail.com>
 References: <20220302204737.49056-1-makvihas@gmail.com>
@@ -68,40 +68,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mark rtl8188eu_xmitframe_complete as bool as it returns true/false.
+Mark is_basicrate as bool as it returns true/false.
 
 Signed-off-by: Vihas Makwana <makvihas@gmail.com>
 ---
- drivers/staging/r8188eu/hal/rtl8188eu_xmit.c    | 2 +-
- drivers/staging/r8188eu/include/rtl8188e_xmit.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/r8188eu/core/rtw_wlan_util.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-index 69b66eb45..55032d7ae 100644
---- a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-@@ -376,7 +376,7 @@ static u32 xmitframe_need_length(struct xmit_frame *pxmitframe)
- 	return len;
+diff --git a/drivers/staging/r8188eu/core/rtw_wlan_util.c b/drivers/staging/r8188eu/core/rtw_wlan_util.c
+index eef8523c3..8e8a82a1e 100644
+--- a/drivers/staging/r8188eu/core/rtw_wlan_util.c
++++ b/drivers/staging/r8188eu/core/rtw_wlan_util.c
+@@ -167,7 +167,7 @@ static unsigned char ratetbl_val_2wifirate(unsigned char rate)
+ 	return val;
  }
  
--s32 rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
-+bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
+-static int is_basicrate(struct adapter *padapter, unsigned char rate)
++static bool is_basicrate(struct adapter *padapter, unsigned char rate)
  {
- 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
- 	struct xmit_frame *pxmitframe = NULL;
-diff --git a/drivers/staging/r8188eu/include/rtl8188e_xmit.h b/drivers/staging/r8188eu/include/rtl8188e_xmit.h
-index 85eb0aad8..8adb672f7 100644
---- a/drivers/staging/r8188eu/include/rtl8188e_xmit.h
-+++ b/drivers/staging/r8188eu/include/rtl8188e_xmit.h
-@@ -143,7 +143,7 @@ s32 rtl8188eu_mgnt_xmit(struct adapter *padapter, struct xmit_frame *frame);
- s32 rtl8188eu_xmit_buf_handler(struct adapter *padapter);
- #define hal_xmit_handler rtl8188eu_xmit_buf_handler
- void rtl8188eu_xmit_tasklet(unsigned long priv);
--s32 rtl8188eu_xmitframe_complete(struct adapter *padapter,
-+bool rtl8188eu_xmitframe_complete(struct adapter *padapter,
- 				 struct xmit_priv *pxmitpriv,
- 				 struct xmit_buf *pxmitbuf);
- 
+ 	int i;
+ 	unsigned char val;
 -- 
 2.30.2
 
