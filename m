@@ -2,169 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E47C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AEDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241494AbiCBLTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        id S241420AbiCBLUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:20:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241726AbiCBLSa (ORCPT
+        with ESMTP id S241270AbiCBLTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:18:30 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FCAC4B62;
-        Wed,  2 Mar 2022 03:16:04 -0800 (PST)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K7s2n1t9Zz67Z6v;
-        Wed,  2 Mar 2022 19:14:41 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 2 Mar 2022 12:15:48 +0100
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <revest@chromium.org>,
-        <gregkh@linuxfoundation.org>
-CC:     <linux-integrity@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v3 5/9] selftests/bpf: Add test for bpf_ima_file_hash()
-Date:   Wed, 2 Mar 2022 12:14:00 +0100
-Message-ID: <20220302111404.193900-6-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220302111404.193900-1-roberto.sassu@huawei.com>
-References: <20220302111404.193900-1-roberto.sassu@huawei.com>
+        Wed, 2 Mar 2022 06:19:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78B47DFC3
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:17:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646219867;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2X8GxD21SAhhZdIvnCz2edJioDnTkcdOU0+RAKaTdzc=;
+        b=aexadk79nwkCvwRfFdsZaHNVwOVBYPI3al8Hgzqxw5dhQtfY2sxTb4WqsOsZmBJQjU79Me
+        Ae+1PJQ5hl23bALc+cYsPpR3t0F/QBrr2Q02EPt0nu6JDG6xOyQMgwB20N5pz7biLqkr6R
+        C5m8lQN9dd3Bcm23dbWNqM76FQnJFPQ=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-116-0uXEaCaROHuKE-0DarhYAg-1; Wed, 02 Mar 2022 06:17:46 -0500
+X-MC-Unique: 0uXEaCaROHuKE-0DarhYAg-1
+Received: by mail-ed1-f72.google.com with SMTP id eg48-20020a05640228b000b00413041cd917so812500edb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 03:17:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2X8GxD21SAhhZdIvnCz2edJioDnTkcdOU0+RAKaTdzc=;
+        b=gASE7zh+KHgB7f/GOhKDondJQyKcAMcbtQtHsB6ZKL0F65GwewUiqaOomSZrzl8OPf
+         Rhpj9OhQuIpe+xbt+Pcd9k3P2bSm6/y6hWlTlQ0bBVafdfJbqJKu/yghzewKnVZOocIj
+         xn6u4D6UFy+conpJfpHKYiooATfT17t8silqRMOTIwZ3tKE1eI46tE1pjxDStKHSpsa1
+         s4oUTw4FnMDPhYGsL9xIfxps0iMPiQZEVPJaSSL7nRB+SKwGlyKFANW9aGjAfMCZBCaO
+         QrgzqAkz3LJEXcvexnqroFpp8XyhCuoZTZJJd9J6ipzW+y74BJc+0uajc4Yy5l/UyCXO
+         AoRA==
+X-Gm-Message-State: AOAM530f517Nrd2uUb2y8uO1oE8YVYkYi+InPIVJXQ9JNke8yAkUawZH
+        7ohJBAD3yTM/dJdYAYLqCEzdAZz9+1+/YEFKsuxXnVoXKYmyZU6HcbX1eXqYfcORp2FhnAObSJo
+        zJ12kEY9YEYhfT4rbYCUb01HW
+X-Received: by 2002:a17:907:6218:b0:6d1:c74:1507 with SMTP id ms24-20020a170907621800b006d10c741507mr21510157ejc.670.1646219863303;
+        Wed, 02 Mar 2022 03:17:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwsTsxQNCAG5cKHcFCRXeY/VSbYV9NrBdf6waIPCETjWZYNACuoETSJGfJgl1eix5EDeno8LQ==
+X-Received: by 2002:a17:907:6218:b0:6d1:c74:1507 with SMTP id ms24-20020a170907621800b006d10c741507mr21509896ejc.670.1646219858312;
+        Wed, 02 Mar 2022 03:17:38 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id qb30-20020a1709077e9e00b006d6f8c77695sm1341642ejc.101.2022.03.02.03.17.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 03:17:36 -0800 (PST)
+Message-ID: <eed70d81-0781-576f-7f88-9046d23c5bfb@redhat.com>
+Date:   Wed, 2 Mar 2022 12:17:36 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: linux-next: Fixes tag needs some work in the drivers-x86 tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Mark Gross <markgross@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220302081752.7fb5afd3@canb.auug.org.au>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220302081752.7fb5afd3@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add new test to ensure that bpf_ima_file_hash() returns the digest of the
-executed files.
+Hi,
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- .../selftests/bpf/prog_tests/test_ima.c       | 43 +++++++++++++++++--
- tools/testing/selftests/bpf/progs/ima.c       | 10 ++++-
- 2 files changed, 47 insertions(+), 6 deletions(-)
+On 3/1/22 22:17, Stephen Rothwell wrote:
+> Hi all,
+> 
+> In commit
+> 
+>   646f429ec2de ("platform/x86: amd-pmc: Set QOS during suspend on CZN w/ timer wakeup")
+> 
+> Fixes tag
+> 
+>   Fixes: 59348401ebed ("platform/x86: amd-pmc: Add special handling for timer based S0i3 wakeup"
+> 
+> has these problem(s):
+> 
+>   - Subject has leading but no trailing parentheses
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-index 97d8a6f84f4a..acc911ba63fd 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-@@ -13,6 +13,8 @@
- 
- #include "ima.skel.h"
- 
-+#define MAX_SAMPLES 2
-+
- static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
- {
- 	int child_pid, child_status;
-@@ -32,14 +34,25 @@ static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
- 	return -EINVAL;
- }
- 
--static u64 ima_hash_from_bpf;
-+static u64 ima_hash_from_bpf[MAX_SAMPLES];
-+static int ima_hash_from_bpf_idx;
- 
- static int process_sample(void *ctx, void *data, size_t len)
- {
--	ima_hash_from_bpf = *((u64 *)data);
-+	if (ima_hash_from_bpf_idx >= MAX_SAMPLES)
-+		return -ENOSPC;
-+
-+	ima_hash_from_bpf[ima_hash_from_bpf_idx++] = *((u64 *)data);
- 	return 0;
- }
- 
-+static void test_init(struct ima__bss *bss)
-+{
-+	ima_hash_from_bpf_idx = 0;
-+
-+	bss->use_ima_file_hash = false;
-+}
-+
- void test_test_ima(void)
- {
- 	char measured_dir_template[] = "/tmp/ima_measuredXXXXXX";
-@@ -72,13 +85,35 @@ void test_test_ima(void)
- 	if (CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno))
- 		goto close_clean;
- 
-+	/*
-+	 * Test #1
-+	 * - Goal: obtain a sample with the bpf_ima_inode_hash() helper
-+	 * - Expected result:  1 sample (/bin/true)
-+	 */
-+	test_init(skel->bss);
- 	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
--	if (CHECK(err, "run_measured_process", "err = %d\n", err))
-+	if (CHECK(err, "run_measured_process #1", "err = %d\n", err))
- 		goto close_clean;
- 
- 	err = ring_buffer__consume(ringbuf);
- 	ASSERT_EQ(err, 1, "num_samples_or_err");
--	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
-+	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
-+
-+	/*
-+	 * Test #2
-+	 * - Goal: obtain samples with the bpf_ima_file_hash() helper
-+	 * - Expected result: 2 samples (./ima_setup.sh, /bin/true)
-+	 */
-+	test_init(skel->bss);
-+	skel->bss->use_ima_file_hash = true;
-+	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
-+	if (CHECK(err, "run_measured_process #2", "err = %d\n", err))
-+		goto close_clean;
-+
-+	err = ring_buffer__consume(ringbuf);
-+	ASSERT_EQ(err, 2, "num_samples_or_err");
-+	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
-+	ASSERT_NEQ(ima_hash_from_bpf[1], 0, "ima_hash");
- 
- close_clean:
- 	snprintf(cmd, sizeof(cmd), "./ima_setup.sh cleanup %s", measured_dir);
-diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
-index b5a0de50d1b4..e0b073dcfb5d 100644
---- a/tools/testing/selftests/bpf/progs/ima.c
-+++ b/tools/testing/selftests/bpf/progs/ima.c
-@@ -18,6 +18,8 @@ struct {
- 
- char _license[] SEC("license") = "GPL";
- 
-+bool use_ima_file_hash;
-+
- static void ima_test_common(struct file *file)
- {
- 	u64 ima_hash = 0;
-@@ -27,8 +29,12 @@ static void ima_test_common(struct file *file)
- 
- 	pid = bpf_get_current_pid_tgid() >> 32;
- 	if (pid == monitored_pid) {
--		ret = bpf_ima_inode_hash(file->f_inode, &ima_hash,
--					 sizeof(ima_hash));
-+		if (!use_ima_file_hash)
-+			ret = bpf_ima_inode_hash(file->f_inode, &ima_hash,
-+						 sizeof(ima_hash));
-+		else
-+			ret = bpf_ima_file_hash(file, &ima_hash,
-+						sizeof(ima_hash));
- 		if (ret < 0 || ima_hash == 0)
- 			return;
- 
--- 
-2.32.0
+Thanks. I've fixed this and done a forced push to drivers-x86/for-next with
+the fixed commit.
+
+Regards,
+
+Hans
 
