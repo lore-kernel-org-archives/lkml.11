@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D392C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2375C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241574AbiCBO3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:29:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
+        id S242977AbiCBO3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:29:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242946AbiCBO25 (ORCPT
+        with ESMTP id S242928AbiCBO26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:28:57 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5186634BB8
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:07 -0800 (PST)
+        Wed, 2 Mar 2022 09:28:58 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1C249F1F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646231288; x=1677767288;
+  t=1646231291; x=1677767291;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QLnCzUeJtYo9oJ+vYtjXG6GkXRsExBKMsty2nQQ4Gik=;
-  b=byVmaV5z4nFGmURbnmzRqXk0sgcGp4wNyxU/nNuKHcA5A3pLQcop9G+V
-   JBiQ0RG90Xhtzr2PklaQSRuTr6wAkFIqvpdO29zOHTBaAdj2DBV1wre52
-   8DP1YJsSf3HJhgZ4yi2ej2W6pV7JQw7BkbxUUnn1vSmLm4TaLoo5RTXMk
-   lN3/LWYwvbWnqWKO6Wke5nibclm+lbCPPx42gigBVRCxbP9haYF1PHeQY
-   A5aPRgDIirSDre8do0j6114Sf7VoOqCsX7LQD8JmYVBl8l+gS81KGphqV
-   IwC6solzzQq4RrBIGUDPQtMuETK8ayDwNG0IDkcTBPlE0b3Xkv923eJOl
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="240824337"
+  bh=q+/r8F1XDpTWhhoX3MZMSCevaK2OCR1Drl1YYmHJWuo=;
+  b=UaQs7ME+yES1A9Sb2nJq9/b13qP+GREYCLMUm6vEbmZVgKpSH8lovFm+
+   JzGiv924fL9NiQKK1eiQE04WTRtAgPHeUaP9ibmoy0hJek+NAylhEeDFy
+   bmjtYg62ZYeZuwDAQRIi24B9t6gNIs5BCrlmzKxQrTRiDUQKrmQQihgac
+   OORnFeL0MPKMonzvMyhtfNcXMTdTRi8oSRWzQ3cD7jLTgdDCAw7/I+KrQ
+   o4kAYJodHF2wRu3og0UTlhUxKYquoy0LwGPJcp/Wqt48BhC2i/bPsjNa7
+   cYBcmyic4QFhG9IXt1wTvfISOj2/3Kf3jdDHRb2L+4efNlfEB1K+B8lkV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233376457"
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="240824337"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:07 -0800
+   d="scan'208";a="233376457"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:09 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="551270221"
+   d="scan'208";a="545512463"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 02 Mar 2022 06:28:01 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 02 Mar 2022 06:28:02 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 14505284; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
+        id 830003FB; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,9 +52,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 06/30] x86/traps: Refactor exc_general_protection()
-Date:   Wed,  2 Mar 2022 17:27:42 +0300
-Message-Id: <20220302142806.51844-7-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 14/30] x86: Consolidate port I/O helpers
+Date:   Wed,  2 Mar 2022 17:27:50 +0300
+Message-Id: <20220302142806.51844-15-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
 References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
@@ -64,112 +64,187 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX brings a new exception -- Virtualization Exception (#VE). Handling
-of #VE structurally very similar to handling #GP.
+There are two implementations of port I/O helpers: one in the kernel and
+one in the boot stub.
 
-Extract two helpers from exc_general_protection() that can be reused for
-handling #VE.
-
-No functional changes.
+Move the helpers required for both to <asm/shared/io.h> and use the one
+implementation everywhere.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/kernel/traps.c | 57 ++++++++++++++++++++++++-----------------
- 1 file changed, 34 insertions(+), 23 deletions(-)
+ arch/x86/boot/boot.h             | 35 +-------------------------------
+ arch/x86/boot/compressed/misc.h  |  2 +-
+ arch/x86/include/asm/io.h        | 22 ++------------------
+ arch/x86/include/asm/shared/io.h | 34 +++++++++++++++++++++++++++++++
+ 4 files changed, 38 insertions(+), 55 deletions(-)
+ create mode 100644 arch/x86/include/asm/shared/io.h
 
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 7ef00dee35be..733b6490523c 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -611,13 +611,43 @@ static bool try_fixup_enqcmd_gp(void)
- #endif
- }
+diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
+index 34c9dbb6a47d..22a474c5b3e8 100644
+--- a/arch/x86/boot/boot.h
++++ b/arch/x86/boot/boot.h
+@@ -23,6 +23,7 @@
+ #include <linux/edd.h>
+ #include <asm/setup.h>
+ #include <asm/asm.h>
++#include <asm/shared/io.h>
+ #include "bitops.h"
+ #include "ctype.h"
+ #include "cpuflags.h"
+@@ -35,40 +36,6 @@ extern struct boot_params boot_params;
  
-+static bool gp_try_fixup_and_notify(struct pt_regs *regs, int trapnr,
-+				    unsigned long error_code, const char *str)
-+{
-+	int ret;
-+
-+	if (fixup_exception(regs, trapnr, error_code, 0))
-+		return true;
-+
-+	current->thread.error_code = error_code;
-+	current->thread.trap_nr = trapnr;
-+
-+	/*
-+	 * To be potentially processing a kprobe fault and to trust the result
-+	 * from kprobe_running(), we have to be non-preemptible.
-+	 */
-+	if (!preemptible() && kprobe_running() &&
-+	    kprobe_fault_handler(regs, trapnr))
-+		return true;
-+
-+	ret = notify_die(DIE_GPF, str, regs, error_code, trapnr, SIGSEGV);
-+	return ret == NOTIFY_STOP;
-+}
-+
-+static void gp_user_force_sig_segv(struct pt_regs *regs, int trapnr,
-+				   unsigned long error_code, const char *str)
-+{
-+	current->thread.error_code = error_code;
-+	current->thread.trap_nr = trapnr;
-+	show_signal(current, SIGSEGV, "", str, regs, error_code);
-+	force_sig(SIGSEGV);
-+}
-+
- DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
+ #define cpu_relax()	asm volatile("rep; nop")
+ 
+-/* Basic port I/O */
+-static inline void outb(u8 v, u16 port)
+-{
+-	asm volatile("outb %0,%1" : : "a" (v), "dN" (port));
+-}
+-static inline u8 inb(u16 port)
+-{
+-	u8 v;
+-	asm volatile("inb %1,%0" : "=a" (v) : "dN" (port));
+-	return v;
+-}
+-
+-static inline void outw(u16 v, u16 port)
+-{
+-	asm volatile("outw %0,%1" : : "a" (v), "dN" (port));
+-}
+-static inline u16 inw(u16 port)
+-{
+-	u16 v;
+-	asm volatile("inw %1,%0" : "=a" (v) : "dN" (port));
+-	return v;
+-}
+-
+-static inline void outl(u32 v, u16 port)
+-{
+-	asm volatile("outl %0,%1" : : "a" (v), "dN" (port));
+-}
+-static inline u32 inl(u16 port)
+-{
+-	u32 v;
+-	asm volatile("inl %1,%0" : "=a" (v) : "dN" (port));
+-	return v;
+-}
+-
+ static inline void io_delay(void)
  {
- 	char desc[sizeof(GPFSTR) + 50 + 2*sizeof(unsigned long) + 1] = GPFSTR;
- 	enum kernel_gp_hint hint = GP_NO_HINT;
--	struct task_struct *tsk;
- 	unsigned long gp_addr;
--	int ret;
+ 	const u16 DELAY_PORT = 0x80;
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 0d8e275a9d96..8a253e85f990 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -22,11 +22,11 @@
+ #include <linux/linkage.h>
+ #include <linux/screen_info.h>
+ #include <linux/elf.h>
+-#include <linux/io.h>
+ #include <asm/page.h>
+ #include <asm/boot.h>
+ #include <asm/bootparam.h>
+ #include <asm/desc_defs.h>
++#include <asm/shared/io.h>
  
- 	if (user_mode(regs) && try_fixup_enqcmd_gp())
- 		return;
-@@ -636,40 +666,21 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
- 		return;
- 	}
+ #include "tdx.h"
  
--	tsk = current;
--
- 	if (user_mode(regs)) {
- 		if (fixup_iopl_exception(regs))
- 			goto exit;
+diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+index 638c1a2a82e0..a1eb218a49f8 100644
+--- a/arch/x86/include/asm/io.h
++++ b/arch/x86/include/asm/io.h
+@@ -44,6 +44,7 @@
+ #include <asm/page.h>
+ #include <asm/early_ioremap.h>
+ #include <asm/pgtable_types.h>
++#include <asm/shared/io.h>
  
--		tsk->thread.error_code = error_code;
--		tsk->thread.trap_nr = X86_TRAP_GP;
--
- 		if (fixup_vdso_exception(regs, X86_TRAP_GP, error_code, 0))
- 			goto exit;
+ #define build_mmio_read(name, size, type, reg, barrier) \
+ static inline type name(const volatile void __iomem *addr) \
+@@ -258,20 +259,6 @@ static inline void slow_down_io(void)
+ #endif
  
--		show_signal(tsk, SIGSEGV, "", desc, regs, error_code);
--		force_sig(SIGSEGV);
-+		gp_user_force_sig_segv(regs, X86_TRAP_GP, error_code, desc);
- 		goto exit;
- 	}
+ #define BUILDIO(bwl, bw, type)						\
+-static inline void out##bwl(type value, u16 port)			\
+-{									\
+-	asm volatile("out" #bwl " %" #bw "0, %w1"			\
+-		     : : "a"(value), "Nd"(port));			\
+-}									\
+-									\
+-static inline type in##bwl(u16 port)					\
+-{									\
+-	type value;							\
+-	asm volatile("in" #bwl " %w1, %" #bw "0"			\
+-		     : "=a"(value) : "Nd"(port));			\
+-	return value;							\
+-}									\
+-									\
+ static inline void out##bwl##_p(type value, u16 port)			\
+ {									\
+ 	out##bwl(value, port);						\
+@@ -320,10 +307,8 @@ static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
+ BUILDIO(b, b, u8)
+ BUILDIO(w, w, u16)
+ BUILDIO(l,  , u32)
++#undef BUILDIO
  
- 	if (fixup_exception(regs, X86_TRAP_GP, error_code, 0))
- 		goto exit;
+-#define inb inb
+-#define inw inw
+-#define inl inl
+ #define inb_p inb_p
+ #define inw_p inw_p
+ #define inl_p inl_p
+@@ -331,9 +316,6 @@ BUILDIO(l,  , u32)
+ #define insw insw
+ #define insl insl
  
--	tsk->thread.error_code = error_code;
--	tsk->thread.trap_nr = X86_TRAP_GP;
--
--	/*
--	 * To be potentially processing a kprobe fault and to trust the result
--	 * from kprobe_running(), we have to be non-preemptible.
--	 */
--	if (!preemptible() &&
--	    kprobe_running() &&
--	    kprobe_fault_handler(regs, X86_TRAP_GP))
--		goto exit;
--
--	ret = notify_die(DIE_GPF, desc, regs, error_code, X86_TRAP_GP, SIGSEGV);
--	if (ret == NOTIFY_STOP)
-+	if (gp_try_fixup_and_notify(regs, X86_TRAP_GP, error_code, desc))
- 		goto exit;
- 
- 	if (error_code)
+-#define outb outb
+-#define outw outw
+-#define outl outl
+ #define outb_p outb_p
+ #define outw_p outw_p
+ #define outl_p outl_p
+diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
+new file mode 100644
+index 000000000000..6707cd555f0c
+--- /dev/null
++++ b/arch/x86/include/asm/shared/io.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_SHARED_IO_H
++#define _ASM_X86_SHARED_IO_H
++
++#include <linux/types.h>
++
++#define BUILDIO(bwl, bw, type)						\
++static inline void out##bwl(type value, u16 port)			\
++{									\
++	asm volatile("out" #bwl " %" #bw "0, %w1"			\
++		     : : "a"(value), "Nd"(port));			\
++}									\
++									\
++static inline type in##bwl(u16 port)					\
++{									\
++	type value;							\
++	asm volatile("in" #bwl " %w1, %" #bw "0"			\
++		     : "=a"(value) : "Nd"(port));			\
++	return value;							\
++}
++
++BUILDIO(b, b, u8)
++BUILDIO(w, w, u16)
++BUILDIO(l,  , u32)
++#undef BUILDIO
++
++#define inb inb
++#define inw inw
++#define inl inl
++#define outb outb
++#define outw outw
++#define outl outl
++
++#endif
 -- 
 2.34.1
 
