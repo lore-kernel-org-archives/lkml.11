@@ -2,127 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F15C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B297C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiCBXqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
+        id S229566AbiCBXqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:46:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiCBXqZ (ORCPT
+        with ESMTP id S229610AbiCBXq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:46:25 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C04E5F251;
-        Wed,  2 Mar 2022 15:44:31 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C6DC1139F;
-        Wed,  2 Mar 2022 15:19:08 -0800 (PST)
-Received: from [10.57.20.1] (unknown [10.57.20.1])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F0FCF3F66F;
-        Wed,  2 Mar 2022 15:19:05 -0800 (PST)
-Message-ID: <77afb869-126d-c9e9-96a5-0aedc4e4569d@arm.com>
-Date:   Wed, 2 Mar 2022 23:19:04 +0000
+        Wed, 2 Mar 2022 18:46:27 -0500
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D27A6C970;
+        Wed,  2 Mar 2022 15:44:44 -0800 (PST)
+Received: by mail-oi1-f179.google.com with SMTP id k2so3291538oia.2;
+        Wed, 02 Mar 2022 15:44:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8YMUTnsXm+M9+dNQuf4G0QInghug+tyPAlId0Vy17Ks=;
+        b=QkySPkCdAqY2R840qmJbCam+0jv7xou9VktKh0yHWCWSGvKnp03OBfqnjY+dSGR4X3
+         GJspR9PT7vXvgMT2LUWtvnL2kkqRE771AskCklji1iAsfreQbGu9wIgs8915Is6TVKMA
+         AI7FzTBkLB56mo6mC7d6+HEpl6mrcVel1dBOrhmO+Ws6HfyOKhPP9rg0neSzzuvTa3/8
+         qUhPxhhZbo4o0eYKik1kcbo1NUAyhZYMdRkNhrR4yNSQw7T16aqGxztbjko376ONSijR
+         6PtR9NxQkot6pmDp5oXwbaetzlEnpydXhEfZi64pzM1AOrz06SObMUNX3H6gJcTQkwIC
+         Y0lg==
+X-Gm-Message-State: AOAM533qzLEoduH8YgPmgYQ7QWwG7bROlhZpuG8a79pTFtr7DTRIbflD
+        fxEsOAVS2Lj8OP3FD/Qw7+Yk9pZ9WQ==
+X-Google-Smtp-Source: ABdhPJzvdLVwsrsmUmbCdsCY2U5wylRZU+h6HwxMq7Pa9QA826lZdCUOl1ytBb0OIpfFS70UHUh+VQ==
+X-Received: by 2002:aca:5f87:0:b0:2d9:1363:1613 with SMTP id t129-20020aca5f87000000b002d913631613mr2092022oib.165.1646264683475;
+        Wed, 02 Mar 2022 15:44:43 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id z9-20020a9d71c9000000b005ad12cbc899sm202195otj.36.2022.03.02.15.44.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 15:44:42 -0800 (PST)
+Received: (nullmailer pid 280433 invoked by uid 1000);
+        Wed, 02 Mar 2022 23:44:41 -0000
+Date:   Wed, 2 Mar 2022 17:44:41 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, matthias.bgg@gmail.com,
+        robh+dt@kernel.org, yongqiang.niu@mediatek.com,
+        jassisinghbrar@gmail.com, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: mailbox: add definition for mt8186
+Message-ID: <YiABadKsmVNt0bnB@robh.at.kernel.org>
+References: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
+ <20220223030138.13939-2-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [next] Internal error: aarch64 BRK: f20003e8 at pc :
- has_cpuid_feature
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Freescale Mailman List <freescale@lists.linaro.org>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Basant Kumar Dwivedi <Basant.KumarDwivedi@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Luis Machado <luis.machado@arm.com>,
-        Szabolcs Nagy <szabolcs.nagy@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Alan Hayward <alan.hayward@arm.com>,
-        Salil Akerkar <Salil.Akerkar@arm.com>,
-        Shuah Khan <shuah@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Qian Cai <quic_qiancai@quicinc.com>
-References: <CA+G9fYuX3nM5y_VD_0menGTF0AqDOZ85=ptmQ_3XoPAAxYMWyQ@mail.gmail.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <CA+G9fYuX3nM5y_VD_0menGTF0AqDOZ85=ptmQ_3XoPAAxYMWyQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223030138.13939-2-rex-bc.chen@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Hi Naresh
-
-On 02/03/2022 21:15, Naresh Kamboju wrote:
-> [Please ignore this email if it is already reported]
+On Wed, 23 Feb 2022 11:01:37 +0800, Rex-BC Chen wrote:
+> Add definition of compatible and dt-binding header for mt8186.
 > 
-> Linux next-20220228..next-20220302 running on Freescale Layerscape 2088A RDB
-> board the following kernel crash reported [1].
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/mailbox/mtk-gce.txt | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
-> This kernel crash is only seen with kselftest-merge configs.
 
-This should be fixed by :
-
-https://lkml.kernel.org/r/20220302134225.159217-1-broonie@kernel.org
-
-Cheers
-Suzuki
-
-
-> 
-> metadata:
->    git_ref: master
->    git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
->    git_sha: 6705cd745adbbeac6b13002c7a30060f7b2568a5
->    git_describe: next-20220228..next-20220302
->    kernel-config: https://builds.tuxbuild.com/25kHVbzi7zV3Pzb1i4scZwtXzeA/config
->    device: Freescale Layerscape 2088A RDB Board
-> 
-> Kernel crash:
-> [    0.000000] Detected PIPT I-cache on CPU0
-> [    0.000000] Internal error: aarch64 BRK: f20003e8 [#1] PREEMPT SMP
-> [    0.000000] Modules linked in:
-> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted
-> 5.17.0-rc6-next-20220228 #1
-> [    0.000000] Hardware name: Freescale Layerscape 2088A RDB Board (DT)
-> [    0.000000] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [    0.000000] pc : has_cpuid_feature+0x104/0x10c
-> [    0.000000] lr : has_cpuid_feature+0x58/0x10c
-> [    0.000000] sp : ffffb7b2bf6b3d00
-> [    0.000000] x29: ffffb7b2bf6b3d00 x28: ffffb7b2be085690 x27: 0000000000000018
-> [    0.000000] x26: ffffb7b2be874e48 x25: ffffb7b2be874e70 x24: ffffb7b2beabc238
-> [    0.000000] x23: 0000000000000005 x22: ffffb7b2bfc05be0 x21: ffffb7b2bfc05728
-> [    0.000000] x20: 0000000000000020 x19: ffffb7b2be084950 x18: 0000000000000000
-> [    0.000000] x17: 6666666666663733 x16: 000000000001f000 x15: 0126000040000000
-> [    0.000000] x14: 1020110500000000 x13: 0000000002102211 x12: 0126000040000000
-> [    0.000000] x11: 0000000000000000 x10: 0000000000000043 x9 : 1211111110110222
-> [    0.000000] x8 : 0000000010011011 x7 : 0000013100000000 x6 : 0000000002102211
-> [    0.000000] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
-> [    0.000000] x2 : 0000000000000028 x1 : 0000000000000040 x0 : 0022220000000000
-> [    0.000000] Call trace:
-> [    0.000000]  has_cpuid_feature+0x104/0x10c
-> [    0.000000]  has_useable_gicv3_cpuif+0x24/0x94
-> [    0.000000]  update_cpu_capabilities+0x90/0x144
-> [    0.000000]  init_cpu_features+0x28c/0x2b4
-> [    0.000000]  cpuinfo_store_boot_cpu+0x58/0x68
-> [    0.000000]  smp_prepare_boot_cpu+0x4c/0x60
-> [    0.000000]  start_kernel+0x20c/0x77c
-> [    0.000000]  __primary_switched+0xc0/0xc8
-> [    0.000000] Code: b9402260 17ffffd7 d2800000 17ffffd6 (d4207d00)
-> [    0.000000] ---[ end trace 0000000000000000 ]---
-> [    0.000000] Kernel panic - not syncing: Attempted to kill the idle task!
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
-> [1] https://lavalab.nxp.com/scheduler/job/851695#L565
-> [2] https://lavalab.nxp.com/scheduler/job/853258#L695
-
+Acked-by: Rob Herring <robh@kernel.org>
