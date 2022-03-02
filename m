@@ -2,262 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16905C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235016AbiCBIrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:47:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        id S237134AbiCBIrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:47:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237408AbiCBIq5 (ORCPT
+        with ESMTP id S230045AbiCBIri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:46:57 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D506BAB9C
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:46:14 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id m6so1508444wrr.10
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:46:14 -0800 (PST)
+        Wed, 2 Mar 2022 03:47:38 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9886BABA4
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:46:55 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id 12so1098116pgd.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:46:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=OAGdmlBU750HPm6uS/2rXxP2qybmRe1eYS45j7gSSxk=;
-        b=WP4yMtfpQleDkk9wS69RYgsd68w6DMQxWIrclmUo4ldChNykmhvZIvGgi45qagVVL0
-         UM9bmwGhBpdP8zVcFR071ykfwaDmXmlr2ZJCi+E0Qhw2yvSw3V9asr736pAim0U5wGpt
-         enFSpLql7sLfSqYp5bvc1GJ2tLchgQkdateHkYFSSo3CnNOstJzQnynEB1JGCcNYVjFt
-         XcpGwRjNrBhq6+TLM/u/r3cesiY5jqJ6imlF8CzyurvZSBtCDEbqxNgWUbFzXHb+XZHH
-         u8Kvv5U8rqogA7drPeghTaWJCRa8BFA2RzR4YtjnghgYZeyhAftCkO43oHmYFlySK5UT
-         578A==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZWLmgm9buCbXqY23s5VhjmfJZhCL4RghEpABSyXi0/w=;
+        b=QeneTRGP9wfQ25M47Q+R8Wl68p5vbBqnFJgw6WQkaxsfswBfxD1OITyA/HIqzBVEo2
+         AZnzxKeNl71ZMwKvldPBo/wm56YZT2vbzLAEyG8hvJerHG+nXA3Zw60rCyyOd0IpAdop
+         J5DaQ73SFL4Scu7mhuf9krPmf8PFtNI7oPVChKCk6vmzr9midVGbN6LbpOIaShuS9YYg
+         bGP22tPqpAGxGlbbLkhLm4bbuSykKGe4jJAwXg0fUSGEYcyZYd6ndab19DhXAeVFaVkB
+         jcJ8izz4tngPcWkiO8vQR5PPQLzHKWKeHu0zP523nhOOPDxxIA4DenbBNVzA1yYmCiMi
+         gIaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=OAGdmlBU750HPm6uS/2rXxP2qybmRe1eYS45j7gSSxk=;
-        b=dN/ljmkqNtPGv9rhI0eRluRkzRIlcLQQELfHa60KfwF6mVaSAd93suW1tfw9/xnub+
-         VG6bqyZxmK1zQkI80nOSpmYlQaAyW10q2czcZq+H6eFpVHuV8NY6z2rf+MSA+m1qLbIO
-         wUfcYryV8OCiwDi4DfwCfHdCPf1bEvUS3wH2pqc/C3AQVz0QdxR9/gEnaKMuJVn0A5QR
-         WO3DolU3U0/SOv4/VxMeFuqR4gl+mWu+nFfGhgwFVhOTBDvVsldYjnNapH38YDT69d/Y
-         FjIt4AM5w/Ut/wLFvRokTmsTAndJCXQRu0158tryho8Q8aPfvt2RVlla4L3oqxs+OwmX
-         VvMw==
-X-Gm-Message-State: AOAM533sCWJVNeJIwSi409E8grgl65DAuJUdEMKLoj0GF3YWzjyGjTkm
-        JUmkF0v/04lO4TpGKnhBYV5LYQ==
-X-Google-Smtp-Source: ABdhPJw5nDmQ7R5dprkc1DDIySxAi6zQnYTihowhbWzCteml7VcyIvHFYuoM8SHpvqOj/d50zsSxUg==
-X-Received: by 2002:a05:6000:15cb:b0:1ea:78fc:2201 with SMTP id y11-20020a05600015cb00b001ea78fc2201mr22973825wry.362.1646210772967;
-        Wed, 02 Mar 2022 00:46:12 -0800 (PST)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id r2-20020adff702000000b001efd7eb7c37sm7983296wrp.34.2022.03.02.00.46.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZWLmgm9buCbXqY23s5VhjmfJZhCL4RghEpABSyXi0/w=;
+        b=2ZjeQW8MKhrR/B6uN7eoiXmKVwDop5Zloo55H/78YFkZjaC7mzzVqNfMyxwK9mfvQR
+         krdoFKLTRe6N9rDPIvJ2hkJbnQBmDgxQcTqfErP/EEOioecjQ5Xmqp6NTeu2GHBIbK23
+         rolCz+tknALEzt4/3U43sBzkbeeqXam8JTecVv8rvjeT+Sn0TTgfs2FLytzvNcmk85R4
+         rVz3RF+9AN2eUS7LOamNvvi3q81+MBN/odEqZg7QT1Zeb+39nLZYPf/RCrWezmSgVlQS
+         oYTQf/wkb0U1HoLEjZn1C/l4QqAJz1Tds0tZl8gJpmi74AuAmwrMjr0baEEqgQYU7RC5
+         scjg==
+X-Gm-Message-State: AOAM530pseLzgKAZwd3KHs7fLb4HbwWrLqw0OlSk3gPoYBAsxm7oCKa3
+        4rNuM73MtcyayOsfeSqJaMo7Kw==
+X-Google-Smtp-Source: ABdhPJxKaSrM6iBBGkvbdb2L3RZylc2pqe5tLOOKYk/MoVAf2KGjquxtsY4qytU/fXNy/oElueVSrg==
+X-Received: by 2002:a63:4386:0:b0:378:b62e:28b3 with SMTP id q128-20020a634386000000b00378b62e28b3mr11156359pga.442.1646210813974;
+        Wed, 02 Mar 2022 00:46:53 -0800 (PST)
+Received: from FVFYT0MHHV2J.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id s10-20020a63214a000000b003652f4ee81fsm14828816pgm.69.2022.03.02.00.46.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 00:46:12 -0800 (PST)
-References: <20220217063346.21691-1-liang.yang@amlogic.com>
- <20220217063346.21691-3-liang.yang@amlogic.com>
- <1jv8wzw78r.fsf@starbuckisacylon.baylibre.com>
- <4741f36a-e17a-75c3-124f-447e4426c436@amlogic.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     "Liang.Yang" <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-mtd@lists.infradead.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v2 2/2] dt-bindings: nand: meson: refine Amlogic
- NAND controller driver
-Date:   Wed, 02 Mar 2022 09:42:06 +0100
-In-reply-to: <4741f36a-e17a-75c3-124f-447e4426c436@amlogic.com>
-Message-ID: <1jczj47ne5.fsf@starbuckisacylon.baylibre.com>
+        Wed, 02 Mar 2022 00:46:53 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     will@kernel.org, akpm@linux-foundation.org, david@redhat.com,
+        bodeddub@amazon.com, osalvador@suse.de, mike.kravetz@oracle.com,
+        rientjes@google.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+        james.morse@arm.com, song.bao.hua@hisilicon.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v2 RESEND 1/2] arm64: avoid flushing icache multiple times on contiguous HugeTLB
+Date:   Wed,  2 Mar 2022 16:46:23 +0800
+Message-Id: <20220302084624.33340-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When a contiguous HugeTLB page is mapped, set_pte_at() will be called
+CONT_PTES/CONT_PMDS times.  Therefore, __sync_icache_dcache() will
+flush cache multiple times if the page is executable (to ensure
+the I-D cache coherency).  However, the first flushing cache already
+covers subsequent cache flush operations.  So only flusing cache
+for the head page if it is a HugeTLB page to avoid redundant cache
+flushing.  In the next patch, it is also depends on this change
+since the tail vmemmap pages of HugeTLB is mapped with read-only
+meanning only head page struct can be modified.
 
-On Wed 02 Mar 2022 at 13:19, Liang.Yang <liang.yang@amlogic.com> wrote:
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ arch/arm64/mm/flush.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> Hi Jerome,
->
-> On 2022/2/28 19:36, Jerome Brunet wrote:
->> [ EXTERNAL EMAIL ]
->> 
->> On Thu 17 Feb 2022 at 14:33, Liang Yang <liang.yang@amlogic.com> wrote:
->> 
->>> convert txt to yaml and refine the meson NFC clock document.
->>>
->>> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
->>> ---
->>>   .../bindings/mtd/amlogic,meson-nand.txt       | 60 ----------------
->>>   .../bindings/mtd/amlogic,meson-nand.yaml      | 70 +++++++++++++++++++
->>>   2 files changed, 70 insertions(+), 60 deletions(-)
->>>   delete mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
->>>   create mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
->>> deleted file mode 100644
->>> index 5794ab1147c1..000000000000
->>> --- a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
->>> +++ /dev/null
->>> @@ -1,60 +0,0 @@
->>> -Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
->>> -
->>> -This file documents the properties in addition to those available in
->>> -the MTD NAND bindings.
->>> -
->>> -Required properties:
->>> -- compatible : contains one of:
->>> -  - "amlogic,meson-gxl-nfc"
->>> -  - "amlogic,meson-axg-nfc"
->>> -- clocks     :
->>> -	A list of phandle + clock-specifier pairs for the clocks listed
->>> -	in clock-names.
->>> -
->>> -- clock-names: Should contain the following:
->>> -	"core" - NFC module gate clock
->>> -	"device" - device clock from eMMC sub clock controller
->>> -	"rx" - rx clock phase
->>> -	"tx" - tx clock phase
->>> -
->>> -- amlogic,mmc-syscon	: Required for NAND clocks, it's shared with SD/eMMC
->>> -				controller port C
->>> -
->>> -Optional children nodes:
->>> -Children nodes represent the available nand chips.
->>> -
->>> -Other properties:
->>> -see Documentation/devicetree/bindings/mtd/nand-controller.yaml for generic bindings.
->>> -
->>> -Example demonstrate on AXG SoC:
->>> -
->>> -	sd_emmc_c_clkc: mmc@7000 {
->>> -		compatible = "amlogic,meson-axg-mmc-clkc", "syscon";
->>> -		reg = <0x0 0x7000 0x0 0x800>;
->>> -	};
->>> -
->>> -	nand-controller@7800 {
->>> -		compatible = "amlogic,meson-axg-nfc";
->>> -		reg = <0x0 0x7800 0x0 0x100>;
->>> -		#address-cells = <1>;
->>> -		#size-cells = <0>;
->>> -		interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
->>> -
->>> -		clocks = <&clkc CLKID_SD_EMMC_C>,
->>> -			<&sd_emmc_c_clkc CLKID_MMC_DIV>,
->>> -			<&sd_emmc_c_clkc CLKID_MMC_PHASE_RX>,
->>> -			<&sd_emmc_c_clkc CLKID_MMC_PHASE_TX>;
->>> -		clock-names = "core", "device", "rx", "tx";
->>> -		amlogic,mmc-syscon = <&sd_emmc_c_clkc>;
->>> -
->>> -		pinctrl-names = "default";
->>> -		pinctrl-0 = <&nand_pins>;
->>> -
->>> -		nand@0 {
->>> -			reg = <0>;
->>> -			#address-cells = <1>;
->>> -			#size-cells = <1>;
->>> -
->>> -			nand-on-flash-bbt;
->>> -		};
->>> -	};
->>> diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
->>> new file mode 100644
->>> index 000000000000..671f0a8fdc7c
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
->>> @@ -0,0 +1,70 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/clock/amlogic,mmc-clkc.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
->>> +
->>> +maintainers:
->>> +  - liang.yang@amlogic.com
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - "amlogic,meson-gxl-nfc"
->>> +      - "amlogic,meson-axg-nfc"
->>> +
->>> +  reg:
->>> +    maxItems: 2
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +  clocks:
->>> +    maxItems: 2
->>> +
->>> +  clock-names:
->>> +    items:
->>> +      - const: "core", "device"
->>> +
->>> +  "#clock-cells":
->>> +    const: 1
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - interrupts
->>> +  - clocks
->>> +  - clock-names
->>> +  - "#clock-cells"
->>> +
->>> +additionalProperties: false
->>> +
->>> +examples:
->>> +  - |
->>> +    nand-controller@7800 {
->>> +	compatible = "amlogic,meson-axg-nfc";
->>> +	reg = <0x0 0x7800 0x0 0x100>,
->>> +	      <0x0 0x7000 0x0 0x1>;
->> Please name the register ressources instead of relying on the order
-> ok
->> Also, use the actual size of region, not the size you are using in the
->> driver. AFAIK, the size of the 2nd region is not 0x1
-> yes, it should be 0x4 here, i will fix it.
-> we only need to use a 32bits SDEMMC_CLOCK register.
-> thanks.
-
-No, it is not the point.
-What register you need in the driver is not relevant.
-What is relevant is the actual size of the memory region - so it not 0x1
-or 0x4 ... more likely 0x800 from what I see in the AXG dts.
-
->> 
->>> +	#address-cells = <1>;
->>> +	#size-cells = <0>;
->>> +	interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
->>> +
->>> +	clocks = <&clkc CLKID_SD_EMMC_C>,
->>> +		<&clkc CLKID_FCLK_DIV2>;
->>> +	clock-names = "core", "device";
->>> +
->>> +	pinctrl-names = "default";
->>> +	pinctrl-0 = <&nand_pins>;
->>> +
->>> +	nand@0 {
->>> +		reg = <0>;
->>> +		#address-cells = <1>;
->>> +		#size-cells = <1>;
->>> +
->>> +		nand-on-flash-bbt;
->>> +	};
->>> +     };
->>> +
->>> +...
->>> \ No newline at end of file
->> .
+diff --git a/arch/arm64/mm/flush.c b/arch/arm64/mm/flush.c
+index 2aaf950b906c..a06c6ac770d4 100644
+--- a/arch/arm64/mm/flush.c
++++ b/arch/arm64/mm/flush.c
+@@ -52,6 +52,13 @@ void __sync_icache_dcache(pte_t pte)
+ {
+ 	struct page *page = pte_page(pte);
+ 
++	/*
++	 * HugeTLB pages are always fully mapped, so only setting head page's
++	 * PG_dcache_clean flag is enough.
++	 */
++	if (PageHuge(page))
++		page = compound_head(page);
++
+ 	if (!test_bit(PG_dcache_clean, &page->flags)) {
+ 		sync_icache_aliases((unsigned long)page_address(page),
+ 				    (unsigned long)page_address(page) +
+-- 
+2.11.0
 
