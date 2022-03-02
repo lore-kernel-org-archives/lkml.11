@@ -2,101 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ED5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF655C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiCCABg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:01:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
+        id S229971AbiCCADJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:03:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiCCABc (ORCPT
+        with ESMTP id S229936AbiCCADH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:01:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B365007D;
-        Wed,  2 Mar 2022 16:00:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 945BE61BA9;
-        Thu,  3 Mar 2022 00:00:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00CE8C36AE3;
-        Thu,  3 Mar 2022 00:00:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646265647;
-        bh=Gh+Iw395lx9OcmDBaop4139TbIG8zRBjlYsZzNBFWco=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BocpuqTmutORsZYOiNSdm6lbdqku4oUyiaGBbawYajhypmeyVq/AFKrfpskEbcDf1
-         Q4/3uRPtQVWQFi13n7scGMH2Wid9LMjelDkVKUG+YEX7DHDQZ0KWBXrrawYLftXc3k
-         imwIMLlwqpUJdpgJFKoH1Z3B51kHkMs0QNYnA8bhbSTXwnhU0Cu1B3wklft1sYv1Q5
-         sZrEciaPDY3ZaKJyqH1bwFDtdS/e3oeCQj2G8VxNKQ5Z3e8195bISM1iV0JOy11v3j
-         OMssM1DtJK+tk/y6B7eunZOi4e+gNL/pU1dRgivstJDAtlfMwXfKDmZjslIiDbLCgP
-         ZdiHHAR5HAnQQ==
-Received: by mail-ed1-f50.google.com with SMTP id y11so3921809eda.12;
-        Wed, 02 Mar 2022 16:00:46 -0800 (PST)
-X-Gm-Message-State: AOAM5322o6RgSTMaVRROWjOUvDSonuRi5Mz0sizM6JGQY6JDMqWB4vnE
-        BtX3oFBEUZlJqqEC969QDVjoY3UBrp98QXXdYQ==
-X-Google-Smtp-Source: ABdhPJyCWS2G7IAO37h6jGUTcYx1AHcHdPNzIqNZZelMR25IBMLn05AR7M7SJt01irflojL+S4EdT9nvnMtxT4pRjgc=
-X-Received: by 2002:aa7:df12:0:b0:410:a50b:de00 with SMTP id
- c18-20020aa7df12000000b00410a50bde00mr31738511edy.2.1646265645243; Wed, 02
- Mar 2022 16:00:45 -0800 (PST)
+        Wed, 2 Mar 2022 19:03:07 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC0010FC3;
+        Wed,  2 Mar 2022 16:02:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646265741; x=1677801741;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y6ExcioFqlJjDZQpSBxXHW53xAZe9Os27BCVKLck3NM=;
+  b=jPfE10oPlf9CFds7d6MCbvoSWyd/te2l7pfVFcH2jVgl0izWxAiGmThj
+   7rJZBRI8VoRs2mnbStWPoiwzvUcm2nL3sj76K13guOYxx4NrBnmpTwdCd
+   NOx4/drpsc0Z8TvCoROIkAYamAVR9csOXPrYptNpYOPlZZKZzzJ6aAeW+
+   44BlztYW/RTRKgPQ8vDAd0BLKnVNoKKFNb+cTleSChz8ahdBA1QRFxEi+
+   lT8OGuDyB50ocaB9tnp+GcUz4s+r/yyLxKIWw9Zzws6q20r3spVjpF3kP
+   oBScnOSt266DYNIZFTmqlhZhazX59IRVcc9FOpbmd2Pkcp+9jApChSpsT
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="278208534"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="278208534"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:39:16 -0800
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="641884850"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.125])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:39:16 -0800
+Date:   Wed, 2 Mar 2022 15:31:00 -0800
+From:   "Raj, Ashok" <ashok.raj@intel.com>
+To:     "Williams, Dan J" <dan.j.williams@intel.com>
+Cc:     "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>, "bp@alien8.de" <bp@alien8.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, Ashok Raj <ashok.raj@intel.com>
+Subject: Re: [RFC 03/10] platform/x86/intel/ifs: Add driver for In-Field Scan
+Message-ID: <20220302233100.GE9351@otc-nc-03>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <20220301195457.21152-4-jithu.joseph@intel.com>
+ <f0e958c612ac4dab30ba458a08a7681e1114668f.camel@intel.com>
 MIME-Version: 1.0
-References: <20220126071932.32615-1-jason-jh.lin@mediatek.com>
- <20220126071932.32615-4-jason-jh.lin@mediatek.com> <CAAOTY__K_0sp6+VdL0yi=wF9wA_uag4HKqK3ST7uySdkzfCHBA@mail.gmail.com>
- <CAAOTY__Xz0Pu30tmUrNJ=Nji=03Xv_3Qw526_hT-zELME36Bxw@mail.gmail.com>
-In-Reply-To: <CAAOTY__Xz0Pu30tmUrNJ=Nji=03Xv_3Qw526_hT-zELME36Bxw@mail.gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 2 Mar 2022 18:00:34 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLU0m9C1OPdiBPTkofB4sfiAeUPbFHp0w8caWyP4XPOEw@mail.gmail.com>
-Message-ID: <CAL_JsqLU0m9C1OPdiBPTkofB4sfiAeUPbFHp0w8caWyP4XPOEw@mail.gmail.com>
-Subject: Re: [PATCH v15 03/12] dt-bindings: display: mediatek: disp: split
- each block to individual yaml
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        "jason-jh . lin" <jason-jh.lin@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fei Shao <fshao@chromium.org>,
-        Moudy Ho <moudy.ho@mediatek.com>,
-        "roy-cw.yeh" <roy-cw.yeh@mediatek.com>, CK Hu <ck.hu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jitao shi <jitao.shi@mediatek.com>,
-        Nancy Lin <nancy.lin@mediatek.com>, singo.chang@mediatek.com,
-        DTML <devicetree@vger.kernel.org>,
-        "moderated list:ARM/STM32 ARCHITECTURE" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f0e958c612ac4dab30ba458a08a7681e1114668f.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 5:07 PM Chun-Kuang Hu <chunkuang.hu@kernel.org> wrote:
->
-> OK, it seems no one has comment on this patch, so
+On Wed, Mar 02, 2022 at 03:24:47PM -0800, Dan Williams wrote:
+> On Tue, 2022-03-01 at 11:54 -0800, Jithu Joseph wrote:
+> > In-Field Scan (IFS) provides hardware hooks to perform core tests and
+> > report failures for portions of silicon that lack error detection
+> > capabilities, which will be available in some server SKUs starting with
+> > Sapphire Rapids. It offers infrastructure to specific users such as cloud
+> > providers or OEMs to schedule tests and find in-field failures due to aging
+> > in silicon that might not necessarily be reported with normal machine
+> > checks.
+> >
+> > Add basic parts of the IFS module (initialization and check IFS capability
+> > support in a processor).
+> >
+> > MSR IA32_CORE_CAPABILITY is a feature-enumerating MSR, bit 2 of which
+> > reports MSR_INTEGRITY_CAPABILITIES. Processor that supports IFS
+> > should reports the MSR_INTEGRITY_CAPABILITIES enabled.
+> >
+> > Please check the latest Intel 64 and IA-32 Architectures Software
+> > Developer's Manual for more detailed information on the MSR and the
+> > MSR_INTEGRITY_CAPABILITIES.
+> >
+> > Originally-by: Kyung Min Park <kyung.min.park@intel.com>
+> > Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
+> > Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+> > Reviewed-by: Tony Luck <tony.luck@intel.com>
+> > ---
+> >  MAINTAINERS                             |  7 ++++
+> >  drivers/platform/x86/intel/Kconfig      |  1 +
+> >  drivers/platform/x86/intel/Makefile     |  1 +
+> >  drivers/platform/x86/intel/ifs/Kconfig  |  9 +++++
+> >  drivers/platform/x86/intel/ifs/Makefile |  7 ++++
+> >  drivers/platform/x86/intel/ifs/core.c   | 49 +++++++++++++++++++++++++
+> >  drivers/platform/x86/intel/ifs/ifs.h    | 14 +++++++
+> >  7 files changed, 88 insertions(+)
+> >  create mode 100644 drivers/platform/x86/intel/ifs/Kconfig
+> >  create mode 100644 drivers/platform/x86/intel/ifs/Makefile
+> >  create mode 100644 drivers/platform/x86/intel/ifs/core.c
+> >  create mode 100644 drivers/platform/x86/intel/ifs/ifs.h
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 777cd6fa2b3d..4c9912c0d725 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -9685,6 +9685,13 @@ B:       https://bugzilla.kernel.org
+> >  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/lenb/linux.git
+> >  F:     drivers/idle/intel_idle.c
+> >
+> > +INTEL IN FIELD SCAN (IFS) DRIVER
+> > +M:     Jithu Joseph <jithu.joseph@intel.com>
+> > +R:     Ashok Raj <ashok.raj@intel.com>
+> > +R:     Tony Luck <tony.luck@intel.com>
+> > +S:     Maintained
+> > +F:     drivers/platform/x86/intel/ifs
+> > +
+> >  INTEL INTEGRATED SENSOR HUB DRIVER
+> >  M:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> >  M:     Jiri Kosina <jikos@kernel.org>
+> > diff --git a/drivers/platform/x86/intel/Kconfig b/drivers/platform/x86/intel/Kconfig
+> > index 8e65086bb6c8..7339e7daf0a1 100644
+> > --- a/drivers/platform/x86/intel/Kconfig
+> > +++ b/drivers/platform/x86/intel/Kconfig
+> > @@ -4,6 +4,7 @@
+> >  #
+> >
+> >  source "drivers/platform/x86/intel/atomisp2/Kconfig"
+> > +source "drivers/platform/x86/intel/ifs/Kconfig"
+> >  source "drivers/platform/x86/intel/int1092/Kconfig"
+> >  source "drivers/platform/x86/intel/int33fe/Kconfig"
+> >  source "drivers/platform/x86/intel/int3472/Kconfig"
+> > diff --git a/drivers/platform/x86/intel/Makefile b/drivers/platform/x86/intel/Makefile
+> > index 35f2066578b2..bd7f2ef5e767 100644
+> > --- a/drivers/platform/x86/intel/Makefile
+> > +++ b/drivers/platform/x86/intel/Makefile
+> > @@ -5,6 +5,7 @@
+> >  #
+> >
+> >  obj-$(CONFIG_INTEL_ATOMISP2_PDX86)     += atomisp2/
+> > +obj-$(CONFIG_INTEL_IFS)                        += ifs/
+> >  obj-$(CONFIG_INTEL_SAR_INT1092)                += int1092/
+> >  obj-$(CONFIG_INTEL_CHT_INT33FE)                += int33fe/
+> >  obj-$(CONFIG_INTEL_SKL_INT3472)                += int3472/
+> > diff --git a/drivers/platform/x86/intel/ifs/Kconfig b/drivers/platform/x86/intel/ifs/Kconfig
+> > new file mode 100644
+> > index 000000000000..88e3d4fa1759
+> > --- /dev/null
+> > +++ b/drivers/platform/x86/intel/ifs/Kconfig
+> > @@ -0,0 +1,9 @@
+> > +config INTEL_IFS
+> > +       tristate "Intel In Field Scan"
+> > +       depends on X86 && 64BIT && SMP
+> 
+> Are there actual CONFIG_SMP and CONFIG_64BIT compilation dependencies
+> in this driver? It looks like this could compile without those config
+> dependencies.
 
-No comment because the patch was not in PW. That's most likely due to this:
+Don't think this is anything specific to compile dependencies. 
 
-Subject: [PATCH v15 03/12] dt-bindings: display: mediatek: disp: split
-each block to individual yaml
-Date: Wed, 26 Jan 2022 15:19:23 +0800 [thread overview]
-Message-ID: <20220126071932.32615-4-jason-jh.lin@mediatek.com> (raw)
-In-Reply-To: <20220126071932.32615-1-jason-jh.lin@mediatek.com>
+This is a server feature and only targetted and validated in those configs,
+untested and unsupported in 32bit configs. 
 
-[-- Warning: decoded text below may be mangled, UTF-8 assumed --]
-[-- Attachment #1: Type: text/plain; charset="y", Size: 50916 bytes --]
-
-"y" is not a valid charset. This is caused when git-send-email asks
-for the encoding and you answer 'y' rather than <enter>.
-
-Rob
