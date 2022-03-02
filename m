@@ -2,196 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8500DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiCBBDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 20:03:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
+        id S236232AbiCBBMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 20:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbiCBBDW (ORCPT
+        with ESMTP id S229771AbiCBBME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 20:03:22 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2884092F;
-        Tue,  1 Mar 2022 17:02:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646182958; x=1677718958;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=kZ5pWhy1BROva5NAhRzEmvger/JpXRnYjMb5oDEnXAo=;
-  b=I8bzZ52HXpgZQEuGeGOZylpgyS74tI6yUfGZEBEWNk9zMdadlAAySZRx
-   FveV9OvRshYx9LDFGhAC5x+bRDxo302WylfAq0hiFmiFcfpcOlEVehGkH
-   2xcHNPBPAHhoVLhjrLtOdx1DiAK0NArqYGN5QUwKusQ/9HHD/KrLuzgDp
-   ffLeYGzUsOSDzoslcd1/jCZsaeBvUIcxPLfAYrgS+Q8DLWta51Dz4E8e5
-   2JJaMwat5qORj33uLLL86EDvE9rbfWLR1WnPE5PDu4hu23uaVlW9Izd22
-   wbsArogcKC7vHXJ3cmcr7oxT4F0Qem+ejOKozDLOlZnycV6igR0UUhMMU
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="240692054"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="240692054"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 17:02:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="510774028"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga006.jf.intel.com with ESMTP; 01 Mar 2022 17:02:23 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 1 Mar 2022 17:02:22 -0800
-Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 1 Mar 2022 17:02:22 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Tue, 1 Mar 2022 17:02:22 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 1 Mar 2022 17:02:22 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CWSiZaG3ng5QPdZuKsUZ4L7mGZmgFnNtBuD9d85MEo7tyb+k51KV/M06D7HQEGdPcySr3qPhKOK50n2m2FgIJ+nrPSKn6k09FYlXXo1Wafd1Gxf8c0Dw34t15FciWgg03qDwRwa+GqPKInGL8uEK+yxs/js0IkqMy5W3lJ/XfFUVKH4IT706dnHloXnZwMItT9G1e+pIIQIK7bR+yYuiUBvrDTQKeDbHsNuOrmX7cyJhDX7Q2qrHONEWWrINm5XY/nZ32sHZxH67cZrXQCAv0PV2D0xGsHFshpfoTOSbdedfAgyrfd59oFGlnMd45GOvX/yUGizbIjBo+MKSVHwn8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QN3EhaiXRc2EeFwiBgvV2mgSgKyg3Yf8FbyU3fv+vQM=;
- b=GDFIHp8JjNStqVfs/PITlaWLEzbPUYakACM3xmhcbIx0qPCkgHvDtzQjhAz6rVq5TKSEE7jGCPv5lzS/RrwJu9kaQuB6BzMvEKuoru6KGbJxsL2AD+pnAPh7C1AqXg2Gt0K6VdbGbxFGxVwgQBcajnWr6EthmbDMu0ga3t6dFAOqOAGLtk8cR67GSrhf57KspepeWd5fjeAX/GG73Mz703V3O8cX0LqxSlJJskyVphhoZRF1A/3TAYKB4xysEm2a2pQP/58ujnCR76HtpR/y1gOe0xcit+y7WP6dISSwXpG7KztvGib2lMHjuhbTumRtplL9dlyZAWOgjpuDj340Xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3768.namprd11.prod.outlook.com (2603:10b6:a03:fa::20)
- by MN2PR11MB4614.namprd11.prod.outlook.com (2603:10b6:208:268::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Wed, 2 Mar
- 2022 01:02:20 +0000
-Received: from BYAPR11MB3768.namprd11.prod.outlook.com
- ([fe80::dc03:366a:dae3:aee]) by BYAPR11MB3768.namprd11.prod.outlook.com
- ([fe80::dc03:366a:dae3:aee%4]) with mapi id 15.20.5038.014; Wed, 2 Mar 2022
- 01:02:20 +0000
-Message-ID: <269ceab6-170f-82e5-f9fc-d3fafba60fba@intel.com>
-Date:   Tue, 1 Mar 2022 17:02:14 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [RFC 10/10] trace: platform/x86/intel/ifs: Add trace point to
- track Intel IFS operations
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     <hdegoede@redhat.com>, <markgross@kernel.org>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <corbet@lwn.net>, <gregkh@linuxfoundation.org>,
-        <andriy.shevchenko@linux.intel.com>, <ashok.raj@intel.com>,
-        <tony.luck@intel.com>, <linux-kernel@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
-        <patches@lists.linux.dev>, <ravi.v.shankar@intel.com>
-References: <20220301195457.21152-1-jithu.joseph@intel.com>
- <20220301195457.21152-11-jithu.joseph@intel.com>
- <20220301151744.1ad5e11a@gandalf.local.home>
-From:   "Joseph, Jithu" <jithu.joseph@intel.com>
-In-Reply-To: <20220301151744.1ad5e11a@gandalf.local.home>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR19CA0008.namprd19.prod.outlook.com
- (2603:10b6:300:d4::18) To BYAPR11MB3768.namprd11.prod.outlook.com
- (2603:10b6:a03:fa::20)
+        Tue, 1 Mar 2022 20:12:04 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B051D98F50
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 17:11:21 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id s24so191207edr.5
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 17:11:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=BVjhXQ5SNbO/pW5hizdV6mz5H8/dxovfwEQSMmhkzAU=;
+        b=BDE3x5UJY+SDX6EudoqgIAwzgA4berHul9/6j7AEMmGHDtbDjJToYSV99AFzkKl55s
+         lAf/KtgPvl04/7/fhjJMImPB7CK7DRXZrslXzpNiqZqyUWWS1W09QyLDoT2PWrB7TcMl
+         SV72s46dP8bhvQ4mkOebTu9rioLLorOT0ag29vckNmOoXSZzIWc10e6qoHeQG7ZC07uN
+         DuiTLBr7PoWW24P4LqSx8+vwzgA1x75uveBla4chuEgbuoxzxjP3+L86R/KD3giaOg0O
+         YrFeN9lzWUTcHqWpUMlTh+U9y+3SnAxRMkUEBPQXAWR9RaKPFvTJo2eHk2WidG7gjzIY
+         2rJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=BVjhXQ5SNbO/pW5hizdV6mz5H8/dxovfwEQSMmhkzAU=;
+        b=6gVjwX9Sq6kL0eNclOw+thp0x93X/CDTXCu5EBE55iQh9c0+V9KQ0/oiVi0IHfWMbR
+         7F1VoGkI8ihGJBiXLvU3c8MUrUpRxDkW5BSZd5amHRMozj8cGLlBVPinRqoUR5qOc0/n
+         XGrVkzvIsUm8s4v+JXdZPshP8uULHU8X8Q1XBK/oEO6MNL8DgzN06zv+x3qgVrcUaXDi
+         JWuUHMGfzTuRRd81IF2hIA1fr7f9qqE8CbxJJrIO9eJm/PIWwdaPkynYCrjmMwOTr8uX
+         llC9/jV7o31pTh8/XBVy4eeuXd6QNvLr2tjfvH6vG7qGtP0vevKa3g/l9rKc+SyB1nE/
+         k5EQ==
+X-Gm-Message-State: AOAM532YmlFPM91s4RRCMx4eJZ+033nBgDAQNDOp6igbmzllmFUTZX2o
+        hvYJFZ6+0xSUT6Rh3NB2vyY4h55cTw1DGOeG3Wk=
+X-Google-Smtp-Source: ABdhPJxXRIlLn/L9tVzObJU1m7g2HQIHiyG8p73bYywPy5UoKAvwNBi0PRUT+7lx2VxrfDypf654hz0gXIRyYwgOSk8=
+X-Received: by 2002:a50:da4b:0:b0:40f:28f0:c2c0 with SMTP id
+ a11-20020a50da4b000000b0040f28f0c2c0mr26884959edk.374.1646183480055; Tue, 01
+ Mar 2022 17:11:20 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cdc994ea-eda5-4d4d-e3d4-08d9fbe84d91
-X-MS-TrafficTypeDiagnostic: MN2PR11MB4614:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <MN2PR11MB4614B405D06796E50AE7FA2A80039@MN2PR11MB4614.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VPnEvktcc3EdHNYzsk/IxRjrHQEmKrLh2iX3auKdZshcEd+97eke/2URojPnMA4jvU7CRxotF+kt7aAaWAMhVsswNjMPM5reWa4DUpE7q9Z8Ip8fIS0xm8vF9cgHACUt5zVX2kWbP4a10RoWMEllWXG3zw87ShNASHrGu7Ag8x58uCTBM5d8QE3anfiAM4r1cOn5llQGpKRYifOFCx1t6/b9IGBlY62fPuSIFmrmcilZ658aNS/SQ3H0d6IRWf+Yc+2BrBj1J7yaeCYQn74DVApo7p2Qh7EK0cgctjoxj6yDXvxRn6yTa0T+SDF0O2FqA4EvfG7OGT+FjNnbcQXkgojMbCNjQW23c8KWChZrkoxakiokMtXBY98WVCXDON+IYdnrtKdqryjfkA/X70VNv7haY7XBWYEFHzfNg9Dztr9EGIJ9Y7NNdhMTeeHQPBRVbG5I/DhknyAcv+OyWgKliwgHyAR29dDDes0gm36UDXJSHKiUkKHsODJciDC/ejrnwZ0K/4fmsYaAJwg7ekocYJtSmkAtay/R+9vKCLDbYeSkFfJgKWkMvKLMy80ch8OxPIUsztXS/epov1/yZyzeT987gduRDvueuiqbFVIQZheVpvYUZh6Y8IlhPrzGQJa+Mp64QsfoyhsIyBy7pPMvEfm6m/2TesogMFeU6A6jSuF3I1oLPF6on4fC++wTnnCJxT+YhBJXnryKQTECSdNj2EGuiZuYsm1ObxAq4OiNw0JRdxm0/pteExyeQoyFQXun
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3768.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(82960400001)(508600001)(6506007)(316002)(38100700002)(53546011)(6512007)(2906002)(6486002)(31696002)(6916009)(8936002)(6666004)(7416002)(5660300002)(26005)(4744005)(2616005)(86362001)(66946007)(4326008)(66476007)(66556008)(186003)(36756003)(31686004)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?clFtb3FUWTA2eTV6aXRLQko0bU5SZ0Q2ZnBibGRQdW9ubmh5NFBpY2RxNHRk?=
- =?utf-8?B?VWRrMlEvTmRoQ1FSRkFCR0dCMlBVeFRreVpLVzRIclRPQXd4L1JrZ2c5MHl0?=
- =?utf-8?B?ZnRpZ1RIbTN3aWo5aEpTbG1XMnUvaDJoQnBwMktEajRuUTQwK2Z0OVFoZGhu?=
- =?utf-8?B?bndvS3RWODVucTUweXR2cVVPRXlaY3RxZFlKSnFtMXpSOW1CV1RTUTJNRERN?=
- =?utf-8?B?ZEZCaDBNOFUrWEpvb24zMFY4emdYS0JBVmJZTVNwbm9nbHc1NkMrdTgxd0FD?=
- =?utf-8?B?TG9oajJMRW9icWdlaUhnZlEzTXpTMEVxSUlXTmRpdFJSU3RoSVMwcTFyQldU?=
- =?utf-8?B?SC9ET3BJelN0YW8rYmhQaUQvbEloOFVjd284WG1Ub1BMVGI1NjlQaEJGanFC?=
- =?utf-8?B?UmNjVW9Ccm9IbmJVMUNPb3RlWXpoUzRSTS84eG9oNE9Tb3d0cjRTN3JOQ3hq?=
- =?utf-8?B?ZktWWDFPUzBXbm9GRWFMZ1hqb2E0aGtlRmxBbW9lM3AwVE0zK2tabUp3c1VO?=
- =?utf-8?B?eWNKQWFQcG1JNFh1VDN4WUxkd010MW5MMlhBUFlDeHBIdVJGMTFyTzNNdHRU?=
- =?utf-8?B?bWluZVJvay9sUXgwcXdlSktjU1pVbUxYWnRKSjRraEw1NDNZNDJZb2ZlYlVV?=
- =?utf-8?B?dEZyNVh1MUgrQTRZR2JhaFZaYU50clR2LysyMFUxenZKek43TmcvVXRGVmNY?=
- =?utf-8?B?MDlzVmlVdFRMYXJndlBuUys0OFh3QitlcXZGUHBsWnFubitsc1FHZEVHQk9l?=
- =?utf-8?B?Q1l3aWdSQ3lPQjI2U1dRTWM1amk1ektmU3A4UjEzNFRSQkloWkFlZ0Mxb2pG?=
- =?utf-8?B?alVBaUtUV3NoOThsRHVCMVlSMGJHUmlqMGREc3Exb2w0L0s1YW01QVlSTmI3?=
- =?utf-8?B?NzNsSHBDZ1FxY05COVNKREp2aVJMQ1Z2emp5bXBUQ2xqMHdHbDRkRkRFVUpJ?=
- =?utf-8?B?bUt1SGFMU3JNRWdCUXZLdEZuc2t2cGpNMFpLdXpOU0h3bVNQVUR4OUdlSVcz?=
- =?utf-8?B?NDIrT21tWEdYVDQ3c204Yk9JTnBYQWxTcDJWYWxPd0p5L0Q4K2N3bkNhS1NR?=
- =?utf-8?B?bjVWOFZOQlI4Q0NzdkdXbmNpcll5aGFGNU1rb1ptYmtNaktLdzgrUjFsL0V6?=
- =?utf-8?B?Zk5IRmhia2NyeU1kenVmZCt6UWM0MEpLSDBFekV3Zm5LK3dJb2hhdUl4TXpy?=
- =?utf-8?B?bE9NajVwZ1gwWGFnZTVNazV6V1NXRDZCclNwRVBTUllIZC9BdmJMeDZSdy9L?=
- =?utf-8?B?Y1JUTDNEZFlRK1J5SGdIdFZKNU1IS1lkSUNuRVJwRjY0N2VENGU4LzNBaTVz?=
- =?utf-8?B?SHF4dzBCTzV3QkxFMGVZR2txNCtZTk9qTnJHMmFydlRXMTRyT0JSWUp6cVF4?=
- =?utf-8?B?ZlFSSktNa3laMjVvcUJ0bEZkcXdPRWhEdzBvUTB2ODlweXJpTHNTNWJxZFVr?=
- =?utf-8?B?eXpHenNhMU5XeWlkbit4UHFlZ2JYR3Vpa2JyU2hWbW1aOElENjNEK2JmM3Nj?=
- =?utf-8?B?eW82Sm9WWndwWGZ6Vld5bFJOVnhiY0VpM2c2T1ZIbS8xc1ZWbjlkR0Q3M09S?=
- =?utf-8?B?MDZzTHVuZmZjS29KVDB2OWlsNzFTV3V1dEZualYxb2RMUXpnMVExL1ZUbGVK?=
- =?utf-8?B?V0hQa0EzVzc3Tlg1Q1BOTzRwNUpUVUhvakpOb0wyS3NPb0J1OFM1MHZXekhV?=
- =?utf-8?B?OGg4SlRWRERqM0Z3ZnExazVCNGdEL3piVGQ3WkIrZUJ4TDZ5cnFVYkFPVytU?=
- =?utf-8?B?V0ZsSDZOQUdhdHFwZTFTRDdUdGpYRHBnL0pMaFJPYVdGN0h3RE9mTnhxeFpk?=
- =?utf-8?B?SlFSUVVadnZ6QU50QnhwVWYxOW1VQU1Qa1VOekFWUks1OFc3UnQ0MTVRQm9o?=
- =?utf-8?B?ODVhbnFaM3RWQk1wT3NlTTJSS21oSHZqdnJVRXNaSUx6b3NtaHVhZXF5QTho?=
- =?utf-8?B?c0VoZ0kyWitlVXhwL205Tk1YaTBQdTB3QjRpWWVYcEh1Q3JnQkluRTBCMC9T?=
- =?utf-8?B?cEJJUkR2ZHNSU3lJcjBycm5wdUZibXhDQzdRblRjVm1nZWRiOUh2TDJjY1Ev?=
- =?utf-8?B?NERWdm94UUp6UnNVSGhXSjlQRnE0cjF0dzBXcWhkSXRwYmZ2L2piL2FyNnor?=
- =?utf-8?B?czFTNCsxTWNESzI1eitCUUUvK2lzenRPZTlDV1NwQjFQcFpzVW1INkFXdThS?=
- =?utf-8?Q?Z4uBgsAxPgW/ywjqTqomAXQ=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdc994ea-eda5-4d4d-e3d4-08d9fbe84d91
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3768.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 01:02:20.3745
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G7OIDXZ6PW8wQ74cjQFy9oU9Yymx4+ny07lbn6H+mQBQH9k+AswqAk4+ZCTLhYTmhvzkAW8jMhA7zN0ZbU1Z5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4614
-X-OriginatorOrg: intel.com
+References: <20220215073743.1769979-1-cgel.zte@gmail.com> <1f486393-3829-4618-39a1-931afc580835@oracle.com>
+ <d6e74520-88bc-9f57-e189-8e4f389726e@google.com> <Yg5RDDRLVsuT/Rfw@casper.infradead.org>
+ <8986d97-3933-8fa7-abba-aabd67924bc2@google.com> <a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com>
+In-Reply-To: <a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com>
+From:   yong w <yongw.pur@gmail.com>
+Date:   Wed, 2 Mar 2022 09:11:08 +0800
+Message-ID: <CAOH5QeA4w+CKW+K58k3c5pRWdkx6uT5ouyQ6hepMd1wKF51mcw@mail.gmail.com>
+Subject: Re: [PATCH] memfd: fix F_SEAL_WRITE after shmem huge page allocated
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Matthew Wilcox <willy@infradead.org>, cgel.zte@gmail.com,
+        kirill@shutemov.name, songliubraving@fb.com,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>, yang.yang29@zte.com.cn,
+        wang.yong12@zte.com.cn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
+this patch does not apply to the 4.19 kernel.
+Is it necessary to make corresponding patches for each stable version?
 
+Thanks.
 
-On 3/1/2022 12:17 PM, Steven Rostedt wrote:
-> On Tue,  1 Mar 2022 11:54:57 -0800
-> Jithu Joseph <jithu.joseph@intel.com> wrote:
-> 
->> +	TP_STRUCT__entry(
->> +		__field(	u8,	start	)
->> +		__field(	u8,	stop	)
->> +		__field(	u64,	status	)
->> +	),
-> 
-> I'd suggest swapping this to:
-> 
-> 		__field(	u64,	status	)
-> 		__field(	u8,	start	)
-> 		__field(	u8,	stop	)
-> 
-> As trace events are usually aligned by 4 bytes (sometimes 8 for archs that
-> require 8byte alignment for 8 byte words), but any event, putting the
-> padding at the end of the event is better than in the middle of the event.
-> 
-> Having the u64 come after two u8 (two byes) will pretty much guarantee a 6
-> bytes hole in the middle of the event.
-
-Will reorder the fields as you suggested. Appreciate the detailed comment.
-
-Jithu
-
-
+Hugh Dickins <hughd@google.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=8827=E6=97=A5=
+=E5=91=A8=E6=97=A5 14:41=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Wangyong reports: after enabling tmpfs filesystem to support
+> transparent hugepage with the following command:
+>
+>  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
+>
+> the docker program tries to add F_SEAL_WRITE through the following
+> command, but it fails unexpectedly with errno EBUSY:
+>
+>  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE) =3D -1.
+>
+> That is because memfd_tag_pins() and memfd_wait_for_pins() were never
+> updated for shmem huge pages: checking page_mapcount() against
+> page_count() is hopeless on THP subpages - they need to check
+> total_mapcount() against page_count() on THP heads only.
+>
+> Make memfd_tag_pins() (compared > 1) as strict as memfd_wait_for_pins()
+> (compared !=3D 1): either can be justified, but given the non-atomic
+> total_mapcount() calculation, it is better now to be strict.  Bear in
+> mind that total_mapcount() itself scans all of the THP subpages, when
+> choosing to take an XA_CHECK_SCHED latency break.
+>
+> Also fix the unlikely xa_is_value() case in memfd_wait_for_pins(): if a
+> page has been swapped out since memfd_tag_pins(), then its refcount must
+> have fallen, and so it can safely be untagged.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Reported-by: wangyong <wang.yong12@zte.com.cn>
+> Signed-off-by: Hugh Dickins <hughd@google.com>
+> Cc: <stable@vger.kernel.org>
+> ---
+> Andrew, please remove
+> fix-shmem-huge-page-failed-to-set-f_seal_write-attribute-problem.patch
+> fix-shmem-huge-page-failed-to-set-f_seal_write-attribute-problem-fix.patc=
+h
+> from mmotm, and replace them by this patch against 5.17-rc5:
+> wangyong's patch did not handle the case of pte-mapped huge pages, and I
+> had this one from earlier, when I found the same issue with MFD_HUGEPAGE
+> (but MFD_HUGEPAGE did not go in, so I didn't post this one, forgetting
+> the transparent_hugepage/shmem_enabled case).
+>
+>  mm/memfd.c |   40 ++++++++++++++++++++++++++++------------
+>  1 file changed, 28 insertions(+), 12 deletions(-)
+>
+> --- 5.17-rc5/mm/memfd.c
+> +++ linux/mm/memfd.c
+> @@ -31,20 +31,28 @@
+>  static void memfd_tag_pins(struct xa_state *xas)
+>  {
+>         struct page *page;
+> -       unsigned int tagged =3D 0;
+> +       int latency =3D 0;
+> +       int cache_count;
+>
+>         lru_add_drain();
+>
+>         xas_lock_irq(xas);
+>         xas_for_each(xas, page, ULONG_MAX) {
+> -               if (xa_is_value(page))
+> -                       continue;
+> -               page =3D find_subpage(page, xas->xa_index);
+> -               if (page_count(page) - page_mapcount(page) > 1)
+> +               cache_count =3D 1;
+> +               if (!xa_is_value(page) &&
+> +                   PageTransHuge(page) && !PageHuge(page))
+> +                       cache_count =3D HPAGE_PMD_NR;
+> +
+> +               if (!xa_is_value(page) &&
+> +                   page_count(page) - total_mapcount(page) !=3D cache_co=
+unt)
+>                         xas_set_mark(xas, MEMFD_TAG_PINNED);
+> +               if (cache_count !=3D 1)
+> +                       xas_set(xas, page->index + cache_count);
+>
+> -               if (++tagged % XA_CHECK_SCHED)
+> +               latency +=3D cache_count;
+> +               if (latency < XA_CHECK_SCHED)
+>                         continue;
+> +               latency =3D 0;
+>
+>                 xas_pause(xas);
+>                 xas_unlock_irq(xas);
+> @@ -73,7 +81,8 @@ static int memfd_wait_for_pins(struct ad
+>
+>         error =3D 0;
+>         for (scan =3D 0; scan <=3D LAST_SCAN; scan++) {
+> -               unsigned int tagged =3D 0;
+> +               int latency =3D 0;
+> +               int cache_count;
+>
+>                 if (!xas_marked(&xas, MEMFD_TAG_PINNED))
+>                         break;
+> @@ -87,10 +96,14 @@ static int memfd_wait_for_pins(struct ad
+>                 xas_lock_irq(&xas);
+>                 xas_for_each_marked(&xas, page, ULONG_MAX, MEMFD_TAG_PINN=
+ED) {
+>                         bool clear =3D true;
+> -                       if (xa_is_value(page))
+> -                               continue;
+> -                       page =3D find_subpage(page, xas.xa_index);
+> -                       if (page_count(page) - page_mapcount(page) !=3D 1=
+) {
+> +
+> +                       cache_count =3D 1;
+> +                       if (!xa_is_value(page) &&
+> +                           PageTransHuge(page) && !PageHuge(page))
+> +                               cache_count =3D HPAGE_PMD_NR;
+> +
+> +                       if (!xa_is_value(page) && cache_count !=3D
+> +                           page_count(page) - total_mapcount(page)) {
+>                                 /*
+>                                  * On the last scan, we clean up all thos=
+e tags
+>                                  * we inserted; but make a note that we s=
+till
+> @@ -103,8 +116,11 @@ static int memfd_wait_for_pins(struct ad
+>                         }
+>                         if (clear)
+>                                 xas_clear_mark(&xas, MEMFD_TAG_PINNED);
+> -                       if (++tagged % XA_CHECK_SCHED)
+> +
+> +                       latency +=3D cache_count;
+> +                       if (latency < XA_CHECK_SCHED)
+>                                 continue;
+> +                       latency =3D 0;
+>
+>                         xas_pause(&xas);
+>                         xas_unlock_irq(&xas);
