@@ -2,84 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1561FC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 02:10:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239035AbiCBCHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 21:07:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
+        id S239042AbiCBCLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 21:11:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiCBCHi (ORCPT
+        with ESMTP id S231734AbiCBCLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 21:07:38 -0500
+        Tue, 1 Mar 2022 21:11:07 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA85A419F;
-        Tue,  1 Mar 2022 18:06:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C2AA6512;
+        Tue,  1 Mar 2022 18:10:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 437D8CE20C1;
-        Wed,  2 Mar 2022 02:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45615C340EE;
-        Wed,  2 Mar 2022 02:06:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B9D85CE20CB;
+        Wed,  2 Mar 2022 02:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63914C340EE;
+        Wed,  2 Mar 2022 02:10:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646186812;
-        bh=RbXjCq2vc9KTjJ2ViOIg4WEUsqUh0ts1JySeSDecJPA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CeKdGh4HJ5xY8VnlinUJxQ4c1yi48El5NRql2ZCTIP2Mmz0h+R9wG20554NXflcMb
-         h6p72p9M9T34mgM1urwfL0Ac2+setqTN/Hus8HEP5hSlYeKrX8CP+Je136zRGYM7VA
-         w1pjE71yLhWfV68Lf6cJfJbdXpWGyL0GKTqAv/ac1YdSambaOKcoPt74fztMyceRi0
-         5dvchGms8HIYcCELtkRrsq91AyGKV8jHUTZngeLt8ODz7/UTURXidE5aF4tRsfmx/S
-         3akqly+ZZPX8OcHC4ilBq/WvlehbRgEdqm1HbTL1VkHGK5IVG2BcNKHdXUlJV0iXmx
-         dVIuoFk3QvPLw==
-Date:   Tue, 1 Mar 2022 18:06:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Another pass removing cases of 'allOf'
- containing a '$ref'
-Message-ID: <20220301180650.6188a66c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220228213802.1639658-1-robh@kernel.org>
-References: <20220228213802.1639658-1-robh@kernel.org>
+        s=k20201202; t=1646187022;
+        bh=U/4xh9QWn0bXibryx90ssRbqx36g3p2I2thEq7GTMCA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pVsWhWV7BIZYQF2Kwu6QyzAUJ/vzzeq1zqk8T+YySwRKjcg0Xk2SK6YCOFWR2+aZO
+         AOCOqics4mI+YL9ur5c4LWbP5H8v4+TpUdydbqolTlybvWXnr7zWXkAarYWRGOZjof
+         Rtp5c0N7Cm0nIVuMNrj8LqDcbkdsj4tENObCwfmkJ7rkvo/ViGwv1uT4BEwTRL+Jxd
+         CA1Nw2Z58JPF4Afbjrc2c+Hk0FOJLo8sQm5IreVuXwjYt/+TN8jfNdiWYgnMpVogKI
+         yqzsr7jBOVh1/HpJUrfPU351igwoY/nD2ECr/OFe4yj8yoK21pIGrmmt3eXAOuzL7y
+         iegcfO/rgo7Eg==
+Date:   Wed, 2 Mar 2022 03:11:06 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <Yh7SOgqdFxJdVPMq@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <Yhy/GvJegnTqYdq6@iki.fi>
+ <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
+ <Yh4fGORDaJyVrJQW@iki.fi>
+ <Yh4i4hVcnfZ8QDAl@iki.fi>
+ <2d2d3471-78ce-9faa-daf6-138078f5ffaa@intel.com>
+ <Yh7Q5fbOtr+6YWaS@iki.fi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh7Q5fbOtr+6YWaS@iki.fi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Feb 2022 15:38:02 -0600 Rob Herring wrote:
-> Another pass at removing unnecessary use of 'allOf' with a '$ref'.
+On Wed, Mar 02, 2022 at 03:05:25AM +0100, Jarkko Sakkinen wrote:
+> > The work that follows this series aimed to do the integration with user
+> > space policy.
 > 
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords.
+> What do you mean by "user space policy" anyway exactly? I'm sorry but I
+> just don't fully understand this.
+> 
+> It's too big of a risk to accept this series without X taken care of. Patch
+> series should neither have TODO nor TBD comments IMHO. I don't want to ack
+> a series based on speculation what might happen in the future.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+If I accept this, then I'm kind of pre-acking code that I have no idea what
+it looks like, can it be acked, or am I doing the right thing for the
+kernel by acking this. 
+
+It's unfortunately force majeure situation for me. I simply could not ack
+this, whether I want it or not.
+
+BR, Jarkko
