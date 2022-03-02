@@ -2,175 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9B0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27ACC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240111AbiCBVtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
+        id S245429AbiCBVxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:53:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237746AbiCBVs7 (ORCPT
+        with ESMTP id S235341AbiCBVxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:48:59 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B2A3122B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:48:15 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id 5so3149543lfz.9
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 13:48:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OmEHlpCk9+kT+4UG18motyIrJrBLGArcs0YNOn66F5M=;
-        b=pdf0eNr+XEEhx6I7NBLOlzOXh63+Tgzj57OoXc2xEiLr52dDN2Iezc0x/79HwdlArL
-         AcPgvTMday3W8ntpZQMzdo9lUHcaPlEjl/B6Xb9hJYZqLtiAK1IN25puSG2r4LbVR6S5
-         kv2w6KiQuWddK6b30orD+iPZd5SFWrnaaHl7LW+arNb7MkCbjCFaTL05LJNKMKpz2rIx
-         utYiKKPWQtXPFVIh8tbe/uOIB+X91M5E47jJ/A0oTBzLODRri8QD6or/+GeyrbulYhUU
-         IqSEPbkEDhA/StOHjj8xs9elHvB2uXJgeRHStnGW2GMm8o260oE3K/8be+6+ISPmAmWF
-         dITw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OmEHlpCk9+kT+4UG18motyIrJrBLGArcs0YNOn66F5M=;
-        b=A6ugu5spIo5x/KM3s7K6sz6mbSs0k1GrKVT1CTvJqMol9Ifpc4+pai25IRdOnpP4Jn
-         439VS4d+xpsJqVoXs4TsisdpWJJWoUwKJnGSSxR2VmAfOnY0JyVpja1M8UohW4npmqjW
-         /TA7iSR/tGBtNXhYlB8LiT1OyYtSNqwTamx38ETmAH4TFKYYFvx2r5snGLihS+361Kad
-         CI4C8e/r0w/cO4v9eSPetQ2eBn8zvoGWYm3njMaSLU0P/8T2pPzUZVQ05sDi/OzYPnbL
-         EF+x95MqW9jfmBEyG2zorfXesIfNV7rFtdsU5zwo4OG6tAPI/TxM0T7Vqr/yom07bwdo
-         dYxw==
-X-Gm-Message-State: AOAM530Tz1Uzq5eV96T0HgBLLRi9uTJ+2kVM9IwzpTXI8l6NwV2q2iKd
-        oY4g+wOb3kCzxoj8/fn+oFsk6qubwbahPbKeYCXvyA==
-X-Google-Smtp-Source: ABdhPJyrQGT67+E2Q0B8IWs/wD6tmHwf9aFFsYLSMb5RypgEguFXNl8rPDiBdZE24YYwgR7k2i2T5YU4Gl16CkxuhVY=
-X-Received: by 2002:a05:6512:490:b0:443:d65a:2bc8 with SMTP id
- v16-20020a056512049000b00443d65a2bc8mr19232653lfq.579.1646257693378; Wed, 02
- Mar 2022 13:48:13 -0800 (PST)
+        Wed, 2 Mar 2022 16:53:09 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C462A8;
+        Wed,  2 Mar 2022 13:52:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=TTmCl82JqLan3QsNgtCR8eCTt45Umy9DiqQwuLlp+nY=; b=KfoYwSU15wZdPny08l3cV8PBZu
+        suXZGirPexQrDgbQX5uGJbU7Df1yJ1ktmLv0jS0sAZKNx+pJdixfgD4R/TDEPqhbqI3BfNt42pheu
+        RjmWCL0DlPB+78SrZXIMGba7JmRb0PQyQQUHkbneh6Acx7Xd1qd6fXDaMXTTVqKiOH3qxy3tAQDOa
+        GvCaN0q6n5SXSqbjf6rmf5n5+sqFBgieDDlbNUI+aO5wXsxAJTiY1flBdSrbSaeah/4c62cT3Q8Hb
+        UXbPO8ixKuUhGo/2c7lCT4NM75T9VeG9xmm8CWBJ8Utbrwowego6iSKFJmRdAIxORzhTRN/ip1tN8
+        MLIdp1Fg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPWt7-004R35-C3; Wed, 02 Mar 2022 21:52:01 +0000
+Date:   Wed, 2 Mar 2022 13:52:01 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        NeilBrown <neilb@suse.de>, Vasily Averin <vvs@virtuozzo.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org
+Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
+Message-ID: <Yh/nAUkt8iZlvQdc@bombadil.infradead.org>
+References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
+ <YhzeCkXEvga7+o/A@bombadil.infradead.org>
+ <20220301180917.tkibx7zpcz2faoxy@google.com>
+ <Yh5lyr8dJXmEoFG6@bombadil.infradead.org>
+ <87wnhdwg75.fsf@email.froward.int.ebiederm.org>
+ <Yh6PPPqgPxJy+Jvx@bombadil.infradead.org>
+ <87ilswwh1x.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-References: <20220302102705.15c32822@gandalf.local.home> <20220302193638.11034-1-ctshao@google.com>
-In-Reply-To: <20220302193638.11034-1-ctshao@google.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 2 Mar 2022 13:48:01 -0800
-Message-ID: <CAKwvOdkWcu5ZPADGieb1Vb+kTbfHNzFAa3FXTWC98xXtzuLwqQ@mail.gmail.com>
-Subject: Re: [PATCH v2] config: Allow kernel installation packaging to
- override pkg-config
-To:     Chun-Tse Shao <ctshao@google.com>
-Cc:     rostedt@goodmis.org, devicetree@vger.kernel.org,
-        frowand.list@gmail.com, jpoimboe@redhat.com,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        masahiroy@kernel.org, michal.lkml@markovi.net,
-        peterz@infradead.org, robh+dt@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ilswwh1x.fsf@email.froward.int.ebiederm.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 11:36 AM Chun-Tse Shao <ctshao@google.com> wrote:
->
-> Add HOSTPKG_CONFIG to allow tooling that builds the kernel to override
-> what pkg-config and parameters are used.
->
-> Signed-off-by: Chun-Tse Shao <ctshao@google.com>
+On Wed, Mar 02, 2022 at 08:43:54AM -0600, Eric W. Biederman wrote:
+> Luis Chamberlain <mcgrof@kernel.org> writes:
+> 
+> > On Tue, Mar 01, 2022 at 02:50:06PM -0600, Eric W. Biederman wrote:
+> >> I really have not looked at this pids controller.
+> >> 
+> >> So I am not certain I understand your example here but I hope I have
+> >> answered your question.
+> >
+> > During experimentation with the above stress-ng test case, I saw tons
+> > of thread just waiting to do exit:
+> 
+> You increment the count of concurrent threads after a no return function
+> in do_exit.  Since the increment is never reached the count always goes
+> down and eventually the warning prints.
+> 
+> > diff --git a/kernel/exit.c b/kernel/exit.c
+> > index 80c4a67d2770..653ca7ebfb58 100644
+> > --- a/kernel/exit.c
+> > +++ b/kernel/exit.c
+> > @@ -881,6 +894,9 @@ void __noreturn do_exit(long code)
+> >  
+> >  	lockdep_free_task(tsk);
+> >  	do_task_dead();
+> 
+> The function do_task_dead never returns.
+> 
+> > +
+> > +	atomic_inc(&exit_concurrent_max);
+> > +	wake_up(&exit_wq);
+> >  }
+> >  EXPORT_SYMBOL_GPL(do_exit);
 
-I'm ok with this patch; a quick grep though shows a few more open
-coded instances of pkg-config.  Should we fix those up, too? i.e.
+Doh thanks!
 
-certs/Makefile:92:HOSTCFLAGS_extract-cert.o = $(shell pkg-config
---cflags libcrypto 2> /dev/null)
-certs/Makefile:93:HOSTLDLIBS_extract-cert = $(shell pkg-config --libs
-libcrypto 2> /dev/null || echo -lcrypto)
-scripts/kconfig/gconf-cfg.sh
-tools/perf/Makefile.perf
-tools/ in general
-
-
-> ---
->  Makefile               | 3 ++-
->  scripts/Makefile       | 4 ++--
->  scripts/dtc/Makefile   | 6 +++---
->  tools/objtool/Makefile | 4 ++--
->  4 files changed, 9 insertions(+), 8 deletions(-)
->
-> diff --git a/Makefile b/Makefile
-> index daeb5c88b50b..f6c5bef7e141 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -430,6 +430,7 @@ else
->  HOSTCC = gcc
->  HOSTCXX        = g++
->  endif
-> +HOSTPKG_CONFIG = pkg-config
->
->  export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
->                               -O2 -fomit-frame-pointer -std=gnu89
-> @@ -525,7 +526,7 @@ KBUILD_LDFLAGS_MODULE :=
->  KBUILD_LDFLAGS :=
->  CLANG_FLAGS :=
->
-> -export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
-> +export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC HOSTPKG_CONFIG
->  export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS LEX YACC AWK INSTALLKERNEL
->  export PERL PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
->  export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD
-> diff --git a/scripts/Makefile b/scripts/Makefile
-> index ce5aa9030b74..f084f08ed176 100644
-> --- a/scripts/Makefile
-> +++ b/scripts/Makefile
-> @@ -14,8 +14,8 @@ hostprogs-always-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE)   += insert-sys-cert
->  HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
->  HOSTLDLIBS_sorttable = -lpthread
->  HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
-> -HOSTCFLAGS_sign-file.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
-> -HOSTLDLIBS_sign-file = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
-> +HOSTCFLAGS_sign-file.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
-> +HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
->
->  ifdef CONFIG_UNWINDER_ORC
->  ifeq ($(ARCH),x86_64)
-> diff --git a/scripts/dtc/Makefile b/scripts/dtc/Makefile
-> index 95aaf7431bff..743fc08827ea 100644
-> --- a/scripts/dtc/Makefile
-> +++ b/scripts/dtc/Makefile
-> @@ -18,7 +18,7 @@ fdtoverlay-objs       := $(libfdt) fdtoverlay.o util.o
->  # Source files need to get at the userspace version of libfdt_env.h to compile
->  HOST_EXTRACFLAGS += -I $(srctree)/$(src)/libfdt
->
-> -ifeq ($(shell pkg-config --exists yaml-0.1 2>/dev/null && echo yes),)
-> +ifeq ($(shell $(HOSTPKG_CONFIG) --exists yaml-0.1 2>/dev/null && echo yes),)
->  ifneq ($(CHECK_DT_BINDING)$(CHECK_DTBS),)
->  $(error dtc needs libyaml for DT schema validation support. \
->         Install the necessary libyaml development package.)
-> @@ -27,9 +27,9 @@ HOST_EXTRACFLAGS += -DNO_YAML
->  else
->  dtc-objs       += yamltree.o
->  # To include <yaml.h> installed in a non-default path
-> -HOSTCFLAGS_yamltree.o := $(shell pkg-config --cflags yaml-0.1)
-> +HOSTCFLAGS_yamltree.o := $(shell $(HOSTPKG_CONFIG) --cflags yaml-0.1)
->  # To link libyaml installed in a non-default path
-> -HOSTLDLIBS_dtc := $(shell pkg-config yaml-0.1 --libs)
-> +HOSTLDLIBS_dtc := $(shell $(HOSTPKG_CONFIG) yaml-0.1 --libs)
->  endif
->
->  # Generated files need one more search path to include headers in source tree
-> diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
-> index 92ce4fce7bc7..549acc5859e9 100644
-> --- a/tools/objtool/Makefile
-> +++ b/tools/objtool/Makefile
-> @@ -19,8 +19,8 @@ LIBSUBCMD             = $(LIBSUBCMD_OUTPUT)libsubcmd.a
->  OBJTOOL    := $(OUTPUT)objtool
->  OBJTOOL_IN := $(OBJTOOL)-in.o
->
-> -LIBELF_FLAGS := $(shell pkg-config libelf --cflags 2>/dev/null)
-> -LIBELF_LIBS  := $(shell pkg-config libelf --libs 2>/dev/null || echo -lelf)
-> +LIBELF_FLAGS := $(shell $(HOSTPKG_CONFIG) libelf --cflags 2>/dev/null)
-> +LIBELF_LIBS  := $(shell $(HOSTPKG_CONFIG) libelf --libs 2>/dev/null || echo -lelf)
->
->  all: $(OBJTOOL)
->
-> --
-> 2.35.1.574.g5d30c73bfb-goog
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+  Luis
