@@ -2,151 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F270EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 22:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 22:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245462AbiCBWKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 17:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34062 "EHLO
+        id S237973AbiCBWLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 17:11:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244455AbiCBWK2 (ORCPT
+        with ESMTP id S230045AbiCBWLe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 17:10:28 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2040.outbound.protection.outlook.com [40.107.212.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D8FD76D8;
-        Wed,  2 Mar 2022 14:09:30 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VLAmvqFwnzj08FkuDGLUMuhqnsN2hKn+e/qukp1xDzkXLNNBWN/+PTP9EwEH4C7hqOOngnqguJXMCgs8T+O35pyQFCAJ9Vk/L5EMaHHp71rVku5CaWa/Lp9bbGjwMp67StxjD1OcCIot4/7XM5ocjQgedIklQJsWSWmZ+V17HnUhMY9w6AWnPB2VDvEsVp4pI+FyP5rZW3M0hl+rv516L9ToPBU56qTA1zlby0ht0m6BuKNbyTgdBhgQnJAFPqvpjR/7SDWX/S3koF1mfanFveC7vmG9xuZu4gHvFxG0YVobwqIOSumImBmXuizqXpYiuhSTCc6w84adx2Yz3nCHHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iargjDpNmatEDQGnWAO2Dk+3PE3O4vlBH9Ssb40hmFM=;
- b=V2hdkxJTacUpWTooMv9WKXUYjsOY1ARxUnXxi1M6ToBm/WsPp60nm2W+IxLx2Ym7zScIGoQabyLKr8i/C4MXGBYB/nxf1hkMGlGutlwx5Ce0DJ4URTF6zwJr3vbrGKKy7ruGTnft2zOPgTFeupMNb+kcpQqq572/yuJlFe0LLf7DZuS4ANgmYBf/vfwxSsJAtF1/p1/eTsTtvTF4F0UxyJdjKNkYgZUuF0Rk+97cw0zSpdQhWLVR7MaItEQcp/R/LiYB1Iae3VWtnMdpHNNNBbT5B+oX1pTXSz5Wyjp2HKcp6jyTYaMGUyfgps8IzwAfuQIStWmjOowIlr50Zu+DjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iargjDpNmatEDQGnWAO2Dk+3PE3O4vlBH9Ssb40hmFM=;
- b=NeGC3cFeP+usGrmlVdtYOLj9kHrgfgrkflEg6oi04QMIMgoaMbQi+0mLUQK8Zn1/xoFUebZ7Xv/KtyXvUvVruI4I2Vf4gC4iSJDBKvT3Az+/dEE8HdMWLcyYS6XfPxDJGyvdc6k2XBR9AoM57Jvy7Zf23Gc5aaZUIX4t/wjiXuo=
-Received: from BN6PR22CA0032.namprd22.prod.outlook.com (2603:10b6:404:37::18)
- by BYAPR12MB3351.namprd12.prod.outlook.com (2603:10b6:a03:de::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Wed, 2 Mar
- 2022 22:09:22 +0000
-Received: from BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:37:cafe::ac) by BN6PR22CA0032.outlook.office365.com
- (2603:10b6:404:37::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.13 via Frontend
- Transport; Wed, 2 Mar 2022 22:09:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT044.mail.protection.outlook.com (10.13.177.219) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Wed, 2 Mar 2022 22:09:21 +0000
-Received: from localhost.localdomain (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 2 Mar
- 2022 16:09:19 -0600
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-CC:     "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <Sanju.Mehta@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 4/5] drivers/thunderbolt: Clarify/correct register offsets for tb_cap_plug_events
-Date:   Wed, 2 Mar 2022 16:07:08 -0600
-Message-ID: <20220302220709.3138846-4-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220302220709.3138846-1-mario.limonciello@amd.com>
-References: <20220302220709.3138846-1-mario.limonciello@amd.com>
+        Wed, 2 Mar 2022 17:11:34 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F66C5BE48
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 14:10:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646259050; x=1677795050;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZZNmIXkT92rLNIrnGw3gjJqLIkRflGEcKN16NURYJHc=;
+  b=EpVLu/6URf1NsC2YjjaO4cuHrsctZPrRo4o5Y9CF7M140yY2gXRccaAV
+   iqRg2k6lYDDXI9ADy8SLPC4Dvz/jwJivyhN7vILN1/z5fexbW+ksFOJZe
+   669nxh99teOH4HORBG6ZjqYog9+2rUcfT8tkn3Zizh0a1vPaW3Yw04dlP
+   QaGznUBgaR96w1iltCLO8Tio1dG3oDRJFhPPe+YRCvq+HojQG51Zl1hTC
+   rG+P7TSeJ4Hh9JsUy4P6PTKu7jzxuqbc57kMVpii+bAlkSYsa+hL6vGtW
+   qHVJBAXqT8lj35nnvjQ/YQYZj663p7CgTypslsSQG8j4evSXIohqb0VS3
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253445797"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="253445797"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 14:10:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="551457162"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 02 Mar 2022 14:10:48 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPXBH-0001zc-F8; Wed, 02 Mar 2022 22:10:47 +0000
+Date:   Thu, 3 Mar 2022 06:09:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alex Elder <elder@linaro.org>
+Subject: [mani-mhi:mhi-next 17/30] drivers/bus/mhi/ep/ring.c:45:66: sparse:
+ sparse: incorrect type in argument 3 (different address spaces)
+Message-ID: <202203030603.3nhJUwR0-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cd764558-0fe8-4bdd-430b-08d9fc994dea
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3351:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB33512C947EE4387FA269C6ADE2039@BYAPR12MB3351.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LWtV5Y2eAXIkUu615tieCBgbnLEKhEEre6iLM/vmTea6wdAFp97OuXoRM8+Kb1W4lv9FZC8NC9kS+3m3xREHA31HlEOjIRk3Nj33ZCQVXplx+aTE6oYvqNnABM6iAZK17ieF24fTlVMWmZ5yqsUMl1KXBKqrjPUrpDMpdofbsamSHLQZcCi9dXPj4j2C8PJpAvJljhiYBxpm2PBzsQDa1Z/Y7JGAomBsBuVJSoP8on6lZfTtUye7piyOllJkarbEI2xN9k/lWHwwh6/iQNiN/Y8USwqcJKlGCm+BYqcJI1kyptqO3wxRM4kmUY1XAr52jM6tCiae3zbOw3MnMYGvDMo6gS3s0UZ0zQJraz4o5f6vdjk+IOAfSTyiqDnB9IzsXin2IO+hGXNHWqg1cJliVfu4hXpQUVOaA+efAPmxW9b3mz3J0pEpv/rylkIGUl7lNPJIpnvjZyUQjiuOd1v+Xsja02/suqTDf7exBTlwLXbEelJGNipVJbN8w2HOJngYqdjEd78VMY9bMjbtoKClNf2MvVwr8R4xxeZQ2Aie3rktJRcMdedH18ezbmUIhs3LYnhEltVYi4ue64wOJeEYXCWiXlnMCqbjIBW9RSjEm1Sl1mTyge3Jszl7MxMrt/FICQJtoao7750Y9ABV+NMnJWH7Q1NM2cnkY5He0GtViih97k1VNr+9LO9AsPnSXf6y36EOcARjqS9CdX3wvYWYvwQdOs9AICT5Kprpmy5qj8MEosidbJIwBXckv4uwqgeHBl//UC/9l2+sZ0bPSzCtjo3g/qGiuUD7PHp7j1oXPRY=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(2906002)(2616005)(8936002)(1076003)(86362001)(8676002)(426003)(5660300002)(82310400004)(44832011)(186003)(4326008)(16526019)(26005)(6666004)(336012)(316002)(81166007)(356005)(966005)(70586007)(508600001)(83380400001)(40460700003)(54906003)(36860700001)(6916009)(47076005)(36756003)(70206006)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 22:09:21.6404
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd764558-0fe8-4bdd-430b-08d9fc994dea
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3351
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The USB4 1.0 specification outlines the `cap_plug_events` structure in
-table 13-14 located on page 507.  This shows that there was a mistake
-in VSC_CS_1 where plug events disable should be 4 bits and
-"TBT3-Compatible" should be 3 bits.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git mhi-next
+head:   4aa2b597db8f8808b7e0f89239cd98c3a56b21b1
+commit: 118a636617aad5e65564efd8c11c60ed1a45e494 [17/30] bus: mhi: ep: Add support for ring management
+config: ia64-randconfig-s031-20220302 (https://download.01.org/0day-ci/archive/20220303/202203030603.3nhJUwR0-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git/commit/?id=118a636617aad5e65564efd8c11c60ed1a45e494
+        git remote add mani-mhi https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git
+        git fetch --no-tags mani-mhi mhi-next
+        git checkout 118a636617aad5e65564efd8c11c60ed1a45e494
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/bus/mhi/ep/ drivers/nvmem/
 
-While correcting the mistake, update the names and comments to more
-closely match the specification.  This should not change anything
-functionally.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Link: https://www.usb.org/sites/default/files/USB4%20Specification%2020211116.zip
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/bus/mhi/ep/ring.c:45:66: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void [noderef] __iomem *to @@     got struct mhi_ring_element * @@
+   drivers/bus/mhi/ep/ring.c:45:66: sparse:     expected void [noderef] __iomem *to
+   drivers/bus/mhi/ep/ring.c:45:66: sparse:     got struct mhi_ring_element *
+   drivers/bus/mhi/ep/ring.c:52:66: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void [noderef] __iomem *to @@     got struct mhi_ring_element * @@
+   drivers/bus/mhi/ep/ring.c:52:66: sparse:     expected void [noderef] __iomem *to
+   drivers/bus/mhi/ep/ring.c:52:66: sparse:     got struct mhi_ring_element *
+   drivers/bus/mhi/ep/ring.c:58:74: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void [noderef] __iomem *to @@     got struct mhi_ring_element * @@
+   drivers/bus/mhi/ep/ring.c:58:74: sparse:     expected void [noderef] __iomem *to
+   drivers/bus/mhi/ep/ring.c:58:74: sparse:     got struct mhi_ring_element *
+>> drivers/bus/mhi/ep/ring.c:130:51: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __iomem *from @@     got struct mhi_ring_element *el @@
+   drivers/bus/mhi/ep/ring.c:130:51: sparse:     expected void [noderef] __iomem *from
+   drivers/bus/mhi/ep/ring.c:130:51: sparse:     got struct mhi_ring_element *el
+
+vim +45 drivers/bus/mhi/ep/ring.c
+
+    24	
+    25	static int __mhi_ep_cache_ring(struct mhi_ep_ring *ring, size_t end)
+    26	{
+    27		struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
+    28		struct device *dev = &mhi_cntrl->mhi_dev->dev;
+    29		size_t start, copy_size;
+    30		int ret;
+    31	
+    32		/* Don't proceed in the case of event ring. This happens during mhi_ep_ring_start(). */
+    33		if (ring->type == RING_TYPE_ER)
+    34			return 0;
+    35	
+    36		/* No need to cache the ring if write pointer is unmodified */
+    37		if (ring->wr_offset == end)
+    38			return 0;
+    39	
+    40		start = ring->wr_offset;
+    41		if (start < end) {
+    42			copy_size = (end - start) * sizeof(struct mhi_ring_element);
+    43			ret = mhi_cntrl->read_from_host(mhi_cntrl, ring->rbase +
+    44							(start * sizeof(struct mhi_ring_element)),
+  > 45							&ring->ring_cache[start], copy_size);
+    46			if (ret < 0)
+    47				return ret;
+    48		} else {
+    49			copy_size = (ring->ring_size - start) * sizeof(struct mhi_ring_element);
+    50			ret = mhi_cntrl->read_from_host(mhi_cntrl, ring->rbase +
+    51							(start * sizeof(struct mhi_ring_element)),
+    52							&ring->ring_cache[start], copy_size);
+    53			if (ret < 0)
+    54				return ret;
+    55	
+    56			if (end) {
+    57				ret = mhi_cntrl->read_from_host(mhi_cntrl, ring->rbase,
+    58								&ring->ring_cache[0],
+    59								end * sizeof(struct mhi_ring_element));
+    60				if (ret < 0)
+    61					return ret;
+    62			}
+    63		}
+    64	
+    65		dev_dbg(dev, "Cached ring: start %zu end %zu size %zu\n", start, end, copy_size);
+    66	
+    67		return 0;
+    68	}
+    69	
+    70	static int mhi_ep_cache_ring(struct mhi_ep_ring *ring, u64 wr_ptr)
+    71	{
+    72		size_t wr_offset;
+    73		int ret;
+    74	
+    75		wr_offset = mhi_ep_ring_addr2offset(ring, wr_ptr);
+    76	
+    77		/* Cache the host ring till write offset */
+    78		ret = __mhi_ep_cache_ring(ring, wr_offset);
+    79		if (ret)
+    80			return ret;
+    81	
+    82		ring->wr_offset = wr_offset;
+    83	
+    84		return 0;
+    85	}
+    86	
+    87	int mhi_ep_update_wr_offset(struct mhi_ep_ring *ring)
+    88	{
+    89		u64 wr_ptr;
+    90	
+    91		wr_ptr = mhi_ep_mmio_get_db(ring);
+    92	
+    93		return mhi_ep_cache_ring(ring, wr_ptr);
+    94	}
+    95	
+    96	/* TODO: Support for adding multiple ring elements to the ring */
+    97	int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *el)
+    98	{
+    99		struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
+   100		struct device *dev = &mhi_cntrl->mhi_dev->dev;
+   101		size_t old_offset = 0;
+   102		u32 num_free_elem;
+   103		int ret;
+   104	
+   105		ret = mhi_ep_update_wr_offset(ring);
+   106		if (ret) {
+   107			dev_err(dev, "Error updating write pointer\n");
+   108			return ret;
+   109		}
+   110	
+   111		if (ring->rd_offset < ring->wr_offset)
+   112			num_free_elem = (ring->wr_offset - ring->rd_offset) - 1;
+   113		else
+   114			num_free_elem = ((ring->ring_size - ring->rd_offset) + ring->wr_offset) - 1;
+   115	
+   116		/* Check if there is space in ring for adding at least an element */
+   117		if (!num_free_elem) {
+   118			dev_err(dev, "No space left in the ring\n");
+   119			return -ENOSPC;
+   120		}
+   121	
+   122		old_offset = ring->rd_offset;
+   123		mhi_ep_ring_inc_index(ring);
+   124	
+   125		dev_dbg(dev, "Adding an element to ring at offset (%zu)\n", ring->rd_offset);
+   126	
+   127		/* Update rp in ring context */
+   128		ring->ring_ctx->generic.rp = cpu_to_le64((ring->rd_offset * sizeof(*el)) + ring->rbase);
+   129	
+ > 130		ret = mhi_cntrl->write_to_host(mhi_cntrl, el, ring->rbase + (old_offset * sizeof(*el)),
+   131					       sizeof(*el));
+   132		if (ret < 0)
+   133			return ret;
+   134	
+   135		return 0;
+   136	}
+   137	
+
 ---
- drivers/thunderbolt/tb_regs.h | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/thunderbolt/tb_regs.h b/drivers/thunderbolt/tb_regs.h
-index 70795a2aa9bb..8c42f8bc679e 100644
---- a/drivers/thunderbolt/tb_regs.h
-+++ b/drivers/thunderbolt/tb_regs.h
-@@ -146,14 +146,14 @@ struct tb_eeprom_ctl {
- 
- struct tb_cap_plug_events {
- 	struct tb_cap_extended_short cap_header;
--	u32 __unknown1:2;
--	u32 plug_events:5;
--	u32 __unknown2:25;
--	u32 __unknown3;
--	u32 __unknown4;
-+	u32 __unknown1:3; /* VSC_CS_1 */
-+	u32 plug_events:4; /* VSC_CS_1 */
-+	u32 __unknown2:25; /* VSC_CS_1 */
-+	u32 vsc_cs_2;
-+	u32 vsc_cs_3;
- 	struct tb_eeprom_ctl eeprom_ctl;
--	u32 __unknown5[7];
--	u32 drom_offset; /* 32 bit register, but eeprom addresses are 16 bit */
-+	u32 __unknown5[7]; /* VSC_CS_5 -> VSC_CS_11 */
-+	u32 drom_offset; /* VSC_CS_12: 32 bit register, but eeprom addresses are 16 bit */
- } __packed;
- 
- /* device headers */
-@@ -464,6 +464,10 @@ struct tb_regs_hop {
- 
- /* Plug Events registers */
- #define TB_PLUG_EVENTS_USB_DISABLE		BIT(2)
-+#define USB4_PLUG_EVENTS_LANE_DISABLE		BIT(3)
-+#define USB4_PLUG_EVENTS_DPOUT_DISABLE		BIT(4)
-+#define USB4_PLUG_EVENTS_LOW_DPIN_DISABLE	BIT(5)
-+#define USB4_PLUG_EVENTS_HIGH_DPIN_DISABLE	BIT(6)
- 
- #define TB_PLUG_EVENTS_PCIE_WR_DATA		0x1b
- #define TB_PLUG_EVENTS_PCIE_CMD			0x1c
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
