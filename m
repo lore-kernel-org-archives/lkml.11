@@ -2,200 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE6AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240740AbiCBJ5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 04:57:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
+        id S240747AbiCBJ5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 04:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiCBJ5W (ORCPT
+        with ESMTP id S231358AbiCBJ5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 04:57:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20197E58D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 01:56:39 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 50A2B21121;
-        Wed,  2 Mar 2022 09:56:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646214998; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AsBBJp+vpeojcN6nK12nMkVYJtAIRctCNR7mUwGffGU=;
-        b=jn8kfNZOwRxK667m3IpT1XdbOyixz/CozEsfm9DoPCJq/hAfv3kLcquT/0UJkIQKSH6dBq
-        ZcQ3ia5vZQF7D7mbJxtKE6xvLjySKiQJ/6QSkq/iMmA4oA7YU1+6NJBlI5XHPcHs/EN5E5
-        3hEqfJ//XJinHfWS3qHN2s0oncTJTV0=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 93EA8A3B93;
-        Wed,  2 Mar 2022 09:56:37 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 10:56:37 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        kernel test robot <lkp@intel.com>,
-        Maninder Singh <maninder1.s@samsung.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vaneet Narang <v.narang@samsung.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>
-Subject: Re: [hnaz-mm:master 272/379] lib/vsprintf.c:991:13: warning:
- variable 'modbuildid' set but not used
-Message-ID: <Yh8/Vbu05MEQylMx@alley>
-References: <202203012040.uFWGm3My-lkp@intel.com>
- <20220301102448.ff9bf910213d705842a2dd45@linux-foundation.org>
- <Yh5yhoW+y9qcn1RM@casper.infradead.org>
+        Wed, 2 Mar 2022 04:57:42 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7200797B96;
+        Wed,  2 Mar 2022 01:56:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646215019; x=1677751019;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=44LOYszFrJLEvO3q4+AUjDDBcsIz3GOTQUi+oFDrXX8=;
+  b=i8iunL9Dhg9PWEMJoUtGX+SRT1mRe4LxGYnz05HQ97oEc+PsRvi2EneG
+   GP9x8pYMdqdaq+sMCNRGMMed+ac6tuVkicAGbadofGfIHkdLj4I7xS+cF
+   zYi0cx8T+qWmfsH1s+g7FUsUsQ5SqQehMYMC1sJXQlmJJIpiwmfy5yc61
+   DsPBX+7EseMFbd2XNAg66FA8dW8rluNAyNhLi3M9dAx3VYAx1AWWGqXOw
+   DU2DelbZVImCdwwJLI4/s2uIUupVNWyerwXiGy04XVm6AvGV2Lgo7GeRT
+   yLqiXB33Oc/hYSaqSEGsGuz0ocZCZHTkFUFoJlBgjlDyK83WlmehBYk9c
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="233980114"
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="233980114"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 01:56:57 -0800
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="551182055"
+Received: from abotoi-mobl2.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.218.48])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 01:56:54 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>
+Subject: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+Date:   Wed,  2 Mar 2022 11:56:00 +0200
+Message-Id: <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yh5yhoW+y9qcn1RM@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-03-01 19:22:46, Matthew Wilcox wrote:
-> On Tue, Mar 01, 2022 at 10:24:48AM -0800, Andrew Morton wrote:
-> > >    lib/vsprintf.c: In function 'va_format':
-> > >    lib/vsprintf.c:1759:9: warning: function 'va_format' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-> > >     1759 |         buf += vsnprintf(buf, end > buf ? end - buf : 0, va_fmt->fmt, va);
-> > >          |         ^~~
-> > 
-> > I wonder what this means.
-> 
-> It means the compiler thinks we might want to add:
-> 
-> __attribute__((format(gnu_printf, x, y))) to the function declaration so it
-> can type-check the arguments.
-> 
-> 'format (ARCHETYPE, STRING-INDEX, FIRST-TO-CHECK)'
->      The 'format' attribute specifies that a function takes 'printf',
->      'scanf', 'strftime' or 'strfmon' style arguments that should be
->      type-checked against a format string.  For example, the
->      declaration:
-> 
->           extern int
->           my_printf (void *my_object, const char *my_format, ...)
->                 __attribute__ ((format (printf, 2, 3)));
-> 
->      causes the compiler to check the arguments in calls to 'my_printf'
->      for consistency with the 'printf' style format string argument
->      'my_format'.
-> 
-> 
-> I haven't looked into this at all and have no idea if we should.
+The Synopsys DesignWare UART has a build-in support for the
+RS485 protocol from IP version 4.0 onward. This commit
+enables basic hardware-controlled half duplex mode support
+for it.
 
-There is the macro __printf(x, y). This particular warning can be
-fixed by:
+HW will take care of managing DE and RE, the driver just gives
+it permission to use either by setting both to 1.
 
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -1672,6 +1672,7 @@ char *escaped_string(char *buf, char *end, u8 *addr, struct printf_spec spec,
- 	return buf;
- }
- 
-+__printf(5, 0)
- static char *va_format(char *buf, char *end, struct va_format *va_fmt,
- 		       struct printf_spec spec, const char *fmt)
- {
-
-
-But it seems to be can of worms. I get more warnings after fixing this
-one. The following patch calmed down the warnings in vsprintf.o. But
-it triggered another warning elsewhere, for example:
-
-kernel/trace/bpf_trace.c: In function ‘____bpf_trace_printk’:
-kernel/trace/bpf_trace.c:383:2: warning: function ‘____bpf_trace_printk’ might be a candidate for ‘gnu_printf’ format attribute [-Wsuggest-attribute=format]
-  ret = bstr_printf(buf, sizeof(buf), fmt, bin_args);
-  ^~~
-kernel/trace/bpf_trace.c: In function ‘____bpf_trace_vprintk’:
-kernel/trace/bpf_trace.c:439:2: warning: function ‘____bpf_trace_vprintk’ might be a candidate for ‘gnu_printf’ format attribute [-Wsuggest-attribute=format]
-  ret = bstr_printf(buf, sizeof(buf), fmt, bin_args);
-  ^~~
-
-
-From 66f6166e968d8c7e752260e7ee7e1c0414cd2cce Mon Sep 17 00:00:00 2001
-From: Petr Mladek <pmladek@suse.com>
-Date: Wed, 2 Mar 2022 10:03:14 +0100
-Subject: [PATCH] vsprintf: Fix warnings about missing gnu_printf attribute in vsprintf.o
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-The following warning is produced by: make W=1 lib/vsprintf.o
-
-lib/vsprintf.c:1770:1: error: multiple storage classes in declaration specifiers
- static char *va_format(char *buf, char *end, struct va_format *va_fmt,
- ^~~~~~
-lib/vsprintf.c:1770:14: warning: no previous prototype for ‘va_format’ [-Wmissing-prototypes]
- static char *va_format(char *buf, char *end, struct va_format *va_fmt,
-              ^~~~~~~~~
-
-More similar warnings are printed after fixing the 1st one:
-
-lib/vsprintf.c: In function ‘pointer’:
-lib/vsprintf.c:2522:3: warning: function ‘pointer’ might be a candidate for ‘gnu_printf’ format attribute [-Wsuggest-attribute=format]
-   return va_format(buf, end, ptr, spec, fmt);
-   ^~~~~~
-lib/vsprintf.c: In function ‘vbin_printf’:
-lib/vsprintf.c:3213:12: warning: function ‘vbin_printf’ might be a candidate for ‘gnu_printf’ format attribute [-Wsuggest-attribute=format]
-            spec);
-            ^~~~
-lib/vsprintf.c: In function ‘bstr_printf’:
-lib/vsprintf.c:3398:5: warning: function ‘bstr_printf’ might be a candidate for ‘gnu_printf’ format attribute [-Wsuggest-attribute=format]
-     str = pointer(fmt, str, end, get_arg(void *), spec);
-     ^~~
-
-Add the proposed annotation.
-
-Signed-off-by: Petr Mladek <pmladek@suse.com>
+Co-developed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Co-developed-by: Raymond Tan <raymond.tan@intel.com>
+Signed-off-by: Raymond Tan <raymond.tan@intel.com>
+Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- include/linux/string.h | 3 +++
- lib/vsprintf.c         | 2 ++
- 2 files changed, 5 insertions(+)
+ drivers/tty/serial/8250/8250_dwlib.c | 67 +++++++++++++++++++++++++++-
+ drivers/tty/serial/8250/8250_dwlib.h |  3 ++
+ 2 files changed, 68 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/string.h b/include/linux/string.h
-index b6572aeca2f5..e37eaecb7906 100644
---- a/include/linux/string.h
-+++ b/include/linux/string.h
-@@ -196,8 +196,11 @@ int __sysfs_match_string(const char * const *array, size_t n, const char *s);
- #define sysfs_match_string(_a, _s) __sysfs_match_string(_a, ARRAY_SIZE(_a), _s)
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 622d3b0d89e7..a4f09a95049b 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -2,19 +2,33 @@
+ /* Synopsys DesignWare 8250 library. */
  
- #ifdef CONFIG_BINARY_PRINTF
-+__printf(3, 0)
- int vbin_printf(u32 *bin_buf, size_t size, const char *fmt, va_list args);
-+__printf(3, 0)
- int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf);
-+__printf(3, 4)
- int bprintf(u32 *bin_buf, size_t size, const char *fmt, ...) __printf(3, 4);
- #endif
+ #include <linux/bitops.h>
++#include <linux/bitfield.h>
+ #include <linux/device.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
++#include <linux/property.h>
+ #include <linux/serial_8250.h>
+ #include <linux/serial_core.h>
  
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 3b8129dd374c..981c71da5e3d 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -1672,6 +1672,7 @@ char *escaped_string(char *buf, char *end, u8 *addr, struct printf_spec spec,
- 	return buf;
+ #include "8250_dwlib.h"
+ 
+ /* Offsets for the DesignWare specific registers */
++#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
++#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
++#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
+ #define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
+ #define DW_UART_CPR	0xf4 /* Component Parameter Register */
+ #define DW_UART_UCV	0xf8 /* UART Component Version */
+ 
++/* Transceiver Control Register bits */
++#define DW_UART_TCR_RS485_EN		BIT(0)
++#define DW_UART_TCR_RE_POL		BIT(1)
++#define DW_UART_TCR_DE_POL		BIT(2)
++#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
++#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
++#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
++#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
++
+ /* Component Parameter Register bits */
+ #define DW_UART_CPR_ABP_DATA_WIDTH	(3 << 0)
+ #define DW_UART_CPR_AFCE_MODE		(1 << 4)
+@@ -87,11 +101,62 @@ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct
  }
+ EXPORT_SYMBOL_GPL(dw8250_do_set_termios);
  
-+__printf(5, 0)
- static char *va_format(char *buf, char *end, struct va_format *va_fmt,
- 		       struct printf_spec spec, const char *fmt)
++static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
++{
++	u32 tcr;
++
++	tcr = dw8250_readl_ext(p, DW_UART_TCR);
++	tcr &= ~DW_UART_TCR_XFER_MODE;
++
++	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Clearing unsupported flags. */
++		rs485->flags &= SER_RS485_ENABLED;
++
++		tcr |= DW_UART_TCR_RS485_EN | DW_UART_TCR_XFER_MODE_DE_OR_RE;
++		dw8250_writel_ext(p, DW_UART_DE_EN, 1);
++		dw8250_writel_ext(p, DW_UART_RE_EN, 1);
++	} else {
++		rs485->flags = 0;
++
++		tcr &= ~DW_UART_TCR_RS485_EN;
++		dw8250_writel_ext(p, DW_UART_DE_EN, 0);
++		dw8250_writel_ext(p, DW_UART_RE_EN, 0);
++	}
++
++	/* Resetting the default DE_POL & RE_POL */
++	tcr &= ~(DW_UART_TCR_DE_POL | DW_UART_TCR_RE_POL);
++
++	if (device_property_read_bool(p->dev, "snps,de-active-high"))
++		tcr |= DW_UART_TCR_DE_POL;
++	if (device_property_read_bool(p->dev, "snps,re-active-high"))
++		tcr |= DW_UART_TCR_RE_POL;
++
++	dw8250_writel_ext(p, DW_UART_TCR, tcr);
++
++	/*
++	 * XXX: Though we could interpret the "RTS" timings as Driver Enable
++	 * (DE) assertion/de-assertion timings, initially not supporting that.
++	 * Ideally we should have timing values for the Driver instead of the
++	 * RTS signal.
++	 */
++	rs485->delay_rts_before_send = 0;
++	rs485->delay_rts_after_send = 0;
++
++	p->rs485 = *rs485;
++
++	return 0;
++}
++
+ void dw8250_setup_port(struct uart_port *p)
  {
-@@ -2498,6 +2499,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
-  * @precision: precision of a number
-  * @qualifier: qualifier of a number (long, size_t, ...)
-  */
-+__printf(1, 0)
- static noinline_for_stack
- int format_decode(const char *fmt, struct printf_spec *spec)
- {
++	struct dw8250_port_data *d = p->private_data;
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 	u32 reg;
+ 
++	d->hw_rs485_support = device_property_read_bool(p->dev, "snps,rs485-interface-en");
++	if (d->hw_rs485_support)
++		p->rs485_config = dw8250_rs485_config;
++
+ 	/*
+ 	 * If the Component Version Register returns zero, we know that
+ 	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
+@@ -108,8 +173,6 @@ void dw8250_setup_port(struct uart_port *p)
+ 	dw8250_writel_ext(p, DW_UART_DLF, 0);
+ 
+ 	if (reg) {
+-		struct dw8250_port_data *d = p->private_data;
+-
+ 		d->dlf_size = fls(reg);
+ 		p->get_divisor = dw8250_get_divisor;
+ 		p->set_divisor = dw8250_set_divisor;
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 83d528e5cc21..a8fa020ca544 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -14,6 +14,9 @@ struct dw8250_port_data {
+ 
+ 	/* Hardware configuration */
+ 	u8			dlf_size;
++
++	/* RS485 variables */
++	bool			hw_rs485_support;
+ };
+ 
+ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct ktermios *old);
 -- 
-2.26.2
+2.30.2
 
