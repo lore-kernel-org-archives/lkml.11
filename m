@@ -2,106 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F243BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5028C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244434AbiCBUs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:48:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
+        id S244456AbiCBUtA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:49:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244349AbiCBUsv (ORCPT
+        with ESMTP id S244349AbiCBUs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:48:51 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E152448389
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:06 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id ay5so2634217plb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:48:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=q2PjyD0od2VK8o284HiNQaL0WzyAhAStKIsfNQ9ArB0=;
-        b=fFFvQBPJXWtHeQCHONh5v5ntNQ7cJ7QvCYiq6WK+gC/ATdr+H91A7hxohgKSGkCjnb
-         xgtsiJc4Dp8lwSF27XNZmzidsjUaNfGAmD00QCo8TevAM97WCCttzFNmDfoaoxIcJp0g
-         kshI5tLlcNCj34SWtftv7aFYUdhqM4ZdKfswP5l12ZQk2qKIUvY2oXLtaWwzLZzuoIcK
-         LALepfGbRRV3mIwhyupYCRhqZLBtk9KK3uFuc3hQehuM0FN07cke9zPUtkWP71DzyVtM
-         c0w9UfUsd64qNRkoj5a+9gTz7yMz/o/Uuf5Qp0WuoT7eKq8v8L2UsxMytd4mmn0zr9m9
-         fQkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q2PjyD0od2VK8o284HiNQaL0WzyAhAStKIsfNQ9ArB0=;
-        b=bjdohufWPmtdUnW3TDtyyYMG/Pa26r/2eNH35Px0pmbu0DyVgdzKaohw3c+tE8pkIj
-         G5Tt0DakX1XBUmsMDvewQ/vOk212kATgeE5Zhlw1K0PyPp0JOxS303duZSN4LeFBQBOq
-         YQr7Ct94mrDWYhHsAWTq9wt+nr0zohSIPIWYLM6eBRCmnkXdqxdah+D91X+xpvHi+P5k
-         bv57UK1wNQ4pugHkVMl9oL1JOPTE0oydrY/bNdEq/VRKgkHzaIkw9qTGDrPkskH3/Vvi
-         por/uV5at1CJMvZiatG7s8urG0ahlLzoXACO3XtpyE3gRoxvOt7plrdxWYP52tgnsX7+
-         WFCA==
-X-Gm-Message-State: AOAM530bjju/yqDfsDplKV/zLwyWx5/LeAoMSN1sdUb1/aZ7XHfiuFbU
-        /tBQtvhX4NasUD42tNayAnc=
-X-Google-Smtp-Source: ABdhPJwbO+QfDmpfMX0CCubakQuZwNurnyfYXKq6QOhwph5DJInXLiLWQi2dwkcZlBhLM6n6kVwCMQ==
-X-Received: by 2002:a17:902:e747:b0:150:2a7:735e with SMTP id p7-20020a170902e74700b0015002a7735emr32418436plf.32.1646254086383;
-        Wed, 02 Mar 2022 12:48:06 -0800 (PST)
-Received: from localhost.localdomain ([103.161.98.179])
-        by smtp.gmail.com with ESMTPSA id bh11-20020a056a00308b00b004f40144cf76sm50905pfb.142.2022.03.02.12.48.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:48:06 -0800 (PST)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 01/16] staging: r8188eu: mark rtw_is_cckrates_included as bool
-Date:   Thu,  3 Mar 2022 02:17:22 +0530
-Message-Id: <20220302204737.49056-2-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220302204737.49056-1-makvihas@gmail.com>
-References: <20220302204737.49056-1-makvihas@gmail.com>
+        Wed, 2 Mar 2022 15:48:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B7F4FC68
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C07C7617EC
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 20:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F137C004E1;
+        Wed,  2 Mar 2022 20:48:05 +0000 (UTC)
+Date:   Wed, 2 Mar 2022 15:48:03 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        alexei.starovoitov@gmail.com, alyssa.milburn@intel.com,
+        andrew.cooper3@citrix.com, hjl.tools@gmail.com,
+        joao@overdrivepizza.com, jpoimboe@redhat.com,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, mbenes@suse.cz, ndesaulniers@google.com,
+        samitolvanen@google.com, x86@kernel.org
+Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
+Message-ID: <20220302154803.73df83e0@gandalf.local.home>
+In-Reply-To: <20220302144716.1772020c@gandalf.local.home>
+References: <20220224145138.952963315@infradead.org>
+        <20220224151322.714815604@infradead.org>
+        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
+        <20220224105847.5c899324@gandalf.local.home>
+        <20220225103449.6084e5314273556f35107cd9@kernel.org>
+        <20220224211919.0612a3f6@rorschach.local.home>
+        <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
+        <20220225083647.12ceb54b@gandalf.local.home>
+        <1646159447.ngbqgzj71t.naveen@linux.ibm.com>
+        <20220301142016.22e787fb@gandalf.local.home>
+        <Yh9vF8REB1JlhQCJ@hirez.programming.kicks-ass.net>
+        <20220302110138.6d2abcec@gandalf.local.home>
+        <20220302144716.1772020c@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mark rtw_is_cckrates_included as bool as it returns true/false.
+On Wed, 2 Mar 2022 14:47:16 -0500
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_ieee80211.c | 2 +-
- drivers/staging/r8188eu/include/ieee80211.h  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> Note, I just pulled this patch, and I hit this warning:
+> 
+> WARNING: CPU: 0 PID: 6965 at arch/x86/kernel/kprobes/core.c:205 recover_probed_instruction+0x8f/0xa0
 
-diff --git a/drivers/staging/r8188eu/core/rtw_ieee80211.c b/drivers/staging/r8188eu/core/rtw_ieee80211.c
-index 62354c319..a7b7b0f14 100644
---- a/drivers/staging/r8188eu/core/rtw_ieee80211.c
-+++ b/drivers/staging/r8188eu/core/rtw_ieee80211.c
-@@ -68,7 +68,7 @@ int rtw_get_bit_value_from_ieee_value(u8 val)
- 	return 0;
- }
- 
--uint	rtw_is_cckrates_included(u8 *rate)
-+bool	rtw_is_cckrates_included(u8 *rate)
- {
- 	u32	i = 0;
- 
-diff --git a/drivers/staging/r8188eu/include/ieee80211.h b/drivers/staging/r8188eu/include/ieee80211.h
-index 3a860e132..1a15db097 100644
---- a/drivers/staging/r8188eu/include/ieee80211.h
-+++ b/drivers/staging/r8188eu/include/ieee80211.h
-@@ -872,7 +872,7 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv);
- 
- int rtw_get_bit_value_from_ieee_value(u8 val);
- 
--uint	rtw_is_cckrates_included(u8 *rate);
-+bool	rtw_is_cckrates_included(u8 *rate);
- 
- uint	rtw_is_cckratesonly_included(u8 *rate);
- 
--- 
-2.30.2
+As we discussed on IRC (but I want an email record of this), it appears that
+with some debugging, the ftrace_location() could return the function right
+after the current function because lookup_rec() has an inclusive "end"
+argument.
 
+Testing:
+
+	rec = lookup_rec(ip - offset, (ip - offset) + size - 1);
+
+Appears to fix the issue.
+
+-- Steve
