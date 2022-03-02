@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC769C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9B1C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241118AbiCBKxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 05:53:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        id S241121AbiCBKxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 05:53:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233360AbiCBKxO (ORCPT
+        with ESMTP id S233360AbiCBKxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 05:53:14 -0500
+        Wed, 2 Mar 2022 05:53:21 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FD6BC92;
-        Wed,  2 Mar 2022 02:52:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3993B286FB;
+        Wed,  2 Mar 2022 02:52:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3F8B6173B;
-        Wed,  2 Mar 2022 10:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE578C004E1;
-        Wed,  2 Mar 2022 10:52:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B56FA61741;
+        Wed,  2 Mar 2022 10:52:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D12ACC004E1;
+        Wed,  2 Mar 2022 10:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646218349;
-        bh=UHil2ffu0s5ipSpavXgVUbVsHwf3d+B6vdWQd26j4qA=;
+        s=korg; t=1646218357;
+        bh=ZTfEzEwYWihopjjsy1ExHg8ub36VTFm/pYc8LuQkD/A=;
         h=From:To:Cc:Subject:Date:From;
-        b=GzZyosgXlvwRa2SBehsuCAjQ9R+IZ/C5s6OKKygfRW0ga/0gHd23/kxcYhvn4f6hZ
-         a0KyehpzOmWDMCEDwu2EMJvUtxiF9ugqs53TRRV8QkdIp1myEGm2JZDrgG6hZhILcd
-         x3BGbZ5qSdXYDyd2cO+Hmiw5Dn0OjQi2UoTg/xS0=
+        b=1YkIuKGzFNnjpXXddCooxqHvgNYztYr5+A8G3hNoziyTOX4byVzBLRMPL9KZz0Nqj
+         /zkylC7JZGZrSzsAFMon+D9hySlANkYoHWGoU3RYpPNAqYfpzVnsZAtEGxpdgBMeJY
+         5vNlyhbOW8FExAe4sPCeKAzTcezwaDC7FclfFpS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.14.269
-Date:   Wed,  2 Mar 2022 11:52:24 +0100
-Message-Id: <1646218345191208@kroah.com>
+Subject: Linux 4.19.232
+Date:   Wed,  2 Mar 2022 11:52:30 +0100
+Message-Id: <1646218350121145@kroah.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,12 +44,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.14.269 kernel.
+I'm announcing the release of the 4.19.232 kernel.
 
-All users of the 4.14 kernel series must upgrade.
+All users of the 4.19 kernel series must upgrade.
 
-The updated 4.14.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
+The updated 4.19.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -62,6 +62,7 @@ greg k-h
  Makefile                                             |    2 
  arch/parisc/kernel/unaligned.c                       |   14 +--
  drivers/ata/pata_hpt37x.c                            |   14 +++
+ drivers/gpio/gpio-tegra186.c                         |   14 ++-
  drivers/gpu/drm/drm_edid.c                           |    2 
  drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c       |   37 ++++-----
  drivers/iio/adc/men_z188_adc.c                       |    9 ++
@@ -71,7 +72,7 @@ greg k-h
  drivers/net/usb/sr9700.c                             |    2 
  drivers/net/usb/zaurus.c                             |   12 +++
  drivers/tty/n_gsm.c                                  |    4 -
- drivers/tty/serial/8250/8250_of.c                    |   11 ++
+ drivers/usb/dwc3/dwc3-pci.c                          |    4 -
  drivers/usb/dwc3/gadget.c                            |    2 
  drivers/usb/gadget/function/rndis.c                  |    8 ++
  drivers/usb/gadget/function/rndis.h                  |    1 
@@ -85,13 +86,16 @@ greg k-h
  fs/tracefs/inode.c                                   |    5 -
  include/net/checksum.h                               |    5 +
  kernel/cgroup/cpuset.c                               |    2 
+ kernel/trace/trace_events_trigger.c                  |   52 +++++++++++--
  mm/memblock.c                                        |   10 ++
  net/core/skbuff.c                                    |    4 -
  net/ipv4/af_inet.c                                   |    5 +
  net/ipv4/ping.c                                      |    1 
  net/ipv6/ip6_offload.c                               |    2 
  net/openvswitch/actions.c                            |   46 +++++++++--
- 32 files changed, 286 insertions(+), 87 deletions(-)
+ net/tipc/name_table.c                                |    2 
+ net/tipc/socket.c                                    |    2 
+ 36 files changed, 336 insertions(+), 100 deletions(-)
 
 Bart Van Assche (1):
       RDMA/ib_srp: Fix a deadlock
@@ -104,6 +108,9 @@ Christophe JAILLET (1):
 
 Daehwan Jung (1):
       usb: gadget: rndis: add spinlock for rndis response list
+
+Dan Carpenter (1):
+      tipc: Fix end of loop tests for list_for_each_entry()
 
 Daniele Palmas (1):
       USB: serial: option: add Telit LE910R1 compositions
@@ -118,7 +125,10 @@ Gal Pressman (1):
       net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
 
 Greg Kroah-Hartman (1):
-      Linux 4.14.269
+      Linux 4.19.232
+
+Hans de Goede (1):
+      usb: dwc3: pci: Fix Bay Trail phy GPIO mappings
 
 Helge Deller (2):
       parisc/unaligned: Fix fldd and fstd unaligned handlers on 32-bit kernel
@@ -132,6 +142,9 @@ Karol Herbst (1):
 
 Linus Torvalds (1):
       fget: clarify and improve __fget_files() implementation
+
+Marc Zyngier (1):
+      gpio: tegra186: Fix chip_data type confusion
 
 Maxime Ripard (1):
       drm/edid: Always set RGB444
@@ -149,9 +162,6 @@ Paul Blakey (1):
 Puma Hsu (1):
       xhci: re-initialize the HC during resume if HCE was set
 
-Robert Hancock (1):
-      serial: 8250: of: Fix mapped region size when using reg-offset property
-
 Sebastian Andrzej Siewior (1):
       usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
 
@@ -164,7 +174,8 @@ Slark Xiao (1):
 Stefano Garzarella (1):
       vhost/vsock: don't check owner in vhost_vsock_stop() while releasing
 
-Steven Rostedt (Google) (1):
+Steven Rostedt (Google) (2):
+      tracing: Have traceon and traceoff trigger honor the instance
       tracefs: Set the group ownership in apply_options() not parse_options()
 
 Szymon Heidrich (1):
@@ -180,6 +191,6 @@ Zhang Qiao (1):
       cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
 
 daniel.starke@siemens.com (2):
-      tty: n_gsm: fix encoding of control signal octet bit DV
       tty: n_gsm: fix proper link termination after failed open
+      tty: n_gsm: fix encoding of control signal octet bit DV
 
