@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EC3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5228CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238096AbiCBPvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 10:51:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55092 "EHLO
+        id S242331AbiCBPvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 10:51:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241074AbiCBPuf (ORCPT
+        with ESMTP id S242080AbiCBPu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 10:50:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73844DF7C
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 07:49:29 -0800 (PST)
+        Wed, 2 Mar 2022 10:50:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5DF49F0A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 07:49:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 779CBB82082
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F526C340F3;
-        Wed,  2 Mar 2022 15:49:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80F4961756
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:49:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2DCBC36AE3;
+        Wed,  2 Mar 2022 15:49:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646236167;
-        bh=GOoi6g4ctUqUHDqZeFC0Osd59H+sK7UFUWiNfmdM4sc=;
+        s=k20201202; t=1646236159;
+        bh=Zc2Ger41MT5AQkcTRwCrjz5QqdHbkGcSl486vW7t/34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GchxLgCOMc3ImfFguBtOgg8lb1eEi7ABmXlwkU1UgNt42MTVFrg2bshW/EJY5NwHu
-         wiUXvSY6skQRiyPs1Qb930sLXBoYI1Py+hIzCF8qPDLmk0kVK8nkkc1RCSgKE5By7f
-         6L8+W8oV0kOelAm1817ns08dR24m92Fz1K6EaJ0YzNHJEIwJBPs1F10/71qkETpqCB
-         zjMJR8oDA690r7PnFK5yj6h8uDyKjgs3agKwkH1bIZrYYwN+uzthqdy4N/RT0jTdVx
-         EAt0co2bf16ftUAo6txovtwjvY/67uRf1+nlKsu9u99gcqTVX7Q3B9TqywPsoXl4jj
-         xxG0ZagQi+2Zg==
+        b=Js1fEjlWLiURECtMXJ6bP5aFqWjYUNKA/M+cRAdfcTDwasKhJKJO/MqaEhIoSjdWY
+         zc8+EcMt6AEIoDbMQZhpTsRIOnQYZhRYa93LQbDWgCKBqervSTq970y2/S0KGgK2Si
+         ELKPZzfwze6wfvT7sPMZbG/sJHlj8fqRE5gQAUzl+2ErKGI5yfQJReYs+8wBrfYAI1
+         Bk1x4txI9iAdd9Ac3y0NoIpPjFYyzvZ9/Qziccul2LAAA7YHSrHM+5tsWGHLwwUssk
+         ZiASTw5lHJzkI34ciSPaDrfxO/D0fSdJPJIT1X+XBDOZgKh65cfldb9BuBJL/2NMR0
+         adH1j0CjBYqzA==
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
@@ -49,9 +49,9 @@ Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
         Uladzislau Rezki <uladzislau.rezki@sony.com>,
         Joel Fernandes <joel@joelfernandes.org>
-Subject: [PATCH 19/19] context_tracking: Exempt CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK from non-active tracking
-Date:   Wed,  2 Mar 2022 16:48:10 +0100
-Message-Id: <20220302154810.42308-20-frederic@kernel.org>
+Subject: [PATCH 17/19] rcu/context-tracking: Use accessor for dynticks counter value
+Date:   Wed,  2 Mar 2022 16:48:08 +0100
+Message-Id: <20220302154810.42308-18-frederic@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220302154810.42308-1-frederic@kernel.org>
 References: <20220302154810.42308-1-frederic@kernel.org>
@@ -61,31 +61,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since a CPU may save the state of the context tracking using
-exception_enter() before calling into schedule(), we need all CPUs in
-the system to track user <-> kernel transitions and not just those that
-really need it (nohz_full CPUs).
-
-The following illustrates the issue that could otherwise happen:
-
-     CPU 0 (not tracking)                       CPU 1 (tracking)
-     -------------------                       --------------------
-     // we are past user_enter()
-     // but this CPU is always in
-     // CONTEXT_KERNEL
-     // because it doesn't track user <-> kernel
-
-     ctx = exception_enter(); //ctx == CONTEXT_KERNEL
-     schedule();
-     ===========================================>
-                                               return from schedule();
-                                               exception_exit(ctx);
-                                               //go to user in CONTEXT_KERNEL
-
-However CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK doesn't play those
-games because schedule() can't be called between user_enter() and
-user_exit() under such config. In this situation we can spare context
-tracking on the CPUs that don't need it.
+The dynticks counter value is going to join the context tracking state
+in a single field. Use an accessor for this value to make the transition
+easier for all readers.
 
 Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 Cc: Paul E. McKenney <paulmck@kernel.org>
@@ -103,41 +81,137 @@ Cc: Phil Auld <pauld@redhat.com>
 Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
 Cc: Alex Belits <abelits@marvell.com>
 ---
- kernel/context_tracking.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ include/linux/context_tracking_state.h | 17 +++++++++++++++++
+ kernel/context_tracking.c              | 10 +++++-----
+ kernel/rcu/tree.c                      | 13 ++++---------
+ 3 files changed, 26 insertions(+), 14 deletions(-)
 
+diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
+index 3da44987dc71..bca0d3e0bd3d 100644
+--- a/include/linux/context_tracking_state.h
++++ b/include/linux/context_tracking_state.h
+@@ -40,6 +40,23 @@ static __always_inline int __ct_state(void)
+ {
+ 	return atomic_read(this_cpu_ptr(&context_tracking.state));
+ }
++
++static __always_inline int ct_dynticks(void)
++{
++	return atomic_read(this_cpu_ptr(&context_tracking.dynticks));
++}
++
++static __always_inline int ct_dynticks_cpu(int cpu)
++{
++	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
++	return atomic_read(&ct->dynticks);
++}
++
++static __always_inline int ct_dynticks_cpu_acquire(int cpu)
++{
++	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
++	return atomic_read_acquire(&ct->state);
++}
+ #endif
+ 
+ #ifdef CONFIG_CONTEXT_TRACKING_USER
 diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index 87e7b748791c..b1934264f77f 100644
+index 69db43548768..fe9066fdfaab 100644
 --- a/kernel/context_tracking.c
 +++ b/kernel/context_tracking.c
-@@ -374,7 +374,7 @@ void noinstr __ct_user_enter(enum ctx_state state)
- 			 * when the CPU runs in userspace.
- 			 */
- 			ct_kernel_exit(true, RCU_DYNTICKS_IDX + state);
--		} else {
-+		} else if (!IS_ENABLED(CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK)) {
- 			/*
- 			 * Even if context tracking is disabled on this CPU, because it's outside
- 			 * the full dynticks mask for example, we still have to keep track of the
-@@ -384,7 +384,8 @@ void noinstr __ct_user_enter(enum ctx_state state)
- 			 * handler and then migrate to another CPU, that new CPU must know where
- 			 * the exception returns by the time we call exception_exit().
- 			 * This information can only be provided by the previous CPU when it called
--			 * exception_enter().
-+			 * exception_enter(). CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK is
-+			 * excused though because it doesn't use exception_enter().
- 			 * OTOH we can spare the calls to vtime and RCU when context_tracking.active
- 			 * is false because we know that CPU is not tickless.
- 			 */
-@@ -460,7 +461,7 @@ void noinstr __ct_user_exit(enum ctx_state state)
- 				trace_user_exit(0);
- 				instrumentation_end();
- 			}
--		} else {
-+		} else if (!IS_ENABLED(CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK)) {
- 			atomic_sub(state, &ct->state);
- 		}
+@@ -133,7 +133,7 @@ static noinstr void rcu_eqs_enter(bool user)
+ 
+ 	lockdep_assert_irqs_disabled();
+ 	instrumentation_begin();
+-	trace_rcu_dyntick(TPS("Start"), ct->dynticks_nesting, 0, atomic_read(&ct->dynticks));
++	trace_rcu_dyntick(TPS("Start"), ct->dynticks_nesting, 0, ct_dynticks());
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
+ 	rcu_preempt_deferred_qs(current);
+ 
+@@ -178,7 +178,7 @@ noinstr void ct_nmi_exit(void)
+ 	 */
+ 	if (ct->dynticks_nmi_nesting != 1) {
+ 		trace_rcu_dyntick(TPS("--="), ct->dynticks_nmi_nesting, ct->dynticks_nmi_nesting - 2,
+-				  atomic_read(&ct->dynticks));
++				  ct_dynticks());
+ 		WRITE_ONCE(ct->dynticks_nmi_nesting, /* No store tearing. */
+ 			   ct->dynticks_nmi_nesting - 2);
+ 		instrumentation_end();
+@@ -186,7 +186,7 @@ noinstr void ct_nmi_exit(void)
  	}
+ 
+ 	/* This NMI interrupted an RCU-idle CPU, restore RCU-idleness. */
+-	trace_rcu_dyntick(TPS("Startirq"), ct->dynticks_nmi_nesting, 0, atomic_read(&ct->dynticks));
++	trace_rcu_dyntick(TPS("Startirq"), ct->dynticks_nmi_nesting, 0, ct_dynticks());
+ 	WRITE_ONCE(ct->dynticks_nmi_nesting, 0); /* Avoid store tearing. */
+ 
+ 	// instrumentation for the noinstr rcu_dynticks_eqs_enter()
+@@ -231,7 +231,7 @@ static void noinstr rcu_eqs_exit(bool user)
+ 	// instrumentation for the noinstr rcu_dynticks_eqs_exit()
+ 	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
+ 
+-	trace_rcu_dyntick(TPS("End"), ct->dynticks_nesting, 1, atomic_read(&ct->dynticks));
++	trace_rcu_dyntick(TPS("End"), ct->dynticks_nesting, 1, ct_dynticks());
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
+ 	WRITE_ONCE(ct->dynticks_nesting, 1);
+ 	WARN_ON_ONCE(ct->dynticks_nmi_nesting);
+@@ -292,7 +292,7 @@ noinstr void ct_nmi_enter(void)
+ 
+ 	trace_rcu_dyntick(incby == 1 ? TPS("Endirq") : TPS("++="),
+ 			  ct->dynticks_nmi_nesting,
+-			  ct->dynticks_nmi_nesting + incby, atomic_read(&ct->dynticks));
++			  ct->dynticks_nmi_nesting + incby, ct_dynticks());
+ 	instrumentation_end();
+ 	WRITE_ONCE(ct->dynticks_nmi_nesting, /* Prevent store tearing. */
+ 		   ct->dynticks_nmi_nesting + incby);
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index e55a44ed19b6..90a22dd2189d 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -272,9 +272,7 @@ void rcu_softirq_qs(void)
+  */
+ static void rcu_dynticks_eqs_online(void)
+ {
+-	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+-
+-	if (atomic_read(&ct->dynticks) & 0x1)
++	if (ct_dynticks() & 0x1)
+ 		return;
+ 	rcu_dynticks_inc(1);
+ }
+@@ -285,10 +283,8 @@ static void rcu_dynticks_eqs_online(void)
+  */
+ static int rcu_dynticks_snap(int cpu)
+ {
+-	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
+-
+ 	smp_mb();  // Fundamental RCU ordering guarantee.
+-	return atomic_read_acquire(&ct->dynticks);
++	return ct_dynticks_cpu_acquire(cpu);
+ }
+ 
+ /*
+@@ -322,11 +318,10 @@ static bool rcu_dynticks_in_eqs_since(struct rcu_data *rdp, int snap)
+  */
+ bool rcu_dynticks_zero_in_eqs(int cpu, int *vp)
+ {
+-	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
+ 	int snap;
+ 
+ 	// If not quiescent, force back to earlier extended quiescent state.
+-	snap = atomic_read(&ct->dynticks) & ~0x1;
++	snap = ct_dynticks_cpu(cpu) & ~0x1;
+ 
+ 	smp_rmb(); // Order ->dynticks and *vp reads.
+ 	if (READ_ONCE(*vp))
+@@ -334,7 +329,7 @@ bool rcu_dynticks_zero_in_eqs(int cpu, int *vp)
+ 	smp_rmb(); // Order *vp read and ->dynticks re-read.
+ 
+ 	// If still in the same extended quiescent state, we are good!
+-	return snap == atomic_read(&ct->dynticks);
++	return snap == ct_dynticks_cpu(cpu);
+ }
+ 
+ /*
 -- 
 2.25.1
 
