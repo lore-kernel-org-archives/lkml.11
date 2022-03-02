@@ -2,170 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8557DC4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242466AbiCBUGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:06:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        id S242836AbiCBUIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:08:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237774AbiCBUGh (ORCPT
+        with ESMTP id S237774AbiCBUHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:06:37 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FE4CA0FE;
-        Wed,  2 Mar 2022 12:05:54 -0800 (PST)
-Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: bbrezillon)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 2FB451F45056;
-        Wed,  2 Mar 2022 20:05:52 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646251552;
-        bh=EC3Sx7CTK8chpFEIlSWop6GT/woJveb8eyelTtp0crI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BVCWm5oC6KGgaBo1E8EZsegF4Znj5jYzCLWXjwdV3e7uMKTFIU48r26VCbvHGGjCU
-         AtPtx3Kt4edD8Cr4xTBF+CyD8P3WrPBXLlXo/+g8Dv2z0K+XbL/Kdk6HD/d99LQPSl
-         jadXzbibKkrNt223YKJAJVqqqH8XYTCfK1JVDSAlNpGbNfDsUTIA7vpENpzDOovIjQ
-         U5bMOU7iYM95gEhbr8ftl4M2+zXZBoxcxS3ONe18Zb8190+c69bYu4oxJWQp7OP/rF
-         IB2lLRgJ4eHAvITIkCYUZ6+tBSCejtclMCRJ8HJZUsdto1qNo7YsbzLuNYg5PuFfUc
-         zbP6wHe/nGjXg==
-Date:   Wed, 2 Mar 2022 21:05:46 +0100
-From:   Boris Brezillon <boris.brezillon@collabora.com>
-To:     Apurva Nandan <a-nandan@ti.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mark Brown <broonie@kernel.org>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Daniel Palmer <daniel@0x0f.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <p.yadav@ti.com>
-Subject: Re: [PATCH v3 05/17] mtd: spinand: Define ctrl_ops for non-page
- read/write op templates
-Message-ID: <20220302210546.486239b4@collabora.com>
-In-Reply-To: <259637a6-e63f-56f0-6cdf-6bd21f8e4453@ti.com>
-References: <20220101074250.14443-1-a-nandan@ti.com>
-        <20220101074250.14443-6-a-nandan@ti.com>
-        <20220103110107.45594e78@collabora.com>
-        <bf3ea909-e0a5-eeac-12e9-c8a809685f48@ti.com>
-        <20220215183705.574df0c1@collabora.com>
-        <259637a6-e63f-56f0-6cdf-6bd21f8e4453@ti.com>
-Organization: Collabora
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Wed, 2 Mar 2022 15:07:53 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403ADCB91A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:07:06 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id e13so2538321plh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:07:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9llME+iRL2iH9L07jwvbWbmbHLr47Rbz7WJ4fOgTlZc=;
+        b=IvpJRwG7ynxkReEE85KaN5rJUYtD4xKNHA+hy6TwBmoQ8B3uYeJI+QViQcnaGiWq86
+         F88M3HTERkoil1v4VBpPtCvYuei+/tfueI2kCXzM7ddvcotxLyWZwiewhTHLUCy28lRK
+         BraqPBOXvwYRthhpbxTgJWS9pGCc3zSZJBqHk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9llME+iRL2iH9L07jwvbWbmbHLr47Rbz7WJ4fOgTlZc=;
+        b=V/kUvXM5ANzNg6xeA3woTqyTwYdwoxLDyEWS/w9+2noF91WRWprNoONMGeg2vk+nh1
+         1i0AAfXMNNeQl4z3pFjaZ2BArLoaH9zryvg6pl3C0fomuDOfLUNOdaazjxyWMGv/uolf
+         hTzZv5vDVTJheLBO7UyOxuyMPFYqW6KJV2ecw3+paLNGzplh2cTloMxIBDF6QfUhj8Uz
+         DVInIgjYHeKJiwjYafmqXPIKi/L5/2Wm8BtJ0iCMTVF9CdtZaA0z3K6rnoalKpo+TJqW
+         rhwMXqlQKXRDUI+r2RGilB55dHbnn/aXKMh5Y4DkK5mSl7FsEETTEKhnbs12BrudsHlk
+         6lSA==
+X-Gm-Message-State: AOAM533yIbH9L6a4LvkNlEtiSCmAfFwn7le6hR79IElSA9zXwZVGZiDP
+        8/osC5Xkpa9sIEPN23hKOPSh3w==
+X-Google-Smtp-Source: ABdhPJyalZw/yElDAQSdRYusWOxjkvZUrvn+e5j/jboS/+hXUtUpvVb6mMnbBbqlv1j/a0ygzQBPkQ==
+X-Received: by 2002:a17:90b:94e:b0:1bc:c99f:ede1 with SMTP id dw14-20020a17090b094e00b001bcc99fede1mr1518926pjb.49.1646251625762;
+        Wed, 02 Mar 2022 12:07:05 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d25-20020a637359000000b0037843afb785sm6664pgn.25.2022.03.02.12.07.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 12:07:05 -0800 (PST)
+Date:   Wed, 2 Mar 2022 12:07:04 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        David Laight <David.Laight@aculab.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        "linux1394-devel@lists.sourceforge.net" 
+        <linux1394-devel@lists.sourceforge.net>,
+        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        "v9fs-developer@lists.sourceforge.net" 
+        <v9fs-developer@lists.sourceforge.net>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <202203021158.DB5204A0@keescook>
+References: <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com>
+ <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
+ <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org>
+ <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
+ <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
+ <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
+ <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
+ <0ced2b155b984882b39e895f0211037c@AcuMS.aculab.com>
+ <CAHk-=wix0HLCBs5sxAeW3uckg0YncXbTjMsE-Tv8WzmkOgLAXQ@mail.gmail.com>
+ <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 21:00:55 +0530
-Apurva Nandan <a-nandan@ti.com> wrote:
+On Wed, Mar 02, 2022 at 10:29:31AM +0100, Rasmus Villemoes wrote:
+> This won't help the current issue (because it doesn't exist and might
+> never), but just in case some compiler people are listening, I'd like to
+> have some sort of way to tell the compiler "treat this variable as
+> uninitialized from here on". So one could do
+> 
+> #define kfree(p) do { __kfree(p); __magic_uninit(p); } while (0)
+> 
+> with __magic_uninit being a magic no-op that doesn't affect the
+> semantics of the code, but could be used by the compiler's "[is/may be]
+> used uninitialized" machinery to flag e.g. double frees on some odd
+> error path etc. It would probably only work for local automatic
+> variables, but it should be possible to just ignore the hint if p is
+> some expression like foo->bar or has side effects. If we had that, the
+> end-of-loop test could include that to "uninitialize" the iterator.
 
-> >> 1. read_cache, write_cache, update_cache op templates don't fit well
-> >> with the other non-data ops, as
-> >> these data ops are used to create a dirmap, and that can be done only
-> >> once at probe time. Hence, there
-> >> is a different mechanism of selecting of data ops and non-data ops. =20
-> > Not sure I see why this is a problem. You can populate data-ops for all
-> > modes, and pick the one that provides the best perfs when you create
-> > the dirmap (which should really be at the end of the probe, if it's not
-> > already).
-> > =20
-> >> Hence, this division in the op templates
-> >> struct as data_ops and ctrl_ops is required. Currently, the core only
-> >> supports using a single protocol for
-> >> data ops, chosen at the time of probing. =20
-> > Again, I don't see why you need to differentiate the control and data
-> > ops when populating this table. Those are just operations the NAND
-> > supports, and the data operations is just a subset.
-> > =20
-> >> 2. If we use this single op_templates struct, I can't think of any good
-> >> way to initialize these in the
-> >> manufacturers driver (winbond.c), refer to 17th patch in this series.
-> >> Could you please suggest a macro
-> >> implementation also for winbond.c with the suggested op_templates stru=
-ct. =20
-> > First replace the op_variants field by something more generic:
-> >
-> > struct spinand_info {
-> > ...
-> > 	const struct spinand_op_variants **ops_variants;
-> > ...
-> > };
-> >
-> > #define SPINAND_OP_VARIANTS(_id, ...) \
-> > 	[SPI_NAND_OP_ ## _id] =3D { __VA_ARGS__ }
-> >
-> > #define SPINAND_OPS_VARIANTS(name, ...)
-> > 	const struct spinand_op_variants name[]{
-> > 		__VA_ARGS__,
-> > 	};
-> >
-> > #define SPINAND_INFO_OPS_VARIANTS(defs)
-> > 	.ops_variants =3D defs
-> >
-> > ...
-> >
-> > static SPINAND_OPS_VARIANTS(w35n01jw_ops_variants,
-> > 		SPINAND_OP_VARIANTS(READ_CACHE,
-> > 			SPINAND_PAGE_READ_FROM_CACHE_OCTALIO_DTR_OP(0, 24, NULL, 0),
-> > 			SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
-> > 			...)),
-> > 		SPINAND_OP_VARIANTS(WRITE_CACHE,
-> > 			SPINAND_PROG_LOAD_OCTALIO_DTR(true, 0, NULL, 0),
-> > 			SPINAND_PROG_LOAD(true, 0, NULL, 0)),
-> > 		...
-> > 		SPINAND_OP_VARIANTS(RESET,
-> > 			SPINAND_RESET_OP_OCTAL_DTR,
-> > 			SPINAND_RESET_OP,
-> > 		...
-> > 		);
-> > ... =20
->=20
-> I find a issue with this implementation, please give corrective suggestio=
-ns:
->=20
-> In type of op variant listing, there is no way to specify the protocol=20
-> of the op in the variants struct itself.
->  =C2=A0=C2=A0=C2=A0 - This will lead to filtering/sorting/searching of op=
-s for finding=20
-> the protocols in the spinand core
->  =C2=A0=C2=A0=C2=A0 while in spinand_match_and_init(), which I don't feel=
- is a good way=20
-> for protocol based op categorization.
+I've long wanted to change kfree() to explicitly set pointers to NULL on
+free. https://github.com/KSPP/linux/issues/87
 
-You'll have to go over all those operations to check which ones are
-supported by the controller anyway. And it's not like the
-classification is complicated since the cmd bus-width+DTR seems to be
-the discriminant, and it's stored directly in the operation template.
+The thing stopping a trivial transformation of kfree() is:
 
->  =C2=A0=C2=A0=C2=A0 - This would also lead to complexities in cases of mi=
-xed mode=20
-> operations.
+	kfree(get_some_pointer());
 
-Not sure what you mean by mixed mode. Are you referring to something
-like 1S-8D-8D? IIUC, all we care about is the mode used for the cmd
-cycle. I don't think there are commands to switch between stateless
-(1S-x[S,D]-x[S,D]) modes (assuming 1S-xD-xD is a thing).
+I would argue, though, that the above is poor form: the thing holding
+the pointer should be the thing freeing it, so these cases should be
+refactored and kfree() could do the NULLing by default.
 
->  =C2=A0=C2=A0=C2=A0 - In addition, we can't simply choose the first suppo=
-rted protocol=20
-> in each op id, as some ops have
->  =C2=A0=C2=A0=C2=A0 intendependency of protocol with other ops. This is b=
-ecause=20
-> non-data ops (like reset, block erase..)
->  =C2=A0=C2=A0=C2=A0 cannot be in different protocols at same time, so it =
-would make=20
-> sense to have some form of protocol
->  =C2=A0=C2=A0=C2=A0 based arrangement while listing them.
+Quoting myself in the above issue:
 
-I'm not suggesting to choose the first supported operation and use it
-unconditionally, but instead choose one operation per stateful mode
-(1S, 2S, 4S, ..., 8D) and use the appropriate template depending on
-the mode the flash is currently in.
 
+Without doing massive tree-wide changes, I think we need compiler
+support. If we had something like __builtin_is_lvalue(), we could
+distinguish function returns from lvalues. For example, right now a
+common case are things like:
+
+	kfree(get_some_ptr());
+
+But if we could at least gain coverage of the lvalue cases, and detect
+them statically at compile-time, we could do:
+
+#define __kfree_and_null(x) do { __kfree(*x); *x = NULL; } while (0)
+#define kfree(x) __builtin_choose_expr(__builtin_is_lvalue(x),
+			__kfree_and_null(&(x)), __kfree(x))
+
+Alternatively, we could do a tree-wide change of the former case (findable
+with Coccinelle) and change them into something like kfree_no_null()
+and redefine kfree() itself:
+
+#define kfree_no_null(x) do { void *__ptr = (x); __kfree(__ptr); } while (0)
+#define kfree(x) do { __kfree(x); x = NULL; } while (0)
+
+-- 
+Kees Cook
