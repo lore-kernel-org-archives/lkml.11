@@ -2,136 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45AEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED55BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240115AbiCBI24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:28:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
+        id S240126AbiCBI3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:29:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240112AbiCBI2w (ORCPT
+        with ESMTP id S239666AbiCBI3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:28:52 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB2239688
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:28:08 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id c18-20020a7bc852000000b003806ce86c6dso2722396wml.5
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:28:08 -0800 (PST)
+        Wed, 2 Mar 2022 03:29:48 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4833916F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:29:05 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id q11so930634pln.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 00:29:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=HxGOuYmY7LiA4iGOdF2v4hBw9/NxWKDxW/pX0o8XeQY=;
-        b=0U55S0NEEaImFGWugryXcG5PJIByCAy7/NHh6Eu7A5Fj3ar/XFGG/uye977EUG+E53
-         kmdrPzzzSePStaFeGuLpLY2hHoFjIRoU/xwcRAwJAS/hG83UxMJBVPfLBJJy8LDwWpAc
-         yG8h8lLC/S0UmDDny122K5dphkBrswi91zslmzK9vgxt3L21VTrbVLjWTOVpxTaMIgB5
-         eZdTkaCO56H4Wwga0+YVUP2hgG4d/IPLBO9ow/0cDogK3HIXK+mTQdFeOtdAzznTWP1J
-         7hjIrgn4MtunhIoWwOkohx5hPhkVX0UuyTXkkz/QfRTNE1SKlCXyjEj3ean/VfH4mPKz
-         LinQ==
+        bh=nhj2UYDv6lhlSNPLYeAs8t7voAVPXKimrviFdjCHzWM=;
+        b=DApuqsEmjJNLujancfXfCthOkTnRIUPq28/r6tOxkHmRYgOlkugPPK0h8zAh8enpIU
+         HfkQBBHhLbFz8qxRq7E2RLuHrElDGGUHS9Y244UdqIirJhWbIHaCrn4YF7xafhgTecpu
+         x6OH95W7ts5LUCdSkrPRN+VLxTqzK7oKM7OtnhOIOVkuakDHhP+07oAY8HWOUrVKWwpS
+         DnRwLDlUAcWgA1CnWdFtO0QOL8kLiRQ+vjGLe4BEgo4v9XJAX76t8Q0sNmUSx1tdL1/b
+         w7Y2MRd1la+tiYmu/lVxcH6LXEof0W4BIhpWEx+hwGiQJUbmqWHEmQaFjYs8VD1Hu04i
+         l7tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=HxGOuYmY7LiA4iGOdF2v4hBw9/NxWKDxW/pX0o8XeQY=;
-        b=KAPps+TKual/lvv21HM9XpahKf6H9pbLR8bSt4QoZvpi2bVlM0RR0/rvwmygXtHzRf
-         7QceRkFS9VLR0fNAmvL5kz5dFqzvSA5eDlHD8BwGVHWa/ALsfhSb56MGUVnGZybWAFY1
-         NVbftkfWCZ1p2bW2wn5bBSAMPwt9mGqyYBNS/fytT2C+2DBFk0ShAcgSiqG1v5MgMZOZ
-         AOr6CrSZ0o4e/pWn2hm8H7zn/G6KDyIVbuS00aJ78vvdjenEgV+Oteq1gKETZgFBBEF+
-         s0e46OvmDTDzT6N9dugQrsfI0dHrTHvM1X4Ln7Tq3f4SF1P5j3sWtUohf94B77ZzKr+m
-         u//w==
-X-Gm-Message-State: AOAM532r9dm2c+QmSB4nt43BH/3+22MDhNCTPH8Ycicg/TwVKgmzbP7K
-        eRRwo7jZodXJ8jihLjxvnOlPbA==
-X-Google-Smtp-Source: ABdhPJw+rAizsnXWw82JpOop6PVVpVwgNfC4DCBaFHUIX7R//EsA8IkQlLb3ax3IfwmPlq0Qpu7x5w==
-X-Received: by 2002:a05:600c:3b10:b0:381:3b9f:e382 with SMTP id m16-20020a05600c3b1000b003813b9fe382mr18332369wms.9.1646209687407;
-        Wed, 02 Mar 2022 00:28:07 -0800 (PST)
-Received: from ?IPV6:2001:861:44c0:66c0:3530:ddb:a61:e8db? ([2001:861:44c0:66c0:3530:ddb:a61:e8db])
-        by smtp.gmail.com with ESMTPSA id b10-20020a5d550a000000b001e30e81afd1sm15903883wrv.2.2022.03.02.00.28.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Mar 2022 00:28:07 -0800 (PST)
-Message-ID: <09756faa-5bfd-beac-0c77-976601141ad1@baylibre.com>
-Date:   Wed, 2 Mar 2022 09:28:06 +0100
+        bh=nhj2UYDv6lhlSNPLYeAs8t7voAVPXKimrviFdjCHzWM=;
+        b=KIMbQVYCCYLXGVBAHp/uJQlZ9BSDEcZvtCxuvIroRvC270+A4X9Fr3sCC54Y+Gf31v
+         wZAn+0IdZBaBm/I9s5HIUMfyvSkuy6+nFEm44JrWaw2fhAnIFFujQ/lxxrl+TfstjaCs
+         LbjRgNaQB/QGAT5A5b5i3Z02RbPBS+NSvMfjPwcMefI7NlGrS4bU5CqEre21/BSuvXXI
+         OtWk11hkSEp5UWKCoN4Y3MDfO2FM2IVEFeNJpNYTPsqA9O/IbXYwZyOCF5lZE02d6bCC
+         2nakA+kk/EAl1dcDsNkNmv65KV1uP5i+hNuEyUfIVOuLST6v3TYMY3/0TtysN430zmxR
+         5axg==
+X-Gm-Message-State: AOAM531QxrPk72skbHVj5qVxQ5FlztVkg+ItR/sCoRFO4VIqSeRdshG3
+        F6BLe4QHFWi0JmlE4KHaIlRQLg==
+X-Google-Smtp-Source: ABdhPJw2Snc+gQoBgYJzFskUkuKAvbAT2RF7i6kPMEQuXqdEKU1ZjuWSi3E8iJ7UVQPqE+7d8aedhQ==
+X-Received: by 2002:a17:902:e5c4:b0:151:9bf6:f47f with SMTP id u4-20020a170902e5c400b001519bf6f47fmr635388plf.110.1646209745090;
+        Wed, 02 Mar 2022 00:29:05 -0800 (PST)
+Received: from FVFYT0MHHV2J.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id a20-20020a056a000c9400b004f396b965a9sm20922228pfv.49.2022.03.02.00.28.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 00:29:04 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
+        hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
+        hch@infradead.org
+Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v4 0/6] Fix some bugs related to ramp and dax
+Date:   Wed,  2 Mar 2022 16:27:12 +0800
+Message-Id: <20220302082718.32268-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V5 0/2] Power: meson-s4: add s4 power domain driver
-Content-Language: en-US
-To:     "shunzhou.jiang@amlogic.com" <shunzhou.jiang@amlogic.com>
-Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-amlogic <linux-amlogic@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        khilman <khilman@baylibre.com>, jbrunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "jianxin.pan" <jianxin.pan@amlogic.com>
-References: <20220301015849.827634-1-shunzhou.jiang@amlogic.com>
- <9c35b653-6cf4-a13e-ce7b-b186cf4b68f4@baylibre.com>
- <2022030211175891410963@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <2022030211175891410963@amlogic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGksDQoNCk9uIDAyLzAzLzIwMjIgMDQ6MTcsIHNodW56aG91LmppYW5nQGFtbG9naWMuY29t
-IHdyb3RlOg0KPiBIaSwNCj4gT0ssIHRoYW5rcyB5b3VyIHJlcGx5DQo+IEkgd2lsbCBjaGVj
-ayB0aGlzIGlzc3VlDQoNCkFub3RoZXIgeDggc2V0IG9mIG1haWxzIGFycml2ZWQgb24gdGhl
-IG1haWxpbmctbGlzdCBmcm9tIHlvdXIgc2lkZSwgcGxlYXNlIGZpeCB0aGUgcHJvYmxlbS4N
-Cg0KTmVpbA0KDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBTaHVuemhvdSBKaWFuZw0KPiBT
-VyBEZXBhcnRtZW50DQo+IA0KPiAgICAgKkZyb206KiBOZWlsIEFybXN0cm9uZyA8bWFpbHRv
-Om5hcm1zdHJvbmdAYmF5bGlicmUuY29tPg0KPiAgICAgKkRhdGU6KsKgMjAyMi0wMy0wMcKg
-MTY6MzkNCj4gICAgICpUbzoqIFNodW56aG91IEppYW5nIDxtYWlsdG86c2h1bnpob3Uuamlh
-bmdAYW1sb2dpYy5jb20+DQo+ICAgICAqQ0M6KiBsaW51eC1hcm0ta2VybmVsIDxtYWlsdG86
-bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnPjsgbGludXgtYW1sb2dpYyA8
-bWFpbHRvOmxpbnV4LWFtbG9naWNAbGlzdHMuaW5mcmFkZWFkLm9yZz47IGxpbnV4LWtlcm5l
-bCA8bWFpbHRvOmxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyBkZXZpY2V0cmVlIDxt
-YWlsdG86ZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc+OyBraGlsbWFuIDxtYWlsdG86a2hp
-bG1hbkBiYXlsaWJyZS5jb20+OyBqYnJ1bmV0IDxtYWlsdG86amJydW5ldEBiYXlsaWJyZS5j
-b20+OyBtYXJ0aW4uYmx1bWVuc3RpbmdsIDxtYWlsdG86bWFydGluLmJsdW1lbnN0aW5nbEBn
-b29nbGVtYWlsLmNvbT47IGppYW54aW4ucGFuIDxtYWlsdG86amlhbnhpbi5wYW5AYW1sb2dp
-Yy5jb20+DQo+ICAgICAqU3ViamVjdDoqwqBSZTogW1BBVENIIFY1IDAvMl0gUG93ZXI6IG1l
-c29uLXM0OiBhZGQgczQgcG93ZXIgZG9tYWluIGRyaXZlcg0KPiAgICAgWyBFWFRFUk5BTCBF
-TUFJTCBdDQo+ICAgICBIaSwNCj4gICAgIE9uIDAxLzAzLzIwMjIgMDI6NTgsIFNodW56aG91
-IEppYW5nIHdyb3RlOg0KPiAgICAgID4gVGhpcyBwYXRjaHNldCBhZGRzIFBvd2VyIGNvbnRy
-b2xsZXIgZHJpdmVyIHN1cHBvcnQgZm9yIE1lc29uLVM0IFNvQw0KPiAgICAgID4gTGlrZXMg
-TWVzb24tQTEsIHRoZSBwb3dlciBkb21haW5zIHJlZ2lzdGVyIG9ubHkgY2FuIGFjY2VzcyBp
-biBzZWN1cmUgd29ybGQNCj4gICAgICA+DQo+ICAgICAgPiBTaHVuemhvdSBKaWFuZyAoMik6
-DQo+ICAgICAgPsKgwqDCoCBkdC1iaW5kaW5nczogcG93ZXI6IGFkZCBBbWxvZ2ljIHM0IHBv
-d2VyIGRvbWFpbnMgYmluZGluZ3MNCj4gICAgICA+wqDCoMKgIHNvYzogczQ6IEFkZCBzdXBw
-b3J0IGZvciBwb3dlciBkb21haW5zIGNvbnRyb2xsZXINCj4gICAgICA+DQo+ICAgICAgPsKg
-wqAgLi4uL3Bvd2VyL2FtbG9naWMsbWVzb24tc2VjLXB3cmMueWFtbMKgwqDCoMKgwqDCoMKg
-wqAgfMKgIDMgKystDQo+ICAgICAgPsKgwqAgZHJpdmVycy9zb2MvYW1sb2dpYy9tZXNvbi1z
-ZWN1cmUtcHdyYy5jwqDCoMKgwqDCoMKgIHwgMjIgKysrKysrKysrKysrKysrKysrKw0KPiAg
-ICAgID7CoMKgIGluY2x1ZGUvZHQtYmluZGluZ3MvcG93ZXIvbWVzb24tczQtcG93ZXIuaMKg
-wqDCoCB8IDE5ICsrKysrKysrKysrKysrKysNCj4gICAgICA+wqDCoCAzIGZpbGVzIGNoYW5n
-ZWQsIDQzIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gICAgICA+wqDCoCBjcmVh
-dGUgbW9kZSAxMDA2NDQgaW5jbHVkZS9kdC1iaW5kaW5ncy9wb3dlci9tZXNvbi1zNC1wb3dl
-ci5oDQo+ICAgICAgPg0KPiAgICAgID4NCj4gICAgICA+IGJhc2UtY29tbWl0OiAzNDQ4YTAx
-OGRlZDAzY2NkNDA5M2Q2Njc1ZjRhMzllYjJkMWExOGVmDQo+ICAgICBJIHRoaW5rIHlvdSBo
-YXZlIGFuIGlzc3VlIHdpdGggeW91ciBtYWlsIHNldHVwLCB5b3Ugc2VudCA1IHRpbWVzIHRo
-ZSBzYW1lICJbUEFUQ0ggVjUgMC8yXSBQb3dlcjogbWVzb24tczQ6IGFkZCBzNCBwb3dlciBk
-b21haW4gZHJpdmVyIiBwYXRjaHNldC4NCj4gICAgIFBsZWFzZSBmaXggaXQgYW5kIG1ha2Vy
-IGl0IGRvZXNuJ3QgaGFwcGVuIGFnYWluLg0KPiAgICAgVGhhbmtzLA0KPiAgICAgTmVpbA0K
-PiANCg0K
+This series is based on next-20220225.
+
+Patch 1-2 fix a cache flush bug, because subsequent patches depend on
+those on those changes, there are placed in this series.  Patch 3-4
+are preparation for fixing a dax bug in patch 5.  Patch 6 is code cleanup
+since the previous patch remove the usage of follow_invalidate_pte().
+
+v4:
+- Fix compilation error on riscv.
+
+v3:
+- Based on next-20220225.
+
+v2:
+- Avoid the overly long line in lots of places suggested by Christoph.
+- Fix a compiler warning reported by kernel test robot since pmd_pfn()
+  is not defined when !CONFIG_TRANSPARENT_HUGEPAGE on powerpc architecture.
+- Split a new patch 4 for preparation of fixing the dax bug.
+
+Muchun Song (6):
+  mm: rmap: fix cache flush on THP pages
+  dax: fix cache flush on PMD-mapped pages
+  mm: rmap: introduce pfn_mkclean_range() to cleans PTEs
+  mm: pvmw: add support for walking devmap pages
+  dax: fix missing writeprotect the pte entry
+  mm: remove range parameter from follow_invalidate_pte()
+
+ fs/dax.c             | 82 +++++-----------------------------------------------
+ include/linux/mm.h   |  3 --
+ include/linux/rmap.h |  3 ++
+ mm/internal.h        | 26 +++++++++++------
+ mm/memory.c          | 23 ++-------------
+ mm/page_vma_mapped.c |  5 ++--
+ mm/rmap.c            | 68 +++++++++++++++++++++++++++++++++++--------
+ 7 files changed, 89 insertions(+), 121 deletions(-)
+
+-- 
+2.11.0
+
