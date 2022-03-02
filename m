@@ -2,187 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A302EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 583A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:45:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbiCBXqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:46:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52596 "EHLO
+        id S229544AbiCBXqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:46:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiCBXqB (ORCPT
+        with ESMTP id S229480AbiCBXqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:46:01 -0500
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD6D239D5C;
-        Wed,  2 Mar 2022 15:43:54 -0800 (PST)
-Received: from [192.168.43.69] (unknown [182.2.41.243])
-        by gnuweeb.org (Postfix) with ESMTPSA id 1DEAD7E6A5;
-        Wed,  2 Mar 2022 23:27:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1646263662;
-        bh=A0wJxlPbC6L5g/52O5FkT+betn2pvQrCWGTRFCIy5gg=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=TfZn8Kq++xUqI9AHW+rba3Ml8VA1cFtpJ/+y9jbgAdML//eyjZyT0eIgzQf2AR677
-         xtQes501LvCiOoVx2OS2LSkTS6+xHOdawqZoF4Z06cJQSMDg8D8S4K3+Nt+8h00nCM
-         cce/fHLpJUg2RJa9xktbajVJjTqkNdiBuVLrKAMIoo3wXrvCjw6GvCe4jkKd6wMxcy
-         jxp8b56394wTwg0mS5VE5/TDSrTQk/2T9ADCCkRLF/ZO53une4ImRGKTRXO5q7CSUH
-         bpsAFuxdbSXLMEfWcQWdd4RvOTj65JM2ObXz/Fo3iXaWpQfvB+xB1EQmIZa2ruD09r
-         19BF0Q3n/Cjdg==
-Message-ID: <109a10da-d1d1-c47a-2f04-31796457f6ff@gnuweeb.org>
-Date:   Thu, 3 Mar 2022 06:27:33 +0700
+        Wed, 2 Mar 2022 18:46:02 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15902399C4
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:43:42 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id w3-20020a056830060300b005ad10e3becaso3104568oti.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 15:43:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z0rddFreBeaOz0mWCXtjsYyNHQxD469iCzkybKp8Hm4=;
+        b=bdi2mdZmdBDwK297etVaiiS8i1rpVOwfXtd/fBrC04gnu0rrm0SZ9UCxypGt0fpQ1m
+         oAP5zfe3a65bhCfaaccs8YI3gxSurH2G1z79A0DiFf5cjyKmPa++VfW5PTTqGiDtUAIz
+         VlctI3JTQDbkpACRlq32cwavCiWf/bEDJi6tZ2fb6ApO6tQ07+5wMjL7rMTbXjzxmcEE
+         CJJmnVDRqeOdAH28SHojDMJtMWFPqvnX8vq727Y9gVS4ha4uH/FjG9LgJqUN7GewXWQT
+         HAoUs9gxSZOHizcBLYlnhL6776op2npl5RaGAbzGuZEtCABIHE3CcaXS3pRuIeoLLAh5
+         NgbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z0rddFreBeaOz0mWCXtjsYyNHQxD469iCzkybKp8Hm4=;
+        b=fcti6NR6RyQdB+X33p4lGWAL9mz5Aq71aZkn2N/VWQzQcNa6jwJURhPQb0E7L/EobV
+         I01hoIzfvuvnmtxfY6+FlZYyuegYlzeGEbp4+A8SJ1E8CoTbgZ2du6KJcfU2d9T9eJOz
+         /7Yuwo43zAPrjoI7yzgG0275dE7vgzZtxlq+dqnjCdfXPjZCwAQk4LJbKMDaLYEhQ+OJ
+         +GNyXM4F5v9CVzhSH8dB6sTEpiVvMp2uL9hKhm64Rrwoq/be4hwaeYomga3wuS0QCVoO
+         6nraIc5a6dJmCGi75W6pYnQOqdi1kC39NhqXoIrMYd3Uu3sbLq8SxTbho++S2LgHbd7V
+         PVfg==
+X-Gm-Message-State: AOAM531zqilp9ENNxJQCj3NC7quRY5LF/nlA7a2HpHnJfcwlceSV1s07
+        IcP9cgCU9t6AbDBxjFr8k4DskGVuZ7lA8JZ8OmzPUjf07Uy8Dw==
+X-Google-Smtp-Source: ABdhPJyF5F9gcr/OgOWt8689+mzsTtT8hB6ASSZynYgU83Bi35DZ52yS6TuxOUB8M9HnuKkmLaaKNcwSMjOijtK5ofg=
+X-Received: by 2002:a25:1906:0:b0:61d:9576:754e with SMTP id
+ 6-20020a251906000000b0061d9576754emr30690643ybz.426.1646262395276; Wed, 02
+ Mar 2022 15:06:35 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 2/2] x86/mce/amd: Fix memory leak when
- `threshold_create_bank()` fails
-Content-Language: en-US
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org,
-        x86@kernel.org, stable@vger.kernel.org,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Jiri Hladky <hladky.jiri@googlemail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org>
- <20220301094608.118879-3-ammarfaizi2@gnuweeb.org>
- <Yh+oyD/5M3TW5ZMM@yaz-ubuntu>
- <4371a592-6686-c535-4daf-993dedb43cd4@gnuweeb.org>
-In-Reply-To: <4371a592-6686-c535-4daf-993dedb43cd4@gnuweeb.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220225012819.1807147-1-surenb@google.com> <20220302002150.2113-1-hdanton@sina.com>
+In-Reply-To: <20220302002150.2113-1-hdanton@sina.com>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Wed, 2 Mar 2022 15:06:24 -0800
+Message-ID: <CAJuCfpG3TRgs8fA5kpkhrFRcDF=C9VyqLTCz42sxOyKZ0pRaNQ@mail.gmail.com>
+Subject: Re: [RFC 1/1] mm: page_alloc: replace mm_percpu_wq with kthreads in drain_all_pages
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     linux-mm <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@suse.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Tim Murray <timmurray@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/3/22 6:20 AM, Ammar Faizi wrote:
-> On 3/3/22 12:26 AM, Yazen Ghannam wrote:
->> Hi Ammar,
-> 
-> Hi Yazen,
-> 
->> ...
->> The threshold interrupt handler uses this pointer. I think the goal here is to
->> set this pointer when the list is fully formed and clear this pointer before
->> making any changes to the list. Otherwise, the interrupt handler will operate
->> on incomplete data if an interrupt comes in the middle of these updates.
->>
->> The changes below should deal with memory leak issue while avoiding a race
->> with the threshold interrupt. What do you think?
-> 
-> Thanks for taking a look into this. I didn't notice that before. The
-> changes look good to me, extra improvements:
-> 
-> 1) _mce_threshold_remove_device() should be static as we don't use it
->     in another translation unit.
-> 2) Minor cleanup, we don't need "goto out_err", just early return
->     directly.
-> 
-> I will fold them in...
-> 
+On Tue, Mar 1, 2022 at 4:22 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Thu, 24 Feb 2022 17:28:19 -0800 Suren Baghdasaryan wrote:
+> > Sending as an RFC to confirm if this is the right direction and to
+> > clarify if other tasks currently executed on mm_percpu_wq should be
+> > also moved to kthreads. The patch seems stable in testing but I want
+> > to collect more performance data before submitting a non-RFC version.
+> >
+> >
+> > Currently drain_all_pages uses mm_percpu_wq to drain pages from pcp
+> > list during direct reclaim. The tasks on a workqueue can be delayed
+> > by other tasks in the workqueues using the same per-cpu worker pool.
+>
+> The pending works may be freeing a couple of slabs/pages each. Who knows?
 
-Please review the patch below, if you think it looks good, I will
-send this for the v5 series. I added your sign-off.
+If we are talking about work specifically scheduled on mm_percpu_wq
+then apart from drain_all_pages, mm_percpu_wq is used to execute
+vmstat_update and lru_add_drain_cpu for drainig pagevecs. If OTOH what
+you mean is that the work might be blocked by say kswapd, which is
+freeing memory, then sure, who knows...
 
- From cae3965734a67d11a5286c612dfddf52398defc8 Mon Sep 17 00:00:00 2001
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Date: Thu, 3 Mar 2022 05:07:38 +0700
-Subject: [PATCH v5 2/2] x86/MCE/AMD: Fix memory leak when `threshold_create_bank()` fails
+>
+> > This results in sizable delays in drain_all_pages when cpus are highly
+> > contended.
+> > Memory management operations designed to relieve memory pressure should
+> > not be allowed to block by other tasks, especially if the task in direct
+> > reclaim has higher priority than the blocking tasks.
+>
+> Wonder why priority is the right cure to tight memory - otherwise it was
+> not a problem given a direct reclaimer of higher priority.
+>
+> Off topic question - why is it making sense from begining for a task of
+> lower priority to peel pages off from another of higher priority if
+> priority is considered in direct reclaim?
 
-In mce_threshold_create_device(), when threshold_create_bank() fails,
-the @bp will be leaked, because mce_threshold_remove_device() will
-not free the @bp. It only frees the @bp when we've already written
-the @bp to the @threshold_banks per-CPU variable, but at the point,
-we haven't.
+The way I understood your question is that you are asking why we have
+to use workqueues of potentially lower priority to drain pages for a
+potentially higher priority process in direct reclaim (which is
+blocked waiting for workqueues to complete draining)?
+If so, IIUC this mechanism was introduced in
+https://lore.kernel.org/all/20170117092954.15413-4-mgorman@techsingularity.net
+to avoid draining from IPI context (CC'ing Mel Gorman to correct me if
+I'm wrong).
+I think the issue here is that in the process we are losing
+information about the priority of the process in direct reclaim, which
+might lead to priority inversion.
 
-Fix this by extracting the cleanup part into a new static function
-_mce_threshold_remove_device(), then use it from create and remove
-device function.
+I'm not sure at all if this is the right solution here, hence sending
+this as RFC to gather more feedback.
+The discussion that lead to this patch starts here:
+https://lore.kernel.org/all/YhNTcM9XtqA1zUUi@dhcp22.suse.cz (CC'ing
+people who were involved in that discussion)
 
-Also, eliminate the "goto out_err". Just early return inside the loop
-when we fail.
+>
+> > Replace the usage of mm_percpu_wq with per-cpu low priority FIFO
+> > kthreads to execute draining tasks.
+> >
+> > Suggested-by: Petr Mladek <pmladek@suse.com>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >  mm/page_alloc.c | 84 ++++++++++++++++++++++++++++++++++++++++---------
+> >  1 file changed, 70 insertions(+), 14 deletions(-)
+> >
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index 3589febc6d31..c9ab2cf4b05b 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -153,7 +153,8 @@ EXPORT_PER_CPU_SYMBOL(_numa_mem_);
+> >  /* work_structs for global per-cpu drains */
+> >  struct pcpu_drain {
+> >       struct zone *zone;
+> > -     struct work_struct work;
+> > +     struct kthread_work work;
+> > +     struct kthread_worker *worker;
+> >  };
+> >  static DEFINE_MUTEX(pcpu_drain_mutex);
+> >  static DEFINE_PER_CPU(struct pcpu_drain, pcpu_drain);
+> > @@ -2209,6 +2210,58 @@ _deferred_grow_zone(struct zone *zone, unsigned int order)
+> >
+> >  #endif /* CONFIG_DEFERRED_STRUCT_PAGE_INIT */
+> >
+> > +static void drain_local_pages_func(struct kthread_work *work);
+> > +
+> > +static int alloc_drain_worker(unsigned int cpu)
+> > +{
+> > +     struct pcpu_drain *drain;
+> > +
+> > +     mutex_lock(&pcpu_drain_mutex);
+>
+> Nit, see below.
+>
+> > +     drain = per_cpu_ptr(&pcpu_drain, cpu);
+> > +     drain->worker = kthread_create_worker_on_cpu(cpu, 0, "pg_drain/%u", cpu);
+> > +     if (IS_ERR(drain->worker)) {
+> > +             drain->worker = NULL;
+> > +             pr_err("Failed to create pg_drain/%u\n", cpu);
+> > +             goto out;
+> > +     }
+> > +     /* Ensure the thread is not blocked by normal priority tasks */
+> > +     sched_set_fifo_low(drain->worker->task);
+> > +     kthread_init_work(&drain->work, drain_local_pages_func);
+> > +out:
+> > +     mutex_unlock(&pcpu_drain_mutex);
+> > +
+> > +     return 0;
+> > +}
+>
+> alloc_drain_worker(unsigned int cpu)
+>   mutex_lock(&pcpu_drain_mutex);
+>   drain->worker = kthread_create_worker_on_cpu(cpu, 0, "pg_drain/%u", cpu);
+>     __kthread_create_worker(cpu, flags, namefmt, args);
+>       kzalloc(sizeof(*worker), GFP_KERNEL);
+>         kmalloc
+>           slab_alloc
+>             new_slab
+>               alloc_pages
+>                 __alloc_pages_slowpath
+>                   __alloc_pages_direct_reclaim
+>                     drain_all_pages(NULL);
+>                       __drain_all_pages(zone, false);
+>                       if (unlikely(!mutex_trylock(&pcpu_drain_mutex))) {
+>                                 if (!zone)
+>                                         return;
+>                                 mutex_lock(&pcpu_drain_mutex);
+>                       }
+>
+> Either deadlock or no page drained wrt pcpu_drain_mutex if nothing missed.
 
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: stable@vger.kernel.org # v5.8+
-Fixes: 6458de97fc15 ("x86/mce/amd: Straighten CPU hotplug path")
-Co-authored-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Co-authored-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
----
-  arch/x86/kernel/cpu/mce/amd.c | 31 ++++++++++++++++++-------------
-  1 file changed, 18 insertions(+), 13 deletions(-)
+Thanks for noticing it! I think this can be easily fixed by calling
+kthread_create_worker_on_cpu outside of the pcpu_drain_mutex
+protection and then assigning the result to drain->worker after taking
+pcpu_drain_mutex.
+Thanks,
+Suren.
 
-diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
-index 9f4b508886dd..ac7246a4de08 100644
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -1293,10 +1293,22 @@ static void threshold_remove_bank(struct threshold_bank *bank)
-  	kfree(bank);
-  }
-  
-+static void _mce_threshold_remove_device(struct threshold_bank **bp)
-+{
-+	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
-+
-+	for (bank = 0; bank < numbanks; bank++) {
-+		if (bp[bank]) {
-+			threshold_remove_bank(bp[bank]);
-+			bp[bank] = NULL;
-+		}
-+	}
-+	kfree(bp);
-+}
-+
-  int mce_threshold_remove_device(unsigned int cpu)
-  {
-  	struct threshold_bank **bp = this_cpu_read(threshold_banks);
--	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
-  
-  	if (!bp)
-  		return 0;
-@@ -1307,13 +1319,7 @@ int mce_threshold_remove_device(unsigned int cpu)
-  	 */
-  	this_cpu_write(threshold_banks, NULL);
-  
--	for (bank = 0; bank < numbanks; bank++) {
--		if (bp[bank]) {
--			threshold_remove_bank(bp[bank]);
--			bp[bank] = NULL;
--		}
--	}
--	kfree(bp);
-+	_mce_threshold_remove_device(bp);
-  	return 0;
-  }
-  
-@@ -1350,15 +1356,14 @@ int mce_threshold_create_device(unsigned int cpu)
-  		if (!(this_cpu_read(bank_map) & (1 << bank)))
-  			continue;
-  		err = threshold_create_bank(bp, cpu, bank);
--		if (err)
--			goto out_err;
-+		if (err) {
-+			_mce_threshold_remove_device(bp);
-+			return err;
-+		}
-  	}
-  	this_cpu_write(threshold_banks, bp);
-  
-  	if (thresholding_irq_en)
-  		mce_threshold_vector = amd_threshold_interrupt;
-  	return 0;
--out_err:
--	mce_threshold_remove_device(cpu);
--	return err;
-  }
-
--- 
-Ammar Faizi
+>
+> > +
+> > +static int free_drain_worker(unsigned int cpu)
+> > +{
+> > +     struct pcpu_drain *drain;
+> > +
+> > +     mutex_lock(&pcpu_drain_mutex);
+> > +     drain = per_cpu_ptr(&pcpu_drain, cpu);
+> > +     kthread_cancel_work_sync(&drain->work);
+> > +     kthread_destroy_worker(drain->worker);
+> > +     drain->worker = NULL;
+> > +     mutex_unlock(&pcpu_drain_mutex);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static void __init init_drain_workers(void)
+> > +{
+> > +     unsigned int cpu;
+> > +
+> > +     for_each_online_cpu(cpu)
+> > +             alloc_drain_worker(cpu);
+> > +
+> > +     if (cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+> > +                                     "page_alloc/drain:online",
+> > +                                     alloc_drain_worker,
+> > +                                     free_drain_worker)) {
+> > +             pr_err("page_alloc_drain: Failed to allocate a hotplug state\n");
+> > +     }
+> > +}
+> > +
+> >  void __init page_alloc_init_late(void)
+> >  {
+> >       struct zone *zone;
+> > @@ -2245,6 +2298,8 @@ void __init page_alloc_init_late(void)
+> >
+> >       for_each_populated_zone(zone)
+> >               set_zone_contiguous(zone);
+> > +
+> > +     init_drain_workers();
+> >  }
+> >
+> >  #ifdef CONFIG_CMA
+> > @@ -3144,7 +3199,7 @@ void drain_local_pages(struct zone *zone)
+> >               drain_pages(cpu);
+> >  }
+> >
+> > -static void drain_local_pages_wq(struct work_struct *work)
+> > +static void drain_local_pages_func(struct kthread_work *work)
+> >  {
+> >       struct pcpu_drain *drain;
+> >
+> > @@ -3175,6 +3230,7 @@ static void drain_local_pages_wq(struct work_struct *work)
+> >  static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
+> >  {
+> >       int cpu;
+> > +     struct pcpu_drain *drain;
+> >
+> >       /*
+> >        * Allocate in the BSS so we won't require allocation in
+> > @@ -3182,13 +3238,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
+> >        */
+> >       static cpumask_t cpus_with_pcps;
+> >
+> > -     /*
+> > -      * Make sure nobody triggers this path before mm_percpu_wq is fully
+> > -      * initialized.
+> > -      */
+> > -     if (WARN_ON_ONCE(!mm_percpu_wq))
+> > -             return;
+> > -
+> >       /*
+> >        * Do not drain if one is already in progress unless it's specific to
+> >        * a zone. Such callers are primarily CMA and memory hotplug and need
+> > @@ -3238,14 +3287,21 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
+> >       }
+> >
+> >       for_each_cpu(cpu, &cpus_with_pcps) {
+> > -             struct pcpu_drain *drain = per_cpu_ptr(&pcpu_drain, cpu);
+> > +             drain = per_cpu_ptr(&pcpu_drain, cpu);
+> >
+> >               drain->zone = zone;
+> > -             INIT_WORK(&drain->work, drain_local_pages_wq);
+> > -             queue_work_on(cpu, mm_percpu_wq, &drain->work);
+> > +             if (likely(drain->worker))
+> > +                     kthread_queue_work(drain->worker, &drain->work);
+> > +     }
+> > +     /* Wait for kthreads to finish or drain itself */
+> > +     for_each_cpu(cpu, &cpus_with_pcps) {
+> > +             drain = per_cpu_ptr(&pcpu_drain, cpu);
+> > +
+> > +             if (likely(drain->worker))
+> > +                     kthread_flush_work(&drain->work);
+> > +             else
+> > +                     drain_local_pages_func(&drain->work);
+> >       }
+> > -     for_each_cpu(cpu, &cpus_with_pcps)
+> > -             flush_work(&per_cpu_ptr(&pcpu_drain, cpu)->work);
+> >
+> >       mutex_unlock(&pcpu_drain_mutex);
+> >  }
+> > --
+> > 2.35.1.574.g5d30c73bfb-goog
+> >
+> >
+>
