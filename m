@@ -2,173 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD06C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9332CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbiCBXsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:48:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        id S229689AbiCBXv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiCBXsR (ORCPT
+        with ESMTP id S229634AbiCBXv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:48:17 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A844108BCF
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:46:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646264789; x=1677800789;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rZgD0e7StjysBcKfEnwI4/9mWixjUGri4p/xVp8Ksq0=;
-  b=EnO7yoFh/7wtA7Vhc/G8PYChlpq0xw3Dbd34sd448hYcOrpZ3Yz9VKv2
-   QG7fz0S7snlflR8sb94a9XcDlHwAgtIiYNWooL5MmofECloAmACiEe3lX
-   m7o7sPx/gGZcCoSdva85Wl53wRQnd16+HJLG4HyQWZ8R1aJ0ZaAT9T1pB
-   Dh0gPncTxcTKqpB17BSL6AQCmJLBvJwTx1JF6O1II2A6/u2J7BHtXuHUQ
-   nQtCN0SC0ilAN9Woa5K1KlICOE39BBMv+h6hl0XD/7EALTjhc+S6M6oHT
-   Ipnn9p7dRHE2I/YsUOsDOqkVTa4se0f4OSy1QupSntu8BfkM3gK4G2oup
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="316745004"
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="316745004"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:33:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="686295716"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Mar 2022 15:33:00 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPYSp-00024x-M5; Wed, 02 Mar 2022 23:32:59 +0000
-Date:   Thu, 3 Mar 2022 07:32:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [frederic-dynticks:rcu/context-tracking 14/19]
- kernel/rcu/tree.c:634:6: error: redefinition of '__rcu_irq_enter_check_tick'
-Message-ID: <202203030727.5aqUHWC6-lkp@intel.com>
+        Wed, 2 Mar 2022 18:51:28 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2435A42A34;
+        Wed,  2 Mar 2022 15:50:44 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id i6-20020a4ac506000000b0031c5ac6c078so3892078ooq.6;
+        Wed, 02 Mar 2022 15:50:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=Q5O31HUYjdscklXRXvmIo2a+KRrg+KbZekYyUmOBdlQ=;
+        b=NMlh+In8hqJzm11n/pBAceHkhO4cKz+IQpIEEoxyH/w/Klg2dyhHX3ssfZYWonHRzY
+         gpU3xjA6mVZZalgz5Is3Oq7Jdy/fnROfgT5X3nr4NkIWINDj1KnvpSdMxgE9jmOKoZmL
+         RG1wVitWI6pA6ORD9X1JvqTI2oUyRd0NldwtysPIDhdrc8dKKLQ4jZOmslsv+avMZQjN
+         PP7sFsW8rAVB+phBv+vNzV+5g7MOnqfey0bj3E8ny1obNVlJ1TePtqaYZaxabwUiG77W
+         gv5/E970OV8yV1Ga9K/QlEZV1+ya9ymaggsGar316Q7vhPLMRV/k+YrshugeJf0XW3cE
+         g9hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=Q5O31HUYjdscklXRXvmIo2a+KRrg+KbZekYyUmOBdlQ=;
+        b=rxOTrgHhp3DdIdr6uo13/I2Ebxodf66BjO5mrOrReWURHq1kyJ5Bx5ZxnTHx6DQQut
+         OOmLpV/AI2M6gquvsqzLmDo6Q0pWyfg0jM1cEjpdq6yh6R0fs4dBi8Vvk/vhU+76TbJB
+         2H2lzfuPgPNZ8K9e4EzIQGnnjWUdCeYBOqT1sz73lePeHYfVKwROJ63E+6mKCAcEbG4M
+         sAvEddNygG2fRci7JCLR2Sb+kvHvLbKQ/ANLve2UMz+vQW+Jf37QTOdCdMuMh6Yv/uDd
+         EWxJG2xJZ9+RMj45DD3wJmxwaEmeu16iU8fo27CDemkQzyX6mE0tXdXEzuXfeWU8GvqE
+         qbow==
+X-Gm-Message-State: AOAM531tf7GopZNSGVzCarSP3+4GP2eVCRzMqnFQTX4FZaaqKa7GfxF5
+        sIAssrRPnT6X/iJ4PMUbz3MRKh3gOm7odsk2jff0+pQEDHI=
+X-Google-Smtp-Source: ABdhPJwsJn9qaH2KXnNnxkinO/s/Gt3k6nIoSEEBwfC4GuE26Li2y7FVOO9kRLouMtJeKS/JPR+vB3d4kyg4ibTYRzA=
+X-Received: by 2002:a9d:5a06:0:b0:5af:b5fd:5b72 with SMTP id
+ v6-20020a9d5a06000000b005afb5fd5b72mr17283446oth.200.1646263217608; Wed, 02
+ Mar 2022 15:20:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220106122452.18719-1-wsa@kernel.org> <Yd6gRR0jtqhRLwtB@ninjato>
+ <98ed8d6d16a3d472d9432eb169aa2da44b66b5cc.camel@yandex.ru>
+ <4dfbee97-14c2-718b-9cbd-fdeeace96f59@yahoo.com> <CAJMQK-h38XdN=QD6ozVNk+wxmpp1DKj21pkFZ+kY31+Lb8ot6Q@mail.gmail.com>
+ <6121a782-6927-f033-1c09-ffe4ad7700ae@yahoo.com> <CAJMQK-j5YYqen78Vgng_5jhja-YKSTRut7f7vJ4wWufVfbZy6w@mail.gmail.com>
+ <363432688.323955.1642272250312@mail.yahoo.com> <CAJMQK-jx+z974AT_p+-AVAbMQQ33V-XU9NKmy-i6nbS5zagHBA@mail.gmail.com>
+ <297191986.3285872.1644002564779@mail.yahoo.com> <YgaiFsgQUSeUTUwz@kunai>
+In-Reply-To: <YgaiFsgQUSeUTUwz@kunai>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed, 2 Mar 2022 18:20:06 -0500
+Message-ID: <CADnq5_M-Wrav_WW4Wx1GC+f0UJtS_Op4W0VWED4VvPhYqDvp2Q@mail.gmail.com>
+Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in adapter"
+To:     Wolfram Sang <wsa@kernel.org>,
+        "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Bibby Hsieh <bibby.hsieh@mediatek.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking
-head:   e4eaff86ec91c1cbde9a113cf5232dac9f897337
-commit: 5a91f02835a27bd066154ab87408505806710e19 [14/19] rcu/context-tracking: Move RCU-dynticks internal functions to context_tracking
-config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220303/202203030727.5aqUHWC6-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=5a91f02835a27bd066154ab87408505806710e19
-        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
-        git fetch --no-tags frederic-dynticks rcu/context-tracking
-        git checkout 5a91f02835a27bd066154ab87408505806710e19
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Fri, Feb 11, 2022 at 12:51 PM Wolfram Sang <wsa@kernel.org> wrote:
+>
+> On Fri, Feb 04, 2022 at 07:22:44PM +0000, Tareque Md.Hanif wrote:
+> >  The issue still exists. It takes very long time to suspend (10-12s). `DRI_PRIME=1 glxgears` is a black window.
+> >
+> > journalctl attached
+> > Looking forward to any testing.
+>
+> Any new ideas which Tareque could test?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+For some background, the GPU has multiple i2c buses attached to it
+which the driver uses for querying the EDID on monitors over i2c.
+Although in this case, the i2c buses are not used because there is no
+display controller on this particular GPU.  I'm not even sure if the
+gpu driver exposes any i2c buses in this case.  The i2c buses present
+are in a vbios table that the driver parses at load time.  If there
+are none on your platform, then it's probably not the AMD GPU driver.
+Can you check if there are any i2c buses from the AMD GPU device in
+sysfs?  I don't really see why this patch would change anything off
+hand on the GPU.  Maybe the GPU is a red herring.  No one reported any
+regressions on systems with AMD CPUs or even other Intel CPUs.  This
+seems to be specific to a particular Intel CPU + AMD Topaz GPUs.  The
+dGPU power is controlled by the platform via ACPI (it's usually a GPIO
+under the covers).  I wonder if the issue is related to one of the i2c
+buses or devices on the intel platform?  E.g.,
 
-All errors (new ones prefixed by >>):
+00:15.0 Signal processing controller: Intel Corporation Sunrise
+Point-LP Serial IO I2C Controller #0 (rev 21)
+00:15.1 Signal processing controller: Intel Corporation Sunrise
+Point-LP Serial IO I2C Controller #1 (rev 21)
+00:1f.4 SMBus: Intel Corporation Sunrise Point-LP SMBus (rev 21)
 
->> kernel/rcu/tree.c:634:6: error: redefinition of '__rcu_irq_enter_check_tick'
-     634 | void __rcu_irq_enter_check_tick(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/interrupt.h:11,
-                    from kernel/rcu/tree.c:26:
-   include/linux/hardirq.h:19:20: note: previous definition of '__rcu_irq_enter_check_tick' was here
-      19 | static inline void __rcu_irq_enter_check_tick(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from kernel/rcu/tree.c:4457:
-   kernel/rcu/tree_plugin.h:932:13: error: static declaration of 'rcu_preempt_deferred_qs' follows non-static declaration
-     932 | static void rcu_preempt_deferred_qs(struct task_struct *t)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/rcupdate.h:227,
-                    from include/linux/rcupdate_wait.h:9,
-                    from kernel/rcu/tree.c:25:
-   include/linux/rcutree.h:63:6: note: previous declaration of 'rcu_preempt_deferred_qs' was here
-      63 | void rcu_preempt_deferred_qs(struct task_struct *t);
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   In file included from kernel/rcu/tree.c:4457:
-   kernel/rcu/tree_plugin.h:932:13: warning: 'rcu_preempt_deferred_qs' defined but not used [-Wunused-function]
-     932 | static void rcu_preempt_deferred_qs(struct task_struct *t)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~
+I'm not sure what those do, but maybe that is something to look at?
 
+Also there are some PCI AERs in the kernel log.  Are those present
+without the patch?
 
-vim +/__rcu_irq_enter_check_tick +634 kernel/rcu/tree.c
-
-07325d4a90d2d84 kernel/rcu/tree.c Thomas Gleixner  2020-05-21  607  
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  608  /**
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  609   * __rcu_irq_enter_check_tick - Enable scheduler tick on CPU if RCU needs it.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  610   *
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  611   * The scheduler tick is not normally enabled when CPUs enter the kernel
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  612   * from nohz_full userspace execution.  After all, nohz_full userspace
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  613   * execution is an RCU quiescent state and the time executing in the kernel
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  614   * is quite short.  Except of course when it isn't.  And it is not hard to
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  615   * cause a large system to spend tens of seconds or even minutes looping
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  616   * in the kernel, which can cause a number of problems, include RCU CPU
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  617   * stall warnings.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  618   *
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  619   * Therefore, if a nohz_full CPU fails to report a quiescent state
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  620   * in a timely manner, the RCU grace-period kthread sets that CPU's
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  621   * ->rcu_urgent_qs flag with the expectation that the next interrupt or
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  622   * exception will invoke this function, which will turn on the scheduler
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  623   * tick, which will enable RCU to detect that CPU's quiescent states,
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  624   * for example, due to cond_resched() calls in CONFIG_PREEMPT=n kernels.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  625   * The tick will be disabled once a quiescent state is reported for
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  626   * this CPU.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  627   *
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  628   * Of course, in carefully tuned systems, there might never be an
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  629   * interrupt or exception.  In that case, the RCU grace-period kthread
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  630   * will eventually cause one to happen.  However, in less carefully
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  631   * controlled environments, this function allows RCU to get what it
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  632   * needs without creating otherwise useless interruptions.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  633   */
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21 @634  void __rcu_irq_enter_check_tick(void)
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  635  {
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  636  	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  637  
-6dbce04d8417ae7 kernel/rcu/tree.c Peter Zijlstra   2020-11-16  638  	// If we're here from NMI there's nothing to do.
-6dbce04d8417ae7 kernel/rcu/tree.c Peter Zijlstra   2020-11-16  639  	if (in_nmi())
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  640  		return;
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  641  
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  642  	RCU_LOCKDEP_WARN(rcu_dynticks_curr_cpu_in_eqs(),
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  643  			 "Illegal rcu_irq_enter_check_tick() from extended quiescent state");
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  644  
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  645  	if (!tick_nohz_full_cpu(rdp->cpu) ||
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  646  	    !READ_ONCE(rdp->rcu_urgent_qs) ||
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  647  	    READ_ONCE(rdp->rcu_forced_tick)) {
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  648  		// RCU doesn't need nohz_full help from this CPU, or it is
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  649  		// already getting that help.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  650  		return;
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  651  	}
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  652  
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  653  	// We get here only when not in an extended quiescent state and
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  654  	// from interrupts (as opposed to NMIs).  Therefore, (1) RCU is
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  655  	// already watching and (2) The fact that we are in an interrupt
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  656  	// handler and that the rcu_node lock is an irq-disabled lock
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  657  	// prevents self-deadlock.  So we can safely recheck under the lock.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  658  	// Note that the nohz_full state currently cannot change.
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  659  	raw_spin_lock_rcu_node(rdp->mynode);
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  660  	if (rdp->rcu_urgent_qs && !rdp->rcu_forced_tick) {
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  661  		// A nohz_full CPU is in the kernel and RCU needs a
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  662  		// quiescent state.  Turn on the tick!
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  663  		WRITE_ONCE(rdp->rcu_forced_tick, true);
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  664  		tick_dep_set_cpu(rdp->cpu, TICK_DEP_BIT_RCU);
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  665  	}
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  666  	raw_spin_unlock_rcu_node(rdp->mynode);
-aaf2bc50df1f4bf kernel/rcu/tree.c Paul E. McKenney 2020-05-21  667  }
-64db4cfff99c04c kernel/rcutree.c  Paul E. McKenney 2008-12-18  668  
-
-:::::: The code at line 634 was first introduced by commit
-:::::: aaf2bc50df1f4bfc6857fc601fc7b21d5a18c6a1 rcu: Abstract out rcu_irq_enter_check_tick() from rcu_nmi_enter()
-
-:::::: TO: Paul E. McKenney <paulmck@kernel.org>
-:::::: CC: Ingo Molnar <mingo@kernel.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Alex
