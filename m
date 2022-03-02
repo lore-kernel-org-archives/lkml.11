@@ -2,115 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 969D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243004AbiCBPux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 10:50:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        id S241063AbiCBPu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 10:50:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241397AbiCBPuM (ORCPT
+        with ESMTP id S240888AbiCBPti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 10:50:12 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F264EF5F
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 07:49:12 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id c23so2341834ioi.4
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 07:49:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YKCrWj+1zMKlxKPB/IddCWs5wzrSW0P5NglCuipbZCs=;
-        b=eJxM/77B7ssFxi/0g1GKRtMpbZuhJOTlH8h19DcfwD6dL6zYrh6mfF5ZTegp7ireD6
-         S+YkCiFvI10DeKstOWdhQlMoYZ28GtJblXh7FxiMKbHHFUPTug1yG9XwA/VIjY+KvJYe
-         cvLD61wDFA944OtrZ73NZRdAx5JN2VLBTt0KY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YKCrWj+1zMKlxKPB/IddCWs5wzrSW0P5NglCuipbZCs=;
-        b=qzltpTdqBph60oD4hFBihdPZUkMLSBoT/c4Z2lXX8mRjSNvLu7aK+APB7w5FcQZXn0
-         EPV4VpjLHRlIPVtsr0OMt6ol7Aok6K3CLsFXmOH3xsll9Vj0QXet+4VFe7GFG7mTd9b+
-         yTphTP2yXcCQMFHLa6aquS/FyE8ALZARICxx8B/WCLiYstjCv2CHrr63LoHLeFYbUmaW
-         E938nLEo2rW6Ov5iE3G6/Yq7RSz7cwLBetbljFSErGpxRwa8v82MyXTHVR3mxy8p6MfX
-         PoCJ3YfG5xCvTGKnEnDykNmh4WgNzaF7XVQftKMY7XaiGVlIFddWtPpO1M5MuIUwlEwb
-         TChQ==
-X-Gm-Message-State: AOAM53185ImkOCDEEav0HCjtqWSRyOI/lJXbFOdFQZFqFL6ZDkyhAZ/t
-        YMbGciydNbQ3dCk019SHO7DnfA==
-X-Google-Smtp-Source: ABdhPJwtlAzsfpKnWWZ+BUdUXjOYZfh0Ht45nhh4y3ukmKQ/VxVRY+e/gtZDfVyzHk0kEB7Zl9JCTQ==
-X-Received: by 2002:a05:6638:bcd:b0:314:9138:8344 with SMTP id g13-20020a0566380bcd00b0031491388344mr25620647jad.64.1646236151869;
-        Wed, 02 Mar 2022 07:49:11 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id p2-20020a92d682000000b002c291ae0e1bsm9724283iln.23.2022.03.02.07.49.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Mar 2022 07:49:11 -0800 (PST)
-Message-ID: <b4d057fd-cccc-571a-0941-061c6a26cbf0@ieee.org>
-Date:   Wed, 2 Mar 2022 09:49:10 -0600
+        Wed, 2 Mar 2022 10:49:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B968B369F1
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 07:48:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 290AEB82082
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:48:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC70EC340F2;
+        Wed,  2 Mar 2022 15:48:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646236127;
+        bh=jRx9Fwtkk7KstICJDkCl/JU8UwjeC0Xpe1Dxm4UwtqA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jcXsDEgZ+46Jzh2kikfnxwVfl3OTFREPLG1+nRtXhS8Wwhjs5ITyNVB/9+v6ORbp5
+         FWeWUb4ztf0xsgPyF5UG3ValcEpyx4SUMeB4DoG5AC9o5c86yyuftmrFxUxAEPI6dj
+         FC2WJrBlpPMcdQCQaanLzUrbyO7AmO0ZDPsKLTIqRnAikIvOCWB3rq9cgcyptJKnuO
+         AwckzEPx+LPtrCUQ4FqPIHL7EKV8JMQJzD9y7K33JIScNIY008x1zBL0EUJt6v/wPM
+         mMgaXV85jMExTJlK9mWsgyWPXwGp2veWtRSGTjvl9EVNdblaEl0fmRrJSz+qZ4kgAC
+         bwyUVN6mPyFgg==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: [PATCH 08/19] context_tracking: Take NMI eqs entrypoints over RCU
+Date:   Wed,  2 Mar 2022 16:47:59 +0100
+Message-Id: <20220302154810.42308-9-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220302154810.42308-1-frederic@kernel.org>
+References: <20220302154810.42308-1-frederic@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [greybus-dev] Re: [PATCH] staging: greybus: loopback: Fix Coding
- Style Error
-Content-Language: en-US
-To:     Ahamed Husni <ahamedhusni73@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     elder@kernel.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220217190722.44894-1-ahamedhusni73@gmail.com>
- <Yg6hcX6XK4Eu0KOR@kroah.com>
- <CAFjpAKqy908scQTRJPkMhEz8OyNiR3-N8XD2hiGa+VBLhUf0VA@mail.gmail.com>
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <CAFjpAKqy908scQTRJPkMhEz8OyNiR3-N8XD2hiGa+VBLhUf0VA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 10:52 PM, Ahamed Husni wrote:
-> Hi Greg,
-> 
-> On Fri, Feb 18, 2022 at 12:56 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->> Did you try to build this change?
-> 
-> I am a newbie kernel dev and trying to understand how things work.
-> I did not build this change by the time I sent you this, thinking this
-> is just a style change.
-> I should have tested the build. I am sorry.
-> 
-> Now I built the changes by setting the following configurations.
-> CONFIG_GREYBUS
-> CONFIG_STAGING
-> CONFIG_GREYBUS_LOOPBACK
-> 
-> My change introduces the following error.
-> ''''
-> drivers/staging/greybus/loopback.c:166:2: error: expected identifier
-> or ‘(’ before ‘do’
->    166 |  do {            \
->        |  ^~
-> ''''
-> I could not fix or find the reason for this error. Please guide me in
-> this regard.
+The RCU dynticks counter is going to be merged into the context tracking
+subsystem. Prepare with moving the NMI extended quiescent states
+entrypoints to context tracking. For now those are dumb redirection to
+existing RCU calls.
 
-You should understand that you cannot contribute to the Linux
-kernel if you don't understand details of the C language well.
-And you really must test your changes (certainly a build test)
-before you send them for review.
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc: Yu Liao<liaoyu15@huawei.com>
+Cc: Phil Auld <pauld@redhat.com>
+Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
+Cc: Alex Belits <abelits@marvell.com>
+---
+ Documentation/RCU/Design/Requirements/Requirements.rst |  2 +-
+ arch/Kconfig                                           |  2 +-
+ arch/arm64/kernel/entry-common.c                       |  8 ++++----
+ include/linux/context_tracking_irq.h                   |  4 ++++
+ include/linux/hardirq.h                                |  4 ++--
+ kernel/context_tracking.c                              | 10 ++++++++++
+ kernel/entry/common.c                                  |  4 ++--
+ kernel/extable.c                                       |  4 ++--
+ kernel/trace/trace.c                                   |  2 +-
+ 9 files changed, 27 insertions(+), 13 deletions(-)
 
-To answer your question, the macro you changed does not
-expand into code that is itself incorporated in an executable
-block.  The macro is used to generate entire functions in a
-unified way.
-
-					-Alex
-
-> 
-> Thanks,
-> Husni.
-> _______________________________________________
-> greybus-dev mailing list -- greybus-dev@lists.linaro.org
-> To unsubscribe send an email to greybus-dev-leave@lists.linaro.org
+diff --git a/Documentation/RCU/Design/Requirements/Requirements.rst b/Documentation/RCU/Design/Requirements/Requirements.rst
+index e3dd5d71c798..256cf260e864 100644
+--- a/Documentation/RCU/Design/Requirements/Requirements.rst
++++ b/Documentation/RCU/Design/Requirements/Requirements.rst
+@@ -1847,7 +1847,7 @@ normal interrupts. One way that this can happen is for code that
+ directly invokes ct_irq_enter() and ct_irq_exit() to be called
+ from an NMI handler. This astonishing fact of life prompted the current
+ code structure, which has ct_irq_enter() invoking
+-rcu_nmi_enter() and ct_irq_exit() invoking rcu_nmi_exit().
++ct_nmi_enter() and ct_irq_exit() invoking ct_nmi_exit().
+ And yes, I also learned of this requirement the hard way.
+ 
+ Loadable Modules
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 66b2b6d4717b..c22b8ca0eb01 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -785,7 +785,7 @@ config HAVE_CONTEXT_TRACKING_USER_OFFSTACK
+ 
+ 	  - Critical entry code isn't preemptible (or better yet:
+ 	    not interruptible).
+-	  - No use of RCU read side critical sections, unless rcu_nmi_enter()
++	  - No use of RCU read side critical sections, unless ct_nmi_enter()
+ 	    got called.
+ 	  - No use of instrumentation, unless instrumentation_begin() got
+ 	    called.
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index 43ca8cf4e1dd..6a1ea28731c8 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -158,7 +158,7 @@ static void noinstr arm64_enter_nmi(struct pt_regs *regs)
+ 	__nmi_enter();
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+ 	lockdep_hardirq_enter();
+-	rcu_nmi_enter();
++	ct_nmi_enter();
+ 
+ 	trace_hardirqs_off_finish();
+ 	ftrace_nmi_enter();
+@@ -179,7 +179,7 @@ static void noinstr arm64_exit_nmi(struct pt_regs *regs)
+ 		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+ 	}
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	lockdep_hardirq_exit();
+ 	if (restore)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+@@ -196,7 +196,7 @@ static void noinstr arm64_enter_el1_dbg(struct pt_regs *regs)
+ 	regs->lockdep_hardirqs = lockdep_hardirqs_enabled();
+ 
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+-	rcu_nmi_enter();
++	ct_nmi_enter();
+ 
+ 	trace_hardirqs_off_finish();
+ }
+@@ -215,7 +215,7 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
+ 		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+ 	}
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	if (restore)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+ }
+diff --git a/include/linux/context_tracking_irq.h b/include/linux/context_tracking_irq.h
+index 60e3ed15a04e..11043bf724b7 100644
+--- a/include/linux/context_tracking_irq.h
++++ b/include/linux/context_tracking_irq.h
+@@ -7,11 +7,15 @@ void ct_irq_enter(void);
+ void ct_irq_exit(void);
+ void ct_irq_enter_irqson(void);
+ void ct_irq_exit_irqson(void);
++void ct_nmi_enter(void);
++void ct_nmi_exit(void);
+ #else
+ static inline void ct_irq_enter(void) { }
+ static inline void ct_irq_exit(void) { }
+ static inline void ct_irq_enter_irqson(void) { }
+ static inline void ct_irq_exit_irqson(void) { }
++static inline void ct_nmi_enter(void) { }
++static inline void ct_nmi_exit(void) { }
+ #endif
+ 
+ #endif
+diff --git a/include/linux/hardirq.h b/include/linux/hardirq.h
+index 76878b357ffa..345cdbe9c1b7 100644
+--- a/include/linux/hardirq.h
++++ b/include/linux/hardirq.h
+@@ -124,7 +124,7 @@ extern void rcu_nmi_exit(void);
+ 	do {							\
+ 		__nmi_enter();					\
+ 		lockdep_hardirq_enter();			\
+-		rcu_nmi_enter();				\
++		ct_nmi_enter();				\
+ 		instrumentation_begin();			\
+ 		ftrace_nmi_enter();				\
+ 		instrumentation_end();				\
+@@ -143,7 +143,7 @@ extern void rcu_nmi_exit(void);
+ 		instrumentation_begin();			\
+ 		ftrace_nmi_exit();				\
+ 		instrumentation_end();				\
+-		rcu_nmi_exit();					\
++		ct_nmi_exit();					\
+ 		lockdep_hardirq_exit();				\
+ 		__nmi_exit();					\
+ 	} while (0)
+diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
+index b63ff851472e..1686cd528966 100644
+--- a/kernel/context_tracking.c
++++ b/kernel/context_tracking.c
+@@ -267,3 +267,13 @@ void ct_irq_exit_irqson(void)
+ {
+ 	rcu_irq_exit_irqson();
+ }
++
++noinstr void ct_nmi_enter(void)
++{
++	rcu_nmi_enter();
++}
++
++noinstr void ct_nmi_exit(void)
++{
++	rcu_nmi_exit();
++}
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index cebc98b8adc6..08230507793f 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -449,7 +449,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
+ 	__nmi_enter();
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+ 	lockdep_hardirq_enter();
+-	rcu_nmi_enter();
++	ct_nmi_enter();
+ 
+ 	instrumentation_begin();
+ 	trace_hardirqs_off_finish();
+@@ -469,7 +469,7 @@ void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
+ 	}
+ 	instrumentation_end();
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	lockdep_hardirq_exit();
+ 	if (irq_state.lockdep)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+diff --git a/kernel/extable.c b/kernel/extable.c
+index b6f330f0fe74..88d4d739c5a1 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -113,7 +113,7 @@ int kernel_text_address(unsigned long addr)
+ 
+ 	/* Treat this like an NMI as it can happen anywhere */
+ 	if (no_rcu)
+-		rcu_nmi_enter();
++		ct_nmi_enter();
+ 
+ 	if (is_module_text_address(addr))
+ 		goto out;
+@@ -126,7 +126,7 @@ int kernel_text_address(unsigned long addr)
+ 	ret = 0;
+ out:
+ 	if (no_rcu)
+-		rcu_nmi_exit();
++		ct_nmi_exit();
+ 
+ 	return ret;
+ }
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 7c500c708180..9434da82af8a 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3086,7 +3086,7 @@ void __trace_stack(struct trace_array *tr, unsigned int trace_ctx,
+ 	}
+ 
+ 	/*
+-	 * When an NMI triggers, RCU is enabled via rcu_nmi_enter(),
++	 * When an NMI triggers, RCU is enabled via ct_nmi_enter(),
+ 	 * but if the above rcu_is_watching() failed, then the NMI
+ 	 * triggered someplace critical, and ct_irq_enter() should
+ 	 * not be called from NMI.
+-- 
+2.25.1
 
