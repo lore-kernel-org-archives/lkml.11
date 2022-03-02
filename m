@@ -2,133 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4737C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243759AbiCBRTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:19:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
+        id S243765AbiCBRXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243764AbiCBRTa (ORCPT
+        with ESMTP id S233163AbiCBRXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:19:30 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78338CCC6E;
-        Wed,  2 Mar 2022 09:18:44 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id gj15-20020a17090b108f00b001bef86c67c1so2263518pjb.3;
-        Wed, 02 Mar 2022 09:18:44 -0800 (PST)
+        Wed, 2 Mar 2022 12:23:40 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C217E4BBAB
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:22:55 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id bx5so2359387pjb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:22:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gLz+dn3sEqx6HUS+1nLd4ttPK5v9DscXSXbYEOAfAtM=;
-        b=GdqgcQdzmBwJL9T5mPH7O9UBvQvH+jpyaIWKT/0WxFiLppgbDQrdxKGa42ERl5uR6l
-         RIuXRcB8hf9MFxbqOd7I7q5UiVgIjAdlgzpJEAWUYa4sz/MUWzWboQhty1USWTMY2ERF
-         9x74dw0HtR5vfKnxxqz/rX96GGONM5Bb8hhQAKryXuQQxItfx+35KgZ43u6cgjyb9St3
-         TO/QZGUMY0Oi5V9g0h3Gs4IItw3CwsWhd+lOwAp8kqQSbj8vwl916k4VG5bgb3up0mL7
-         yNGyglq4SCkbWXIIVrMMRtX3oNJIVjn5prT/C92LOlwgOdP61Igwi4siWNNHMVl7fSas
-         p0RQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Jklf8XPuym2PP8A66P9TwV3A0pOKZ2tfA0gEcqm6VHU=;
+        b=JCnfVceXbb7gtnysgddHpYe+fZSK1mwYXlQ9n8cgZmLcjIvEAEax475FB2bAKmLvYm
+         7ld6i+2lkqVHygprODVZpZg8RaTihov8S5A6HJUnOQDHQbaNjlObmzqxVIHLLCG1PsMh
+         7MUw6VDSYcUG2Hrs3gkHPqu3r6RslxC4gm+UOIy+ItO1o5s8loyFtrIn3Lhno9r8AIa0
+         H8jY0REOsHbJF8dBleSo9CLHklTHHv+lpWzoC2YtNjG2t9Y1zjyn5SEwR+50l676Z5Gf
+         E8iZkOnZbtV/P0PbHahihueRwEWd4PwK+PCzcCTvi2KFjLZx4QxHaw4elUwYxwbnjiyt
+         zmUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gLz+dn3sEqx6HUS+1nLd4ttPK5v9DscXSXbYEOAfAtM=;
-        b=nyQ6/yPskVln+deeitRblepCBusq0n2sqc5C38GN0bJOnc7TwxNTR2SEfXVhCjiXJU
-         5hBo11ccNqzOfrncXo15pi1w+pQVmSYg0NXZS9odJ/RRfb3p7UHI13mXmJHnotR1gDHy
-         HRu+I/g0J06ph8O04V84GxjTBxjWIAmglopon6Eum8/6Hf0StU3pNahi7K8Xnat2rm9W
-         71Q4X3VVRa/8e3pqlSTp3H6fWtRjGLoOJbXftyNhgsCpBIFbcuCh9Orm2V0rS5udrNwF
-         d0PoqTgwqBguDesjIH804u8k6pGojY+7BcecMFwIRVxX6Ty0c4eDMOAAS+1MzAHSiqBU
-         O6wA==
-X-Gm-Message-State: AOAM531cz+waoafqomNXMv1NgiIp1vjmlHPCSEs2v77NG686A9v+js1r
-        0na9m0cvRTjXPi9QnqG/wNHKwmzyZkCqlF63
-X-Google-Smtp-Source: ABdhPJyg+01RxgPCsirAMYtoF8etJupvDy3nF7hxoKHMwqsW73bcl/n6nLrHEySpG6rDkqDIT7XPsw==
-X-Received: by 2002:a17:902:cec9:b0:151:9b2c:338 with SMTP id d9-20020a170902cec900b001519b2c0338mr2823044plg.164.1646241523931;
-        Wed, 02 Mar 2022 09:18:43 -0800 (PST)
-Received: from kvigor-fedora-PF399REY.thefacebook.com ([2620:10d:c090:400::5:d6ec])
-        by smtp.gmail.com with ESMTPSA id c63-20020a624e42000000b004f414f0a391sm10339965pfb.79.2022.03.02.09.18.42
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Jklf8XPuym2PP8A66P9TwV3A0pOKZ2tfA0gEcqm6VHU=;
+        b=P7SPweHoN+1djW81gyLXapyS/8fGbHIbb92kARFVQV15nFosQ9f576ng+cZ+1Gg4lp
+         O+mZLmQoFrU9PiMRNXUxtICrrOGRVmgkQmKw02NwfSjfHg9mpGA7b/luUSdxcxvjXMiM
+         AXzr6U2xD1B9MNbtW0bt34V0XHEtU5+4G1VupaUrE+ZmnKPkirDiVRoNrsCr23jQ+i8f
+         PMbveqHDXP1LcA7Lb10gYVDWzC3fL3y5loT5pxaRRgkJGgYOg4lgXRAE28BXtajaKfmI
+         QLu6nSVS0x9GMpkJvzEkriFEzp6YbxrF1JiGciChMbqtD9/d8KJMYph1HBQOtvh2nZlz
+         esAA==
+X-Gm-Message-State: AOAM531WmwDLmt9NoW7bi6Xh4Lb0NX3N9HTEIq3BCSQYyErzw8Q+Q0hy
+        f0ubSe/AAy7KanmbIjlqr4g=
+X-Google-Smtp-Source: ABdhPJzhAaDYo23YzK1/SpdmOHYrat1lErBtR/w0fcviW8SQM2/DBGIsAiPQFsF/IgQn1wI6MMu4kg==
+X-Received: by 2002:a17:90a:528b:b0:1bc:c5f9:82a with SMTP id w11-20020a17090a528b00b001bcc5f9082amr852446pjh.210.1646241774169;
+        Wed, 02 Mar 2022 09:22:54 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+        by smtp.gmail.com with ESMTPSA id a19-20020a17090ad81300b001bc447c2c91sm5661748pjv.31.2022.03.02.09.22.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 09:18:43 -0800 (PST)
-From:   Kevin Vigor <kvigor@gmail.com>
-To:     miklos@szeredi.hu
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kevin Vigor <kvigor@gmail.com>
-Subject: [RFC PATCH 1/1] FUSE: Add FUSE_TRUST_MAX_RA flag enabling readahead settings >128KB.
-Date:   Wed,  2 Mar 2022 10:18:16 -0700
-Message-Id: <20220302171816.1170782-2-kvigor@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220302171816.1170782-1-kvigor@gmail.com>
-References: <20220302171816.1170782-1-kvigor@gmail.com>
+        Wed, 02 Mar 2022 09:22:53 -0800 (PST)
+Date:   Wed, 2 Mar 2022 17:22:48 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Faiyaz Mohammed <faiyazm@codeaurora.org>
+Subject: Re: [PATCH 2/5] mm/slub: use stackdepot to save stack trace in
+ objects
+Message-ID: <Yh+n6MmSkjYM43iQ@ip-172-31-19-208.ap-northeast-1.compute.internal>
+References: <20220225180318.20594-1-vbabka@suse.cz>
+ <20220225180318.20594-3-vbabka@suse.cz>
+ <YhtH5o2+7r85THg1@ip-172-31-19-208.ap-northeast-1.compute.internal>
+ <4b6e9dbb-ba3e-f33c-956e-07b5f81deee8@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b6e9dbb-ba3e-f33c-956e-07b5f81deee8@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The existing process_init_reply() in fs/fuse/inode.c sets the ra_pages
-value to the minimum of the max_readahead value provided by the user
-and the pre-existing ra_pages value, which is initialized to
-VM_READAHEAD_PAGES. This makes it impossible to increase the readahead
-value to larger values.
+On Wed, Mar 02, 2022 at 05:51:32PM +0100, Vlastimil Babka wrote:
+> On 2/27/22 10:44, Hyeonggon Yoo wrote:
+> > On Fri, Feb 25, 2022 at 07:03:15PM +0100, Vlastimil Babka wrote:
+> >> From: Oliver Glitta <glittao@gmail.com>
+> >> 
+> >> Many stack traces are similar so there are many similar arrays.
+> >> Stackdepot saves each unique stack only once.
+> >>
+> >> Replace field addrs in struct track with depot_stack_handle_t handle.  Use
+> >> stackdepot to save stack trace.
+> >>
+> > 
+> > I think it's not a replacement?
+> 
+> It is, for the array 'addrs':
+> 
+> -#ifdef CONFIG_STACKTRACE
+> -	unsigned long addrs[TRACK_ADDRS_COUNT];	/* Called from address */
+> +#ifdef CONFIG_STACKDEPOT
+> +	depot_stack_handle_t handle;
+> 
+> Not confuse with 'addr' which is the immediate caller and indeed stays
+> for redundancy/kernels without stack trace enabled.
+>
 
-Add a new flag which causes us to blindly accept the user-provided
-value. Note that the existing read_ahead_kb sysfs entry for normal
-block devices does the same (simply accepts user-provided values
-directly with no checks).
+Oh, my fault. Right. I was confused.
+I should read it again.
 
-Signed-off-by: Kevin Vigor <kvigor@gmail.com>
----
- fs/fuse/inode.c           | 8 ++++++--
- include/uapi/linux/fuse.h | 3 +++
- 2 files changed, 9 insertions(+), 2 deletions(-)
+> >> The benefits are smaller memory overhead and possibility to aggregate
+> >> per-cache statistics in the following patch using the stackdepot handle
+> >> instead of matching stacks manually.
+> >> 
+> >> [ vbabka@suse.cz: rebase to 5.17-rc1 and adjust accordingly ]
+> >> 
+> >> This was initially merged as commit 788691464c29 and reverted by commit
+> >> ae14c63a9f20 due to several issues, that should now be fixed.
+> >> The problem of unconditional memory overhead by stackdepot has been
+> >> addressed by commit 2dba5eb1c73b ("lib/stackdepot: allow optional init
+> >> and stack_table allocation by kvmalloc()"), so the dependency on
+> >> stackdepot will result in extra memory usage only when a slab cache
+> >> tracking is actually enabled, and not for all CONFIG_SLUB_DEBUG builds.
+> >> The build failures on some architectures were also addressed, and the
+> >> reported issue with xfs/433 test did not reproduce on 5.17-rc1 with this
+> >> patch.
+> > 
+> > This is just an idea and beyond this patch.
+> > 
+> > After this patch, now we have external storage that records stack traces.
+> 
+> Well, we had it before this patch too.
+>
+> > It's possible that some rare stack traces are in stack depot, but
+> > not reachable because track is overwritten.
+> 
+> Yes.
+> 
+> > I think it's worth implementing a way to iterate through stacks in stack depot?
+> 
+> The question is for what use case? We might even not know who stored
+> them - could have been page_owner, or other stack depot users.
 
-diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
-index 8b89e3ba7df3..81c96c404a76 100644
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -1182,8 +1182,12 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
- 			fc->no_flock = 1;
- 		}
- 
--		fm->sb->s_bdi->ra_pages =
-+		if (arg->flags & FUSE_TRUST_MAX_RA) {
-+			fm->sb->s_bdi->ra_pages = ra_pages;
-+		} else {
-+			fm->sb->s_bdi->ra_pages =
- 				min(fm->sb->s_bdi->ra_pages, ra_pages);
-+		}
- 		fc->minor = arg->minor;
- 		fc->max_write = arg->minor < 5 ? 4096 : arg->max_write;
- 		fc->max_write = max_t(unsigned, 4096, fc->max_write);
-@@ -1219,7 +1223,7 @@ void fuse_send_init(struct fuse_mount *fm)
- 		FUSE_PARALLEL_DIROPS | FUSE_HANDLE_KILLPRIV | FUSE_POSIX_ACL |
- 		FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
- 		FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
--		FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT;
-+		FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_TRUST_MAX_RA;
- #ifdef CONFIG_FUSE_DAX
- 	if (fm->fc->dax)
- 		ia->in.flags |= FUSE_MAP_ALIGNMENT;
-diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
-index a1dc3ee1d17c..df9840f4642f 100644
---- a/include/uapi/linux/fuse.h
-+++ b/include/uapi/linux/fuse.h
-@@ -341,6 +341,8 @@ struct fuse_file_lock {
-  *			write/truncate sgid is killed only if file has group
-  *			execute permission. (Same as Linux VFS behavior).
-  * FUSE_SETXATTR_EXT:	Server supports extended struct fuse_setxattr_in
-+ * FUSE_TRUST_MAX_RA:	Accept the user-provided max_readahead value instead
-+ *			of clamping to <= VM_READAHEAD_PAGES.
-  */
- #define FUSE_ASYNC_READ		(1 << 0)
- #define FUSE_POSIX_LOCKS	(1 << 1)
-@@ -372,6 +374,7 @@ struct fuse_file_lock {
- #define FUSE_SUBMOUNTS		(1 << 27)
- #define FUSE_HANDLE_KILLPRIV_V2	(1 << 28)
- #define FUSE_SETXATTR_EXT	(1 << 29)
-+#define FUSE_TRUST_MAX_RA	(1 << 30)
- 
- /**
-  * CUSE INIT request/reply flags
+> But the point is usually not to learn about all existing traces, but to
+> determine which ones cause an object lifetime bug, or memory leak.
+
+Yeah, this is exactly what I misunderstood.
+I thought purpose of free_traces is to show all existing traces.
+But I realized today that free trace without alloc trace is not useful.
+
+I'll review v2 with these in mind.
+Thank you.
+
+> >> 
+> >> Signed-off-by: Oliver Glitta <glittao@gmail.com>
+> >> Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+> >> Cc: David Rientjes <rientjes@google.com>
+> >> Cc: Christoph Lameter <cl@linux.com>
+> >> Cc: Pekka Enberg <penberg@kernel.org>
+> >> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+> > 
+> 
+
 -- 
-2.33.1
-
+Thank you, You are awesome!
+Hyeonggon :-)
