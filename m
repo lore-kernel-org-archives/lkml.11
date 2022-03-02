@@ -2,89 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80974C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB69C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244311AbiCBUsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
+        id S244310AbiCBUsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:48:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbiCBUsj (ORCPT
+        with ESMTP id S244354AbiCBUss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:48:39 -0500
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EA13BBC8;
-        Wed,  2 Mar 2022 12:47:54 -0800 (PST)
-Received: by mail-pl1-f180.google.com with SMTP id s1so2595496plg.12;
-        Wed, 02 Mar 2022 12:47:54 -0800 (PST)
+        Wed, 2 Mar 2022 15:48:48 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52743FBC7
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:48:03 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id ge19-20020a17090b0e1300b001bcca16e2e7so5847406pjb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:48:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eoKQqCbI8PxL6l9piEDwf9eS8EFbrh6cCOCe/ltlwc4=;
+        b=ASeGJrfLRf/uRKaUvdh8TJg8raWbVzeyEUkn4pekIqzqxSAXb/GNo5doCQv013EQiA
+         Wd3ZjFZ5fKmPdd5sr8m8IUU3yWd2ci13b9omZL6ugqsdjz97AHAD+lEp/UQeddhywZmp
+         yR1CPpQXKzLYxO6zdAag+spSYMLJvZg8ecQtTUqk2/3ceIwdIwkkL2EBY1WePGmd37hP
+         KxKM/wxUY80ySGPxgYxPDoadheG92qG0iunt/EUR3oUNpQHFTJBVksuj0XgmxkuAuOYA
+         Gi91nHAtBmtvVOgR+j/zFsmoRcQcEsou4GfrSSytvOY6/N3d1Pz4Vy940W9bCYc7lI0x
+         yeBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/8RzJI/cV5QLUaK7OFWN4qtubroSrlMbLOdRPpIyWFQ=;
-        b=U/benTwITi48kAs3XKBcYSLSExoN8Ti8b3oerB4sNOEr5ZeQZdpPYq0Rrlaw7cCIj0
-         LD0TIlUc2wGkBZFbWkzgxPcXsCcdt0l8CY0rWDx5DFjhnGhXj9Mt3Oa7zUMDD60pdJEy
-         FjY79a4tuMcVonDlpVyuTL1hQwPDw+lxbkOq/qAwIR18szKUgISbxAOfjqaHiQhobHdJ
-         mtIhJ17xyApwbDD2Sbngxv9XfRXHTPQYqNEOBUNiAbivGAfjlA/QSeQ2+d7WPj9+LKM+
-         dzc1TiIQLCevnCs55moywtVG4dXNxoenS7Y9ya6ctuoyf5lvUQ8JkmxcyL4uWFtYOSOE
-         kVzg==
-X-Gm-Message-State: AOAM530sVtdmUce82nO9KGXyPSuefxN8Kat4tGtRuUnQ4/xYL8qrhRiQ
-        yYNUrFLOyWRRre5GmURxYhI=
-X-Google-Smtp-Source: ABdhPJxmupNHujhiGV8P8/41cjzWqCEh3zk4qKmxMoCyV6RrPawt20cUfWrygRx3Lca72CdYHeMo9Q==
-X-Received: by 2002:a17:903:248:b0:14f:139f:191f with SMTP id j8-20020a170903024800b0014f139f191fmr32545625plh.71.1646254074201;
-        Wed, 02 Mar 2022 12:47:54 -0800 (PST)
-Received: from garbanzo (136-24-173-63.cab.webpass.net. [136.24.173.63])
-        by smtp.gmail.com with ESMTPSA id lr11-20020a17090b4b8b00b001bc4098fa78sm6483516pjb.24.2022.03.02.12.47.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eoKQqCbI8PxL6l9piEDwf9eS8EFbrh6cCOCe/ltlwc4=;
+        b=czZC8Lq2MykcSm057VcpUkrSV1WVnB/f9upvR1MzfSVj6Wx2NjHioBgw7TdVDraOlx
+         WmhPoFVJdDlp0YUDbg4gEvh7NIBpWygUZL1B/ff7kbv+/oiZs6ghvlgXI1LUNiNOOVSM
+         3Q5WmWYYEcma/+94Fy1uhKg7+lm1qQRMFYBjPblC0ESc3y52Q4iWR7ZpHOsDIJrIq/JC
+         daYDlXvb8kvo4pJ6A6PazU9wu4LRh5nZhml/IV5uuRQOTx5ymf2qMVfmDswZMhvShvkw
+         leyB7nifB3WmpLiCla3KOxuCGsZQDNU9eOt7gqhjN4q5eGlHwVdE8iUCQky0jWhOvvtE
+         O7Dw==
+X-Gm-Message-State: AOAM533OSaEbGd6+hW8ICzR/Hwjz2KNw2J964jNjduzd3+lVQE3ItnYc
+        qK7HEdtoR3s0Hd4z8+/7Ntc=
+X-Google-Smtp-Source: ABdhPJwc8llIZdxMOho86N5zl7n2dsqX/toWP1I4HBVNCQHLPvrwfS5Xz8R4VJlL5puQky/fDmxwMg==
+X-Received: by 2002:a17:903:2284:b0:151:9670:9012 with SMTP id b4-20020a170903228400b0015196709012mr5002543plh.110.1646254083196;
+        Wed, 02 Mar 2022 12:48:03 -0800 (PST)
+Received: from localhost.localdomain ([103.161.98.179])
+        by smtp.gmail.com with ESMTPSA id bh11-20020a056a00308b00b004f40144cf76sm50905pfb.142.2022.03.02.12.48.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:47:53 -0800 (PST)
-Date:   Wed, 2 Mar 2022 12:47:50 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     "hch@infradead.org" <hch@infradead.org>
-Cc:     Damien Le Moal <Damien.LeMoal@wdc.com>,
-        Kanchan Joshi <joshiiitr@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Kanchan Joshi <joshi.k@samsung.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "bcrl@kvack.org" <bcrl@kvack.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        SelvaKumar S <selvakuma.s1@samsung.com>,
-        Nitesh Shetty <nj.shetty@samsung.com>,
-        Javier Gonzalez <javier.gonz@samsung.com>,
-        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        Naohiro Aota <Naohiro.Aota@wdc.com>,
-        Adam Manzanares <a.manzanares@samsung.com>,
-        "Remzi H. Arpaci-Dusseau" <remzi@cs.wisc.edu>
-Subject: Re: [PATCH v4 6/6] io_uring: add support for zone-append
-Message-ID: <20220302204750.e3vt3w5uggd35x3a@garbanzo>
-References: <20200731064526.GA25674@infradead.org>
- <MWHPR04MB37581344328A42EA7F5ED13EE74E0@MWHPR04MB3758.namprd04.prod.outlook.com>
- <CA+1E3rLM4G4SwzD6RWsK6Ssp7NmhiPedZDjrqN3kORQr9fxCtw@mail.gmail.com>
- <MWHPR04MB375863C20C1EF2CB27E62703E74E0@MWHPR04MB3758.namprd04.prod.outlook.com>
- <20200731091416.GA29634@infradead.org>
- <MWHPR04MB37586D39CA389296CE0252A4E74E0@MWHPR04MB3758.namprd04.prod.outlook.com>
- <20200731094135.GA4104@infradead.org>
- <MWHPR04MB3758A4B2967DB1FABAAD9265E74E0@MWHPR04MB3758.namprd04.prod.outlook.com>
- <20200731125110.GA11500@infradead.org>
- <20200731130802.GA16665@infradead.org>
+        Wed, 02 Mar 2022 12:48:02 -0800 (PST)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH 00/16] staging: r8188eu: convert functions to return bool
+Date:   Thu,  3 Mar 2022 02:17:21 +0530
+Message-Id: <20220302204737.49056-1-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200731130802.GA16665@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 31, 2020 at 02:08:02PM +0100, hch@infradead.org wrote:
-> And FYI, this is what I'd do for a hacky aio-only prototype (untested):
+There are many functions which return true/false but are marked as int, 
+uint, s32 etc. Mark them as bool.
 
-So... are we OK with an aio-only approach (instead of using io-uring)
-for raw access to append?
+Vihas Makwana (16):
+  staging: r8188eu: mark rtw_is_cckrates_included as bool
+  staging: r8188eu: mark rtw_is_cckratesonly_included as bool
+  staging: r8188eu: mark rtw_is_desired_network as bool
+  staging: r8188eu: mark PS_RDY_CHECK as bool
+  staging: r8188eu: mark check_indicate_seq as bool
+  staging: r8188eu: mark enqueue_reorder_recvframe as bool
+  staging: r8188eu: mark recv_indicatepkts_in_order as bool
+  staging: r8188eu: mark cckrates_included as bool
+  staging: r8188eu: mark cckratesonly_included as bool
+  staging: r8188eu: mark is_basicrate as bool
+  staging: r8188eu: mark is_ap_in_tkip as bool
+  staging: r8188eu: mark rtl8188eu_xmitframe_complete as bool
+  staging: r8188eu: mark check_fwstate as bool
+  staging: r8188eu: mark IS_MCAST as bool
+  staging: r8188eu: mark IsFrameTypeCtrl as bool
+  staging: r8188eu: mark rtw_endofpktfile as bool
 
-  Luis
+ drivers/staging/r8188eu/core/rtw_ieee80211.c    | 4 ++--
+ drivers/staging/r8188eu/core/rtw_mlme.c         | 2 +-
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c      | 2 +-
+ drivers/staging/r8188eu/core/rtw_recv.c         | 7 +++----
+ drivers/staging/r8188eu/core/rtw_wlan_util.c    | 8 ++++----
+ drivers/staging/r8188eu/hal/rtl8188eu_xmit.c    | 2 +-
+ drivers/staging/r8188eu/include/ieee80211.h     | 4 ++--
+ drivers/staging/r8188eu/include/rtl8188e_xmit.h | 2 +-
+ drivers/staging/r8188eu/include/rtw_mlme.h      | 2 +-
+ drivers/staging/r8188eu/include/rtw_mlme_ext.h  | 6 +++---
+ drivers/staging/r8188eu/include/wifi.h          | 4 ++--
+ drivers/staging/r8188eu/include/xmit_osdep.h    | 2 +-
+ drivers/staging/r8188eu/os_dep/xmit_linux.c     | 2 +-
+ 13 files changed, 23 insertions(+), 24 deletions(-)
+
+-- 
+2.30.2
+
