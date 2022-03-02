@@ -2,142 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3817C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240228AbiCBLPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:15:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
+        id S241487AbiCBLQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:16:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241384AbiCBLPN (ORCPT
+        with ESMTP id S241344AbiCBLPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:15:13 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A80D60A8B;
-        Wed,  2 Mar 2022 03:14:15 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id z2so1264879plg.8;
-        Wed, 02 Mar 2022 03:14:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LB2Rb6jDVG8ESI9lXPQQ7RDtAAcoqVgAAU8pFuQ40Os=;
-        b=mL0ZvY02MjrP36BHSwyl3J021AubY9TqUCofuH/2SptWX5ARfBr9gOASAsUnoI4UxB
-         l6VXN4dH5oVt8zdJdmtNvTP3fTJOJyOiGWfXZhAF8khtCWLMQ5RUq+EIeU1LyEPOZ6Lr
-         QNwDo2NgTGHhwEuoZKAHTO3FBh/KVPZ2FlG+yp+Bldb11+IRb8fAr5coRAMDHKdgBLHj
-         MHf2zvSl3qxvpthSnYxjul17y1yT2RMVV7wXlGx+cgB/9y27jHqtb/s3ob6CGs45ENxc
-         s86Yi57QikZgOXkfpsvEblpdiD25oPVJ4efasKccvp7UWVyZwFXWCQf+wmfQxBps/biw
-         LeDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LB2Rb6jDVG8ESI9lXPQQ7RDtAAcoqVgAAU8pFuQ40Os=;
-        b=wjOWzQy7s724eKqp9QRehZwshPd8QUZLKPFIlYHm+KH5QbQRBLJYQW88exiVWDy8nc
-         HHqboFp4qz+t/KPYXXl0yt0kcIsSq+TAyg+1Un0f/yl547LwQ5RKLH3QkjH/a3kGYgOQ
-         J0+dvLzIPydXlJgMCCr3wRH2Ic5xbKAr30vVC349NtPVyEs1OnQOti/mdnpDw3g1S5Ih
-         AB1Zg9/aphfd8+HRLH0LsFcqUvdg7ZN9qMpY+xPe3sjJX+7ZdRD/oz8f+sVnKsr0ns2s
-         N58brGyQNcdHylhyiMOcIkZydYJFZzuoVc5qrewTQTCFlD2DYeAvQ5WmCXzCfATjeY3B
-         n7xQ==
-X-Gm-Message-State: AOAM530KdRTqjEiQX7OL7zab51/bM9MQp7O2tcBHJl0HHeYWkR1w2bbx
-        cP4xaJtwOq2bmdZd1gwjc/I=
-X-Google-Smtp-Source: ABdhPJzgFSeWc9NS1kv85YFdX7GTdFf0FkqSaD2vPuTuSTkry9Xu8BmSkbBg1IA8PfXMKxwH6aofww==
-X-Received: by 2002:a17:902:b582:b0:14c:a63d:3df6 with SMTP id a2-20020a170902b58200b0014ca63d3df6mr30212293pls.51.1646219654889;
-        Wed, 02 Mar 2022 03:14:14 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id v22-20020a17090ad59600b001b7deb42251sm4681847pju.15.2022.03.02.03.14.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 03:14:14 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        Like Xu <likexu@tencent.com>
-Subject: [PATCH v2 12/12] KVM: x86/pmu: Clear reserved bit PERF_CTL2[43] for AMD erratum 1292
-Date:   Wed,  2 Mar 2022 19:13:34 +0800
-Message-Id: <20220302111334.12689-13-likexu@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220302111334.12689-1-likexu@tencent.com>
-References: <20220302111334.12689-1-likexu@tencent.com>
+        Wed, 2 Mar 2022 06:15:52 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F4060DAF;
+        Wed,  2 Mar 2022 03:14:35 -0800 (PST)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K7s1K3cK2z67NJM;
+        Wed,  2 Mar 2022 19:13:25 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Mar 2022 12:14:32 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <revest@chromium.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-integrity@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v3 2/9] ima: Always return a file measurement in ima_file_hash()
+Date:   Wed, 2 Mar 2022 12:13:57 +0100
+Message-ID: <20220302111404.193900-3-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220302111404.193900-1-roberto.sassu@huawei.com>
+References: <20220302111404.193900-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+__ima_inode_hash() checks if a digest has been already calculated by
+looking for the integrity_iint_cache structure associated to the passed
+inode.
 
-The AMD Family 19h Models 00h-0Fh Processors may experience sampling
-inaccuracies that cause the following performance counters to overcount
-retire-based events. To count the non-FP affected PMC events correctly,
-a patched guest with a target vCPU model would:
+Users of ima_file_hash() (e.g. eBPF) might be interested in obtaining the
+information without having to setup an IMA policy so that the digest is
+always available at the time they call this function.
 
-    - Use Core::X86::Msr::PERF_CTL2 to count the events, and
-    - Program Core::X86::Msr::PERF_CTL2[43] to 1b, and
-    - Program Core::X86::Msr::PERF_CTL2[20] to 0b.
+In addition, they likely expect the digest to be fresh, e.g. recalculated
+by IMA after a file write. Although getting the digest from the
+bprm_committed_creds hook (as in the eBPF test) ensures that the digest is
+fresh, as the IMA hook is executed before that hook, this is not always the
+case (e.g. for the mmap_file hook).
 
-To support this use of AMD guests, KVM should not reserve bit 43
-only for counter #2. Treatment of other cases remains unchanged.
+Call ima_collect_measurement() in __ima_inode_hash(), if the file
+descriptor is available (passed by ima_file_hash()) and the digest is not
+available/not fresh, and store the file measurement in a temporary
+integrity_iint_cache structure.
 
-AMD hardware team clarified that the conditions under which the
-overcounting can happen, is quite rare. This change may make those
-PMU driver developers who have read errata #1292 less disappointed.
+This change does not cause memory usage increase, due to using the
+temporary integrity_iint_cache structure, and due to freeing the
+ima_digest_data structure inside integrity_iint_cache before exiting from
+__ima_inode_hash().
 
-Reported-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
+For compatibility reasons, the behavior of ima_inode_hash() remains
+unchanged.
+
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- arch/x86/kvm/svm/pmu.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ security/integrity/ima/ima_main.c | 46 ++++++++++++++++++++++---------
+ 1 file changed, 33 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index 41c9b9e2aec2..05b4e4f2bb66 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -18,6 +18,20 @@
- #include "pmu.h"
- #include "svm.h"
+diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+index 946ba8a12eab..ed1a82f1def3 100644
+--- a/security/integrity/ima/ima_main.c
++++ b/security/integrity/ima/ima_main.c
+@@ -520,20 +520,38 @@ int ima_file_check(struct file *file, int mask)
+ }
+ EXPORT_SYMBOL_GPL(ima_file_check);
  
-+/*
-+ * As a workaround of "Retire Based Events May Overcount" for erratum 1292,
-+ * some patched guests may set PERF_CTL2[43] to 1b and PERF_CTL2[20] to 0b
-+ * to count the non-FP affected PMC events correctly.
-+ *
-+ * Note, tests show that the counter difference before and after using the
-+ * workaround is not significant. Host will be scheduling CTR2 indiscriminately.
-+ */
-+static inline bool vcpu_overcount_retire_events(struct kvm_vcpu *vcpu)
-+{
-+	return guest_cpuid_family(vcpu) == 0x19 &&
-+		guest_cpuid_model(vcpu) < 0x10;
-+}
+-static int __ima_inode_hash(struct inode *inode, char *buf, size_t buf_size)
++static int __ima_inode_hash(struct inode *inode, struct file *file, char *buf,
++			    size_t buf_size)
+ {
+-	struct integrity_iint_cache *iint;
+-	int hash_algo;
++	struct integrity_iint_cache *iint = NULL, tmp_iint;
++	int rc, hash_algo;
+ 
+-	if (!ima_policy_flag)
+-		return -EOPNOTSUPP;
++	if (ima_policy_flag) {
++		iint = integrity_iint_find(inode);
++		if (iint)
++			mutex_lock(&iint->mutex);
++	}
 +
- enum pmu_type {
- 	PMU_TYPE_COUNTER = 0,
- 	PMU_TYPE_EVNTSEL,
-@@ -224,6 +238,7 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	struct kvm_pmc *pmc;
- 	u32 msr = msr_info->index;
- 	u64 data = msr_info->data;
-+	u64 reserved_bits;
++	if ((!iint || !(iint->flags & IMA_COLLECTED)) && file) {
++		if (iint)
++			mutex_unlock(&iint->mutex);
++
++		memset(&tmp_iint, 0, sizeof(tmp_iint));
++		tmp_iint.inode = inode;
++		mutex_init(&tmp_iint.mutex);
++
++		rc = ima_collect_measurement(&tmp_iint, file, NULL, 0,
++					     ima_hash_algo, NULL);
++		if (rc < 0)
++			return -EOPNOTSUPP;
++
++		iint = &tmp_iint;
++		mutex_lock(&iint->mutex);
++	}
  
- 	/* MSR_PERFCTRn */
- 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_COUNTER);
-@@ -236,7 +251,10 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	if (pmc) {
- 		if (data == pmc->eventsel)
- 			return 0;
--		if (!(data & pmu->reserved_bits)) {
-+		reserved_bits = pmu->reserved_bits;
-+		if (pmc->idx == 2 && vcpu_overcount_retire_events(vcpu))
-+			reserved_bits &= ~BIT_ULL(43);
-+		if (!(data & reserved_bits)) {
- 			pmc->eventsel = data;
- 			reprogram_counter(pmc);
- 			return 0;
+-	iint = integrity_iint_find(inode);
+ 	if (!iint)
+ 		return -EOPNOTSUPP;
+ 
+-	mutex_lock(&iint->mutex);
+-
+ 	/*
+ 	 * ima_file_hash can be called when ima_collect_measurement has still
+ 	 * not been called, we might not always have a hash.
+@@ -552,12 +570,14 @@ static int __ima_inode_hash(struct inode *inode, char *buf, size_t buf_size)
+ 	hash_algo = iint->ima_hash->algo;
+ 	mutex_unlock(&iint->mutex);
+ 
++	if (iint == &tmp_iint)
++		kfree(iint->ima_hash);
++
+ 	return hash_algo;
+ }
+ 
+ /**
+- * ima_file_hash - return the stored measurement if a file has been hashed and
+- * is in the iint cache.
++ * ima_file_hash - return a measurement of the file
+  * @file: pointer to the file
+  * @buf: buffer in which to store the hash
+  * @buf_size: length of the buffer
+@@ -570,7 +590,7 @@ static int __ima_inode_hash(struct inode *inode, char *buf, size_t buf_size)
+  * The file hash returned is based on the entire file, including the appended
+  * signature.
+  *
+- * If IMA is disabled or if no measurement is available, return -EOPNOTSUPP.
++ * If the measurement cannot be performed, return -EOPNOTSUPP.
+  * If the parameters are incorrect, return -EINVAL.
+  */
+ int ima_file_hash(struct file *file, char *buf, size_t buf_size)
+@@ -578,7 +598,7 @@ int ima_file_hash(struct file *file, char *buf, size_t buf_size)
+ 	if (!file)
+ 		return -EINVAL;
+ 
+-	return __ima_inode_hash(file_inode(file), buf, buf_size);
++	return __ima_inode_hash(file_inode(file), file, buf, buf_size);
+ }
+ EXPORT_SYMBOL_GPL(ima_file_hash);
+ 
+@@ -605,7 +625,7 @@ int ima_inode_hash(struct inode *inode, char *buf, size_t buf_size)
+ 	if (!inode)
+ 		return -EINVAL;
+ 
+-	return __ima_inode_hash(inode, buf, buf_size);
++	return __ima_inode_hash(inode, NULL, buf, buf_size);
+ }
+ EXPORT_SYMBOL_GPL(ima_inode_hash);
+ 
 -- 
-2.35.1
+2.32.0
 
