@@ -2,118 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D85F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B01E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241521AbiCBOsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37034 "EHLO
+        id S243234AbiCBOuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:50:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235638AbiCBOsl (ORCPT
+        with ESMTP id S234273AbiCBOuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:48:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344CF10FF9
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:47:58 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nPQGe-000055-LM; Wed, 02 Mar 2022 15:47:52 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-5c51-3418-45e9-21d0.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5c51:3418:45e9:21d0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id EE38140DDC;
-        Wed,  2 Mar 2022 14:47:48 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 15:47:48 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     kernel test robot <yujie.liu@intel.com>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arunachalam Santhanam <Arunachalam.Santhanam@in.bosch.com>,
-        linux-can <linux-can@vger.kernel.org>
-Subject: Re: drivers/net/can/usb/etas_es58x/es58x_fd.c:174:8: warning:
- Uninitialized variable: rx_event_msg [uninitvar]
-Message-ID: <20220302144748.tidd2zq2xfdqvoyl@pengutronix.de>
-References: <202203021333.mMJpWPzx-lkp@intel.com>
- <5f13b914-e309-49ee-4f98-c81780c478b9@intel.com>
- <20220302103219.kvpfhc6qz42t3pvv@pengutronix.de>
- <CAMZ6Rq+HR=j2mD97etTgSapOix96P=pK70bTr9HeJu2Mjkn3+g@mail.gmail.com>
- <20220302130423.ddd2ulldffpo5lb2@pengutronix.de>
- <CAMZ6Rq+J0CH_HvK1ax=VcWKqih+B_0Nfoc9jZMiq7OtuXL06hw@mail.gmail.com>
+        Wed, 2 Mar 2022 09:50:08 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DA92B180
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:49:24 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646232563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OsfRjPGADDznTwP6UP8rO2/tn0zLOEDntHkPMrLfO3o=;
+        b=PQI6UudmCrIGk9Y4uQdDksKVK6LvG6dl92N2Mvx4EmNEfYLMKjoHBg9snNfeBkTpZ4r4kO
+        LIaewMgebD9I++aM6yMtQwZGmhIsqKcjCB1Ey26O6w0/yV7XbcTskVBoYQ7SqR+rncLUSX
+        PVfpMV0setuD2ryMTi3OR5Tmz63ex975Z0jJ65tZzDKpW7R+SOXbtlZnIgDjPQ5ePI4O6m
+        N+93hFSwXE66o80VQ6HGLFpB4ZD8J84T5EMrUZV1D5FgBPa1sJZNpwL4wUGr75WjGHt1qB
+        OQDdaJeVAUBfD9Nk6GVfD8cd4j7WqVa7ode1d24qRyd7rh3cZkmXu98HE+jDcg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646232563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OsfRjPGADDznTwP6UP8rO2/tn0zLOEDntHkPMrLfO3o=;
+        b=gEbU27e2+ZIKq7GlcvsN82xEJPYX/NfomHyHT6KYdvp6RloQF2dbRV/sCha36zIJYT/ISb
+        fUTiHzlbxee742DA==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: two locations: was: Re: [PATCH printk v1 03/13] printk: use
+ percpu flag instead of cpu_online()
+In-Reply-To: <Yg0C+UtoegnybA4q@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-4-john.ogness@linutronix.de>
+ <Yg0C+UtoegnybA4q@alley>
+Date:   Wed, 02 Mar 2022 15:55:23 +0106
+Message-ID: <87v8wwh0jw.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="goiohfcs56kly6pg"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6Rq+J0CH_HvK1ax=VcWKqih+B_0Nfoc9jZMiq7OtuXL06hw@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022-02-16, Petr Mladek <pmladek@suse.com> wrote:
+>> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+>> index d1b773823d63..b346e60e9e51 100644
+>> --- a/kernel/printk/printk.c
+>> +++ b/kernel/printk/printk.c
+>> @@ -2577,11 +2577,11 @@ static int have_callable_console(void)
+>>   *
+>>   * Console drivers may assume that per-cpu resources have been allocated. So
+>>   * unless they're explicitly marked as being able to cope (CON_ANYTIME) don't
+>> - * call them until this CPU is officially up.
+>> + * call them until per-cpu resources have been allocated.
+>>   */
+>>  static inline int can_use_console(void)
+>>  {
+>> -	return cpu_online(raw_smp_processor_id()) || have_callable_console();
+>> +	return (printk_percpu_data_ready() || have_callable_console());
+>>  }
+>
+> cpu_online(raw_smp_processor_id()) check is used also in
+> call_console_drivers(). The same logic should be used in both
+> locations.
+>
+> I found this when reviewing 6th patch that replaced both checks
+> with a single one.
+>
+> Note that I am still not sure if this change is correct at all.
+> It will allow to always call the console during CPU hotplug
+> and I am not sure if it is safe. IMHO, it might cause problems when
+> a console driver uses, for example, CPU-bound workqueues.
 
---goiohfcs56kly6pg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You are correct. We must take hotplug into account for !CON_ANYTIME
+consoles. There may be some hotplug callbacks that make memory
+unavailable for the console.
 
-On 02.03.2022 23:42:53, Vincent MAILHOL wrote:
-> On Wed. 2 Mar 2022 at 22:04, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > I was thinking of this:
-> >
-> > | void *foo =3D bar->baz;
-> > |
-> > | if (!bar)
-> > |         return;
-> > |
-> > | printf("%p", foo);
-> >
-> > There were/are compilers that optimize the bar NULL pointer check away,
-> > because bar has already been de-referenced.
->=20
-> Sorry, I do not get your example. If bar is NULL,
-> | void *foo =3D bar->baz;
-> would segfault and thus the check is not reached.
+However, I will add the use of printk_percpu_data_ready() in the
+check. !CON_ANYTIME consoles also should not be called until the per-cpu
+areas are ready. For example, it would be bad if a console queued
+irq_work before per-cpu areas are setup (cpu_online() is true during
+this time).
 
-ACK
+One of my main concerns was that raw_smp_processor_id() was used for the
+check. It is conceptually wrong to exclude certain consoles based on a
+current CPU when migration is still enabled. I understand that the use
+of can_use_console() is an optimization to avoid doing extra work where
+there are no consoles available. But the task could be preemptible there
+and _conceptually_, could get moved to another CPU before its write()
+callback is called. The cpu_online() check belongs in code where
+preemption is disabled.
 
-> If bar is not NULL, the check succeeds.
->=20
-> In both cases, the return statement of the if branch is never
-> executed making this some dead code. So I do not see why this is
-> an issue if the compiler removes it.
+If the context is preemptible, I do not think it will ever see
+!cpu_online(). So I think if the cpu_online() check is limited to
+unlocking when console_trylock() was used, it will be correct.
 
-IIRC in some cases the code was shuffled around by the compiler and the
-NULL pointer check was done....and with a new compiler version it
-stopped working :)
+In the current implementation of printk(), it would be odd to do this
+conditional check (perhaps by passing @do_cond_resched to
+can_use_console()). But my series does significant refactoring and
+actually does need to distinguish between console_lock() and
+console_trylock() due to the kthreads and supporting the handover. So it
+should work well that the cpu_online() check for !CON_ANYTIME is only
+performed when !preemptible.
 
-regards,
-Marc
+Regardless, my v2 will keep cpu_online() checks since they are necessary
+for hotplug support.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---goiohfcs56kly6pg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIfg5IACgkQrX5LkNig
-010y+Qf/f5JuMksYTwROvq+dWt29bgQ22vMgbkBu52JhjCv7Vfihplg8sqODqJBl
-mYYesKRehXh2xUVDy8n+HEtXQvSsbNiA6CscidS1jHaG09yOPOm+/3ulylEz5vU6
-VCnfbHb2I2zgYG7Bcoh82lz9VCGog8B4dRc+3IywXEv05P95MCt9ACl+lmOIB0p4
-UiCQ9Vii0ohNBElAJ7X1TYLR7KDQGW80bMHsQCq9l6l+wCKU9iXxKwdPh9W7x0Nq
-xTZBQEqigDHwJKI20U6CzOReGHEN+99KXSBSLF2iOzBSbR18bRihhiDSkILD0esf
-dY2rB+NgzjysaST27/FGUKiGdg4DXA==
-=MAE0
------END PGP SIGNATURE-----
-
---goiohfcs56kly6pg--
+John
