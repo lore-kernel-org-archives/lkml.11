@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA64AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69493C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242868AbiCBSdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
+        id S244570AbiCBSej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:34:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236812AbiCBSdK (ORCPT
+        with ESMTP id S236812AbiCBSei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:33:10 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35384109B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:32:25 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id g7-20020a17090a708700b001bb78857ccdso5565029pjk.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:32:25 -0800 (PST)
+        Wed, 2 Mar 2022 13:34:38 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14484C9A3C
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:33:54 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id 5so2353267lfz.9
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:33:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Qd42BnpR52D+AhX5aeRfQ73Nc9hYkmpHfd4TTWN+uII=;
-        b=GWLUbfHqPqiWSHV5g19FOhTfakpd0jWDELj9DJzgQUDt0ztsNuPbwPjvGFqDqQuMEK
-         yxz54xIFb3JDWxlkH4lwbXxhu6rmN+J2a+rexf9+LCzeaTx0w2JwqEgMi/9enfRqeZlC
-         Z+C18SN/xIqaY9YFlLNcwTvQfYt7tTTEXxWsk=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sd+QCgx6ejQtfJh0ZQLIdPUh9xzXsejItXGMffzQAc0=;
+        b=iDSC1AseNmMqk2BqO7yCgINbNSucW1S3mrbiOcArZvBpaghKwT9l5hvk22nxxddJU5
+         CVMLR9RINtqyWLOKbKAVHFgUwgywuLK4/rWM5ztyt8xGmslZfjnR4dqRSIiG1Fn2Gl3q
+         CS9mK5K2Te6lc2kqG9LCaKpItlJRuZxE8k+zB4CJAh0caTvns3dHKn0bXI/xhruG9XSP
+         veeOTiJl4mtTtQLfQs7kZrRjchr69XTyffiHes/ddzmbXoiYOWK7UbVIei2CjZc4x5Sw
+         grg4R67/MKJZq2tKoKpTdubCvAwswmSciBb7SoZvjE3nRMILTxfSWCtOMZIscWIGO6nw
+         mQug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Qd42BnpR52D+AhX5aeRfQ73Nc9hYkmpHfd4TTWN+uII=;
-        b=RR+75YC22WYieMZhMpXnbZe/ZBBrbXfFCtxOTUndjY4ipb9dT8Xtt0IimqGnIJ/vEk
-         mOFhyxiMQCAIpp9Xp9z38AVzfJKyr07aGQMyYxM/13RkIUUcg+DFoxNBzeJSWIcRQC8i
-         NVQ0yZfAINiPQADeaOGRh8hWUwjVwyB6EGMyoIUFxk7SyjSb36/n3d7WI4gah/LGsMoh
-         NNBSCqs9lKqLXpk4Faac14EWT3Yr4T7+6pokks0VxnMG79Ndy1F8VAH55xJC+/XRahSp
-         QpVjGf4SdflTZI3iKOq6F3suKEYRFGdxf+QBe50TufjzJDHxlXfexOrKMIptbKcK58Uo
-         xFew==
-X-Gm-Message-State: AOAM5305UAFP9Et3dkbI9Cc6lpc3uDzfIjb9uOfg01oMM3LwOJTR53sL
-        wR9Nq35ddB4oe44ju9zN1i6xAA==
-X-Google-Smtp-Source: ABdhPJzk/lxhMnPk1kXAbBKUchI/3RHE2hqeXkIEmq3usIg0PZJsC/S4HcjvYCzeAWEZSV2Xyb5VhA==
-X-Received: by 2002:a17:902:6b0a:b0:14d:8ee9:3298 with SMTP id o10-20020a1709026b0a00b0014d8ee93298mr32019886plk.125.1646245944666;
-        Wed, 02 Mar 2022 10:32:24 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j1-20020a056a00130100b004df82ad0498sm21679139pfu.82.2022.03.02.10.32.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 10:32:24 -0800 (PST)
-Date:   Wed, 2 Mar 2022 10:32:23 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/19] Enable -Wshadow=local for kernel/sched
-Message-ID: <202203021030.EEEF58C2@keescook>
-References: <20220302043451.2441320-1-willy@infradead.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sd+QCgx6ejQtfJh0ZQLIdPUh9xzXsejItXGMffzQAc0=;
+        b=w4hMCJUF4wxlX1G4cha3vl4e1rKnd2b7fI2Qym2di9n7UuENJPAruZWfOjrfChBu/p
+         W0nrE+VnALgnqYdKZw7RWWuvfyDucY3pItpA/pURWGWFEs8QW+4vM6DJ8RZRoV/7Wsc0
+         HfApjHd1JxDh/fMVWIvhQevsMKrcuLueB6a5cGwobCHid8furw8BQRKy2BmDrPt84Xbh
+         E2DM/PWWqax3fG81vbOoX2RmrCKWztzQgzNoorBSmTkPlyAidk4Bjqr2bMq7FO2EORIx
+         FCcSf0clZkl0sXbqwlU+WPMq7spCrmkHZAUfYk+6TOXpz9s43uosHDcoPcng0kub4iou
+         Jr0g==
+X-Gm-Message-State: AOAM532dkA8BguQBdUBmsONBRX/swduwMlEH8W9zyezchHcoqcarHoTt
+        toFg3l4RAk3tkut5zjoXd6JkAbSGcLtLK8hQa7j9UA==
+X-Google-Smtp-Source: ABdhPJz3IXcAFe58DPhtDWnyKmNPxGvamwOJoWEhrYKhfFZTY7ccoweBqSbYNkziQsARF2nCSN+vas2mfKXR3PaNjhE=
+X-Received: by 2002:ac2:5a5d:0:b0:444:26e0:3d6a with SMTP id
+ r29-20020ac25a5d000000b0044426e03d6amr18336527lfn.537.1646246028875; Wed, 02
+ Mar 2022 10:33:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220302043451.2441320-1-willy@infradead.org>
+References: <20220226001546.360188-1-seanjc@google.com> <20220226001546.360188-23-seanjc@google.com>
+ <b9270432-4ee8-be8e-8aa1-4b09992f82b8@redhat.com> <Yh+q59WsjgCdMcP7@google.com>
+In-Reply-To: <Yh+q59WsjgCdMcP7@google.com>
+From:   David Matlack <dmatlack@google.com>
+Date:   Wed, 2 Mar 2022 10:33:22 -0800
+Message-ID: <CALzav=dzqOp-css8kgqHhCLJnbUrUZt+e_YStCj2HFy0oD+vGg@mail.gmail.com>
+Subject: Re: [PATCH v3 22/28] KVM: x86/mmu: Zap defunct roots via asynchronous worker
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 04:34:32AM +0000, Matthew Wilcox (Oracle) wrote:
-> I thought I'd choose one of the more core parts of the kernel to
-> demonstrate the value of -Wshadow.  It found two places where there are
-> shadowed variables that are at least confusing.  For all I know they're
-> buggy and my resolution of these warnings is wrong.
-> 
-> The first 12 patches just untangle the unclean uses of __ret in wait.h
-> & friends.  Then 4 patches to fix problems in headers that are noticed
-> by kernel/sched.  Two patches fix the two places in kernel/sched/
-> with shadowed variables and the final patch adds -Wshadow=local to
-> the Makefile.
+On Wed, Mar 2, 2022 at 9:35 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Wed, Mar 02, 2022, Paolo Bonzini wrote:
+> > However, I think we now need a module_get/module_put when creating/destroying
+> > a VM; the workers can outlive kvm_vm_release and therefore any reference
+> > automatically taken by VFS's fops_get/fops_put.
+>
+> Haven't read the rest of the patch, but this caught my eye.  We _already_ need
+> to handle this scenario.  As you noted, any worker, i.e. anything that takes a
+> reference via kvm_get_kvm() without any additional guarantee that the module can't
+> be unloaded is suspect. x86 is mostly fine, though kvm_setup_async_pf() is likely
+> affected, and other architectures seem to have bugs.
+>
+> Google has an internal patch that addresses this.  I believe David is going to post
+> the fix... David?
 
-You are my hero. I was pulling my hair out trying to figure out how
-to deal with this a few months ago, and the use of UNIQUE_ID was the
-key. Yay!
-
-> I'm quite certain this patch series isn't going in as-is.  But maybe
-> it'll inspire some patches that can go in.
-
-I think it's pretty darn close. One thing that can be done to test the
-results for the first 12 patches is to do a binary comparison -- these
-changes _should_ have no impact on the final machine code. (It'll
-totally change the debug sections, etc, but the machine code should be
-the same.)
-
--- 
-Kees Cook
+This was towards the back of my queue but I can bump it to the front.
+I'll have the patches out this week.
