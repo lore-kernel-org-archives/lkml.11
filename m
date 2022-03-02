@@ -2,82 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD572C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 05:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A78C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 05:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239520AbiCBFO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 00:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        id S239617AbiCBFOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 00:14:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237334AbiCBFOU (ORCPT
+        with ESMTP id S239494AbiCBFOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 00:14:20 -0500
+        Wed, 2 Mar 2022 00:14:23 -0500
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E19F25D3;
-        Tue,  1 Mar 2022 21:13:37 -0800 (PST)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2222cXOq016190;
-        Wed, 2 Mar 2022 05:13:34 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E32447ADF;
+        Tue,  1 Mar 2022 21:13:41 -0800 (PST)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2222W19t006487;
+        Wed, 2 Mar 2022 05:13:37 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=RgWAU+vXfqk7wmJ8JK/UtnaVMXmWTqKA++qkR1qKaDo=;
- b=rieyIYP3FV3ldGx7LQqIGhj4T2LpHzzK9TiXoCp5VnXcy4ToGJhYHGY7h4F/gFPiEf8n
- hhMcM2ATuNP3SOknkLwG9SxiUzo3x90XOq3qHkHIdwwr2nNizIsazdpy0Dp+yuxGx8Bk
- VcgC3Ax6Pc+sZX7xWQuWjgAOjMvsh3ao3bOZiA3/SPVZ+0BYXWMUW/OE+BLQrrm5xIgG
- NeYcm2AbvyzjyhcQrfwp43g4bcv0NV14QVqisyXm9DikUDPiJ07J4ih5miyFXBI0DNH6
- lhEW+bDCzgUlWFdfEBjDy2xq5IER35EOXS2d53d4toz85zkR+D0Iv5a+CoqOdzlVTTVH mg== 
+ bh=rHUgHhopvue/AAPK+/mb9kiUgRdUKw+MBpTb/HZqUeo=;
+ b=Jb34d7WR340ztbLn/zsvOVH3ldehCgL08A3U0GCmGKabxmR5DP7xiI/Bs/xeRdZ+GJ+b
+ Ej1WgeEkZQRxz5IM6EoWBTzLp+KBoFjxjb80EH/01O049thY72+Z99wqWyRqj+YZHR7p
+ c/J/P7mSzehV5AAF4TmgE6n3Rj2GA4yt91acFMNcd+icBpP19w7wGXbmt1KfxCP27snU
+ qxofTddO8acxcqXvB5yewV7pWrp1ovrKhFhvmpZWCerpM1hZ7TsE4/xKbrwl+G8XHDzl
+ SRCFUQ5xoCsTiuY7diyERaZb8MtfIksNvh9VBC59uMaaF4mPy1IIpogza+ulPCV+S1Rj DA== 
 Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ehbk9b9vk-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ehh2ejm8a-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Mar 2022 05:13:34 +0000
+        Wed, 02 Mar 2022 05:13:37 +0000
 Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2225C1s3175243;
-        Wed, 2 Mar 2022 05:13:33 GMT
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2225C1tJ175224;
+        Wed, 2 Mar 2022 05:13:36 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3ef9ayxgfr-1
+        by userp3030.oracle.com with ESMTP id 3ef9ayxgka-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Mar 2022 05:13:33 +0000
+        Wed, 02 Mar 2022 05:13:36 +0000
 Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2225DVPI178145;
-        Wed, 2 Mar 2022 05:13:32 GMT
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2225DVPO178145;
+        Wed, 2 Mar 2022 05:13:36 GMT
 Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by userp3030.oracle.com with ESMTP id 3ef9ayxgcv-2;
-        Wed, 02 Mar 2022 05:13:32 +0000
+        by userp3030.oracle.com with ESMTP id 3ef9ayxgcv-5;
+        Wed, 02 Mar 2022 05:13:36 +0000
 From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     njavali@marvell.com, cgel.zte@gmail.com
+To:     Finn Thain <fthain@linux-m68k.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>
 Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        jejb@linux.ibm.com, GR-QLogic-Storage-Upstream@marvell.com,
-        Zeal Robot <zealci@zte.com.cn>, mrangankar@marvell.com,
-        Changcheng Deng <deng.changcheng@zte.com.cn>
-Subject: Re: [PATCH] scsi: qla4xxx: Remove unneeded variable
-Date:   Wed,  2 Mar 2022 00:13:20 -0500
-Message-Id: <164619702113.16127.18227099863037977527.b4-ty@oracle.com>
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH] mesh: Stop using struct scsi_pointer
+Date:   Wed,  2 Mar 2022 00:13:23 -0500
+Message-Id: <164619702112.16127.3138997344528184574.b4-ty@oracle.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220224090735.1967816-1-deng.changcheng@zte.com.cn>
-References: <20220224090735.1967816-1-deng.changcheng@zte.com.cn>
+In-Reply-To: <fbf930e64af5b15ca028dfe25b00fe933951f19b.1645484982.git.fthain@linux-m68k.org>
+References: <fbf930e64af5b15ca028dfe25b00fe933951f19b.1645484982.git.fthain@linux-m68k.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: gZVzLJ9vz37iJD_sBpKaAt9_XJwS9woP
-X-Proofpoint-ORIG-GUID: gZVzLJ9vz37iJD_sBpKaAt9_XJwS9woP
+X-Proofpoint-ORIG-GUID: 94n0qQGh43OtFvqygZZ2-Rzf03EJusFa
+X-Proofpoint-GUID: 94n0qQGh43OtFvqygZZ2-Rzf03EJusFa
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022 09:07:35 +0000, cgel.zte@gmail.com wrote:
+On Tue, 22 Feb 2022 10:09:42 +1100, Finn Thain wrote:
 
-> From: Changcheng Deng <deng.changcheng@zte.com.cn>
-> 
-> Remove unneeded variable used to store return value.
+> This driver doesn't use SCp.ptr to save a SCSI command data pointer
+> which means "scsi pointer" is a complete misnomer here. Only a few
+> members of struct scsi_pointer are used and the rest waste memory.
+> Avoid the "struct foo { struct bar; };" silliness.
 > 
 > 
 
 Applied to 5.18/scsi-queue, thanks!
 
-[1/1] scsi: qla4xxx: Remove unneeded variable
-      https://git.kernel.org/mkp/scsi/c/c13ad4cf6de8
+[1/1] mesh: Stop using struct scsi_pointer
+      https://git.kernel.org/mkp/scsi/c/2e1b3175f29c
 
 -- 
 Martin K. Petersen	Oracle Linux Engineering
