@@ -2,102 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22028C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245390AbiCBVh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:37:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
+        id S245413AbiCBVht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:37:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245358AbiCBVhW (ORCPT
+        with ESMTP id S240058AbiCBVhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:37:22 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D9C5640A;
-        Wed,  2 Mar 2022 13:36:37 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id g1so6186206ybe.4;
-        Wed, 02 Mar 2022 13:36:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=F9su24UUCpFbzNjnzich2MRj6bAe/1UrU40e7yTrYl4=;
-        b=kJYAGOURvvI51nvUQxCcdujpjcu86BIy/7PcVFcAJWYVOU+VYmjLG9uxZrne+ZHDgf
-         wtt7Kypti4GRddq2ZjajoyBnDi7tp09Cga9N7UzWlurwi96LioKSp8NONWFv5sT++x/h
-         h1WBPZHYIaPO5XacD02pjmsgSaHO6XXw9lqnlBJZ8+nPI42KCQpKwvtxWQvQz8fKku5f
-         gFc9tMlKx0mCEsRRlTZWPyER9U3zCGb/3DXO5eD8tMlpAluM0TeeXOqPHirtTqo8eSm0
-         0QWH5oMH1IqlROCrEpPnw21RjBWG22y6EHp2rBGdiYKJDjOePeQLu1Vhc3lIvK4Imm4x
-         p5Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=F9su24UUCpFbzNjnzich2MRj6bAe/1UrU40e7yTrYl4=;
-        b=JWqXaFIgqrxP2j8EZHSwzPbAJyq5fDaTMNGghNein14AYt2H7EitiPgHHW+S3ZIs6x
-         S3ht+ln75f74A7hetB+PqsVo+5QIBP82plYIAY/Be8Hbbw990+45Gj8vqSGHPeteybZh
-         bUnmtWyjDgs0SWXPalE1DPfMnxmyKEuSdq7IzWJlHxrehBCnJGoK5Ez87tL6zq5fJT1X
-         PR7yuwcaD9OuX/zo8Z8iB8lZzddZHvBaEVQCRPqavcc45SFLNPY24vUFektGNuLc9zne
-         ALXl1qr/CIS6gHM8oHxSCOVh0UeBIAOX4yKcXq5/zVu/S2TzlUK/aW9EViDTyTRE3tJs
-         Ec+w==
-X-Gm-Message-State: AOAM5320W4XrRAGku9lyLkyp7z8Zr1teXjx+NM6uZmWzinFFWdJHhgT9
-        dvFMlvnFTU1uNFKzS5JNQ1BLDr5+KxKnXRu03tY=
-X-Google-Smtp-Source: ABdhPJw7BiPedTto2QQEQGe/650vKh+a92S6h573kPbrCj+bZkGHT0XJF4cXuWxFhf6Ef1veMooEo6KVj72th/wvP+w=
-X-Received: by 2002:a25:8546:0:b0:61e:1d34:ec71 with SMTP id
- f6-20020a258546000000b0061e1d34ec71mr29825208ybn.259.1646256996745; Wed, 02
- Mar 2022 13:36:36 -0800 (PST)
+        Wed, 2 Mar 2022 16:37:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7A7C7E5D
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:36:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B727B8223F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 21:36:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFB9C004E1;
+        Wed,  2 Mar 2022 21:36:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646257006;
+        bh=wGOLoq8fO/bwBfklot0y6ii49GS28hhpXga2ycZLJdU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lboPQ20XON/WND9HxR5Dwmk0jul4RMqBddy5YACBLugkN1tKUS1+GvTUWoUbP5kaj
+         HaRRrCgYeaTKkMVtT9/SqDfkrY2WsahR1FnB7Jkf0EOGLU/ZcplDIQhJVryPb3Xhzy
+         wg3aT1kFTlk57cOOoyX0nEFLuBTK7lApVphEmiNA=
+Date:   Wed, 2 Mar 2022 22:36:43 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>
+Cc:     "Zhang, Qiang1" <qiang1.zhang@intel.com>,
+        Tejun Heo <tj@kernel.org>,
+        syzbot <syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "balbi@kernel.org" <balbi@kernel.org>
+Subject: Re: [syzbot] KASAN: use-after-free Read in dev_uevent
+Message-ID: <Yh/ja0K9E7ahJf5Q@kroah.com>
+References: <YhZiMHHjrBw8am5g@rowland.harvard.edu>
+ <PH0PR11MB5880D7544442B4D60810F0D2DA3D9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <PH0PR11MB588091026B817203C772B264DA3D9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <Yhf3ThBfjWVcYszC@rowland.harvard.edu>
+ <YhgIs6FmBJYXiQVw@kroah.com>
+ <Yhg5lWdEy2G4SsFr@rowland.harvard.edu>
+ <YhiZDy+y1/YmlWL2@kroah.com>
+ <Yhj7FO3hisW9yJRN@rowland.harvard.edu>
+ <Yhnttj7dA0ZecNj0@kroah.com>
+ <Yh/BF2bx1TT3DMPG@rowland.harvard.edu>
 MIME-Version: 1.0
-References: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 2 Mar 2022 13:36:25 -0800
-Message-ID: <CABBYNZKpZ+tA0YuBFzwug-W3Bcx9GuL4hcrPSfSQt0VnbZi58A@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Don't assign twice the same value
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh/BF2bx1TT3DMPG@rowland.harvard.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On Wed, Mar 02, 2022 at 02:10:15PM -0500, stern@rowland.harvard.edu wrote:
+> On Sat, Feb 26, 2022 at 10:07:02AM +0100, gregkh@linuxfoundation.org wrote:
+> > On Fri, Feb 25, 2022 at 10:51:48AM -0500, stern@rowland.harvard.edu wrote:
+> > > On Fri, Feb 25, 2022 at 09:53:35AM +0100, gregkh@linuxfoundation.org wrote:
+> > > > The aux bus might make this easier:
+> > > > 	Documentation/driver-api/auxiliary_bus.rst
+> > > 
+> > > Won't this end up changing the user-visible filenames and directories in 
+> > > sysfs for gadgets and gadget drivers?
+> > > 
+> > > For instance, currently gadgets get registered under their UDC driver 
+> > > name, like "net2280" or "at91".  If we put them on the aux bus then they 
+> > > will have to get registered under a name looking something like 
+> > > "udc.gadget.0", i.e., module name, generic device name, and ID number.
+> > 
+> > Ah, yeah, that isn't good.
+> > 
+> > > We will be forced to use a generic device name because the aux bus does 
+> > > matching based on it, and we want every gadget driver to be able to 
+> > > match every UDC.  We don't want some gadget drivers restricted to 
+> > > net2280 gadgets, others restricted to fotg210 gadgets, and so on.
+> > 
+> > So yes, I guess it does need to be a "real" bus, sorry.
+> 
+> It turns out not to be so bad.  In fact there are only five
+> gadget drivers (that is, instances of struct usb_gadget_driver) in the 
+> kernel:
+> 
+> 	composite_driver_template	(gadget/composite.c)
+> 	configfs_driver_template	(gadget/configfs.c)
+> 	gadgetfs_driver			(gadget/legacy/inode.c)
+> 	driver				(gadget/legacy/raw_gadget.c)
+> 	dbgp_driver			(gadget/legacy/dbgp.c)
 
-On Wed, Mar 2, 2022 at 12:18 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> data.pid is set twice with the same value. Remove one of these redundant
-> calls.
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  net/bluetooth/l2cap_core.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> index e817ff0607a0..0d460cb7f965 100644
-> --- a/net/bluetooth/l2cap_core.c
-> +++ b/net/bluetooth/l2cap_core.c
-> @@ -1443,7 +1443,6 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
->         data.pdu.scid[0]     = cpu_to_le16(chan->scid);
->
->         chan->ident = l2cap_get_ident(conn);
-> -       data.pid = chan->ops->get_peer_pid(chan);
+I would really love to drop the gadget/legacy/ stuff if at all possible
+entirely.  I wonder if that's possible.  I know that Android has moved
+off of this, and that used to be the largest user (in the billions), so
+we might be ok to possibly just delete these entirely.
 
-Perhaps we should do if (!data->pid) then since afaik one can do
-connect without bind.
+> Everything else is implemented as a "function" driver.  So the gadget 
+> driver's name doesn't mean very much to the user anyway.
 
->         data.count = 1;
->         data.chan = chan;
-> --
-> 2.32.0
->
+That's good to know.
 
+> The interaction between the gadget subsystem and the device core is 
+> rather peculiar.  Each UDC controller is represented by a pair of device 
+> structures: the .dev fields in struct usb_udc and struct usb_gadget.  
+> These two are siblings -- they always have the same parent (see 
+> usb_add_gadget() in gadget/udc/core.c).  Furthermore, they have the same 
+> driver; that is, udc->dev.driver is always the same as 
+> gadget->dev.driver (see udc_bind_to_driver()).  Which is doubly odd, 
+> because gadget drivers manage only gadget devices, not udc devices.  The 
+> major difference between them is that the usb_udc is a class device 
+> whereas the usb_gadget is a "real" device.
+> 
+> Currently neither the udc device nor the gadget device is registered on 
+> any bus.  IMO it would make sense to leave udc->dev.driver always set to 
+> NULL, keep the udc devices bus-less, and put the gadget devices on the 
+> aux bus.
+> 
+> Does that sound reasonable?  I'll work on a patch to do it.
 
--- 
-Luiz Augusto von Dentz
+That's odd, but it might work, so sure, let's see how it turns out.
+
+thanks,
+
+greg k-h
