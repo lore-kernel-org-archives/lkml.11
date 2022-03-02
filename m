@@ -2,114 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F47FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244231AbiCBUqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:46:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45884 "EHLO
+        id S244257AbiCBUsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:48:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbiCBUqQ (ORCPT
+        with ESMTP id S231127AbiCBUsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:46:16 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0780B38789;
-        Wed,  2 Mar 2022 12:45:33 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id f5so5861601ybg.9;
-        Wed, 02 Mar 2022 12:45:32 -0800 (PST)
+        Wed, 2 Mar 2022 15:48:16 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0B31260A
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:47:31 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id z11so2609925pla.7
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:47:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y6qqvHc/+bg7logl0Wqx5hN0gsT9pLtg+9GuBdEyV/s=;
-        b=N6mzMrvWJ3NnD3ZyiJjMdVcsCSd17WTZeB6K7pfo5O4CTlaCF/zVdybZv+jhlTrmxe
-         uPhSjCcemXAPPjSrv6Mt5HWt3iMD5ymv09MAlL+oTjIdHYCdg/0ssExCUuNBW85SJtyL
-         6OeZi79DSlqdlABdL8kngO2BoTutu+xJFXugejEjTOelpI2a+1M4P6YxOlDkDUJyF29p
-         PgdD7Ic+/VgjKaC6I7tmOHYd0tLr5EfPZX9OcETMEavgE8GzKwipHdx6ClJQBP2rXN9f
-         EGUY3EVA/3aCTBVmeMF2lzsoXWVLoxju/7BmHfIIowzLDvJ2L+u3IWbGBpTNizOgCwuq
-         xi8Q==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=w2++eX0uxoFYGn6KsfxgmKtFhWBbHG1cFniS6G65R/8=;
+        b=ZvIT3UHrIkyHs392SzCJH5dcOt5KKLuzWyEeIFZOeA2qaJiPK7ton6Y6Lr1ivan4Js
+         UzcI337HwVIoduHg/JgXtl2CQGrDZmUSf3ucbmrtJ6IgtSvNqsQw36nM9FV52EIaWM4b
+         nNaiaF1+GKtFMTHQmBdtFfqVv6D55x5mgDz3jaj/0PN4CGVqdFbUWNqbbt7gXCxUwNEZ
+         da1NehZYGkvWBSXYrG4bJB5le52dQRBSQDyWXcguuRqdmtaZ4BLJPrvK2Xn/b+IdPCLb
+         oKjS+t4qWNIvM64IklH38agjF+NntHojUc4Pfaf5e5zzZCaWU8He9HomqZ7O07yFoHYc
+         1kCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y6qqvHc/+bg7logl0Wqx5hN0gsT9pLtg+9GuBdEyV/s=;
-        b=MqTU/7efOxboHWpzNtbPuUYy5P3UtEZkdXGobys3I+yE4NONEoIYDh2OMaAtgEXsto
-         0etjCrSBMc0cfPzYeUmqZVIFiPWatz6xYCBLAMVlSurHao+yl7p0kFLVCoG5iQuPz7Ir
-         oNnA7Jl4Odo0KYnHkXYXUVNC7AeamPH9BaJstB3x4ZJZ3tcikMFUvlkzcMIPFKzs7zYi
-         iax6xJPG9IgJCb1METWlCUbtyk8Cb0JQSKPm8+rcnPrPRx9pVMmMExlSCORysR5mmncl
-         evi/IKZurk3WxnGJCtChu8jqCRaIyPl30DgrD1wALp5wtH/LODB1QhepuGYVwPufVb8S
-         cs+g==
-X-Gm-Message-State: AOAM5302zMnxAGgWroUQhPc5HYFLcZAvoLm4RBOH7/RakyzxosXy/4eG
-        3uDEi+NsIXfD/Mx4CCUJfsXYgvL7wr8BtVJvGcg=
-X-Google-Smtp-Source: ABdhPJzRUMWLpsd+tQeqMe+lON1YrQZx9JkRO/Ga9/nynwkkheUILhBEVszCKkAbAE9UfTyjpoKk7tOUpMQSERi2HWM=
-X-Received: by 2002:a25:23d2:0:b0:628:771a:9d3 with SMTP id
- j201-20020a2523d2000000b00628771a09d3mr10191498ybj.215.1646253932161; Wed, 02
- Mar 2022 12:45:32 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w2++eX0uxoFYGn6KsfxgmKtFhWBbHG1cFniS6G65R/8=;
+        b=yIv089c9RQ9oCZh15YB8Ga5iKpiP7nOvb1T3mK6XwLZpIHHxICnDaxbKoV0BxBAtig
+         6C55jJI91bW8DxwYefYrXXHU2cClqKb/+q+SXtAypAqj/rQR99tm23UZiVpxEogxSGZS
+         n6uK4hyE7QdtMpUcdl/YGT4VNi0tbU9l6WzXhJJRNNHO4bjz+aIQ4XzzCLKjVf04T6WV
+         Yb7WSXjn9LSkWa/UxzVJLsdleeIZFghhMoAelKhDTfuBppObh5JdjzaJi+CPm+OrBn6x
+         mviy8AWWAhS2kOSM/XmJReRsZl0SwBXTgpj1Fp3zmAOJiQ1EQHvJQsJ9H/C8SObQJh6e
+         bxqA==
+X-Gm-Message-State: AOAM531GN0TCtZc/0glmxVD8FfbVEXzNrg5oKCemtkuWLNNxgb4T1zjI
+        UEvSBmuSBTsrnol3DyajqcAHsw==
+X-Google-Smtp-Source: ABdhPJxkbHtoXR7YSBFfm/MXCJjH0S84GP7djHmq1H20YYhQpwJ2f0WnZE7RRove22yTCjGhMKM0DQ==
+X-Received: by 2002:a17:90b:4595:b0:1be:db22:8327 with SMTP id hd21-20020a17090b459500b001bedb228327mr1644495pjb.99.1646254051075;
+        Wed, 02 Mar 2022 12:47:31 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id v23-20020a17090a521700b001bbfc181c93sm5892971pjh.19.2022.03.02.12.47.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 12:47:30 -0800 (PST)
+Date:   Wed, 2 Mar 2022 20:47:26 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+Subject: Re: [PATCH v3 22/28] KVM: x86/mmu: Zap defunct roots via
+ asynchronous worker
+Message-ID: <Yh/X3m1rjYaY2s0z@google.com>
+References: <20220226001546.360188-1-seanjc@google.com>
+ <20220226001546.360188-23-seanjc@google.com>
+ <b9270432-4ee8-be8e-8aa1-4b09992f82b8@redhat.com>
+ <Yh+xA31FrfGoxXLB@google.com>
+ <f4189f26-eff9-9fd0-40a1-69ac7759dedf@redhat.com>
+ <Yh/GoUPxMRyFqFc5@google.com>
+ <442859af-6454-b15e-b2ad-0fc7c4e22909@redhat.com>
 MIME-Version: 1.0
-References: <alpine.DEB.2.21.2202141955550.34636@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2202141955550.34636@angie.orcam.me.uk>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Wed, 2 Mar 2022 20:44:56 +0000
-Message-ID: <CADVatmP4sPwyqi6vKPm3QOFD=47w1LwXtsUynhecY4wMYGhXmw@mail.gmail.com>
-Subject: Re: [PATCH v2] parport_pc: Also enable driver for PCI systems
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <442859af-6454-b15e-b2ad-0fc7c4e22909@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 8:16 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
->
-> Nowadays PC-style parallel ports come in the form of PCI and PCIe option
-> cards and there are some combined parallel/serial option cards as well
-> that we handle in the parport subsystem.  There is nothing in particular
-> that would prevent them from being used in any system equipped with PCI
-> or PCIe connectivity, except that we do not permit the PARPORT_PC config
-> option to be selected for platforms for which ARCH_MIGHT_HAVE_PC_PARPORT
-> has not been set for.
->
-> The only PCI platforms that actually can't make use of PC-style parallel
-> port hardware are those newer PCIe systems that have no support for I/O
-> cycles in the host bridge, required by such parallel ports.  Notably,
-> this includes the s390 arch, which has port I/O accessors that cause
-> compilation warnings (promoted to errors with `-Werror'), and there are
-> other cases such as the POWER9 PHB4 device, though this one has variable
-> port I/O accessors that depend on the particular system.  Also it is not
-> clear whether the serial port side of devices enabled by PARPORT_SERIAL
-> uses port I/O or MMIO.  Finally Super I/O solutions are always either
-> ISA or platform devices.
->
-> Make the PARPORT_PC option selectable also for PCI systems then, except
-> for the s390 arch, however limit the availability of PARPORT_PC_SUPERIO
-> to platforms that enable ARCH_MIGHT_HAVE_PC_PARPORT.  Update platforms
-> accordingly for the required <asm/parport.h> header.
->
-> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+On Wed, Mar 02, 2022, Paolo Bonzini wrote:
+> On 3/2/22 20:33, Sean Christopherson wrote:
+> > What about that idea?  Put roots invalidated by "fast zap" on_another_  list?
+> > My very original idea of moving the roots to a separate list didn't work because
+> > the roots needed to be reachable by the mmu_notifier.  But we could just add
+> > another list_head (inside the unsync_child_bitmap union) and add the roots to
+> > _that_  list.
+> 
+> Perhaps the "separate list" idea could be extended to have a single worker
+> for all kvm_tdp_mmu_put_root() work, and then indeed replace
+> kvm_tdp_mmu_zap_invalidated_roots() with a flush of _that_ worker.  The
+> disadvantage is a little less parallelism in zapping invalidated roots; but
+> what is good for kvm_tdp_mmu_zap_invalidated_roots() is just as good for
+> kvm_tdp_mmu_put_root(), I suppose.  If one wants separate work items, KVM
+> could have its own workqueue, and then you flush that workqueue.
+> 
+> For now let's do it the simple but ugly way.  Keeping
+> next_invalidated_root() does not make things worse than the status quo, and
+> further work will be easier to review if it's kept separate from this
+> already-complex work.
 
-Acked-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Oof, that's not gonna work.  My approach here in v3 doesn't work either.  I finally
+remembered why I had the dedicated tdp_mmu_defunct_root flag and thus the smp_mb_*()
+dance.
 
-Usually parport patches goes via Greg's tree. Adding Greg.
+kvm_tdp_mmu_zap_invalidated_roots() assumes that it was gifted a reference to
+_all_ invalid roots by kvm_tdp_mmu_invalidate_all_roots().  This works in the
+current code base only because kvm->slots_lock is held for the entire duration,
+i.e. roots can't become invalid between the end of kvm_tdp_mmu_invalidate_all_roots()
+and the end of kvm_tdp_mmu_zap_invalidated_roots().
 
--- 
-Regards
-Sudip
+Marking a root invalid in kvm_tdp_mmu_put_root() breaks that assumption, e.g. if a
+new root is created and then dropped, it will be marked invalid but the "fast zap"
+will not have a reference.  The "defunct" flag prevents this scenario by allowing
+the "fast zap" path to identify invalid roots for which it did not take a reference.
+By virtue of holding a reference, "fast zap" also guarantees that the roots it needs
+to invalidate and put can't become defunct.
+
+My preference would be to either go back to a variant of v2, or to implement my
+"second list" idea.  
+
+I also need to figure out why I didn't encounter errors in v3, because I distinctly
+remember underflowing the refcount before adding the defunct flag...
