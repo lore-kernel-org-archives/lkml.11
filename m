@@ -2,119 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3107DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22028C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245349AbiCBVg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:36:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
+        id S245390AbiCBVh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245324AbiCBVgX (ORCPT
+        with ESMTP id S245358AbiCBVhW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:36:23 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFAC46B32;
-        Wed,  2 Mar 2022 13:35:39 -0800 (PST)
-Date:   Wed, 02 Mar 2022 21:35:36 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646256938;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Gj4MAdJpqSWwDZaOYbPqatr1LmMEJp06NeXMN8Ht7jQ=;
-        b=smaz3OYmDHhy4TOn9ymVIbzb4ESiFhRxYosoxgoiv9WM2TTsWhvOyKcBOqI+dcYs0fEJGS
-        4kHsS7P0yrNgAszzXxe4zHFEe0k9mtz5GvbqL84oEnq5OOTQ4Jrl5YXQMAlBlAaJvpGy0+
-        C3pFRgQEpc2dsq6vK/2tjzlSdYSmTSIHdFgP78cZniestfpbZjha6usMVjxChBiBsoU2hN
-        UIwT1sH5FhkVdx/FS98P07HzMMYc13EvLfLHFKED5QyocvB60sGZaL05rAbr5FmHPNtHjb
-        tsQ2vy+jW/i70O0ULB9Amxme9L1rt2/0U4Y6d3pakbUnUhKHUm1krHAt/I5qLw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646256938;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Gj4MAdJpqSWwDZaOYbPqatr1LmMEJp06NeXMN8Ht7jQ=;
-        b=klfnp3H6GZvyqX+KEEDvl2dBdN7NVvGS9owEy7bQr3EFbTaH6cpuutnGyP07cJmbLSp+nD
-        EsXNd9nBV4/UuZCQ==
-From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: irq/core] misc: hi6421-spmi-pmic: Use generic_handle_irq_safe().
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org
-In-Reply-To: <20220211181500.1856198-5-bigeasy@linutronix.de>
-References: <20220211181500.1856198-5-bigeasy@linutronix.de>
+        Wed, 2 Mar 2022 16:37:22 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D9C5640A;
+        Wed,  2 Mar 2022 13:36:37 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id g1so6186206ybe.4;
+        Wed, 02 Mar 2022 13:36:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F9su24UUCpFbzNjnzich2MRj6bAe/1UrU40e7yTrYl4=;
+        b=kJYAGOURvvI51nvUQxCcdujpjcu86BIy/7PcVFcAJWYVOU+VYmjLG9uxZrne+ZHDgf
+         wtt7Kypti4GRddq2ZjajoyBnDi7tp09Cga9N7UzWlurwi96LioKSp8NONWFv5sT++x/h
+         h1WBPZHYIaPO5XacD02pjmsgSaHO6XXw9lqnlBJZ8+nPI42KCQpKwvtxWQvQz8fKku5f
+         gFc9tMlKx0mCEsRRlTZWPyER9U3zCGb/3DXO5eD8tMlpAluM0TeeXOqPHirtTqo8eSm0
+         0QWH5oMH1IqlROCrEpPnw21RjBWG22y6EHp2rBGdiYKJDjOePeQLu1Vhc3lIvK4Imm4x
+         p5Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F9su24UUCpFbzNjnzich2MRj6bAe/1UrU40e7yTrYl4=;
+        b=JWqXaFIgqrxP2j8EZHSwzPbAJyq5fDaTMNGghNein14AYt2H7EitiPgHHW+S3ZIs6x
+         S3ht+ln75f74A7hetB+PqsVo+5QIBP82plYIAY/Be8Hbbw990+45Gj8vqSGHPeteybZh
+         bUnmtWyjDgs0SWXPalE1DPfMnxmyKEuSdq7IzWJlHxrehBCnJGoK5Ez87tL6zq5fJT1X
+         PR7yuwcaD9OuX/zo8Z8iB8lZzddZHvBaEVQCRPqavcc45SFLNPY24vUFektGNuLc9zne
+         ALXl1qr/CIS6gHM8oHxSCOVh0UeBIAOX4yKcXq5/zVu/S2TzlUK/aW9EViDTyTRE3tJs
+         Ec+w==
+X-Gm-Message-State: AOAM5320W4XrRAGku9lyLkyp7z8Zr1teXjx+NM6uZmWzinFFWdJHhgT9
+        dvFMlvnFTU1uNFKzS5JNQ1BLDr5+KxKnXRu03tY=
+X-Google-Smtp-Source: ABdhPJw7BiPedTto2QQEQGe/650vKh+a92S6h573kPbrCj+bZkGHT0XJF4cXuWxFhf6Ef1veMooEo6KVj72th/wvP+w=
+X-Received: by 2002:a25:8546:0:b0:61e:1d34:ec71 with SMTP id
+ f6-20020a258546000000b0061e1d34ec71mr29825208ybn.259.1646256996745; Wed, 02
+ Mar 2022 13:36:36 -0800 (PST)
 MIME-Version: 1.0
-Message-ID: <164625693694.16921.15227620434324740318.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 2 Mar 2022 13:36:25 -0800
+Message-ID: <CABBYNZKpZ+tA0YuBFzwug-W3Bcx9GuL4hcrPSfSQt0VnbZi58A@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Don't assign twice the same value
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/core branch of tip:
+Hi Christophe,
 
-Commit-ID:     1b9855de1ef4a3f82119f9d8b054a588c7c315fb
-Gitweb:        https://git.kernel.org/tip/1b9855de1ef4a3f82119f9d8b054a588c7c315fb
-Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-AuthorDate:    Fri, 11 Feb 2022 19:14:57 +01:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Wed, 02 Mar 2022 22:28:50 +01:00
+On Wed, Mar 2, 2022 at 12:18 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> data.pid is set twice with the same value. Remove one of these redundant
+> calls.
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  net/bluetooth/l2cap_core.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> index e817ff0607a0..0d460cb7f965 100644
+> --- a/net/bluetooth/l2cap_core.c
+> +++ b/net/bluetooth/l2cap_core.c
+> @@ -1443,7 +1443,6 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
+>         data.pdu.scid[0]     = cpu_to_le16(chan->scid);
+>
+>         chan->ident = l2cap_get_ident(conn);
+> -       data.pid = chan->ops->get_peer_pid(chan);
 
-misc: hi6421-spmi-pmic: Use generic_handle_irq_safe().
+Perhaps we should do if (!data->pid) then since afaik one can do
+connect without bind.
 
-generic_handle_irq() is invoked from a regular interrupt service
-routine. This handler will become a forced-threaded handler on
-PREEMPT_RT and will be invoked with enabled interrupts. The
-generic_handle_irq() must be invoked with disabled interrupts in order
-to avoid deadlocks.
+>         data.count = 1;
+>         data.chan = chan;
+> --
+> 2.32.0
+>
 
-Instead of manually disabling interrupts before invoking use
-generic_handle_irq_safe() which can be invoked with enabled and disabled
-interrupts.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org> 
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220211181500.1856198-5-bigeasy@linutronix.de
-
----
- drivers/misc/hi6421v600-irq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/misc/hi6421v600-irq.c b/drivers/misc/hi6421v600-irq.c
-index 1c76379..caa3de3 100644
---- a/drivers/misc/hi6421v600-irq.c
-+++ b/drivers/misc/hi6421v600-irq.c
-@@ -117,8 +117,8 @@ static irqreturn_t hi6421v600_irq_handler(int irq, void *__priv)
- 			 * If both powerkey down and up IRQs are received,
- 			 * handle them at the right order
- 			 */
--			generic_handle_irq(priv->irqs[POWERKEY_DOWN]);
--			generic_handle_irq(priv->irqs[POWERKEY_UP]);
-+			generic_handle_irq_safe(priv->irqs[POWERKEY_DOWN]);
-+			generic_handle_irq_safe(priv->irqs[POWERKEY_UP]);
- 			pending &= ~HISI_IRQ_POWERKEY_UP_DOWN;
- 		}
- 
-@@ -126,7 +126,7 @@ static irqreturn_t hi6421v600_irq_handler(int irq, void *__priv)
- 			continue;
- 
- 		for_each_set_bit(offset, &pending, BITS_PER_BYTE) {
--			generic_handle_irq(priv->irqs[offset + i * BITS_PER_BYTE]);
-+			generic_handle_irq_safe(priv->irqs[offset + i * BITS_PER_BYTE]);
- 		}
- 	}
- 
+-- 
+Luiz Augusto von Dentz
