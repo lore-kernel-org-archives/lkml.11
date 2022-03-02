@@ -2,72 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F76EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0CCBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 18:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244036AbiCBSkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
+        id S244008AbiCBSla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:41:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235984AbiCBSkL (ORCPT
+        with ESMTP id S233944AbiCBSl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:40:11 -0500
-X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 10:39:27 PST
-Received: from smtp5.emailarray.com (smtp5.emailarray.com [65.39.216.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6F64198F
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:39:27 -0800 (PST)
-Received: (qmail 79736 invoked by uid 89); 2 Mar 2022 18:32:46 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
-  by smtp5.emailarray.com with SMTP; 2 Mar 2022 18:32:46 -0000
-Date:   Wed, 2 Mar 2022 10:32:45 -0800
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: IRTE entry not present errors for serial driver
-Message-ID: <20220302183245.xzxaf6zz2yxmnsbm@bsd-mbp.dhcp.thefacebook.com>
+        Wed, 2 Mar 2022 13:41:28 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EE7D207B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 10:40:45 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id mr24-20020a17090b239800b001bf0a375440so205253pjb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 10:40:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sFxoRgrz8KohI1fJKR74aYbi9fTI6OzJ5gZS0IdaClo=;
+        b=FqtKhM2WF7Jc6NpSCyY6TObLSgAalvebQmDZ7Cmnj3Q6/HPOsS2yrpPnaqq4PCyRlc
+         rPuOQ3zSY6orsEbVMmCw8vqQmgu17OkywHjW/ut7YGDpCj2Z3eRmyVvHObByzeUYI1BI
+         f9ykpZhAyXvTC2hGuLC7ICDLhWy3TMlg65fHU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sFxoRgrz8KohI1fJKR74aYbi9fTI6OzJ5gZS0IdaClo=;
+        b=SQugRM6i9Lex3OqnSqANR05/eJfUA44Ua3IhLPUtfSFpZ/xnfk3dvOTlGFNhabdYHL
+         pr/DGCG88IkUs2PDPiDxfPDI+e21vrkQ8Z1PpF52dVwY/T0fY0HrVQmoso9aGxjkySpj
+         FeA4s2EIPZYsGELw7GHz8cMXKEglwlvj0t6m19S8JSKWnB577GbEod7XVY4g1yNyThWa
+         Uq6/Z5Wd8vEcgXgO+yIBUZwqRgwiDj8Ij2r/ng+vOgD0avSEBSvB4eB8zNkq9Io0xko5
+         8IkPJ4kZDP2VxqXNriOzvVokcWjAznnLVWV8fnricViw4E1yDJ87Ze2YWdrNkK91CYFY
+         ZpvQ==
+X-Gm-Message-State: AOAM530OOsvCYIlpLnQfyT6/Ki3kzwAScsud1FgnlkvAKplfDVcTX5C1
+        0mZ9HhrNaLER0BrJZkqDouAR8Q==
+X-Google-Smtp-Source: ABdhPJyklsyONHI38lOVI0R5wsUnGsW6kq05jCjs2DiOqIxIjANGoPXFxwEDemY6YKQCv1gPZ1G1Qg==
+X-Received: by 2002:a17:90b:1645:b0:1bf:11:66ae with SMTP id il5-20020a17090b164500b001bf001166aemr1164990pjb.198.1646246444742;
+        Wed, 02 Mar 2022 10:40:44 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b3-20020a056a00114300b004cc39630bfcsm21702579pfm.207.2022.03.02.10.40.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 10:40:44 -0800 (PST)
+Date:   Wed, 2 Mar 2022 10:40:43 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        joao@overdrivepizza.com, hjl.tools@gmail.com, jpoimboe@redhat.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2 01/39] kbuild: Fix clang build
+Message-ID: <202203021039.0DF89D3F2C@keescook>
+References: <20220224145138.952963315@infradead.org>
+ <20220224151322.072632223@infradead.org>
+ <CAKwvOdkD2WY=hEHy8_0zs70AGx6LRQwxL5mEZyB30uqpruYJyA@mail.gmail.com>
+ <Yh+dMJsH+ZMPfqwD@thelio-3990X>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Yh+dMJsH+ZMPfqwD@thelio-3990X>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm running into an issue with the ptp_ocp driver that I can use some
-help with.
+On Wed, Mar 02, 2022 at 09:37:04AM -0700, Nathan Chancellor wrote:
+> However, I think we could still address Peter's complaint of "there
+> should be an easier way for me to use the tools that are already in my
+> PATH" with his first iteration of this patch [1], which I feel is
+> totally reasonable:
+> 
+> $ make LLVM=-14
+> 
+> It is still easy to use (in fact, it is shorter than 'CC=clang-14') and
+> it does not change anything else about how we build with LLVM. We would
+> just have to add something along the lines of
+> 
+> "If your LLVM tools have a suffix like Debian's (clang-14, ld.lld-14,
+> etc.), use LLVM=<suffix>.
+> 
+> $ make LLVM=-14"
+> 
+> to Documentation/kbuild/llvm.rst.
+> 
+> I might change the patch not to be so clever though:
+> 
+> ifneq ($(LLVM),)
+> ifneq ($(LLVM),1)
+> LLVM_SFX := $(LLVM)
+> endif
+> endif
 
-This driver is for a PCIe board which has an FPGA providing UARTs
-for communication with onboard chips.  The design uses MSI interrupts.
+I like this idea! I think it's much easier to control than PATH (though
+I see the rationale there too).
 
-When the driver is initially loaded, tracepoints show that the 
-the interrupt vector is activated and allocated:
-
-  kworker/0:2-2827    [000] ..... 76495.343455: vector_activate: irq=82 is_managed=0 can_reserve=1 reserve=0
-  kworker/0:2-2827    [000] d..1. 76495.343456: vector_alloc: irq=82 vector=37 reserved=1 ret=0
-  kworker/0:2-2827    [000] d..1. 76495.343456: vector_update: irq=82 vector=37 cpu=3 prev_vector=0 prev_cpu=0
-  kworker/0:2-2827    [000] d..1. 76495.343457: vector_config: irq=82 vector=37 cpu=3 apicdest=0x00000006
-
-Later, when the serial device is /first/ opened, there are no errors
-and serial communication proceeds without a problem.  When the tty
-is closed, the MSI interrupt entry is deactivated:
-
-  tio-3209    [008] d..1. 76557.424960: vector_deactivate: irq=82 is_managed=0 can_reserve=0 reserve=0
-
-On the second (and subsequent) opens, a DMAR fault is observed, which
-seems to indicate that an IRQ from the serial port was taken before the 
-IRTE vector was updated.
-
-  [76561.103090] DMAR: DRHD: handling fault status reg 2
-  [76561.105092] DMAR: [INTR-REMAP] Request device [65:00.0] fault index 0x25 [fault reason 0x22] Present field in the IRTE entry is clear
-
-  tio-3211    [002] d..1. 76561.108431: vector_activate: irq=82 is_managed=0 can_reserve=0 reserve=0
-
-    (serial port closed)
-  tio-3211    [002] d..1.  76564.596150: vector_deactivate: irq=82 is_managed=0 can_reserve=0 reserve=0
-
-
-Why is the vector being deactivated when the tty device is closed,
-if it is left activated on module load?
-
-This is on net-next (5.17.0-rc4+)
 -- 
-Jonathan
+Kees Cook
