@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD30C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8719BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbiCBXzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:55:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        id S229766AbiCBXz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiCBXzs (ORCPT
+        with ESMTP id S229738AbiCBXz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:55:48 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D70C1301A7
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:55:03 -0800 (PST)
+        Wed, 2 Mar 2022 18:55:57 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD770131112
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:55:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646265303; x=1677801303;
+  t=1646265313; x=1677801313;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=J0QbwjCwDYXvMNsZ5InVMIU+FlQX9LNCp20z66s3YCI=;
-  b=N4KbMYvwgrFi/8qP6Tw5HqLC/XwJ+wyccsyU5sM+m8BPWcCwsllCKJZx
-   5guFVOTmWr+rgmXX0r/vd78fDy4GOxikGmf1qEX704K6JmrwZXd+oD3oV
-   eCZz7wqOwqy9AMZx81wJqbnsXFNqxoeIc7/URdhuuZvBS9U2kWhAW5zpk
-   1v87AqZQkZD6KRSYorUji7clalee7uf2YZq5oZWjDsYZzGZlgEznZXSlJ
-   nE+toLG/dCGVMt1TmUbtmG39jovB+4ajYcAuOIDKuFsCS9nxbMoO1ThZs
-   qirNeQokavNL4OE72OQ6y9Rt3M92k/Ua5tVc1IpYFVpal0RzkWMwPgaZY
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253459978"
+  bh=MhUQaja/NcVj8kw9fjRzNWwu1H0JU2FYXWCdvlaoY6k=;
+  b=HOIjDO/CCbUYYArHDX1kr0EGRursI1wzvRYeSdYstiodv21KN8YYRBxI
+   A+OpneKVVd4xaYDMCSq04hkisl4rG1LxzwRu/rGjD+g487P2r1RhQJkmL
+   s9dfQ3n3MjlqYYx+QcEjnOQZxHsVTS5avtCfSiGJy2GDlNSyj4+V6FCtc
+   MTYCU+lDz99fyixNhWky8jJKPQ8ctmgmRwiP0l9g20emzgilTTYdZ5RZQ
+   biwTbnA+41bL0OR1dYDIPGW7px4b9JUQ2qUfnkSdEDQYzmISSV6rEbMRh
+   EyVqrkCz763SOJaGtHdaQGr8vCwDYL8V4zKlxZ26lQNNOPceWM93T+yvo
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233496793"
 X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="253459978"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:33:01 -0800
+   d="scan'208";a="233496793"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:33:01 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="709698415"
+   d="scan'208";a="594181258"
 Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 02 Mar 2022 15:33:00 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2022 15:33:00 -0800
 Received: from kbuild by e9605edfa585 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nPYSp-00024t-Kg; Wed, 02 Mar 2022 23:32:59 +0000
-Date:   Thu, 3 Mar 2022 07:32:44 +0800
+        id 1nPYSp-00024v-Lf; Wed, 02 Mar 2022 23:32:59 +0000
+Date:   Thu, 3 Mar 2022 07:32:51 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/050-nvme 9/15] m68k-linux-ld: apple.c:undefined
- reference to `devm_apple_rtkit_init'
-Message-ID: <202203030728.ft88aFTm-lkp@intel.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [frederic-dynticks:rcu/context-tracking 14/19]
+ kernel/rcu/tree_plugin.h:932:13: error: static declaration of
+ 'rcu_preempt_deferred_qs' follows non-static declaration
+Message-ID: <202203030729.s3AJ15rL-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,51 +56,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/050-nvme
-head:   fa98fe78deae80c3ca00451876f72fd38b2b3ee9
-commit: 27dce760587c8c88aef9a2ef877a92df348075a6 [9/15] WIP: nvme-apple: add initial Apple SoC NVMe driver
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220303/202203030728.ft88aFTm-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking
+head:   e4eaff86ec91c1cbde9a113cf5232dac9f897337
+commit: 5a91f02835a27bd066154ab87408505806710e19 [14/19] rcu/context-tracking: Move RCU-dynticks internal functions to context_tracking
+config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220303/202203030729.s3AJ15rL-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/27dce760587c8c88aef9a2ef877a92df348075a6
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/050-nvme
-        git checkout 27dce760587c8c88aef9a2ef877a92df348075a6
+        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=5a91f02835a27bd066154ab87408505806710e19
+        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+        git fetch --no-tags frederic-dynticks rcu/context-tracking
+        git checkout 5a91f02835a27bd066154ab87408505806710e19
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_destroy':
-   apple.c:(.text+0x51e): undefined reference to `apple_sart_remove_allowed_region'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_setup':
-   apple.c:(.text+0x5c2): undefined reference to `apple_sart_add_allowed_region'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_probe':
-   apple.c:(.text+0x1332): undefined reference to `apple_sart_get'
->> m68k-linux-ld: apple.c:(.text+0x152e): undefined reference to `devm_apple_rtkit_init'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_disable':
-   apple.c:(.text+0x17a4): undefined reference to `apple_rtkit_is_crashed'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_shutdown':
-   apple.c:(.text+0x1a1e): undefined reference to `apple_rtkit_is_running'
->> m68k-linux-ld: apple.c:(.text+0x1a30): undefined reference to `apple_rtkit_shutdown'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_remove':
-   apple.c:(.text+0x1ad6): undefined reference to `apple_rtkit_is_running'
-   m68k-linux-ld: apple.c:(.text+0x1ae6): undefined reference to `apple_rtkit_shutdown'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_reset_work':
-   apple.c:(.text+0x1b4e): undefined reference to `apple_rtkit_is_crashed'
->> m68k-linux-ld: apple.c:(.text+0x1b94): undefined reference to `apple_rtkit_is_running'
-   m68k-linux-ld: apple.c:(.text+0x1bec): undefined reference to `apple_rtkit_shutdown'
->> m68k-linux-ld: apple.c:(.text+0x1c00): undefined reference to `apple_rtkit_reinit'
->> m68k-linux-ld: apple.c:(.text+0x1c3c): undefined reference to `apple_rtkit_boot'
-   m68k-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_timeout':
-   apple.c:(.text+0x2280): undefined reference to `apple_rtkit_is_crashed'
-   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
+   In file included from kernel/rcu/tree.c:4457:
+>> kernel/rcu/tree_plugin.h:932:13: error: static declaration of 'rcu_preempt_deferred_qs' follows non-static declaration
+     932 | static void rcu_preempt_deferred_qs(struct task_struct *t)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/rcupdate.h:227,
+                    from include/linux/rcupdate_wait.h:9,
+                    from kernel/rcu/tree.c:25:
+   include/linux/rcutree.h:63:6: note: previous declaration of 'rcu_preempt_deferred_qs' was here
+      63 | void rcu_preempt_deferred_qs(struct task_struct *t);
+         |      ^~~~~~~~~~~~~~~~~~~~~~~
+   In file included from kernel/rcu/tree.c:4457:
+   kernel/rcu/tree_plugin.h:932:13: warning: 'rcu_preempt_deferred_qs' defined but not used [-Wunused-function]
+     932 | static void rcu_preempt_deferred_qs(struct task_struct *t)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/rcu_preempt_deferred_qs +932 kernel/rcu/tree_plugin.h
+
+790da248978a072 Paul E. McKenney 2021-09-29  927  
+790da248978a072 Paul E. McKenney 2021-09-29  928  // Except that we do need to respond to a request by an expedited grace
+790da248978a072 Paul E. McKenney 2021-09-29  929  // period for a quiescent state from this CPU.  Note that requests from
+790da248978a072 Paul E. McKenney 2021-09-29  930  // tasks are handled when removing the task from the blocked-tasks list
+790da248978a072 Paul E. McKenney 2021-09-29  931  // below.
+790da248978a072 Paul E. McKenney 2021-09-29 @932  static void rcu_preempt_deferred_qs(struct task_struct *t)
+790da248978a072 Paul E. McKenney 2021-09-29  933  {
+790da248978a072 Paul E. McKenney 2021-09-29  934  	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
+790da248978a072 Paul E. McKenney 2021-09-29  935  
+790da248978a072 Paul E. McKenney 2021-09-29  936  	if (rdp->cpu_no_qs.b.exp)
+790da248978a072 Paul E. McKenney 2021-09-29  937  		rcu_report_exp_rdp(rdp);
+790da248978a072 Paul E. McKenney 2021-09-29  938  }
+3e31009898699df Paul E. McKenney 2018-06-21  939  
+
+:::::: The code at line 932 was first introduced by commit
+:::::: 790da248978a0722d92d1471630c881704f7eb0d rcu: Make idle entry report expedited quiescent states
+
+:::::: TO: Paul E. McKenney <paulmck@kernel.org>
+:::::: CC: Paul E. McKenney <paulmck@kernel.org>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
