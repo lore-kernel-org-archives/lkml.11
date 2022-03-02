@@ -2,72 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA9CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D17AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240101AbiCBI0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:26:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
+        id S240109AbiCBI2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:28:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240093AbiCBI0n (ORCPT
+        with ESMTP id S235447AbiCBI2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:26:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63AE0B82CC
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:26:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646209560;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 2 Mar 2022 03:28:31 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08693387B7
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 00:27:47 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3D77A218EE;
+        Wed,  2 Mar 2022 08:27:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646209666; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=YtrInDoeeooDXLH4/ASDNuBM89b2Da/ya3ncv+m8FWA=;
-        b=NrKxjS2mZ+3LnBTNJCqK+BpA/wvESboaJuprHaZfPRJe6Vhr9BJ5QjipGwKmKGkpMhGDZN
-        tcA4cEpdd6JCOxI1V+8K/WJWZb4DGmZ29Ry5t5KweCDXskl+gZc5TgulC8NcFclj/Lcufz
-        E3EHKq9FlGA4zQz7FLTkcP/hCdREJDk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-326-sAHRB3rVNm6CEswhqULziw-1; Wed, 02 Mar 2022 03:25:57 -0500
-X-MC-Unique: sAHRB3rVNm6CEswhqULziw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F944824FA7;
-        Wed,  2 Mar 2022 08:25:55 +0000 (UTC)
-Received: from T590 (ovpn-8-19.pek2.redhat.com [10.72.8.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 629027FCE4;
-        Wed,  2 Mar 2022 08:25:49 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 16:25:45 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Cc:     linux-scsi <linux-scsi@vger.kernel.org>, yukuai3@huawei.com,
-        linux-next <linux-next@vger.kernel.org>, axboe@kernel.dk,
-        linux-block@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [next-20220225][Oops][ppc] lvm snapshot merge results kernel
- panics (throtl_pending_timer_fn)
-Message-ID: <Yh8qCS5JM8ZbtqY4@T590>
-References: <d583adf0-2d98-60b6-620c-722912c05852@linux.vnet.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d583adf0-2d98-60b6-620c-722912c05852@linux.vnet.ibm.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+        bh=9TSNZrBpMR+dD20Bm8WKUFJxKv90bww4RaWEH7qCn6E=;
+        b=vDMBA6VN228hGxDmm4+6hI/zXP5PucvtznNszbtFx+r1zlfTWAjzsBSAEkQQKSjaRTgrN9
+        2yI1ubP9jcE0vQwN0nQjXKP720KLsPoOiUkmUlnfShp0LUsNe9DS0cHstw8yLJBoQMiqne
+        ehKo0tf1a+Sqd9NQA8vm2ymLCMDObfc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646209666;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9TSNZrBpMR+dD20Bm8WKUFJxKv90bww4RaWEH7qCn6E=;
+        b=2eissv3EzPZGWaDipG/hR9vy55/Tv2Dhw65glMJwAGemow5y6iG+53f2gHk54jMzG6rmbh
+        VunqKtNcIDmHnNBw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 23217A3B84;
+        Wed,  2 Mar 2022 08:27:45 +0000 (UTC)
+Date:   Wed, 02 Mar 2022 09:27:45 +0100
+Message-ID: <s5hsfs0oj26.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Zhen Ni <nizhen@uniontech.com>
+Cc:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: intel_hdmi: Fix reference to PCM buffer address
+In-Reply-To: <20220302074241.30469-1-nizhen@uniontech.com>
+References: <20220302074241.30469-1-nizhen@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 01:31:39PM +0530, Abdul Haleem wrote:
-> Greeting's
+On Wed, 02 Mar 2022 08:42:41 +0100,
+Zhen Ni wrote:
 > 
-> Linux next kernel 5.17.0-rc5-next-20220225 crashed on my power 10 LPAR when
-> merge lvm snapshot on nvme disk
+> PCM buffers might be allocated dynamically when the buffer
+> preallocation failed or a larger buffer is requested, and it's not
+> guaranteed that substream->dma_buffer points to the actually used
+> buffer.  The driver needs to refer to substream->runtime->dma_addr
+> instead for the buffer address.
+> 
+> Signed-off-by: Zhen Ni <nizhen@uniontech.com>
 
-Please try next-20220301, in which the "bad" patch of 'block: cancel all
-throttled bios in del_gendisk()' is dropped.
+Thanks, applied now with Cc-to-stable.
+
+I guess the had_pcm_mmap() can be dropped completely and replaced with
+the standard mmap helper, as what we really want is rather wc.
+But it can be done for 5.18.
 
 
-Thanks,
-Ming
-
+Takashi
