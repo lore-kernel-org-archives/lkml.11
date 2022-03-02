@@ -2,161 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A40C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C799C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243267AbiCBOxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:53:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50212 "EHLO
+        id S243270AbiCBOyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:54:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235638AbiCBOxi (ORCPT
+        with ESMTP id S233504AbiCBOy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:53:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38ABA24F05;
-        Wed,  2 Mar 2022 06:52:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC25261631;
-        Wed,  2 Mar 2022 14:52:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1043C004E1;
-        Wed,  2 Mar 2022 14:52:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646232774;
-        bh=AaVZTbcwsLoEN6dmpELG2w6iDesUHs9sUP4+Omqezc0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kmJqzFyFBVEXdMwB0eYXxslBglK/+MZ5AFOPSiGR8t3try2vJjoWiGy8wnz2URrGw
-         hA8GFBMn5xOuRu5LtAgT8WkMLUhPG0jHyNhC76m4laj5WdP4reH84Q7cTJKuIdpfXD
-         xphCFdJ9efrMR7DaHcdLNG/zDWLE9Dc5KhkjfPRc=
-Date:   Wed, 2 Mar 2022 15:52:51 +0100
-From:   'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-To:     =?utf-8?B?77+95b+177+977+9L1RWIFMvVyBMYWIoVkQpL1N0YWZmIEVuZ2luZWVyLw==?=
-         =?utf-8?B?77+977y677+977+977+977+9?= <yj84.jang@samsung.com>
-Cc:     "'Rafael J. Wysocki'" <rafael@kernel.org>,
-        'Pavel Machek' <pavel@ucw.cz>,
-        'Len Brown' <len.brown@intel.com>,
-        'Bjorn Helgaas' <bhelgaas@google.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-usb@vger.kernel.org, js07.lee@samsung.com
-Subject: Re: [PATCH] PM: Add device name to suspend_report_result()
-Message-ID: <Yh+Ew8nd2C44ShHw@kroah.com>
-References: <CGME20220302064921epcas1p19fbe8c017d776657caa696a3cef10093@epcas1p1.samsung.com>
- <20220302064917.64073-1-yj84.jang@samsung.com>
- <Yh8jb/X5ZNFvVQlf@kroah.com>
- <03e001d82e24$b1b0e450$1512acf0$@samsung.com>
+        Wed, 2 Mar 2022 09:54:26 -0500
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21722DD66;
+        Wed,  2 Mar 2022 06:53:42 -0800 (PST)
+Received: by mail-wr1-f46.google.com with SMTP id r10so3218046wrp.3;
+        Wed, 02 Mar 2022 06:53:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ymAiqH7FrFQT4kALiSCU8D+YjYYsG1H9OJ7iD9GzacQ=;
+        b=F5qx+QEZefC0cP/nJbw/3/C5Y0U2ef4IPOf1oD/kcf5cGpBIHd4oPR51HhZ7QzTMf4
+         MV2yzcAyzWXT28DLYZgBcFARXnTlQwtrz0QLzZ1OHfZuHiEIBs1yrcjrgDCubRXbTq/u
+         m/J8tY3z3ulgtnzS96cKnnM0iLZ4ZVla3QTsENa7fujWZpYloCyU4onoj1zjX3Oz60+e
+         2uV1oQWedY2MAEf7Ft9ODgMV2FFpUohx6yG2QRZuB+useyFexXhCy4JSFUrGphWjRedl
+         M3tVN7yu2a5hU5eT/Q2q7kCqPa2d4JZUfbw95FVPc4TNocdu/ewVMCTkHt8pSHy21jzU
+         EdNQ==
+X-Gm-Message-State: AOAM530zbT2WuC2FVUzkHr5w72cXjc2sgMM0VOOtKwrUAT4Rh3k3Y6JY
+        W0+oLlTrqFDd5XQ1cchE7es=
+X-Google-Smtp-Source: ABdhPJymZRwxT/Fzt+V604FQew9mY27jW0koz3Qh0DPBc5UJLdPz6bYdfKZKRPghGZXuuWQuqc+y6g==
+X-Received: by 2002:a05:6000:156a:b0:1ed:ab7e:b69b with SMTP id 10-20020a056000156a00b001edab7eb69bmr23447319wrz.305.1646232821500;
+        Wed, 02 Mar 2022 06:53:41 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b00380fc02ff76sm6686255wms.15.2022.03.02.06.53.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 06:53:41 -0800 (PST)
+Date:   Wed, 2 Mar 2022 14:53:39 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Iouri Tarassov <iourit@linux.microsoft.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
+        spronovo@linux.microsoft.com, gregkh@linuxfoundation.org
+Subject: Re: [PATCH v3 00/30] Driver for Hyper-v virtual compute device
+Message-ID: <20220302145339.2s2bt252sxj3lsn6@liuwe-devbox-debian-v2>
+References: <cover.1646161341.git.iourit@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <03e001d82e24$b1b0e450$1512acf0$@samsung.com>
+In-Reply-To: <cover.1646161341.git.iourit@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 08:00:14PM +0900, �念��/TV S/W Lab(VD)/Staff Engineer/�Ｚ���� wrote:
-> > -----Original Message-----
-> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Sent: Wednesday, March 2, 2022 4:58 PM
-> > To: Youngjin Jang <yj84.jang@samsung.com>
-> > Cc: Rafael J. Wysocki <rafael@kernel.org>; Pavel Machek <pavel@ucw.cz>;
-> > Len Brown <len.brown@intel.com>; Bjorn Helgaas <bhelgaas@google.com>;
-> > linux-pm@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
-> > pci@vger.kernel.org; linux-acpi@vger.kernel.org; linux-
-> usb@vger.kernel.org;
-> > js07.lee@samsung.com
-> > Subject: Re: [PATCH] PM: Add device name to suspend_report_result()
-> > 
-> > On Wed, Mar 02, 2022 at 03:49:17PM +0900, Youngjin Jang wrote:
-> > > From: "yj84.jang" <yj84.jang@samsung.com>
-> > >
-> > > currently, suspend_report_result() prints only function information.
-> > > If any driver uses common pm function, nobody knows who called failed
-> > > function exactly.
-> > >
-> > > So, device information is needed to recognize specific wrong driver.
-> > >
-> > > e.g.)
-> > > PM: dpm_run_callback(): pm_generic_suspend+0x0/0x48 returns 0
-> > > PM: dpm_run_callback(): platform_pm_suspend+0x0/0x68 returns 0 after
-> > > patch,
-> > > PM: dpm_run_callback(): pm_generic_suspend+0x0/0x48 (amba) returns 0
-> > > PM: dpm_run_callback(): platform_pm_suspend+0x0/0x68 (armv7-pmu)
-> > > returns 0
-> > >
-> > > Signed-off-by: yj84.jang <yj84.jang@samsung.com>
-> > > ---
-> > >  drivers/base/power/main.c  | 10 +++++-----
-> > >  drivers/pci/pci-driver.c   | 14 +++++++-------
-> > >  drivers/pnp/driver.c       |  2 +-
-> > >  drivers/usb/core/hcd-pci.c |  4 ++--
-> > >  include/linux/pm.h         |  8 ++++----
-> > >  5 files changed, 19 insertions(+), 19 deletions(-)
-> > >
-> > > diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
-> > > index 04ea92c..a762fe8 100644
-> > > --- a/drivers/base/power/main.c
-> > > +++ b/drivers/base/power/main.c
-> > > @@ -485,7 +485,7 @@ static int dpm_run_callback(pm_callback_t cb, struct
-> > device *dev,
-> > >  	trace_device_pm_callback_start(dev, info, state.event);
-> > >  	error = cb(dev);
-> > >  	trace_device_pm_callback_end(dev, error);
-> > > -	suspend_report_result(cb, error);
-> > > +	suspend_report_result(dev, cb, error);
-> > >
-> > >  	initcall_debug_report(dev, calltime, cb, error);
-> > >
-> > > @@ -1568,7 +1568,7 @@ static int legacy_suspend(struct device *dev,
-> > pm_message_t state,
-> > >  	trace_device_pm_callback_start(dev, info, state.event);
-> > >  	error = cb(dev, state);
-> > >  	trace_device_pm_callback_end(dev, error);
-> > > -	suspend_report_result(cb, error);
-> > > +	suspend_report_result(dev, cb, error);
-> > >
-> > >  	initcall_debug_report(dev, calltime, cb, error);
-> > >
-> > > @@ -1855,7 +1855,7 @@ static int device_prepare(struct device *dev,
-> > pm_message_t state)
-> > >  	device_unlock(dev);
-> > >
-> > >  	if (ret < 0) {
-> > > -		suspend_report_result(callback, ret);
-> > > +		suspend_report_result(dev, callback, ret);
-> > >  		pm_runtime_put(dev);
-> > >  		return ret;
-> > >  	}
-> > > @@ -1960,10 +1960,10 @@ int dpm_suspend_start(pm_message_t state)  }
-> > > EXPORT_SYMBOL_GPL(dpm_suspend_start);
-> > >
-> > > -void __suspend_report_result(const char *function, void *fn, int ret)
-> > > +void __suspend_report_result(const char *function, struct device
-> > > +*dev, void *fn, int ret)
-> > >  {
-> > >  	if (ret)
-> > > -		pr_err("%s(): %pS returns %d\n", function, fn, ret);
-> > > +		pr_err("%s(): %pS (%s) returns %d\n", function, fn,
-> > > +dev_driver_string(dev), ret);
-> > 
-> > If you have a struct device, please use dev_err().
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Hello,
-> Thanks for your review.
-> 
-> I think dev_err() is nice option, but we can see a minor issue.
-> Prefix log "PM: " would be lost, If I use dev_err() in this context.
-> As you know, all logs in power management include "PM :" prefix.
+Hi Iouri
 
-Why does that matter?  Fix them all to use the struct device pointer and
-then they will be properly unified with the rest of the kernel log
-infrastructure.
+I've gone through the whole series. A large portion of the series is
+about graphics stuff which is out of my wheelhouse.
 
-thanks,
+I have two general comments here.
 
-greg k-h
+There seems to be an excessive amount pr_debug / pr_err in code. Please
+try to reduce their number a bit.
+
+For memory allocation you always use vzalloc, however large or small the
+allocation may be. Why not use kzalloc for smaller allocations?
+
+Thanks,
+Wei.
