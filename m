@@ -2,219 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93501C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244836AbiCBTDf convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 14:03:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
+        id S244831AbiCBTDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 14:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244817AbiCBTDU (ORCPT
+        with ESMTP id S244816AbiCBTDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 14:03:20 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49D2A33896
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:02:34 -0800 (PST)
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-569-blNd0XKqPPGu3JWhlIjUtg-1; Wed, 02 Mar 2022 14:02:28 -0500
-X-MC-Unique: blNd0XKqPPGu3JWhlIjUtg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 781C084A5F1;
-        Wed,  2 Mar 2022 19:02:27 +0000 (UTC)
-Received: from x1.com (unknown [10.22.32.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0257719C59;
-        Wed,  2 Mar 2022 19:02:21 +0000 (UTC)
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Clark Williams <williams@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [PATCH V3 04/15] rtla/timerlat: Add the automatic trace option
-Date:   Wed,  2 Mar 2022 20:01:29 +0100
-Message-Id: <92438f7ef132c731f538cebdf77850300afe04a5.1646247211.git.bristot@kernel.org>
-In-Reply-To: <cover.1646247211.git.bristot@kernel.org>
-References: <cover.1646247211.git.bristot@kernel.org>
+        Wed, 2 Mar 2022 14:03:24 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B375DEE5;
+        Wed,  2 Mar 2022 11:02:40 -0800 (PST)
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K83QY1FMLz67LfL;
+        Thu,  3 Mar 2022 03:02:29 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Mar 2022 20:02:37 +0100
+Received: from [10.47.84.129] (10.47.84.129) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 2 Mar
+ 2022 19:02:36 +0000
+Message-ID: <499b0d93-9352-b52f-0ee8-7dc7fd0bac5c@huawei.com>
+Date:   Wed, 2 Mar 2022 19:02:35 +0000
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v7 04/10] hisi_acc_vfio_pci: add new vfio_pci driver for
+ HiSilicon ACC devices
+To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
+        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
+        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
+        <liulongfang@huawei.com>, <prime.zeng@hisilicon.com>,
+        <jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
+References: <20220302172903.1995-1-shameerali.kolothum.thodi@huawei.com>
+ <20220302172903.1995-5-shameerali.kolothum.thodi@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220302172903.1995-5-shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.84.129]
+X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the -a/--auto <arg in us> option. This option sets some commonly
-used options while debugging the system. It aims to help users produce
-reports in the field, reducing the number of arguments passed to the
-tool in the first approach to a problem.
+On 02/03/2022 17:28, Shameer Kolothum wrote:
+> +config HISI_ACC_VFIO_PCI
+> +	tristate "VFIO PCI support for HiSilicon ACC devices"
+> +	depends on (ARM64 && VFIO_PCI_CORE) || (COMPILE_TEST && 64BIT)
 
-It is equivalent to setting osnoise/stop_tracing_total_us and print_stack
-with the argument, and saving the trace to timerlat_trace.txt file if the
-trace is stopped automatically.
+This means that we will have HISI_ACC_VFIO_PCI=y for COMPILE_TEST=y and 
+64BIT=y and VFIO_PCI_CORE=n, but ...
 
-Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- .../tools/rtla/common_timerlat_options.rst    |  7 ++++++
- tools/tracing/rtla/src/timerlat_hist.c        | 24 +++++++++++++++----
- tools/tracing/rtla/src/timerlat_top.c         | 22 ++++++++++++++---
- 3 files changed, 46 insertions(+), 7 deletions(-)
+> +	help
+> +	  This provides generic PCI support for HiSilicon ACC devices
+> +	  using the VFIO framework.
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/vfio/pci/hisilicon/Makefile b/drivers/vfio/pci/hisilicon/Makefile
+> new file mode 100644
+> index 000000000000..c66b3783f2f9
+> --- /dev/null
+> +++ b/drivers/vfio/pci/hisilicon/Makefile
+> @@ -0,0 +1,4 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +obj-$(CONFIG_HISI_ACC_VFIO_PCI) += hisi-acc-vfio-pci.o
+> +hisi-acc-vfio-pci-y := hisi_acc_vfio_pci.o
+> +
+> diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
+> new file mode 100644
+> index 000000000000..8129c3457b3b
+> --- /dev/null
+> +++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
+> @@ -0,0 +1,100 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2021, HiSilicon Ltd.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/eventfd.h>
+> +#include <linux/file.h>
+> +#include <linux/hisi_acc_qm.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +#include <linux/vfio.h>
+> +#include <linux/vfio_pci_core.h>
+> +
+> +static int hisi_acc_vfio_pci_open_device(struct vfio_device *core_vdev)
+> +{
+> +	struct vfio_pci_core_device *vdev =
+> +		container_of(core_vdev, struct vfio_pci_core_device, vdev);
+> +	int ret;
+> +
+> +	ret = vfio_pci_core_enable(vdev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	vfio_pci_core_finish_enable(vdev);
 
-diff --git a/Documentation/tools/rtla/common_timerlat_options.rst b/Documentation/tools/rtla/common_timerlat_options.rst
-index e9c1bfd55d48..14a24a121f5d 100644
---- a/Documentation/tools/rtla/common_timerlat_options.rst
-+++ b/Documentation/tools/rtla/common_timerlat_options.rst
-@@ -1,3 +1,10 @@
-+**-a**, **--auto** *us*
-+
-+        Set the automatic trace mode. This mode sets some commonly used options
-+        while debugging the system. It is equivalent to use **-T** *us* **-s** *us*
-+        **-t**. By default, *timerlat* tracer uses FIFO:95 for *timerlat* threads,
-+        thus equilavent to **-P** *f:95*.
-+
- **-p**, **--period** *us*
- 
-         Set the *timerlat* tracer period in microseconds.
-diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
-index 237e1735afa7..9cd97095b04a 100644
---- a/tools/tracing/rtla/src/timerlat_hist.c
-+++ b/tools/tracing/rtla/src/timerlat_hist.c
-@@ -428,11 +428,12 @@ static void timerlat_hist_usage(char *usage)
- 
- 	char *msg[] = {
- 		"",
--		"  usage: [rtla] timerlat hist [-h] [-q] [-d s] [-D] [-n] [-p us] [-i us] [-T us] [-s us] [-t[=file]] \\",
--		"         [-c cpu-list] [-P priority] [-E N] [-b N]  [--no-irq] [--no-thread] [--no-header] [--no-summary] \\",
--		"         [--no-index] [--with-zeros]",
-+		"  usage: [rtla] timerlat hist [-h] [-q] [-d s] [-D] [-n] [-a us] [-p us] [-i us] [-T us] [-s us] \\",
-+		"         [-t[=file]] [-c cpu-list] [-P priority] [-E N] [-b N]  [--no-irq] [--no-thread] [--no-header] \\",
-+		"         [--no-summary] [--no-index] [--with-zeros]",
- 		"",
- 		"	  -h/--help: print this menu",
-+		"	  -a/--auto: set automatic trace mode, stopping the session if argument in us latency is hit",
- 		"	  -p/--period us: timerlat period in us",
- 		"	  -i/--irq us: stop trace if the irq latency is higher than the argument in us",
- 		"	  -T/--thread us: stop trace if the thread latency is higher than the argument in us",
-@@ -477,6 +478,7 @@ static struct timerlat_hist_params
- *timerlat_hist_parse_args(int argc, char *argv[])
- {
- 	struct timerlat_hist_params *params;
-+	int auto_thresh;
- 	int retval;
- 	int c;
- 
-@@ -491,6 +493,7 @@ static struct timerlat_hist_params
- 
- 	while (1) {
- 		static struct option long_options[] = {
-+			{"auto",		required_argument,	0, 'a'},
- 			{"cpus",		required_argument,	0, 'c'},
- 			{"bucket-size",		required_argument,	0, 'b'},
- 			{"debug",		no_argument,		0, 'D'},
-@@ -516,7 +519,7 @@ static struct timerlat_hist_params
- 		/* getopt_long stores the option index here. */
- 		int option_index = 0;
- 
--		c = getopt_long(argc, argv, "c:b:d:E:Dhi:np:P:s:t::T:012345",
-+		c = getopt_long(argc, argv, "a:c:b:d:E:Dhi:np:P:s:t::T:012345",
- 				 long_options, &option_index);
- 
- 		/* detect the end of the options. */
-@@ -524,6 +527,19 @@ static struct timerlat_hist_params
- 			break;
- 
- 		switch (c) {
-+		case 'a':
-+			auto_thresh = get_llong_from_str(optarg);
-+
-+			/* set thread stop to auto_thresh */
-+			params->stop_total_us = auto_thresh;
-+
-+			/* get stack trace */
-+			params->print_stack = auto_thresh;
-+
-+			/* set trace */
-+			params->trace_output = "timerlat_trace.txt";
-+
-+			break;
- 		case 'c':
- 			retval = parse_cpu_list(optarg, &params->monitored_cpus);
- 			if (retval)
-diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
-index d4187f6534ed..aef044832964 100644
---- a/tools/tracing/rtla/src/timerlat_top.c
-+++ b/tools/tracing/rtla/src/timerlat_top.c
-@@ -266,10 +266,11 @@ static void timerlat_top_usage(char *usage)
- 
- 	static const char *const msg[] = {
- 		"",
--		"  usage: rtla timerlat [top] [-h] [-q] [-d s] [-D] [-n] [-p us] [-i us] [-T us] [-s us] [-t[=file]] \\",
--		"	  [-c cpu-list] [-P priority]",
-+		"  usage: rtla timerlat [top] [-h] [-q] [-a us] [-d s] [-D] [-n] [-p us] [-i us] [-T us] [-s us] \\",
-+		"	  [[-t[=file]] -c cpu-list] [-P priority]",
- 		"",
- 		"	  -h/--help: print this menu",
-+		"	  -a/--auto: set automatic trace mode, stopping the session if argument in us latency is hit",
- 		"	  -p/--period us: timerlat period in us",
- 		"	  -i/--irq us: stop trace if the irq latency is higher than the argument in us",
- 		"	  -T/--thread us: stop trace if the thread latency is higher than the argument in us",
-@@ -307,6 +308,7 @@ static struct timerlat_top_params
- *timerlat_top_parse_args(int argc, char **argv)
- {
- 	struct timerlat_top_params *params;
-+	long long auto_thresh;
- 	int retval;
- 	int c;
- 
-@@ -319,6 +321,7 @@ static struct timerlat_top_params
- 
- 	while (1) {
- 		static struct option long_options[] = {
-+			{"auto",		required_argument,	0, 'a'},
- 			{"cpus",		required_argument,	0, 'c'},
- 			{"debug",		no_argument,		0, 'D'},
- 			{"duration",		required_argument,	0, 'd'},
-@@ -337,7 +340,7 @@ static struct timerlat_top_params
- 		/* getopt_long stores the option index here. */
- 		int option_index = 0;
- 
--		c = getopt_long(argc, argv, "c:d:Dhi:np:P:qs:t::T:",
-+		c = getopt_long(argc, argv, "a:c:d:Dhi:np:P:qs:t::T:",
- 				 long_options, &option_index);
- 
- 		/* detect the end of the options. */
-@@ -345,6 +348,19 @@ static struct timerlat_top_params
- 			break;
- 
- 		switch (c) {
-+		case 'a':
-+			auto_thresh = get_llong_from_str(optarg);
-+
-+			/* set thread stop to auto_thresh */
-+			params->stop_total_us = auto_thresh;
-+
-+			/* get stack trace */
-+			params->print_stack = auto_thresh;
-+
-+			/* set trace */
-+			params->trace_output = "timerlat_trace.txt";
-+
-+			break;
- 		case 'c':
- 			retval = parse_cpu_list(optarg, &params->monitored_cpus);
- 			if (retval)
--- 
-2.34.1
+... there does not seem to be a stub for vfio_pci_core_finish_enable(), 
+so I don't think that we compile under the conditions described. I think 
+that HISI_ACC_VFIO_PCI should always depends on HISI_ACC_VFIO_PCI
+
+> +
+> +	return 0;
+> +}
 
