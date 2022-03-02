@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 506B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F07CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242665AbiCBQdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:33:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
+        id S242758AbiCBQhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242543AbiCBQdC (ORCPT
+        with ESMTP id S238232AbiCBQhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 11:33:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1B7C6255;
-        Wed,  2 Mar 2022 08:32:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A2F6617F7;
-        Wed,  2 Mar 2022 16:32:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FDCBC004E1;
-        Wed,  2 Mar 2022 16:32:16 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Jx2KF4SC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646238734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pn15odJ1axHr1tSHXKM6R6gy8OQYz+UX/tuJV8kTZOI=;
-        b=Jx2KF4SCMS6oQ81ruL+PmUOxb313LAgFJH4b+Nm/AbpnaHEQrJ93HFFJlkrZFljIclR1Ig
-        7MjMDAT88vIHvYQ5jVCXMswnqvnSTAn/DRep7zjTiB1RFfgW3eKlFxCp1420xGYalEM2Wc
-        ntxUnKyAuMw/wp27G1pbbLokW2Kvk8w=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6b026337 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 2 Mar 2022 16:32:14 +0000 (UTC)
-Date:   Wed, 2 Mar 2022 17:32:07 +0100
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Laszlo Ersek <lersek@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        QEMU Developers <qemu-devel@nongnu.org>,
-        linux-hyperv@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        adrian@parity.io,
-        Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: propagating vmgenid outward and upward
-Message-ID: <Yh+cB5bWarl8CFN1@zx2c4.com>
-References: <CAHmME9qieLUDVoPYZPo=N8NCL1T-RzQ4p7kCFv3PKFUkhWZPsw@mail.gmail.com>
- <20220302031738-mutt-send-email-mst@kernel.org>
- <CAHmME9pf-bjnZuweoLqoFEmPy1OK7ogEgGEAva1T8uVTufhCuw@mail.gmail.com>
- <20220302074503-mutt-send-email-mst@kernel.org>
- <Yh93UZMQSYCe2LQ7@zx2c4.com>
- <20220302092149-mutt-send-email-mst@kernel.org>
- <CAHmME9rf7hQP78kReP2diWNeX=obPem=f8R-dC7Wkpic2xmffg@mail.gmail.com>
- <20220302101602-mutt-send-email-mst@kernel.org>
- <Yh+PET49oHNpxn+H@zx2c4.com>
- <20220302111737-mutt-send-email-mst@kernel.org>
+        Wed, 2 Mar 2022 11:37:15 -0500
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB9C4B78;
+        Wed,  2 Mar 2022 08:36:32 -0800 (PST)
+Received: by mail-yb1-f180.google.com with SMTP id j2so4596333ybu.0;
+        Wed, 02 Mar 2022 08:36:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fvGAdBIf+bhILkDwd1RAEBaMeGjQHU2I0tTcLA9pmuw=;
+        b=BjgtjKcdRg4y5tSWnwE6w/wAu/blR5Mf4UgGdHmH8dXcKcYUhxwM1btnFNA21tNSVC
+         zCeJTJyjXkpOQz91UYu9r1n1E9vxHHp2aKCXvz3kXXlX3GwQ+SM4eOl/N8BcILf0EQim
+         yM3nm6zjmK5QSDCyq4SZtF1bZ/vbqeoB9ufQdEwrbw5MGrzWKW2bIHLRIY71ZEKr0pp2
+         6TGO4MClhmBf48c5vGAlkMSGynf4OHHVyCD9SzVyk2NVGstQCz3ld+UiyLkj5DDSBjuJ
+         uFTwiU0YkZNQ7Kx2/7nxCzRPzDwDyamRD7C+a/10Xril6w421o0q5rfSBO37q/qcbyvn
+         tTug==
+X-Gm-Message-State: AOAM531nLR1a/GMQnMs744tPP07/Jt7QLRQjIOwgiCQNhAPnFBCoYMPN
+        cDFq7Tlk3nSsKqTt2VO7xdwsv9RmfhbJhV4Wznw=
+X-Google-Smtp-Source: ABdhPJxn9LMC8lwWO4YmbVkZlEVT1jBmWUWdBg1cMfWRsu7mg1BUeW+rNNGEaSftaTVtMzJb7bwJ16HO+lMGdkKcQfA=
+X-Received: by 2002:a25:6649:0:b0:628:a0c0:f0e0 with SMTP id
+ z9-20020a256649000000b00628a0c0f0e0mr3022520ybm.81.1646238991427; Wed, 02 Mar
+ 2022 08:36:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220302111737-mutt-send-email-mst@kernel.org>
+References: <20220211110423.22733-1-andriy.shevchenko@linux.intel.com> <Yh+SHs4CEWkiLxAe@smile.fi.intel.com>
+In-Reply-To: <Yh+SHs4CEWkiLxAe@smile.fi.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 2 Mar 2022 17:36:20 +0100
+Message-ID: <CAJZ5v0g_3a7A5aFab6ZsM8nPDmivoTeNgdSG17Lt71mFKmNxmg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] ACPI: Switch to use list_entry_is_head() helper
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        nvdimm@lists.linux.dev, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+On Wed, Mar 2, 2022 at 4:50 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Fri, Feb 11, 2022 at 01:04:23PM +0200, Andy Shevchenko wrote:
+> > Since we got list_entry_is_head() helper in the generic header,
+> > we may switch the ACPI modules to use it. This eliminates the
+> > need in additional variable. In some cases it reduces critical
+> > sections as well.
+>
+> Besides the work required in a couple of cases (LKP) there is an
+> ongoing discussion about list loops (and this particular API).
+>
+> Rafael, what do you think is the best course of action here?
 
-On Wed, Mar 02, 2022 at 11:22:46AM -0500, Michael S. Tsirkin wrote:
-> > Because that 16 byte read of vmgenid is not atomic. Let's say you read
-> > the first 8 bytes, and then the VM is forked.
-> 
-> But at this point when VM was forked plaintext key and nonce are all in
-> buffer, and you previously indicated a fork at this point is harmless.
-> You wrote "If it changes _after_ that point of check ... it doesn't
-> matter:"
-
-Ahhh, fair point. I think you're right.
-
-Alright, so all we're talking about here is an ordinary 16-byte read,
-and 16 bytes of storage per keypair, and a 16-byte comparison.
-
-Still seems much worse than just having a single word...
-
-Jason
+I think the current approach is to do the opposite of what this patch
+is attempting to do: avoid using the list iterator outside of the
+loop.
