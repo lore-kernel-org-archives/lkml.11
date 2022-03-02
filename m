@@ -2,88 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237463AbiCBTaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 14:30:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50066 "EHLO
+        id S238816AbiCBTcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 14:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233197AbiCBTaE (ORCPT
+        with ESMTP id S232209AbiCBTcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 14:30:04 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66EB27B18;
-        Wed,  2 Mar 2022 11:29:20 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id mr24-20020a17090b239800b001bf0a375440so311795pjb.4;
-        Wed, 02 Mar 2022 11:29:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UzhXNQEk/98D9nQUp1p8H/GyW3pI8iVAEFCE5YOMGLY=;
-        b=d+cdkiaLMABcaz2/BTbjX2lCMh2WlXg1OAvIXG+RneTxIPApCaeWTwrYce2FtoR3BQ
-         j4EuGjR/HHxtLdAik2Q+eWeEdQ19c4n4FashAo5xeCMkY2QAblES/mrzXkLYwXKsIILi
-         Rd63nuZNJgeljVaAVKFS9vExpPnVFse5i8GL27dYKjKEd6MViSZbT+psLuYBe/79FDuj
-         j8R1BeeMnwBA3ptFzVlGgYOjjL3L/9f3gfzxLGHRuWfcUoO50cd0YJSHM8nj99Lvjc0u
-         Gq/WoGEvp8j7hHi/2KAx3ASOO9zBaeaKMgrJQWqK9e6LZczSySjOEJMGsq+lXu0zFiqH
-         78Sw==
+        Wed, 2 Mar 2022 14:32:06 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F93BD64F4
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:31:23 -0800 (PST)
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 221F73F07E
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:31:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646249482;
+        bh=h7zoiHroALo7RM2Ucqc+edums/unXH0DNAll2z0zzoI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=ni+aXlkowli1/cMc2XxZcdEpnfoCXecPMDooQlGNr7UU7dk4xGQloLDOIPnUCXYVR
+         zdAoV2aWi++fgXailw6BTsUp1D8Lt/W34Mr4dXynyi1vVzIDPbNGzuYHZjTuCuNLjf
+         ncLI7PAbcWCasYr3HG6ikOtD6AjLnzmsEsrP4boz8RV79Gi6Z1pG3YoKTk3yLNkp8o
+         qYWHnhTU6SWOD9xbI2Oy9jhkugwrYY6POTUH0r93dEVk6kDUVU1EADNqtmoLQw7aCZ
+         6QpzCJcF+/3NWAUOZ+IBNAQXmbNZm7QRmDVjXLwTLz41swENH0HM/6ajs8rCvaRKAe
+         a0UWn5kV6yotQ==
+Received: by mail-wm1-f69.google.com with SMTP id o21-20020a05600c511500b003818c4b98b5so793500wms.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 11:31:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=UzhXNQEk/98D9nQUp1p8H/GyW3pI8iVAEFCE5YOMGLY=;
-        b=cqPYoN9ncnseoHjDzOdgqMIEvDFEXjoRnu4UdisJF/kkrNtk58s1tDYMadWcrqaWNB
-         Fk1aslHVR9B4bb3n/jSUY80PKbpUFxFVRZ3/J10Ixe/TUXOkF7Fa30ICc6i2Tw1/eVSp
-         T5E4pizhlomj/ayJZw0VWQ2/xKPC768I0lFCyMxCjtISdKbYSLkWudxO1zIzmYrcm5ZH
-         gOIbuSpWwLFnFbJdiPfnG59y3GVHH9AOt5l4Pzmx++mY8iTosvDeTJ+ccMSLyS3UhKCG
-         6dxeruQ1MSYoGfXcB00I+led+9RLzVJKHx2l1HaH+/pt9y7Amnl/PcdSwC61/81K5VLn
-         J3ag==
-X-Gm-Message-State: AOAM531HJLMYSkacRsrPemqXjhJyBqseWiJyl6hMYjrdEUmSKIY3w1N9
-        gOjY6KuxHceJU6pk996YcTeLgjed3Rs34Q==
-X-Google-Smtp-Source: ABdhPJy6JyjjvgV7Esq1cCv1MhMeNUuMKG73Gd6Qjt1R93GuwVHnmRshzm15dwzxBFVlearJQEKFVg==
-X-Received: by 2002:a17:902:e889:b0:151:a56d:eb8f with SMTP id w9-20020a170902e88900b00151a56deb8fmr1132881plg.142.1646249360397;
-        Wed, 02 Mar 2022 11:29:20 -0800 (PST)
-Received: from localhost.localdomain ([122.161.53.154])
-        by smtp.gmail.com with ESMTPSA id e21-20020a635455000000b00372badd9063sm16763076pgm.11.2022.03.02.11.29.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 11:29:20 -0800 (PST)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>, Han Xu <han.xu@nxp.com>
-Subject: [PATCH] dt-bindings: spi: Update NXP Flexspi maintainer details
-Date:   Thu,  3 Mar 2022 00:59:15 +0530
-Message-Id: <20220302192915.6193-1-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=h7zoiHroALo7RM2Ucqc+edums/unXH0DNAll2z0zzoI=;
+        b=VLPTCRqCDQ53fa4+QgjTTpzvCjoqjkCLYWKWk8gL5HsanXgqNX6X5Mjy/VzANNQyF0
+         YWThz0sMn4m1UrIzQG/iOVeCohMomAYuxDMBZEoKMQrK8lc7M14Lo1y2PxArrOHjvHLJ
+         Bj2lYrLcZex+rluvKySr4PlH0tFjaXB3YhD6riR8PdSRjWMsLeWQQgGW+aSV/nFi/2O5
+         jNG+R/7nUUQW1QryIg1TW3SiWyv0E51T09nUXENTA5fO7lBcI0YDjZvsNEfsixIw0FP5
+         8FHabd8ztz04PugM09LD1mzwyK34SqWTIFEZHHobOyfc3+ZtZRxXUT1AZ7Otsy3el+UI
+         41hw==
+X-Gm-Message-State: AOAM530mbtwKafNWS7HacarDoW7T77Qi9Vy4+NUoLHdcbGxdsi3Ny5tQ
+        eAVoYOOukbkPswveWbpbDpnZSCDC5KR1NexVBrjBxFLrvkxmoCmUuJ4JXyh39aPl/BNNXYr1Ktk
+        E0rffMA90bVXIl2cruieHtEZ+3/0lXpUvCOY8jpR/Jw==
+X-Received: by 2002:a05:6000:508:b0:1e4:a027:d147 with SMTP id a8-20020a056000050800b001e4a027d147mr24344771wrf.315.1646249481829;
+        Wed, 02 Mar 2022 11:31:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwacERm1jqXGVZsAJ8yvmRStyZfoO559hV3UUAuxRuYbfDu3w787ac8/2QnUb/1f7xbH8Keeg==
+X-Received: by 2002:a05:6000:508:b0:1e4:a027:d147 with SMTP id a8-20020a056000050800b001e4a027d147mr24344763wrf.315.1646249481644;
+        Wed, 02 Mar 2022 11:31:21 -0800 (PST)
+Received: from [192.168.0.137] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm10016714wmq.35.2022.03.02.11.31.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 11:31:20 -0800 (PST)
+Message-ID: <b7f68054-707c-8b76-23ab-027a8aab41f0@canonical.com>
+Date:   Wed, 2 Mar 2022 20:31:20 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [Patch v4 2/4] dt-bindings: memory: Update reg maxitems for
+ tegra186
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>, Ashish Mhetre <amhetre@nvidia.com>
+Cc:     thierry.reding@gmail.com, jonathanh@nvidia.com, digetx@gmail.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, vdumpa@nvidia.com, Snikam@nvidia.com
+References: <1646210609-21943-1-git-send-email-amhetre@nvidia.com>
+ <1646210609-21943-3-git-send-email-amhetre@nvidia.com>
+ <Yh+um1TSNWK8P6GY@robh.at.kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <Yh+um1TSNWK8P6GY@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Han Xu as flexspi maintainer.
-Also, update my email address as previous one is not working anymore.
+On 02/03/2022 18:51, Rob Herring wrote:
+> On Wed, Mar 02, 2022 at 02:13:27PM +0530, Ashish Mhetre wrote:
+>> >From tegra186 onwards, memory controller support multiple channels.
+>> Reg items are updated with address and size of these channels.
+>> Tegra186 has overall 5 memory controller channels. Tegra194 and tegra234
+>> have overall 17 memory controller channels each.
+>> There is 1 reg item for memory controller stream-id registers.
+>> So update the reg maxItems to 18 in tegra186 devicetree documentation.
+> 
+> Some of this needs to be in 'description' for 'reg'.
+> 
+>>
+>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+>> ---
+>>  .../devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml      | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>> index 13c4c82..eb7ed00 100644
+>> --- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>> +++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>> @@ -35,7 +35,7 @@ properties:
+>>  
+>>    reg:
+>>      minItems: 1
+>> -    maxItems: 3
+>> +    maxItems: 18
+>>  
 
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
----
- Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+...and with "if:" block constraining these on different hardware.
 
-diff --git a/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml b/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml
-index 283815d59e85..1b552c298277 100644
---- a/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-nxp-fspi.yaml
-@@ -7,7 +7,8 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: NXP Flex Serial Peripheral Interface (FSPI)
- 
- maintainers:
--  - Kuldeep Singh <kuldeep.singh@nxp.com>
-+  - Han Xu <han.xu@nxp.com>
-+  - Kuldeep Singh <singh.kuldeep87k@gmail.com>
- 
- allOf:
-   - $ref: "spi-controller.yaml#"
--- 
-2.25.1
 
+Best regards,
+Krzysztof
