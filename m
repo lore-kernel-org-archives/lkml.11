@@ -2,93 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5E4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC095C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243612AbiCBRK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        id S243684AbiCBRMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:12:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231790AbiCBRKY (ORCPT
+        with ESMTP id S243755AbiCBRLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:10:24 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D7E6342;
-        Wed,  2 Mar 2022 09:09:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646240981; x=1677776981;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ARu95SNjYvUW6s+dQ5hSBTaIXLn2LgPc0xfUHeJLPZ8=;
-  b=Kcnwq8R/yC952bKJDjGmx4d8EwmscA4Ac5uEyQ0MaKD4CW7TZOtsVBXh
-   7u0iB61y0FvWqXn3Onu7RSiRWof4mPOucmAqP7j2bEnA71q4QZPER2UOb
-   cDhlV1CPYWAGXN06fYLCFruln7j2y61Au1JfDF+B9V/WYRG4eggm3aV8c
-   +aVRORwTVqAm7hk/HigDBFK9hitQaVgBIPXJJsjcLCNPWnXk6ZtciWKqn
-   bGklHoGHpPSGZcBNfmHvcW0jkFvMW2LVVsC3DVkl9u8zRuSycefSka/H7
-   3ZeK7HCQTZpZ2inApn2OqZAG0Fa6P06bM9n+kzPk1KYR1IWroNUbLZCIr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251027450"
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="251027450"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:09:15 -0800
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="511078765"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:09:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nPSSf-00APUi-LB;
-        Wed, 02 Mar 2022 19:08:25 +0200
-Date:   Wed, 2 Mar 2022 19:08:25 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        nvdimm@lists.linux.dev, Len Brown <lenb@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [PATCH v1 1/1] ACPI: Switch to use list_entry_is_head() helper
-Message-ID: <Yh+kiSMZPleBcOXh@smile.fi.intel.com>
-References: <20220211110423.22733-1-andriy.shevchenko@linux.intel.com>
- <Yh+SHs4CEWkiLxAe@smile.fi.intel.com>
- <CAJZ5v0g_3a7A5aFab6ZsM8nPDmivoTeNgdSG17Lt71mFKmNxmg@mail.gmail.com>
+        Wed, 2 Mar 2022 12:11:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC370CF387
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:10:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646241055;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OCk0IGN+JSNCGOmZy65+tm/Nx0eAS27c5ZIr+XIGJxc=;
+        b=ec047Mgd8dCtj7whfviaju5Bc7Xm2i+mqXiMsVCTE+6PGE51n613cc3B8TWhiGK4OAIxny
+        Fn4PsduDQSW59jprGQvhP4j1tILupWaaOjwX0nlFwEngiVzzIzWznOSDCA8wd40Hzwtbe3
+        lYyrQd3lfg5KrGY/Xy+ZfDI871v+2L4=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-244-zU964_kyOcWoKoHNUGH9aA-1; Wed, 02 Mar 2022 12:10:54 -0500
+X-MC-Unique: zU964_kyOcWoKoHNUGH9aA-1
+Received: by mail-wr1-f71.google.com with SMTP id o9-20020adfca09000000b001ea79f7edf8so862717wrh.16
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:10:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OCk0IGN+JSNCGOmZy65+tm/Nx0eAS27c5ZIr+XIGJxc=;
+        b=lDGAHTx+3ccv0JbYpy1EkyE6+U8Nc8TTpIgiNM55k2xreoqBIwtDvfOxc7bn3+LDzq
+         XKa5OePbY3HpgoEBLl5pEqzxsZrqvWfSq9XT7yIGi7dZcdREombrc3oDvm1wRGnI52mR
+         4Q5Hte5OgDv1Rsyp/Z0FbXSQKBUelkUMFgqwansp/KRAv2AFScFRzg9Oqs02Qv6B3qP3
+         wbGxepag7xKBSEnCskbFUMT3BkNQ7Oh17A3XXAp8MVzfC2h/Yu/ptaifiWKKF4FnLHYq
+         +NY2RwhYpKKsVByEHdhBwdpriNIPXyXXYDtwpTBOI6icqoDHM+AXZEvjWepbb7wLKiqo
+         oCNw==
+X-Gm-Message-State: AOAM5327BqXn7Ic/yVJnKFzl1cqqikxRvZSPKoZrlWMy3Vi6rs1Jhc/j
+        9C48Lq0oDf6G+ZgRASoE+slPSjqwHft0aCA4BPGL3j4tLRjHfFJyyjNqEaI5y7vW4XbJvsiVIqo
+        PNSCB/kwjNvvTi9Mmfosr8vqT
+X-Received: by 2002:a5d:6b0f:0:b0:1e7:9432:ee8c with SMTP id v15-20020a5d6b0f000000b001e79432ee8cmr22844994wrw.216.1646241052249;
+        Wed, 02 Mar 2022 09:10:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwdCmMTM9zLSI+LlHPZY7Qi9z6yOB/Nx9cLAFKLKH9IIrgIyZ3Z4qt7cBDrf7wigHlwXxKhVQ==
+X-Received: by 2002:a5d:6b0f:0:b0:1e7:9432:ee8c with SMTP id v15-20020a5d6b0f000000b001e79432ee8cmr22844983wrw.216.1646241051946;
+        Wed, 02 Mar 2022 09:10:51 -0800 (PST)
+Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id e20-20020adfa454000000b001f01a14dce8sm5579398wra.97.2022.03.02.09.10.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 09:10:51 -0800 (PST)
+Date:   Wed, 2 Mar 2022 18:10:48 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220302171048.aijkcrwcrgsu475z@sgarzare-redhat>
+References: <20220302075421.2131221-1-lee.jones@linaro.org>
+ <20220302082021-mutt-send-email-mst@kernel.org>
+ <Yh93k2ZKJBIYQJjp@google.com>
+ <20220302095045-mutt-send-email-mst@kernel.org>
+ <Yh+F1gkCGoYF2lMV@google.com>
+ <CAGxU2F4cUDrMzoHH1NT5_ivxBPgEE8HOzP5s_Bt5JURRaSsLdQ@mail.gmail.com>
+ <20220302112945-mutt-send-email-mst@kernel.org>
+ <Yh+gDZUbgBRx/1ro@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAJZ5v0g_3a7A5aFab6ZsM8nPDmivoTeNgdSG17Lt71mFKmNxmg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <Yh+gDZUbgBRx/1ro@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 05:36:20PM +0100, Rafael J. Wysocki wrote:
-> On Wed, Mar 2, 2022 at 4:50 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Fri, Feb 11, 2022 at 01:04:23PM +0200, Andy Shevchenko wrote:
-> > > Since we got list_entry_is_head() helper in the generic header,
-> > > we may switch the ACPI modules to use it. This eliminates the
-> > > need in additional variable. In some cases it reduces critical
-> > > sections as well.
-> >
-> > Besides the work required in a couple of cases (LKP) there is an
-> > ongoing discussion about list loops (and this particular API).
-> >
-> > Rafael, what do you think is the best course of action here?
-> 
-> I think the current approach is to do the opposite of what this patch
-> is attempting to do: avoid using the list iterator outside of the
-> loop.
+On Wed, Mar 02, 2022 at 04:49:17PM +0000, Lee Jones wrote:
+>On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+>
+>> On Wed, Mar 02, 2022 at 05:28:31PM +0100, Stefano Garzarella wrote:
+>> > On Wed, Mar 2, 2022 at 3:57 PM Lee Jones <lee.jones@linaro.org> wrote:
+>> > >
+>> > > On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+>> > >
+>> > > > On Wed, Mar 02, 2022 at 01:56:35PM +0000, Lee Jones wrote:
+>> > > > > On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+>> > > > >
+>> > > > > > On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
+>> > > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+>> > > > > > > to vhost_get_vq_desc().  All we have to do is take the same lock
+>> > > > > > > during virtqueue clean-up and we mitigate the reported issues.
+>> > > > > > >
+>> > > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+>> > > > > > >
+>> > > > > > > Cc: <stable@vger.kernel.org>
+>> > > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+>> > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+>> > > > > > > ---
+>> > > > > > >  drivers/vhost/vhost.c | 2 ++
+>> > > > > > >  1 file changed, 2 insertions(+)
+>> > > > > > >
+>> > > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> > > > > > > index 59edb5a1ffe28..bbaff6a5e21b8 100644
+>> > > > > > > --- a/drivers/vhost/vhost.c
+>> > > > > > > +++ b/drivers/vhost/vhost.c
+>> > > > > > > @@ -693,6 +693,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>> > > > > > >         int i;
+>> > > > > > >
+>> > > > > > >         for (i = 0; i < dev->nvqs; ++i) {
+>> > > > > > > +               mutex_lock(&dev->vqs[i]->mutex);
+>> > > > > > >                 if (dev->vqs[i]->error_ctx)
+>> > > > > > >                         eventfd_ctx_put(dev->vqs[i]->error_ctx);
+>> > > > > > >                 if (dev->vqs[i]->kick)
+>> > > > > > > @@ -700,6 +701,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>> > > > > > >                 if (dev->vqs[i]->call_ctx.ctx)
+>> > > > > > >                         eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
+>> > > > > > >                 vhost_vq_reset(dev, dev->vqs[i]);
+>> > > > > > > +               mutex_unlock(&dev->vqs[i]->mutex);
+>> > > > > > >         }
+>> > > > > >
+>> > > > > > So this is a mitigation plan but the bug is still there though
+>> > > > > > we don't know exactly what it is.  I would prefer adding something like
+>> > > > > > WARN_ON(mutex_is_locked(vqs[i]->mutex) here - does this make sense?
+>> > > > >
+>> > > > > As a rework to this, or as a subsequent patch?
+>> > > >
+>> > > > Can be a separate patch.
+>> > > >
+>> > > > > Just before the first lock I assume?
+>> > > >
+>> > > > I guess so, yes.
+>> > >
+>> > > No problem.  Patch to follow.
+>> > >
+>> > > I'm also going to attempt to debug the root cause, but I'm new to this
+>> > > subsystem to it might take a while for me to get my head around.
+>> >
+>> > IIUC the root cause should be the same as the one we solved here:
+>> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a58da53ffd70294ebea8ecd0eb45fd0d74add9f9
+>> >
+>> > The worker was not stopped before calling vhost_dev_cleanup(). So while
+>> > the worker was still running we were going to free memory or initialize
+>> > fields while it was still using virtqueue.
+>>
+>> Right, and I agree but it's not the root though, we do attempt to stop all workers.
+>
+>Exactly.  This is what happens, but the question I'm going to attempt
+>to answer is *why* does this happen.
 
-OK, let's drop this change.
+IIUC the worker was still running because the /dev/vhost-vsock file was 
+not explicitly closed, so vhost_vsock_dev_release() was called in the 
+do_exit() of the process.
 
--- 
-With Best Regards,
-Andy Shevchenko
+In that case there was the issue, because vhost_dev_check_owner() 
+returned false in vhost_vsock_stop() since current->mm was NULL.
+So it returned earlier, without calling vhost_vq_set_backend(vq, NULL).
 
+This did not stop the worker from continuing to run, causing the 
+multiple issues we are seeing.
+
+current->mm was NULL, because in the do_exit() the address space is 
+cleaned in the exit_mm(), which is called before releasing the files 
+into the exit_task_work().
+
+This can be seen from the logs, where we see first the warnings printed 
+by vhost_dev_cleanup() and then the panic in the worker (e.g. here 
+https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000)
+
+Mike also added a few more helpful details in this thread: 
+https://lore.kernel.org/virtualization/20220221100500.2x3s2sddqahgdfyt@sgarzare-redhat/T/#ree61316eac63245c9ba3050b44330e4034282cc2
+
+Thanks,
+Stefano
 
