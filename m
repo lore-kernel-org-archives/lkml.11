@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 197D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243017AbiCBQhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:37:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51120 "EHLO
+        id S243062AbiCBQhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:37:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242830AbiCBQhd (ORCPT
+        with ESMTP id S242840AbiCBQhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 11:37:33 -0500
+        Wed, 2 Mar 2022 11:37:35 -0500
 Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A029CEA00
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2CBCEA01
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:52 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646239007;
+        t=1646239009;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ReVQg90bpO6aQ9p1E17mGNBQrTUFi/5PZoBeBo27NeE=;
-        b=CkSxgq2C4AQd4Hc/5oIgvZVdzS8i0G/red+aOhMvBK+qP+KWRBe1leENjyQER0Scn8x8s+
-        +JQ5jqkF9/rAvHLfhxTpE1MaNTAH3+5lHi+ABoT3biafZUWNz1r9qlaCCnYaOH+mR/AO56
-        glUtZxXMxV9DzLCbZno4jG0eTH+Qnxc=
+        bh=Y1tVVcjXP0EERa5LTGRHGhA3byiWB4oonSnJ546jpQY=;
+        b=Lt4GrBE4AcuD8i0t9r97+W9VG/37yQMTx3JTaWtBhqz73Ts6O4gHTwfWe/kSPuGcx5X2Mo
+        5T5ocOiZw0whxQHDZxGV14Ovfb18EmMLsBiOoSZhPraZ349MCqlDwi5bfAklOErZc2h5/5
+        5aV2NFs1OglbiLieI37hZm7xGihH/Vs=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -36,9 +36,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm 02/22] kasan: more line breaks in reports
-Date:   Wed,  2 Mar 2022 17:36:22 +0100
-Message-Id: <8682c4558e533cd0f99bdb964ce2fe741f2a9212.1646237226.git.andreyknvl@google.com>
+Subject: [PATCH mm 05/22] kasan: print basic stack frame info for SW_TAGS
+Date:   Wed,  2 Mar 2022 17:36:25 +0100
+Message-Id: <029aaa87ceadde0702f3312a34697c9139c9fb53.1646237226.git.andreyknvl@google.com>
 In-Reply-To: <cover.1646237226.git.andreyknvl@google.com>
 References: <cover.1646237226.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -51,68 +51,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Add a line break after each part that describes the buggy address.
-Improves readability of reports.
+Software Tag-Based mode tags stack allocations when CONFIG_KASAN_STACK
+is enabled. Print task name and id in reports for stack-related bugs.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/report.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ mm/kasan/kasan.h          |  2 +-
+ mm/kasan/report_sw_tags.c | 11 +++++++++++
+ 2 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 607a8c2e4674..ded648c0a0e4 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -250,11 +250,13 @@ static void print_address_description(void *addr, u8 tag)
- 		void *object = nearest_obj(cache, slab,	addr);
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index d1e111b7d5d8..4447df0d7343 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -274,7 +274,7 @@ void *kasan_find_first_bad_addr(void *addr, size_t size);
+ const char *kasan_get_bug_type(struct kasan_access_info *info);
+ void kasan_metadata_fetch_row(char *buffer, void *row);
  
- 		describe_object(cache, object, addr, tag);
-+		pr_err("\n");
- 	}
+-#if defined(CONFIG_KASAN_GENERIC) && defined(CONFIG_KASAN_STACK)
++#if defined(CONFIG_KASAN_STACK)
+ void kasan_print_address_stack_frame(const void *addr);
+ #else
+ static inline void kasan_print_address_stack_frame(const void *addr) { }
+diff --git a/mm/kasan/report_sw_tags.c b/mm/kasan/report_sw_tags.c
+index d2298c357834..44577b8d47a7 100644
+--- a/mm/kasan/report_sw_tags.c
++++ b/mm/kasan/report_sw_tags.c
+@@ -51,3 +51,14 @@ void kasan_print_tags(u8 addr_tag, const void *addr)
  
- 	if (kernel_or_module_addr(addr) && !init_task_stack_addr(addr)) {
- 		pr_err("The buggy address belongs to the variable:\n");
- 		pr_err(" %pS\n", addr);
-+		pr_err("\n");
- 	}
- 
- 	if (is_vmalloc_addr(addr)) {
-@@ -265,6 +267,7 @@ static void print_address_description(void *addr, u8 tag)
- 			       " [%px, %px) created by:\n"
- 			       " %pS\n",
- 			       va->addr, va->addr + va->size, va->caller);
-+			pr_err("\n");
- 
- 			page = vmalloc_to_page(page);
- 		}
-@@ -273,9 +276,11 @@ static void print_address_description(void *addr, u8 tag)
- 	if (page) {
- 		pr_err("The buggy address belongs to the physical page:\n");
- 		dump_page(page, "kasan: bad access detected");
-+		pr_err("\n");
- 	}
- 
- 	kasan_print_address_stack_frame(addr);
-+	pr_err("\n");
+ 	pr_err("Pointer tag: [%02x], memory tag: [%02x]\n", addr_tag, *shadow);
  }
- 
- static bool meta_row_is_guilty(const void *row, const void *addr)
-@@ -382,7 +387,6 @@ void kasan_report_invalid_free(void *object, unsigned long ip)
- 	kasan_print_tags(tag, object);
- 	pr_err("\n");
- 	print_address_description(object, tag);
--	pr_err("\n");
- 	print_memory_metadata(object);
- 	end_report(&flags, (unsigned long)object);
- }
-@@ -443,7 +447,6 @@ static void __kasan_report(unsigned long addr, size_t size, bool is_write,
- 
- 	if (addr_has_metadata(untagged_addr)) {
- 		print_address_description(untagged_addr, get_tag(tagged_addr));
--		pr_err("\n");
- 		print_memory_metadata(info.first_bad_addr);
- 	} else {
- 		dump_stack_lvl(KERN_ERR);
++
++#ifdef CONFIG_KASAN_STACK
++void kasan_print_address_stack_frame(const void *addr)
++{
++	if (WARN_ON(!object_is_on_stack(addr)))
++		return;
++
++	pr_err("The buggy address belongs to stack of task %s/%d\n",
++	       current->comm, task_pid_nr(current));
++}
++#endif
 -- 
 2.25.1
 
