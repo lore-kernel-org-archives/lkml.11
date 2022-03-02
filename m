@@ -2,128 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 553C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B12FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243473AbiCBPcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 10:32:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S243484AbiCBPeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 10:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243436AbiCBPcP (ORCPT
+        with ESMTP id S243476AbiCBPeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 10:32:15 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB441377EF;
-        Wed,  2 Mar 2022 07:31:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646235092; x=1677771092;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xAc+gk2/+uUrxuyv4q2tiGwH2PWivQpVZzG75sglYWE=;
-  b=evVfxgtKL9xJj3enedq5hXvm2JsFaE4MT0GCTONJyTh2iLxO03Dbt0SX
-   ttnHeZwen5Sd/KXGeJsoTEETL8iLe4TMnIJD1d6h4r9grmsn4iisyo8hu
-   YWy8VqJTO49MZrn8p/9DS0X+AuxDNtpuGkwOpd8nkuPNtfAu6cmznjJMh
-   GTWOL+M/Nwnablerd8N56uCcQ9Jxb8tGcftq0iPjA4tosWZxrY7hJPkra
-   3m/dQ6VXTa7QETCnwU+27o7FuN/rv5l49xqVCsV/cXkwpMco7zAfwUPAR
-   v7l60EuGKh1vPqj36ubnQ/NGT8LjgFw7lPHHx6oi2MffNUKBv5bqM6Bes
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="240839916"
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="240839916"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 07:31:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="508235462"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 02 Mar 2022 07:31:27 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 42F1E183; Wed,  2 Mar 2022 17:31:45 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 1/1] iio: dac: ltc2688: Use temporary variable for struct device
-Date:   Wed,  2 Mar 2022 17:31:42 +0200
-Message-Id: <20220302153142.52743-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 2 Mar 2022 10:34:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65A74615E;
+        Wed,  2 Mar 2022 07:33:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 567EC616D7;
+        Wed,  2 Mar 2022 15:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F70C004E1;
+        Wed,  2 Mar 2022 15:33:14 +0000 (UTC)
+Date:   Wed, 2 Mar 2022 10:33:13 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jithu Joseph <jithu.joseph@intel.com>, hdegoede@redhat.com,
+        markgross@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, corbet@lwn.net, andriy.shevchenko@linux.intel.com,
+        ashok.raj@intel.com, tony.luck@intel.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        ravi.v.shankar@intel.com
+Subject: Re: [RFC 00/10] Introduce In Field Scan driver
+Message-ID: <20220302103313.3bacd10b@gandalf.local.home>
+In-Reply-To: <Yh59rOIH24X+6GyI@kroah.com>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+        <Yh59rOIH24X+6GyI@kroah.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use temporary variable for struct device to make code neater.
+On Tue, 1 Mar 2022 21:10:20 +0100
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/dac/ltc2688.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+> "RFC" means you are not comfortable submitting the changes yet, so you
+> don't need my review at this point in time.  Become confident in your
+> changes before asking for others to review the code please.
 
-diff --git a/drivers/iio/dac/ltc2688.c b/drivers/iio/dac/ltc2688.c
-index e41861d29767..d249fa28202c 100644
---- a/drivers/iio/dac/ltc2688.c
-+++ b/drivers/iio/dac/ltc2688.c
-@@ -703,21 +703,20 @@ static int ltc2688_tgp_clk_setup(struct ltc2688_state *st,
- 				 struct ltc2688_chan *chan,
- 				 struct fwnode_handle *node, int tgp)
- {
-+	struct device *dev = &st->spi->dev;
- 	unsigned long rate;
- 	struct clk *clk;
- 	int ret, f;
- 
--	clk = devm_get_clk_from_child(&st->spi->dev, to_of_node(node), NULL);
-+	clk = devm_get_clk_from_child(dev, to_of_node(node), NULL);
- 	if (IS_ERR(clk))
--		return dev_err_probe(&st->spi->dev, PTR_ERR(clk),
--				     "failed to get tgp clk.\n");
-+		return dev_err_probe(dev, PTR_ERR(clk), "failed to get tgp clk.\n");
- 
- 	ret = clk_prepare_enable(clk);
- 	if (ret)
--		return dev_err_probe(&st->spi->dev, ret,
--				     "failed to enable tgp clk.\n");
-+		return dev_err_probe(dev, ret, "failed to enable tgp clk.\n");
- 
--	ret = devm_add_action_or_reset(&st->spi->dev, ltc2688_clk_disable, clk);
-+	ret = devm_add_action_or_reset(dev, ltc2688_clk_disable, clk);
- 	if (ret)
- 		return ret;
- 
-@@ -858,6 +857,7 @@ static int ltc2688_channel_config(struct ltc2688_state *st)
- 
- static int ltc2688_setup(struct ltc2688_state *st, struct regulator *vref)
- {
-+	struct device *dev = &st->spi->dev;
- 	struct gpio_desc *gpio;
- 	int ret;
- 
-@@ -865,10 +865,9 @@ static int ltc2688_setup(struct ltc2688_state *st, struct regulator *vref)
- 	 * If we have a reset pin, use that to reset the board, If not, use
- 	 * the reset bit.
- 	 */
--	gpio = devm_gpiod_get_optional(&st->spi->dev, "clr", GPIOD_OUT_HIGH);
-+	gpio = devm_gpiod_get_optional(dev, "clr", GPIOD_OUT_HIGH);
- 	if (IS_ERR(gpio))
--		return dev_err_probe(&st->spi->dev, PTR_ERR(gpio),
--				     "Failed to get reset gpio");
-+		return dev_err_probe(dev, PTR_ERR(gpio), "Failed to get reset gpio");
- 	if (gpio) {
- 		usleep_range(1000, 1200);
- 		/* bring device out of reset */
-@@ -887,7 +886,7 @@ static int ltc2688_setup(struct ltc2688_state *st, struct regulator *vref)
- 	 * Duplicate the default channel configuration as it can change during
- 	 * @ltc2688_channel_config()
- 	 */
--	st->iio_chan = devm_kmemdup(&st->spi->dev, ltc2688_channels,
-+	st->iio_chan = devm_kmemdup(dev, ltc2688_channels,
- 				    sizeof(ltc2688_channels), GFP_KERNEL);
- 	if (!st->iio_chan)
- 		return -ENOMEM;
--- 
-2.34.1
+I guess you and I have a different understanding of RFC (Request for
+Comments). As to me, comments are a form of review.
 
+In other words, RFC to me means the review is "does this design look like
+it will work", and we should be reviewing the design and overview of the
+patches. Not the nitty gritty details (like missed error handling, unless
+the design will prevent it). Although, you could add those comments in a
+review.
+
+When I post RFCs, it's not that I'm not comfortable submitting the change,
+it's because I want to know if what I'm doing makes sense, and I might be
+missing something that will make this effort in vain.
+
+What ever happen to the "Submit early, submit often" mantra?
+
+-- Steve
