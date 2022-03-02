@@ -2,191 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3836CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDE0C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244134AbiCBReo convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:34:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
+        id S239999AbiCBRf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:35:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244210AbiCBReI (ORCPT
+        with ESMTP id S244127AbiCBRfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:34:08 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E41616D;
-        Wed,  2 Mar 2022 09:33:12 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 222FrqMW005719;
-        Wed, 2 Mar 2022 17:32:15 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ejbmdt32p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 17:32:14 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 222HDSVA008084;
-        Wed, 2 Mar 2022 17:31:22 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04ams.nl.ibm.com with ESMTP id 3egbj1amfq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 17:31:22 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 222HVKEU51511702
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Mar 2022 17:31:20 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 64AFD4203F;
-        Wed,  2 Mar 2022 17:31:20 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BF6D642042;
-        Wed,  2 Mar 2022 17:31:19 +0000 (GMT)
-Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Wed,  2 Mar 2022 17:31:19 +0000 (GMT)
-Received: from yukon.ibmuc.com (unknown [9.171.58.125])
-        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 581E42200FE;
-        Wed,  2 Mar 2022 18:31:18 +0100 (CET)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-Subject: [PATCH v2 02/10] ARM: dts: aspeed: Adjust "reg" property of FMC/SPI controllers
-Date:   Wed,  2 Mar 2022 18:31:06 +0100
-Message-Id: <20220302173114.927476-3-clg@kaod.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220302173114.927476-1-clg@kaod.org>
-References: <20220302173114.927476-1-clg@kaod.org>
+        Wed, 2 Mar 2022 12:35:22 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C42D5F47;
+        Wed,  2 Mar 2022 09:34:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646242460; x=1677778460;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jzifREd1E6S6cVQq/lLaPIGktR6DrXmG+S0OSbMPecs=;
+  b=ccDYS6FGM+MtYZN/YZYxXCDyJlu0Pl7mX1g2wXBsfH1+kzA7wtX7rfhB
+   kHkj1J9Xr+L95XtZNWy5tkl6DkSLTV08ydcz5pYjToNwLJ18xV61eJjxq
+   UI9WLLJM7eDADUy5S29ZhIMrj+Fi6zmHMsdSRxlyggJJIdLZHig/olWB5
+   8pvExRoDnIgM9JbMWGfEWCGE+c444XZB7iQ8aMkg3gJ5phyDwFpizKCcv
+   0YLB/Lboiryjccs69ebhLiSz30O2XqYOVmP9BUTWHm8fdT0MSQkeBOb0A
+   nzzxSGp8Nkn1H3g4mWXVzgJwMj4VE/JSOmhrKQwIZgymulJTkidxxT+TV
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="240876017"
+X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
+   d="scan'208";a="240876017"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:32:49 -0800
+X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
+   d="scan'208";a="493617661"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 09:32:46 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nPSpT-00AQ2N-1D;
+        Wed, 02 Mar 2022 19:31:59 +0200
+Date:   Wed, 2 Mar 2022 19:31:58 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Michael Mueller <mimu@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>
+Subject: Re: [PATCH v1 1/1] KVM: s390: Don't cast parameter in bit operations
+Message-ID: <Yh+qDhd6FL9nlQdD@smile.fi.intel.com>
+References: <20220223164420.45344-1-andriy.shevchenko@linux.intel.com>
+ <20220224123620.57fd6c8b@p-imbrenda>
+ <3640a910-60fe-0935-4dfc-55bb65a75ce5@linux.ibm.com>
+ <Yh+Qw6Pb+Cd9JDNa@smile.fi.intel.com>
+ <Yh+m65BSfQgaDFwi@yury-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: UYF6sFSv9nuLXwvrpwtM6l_8y6ANseni
-X-Proofpoint-GUID: UYF6sFSv9nuLXwvrpwtM6l_8y6ANseni
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-02_12,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1034 impostorscore=0
- phishscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0 adultscore=0
- mlxlogscore=507 malwarescore=0 priorityscore=1501 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203020076
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh+m65BSfQgaDFwi@yury-laptop>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is compatible with the current driver and addresses issues when
-running 'make dt_binding_check'.
+On Wed, Mar 02, 2022 at 09:18:35AM -0800, Yury Norov wrote:
+> On Wed, Mar 02, 2022 at 05:44:03PM +0200, Andy Shevchenko wrote:
+> > On Thu, Feb 24, 2022 at 01:10:34PM +0100, Michael Mueller wrote:
+> > > On 24.02.22 12:36, Claudio Imbrenda wrote:
+> > 
+> > ...
+> > 
+> > > we do that at several places
+> > 
+> > Thanks for pointing out.
+> > 
+> > > arch/s390/kernel/processor.c:	for_each_set_bit_inv(bit, (long
+> > > *)&stfle_fac_list, MAX_FACILITY_BIT)
+> > 
+> > This one requires a separate change, not related to this patch.
+> > 
+> > > arch/s390/kvm/interrupt.c:	set_bit_inv(IPM_BIT_OFFSET + gisc, (unsigned long
+> > > *) gisa);
+> > 
+> > This is done in the patch. Not sure how it appears in your list.
+> > 
+> > > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
+> > > sca->mcn);
+> > > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
+> > > &sca->mcn);
+> > 
+> > These two should be fixed in a separate change.
+> > 
+> > Also this kind of stuff:
+> > 
+> > 	bitmap_copy(kvm->arch.cpu_feat, (unsigned long *) data.feat,
+> > 	            KVM_S390_VM_CPU_FEAT_NR_BITS);
+> > 
+> > might require a new API like
+> > 
+> > bitmap_from_u64_array()
+> > bitmap_to_u64_array()
+> > 
+> > Yury?
+> 
+> If BE32 is still the case then yes.
 
-Cc: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-Signed-off-by: Cédric Le Goater <clg@kaod.org>
----
- arch/arm/boot/dts/aspeed-g4.dtsi | 6 ++----
- arch/arm/boot/dts/aspeed-g5.dtsi | 9 +++------
- arch/arm/boot/dts/aspeed-g6.dtsi | 9 +++------
- 3 files changed, 8 insertions(+), 16 deletions(-)
+The whole point is to get rid of the bad pattern, while it may still work
+in the particular case.
 
-diff --git a/arch/arm/boot/dts/aspeed-g4.dtsi b/arch/arm/boot/dts/aspeed-g4.dtsi
-index f14dace34c5a..9ae67e83cf60 100644
---- a/arch/arm/boot/dts/aspeed-g4.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g4.dtsi
-@@ -54,8 +54,7 @@ ahb {
- 		ranges;
- 
- 		fmc: spi@1e620000 {
--			reg = < 0x1e620000 0x94
--				0x20000000 0x10000000 >;
-+			reg = <0x1e620000 0x94>, <0x20000000 0x10000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2400-fmc";
-@@ -91,8 +90,7 @@ flash@4 {
- 		};
- 
- 		spi: spi@1e630000 {
--			reg = < 0x1e630000 0x18
--				0x30000000 0x10000000 >;
-+			reg = <0x1e630000 0x18>, <0x30000000 0x10000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2400-spi";
-diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
-index 7495f93c5069..c3e0a8e13c8a 100644
---- a/arch/arm/boot/dts/aspeed-g5.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g5.dtsi
-@@ -55,8 +55,7 @@ ahb {
- 		ranges;
- 
- 		fmc: spi@1e620000 {
--			reg = < 0x1e620000 0xc4
--				0x20000000 0x10000000 >;
-+			reg = <0x1e620000 0xc4>, <0x20000000 0x10000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2500-fmc";
-@@ -84,8 +83,7 @@ flash@2 {
- 		};
- 
- 		spi1: spi@1e630000 {
--			reg = < 0x1e630000 0xc4
--				0x30000000 0x08000000 >;
-+			reg = <0x1e630000 0xc4>, <0x30000000 0x08000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2500-spi";
-@@ -106,8 +104,7 @@ flash@1 {
- 		};
- 
- 		spi2: spi@1e631000 {
--			reg = < 0x1e631000 0xc4
--				0x38000000 0x08000000 >;
-+			reg = <0x1e631000 0xc4>, <0x38000000 0x08000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2500-spi";
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..1ad05dde19d2 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -95,8 +95,7 @@ gic: interrupt-controller@40461000 {
- 			};
- 
- 		fmc: spi@1e620000 {
--			reg = < 0x1e620000 0xc4
--				0x20000000 0x10000000 >;
-+			reg = <0x1e620000 0xc4>, <0x20000000 0x10000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2600-fmc";
-@@ -124,8 +123,7 @@ flash@2 {
- 		};
- 
- 		spi1: spi@1e630000 {
--			reg = < 0x1e630000 0xc4
--				0x30000000 0x10000000 >;
-+			reg = <0x1e630000 0xc4>, <0x30000000 0x10000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2600-spi";
-@@ -146,8 +144,7 @@ flash@1 {
- 		};
- 
- 		spi2: spi@1e631000 {
--			reg = < 0x1e631000 0xc4
--				0x50000000 0x10000000 >;
-+			reg = <0x1e631000 0xc4>, <0x50000000 0x10000000>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			compatible = "aspeed,ast2600-spi";
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
