@@ -2,240 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39281C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F23C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242167AbiCBTSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 14:18:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
+        id S237330AbiCBTTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 14:19:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241448AbiCBTSf (ORCPT
+        with ESMTP id S235020AbiCBTTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 14:18:35 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1EF1704B;
-        Wed,  2 Mar 2022 11:17:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646248662; x=1677784662;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=W5bF9lrLsIRpfJsYdIa+ZYl/EKN3Jruw12F438PMPI0=;
-  b=eZ8/nmRJqr6WyQXWFXqnKEUrVCreIMtwOOv5Oxpwf+nq2cFZ15o0fA+B
-   0yAHKKuaaoyaeSv1pRDlO0sYN8Nn4f/ZjB0/JHYR+JcPwYvPM2q6STCC9
-   MAPWx9/xUsz3FwDowSYARo2syU1lV+MbLazuTEAbSPBuX7g6f9JtqKjxD
-   so4pd8eeT+mQyiQDARavOFJtsxQNVWxtLkR8RFQXac7aiSuYVBL/qeQkF
-   nAQ8dRBDghqoET1TRWdMYAI8p1yX8s3eqps9tOlC6Nd9EjLXdzLq3Uhu0
-   Zjv/h+P8a22r/olYp+Zkw4tUs+2rSSCB0kTk8BMoJG0PSE+Y54rXA2TmL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251059895"
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="251059895"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 11:17:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="630515739"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 Mar 2022 11:17:36 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPUTa-0001ni-Fw; Wed, 02 Mar 2022 19:17:30 +0000
-Date:   Thu, 3 Mar 2022 03:16:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, zohar@linux.ibm.com,
-        serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Stefan Berger <stefanb@linux.ibm.com>
-Subject: Re: [PATCH v11 23/27] ima: Introduce securityfs file to activate an
- IMA namespace
-Message-ID: <202203030340.kolQS5ma-lkp@intel.com>
-References: <20220302134703.1273041-24-stefanb@linux.ibm.com>
+        Wed, 2 Mar 2022 14:19:04 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130F2220D5
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:18:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=PRQG6g+MUHSU/R8yPTlf3nRoJJmafVT52l/ZxTMw4nY=; b=Wc86twxb+Os6GNB2WIpAWPL9q2
+        KN7AKUPUJpRYYsgwSJj4x391dRruhCrrD6fyR4+RNpxF9cPoIrbfW92C9bvvK52aBOt4mB08d+IN6
+        vmxuvTATFik5BwFqPKuOVDfUPnv2nGAV4yRahqoLiA2Ud06ugiAMDOdvigNjroqcV2ahDdvucIuho
+        GCzHWMmIw4NIrwnHAfRUGc8JX1Uap2X8l0K3jFKdapEhu+OxH7BuZzESVrv/v6qm3luanFz9W9Jxi
+        xMEaY5m1VGB96asTvQ6JNjtj4pCngVoLDNvfm+UvKOHANs79TfcbYyCMY3/Bacv2Oj4+tMOaB9/dy
+        WkzCsV4A==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPUUC-00AubU-Tk; Wed, 02 Mar 2022 19:18:09 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 51BCA30018E;
+        Wed,  2 Mar 2022 20:18:06 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 14B733086C902; Wed,  2 Mar 2022 20:18:06 +0100 (CET)
+Date:   Wed, 2 Mar 2022 20:18:06 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Kees Cook <keescook@chromium.org>, Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/19] Enable -Wshadow=local for kernel/sched
+Message-ID: <Yh/C7nnElPOL3G/k@hirez.programming.kicks-ass.net>
+References: <20220302043451.2441320-1-willy@infradead.org>
+ <202203021030.EEEF58C2@keescook>
+ <Yh+67VF0/OFSp15y@casper.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220302134703.1273041-24-stefanb@linux.ibm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Yh+67VF0/OFSp15y@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stefan,
+On Wed, Mar 02, 2022 at 06:43:57PM +0000, Matthew Wilcox wrote:
+> ie "__ret = freezable_schedule_timeout(__ret)" is supposed to refer to
+> the inner __ret, not the outer __ret.  Which was the opposite of what
+> I thought was supposed to happen.
+> 
+> We can fix this, of course.  Something like ...
+> 
+> #define ___wait_event_freezable_timeout(wq_head, condition, timeout, ret) \
+> 	___wait_event(wq_head, ___wait_cond_timeout(condition, ret),      \
+> 		TASK_INTERRUPTIBLE, 0, timeout,				  \
+> 		ret = freezable_schedule_timeout(ret), ret)
+> 
+> #define __wait_event_freezable_timeout(wq_head, condition, timeout) \
+> 	___wait_event_freezable_timeout(wq_head, condition, timeout, UNIQUE_ID)
+> 
+> ... and now all the 'ret' refer to the thing that they look like they're
+> referring to.
 
-Thank you for the patch! Perhaps something to improve:
+Right; so the trick is to make sure all ___wait_event() users will have
+a ret and then the inner ret can go away. The interruptible/timeout
+variants all already have a ret variable, but the unconditional things
+like wait_event() do not (which is where all the trouble started).
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.17-rc6]
-[cannot apply to zohar-integrity/next-integrity linux/master jmorris-security/next-testing next-20220302]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Stefan-Berger/ima-Namespace-IMA-with-audit-support-in-IMA-ns/20220302-215707
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git fb184c4af9b9f4563e7a126219389986a71d5b5b
-config: arm64-randconfig-r006-20220302 (https://download.01.org/0day-ci/archive/20220303/202203030340.kolQS5ma-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/0day-ci/linux/commit/59a9ba1130510d6693a61c6eb84c29983fa696df
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Stefan-Berger/ima-Namespace-IMA-with-audit-support-in-IMA-ns/20220302-215707
-        git checkout 59a9ba1130510d6693a61c6eb84c29983fa696df
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash security/integrity/ima/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> security/integrity/ima/ima_fs.c:591:3: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-                   if (IS_ERR(active))
-                   ^~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:56:28: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:30: note: expanded from macro '__trace_if_var'
-   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   security/integrity/ima/ima_fs.c:608:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   security/integrity/ima/ima_fs.c:591:3: note: remove the 'if' if its condition is always false
-                   if (IS_ERR(active))
-                   ^~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:56:23: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                         ^
-   security/integrity/ima/ima_fs.c:516:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   1 warning generated.
-
-
-vim +591 security/integrity/ima/ima_fs.c
-
-   504	
-   505	int ima_fs_ns_init(struct user_namespace *user_ns, struct dentry *root)
-   506	{
-   507		struct ima_namespace *ns = ima_ns_from_user_ns(user_ns);
-   508		struct dentry *int_dir;
-   509		struct dentry *ima_dir = NULL;
-   510		struct dentry *ima_symlink = NULL;
-   511		struct dentry *binary_runtime_measurements = NULL;
-   512		struct dentry *ascii_runtime_measurements = NULL;
-   513		struct dentry *runtime_measurements_count = NULL;
-   514		struct dentry *violations = NULL;
-   515		struct dentry *active = NULL;
-   516		int ret;
-   517	
-   518		/* FIXME: update when evm and integrity are namespaced */
-   519		if (user_ns != &init_user_ns) {
-   520			int_dir = securityfs_create_dir("integrity", root);
-   521			if (IS_ERR(int_dir))
-   522				return PTR_ERR(int_dir);
-   523		} else {
-   524			int_dir = integrity_dir;
-   525		}
-   526	
-   527		ima_dir = securityfs_create_dir("ima", int_dir);
-   528		if (IS_ERR(ima_dir)) {
-   529			ret = PTR_ERR(ima_dir);
-   530			goto out;
-   531		}
-   532	
-   533		ima_symlink = securityfs_create_symlink("ima", root, "integrity/ima",
-   534							NULL);
-   535		if (IS_ERR(ima_symlink)) {
-   536			ret = PTR_ERR(ima_symlink);
-   537			goto out;
-   538		}
-   539	
-   540		binary_runtime_measurements =
-   541		    securityfs_create_file("binary_runtime_measurements",
-   542					   S_IRUSR | S_IRGRP, ima_dir, NULL,
-   543					   &ima_measurements_ops);
-   544		if (IS_ERR(binary_runtime_measurements)) {
-   545			ret = PTR_ERR(binary_runtime_measurements);
-   546			goto out;
-   547		}
-   548	
-   549		ascii_runtime_measurements =
-   550		    securityfs_create_file("ascii_runtime_measurements",
-   551					   S_IRUSR | S_IRGRP, ima_dir, NULL,
-   552					   &ima_ascii_measurements_ops);
-   553		if (IS_ERR(ascii_runtime_measurements)) {
-   554			ret = PTR_ERR(ascii_runtime_measurements);
-   555			goto out;
-   556		}
-   557	
-   558		runtime_measurements_count =
-   559		    securityfs_create_file("runtime_measurements_count",
-   560					   S_IRUSR | S_IRGRP, ima_dir, NULL,
-   561					   &ima_measurements_count_ops);
-   562		if (IS_ERR(runtime_measurements_count)) {
-   563			ret = PTR_ERR(runtime_measurements_count);
-   564			goto out;
-   565		}
-   566	
-   567		violations =
-   568		    securityfs_create_file("violations", S_IRUSR | S_IRGRP,
-   569					   ima_dir, NULL, &ima_htable_violations_ops);
-   570		if (IS_ERR(violations)) {
-   571			ret = PTR_ERR(violations);
-   572			goto out;
-   573		}
-   574	
-   575		if (!ns->ima_policy_removed) {
-   576			ns->ima_policy =
-   577			    securityfs_create_file("policy", POLICY_FILE_FLAGS,
-   578						   ima_dir, NULL,
-   579						   &ima_measure_policy_ops);
-   580			if (IS_ERR(ns->ima_policy)) {
-   581				ret = PTR_ERR(ns->ima_policy);
-   582				goto out;
-   583			}
-   584		}
-   585	
-   586		if (ns != &init_ima_ns) {
-   587			active =
-   588			    securityfs_create_file("active",
-   589						   S_IRUSR | S_IWUSR | S_IRGRP, ima_dir,
-   590						   NULL, &ima_active_ops);
- > 591			if (IS_ERR(active))
-   592				goto out;
-   593		}
-   594	
-   595		return 0;
-   596	out:
-   597		securityfs_remove(active);
-   598		securityfs_remove(ns->ima_policy);
-   599		securityfs_remove(violations);
-   600		securityfs_remove(runtime_measurements_count);
-   601		securityfs_remove(ascii_runtime_measurements);
-   602		securityfs_remove(binary_runtime_measurements);
-   603		securityfs_remove(ima_symlink);
-   604		securityfs_remove(ima_dir);
-   605		if (user_ns != &init_user_ns)
-   606			securityfs_remove(int_dir);
-   607	
-   608		return ret;
-   609	}
-   610	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+By simply adding a ret variable, even to the variants without return
+value, the inner variable can go away and the shadowing goes away.
