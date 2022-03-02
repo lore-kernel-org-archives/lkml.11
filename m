@@ -2,78 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 23:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbiCBXxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 18:53:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S229755AbiCBXxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 18:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbiCBXwr (ORCPT
+        with ESMTP id S229735AbiCBXxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 18:52:47 -0500
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54B4B1A802;
-        Wed,  2 Mar 2022 15:52:02 -0800 (PST)
-Received: from [192.168.1.17] (unknown [192.182.151.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8952E20B7178;
-        Wed,  2 Mar 2022 15:27:56 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8952E20B7178
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1646263676;
-        bh=5KvOsKwug+N0UsgvLNjMfAoBITxIY5JfWuFek8c6W6I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=N9dJI5zEX5kl97tkKa4n/yyeKwGJSfbPRAjJRdRj2cYT0nvf7a5CWWu5WO2ahrD3X
-         BBrg5BYPR2rNIwfmni5dyoOL5gK3KVGc6I5IbM/zQkn1Zbiua4k2zM+uj+NVZSu/qW
-         oN8LIYkoxJZyUJdS3hD0OYDnm1Spjh/PsMGUCfJY=
-Message-ID: <6b691648-96ce-f28e-436e-f5eb4137e73b@linux.microsoft.com>
-Date:   Wed, 2 Mar 2022 15:27:56 -0800
+        Wed, 2 Mar 2022 18:53:44 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63C3D1987;
+        Wed,  2 Mar 2022 15:52:53 -0800 (PST)
+X-UUID: e55578293866465f8f422d077c288aa3-20220303
+X-UUID: e55578293866465f8f422d077c288aa3-20220303
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 342637879; Thu, 03 Mar 2022 07:52:45 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 3 Mar 2022 07:52:43 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 3 Mar 2022 07:52:43 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     <robin.murphy@arm.com>
+CC:     <Libo.Kang@mediatek.com>, <Ning.Li@mediatek.com>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <miles.chen@mediatek.com>, <stable@vger.kernel.org>,
+        <will@kernel.org>, <wsd_upstream@mediatek.com>,
+        <yf.wang@mediatek.com>
+Subject: Re: [PATCH v2] iommu/iova: Reset max32_alloc_size after cleaning
+Date:   Thu, 3 Mar 2022 07:52:38 +0800
+Message-ID: <20220302235238.13099-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <ca208635-449b-2c94-7317-09ed8eb86a2c@arm.com>
+References: <ca208635-449b-2c94-7317-09ed8eb86a2c@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 02/30] drivers: hv: dxgkrnl: Driver initialization and
- loading
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
-        spronovo@linux.microsoft.com
-References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
- <739cf89e71ff72436d7ca3f846881dfb45d07a6a.1646163378.git.iourit@linux.microsoft.com>
- <Yh6F9cG6/SV6Fq8Q@kroah.com>
-From:   Iouri Tarassov <iourit@linux.microsoft.com>
-In-Reply-To: <Yh6F9cG6/SV6Fq8Q@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 3/1/2022 12:45 PM, Greg KH wrote:
-> On Tue, Mar 01, 2022 at 11:45:49AM -0800, Iouri Tarassov wrote:
-> > - Create skeleton and add basic functionality for the
-> > hyper-v compute device driver (dxgkrnl).
-> > 
-> > +
-> > +#undef pr_fmt
-> > +#define pr_fmt(fmt)	"dxgk: " fmt
+>> If no cached iova is freed, resetting max32_alloc_size before
+>> the retry allocation only give us a retry. Is it possible that
+>> other users free their iovas during the additional retry?
 >
-> Use the dev_*() print functions, you are a driver, and you always have a
-> pointer to a struct device.  There's no need to ever call pr_*().
->
+> No, it's not possible, since everyone's serialised by iova_rbtree_lock. 
+> If the caches were already empty and the retry gets the lock first, it 
+> will still fail again - forcing a reset of max32_alloc_size only means 
+> it has to take the slow path to that failure. If another caller *did* 
+> manage to get in and free something between free_global_cached_iovas() 
+> dropping the lock and alloc_iova() re-taking it, then that would have 
+> legitimately reset max32_alloc_size anyway.
 
-There is no struct device during module initialization until the
-/dev/dxg device is created. Is it ok to use pr_* functions in this case?
-Should dev_*(NULL,...) be used? I see other drivers use the pr_*
-functions in this case (mips.c as an example).
+Thanks for your explanation.
 
+YF showed me some numbers yesterday and maybe we can have a further
+discussion in that test case. (It looks like that some iovas are freed but
+their pfn_lo(s) are less than cached_iova->pfn_lo, so max32_alloc_size is not
+reset. So there are enought free iovas but the allocation still failed)
 
-Thanks
+__cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+{
+	struct iova *cached_iova;
 
-Iouri
+	cached_iova = to_iova(iovad->cached32_node);
+	if (free == cached_iova ||
+		(free->pfn_hi < iovad->dma_32bit_pfn &&
+		 free->pfn_lo >= cached_iova->pfn_lo)) {
+		iovad->cached32_node = rb_next(&free->node);
+		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+	}
+	...
+}
 
-> thanks,
->
-> greg k-h
+Hi YF,
+Could your share your observation of the iova allocation failure you hit?
+
+Thanks,
+Miles
+
