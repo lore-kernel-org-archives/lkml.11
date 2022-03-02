@@ -2,267 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28396C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CBD8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245273AbiCBVOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:14:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
+        id S241954AbiCBVQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:16:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245212AbiCBVMi (ORCPT
+        with ESMTP id S233179AbiCBVQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:12:38 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA921DEA0D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 13:11:35 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id ay10so4737107wrb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 13:11:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hD068yvCJVz7diE/pqMBYrQcMNXiKRUWce+U3Y/ygL4=;
-        b=NEN5f3SCzE4S/BhtzpnNylPdmuqxGGt7/ksv+AT2BkVx5kAHsE7E64pLUsII7n49ol
-         cfHCJG27cm1GasSgfBNPGMcs/xW1ARn4l2SlRiQpLX3lf8/Uiesd99M9X6FgFP6cB+VB
-         reFGUVI7tIk4FmbYkusSFrkO6Fg0gVl8+4mjscmE2d8U9i4wJiUkyTwyKmHWvduHWaal
-         dr5EcK2dplvSL9IffsIuNUjvzBxX59K0dH3JsiLzvn95W2+mvfIhVt99JcRU4i8z9+x4
-         IBN+SCFNBm6R5boNHQc3Rd64RRtC8NV48P+3Fpf3SqNPYX/p0JGZuTaNpwzFfL65JejU
-         rovQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hD068yvCJVz7diE/pqMBYrQcMNXiKRUWce+U3Y/ygL4=;
-        b=RxJL2YQcfse+gmQA0OeQ4Y0Kg5o6XUhqN9L6F9xUH3g2RWJ67efSlTPC7p8O45SQvr
-         6x0u6NCjVZu4J9ScrDso8TyfGwHZSy3D1B3rciLHvB5f/fE1nLp3aNgKebtUpft7bo6v
-         s1L29FKv8UCHP7DCkLlG14RzKpJRyPCFBI7sXc7Twkmi8N686J4S/EDPGYbk6khFVQB5
-         kCtwzm26qaZmgRlPWdhtn3lDXd+Bf4KOsmPwiHYm6MiA9g3Gn32lqm23btKIu+aPw/UH
-         I10kDK3lLRlKqttz8Oyom2qv7DB2BwMiRrEx+DFzZu/MLDLp3zIrgNJObhQZ4COHh5j8
-         dZYA==
-X-Gm-Message-State: AOAM533KGk5TK3oQGN2Olk/kyQZLXKfI+HzdD+dOzJhhVCUwZnpG/Q5N
-        lEuTGHzuLQscZWRxoTmsnLSpyGZ87LWJ3Q==
-X-Google-Smtp-Source: ABdhPJzF3BD+XPvDJLGS3kvRnzSb8RFBxVQn6yv/i4Afa7uSh8aBsJCkYudwUShkYrzvZ1aB4QkkHA==
-X-Received: by 2002:a5d:6103:0:b0:1ed:9e65:b090 with SMTP id v3-20020a5d6103000000b001ed9e65b090mr23743441wrt.332.1646255494454;
-        Wed, 02 Mar 2022 13:11:34 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm145776wmp.44.2022.03.02.13.11.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 13:11:34 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     heiko@sntech.de, herbert@gondor.apana.org.au, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, john@metanate.com,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v2 15/18] crypto: rockchip: introduce PM
-Date:   Wed,  2 Mar 2022 21:11:10 +0000
-Message-Id: <20220302211113.4003816-16-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220302211113.4003816-1-clabbe@baylibre.com>
-References: <20220302211113.4003816-1-clabbe@baylibre.com>
+        Wed, 2 Mar 2022 16:16:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F370D5E;
+        Wed,  2 Mar 2022 13:15:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 078A8B82231;
+        Wed,  2 Mar 2022 21:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FC45C004E1;
+        Wed,  2 Mar 2022 21:15:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646255753;
+        bh=gDOb3uOTmYK1tCwXGMDSEdWNLGwvH0XEN6bnN2kAsvw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XXVm2vOnX8XTJh2+7pn5cnlIt0vFWSaKMjEtJypOFlbyW61g5stwJOuuXs9wB0qWp
+         g96RQ0gvNK7h3l9RZtscgGQQC4Tn7jqoL0Rw9+hNC9lWwmOWDveb1MfVA8u5jAXrJZ
+         woSji1ElKcWhd47BE7kOy0gFWRZBya7zAaTfgqEqOW0ele327T6pti9IYSbzTQFz99
+         bKTfsgNI0OIjNB0xdcYPbtMcnGgIsr7X9BOi5QDzWBuL3QyNMVyrtlK1k5AS0UJwQ8
+         se0Z69L6kOClY2WcSdtA9ekR0iqxkpdjvwP+B9PoUz1l32wd7M8PMXF0chVijCQeCP
+         eRhElaUPHByPg==
+Date:   Wed, 2 Mar 2022 14:15:45 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     keescook@chromium.org, x86@kernel.org, joao@overdrivepizza.com,
+        hjl.tools@gmail.com, jpoimboe@redhat.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2 01/39] kbuild: Fix clang build
+Message-ID: <Yh/egU1LZudfrgVy@dev-arch.thelio-3990X>
+References: <20220224145138.952963315@infradead.org>
+ <20220224151322.072632223@infradead.org>
+ <CAKwvOdkD2WY=hEHy8_0zs70AGx6LRQwxL5mEZyB30uqpruYJyA@mail.gmail.com>
+ <Yh+dMJsH+ZMPfqwD@thelio-3990X>
+ <CAKwvOdmouBTe5pH3JoP6EEfwNT5=6WvX3oCEZRxO0Dkf38S14w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="liu8GtapZ3xLnrsC"
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdmouBTe5pH3JoP6EEfwNT5=6WvX3oCEZRxO0Dkf38S14w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add runtime PM support for rockchip crypto.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+--liu8GtapZ3xLnrsC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Mar 02, 2022 at 11:18:07AM -0800, Nick Desaulniers wrote:
+> On Wed, Mar 2, 2022 at 8:37 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > On Tue, Mar 01, 2022 at 01:16:04PM -0800, Nick Desaulniers wrote:
+> > > As per our previous discussion
+> > > https://lore.kernel.org/linux-kbuild/CAKwvOd=x9E=7WcCiieso-CDiiU-wMFcXL4W3V5j8dq7BL5QT+w@mail.gmail.com/
+> > > I'm still of the opionion that this should be solved by modifications
+> > > (permanent or one off) to one's $PATH.
+> >
+> > However, I think we could still address Peter's complaint of "there
+> > should be an easier way for me to use the tools that are already in my
+> > PATH" with his first iteration of this patch [1], which I feel is
+> > totally reasonable:
+> >
+> > $ make LLVM=-14
+> >
+> > It is still easy to use (in fact, it is shorter than 'CC=clang-14') and
+> > it does not change anything else about how we build with LLVM. We would
+> > just have to add something along the lines of
+> >
+> > "If your LLVM tools have a suffix like Debian's (clang-14, ld.lld-14,
+> > etc.), use LLVM=<suffix>.
+> 
+> "If your LLVM tools have a suffix and you prefer to test an explicit
+> version rather than the unsuffixed executables ..."
+
+Ack, I included this.
+
+> > $ make LLVM=-14"
+> >
+> > to Documentation/kbuild/llvm.rst.
+> >
+> > I might change the patch not to be so clever though:
+> >
+> > ifneq ($(LLVM),)
+> > ifneq ($(LLVM),1)
+> > LLVM_SFX := $(LLVM)
+> > endif
+> > endif
+> >
+> > [1]: https://lore.kernel.org/r/YXqpFHeY26sEbort@hirez.programming.kicks-ass.net/
+> 
+> I'd be much more amenable to that approach.
+
+Sounds good, tentative patch attached, it passes all of my testing.
+There is an instance of $(LLVM) in tools/testing/selftests/lib.mk that I
+did not touch, as that will presumably have to go through the selftests
+tree. I can send a separate patch for that later.
+
+Peter, is this approach okay with you? If so, would you like to be
+co-author or should I use a suggested-by tag?
+
+Cheers,
+Nathan
+
+--liu8GtapZ3xLnrsC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-kbuild-Allow-a-suffix-with-LLVM.patch"
+
+From 83219caafbb7dbc2e41e3888ba5079d342aff633 Mon Sep 17 00:00:00 2001
+From: Nathan Chancellor <nathan@kernel.org>
+Date: Wed, 2 Mar 2022 13:28:14 -0700
+Subject: [PATCH] kbuild: Allow a suffix with $(LLVM)
+
+The LLVM variable allows a developer to quickly switch between the GNU
+and LLVM tools. However, it does not handle versioned binaries, such as
+the ones shipped by Debian, as LLVM=1 just defines the build variables
+with the unversioned binaries.
+
+There was some discussion during the review of the patch that introduces
+LLVM=1 around this, ultimately coming to the conclusion that developers
+can just add the folder that contains the unversioned binaries to their
+PATH, as Debian's versioned suffixed binaries are really just symlinks
+to the unversioned binaries in /usr/lib/llvm-#/bin:
+
+$ realpath /usr/bin/clang-14
+/usr/lib/llvm-14/bin/clang
+
+$ PATH=/usr/lib/llvm-14/bin:$PATH make ... LLVM=1
+
+However, it is simple enough to support this scheme directly in the
+Kbuild system by allowing the developer to specify the version suffix
+with LLVM=, which is shorter than the above suggestion:
+
+$ make ... LLVM=-14
+
+It does not change the meaning of LLVM=1 (which will continue to use
+unversioned binaries) and it does not add too much additional complexity
+to the existing $(LLVM) code, while allowing developers to quickly test
+their series with different versions of the whole LLVM suite of tools.
+
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
- drivers/crypto/Kconfig                        |  1 +
- drivers/crypto/rockchip/rk3288_crypto.c       | 50 ++++++++++++++++++-
- drivers/crypto/rockchip/rk3288_crypto.h       |  1 +
- drivers/crypto/rockchip/rk3288_crypto_ahash.c | 11 ++++
- .../crypto/rockchip/rk3288_crypto_skcipher.c  | 10 ++++
- 5 files changed, 71 insertions(+), 2 deletions(-)
+ Documentation/kbuild/llvm.rst  |  7 +++++++
+ Makefile                       | 24 ++++++++++++++----------
+ tools/scripts/Makefile.include | 20 ++++++++++++--------
+ 3 files changed, 33 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/crypto/Kconfig b/drivers/crypto/Kconfig
-index 04c8e332c5a1..685631a5cbea 100644
---- a/drivers/crypto/Kconfig
-+++ b/drivers/crypto/Kconfig
-@@ -784,6 +784,7 @@ config CRYPTO_DEV_IMGTEC_HASH
- config CRYPTO_DEV_ROCKCHIP
- 	tristate "Rockchip's Cryptographic Engine driver"
- 	depends on OF && ARCH_ROCKCHIP
-+	depends on PM
- 	select CRYPTO_AES
- 	select CRYPTO_ENGINE
- 	select CRYPTO_LIB_DES
-diff --git a/drivers/crypto/rockchip/rk3288_crypto.c b/drivers/crypto/rockchip/rk3288_crypto.c
-index cd0755731cf7..ba56f8ff97c3 100644
---- a/drivers/crypto/rockchip/rk3288_crypto.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto.c
-@@ -57,6 +57,48 @@ static void rk_crypto_disable_clk(struct rk_crypto_info *dev)
- 	clk_disable_unprepare(dev->sclk);
- }
+diff --git a/Documentation/kbuild/llvm.rst b/Documentation/kbuild/llvm.rst
+index d32616891dcf..5805a8473a36 100644
+--- a/Documentation/kbuild/llvm.rst
++++ b/Documentation/kbuild/llvm.rst
+@@ -60,6 +60,13 @@ They can be enabled individually. The full list of the parameters: ::
+ 	  OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf \
+ 	  HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld
  
-+/*
-+ * Power management strategy: The device is suspended unless a TFM exists for
-+ * one of the algorithms proposed by this driver.
-+ */
-+static int rk_crypto_pm_suspend(struct device *dev)
-+{
-+	struct rk_crypto_info *rkdev = dev_get_drvdata(dev);
++If your LLVM tools have a suffix and you prefer to test an explicit version rather
++than the unsuffixed executables, use ``LLVM=<suffix>``. For example: ::
 +
-+	rk_crypto_disable_clk(rkdev);
-+	return 0;
-+}
++	make LLVM=-14
 +
-+static int rk_crypto_pm_resume(struct device *dev)
-+{
-+	struct rk_crypto_info *rkdev = dev_get_drvdata(dev);
++will use ``clang-14``, ``ld.lld-14``, etc.
 +
-+	return rk_crypto_enable_clk(rkdev);
-+}
+ The integrated assembler is enabled by default. You can pass ``LLVM_IAS=0`` to
+ disable it.
+ 
+diff --git a/Makefile b/Makefile
+index daeb5c88b50b..89b61e693258 100644
+--- a/Makefile
++++ b/Makefile
+@@ -424,8 +424,12 @@ HOST_LFS_LDFLAGS := $(shell getconf LFS_LDFLAGS 2>/dev/null)
+ HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
+ 
+ ifneq ($(LLVM),)
+-HOSTCC	= clang
+-HOSTCXX	= clang++
++ifneq ($(LLVM),1)
++LLVM_SFX := $(LLVM)
++endif
 +
-+static const struct dev_pm_ops rk_crypto_pm_ops = {
-+	SET_RUNTIME_PM_OPS(rk_crypto_pm_suspend, rk_crypto_pm_resume, NULL)
-+};
++HOSTCC	= clang$(LLVM_SFX)
++HOSTCXX	= clang++$(LLVM_SFX)
+ else
+ HOSTCC	= gcc
+ HOSTCXX	= g++
+@@ -443,14 +447,14 @@ KBUILD_HOSTLDLIBS   := $(HOST_LFS_LIBS) $(HOSTLDLIBS)
+ # Make variables (CC, etc...)
+ CPP		= $(CC) -E
+ ifneq ($(LLVM),)
+-CC		= clang
+-LD		= ld.lld
+-AR		= llvm-ar
+-NM		= llvm-nm
+-OBJCOPY		= llvm-objcopy
+-OBJDUMP		= llvm-objdump
+-READELF		= llvm-readelf
+-STRIP		= llvm-strip
++CC		= clang$(LLVM_SFX)
++LD		= ld.lld$(LLVM_SFX)
++AR		= llvm-ar$(LLVM_SFX)
++NM		= llvm-nm$(LLVM_SFX)
++OBJCOPY		= llvm-objcopy$(LLVM_SFX)
++OBJDUMP		= llvm-objdump$(LLVM_SFX)
++READELF		= llvm-readelf$(LLVM_SFX)
++STRIP		= llvm-strip$(LLVM_SFX)
+ else
+ CC		= $(CROSS_COMPILE)gcc
+ LD		= $(CROSS_COMPILE)ld
+diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
+index 79d102304470..ab3b2a7dcc94 100644
+--- a/tools/scripts/Makefile.include
++++ b/tools/scripts/Makefile.include
+@@ -52,11 +52,15 @@ define allow-override
+ endef
+ 
+ ifneq ($(LLVM),)
+-$(call allow-override,CC,clang)
+-$(call allow-override,AR,llvm-ar)
+-$(call allow-override,LD,ld.lld)
+-$(call allow-override,CXX,clang++)
+-$(call allow-override,STRIP,llvm-strip)
++ifneq ($(LLVM),1)
++LLVM_SFX := $(LLVM)
++endif
 +
-+static int rk_crypto_pm_init(struct rk_crypto_info *rkdev)
-+{
-+	int err;
-+
-+	pm_runtime_use_autosuspend(rkdev->dev);
-+	pm_runtime_set_autosuspend_delay(rkdev->dev, 2000);
-+
-+	err = pm_runtime_set_suspended(rkdev->dev);
-+	if (err)
-+		return err;
-+	pm_runtime_enable(rkdev->dev);
-+	return err;
-+}
-+
-+static void rk_crypto_pm_exit(struct rk_crypto_info *rkdev)
-+{
-+	pm_runtime_disable(rkdev->dev);
-+}
-+
- static irqreturn_t rk_crypto_irq_handle(int irq, void *dev_id)
- {
- 	struct rk_crypto_info *dev  = platform_get_drvdata(dev_id);
-@@ -259,7 +301,9 @@ static int rk_crypto_probe(struct platform_device *pdev)
- 	crypto_engine_start(crypto_info->engine);
- 	init_completion(&crypto_info->complete);
++$(call allow-override,CC,clang$(LLVM_SFX))
++$(call allow-override,AR,llvm-ar$(LLVM_SFX))
++$(call allow-override,LD,ld.lld$(LLVM_SFX))
++$(call allow-override,CXX,clang++$(LLVM_SFX))
++$(call allow-override,STRIP,llvm-strip$(LLVM_SFX))
+ else
+ # Allow setting various cross-compile vars or setting CROSS_COMPILE as a prefix.
+ $(call allow-override,CC,$(CROSS_COMPILE)gcc)
+@@ -69,9 +73,9 @@ endif
+ CC_NO_CLANG := $(shell $(CC) -dM -E -x c /dev/null | grep -Fq "__clang__"; echo $$?)
  
--	rk_crypto_enable_clk(crypto_info);
-+	err = rk_crypto_pm_init(crypto_info);
-+	if (err)
-+		goto err_crypto;
- 
- 	err = rk_crypto_register(crypto_info);
- 	if (err) {
-@@ -280,6 +324,7 @@ static int rk_crypto_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_register_alg:
-+	rk_crypto_pm_exit(crypto_info);
- err_crypto:
- 	dev_err(dev, "Crypto Accelerator not successfully registered\n");
- 	return err;
-@@ -293,7 +338,7 @@ static int rk_crypto_remove(struct platform_device *pdev)
- 	debugfs_remove_recursive(crypto_tmp->dbgfs_dir);
- #endif
- 	rk_crypto_unregister();
--	rk_crypto_disable_clk(crypto_tmp);
-+	rk_crypto_pm_exit(crypto_tmp);
- 	return 0;
- }
- 
-@@ -302,6 +347,7 @@ static struct platform_driver crypto_driver = {
- 	.remove		= rk_crypto_remove,
- 	.driver		= {
- 		.name	= "rk3288-crypto",
-+		.pm		= &rk_crypto_pm_ops,
- 		.of_match_table	= crypto_of_id_table,
- 	},
- };
-diff --git a/drivers/crypto/rockchip/rk3288_crypto.h b/drivers/crypto/rockchip/rk3288_crypto.h
-index e2a6d735f2e2..06b2d9f52a80 100644
---- a/drivers/crypto/rockchip/rk3288_crypto.h
-+++ b/drivers/crypto/rockchip/rk3288_crypto.h
-@@ -9,6 +9,7 @@
- #include <linux/interrupt.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
-+#include <linux/pm_runtime.h>
- #include <linux/scatterlist.h>
- #include <crypto/engine.h>
- #include <crypto/internal/hash.h>
-diff --git a/drivers/crypto/rockchip/rk3288_crypto_ahash.c b/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-index 8856c6226be6..a41e21c7141b 100644
---- a/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-@@ -328,6 +328,7 @@ static int rk_cra_hash_init(struct crypto_tfm *tfm)
- 	struct ahash_alg *alg = __crypto_ahash_alg(tfm->__crt_alg);
- 
- 	const char *alg_name = crypto_tfm_alg_name(tfm);
-+	int err;
- 
- 	algt = container_of(alg, struct rk_crypto_tmp, alg.hash);
- 
-@@ -349,7 +350,16 @@ static int rk_cra_hash_init(struct crypto_tfm *tfm)
- 	tctx->enginectx.op.prepare_request = rk_hash_prepare;
- 	tctx->enginectx.op.unprepare_request = rk_hash_unprepare;
- 
-+	err = pm_runtime_get_sync(tctx->dev->dev);
-+	if (err < 0)
-+		goto error_pm;
-+
- 	return 0;
-+error_pm:
-+	pm_runtime_put_noidle(tctx->dev->dev);
-+	crypto_free_ahash(tctx->fallback_tfm);
-+
-+	return err;
- }
- 
- static void rk_cra_hash_exit(struct crypto_tfm *tfm)
-@@ -357,6 +367,7 @@ static void rk_cra_hash_exit(struct crypto_tfm *tfm)
- 	struct rk_ahash_ctx *tctx = crypto_tfm_ctx(tfm);
- 
- 	crypto_free_ahash(tctx->fallback_tfm);
-+	pm_runtime_put_sync_suspend(tctx->dev->dev);
- }
- 
- struct rk_crypto_tmp rk_ahash_sha1 = {
-diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-index a8cfb520eaf8..55efda6ea3e7 100644
---- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
-@@ -458,6 +458,7 @@ static int rk_ablk_init_tfm(struct crypto_skcipher *tfm)
- 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
- 	const char *name = crypto_tfm_alg_name(&tfm->base);
- 	struct rk_crypto_tmp *algt;
-+	int err;
- 
- 	algt = container_of(alg, struct rk_crypto_tmp, alg.skcipher);
- 
-@@ -475,7 +476,15 @@ static int rk_ablk_init_tfm(struct crypto_skcipher *tfm)
- 
- 	ctx->enginectx.op.do_one_request = rk_cipher_run;
- 
-+	err = pm_runtime_get_sync(ctx->dev->dev);
-+	if (err < 0)
-+		goto error_pm;
-+
- 	return 0;
-+error_pm:
-+	pm_runtime_put_noidle(ctx->dev->dev);
-+	crypto_free_skcipher(ctx->fallback_tfm);
-+	return err;
- }
- 
- static void rk_ablk_exit_tfm(struct crypto_skcipher *tfm)
-@@ -484,6 +493,7 @@ static void rk_ablk_exit_tfm(struct crypto_skcipher *tfm)
- 
- 	memzero_explicit(ctx->key, ctx->keylen);
- 	crypto_free_skcipher(ctx->fallback_tfm);
-+	pm_runtime_put_sync_suspend(ctx->dev->dev);
- }
- 
- struct rk_crypto_tmp rk_ecb_aes_alg = {
+ ifneq ($(LLVM),)
+-HOSTAR  ?= llvm-ar
+-HOSTCC  ?= clang
+-HOSTLD  ?= ld.lld
++HOSTAR  ?= llvm-ar$(LLVM_SFX)
++HOSTCC  ?= clang$(LLVM_SFX)
++HOSTLD  ?= ld.lld$(LLVM_SFX)
+ else
+ HOSTAR  ?= ar
+ HOSTCC  ?= gcc
+
+base-commit: fb184c4af9b9f4563e7a126219389986a71d5b5b
 -- 
-2.34.1
+2.35.1
 
+
+--liu8GtapZ3xLnrsC--
