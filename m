@@ -2,140 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E25C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B66C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 12:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241757AbiCBMUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 07:20:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        id S241759AbiCBMVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 07:21:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241744AbiCBMUF (ORCPT
+        with ESMTP id S241727AbiCBMVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 07:20:05 -0500
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B610657168
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 04:19:20 -0800 (PST)
-Received: by mail-oo1-xc33.google.com with SMTP id x6-20020a4a4106000000b003193022319cso1668265ooa.4
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 04:19:20 -0800 (PST)
+        Wed, 2 Mar 2022 07:21:35 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968AA5BE7E
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 04:20:52 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso1276937pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 04:20:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n2AHBorZms8YAGoG9GhF+kfihvE43wMRpP4hUA+7xto=;
-        b=r4fh2zx+7V9cjuHBtWdTH+AuC8ckxuv3eEjvJg2jgDKfSSAKj2ATaKGBVZMKjnkHqf
-         HgcJoT9GYZUogc7cmeUiNUy28YO1+8JNBTdXoqYeqPqWWDbfr+XTQwEW8uRyTW4u4m0i
-         p3yZH/6ARzIxhZ6KEnS00wlZFdLvd7EDxldDgKHDvbrux95w+RY1ZPlCWsrYS104b7P5
-         7Fz8jTM9orYw2DZEaNRdeH12F4eysoZRdsbU7FCWGzPqa84E0Ca8a2uuDEsjFDO/hqvK
-         FQlFtx6ntGzjq+KwsakdXWEQxMXIGbCfjIIK73MUVFBJ0WHSZGPe23km98T+SgmmmEP6
-         smwg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vplKU+u5BNo996K8f2xPSiatclDH2lB4T12dOrQIivE=;
+        b=K/EOiYcscZwk3AZTAYctKgHa6T/X/HoWmn9P6qtPVpTOHWomoZPugyFqWlNtT5kieI
+         HQcEBb1VhOJMe0W0MgHN6Ivz2w6n0mg9WRL+EJ8h67RwbWxhEEuAvXeE9rXb+xSsAS2g
+         3xjTB5a5QowTYHuXZvULaTS/PyOq1IdzVVPIeamSowW0bB2daY+6Y6/CpJ4kfluPeTzL
+         zRr7XYUdXQX5hgNqVZ8MFwxm5aULRW2tczjOtLmK3hHu0naFEi8ecYlBl0pVxrpt3+AE
+         oJXqSaDDMOtzBsO9TEg1n7VlqCwjCNUNaQvFp/UOjBBmW5F6Lzbh6+s5oJtGVma42uUi
+         YaSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n2AHBorZms8YAGoG9GhF+kfihvE43wMRpP4hUA+7xto=;
-        b=SDTvdTvmVBv36VI8y8MKrbmSD/v7hFPBQ45u8zg8Lt46r/YSWk68db10KZ7Cdt4OKX
-         h+HFBjlIFGlO6huKrhINgFqCh9f4Maf0PIeRHSuBwx3dHAkza008wPTomCoc/TNbt+2/
-         VJnM53ztbbq0wbGIgynb3NMIWIEeOdnxKiqFzjn/3sv1ozq4wCvPSOycE0JA1NrUw1CT
-         ZT+WLWEV/ccVT16gWaTtiXtjvWiZsnBozfYNmQxSMk2hWhEJssZydZzmczXHXP4+LFuc
-         196cCrqQsSZqWQ//pBtTBycYKj3nhILZxGab2xDkvr+JzTvFTP4mH+7FO/bWaZwqfIFy
-         o/aw==
-X-Gm-Message-State: AOAM53015XPS4ch8RC92yj+U3vHgTlUamQq2Wz0rcs+JdlApUIppnqnV
-        OuPhvtaWqjd82FVpvI1QwRuvypvDttaU+PpP3lsRFQ==
-X-Google-Smtp-Source: ABdhPJzRsnGNx1fdPAqwBzv9n93Ob+rDaO5Q/Mm9UetP4uvFOGd1t9zNatKQ5mno6z4JPqg2SO/qtToGVI/930EUBFc=
-X-Received: by 2002:a05:6870:434f:b0:bf:9f2a:26f0 with SMTP id
- x15-20020a056870434f00b000bf9f2a26f0mr7372412oah.40.1646223560034; Wed, 02
- Mar 2022 04:19:20 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vplKU+u5BNo996K8f2xPSiatclDH2lB4T12dOrQIivE=;
+        b=FWzIf9F8pVfbjIZBPwabLi7fTF6jcypPvxPjD0G4qHCTg7P2B2BYcxtr+Fw5d464Bd
+         0clJtEIVKIJjDSFaj0u9VZvbHv4cbBOveSck14JaT0VJfXwJhVKwS97leWk6WQVCWBIr
+         Shhh/tCavskRaIYY/ayRYGmEs/2C6ycNUI4yKJ6lVHexUMhVgtSH/ln+FReqiCgK5eRe
+         zJDWRDC2yc3pX7iRIxM4qCdT0U/RngFiQOtnAykEWBtenKpxkKCMa9RuQD6KQESl634q
+         BwmT9mG1awqAL1OHee/OXJpVqJxoJQcJZ/c76NU4v64JEMx0oxuWoqSPTFvNCU6rC5Lb
+         Dxlg==
+X-Gm-Message-State: AOAM5316GTmg6GLYbWuTXLWH0ds+wUNfQg6OZI2TroKd7UFk0d+E3tdj
+        YlZ/XHV2qEc9gOUjEALBrFGbKO+oG4Ns9w==
+X-Google-Smtp-Source: ABdhPJwHEKTP96y89UWO+7Wjwb22ouIUUzzweveRMnfLvYDw4WP9tBJO4AhiwPELre3xgi00gpjx0g==
+X-Received: by 2002:a17:902:c111:b0:14f:c841:66e2 with SMTP id 17-20020a170902c11100b0014fc84166e2mr30558022pli.92.1646223651814;
+        Wed, 02 Mar 2022 04:20:51 -0800 (PST)
+Received: from localhost.localdomain (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
+        by smtp.gmail.com with ESMTPSA id na5-20020a17090b4c0500b001bc9301f316sm5046887pjb.42.2022.03.02.04.20.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 04:20:51 -0800 (PST)
+From:   Nguyen Dinh Phi <phind.uet@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, Nguyen Dinh Phi <phind.uet@gmail.com>
+Subject: [PATCH RESEND] samples/kobject: Use sysfs_emit instead of snprintf
+Date:   Wed,  2 Mar 2022 20:07:59 +0800
+Message-Id: <20220302120759.380932-1-phind.uet@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
- <20220301072511.117818-6-bhupesh.sharma@linaro.org> <d51717a2-0a50-f2fb-0d2d-e233c6e75d4b@linaro.org>
-In-Reply-To: <d51717a2-0a50-f2fb-0d2d-e233c6e75d4b@linaro.org>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Date:   Wed, 2 Mar 2022 17:49:09 +0530
-Message-ID: <CAH=2NtwGzDCACt16YfMCys+qBF+peTCyJo+WTsEk5CfPUpE2sw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] PCI: qcom: Add SM8150 SoC support
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, bhupesh.linux@gmail.com,
-        lorenzo.pieralisi@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
-        bhelgaas@google.com, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, sboyd@kernel.org, mturquette@baylibre.com,
-        linux-clk@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dmitry,
+Convert sprintf() to sysfs_emit() in order to check buffer overrun on sysfs
+outputs.
 
-On Tue, 1 Mar 2022 at 17:13, Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> On 01/03/2022 10:25, Bhupesh Sharma wrote:
-> > The PCIe IP (rev 1.5.0) on SM8150 SoC is similar to the one used on
-> > SM8250. Hence the support is added reusing the members of ops_2_7_0.
-> >
-> > Cc: Vinod Koul <vkoul@kernel.org>
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> > ---
-> >   drivers/pci/controller/dwc/pcie-qcom.c | 16 ++++++++++++++++
-> >   1 file changed, 16 insertions(+)
-> >
-> > diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-> > index c19cd506ed3f..66fbc0234888 100644
-> > --- a/drivers/pci/controller/dwc/pcie-qcom.c
-> > +++ b/drivers/pci/controller/dwc/pcie-qcom.c
-> > @@ -1487,6 +1487,17 @@ static const struct qcom_pcie_ops ops_1_9_0 = {
-> >       .config_sid = qcom_pcie_config_sid_sm8250,
-> >   };
-> >
-> > +/* Qcom IP rev.: 1.5.0 */
-> > +static const struct qcom_pcie_ops ops_1_5_0 = {
-> > +     .get_resources = qcom_pcie_get_resources_2_7_0,
-> > +     .init = qcom_pcie_init_2_7_0,
-> > +     .deinit = qcom_pcie_deinit_2_7_0,
-> > +     .ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
-> > +     .post_init = qcom_pcie_post_init_2_7_0,
-> > +     .post_deinit = qcom_pcie_post_deinit_2_7_0,
-> > +     .config_sid = qcom_pcie_config_sid_sm8250,
-> > +};
-> > +
->
-> This duplicates the ops_1_9_0, doesn't it?
-> I'd suggest to reuse 1.9.0 structure and add a comment that it's also
-> used for 1.5.0.
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+---
+ samples/kobject/kobject-example.c | 4 ++--
+ samples/kobject/kset-example.c    | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Ack. I will fix this in v3.
+diff --git a/samples/kobject/kobject-example.c b/samples/kobject/kobject-example.c
+index 9e383fdbaa00..96678ed73216 100644
+--- a/samples/kobject/kobject-example.c
++++ b/samples/kobject/kobject-example.c
+@@ -28,7 +28,7 @@ static int bar;
+ static ssize_t foo_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 			char *buf)
+ {
+-	return sprintf(buf, "%d\n", foo);
++	return sysfs_emit(buf, "%d\n", foo);
+ }
+ 
+ static ssize_t foo_store(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -60,7 +60,7 @@ static ssize_t b_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 		var = baz;
+ 	else
+ 		var = bar;
+-	return sprintf(buf, "%d\n", var);
++	return sysfs_emit(buf, "%d\n", var);
+ }
+ 
+ static ssize_t b_store(struct kobject *kobj, struct kobj_attribute *attr,
+diff --git a/samples/kobject/kset-example.c b/samples/kobject/kset-example.c
+index c8010f126808..52f1acabd479 100644
+--- a/samples/kobject/kset-example.c
++++ b/samples/kobject/kset-example.c
+@@ -112,7 +112,7 @@ static void foo_release(struct kobject *kobj)
+ static ssize_t foo_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
+ 			char *buf)
+ {
+-	return sprintf(buf, "%d\n", foo_obj->foo);
++	return sysfs_emit(buf, "%d\n", foo_obj->foo);
+ }
+ 
+ static ssize_t foo_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
+@@ -144,7 +144,7 @@ static ssize_t b_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
+ 		var = foo_obj->baz;
+ 	else
+ 		var = foo_obj->bar;
+-	return sprintf(buf, "%d\n", var);
++	return sysfs_emit(buf, "%d\n", var);
+ }
+ 
+ static ssize_t b_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
+-- 
+2.25.1
 
-Regards,
-Bhupesh
-
-> >   static const struct qcom_pcie_cfg apq8084_cfg = {
-> >       .ops = &ops_1_0_0,
-> >   };
-> > @@ -1511,6 +1522,10 @@ static const struct qcom_pcie_cfg sdm845_cfg = {
-> >       .ops = &ops_2_7_0,
-> >   };
-> >
-> > +static const struct qcom_pcie_cfg sm8150_cfg = {
-> > +     .ops = &ops_1_5_0,
-> > +};
-> > +
-> >   static const struct qcom_pcie_cfg sm8250_cfg = {
-> >       .ops = &ops_1_9_0,
-> >   };
-> > @@ -1626,6 +1641,7 @@ static const struct of_device_id qcom_pcie_match[] = {
-> >       { .compatible = "qcom,pcie-ipq4019", .data = &ipq4019_cfg },
-> >       { .compatible = "qcom,pcie-qcs404", .data = &ipq4019_cfg },
-> >       { .compatible = "qcom,pcie-sdm845", .data = &sdm845_cfg },
-> > +     { .compatible = "qcom,pcie-sm8150", .data = &sm8150_cfg },
-> >       { .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
-> >       { .compatible = "qcom,pcie-sc8180x", .data = &sm8250_cfg },
-> >       { .compatible = "qcom,pcie-sc7280", .data = &sc7280_cfg },
->
->
-> --
-> With best wishes
-> Dmitry
