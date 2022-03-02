@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 527C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243134AbiCBOay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:30:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        id S243126AbiCBObA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:31:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243123AbiCBO3x (ORCPT
+        with ESMTP id S243084AbiCBO3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:29:53 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE6555769
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:35 -0800 (PST)
+        Wed, 2 Mar 2022 09:29:52 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FCA56421
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646231316; x=1677767316;
+  t=1646231311; x=1677767311;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dssmTF2/Efup6H50u/WDiNUqY08JOsX/5fqKg56PU14=;
-  b=R7WhvnJ3glu+YYI/lT11IGoUxybAut5pIYaaQ1ZjaJ9Bz+QcaA6tGeh8
-   /mVR1R2CSrFTbLu6bRIQPbW6oBicfplmCJwZmHMglYymq0XEFBXCO3mii
-   YCBYyuHT0hFQG8Ws8ULs34xG0K7/bCem+DjBP8AbZNL6DxuDuivSk7Z0P
-   YDS4vo+UrGilPlRI2l1IKH5D2mIQiZMlFVe1eHZWK5cJB3REAv66/w9cG
-   xer4Cgd9U4uEzBVWtk4gHlNCo9M5x+HvwRvL7Bd7iQA/IPrNc3D+EFYpS
-   mDhMa94PxSi2hESmPl+t7pPJ06XE18uUOMILwQ6Kw+u8hTJhMRosxr5Ix
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="252239436"
+  bh=iBQ+LEtis0tXpyQ6lUaVrLGKia4klRfYbp2til+UWeY=;
+  b=nzeGbdIhbeA3VMdINdAKTlhSOgS2iFzkm0Y8zjCrbaGm7lII3bIwG8zF
+   xMdqPKJsl37wS/xn9Fjwq1axstjQklvRI42LioOr/nZZVkKJvolCCq+Rx
+   UwjmRleIYXmwhCese826jL5Kh+65eLHGKtGGIKM4t7LALJCiypyWd77e7
+   R9mPYomus9a+cQN7EAqCizf7/1UtTTn1KeRgPP/1bE2934TVedaJ0aNpB
+   MYp/fATWlip64pQnMwRRxjBeexOf8OWb5Y8yIx4b4Npn0s2mYT3e7tZBB
+   PjpKT/uiMrz+9iIaH8DsP93MPVSlMRcNpk4jUm4lPvi0MmPAQnwx4cj7C
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233376511"
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="252239436"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:16 -0800
+   d="scan'208";a="233376511"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="609215472"
+   d="scan'208";a="545512491"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Mar 2022 06:28:08 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 02 Mar 2022 06:28:10 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 908BC411; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
+        id 1CAD1607; Wed,  2 Mar 2022 16:28:13 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,11 +51,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv5 15/30] x86/boot: Port I/O: allow to hook up alternative helpers
-Date:   Wed,  2 Mar 2022 17:27:51 +0300
-Message-Id: <20220302142806.51844-16-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 26/30] x86/mm/cpa: Add support for TDX shared memory
+Date:   Wed,  2 Mar 2022 17:28:02 +0300
+Message-Id: <20220302142806.51844-27-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
 References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
@@ -65,438 +64,181 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Port I/O instructions trigger #VE in the TDX environment. In response to
-the exception, kernel emulates these instructions using hypercalls.
+Intel TDX protects guest memory from VMM access. Any memory that is
+required for communication with the VMM must be explicitly shared.
 
-But during early boot, on the decompression stage, it is cumbersome to
-deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
-handling.
+It is a two-step process: the guest sets the shared bit in the page
+table entry and notifies VMM about the change. The notification happens
+using MapGPA hypercall.
 
-Add a way to hook up alternative port I/O helpers in the boot stub with
-a new pio_ops structure.  For now, set the ops structure to just call
-the normal I/O operation functions.
+Conversion back to private memory requires clearing the shared bit,
+notifying VMM with MapGPA hypercall following with accepting the memory
+with AcceptPage hypercall.
 
-The approach has down sides: TDX boot will fail if any code bypass
-pio_ops and go for direct port I/O helper. The failure will only be
-visible on TDX boot (or other user of alternative pio_ops).
+Provide a TDX version of x86_platform.guest.* callbacks. It makes
+__set_memory_enc_pgtable() work right in TDX guest.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/x86/boot/a20.c                  | 14 ++++++------
- arch/x86/boot/boot.h                 |  2 +-
- arch/x86/boot/compressed/misc.c      | 18 ++++++++++------
- arch/x86/boot/compressed/misc.h      |  2 +-
- arch/x86/boot/early_serial_console.c | 28 ++++++++++++------------
- arch/x86/boot/io.h                   | 32 ++++++++++++++++++++++++++++
- arch/x86/boot/main.c                 |  4 ++++
- arch/x86/boot/pm.c                   | 10 ++++-----
- arch/x86/boot/tty.c                  |  4 ++--
- arch/x86/boot/video-vga.c            |  6 +++---
- arch/x86/boot/video.h                |  8 ++++---
- arch/x86/realmode/rm/wakemain.c      | 14 +++++++-----
- 12 files changed, 95 insertions(+), 47 deletions(-)
- create mode 100644 arch/x86/boot/io.h
+ arch/x86/coco/core.c    |   1 +
+ arch/x86/coco/tdx.c     | 101 ++++++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/traps.c |   2 +-
+ 3 files changed, 103 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/boot/a20.c b/arch/x86/boot/a20.c
-index a2b6b428922a..7f6dd5cc4670 100644
---- a/arch/x86/boot/a20.c
-+++ b/arch/x86/boot/a20.c
-@@ -25,7 +25,7 @@ static int empty_8042(void)
- 	while (loops--) {
- 		io_delay();
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 54344122e2fe..9778cf4c6901 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -21,6 +21,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+ 	switch (attr) {
+ 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
+ 	case CC_ATTR_HOTPLUG_DISABLED:
++	case CC_ATTR_GUEST_MEM_ENCRYPT:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index c82e8eda8c8b..2168ee25a52c 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -10,10 +10,15 @@
+ #include <asm/vmx.h>
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
++#include <asm/x86_init.h>
  
--		status = inb(0x64);
-+		status = pio_ops.inb(0x64);
- 		if (status == 0xff) {
- 			/* FF is a plausible, but very unlikely status */
- 			if (!--ffs)
-@@ -34,7 +34,7 @@ static int empty_8042(void)
- 		if (status & 1) {
- 			/* Read and discard input data */
- 			io_delay();
--			(void)inb(0x60);
-+			(void)pio_ops.inb(0x60);
- 		} else if (!(status & 2)) {
- 			/* Buffers empty, finished! */
- 			return 0;
-@@ -99,13 +99,13 @@ static void enable_a20_kbc(void)
- {
- 	empty_8042();
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+ #define TDX_GET_VEINFO			3
++#define TDX_ACCEPT_PAGE			6
++
++/* TDX hypercall Leaf IDs */
++#define TDVMCALL_MAP_GPA		0x10001
  
--	outb(0xd1, 0x64);	/* Command write */
-+	pio_ops.outb(0xd1, 0x64);	/* Command write */
- 	empty_8042();
- 
--	outb(0xdf, 0x60);	/* A20 on */
-+	pio_ops.outb(0xdf, 0x60);	/* A20 on */
- 	empty_8042();
- 
--	outb(0xff, 0x64);	/* Null command, but UHCI wants it */
-+	pio_ops.outb(0xff, 0x64);	/* Null command, but UHCI wants it */
- 	empty_8042();
+ /* MMIO direction */
+ #define EPT_READ	0
+@@ -495,6 +500,98 @@ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+ 	return ret;
  }
  
-@@ -113,10 +113,10 @@ static void enable_a20_fast(void)
- {
- 	u8 port_a;
- 
--	port_a = inb(0x92);	/* Configuration port A */
-+	port_a = pio_ops.inb(0x92);	/* Configuration port A */
- 	port_a |=  0x02;	/* Enable A20 */
- 	port_a &= ~0x01;	/* Do not reset machine */
--	outb(port_a, 0x92);
-+	pio_ops.outb(port_a, 0x92);
- }
- 
- /*
-diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
-index 22a474c5b3e8..bd8f640ca15f 100644
---- a/arch/x86/boot/boot.h
-+++ b/arch/x86/boot/boot.h
-@@ -23,10 +23,10 @@
- #include <linux/edd.h>
- #include <asm/setup.h>
- #include <asm/asm.h>
--#include <asm/shared/io.h>
- #include "bitops.h"
- #include "ctype.h"
- #include "cpuflags.h"
-+#include "io.h"
- 
- /* Useful macros */
- #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
-diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
-index 2b1169869b96..ff0e1b977514 100644
---- a/arch/x86/boot/compressed/misc.c
-+++ b/arch/x86/boot/compressed/misc.c
-@@ -47,6 +47,8 @@ void *memmove(void *dest, const void *src, size_t n);
-  */
- struct boot_params *boot_params;
- 
-+struct port_io_ops pio_ops;
-+
- memptr free_mem_ptr;
- memptr free_mem_end_ptr;
- 
-@@ -103,10 +105,12 @@ static void serial_putchar(int ch)
- {
- 	unsigned timeout = 0xffff;
- 
--	while ((inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
-+	while ((pio_ops.inb(early_serial_base + LSR) & XMTRDY) == 0 &&
-+	       --timeout) {
- 		cpu_relax();
-+	}
- 
--	outb(ch, early_serial_base + TXR);
-+	pio_ops.outb(ch, early_serial_base + TXR);
- }
- 
- void __putstr(const char *s)
-@@ -152,10 +156,10 @@ void __putstr(const char *s)
- 	boot_params->screen_info.orig_y = y;
- 
- 	pos = (x + cols * y) * 2;	/* Update cursor position */
--	outb(14, vidport);
--	outb(0xff & (pos >> 9), vidport+1);
--	outb(15, vidport);
--	outb(0xff & (pos >> 1), vidport+1);
-+	pio_ops.outb(14, vidport);
-+	pio_ops.outb(0xff & (pos >> 9), vidport+1);
-+	pio_ops.outb(15, vidport);
-+	pio_ops.outb(0xff & (pos >> 1), vidport+1);
- }
- 
- void __puthex(unsigned long value)
-@@ -370,6 +374,8 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
- 	lines = boot_params->screen_info.orig_video_lines;
- 	cols = boot_params->screen_info.orig_video_cols;
- 
-+	init_default_io_ops();
-+
- 	/*
- 	 * Detect TDX guest environment.
- 	 *
-diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
-index 8a253e85f990..ea71cf3d64e1 100644
---- a/arch/x86/boot/compressed/misc.h
-+++ b/arch/x86/boot/compressed/misc.h
-@@ -26,7 +26,6 @@
- #include <asm/boot.h>
- #include <asm/bootparam.h>
- #include <asm/desc_defs.h>
--#include <asm/shared/io.h>
- 
- #include "tdx.h"
- 
-@@ -35,6 +34,7 @@
- 
- #define BOOT_BOOT_H
- #include "../ctype.h"
-+#include "../io.h"
- 
- #ifdef CONFIG_X86_64
- #define memptr long
-diff --git a/arch/x86/boot/early_serial_console.c b/arch/x86/boot/early_serial_console.c
-index 023bf1c3de8b..03e43d770571 100644
---- a/arch/x86/boot/early_serial_console.c
-+++ b/arch/x86/boot/early_serial_console.c
-@@ -28,17 +28,17 @@ static void early_serial_init(int port, int baud)
- 	unsigned char c;
- 	unsigned divisor;
- 
--	outb(0x3, port + LCR);	/* 8n1 */
--	outb(0, port + IER);	/* no interrupt */
--	outb(0, port + FCR);	/* no fifo */
--	outb(0x3, port + MCR);	/* DTR + RTS */
-+	pio_ops.outb(0x3, port + LCR);	/* 8n1 */
-+	pio_ops.outb(0, port + IER);	/* no interrupt */
-+	pio_ops.outb(0, port + FCR);	/* no fifo */
-+	pio_ops.outb(0x3, port + MCR);	/* DTR + RTS */
- 
- 	divisor	= 115200 / baud;
--	c = inb(port + LCR);
--	outb(c | DLAB, port + LCR);
--	outb(divisor & 0xff, port + DLL);
--	outb((divisor >> 8) & 0xff, port + DLH);
--	outb(c & ~DLAB, port + LCR);
-+	c = pio_ops.inb(port + LCR);
-+	pio_ops.outb(c | DLAB, port + LCR);
-+	pio_ops.outb(divisor & 0xff, port + DLL);
-+	pio_ops.outb((divisor >> 8) & 0xff, port + DLH);
-+	pio_ops.outb(c & ~DLAB, port + LCR);
- 
- 	early_serial_base = port;
- }
-@@ -104,11 +104,11 @@ static unsigned int probe_baud(int port)
- 	unsigned char lcr, dll, dlh;
- 	unsigned int quot;
- 
--	lcr = inb(port + LCR);
--	outb(lcr | DLAB, port + LCR);
--	dll = inb(port + DLL);
--	dlh = inb(port + DLH);
--	outb(lcr, port + LCR);
-+	lcr = pio_ops.inb(port + LCR);
-+	pio_ops.outb(lcr | DLAB, port + LCR);
-+	dll = pio_ops.inb(port + DLL);
-+	dlh = pio_ops.inb(port + DLH);
-+	pio_ops.outb(lcr, port + LCR);
- 	quot = (dlh << 8) | dll;
- 
- 	return BASE_BAUD / quot;
-diff --git a/arch/x86/boot/io.h b/arch/x86/boot/io.h
-new file mode 100644
-index 000000000000..87dc8ee5d15f
---- /dev/null
-+++ b/arch/x86/boot/io.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef BOOT_IO_H
-+#define BOOT_IO_H
-+
-+#include <asm/shared/io.h>
-+
-+struct port_io_ops {
-+	u8 (*inb)(u16 port);
-+	u16 (*inw)(u16 port);
-+	u32 (*inl)(u16 port);
-+	void (*outb)(u8 v, u16 port);
-+	void (*outw)(u16 v, u16 port);
-+	void (*outl)(u32 v, u16 port);
-+};
-+
-+extern struct port_io_ops pio_ops;
-+
-+/*
-+ * Use the normal I/O instructions by default.
-+ * TDX guests override these to use hypercalls.
-+ */
-+static inline void init_default_io_ops(void)
++static bool tdx_tlb_flush_required(bool enc)
 +{
-+	pio_ops.inb = inb;
-+	pio_ops.inw = inw;
-+	pio_ops.inl = inl;
-+	pio_ops.outb = outb;
-+	pio_ops.outw = outw;
-+	pio_ops.outl = outl;
++	/*
++	 * TDX guest is responsible for flushing caches on private->shared
++	 * transition. VMM is responsible for flushing on shared->private.
++	 */
++	return !enc;
 +}
 +
-+#endif
-diff --git a/arch/x86/boot/main.c b/arch/x86/boot/main.c
-index e3add857c2c9..1202d4f8a390 100644
---- a/arch/x86/boot/main.c
-+++ b/arch/x86/boot/main.c
-@@ -17,6 +17,8 @@
- 
- struct boot_params boot_params __attribute__((aligned(16)));
- 
-+struct port_io_ops pio_ops;
++static bool tdx_cache_flush_required(void)
++{
++	return true;
++}
 +
- char *HEAP = _end;
- char *heap_end = _end;		/* Default end of heap = no heap */
- 
-@@ -133,6 +135,8 @@ static void init_heap(void)
- 
- void main(void)
- {
-+	init_default_io_ops();
++static bool accept_page(phys_addr_t gpa, enum pg_level pg_level)
++{
++	/*
++	 * Pass the page physical address to the TDX module to accept the
++	 * pending, private page.
++	 *
++	 * Bits 2:0 of GPA encode page size: 0 - 4K, 1 - 2M, 2 - 1G.
++	 */
++	switch (pg_level) {
++	case PG_LEVEL_4K:
++		break;
++	case PG_LEVEL_2M:
++		gpa |= 1;
++		break;
++	case PG_LEVEL_1G:
++		gpa |= 2;
++		break;
++	default:
++		return false;
++	}
 +
- 	/* First, copy the boot header into the "zeropage" */
- 	copy_boot_params();
- 
-diff --git a/arch/x86/boot/pm.c b/arch/x86/boot/pm.c
-index 40031a614712..4180b6a264c9 100644
---- a/arch/x86/boot/pm.c
-+++ b/arch/x86/boot/pm.c
-@@ -25,7 +25,7 @@ static void realmode_switch_hook(void)
- 			     : "eax", "ebx", "ecx", "edx");
- 	} else {
- 		asm volatile("cli");
--		outb(0x80, 0x70); /* Disable NMI */
-+		pio_ops.outb(0x80, 0x70); /* Disable NMI */
- 		io_delay();
- 	}
- }
-@@ -35,9 +35,9 @@ static void realmode_switch_hook(void)
-  */
- static void mask_all_interrupts(void)
- {
--	outb(0xff, 0xa1);	/* Mask all interrupts on the secondary PIC */
-+	pio_ops.outb(0xff, 0xa1);	/* Mask all interrupts on the secondary PIC */
- 	io_delay();
--	outb(0xfb, 0x21);	/* Mask all but cascade on the primary PIC */
-+	pio_ops.outb(0xfb, 0x21);	/* Mask all but cascade on the primary PIC */
- 	io_delay();
- }
- 
-@@ -46,9 +46,9 @@ static void mask_all_interrupts(void)
-  */
- static void reset_coprocessor(void)
- {
--	outb(0, 0xf0);
-+	pio_ops.outb(0, 0xf0);
- 	io_delay();
--	outb(0, 0xf1);
-+	pio_ops.outb(0, 0xf1);
- 	io_delay();
- }
- 
-diff --git a/arch/x86/boot/tty.c b/arch/x86/boot/tty.c
-index f7eb976b0a4b..ee8700682801 100644
---- a/arch/x86/boot/tty.c
-+++ b/arch/x86/boot/tty.c
-@@ -29,10 +29,10 @@ static void __section(".inittext") serial_putchar(int ch)
- {
- 	unsigned timeout = 0xffff;
- 
--	while ((inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
-+	while ((pio_ops.inb(early_serial_base + LSR) & XMTRDY) == 0 && --timeout)
- 		cpu_relax();
- 
--	outb(ch, early_serial_base + TXR);
-+	pio_ops.outb(ch, early_serial_base + TXR);
- }
- 
- static void __section(".inittext") bios_putchar(int ch)
-diff --git a/arch/x86/boot/video-vga.c b/arch/x86/boot/video-vga.c
-index 4816cb9cf996..17baac542ee7 100644
---- a/arch/x86/boot/video-vga.c
-+++ b/arch/x86/boot/video-vga.c
-@@ -131,7 +131,7 @@ static void vga_set_80x43(void)
- /* I/O address of the VGA CRTC */
- u16 vga_crtc(void)
- {
--	return (inb(0x3cc) & 1) ? 0x3d4 : 0x3b4;
-+	return (pio_ops.inb(0x3cc) & 1) ? 0x3d4 : 0x3b4;
- }
- 
- static void vga_set_480_scanlines(void)
-@@ -148,10 +148,10 @@ static void vga_set_480_scanlines(void)
- 	out_idx(0xdf, crtc, 0x12); /* Vertical display end */
- 	out_idx(0xe7, crtc, 0x15); /* Vertical blank start */
- 	out_idx(0x04, crtc, 0x16); /* Vertical blank end */
--	csel = inb(0x3cc);
-+	csel = pio_ops.inb(0x3cc);
- 	csel &= 0x0d;
- 	csel |= 0xe2;
--	outb(csel, 0x3c2);
-+	pio_ops.outb(csel, 0x3c2);
- }
- 
- static void vga_set_vertical_end(int lines)
-diff --git a/arch/x86/boot/video.h b/arch/x86/boot/video.h
-index 04bde0bb2003..87a5f726e731 100644
---- a/arch/x86/boot/video.h
-+++ b/arch/x86/boot/video.h
-@@ -15,6 +15,8 @@
- 
- #include <linux/types.h>
- 
-+#include "boot.h"
++	return !__tdx_module_call(TDX_ACCEPT_PAGE, gpa, 0, 0, 0, NULL);
++}
 +
- /*
-  * This code uses an extended set of video mode numbers. These include:
-  * Aliases for standard modes
-@@ -96,13 +98,13 @@ extern int graphic_mode;	/* Graphics mode with linear frame buffer */
- /* Accessing VGA indexed registers */
- static inline u8 in_idx(u16 port, u8 index)
- {
--	outb(index, port);
--	return inb(port+1);
-+	pio_ops.outb(index, port);
-+	return pio_ops.inb(port+1);
- }
- 
- static inline void out_idx(u8 v, u16 port, u8 index)
- {
--	outw(index+(v << 8), port);
-+	pio_ops.outw(index+(v << 8), port);
- }
- 
- /* Writes a value to an indexed port and then reads the port again */
-diff --git a/arch/x86/realmode/rm/wakemain.c b/arch/x86/realmode/rm/wakemain.c
-index 1d6437e6d2ba..8c2eb2a829f1 100644
---- a/arch/x86/realmode/rm/wakemain.c
-+++ b/arch/x86/realmode/rm/wakemain.c
-@@ -17,18 +17,18 @@ static void beep(unsigned int hz)
- 	} else {
- 		u16 div = 1193181/hz;
- 
--		outb(0xb6, 0x43);	/* Ctr 2, squarewave, load, binary */
-+		pio_ops.outb(0xb6, 0x43);	/* Ctr 2, squarewave, load, binary */
- 		io_delay();
--		outb(div, 0x42);	/* LSB of counter */
-+		pio_ops.outb(div, 0x42);	/* LSB of counter */
- 		io_delay();
--		outb(div >> 8, 0x42);	/* MSB of counter */
-+		pio_ops.outb(div >> 8, 0x42);	/* MSB of counter */
- 		io_delay();
- 
- 		enable = 0x03;		/* Turn on speaker */
- 	}
--	inb(0x61);		/* Dummy read of System Control Port B */
-+	pio_ops.inb(0x61);		/* Dummy read of System Control Port B */
- 	io_delay();
--	outb(enable, 0x61);	/* Enable timer 2 output to speaker */
-+	pio_ops.outb(enable, 0x61);	/* Enable timer 2 output to speaker */
- 	io_delay();
- }
- 
-@@ -62,8 +62,12 @@ static void send_morse(const char *pattern)
- 	}
- }
- 
-+struct port_io_ops pio_ops;
++/*
++ * Inform the VMM of the guest's intent for this physical page: shared with
++ * the VMM or private to the guest.  The VMM is expected to change its mapping
++ * of the page in response.
++ */
++static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
++{
++	phys_addr_t start = __pa(vaddr);
++	phys_addr_t end = __pa(vaddr + numpages * PAGE_SIZE);
 +
- void main(void)
- {
-+	init_default_io_ops();
++	if (!enc) {
++		start |= cc_mkdec(0);
++		end |= cc_mkdec(0);
++	}
 +
- 	/* Kill machine if structures are wrong */
- 	if (wakeup_header.real_magic != 0x12345678)
- 		while (1)
++	/*
++	 * Notify the VMM about page mapping conversion. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
++	 * section "TDG.VP.VMCALL<MapGPA>"
++	 */
++	if (_tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0))
++		return false;
++
++	/* private->shared conversion  requires only MapGPA call */
++	if (!enc)
++		return true;
++
++	/*
++	 * For shared->private conversion, accept the page using
++	 * TDX_ACCEPT_PAGE TDX module call.
++	 */
++	while (start < end) {
++		/* Try if 1G page accept is possible */
++		if (!(start & ~PUD_MASK) && end - start >= PUD_SIZE &&
++		    accept_page(start, PG_LEVEL_1G)) {
++			start += PUD_SIZE;
++			continue;
++		}
++
++		/* Try if 2M page accept is possible */
++		if (!(start & ~PMD_MASK) && end - start >= PMD_SIZE &&
++		    accept_page(start, PG_LEVEL_2M)) {
++			start += PMD_SIZE;
++			continue;
++		}
++
++		if (!accept_page(start, PG_LEVEL_4K))
++			return false;
++		start += PAGE_SIZE;
++	}
++
++	return true;
++}
++
+ void __init tdx_early_init(void)
+ {
+ 	unsigned int gpa_width;
+@@ -526,5 +623,9 @@ void __init tdx_early_init(void)
+ 	 */
+ 	cc_set_mask(BIT_ULL(gpa_width - 1));
+ 
++	x86_platform.guest.enc_cache_flush_required = tdx_cache_flush_required;
++	x86_platform.guest.enc_tlb_flush_required = tdx_tlb_flush_required;
++	x86_platform.guest.enc_status_change_finish = tdx_enc_status_changed;
++
+ 	pr_info("Guest detected\n");
+ }
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 1c3cb952fa2a..080f21171b27 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -1308,7 +1308,7 @@ static void ve_raise_fault(struct pt_regs *regs, long error_code)
+  *
+  * In the settings that Linux will run in, virtualization exceptions are
+  * never generated on accesses to normal, TD-private memory that has been
+- * accepted.
++ * accepted (by BIOS or with tdx_enc_status_changed()).
+  *
+  * Syscall entry code has a critical window where the kernel stack is not
+  * yet set up. Any exception in this window leads to hard to debug issues
 -- 
 2.34.1
 
