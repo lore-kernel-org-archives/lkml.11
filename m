@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE635C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 20:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243941AbiCBUcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 15:32:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
+        id S235803AbiCBUc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 15:32:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243762AbiCBUcT (ORCPT
+        with ESMTP id S244002AbiCBUcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 15:32:19 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53B3CFBBF
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:31:25 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id bx5so2805731pjb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:31:25 -0800 (PST)
+        Wed, 2 Mar 2022 15:32:24 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66EFCFB83
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 12:31:36 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id e13so2592034plh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 12:31:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WWC9dqBz+lDH+nVtZcEeQtAyALBaRdonpw4pBAJ7QQM=;
-        b=dJbI8R7OHXHwQk4Dldy/InhjylGtauQIqBg6uzpcdWBZEZm+LTXtSmYd34fbkwCe5i
-         e/sg3bpiATOobW5QXMbJrnwCapsuH4wlNbrmaYa62f9/oeYg07v6wu+ODZWbUKR6Gkce
-         G9iKeGKuyLZ+l95OYtBr//KNsCPhM/DE4/FJqvVj5G+i481Dqb2vkpLDEFMvGXQigcEu
-         +pQLnxbVpjoSz/DTdq3hzgxrEk07OH7YzHa/BK2BmO13EbrHw6hI0AZuVPX6Yxto7oXh
-         dLRsUOalTSQx5fMk482ZSvabLbwfzz196c/kc9iIyVZr8OiOjXi94NQjJj7Oc3t1IjcW
-         KvYQ==
+        bh=6aVyDbY8mWFDs86ZSUd7TuJOdBkBFLjs80gN0LS4pVY=;
+        b=Tl7NEZvhUZpdTwcmNe+f/k3vBpnZvUbtaafcgnb2OUtQN33/NOBKA/oOQ83psaAVPk
+         ggqvLNZym/zESiPo+8EUetAQy/d9qUY7s2BiZt0LZkm0sKEeA5/D8/HwZvEckCcIEdrY
+         OQanc3Gn4bz62tkHmduupGz7wi+r28JZYuSuoQBa2yQRigViwFSMqIzy7JDPEbcoOms8
+         7eO7Nrxq3LZKUCFVQjdIrgMFoRgJQRgcTujW9CfhQ5Z4NZRH9Ylgnl8iamL1PuTHzPXz
+         iNpAIRTpPJKf57odccoTGvQgJMBzIzUUxAFP8IDV5dBcD90xXnj2fDLHZ1bq8MQvAzRK
+         Kjxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WWC9dqBz+lDH+nVtZcEeQtAyALBaRdonpw4pBAJ7QQM=;
-        b=7NQTlvf0iqslPDp636WkQPt1POyz6T7Pur1QGi5lGqXy00ZgJejqFlWzagVZQUNmvV
-         KOufaiNtOAP6BOpIU1+Gm+nm3r6jFPfqPLR3Mqah/j4gs1YVnZFgFm9sagopkjK+Y9Wa
-         th6idWBrJHGYIBQFz7qAcAL8FULDYldLGoQUVeirGlv55eT7W1eZcEKDjVr6XUlSYpUp
-         ovvWWUQ4AyEBiKUX3p5ZSMKucnehRwXZm9S9dHzk1061Le6+g7vBeNL4W3xOVzc9LDqH
-         b4XRcDhVfjnGOcXuLOUZm7VrbVxHT9M8p4xejc79tagZl3HZ6Os+RHgtxncSxTYKg4Pi
-         Jl6A==
-X-Gm-Message-State: AOAM5313jWjltVwnPsz1BQPUpftrrr7s7RY+mLGgn/uxcYjtVVk9A88E
-        2FI28ZrMSTp1EuMPBm1fuYTsOEAWXvn2wQ==
-X-Google-Smtp-Source: ABdhPJxltN/KLZpliXQJocHT1h1XwitZuKd+FFHlQwKvMtW9dW1b6myW+oMBuqBcDoJP79mnyu/cOg==
-X-Received: by 2002:a17:90a:ae11:b0:1be:efe6:4c6c with SMTP id t17-20020a17090aae1100b001beefe64c6cmr1637194pjq.128.1646253085071;
-        Wed, 02 Mar 2022 12:31:25 -0800 (PST)
+        bh=6aVyDbY8mWFDs86ZSUd7TuJOdBkBFLjs80gN0LS4pVY=;
+        b=h4n0pkjtX5nZzVHuT2vj/NVVR2w+nOANtcI+709NADzvgQKCcZpRzN0xC9YpaGMROb
+         igFCl8HAT6cw/ihGzZngdLhWde2DsVPDXjSqYnA6iSm5eDfgoYqhasEQnS6/g2dh6xsA
+         14ufL7fxHBXlouoNLlB+M8wcbj84YG7v4JmBbcDw38afpx8z47T54wv/fF7R7VdhOSE8
+         BsL/v3yUuFQR/tQ4i9ay+DXLRqdxBnMlyVPsRq9fRLNTP00dl+RtGM/OGlrHN6x5/R9v
+         Ze6XgQ3WIbDreuEUC/SCeTkP4CRmrpQIEbIuEW65fIPt2lUdTtH3LHuTzlzE94up30HB
+         a+SQ==
+X-Gm-Message-State: AOAM530dIdB70OnMdHNnmHZE6yKdF3xrSDqwkSsuCo72lU5ln6Q6K+NI
+        mEuVpmJ8UC+TvMlxiYcPimdlYw==
+X-Google-Smtp-Source: ABdhPJxMxp1gqbVtF9DFn3Tc3YJZqRD1Zo0skonvDO+wrA4GxmhhC4lZ0Rzrnob3c5L5q3wx3aE5MQ==
+X-Received: by 2002:a17:90b:f8a:b0:1be:dccd:e4f7 with SMTP id ft10-20020a17090b0f8a00b001bedccde4f7mr1627856pjb.92.1646253096058;
+        Wed, 02 Mar 2022 12:31:36 -0800 (PST)
 Received: from localhost.localdomain ([182.64.85.91])
-        by smtp.gmail.com with ESMTPSA id b1-20020a17090aa58100b001bcb7bad374sm5963410pjq.17.2022.03.02.12.31.19
+        by smtp.gmail.com with ESMTPSA id b1-20020a17090aa58100b001bcb7bad374sm5963410pjq.17.2022.03.02.12.31.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:31:24 -0800 (PST)
+        Wed, 02 Mar 2022 12:31:35 -0800 (PST)
 From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
 To:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
         devicetree@vger.kernel.org
@@ -56,11 +56,10 @@ Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
         bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
         bhelgaas@google.com, linux-kernel@vger.kernel.org,
         robh+dt@kernel.org, sboyd@kernel.org, mturquette@baylibre.com,
-        linux-clk@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH v3 5/7] PCI: qcom: Add SM8150 SoC support
-Date:   Thu,  3 Mar 2022 02:00:43 +0530
-Message-Id: <20220302203045.184500-6-bhupesh.sharma@linaro.org>
+        linux-clk@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH v3 7/7] arm64: dts: qcom: sa8155: Enable PCIe nodes
+Date:   Thu,  3 Mar 2022 02:00:45 +0530
+Message-Id: <20220302203045.184500-8-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220302203045.184500-1-bhupesh.sharma@linaro.org>
 References: <20220302203045.184500-1-bhupesh.sharma@linaro.org>
@@ -70,43 +69,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PCIe IP (rev 1.5.0) on SM8150 SoC is similar to the one used on
-SM8250. Hence the support is added reusing the members of ops_1_9_0.
+SA8155p ADP board supports the PCIe0 controller in the RC
+mode (only). So add the support for the same.
 
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc: Vinod Koul <vkoul@kernel.org>
 Cc: Rob Herring <robh+dt@kernel.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 42 ++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index c19cd506ed3f..564e2f10ea65 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1511,6 +1511,13 @@ static const struct qcom_pcie_cfg sdm845_cfg = {
- 	.ops = &ops_2_7_0,
+diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+index 8756c2b25c7e..3f6b3ee404f5 100644
+--- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
++++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+@@ -387,9 +387,51 @@ &usb_2_qmpphy {
+ 	vdda-pll-supply = <&vdda_usb_ss_dp_core_1>;
  };
  
-+static const struct qcom_pcie_cfg sm8150_cfg = {
-+	/* sm8150 has qcom IP rev 1.5.0. However 1.5.0 ops are same as
-+	 * 1.9.0, so reuse the same.
-+	 */
-+	.ops = &ops_1_9_0,
++&pcie0 {
++	status = "okay";
 +};
 +
- static const struct qcom_pcie_cfg sm8250_cfg = {
- 	.ops = &ops_1_9_0,
- };
-@@ -1626,6 +1633,7 @@ static const struct of_device_id qcom_pcie_match[] = {
- 	{ .compatible = "qcom,pcie-ipq4019", .data = &ipq4019_cfg },
- 	{ .compatible = "qcom,pcie-qcs404", .data = &ipq4019_cfg },
- 	{ .compatible = "qcom,pcie-sdm845", .data = &sdm845_cfg },
-+	{ .compatible = "qcom,pcie-sm8150", .data = &sm8150_cfg },
- 	{ .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
- 	{ .compatible = "qcom,pcie-sc8180x", .data = &sm8250_cfg },
- 	{ .compatible = "qcom,pcie-sc7280", .data = &sc7280_cfg },
++&pcie0_phy {
++	status = "okay";
++	vdda-phy-supply = <&vreg_l18c_0p88>;
++	vdda-pll-supply = <&vreg_l8c_1p2>;
++};
++
++&pcie1_phy {
++	vdda-phy-supply = <&vreg_l18c_0p88>;
++	vdda-pll-supply = <&vreg_l8c_1p2>;
++};
++
+ &tlmm {
+ 	gpio-reserved-ranges = <0 4>;
+ 
++	bt_en_default: bt_en_default {
++		mux {
++			pins = "gpio172";
++			function = "gpio";
++		};
++
++		config {
++			pins = "gpio172";
++			drive-strength = <2>;
++			bias-pull-down;
++		};
++	};
++
++	wlan_en_default: wlan_en_default {
++		mux {
++			pins = "gpio169";
++			function = "gpio";
++		};
++
++		config {
++			pins = "gpio169";
++			drive-strength = <16>;
++			output-high;
++			bias-pull-up;
++		};
++	};
++
+ 	usb2phy_ac_en1_default: usb2phy_ac_en1_default {
+ 		mux {
+ 			pins = "gpio113";
 -- 
 2.35.1
 
