@@ -2,87 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02991C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240977AbiCBK0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 05:26:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
+        id S240985AbiCBK0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 05:26:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235624AbiCBK0a (ORCPT
+        with ESMTP id S240979AbiCBK0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 05:26:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A817AD10D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 02:25:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646216746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fSrRNDpTZsFhlMpsmENClsaKs1lidW/Xhq22SIV8IOg=;
-        b=SGucAioKE2xe2otWSekWafpbw6mtwfHrybJUpLFrF/6qH0YgrELrE7AUO8GJfhEOr1ScXl
-        Jjlf+JsON4qzB57Nr926SVoHcMqIG6jVMDtuzCeL1+jRNpiZfMZpcSZ2qiDJ/b1y7dDlys
-        5ApX39ma5qY89AgnN4x6KyzyNKtq+us=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-96-_QMKm25sPWiww5mBf2CnDQ-1; Wed, 02 Mar 2022 05:25:43 -0500
-X-MC-Unique: _QMKm25sPWiww5mBf2CnDQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 2 Mar 2022 05:26:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D614BE1E1;
+        Wed,  2 Mar 2022 02:25:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E96DA1006AA6;
-        Wed,  2 Mar 2022 10:25:40 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AEA77B6F3;
-        Wed,  2 Mar 2022 10:24:58 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Sean Christopherson <seanjc@google.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH] KVM: x86: mmu: trace kvm_mmu_set_spte after the new SPTE was set
-Date:   Wed,  2 Mar 2022 12:24:57 +0200
-Message-Id: <20220302102457.588450-1-mlevitsk@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0D5FB81F61;
+        Wed,  2 Mar 2022 10:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8667AC004E1;
+        Wed,  2 Mar 2022 10:25:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646216748;
+        bh=Rx6BK3yEyjhunkFOjdoBpPskNNZoXkPwCC5NrzfuBVI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=boMjGCPXsNFGILP20rRGUBff+Ww8a79Y1VcW2gc8PbsskhnE3Yrub3QjSQO0uhLjq
+         ssneieFqCHD6C44q3Sok9DgbpFBBvU8DBFwXCanOeR6a6eAwuuh2YKaB0kiDUi7j1y
+         YLDNIDWy31YSMb2nu5PMALi8MI9755iEVV2uinYMkFg1QqeQtRi1OZJPynybl9fSih
+         WQ4mgjpWHIOwGeqaj/YUKfsoa+Y8asWj+js+fU2A7EUaio4WT0EQC8myIebvmCrYTD
+         PF/rs3OANJgAGT62tLHxcWvvZJbp5HVE26ftMpx0bjdBCbwLuGntlR/7XLAey2j7BS
+         Q7OlyOwcC2GPg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nPMB0-00Be3p-50; Wed, 02 Mar 2022 10:25:46 +0000
+Date:   Wed, 02 Mar 2022 10:25:45 +0000
+Message-ID: <877d9c3b2u.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/2] irqchip: Add Qualcomm MPM controller driver
+In-Reply-To: <20220302084028.GL269879@dragon>
+References: <20220301062414.2987591-1-shawn.guo@linaro.org>
+        <20220301062414.2987591-3-shawn.guo@linaro.org>
+        <87ee3m2aed.wl-maz@kernel.org>
+        <20220302084028.GL269879@dragon>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: shawn.guo@linaro.org, tglx@linutronix.de, quic_mkshah@quicinc.com, bjorn.andersson@linaro.org, sudeep.holla@arm.com, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It makes more sense to print new SPTE value than the
-old value.
+On Wed, 02 Mar 2022 08:40:28 +0000,
+Shawn Guo <shawn.guo@linaro.org> wrote:
+> 
+> Hi Marc,
+> 
+> On Tue, Mar 01, 2022 at 11:13:30AM +0000, Marc Zyngier wrote:
+> > Hi Shawn,
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[...]
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 94f077722b290..0e209f0b2e1d2 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2690,8 +2690,8 @@ static int mmu_set_spte(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
- 	if (*sptep == spte) {
- 		ret = RET_PF_SPURIOUS;
- 	} else {
--		trace_kvm_mmu_set_spte(level, gfn, sptep);
- 		flush |= mmu_spte_update(sptep, spte);
-+		trace_kvm_mmu_set_spte(level, gfn, sptep);
- 	}
- 
- 	if (wrprot) {
+> > 
+> > > +static int qcom_mpm_set_type(struct irq_data *d, unsigned int type)
+> > > +{
+> > > +	struct qcom_mpm_priv *priv = d->chip_data;
+> > > +	int pin = d->hwirq;
+> > > +	unsigned int index = pin / 32;
+> > > +	unsigned int shift = pin % 32;
+> > > +
+> > > +	switch (type & IRQ_TYPE_SENSE_MASK) {
+> > > +	case IRQ_TYPE_EDGE_RISING:
+> > > +		mpm_set_type(priv, !!(type & IRQ_TYPE_EDGE_RISING),
+> > > +			     MPM_REG_RISING_EDGE, index, shift);
+> > > +		break;
+> > > +	case IRQ_TYPE_EDGE_FALLING:
+> > > +		mpm_set_type(priv, !!(type & IRQ_TYPE_EDGE_FALLING),
+> > > +			     MPM_REG_FALLING_EDGE, index, shift);
+> > > +		break;
+> > > +	case IRQ_TYPE_LEVEL_HIGH:
+> > > +		mpm_set_type(priv, !!(type & IRQ_TYPE_LEVEL_HIGH),
+> > > +			     MPM_REG_POLARITY, index, shift);
+> > > +		break;
+> > > +	}
+> > 
+> > All these '!!(type & BLAH)' are totally superfluous, as they all expand
+> > to 'true' by construction.
+> 
+> Yes, you are right!
+> 
+> > And this leads to a few questions:
+> > 
+> > - Shouldn't a rising interrupt clear the falling detection?
+> > - Shouldn't a level-low clear the polarity?
+> > - How do you handle IRQ_TYPE_EDGE_BOTH?
+> > - How is MPM_REG_POLARITY evaluated for edge interrupts (resp the EDGE
+> >   registers for level interrupts), as you never seem to be configuring
+> >   a type here?
+> 
+> Honestly, qcom_mpm_set_type() was mostly taken from downstream without
+> too much thinking.  I trusted it as a "good" reference as I have no
+> document to verify the code.  These questions are great and resulted the
+> code changes are pretty sensible to me.
+
+I don't think these changes are enough. For example, an interrupt
+being switched from level to edge is likely to misbehave (how do you
+distinguish the two?). If that's what the downstream driver does, then
+it is terminally broken.
+
+As I asked before, we need some actual specs, or at least someone to
+paraphrase it for us. There are a number of QC folks on Cc, and I
+expect them to chime in and explain how MPM works here.
+
+> 
+> > - What initialises the MPM trigger types at boot time?
+> 
+> I dumped the vMPM region and it's all zeros.  My understanding is if
+> vMPM needs any sort of initialization, it should be done by RPM firmware
+> before APSS gets booting.
+
+What about kexec? We can't rely on this memory region to always be
+0-initialised, nor do we know what that means.
+
+Thanks,
+
+	M.
+
 -- 
-2.26.3
-
+Without deviation from the norm, progress is not possible.
