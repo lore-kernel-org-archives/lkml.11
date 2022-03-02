@@ -2,98 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C10CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 19:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241978AbiCBToQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 14:44:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
+        id S242058AbiCBTpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 14:45:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242082AbiCBToL (ORCPT
+        with ESMTP id S231410AbiCBTpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 14:44:11 -0500
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CC7CA0DF;
-        Wed,  2 Mar 2022 11:43:24 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id g26so5538209ybj.10;
-        Wed, 02 Mar 2022 11:43:24 -0800 (PST)
+        Wed, 2 Mar 2022 14:45:09 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7302CA0DD
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:44:24 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 96F9B3F609
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:44:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646250263;
+        bh=CXgP08C1PuFq4bqpjNjFmw31qLuU1W2/XX2cgUb+4wc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=ReaNoNkZPHpbDnlCJb8wdbhj7vA9g0We8sf6i4wYTFmJTehsAlJVK+utKO2MNZ8wu
+         MSIYT2JiVykvc2YU85iB/59PF2lRDxmpcbJ8xSiNJ/DOGt/HA6scoKRrlb53/l5V8O
+         KR11Ix7mvZSFjv05Wa94kvaAxFkTZRIssVapA31snbA9jgZ3NICwnzcuDFlTxZI+FN
+         wI0bESjkQPdD0Uogase46Vg9u2O7Q1bWK2MwP9bMu9G9JEdfrGLbIrIXntcIo3pGxF
+         Plcfjg26f/tPhteP5ElSI0qzF/9XWR8kmt7kednP+HI3vYEbVmf0kEuBe3DnBIGeL2
+         VjnPcnbeUxabw==
+Received: by mail-ej1-f72.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so1504595ejk.16
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 11:44:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5wvrt4mN5pwwCtlrrq6xd2uRhH3ZrSedQGiLgTtwogM=;
-        b=YaQNHym3tiesS2Tc0ukoLuesX5mNmGnN8db2GEaB6Mja/8MGC9lSzokzxV0LZO9Lpi
-         JHPavshPjZfEgURxMABWNe0ONl3YyBzz1+wMRVK3mCKqy+U6O7N0ze9KXx/6TBO5cH/6
-         1KxRMlDExARJXst6BDx15X2QUr+v00YXEJhWzYbEqXqgYW2cIOmBJVF+LTQcO6Ye19Lp
-         TXbBfz/H8YS/EMyHjeFb2jubDgdU4zO3yfWLMQagCOfTtVpxZxB/JLtB+EHwT6KVDM3w
-         aInFhBfZ0ywbW72p+vyUq4dKoTnRy5RYTBIkkH/6IvGA/Txpof/R6TCQ9jSyn7U3amCR
-         HD8Q==
-X-Gm-Message-State: AOAM532P+730t04OrkYYKPp35F8HhY4XXvo+i5kmORKQIMdnMtN1noPz
-        7fb3uTGpDpYjFW0dL20r37u+hvtwud3ZQAG7sdc=
-X-Google-Smtp-Source: ABdhPJylJxJ02SR2t3nFiQMP5hcdt++ycrqhmtMvNSGMlP5wyagWCqyYKwxGDNnqZY9IO3rDIcfxNVBvZtwv768sIPA=
-X-Received: by 2002:a25:bbc1:0:b0:610:b4ce:31db with SMTP id
- c1-20020a25bbc1000000b00610b4ce31dbmr30378943ybk.482.1646250173910; Wed, 02
- Mar 2022 11:42:53 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CXgP08C1PuFq4bqpjNjFmw31qLuU1W2/XX2cgUb+4wc=;
+        b=1cu3RDWC/smkbMGNrtGrVYFDoRcKchupPNspY60LFLdo0a0j7tkWPCrRF2ax0DNaXI
+         qvqYrJ2Zmz28UMsGfz3g0XGLMh56KaledAUsuwPwm7PCFVa36iHXtL+sYpHsr7BK7BTI
+         vA9x/ByRyU/XwhI+If7tSZG5J8A5kbSphJskUqn5w493OwUuo/SgWF5LUydx4HPJGbkO
+         h08w9Od1qAhNhBMu0GsoCsZoT1Mh2uuOiuE7xpuEylZ35Kn/iAHfTJI62pj1MQ/A3rOp
+         jQJAAujzPY9p/TpJAUl2jG96jF7eET77E+M4D6hiCOdjzeeP7xUUbGf++v0g7h+bwJ9T
+         tZAg==
+X-Gm-Message-State: AOAM531UjPQdyujo0wEGe71glNJPXWTy+jDqRbejXfKnrA9FkVVgy6fo
+        64+/UZKLa6T+ISmv087ASVkmISDprN8a65QBjjiujDLYIp+yJpHTRuxAqJrEl1ihTifZJlbLBUL
+        PMCnlugTriwMT7P/aFVRjSnJvP2ZfziWs4o6JT9NI4A==
+X-Received: by 2002:a17:906:7056:b0:6d6:dd99:f2a4 with SMTP id r22-20020a170906705600b006d6dd99f2a4mr9253741ejj.43.1646250263270;
+        Wed, 02 Mar 2022 11:44:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxeddp5OV+Flh+0Pd77oYKfgd5Yl2rsTAbN/GiVUOQXPIPUCAJzYFwH4LA4d4WjKVxsccE4rQ==
+X-Received: by 2002:a17:906:7056:b0:6d6:dd99:f2a4 with SMTP id r22-20020a170906705600b006d6dd99f2a4mr9253733ejj.43.1646250263033;
+        Wed, 02 Mar 2022 11:44:23 -0800 (PST)
+Received: from [192.168.0.137] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id y12-20020a50eb8c000000b00410f02e577esm9138825edr.7.2022.03.02.11.44.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 11:44:22 -0800 (PST)
+Message-ID: <72fafc84-4986-926f-67ae-155f4fced88b@canonical.com>
+Date:   Wed, 2 Mar 2022 20:44:21 +0100
 MIME-Version: 1.0
-References: <20220223160708.88100-1-mark@yotsuba.nl> <303dc74a-4d63-70a2-9891-af3e3d8baf26@redhat.com>
- <CAJZ5v0gVN_nsB5eqfWzyG3+LyvAmOJKsVbA4_sOiAV+RnjG64w@mail.gmail.com>
-In-Reply-To: <CAJZ5v0gVN_nsB5eqfWzyG3+LyvAmOJKsVbA4_sOiAV+RnjG64w@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 2 Mar 2022 20:42:43 +0100
-Message-ID: <CAJZ5v0gPxZ_m=7bqgo54kb1Kx5ut_KZ2iOeWo2ak0AFJq7rpjw@mail.gmail.com>
-Subject: Re: [PATCH] x86/acpi: Work around broken XSDT on SEGA AALE board
-To:     Mark Cilissen <mark@yotsuba.nl>,
-        Hans de Goede <hdegoede@redhat.com>
-Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [Patch v4 4/4] memory: tegra: Add MC error logging on tegra186
+ onward
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>, robh+dt@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com, digetx@gmail.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
+References: <1646210609-21943-1-git-send-email-amhetre@nvidia.com>
+ <1646210609-21943-5-git-send-email-amhetre@nvidia.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1646210609-21943-5-git-send-email-amhetre@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 8:34 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Thu, Feb 24, 2022 at 9:41 AM Hans de Goede <hdegoede@redhat.com> wrote:
-> >
-> > Hi Mark,
-> >
-> > On 2/23/22 17:07, Mark Cilissen wrote:
-> > > On this board the ACPI RSDP structure points to both a RSDT and an XSDT,
-> > > but the XSDT points to a truncated FADT. This causes all sorts of trouble
-> > > and usually a complete failure to boot after the following error occurs:
-> > >
-> > >   ACPI Error: Unsupported address space: 0x20 (*/hwregs-*)
-> > >   ACPI Error: AE_SUPPORT, Unable to initialize fixed events (*/evevent-*)
-> > >   ACPI: Unable to start ACPI Interpreter
-> > >
-> > > This leaves the ACPI implementation in such a broken state that subsequent
-> > > kernel subsystem initialisations go wrong, resulting in among others
-> > > mismapped PCI memory, SATA and USB enumeration failures, and freezes.
-> > >
-> > > As this is an older embedded platform that will likely never see any BIOS
-> > > updates to address this issue and its default shipping OS only complies to
-> > > ACPI 1.0, work around this by forcing `acpi=rsdt`. This patch, applied on
-> > > top of Linux 5.10.102, was confirmed on real hardware to fix the issue.
-> > >
-> > > Signed-off-by: Mark Cilissen <mark@yotsuba.nl>
-> > > Cc: stable@vger.kernel.org
-> >
-> > Wow, you got it working, cool!
-> >
-> > The patch looks good to me:
-> >
-> > Reviewed-by: Hans de Goede <hdegoede@redhat.com>
->
-> Applied as 5.18 material, thanks!
+On 02/03/2022 09:43, Ashish Mhetre wrote:
+> Add new function 'get_int_channel' in tegra_mc_soc struture which is
+> implemented by tegra SOCs which support multiple MC channels. This
+> function returns the channel which should be used to get the information
+> of interrupts.
+> Remove static from tegra30_mc_handle_irq and use it as interrupt handler
+> for MC interrupts on tegra186, tegra194 and tegra234 to log the errors.
+> Add error specific MC status and address register bits and use them on
+> tegra186, tegra194 and tegra234.
+> Add error logging for generalized carveout interrupt on tegra186, tegra194
+> and tegra234.
+> Add error logging for route sanity interrupt on tegra194 an tegra234.
+> Add register for higher bits of error address which is available on
+> tegra194 and tegra234.
+> Add a boolean variable 'has_addr_hi_reg' in tegra_mc_soc struture which
+> will be true if soc has register for higher bits of memory controller
+> error address. Set it true for tegra194 and tegra234.
+> 
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  drivers/memory/tegra/mc.c       | 102 ++++++++++++++++++++++++++++++++++------
+>  drivers/memory/tegra/mc.h       |  37 ++++++++++++++-
+>  drivers/memory/tegra/tegra186.c |  45 ++++++++++++++++++
+>  drivers/memory/tegra/tegra194.c |  44 +++++++++++++++++
+>  drivers/memory/tegra/tegra234.c |  59 +++++++++++++++++++++++
+>  include/soc/tegra/mc.h          |   4 ++
+>  6 files changed, 275 insertions(+), 16 deletions(-)
+> 
 
-And dropped due to a problem introduced by it.
+(...)
 
-Also please note that the x86 mailing list address originally used in
-the CC list was incorrect.
+>  
+> +static int tegra186_mc_get_channel(struct tegra_mc *mc, int *mc_channel)
+> +{
+> +	u32 g_intstatus;
+> +
+> +	g_intstatus = mc_ch_readl(mc, MC_BROADCAST_CHANNEL,
+> +				  MC_GLOBAL_INTSTATUS);
+> +
+> +	switch (g_intstatus & mc->soc->int_channel_mask) {
+> +	case BIT(0):
+> +		*mc_channel = 0;
+> +		break;
+> +
+> +	case BIT(1):
+> +		*mc_channel = 1;
+> +		break;
+> +
+> +	case BIT(2):
+> +		*mc_channel = 2;
+> +		break;
+> +
+> +	case BIT(3):
+> +		*mc_channel = 3;
+> +		break;
+> +
+> +	case BIT(24):
+> +		*mc_channel = MC_BROADCAST_CHANNEL;
+> +		break;
+> +
+> +	default:
+> +		pr_err("Unknown interrupt source\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  const struct tegra_mc_soc tegra186_mc_soc = {
+>  	.num_clients = ARRAY_SIZE(tegra186_mc_clients),
+>  	.clients = tegra186_mc_clients,
+>  	.num_address_bits = 40,
+>  	.num_channels = 4,
+> +	.client_id_mask = 0xff,
+> +	.intmask = MC_INT_DECERR_GENERALIZED_CARVEOUT | MC_INT_DECERR_MTS |
+> +		   MC_INT_SECERR_SEC | MC_INT_DECERR_VPR |
+> +		   MC_INT_SECURITY_VIOLATION | MC_INT_DECERR_EMEM,
+>  	.ops = &tegra186_mc_ops,
+> +	.int_channel_mask = 0x100000f,
+> +	.get_int_channel = tegra186_mc_get_channel,
+>  };
+>  #endif
+> diff --git a/drivers/memory/tegra/tegra194.c b/drivers/memory/tegra/tegra194.c
+> index 9400117..bc16567 100644
+> --- a/drivers/memory/tegra/tegra194.c
+> +++ b/drivers/memory/tegra/tegra194.c
+> @@ -1343,10 +1343,54 @@ static const struct tegra_mc_client tegra194_mc_clients[] = {
+>  	},
+>  };
+>  
+> +static int tegra194_mc_get_channel(struct tegra_mc *mc, int *mc_channel)
+
+Looks like 'mc' could be a pointer to const.
+
+> +{
+> +	u32 g_intstatus;
+
+Variable name just "status" because it looks like some
+hungarian-notation-style...
+
+The same in other places like this.
+
+
+Best regards,
+Krzysztof
