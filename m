@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A04D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 13:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242337AbiCBNqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 08:46:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
+        id S242341AbiCBNsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 08:48:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236210AbiCBNqH (ORCPT
+        with ESMTP id S236210AbiCBNsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 08:46:07 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6D625C84A;
-        Wed,  2 Mar 2022 05:45:23 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 6DD9192009C; Wed,  2 Mar 2022 14:45:22 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 6929692009B;
-        Wed,  2 Mar 2022 13:45:22 +0000 (GMT)
-Date:   Wed, 2 Mar 2022 13:45:22 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Icenowy Zheng <icenowy@aosc.io>
-cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] parport_pc: Also enable driver for PCI systems
-In-Reply-To: <8e799cadb1104714f998fe74e40b3cb052c9c1ed.camel@aosc.io>
-Message-ID: <alpine.DEB.2.21.2203021337430.58475@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2202141955550.34636@angie.orcam.me.uk> <8e799cadb1104714f998fe74e40b3cb052c9c1ed.camel@aosc.io>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Wed, 2 Mar 2022 08:48:35 -0500
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A31A3914E;
+        Wed,  2 Mar 2022 05:47:49 -0800 (PST)
+Received: by mail-ed1-f54.google.com with SMTP id h15so2325964edv.7;
+        Wed, 02 Mar 2022 05:47:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AcALeRLgruJraoqYkSDWeD6cogilR50XrL0fln3VffM=;
+        b=Zt/DO+Bq20//tVb2JU+hu8hHyEkmNc1bCqbD+5AM+Cc5TzPLsHYHf8Ecjg2JQ2TAcM
+         xdLnPGzSZJIlB1Etlp6Q8H28Ft7xBv0kRPV6MnqFKPDPxcQG4gLWXfEW/g6/SeQq5Jq0
+         cJWyIcE6vBvTq9qMxPUnLbJrj3uwx9PWJGEjabaN/Z+6E9Hk4ocbuSDmcpuxF7l/TcbR
+         6Joh9pPAYeBCTZx4QJ/s9RPN5QKF9EYoyfFSxxJLxBNhw0ngP7oR7eze2+blMf9RHpDa
+         mwcwewOu0RXHn3pTlW+EuvImKy5LfoaK1ND3JETVwDX5QeYKBi/Ak7dvHUqKT5VMhn72
+         xBIg==
+X-Gm-Message-State: AOAM530wSp+qQftMjLT2l/+oX1MLFIxVnIsf+qt9L/wv+IkWjVpm3cI9
+        tje5s2moolIG/7FeFG6rIb1RFQgwYBQ=
+X-Google-Smtp-Source: ABdhPJyLon6u9lLsCunawYR20XfDf0xqCgLlH9uQfjZDDHBev+/9Kxx+h6PWJ1DRu4mFMN+J2Sl/Iw==
+X-Received: by 2002:a05:6402:520c:b0:412:7f7d:b06b with SMTP id s12-20020a056402520c00b004127f7db06bmr29985652edd.91.1646228867527;
+        Wed, 02 Mar 2022 05:47:47 -0800 (PST)
+Received: from [192.168.0.136] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.googlemail.com with ESMTPSA id l5-20020a170906644500b006ce6b73ffd2sm6364627ejn.84.2022.03.02.05.47.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 05:47:46 -0800 (PST)
+Message-ID: <5476022d-6cac-82b4-b17e-23160689ea38@kernel.org>
+Date:   Wed, 2 Mar 2022 14:47:45 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 2/2] dt-bindings: hwmon: Add sample averaging
+ properties for ADM1275
+Content-Language: en-US
+To:     Potin Lai <potin.lai@quantatw.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Patrick Williams <patrick@stwcx.xyz>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220302123817.27025-1-potin.lai@quantatw.com>
+ <20220302123817.27025-3-potin.lai@quantatw.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220302123817.27025-3-potin.lai@quantatw.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022, Icenowy Zheng wrote:
-
-> > The only PCI platforms that actually can't make use of PC-style
-> > parallel 
-> > port hardware are those newer PCIe systems that have no support for
-> > I/O 
-> > cycles in the host bridge, required by such parallel ports.  Notably,
-> > this includes the s390 arch, which has port I/O accessors that cause 
-> > compilation warnings (promoted to errors with `-Werror'), and there
-> > are 
-> > other cases such as the POWER9 PHB4 device, though this one has
-> > variable 
-> > port I/O accessors that depend on the particular system.  Also it is
-> > not 
-> > clear whether the serial port side of devices enabled by
-> > PARPORT_SERIAL 
-> > uses port I/O or MMIO.  Finally Super I/O solutions are always either
-> > ISA or platform devices.
+On 02/03/2022 13:38, Potin Lai wrote:
+> Add documentation of new properties for sample averaging in PMON_CONFIG
+> register.
 > 
-> Just spot this patch in linux-riscv mailing list, I think there's a
-> pending patchset that tries to add a HAS_IOPORT Kconfig option, which
-> can be used in this situation.
+> New properties:
+> - adi,volt-curr-sample-average
+> - adi,power-sample-average
+> 
+> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+> ---
+>  .../bindings/hwmon/adi,adm1275.yaml           | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+> 
 
- Thanks for your input.
 
- That has been actually discussed already with a conclusion that more work 
-is required to have HAS_IOPORT supported, see the thread starting from: 
-<https://lore.kernel.org/lkml/CAMuHMdW-utcFzCZTgqONjxs=U662nF0=aBQu7Zi7FBQouwiA3g@mail.gmail.com/>. 
-(there's a reference to the HAS_IOPORT patchset there as well).  Once that 
-has been sorted configuration conditions for the parport driver can be 
-updated accordingly.  For the time being the !S390 qualification should 
-do.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-  Maciej
+
+Best regards,
+Krzysztof
