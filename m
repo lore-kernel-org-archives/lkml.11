@@ -2,179 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B3BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243924AbiCBR3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
+        id S243948AbiCBR3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:29:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243877AbiCBR3G (ORCPT
+        with ESMTP id S239351AbiCBR3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:29:06 -0500
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 5D745443DD
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:28:01 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1646242081; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=odXa6b5fU8MQd02N9WcX5w0ikkxNFvzlNrIqygo8Kz0=; b=NZvq7tq8sMEHEZwKvCypyxrrauxB431sQ3Z/+Yc4kspoJ0+SBEXOA6eJ6X95zwAnubu/Ugk/
- qI4xVpOXjovKOBbpyZ6RzaaSaVg+v2J5vWQeQehYurxIcQNexKYeQFJf3GhOZvAQeVlGyaxk
- fQxm8WlApq5iCxIxbfi8TKQ18Tw=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 621fa921ea5f8dddb54808a4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 02 Mar 2022 17:28:01
- GMT
-Sender: quic_akhilpo=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9B402C43619; Wed,  2 Mar 2022 17:28:01 +0000 (UTC)
-Received: from hyd-lnxbld559.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akhilpo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DA49DC43617;
-        Wed,  2 Mar 2022 17:27:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org DA49DC43617
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-To:     freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Douglas Anderson <dianders@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Sean Paul <sean@poorly.run>, Wang Qing <wangqing@vivo.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 02/10] drm/msm/a6xx: Send NMI to gmu when it is hung
-Date:   Wed,  2 Mar 2022 22:57:28 +0530
-Message-Id: <20220302225551.v1.2.Icda301aa85f1e4367601fa9b830b3365d377e669@changeid>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646242056-2456-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1646242056-2456-1-git-send-email-quic_akhilpo@quicinc.com>
+        Wed, 2 Mar 2022 12:29:40 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785A24D601
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:28:08 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2dbfe58670cso26331747b3.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:28:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Uuao6LtPoxz+SwUeDa6xzf7SfiyP8QP18hPPHG47BUc=;
+        b=q3XRXLhSkdzfXMPqmPGrtL5qKLDaaanmRsuY1OlB+gywhyfQ3P0k2Ty/lLBIx9hngr
+         bIE3qAL4ikUxI5IPrvBeSteXA23/TUiOhOXlNzpa2gQtUgeyGl8Sv+On2Q2+b/ioPLVK
+         y6mGgX6AYdM5qc4LpFsHD+JseMxCAPR3H5Cc4VnjOZ7eV1ADHbYrVBbr9AL8ZR5ElxMn
+         onL1EgPo/RmTTVYw9otAeEqlQaXOudGa8wKxOcCtR9oLm0BoPskgY4WBR6I9166lo/cT
+         W+PbTD8Xdk6xgUjKZon509MUJZNIphLafkMUrZ8a/ku3GC4bjTQpoQ7Ua0dreHWIDPif
+         i76A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uuao6LtPoxz+SwUeDa6xzf7SfiyP8QP18hPPHG47BUc=;
+        b=q7SzyoTCNiEKiH4Dv7j9enkZOK+cpRjE0vK8rrygf3b/VkhmIfb7160pojBK8jd8Fr
+         lk2p0cpOO/7jr66U35OaoiJI9x8qQU67mYcneNojhtS4t8rWjjp9QR7YvUjdcm5/k4Kd
+         0kc5EK9Y3VUDT0wRE81/ELSZ2HwdUkWq7jjgydhKfHAnzBGrOIwKQaPb8PZZbN6OJ/GS
+         ZHMa1Z3q3SJ6C0VbYwbKqOD4ekj6r05ej+Fy5nUXqZI7Kto3+0v7Qa8RH+fOAUocUt/o
+         zKE9Y0gmxy5Zd17ia8H2udlZq9mqw6NNcS88HOblOSjyqaGOmcwlnQ5V27k9cuveSh0T
+         Mr4Q==
+X-Gm-Message-State: AOAM530Rm3CniJZzq7fHjk9ONNk3OH926qTZrdRo8fDNMQmQNgPwlOXd
+        kcCOpgfRJkHmwwITscYxQPRhQixw+3hfwErFkIi64Q==
+X-Google-Smtp-Source: ABdhPJwm2ZWFQ7qE2nk58NylCSEqbiMe0zCq2KvKucwX8DnqEWD9OpvdoQUD/JGXnJ1oLd0rtBKUTnEU1/3Qg3jDPlI=
+X-Received: by 2002:a81:49d0:0:b0:2db:dc6d:445d with SMTP id
+ w199-20020a8149d0000000b002dbdc6d445dmr9596217ywa.512.1646242087255; Wed, 02
+ Mar 2022 09:28:07 -0800 (PST)
+MIME-Version: 1.0
+References: <20220225180318.20594-1-vbabka@suse.cz> <YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal>
+ <f194f876-1c46-f3ae-573e-d3ddd6dcf4cc@suse.cz> <Yh0+Jld+sDy1Hkdb@ip-172-31-19-208.ap-northeast-1.compute.internal>
+ <Yh8szz+UxqddwK7j@linux.ibm.com> <024aacf5-ac49-7d04-7293-1e1451ff9029@suse.cz>
+ <Yh9jgGOocmU3WsES@linux.ibm.com> <Yh+jJC8JofHx28K+@ip-172-31-19-208.ap-northeast-1.compute.internal>
+In-Reply-To: <Yh+jJC8JofHx28K+@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From:   Marco Elver <elver@google.com>
+Date:   Wed, 2 Mar 2022 18:27:30 +0100
+Message-ID: <CANpmjNMMu5-fvmmx4SidWFdbAnsJJhqTd1bfyxJtvJV3d3q_fg@mail.gmail.com>
+Subject: Re: [PATCH 0/5] SLUB debugfs improvements based on stackdepot
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Mike Rapoport <rppt@linux.ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Faiyaz Mohammed <faiyazm@codeaurora.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Karolina Drobnik <karolinadrobnik@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While capturing gmu state, first send an NMI to gmu when it is hung.
-This helps to move gmu to a safe state.
+On Wed, 2 Mar 2022 at 18:02, Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+[...]
+> So IMO we have two solutions.
+>
+> First solution is only allowing early init and avoiding late init.
+> (setting a global variable that is visible to stack depot would do this)
+>
+> And second solution is to make caller allocate and manage its own hash
+> table. All of this complexity is because we're trying to make stack_table
+> global.
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
----
+I think this would be a mistake, because then we have to continuously
+audit all users of stackdepot and make sure that allocation stack
+traces don't end up in duplicate hash tables. It's global for a
+reason.
 
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c       | 37 +++++++++++++++++++++++++++++
- drivers/gpu/drm/msm/adreno/a6xx_gmu.h       |  1 +
- drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c | 14 ++++++++++-
- 3 files changed, 51 insertions(+), 1 deletion(-)
+> First solution looks ok if we have few users of stack depot.
+> But I think we should use second approach if stack depot is growing
+> more and more callers?
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index 3e325e2..f208a81 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -14,6 +14,37 @@
- #include "msm_gpu_trace.h"
- #include "msm_mmu.h"
- 
-+void a6xx_gmu_send_nmi(struct a6xx_gmu *gmu)
-+{
-+	struct a6xx_gpu *a6xx_gpu = container_of(gmu, struct a6xx_gpu, gmu);
-+	struct adreno_gpu *adreno_gpu = &a6xx_gpu->base;
-+	struct msm_gpu *gpu = &adreno_gpu->base;
-+	u32 val;
-+
-+	if (a6xx_gmu_gx_is_on(gmu) && a6xx_is_smmu_stalled(gpu)) {
-+		DRM_DEV_ERROR(gmu->dev,
-+				"Skipping GMU NMI since SMMU is stalled\n");
-+	}
-+
-+	/* Don't retrigger NMI if gmu reset is already active */
-+	val = gmu_read(gmu, REG_A6XX_GMU_CM3_FW_INIT_RESULT);
-+	if (val & 0xE00)
-+		return;
-+
-+	/* Mask all interrupts from GMU first */
-+	gmu_write(gmu, REG_A6XX_GMU_GMU2HOST_INTR_MASK, 0xFFFFFFFF);
-+
-+	/* Trigger NMI to make gmu save it's internal state to ddr */
-+	val = gmu_read(gmu, REG_A6XX_GMU_CM3_CFG);
-+	gmu_write(gmu, REG_A6XX_GMU_CM3_CFG, val | BIT(9));
-+
-+	/* Barrier to ensure write is posted before we proceed */
-+	wmb();
-+
-+	/* Small delay to ensure state copy is ddr is complete at GMU */
-+	udelay(200);
-+}
-+
- static void a6xx_gmu_fault(struct a6xx_gmu *gmu)
- {
- 	struct a6xx_gpu *a6xx_gpu = container_of(gmu, struct a6xx_gpu, gmu);
-@@ -790,6 +821,12 @@ static int a6xx_gmu_fw_start(struct a6xx_gmu *gmu, unsigned int state)
- 	gmu_write(gmu, REG_A6XX_GMU_CM3_FW_INIT_RESULT, 0);
- 	gmu_write(gmu, REG_A6XX_GMU_CM3_BOOT_CONFIG, 0x02);
- 
-+	/*
-+	 * Make sure that the NMI bit is cleared by configuring the reset value
-+	 * here
-+	 */
-+	gmu_write(gmu, REG_A6XX_GMU_CM3_CFG, 0x4052);
-+
- 	/* Write the iova of the HFI table */
- 	gmu_write(gmu, REG_A6XX_GMU_HFI_QTBL_ADDR, gmu->hfi.iova);
- 	gmu_write(gmu, REG_A6XX_GMU_HFI_QTBL_INFO, 1);
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.h b/drivers/gpu/drm/msm/adreno/a6xx_gmu.h
-index 84bd516..4228ec1 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.h
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.h
-@@ -186,5 +186,6 @@ int a6xx_hfi_set_freq(struct a6xx_gmu *gmu, int index);
- 
- bool a6xx_gmu_gx_is_on(struct a6xx_gmu *gmu);
- bool a6xx_gmu_sptprac_is_on(struct a6xx_gmu *gmu);
-+void a6xx_gmu_send_nmi(struct a6xx_gmu *gmu);
- 
- #endif
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c
-index 7de9d2f..09b2ff0 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c
-@@ -964,6 +964,18 @@ static void a6xx_get_indexed_registers(struct msm_gpu *gpu,
- 	a6xx_state->nr_indexed_regs = count;
- }
- 
-+void a6xx_get_gmu_state(struct msm_gpu *gpu, struct a6xx_gpu_state *a6xx_state)
-+{
-+	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-+	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-+	struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
-+
-+	if (gmu->hung)
-+		a6xx_gmu_send_nmi(gmu);
-+
-+	a6xx_get_gmu_registers(gpu, a6xx_state);
-+}
-+
- struct msm_gpu_state *a6xx_gpu_state_get(struct msm_gpu *gpu)
- {
- 	struct a6xx_crashdumper _dumper = { 0 }, *dumper = NULL;
-@@ -980,7 +992,7 @@ struct msm_gpu_state *a6xx_gpu_state_get(struct msm_gpu *gpu)
- 	/* Get the generic state from the adreno core */
- 	adreno_gpu_state_get(gpu, &a6xx_state->base);
- 
--	a6xx_get_gmu_registers(gpu, a6xx_state);
-+	a6xx_get_gmu_state(gpu, a6xx_state);
- 
- 	a6xx_state->gmu_log = a6xx_snapshot_gmu_bo(a6xx_state, &a6xx_gpu->gmu.log);
- 	a6xx_state->gmu_hfi = a6xx_snapshot_gmu_bo(a6xx_state, &a6xx_gpu->gmu.hfi);
--- 
-2.7.4
+The problem here really is just that initialization of stackdepot and
+slabs can have a cyclic dependency with the changes you're making. I
+very much doubt there'll be other cases (beyond the allocator itself
+used by stackdepot) which can introduce such a cyclic dependency.
 
+The easiest way to break the cyclic dependency is to initialize
+stackdepot earlier, assuming it can be determined it is required (in
+this case it can because the command line is parsed before slab
+creation). The suggestion with the stack_depot_needed_early variable
+(like Mike's suggested code) would solve all that.
+
+I don't understand the concern about multiple contexts. The problem is
+just about a cyclic dependency during early init, and I doubt we'll
+have more of that.
+
+Thanks,
+-- Marco
