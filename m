@@ -2,103 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA582C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD802C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237260AbiCBBdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 20:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
+        id S237956AbiCBBda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 20:33:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238531AbiCBBc5 (ORCPT
+        with ESMTP id S237754AbiCBBdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 20:32:57 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE8939B86;
-        Tue,  1 Mar 2022 17:32:15 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id q8so235991iod.2;
-        Tue, 01 Mar 2022 17:32:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ztWi/UNJL/XxaHXFhvfP5PfT1ItALyADT54uwPwC7eo=;
-        b=PGM87wOxTmfpOaGHHAolyktHMBPxeSumtGmiieXiZGPf0I8OXt6ND6Uy7FuADWXAey
-         oX0oJPzWALxW8eczzKkaZu3gWr63cywTmUh0b4nsqrnZFFKFVKZIECbrNx/Fi/yn6iAU
-         XB0Oh/7ef9erOig7u/Em9rdMdUcCdoJ1NuE3WpkJc3FLGHutrmEOCkgGXj3KxoQpeDZb
-         PwDz3JuJa/lNtkUQoLbLhQN2tF7dpL0u+kbs5zH0l9m3sjvsPtsDbBJ10KDLzQLo/2lm
-         P9EPvASNt5QZlI/Yn3x+IjI/l2IG1ASU/s8PU+Us52vjeZ59slnxWxJ9Uh7b7jqVfVr4
-         r+Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ztWi/UNJL/XxaHXFhvfP5PfT1ItALyADT54uwPwC7eo=;
-        b=MbQERa6TiO6oya3LL6EZRQZiGpOFv4jTN/LfciqJ8ypukPEfm+un91tG0PYwxxCQcG
-         ozw1X72nathxNQBwR2R37NyDgEJfrFr1qsc4BVJFfaldv/LkJyjBOX+AAbEvGIKGAO4m
-         IJmPdSM5F04QJz4aQAsoS4y9t8LSx8EMVW+hgGaMfd3MSpVZT9q7y2joqbyKqYjxiami
-         PSJ1HTThwAzw/pP6BQelLbl99gt+i+KseURxBKUG3aPSLruDVG82PJ38zT2sNU6Fr4x7
-         O7OcdRkj/X0OqmRCHWdRLqHfqJqWngzi3Nr8N/URrgIzY8IGhwIfBUOztN1P7kmEy92H
-         UVwg==
-X-Gm-Message-State: AOAM530yp7Df4YzIpG1Q873IeDW6Jr4ox2ThSeLfufXVN8PL+JBB8QNw
-        14Vp9eym6Fx+pXFnx6VPVtdJM7OWWdtWFvYb0Is=
-X-Google-Smtp-Source: ABdhPJwyXY3CX8OBAglFpo4/v3dN5UstC8l3gL09iftRxZ1bgsCXXoKgRduiqva7nZKtN792g+r5eFaXf4z/HSPq0Oc=
-X-Received: by 2002:a02:a804:0:b0:30e:4778:559a with SMTP id
- f4-20020a02a804000000b0030e4778559amr22835066jaj.291.1646184735094; Tue, 01
- Mar 2022 17:32:15 -0800 (PST)
+        Tue, 1 Mar 2022 20:33:25 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4B3DEB5;
+        Tue,  1 Mar 2022 17:32:39 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K7c792bXTz4xRC;
+        Wed,  2 Mar 2022 12:32:36 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646184758;
+        bh=2Qup4iKVliQdfHZQ/dyiKxqOCHtCVx5xPxSyD+e9DrU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cQpdOvJegGZwY/jHMBviluoXSh0S27XtL4LRQLYiRx+dSWl2A8ChNNjKZH6qKMs4J
+         QjJtipFMSddRWdpUsE92TO7WvPFDSH+c+aigi3lJfwxm/hOJb5bcqT67y0KTFd91zt
+         gGnaY3ydtFd/nAgkG6qUNfXP2foSWCTBcZJuUd3TJP/0U9V7/u10/POTUP4wB4iudy
+         qKTG5GbiM6n91d5cRuCMY7ub2HsGsS7JNf6wsZBOpwCCjzDIAgQakA9STx06RP/6bG
+         A4rYczX8z5MR8N06meg9TzRRrBLVez1wvOwxm2o3G4LcWKBZS3Y4G61W0ex7wokIUk
+         xZuObx8Yq3auw==
+Date:   Wed, 2 Mar 2022 12:32:36 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Dave Airlie <airlied@linux.ie>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Ville =?UTF-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the drm tree
+Message-ID: <20220302123236.1b7c721b@canb.auug.org.au>
+In-Reply-To: <20220202151045.23205624@canb.auug.org.au>
+References: <20220202151045.23205624@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20220301063756.16817-1-flyingpeng@tencent.com> <Yh5d7XBD9D4FhEe3@google.com>
-In-Reply-To: <Yh5d7XBD9D4FhEe3@google.com>
-From:   Hao Peng <flyingpenghao@gmail.com>
-Date:   Wed, 2 Mar 2022 09:30:44 +0800
-Message-ID: <CAPm50a+p2pSjExDwPmGpZ_aTuxs=x6RZ4-AAD19RDQx2o-=NCw@mail.gmail.com>
-Subject: Re: [PATCH] kvm: x86: Improve virtual machine startup performance
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/sE0=Cr+s_nWrz3Xx=O94Wjz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 1:54 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Tue, Mar 01, 2022, Peng Hao wrote:
-> >  From: Peng Hao <flyingpeng@tencent.com>
-> >
-> > vcpu 0 will repeatedly enter/exit the smm state during the startup
-> > phase, and kvm_init_mmu will be called repeatedly during this process.
-> > There are parts of the mmu initialization code that do not need to be
-> > modified after the first initialization.
-> >
-> > Statistics on my server, vcpu0 when starting the virtual machine
-> > Calling kvm_init_mmu more than 600 times (due to smm state switching).
-> > The patch can save about 36 microseconds in total.
-> >
-> > Signed-off-by: Peng Hao <flyingpeng@tencent.com>
-> > ---
-> > @@ -5054,7 +5059,7 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
-> >  void kvm_mmu_reset_context(struct kvm_vcpu *vcpu)
-> >  {
-> >       kvm_mmu_unload(vcpu);
-> > -     kvm_init_mmu(vcpu);
-> > +     kvm_init_mmu(vcpu, false);
->
-> This is wrong, kvm_mmu_reset_context() is the "big hammer" and is expected to
-> unconditionally get the MMU to a known good state.  E.g. failure to initialize
-> means this code:
->
->         context->shadow_root_level = kvm_mmu_get_tdp_level(vcpu);
->
-> will not update the shadow_root_level as expected in response to userspace changing
-> guest.MAXPHYADDR in such a way that KVM enables/disables 5-level paging.
->
-Thanks for pointing this out. However, other than shadow_root_level,
-other fields of context will not
-change during the entire operation, such as
-page_fault/sync_page/direct_map and so on under
-the condition of tdp_mmu.
-Is this patch still viable after careful confirmation of the fields
-that won't be modified?
-thanks.
-> The SMM transitions definitely need to be fixed, and we're slowly getting there,
-> but sadly there's no quick fix.
+--Sig_/sE0=Cr+s_nWrz3Xx=O94Wjz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,
+
+On Wed, 2 Feb 2022 15:10:45 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+>=20
+> After merging the drm tree, today's linux-next build (htmldocs) produced
+> this warning:
+>=20
+> include/drm/drm_connector.h:637: warning: Function parameter or member 'e=
+did_hdmi_rgb444_dc_modes' not described in 'drm_display_info'
+> include/drm/drm_connector.h:637: warning: Function parameter or member 'e=
+did_hdmi_ycbcr444_dc_modes' not described in 'drm_display_info'
+>=20
+> Introduced by commit
+>=20
+>   4adc33f36d80 ("drm/edid: Split deep color modes between RGB and YUV444")
+
+I am still seeing these warnings.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/sE0=Cr+s_nWrz3Xx=O94Wjz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIeyTQACgkQAVBC80lX
+0GypQQf/a4GZbxJBbUJsZte/TTgnf5Mb7VM2m3++z2VLPCb7SHsRUq7dPYpeDrD2
+vPmVX8LMUhsTqityHzZkrr3Sa0DzPipA1GrRI1qk1a6Wt4DC6gsfafancf+puqXM
+wnlKaDn8ZLKjiH2y2FI+FHtCa7eybBYF4CV10qEwxrj/kV95NiNik9W94N6Ph5im
+bi2Xro4As4NZ3qgJHcyB9cTE9qm86w3APM/ST4+GedqIBUikve4MT9MEOZeBVwtY
+m2hmnP6GEZ0051JPH2slaRvtQDhUkg/2389VhF5GroNqfmj/NwhGdfrDuzvjcHAE
+ezOq2DF14kB2gLI3kAKglJfwUwYVlA==
+=zYdX
+-----END PGP SIGNATURE-----
+
+--Sig_/sE0=Cr+s_nWrz3Xx=O94Wjz--
