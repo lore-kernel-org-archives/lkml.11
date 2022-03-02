@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F71C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 03:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6751CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 03:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234714AbiCBDIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 22:08:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
+        id S239235AbiCBDIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 22:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239234AbiCBDIZ (ORCPT
+        with ESMTP id S232169AbiCBDIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 22:08:25 -0500
+        Tue, 1 Mar 2022 22:08:54 -0500
 Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669AFE0AA
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 19:07:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01340E0D1
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 19:08:11 -0800 (PST)
 Received: from twspam01.aspeedtech.com (localhost [127.0.0.2] (may be forged))
-        by twspam01.aspeedtech.com with ESMTP id 2222fMCk029340
+        by twspam01.aspeedtech.com with ESMTP id 2222fMP6029341
         for <linux-kernel@vger.kernel.org>; Wed, 2 Mar 2022 10:41:22 +0800 (GMT-8)
         (envelope-from tommy_huang@aspeedtech.com)
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 2222eKE0029210;
-        Wed, 2 Mar 2022 10:40:20 +0800 (GMT-8)
+        by twspam01.aspeedtech.com with ESMTP id 2222eJgK029207;
+        Wed, 2 Mar 2022 10:40:19 +0800 (GMT-8)
         (envelope-from tommy_huang@aspeedtech.com)
 Received: from tommy0527-VirtualBox.aspeedtech.com (192.168.2.141) by
  TWMBX02.aspeed.com (192.168.0.24) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 2 Mar 2022 10:49:41 +0800
+ 15.0.1497.2; Wed, 2 Mar 2022 10:49:40 +0800
 From:   Tommy Haung <tommy_huang@aspeedtech.com>
 To:     <joel@jms.id.au>, <airlied@linux.ie>, <daniel@ffwll.ch>,
         <robh+dt@kernel.org>, <andrew@aj.id.au>,
@@ -34,9 +34,9 @@ To:     <joel@jms.id.au>, <airlied@linux.ie>, <daniel@ffwll.ch>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH v6 4/5] drm/aspeed: Add AST2600 chip support
-Date:   Wed, 2 Mar 2022 10:49:29 +0800
-Message-ID: <20220302024930.18758-5-tommy_huang@aspeedtech.com>
+Subject: [PATCH v6 1/5] ARM: dts: aspeed: Add GFX node to AST2600
+Date:   Wed, 2 Mar 2022 10:49:26 +0800
+Message-ID: <20220302024930.18758-2-tommy_huang@aspeedtech.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220302024930.18758-1-tommy_huang@aspeedtech.com>
 References: <20220302024930.18758-1-tommy_huang@aspeedtech.com>
@@ -46,41 +46,43 @@ X-Originating-IP: [192.168.2.141]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 2222eKE0029210
+X-MAIL: twspam01.aspeedtech.com 2222eJgK029207
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add AST2600 chip support and setting.
+From: Joel Stanley <joel@jms.id.au>
 
+The GFX device is present in the AST2600 SoC.
+
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: Tommy Haung <tommy_huang@aspeedtech.com>
 ---
- drivers/gpu/drm/aspeed/aspeed_gfx_drv.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm/boot/dts/aspeed-g6.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c b/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
-index d4b56b3c7597..d10246b1d1c2 100644
---- a/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
-+++ b/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
-@@ -82,9 +82,18 @@ static const struct aspeed_gfx_config ast2500_config = {
- 	.scan_line_max = 128,
- };
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index 1b47be1704f8..e38c3742761b 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -351,6 +351,17 @@
+ 				quality = <100>;
+ 			};
  
-+static const struct aspeed_gfx_config ast2600_config = {
-+	.dac_reg = 0xc0,
-+	.int_clear_reg = 0x68,
-+	.vga_scratch_reg = 0x50,
-+	.throd_val = CRT_THROD_LOW(0x50) | CRT_THROD_HIGH(0x70),
-+	.scan_line_max = 128,
-+};
++			gfx: display@1e6e6000 {
++				compatible = "aspeed,ast2600-gfx", "aspeed,ast2500-gfx", "syscon";
++				reg = <0x1e6e6000 0x1000>;
++				reg-io-width = <4>;
++				clocks = <&syscon ASPEED_CLK_GATE_D1CLK>;
++				resets = <&syscon ASPEED_RESET_GRAPHICS>;
++				syscon = <&syscon>;
++				status = "disabled";
++				interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
++			};
 +
- static const struct of_device_id aspeed_gfx_match[] = {
- 	{ .compatible = "aspeed,ast2400-gfx", .data = &ast2400_config },
- 	{ .compatible = "aspeed,ast2500-gfx", .data = &ast2500_config },
-+	{ .compatible = "aspeed,ast2600-gfx", .data = &ast2600_config },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, aspeed_gfx_match);
+ 			xdma: xdma@1e6e7000 {
+ 				compatible = "aspeed,ast2600-xdma";
+ 				reg = <0x1e6e7000 0x100>;
 -- 
 2.17.1
 
