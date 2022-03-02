@@ -2,97 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01347C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C741FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 10:40:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241073AbiCBKku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 05:40:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
+        id S241083AbiCBKkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 05:40:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241059AbiCBKkm (ORCPT
+        with ESMTP id S241066AbiCBKkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 05:40:42 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C149EBECE4
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 02:39:58 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id a5so1549808pfv.9
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 02:39:58 -0800 (PST)
+        Wed, 2 Mar 2022 05:40:47 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B741BBF504
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 02:40:02 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso4429900pjj.2
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 02:40:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5hSSYyjIeCQj/Yk471H+t4be62lPbXH733Ozer3TJP4=;
-        b=JyG9DV8skFLWA/Riameo1pOnfP0U20+Dvh30cSsaSMOpc+vhdzlg5CjfLqN629EYdQ
-         tX3v6gfw8yy7ZQTErKAB7PtNlyeOaYSPB5hx0vSqLuNBhbQ+ut0olipDjzD3O6JgKWBO
-         5W4JiSd5xc4FTX/EyK9BGNwwOjXzzeKccQr7fZXSu8nlO+bqMCmZNX6QUHzkSCNmB63x
-         fyJcbuFogdBqTAAYWk1XzfB6rHQPpwnYjy3kX9AyFmwp/0hRgHZoLFWTOLevuz6CNhi0
-         d4wRBAN1gzG6/iJkMYYHGUFNsDy/Cxd0k5H09Z17+90EV93R3KXfEBIUnbGzKOlLFnGT
-         6fQA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pq6jKLtGHQsUT6iafR8v8xBWK/Sf/g1/dX36fql3M4I=;
+        b=EVYKZ1nXdOBRMVBEuZ0vUSAHriHHBiRo7e2sw7KOvF3JmJh/+iRWyb0PnKDK/paOUa
+         +QbxooHCgR6BLMR+Qjf5y3owxxUpoKVqK7aev4IjD3vWYIaCBnE4/n1MPjUpqSrHBFca
+         2PoeBHGJ80zEnH15/eSbjdjsqc7kv2nle7Y4B6STd0/pY5/S+1aii+RjcxEURp6tHOrV
+         XgSnpetupAWNzGAAUuQD4/5+iVPS4Ry470EV75Y60sFn07HUv6ssKcK08wG/zBzxpFzQ
+         9gAnB0Bk7Ip+S5G6MB2qyx9Bp4L91yqr/YDuHBdY9yNCb39DNB4IpTvqr2BT3epWbGDR
+         Zztw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5hSSYyjIeCQj/Yk471H+t4be62lPbXH733Ozer3TJP4=;
-        b=V+3qPHyqXBbr1We+yhcx6Q8cXQiJVfIFChw+jCIOdqCKozczyLNIfUSXIruPjLIWM5
-         lg7c3HnAYTe7g1yxQwUWOeJslGO1jCD8rJJP+NAEUuN95BvjXZOYP2F45/SlXjXzoiAA
-         wPLKxCsYlnuzbysYLTMqx4XoThO407Qn0CK+U/IvuKlID3pe1I9+e4YsS5wemo1e69fX
-         rF26fureOB1xDYdZJ9x2XiVuIP2+GfQix1Bj7vVhioXK2YaqHv/JPqwTMvzPAx1et0DW
-         kPpLCQMewGCOg1lCSI0hNqy0TES4RcRCMkF62J8UeAS/OC6hYyX2NVx3kVJi2RFq0Oxp
-         gnYQ==
-X-Gm-Message-State: AOAM531P3AXSqRDHF+DLcHD2h7Fr5hYpT73oRZX7RlJgKQSP9zR29v3h
-        vqf6JoON/5X+cdXxFdZxmQ95Rg==
-X-Google-Smtp-Source: ABdhPJzUgJ792DPF3EApiJ3GaQ2Zj69A9UDb+Cj0BKYL2QF0NZYAbbkDZrH7d7ME28LWmmtZzJdK0g==
-X-Received: by 2002:a05:6a00:1694:b0:4e1:5931:b040 with SMTP id k20-20020a056a00169400b004e15931b040mr31936664pfc.7.1646217598082;
-        Wed, 02 Mar 2022 02:39:58 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pq6jKLtGHQsUT6iafR8v8xBWK/Sf/g1/dX36fql3M4I=;
+        b=f5xLrc06a32xSmaxE6JH9hQ3AlS/5uxDIj9fI9oJdAs20goUtuLkGnkW3QLCfLy9Ir
+         XZOlWonQOGlVlaKXJrEhZTzBW7KhEX1fqJxw7caLk1zHF/jgokKMmvy5Q9ZhyE5TaMpy
+         +111nWfcTkbsrS9SxLqJOMSkrB6RhIcAJPaTTiXFvBnOqnb9SMt8qK2e10rmxtAB4WXq
+         qrkONyCETDBlUNGD2ytoo2weJg/JdTYoarwgIopLLtE/flhOMf84ibJxSawZhXMkVTbp
+         eTil3POK0eLAigNOekKZvV9zwLVwnG5UeDYIbtUbCHV40vZCo+k9sGdl/8n6Erb0AQEa
+         Ds1A==
+X-Gm-Message-State: AOAM531ycVmtZrNmGN8XN+5q4unUcNe8c5Ji33uMfvDtMi2yvnIJb0HL
+        BHXtgTJq8RU9GpHpIkbS/lEBWw==
+X-Google-Smtp-Source: ABdhPJwQUPKAnnn9iLIXF/B8bDN6A7uOJd4C0X1jTMj3JNqZd4rykY8pvF/ArLHTfHAmPPXS+8ye0A==
+X-Received: by 2002:a17:902:e943:b0:14f:4a2b:203 with SMTP id b3-20020a170902e94300b0014f4a2b0203mr30121444pll.113.1646217602135;
+        Wed, 02 Mar 2022 02:40:02 -0800 (PST)
 Received: from localhost.localdomain ([171.50.175.145])
-        by smtp.gmail.com with ESMTPSA id m20-20020a634c54000000b003739af127c9sm15612308pgl.70.2022.03.02.02.39.54
+        by smtp.gmail.com with ESMTPSA id m20-20020a634c54000000b003739af127c9sm15612308pgl.70.2022.03.02.02.39.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 02:39:57 -0800 (PST)
+        Wed, 02 Mar 2022 02:40:01 -0800 (PST)
 From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
 To:     netdev@vger.kernel.org
 Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
         vkoul@kernel.org, linux-kernel@vger.kernel.org,
         davem@davemloft.net, linux-arm-msm@vger.kernel.org,
         bjorn.andersson@linaro.org
-Subject: [PATCH v2 0/2 net-next] net: stmmac: Enable support for Qualcomm SA8155p-ADP board
-Date:   Wed,  2 Mar 2022 16:09:48 +0530
-Message-Id: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
+Subject: [PATCH v2 1/2 net-next] net: stmmac: Add support for SM8150
+Date:   Wed,  2 Mar 2022 16:09:49 +0530
+Message-Id: <20220302103950.30356-2-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
+References: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v1:
------------------
-- v1 can be seen here: https://lore.kernel.org/netdev/20220126221725.710167-1-bhupesh.sharma@linaro.org/t/
-- Fixed review comments from Bjorn - broke the v1 series into two
-  separate series - one each for 'net' tree and 'arm clock/dts' tree
-  - so as to ease review of the same from the respective maintainers.
-- This series is intended for the 'net' tree.
+From: Vinod Koul <vkoul@kernel.org>
 
-The SA8155p-ADP board supports on-board ethernet (Gibabit Interface),
-with support for both RGMII and RMII buses.
-
-This patchset adds the support for the same.
-
-Note that this patchset is based on an earlier sent patchset
-for adding PDC controller support on SM8150 (see [1]).
-
-[1]. https://lore.kernel.org/linux-arm-msm/20220226184028.111566-1-bhupesh.sharma@linaro.org/T/
+This adds compatible, POR config & driver data for ethernet controller
+found in SM8150 SoC.
 
 Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[bhsharma: Massage the commit log and other cosmetic changes]
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+---
+ .../ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c   | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-Bjorn Andersson (1):
-  net: stmmac: dwmac-qcom-ethqos: Adjust rgmii loopback_en per platform
-
-Vinod Koul (1):
-  net: stmmac: Add support for SM8150
-
- .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 37 +++++++++++++++++--
- 1 file changed, 33 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 2ffa0a11eea5..8cdba9d521ec 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -183,6 +183,20 @@ static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
+ 	.num_por = ARRAY_SIZE(emac_v2_3_0_por),
+ };
+ 
++static const struct ethqos_emac_por emac_v2_1_0_por[] = {
++	{ .offset = RGMII_IO_MACRO_CONFIG,	.value = 0x40C01343 },
++	{ .offset = SDCC_HC_REG_DLL_CONFIG,	.value = 0x2004642C },
++	{ .offset = SDCC_HC_REG_DDR_CONFIG,	.value = 0x00000000 },
++	{ .offset = SDCC_HC_REG_DLL_CONFIG2,	.value = 0x00200000 },
++	{ .offset = SDCC_USR_CTL,		.value = 0x00010800 },
++	{ .offset = RGMII_IO_MACRO_CONFIG2,	.value = 0x00002060 },
++};
++
++static const struct ethqos_emac_driver_data emac_v2_1_0_data = {
++	.por = emac_v2_1_0_por,
++	.num_por = ARRAY_SIZE(emac_v2_1_0_por),
++};
++
+ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
+ {
+ 	unsigned int val;
+@@ -558,6 +572,7 @@ static int qcom_ethqos_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id qcom_ethqos_match[] = {
+ 	{ .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_data},
++	{ .compatible = "qcom,sm8150-ethqos", .data = &emac_v2_1_0_data},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_ethqos_match);
 -- 
 2.35.1
 
