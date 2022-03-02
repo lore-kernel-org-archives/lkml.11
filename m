@@ -2,89 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC81C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7D7C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243737AbiCBRTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
+        id S243755AbiCBRT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:19:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234309AbiCBRTV (ORCPT
+        with ESMTP id S243740AbiCBRTW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:19:21 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E23FC8FB1;
-        Wed,  2 Mar 2022 09:18:37 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 12so2223951pgd.0;
-        Wed, 02 Mar 2022 09:18:37 -0800 (PST)
+        Wed, 2 Mar 2022 12:19:22 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA4AC7E9D;
+        Wed,  2 Mar 2022 09:18:38 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id y15-20020a4a650f000000b0031c19e9fe9dso2628486ooc.12;
+        Wed, 02 Mar 2022 09:18:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wH+95IPbGU7LsO+nMed5iXzS0Pw2Zt/UPlRhOF3gCdA=;
-        b=M8852nDZ1BX27cpQ3GBheX66KgLAxHQ2VbwYXmnN/wc00WoT/ShdkUbs4JmmPfQXBc
-         IRj444RvI2d1RIP1sijylV3cK48mstE+tFzjLNADlSjmjPMGI5r77Pit1CJmPnwRwBpL
-         pDTCIfUpSweQMwKO2gpix67Grp64NkH3Fc4hC+bCiRD9Ao0T6JfsKAqtUoncp3/NWzJl
-         Rn2o+D1uMSzY4SbYLyECFAiUP/5ByvEzJtAUMNHt2h/5gp4VbhKa0tpTJBxlYv5IYZf/
-         9MeckTiYKNIS/Fj1aaG3eFeGePDqLn7UNkQoh4RFTx5xXT/R517HvFnqqDJBjCeG6MER
-         kD4Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cwLG9kTnhX2GqkeQf8KU8q/jw+pGFKDaUnw1ajiL6WA=;
+        b=Ph+RbvL6FanSOSwQxZUf26lIJLD1mcS3h0APBOTmjL0rL8sL58KJLFAGiWptkhBp5f
+         z5ZgRL+10UyFNfksj//XcL9pJCGCD6qYN9UCdiS8SIRssuw3151XtoQsw11ASk+hEEQs
+         7UWDCkB2pqpxxqJssBKAq8izDqfQt3z4hlBl78kUt3xIc/snzVPeNxjkge/VZOSWHaLR
+         40GJ26I2rx8DmUJSGIItZ1LqEOGI32dpoM2HZZb4qQv4d7UgQ4MF7I8MHghj3+jwXqm8
+         sv+M1n5AKMMjPdnNP0hgHgFXQ8GowrimHS7zngUz0tPwpAWrZaH9Fx1B11OQPzUNAcML
+         C9vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wH+95IPbGU7LsO+nMed5iXzS0Pw2Zt/UPlRhOF3gCdA=;
-        b=7qw07SUWw74pt3vnorcOkd8CPk4Bu4TZZV2erBivdEFQ4cZE05SpRlBvtFBGWbFysz
-         TUn8xqfAmW+PSTSRvnGmlZ/IjuId0MWgdEq9A+/hXk+jkmJapwSGgq4HYx6W+zR0g0co
-         13wtpqzWG7cdTbt1l9wfJgCxgr3v0yt5pDGIWvGj+Fi4c8x2ox5kXgPXj7rpGm5RAvXY
-         xmxHVW+IpBFbpifMih3z/vc8wWnFypQKQbLolOqKrry9BRSFnbWd45mdJOYfVeTaaRf8
-         zkhYJyYBK+1LT3krt5bkHmu9Ea1mg78AwJVI9QHLnxDJJcIMeY5JRlli7w2yOMSS/C2H
-         nkFA==
-X-Gm-Message-State: AOAM531lrFC/NDp2/I2+V7u9emsjYYUYwBObH6SSJ6T4gSjokmB4zRmN
-        ajToiA2n9UDqSm90eDQMWAQ=
-X-Google-Smtp-Source: ABdhPJw/Vg1GZgRtifAmdYbWBTQSaZflWGmOwq3YAOBtD53njeZS72iIwbBx0Yl8ByT/lN86yhMrBQ==
-X-Received: by 2002:a05:6a00:b52:b0:4f0:ff67:413 with SMTP id p18-20020a056a000b5200b004f0ff670413mr33920452pfo.61.1646241516606;
-        Wed, 02 Mar 2022 09:18:36 -0800 (PST)
-Received: from kvigor-fedora-PF399REY.thefacebook.com ([2620:10d:c090:400::5:d6ec])
-        by smtp.gmail.com with ESMTPSA id c63-20020a624e42000000b004f414f0a391sm10339965pfb.79.2022.03.02.09.18.35
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cwLG9kTnhX2GqkeQf8KU8q/jw+pGFKDaUnw1ajiL6WA=;
+        b=LNvUgFBFAZzAONYCafiqBWiLhv+0lmjkf3GptQLDrnFHQsCRQ+yln6WR4wYH10xY15
+         8z/imfVYtVk+3+woCjA84ao9eqfzlM/+9oRiEzqgNcZK9FCA9kqoA8I1eoM/qIIt4RKW
+         AqxCCBt74+G3p4w9EZAQcqARZUf0rJrN2GanX8N19VjNTCOb/4AmneuE7tACvd6m49/U
+         OHwY2aHcnPkEyAFWa0+zWMRHyJMRO2jATngrdPb3vWd2FPdpiDeK3tlRjGVX9WZ9iI7H
+         RXb3auryrvuiAA/FHYquK9JSZaRk70hVYwdcAFcLOanPj0aC+sCXilLskJAl5/IuMOEX
+         4IDA==
+X-Gm-Message-State: AOAM533xeKufT9EOljbSplasytugfV5W+3mBj1iYIWtAnoI/qu5f+5uv
+        YVg1qi9UMwEqKgxD/SCS8uqTenpnSso=
+X-Google-Smtp-Source: ABdhPJzaTl0H10yq5ZoNdnQwMSeiQ6SyTqU2PuD1HxWe6SG7t/bXRnCfIG9yWUnPnd3RZp+WwWGEPA==
+X-Received: by 2002:a05:6870:c987:b0:d7:3d45:6692 with SMTP id hi7-20020a056870c98700b000d73d456692mr683349oab.34.1646241517676;
+        Wed, 02 Mar 2022 09:18:37 -0800 (PST)
+Received: from localhost ([98.200.8.69])
+        by smtp.gmail.com with ESMTPSA id m7-20020a9d6447000000b005acf7e4c507sm7983689otl.20.2022.03.02.09.18.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 09:18:36 -0800 (PST)
-From:   Kevin Vigor <kvigor@gmail.com>
-To:     miklos@szeredi.hu
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kevin Vigor <kvigor@gmail.com>
-Subject: [RFC PATCH 0/1] FUSE: allow drivers to increase readahead.
-Date:   Wed,  2 Mar 2022 10:18:15 -0700
-Message-Id: <20220302171816.1170782-1-kvigor@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 02 Mar 2022 09:18:37 -0800 (PST)
+Date:   Wed, 2 Mar 2022 09:18:35 -0800
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Michael Mueller <mimu@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>
+Subject: Re: [PATCH v1 1/1] KVM: s390: Don't cast parameter in bit operations
+Message-ID: <Yh+m65BSfQgaDFwi@yury-laptop>
+References: <20220223164420.45344-1-andriy.shevchenko@linux.intel.com>
+ <20220224123620.57fd6c8b@p-imbrenda>
+ <3640a910-60fe-0935-4dfc-55bb65a75ce5@linux.ibm.com>
+ <Yh+Qw6Pb+Cd9JDNa@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh+Qw6Pb+Cd9JDNa@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Summary:
+On Wed, Mar 02, 2022 at 05:44:03PM +0200, Andy Shevchenko wrote:
+> On Thu, Feb 24, 2022 at 01:10:34PM +0100, Michael Mueller wrote:
+> > On 24.02.22 12:36, Claudio Imbrenda wrote:
+> 
+> ...
+> 
+> > we do that at several places
+> 
+> Thanks for pointing out.
+> 
+> > arch/s390/kernel/processor.c:	for_each_set_bit_inv(bit, (long
+> > *)&stfle_fac_list, MAX_FACILITY_BIT)
+> 
+> This one requires a separate change, not related to this patch.
+> 
+> > arch/s390/kvm/interrupt.c:	set_bit_inv(IPM_BIT_OFFSET + gisc, (unsigned long
+> > *) gisa);
+> 
+> This is done in the patch. Not sure how it appears in your list.
+> 
+> > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
+> > sca->mcn);
+> > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
+> > &sca->mcn);
+> 
+> These two should be fixed in a separate change.
+> 
+> Also this kind of stuff:
+> 
+> 	bitmap_copy(kvm->arch.cpu_feat, (unsigned long *) data.feat,
+> 	            KVM_S390_VM_CPU_FEAT_NR_BITS);
+> 
+> might require a new API like
+> 
+> bitmap_from_u64_array()
+> bitmap_to_u64_array()
+> 
+> Yury?
 
-Allow FUSE drivers to increase readahead setting.
-
-Details:
-
-FUSE drivers can set a max_readahead value in the fuse_init_out value.
-
-However, this value can currently only decrease the readahead setting
-from the default, which is set to VM_READAHEAD_PAGES in bdi_alloc().
-
-Add a flag which causes the kernel driver to accept whatever
-max_readahead value the user provides in fuse_init_out. Note that
-read_ahead_kb_store() similarly allows users to set arbitrary ra_pages
-values.
-
-Kevin Vigor (1):
-  FUSE: Add FUSE_TRUST_MAX_RA flag enabling readahead settings >128KB.
-
- fs/fuse/inode.c           | 8 ++++++--
- include/uapi/linux/fuse.h | 3 +++
- 2 files changed, 9 insertions(+), 2 deletions(-)
-
--- 
-2.33.1
-
+If BE32 is still the case then yes.
