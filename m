@@ -2,119 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1E6C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 22:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C053C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 22:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243439AbiCBWRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 17:17:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        id S244442AbiCBWSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 17:18:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230045AbiCBWRe (ORCPT
+        with ESMTP id S230045AbiCBWSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 17:17:34 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C910D199B;
-        Wed,  2 Mar 2022 14:16:50 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id t28so3017651qtc.7;
-        Wed, 02 Mar 2022 14:16:50 -0800 (PST)
+        Wed, 2 Mar 2022 17:18:50 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5720A34B89
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 14:18:06 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id y5so2541439ill.13
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 14:18:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qFb1AQXGto8rW2v4HENONQPyad9zpp2Lw3iyL5e2hcw=;
-        b=TGLsEu6t++tXeHwptrWF0tmRCBkIkJHDm4VFCqheaPgdP8JHAuqJrpBzSg8NQ9fp8F
-         XGDXGLQ9OJkcaVoPa7f/ow+MOL8mQC7QNnJ6ZoiOKaO0jqhk5+Mefa7o+fgkgIQA8GqA
-         QF3kXKcFGBmGfZhGMttHslQaXysRkuvCylHUI=
+         :cc;
+        bh=SRcrXrbjAkSUZ9K2sfExxRVmg7Xf9wQCXzpvkYMoGAY=;
+        b=Oyp5KCl3qEk1HVjktZEALObEMHLPjVP9jdV3etdyc7CKCgn8nw1o1/0En5qILxWDz8
+         DyVKpBuETJatlNRQ8owc6sjP17GGhsTSYvOKcbG9DNMfd6s09by7vrs+2jO8xnDt12dl
+         CRLoD1wpV9MwyaLmOJIx7wGRSTvNTUIOUqODM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qFb1AQXGto8rW2v4HENONQPyad9zpp2Lw3iyL5e2hcw=;
-        b=VY4k00Fbot5FOmwUGDArwbYQHHqAfHWwquukL1ZFQlVcrvmeE7hNttzHZeo2Ecyhf6
-         hl3aWYWkHIuASLY1vLzUWUaAvBKnrL67V2a4Abtv5glcyR4FHOlkf1z2Qp4+0VYc9KMA
-         1RNgp0xGQivkUx8uMuVmvNJSxjWXHDWs56Nnjm4dL8Jcupevrk3cQpOIis5j3I0mVNQs
-         xLAvqZKGne0qLlm87I0niiRNtHid94d9q5p4AXTTfpyjvFnNuepz2y43sJGxTqUraBkv
-         L6UEaLa1DaeSGI7BggZ4YYRv68GKdqUcxuzC/lqvqUSWK6QR9c55suQA5osbNpDats3D
-         O6KA==
-X-Gm-Message-State: AOAM532QNKvUYC2IYOV/ZQi3fBlcB6mGRzKGzg07rxyc5hHFK/hqyUiu
-        z0S+lnPvcP/tYM3Pi5cJYhx9JpnF7f5AOr2apFU=
-X-Google-Smtp-Source: ABdhPJzkJ0p0YYS9ZflUh9jGYrmogt5rxOjUJMxJJf96LA6FonDZUDNtoD1pgTQcDhJlQxMnIZ36OkJc+TL5n2hUco4=
-X-Received: by 2002:ac8:5b82:0:b0:2cf:232d:b1f8 with SMTP id
- a2-20020ac85b82000000b002cf232db1f8mr25724587qta.58.1646259409105; Wed, 02
- Mar 2022 14:16:49 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=SRcrXrbjAkSUZ9K2sfExxRVmg7Xf9wQCXzpvkYMoGAY=;
+        b=euItD70U2U/CZBLWgF+0LH30So1g2qwOdz+Uj02aIqyUkHwugTN43mWY4zA1H9Y6e2
+         VGAXHhkKnSUZ7BQzMeR8rBRk0gEUwEa2Rx8uqAlOQSK2cQGkkR+P/6ystm2O3nyyPnHB
+         bm43FxFMnxxc/30GDGgaRdT+uVddI6C5SbCU6yTCmoQDYOA6iXvzFq9zdG5wP+d3Hiy8
+         /5lhpgadPh4K2fEKU5iNwSJpUQk9EdzHIvMhYM26uoRRz2N/Zml2BFFx0bqbwIZHCMP2
+         ATXznw7oiDVIhVunCRSlmHJFRvsEqQ9UqvbZEBgTQUFIIUQWgZCLHaan2Mvx9Pf73k+w
+         oB9g==
+X-Gm-Message-State: AOAM531yomgXTQGKsBz0tAu/+3ZLqSKcIu7yryfzKZ0nhxR6qx/SNR7K
+        j0KexHgr0NPoQwwfCBGgKgmWQLHVfa91k7EcTBscng==
+X-Google-Smtp-Source: ABdhPJzgLW1DYN12tl3/oWDOzZVO9FPPMe5Px5umn5KctlrjVzjKjHobseggnLRnrRxg01kEcSUNt4C6vS3SRQBjxbA=
+X-Received: by 2002:a05:6e02:1c09:b0:2be:8ce6:8551 with SMTP id
+ l9-20020a056e021c0900b002be8ce68551mr29696582ilh.48.1646259485718; Wed, 02
+ Mar 2022 14:18:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20220302173114.927476-1-clg@kaod.org> <20220302173114.927476-2-clg@kaod.org>
-In-Reply-To: <20220302173114.927476-2-clg@kaod.org>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 2 Mar 2022 22:16:35 +0000
-Message-ID: <CACPK8XcQfC6qfMDLzzLeK5BKmBnrspruvruJ9xGdydZgWefVOw@mail.gmail.com>
-Subject: Re: [PATCH v2 01/10] mtd: spi-nor: aspeed: Rename Kconfig option
-To:     =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>
-Cc:     linux-spi@vger.kernel.org,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <CA+G9fYtRBNVJdrFYnrRC22CfXg5iVwbb+EWMqZGARO-DHagapQ@mail.gmail.com>
+In-Reply-To: <CA+G9fYtRBNVJdrFYnrRC22CfXg5iVwbb+EWMqZGARO-DHagapQ@mail.gmail.com>
+From:   Rob Clark <robdclark@chromium.org>
+Date:   Wed, 2 Mar 2022 14:18:36 -0800
+Message-ID: <CAJs_Fx5xSDeHur+=xhQCUXfOYrNPWMpnXn79Z6yf4pHu76uhUQ@mail.gmail.com>
+Subject: Re: [next] arm64: db410c: Internal error: Oops: 96000004 - msm_gpu_pm_suspend
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     dri-devel@lists.freedesktop.org, Rob Clark <robdclark@gmail.com>,
+        lkft-triage@lists.linaro.org,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Vinod Koul <vinod.koul@linaro.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Linux Kernel Functional Testing <lkft@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 at 17:31, C=C3=A9dric Le Goater <clg@kaod.org> wrote:
->
-> To prepare transition to the new Aspeed SMC SPI controller driver using
-> the spi-mem interface, change the kernel CONFIG option of the current
-> driver to reflect that the implementation uses the MTD SPI-NOR interface.
-> Once the new driver is sufficiently exposed, we should remove the old one=
-.
->
-> Signed-off-by: C=C3=A9dric Le Goater <clg@kaod.org>
+Should be fixed by:
 
-As the maintianer of the aspeed systems and the openbmc kernel, I
-think this makes the most sense.
+https://patchwork.freedesktop.org/patch/475238/?series=100448&rev=1
 
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+t-b's welcome
 
-> ---
->  drivers/mtd/spi-nor/controllers/Kconfig  | 2 +-
->  drivers/mtd/spi-nor/controllers/Makefile | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+On Wed, Mar 2, 2022 at 12:35 PM Naresh Kamboju
+<naresh.kamboju@linaro.org> wrote:
 >
-> diff --git a/drivers/mtd/spi-nor/controllers/Kconfig b/drivers/mtd/spi-no=
-r/controllers/Kconfig
-> index 5c0e0ec2e6d1..876a47042fec 100644
-> --- a/drivers/mtd/spi-nor/controllers/Kconfig
-> +++ b/drivers/mtd/spi-nor/controllers/Kconfig
-> @@ -1,5 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0-only
-> -config SPI_ASPEED_SMC
-> +config SPI_ASPEED_SMC_MTD_SPI_NOR
->         tristate "Aspeed flash controllers in SPI mode"
->         depends on ARCH_ASPEED || COMPILE_TEST
->         depends on HAS_IOMEM && OF
-> diff --git a/drivers/mtd/spi-nor/controllers/Makefile b/drivers/mtd/spi-n=
-or/controllers/Makefile
-> index e7abba491d98..1e28297fb1e8 100644
-> --- a/drivers/mtd/spi-nor/controllers/Makefile
-> +++ b/drivers/mtd/spi-nor/controllers/Makefile
-> @@ -1,5 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
-> -obj-$(CONFIG_SPI_ASPEED_SMC)   +=3D aspeed-smc.o
-> +obj-$(CONFIG_SPI_ASPEED_SMC_MTD_SPI_NOR)       +=3D aspeed-smc.o
->  obj-$(CONFIG_SPI_HISI_SFC)     +=3D hisi-sfc.o
->  obj-$(CONFIG_SPI_NXP_SPIFI)    +=3D nxp-spifi.o
->  obj-$(CONFIG_SPI_INTEL_SPI)    +=3D intel-spi.o
+> [Please ignore this email if it is already reported]
+>
+> Linux next-20220302 running on Qcom db410c the following kernel crash
+> reported [1].
+>
+> metadata:
+>   git_ref: master
+>   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+>   git_sha: adaedcf826dccf01b69d9a1f1997c9446c6b2c54
+>   git_describe: next-20220302
+>   kernel-config: https://builds.tuxbuild.com/25pJv2XjzFav5peWxwfhaU3LFEN/config
+>
+>
+> Kernel crash:
+>
+>  Failed to start Entropy Daemon based on the HAVEGE algorithm
+> [   12.104662] Unable to handle kernel NULL pointer dereference at
+> virtual address 0000000000000010
+> [   12.121151]   ESR = 0x96000004
+> [   12.121211]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [   12.123137]   SET = 0, FnV = 0
+> [   12.128687]   EA = 0, S1PTW = 0
+> [   12.131464]   FSC = 0x04: level 0 translation fault
+> [   12.134572] Data abort info:
+> [   12.139457]   ISV = 0, ISS = 0x00000004
+> [   12.142566]   CM = 0, WnR = 0
+> [   12.146165] user pgtable: 4k pages, 48-bit VAs, pgdp=000000008235d000
+> [   12.149360] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+> [   12.156339] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> [   12.162370] Modules linked in: videobuf2_dma_contig adv7511(+)
+> crct10dif_ce qcom_wcnss_pil cec qrtr qcom_q6v5_mss qcom_camss
+> snd_soc_lpass_apq8016 qcom_pil_info snd_soc_lpass_cpu rtc_pm8xxx
+> videobuf2_dma_sg qcom_spmi_vadc snd_soc_msm8916_analog qcom_q6v5
+> snd_soc_msm8916_digital snd_soc_apq8016_sbc snd_soc_lpass_platform
+> qcom_pon v4l2_fwnode snd_soc_qcom_common qcom_spmi_temp_alarm
+> qcom_sysmon qcom_vadc_common venus_core msm qcom_common v4l2_async
+> qcom_glink_smem qmi_helpers v4l2_mem2mem videobuf2_memops mdt_loader
+> qnoc_msm8916 gpu_sched icc_smd_rpm display_connector drm_dp_helper
+> videobuf2_v4l2 drm_kms_helper qcom_stats videobuf2_common qcom_rng
+> i2c_qcom_cci rpmsg_char drm socinfo rmtfs_mem fuse
+> [   12.207393] CPU: 0 PID: 66 Comm: kworker/0:4 Not tainted
+> 5.17.0-rc6-next-20220302 #1
+> [   12.207407] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
+> [   12.207415] Workqueue: pm pm_runtime_work
+> [   12.243952] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   12.247862] pc : hrtimer_active+0x14/0x80
+> [   12.254628] lr : hrtimer_cancel+0x28/0x70
+> [   12.258795] sp : ffff80000b423b70
+> [   12.262786] x29: ffff80000b423b70 x28: 0000000000000000 x27: 0000000000000000
+> [   12.266092] x26: ffff80000ad5d2e0 x25: 00000002d138d917 x24: ffff00000d8dbb80
+> [   12.273210] x23: ffff00000326c010 x22: ffff00000f6b2020 x21: ffff00000f6b2000
+> [   12.280328] x20: ffff00000f6b20f8 x19: ffff00000f6b2318 x18: 0000000000000000
+> [   12.287447] x17: ffff800035bf3000 x16: ffff800008004000 x15: 0000000000004000
+> [   12.294564] x14: 0000000000000000 x13: 0000000000000000 x12: ffff80000a8b7000
+> [   12.301682] x11: 0000087facb61180 x10: 0000000000000bc0 x9 : ffff8000081d3a78
+> [   12.308800] x8 : ffff000003c68000 x7 : 0000000000000018 x6 : 000000001483ced5
+> [   12.315918] x5 : 00ffffffffffffff x4 : 0000000000000000 x3 : 0000000000000000
+> [   12.323036] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff00000f6b2318
+> [   12.330156] Call trace:
+> [   12.337263]  hrtimer_active+0x14/0x80
+> [   12.339524]  msm_devfreq_suspend+0x30/0x60 [msm]
+> [   12.343348]  msm_gpu_pm_suspend+0x44/0x144 [msm]
+> [   12.348035]  adreno_suspend+0x6c/0x174 [msm]
+> [   12.352634]  pm_generic_runtime_suspend+0x38/0x50
+> [   12.356885]  genpd_runtime_suspend+0xb4/0x314
+> [   12.361487]  __rpm_callback+0x50/0x180
+> [   12.365824]  rpm_callback+0x74/0x80
+> [   12.369470]  rpm_suspend+0x110/0x634
+> [   12.372856]  pm_runtime_work+0xd0/0xd4
+> [   12.376676]  process_one_work+0x1dc/0x450
+> [   12.380235]  worker_thread+0x154/0x450
+> [   12.384314]  kthread+0x100/0x110
+> [   12.387959]  ret_from_fork+0x10/0x20
+> [   12.391351] Code: aa1e03e9 d503201f d503233f f9401802 (b9401041)
+> [   12.394913] ---[ end trace 0000000000000000 ]---
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
 > --
-> 2.34.1
->
+> Linaro LKFT
+> https://lkft.linaro.org
+> [1] https://lkft.validation.linaro.org/scheduler/job/4643232#L2396
