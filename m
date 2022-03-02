@@ -1,44 +1,39 @@
 Return-Path: <linux-kernel-owner@kernel.org>
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 07:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A46C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239872AbiCBH3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 02:29:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S239885AbiCBHnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 02:43:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236844AbiCBH3Q (ORCPT
+        with ESMTP id S237756AbiCBHnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 02:29:16 -0500
-X-Greylist: delayed 2148 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 23:28:31 PST
+        Wed, 2 Mar 2022 02:43:51 -0500
 Received: from Atcsqr.andestech.com (atcsqr.andestech.com [60.248.187.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159994578D
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 23:28:30 -0800 (PST)
-Received: from Atcsqr.andestech.com (localhost [127.0.0.2] (may be forged))
-        by Atcsqr.andestech.com with ESMTP id 2226qiM8047714
-        for <linux-kernel@vger.kernel.org>; Wed, 2 Mar 2022 14:52:44 +0800 (+08)
-        (envelope-from alankao@andestech.com)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB175F8F1
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 23:43:04 -0800 (PST)
 Received: from mail.andestech.com (ATCPCS16.andestech.com [10.0.1.222])
-        by Atcsqr.andestech.com with ESMTP id 2226qNYD047683;
-        Wed, 2 Mar 2022 14:52:23 +0800 (+08)
+        by Atcsqr.andestech.com with ESMTP id 2227gofM061830;
+        Wed, 2 Mar 2022 15:42:50 +0800 (+08)
         (envelope-from alankao@andestech.com)
 Received: from atcsi01.andestech.com (10.0.15.167) by ATCPCS16.andestech.com
  (10.0.1.222) with Microsoft SMTP Server id 14.3.498.0; Wed, 2 Mar 2022
- 14:52:22 +0800
+ 15:42:46 +0800
 From:   Alan Kao <alankao@andestech.com>
 To:     Arnd Bergmann <arnd@arndb.de>, <linux-kernel@vger.kernel.org>,
         "Greentime Hu" <green.hu@gmail.com>
 CC:     Alan Kao <alankao@andestech.com>
 Subject: [PATCH] nds32: Remove the architecture
-Date:   Wed, 2 Mar 2022 14:52:13 +0800
-Message-ID: <20220302065213.82702-1-alankao@andestech.com>
+Date:   Wed, 2 Mar 2022 15:42:45 +0800
+Message-ID: <20220302074245.257153-1-alankao@andestech.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.0.15.167]
 X-DNSRBL: 
-X-MAIL: Atcsqr.andestech.com 2226qiM8047714
+X-MAIL: Atcsqr.andestech.com 2227gofM061830
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
