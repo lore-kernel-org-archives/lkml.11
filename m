@@ -2,195 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B99EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96597C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 08:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240237AbiCBIw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 03:52:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
+        id S240251AbiCBIy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 03:54:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240234AbiCBIw0 (ORCPT
+        with ESMTP id S234861AbiCBIyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 03:52:26 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4B6BB0BB;
-        Wed,  2 Mar 2022 00:51:42 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id B2C62A04;
-        Wed,  2 Mar 2022 09:51:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646211099;
-        bh=cbzPGIwgXJdg7L3y0VO7R5FjmCa4xay9OWwPMF71EJg=;
+        Wed, 2 Mar 2022 03:54:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202475FF04;
+        Wed,  2 Mar 2022 00:53:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B81296124D;
+        Wed,  2 Mar 2022 08:53:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED9BC004E1;
+        Wed,  2 Mar 2022 08:53:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646211218;
+        bh=G74+aJfG6CYsfJpqACXBWrfFsPqguSBtGOY3haphRKI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j3O8fi11Gp7hoTmSzMtUWa37EFrB/cKOrROkphix2NDKx30J/gcT2BsFswLGvuEY0
-         y8hZn8JAKXwxMViZKN56dONwX2TATkgxIwWhsUb8+49nMVqoKxpIuZWc31bLIt+qSg
-         QtN7oReI0oz9pRMYpzUV/6Hq2FsnfGAvBzacy+2Y=
-Date:   Wed, 2 Mar 2022 10:51:27 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 63/66] staging: media: Add support for the Allwinner
- A31 ISP
-Message-ID: <Yh8wD8lF2Hs+cxD7@pendragon.ideasonboard.com>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-64-paul.kocialkowski@bootlin.com>
- <YgFFxMd2htKvX0K1@pendragon.ideasonboard.com>
- <Yh5CuyEJ+WhIAzYm@aptenodytes>
+        b=Lf1K83pfZJ0TAdTTKhvpqcbQIDZD5zpio0iBwWG6ZCzkz3KPJA1kvmZmAVsctBLfS
+         Vm/KMgJJXcNO8HI5RLO7oaBZc5SsnNw44K6jocTDFr9ltgAMntutPJ6qif0Mvg+iUY
+         7zvswMwmD7/toHQhBSpxgyY8lwJ4X41mdyVEdjmo=
+Date:   Wed, 2 Mar 2022 09:53:34 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, Alexander Graf <graf@amazon.com>,
+        Jann Horn <jannh@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH 2/3] random: provide notifier for VM fork
+Message-ID: <Yh8wjrf7HVf56Anw@kroah.com>
+References: <20220301231038.530897-1-Jason@zx2c4.com>
+ <20220301231038.530897-3-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yh5CuyEJ+WhIAzYm@aptenodytes>
+In-Reply-To: <20220301231038.530897-3-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
-
-On Tue, Mar 01, 2022 at 04:58:51PM +0100, Paul Kocialkowski wrote:
-> On Mon 07 Feb 22, 18:16, Laurent Pinchart wrote:
-> > On Sat, Feb 05, 2022 at 07:54:26PM +0100, Paul Kocialkowski wrote:
-> > > Some Allwinner platforms come with an Image Signal Processor, which
-> > > supports various features in order to enhance and transform data
-> > > received by image sensors into good-looking pictures. In most cases,
-> > > the data is raw bayer, which gets internally converted to RGB and
-> > > finally YUV, which is what the hardware produces.
-> > > 
-> > > This driver supports ISPs that are similar to the A31 ISP, which was
-> > > the first standalone ISP found in Allwinner platforms. Simpler ISP
-> > > blocks were found in the A10 and A20, where they are tied to a CSI
-> > > controller. Newer generations of Allwinner SoCs (starting with the
-> > > H6, H616, etc) come with a new camera subsystem and revised ISP.
-> > > Even though these previous and next-generation ISPs are somewhat
-> > > similar to the A31 ISP, they have enough significant differences to
-> > > be out of the scope of this driver.
-> > > 
-> > > While the ISP supports many features, including 3A and many
-> > > enhancement blocks, this implementation is limited to the following:
-> > > - V3s (V3/S3) platform support;
-> > > - Bayer media bus formats as input;
-> > 
-> > Greyscale formats would also be nice to have, if the hardware can
-> > support that (it mostly just requires the ability to disable the CFA
-> > interpolation).
+On Wed, Mar 02, 2022 at 12:10:37AM +0100, Jason A. Donenfeld wrote:
+> Drivers such as WireGuard need to learn when VMs fork in order to clear
+> sessions. This commit provides a simple notifier_block for that, with a
+> register and unregister function. When no VM fork detection is compiled
+> in, this turns into a no-op, similar to how the power notifier works.
 > 
-> As far as I know there's no support for grayscale, only bayer formats
-> and YUV.
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/char/random.c  | 15 +++++++++++++++
+>  include/linux/random.h |  5 +++++
+>  2 files changed, 20 insertions(+)
 > 
-> > > - Semi-planar YUV (NV12/NV21) as output;
-> > 
-> > Packed YUV would also be useful if the hardware supports it.
+> diff --git a/drivers/char/random.c b/drivers/char/random.c
+> index 6bd1bbab7392..483fd2dc2057 100644
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -1141,6 +1141,8 @@ void add_bootloader_randomness(const void *buf, size_t size)
+>  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+>  
+>  #if IS_ENABLED(CONFIG_VMGENID)
+> +static BLOCKING_NOTIFIER_HEAD(vmfork_notifier);
+> +
+>  /*
+>   * Handle a new unique VM ID, which is unique, not secret, so we
+>   * don't credit it, but we do immediately force a reseed after so
+> @@ -1152,11 +1154,24 @@ void add_vmfork_randomness(const void *unique_vm_id, size_t size)
+>  	if (crng_ready()) {
+>  		crng_reseed(true);
+>  		pr_notice("crng reseeded due to virtual machine fork\n");
+> +		blocking_notifier_call_chain(&vmfork_notifier, 0, NULL);
+>  	}
+>  }
+>  #if IS_MODULE(CONFIG_VMGENID)
+>  EXPORT_SYMBOL_GPL(add_vmfork_randomness);
+>  #endif
+> +
+> +int register_random_vmfork_notifier(struct notifier_block *nb)
+> +{
+> +	return blocking_notifier_chain_register(&vmfork_notifier, nb);
+> +}
+> +EXPORT_SYMBOL_GPL(register_random_vmfork_notifier);
+> +
+> +int unregister_random_vmfork_notifier(struct notifier_block *nb)
+> +{
+> +	return blocking_notifier_chain_unregister(&vmfork_notifier, nb);
+> +}
+> +EXPORT_SYMBOL_GPL(unregister_random_vmfork_notifier);
+>  #endif
+>  
+>  struct fast_pool {
+> diff --git a/include/linux/random.h b/include/linux/random.h
+> index e84b6fa27435..7fccbc7e5a75 100644
+> --- a/include/linux/random.h
+> +++ b/include/linux/random.h
+> @@ -31,6 +31,11 @@ extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+>  				       size_t entropy);
+>  #if IS_ENABLED(CONFIG_VMGENID)
+>  extern void add_vmfork_randomness(const void *unique_vm_id, size_t size);
+> +extern int register_random_vmfork_notifier(struct notifier_block *nb);
+> +extern int unregister_random_vmfork_notifier(struct notifier_block *nb);
+> +#else
+> +static inline int register_random_vmfork_notifier(struct notifier_block *nb) { return 0; }
+> +static inline int unregister_random_vmfork_notifier(struct notifier_block *nb) { return 0; }
+>  #endif
+>  
+>  extern void get_random_bytes(void *buf, size_t nbytes);
+> -- 
+> 2.35.1
 > 
-> Same here, it only supports planar and semi-planar YUV as output.
-> 
-> > > - Debayering with per-component gain and offset configuration;
-> > > - 2D noise filtering with configurable coefficients.
-> > > 
-> > > Since many features are missing from the associated uAPI, the driver
-> > > is aimed to integrate staging until all features are properly
-> > > described.
-> > > 
-> > > On the technical side, it uses the v4l2 and media controller APIs,
-> > > with a video node for capture, a processor subdev and a video node
-> > > for parameters submission. A specific uAPI structure and associated
-> > > v4l2 meta format are used to configure parameters of the supported
-> > > modules.
-> > > 
-> > > One particular thing about the hardware is that configuration for
-> > > module registers needs to be stored in a DMA buffer and gets copied
-> > > to actual registers by the hardware at the next vsync, when instructed
-> > > by a flag. This is handled by the "state" mechanism in the driver.
-> > > 
-> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > ---
-> > >  drivers/staging/media/sunxi/Kconfig           |   1 +
-> > >  drivers/staging/media/sunxi/Makefile          |   1 +
-> > >  drivers/staging/media/sunxi/sun6i-isp/Kconfig |  13 +
-> > >  .../staging/media/sunxi/sun6i-isp/Makefile    |   4 +
-> > >  .../staging/media/sunxi/sun6i-isp/sun6i_isp.c | 572 +++++++++++++
-> > >  .../staging/media/sunxi/sun6i-isp/sun6i_isp.h |  86 ++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_capture.c | 751 ++++++++++++++++++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_capture.h |  78 ++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_params.c  | 573 +++++++++++++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_params.h  |  52 ++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_proc.c    | 599 ++++++++++++++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_proc.h    |  61 ++
-> > >  .../media/sunxi/sun6i-isp/sun6i_isp_reg.h     | 275 +++++++
-> > >  .../sunxi/sun6i-isp/uapi/sun6i-isp-config.h   |  43 +
-> > 
-> > Could you add a TODO file to list the issues that need to be fixed for
-> > the driver to move out of staging ? I'll already propose one entry:
-> > 
-> > - Add support in libcamera
-> 
-> Maybe it would be good to narrow down what level of support you have in mind
-> here. Just adding basic support fort the pipeline is probably doable, but
-> developing complex 3A algorithms would require very significant effort and
-> it would be a shame that this prevents the driver from leaving staging.
-> 
-> I think another obvious task would be to have a complete uAPI that reflects
-> all modules that are part of the ISP.
-> 
-> What do you think?
 
-The reason why I'd like to see libcamera support for the ISP driver is
-to ensure that the kernel API is adequate for real use cases. The API
-can be split in three parts:
+It seems crazy that the "we just were spawned as a new vm" notifier is
+based in the random driver, but sure, put it here for now!  :)
 
-- Pipeline configuration (this includes the media controller topology,
-  link setting, subdev pad format/selection rectangle configuration,
-  ...)
-- ISP parameters
-- ISP statistics
-
-A pipeline handler implementation will cover the first parts. The second
-and third parts need to be tested too, but we don't need to implement
-every single feature. A very simple algorithm that demonstrates
-statistics can be captured and ISP parameters can be set should be
-enough to test and exercise the API in real scenarios. We're working on
-making basic AE and AWB algorithm implementations generic (or at least
-creating generic building blocks that can easily be assembled to create
-those algorithms, as the ISP statistics and parameters are specific to
-the ISP and thus require some ISP-specific code), so that should become
-a fairly easy task soon. I expect most of the work to go in the pipeline
-handler.
-
-Does this sound fair to you ?
-
-> > This isn't required to merge the driver in staging as long as ABI
-> > compatibility doesn't need to be preserved until the driver is moved out
-> > of staging.
-> >
-> > >  14 files changed, 3109 insertions(+)
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/Kconfig
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/Makefile
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp.c
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp.h
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_capture.c
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_capture.h
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_params.c
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_params.h
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.c
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.h
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_reg.h
-> > >  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/uapi/sun6i-isp-config.h
-> > 
-> > [snip]
-
--- 
-Regards,
-
-Laurent Pinchart
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
