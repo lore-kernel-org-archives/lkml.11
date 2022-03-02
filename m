@@ -2,187 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0753C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241313AbiCBLXJ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:23:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48870 "EHLO
+        id S241423AbiCBLXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:23:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241411AbiCBLWy (ORCPT
+        with ESMTP id S240017AbiCBLXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:22:54 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3487657;
-        Wed,  2 Mar 2022 03:22:11 -0800 (PST)
-Date:   Wed, 02 Mar 2022 10:40:07 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v1 3/3] drm/panel : innolux-ej030na and abt-y030xx067a :
- add .enable and .disable
-To:     Christophe Branchereau <cbranchereau@gmail.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org
-Message-Id: <VM548R.0I9BAN681OS83@crapouillou.net>
-In-Reply-To: <20220301153122.20660-4-cbranchereau@gmail.com>
-References: <20220301153122.20660-1-cbranchereau@gmail.com>
-        <20220301153122.20660-4-cbranchereau@gmail.com>
+        Wed, 2 Mar 2022 06:23:18 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883005F95
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:22:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Kf8zKjx1jpB6ExufZ+QyMPsC6cuJG3089w5+njs1G5A=; b=c0DkrTda2xpKvQodJagOfOc7VD
+        zppk1RxeyrxfqxPf0iJ7eKwJA+LospYsjRd4+ztXiOUqoneCxHUTde1uzopU1eB+5rLv7lOVM0UMs
+        5jYG+L2Fs2NcOE3ezqsXzF8ZSVI2DxJg0ctPT24oKasn0WrIbtm9yBXNtJhsO+wf48tQv7yR25H1w
+        A2E/e8g3cKImvO47diCQ2ggxChcYbFiEu+caxvSb4jHhPYhUgB0cijR4449MA9iJEmO2SsWjzvA65
+        PWdlg+T7sZ30+mfYOqrMpdi15sXunojfvBIpw2MZ5t83JJVKiI1ufAF3C4riJ9DOujMSGzgU/F9kt
+        qUYrhaIg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57594)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nPN3u-0002Kq-9x; Wed, 02 Mar 2022 11:22:30 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nPN3t-00085p-8J; Wed, 02 Mar 2022 11:22:29 +0000
+Date:   Wed, 2 Mar 2022 11:22:29 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: boot flooded with unwind: Index not found
+Message-ID: <Yh9TdbWwHX/5Bhmt@shell.armlinux.org.uk>
+References: <Yh5AlfprVAZvJDJA@shell.armlinux.org.uk>
+ <CAMj1kXGRTM99F_Q29Q4G2Q4L6WSHn2YY+_QZCXQGmw=yWPe1mQ@mail.gmail.com>
+ <CAMj1kXEy6n3zZ8Z51kP=tTuOU0xCXLLfC-b6BMpdsjMoM7zGBg@mail.gmail.com>
+ <Yh8tWdiWPgZLyQtx@Red>
+ <CAMj1kXGRtdftpoqmd7HBonBBS67jO=YWzoESPAagGfQBZUDQWg@mail.gmail.com>
+ <Yh8w7ldudhmbYv4N@Red>
+ <CAMj1kXHri2_tnYhu2gE9xTUOxLY9v1=zODCo1BGfjFTKukiedA@mail.gmail.com>
+ <Yh9CbcrfDvN2Z9Y9@Red>
+ <Yh9RI64fThQfnJgS@shell.armlinux.org.uk>
+ <CAMj1kXGVwXzAAyDeJqAi+eK1hOB3uShiBb_LORL-_YNvikbsAw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXGVwXzAAyDeJqAi+eK1hOB3uShiBb_LORL-_YNvikbsAw@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
-
-Le mar., mars 1 2022 at 16:31:22 +0100, Christophe Branchereau 
-<cbranchereau@gmail.com> a écrit :
-> Following the introduction of bridge_atomic_enable in the ingenic
-> drm driver, the crtc is enabled between .prepare and .enable, if
-> it exists.
+On Wed, Mar 02, 2022 at 12:19:40PM +0100, Ard Biesheuvel wrote:
+> On Wed, 2 Mar 2022 at 12:12, Russell King (Oracle)
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Wed, Mar 02, 2022 at 11:09:49AM +0100, Corentin Labbe wrote:
+> > > The crash disappeared (but the suspicious RCU usage is still here).
+> >
+> > As the trace on those is:
+> >
+> > [    0.239629]  unwind_backtrace from show_stack+0x10/0x14
+> > [    0.239654]  show_stack from init_stack+0x1c54/0x2000
+> >
+> > unwind_backtrace() and show_stack() are both C code, the compiler will
+> > emit the unwind information for it. show_stack() isn't called from
+> > assembly code, only from C code, so the next function's unwind
+> > information should also be generated by the compiler.
+> >
+> > However, init_stack is not a function - it's an array of unsigned long.
+> > There is no way this should appear in the trace, and this suggests that
+> > the unwind of show_stack() has gone wrong.
+> >
+> > I don't see anything obvious in Ard's changes that would cause that
+> > though.
+> >
+> > Did it used to work fine with previous versions of linux-next - those
+> > versions where we had Ard's "arm-vmap-stacks-v6" tag merged in
+> > (commit 2fa394824493) and did this only appear when I merged
+> > "arm-ftrace-for-rmk" (commit 74aaaa1e9bba) ? Did merging
+> > "arm-ftrace-for-rmk" cause any change in your .config?
+> >
 > 
-> Add it so the backlight is only enabled after the crtc is, to avoid
-> graphical issues.
+> I can reproduce the RCU warnings, and I have tracked this down to the
+> change I made to return_address() for the graph tracer, which I
+> thought was justified after removing the call to
+> kernel_text_address():
 > 
-> Signed-off-by: Christophe Branchereau <cbranchereau@gmail.com>
-> ---
->  drivers/gpu/drm/panel/panel-abt-y030xx067a.c  | 23 ++++++++++++--
->  drivers/gpu/drm/panel/panel-innolux-ej030na.c | 31 
-> ++++++++++++++++---
->  2 files changed, 48 insertions(+), 6 deletions(-)
+> --- a/arch/arm/include/asm/ftrace.h
+> +++ b/arch/arm/include/asm/ftrace.h
+> @@ -35,26 +35,8 @@ static inline unsigned long
+> ftrace_call_adjust(unsigned long addr)
 > 
-> diff --git a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c 
-> b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> index f043b484055b..b5736344e3ec 100644
-> --- a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> +++ b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> @@ -183,8 +183,6 @@ static int y030xx067a_prepare(struct drm_panel 
-> *panel)
->  		goto err_disable_regulator;
->  	}
+>  #ifndef __ASSEMBLY__
 > 
-> -	msleep(120);
+> -#if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND)
+> -/*
+> - * return_address uses walk_stackframe to do it's work.  If both
+> - * CONFIG_FRAME_POINTER=y and CONFIG_ARM_UNWIND=y walk_stackframe uses unwind
+> - * information.  For this to work in the function tracer many functions would
+> - * have to be marked with __notrace.  So for now just depend on
+> - * !CONFIG_ARM_UNWIND.
+> - */
 > -
->  	return 0;
+>  void *return_address(unsigned int);
 > 
->  err_disable_regulator:
-> @@ -202,6 +200,25 @@ static int y030xx067a_unprepare(struct drm_panel 
-> *panel)
->  	return 0;
->  }
-> 
-> +static int y030xx067a_enable(struct drm_panel *panel)
-> +{
-> +	if (panel->backlight) {
-> +		/* Wait for the picture to be ready before enabling backlight */
-> +		msleep(120);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int y030xx067a_disable(struct drm_panel *panel)
-> +{
-> +	struct y030xx067a *priv = to_y030xx067a(panel);
-> +
-> +	regmap_clear_bits(priv->map, 0x06, REG06_XPSAVE);
-
-Shouldn't that be balanced by a regmap_set_bits() in the .enable() 
-function?
-
-Cheers,
--Paul
-
-> +
-> +	return 0;
-> +}
-> +
->  static int y030xx067a_get_modes(struct drm_panel *panel,
->  				struct drm_connector *connector)
->  {
-> @@ -239,6 +256,8 @@ static int y030xx067a_get_modes(struct drm_panel 
-> *panel,
->  static const struct drm_panel_funcs y030xx067a_funcs = {
->  	.prepare	= y030xx067a_prepare,
->  	.unprepare	= y030xx067a_unprepare,
-> +	.enable		= y030xx067a_enable,
-> +	.disable	= y030xx067a_disable,
->  	.get_modes	= y030xx067a_get_modes,
->  };
-> 
-> diff --git a/drivers/gpu/drm/panel/panel-innolux-ej030na.c 
-> b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> index c558de3f99be..6de7370185cd 100644
-> --- a/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> +++ b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> @@ -80,8 +80,6 @@ static const struct reg_sequence 
-> ej030na_init_sequence[] = {
->  	{ 0x47, 0x08 },
->  	{ 0x48, 0x0f },
->  	{ 0x49, 0x0f },
+> -#else
 > -
-> -	{ 0x2b, 0x01 },
->  };
-> 
->  static int ej030na_prepare(struct drm_panel *panel)
-> @@ -109,8 +107,6 @@ static int ej030na_prepare(struct drm_panel 
-> *panel)
->  		goto err_disable_regulator;
->  	}
-> 
-> -	msleep(120);
+> -static inline void *return_address(unsigned int level)
+> -{
+> -       return NULL;
+> -}
 > -
->  	return 0;
+> -#endif
+> -
+>  #define ftrace_return_address(n) return_address(n)
 > 
->  err_disable_regulator:
-> @@ -128,6 +124,31 @@ static int ej030na_unprepare(struct drm_panel 
-> *panel)
->  	return 0;
->  }
+>  #define ARCH_HAS_SYSCALL_MATCH_SYM_NAME
 > 
-> +static int ej030na_enable(struct drm_panel *panel)
-> +{
-> +	struct ej030na *priv = to_ej030na(panel);
-> +
-> +	/* standby off */
-> +	regmap_write(priv->map, 0x2b, 0x01);
-> +
-> +	if (panel->backlight) {
-> +		/* Wait for the picture to be ready before enabling backlight */
-> +		msleep(120);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int ej030na_disable(struct drm_panel *panel)
-> +{
-> +	struct ej030na *priv = to_ej030na(panel);
-> +
-> +	/* standby on */
-> +	regmap_write(priv->map, 0x2b, 0x00);
-> +
-> +	return 0;
-> +}
-> +
->  static int ej030na_get_modes(struct drm_panel *panel,
->  			     struct drm_connector *connector)
->  {
-> @@ -165,6 +186,8 @@ static int ej030na_get_modes(struct drm_panel 
-> *panel,
->  static const struct drm_panel_funcs ej030na_funcs = {
->  	.prepare	= ej030na_prepare,
->  	.unprepare	= ej030na_unprepare,
-> +	.enable		= ej030na_enable,
-> +	.disable	= ej030na_disable,
->  	.get_modes	= ej030na_get_modes,
->  };
+> However, the function graph tracer works happily with this bit
+> reverted, and so that is probably the best course of action here.
 > 
-> --
-> 2.34.1
-> 
+> I have already sent the patch that reintroduces the
+> kernel_text_address() check - would you prefer a v2 of that one with
+> this change incorporated? Or a second patch that just reverts the
+> above? (Given that the bogus dereference was invoked from
+> return_address() as well, I suspect that this change would make the
+> get_kernel_nofault() change I proposed in this thread redundant)
 
+I'd prefer patches on top of my devel-stable branch, thanks.
 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
