@@ -2,85 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D814C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 488EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238951AbiCBBmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 20:42:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        id S238958AbiCBBsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 20:48:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232491AbiCBBmH (ORCPT
+        with ESMTP id S236717AbiCBBs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 20:42:07 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE05A1444;
-        Tue,  1 Mar 2022 17:41:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1B64ACE2080;
-        Wed,  2 Mar 2022 01:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46113C340EE;
-        Wed,  2 Mar 2022 01:41:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646185282;
-        bh=0uq04TIw16sFFqGnO4Xc0RqH2SMYpo02cxq8yHyjHEE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hax7RNqq32w5+aztR8fik2izzY7o6yMJBICL+Hw+7S3XxcFZPbW8h479Ail8YBEPo
-         OBJCtcP8wws2LlCFR7YJYFTcL1Sw6ZkO8v7coQa7SJzI4K73RNUpq9D12QDK3w8fXr
-         KNwVFViHBPHzCz57vfgbWJblHJmsyJ2q14ETGPDnoROyXUy2qU3KISeYUjkj4LzGKh
-         bdXfQlpQI9Smw84WOhmuydRDEx6d7l+T4rlTw5N7Hxpe/LevZGRFQNeYY2zo1OpFKe
-         mntL8dvQmzjvDXsTdNp64cApey5uR1kkilspz0SoLAiMPy4OpjlHBcXv43dzDzmHoN
-         N1aT5LkUa9n9g==
-Date:   Tue, 1 Mar 2022 17:41:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yeqi Fu <fufuyqqqqqq@gmail.com>
-Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>
-Subject: Re: [PATCH v1] dpaa2-switch: fix memory leak of
- dpaa2_switch_acl_entry_add
-Message-ID: <20220301174120.0722aed4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220301141544.13411-1-fufuyqqqqqq@gmail.com>
-References: <a87a691a-62c2-5b42-3be8-ee1161281ad8@suse.de>
-        <20220301141544.13411-1-fufuyqqqqqq@gmail.com>
+        Tue, 1 Mar 2022 20:48:28 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB25B17AAD
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 17:47:44 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id bm39so208472qkb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 17:47:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Mgf1HAXmo18JSbss+8HqPirEGYISw1T1YWytow0MUCs=;
+        b=LUX5mz/uFs1tXRIyjHFWvNomENb+XL1uTGGmGp/Sv0C6k7AU6+O+nZ+rrdxX/q7eay
+         yoSXrmjDlwwTx1wsjkJzkiLYjjYRCc9nuqfKyJP8LsiR6WEmdPP8+KjhPfJSs4UTJk0U
+         MOv9Z0S2VDibn98ytvyhkhI9BGvz28EloqmS+aOiYl0LYBsEF1ot8nHSriUKtIsCFGLW
+         1tljeoqleRlL+iNjA1iX6fuTt/t8hfnW03BQspKnkljtUFnOmRjEcUzzQxxWV/qw5wmF
+         qUS5bbz8u4Lyf4Tbx7pWT6qDrANRDkDsdJsqXXaIG6iT9yWHw87tJq+gWHPMB8P0bplS
+         YF/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Mgf1HAXmo18JSbss+8HqPirEGYISw1T1YWytow0MUCs=;
+        b=gzEH0BW0WcvcT0Hpw/rZ32B8zmDIsGnCvbzwNTkkNzO9ecK/SmBJGw+28DBGihRkUv
+         8ADhcfxxO5iS5ZZjZjkpiiPEONT6+PyASXQwUtiMUoEAs2pUzBg9n0Tw/H/3CW8vZN2O
+         jGzOw2PY7s++LgAsp4JVhbSa3Dut/2DxN8BkNHmZRf+xd8oUvQ2qJt5UfhqX1tQQYyuY
+         xZwGC2INcPow5+Fv3tkC4lpYfJeVjwosTVec+I8S76rawOuHNgHxhDJNjQ4hAHcTieWv
+         wEYKZ+qC5OyAJvW+f01Wmp4xmzayZoba4G5yBznKnyMjUKAosGSUZjuvRe3CfmJanyh6
+         VSdA==
+X-Gm-Message-State: AOAM5320Bd3gRkR/+NXsH/085yGE3Ieg3+x6TZ4tDaTAMd9eAhwM+MFD
+        5WWi0y3bgSxAcdcekUXn3xR6HW7wqG3bZTLYMbuuhg==
+X-Google-Smtp-Source: ABdhPJzrU2fR07uEXITY9Nq9WB/Rf4BURiyOAXE3/3F5S7O6zXheS1LlqUyywuxrHbREKt0PcmAq73kOAe+5zjC2QGs=
+X-Received: by 2002:a05:620a:4307:b0:507:d5b1:f65e with SMTP id
+ u7-20020a05620a430700b00507d5b1f65emr15266386qko.363.1646185663888; Tue, 01
+ Mar 2022 17:47:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220302012931.4107196-1-bjorn.andersson@linaro.org> <20220302012931.4107196-2-bjorn.andersson@linaro.org>
+In-Reply-To: <20220302012931.4107196-2-bjorn.andersson@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 2 Mar 2022 04:47:32 +0300
+Message-ID: <CAA8EJppiNbJhrdFgJ0sESBM5m3oyazS-8dG8919xdZu50fZ8aQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] drm/msm/dpu: Issue MDSS reset during initialization
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  1 Mar 2022 22:15:44 +0800 Yeqi Fu wrote:
-> @@ -142,6 +143,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
->  			 DMA_TO_DEVICE);
->  	if (err) {
->  		dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
-> +		kfree(cmd_buff);
->  		return err;
->  	}
+On Wed, 2 Mar 2022 at 04:27, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+>
+> It's typical for the bootloader to bring up the display for showing a
+> boot splash or efi framebuffer. But in some cases the kernel driver ends
+> up only partially configuring (in particular) the DPU, which might
+> result in e.g. that two different data paths attempts to push data to
+> the interface - with resulting graphical artifacts.
+>
+> Naturally the end goal would be to inherit the bootloader's
+> configuration and provide the user with a glitch free handover from the
+> boot configuration to a running DPU.
+>
+> But as implementing seamless transition from the bootloader
+> configuration to the running OS will be a considerable effort, start by
+> simply resetting the entire MDSS to its power-on state, to avoid the
+> partial configuration.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>
+> Changes since v1:
+> - Rather than trying to deconfigure individual pieces of the DPU, reset the
+>   entire block.
+>
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_mdss.c | 18 ++++++++++++++++++
+>  drivers/gpu/drm/msm/msm_drv.c            |  4 ++++
+>  drivers/gpu/drm/msm/msm_kms.h            |  1 +
+>  3 files changed, 23 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_mdss.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_mdss.c
+> index b10ca505f9ac..419eaaefe606 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_mdss.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_mdss.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/irqchip.h>
+>  #include <linux/irqdesc.h>
+>  #include <linux/irqchip/chained_irq.h>
+> +#include <linux/reset.h>
+>  #include "dpu_kms.h"
+>
+>  #define to_dpu_mdss(x) container_of(x, struct dpu_mdss, base)
+> @@ -31,6 +32,7 @@ struct dpu_mdss {
+>         void __iomem *mmio;
+>         struct clk_bulk_data *clocks;
+>         size_t num_clocks;
+> +       struct reset_control *reset;
+>         struct dpu_irq_controller irq_controller;
+>  };
+>
+> @@ -197,10 +199,18 @@ static void dpu_mdss_destroy(struct msm_mdss *mdss)
+>         dpu_mdss->mmio = NULL;
+>  }
+>
+> +static int dpu_mdss_reset(struct msm_mdss *mdss)
+> +{
+> +       struct dpu_mdss *dpu_mdss = to_dpu_mdss(mdss);
+> +
+> +       return reset_control_reset(dpu_mdss->reset);
+> +}
+> +
+>  static const struct msm_mdss_funcs mdss_funcs = {
+>         .enable = dpu_mdss_enable,
+>         .disable = dpu_mdss_disable,
+>         .destroy = dpu_mdss_destroy,
+> +       .reset = dpu_mdss_reset,
+>  };
+>
+>  int dpu_mdss_init(struct platform_device *pdev)
+> @@ -227,6 +237,13 @@ int dpu_mdss_init(struct platform_device *pdev)
+>         }
+>         dpu_mdss->num_clocks = ret;
+>
+> +       dpu_mdss->reset = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
+> +       if (IS_ERR(dpu_mdss->reset)) {
+> +               ret = PTR_ERR(dpu_mdss->reset);
+> +               DPU_ERROR("failed to acquire mdss reset, ret=%d", ret);
+> +               goto reset_parse_err;
+> +       }
+> +
+>         dpu_mdss->base.dev = &pdev->dev;
+>         dpu_mdss->base.funcs = &mdss_funcs;
+>
+> @@ -252,6 +269,7 @@ int dpu_mdss_init(struct platform_device *pdev)
+>  irq_error:
+>         _dpu_mdss_irq_domain_fini(dpu_mdss);
+>  irq_domain_error:
+> +reset_parse_err:
+>  clk_parse_err:
+>         if (dpu_mdss->mmio)
+>                 devm_iounmap(&pdev->dev, dpu_mdss->mmio);
+> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+> index 129fa841ac22..7595f83da3f1 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.c
+> +++ b/drivers/gpu/drm/msm/msm_drv.c
+> @@ -388,6 +388,10 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
+>         if (ret)
+>                 return ret;
+>
+> +       /* Issue a reset of the entire MDSS */
+> +       if (priv->mdss && priv->mdss->funcs->reset)
+> +               priv->mdss->funcs->reset(priv->mdss);
+> +
 
-With more context:
+I think this is incorrect. In this way reset happens after all
+subdevice are probed. They might have programmed some state of the
+corresponding block. The clocks are already registered, so the clock
+framework will be out of sync.
+I think the reset should happen before calling of_platform_populate(),
+so the device state is consistent with the driver.
 
-                return -EFAULT;
-        }
- 
-        err = dpsw_acl_add_entry(ethsw->mc_io, 0, ethsw->dpsw_handle,
-                                 filter_block->acl_id, acl_entry_cfg);
- 
-        dma_unmap_single(dev, acl_entry_cfg->key_iova, sizeof(cmd_buff),
-                         DMA_TO_DEVICE);
-        if (err) {
-                dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
-+               kfree(cmd_buff);
-                return err;
-        }
- 
-        kfree(cmd_buff);
- 
-        return 0;
- }
+Also see the https://git.linaro.org/people/dmitry.baryshkov/kernel.git/log/?h=dpu-mdss-rework,
+which reworks the mdss driver and mdss probing.
 
-Here we see unmap is "pulled up" above the error check, same thing can
-be done with the kfree(). Otherwise it looks slightly weird - the
-buffer unmap and kfree are conceptually part of releasing the buffer,
-yet they are split across the paths.
+>         /* Bind all our sub-components: */
+>         ret = component_bind_all(dev, ddev);
+>         if (ret)
+> diff --git a/drivers/gpu/drm/msm/msm_kms.h b/drivers/gpu/drm/msm/msm_kms.h
+> index 2a4f0526cb98..716a34fca1cd 100644
+> --- a/drivers/gpu/drm/msm/msm_kms.h
+> +++ b/drivers/gpu/drm/msm/msm_kms.h
+> @@ -205,6 +205,7 @@ struct msm_mdss_funcs {
+>         int (*enable)(struct msm_mdss *mdss);
+>         int (*disable)(struct msm_mdss *mdss);
+>         void (*destroy)(struct msm_mdss *mdss);
+> +       int (*reset)(struct msm_mdss *mdss);
+>  };
+>
+>  struct msm_mdss {
+> --
+> 2.33.1
+>
+
+
+-- 
+With best wishes
+Dmitry
