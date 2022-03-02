@@ -2,198 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04ADAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234403AbiCBRck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:32:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
+        id S244104AbiCBRdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:33:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243947AbiCBRcZ (ORCPT
+        with ESMTP id S244187AbiCBRcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:32:25 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8921E5DA47
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:31:16 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id k29-20020a05600c1c9d00b003817fdc0f00so1702787wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:31:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r8D9Glo/IqaUHdT1IqNZ/4L9jANqiQOBO7H8ZnJ11bo=;
-        b=kprMM0PaxhQaUOtqFTUXwwSlh4FWOta0HNFj3k7wlkS3kkvEmZ+wqPXkOH8B7y9/oC
-         bm2gpBOVubXzle2zPcw8J4V7zljJPHIGhK4LrcPmyX92uvl7bC9wBUgtv6SjxBBFh2dY
-         hcYB13Xv3owOAW+CWyYokl0ROfZlLpNgD4VTywg6B1V5WHMB04iufGZ/UiYQmN4WA4Nr
-         gaiSEvvwL/JrKDnH1wb7+LFr4UY8vX1Fl/UqusDD2AYSrYEW5Zk/uEXCJYGrCSk/ufW4
-         Hn7qtBMFNHJAEYKi1pg6r+9QpgVjIiYbQPjAYT+hhjhFeyakxl5yLxHCKGsJOlUmknxn
-         +W3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r8D9Glo/IqaUHdT1IqNZ/4L9jANqiQOBO7H8ZnJ11bo=;
-        b=HWpYdKymjrrnSJ6u0MHdaflnUZpMkMk5bh1G8zIMvMWaObxYL/ftbXmVOxwb+vE9RY
-         pLiFURnmaejtZc4Qb9Whqea34UWw3NJaNHCb8P+ayvC9WusybSj/XPpdDdkYzVvmvLyj
-         yzhknMALujmaQ8gJ7ugi6mC9lsq3kV8km3MptW+8HdrWMnxrd82UCpp0/2XYISmqB6jT
-         6gH61Mx+j8zI34vP1VOqEvHSYRlktwqKK/35FVBFu3Ku/TIzbl+nGpHdQVG5mXcsYqc2
-         WyWtf7ga6vAMF/4tf8lHkM2GEJm8P/H2/5Z6N+9+y9CNE4kOrNZEppvjABYVT1GwR+bR
-         yb9g==
-X-Gm-Message-State: AOAM5337292ogPCC1FNwDpkUHAvpaNt4kWvM4vEa5yOkPdaLiZiqAU6c
-        uZQvCjwyhgOfJO8U2XsUybN9ndrhYu4COe9efhIw5A==
-X-Google-Smtp-Source: ABdhPJyq4u8HQIq9pMffamDskyFj4okMEA25x2hK2hxWrrZpj8MvyhBFFR4we+1tTnFgbJ0bfNScYb4wg6LgfMWVPhU=
-X-Received: by 2002:a05:600c:2284:b0:386:90d8:73ca with SMTP id
- 4-20020a05600c228400b0038690d873camr714048wmf.66.1646242274759; Wed, 02 Mar
- 2022 09:31:14 -0800 (PST)
+        Wed, 2 Mar 2022 12:32:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1415F58811
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:31:45 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 371DB1F39D;
+        Wed,  2 Mar 2022 17:31:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646242296; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=48xH8ZTiFHXoSQMDMbDhDVgxUz19c3sly3xHjZkeeao=;
+        b=NV0bB1KwuS6luMyfYzLXSJiAzAf4yzCWKJ2kh0/udbFwtx4MR/G+ofKP1r49y/W4ldQrXH
+        +CBFZqw1FD/mfjYdPpua1LUld141NK/7YhHt7j8dEJRvye20Z/ii8LwPUuaK0r2PMHbizk
+        Ot3pl4psRMZtut0JIz/54+zwSXlJ2kg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646242296;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=48xH8ZTiFHXoSQMDMbDhDVgxUz19c3sly3xHjZkeeao=;
+        b=c+F9XeRtLM7g3atREp577ucoAo9xHXR9USAm/S0qliucDd5QxflkAu4Txhkim6qfhY7hUq
+        s9orFNcf9i0VZuDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E5C1F13D38;
+        Wed,  2 Mar 2022 17:31:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GOyCN/epH2LPTAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 02 Mar 2022 17:31:35 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Faiyaz Mohammed <faiyazm@codeaurora.org>,
+        Marco Elver <elver@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH v2 1/6] lib/stackdepot: allow requesting early initialization dynamically
+Date:   Wed,  2 Mar 2022 18:31:17 +0100
+Message-Id: <20220302173122.11939-2-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220302173122.11939-1-vbabka@suse.cz>
+References: <20220302173122.11939-1-vbabka@suse.cz>
 MIME-Version: 1.0
-References: <20220225033548.1912117-1-kaleshsingh@google.com>
- <20220225033548.1912117-4-kaleshsingh@google.com> <87tucg6b97.wl-maz@kernel.org>
-In-Reply-To: <87tucg6b97.wl-maz@kernel.org>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Wed, 2 Mar 2022 09:31:03 -0800
-Message-ID: <CAC_TJvcjq5R_+UzhhqjZnusa5g+RT0HbLHBob-pTqofKgMSp9g@mail.gmail.com>
-Subject: Re: [PATCH v4 3/8] KVM: arm64: Add guard pages for KVM nVHE
- hypervisor stack
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Will Deacon <will@kernel.org>, Quentin Perret <qperret@google.com>,
-        Fuad Tabba <tabba@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4062; h=from:subject; bh=fUAWYw/XGeQuLFiGDuRcbqQ62jmrmDVhwsfBAo33KGE=; b=owGbwMvMwMH4QPFU8cfOlQKMp9WSGJLkVz4tkfh50j/tfNQNLwPf7mus0968Kmb6qns1ictYKYRZ RFm3k9GYhYGRg0FWTJGl13sy40rTxxL7POLOwAxiZQKZwsDFKQATUZPjYFilajip33Vt8e2P/TO3fV upfuEJW7bWVAdGdv6Yh4KcaZc+GjtWWir7V/I4zjF1KNOxqil5ocWnejzrlYDC7vubPfueb/CN5qxX XJ7CwdFu9STbQnLGzKWf1k94mOe5dbWPXkQYw6pvSUWTK/NlfHqnW26wEiy7f6D32WJD/lVsT8Qu/8 +32trcUpjqUC18LHvPnw/K+9uCfxabzJm3/hP381iuQNt/7mV7GdrPBB29Fu6yx3hezL6WDy1MvXLv f7On/S9p0PZ8VbJZuk3F9PPRa+mmdq/XuhjXGtsvXFp5iiu4bP3r8p2K98WP/au6sdlBKEheXs2zhT 8pJCG7Kzzs5JnKBQIde/oidJoB
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 11:53 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Fri, 25 Feb 2022 03:34:48 +0000,
-> Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > Maps the stack pages in the flexible private VA range and allocates
-> > guard pages below the stack as unbacked VA space. The stack is aligned
-> > to twice its size to aid overflow detection (implemented in a subsequent
-> > patch in the series).
-> >
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > ---
-> >
-> > Changes in v4:
-> >   - Replace IS_ERR_OR_NULL check with IS_ERR check now that
-> >     hyp_alloc_private_va_range() returns an error for null
-> >     pointer, per Fuad
-> >   - Format comments to < 80 cols, per Fuad
-> >
-> > Changes in v3:
-> >   - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
-> >
-> >  arch/arm64/include/asm/kvm_asm.h |  1 +
-> >  arch/arm64/kvm/arm.c             | 32 +++++++++++++++++++++++++++++---
-> >  2 files changed, 30 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-> > index d5b0386ef765..2e277f2ed671 100644
-> > --- a/arch/arm64/include/asm/kvm_asm.h
-> > +++ b/arch/arm64/include/asm/kvm_asm.h
-> > @@ -169,6 +169,7 @@ struct kvm_nvhe_init_params {
-> >       unsigned long tcr_el2;
-> >       unsigned long tpidr_el2;
-> >       unsigned long stack_hyp_va;
-> > +     unsigned long stack_pa;
-> >       phys_addr_t pgd_pa;
-> >       unsigned long hcr_el2;
-> >       unsigned long vttbr;
-> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> > index ecc5958e27fe..0a83c0e7f838 100644
-> > --- a/arch/arm64/kvm/arm.c
-> > +++ b/arch/arm64/kvm/arm.c
-> > @@ -1541,7 +1541,6 @@ static void cpu_prepare_hyp_mode(int cpu)
-> >       tcr |= (idmap_t0sz & GENMASK(TCR_TxSZ_WIDTH - 1, 0)) << TCR_T0SZ_OFFSET;
-> >       params->tcr_el2 = tcr;
-> >
-> > -     params->stack_hyp_va = kern_hyp_va(per_cpu(kvm_arm_hyp_stack_page, cpu) + PAGE_SIZE);
-> >       params->pgd_pa = kvm_mmu_get_httbr();
-> >       if (is_protected_kvm_enabled())
-> >               params->hcr_el2 = HCR_HOST_NVHE_PROTECTED_FLAGS;
-> > @@ -1990,14 +1989,41 @@ static int init_hyp_mode(void)
-> >        * Map the Hyp stack pages
-> >        */
-> >       for_each_possible_cpu(cpu) {
-> > +             struct kvm_nvhe_init_params *params = per_cpu_ptr_nvhe_sym(kvm_init_params, cpu);
-> >               char *stack_page = (char *)per_cpu(kvm_arm_hyp_stack_page, cpu);
-> > -             err = create_hyp_mappings(stack_page, stack_page + PAGE_SIZE,
-> > -                                       PAGE_HYP);
-> > +             unsigned long stack_hyp_va, guard_hyp_va;
-> >
-> > +             /*
-> > +              * Private mappings are allocated downwards from io_map_base
-> > +              * so allocate the stack first then the guard page.
-> > +              *
-> > +              * The stack is aligned to twice its size to facilitate overflow
-> > +              * detection.
-> > +              */
-> > +             err = __create_hyp_private_mapping(__pa(stack_page), PAGE_SIZE,
-> > +                                             PAGE_SIZE * 2, &stack_hyp_va, PAGE_HYP);
->
-> Right, I guess that's where my earlier ask breaks, as you want an
-> alignment that is *larger* than the allocation.
->
-> >               if (err) {
-> >                       kvm_err("Cannot map hyp stack\n");
-> >                       goto out_err;
-> >               }
-> > +
-> > +             /* Allocate unbacked private VA range for stack guard page */
-> > +             guard_hyp_va = hyp_alloc_private_va_range(PAGE_SIZE, PAGE_SIZE);
->
-> Huh. You are implicitly relying on the VA allocator handing you an
-> address contiguous with the previous mapping. That's... brave. I'd
-> rather you allocate the VA space upfront with the correct alignment
-> and then map the single page where it should be in the VA region.
->
-> That'd be a lot less fragile.
+In a later patch we want to add stackdepot support for object owner
+tracking in slub caches, which is enabled by slub_debug boot parameter.
+This creates a bootstrap problem as some caches are created early in
+boot when slab_is_available() is false and thus stack_depot_init()
+tries to use memblock. But, as reported by Hyeonggon Yoo [1] we are
+already beyond memblock_free_all(). Ideally memblock allocation should
+fail, yet it succeeds, but later the system crashes, which is a
+separately handled issue.
 
-Agreed. I'll fix it in the next version.
+To resolve this boostrap issue in a robust way, this patch adds another
+way to request stack_depot_early_init(), which happens at a well-defined
+point of time. In addition to build-time CONFIG_STACKDEPOT_ALWAYS_INIT,
+code that's e.g. processing boot parmeters (which happens early enough)
+can set a new variable stack_depot_want_early_init as true.
 
-Thanks,
-Kalesh
->
-> > +             if (IS_ERR((void *)guard_hyp_va)) {
-> > +                     err = PTR_ERR((void *)guard_hyp_va);
-> > +                     kvm_err("Cannot allocate hyp stack guard page\n");
-> > +                     goto out_err;
-> > +             }
-> > +
-> > +             /*
-> > +              * Save the stack PA in nvhe_init_params. This will be needed
-> > +              * to recreate the stack mapping in protected nVHE mode.
-> > +              * __hyp_pa() won't do the right thing there, since the stack
-> > +              * has been mapped in the flexible private VA space.
-> > +              */
-> > +             params->stack_pa = __pa(stack_page) + PAGE_SIZE;
-> > +
-> > +             params->stack_hyp_va = stack_hyp_va + PAGE_SIZE;
-> >       }
-> >
-> >       for_each_possible_cpu(cpu) {
->
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+In this patch we also convert page_owner to this approach. While it
+doesn't have the bootstrap issue as slub, it's also a functionality
+enabled by a boot param and can thus request stack_depot_early_init()
+with memblock allocation instead of later initialization with
+kvmalloc().
+
+[1] https://lore.kernel.org/all/YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal/
+
+Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ include/linux/stackdepot.h | 16 ++++++++++++++--
+ lib/stackdepot.c           |  2 ++
+ mm/page_owner.c            |  9 ++++++---
+ 3 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/stackdepot.h b/include/linux/stackdepot.h
+index 17f992fe6355..1217ba2b636e 100644
+--- a/include/linux/stackdepot.h
++++ b/include/linux/stackdepot.h
+@@ -15,6 +15,8 @@
+ 
+ typedef u32 depot_stack_handle_t;
+ 
++extern bool stack_depot_want_early_init;
++
+ depot_stack_handle_t __stack_depot_save(unsigned long *entries,
+ 					unsigned int nr_entries,
+ 					gfp_t gfp_flags, bool can_alloc);
+@@ -26,11 +28,21 @@ depot_stack_handle_t __stack_depot_save(unsigned long *entries,
+  * The alternative is to select STACKDEPOT_ALWAYS_INIT to have stack depot
+  * enabled as part of mm_init(), for subsystems where it's known at compile time
+  * that stack depot will be used.
++ *
++ * Another alternative is to set stack_depot_want_early_init as true, when the
++ * decision to use stack depot is taken e.g. when evaluating kernel boot
++ * parameters, which precedes the call to stack_depot_want_early_init().
+  */
+ int stack_depot_init(void);
+ 
+-#ifdef CONFIG_STACKDEPOT_ALWAYS_INIT
+-static inline int stack_depot_early_init(void)	{ return stack_depot_init(); }
++#ifdef CONFIG_STACKDEPOT
++static inline int stack_depot_early_init(void)
++{
++	if (IS_ENABLED(CONFIG_STACKDEPOT_ALWAYS_INIT)
++	    || stack_depot_want_early_init)
++		return stack_depot_init();
++	return 0;
++}
+ #else
+ static inline int stack_depot_early_init(void)	{ return 0; }
+ #endif
+diff --git a/lib/stackdepot.c b/lib/stackdepot.c
+index bf5ba9af0500..02e2b5fcbf3b 100644
+--- a/lib/stackdepot.c
++++ b/lib/stackdepot.c
+@@ -66,6 +66,8 @@ struct stack_record {
+ 	unsigned long entries[];	/* Variable-sized array of entries. */
+ };
+ 
++bool stack_depot_want_early_init = false;
++
+ static void *stack_slabs[STACK_ALLOC_MAX_SLABS];
+ 
+ static int depot_index;
+diff --git a/mm/page_owner.c b/mm/page_owner.c
+index 99e360df9465..40dce2b81d13 100644
+--- a/mm/page_owner.c
++++ b/mm/page_owner.c
+@@ -42,7 +42,12 @@ static void init_early_allocated_pages(void);
+ 
+ static int __init early_page_owner_param(char *buf)
+ {
+-	return kstrtobool(buf, &page_owner_enabled);
++	int ret = kstrtobool(buf, &page_owner_enabled);
++
++	if (page_owner_enabled)
++		stack_depot_want_early_init = true;
++
++	return ret;
+ }
+ early_param("page_owner", early_page_owner_param);
+ 
+@@ -80,8 +85,6 @@ static __init void init_page_owner(void)
+ 	if (!page_owner_enabled)
+ 		return;
+ 
+-	stack_depot_init();
+-
+ 	register_dummy_stack();
+ 	register_failure_stack();
+ 	register_early_stack();
+-- 
+2.35.1
+
