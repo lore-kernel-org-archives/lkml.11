@@ -2,192 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F34C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69380C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 09:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240368AbiCBJKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 04:10:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S240376AbiCBJKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 04:10:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240358AbiCBJKW (ORCPT
+        with ESMTP id S240366AbiCBJKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 04:10:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E49B82F8
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 01:09:39 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1ED8E21991;
-        Wed,  2 Mar 2022 09:09:38 +0000 (UTC)
+        Wed, 2 Mar 2022 04:10:31 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A35BB095
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 01:09:48 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0B4C91F37E;
+        Wed,  2 Mar 2022 09:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646212178; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1646212187; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v+CJOTOD4n7/OSSm073QF8ULoWYfiH4GzE5utXJnhxA=;
-        b=oD83E4vsqXcSYoJNs6mRPFvLd5ik2FsCH6wAEbZDKRYSB3S8Tg0EsvFkVSwbfvOb+It4sn
-        KxdAN2XxMcBG5bDaLQJ2+jbBh6r4/VamLm5/F6taZn2sGdiCI6rJaCkuvlk6Rn1s1xrqPJ
-        71ksSdOrEk2GotWCREp7ZdZqpPEigWU=
+        bh=81XLZdJTxsdo7/bRz3kjmDMEOLKe7jESLpZCe4VnvqE=;
+        b=k8yt4iAjrQQOy+X00UrbEW9jP81lB3Iz7a2gsj07TWUjIeTK6th5Ipx+rL3GpjzUuFmNTv
+        C/sUk98K6kJq7EEBDTycvBNL1C1f+0pH5g1q7/KpFHaRKvdGd0AbW6c1q9mvNY9U+yHDX1
+        VunrrQBvhA61XEsVXfyBF/2emNDG+SY=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646212178;
+        s=susede2_ed25519; t=1646212187;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v+CJOTOD4n7/OSSm073QF8ULoWYfiH4GzE5utXJnhxA=;
-        b=tbETP8MJoXoBANx3DZ02m94JinwzFvQyiFW421CBLBOFkk9Clo4I7VJubxuwEMyZGfTimy
-        HNCUOupVS4B8EfDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        bh=81XLZdJTxsdo7/bRz3kjmDMEOLKe7jESLpZCe4VnvqE=;
+        b=O5TZ4vyelRYzLxvybbc1EJqpJc5z5JYo9vkXbIgG6evYkD5ZwkPuwNJCuM2yRLsuxbKvMv
+        cXZFecWBVm87V1DA==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CE49813345;
-        Wed,  2 Mar 2022 09:09:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id u5OBMVE0H2LhVgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 02 Mar 2022 09:09:37 +0000
-Message-ID: <024aacf5-ac49-7d04-7293-1e1451ff9029@suse.cz>
-Date:   Wed, 2 Mar 2022 10:09:37 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id EC2FEA3B83;
+        Wed,  2 Mar 2022 09:09:46 +0000 (UTC)
+Date:   Wed, 2 Mar 2022 10:09:46 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Zong Cao <cz18811105578@gmail.com>
+cc:     jpoimboe@redhat.com, peterz@infradead.org, mingo@kernel.org,
+        bp@suse.de, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] objtool: Fix memory leak in objtool_create_backup
+In-Reply-To: <20220301163651.50346-1-cz18811105578@gmail.com>
+Message-ID: <alpine.LSU.2.21.2203021008340.5895@pobox.suse.cz>
+References: <20220301163651.50346-1-cz18811105578@gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 0/5] SLUB debugfs improvements based on stackdepot
-Content-Language: en-US
-To:     Mike Rapoport <rppt@linux.ibm.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Oliver Glitta <glittao@gmail.com>,
-        Faiyaz Mohammed <faiyazm@codeaurora.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Marco Elver <elver@google.com>,
-        Karolina Drobnik <karolinadrobnik@gmail.com>
-References: <20220225180318.20594-1-vbabka@suse.cz>
- <YhnUcqyeMgCrWZbd@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <f194f876-1c46-f3ae-573e-d3ddd6dcf4cc@suse.cz>
- <Yh0+Jld+sDy1Hkdb@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <Yh8szz+UxqddwK7j@linux.ibm.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <Yh8szz+UxqddwK7j@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 09:37, Mike Rapoport wrote:
-> On Mon, Feb 28, 2022 at 09:27:02PM +0000, Hyeonggon Yoo wrote:
->> On Mon, Feb 28, 2022 at 08:10:18PM +0100, Vlastimil Babka wrote:
->> > On 2/26/22 08:19, Hyeonggon Yoo wrote:
->> > > On Fri, Feb 25, 2022 at 07:03:13PM +0100, Vlastimil Babka wrote:
->> > >> Hi,
->> > >> 
->> > >> this series combines and revives patches from Oliver's last year
->> > >> bachelor thesis (where I was the advisor) that make SLUB's debugfs
->> > >> files alloc_traces and free_traces more useful.
->> > >> The resubmission was blocked on stackdepot changes that are now merged,
->> > >> as explained in patch 2.
->> > >> 
->> > > 
->> > > Hello. I just started review/testing this series.
->> > > 
->> > > it crashed on my system (arm64)
->> > 
->> > Hmm, interesting. On x86_64 this works for me and stackdepot is allocated
->> > from memblock. arm64 must have memblock freeing happen earlier or something.
->> > (CCing memblock experts)
->> > 
->> > > I ran with boot parameter slub_debug=U, and without KASAN.
->> > > So CONFIG_STACKDEPOT_ALWAYS_INIT=n.
->> > > 
->> > > void * __init memblock_alloc_try_nid(
->> > >                         phys_addr_t size, phys_addr_t align,
->> > >                         phys_addr_t min_addr, phys_addr_t max_addr,
->> > >                         int nid)
->> > > {
->> > >         void *ptr;
->> > > 
->> > >         memblock_dbg("%s: %llu bytes align=0x%llx nid=%d from=%pa max_addr=%pa %pS\n",
->> > >                      __func__, (u64)size, (u64)align, nid, &min_addr,
->> > >                      &max_addr, (void *)_RET_IP_);
->> > >         ptr = memblock_alloc_internal(size, align,
->> > >                                            min_addr, max_addr, nid, false);
->> > >         if (ptr)
->> > >                 memset(ptr, 0, size); <--- Crash Here
->> > > 
->> > >         return ptr;
->> > > }
->> > > 
->> > > It crashed during create_boot_cache() -> stack_depot_init() ->
->> > > memblock_alloc().
->> > > 
->> > > I think That's because, in kmem_cache_init(), both slab and memblock is not
->> > > available. (AFAIU memblock is not available after mem_init() because of
->> > > memblock_free_all(), right?)
->> > 
->> > Hm yes I see, even in x86_64 version mem_init() calls memblock_free_all().
->> > But then, I would expect stack_depot_init() to detect that memblock_alloc()
->> > returns NULL, we print ""Stack Depot hash table allocation failed,
->> > disabling" and disable it. Instead it seems memblock_alloc() returns
->> > something that's already potentially used by somebody else? Sounds like a bug?
->> 
->> 
->> By the way, I fixed this by allowing stack_depot_init() to be called in
->> kmem_cache_init() too [1] and Marco suggested that calling
->> stack_depot_init() depending on slub_debug parameter for simplicity. [2]
->> 
->> I would prefer [2], Would you take a look?
->> 
->> [1] https://lkml.org/lkml/2022/2/27/31
->> 
->> [2] https://lkml.org/lkml/2022/2/28/717
-> 
-> I have the third version :)
+Hi,
 
-While simple, it changes the timing of stack_depot_early_init() that was
-supposed to be at a single callsite - now it's less predictable and depends
-on e.g. kernel parameter ordering. Some arch/config combo could break,
-dunno. Setting a variable that stack_depot_early_init() checks should be
-more robust.
+On Wed, 2 Mar 2022, cz18811105578@gmail.com wrote:
 
+> From: Zong Cao <cz18811105578@gmail.com>
 > 
-> diff --git a/mm/slub.c b/mm/slub.c
-> index a74afe59a403..0c3ab2335b46 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -1548,6 +1548,10 @@ static int __init setup_slub_debug(char *str)
->  	}
->  out:
->  	slub_debug = global_flags;
-> +
-> +	if (slub_flags & SLAB_STORE_USER && IS_ENABLED(CONFIG_STACKDEPOT))
-> +		stack_depot_early_init();
-> +
->  	if (slub_debug != 0 || slub_debug_string)
->  		static_branch_enable(&slub_debug_enabled);
->  	else
-> @@ -4221,9 +4225,6 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
->  	s->remote_node_defrag_ratio = 1000;
->  #endif
->  
-> -	if (s->flags & SLAB_STORE_USER && IS_ENABLED(CONFIG_STACKDEPOT))
-> -		stack_depot_init();
-> -
->  	/* Initialize the pre-computed randomized freelist if slab is up */
->  	if (slab_state >= UP) {
->  		if (init_cache_random_seq(s))
->  
->> -- 
->> Thank you, You are awesome!
->> Hyeonggon :-)
-> 
+> The error handling branch did not properly free the memory before
+> return, which would cause memory leak.
 
+yes, but objtool exits immediately in those cases so this is not really 
+needed in the end.
+
+Regards
+Miroslav
