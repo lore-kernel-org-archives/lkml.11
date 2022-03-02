@@ -2,222 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20261C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A88C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238647AbiCBLBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
+        id S241153AbiCBLB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:01:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234836AbiCBLBI (ORCPT
+        with ESMTP id S234836AbiCBLB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:01:08 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53496E793
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:00:21 -0800 (PST)
-Received: from epcas1p4.samsung.com (unknown [182.195.41.48])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220302110016epoutp041a927424bdc2c68c0a0eb4373c547fac~Yi0qhg5jZ2626226262epoutp04_
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:00:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220302110016epoutp041a927424bdc2c68c0a0eb4373c547fac~Yi0qhg5jZ2626226262epoutp04_
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646218816;
-        bh=kq8MQbVRkc+bOUL5EisgTWGyifp1Wf2QScEObld1uDc=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=VBiAPt2ZvaQ40xwTA8+UZ8RzRuOIDVE9uv49XxDqKoVuisSMBghbFybAjH7/9Iwru
-         TMNjOQnksf8x/hQ2B2Yy/KLdmU4zQ/C+QSDhP1DvjRKI7NYAEDACoW9CB2yCOo0wyN
-         x7oUTRy6L+AcVZll59VcXkiPT92+vyLyc4V8fRWc=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220302110015epcas1p11e00fb34377d4913a5204264f2a86106~Yi0qGCeoa0938509385epcas1p1j;
-        Wed,  2 Mar 2022 11:00:15 +0000 (GMT)
-Received: from epsmges1p3.samsung.com (unknown [182.195.38.241]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4K7rk64VW2z4x9Ps; Wed,  2 Mar
-        2022 11:00:14 +0000 (GMT)
-Received: from epcas1p1.samsung.com ( [182.195.41.45]) by
-        epsmges1p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        7F.25.09592.E3E4F126; Wed,  2 Mar 2022 20:00:14 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220302110014epcas1p48988c9d9e7f43f5ca002f718baa7ae53~Yi0odL9Xt1455414554epcas1p4C;
-        Wed,  2 Mar 2022 11:00:14 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220302110014epsmtrp120570eea30bcef7d260dbef848ee1bda~Yi0ocaG5d0587005870epsmtrp1Q;
-        Wed,  2 Mar 2022 11:00:14 +0000 (GMT)
-X-AuditID: b6c32a37-28fff70000002578-9c-621f4e3e3792
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E7.59.29871.E3E4F126; Wed,  2 Mar 2022 20:00:14 +0900 (KST)
-Received: from yj84jang02 (unknown [10.88.97.211]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220302110013epsmtip2d98d3399c45cf71f6484d5611b47ffdc~Yi0oO1qT42184721847epsmtip2H;
-        Wed,  2 Mar 2022 11:00:13 +0000 (GMT)
-From:   =?ks_c_5601-1987?B?wOW/tcH4L1RWIFMvVyBMYWIoVkQpL1N0YWZmIEVuZ2luZWVyL7vv?=
-         =?ks_c_5601-1987?B?vLrA/MDa?= <yj84.jang@samsung.com>
-To:     "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>
-Cc:     "'Rafael J. Wysocki'" <rafael@kernel.org>,
-        "'Pavel Machek'" <pavel@ucw.cz>,
-        "'Len Brown'" <len.brown@intel.com>,
-        "'Bjorn Helgaas'" <bhelgaas@google.com>,
-        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <js07.lee@samsung.com>
-In-Reply-To: <Yh8jb/X5ZNFvVQlf@kroah.com>
-Subject: RE: [PATCH] PM: Add device name to suspend_report_result()
-Date:   Wed, 2 Mar 2022 20:00:14 +0900
-Message-ID: <03e001d82e24$b1b0e450$1512acf0$@samsung.com>
+        Wed, 2 Mar 2022 06:01:56 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3565F6D85C
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:01:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646218873; x=1677754873;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=SnTi0TOdYsSei3g1dNB+2AeawdL74DNfmP4PMy+W/Qk=;
+  b=K0c6ySohy5d9P0y/fcdooFKYsL8JH4lLyCeWd/X858Gy2E5JyYPaLZ/T
+   4quMu1Q3ogIxRue4wGOI1fLnE5koxFuwpubcLCqza5dW2fRj1dMe9Bz/Q
+   ZCpyDGVfD7bZT5rnV0nGg9vrC3vaUxrQy62IDRorD/aPLPvn/BI5cIUN6
+   E/2KsfY8xlfoX8Lb1zmAOlA8N00WCOuYxzC62cEDQmxWngbD4Xgv7hI8y
+   zr1gLtYwpJqw3y9ekrvNWcGcP+z6O73ZSXKSJYHBpyqs3KVES1Si0y+Zv
+   Xa2fMkandT7TLs277+ErBk8iIJEE+mDU1UInJU3q8UV+zokivBZvvMv74
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="253298945"
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="253298945"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 03:01:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
+   d="scan'208";a="535346253"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 02 Mar 2022 03:01:11 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPMhB-0001L9-3u; Wed, 02 Mar 2022 10:59:01 +0000
+Date:   Wed, 2 Mar 2022 18:58:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: arch/s390/kernel/syscall.c:56:1: sparse: sparse: Using plain integer
+ as NULL pointer
+Message-ID: <202203021808.beYRnzDb-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ks_c_5601-1987"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQGYo0TT2vM3t6OMkLszEBoeXVnaDgIOdYpqAcZRUMetDFa0cA==
-Content-Language: ko
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOJsWRmVeSWpSXmKPExsWy7bCmrq6dn3ySwbk/ihZLmjIsmhevZ7N4
-        dPM3q8WsKXuZLJbv62e0uLxrDpvF2XnH2Sw+9x5htFi0rJXZ4u6po2wWc79MZXbg9liwqdRj
-        8Z6XTB6bVnWyeeyfu4bdo2/LKkaPFau/s3t83iQXwB6VbZORmpiSWqSQmpecn5KZl26r5B0c
-        7xxvamZgqGtoaWGupJCXmJtqq+TiE6DrlpkDdKKSQlliTilQKCCxuFhJ386mKL+0JFUhI7+4
-        xFYptSAlp8CsQK84Mbe4NC9dLy+1xMrQwMDIFKgwITtj5aeFLAUz5Cre/V/I0sB4W6KLkYND
-        QsBEYsaetC5GLg4hgR2MEnPmH2SCcD4xSrzavIwFwvnGKHGrZSGQwwnWce7zD3aIxF5Gia3H
-        Z0G1PGeU2HPqJFiGTaCdUWLnqtXsIC0iAuYScx8eB0swC1xikrh+aQsjSIJTQFNi5cc7rCC2
-        sICzxN59R8B2sAioSGw8e4sNxOYVsJT4v+IPE4QtKHFy5hOwGmYBI4klq+czQdjyEtvfzmGG
-        uE9B4ufTZawQi50kXl09wQpRIyIxu7ONGeQICYEDHBJbd05ghWhwkejr+cUOYQtLvDq+BcqW
-        knjZ3wZlp0tMfPwWyi6Q+Pt4CdQyY4l3b9dC2YoSO3/PZYRYxifx7msPKySIeSU62oQgSpQl
-        Hp9fzQZhS0qs/72faQKj0iwkr81C8tosJK/NQvLCAkaWVYxiqQXFuempxYYFxvAIT87P3cQI
-        TsFa5jsYp739oHeIkYmD8RCjBAezkgivuLV8khBvSmJlVWpRfnxRaU5q8SFGU2BoT2SWEk3O
-        B2aBvJJ4QxNLAxMzIxMLY0tjMyVx3lXTTicKCaQnlqRmp6YWpBbB9DFxcEo1MFkt29pZp93S
-        l9jl1F4RbTPj9c3Jel/Z620CNjyz67F33fvw3vWPU7beCUlWuqEgf8Yn6dWiu79nmjJsW7WC
-        f/VL8bwNyzaytV8W2av3o3vrmg/rMgJLVjX7uZi7TemzizA5pWtnU143+8058bfKsqdOLLCu
-        3VF/t3fxkqWtj1Z/Oc/VxPAy9lU6w+2FB5NSzrRJnk57I/n2wKviWOmauW9iGc6//NnPl9bE
-        mW5wqoJhsljcu+BPkkmCm5uZuLfde2+cyqEXM0mhq6LuwSk/iR2vJz61eRQ5zah48WXP8qn2
-        fceb368T+tUsclsteVlM+PX3tyS+ODzclRSQp3oqmjd3n9ilM5kikm7ZpZM3/1ZiKc5INNRi
-        LipOBABfkH8OSgQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrAIsWRmVeSWpSXmKPExsWy7bCSvK6dn3ySwZrr7BZLmjIsmhevZ7N4
-        dPM3q8WsKXuZLJbv62e0uLxrDpvF2XnH2Sw+9x5htFi0rJXZ4u6po2wWc79MZXbg9liwqdRj
-        8Z6XTB6bVnWyeeyfu4bdo2/LKkaPFau/s3t83iQXwB7FZZOSmpNZllqkb5fAlbHy00KWghly
-        Fe/+L2RpYLwt0cXIySEhYCJx7vMP9i5GLg4hgd2MEg+X/mSCSEhKfP30ma2LkQPIFpY4fLgY
-        ouYpo0Tv100sIA6bQDujxM5Vq9lBGkQEzCXmPjwOZjML3GKS+HvIGaJjJaPEteOtYAlOAU2J
-        lR/vsILYwgLOEnv3HWEBsVkEVCQ2nr3FBmLzClhK/F/xhwnCFpQ4OfMJC8RQE4nGw91QtrzE
-        9rdzmCEuVZD4+XQZK8QRThKvrp5ghagRkZjd2cY8gVF4FpJRs5CMmoVk1CwkLQsYWVYxSqYW
-        FOem5xYbFhjmpZbrFSfmFpfmpesl5+duYgRHopbmDsbtqz7oHWJk4mA8xCjBwawkwituLZ8k
-        xJuSWFmVWpQfX1Sak1p8iFGag0VJnPdC18l4IYH0xJLU7NTUgtQimCwTB6dUA9Nkq2vyFpMF
-        7k2ZyLl56a/r5x/XHqyaWXFWROdL6qxQQUOVtkqLuefu6N/xE1jZ+Pp8fmed/sp4lvnGQi4n
-        Z28vZ+/5U8rZb2av4Kt0Ma/48UbWGy/a448VKMtszNvM/in7S7TTioMxK/crq1QJfjrLfr3F
-        Ymt29Y54V//zMfofTRd4pK+N2rmLUeW628H+zqYin3v/rYqMJKdE2xtw7WG4cPq0kPujMF11
-        Xe2OPc2BFl6b2AMaJ6zX//H3Pk/8H5F38ml+muv8Fx01NJLbb7m74f1f7q4r2QWOzusZj2ax
-        R+442jFJKjjwy/bKB0wup10b/eQCZZQXK/HwvW/tPX51ZUXS8leJxZ9U9VeEKrEUZyQaajEX
-        FScCAG+lEs8zAwAA
-X-CMS-MailID: 20220302110014epcas1p48988c9d9e7f43f5ca002f718baa7ae53
-X-Msg-Generator: CA
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220302064921epcas1p19fbe8c017d776657caa696a3cef10093
-References: <CGME20220302064921epcas1p19fbe8c017d776657caa696a3cef10093@epcas1p1.samsung.com>
-        <20220302064917.64073-1-yj84.jang@samsung.com> <Yh8jb/X5ZNFvVQlf@kroah.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Sent: Wednesday, March 2, 2022 4:58 PM
-> To: Youngjin Jang <yj84.jang@samsung.com>
-> Cc: Rafael J. Wysocki <rafael@kernel.org>; Pavel Machek <pavel@ucw.cz>;
-> Len Brown <len.brown@intel.com>; Bjorn Helgaas <bhelgaas@google.com>;
-> linux-pm@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
-> pci@vger.kernel.org; linux-acpi@vger.kernel.org; linux-
-usb@vger.kernel.org;
-> js07.lee@samsung.com
-> Subject: Re: [PATCH] PM: Add device name to suspend_report_result()
-> 
-> On Wed, Mar 02, 2022 at 03:49:17PM +0900, Youngjin Jang wrote:
-> > From: "yj84.jang" <yj84.jang@samsung.com>
-> >
-> > currently, suspend_report_result() prints only function information.
-> > If any driver uses common pm function, nobody knows who called failed
-> > function exactly.
-> >
-> > So, device information is needed to recognize specific wrong driver.
-> >
-> > e.g.)
-> > PM: dpm_run_callback(): pm_generic_suspend+0x0/0x48 returns 0
-> > PM: dpm_run_callback(): platform_pm_suspend+0x0/0x68 returns 0 after
-> > patch,
-> > PM: dpm_run_callback(): pm_generic_suspend+0x0/0x48 (amba) returns 0
-> > PM: dpm_run_callback(): platform_pm_suspend+0x0/0x68 (armv7-pmu)
-> > returns 0
-> >
-> > Signed-off-by: yj84.jang <yj84.jang@samsung.com>
-> > ---
-> >  drivers/base/power/main.c  | 10 +++++-----
-> >  drivers/pci/pci-driver.c   | 14 +++++++-------
-> >  drivers/pnp/driver.c       |  2 +-
-> >  drivers/usb/core/hcd-pci.c |  4 ++--
-> >  include/linux/pm.h         |  8 ++++----
-> >  5 files changed, 19 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
-> > index 04ea92c..a762fe8 100644
-> > --- a/drivers/base/power/main.c
-> > +++ b/drivers/base/power/main.c
-> > @@ -485,7 +485,7 @@ static int dpm_run_callback(pm_callback_t cb, struct
-> device *dev,
-> >  	trace_device_pm_callback_start(dev, info, state.event);
-> >  	error = cb(dev);
-> >  	trace_device_pm_callback_end(dev, error);
-> > -	suspend_report_result(cb, error);
-> > +	suspend_report_result(dev, cb, error);
-> >
-> >  	initcall_debug_report(dev, calltime, cb, error);
-> >
-> > @@ -1568,7 +1568,7 @@ static int legacy_suspend(struct device *dev,
-> pm_message_t state,
-> >  	trace_device_pm_callback_start(dev, info, state.event);
-> >  	error = cb(dev, state);
-> >  	trace_device_pm_callback_end(dev, error);
-> > -	suspend_report_result(cb, error);
-> > +	suspend_report_result(dev, cb, error);
-> >
-> >  	initcall_debug_report(dev, calltime, cb, error);
-> >
-> > @@ -1855,7 +1855,7 @@ static int device_prepare(struct device *dev,
-> pm_message_t state)
-> >  	device_unlock(dev);
-> >
-> >  	if (ret < 0) {
-> > -		suspend_report_result(callback, ret);
-> > +		suspend_report_result(dev, callback, ret);
-> >  		pm_runtime_put(dev);
-> >  		return ret;
-> >  	}
-> > @@ -1960,10 +1960,10 @@ int dpm_suspend_start(pm_message_t state)  }
-> > EXPORT_SYMBOL_GPL(dpm_suspend_start);
-> >
-> > -void __suspend_report_result(const char *function, void *fn, int ret)
-> > +void __suspend_report_result(const char *function, struct device
-> > +*dev, void *fn, int ret)
-> >  {
-> >  	if (ret)
-> > -		pr_err("%s(): %pS returns %d\n", function, fn, ret);
-> > +		pr_err("%s(): %pS (%s) returns %d\n", function, fn,
-> > +dev_driver_string(dev), ret);
-> 
-> If you have a struct device, please use dev_err().
-> 
-> thanks,
-> 
-> greg k-h
+Hi Sven,
 
-Hello,
-Thanks for your review.
+First bad commit (maybe != root cause):
 
-I think dev_err() is nice option, but we can see a minor issue.
-Prefix log "PM: " would be lost, If I use dev_err() in this context.
-As you know, all logs in power management include "PM :" prefix.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   fb184c4af9b9f4563e7a126219389986a71d5b5b
+commit: 56e62a73702836017564eaacd5212e4d0fa1c01d s390: convert to generic entry
+date:   1 year, 1 month ago
+config: s390-randconfig-s031-20220302 (https://download.01.org/0day-ci/archive/20220302/202203021808.beYRnzDb-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=56e62a73702836017564eaacd5212e4d0fa1c01d
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 56e62a73702836017564eaacd5212e4d0fa1c01d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash arch/s390/kernel/
 
-So, I think pr_err() with detail information would be better than dev_err().
-- PM: amba 1740000.etm: dpm_run_callback(): pm_generic_resume+0x0/0x48
-returns 0
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+sparse warnings: (new ones prefixed by >>)
+>> arch/s390/kernel/syscall.c:56:1: sparse: sparse: Using plain integer as NULL pointer
+>> arch/s390/kernel/syscall.c:56:1: sparse: sparse: Using plain integer as NULL pointer
+
+vim +56 arch/s390/kernel/syscall.c
+
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  55  
+a4679373cf4ee0 arch/s390/kernel/sys_s390.c Christoph Hellwig 2010-03-10 @56  SYSCALL_DEFINE1(mmap2, struct s390_mmap_arg_struct __user *, arg)
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  57  {
+a4679373cf4ee0 arch/s390/kernel/sys_s390.c Christoph Hellwig 2010-03-10  58  	struct s390_mmap_arg_struct a;
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  59  	int error = -EFAULT;
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  60  
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  61  	if (copy_from_user(&a, arg, sizeof(a)))
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  62  		goto out;
+a90f590a1bee36 arch/s390/kernel/sys_s390.c Dominik Brodowski 2018-03-11  63  	error = ksys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd, a.offset);
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  64  out:
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  65  	return error;
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  66  }
+^1da177e4c3f41 arch/s390/kernel/sys_s390.c Linus Torvalds    2005-04-16  67  
+
+:::::: The code at line 56 was first introduced by commit
+:::::: a4679373cf4ee0e7792dc56205365732b725c2c1 Add generic sys_old_mmap()
+
+:::::: TO: Christoph Hellwig <hch@lst.de>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
