@@ -2,29 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E539C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F0FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 16:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242927AbiCBQhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 11:37:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
+        id S242976AbiCBQhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 11:37:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242765AbiCBQhc (ORCPT
+        with ESMTP id S242798AbiCBQhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Mar 2022 11:37:32 -0500
 Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64634CEA04
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F60CEA01
         for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 08:36:49 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646239006;
+        t=1646239008;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=u21KV9s2q5sfOslEpw/sDzZbvsgVEVjrwLfohbEqpJg=;
-        b=OCYrJ0Dskjlu+HYjjFC97sPKj6F0lIMr+23nFt90d7yM5h0clSM+2Pu8RNAmPRlE3EBI2l
-        T7qBpnA9NFvU0vwQSEa9iraxP+Gi8yJcYugpQuWF1Xty+8qE/EAHXAjMQ0f8qBZBo4cU91
-        5kU0eNx02/50A/TPERPno6NbvxGbf4Q=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/PNbeFwa0AFDpaFm8soBx+srw+6LkE/5medj0Pnuzw0=;
+        b=dv6ARQELb9KrBwGlPNLJRXzwHGIL9vGau4uJBJnlfxJAURfUnesxoerB2uQ1mLFWWJpXCY
+        eMBLw+rI7xjWi+Uqs6C7OYC65eMQkQblcKlU2uEt4dLkyYDGPGIakZh4NzoflRtxJBQp1E
+        A9UTsjjFXAN48UAJzg4uhu0IIVPV10k=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -35,9 +36,11 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm 00/22] kasan: report clean-ups and improvements
-Date:   Wed,  2 Mar 2022 17:36:20 +0100
-Message-Id: <cover.1646237226.git.andreyknvl@google.com>
+Subject: [PATCH mm 03/22] kasan: rearrange stack frame info in reports
+Date:   Wed,  2 Mar 2022 17:36:23 +0100
+Message-Id: <1ee113a4c111df97d168c820b527cda77a3cac40.1646237226.git.andreyknvl@google.com>
+In-Reply-To: <cover.1646237226.git.andreyknvl@google.com>
+References: <cover.1646237226.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -48,45 +51,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-A number of clean-up patches for KASAN reporting code.
+- Move printing stack frame info before printing page info.
 
-Most are non-functional and only improve readability.
+- Add object_is_on_stack() check to print_address_description()
+  and add a corresponding WARNING to kasan_print_address_stack_frame().
+  This looks more in line with the rest of the checks in this function
+  and also allows to avoid complicating code logic wrt line breaks.
 
-The patches go on top of mm.
+- Clean up comments related to get_address_stack_frame_info().
 
-Andrey Konovalov (22):
-  kasan: drop addr check from describe_object_addr
-  kasan: more line breaks in reports
-  kasan: rearrange stack frame info in reports
-  kasan: improve stack frame info in reports
-  kasan: print basic stack frame info for SW_TAGS
-  kasan: simplify async check in end_report
-  kasan: simplify kasan_update_kunit_status and call sites
-  kasan: check CONFIG_KASAN_KUNIT_TEST instead of CONFIG_KUNIT
-  kasan: move update_kunit_status to start_report
-  kasan: move disable_trace_on_warning to start_report
-  kasan: split out print_report from __kasan_report
-  kasan: simplify kasan_find_first_bad_addr call sites
-  kasan: restructure kasan_report
-  kasan: merge __kasan_report into kasan_report
-  kasan: call print_report from kasan_report_invalid_free
-  kasan: move and simplify kasan_report_async
-  kasan: rename kasan_access_info to kasan_report_info
-  kasan: add comment about UACCESS regions to kasan_report
-  kasan: respect KASAN_BIT_REPORTED in all reporting routines
-  kasan: reorder reporting functions
-  kasan: move and hide kasan_save_enable/restore_multi_shot
-  kasan: disable LOCKDEP when printing reports
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ mm/kasan/report.c         | 12 +++++++++---
+ mm/kasan/report_generic.c | 15 ++++-----------
+ 2 files changed, 13 insertions(+), 14 deletions(-)
 
- include/linux/kasan.h     |   4 -
- mm/kasan/kasan.h          |  44 ++++--
- mm/kasan/report.c         | 312 ++++++++++++++++++++++----------------
- mm/kasan/report_generic.c |  34 ++---
- mm/kasan/report_hw_tags.c |   1 +
- mm/kasan/report_sw_tags.c |  15 ++
- mm/kasan/report_tags.c    |   2 +-
- 7 files changed, 241 insertions(+), 171 deletions(-)
-
+diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+index ded648c0a0e4..d60ee8b81e2b 100644
+--- a/mm/kasan/report.c
++++ b/mm/kasan/report.c
+@@ -259,6 +259,15 @@ static void print_address_description(void *addr, u8 tag)
+ 		pr_err("\n");
+ 	}
+ 
++	if (object_is_on_stack(addr)) {
++		/*
++		 * Currently, KASAN supports printing frame information only
++		 * for accesses to the task's own stack.
++		 */
++		kasan_print_address_stack_frame(addr);
++		pr_err("\n");
++	}
++
+ 	if (is_vmalloc_addr(addr)) {
+ 		struct vm_struct *va = find_vm_area(addr);
+ 
+@@ -278,9 +287,6 @@ static void print_address_description(void *addr, u8 tag)
+ 		dump_page(page, "kasan: bad access detected");
+ 		pr_err("\n");
+ 	}
+-
+-	kasan_print_address_stack_frame(addr);
+-	pr_err("\n");
+ }
+ 
+ static bool meta_row_is_guilty(const void *row, const void *addr)
+diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
+index 139615ef326b..3751391ff11a 100644
+--- a/mm/kasan/report_generic.c
++++ b/mm/kasan/report_generic.c
+@@ -211,6 +211,7 @@ static void print_decoded_frame_descr(const char *frame_descr)
+ 	}
+ }
+ 
++/* Returns true only if the address is on the current task's stack. */
+ static bool __must_check get_address_stack_frame_info(const void *addr,
+ 						      unsigned long *offset,
+ 						      const char **frame_descr,
+@@ -224,13 +225,6 @@ static bool __must_check get_address_stack_frame_info(const void *addr,
+ 
+ 	BUILD_BUG_ON(IS_ENABLED(CONFIG_STACK_GROWSUP));
+ 
+-	/*
+-	 * NOTE: We currently only support printing frame information for
+-	 * accesses to the task's own stack.
+-	 */
+-	if (!object_is_on_stack(addr))
+-		return false;
+-
+ 	aligned_addr = round_down((unsigned long)addr, sizeof(long));
+ 	mem_ptr = round_down(aligned_addr, KASAN_GRANULE_SIZE);
+ 	shadow_ptr = kasan_mem_to_shadow((void *)aligned_addr);
+@@ -269,14 +263,13 @@ void kasan_print_address_stack_frame(const void *addr)
+ 	const char *frame_descr;
+ 	const void *frame_pc;
+ 
++	if (WARN_ON(!object_is_on_stack(addr)))
++		return;
++
+ 	if (!get_address_stack_frame_info(addr, &offset, &frame_descr,
+ 					  &frame_pc))
+ 		return;
+ 
+-	/*
+-	 * get_address_stack_frame_info only returns true if the given addr is
+-	 * on the current task's stack.
+-	 */
+ 	pr_err("\n");
+ 	pr_err("addr %px is located in stack of task %s/%d at offset %lu in frame:\n",
+ 	       addr, current->comm, task_pid_nr(current), offset);
 -- 
 2.25.1
 
