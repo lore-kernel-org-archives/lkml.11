@@ -2,168 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 11:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241380AbiCBLPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 06:15:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
+        id S241392AbiCBLPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 06:15:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241318AbiCBLOq (ORCPT
+        with ESMTP id S241337AbiCBLOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 06:14:46 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD28606D7;
-        Wed,  2 Mar 2022 03:13:59 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id d17so1696438pfl.0;
-        Wed, 02 Mar 2022 03:13:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GmHHVLhMLkneE+EGE4WwFIYlUm+9Kc8ZOrRDwiqbOwU=;
-        b=k+QjHLMylb+UECl9c9j5EOTXOO/4ZUxCc2JlFkdTLTwl+EHmaL0+gzRcFA3w0uJWQy
-         W7kpFz2sIUO61eqATqvOlqR1NN1Ppy7kgCRWCvu4hv0gFqP7Be24VVG3VnOGPuOHltWQ
-         G1Dc4MIcWuyNZ+J9PD6LBHyyDoioRvQPcBfxWPmEbzodsG5kiRvuzS9EyWBRe9CvnFGg
-         7QoHooFx+TTYqiTxpBDHzNMmRJB3kSnhjh5kZA4vlFZLOfFoEKmrBxH6tINhMw00kLRb
-         vJyuGVIA77mBmEaN/B9TSw9/mNRZC7o0cwEUSPz5WF5P7s8O4t37v61VXv8znoTQAGQe
-         82gA==
+        Wed, 2 Mar 2022 06:14:51 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CAC606ED
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 03:14:07 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0E4DF3F5F3
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 11:14:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646219646;
+        bh=c/HrBEq7VXD/vzB2plWQqXVKzKIhpuLhlwaapBvCoq4=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=ZZvYRDF/TkkrYLNl3TiNcu+DN92urcmu0P7BgYyvNvSRA/KAQuj0+hbSgwOakKROo
+         O1F0AbDAy6rsHiBpJL2UPgxo2ILfehkBEzPZFZSlhSdKGbc72dV1+/gCl5frakWkpY
+         uyZDAt86+K4VaKSZHLty4FtVShq5tmihkIWPsr0s4vKYbYtj/XgSdf8fU0VBFn7f6l
+         4cP9lD4XKZPWakf1WJMr2ldMA1DtZ3QTaNbz5Ek3EtHBCkgacI1eYg8nK8i7RwORoB
+         v5QnDLow7gVyZNbZSSGOetk6GdIpxLCrVnCiQZ4lq7EQJy2QIDmLgTawkmzznz1p6a
+         RiCrgHLE4Rr/Q==
+Received: by mail-ed1-f69.google.com with SMTP id f9-20020a0564021e8900b00412d0a6ef0dso806036edf.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 03:14:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GmHHVLhMLkneE+EGE4WwFIYlUm+9Kc8ZOrRDwiqbOwU=;
-        b=1Y0++Yz8W5ExAFohaCUvaRYWFE6tfb1toU92uI7JiTpE7sX88cLh6Z0eubzo+hx2AJ
-         eIdsZWJvsqnA3w71ITniAJ5mDeDvrMq4lSaG+pEFHVOJjv1iimgCqk8MY3Iq+mGdMpCK
-         LE0U1kmGIcxZEfruoU4+U05zUOzUeICNd3zYJTTSPKAgZRC4GdPTbsllp+5q/W+zGDVr
-         di1aE/0y1uYUC+cb3htM4j61xHT0GCkMVlC8Li+GkGJB7xzBqpFnkjxsBbur/pMLWyi+
-         PExvJyn5u5w+0qaqH3nDSXb4kbl+eBmGjhMneAM8UI3rdJAFSz11J14cL87CWnwvrsV2
-         DP/A==
-X-Gm-Message-State: AOAM533YcznWVXDdqtEQFk2YnCObuINzq/tL6rIdpfhfjlVUe7jGcazm
-        nNGns8Yw5nReHyQYlFkSf6U=
-X-Google-Smtp-Source: ABdhPJxYh2IHOjNAazTukrTlaFnJlAWETGRItlCRNd/OOAMWSCEErTZoYtYyTCZat+lb4T8M6RVZjA==
-X-Received: by 2002:a63:c011:0:b0:378:74a6:9c31 with SMTP id h17-20020a63c011000000b0037874a69c31mr15963077pgg.585.1646219639456;
-        Wed, 02 Mar 2022 03:13:59 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id v22-20020a17090ad59600b001b7deb42251sm4681847pju.15.2022.03.02.03.13.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 03:13:59 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        Like Xu <likexu@tencent.com>
-Subject: [PATCH v2 06/12] KVM: x86/pmu: Use only the uniformly exported interface reprogram_counter()
-Date:   Wed,  2 Mar 2022 19:13:28 +0800
-Message-Id: <20220302111334.12689-7-likexu@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220302111334.12689-1-likexu@tencent.com>
-References: <20220302111334.12689-1-likexu@tencent.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c/HrBEq7VXD/vzB2plWQqXVKzKIhpuLhlwaapBvCoq4=;
+        b=AjvZfLTzlucnzDZkS7tEPx+XllnuBEv8zaamY67w7dtKLX3tCKnszdKkdzC1fAoUiI
+         sPaLzQ61nX451pX+l/x50yF6DdTunhpcZoHR8Hb9j5bJhXsy5YLvTBfQ7B+XGlY7TOO9
+         4J/Ox++ZFF4fK5BMqQ0/Y1fF7p6J1ly6+t9IMJxvEGvZgqpfKaYy29e/5XbpCc4S2za8
+         u9L6fl6zIM1l8Q1xJzATViXCGOZQOP3YoBCWFytawjejES/MWAneK6W3e2f0d+FQdqmr
+         nevs0fMBAI/EfPrxbjyCvlLshw8sR31ECiMYW8NVaNeHlwFCRETkHSJY8GdQ0qOfSGZ5
+         VrlA==
+X-Gm-Message-State: AOAM533JLmcPpjDFGTD/1ki6LEZ4pb8KIFJjw4XghZxW+EBOqs7bHU30
+        U4CqruC+BPGS8LpU83ZqydGrG4ZN9kELa4J9poHoEQQ5W0AR97tSI53Fve6VN8b1nTlFe6KB46j
+        hNY9ZeLQczmP1BYyVfROBK5xo5fn7IbqFjgK2qW0MuA==
+X-Received: by 2002:a17:907:a41f:b0:6d6:f925:1696 with SMTP id sg31-20020a170907a41f00b006d6f9251696mr4947753ejc.62.1646219645739;
+        Wed, 02 Mar 2022 03:14:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw4eItwRYHbFhHJecp/z62mEUFQa+5CGvwbfF4FEcKbfj5pKDOx0k/F7sIT5mVv7fPze2379A==
+X-Received: by 2002:a17:907:a41f:b0:6d6:f925:1696 with SMTP id sg31-20020a170907a41f00b006d6f9251696mr4947744ejc.62.1646219645563;
+        Wed, 02 Mar 2022 03:14:05 -0800 (PST)
+Received: from [192.168.0.136] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id vl11-20020a17090730cb00b006d8121d0fc4sm857414ejb.138.2022.03.02.03.14.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 03:14:04 -0800 (PST)
+Message-ID: <c13930a5-85ab-5a2c-54e5-15fc5bc87b17@canonical.com>
+Date:   Wed, 2 Mar 2022 12:14:03 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] serial: samsung: Add samsung_early_read to support early
+ kgdboc
+Content-Language: en-US
+To:     Woody Lin <woodylin@google.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, markcheng@google.com
+References: <20220302101925.210810-1-woodylin@google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220302101925.210810-1-woodylin@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On 02/03/2022 11:19, Woody Lin wrote:
+> The 'kgdboc_earlycon_init' looks for boot console that has both .read
+> and .write callbacks. Adds 'samsung_early_read' to samsung_tty.c's early
+> console to support kgdboc.
+> 
+> Signed-off-by: Woody Lin <woodylin@google.com>
+> ---
+>  drivers/tty/serial/samsung_tty.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index d002a4e48ed9..eeb30d016ff1 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -2949,6 +2949,7 @@ static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
+>  
+>  struct samsung_early_console_data {
+>  	u32 txfull_mask;
+> +	u32 rxfifo_mask;
+>  };
+>  
+>  static void samsung_early_busyuart(struct uart_port *port)
+> @@ -2983,6 +2984,26 @@ static void samsung_early_write(struct console *con, const char *s,
+>  	uart_console_write(&dev->port, s, n, samsung_early_putc);
+>  }
+>  
+> +static int samsung_early_read(struct console *con, char *s, unsigned int n)
+> +{
+> +	struct earlycon_device *dev = con->data;
+> +	struct samsung_early_console_data *data = dev->port.private_data;
 
-Since reprogram_counter(), reprogram_{gp, fixed}_counter() currently have
-the same incoming parameter "struct kvm_pmc *pmc", the callers can simplify
-the conetxt by using uniformly exported interface, which makes reprogram_
-{gp, fixed}_counter() static and eliminates EXPORT_SYMBOL_GPL.
+This can be const.
 
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/kvm/pmu.c           | 6 ++----
- arch/x86/kvm/pmu.h           | 2 --
- arch/x86/kvm/svm/pmu.c       | 2 +-
- arch/x86/kvm/vmx/pmu_intel.c | 4 ++--
- 4 files changed, 5 insertions(+), 9 deletions(-)
+Rest looks ok.
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 282e6e859c46..5299488b002c 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -215,7 +215,7 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
- 	return allow_event;
- }
- 
--void reprogram_gp_counter(struct kvm_pmc *pmc)
-+static void reprogram_gp_counter(struct kvm_pmc *pmc)
- {
- 	u64 config;
- 	u32 type = PERF_TYPE_RAW;
-@@ -258,9 +258,8 @@ void reprogram_gp_counter(struct kvm_pmc *pmc)
- 			      (eventsel & HSW_IN_TX),
- 			      (eventsel & HSW_IN_TX_CHECKPOINTED));
- }
--EXPORT_SYMBOL_GPL(reprogram_gp_counter);
- 
--void reprogram_fixed_counter(struct kvm_pmc *pmc)
-+static void reprogram_fixed_counter(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 	int idx = pmc->idx - INTEL_PMC_IDX_FIXED;
-@@ -288,7 +287,6 @@ void reprogram_fixed_counter(struct kvm_pmc *pmc)
- 			      !(en_field & 0x1), /* exclude kernel */
- 			      pmi, false, false);
- }
--EXPORT_SYMBOL_GPL(reprogram_fixed_counter);
- 
- void reprogram_counter(struct kvm_pmc *pmc)
- {
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index 70a982c3cdad..201b99628423 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -140,8 +140,6 @@ static inline u64 get_sample_period(struct kvm_pmc *pmc, u64 counter_value)
- 	return sample_period;
- }
- 
--void reprogram_gp_counter(struct kvm_pmc *pmc);
--void reprogram_fixed_counter(struct kvm_pmc *pmc);
- void reprogram_counter(struct kvm_pmc *pmc);
- 
- void kvm_pmu_deliver_pmi(struct kvm_vcpu *vcpu);
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index 7ff9ccaca0a4..a18bf636fbce 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -266,7 +266,7 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			return 0;
- 		if (!(data & pmu->reserved_bits)) {
- 			pmc->eventsel = data;
--			reprogram_gp_counter(pmc);
-+			reprogram_counter(pmc);
- 			return 0;
- 		}
- 	}
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 3ddbfdd16cd0..19b78a9d9d47 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -52,7 +52,7 @@ static void reprogram_fixed_counters(struct kvm_pmu *pmu, u64 data)
- 		pmc = get_fixed_pmc(pmu, MSR_CORE_PERF_FIXED_CTR0 + i);
- 
- 		__set_bit(INTEL_PMC_IDX_FIXED + i, pmu->pmc_in_use);
--		reprogram_fixed_counter(pmc);
-+		reprogram_counter(pmc);
- 	}
- }
- 
-@@ -449,7 +449,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 				return 0;
- 			if (!(data & pmu->reserved_bits)) {
- 				pmc->eventsel = data;
--				reprogram_gp_counter(pmc);
-+				reprogram_counter(pmc);
- 				return 0;
- 			}
- 		} else if (intel_pmu_handle_lbr_msrs_access(vcpu, msr_info, false))
--- 
-2.35.1
 
+Best regards,
+Krzysztof
