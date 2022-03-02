@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE69C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243070AbiCBO3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:29:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S243010AbiCBO35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:29:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242956AbiCBO3T (ORCPT
+        with ESMTP id S243011AbiCBO3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:29:19 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C0837BE8
+        Wed, 2 Mar 2022 09:29:20 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E1B45050
         for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:28:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646231296; x=1677767296;
+  t=1646231297; x=1677767297;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XeiDSHDhSk1ZAnWl9C35VO6F89iKjoQMuwzkA1dSo5A=;
-  b=ZfTy0rXnDoxtBCkGJeNMaZKRtfsHKY1uMpTlaOncqpZzXqF9D2wSXKdm
-   Ax8S1/MbwM0SpG36giebWbK28Y6djYQSOdJpzAwSwPe9XAX1Qed2gr7G5
-   lCfMcNpWjT1LAFOH6/mIOyz0jqadhL1nQIDhHOW62pvo4C+JBMKm3jmFf
-   cUer+hTJ+hWDtGCYER1hUiOOIl6jkl107gizTXlA9UhIFL1xdzg6K4ZP1
-   9IpnrjRy8Rcn84cI5R8fyMUBj991YiY9LjJaCIvGKz7KfLG90DzNDT29/
-   pyHokg+btOtFAj+HR0b/+2iWNc3GXOHpmbiHCAfVhRAOv3JWE8w4qI15k
+  bh=8/5iP14Tg24GtfulUdmcNudmbOpBuYqe/UqX13ONj68=;
+  b=EcNUbcN/NiCd5ibVC4Zth7UsEQsSF8OoXObhphV/T+34njU0UcUQbNJr
+   05itw4pI+m/ZFlBoTqnZ1NLk1cN+JEwpeAYCpYZLRiixeZUrZfI81udXH
+   Jl00Mw0rCZwiArR6qBq6UlFD9/Q4fnlE6xLKU3e0hG26T7Ey68yM1QsyI
+   OGdKYB5OhJL/73D8U0HVkhG9ZSor9zdEapY/ZWKc/PyTOCE3MiF0YtLgZ
+   wrg0yNIy751vqgNmysUlYZlhrOibcgMyDZg3l1r1wh4kkNCEhb80piADR
+   fwZmuhPeXe7A8p+n8tF/vtG5b9LWQ78untUhg2dyqnt/2yuQIm7ThK3cc
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="339840742"
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="240824389"
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="339840742"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:15 -0800
+   d="scan'208";a="240824389"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 06:28:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,149,1643702400"; 
-   d="scan'208";a="686146229"
+   d="scan'208";a="709524821"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Mar 2022 06:28:09 -0800
+  by orsmga005.jf.intel.com with ESMTP; 02 Mar 2022 06:28:09 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id E45B55D4; Wed,  2 Mar 2022 16:28:12 +0200 (EET)
+        id 124D75E4; Wed,  2 Mar 2022 16:28:13 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,101 +52,56 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 22/30] x86/boot: Set CR0.NE early and keep it set during the boot
-Date:   Wed,  2 Mar 2022 17:27:58 +0300
-Message-Id: <20220302142806.51844-23-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 25/30] x86/tdx: Make pages shared in ioremap()
+Date:   Wed,  2 Mar 2022 17:28:01 +0300
+Message-Id: <20220302142806.51844-26-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
 References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX guest requires CR0.NE to be set. Clearing the bit triggers #GP(0).
+In TDX guests, guest memory is protected from host access. If a guest
+performs I/O, it needs to explicitly share the I/O memory with the host.
 
-If CR0.NE is 0, the MS-DOS compatibility mode for handling floating-point
-exceptions is selected. In this mode, the software exception handler for
-floating-point exceptions is invoked externally using the processor’s
-FERR#, INTR, and IGNNE# pins.
+Make all ioremap()ed pages that are not backed by normal memory
+(IORES_DESC_NONE or IORES_DESC_RESERVED) mapped as shared.
 
-Using FERR# and IGNNE# to handle floating-point exception is deprecated.
-CR0.NE=0 also limits newer processors to operate with one logical
-processor active.
+Since TDX memory encryption support is similar to AMD SEV architecture,
+reuse the infrastructure from AMD SEV code.
 
-Kernel uses CR0_STATE constant to initialize CR0. It has NE bit set.
-But during early boot kernel has more ad-hoc approach to setting bit
-in the register.
-
-Make CR0 initialization consistent, deriving the initial value of CR0
-from CR0_STATE.
-
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/boot/compressed/head_64.S   | 7 ++++---
- arch/x86/realmode/rm/trampoline_64.S | 8 ++++----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ arch/x86/mm/ioremap.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
-index fd9441f40457..d0c3d33f3542 100644
---- a/arch/x86/boot/compressed/head_64.S
-+++ b/arch/x86/boot/compressed/head_64.S
-@@ -289,7 +289,7 @@ SYM_FUNC_START(startup_32)
- 	pushl	%eax
+diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+index 026031b3b782..a5d4ec1afca2 100644
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -242,10 +242,15 @@ __ioremap_caller(resource_size_t phys_addr, unsigned long size,
+ 	 * If the page being mapped is in memory and SEV is active then
+ 	 * make sure the memory encryption attribute is enabled in the
+ 	 * resulting mapping.
++	 * In TDX guests, memory is marked private by default. If encryption
++	 * is not requested (using encrypted), explicitly set decrypt
++	 * attribute in all IOREMAPPED memory.
+ 	 */
+ 	prot = PAGE_KERNEL_IO;
+ 	if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
+ 		prot = pgprot_encrypted(prot);
++	else
++		prot = pgprot_decrypted(prot);
  
- 	/* Enter paged protected Mode, activating Long Mode */
--	movl	$(X86_CR0_PG | X86_CR0_PE), %eax /* Enable Paging and Protected mode */
-+	movl	$CR0_STATE, %eax
- 	movl	%eax, %cr0
- 
- 	/* Jump from 32bit compatibility mode into 64bit mode. */
-@@ -662,8 +662,9 @@ SYM_CODE_START(trampoline_32bit_src)
- 	pushl	$__KERNEL_CS
- 	pushl	%eax
- 
--	/* Enable paging again */
--	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
-+	/* Enable paging again. */
-+	movl	%cr0, %eax
-+	btsl	$X86_CR0_PG_BIT, %eax
- 	movl	%eax, %cr0
- 
- 	lret
-diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
-index ae112a91592f..d380f2d1fd23 100644
---- a/arch/x86/realmode/rm/trampoline_64.S
-+++ b/arch/x86/realmode/rm/trampoline_64.S
-@@ -70,7 +70,7 @@ SYM_CODE_START(trampoline_start)
- 	movw	$__KERNEL_DS, %dx	# Data segment descriptor
- 
- 	# Enable protected mode
--	movl	$X86_CR0_PE, %eax	# protected mode (PE) bit
-+	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
- 	movl	%eax, %cr0		# into protected mode
- 
- 	# flush prefetch and jump to startup_32
-@@ -148,8 +148,8 @@ SYM_CODE_START(startup_32)
- 	movl	$MSR_EFER, %ecx
- 	wrmsr
- 
--	# Enable paging and in turn activate Long Mode
--	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
-+	# Enable paging and in turn activate Long Mode.
-+	movl	$CR0_STATE, %eax
- 	movl	%eax, %cr0
- 
- 	/*
-@@ -169,7 +169,7 @@ SYM_CODE_START(pa_trampoline_compat)
- 	movl	$rm_stack_end, %esp
- 	movw	$__KERNEL_DS, %dx
- 
--	movl	$X86_CR0_PE, %eax
-+	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
- 	movl	%eax, %cr0
- 	ljmpl   $__KERNEL32_CS, $pa_startup_32
- SYM_CODE_END(pa_trampoline_compat)
+ 	switch (pcm) {
+ 	case _PAGE_CACHE_MODE_UC:
 -- 
 2.34.1
 
