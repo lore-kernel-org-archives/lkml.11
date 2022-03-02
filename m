@@ -2,95 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B824AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 17:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243566AbiCBRIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:08:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44420 "EHLO
+        id S243391AbiCBRJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243643AbiCBRIS (ORCPT
+        with ESMTP id S235582AbiCBRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:08:18 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1506E5F65;
-        Wed,  2 Mar 2022 09:07:31 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id m6so3799224wrr.10;
-        Wed, 02 Mar 2022 09:07:31 -0800 (PST)
+        Wed, 2 Mar 2022 12:09:52 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56C72A24D
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 09:09:08 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id h16-20020a056902009000b00628a70584b2so1499366ybs.6
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 09:09:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+FBEODWlEwE4ZBpRu4pszv+L75J4ftu6Yw0by+ZcvnE=;
-        b=hOrlpj9wIqQtiZ2iI5gabtXozHts++6EWfoyBCd9XE7smYEqH0D0OVdiWv1pcyWOmv
-         drF40iR0EnF9vCeXmIYqfPop33M7aHpNtmCzSt5le3/11zOqSeexGyBz8MgQ4WEPa5oI
-         IAkV+2cfB3IjRsBMxueIpgamXDtArN4GOSuNjFxfLz7eFSSMx7HDIJrnb/ZruGVPRQqm
-         JuXSGImYl/NJQlq9JmPQ6uAcc6mnjQS0l7Y1oTTVRL9RQWBTmnnBopCO4aH4quRq43/G
-         dc2kmxA0iGAwtQmMN6z3smEFOwKvl/1qLFFuPzojfYWvmcG8HPgoK2q2CCBdNQ2VmTBc
-         0fUg==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ZMpzNEO4OPsp548pYzGhk7wZS3nBzSDrcI4nxyW6tZM=;
+        b=aiIy58X8kGzp5JdrFAHj8izY/rdF4BudQOUeB5/s3q4lshKXZ8omiY5VgIxx1xhf4Q
+         dL4vmHW8ZXhN7rL9CYSUcnfn6JmdPeZOm0gq2PBtrVRbSuGpUhOtGZG3N2eKrLAKmSAR
+         wWhWGgSCdOTafxyzWhmfnjnvO5aWcs15wKB4QVsUrdYVnaa9lYECPBmn9dahI2ohVyBw
+         JZx+NG4w2d7VMBIOlTGPDcJSKtUIJaQ06z7RksYPil+b27jX2AhwrL6zQ9HN8f5XxQDF
+         miXmPk/SGZHevMAarSD1RaPCIAyT8S2Pb1IC+5hY6XVK2bINUpvFjJjMymgqXMaFtds1
+         obUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+FBEODWlEwE4ZBpRu4pszv+L75J4ftu6Yw0by+ZcvnE=;
-        b=6fuFDZzxWOGkFrJKQQXZuQTGyQ0ou3lpE3/TRfwMqATjtkIn4EUi1gB0XrdHf+lzIq
-         YZy5UCv0CbKZz1z8UHs19ope2G97ZMuWgILV7zB+fJQUxgmuGiw/wtCcrYqASvYBbJtJ
-         hKgpxM4JQWGYfUvatPb/J6K1DQC6Juc3cBOKtRq5p4x+cxswEAy6KV3OX+jCPPnoGiFc
-         UPkJZ3sTlo36y5LJ9RhoR41pkgJ7DofZvwl16u5c1PpvJNHIDxGl1HBkous45aDyyasr
-         O2YXV+245zvIwybjkW1iioiha7arNmPkmeoZ2oTkv22spLzfylBqx7zhWNYBUeH4pYy3
-         Y47w==
-X-Gm-Message-State: AOAM5313enK2e8TWaglWC9Be+NtWfpP6TkmiF+X6VK4klpON7GsBSCBp
-        v39CHqwzHFkzbrt43vGLAijYTENvADe/qg==
-X-Google-Smtp-Source: ABdhPJyDPnbwGRm/gHFADgHnG9mY1P7DvsXiSdJn8zqflakPBj5aWX46fD1EGCCM5wnDqY8YQSkV6A==
-X-Received: by 2002:adf:f201:0:b0:1ed:c254:c1a2 with SMTP id p1-20020adff201000000b001edc254c1a2mr23485713wro.106.1646240849938;
-        Wed, 02 Mar 2022 09:07:29 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id l15-20020a05600c4f0f00b0037d62a899b1sm6651200wmq.6.2022.03.02.09.07.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 09:07:29 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        alsa-devel@alsa-project.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] ALSA: echoaudio: remove redundant assignment to variable bytes
-Date:   Wed,  2 Mar 2022 17:07:28 +0000
-Message-Id: <20220302170728.1094633-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ZMpzNEO4OPsp548pYzGhk7wZS3nBzSDrcI4nxyW6tZM=;
+        b=tqC+tm/iMVp3RJ9onOOlAARwgc46ZpTKGA2mUjytvFgO4qBPkTlhmOgBULN7f61laV
+         muf2hsetu5NPTCtdCAZLkIPoDLHuUYyt5D98MJ/6zotejmSrEMWUUlSBgZ3Wx5BOeKeH
+         fI3bY7wLGwRAoNzIvIw764t9SY89iyCPyiA/rQcyB+dm55r/xRHOZGkqQPrSE5geOofb
+         OondjRQd9HHDm/ipl4cj3XykkqAh9y8gVox+vjmEE3EUEfzpO/cIizUIyZa8BOofJzTC
+         1nierndZW//0iHD72cSdQ7xs3ingFR/Zl9bGjNrkbBoO4AX6E2IeTl2wEtPXHMBJbHUC
+         jdyg==
+X-Gm-Message-State: AOAM532Owozn3eo5/mewVBPldzGhkXbkCymYs+XdnXx/+ZhjY3kzfamd
+        /+d/v98kZtW5izHjib1HcQoVHGGjaXtP
+X-Google-Smtp-Source: ABdhPJyL7D59S0c7J3/2Op0q9aw5Wnve+xXjWrrlV45CTNX4k/0oMEztpE6wC4lT9bO6+BQsyODILO5P7lBB
+X-Received: from ezekiel.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:108e])
+ (user=shraash job=sendgmr) by 2002:a25:35c2:0:b0:60f:c5d8:99ff with SMTP id
+ c185-20020a2535c2000000b0060fc5d899ffmr29221573yba.380.1646240948002; Wed, 02
+ Mar 2022 09:09:08 -0800 (PST)
+Date:   Wed,  2 Mar 2022 22:39:02 +0530
+Message-Id: <20220302170902.752687-1-shraash@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
+Subject: [PATCH] drm: Fix no previous prototype error in drm_nomodeset.c
+From:   Aashish Sharma <shraash@google.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
+        groeck@chromium.org, dri-devel@lists.freedesktop.org
+Cc:     Aashish Sharma <shraash@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable bytes is being assigned a value that is never read, it
-is being re-assigned inside a following if block. The assignment is
-redundant and can be removed.
+Fix this kernel test robot error:
 
-Cleans up clang scan build warning:
-sound/pci/echoaudio/midi.c:211:9: warning: Although the value stored
-to 'bytes' is used in the enclosing expression, the value is never
-actually read from 'bytes' [deadcode.DeadStores]
+drivers/gpu/drm/drm_nomodeset.c:8:6: error:
+no previous prototype for 'drm_firmware_drivers_only'
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Including drm_drv.h in drm_nomodeset.c which contains
+drm_firmware_drivers_only's declaration.
+
+Signed-off-by: Aashish Sharma <shraash@google.com>
 ---
- sound/pci/echoaudio/midi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/drm_nomodeset.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/pci/echoaudio/midi.c b/sound/pci/echoaudio/midi.c
-index cb72d27e809e..7be5c3327b16 100644
---- a/sound/pci/echoaudio/midi.c
-+++ b/sound/pci/echoaudio/midi.c
-@@ -208,7 +208,7 @@ static void snd_echo_midi_output_write(struct timer_list *t)
+diff --git a/drivers/gpu/drm/drm_nomodeset.c b/drivers/gpu/drm/drm_nomodeset.c
+index f3978d5bd3a1..9402deb4985f 100644
+--- a/drivers/gpu/drm/drm_nomodeset.c
++++ b/drivers/gpu/drm/drm_nomodeset.c
+@@ -2,6 +2,7 @@
  
- 	/* No interrupts are involved: we have to check at regular intervals
- 	if the card's output buffer has room for new data. */
--	sent = bytes = 0;
-+	sent = 0;
- 	spin_lock_irqsave(&chip->lock, flags);
- 	chip->midi_full = 0;
- 	if (!snd_rawmidi_transmit_empty(chip->midi_out)) {
+ #include <linux/module.h>
+ #include <linux/types.h>
++#include <drm/drm_drv.h>
+ 
+ static bool drm_nomodeset;
+ 
 -- 
-2.34.1
+2.35.1.574.g5d30c73bfb-goog
 
