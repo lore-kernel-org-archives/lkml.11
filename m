@@ -2,105 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 353D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 21:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiCBVkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 16:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
+        id S245405AbiCBVmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 16:42:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245394AbiCBVkm (ORCPT
+        with ESMTP id S241447AbiCBVmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 16:40:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DB5CA710;
-        Wed,  2 Mar 2022 13:39:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9A0FB8223F;
-        Wed,  2 Mar 2022 21:39:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528C7C004E1;
-        Wed,  2 Mar 2022 21:39:55 +0000 (UTC)
-From:   Clark Williams <williams@redhat.com>
-Subject: [ANNOUNCE] 5.15.25-rt33
-Date:   Wed, 02 Mar 2022 21:36:15 -0000
-Message-ID: <164625697532.2377441.9278541632521957793@puck.lan>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Wed, 2 Mar 2022 16:42:42 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A703CA320;
+        Wed,  2 Mar 2022 13:41:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646257317; x=1677793317;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=tICJn7O0frWHzJ+wfRZLQugK3cqy6m5DqqQk0iFZOIE=;
+  b=fLXHlNzIcG1wfnYsGuUmghj/0F+DLkXGmWUax2zUzLW5VeIzKLHUvYsN
+   LrSi3pNrKq5BY/gXuw+NQqneM8cSdgOVlLw7mHmboQQeJsaQeEWes6tK9
+   GiYXE/Lz32Pfu4Hv5130GNE7aUlJlMoK6tZ2QMLAOPa1UUIWcuCDtJYGB
+   GIvo64yfWPoPioqy9RnuhsmhNwTCydToNyL+Y2hzBBJRTqzoFVJl7HM/1
+   yTGaJjz/iDV0zc8YAkNE6kCll1DIL9rvZ4CT+rhwfX0bt2ElWuSdKyImO
+   Pp76dmwF4CiA/vWnUQOzu1iqlgZVRw9GO93EAVieWs0byvBsN3LuwUVFk
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251086289"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="251086289"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 13:41:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="576255809"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga001.jf.intel.com with ESMTP; 02 Mar 2022 13:41:56 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Mar 2022 13:41:55 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Mar 2022 13:41:55 -0800
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.021;
+ Wed, 2 Mar 2022 13:41:55 -0800
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Andy Lutomirski <luto@kernel.org>
+CC:     "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Borislav Petkov" <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <daniel.wagner@suse.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Clark Williams <williams@redhat.com>,
-        Pavel Machek <pavel@denx.de>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: RE: [RFC 00/10] Introduce In Field Scan driver
+Thread-Topic: [RFC 00/10] Introduce In Field Scan driver
+Thread-Index: AQHYLaZcmKq0UuRYGU6xp1k7P7vRw6yspmuA///mywCAAJPCgP//faKA
+Date:   Wed, 2 Mar 2022 21:41:55 +0000
+Message-ID: <f927a309de734c50a5ea8e62077e9e30@intel.com>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <1b793ead-a47c-4719-b7b5-cba7d49633f2@www.fastmail.com>
+ <Yh/Tt50Y8ubGNwS6@agluck-desk3.sc.intel.com>
+ <bdc14f77-98e0-4af8-9bef-5dd3d41f22c2@www.fastmail.com>
+In-Reply-To: <bdc14f77-98e0-4af8-9bef-5dd3d41f22c2@www.fastmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT-list!
+> How does this work?  Is there an Intel IFS blob v1.17 that is expected
+> to be *the* blob for a given CPU until an update happens?
 
-I'm pleased to announce the 5.15.25-rt33 stable release.
+This is the model. Although internally the blob is divided into chunks
+that can be run separately, folks outside Intel have no visibility into
+which chunk tests which circuits (even *inside* ... I don't know what
+each chunk does :-) )
 
-This release contains a backport of the following commits from the 5.17.y-rt tree:
+How often will updates occur? No idea. Since this is new, I'd expect
+that there might be some improvements when there is feedback from
+large CSPs running on many more systems than we have.
 
-ac9c70a245d28	genirq: Provide generic_handle_irq_safe()
-7e44f2d97e9c2	i2c: core: Use generic_handle_irq_safe() in i2c_handle_smbus_host_notify().
-8ea8588239d64	i2c: cht-wc: Use generic_handle_irq_safe().
-87ebe41b420c6	misc: hi6421-spmi-pmic: Use generic_handle_irq_safe().
-a6efcd21ca31e	mfd: ezx-pcap: Use generic_handle_irq_safe().
-dda02de93749e	net: usb: lan78xx: Use generic_handle_irq_safe().
-37801f96e1f0e	staging: greybus: gpio: Use generic_handle_irq_safe().
+>  Or is the
+> expectation that several different blobs might all useful on the same
+> system and operators might want to run different blobs under different
+> circumstances?
 
-You can get this release via the git tree at:
+One of our early implementations included extra sysfs hooks to only
+test specific chunks ... but we dropped that complexity as there's no
+way for end users to decide which chunks to run.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
+So the posted series just iterates all chunks for a core.
 
-  branch: v5.15-rt
-  Head SHA1: e9e1ef73da553f7b8f8dc135229a97c7ad3b4ad4
+-Tony
 
-Or to build 5.15.25-rt33 directly, the following patches should be applied:
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.15.25.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/patch-5.15.25-rt33.patch.xz
-
-
-You can also build from 5.15.25-rt32 by applying the incremental patch:
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/incr/patch-5.15.25-rt32-rt33.patch.xz
-
-Enjoy!
-Clark
-
-Changes from v5.15.25-rt32:
----
-
-Clark Williams (1):
-      Linux 5.15.25-rt33
-
-Sebastian Andrzej Siewior (7):
-      genirq: Provide generic_handle_irq_safe().
-      i2c: core: Use generic_handle_irq_safe() in i2c_handle_smbus_host_notify().
-      i2c: cht-wc: Use generic_handle_irq_safe().
-      misc: hi6421-spmi-pmic: Use generic_handle_irq_safe().
-      mfd: ezx-pcap: Use generic_handle_irq_safe().
-      net: usb: lan78xx: Use generic_handle_irq_safe().
-      staging: greybus: gpio: Use generic_handle_irq_safe().
----
-drivers/i2c/busses/i2c-cht-wc.c | 11 ++---------
- drivers/i2c/i2c-core-base.c     |  2 +-
- drivers/mfd/ezx-pcap.c          |  4 +---
- drivers/misc/hi6421v600-irq.c   |  6 +++---
- drivers/net/usb/lan78xx.c       |  7 ++-----
- drivers/staging/greybus/gpio.c  |  5 +----
- include/linux/irqdesc.h         |  1 +
- kernel/irq/irqdesc.c            | 23 +++++++++++++++++++++++
- localversion-rt                 |  2 +-
- 9 files changed, 35 insertions(+), 26 deletions(-)
----
