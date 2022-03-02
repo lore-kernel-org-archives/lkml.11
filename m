@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F906C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 07:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83512C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 07:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239814AbiCBHCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 02:02:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
+        id S239799AbiCBHE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 02:04:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239808AbiCBHCW (ORCPT
+        with ESMTP id S231287AbiCBHE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 02:02:22 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BCB58B459D;
-        Tue,  1 Mar 2022 23:01:39 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A5A01424;
-        Tue,  1 Mar 2022 23:01:39 -0800 (PST)
-Received: from [10.57.21.27] (unknown [10.57.21.27])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 605C33F73D;
-        Tue,  1 Mar 2022 23:01:37 -0800 (PST)
-Message-ID: <fd9b6b6e-9258-b7e3-fbbe-404cd49b26dd@arm.com>
-Date:   Wed, 2 Mar 2022 07:01:35 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 3/4] OPP: Add support of "opp-microwatt" for advanced
- EM registration
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
-        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-References: <20220301093524.8870-1-lukasz.luba@arm.com>
- <20220301093524.8870-4-lukasz.luba@arm.com>
- <20220302045301.fq6nolscdfd5wvyo@vireshk-i7>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220302045301.fq6nolscdfd5wvyo@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 2 Mar 2022 02:04:56 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC72B3E44;
+        Tue,  1 Mar 2022 23:04:10 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 4DD385800E8;
+        Wed,  2 Mar 2022 02:04:08 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Wed, 02 Mar 2022 02:04:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=PtyXlBAMRksx2k
+        euLGv8zpdla9w5ErOiH3vNaKUGa8k=; b=PySEKMUAzvvPS7dn6Q28WWP/52PacE
+        z4hg7eGRHexTb8wg+Y5xtvO+2eG+aYGntq60FIcYkJmsf5Qb3b6tGS58bt5OTnRI
+        WUI71KyY/23RtVtS5/1GIfuWIwSMxWDyND3mdPK2PjLT4j4u85ToOKcoajHvNy6y
+        9oEEOa6r1e2sq3Qm7NHSzhGF5VwVfiJXV8bfeI1+oZoM048ys0+lKfrmjcmmEoUh
+        I+lsGBuf9pSd9SRjrObdr/G7DTaFPUwip80d2N2fu11sFWXnA9xJjqLyRc5eS7w6
+        BrHLLzzUNM1eMDszxZE8B+/a7fDvNED48QUGF3HJZw1/uyVAbCRr48Kw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=PtyXlBAMRksx2keuL
+        Gv8zpdla9w5ErOiH3vNaKUGa8k=; b=ZkUxqouPjEjyO2j7xw9GUM5RUV8XGA6fX
+        w9w/7UhXL3yjFbHu0P4Ctm8UP/OVSvnBkZqcz5I8xTXrft6IQ+vonyfl/d5FI3Iq
+        q41ts9EfVkdRGw+p0q9pGlSXSawfvUjTmX4dMQb0vUKHJYURpBzlvmzc9UOekFH3
+        qeOs4mfovJDLNG3fz0dqzyz+Y9elan05bwRTN6gx/U47/OEY2wOka6x1Dm7C7IVm
+        qmmfQGcCSnpxWOd0HDQCuSptGOaaaxUBNVdlWi6WdjQ54zo+BRyEDSrO5jz8S/nj
+        ohUSexQI0o3ui7boE/AdI38gFVOOejqSticeK5Ycj/kyssbuG4Faw==
+X-ME-Sender: <xms:5xYfYstDuggb9mb-7-Ao6vDfkZdlUc4e0snDUDZ94GKW_gqhOa9dCA>
+    <xme:5xYfYpdbUeGTPYsud-3idoPJ-SGZNKM0BFwzBtkQ0TM62boUmA8whzUVGKJkUGwyM
+    nwoLLb4_xYHZiZQlQ4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtfedgleegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfulhgr
+    uggvucghrghtkhhinhhsfdcuoehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+    eqnecuggftrfgrthhtvghrnhepueeiffetjeeitefgveetleehveduheetiefhhfethedt
+    teelgeettddvvedvudegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhm
+X-ME-Proxy: <xmx:5xYfYnwBgmCDzfJ6L_rswVgcvohfzFzeNgTho_N1jeihydu_Tke5fw>
+    <xmx:5xYfYvN14w_yP9wgocCSaIT4fb8CHAITNR_4SIOZFptELw0BcjSmdw>
+    <xmx:5xYfYs9OGdLYMymkX31YWK0IuxcTUNwr4ifrhwCd47sx38gdxTq1Cg>
+    <xmx:6BYfYt0yPXFDtpT7vLeFldrh6uF1QaSrnpmAzXAhQbpv3fzw_lEJ1J9EI8I>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id B1869F60084; Wed,  2 Mar 2022 02:04:07 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4778-g14fba9972e-fm-20220217.001-g14fba997
+Mime-Version: 1.0
+Message-Id: <09ca3973-795c-4f6d-8584-96f4dd233567@www.fastmail.com>
+In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
+References: <20220228172248.232273337@linuxfoundation.org>
+Date:   Wed, 02 Mar 2022 02:04:06 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 5.4 00/53] 5.4.182-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 28, 2022, at 12:23 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.182 release.
+> There are 53 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 02 Mar 2022 17:20:16 +0000.
+> Anything received after that time might be too late.
 
+5.4.182-rc1 compiled and booted with no errors or regressions on my x86_64 test system.
 
-On 3/2/22 04:53, Viresh Kumar wrote:
-> On 01-03-22, 09:35, Lukasz Luba wrote:
->> The Energy Model (EM) can be created based on DT entry:
->> 'dynamic-power-coefficient'. It's a 'simple' EM which is limited to the
->> dynamic power. It has to fit into the math formula which requires also
->> information about voltage. Some of the platforms don't expose voltage
->> information, thus it's not possible to use EM registration using DT.
->>
->> This patch aims to fix it. It introduces new implementation of the EM
->> registration callback. The new mechanism relies on the new OPP feature
->> allowing to get power (which is coming from "opp-microwatt" DT property)
->> expressed in micro-Watts.
->>
->> The patch also opens new opportunity to better support platforms, which
->> have a decent static power. It allows to register 'advanced' EM (based
->> on real power measurements) which models total power (static + dynamic),
->> so better reflects real HW.
-> 
-> Advanced :(
-> 
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-You're right, here these words sneak in. I'm going to resent this patch
-because it has this reported build issue for !EM. I'll update the words
-there as well.
-
-BTW, for the build fix, I'm going for the v3 approach:
-
-------------8<--------------
-         if (_of_has_opp_microwatt_property(dev)) {
-                 struct em_data_callback em_cb_dt = 
-EM_DATA_CB(_get_dt_power);
-
-                 return em_dev_register_perf_domain(dev, nr_opp, &em_cb_dt,
-                                                    cpus, true);
-         }
-
------------>8---------------
-
-I don't want to introduce another dual-macro mechanism, since
-the type em_data_callback is not defined in !EM.
-
-I hope you are OK with this approach, if not please let me know.
-
+Cheers, 
+Slade
