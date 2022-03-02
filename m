@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7292C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 15:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241112AbiCBPuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 10:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
+        id S241516AbiCBPuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 10:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242436AbiCBPuL (ORCPT
+        with ESMTP id S242197AbiCBPuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 10:50:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD3E48E66
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 07:49:06 -0800 (PST)
+        Wed, 2 Mar 2022 10:50:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6E340E44
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 07:48:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D75DB61735
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:49:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A09CC004E1;
-        Wed,  2 Mar 2022 15:49:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D22BB8207F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 15:48:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAD50C340F6;
+        Wed,  2 Mar 2022 15:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646236145;
-        bh=2VDUvcEwCsllnDBe7ipIo2e+Ud0/ufJ0n1ICl+dEAtM=;
+        s=k20201202; t=1646236138;
+        bh=LEEbg/tTkNBYhQGsXaeUmRgAChHsIDSgUV6Twd2J88E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VsG2+xVCpCoAVWqgWfvgs7rkNLIx+ua/P3troHf6UzPuLYrUGUTv01nH0qyWDjCif
-         YUvWJtqKWLvAD39h9qgVSS99CErge3C9+Hz8Wt67w5tjtc2IVsjla4WnU+4x6/dxbP
-         dv5lkptgABolUNEcSMtFduKji1D+g+P0yxRFf9CbkFawDPHlUBKk77lT0Dc95m0TEr
-         Ovaojr9ieZVfkbuvcBNssBTwUXHPXSMV4udB6RsCiMN62/cYkn1+Hr6uqNCMaIYe2s
-         vfi0PAaziTlubAlcAmNAJ6yexRags+h5/c+Fl5x9OAQuY4cGm/Zy6Id4pee+6aXCbW
-         4ABOkFaPlMnUw==
+        b=fHbAze20whdP/pPGI9gRVSPjG8dxF2UCwEBpdQl0zh2mNMDpmW+Vh4XlZtnZiBjj5
+         4i3kgoKDCdf0zewx68YHGx6Tc9lM/jkj2V3oM/+d2LSfvb1ij6OBhUEIVFFm3fCqU/
+         5tF+0SBL/nIwCXgj7fUibZ6WrZsobmVJz9XHLTToUlzGEQfB41n8xM+zXUZFLxBXG8
+         W8VJZmh70GBX8slwF45Vr4YjS14GCW+daAaDTB+YV4bBO0Uxc/WEnwwcBCgiCHChXF
+         ChyN3QXsz3JQEOvp7D4/tLofiT97SW7p+ao1i/4n7BrbURUczFHb1FnIL3XB2C1kPf
+         fEBte/UX9D18g==
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
@@ -49,9 +49,9 @@ Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
         Uladzislau Rezki <uladzislau.rezki@sony.com>,
         Joel Fernandes <joel@joelfernandes.org>
-Subject: [PATCH 13/19] rcu/context-tracking: Move deferred nocb resched to context tracking
-Date:   Wed,  2 Mar 2022 16:48:04 +0100
-Message-Id: <20220302154810.42308-14-frederic@kernel.org>
+Subject: [PATCH 11/19] rcu/context_tracking: Move dynticks_nesting to context tracking
+Date:   Wed,  2 Mar 2022 16:48:02 +0100
+Message-Id: <20220302154810.42308-12-frederic@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220302154810.42308-1-frederic@kernel.org>
 References: <20220302154810.42308-1-frederic@kernel.org>
@@ -61,9 +61,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To prepare for migrating the RCU eqs accounting code to context tracking,
-split the last-resort deferred nocb resched from rcu_user_enter() and
-move it into a separate call from context tracking.
+The RCU eqs tracking is going to be performed by the context tracking
+subsystem. The related nesting counters thus need to be moved to the
+context tracking structure.
 
 Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 Cc: Paul E. McKenney <paulmck@kernel.org>
@@ -81,92 +81,197 @@ Cc: Phil Auld <pauld@redhat.com>
 Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
 Cc: Alex Belits <abelits@marvell.com>
 ---
- include/linux/rcutree.h   |  6 ++++++
- kernel/context_tracking.c |  8 ++++++++
- kernel/rcu/tree.c         | 15 ++-------------
- 3 files changed, 16 insertions(+), 13 deletions(-)
+ include/linux/context_tracking_state.h |  1 +
+ kernel/context_tracking.c              |  1 +
+ kernel/rcu/tree.c                      | 31 +++++++++++++-------------
+ kernel/rcu/tree.h                      |  1 -
+ kernel/rcu/tree_stall.h                |  3 ++-
+ 5 files changed, 20 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/rcutree.h b/include/linux/rcutree.h
-index e05334c4c3d1..6d111a3c0cc0 100644
---- a/include/linux/rcutree.h
-+++ b/include/linux/rcutree.h
-@@ -78,4 +78,10 @@ int rcutree_dead_cpu(unsigned int cpu);
- int rcutree_dying_cpu(unsigned int cpu);
- void rcu_cpu_starting(unsigned int cpu);
+diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
+index 5ad0e481c5a3..bcb942945265 100644
+--- a/include/linux/context_tracking_state.h
++++ b/include/linux/context_tracking_state.h
+@@ -24,6 +24,7 @@ struct context_tracking {
+ 	} state;
+ #endif
+ 	atomic_t dynticks;		/* Even value for idle, else odd. */
++	long dynticks_nesting;		/* Track process nesting level. */
+ };
  
-+#if defined(CONFIG_NO_HZ_FULL) && (!defined(CONFIG_GENERIC_ENTRY) || !defined(CONFIG_KVM_XFER_TO_GUEST_WORK))
-+void rcu_irq_work_resched(void);
-+#else
-+static inline void rcu_irq_work_resched(void) { }
-+#endif
-+
- #endif /* __LINUX_RCUTREE_H */
+ #ifdef CONFIG_CONTEXT_TRACKING
 diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index 155534c409fc..7be7a2044d3a 100644
+index 77b61a7c9890..09a77884a4e3 100644
 --- a/kernel/context_tracking.c
 +++ b/kernel/context_tracking.c
-@@ -60,6 +60,8 @@ static __always_inline void context_tracking_recursion_exit(void)
-  */
- void noinstr __ct_user_enter(enum ctx_state state)
- {
-+	lockdep_assert_irqs_disabled();
-+
- 	/* Kernel threads aren't supposed to go to userspace */
- 	WARN_ON_ONCE(!current->mm);
+@@ -234,6 +234,7 @@ void __init context_tracking_init(void)
+ #endif /* #ifdef CONFIG_CONTEXT_TRACKING_USER */
  
-@@ -81,6 +83,12 @@ void noinstr __ct_user_enter(enum ctx_state state)
- 				vtime_user_enter(current);
- 				instrumentation_end();
- 			}
-+			/*
-+			 * Other than generic entry implementation, we may be past the last
-+			 * rescheduling opportunity in the entry code. Trigger a self IPI
-+			 * that will fire and reschedule once we resume in user/guest mode.
-+			 */
-+			rcu_irq_work_resched();
- 			rcu_user_enter();
- 		}
- 		/*
+ DEFINE_PER_CPU(struct context_tracking, context_tracking) = {
++		.dynticks_nesting = 1,
+ 		.dynticks = ATOMIC_INIT(1),
+ };
+ EXPORT_SYMBOL_GPL(context_tracking);
 diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index c2528e65de0c..938537958c27 100644
+index 96eb8503f28e..8708d1a99565 100644
 --- a/kernel/rcu/tree.c
 +++ b/kernel/rcu/tree.c
-@@ -686,7 +686,7 @@ static DEFINE_PER_CPU(struct irq_work, late_wakeup_work) =
-  * last resort is to fire a local irq_work that will trigger a reschedule once IRQs
-  * get re-enabled again.
-  */
--noinstr static void rcu_irq_work_resched(void)
-+noinstr void rcu_irq_work_resched(void)
- {
- 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
+@@ -75,7 +75,6 @@
+ /* Data structures. */
  
-@@ -702,10 +702,7 @@ noinstr static void rcu_irq_work_resched(void)
+ static DEFINE_PER_CPU_SHARED_ALIGNED(struct rcu_data, rcu_data) = {
+-	.dynticks_nesting = 1,
+ 	.dynticks_nmi_nesting = DYNTICK_IRQ_NONIDLE,
+ #ifdef CONFIG_RCU_NOCB_CPU
+ 	.cblist.flags = SEGCBLIST_RCU_CORE,
+@@ -441,7 +440,7 @@ static int rcu_is_cpu_rrupt_from_idle(void)
+ 	lockdep_assert_irqs_disabled();
+ 
+ 	/* Check for counter underflows */
+-	RCU_LOCKDEP_WARN(__this_cpu_read(rcu_data.dynticks_nesting) < 0,
++	RCU_LOCKDEP_WARN(__this_cpu_read(context_tracking.dynticks_nesting) < 0,
+ 			 "RCU dynticks_nesting counter underflow!");
+ 	RCU_LOCKDEP_WARN(__this_cpu_read(rcu_data.dynticks_nmi_nesting) <= 0,
+ 			 "RCU dynticks_nmi_nesting counter underflow/zero!");
+@@ -457,7 +456,7 @@ static int rcu_is_cpu_rrupt_from_idle(void)
+ 	WARN_ON_ONCE(!nesting && !is_idle_task(current));
+ 
+ 	/* Does CPU appear to be idle from an RCU standpoint? */
+-	return __this_cpu_read(rcu_data.dynticks_nesting) == 0;
++	return __this_cpu_read(context_tracking.dynticks_nesting) == 0;
+ }
+ 
+ #define DEFAULT_RCU_BLIMIT (IS_ENABLED(CONFIG_RCU_STRICT_GRACE_PERIOD) ? 1000 : 10)
+@@ -624,16 +623,16 @@ static noinstr void rcu_eqs_enter(bool user)
+ 	WARN_ON_ONCE(rdp->dynticks_nmi_nesting != DYNTICK_IRQ_NONIDLE);
+ 	WRITE_ONCE(rdp->dynticks_nmi_nesting, 0);
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
+-		     rdp->dynticks_nesting == 0);
+-	if (rdp->dynticks_nesting != 1) {
++		     ct->dynticks_nesting == 0);
++	if (ct->dynticks_nesting != 1) {
+ 		// RCU will still be watching, so just do accounting and leave.
+-		rdp->dynticks_nesting--;
++		ct->dynticks_nesting--;
+ 		return;
  	}
+ 
+ 	lockdep_assert_irqs_disabled();
+ 	instrumentation_begin();
+-	trace_rcu_dyntick(TPS("Start"), rdp->dynticks_nesting, 0, atomic_read(&ct->dynticks));
++	trace_rcu_dyntick(TPS("Start"), ct->dynticks_nesting, 0, atomic_read(&ct->dynticks));
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
+ 	rcu_preempt_deferred_qs(current);
+ 
+@@ -641,7 +640,7 @@ static noinstr void rcu_eqs_enter(bool user)
+ 	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
+ 
  	instrumentation_end();
- }
--
--#else
--static inline void rcu_irq_work_resched(void) { }
--#endif
-+#endif /* #if !defined(CONFIG_GENERIC_ENTRY) || !defined(CONFIG_KVM_XFER_TO_GUEST_WORK) */
- 
- /**
-  * rcu_user_enter - inform RCU that we are resuming userspace.
-@@ -720,14 +717,6 @@ static inline void rcu_irq_work_resched(void) { }
-  */
- noinstr void rcu_user_enter(void)
+-	WRITE_ONCE(rdp->dynticks_nesting, 0); /* Avoid irq-access tearing. */
++	WRITE_ONCE(ct->dynticks_nesting, 0); /* Avoid irq-access tearing. */
+ 	// RCU is watching here ...
+ 	rcu_dynticks_eqs_enter();
+ 	// ... but is no longer watching here.
+@@ -798,7 +797,7 @@ void rcu_irq_exit_check_preempt(void)
  {
--	lockdep_assert_irqs_disabled();
--
--	/*
--	 * Other than generic entry implementation, we may be past the last
--	 * rescheduling opportunity in the entry code. Trigger a self IPI
--	 * that will fire and reschedule once we resume in user/guest mode.
--	 */
--	rcu_irq_work_resched();
- 	rcu_eqs_enter(true);
- }
+ 	lockdep_assert_irqs_disabled();
  
+-	RCU_LOCKDEP_WARN(__this_cpu_read(rcu_data.dynticks_nesting) <= 0,
++	RCU_LOCKDEP_WARN(__this_cpu_read(context_tracking.dynticks_nesting) <= 0,
+ 			 "RCU dynticks_nesting counter underflow/zero!");
+ 	RCU_LOCKDEP_WARN(__this_cpu_read(rcu_data.dynticks_nmi_nesting) !=
+ 			 DYNTICK_IRQ_NONIDLE,
+@@ -824,11 +823,11 @@ static void noinstr rcu_eqs_exit(bool user)
+ 
+ 	lockdep_assert_irqs_disabled();
+ 	rdp = this_cpu_ptr(&rcu_data);
+-	oldval = rdp->dynticks_nesting;
++	oldval = ct->dynticks_nesting;
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && oldval < 0);
+ 	if (oldval) {
+ 		// RCU was already watching, so just do accounting and leave.
+-		rdp->dynticks_nesting++;
++		ct->dynticks_nesting++;
+ 		return;
+ 	}
+ 	rcu_dynticks_task_exit();
+@@ -840,9 +839,9 @@ static void noinstr rcu_eqs_exit(bool user)
+ 	// instrumentation for the noinstr rcu_dynticks_eqs_exit()
+ 	instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
+ 
+-	trace_rcu_dyntick(TPS("End"), rdp->dynticks_nesting, 1, atomic_read(&ct->dynticks));
++	trace_rcu_dyntick(TPS("End"), ct->dynticks_nesting, 1, atomic_read(&ct->dynticks));
+ 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
+-	WRITE_ONCE(rdp->dynticks_nesting, 1);
++	WRITE_ONCE(ct->dynticks_nesting, 1);
+ 	WARN_ON_ONCE(rdp->dynticks_nmi_nesting);
+ 	WRITE_ONCE(rdp->dynticks_nmi_nesting, DYNTICK_IRQ_NONIDLE);
+ 	instrumentation_end();
+@@ -4122,12 +4121,13 @@ static void rcu_init_new_rnp(struct rcu_node *rnp_leaf)
+ static void __init
+ rcu_boot_init_percpu_data(int cpu)
+ {
++	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+ 	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
+ 
+ 	/* Set up local state, ensuring consistent view of global state. */
+ 	rdp->grpmask = leaf_node_cpu_bit(rdp->mynode, cpu);
+ 	INIT_WORK(&rdp->strict_work, strict_work_handler);
+-	WARN_ON_ONCE(rdp->dynticks_nesting != 1);
++	WARN_ON_ONCE(ct->dynticks_nesting != 1);
+ 	WARN_ON_ONCE(rcu_dynticks_in_eqs(rcu_dynticks_snap(cpu)));
+ 	rdp->barrier_seq_snap = rcu_state.barrier_sequence;
+ 	rdp->rcu_ofl_gp_seq = rcu_state.gp_seq;
+@@ -4152,6 +4152,7 @@ rcu_boot_init_percpu_data(int cpu)
+ int rcutree_prepare_cpu(unsigned int cpu)
+ {
+ 	unsigned long flags;
++	struct context_tracking *ct = per_cpu_ptr(&context_tracking, cpu);
+ 	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
+ 	struct rcu_node *rnp = rcu_get_root();
+ 
+@@ -4160,7 +4161,7 @@ int rcutree_prepare_cpu(unsigned int cpu)
+ 	rdp->qlen_last_fqs_check = 0;
+ 	rdp->n_force_qs_snap = READ_ONCE(rcu_state.n_force_qs);
+ 	rdp->blimit = blimit;
+-	rdp->dynticks_nesting = 1;	/* CPU not up, no tearing. */
++	ct->dynticks_nesting = 1;	/* CPU not up, no tearing. */
+ 	raw_spin_unlock_rcu_node(rnp);		/* irqs remain disabled. */
+ 
+ 	/*
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index 15246a3f0734..8050bab08f39 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -186,7 +186,6 @@ struct rcu_data {
+ 
+ 	/* 3) dynticks interface. */
+ 	int dynticks_snap;		/* Per-GP tracking for dynticks. */
+-	long dynticks_nesting;		/* Track process nesting level. */
+ 	long dynticks_nmi_nesting;	/* Track irq/NMI nesting level. */
+ 	bool rcu_need_heavy_qs;		/* GP old, so heavy quiescent state! */
+ 	bool rcu_urgent_qs;		/* GP old need light quiescent state. */
+diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+index 202129b1c7e4..30a5e0a8ddb3 100644
+--- a/kernel/rcu/tree_stall.h
++++ b/kernel/rcu/tree_stall.h
+@@ -429,6 +429,7 @@ static void print_cpu_stall_info(int cpu)
+ {
+ 	unsigned long delta;
+ 	bool falsepositive;
++	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+ 	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
+ 	char *ticks_title;
+ 	unsigned long ticks_value;
+@@ -459,7 +460,7 @@ static void print_cpu_stall_info(int cpu)
+ 				"!."[!delta],
+ 	       ticks_value, ticks_title,
+ 	       rcu_dynticks_snap(cpu) & 0xfff,
+-	       rdp->dynticks_nesting, rdp->dynticks_nmi_nesting,
++	       ct->dynticks_nesting, rdp->dynticks_nmi_nesting,
+ 	       rdp->softirq_snap, kstat_softirqs_cpu(RCU_SOFTIRQ, cpu),
+ 	       data_race(rcu_state.n_force_qs) - rcu_state.n_force_qs_gpstart,
+ 	       falsepositive ? " (false positive?)" : "");
 -- 
 2.25.1
 
