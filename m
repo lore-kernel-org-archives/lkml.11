@@ -2,335 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5639C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA145C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbiCCATW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:19:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
+        id S230203AbiCCAUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbiCCATW (ORCPT
+        with ESMTP id S230194AbiCCAUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:19:22 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4F77DED0
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:18:35 -0800 (PST)
-Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
-        by 156.147.23.53 with ESMTP; 3 Mar 2022 09:18:34 +0900
-X-Original-SENDERIP: 156.147.1.126
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.126 with ESMTP; 3 Mar 2022 09:18:34 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Thu, 3 Mar 2022 09:18:13 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
-        bfields@fieldses.org, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, paolo.valente@linaro.org,
-        josef@toxicpanda.com, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, jack@suse.cz, jack@suse.com,
-        jlayton@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
-        djwong@kernel.org, dri-devel@lists.freedesktop.org,
-        airlied@linux.ie, rodrigosiqueiramelo@gmail.com,
-        melissa.srw@gmail.com, hamohammed.sa@gmail.com
-Subject: Re: [PATCH v3 00/21] DEPT(Dependency Tracker)
-Message-ID: <20220303001812.GA20752@X58A-UD3R>
-References: <1646042220-28952-1-git-send-email-byungchul.park@lge.com>
- <Yh70VkRkUfwIjPWv@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <Yh74VbNZZt35wHZD@ip-172-31-19-208.ap-northeast-1.compute.internal>
+        Wed, 2 Mar 2022 19:20:08 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B001FA42
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:19:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646266761; x=1677802761;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LMWdww3gKVSvMPGl0y+W3jt1a4ZtdGZp8Jk/8TdBtFs=;
+  b=GGa6zocP2ld2LGZGOAnfkohlYZAtZwHlDbl5jmMUGcuP3SVV4KRIOlnX
+   Uyj60G4ltsZbdYwUF6wdV5K2Q+wrEbUqLbI6YYHTR08eVSUJDHersoK2A
+   4g5sqSib0lvwj9ROEVoLPDaHF1JYFaWU3gZXwnc72U354Fr1auzhTu+VF
+   u5/m4BowumypOIuGeh20sERDVafMefVLdCnmrIEEiYIRD/ZjRegNBlKYy
+   6eAhp2W7bkfxZRhxDoaMNU4vDaFGI6YjhIyLRkMTyBfrBvfuQY3NEFHMq
+   eH0Ne9m3ME13YmnvIBn4++R96udgdb5QNwE8Sbh4BAANeZ9W44tSw5jrL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="237038479"
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="237038479"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 15:12:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
+   d="scan'208";a="493719715"
+Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 02 Mar 2022 15:11:59 -0800
+Received: from kbuild by e9605edfa585 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPY8U-00023E-F7; Wed, 02 Mar 2022 23:11:58 +0000
+Date:   Thu, 3 Mar 2022 07:11:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [frederic-dynticks:rcu/context-tracking 13/19]
+ kernel/context_tracking.c:91:4: error: implicit declaration of function
+ 'rcu_irq_work_resched'
+Message-ID: <202203030735.RQy2zusl-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yh74VbNZZt35wHZD@ip-172-31-19-208.ap-northeast-1.compute.internal>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 04:53:41AM +0000, Hyeonggon Yoo wrote:
-> On Wed, Mar 02, 2022 at 04:36:38AM +0000, Hyeonggon Yoo wrote:
-> > On Mon, Feb 28, 2022 at 06:56:39PM +0900, Byungchul Park wrote:
-> > > I didn't want to bother you so I was planning to send the next spin
-> > > after making more progress. However, PATCH v2 reports too many false
-> > > positives because Dept tracked the bit_wait_table[] wrong way - I
-> > > apologize for that. So I decided to send PATCH v3 first before going
-> > > further for those who want to run Dept for now.
-> > > 
-> > > There might still be some false positives but not overwhelming.
-> > >
-> > 
-> > Hello Byungchul, I'm running DEPT v3 on my system
-> > and I see report below.
-> > 
-> > Looking at the kmemleak code and comment, I think
-> > kmemleak tried to avoid lockdep recursive warning
-> > but detected by DEPT?
-> >
-> 
-> Forgot to include another warning caused by DEPT.
-> 
-> And comment below might be useful for debugging:
-> 
-> in kmemleak.c:
->   43  * Locks and mutexes are acquired/nested in the following order:
->   44  *
->   45  *   scan_mutex [-> object->lock] -> kmemleak_lock -> other_object->lock (SINGLE_DEPTH_NESTING)
->   46  *
->   47  * No kmemleak_lock and object->lock nesting is allowed outside scan_mutex
->   48  * regions.
-> 
-> ===================================================
-> DEPT: Circular dependency has been detected.
-> 5.17.0-rc1+ #1 Tainted: G        W        
-> ---------------------------------------------------
-> summary
-> ---------------------------------------------------
-> *** DEADLOCK ***
-> 
-> context A
->     [S] __raw_spin_lock_irqsave(&object->lock:0)
->     [W] __raw_spin_lock_irqsave(kmemleak_lock:0)
->     [E] spin_unlock(&object->lock:0)
-> 
-> context B
->     [S] __raw_spin_lock_irqsave(kmemleak_lock:0)
->     [W] _raw_spin_lock_nested(&object->lock:0)
->     [E] spin_unlock(kmemleak_lock:0)
-> 
-> [S]: start of the event context
-> [W]: the wait blocked
-> [E]: the event not reachable
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking
+head:   e4eaff86ec91c1cbde9a113cf5232dac9f897337
+commit: 5cb63f8df32ee1a43ca46337d6c8554a27d44165 [13/19] rcu/context-tracking: Move deferred nocb resched to context tracking
+config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20220303/202203030735.RQy2zusl-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=5cb63f8df32ee1a43ca46337d6c8554a27d44165
+        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+        git fetch --no-tags frederic-dynticks rcu/context-tracking
+        git checkout 5cb63f8df32ee1a43ca46337d6c8554a27d44165
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Hi Hyeonggon,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Dept also allows the following scenario when an user guarantees that
-each lock instance is different from another at a different depth:
+All errors (new ones prefixed by >>):
 
-   lock A0 with depth
-   lock A1 with depth + 1
-   lock A2 with depth + 2
-   lock A3 with depth + 3
-   (and so on)
-   ..
-   unlock A3
-   unlock A2
-   unlock A1
-   unlock A0
+>> kernel/context_tracking.c:91:4: error: implicit declaration of function 'rcu_irq_work_resched' [-Werror,-Wimplicit-function-declaration]
+                           rcu_irq_work_resched();
+                           ^
+   1 error generated.
 
-However, Dept does not allow the following scenario where another lock
-class cuts in the dependency chain:
 
-   lock A0 with depth
-   lock B
-   lock A1 with depth + 1
-   lock A2 with depth + 2
-   lock A3 with depth + 3
-   (and so on)
-   ..
-   unlock A3
-   unlock A2
-   unlock A1
-   unlock B
-   unlock A0
+vim +/rcu_irq_work_resched +91 kernel/context_tracking.c
 
-This scenario is clearly problematic. What do you think is going to
-happen with another context running the following?
+    51	
+    52	/**
+    53	 * __ct_user_enter - Inform the context tracking that the CPU is going
+    54	 *		     to enter user or guest space mode.
+    55	 *
+    56	 * This function must be called right before we switch from the kernel
+    57	 * to user or guest space, when it's guaranteed the remaining kernel
+    58	 * instructions to execute won't use any RCU read side critical section
+    59	 * because this function sets RCU in extended quiescent state.
+    60	 */
+    61	void noinstr __ct_user_enter(enum ctx_state state)
+    62	{
+    63		lockdep_assert_irqs_disabled();
+    64	
+    65		/* Kernel threads aren't supposed to go to userspace */
+    66		WARN_ON_ONCE(!current->mm);
+    67	
+    68		if (!context_tracking_recursion_enter())
+    69			return;
+    70	
+    71		if ( __this_cpu_read(context_tracking.state) != state) {
+    72			if (__this_cpu_read(context_tracking.active)) {
+    73				/*
+    74				 * At this stage, only low level arch entry code remains and
+    75				 * then we'll run in userspace. We can assume there won't be
+    76				 * any RCU read-side critical section until the next call to
+    77				 * user_exit() or ct_irq_enter(). Let's remove RCU's dependency
+    78				 * on the tick.
+    79				 */
+    80				if (state == CONTEXT_USER) {
+    81					instrumentation_begin();
+    82					trace_user_enter(0);
+    83					vtime_user_enter(current);
+    84					instrumentation_end();
+    85				}
+    86				/*
+    87				 * Other than generic entry implementation, we may be past the last
+    88				 * rescheduling opportunity in the entry code. Trigger a self IPI
+    89				 * that will fire and reschedule once we resume in user/guest mode.
+    90				 */
+  > 91				rcu_irq_work_resched();
+    92				rcu_user_enter();
+    93			}
+    94			/*
+    95			 * Even if context tracking is disabled on this CPU, because it's outside
+    96			 * the full dynticks mask for example, we still have to keep track of the
+    97			 * context transitions and states to prevent inconsistency on those of
+    98			 * other CPUs.
+    99			 * If a task triggers an exception in userspace, sleep on the exception
+   100			 * handler and then migrate to another CPU, that new CPU must know where
+   101			 * the exception returns by the time we call exception_exit().
+   102			 * This information can only be provided by the previous CPU when it called
+   103			 * exception_enter().
+   104			 * OTOH we can spare the calls to vtime and RCU when context_tracking.active
+   105			 * is false because we know that CPU is not tickless.
+   106			 */
+   107			__this_cpu_write(context_tracking.state, state);
+   108		}
+   109		context_tracking_recursion_exit();
+   110	}
+   111	EXPORT_SYMBOL_GPL(__ct_user_enter);
+   112	
 
-   lock A1 with depth
-   lock B
-   lock A2 with depth + 1
-   lock A3 with depth + 2
-   (and so on)
-   ..
-   unlock A3
-   unlock A2
-   unlock B
-   unlock A1
-
-It's a deadlock. That's why Dept reports this case as a problem. Or am I
-missing something?
-
-Thanks,
-Byungchul
-
-> ---------------------------------------------------
-> context A's detail
-> ---------------------------------------------------
-> context A
->     [S] __raw_spin_lock_irqsave(&object->lock:0)
->     [W] __raw_spin_lock_irqsave(kmemleak_lock:0)
->     [E] spin_unlock(&object->lock:0)
-> 
-> [S] __raw_spin_lock_irqsave(&object->lock:0):
-> [<ffffffc00810302c>] scan_gray_list+0x84/0x13c
-> stacktrace:
->       dept_ecxt_enter+0x88/0xf4
->       _raw_spin_lock_irqsave+0xf0/0x1c4
->       scan_gray_list+0x84/0x13c
->       kmemleak_scan+0x2d8/0x54c
->       kmemleak_scan_thread+0xac/0xd4
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> 
-> [W] __raw_spin_lock_irqsave(kmemleak_lock:0):
-> [<ffffffc008102ebc>] scan_block+0x3c/0x128
-> stacktrace:
->       __dept_wait+0x8c/0xa4
->       dept_wait+0x6c/0x88
->       _raw_spin_lock_irqsave+0xb8/0x1c4
->       scan_block+0x3c/0x128
->       scan_gray_list+0xc4/0x13c
->       kmemleak_scan+0x2d8/0x54c
->       kmemleak_scan_thread+0xac/0xd4
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> 
-> [E] spin_unlock(&object->lock:0):
-> [<ffffffc008102ee0>] scan_block+0x60/0x128
-> 
-> ---------------------------------------------------
-> context B's detail
-> ---------------------------------------------------
-> context B
->     [S] __raw_spin_lock_irqsave(kmemleak_lock:0)
->     [W] _raw_spin_lock_nested(&object->lock:0)
->     [E] spin_unlock(kmemleak_lock:0)
-> 
-> [S] __raw_spin_lock_irqsave(kmemleak_lock:0):
-> [<ffffffc008102ebc>] scan_block+0x3c/0x128
-> stacktrace:
->       dept_ecxt_enter+0x88/0xf4
->       _raw_spin_lock_irqsave+0xf0/0x1c4
->       scan_block+0x3c/0x128
->       kmemleak_scan+0x19c/0x54c
->       kmemleak_scan_thread+0xac/0xd4
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> 
-> [W] _raw_spin_lock_nested(&object->lock:0):
-> [<ffffffc008102f34>] scan_block+0xb4/0x128
-> stacktrace:
->       dept_wait+0x74/0x88
->       _raw_spin_lock_nested+0xa8/0x1b0
->       scan_block+0xb4/0x128
->       kmemleak_scan+0x19c/0x54c
->       kmemleak_scan_thread+0xac/0xd4
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> [E] spin_unlock(kmemleak_lock:0):
-> [<ffffffc008102ee0>] scan_block+0x60/0x128
-> stacktrace:
->       dept_event+0x7c/0xfc
->       _raw_spin_unlock_irqrestore+0x8c/0x120
->       scan_block+0x60/0x128
->       kmemleak_scan+0x19c/0x54c
->       kmemleak_scan_thread+0xac/0xd4
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> ---------------------------------------------------
-> information that might be helpful
-> ---------------------------------------------------
-> CPU: 1 PID: 38 Comm: kmemleak Tainted: G        W         5.17.0-rc1+ #1
-> Hardware name: linux,dummy-virt (DT)
-> Call trace:
->  dump_backtrace.part.0+0x9c/0xc4
->  show_stack+0x14/0x28
->  dump_stack_lvl+0x9c/0xcc
->  dump_stack+0x14/0x2c
->  print_circle+0x2d4/0x438
->  cb_check_dl+0x6c/0x70
->  bfs+0xc0/0x168
->  add_dep+0x88/0x11c
->  add_wait+0x2d0/0x2dc
->  __dept_wait+0x8c/0xa4
->  dept_wait+0x6c/0x88
->  _raw_spin_lock_irqsave+0xb8/0x1c4
->  scan_block+0x3c/0x128
->  scan_gray_list+0xc4/0x13c
->  kmemleak_scan+0x2d8/0x54c
->  kmemleak_scan_thread+0xac/0xd4
->  kthread+0xd4/0xe4
->  ret_from_fork+0x10/0x20
-> 
-> > ===================================================
-> > DEPT: Circular dependency has been detected.
-> > 5.17.0-rc1+ #1 Tainted: G        W
-> > ---------------------------------------------------
-> > summary
-> > ---------------------------------------------------
-> > *** AA DEADLOCK ***
-> > 
-> > context A
-> >     [S] __raw_spin_lock_irqsave(&object->lock:0)
-> >     [W] _raw_spin_lock_nested(&object->lock:0)
-> >     [E] spin_unlock(&object->lock:0)
-> > 
-> > [S]: start of the event context
-> > [W]: the wait blocked
-> > [E]: the event not reachable
-> > ---------------------------------------------------
-> > context A's detail
-> > ---------------------------------------------------
-> > context A
-> >     [S] __raw_spin_lock_irqsave(&object->lock:0)
-> >     [W] _raw_spin_lock_nested(&object->lock:0)
-> >     [E] spin_unlock(&object->lock:0)
-> > 
-> > [S] __raw_spin_lock_irqsave(&object->lock:0):
-> > [<ffffffc00810302c>] scan_gray_list+0x84/0x13c
-> > stacktrace:
-> >       dept_ecxt_enter+0x88/0xf4
-> >       _raw_spin_lock_irqsave+0xf0/0x1c4
-> >       scan_gray_list+0x84/0x13c
-> >       kmemleak_scan+0x2d8/0x54c
-> >       kmemleak_scan_thread+0xac/0xd4
-> >       kthread+0xd4/0xe4
-> >       ret_from_fork+0x10/0x20
-> > 
-> > [E] spin_unlock(&object->lock:0):
-> > [<ffffffc008102ee0>] scan_block+0x60/0x128
-> > ---------------------------------------------------
-> > information that might be helpful
-> > ---------------------------------------------------
-> > CPU: 1 PID: 38 Comm: kmemleak Tainted: G        W         5.17.0-rc1+ #1
-> > Hardware name: linux,dummy-virt (DT)
-> > Call trace:
-> >  dump_backtrace.part.0+0x9c/0xc4
-> >  show_stack+0x14/0x28
-> >  dump_stack_lvl+0x9c/0xcc
-> >  dump_stack+0x14/0x2c
-> >  print_circle+0x2d4/0x438
-> >  cb_check_dl+0x44/0x70
-> >  bfs+0x60/0x168
-> >  add_dep+0x88/0x11c
-> >  add_wait+0x2d0/0x2dc
-> >  __dept_wait+0x8c/0xa4
-> >  dept_wait+0x6c/0x88
-> >  _raw_spin_lock_nested+0xa8/0x1b0
-> >  scan_block+0xb4/0x128
-> >  scan_gray_list+0xc4/0x13c
-> >  kmemleak_scan+0x2d8/0x54c
-> >  kmemleak_scan_thread+0xac/0xd4
-> >  kthread+0xd4/0xe4
-> >  ret_from_fork+0x10/0x20
-> >
-> [...]
-> 
-> --
-> Thank you, You are awesome!
-> Hyeonggon :-)
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
