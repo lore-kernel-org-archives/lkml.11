@@ -2,70 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F964C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 943D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232644AbiCBOba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:31:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
+        id S243096AbiCBObc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243106AbiCBOaX (ORCPT
+        with ESMTP id S243121AbiCBOaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:30:23 -0500
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF586C7E64;
-        Wed,  2 Mar 2022 06:29:03 -0800 (PST)
-Received: by mail-wm1-f50.google.com with SMTP id 7-20020a05600c228700b00385fd860f49so522922wmf.0;
-        Wed, 02 Mar 2022 06:29:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u1uRIjELuAIT1ZdKPoFbKLM6B7n19acx/Ml5oN1/Sgo=;
-        b=J6V9rf3W5QcP/b7nmKxXt/bgdCFDa/Mwhlo6ktS40eaYWRMpibbdzP3cymGyp5F6LO
-         PJW2W4WVJHgPZYOLGDk7AF5zo1r1XS2viIxgwJiWrzZm8yF/s1YkrmDrCDDa3iSzjQ1q
-         J+o4W0DMC/SNcma+T0/0h/HiUBbsb27/nwEp8pyew1YgztlRn/u5gEfFjqVI5yoBh0CL
-         iGUZgbH6x8Du4uVwZHShT42H/jN78oYDbKseLnO9PUsUCra0O2DyUYK4TXmyrwF9w8aU
-         z2bcGVep4cbFkccq1SQvbucJemVleNmnsw+ltgjNyn9JGgyHbyeJbL7VxcT9FDy6zQB4
-         oRyw==
-X-Gm-Message-State: AOAM531OZ5DggP3DZFwWc47p3NUJeCMYq7mfbOT3kPcJEYTn5Moi9RZn
-        gK5xzo5a171m5JKXsihc1js=
-X-Google-Smtp-Source: ABdhPJwjvW/iEsr/yoeBUz+tCiWoRjuXWWG5bQtcXTgbZ3ykMPh1U73cqUPXi286lwjvjWuwofwCyQ==
-X-Received: by 2002:a05:600c:1e84:b0:381:6c56:ebcc with SMTP id be4-20020a05600c1e8400b003816c56ebccmr63096wmb.28.1646231342063;
-        Wed, 02 Mar 2022 06:29:02 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id g7-20020a5d5407000000b001e2628b6490sm16865278wrv.17.2022.03.02.06.29.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 06:29:01 -0800 (PST)
-Date:   Wed, 2 Mar 2022 14:29:00 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Iouri Tarassov <iourit@linux.microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
-        spronovo@linux.microsoft.com, gregkh@linuxfoundation.org
-Subject: Re: [PATCH v3 30/30] drivers: hv: dxgkrnl: Add support to map guest
- pages by host
-Message-ID: <20220302142900.6ziddzoes2oovhzi@liuwe-devbox-debian-v2>
-References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
- <7e303134ccd13b25080f7ebde5dc57f302972d55.1646163379.git.iourit@linux.microsoft.com>
+        Wed, 2 Mar 2022 09:30:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1EB6E34B;
+        Wed,  2 Mar 2022 06:28:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1ACA7B81FF6;
+        Wed,  2 Mar 2022 14:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BC28C340ED;
+        Wed,  2 Mar 2022 14:28:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646231330;
+        bh=x5NhZSDTe+nBk7s18b/KMi3nUIEuVJYY1jAlwghRTyk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lZCrFgAVl4vJwdBUJKqCZreKsAfPLt6WCJ3rKSfZYE1Ygf1C1lKiVYAWqo51qTIkz
+         hKteFm4C9635nJ773d5Me4M+0h1bSFNFgLy9hk/ifpwHZvqMWT/JpVJQJfv6yuI5vw
+         scC4wN4I/KiENygKF0tDoUUsxzRCL4mFlcp5opU0DFa2/rjXybuTqQ7AWpJFp10NVE
+         U29UZSVNmQz7Zow63+JcBshpMw6Fjy6iG/kRaNE8rrtl45v4EH7r51r/Zx7GpJo6+N
+         V9OCGCciFnIG3Xo7awHeaWrnDJRCyHXG54eTik6I6XNbwbjcJ/GHRSyKqXiTjI3yl6
+         Ncm56n8TBwBEw==
+Date:   Wed, 2 Mar 2022 19:58:47 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Wesley Cheng <wcheng@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: phy: qcom,usb-snps-femto-v2: Add
+ sc8180x and sc8280xp
+Message-ID: <Yh9/H9SQilPoHaa/@matsya>
+References: <20220225034049.2294207-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7e303134ccd13b25080f7ebde5dc57f302972d55.1646163379.git.iourit@linux.microsoft.com>
+In-Reply-To: <20220225034049.2294207-1-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 11:46:17AM -0800, Iouri Tarassov wrote:
-[...]
-> @@ -1393,6 +1396,7 @@ int create_existing_sysmem(struct dxgdevice *device,
->  	pr_debug("   Alloc size: %lld", alloc_size);
->  
->  	dxgalloc->cpu_address = (void *)sysmem;
-> +
+On 24-02-22, 19:40, Bjorn Andersson wrote:
+> Add compatible for the femto USB PHY found in sc8180x, sc8280xp and the
+> generic 5nm form of the latter.
 
-Well this is just adding a blank line. Please avoid changes like this...
+Applied all, thanks
 
-Thanks,
-Wei.
+-- 
+~Vinod
