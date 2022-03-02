@@ -2,80 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8043DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 01:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238956AbiCBBk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 20:40:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
+        id S238834AbiCBBlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 20:41:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238931AbiCBBkz (ORCPT
+        with ESMTP id S232582AbiCBBlg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 20:40:55 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED50EA2508;
-        Tue,  1 Mar 2022 17:40:13 -0800 (PST)
+        Tue, 1 Mar 2022 20:41:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB78A1BE8;
+        Tue,  1 Mar 2022 17:40:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0A825CE2082;
-        Wed,  2 Mar 2022 01:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 134CEC340F0;
-        Wed,  2 Mar 2022 01:40:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C13BB81BEA;
+        Wed,  2 Mar 2022 01:40:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D76B5C340EE;
+        Wed,  2 Mar 2022 01:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646185210;
-        bh=yiu2oVO8iMfUx8EITjMvjJ0JsQ6koCRlfPLhskhPshw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mCDoiTtw0T88xtrDgZ8GvcOrpJpL/HbGqFUfXy+tPngi0wtZZm+Vqf0LIHZoyqAfY
-         9JEdSVry3XnnuwwtThP4Uauz+NC4gy+p8wVhAjnpyrTLzbsSKfTfHXOKLbb5yWsiAW
-         BCgz4xHr088dHv1eeltEILX8/XtrKqu4GuQ8VRgLqmvg04WIkp/8Pybofzv1sRLA9g
-         0qAzWkjQnXUDvf5CY25Ektbfyv5K0TQloxTo0De9QnXTYn0/iUS3ksf7SYfbeZrbHs
-         /kFsXk5CRzirj9uyuVBR+pScsPJ2O3IFfcTfnNNMPici54dhmtlxqZGm/a2v8jy28X
-         6ya7T3dGJ4VsQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA678EAC096;
-        Wed,  2 Mar 2022 01:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1646185252;
+        bh=t7b7XBlaSW5C/zrCE4sLY8sBYlVGnx0VRe90U0a1Cy0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=l3lTt8RMP2oSRblhVvuP/nR4t/f5RP5+dKwTfzyAbQLkLM4vYMpAbJi0fUWGfwBys
+         WfrKmrTRN8b0ISJTN/m86zV74A7TWcU5T0vLRq3wkvaZkUX06hqPYlVlsg/h1ujrOQ
+         tdZU7LUgSMB4/5vPlwDbVdITsVtOAJjjzkgW2GP0BUMkwNyQJB4A3/zzJculY7sXfg
+         GjV4atlpSv7E7dy7ipGz26JmvlNTrpNqQMXhBV5FOlZX0ejmbR3A3icA8epoqvJYHs
+         myfzsMdAxzUd6ZRXo2kIVVvSjndwL8xKbCHmxaiBYy3JVbaDoNsjfh6XqcmS/WRaJP
+         RPJP7jGfou74Q==
+Date:   Wed, 2 Mar 2022 02:41:37 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5] x86/sgx: Free backing memory after faulting the
+ enclave page
+Message-ID: <Yh7LUU401weiq0ew@iki.fi>
+References: <20220301125836.3430-1-jarkko@kernel.org>
+ <3a083b4d-9645-dec6-8cdc-481429dd0a1f@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3] tun: support NAPI for packets received from
- batched XDP buffs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164618520995.21891.13359440725672676433.git-patchwork-notify@kernel.org>
-Date:   Wed, 02 Mar 2022 01:40:09 +0000
-References: <20220228033805.1579435-1-baymaxhuang@gmail.com>
-In-Reply-To: <20220228033805.1579435-1-baymaxhuang@gmail.com>
-To:     Harold Huang <baymaxhuang@gmail.com>
-Cc:     netdev@vger.kernel.org, jasowang@redhat.com, pabeni@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3a083b4d-9645-dec6-8cdc-481429dd0a1f@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 28 Feb 2022 11:38:05 +0800 you wrote:
-> In tun, NAPI is supported and we can also use NAPI in the path of
-> batched XDP buffs to accelerate packet processing. What is more, after
-> we use NAPI, GRO is also supported. The iperf shows that the throughput of
-> single stream could be improved from 4.5Gbps to 9.2Gbps. Additionally, 9.2
-> Gbps nearly reachs the line speed of the phy nic and there is still about
-> 15% idle cpu core remaining on the vhost thread.
+On Tue, Mar 01, 2022 at 09:54:14AM -0800, Dave Hansen wrote:
+> On 3/1/22 04:58, Jarkko Sakkinen wrote:
+> > @@ -32,14 +58,16 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+> >  	else
+> >  		page_index = PFN_DOWN(encl->size);
+> >  
+> > +	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+> > +
+> >  	ret = sgx_encl_lookup_backing(encl, page_index, &b);
+> >  	if (ret)
+> >  		return ret;
 > 
-> [...]
+> What tree is this against?  It looks like it might be on top of
+> Kristen's overcommit series.
+> 
+> It would be best if you could test this on top of tip/sgx.  Kristen
+> changed code in this area as well.
 
-Here is the summary with links:
-  - [net-next,v3] tun: support NAPI for packets received from batched XDP buffs
-    https://git.kernel.org/netdev/net-next/c/fb3f903769e8
+I rebased this against latest stuff and now I did a sanity check:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+$ git fetch tip
+remote: Enumerating objects: 75, done.
+remote: Counting objects: 100% (75/75), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 77 (delta 65), reused 65 (delta 63), pack-reused 2
+Unpacking objects: 100% (77/77), 34.07 KiB | 157.00 KiB/s, done.
+From git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+   161a9a33702a..cedd3614e5d9  perf/core  -> tip/perf/core
+   6255b48aebfd..25795ef6299f  sched/core -> tip/sched/core
 
+$ git rebase tip/x86/sgx 
+Current branch master is up to date.
 
+BR, Jarkko
