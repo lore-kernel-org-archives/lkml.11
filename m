@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F59FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 04:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0563DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 04:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239500AbiCBEgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 23:36:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        id S239483AbiCBEgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 23:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239483AbiCBEga (ORCPT
+        with ESMTP id S239489AbiCBEgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 23:36:30 -0500
+        Tue, 1 Mar 2022 23:36:31 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A631DB108C
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 20:35:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B93B10A5
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 20:35:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=uYCqflrBoaogKtYO3azgayBAXohniRh2EXS8txrntpg=; b=OtlzBRNUz6ChHQOoQvjzKJEbV2
-        ywF0K/EWNPqawhanWFG+QyzDP5DyXeiHeTQDNpftYahnjpxwm1rdDQ+OKMHlmHFr+L4edPZP+U09X
-        oDlF1dvNRBjBCEcMgBzXX+D4J4JQx/rl5jbY+rXa7fhGKzIAg8emPzobPN0fZxPNUbheahoniwYpw
-        YExRoAk12YUc/AH1KQzhPjiioRKEirTlPB+8rrZo/fJrS+BgGQgPKQwaaoduGi7pNBMvejS5Z8/VW
-        at4Gcjkvfc7m78qjyCL0owHiCEMeDgTzeiKncGzduyT2BHERbUvLz0U1FSwoSTcwKLDZhg2HsmZ+K
-        qy2o/bIg==;
+        bh=9s7ebt5G6ChAio+CfHim1dBptzEdmn/x8MknWstJb20=; b=X9rkuo48pxsIEMMJqPgl4wyd2W
+        /xwEKHxag/qrgDKFcU0UXZVGErl0lDsmDZQe3Ogm5g6JTFanfqBfXaAZwBYk7Etmgte3WqAo0xVks
+        IZq5pqShliUkoIzQXBBsEMV/lzRvxlF5/1NiQwR+rSSTOz8pcJ2YZPf2kUd3rvRdctBDjs4fpVa8s
+        eYRl7eY89Tqls4wwU8iGREKJJba2n2wTayGWdueLKdAI7mZMdozsjxSdd40+WhIIu81AXmbwWeCsv
+        gjlCNBVBeC/rn7AK7a3Yyoh6FVG9Ad5/vqB0DsJtk3ibfK1pLlGHhxLdbmXp0bqqnRnhLNq9QfIC4
+        nCWP4QQA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPGhR-00AF73-Vd; Wed, 02 Mar 2022 04:34:54 +0000
+        id 1nPGhS-00AF77-4M; Wed, 02 Mar 2022 04:34:54 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     Kees Cook <keescook@chromium.org>, Ingo Molnar <mingo@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -39,9 +39,9 @@ To:     Kees Cook <keescook@chromium.org>, Ingo Molnar <mingo@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 03/19] swait: Parameterize the return variable to __swait_event_interruptible_timeout()
-Date:   Wed,  2 Mar 2022 04:34:35 +0000
-Message-Id: <20220302043451.2441320-4-willy@infradead.org>
+Subject: [PATCH 05/19] wait: Parameterize the return variable to __wait_event_timeout()
+Date:   Wed,  2 Mar 2022 04:34:37 +0000
+Message-Id: <20220302043451.2441320-6-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220302043451.2441320-1-willy@infradead.org>
 References: <20220302043451.2441320-1-willy@infradead.org>
@@ -56,29 +56,29 @@ Pass the name from its caller.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/swait.h | 4 ++--
+ include/linux/wait.h | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/swait.h b/include/linux/swait.h
-index 0ca80e31776f..4147be3a0014 100644
---- a/include/linux/swait.h
-+++ b/include/linux/swait.h
-@@ -215,7 +215,7 @@ do {									\
- 	__ret;								\
+diff --git a/include/linux/wait.h b/include/linux/wait.h
+index 890cce3c0f2e..b34d36001fd2 100644
+--- a/include/linux/wait.h
++++ b/include/linux/wait.h
+@@ -385,7 +385,7 @@ do {										\
+ 	__ret;									\
  })
  
--#define __swait_event_interruptible_timeout(wq, condition, timeout)	\
-+#define __swait_event_interruptible_timeout(wq, condition, timeout, __ret) \
- 	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
- 		      TASK_INTERRUPTIBLE, timeout,			\
+-#define __wait_event_timeout(wq_head, condition, timeout)			\
++#define __wait_event_timeout(wq_head, condition, timeout, __ret)		\
+ 	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_UNINTERRUPTIBLE, 0, timeout,				\
  		      __ret = schedule_timeout(__ret))
-@@ -225,7 +225,7 @@ do {									\
- 	long __ret = timeout;						\
- 	if (!___wait_cond_timeout(condition, __ret))			\
- 		__ret = __swait_event_interruptible_timeout(wq,		\
--						condition, timeout);	\
-+					condition, timeout, __ret);	\
- 	__ret;								\
+@@ -414,7 +414,7 @@ do {										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+ 	if (!___wait_cond_timeout(condition, __ret))				\
+-		__ret = __wait_event_timeout(wq_head, condition, timeout);	\
++		__ret = __wait_event_timeout(wq_head, condition, timeout, __ret); \
+ 	__ret;									\
  })
  
 -- 
