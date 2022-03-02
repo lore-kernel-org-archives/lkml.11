@@ -2,62 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 825F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 14:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243096AbiCBObc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 09:31:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
+        id S243093AbiCBOct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 09:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243121AbiCBOaK (ORCPT
+        with ESMTP id S243061AbiCBOcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 09:30:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1EB6E34B;
-        Wed,  2 Mar 2022 06:28:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1ACA7B81FF6;
-        Wed,  2 Mar 2022 14:28:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BC28C340ED;
-        Wed,  2 Mar 2022 14:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646231330;
-        bh=x5NhZSDTe+nBk7s18b/KMi3nUIEuVJYY1jAlwghRTyk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lZCrFgAVl4vJwdBUJKqCZreKsAfPLt6WCJ3rKSfZYE1Ygf1C1lKiVYAWqo51qTIkz
-         hKteFm4C9635nJ773d5Me4M+0h1bSFNFgLy9hk/ifpwHZvqMWT/JpVJQJfv6yuI5vw
-         scC4wN4I/KiENygKF0tDoUUsxzRCL4mFlcp5opU0DFa2/rjXybuTqQ7AWpJFp10NVE
-         U29UZSVNmQz7Zow63+JcBshpMw6Fjy6iG/kRaNE8rrtl45v4EH7r51r/Zx7GpJo6+N
-         V9OCGCciFnIG3Xo7awHeaWrnDJRCyHXG54eTik6I6XNbwbjcJ/GHRSyKqXiTjI3yl6
-         Ncm56n8TBwBEw==
-Date:   Wed, 2 Mar 2022 19:58:47 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Wesley Cheng <wcheng@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: phy: qcom,usb-snps-femto-v2: Add
- sc8180x and sc8280xp
-Message-ID: <Yh9/H9SQilPoHaa/@matsya>
-References: <20220225034049.2294207-1-bjorn.andersson@linaro.org>
+        Wed, 2 Mar 2022 09:32:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44E5EC8F8F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 06:31:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646231500;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jffqN0m1GTXZQWXvQAEMRQWppzF6htiIzraNQHv9l3A=;
+        b=TsL9CYqYPKegncPPd63lFL2ceCbl4yUiOyS/Z9Y2noyS8znFsv3FLKrtnmrp/OBNHjrFu2
+        mcm1iJGfaW2oHOvf0vuT37d5H200em4G0NzCIbWaHj7v1i7WunrKmsqIJ331eiLI4O5Qqj
+        TGBbhVlqHzjDBdwVORa3D7bA7fKRQaE=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-132-Ox5b2FSFPJeGoGBI0wx-9g-1; Wed, 02 Mar 2022 09:31:36 -0500
+X-MC-Unique: Ox5b2FSFPJeGoGBI0wx-9g-1
+Received: by mail-ed1-f71.google.com with SMTP id r9-20020a05640251c900b00412d54ea618so1095511edd.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 06:31:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jffqN0m1GTXZQWXvQAEMRQWppzF6htiIzraNQHv9l3A=;
+        b=FjQ2oPXRV8AmKMmyf8tUk8hNUUykdp9kWQaxUtYyPUgX/01EPQZJHj6c2qNdqRQ9m4
+         Gm2VRFg5GVxMRvcIFlA68+UILSJ9kqawEtkSU3vi5eOGcw7TdHE9cKbS3mVw6EnQbUbv
+         BXKFEaXGGEktx+kObvpSPDm4jFh/914xORBU2RL/2dm1pgDJx1HdHIgRNdKms/NruLHc
+         7KHn/29VJ1Py9+3ANsJa1lN+1g9gQHdNapLQf7oM7EGNAXI3laioW/Lh4LKUSTEjrSKW
+         O/GOdYXwTbp55KXzstbmqS/U+JgsSybt7TidxUpSdeIB7l2sOl3mT5tAhwxDsq3Jn++S
+         LP7g==
+X-Gm-Message-State: AOAM5312jvFlWNv76H3KpXgVv8xrc31NnCz5wcqD7ch0iHxC89FBaGGb
+        upBqhh+1cXLsKsIYMEPagN+o7kGQaUf6RofW9w9tD+PzfVyHpdUlHrVO+bNC96alq8dDEyI2J4q
+        zLac42ShjKNFSB0hPOf2mVmBW
+X-Received: by 2002:aa7:d453:0:b0:410:d407:da20 with SMTP id q19-20020aa7d453000000b00410d407da20mr29770286edr.351.1646231495396;
+        Wed, 02 Mar 2022 06:31:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzaZs2pwoj8NQ1tJcS9kKa4Smgf4WJxw9Nh28O3Qs9xg1q9OsU5852ZY8EiOYJAbvbNOWtZKw==
+X-Received: by 2002:aa7:d453:0:b0:410:d407:da20 with SMTP id q19-20020aa7d453000000b00410d407da20mr29770273edr.351.1646231495166;
+        Wed, 02 Mar 2022 06:31:35 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id z17-20020a1709060bf100b006cf2730b5f2sm6383886ejg.30.2022.03.02.06.31.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 06:31:34 -0800 (PST)
+Message-ID: <54dafc1d-bc72-8cb0-a539-4fdfc068cb5a@redhat.com>
+Date:   Wed, 2 Mar 2022 15:31:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220225034049.2294207-1-bjorn.andersson@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] platform: x86: huawei-wmi: check the return value of
+ device_create_file()
+Content-Language: en-US
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>, markgross@kernel.org
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220225130448.27063-1-baijiaju1990@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220225130448.27063-1-baijiaju1990@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24-02-22, 19:40, Bjorn Andersson wrote:
-> Add compatible for the femto USB PHY found in sc8180x, sc8280xp and the
-> generic 5nm form of the latter.
+Hi,
 
-Applied all, thanks
+On 2/25/22 14:04, Jia-Ju Bai wrote:
+> The function device_create_file() in huawei_wmi_battery_add() can fail,
+> so its return value should be checked.
+> 
+> Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 
--- 
-~Vinod
+Please run check-patch.pl your patches before submitting them.
+
+
+> ---
+>  drivers/platform/x86/huawei-wmi.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
+> index a2d846c4a7ee..2ffd3840f3e8 100644
+> --- a/drivers/platform/x86/huawei-wmi.c
+> +++ b/drivers/platform/x86/huawei-wmi.c
+> @@ -470,10 +470,19 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
+>  
+>  static int huawei_wmi_battery_add(struct power_supply *battery)
+>  {
+> -	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
+> -	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
+> +	int err = 0; 
+
+There needs to be an empty line here,
+> +	err = device_create_file(&battery->dev, 
+> +						&dev_attr_charge_control_start_threshold);
+
+Why the weird continuation of the call on another line? Please make this a single line.
+
+> +	if (err)
+> +		return err;
+
+Empty line here.
+
+> +	err = device_create_file(&battery->dev, 
+> +						&dev_attr_charge_control_end_threshold);
+
+Please make this a single line.
+
+> +	if (err) {
+> +		device_remove_file(&battery->dev, 
+> +						&dev_attr_charge_control_start_threshold);
+> +	}
+
+No need for {} here.
+
+>  
+> -	return 0;
+> +	return err;
+>  }
+>  
+>  static int huawei_wmi_battery_remove(struct power_supply *battery)
+
+Regards,
+
+Hans
+
