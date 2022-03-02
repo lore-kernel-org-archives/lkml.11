@@ -2,273 +2,425 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 22:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 476A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Mar 2022 22:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240906AbiCBWBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 17:01:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44088 "EHLO
+        id S238259AbiCBWCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 17:02:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236858AbiCBWA7 (ORCPT
+        with ESMTP id S236858AbiCBWCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 17:00:59 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078C6CD5D7;
-        Wed,  2 Mar 2022 14:00:16 -0800 (PST)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 222JMoEl011132;
-        Wed, 2 Mar 2022 14:00:00 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=rT6ko2SecWITHSpqGFiqRHFbplyN4beHsLk7Syq0HVQ=;
- b=Kel3OA7dgS6su+ASoAMwDVd9jmTbldLp2+c86mHoUGeoAOJjtwlTH+RPUtlG46464rOa
- RZU5bEUED7qTulFOAq9ByNW+PvrcfyX+S7ka/J5WyE+QIRxmlI8N/Xso5tzkZpC1Fz5l
- MusLr9A4XPhNBLy1i72Bkf1JwCN1BrmX/Q0= 
-Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2048.outbound.protection.outlook.com [104.47.51.48])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ejaqwu6kd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 13:59:59 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gMjf3GvjfzSuKCMdlotzaVGiaoo39NujRI0sTBNP7H7xPwXDaLAVMhUXSGNXJ5npcTD4chJbAOkE2qN2AjK09FrShwhmhu2NG7z4ngvJowQqAMjY8/Y7MDrEzZi5ctVzcg1jM3701wqrrMuk1544gIOu2Hm0w9SOLli+05pkhTwN+TEDq5SFw1aZq8wRjDM37Ms1fhYf4L8XZiWrMvGT6OqTDs08f/DD1nk2PMHx4eoRXSGdcWFaPybRPjPQH0GIEeFsTcGoTcPL2/ILy340x6rZlnTLq7xDNDDdUhllSGtySFgEf17Rtkt1ACNkhF1naSEWBSWggdIgQQA30fbA4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rT6ko2SecWITHSpqGFiqRHFbplyN4beHsLk7Syq0HVQ=;
- b=lTGOdRmnkRZ+X57QFCHncdMkOUT/dFzejWO85YVUgNuMvVeha2wgy6rUR/bFuA12byt68fkCNVhziOuFkibiXSGhFuL15qphyjSzksm6kPRGuSaXRgJo+5reeqiaxURKxjL330xvEM/RgvXvWQY4Ag7q76C6sf3hoB0qVhO++eWoi08oIbQ74/QQtPEgP3Abdiq4+cCVguwVR4Cgz5B+LwBCsW3FsTLWWTStBFbq6dSa298ft1UWu+rR8AeW6ZWvuEwgCDtu66Fse9NG9zfAHXQ83D3Jhbd0c4FTyzSUMVUGKBqi48IGzyALVsGHMurDNf6isDBEN+3qZ3y7syHQCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SJ0PR15MB4661.namprd15.prod.outlook.com (2603:10b6:a03:37a::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 2 Mar
- 2022 21:59:57 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::91dd:facd:e7a5:a8d1]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::91dd:facd:e7a5:a8d1%3]) with mapi id 15.20.5017.027; Wed, 2 Mar 2022
- 21:59:57 +0000
-Message-ID: <a4a23560-8a63-90f6-ad1c-c2d5c761e7e6@fb.com>
-Date:   Wed, 2 Mar 2022 13:59:52 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH bpf-next v1 8/9] bpf: Introduce cgroup iter
-Content-Language: en-US
-To:     Hao Luo <haoluo@google.com>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, joshdon@google.com, sdf@google.com,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220225234339.2386398-1-haoluo@google.com>
- <20220225234339.2386398-9-haoluo@google.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220225234339.2386398-9-haoluo@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR18CA0052.namprd18.prod.outlook.com
- (2603:10b6:300:39::14) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        Wed, 2 Mar 2022 17:02:22 -0500
+X-Greylist: delayed 460 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 14:01:35 PST
+Received: from arashi.greysector.net (arashi.greysector.net [51.68.141.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE47CD5D7;
+        Wed,  2 Mar 2022 14:01:35 -0800 (PST)
+Received: from sakura.greysector.net (37.30.40.30.nat.umts.dynamic.t-mobile.pl [37.30.40.30])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by arashi.greysector.net (Postfix) with ESMTPSA id AF61A138D;
+        Wed,  2 Mar 2022 22:53:51 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 arashi.greysector.net AF61A138D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=greysector.net;
+        s=default; t=1646258032;
+        bh=+6+RkQe0MbTJpTJIkhDXme85iXcXoTeHCmwWM/geZs0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cDlbIZisp0syaJrp1y3e6Dq1/NN9jfTlDd1EBbl0Dkfoy54wJac3QCN0rK0tu+xdr
+         H690dWwottkioWtg3OwoUmmiDGiMSJIocVD2ehYFde341AiE2IJggBvDdRnOIrv4tG
+         OUKZiV6j6eatDggjEz+q82YbrpHp9hw1L8qoN+r4=
+Date:   Wed, 2 Mar 2022 22:53:49 +0100
+From:   Dominik Mierzejewski <dominik@greysector.net>
+To:     Song Liu <song@kernel.org>
+Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        linux-raid <linux-raid@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: Re: Bug 215605 - [5.14 regression] BUG: unable to handle page fault
+ while running badblocks (fsck.ext4 -c) on a raid5 md array
+Message-ID: <Yh/nbZYmYD6SpZV9@sakura.greysector.net>
+References: <53e7de78-4d27-5089-f159-0d443b354666@leemhuis.info>
+ <35bafd68-b340-dfaa-dd5f-d45843104f91@leemhuis.info>
+ <CAPhsuW44tX0rBpy5c63HgTtRSF=UAAsgv8ZuYE_QTLhi6syXaA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4838601e-abea-42ba-280f-08d9fc97fd9b
-X-MS-TrafficTypeDiagnostic: SJ0PR15MB4661:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR15MB4661CA28FCA1A571291A6712D3039@SJ0PR15MB4661.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kUdioub7KjSDfOspetfIcE1mgVN81cFUP0rluxYt4Xhn/xb+w4fMCMUYK3qnpWAWHzFhka8QWEhQattHG3qwmH2knEYOyPd31MZ8OKlwRNQMUqdEo7gfmTeLmeyzm3NM3fEOaxXkSN68CaxNhyGCssdV01H/mCrB02spookMKu8F/L0yL4UP0Nu3eQVjBbBalUKaLfOJjIUfyLn9yMyJp19HCdwBcuHqyx/GgWGhc51Eut73U+iW79MsBxXIL+qbrOVCCy4PupVZ53ZOSjZe9VtH9f8cAvkNSkuzBLE030p6xA2BbY07XZY76wv3CnFJHp2CfFUI2KQ3eImWUo991doxY3/O8BME1UZFLkXldb+7/KXZZnEGThr9mKqF3o8EuiyCYgEyOQCbXdcp7ccuwvnfFJdW420ot3aMRzYfGRq31h44JUad+oSPIlrFP+XWh4HeuOh/HbvBYBxXEanL/75ENA/SJCBcvPDhH/ncaaGzg7d0lsekDqOg7mjxeh/7vWtY9iK1bCx+p0hyWULn/0jK98QmiG3tmpb4qRnIJQX+/Fgk0+hlYNiMv735JbqlixDCgmAmW4t2uEKlEYjvfPjSq3sSB7TSIfynz3dC6ddqc0eKYM+5plSpTp+4rgGDzSRhzJUHnaXKzo8K4CmvTduCsBvju3S532T1Ur3g6mOgzP+KEkB+UQs3kM02I5LDeGBTPt3HeDF9puenVPQTKQBAjsWhUyjuXCAhYnBf9WuYYFAXd0CapomN+lZnJ7SW
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(186003)(38100700002)(54906003)(86362001)(31696002)(110136005)(66556008)(66946007)(6512007)(36756003)(66476007)(4326008)(31686004)(8676002)(2906002)(5660300002)(7416002)(508600001)(6486002)(83380400001)(8936002)(53546011)(2616005)(52116002)(316002)(6506007)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bmRGQUdXOHNGeHVyazJab2o0LzAvQnpSRmZCUkVnZXBYcmJDWjdxZjZXWFZo?=
- =?utf-8?B?VWdIRi9LYUpYUElTdEQ1TkJIN290NFY0ajFHdDNNUUJUU2g3dGhqNm9FZ25x?=
- =?utf-8?B?b2tIY2dkN3FPNEUvZWNlYmY5NEorS2tjL003aFVldnYwSmVRM1FnN0ZQMlJ4?=
- =?utf-8?B?ZUw3VWp1VzJQVHkwUjUvYXVwRVk5OXdwNHB0aEZqUlVuSEg3NStnaDA5a3hF?=
- =?utf-8?B?Q3ZtL3FiNWFmSnRraEs4enArRG5yQ3ptWGJSTWU3RjQxNU5iaWFHTU1SSXFo?=
- =?utf-8?B?N3lzYVJPaWw4Sk9rR3hqWFo3QlJ2TVVLdnlUU0F1QnRyQzJBWVdLVHdlMmtH?=
- =?utf-8?B?ZTYrcndFMU5QS1BuY2F5T0w4SXpOYkVhUEdMbzdvVlF2cHhrcUcwQnNGY2l3?=
- =?utf-8?B?S0hoU3QxdTRsallnNmVBeHQ1SUZrcExtdE9yRDJFZk8yTGhJc2xINlhEYWtN?=
- =?utf-8?B?MjN0cUd0M0NVN2dyU1VKWHBSaUZvanZWUTVabnlEbVVEZVYxR0FqZXJxem42?=
- =?utf-8?B?bEllSFNXamh6eXlWL2JVUkNiM2dmUnFSOHpYa2tyQ0ZXNUNia3krS2c0OGlY?=
- =?utf-8?B?elpaYWFBemI3NnUwTzV0a2c2UVFYaVl4Nmh4NDdBZ3RVaTAvemF2UWcreHp6?=
- =?utf-8?B?VmxhYmR4enNFOGI1dVpmYkpCTU9EaTJiTVpUSExxOVFxZnVSN3czcVd6OTYv?=
- =?utf-8?B?cEVIVlY1VGRvcUlzZUFEa2Z6dDJrVjhaZUxxYTJxUWVocUR4QWtDTjY1VFdQ?=
- =?utf-8?B?YVBPRnY0M1RXenEwMmhNTDlsV3pVcGJvcS9MQ0dqd0tKRWlFUWpnTytlWWVC?=
- =?utf-8?B?ZzB6aWtrUE1uWk1zWkZyUmJPZVpxWVl0T0ZROUVoQkFkMzRqc0o1WkxscVNM?=
- =?utf-8?B?UXloZmFORWVRaDFCTnlOMENybncwUjVKU1ZiZ1NzdzNOZHdEYlBoazFGU25u?=
- =?utf-8?B?MjZWc3BHSzd2TTA1aUNRbTArUGNVeC9qUmhHWGplNlRwZFJNQ0JPaE90MHhW?=
- =?utf-8?B?VVBTMXVQUWp5dzZQb21CZ0tveHRKZTFMMzlaaVVrWlFpWG1GeFpaMS9iSTQr?=
- =?utf-8?B?bFdrVDQ0bVhqOERLVHJwYlBrVDNETDVZU3FuQ21tbWxBSWowbTVYU0p5NjhQ?=
- =?utf-8?B?RjRjYUhSYTBYYjQxRC9jQWIrL3ZDTUVuVkMvMXJUUmF5Q3gzZ2JSUFZFUVpq?=
- =?utf-8?B?Qmk3VzJOR0R0LzROM3NPTmFHelgrTU9URENpakh2dkJRS2VqeXhEMy9mWUVu?=
- =?utf-8?B?Q2ZpaFZYK2s2MHErSHpCOEQrRnhjOGhLZEpsTTlrM2hBeGlnZUZ1dm1CbTlN?=
- =?utf-8?B?V3FGUTF3cHM1UWZYM3NSdTZJM05ES0VaNDF0Z0cwL2s4dURMUUNodHNnZzhi?=
- =?utf-8?B?MVl5ODZzZks4Yi83UDFLdXhac3pwZm03V1k4c3Fsc28vSTBCSzkyMUxZWTd4?=
- =?utf-8?B?SVpjYTFxSHBNdFQrVmEwWXdHRTBveWdxUTJ0RUJLS2lZTzdGUy9yUS8xcWhu?=
- =?utf-8?B?Wk0wY1FwYlZtUmVaTUM5RE91ZjQ5V281YUl2cHMwQ0E5Z09uNERiRmFGZnVX?=
- =?utf-8?B?NnBDUXJuSE0zS0ROd0dIanBGUUdXditoeWlKeFIwT0pNdlRJQVBwYkh3N3c2?=
- =?utf-8?B?bit6RXdjc2lBUnZjOW9vWmRFL3NqMmoxWmMyMUJsQmNEU2swdTZENk5ZOVlr?=
- =?utf-8?B?NWgzV0YvL1oyU0F0RnYvSXNiR2FqVXFRbmpaQjY5aitWU3ExanZRZVdXQ0J2?=
- =?utf-8?B?R1orTlRUelJXK3FuSk1UKzVZbk1NaUFlcC9Lb0dMR1pQZ1JBWXM3ckNqUGNi?=
- =?utf-8?B?cDNkcEMyRE9DOUlWYTR5M3BVMW9TZTliS2hFcktUNUhrMzhkRzhod3hVTCtK?=
- =?utf-8?B?eE1SWUplbkpHVi9uK0didUpZeFpwMjk0d0lwUUptNXNFVDVzcmx5RWtvdVQr?=
- =?utf-8?B?TGFLUjZsSnA2bTBLVlZib3NMVlRBTFpKSkhXeGRpQnlmVnd2dUVzeUI4ampk?=
- =?utf-8?B?VVA2cEIxbzNPM1BFVEpDTlFUSU9iV20xSDZ0ZVFHWU5mWEZob3NtbFRBckNy?=
- =?utf-8?B?MW5uZjQzWjJ2R1QzS3pMMkNybmkzT2lDQlNyMUx3cFVXOXRyY1FxQXd1clJp?=
- =?utf-8?B?VENicGozNTZkRlg2YzU1QTdocVB6ZWZCcFdyc2Ezdk1nSE0wQzdnUzZrZ2N0?=
- =?utf-8?B?cWc9PQ==?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4838601e-abea-42ba-280f-08d9fc97fd9b
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 21:59:57.5950
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PagQTxv443fOOr6mxVRczFKO39oXevukMrPVLy0rUmgY2iDM2jTucMpyXCQp71a6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4661
-X-Proofpoint-GUID: Wf--Qx04TssLstBjKAgpGXvyEVsiMpxi
-X-Proofpoint-ORIG-GUID: Wf--Qx04TssLstBjKAgpGXvyEVsiMpxi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-02_12,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
- malwarescore=0 clxscore=1015 priorityscore=1501 bulkscore=0 spamscore=0
- mlxlogscore=999 suspectscore=0 adultscore=0 lowpriorityscore=0
- phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203020092
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAPhsuW44tX0rBpy5c63HgTtRSF=UAAsgv8ZuYE_QTLhi6syXaA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello!
 
+On Tuesday, 01 March 2022 at 01:24, Song Liu wrote:
+> On Mon, Feb 28, 2022 at 1:43 AM Thorsten Leemhuis
+> <regressions@leemhuis.info> wrote:
+> >
+> > [CCing Jens]
+> >
+> > Hi, this is your Linux kernel regression tracker. Top-posting for once,
+> > to make this easily accessible to everyone.
+> >
+> > What's up here? Below regression was reported two weeks ago and I
+> > forwarded it nearly a week ago, nevertheless the reporter afaics didn't
+> > get a single reply. Is the issue discussed somewhere else and I just
+> > missed it? Is the report not accurate for some reason or missing
+> > something important? Or did the report fall throug the cracks?
+>=20
+> Sorry for the late reply. I was on vacation last week.
 
-On 2/25/22 3:43 PM, Hao Luo wrote:
-> Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
-> iter doesn't iterate a set of kernel objects. Instead, it is supposed to
-> be parameterized by a cgroup id and prints only that cgroup. So one
-> needs to specify a target cgroup id when attaching this iter.
-> 
-> The target cgroup's state can be read out via a link of this iter.
-> Typically, we can monitor cgroup creation and deletion using sleepable
-> tracing and use it to create corresponding directories in bpffs and pin
-> a cgroup id parameterized link in the directory. Then we can read the
-> auto-pinned iter link to get cgroup's state. The output of the iter link
-> is determined by the program. See the selftest test_cgroup_stats.c for
-> an example.
-> 
-> Signed-off-by: Hao Luo <haoluo@google.com>
-> ---
->   include/linux/bpf.h            |   1 +
->   include/uapi/linux/bpf.h       |   6 ++
->   kernel/bpf/Makefile            |   2 +-
->   kernel/bpf/cgroup_iter.c       | 141 +++++++++++++++++++++++++++++++++
->   tools/include/uapi/linux/bpf.h |   6 ++
->   5 files changed, 155 insertions(+), 1 deletion(-)
->   create mode 100644 kernel/bpf/cgroup_iter.c
-> 
+No problem, thanks for responding.
+
 [...]
-> +
-> +static const struct seq_operations cgroup_iter_seq_ops = {
-> +	.start  = cgroup_iter_seq_start,
-> +	.next   = cgroup_iter_seq_next,
-> +	.stop   = cgroup_iter_seq_stop,
-> +	.show   = cgroup_iter_seq_show,
-> +};
-> +
-> +BTF_ID_LIST_SINGLE(bpf_cgroup_btf_id, struct, cgroup)
-> +
-> +static int cgroup_iter_seq_init(void *priv_data, struct bpf_iter_aux_info *aux)
-> +{
-> +	*(u64 *)priv_data = aux->cgroup_id;
-> +	return 0;
-> +}
-> +
-> +static void cgroup_iter_seq_fini(void *priv_data)
-> +{
-> +}
-> +
-> +static const struct bpf_iter_seq_info cgroup_iter_seq_info = {
-> +	.seq_ops                = &cgroup_iter_seq_ops,
-> +	.init_seq_private       = cgroup_iter_seq_init,
-> +	.fini_seq_private       = cgroup_iter_seq_fini,
+> > On 22.02.22 09:59, Thorsten Leemhuis wrote:
+> > > Hi, this is your Linux kernel regression tracker.
+> > >
+> > > I noticed a regression report in bugzilla.kernel.org that afaics nobo=
+dy
+> > > acted upon since it was reported about a week ago, that's why I decid=
+ed
+> > > to forward it to the lists and add a few relevant people to the CC. To
+> > > quote from https://bugzilla.kernel.org/show_bug.cgi?id=3D215605
+> > >
+> > >>  Dominik Mierzejewski 2022-02-14 10:36:36 UTC
+> > >>
+> > >> Created attachment 300450 [details]
+> > >> kernel-5.16.8 dmesg with crash
+> > >>
+> > >> I'm experiencing kernel crash when running badblocks (fsck.ext4 -c) =
+on a raid5 md array in my Intel Atom-based NAS box (Thecus N5550):
+> > >> [  720.911993] kernel: BUG: unable to handle page fault for address:=
+ ffffdbc681023bc8
+> > >> [  720.912073] kernel: #PF: supervisor read access in kernel mode
+> > >> [  720.912120] kernel: #PF: error_code(0x0000) - not-present page
+> > >> [  720.912166] kernel: PGD 11ffc6067 P4D 11ffc6067 PUD 0
+> > >> [  720.912213] kernel: Oops: 0000 [#1] PREEMPT SMP NOPTI
+> > >> [  720.912256] kernel: CPU: 1 PID: 1406 Comm: badblocks Not tainted =
+5.16.8-200.fc35.x86_64 #1
+> > >> [  720.912321] kernel: Hardware name: Intel Corporation Milstead Pla=
+tform/Granite Well, BIOS CDV W Series 05 08/27/2015
+> > >> [  720.912400] kernel: RIP: 0010:kfree+0x58/0x3e0
+> > >> [  720.912449] kernel: Code: 80 4c 01 e5 0f 82 84 03 00 00 48 c7 c0 =
+00 00 00 80 48 2b 05 4a 96 3b 01 48 01 c5 48 c1 ed 0c 48 c1 e5 06 48 03 2d =
+28 96 3b 01 <48> 8b 45 08 48 8d 50 ff a8 01 48 0f 45 ea 4
+> > >> 8 8b 55 08 48 8d 42 ff
+> > >> [  720.912598] kernel: RSP: 0018:ffff9db4008efaf8 EFLAGS: 00010286
+> > >> [  720.912648] kernel: RAX: 00006d7bc0000000 RBX: ffff9284c5214800 R=
+CX: ffff9284c3758ff8
+> > >> [  720.912708] kernel: RDX: ffff9283c1102740 RSI: ffffffffc07af091 R=
+DI: ffff9db4008efd58
+> > >> [  720.912767] kernel: RBP: ffffdbc681023bc0 R08: ffff9db4008efb88 R=
+09: ffff9284c3759000
+> > >> [  720.912826] kernel: R10: 0000000000000028 R11: ffff9284c213db48 R=
+12: ffff9db4008efd58
+> > >> [  720.912885] kernel: R13: ffff9284c213da00 R14: ffff9284c375f000 R=
+15: ffff9db4008efd58
+> > >> [  720.912945] kernel: FS:  00007f73e6669740(0000) GS:ffff9284dbc800=
+00(0000) knlGS:0000000000000000
+> > >> [  720.913012] kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005=
+0033
+> > >> [  720.913062] kernel: CR2: ffffdbc681023bc8 CR3: 000000005c2cc000 C=
+R4: 00000000000006e0
+> > >> [  720.913122] kernel: Call Trace:
+> > >> [  720.913150] kernel:  <TASK>
+> > >> [  720.913179] kernel:  raid5_make_request+0xb31/0xb90 [raid456]
+> > >> [  720.913247] kernel:  ? do_wait_intr_irq+0xa0/0xa0
+> > >> [  720.913292] kernel:  ? __blk_queue_split+0x30a/0x470
+> > >> [  720.913339] kernel:  md_handle_request+0x119/0x180
+> > >> [  720.913386] kernel:  md_submit_bio+0x67/0xa0
+> > >> [  720.913425] kernel:  __submit_bio_fops+0x91/0x160
+> > >> [  720.913468] kernel:  submit_bio_noacct+0xd7/0x2c0
+> > >> [  720.913510] kernel:  __blkdev_direct_IO_simple+0x198/0x290
+> > >> [  720.913576] kernel:  ? __fpu_restore_sig+0x193/0x570
+> > >> [  720.913623] kernel:  ? sysvec_apic_timer_interrupt+0xaf/0xd0
+> > >> [  720.913676] kernel:  ? __blkdev_direct_IO_simple+0x290/0x290
+> > >> [  720.913728] kernel:  generic_file_read_iter+0x9b/0x160
+> > >> [  720.913775] kernel:  new_sync_read+0x105/0x180
+> > >> [  720.913820] kernel:  vfs_read+0xf1/0x190
+> > >> [  720.913858] kernel:  ksys_read+0x4f/0xc0
+> > >> [  720.913896] kernel:  do_syscall_64+0x38/0x90
+> > >> [  720.913936] kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > >> [  720.913985] kernel: RIP: 0033:0x7f73e676d772
+> > >> [  720.914024] kernel: Code: c0 e9 b2 fe ff ff 50 48 8d 3d da 2e 0c =
+00 e8 b5 f9 01 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 =
+75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 5=
+4 24
+> > >> [  720.914166] kernel: RSP: 002b:00007fff1b8fcbb8 EFLAGS: 00000246 O=
+RIG_RAX: 0000000000000000
+> > >> [  720.914231] kernel: RAX: ffffffffffffffda RBX: 0000000000000040 R=
+CX: 00007f73e676d772
+> > >> [  720.917149] kernel: RDX: 0000000000040000 RSI: 00007f73e65d3000 R=
+DI: 0000000000000004
+> > >> [  720.920078] kernel: RBP: 0000000000001000 R08: 00000000015105c0 R=
+09: 0000000000000080
+> > >> [  720.922980] kernel: R10: 00007fff1b8fca00 R11: 0000000000000246 R=
+12: 00000015105c0000
+> > >> [  720.925875] kernel: R13: 0000000000000004 R14: 00007f73e65d3000 R=
+15: 0000000000040000
+> > >> [  720.928795] kernel:  </TASK>
+> > >> [  720.931704] kernel: Modules linked in: sctp ip6_udp_tunnel udp_tu=
+nnel rpcrdma rdma_cm iw_cm ib_cm ib_core sit tunnel4 ip_tunnel rfkill ipt_R=
+EJECT nf_reject_ipv4 iptable_filter xt_nat iptable_nat nf_nat iptable_mangl=
+e nf_conntrack_pptp xt_CT iptable_raw xt_multiport xt_set ip6t_REJECT nf_re=
+ject_ipv6 xt_LOG nf_log_syslog xt_limit xt_state xt_conntrack nf_conntrack =
+nf_defrag_ipv6 nf_defrag_ipv4 ip6table_filter ip6_tables ip_set_hash_netpor=
+t ip_set_hash_net ip_set drivetemp it87 nfnetlink hwmon_vid vfat fat iTCO_w=
+dt intel_pmc_bxt iTCO_vendor_support at24 raid456 async_raid6_recov async_m=
+emcpy async_pq async_xor async_tx intel_powerclamp raid1 coretemp snd_hda_c=
+odec_realtek snd_hda_codec_generic ledtrig_audio snd_hda_codec_hdmi snd_hda=
+_intel snd_intel_dspcfg snd_intel_sdw_acpi snd_hda_codec snd_hda_core snd_u=
+sb_audio i2c_i801 gma500_gfx i2c_smbus snd_usbmidi_lib joydev snd_hwdep snd=
+_rawmidi snd_seq_device mc snd_pcm lpc_ich i2c_algo_bit snd_timer drm_kms_h=
+elper snd cec soundcore nfsd auth_rpcgss
+> > >> [  720.931885] kernel:  nfs_acl lockd grace drm fuse sunrpc zram ip_=
+tables hid_logitech_hidpp serio_raw r8152 sata_sil24 video mii hid_jabra e1=
+000e hid_logitech_dj
+> > >> [  720.952122] kernel: CR2: ffffdbc681023bc8
+> > >> [  720.955651] kernel: ---[ end trace de2c3d5b971ae71d ]---
+> > >> [  720.959186] kernel: RIP: 0010:kfree+0x58/0x3e0
+> > >> [  720.962723] kernel: Code: 80 4c 01 e5 0f 82 84 03 00 00 48 c7 c0 =
+00 00 00 80 48 2b 05 4a 96 3b 01 48 01 c5 48 c1 ed 0c 48 c1 e5 06 48 03 2d =
+28 96 3b 01 <48> 8b 45 08 48 8d 50 ff a8 01 48 0f 45 ea 48 8b 55 08 48 8d 4=
+2 ff
+> > >> [  720.966472] kernel: RSP: 0018:ffff9db4008efaf8 EFLAGS: 00010286
+> > >> [  720.970238] kernel: RAX: 00006d7bc0000000 RBX: ffff9284c5214800 R=
+CX: ffff9284c3758ff8
+> > >> [  720.973993] kernel: RDX: ffff9283c1102740 RSI: ffffffffc07af091 R=
+DI: ffff9db4008efd58
+> > >> [  720.977723] kernel: RBP: ffffdbc681023bc0 R08: ffff9db4008efb88 R=
+09: ffff9284c3759000
+> > >> [  720.981464] kernel: R10: 0000000000000028 R11: ffff9284c213db48 R=
+12: ffff9db4008efd58
+> > >> [  720.985228] kernel: R13: ffff9284c213da00 R14: ffff9284c375f000 R=
+15: ffff9db4008efd58
+> > >> [  720.988995] kernel: FS:  00007f73e6669740(0000) GS:ffff9284dbc800=
+00(0000) knlGS:0000000000000000
+> > >> [  720.992774] kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005=
+0033
+> > >> [  720.996535] kernel: CR2: ffffdbc681023bc8 CR3: 000000005c2cc000 C=
+R4: 00000000000006e0
+>=20
+> I tried a few things (injecting badblocks, etc.) but still could not
+> reproduce this issue.
+>=20
+> Hi Dominik,
+>=20
+> Could you please share more information about the array?
 
-Since cgroup_iter_seq_fini() is a nop, you can just have
-	.fini_seq_private	= NULL,
+Please note that I repaired the array by stopping it and reassembling
+without badblocks maps:
+# mdadm --assemble -U force-no-bbl /dev/md126 /dev/sdb1 /dev/sdc1 /dev/sdd1=
+ /dev/sde1 /dev/sdf1
 
-> +	.seq_priv_size          = sizeof(u64),
-> +};
-> +
-> +static int bpf_iter_attach_cgroup(struct bpf_prog *prog,
-> +				  union bpf_iter_link_info *linfo,
-> +				  struct bpf_iter_aux_info *aux)
-> +{
-> +	aux->cgroup_id = linfo->cgroup.cgroup_id;
-> +	return 0;
-> +}
-> +
-> +static void bpf_iter_detach_cgroup(struct bpf_iter_aux_info *aux)
-> +{
-> +}
-> +
-> +void bpf_iter_cgroup_show_fdinfo(const struct bpf_iter_aux_info *aux,
-> +				 struct seq_file *seq)
-> +{
-> +	char buf[64] = {0};
+I ran fsck on it and repaired multiple-owned blocks. It's been running
+smoothly since then, even under kernel 5.16.9. I'm not sure the
+following information will be useful now.
 
-Is this 64 the maximum possible cgroup path length?
-If there is a macro for that, I think it would be good to use it.
+>    mdadm --detail /dev/mdXXX
 
-> +
-> +	cgroup_path_from_kernfs_id(aux->cgroup_id, buf, sizeof(buf));
+# mdadm --detail /dev/md126
+/dev/md126:
+           Version : 1.2
+     Creation Time : Sat Oct 19 22:39:14 2019
+        Raid Level : raid5
+        Array Size : 11720531968 (10.92 TiB 12.00 TB)
+     Used Dev Size : 2930132992 (2.73 TiB 3.00 TB)
+      Raid Devices : 5
+     Total Devices : 5
+       Persistence : Superblock is persistent
 
-cgroup_path_from_kernfs_id() might fail in which case, buf will be 0.
-and cgroup_path will be nothing. I guess this might be the expected
-result. I might be good to add a comment to clarify in the code.
+     Intent Bitmap : Internal
+
+       Update Time : Wed Mar  2 22:29:09 2022
+             State : clean=20
+    Active Devices : 5
+   Working Devices : 5
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : left-symmetric
+        Chunk Size : 512K
+
+Consistency Policy : bitmap
+
+              Name : any:nas
+              UUID : 4fef0683:8f39a12d:eb69f742:b501ef53
+            Events : 71011
+
+    Number   Major   Minor   RaidDevice State
+       6       8       17        0      active sync   /dev/sdb1
+       1       8       33        1      active sync   /dev/sdc1
+       7       8       49        2      active sync   /dev/sdd1
+       3       8       65        3      active sync   /dev/sde1
+       5       8       81        4      active sync   /dev/sdf1
+
+>    mdadm --examine /dev/<devices>
+
+# mdadm --examine /dev/sdb1
+/dev/sdb1:
+          Magic : a92b4efc
+        Version : 1.2
+    Feature Map : 0x1
+     Array UUID : 4fef0683:8f39a12d:eb69f742:b501ef53
+           Name : any:nas
+  Creation Time : Sat Oct 19 22:39:14 2019
+     Raid Level : raid5
+   Raid Devices : 5
+
+ Avail Dev Size : 5860266895 sectors (2.73 TiB 3.00 TB)
+     Array Size : 11720531968 KiB (10.92 TiB 12.00 TB)
+  Used Dev Size : 5860265984 sectors (2.73 TiB 3.00 TB)
+    Data Offset : 264192 sectors
+   Super Offset : 8 sectors
+   Unused Space : before=3D264112 sectors, after=3D911 sectors
+          State : clean
+    Device UUID : 506215d3:7893b583:1b956e6a:532d7751
+
+Internal Bitmap : 8 sectors from superblock
+    Update Time : Wed Mar  2 22:29:09 2022
+       Checksum : b8ce0df8 - correct
+         Events : 71011
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+   Device Role : Active device 0
+   Array State : AAAAA ('A' =3D=3D active, '.' =3D=3D missing, 'R' =3D=3D r=
+eplacing)
+# mdadm --examine /dev/sdc1
+/dev/sdc1:
+          Magic : a92b4efc
+        Version : 1.2
+    Feature Map : 0x1
+     Array UUID : 4fef0683:8f39a12d:eb69f742:b501ef53
+           Name : any:nas
+  Creation Time : Sat Oct 19 22:39:14 2019
+     Raid Level : raid5
+   Raid Devices : 5
+
+ Avail Dev Size : 5860266895 sectors (2.73 TiB 3.00 TB)
+     Array Size : 11720531968 KiB (10.92 TiB 12.00 TB)
+  Used Dev Size : 5860265984 sectors (2.73 TiB 3.00 TB)
+    Data Offset : 264192 sectors
+   Super Offset : 8 sectors
+   Unused Space : before=3D264112 sectors, after=3D911 sectors
+          State : clean
+    Device UUID : 9ab16a47:b23435f3:9231fd6b:e7d709d4
+
+Internal Bitmap : 8 sectors from superblock
+    Update Time : Wed Mar  2 22:29:09 2022
+       Checksum : 20c43ebb - correct
+         Events : 71011
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+   Device Role : Active device 1
+   Array State : AAAAA ('A' =3D=3D active, '.' =3D=3D missing, 'R' =3D=3D r=
+eplacing)
+# mdadm --examine /dev/sdd1
+/dev/sdd1:
+          Magic : a92b4efc
+        Version : 1.2
+    Feature Map : 0x1
+     Array UUID : 4fef0683:8f39a12d:eb69f742:b501ef53
+           Name : any:nas
+  Creation Time : Sat Oct 19 22:39:14 2019
+     Raid Level : raid5
+   Raid Devices : 5
+
+ Avail Dev Size : 5860266895 sectors (2.73 TiB 3.00 TB)
+     Array Size : 11720531968 KiB (10.92 TiB 12.00 TB)
+  Used Dev Size : 5860265984 sectors (2.73 TiB 3.00 TB)
+    Data Offset : 264192 sectors
+   Super Offset : 8 sectors
+   Unused Space : before=3D264112 sectors, after=3D911 sectors
+          State : clean
+    Device UUID : 44265974:c83d899d:9bab17f4:59a0786e
+
+Internal Bitmap : 8 sectors from superblock
+    Update Time : Wed Mar  2 22:29:09 2022
+       Checksum : 1a8ffefc - correct
+         Events : 71011
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+   Device Role : Active device 2
+   Array State : AAAAA ('A' =3D=3D active, '.' =3D=3D missing, 'R' =3D=3D r=
+eplacing)
+# mdadm --examine /dev/sde1
+/dev/sde1:
+          Magic : a92b4efc
+        Version : 1.2
+    Feature Map : 0x1
+     Array UUID : 4fef0683:8f39a12d:eb69f742:b501ef53
+           Name : any:nas
+  Creation Time : Sat Oct 19 22:39:14 2019
+     Raid Level : raid5
+   Raid Devices : 5
+
+ Avail Dev Size : 5860266895 sectors (2.73 TiB 3.00 TB)
+     Array Size : 11720531968 KiB (10.92 TiB 12.00 TB)
+  Used Dev Size : 5860265984 sectors (2.73 TiB 3.00 TB)
+    Data Offset : 264192 sectors
+   Super Offset : 8 sectors
+   Unused Space : before=3D264112 sectors, after=3D911 sectors
+          State : clean
+    Device UUID : 722420f5:3d9c05e0:71bad4ca:add63b08
+
+Internal Bitmap : 8 sectors from superblock
+    Update Time : Wed Mar  2 22:29:09 2022
+       Checksum : 4e53a0c5 - correct
+         Events : 71011
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+   Device Role : Active device 3
+   Array State : AAAAA ('A' =3D=3D active, '.' =3D=3D missing, 'R' =3D=3D r=
+eplacing)
+# mdadm --examine /dev/sdf1
+/dev/sdf1:
+          Magic : a92b4efc
+        Version : 1.2
+    Feature Map : 0x1
+     Array UUID : 4fef0683:8f39a12d:eb69f742:b501ef53
+           Name : any:nas
+  Creation Time : Sat Oct 19 22:39:14 2019
+     Raid Level : raid5
+   Raid Devices : 5
+
+ Avail Dev Size : 5860266895 sectors (2.73 TiB 3.00 TB)
+     Array Size : 11720531968 KiB (10.92 TiB 12.00 TB)
+  Used Dev Size : 5860265984 sectors (2.73 TiB 3.00 TB)
+    Data Offset : 264192 sectors
+   Super Offset : 8 sectors
+   Unused Space : before=3D264112 sectors, after=3D911 sectors
+          State : clean
+    Device UUID : 6c2badc9:f7803c8b:9ee398c0:b4e7497d
+
+Internal Bitmap : 8 sectors from superblock
+    Update Time : Wed Mar  2 22:29:09 2022
+       Checksum : 38e9c6af - correct
+         Events : 71011
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+   Device Role : Active device 4
+   Array State : AAAAA ('A' =3D=3D active, '.' =3D=3D missing, 'R' =3D=3D r=
+eplacing)
 
 
-> +	seq_printf(seq, "cgroup_id:\t%lu\n", aux->cgroup_id);
-> +	seq_printf(seq, "cgroup_path:\t%s\n", buf);
-> +}
-> +
-> +int bpf_iter_cgroup_fill_link_info(const struct bpf_iter_aux_info *aux,
-> +				   struct bpf_link_info *info)
-> +{
-> +	info->iter.cgroup.cgroup_id = aux->cgroup_id;
-> +	return 0;
-> +}
-> +
-> +DEFINE_BPF_ITER_FUNC(cgroup, struct bpf_iter_meta *meta,
-> +		     struct cgroup *cgroup)
-> +
-> +static struct bpf_iter_reg bpf_cgroup_reg_info = {
-> +	.target			= "cgroup",
-> +	.attach_target		= bpf_iter_attach_cgroup,
-> +	.detach_target		= bpf_iter_detach_cgroup,
+Regards,
+Dominik
 
-The same ehre, since bpf_iter_detach_cgroup() is a nop,
-you can replace it with NULL in the above.
-
-> +	.show_fdinfo		= bpf_iter_cgroup_show_fdinfo,
-> +	.fill_link_info		= bpf_iter_cgroup_fill_link_info,
-> +	.ctx_arg_info_size	= 1,
-> +	.ctx_arg_info		= {
-> +		{ offsetof(struct bpf_iter__cgroup, cgroup),
-> +		  PTR_TO_BTF_ID },
-> +	},
-> +	.seq_info		= &cgroup_iter_seq_info,
-> +};
-> +
-> +static int __init bpf_cgroup_iter_init(void)
-> +{
-> +	bpf_cgroup_reg_info.ctx_arg_info[0].btf_id = bpf_cgroup_btf_id[0];
-> +	return bpf_iter_reg_target(&bpf_cgroup_reg_info);
-> +}
-> +
-[...]
+--=20
+Fedora   https://getfedora.org  |  RPM Fusion  http://rpmfusion.org
+There should be a science of discontent. People need hard times and
+oppression to develop psychic muscles.
+        -- from "Collected Sayings of Muad'Dib" by the Princess Irulan
