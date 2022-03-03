@@ -2,117 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E92C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237221AbiCCXDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 18:03:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        id S236578AbiCCXDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 18:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237183AbiCCXDZ (ORCPT
+        with ESMTP id S235818AbiCCXDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 18:03:25 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD01090CDF
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 15:02:34 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id i11so8520212eda.9
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 15:02:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QYz72xS4UEUEZyA/zmJjeRPqsPKoO6eSb+1q4FNlVR8=;
-        b=l6FIj3aats2SLjz57UHUFzeX+1E7k3S4Dlpstfnlv80RVlxrN8PxjndVH7iYewpCSq
-         Xyhxd+QRKRv3vVvSZb2z4KiSw3xMy1qgAriSSd2zu2wTAj9I5snO+A0DBK9Sv3Cr4A7n
-         f39aaXyoc2P3YxjLzmAQQ0cYuuX07Cz/93Qug=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QYz72xS4UEUEZyA/zmJjeRPqsPKoO6eSb+1q4FNlVR8=;
-        b=F07lkiCAiuKGv3gJiSw2SjVKtNkZ/rt/VSeR353tGFZRRP/SGijcR7nWnDg+kGW6XS
-         X3EZ2sikKOnsznpncX4r9ALVBvCCuMUqwV0EbOLgkLD6FX0xlg0fpIe/H2Hrgj7aPFus
-         NGdRA8nVJj5OAdSO5DB231K1uDcmWekYuf3PdE7TNmE+IZps/EuDureFG8J0QnL8mRK9
-         Vv6fbP7geKCe4WUxEYCQKMWrAO+a262SS3P7IseswaNuKAA6MJ58k6Hp1n0DKc6k5Bpw
-         M+YIdbw+9rfVWaGHbAEYrSY2DCrZR79tidQHVUCPh0cZYilbr492noZ2zezFD954SoxL
-         /1Vg==
-X-Gm-Message-State: AOAM533SBZQO6nC8ZQv6a+t5xOKDlSJL9oG76LwO1rF7a+6IupE3rDAw
-        10MzL3j59yx1frzBfjcdAAe6IzFY1dXE8w==
-X-Google-Smtp-Source: ABdhPJyIZdb8Szc0KviewFA/v8XW0TOZsUgOnLWKNu3fjnSvFvVjmzxpwXF+PirClYV9EpsxF+AxZg==
-X-Received: by 2002:a05:6402:424b:b0:410:92aa:30b1 with SMTP id g11-20020a056402424b00b0041092aa30b1mr36374049edb.297.1646348552763;
-        Thu, 03 Mar 2022 15:02:32 -0800 (PST)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id p14-20020aa7cc8e000000b0040f13865fa9sm1389343edt.3.2022.03.03.15.02.31
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 15:02:32 -0800 (PST)
-Received: by mail-wr1-f53.google.com with SMTP id d3so10051561wrf.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 15:02:31 -0800 (PST)
-X-Received: by 2002:a5d:64ed:0:b0:1f0:6672:f10c with SMTP id
- g13-20020a5d64ed000000b001f06672f10cmr1270642wri.679.1646348551347; Thu, 03
- Mar 2022 15:02:31 -0800 (PST)
+        Thu, 3 Mar 2022 18:03:31 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB2C10E042;
+        Thu,  3 Mar 2022 15:02:43 -0800 (PST)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K8mj12hQTz67fK4;
+        Fri,  4 Mar 2022 07:02:29 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 4 Mar 2022 00:02:41 +0100
+Received: from A2006125610.china.huawei.com (10.47.82.4) by
+ lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 3 Mar 2022 23:02:34 +0000
+From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
+        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
+        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
+        <liulongfang@huawei.com>, <prime.zeng@hisilicon.com>,
+        <jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
+Subject: [PATCH v8 6/9] hisi_acc_vfio_pci: Add helper to retrieve the struct pci_driver
+Date:   Thu, 3 Mar 2022 23:01:28 +0000
+Message-ID: <20220303230131.2103-7-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
+References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-References: <20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
- <20220301181107.v4.2.I48b18ab197c9b649d376cf8cfd934e59d338f86d@changeid>
-In-Reply-To: <20220301181107.v4.2.I48b18ab197c9b649d376cf8cfd934e59d338f86d@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 3 Mar 2022 15:02:18 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=X6jf-UbCzB23MjBWwfs0HcHuoE9ozd3FZxN1U-H_8Saw@mail.gmail.com>
-Message-ID: <CAD=FV=X6jf-UbCzB23MjBWwfs0HcHuoE9ozd3FZxN1U-H_8Saw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] drm/bridge: analogix_dp: Enable autosuspend
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>, Sean Paul <sean@poorly.run>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.47.82.4]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+struct pci_driver pointer is an input into the pci_iov_get_pf_drvdata().
+Introduce helpers to retrieve the ACC PF dev struct pci_driver pointers
+as we use this in ACC vfio migration driver.
 
-On Tue, Mar 1, 2022 at 6:11 PM Brian Norris <briannorris@chromium.org> wrote:
->
-> DP AUX transactions can consist of many short operations. There's no
-> need to power things up/down in short intervals.
->
-> I pick an arbitrary 100ms; for the systems I'm testing (Rockchip
-> RK3399), runtime-PM transitions only take a few microseconds.
->
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> ---
->
-> Changes in v4:
->  - call pm_runtime_mark_last_busy() and
->    pm_runtime_dont_use_autosuspend()
->  - drop excess pm references around drm_get_edid(), now that we grab and
->    hold in the dp-aux helper
->
-> Changes in v3:
->  - New in v3
->
->  drivers/gpu/drm/bridge/analogix/analogix_dp_core.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/crypto/hisilicon/hpre/hpre_main.c | 6 ++++++
+ drivers/crypto/hisilicon/sec2/sec_main.c  | 6 ++++++
+ drivers/crypto/hisilicon/zip/zip_main.c   | 6 ++++++
+ include/linux/hisi_acc_qm.h               | 5 +++++
+ 4 files changed, 23 insertions(+)
 
-This looks great to me now, thanks.
+diff --git a/drivers/crypto/hisilicon/hpre/hpre_main.c b/drivers/crypto/hisilicon/hpre/hpre_main.c
+index 3589d8879b5e..36ab30e9e654 100644
+--- a/drivers/crypto/hisilicon/hpre/hpre_main.c
++++ b/drivers/crypto/hisilicon/hpre/hpre_main.c
+@@ -1190,6 +1190,12 @@ static struct pci_driver hpre_pci_driver = {
+ 	.driver.pm		= &hpre_pm_ops,
+ };
+ 
++struct pci_driver *hisi_hpre_get_pf_driver(void)
++{
++	return &hpre_pci_driver;
++}
++EXPORT_SYMBOL_GPL(hisi_hpre_get_pf_driver);
++
+ static void hpre_register_debugfs(void)
+ {
+ 	if (!debugfs_initialized())
+diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+index 311a8747b5bf..421a405ca337 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_main.c
++++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+@@ -1088,6 +1088,12 @@ static struct pci_driver sec_pci_driver = {
+ 	.driver.pm = &sec_pm_ops,
+ };
+ 
++struct pci_driver *hisi_sec_get_pf_driver(void)
++{
++	return &sec_pci_driver;
++}
++EXPORT_SYMBOL_GPL(hisi_sec_get_pf_driver);
++
+ static void sec_register_debugfs(void)
+ {
+ 	if (!debugfs_initialized())
+diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
+index 66decfe07282..4534e1e107d1 100644
+--- a/drivers/crypto/hisilicon/zip/zip_main.c
++++ b/drivers/crypto/hisilicon/zip/zip_main.c
+@@ -1012,6 +1012,12 @@ static struct pci_driver hisi_zip_pci_driver = {
+ 	.driver.pm		= &hisi_zip_pm_ops,
+ };
+ 
++struct pci_driver *hisi_zip_get_pf_driver(void)
++{
++	return &hisi_zip_pci_driver;
++}
++EXPORT_SYMBOL_GPL(hisi_zip_get_pf_driver);
++
+ static void hisi_zip_register_debugfs(void)
+ {
+ 	if (!debugfs_initialized())
+diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
+index 6a6477c34666..00f2a4db8723 100644
+--- a/include/linux/hisi_acc_qm.h
++++ b/include/linux/hisi_acc_qm.h
+@@ -476,4 +476,9 @@ void hisi_qm_pm_init(struct hisi_qm *qm);
+ int hisi_qm_get_dfx_access(struct hisi_qm *qm);
+ void hisi_qm_put_dfx_access(struct hisi_qm *qm);
+ void hisi_qm_regs_dump(struct seq_file *s, struct debugfs_regset32 *regset);
++
++/* Used by VFIO ACC live migration driver */
++struct pci_driver *hisi_sec_get_pf_driver(void);
++struct pci_driver *hisi_hpre_get_pf_driver(void);
++struct pci_driver *hisi_zip_get_pf_driver(void);
+ #endif
+-- 
+2.25.1
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
-Though I'm not a massive expert on the Analogix DP driver, I'm pretty
-confident about the DP AUX stuff that Brian is touching. I just
-checked and I see that this driver isn't changing lots and the last
-change landed in drm-misc, which means that I can commit this. Thus,
-unless someone else shouts, I'll plan to wait until next week and
-commit these two patches to drm-misc.
-
-The first of the two patches is a "Fix" but since it's been broken
-since 2016 I'll assume that nobody is chomping at the bit for these to
-get into stable and that it would be easier to land both in
-"drm-misc-next". Please yell if someone disagrees.
-
--Doug
