@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D70C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232802AbiCCLbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:31:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48108 "EHLO
+        id S229672AbiCCLbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:31:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbiCCLbL (ORCPT
+        with ESMTP id S232730AbiCCLbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:11 -0500
+        Thu, 3 Mar 2022 06:31:09 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C761795FE
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89044DE2CD
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=1h/ft8uEzPwA8bso5xyVZXC8EKcwtN+ddoxwlbZkOho=; b=OtRwD1HTr0fSKeREEY0D0sLC9w
-        YAtaRXS/hMz+JQnCMiKtxwNtUlcvcrqqHBPcx0IDwy4ydQnsMxm1uzFrn3nQnuRjNQgcrbOIXeAAz
-        9CVKaShaWsEo/c0hGLahNYXais5z6HallAE5FR4eXKy59n/+ahYaral4DhS41y3vwbtB+/d55EOzp
-        OIxmG2QYX6f+0L3ft/T8FMOX+/9U9ZE0T9+Oj/ztmtXfiePqezSgtUhMG8wv3rZs8jFwYAuo9ek7e
-        B7Zj8XLW4Pa/E2GaRczNvBeL63xvRLKsmXTAOOExgLgrwoAnAZkw8I0nWC41RoZRmIgnkXCzYebwe
-        +tDtDOMA==;
+        bh=JWR1Jvatd2wRq94EgF2FFUHDrJsSm4yXOI7jdL4Xcs4=; b=hJhEpavCPHNClNaTf6mDQbriuB
+        JU5Oc0Kd8GpMqMPexa1jJDYxpkgq+LXmAWOnGuXfsufIF7YnmQ3UYeEeuJzEPjHTZq3b++1CZ69MF
+        91nNsTgI4HgIy2RlbazkagdAQwj535bOVnXZZsD6SUlM2+28TyND5JG6u7aCQt9e4gQJlXZdhIUHN
+        cJEJ8ZCLoyNupZyJ8MTihszNfFoGfEjfNdrHQ1ydPrpBZowovcL4Am3ZFUJTmkOctoQQaOBmixBb0
+        HgCRY5T4KCBLM6iRcagjFLTOVeP2Z+kTIkdgJdR46BH6k9AHcYDMydkr4PJAiGVIqOQYRMkaZ1K4R
+        oePOFf1A==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeh-00Etph-Sf; Thu, 03 Mar 2022 11:30:00 +0000
+        id 1nPjeh-00Etpn-QZ; Thu, 03 Mar 2022 11:29:59 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 09C7B302D41;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0E0E7302D8A;
         Thu,  3 Mar 2022 12:29:57 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 7DAD530126B23; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112826.481793874@infradead.org>
+        id 9002A30126BED; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112826.787190196@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:46 +0100
+Date:   Thu, 03 Mar 2022 12:23:51 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 25/39] x86/bugs: Disable Retpoline when IBT
+Subject: [PATCH v3 30/39] x86/ibt: Ensure module init/exit points have references
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,58 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Retpoline and IBT are mutually exclusive. IBT relies on indirect
-branches (JMP/CALL *%reg) while retpoline avoids them by design.
-
-Demote to LFENCE on IBT enabled hardware.
+Since the references to the module init/exit points only have external
+references, a module LTO run will consider them 'unused' and seal
+them, leading to an immediate fail on module load.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/linux/cfi.h |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -891,6 +891,7 @@ static void __init spectre_v2_select_mit
- {
- 	enum spectre_v2_mitigation_cmd cmd = spectre_v2_parse_cmdline();
- 	enum spectre_v2_mitigation mode = SPECTRE_V2_NONE;
-+	bool silent_demote = false;
+--- a/include/linux/cfi.h
++++ b/include/linux/cfi.h
+@@ -34,8 +34,17 @@ static inline void cfi_module_remove(str
  
- 	/*
- 	 * If the CPU is not affected and the command line mode is NONE or AUTO
-@@ -906,6 +907,7 @@ static void __init spectre_v2_select_mit
+ #else /* !CONFIG_CFI_CLANG */
  
- 	case SPECTRE_V2_CMD_FORCE:
- 	case SPECTRE_V2_CMD_AUTO:
-+		silent_demote = true;
- 		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED)) {
- 			mode = SPECTRE_V2_IBRS_ENHANCED;
- 			/* Force it so VMEXIT will restore correctly */
-@@ -938,6 +940,7 @@ static void __init spectre_v2_select_mit
- 	retpoline_amd:
- 		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
- 			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
-+			silent_demote = false;
- 			goto retpoline_generic;
- 		}
- 		mode = SPECTRE_V2_RETPOLINE_AMD;
-@@ -947,6 +950,16 @@ static void __init spectre_v2_select_mit
- 	retpoline_generic:
- 		mode = SPECTRE_V2_RETPOLINE_GENERIC;
- 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+-#define __CFI_ADDRESSABLE(fn, __attr)
++#ifdef CONFIG_X86_KERNEL_IBT
 +
-+		/*
-+		 * ROP defeats IBT, make sure not to use Retpolines and IBT together.
-+		 */
-+		if (HAS_KERNEL_IBT && cpu_feature_enabled(X86_FEATURE_IBT)) {
-+			if (!silent_demote)
-+				pr_warn("Spectre mitigation: Switching to LFENCE due to IBT\n");
-+			mode = SPECTRE_V2_RETPOLINE_AMD;
-+			setup_force_cpu_cap(X86_FEATURE_RETPOLINE_AMD);
-+		}
- 	}
++#define __CFI_ADDRESSABLE(fn, __attr) \
++	const void *__cfi_jt_ ## fn __visible __attr = (void *)&fn
++
++#endif /* CONFIG_X86_KERNEL_IBT */
  
- specv2_set_mode:
+ #endif /* CONFIG_CFI_CLANG */
+ 
++#ifndef __CFI_ADDRESSABLE
++#define __CFI_ADDRESSABLE(fn, __attr)
++#endif
++
+ #endif /* _LINUX_CFI_H */
 
 
