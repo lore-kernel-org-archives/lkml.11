@@ -2,99 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E06EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C15C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231230AbiCCISg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:18:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
+        id S231240AbiCCITh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231139AbiCCISd (ORCPT
+        with ESMTP id S230188AbiCCITf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:18:33 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E42D5C34D;
-        Thu,  3 Mar 2022 00:17:47 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K8P460kP7z4xdl;
-        Thu,  3 Mar 2022 19:17:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1646295463;
-        bh=CPzmnLR+ho77uKWhDa8Y+eEe6N04grx16PnUHQlJvrs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=q0LHXlNqsvbdzWe9vPg+d4bwteqv8ig69J0yGNuKSm9bXGRSf53/jyQo8HqrwqDls
-         3gAMxZMkW9AZIvneMIShH+NqGOT+lFr+iwG5jt5YzLCz+5oEl+EilmmGPHsQxeAa+Q
-         foDaJdbkJoPoIS3QpyE1F5GHO1PSAqOrCKQ3Q+ANgTD6U5iAxt6qobyVBcRvnjFxlC
-         hHErlkNsGDJhU0HK0h1xOPvXFdF4iEYSPSteb1L6zhBIYNfN7uaO8TYvuhiHKdyCfp
-         exAX5Z4tTt2rzxzCJ0g1gpNN+o1hFAA+spUrs4pHyv6Ph4TW+s98sy/5192OOUHolx
-         6y7CbH0LS16DA==
-Date:   Thu, 3 Mar 2022 19:17:41 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Alan Kao <alankao@andestech.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stafford Horne <shorne@gmail.com>
-Subject: linux-next: manual merge of the akpm-current tree with the
- asm-generic tree
-Message-ID: <20220303191741.3055ac34@canb.auug.org.au>
+        Thu, 3 Mar 2022 03:19:35 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089A11712B5
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:18:50 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id j15so7037286lfe.11
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 00:18:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=on4cm3w97gy7RevnM2fAc8kCbBYemQ93B0MGug+f2Sw=;
+        b=HbmOUBeULRAj4VjhmZVI3EKmNdxqiWcxb0dr+4Kpd3Uum3VcFHkK4pe8+KHgkMhEwG
+         XEhHYFpvjPm4aiqP904xnKALwPNGd2RH8l59cDmlnI68h8iSOcWWegi1H5Ir8tSZAbFc
+         m61+tI1InDj0JEM9IXyUtSFpJN7s4yoRuKDdc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=on4cm3w97gy7RevnM2fAc8kCbBYemQ93B0MGug+f2Sw=;
+        b=d8LH1qcLwNAGLIehQbnwpLDF2zOajsRUCG2ya9oNC8ykm1bJ/7sfnu5LbiV25MEqtP
+         MdNcukRKlYJIFNbxZWgjjFBD2lXsvA9gA90ZMqY9eJv0qxZQM21bdP56kLuMznqDQS+g
+         OeHjv+EZu9hYVppI4BfihCA/Tw1MCkAFOJ40FrPnwZaGGPhTFrE6qcnbV/ra7jegWhCE
+         0LgwGrGnA47l4PRSvMDoiV3UHGmV99pG1S9d6EI63ENdJNxEY5L6iRyNXc6uJqU59EPo
+         ti4lRo42R0dgxQy3yC/Wd0+WXC1z815UBxi1rxQzyp+9kkIQLWnQi/HxZ91tNIRYHrI/
+         KKAw==
+X-Gm-Message-State: AOAM532pjJ5UqcUuBchnzzmHJXKiJ5RL/G8mZA05rwNMvnSR/nJ6doQX
+        ZmQMZNQd98d2EsL3wt9VpNfZs3b925W6YWnX76jpE5gE2Ap8/WMG
+X-Google-Smtp-Source: ABdhPJz7qOkcs9NrVpx+qNqlVj4sTQvZ7OlQDyiM5QuV1qHK2lks0edta7sb7odh4BSvah8kBcAyY+1/w97q+jW/l1Q=
+X-Received: by 2002:ac2:5fc2:0:b0:443:82cf:9603 with SMTP id
+ q2-20020ac25fc2000000b0044382cf9603mr20717684lfg.142.1646295528442; Thu, 03
+ Mar 2022 00:18:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/HLBxvijQmW7WCX/K3UnFyYe";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20220106065407.16036-1-johnson.wang@mediatek.com>
+ <20220106065407.16036-5-johnson.wang@mediatek.com> <Yd4yy2emxSSh80UW@robh.at.kernel.org>
+In-Reply-To: <Yd4yy2emxSSh80UW@robh.at.kernel.org>
+From:   Fei Shao <fshao@chromium.org>
+Date:   Thu, 3 Mar 2022 16:18:12 +0800
+Message-ID: <CAJ66y9F67VNRWE3JsCqnX4AFzd+R9Y9WJHoxnk_t7u2rHhuimg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] dt-bindings: regulator: Add MT6358 regulators
+To:     Rob Herring <robh@kernel.org>
+Cc:     Johnson Wang <johnson.wang@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        broonie@kernel.org, linux-kernel <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/HLBxvijQmW7WCX/K3UnFyYe
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 11 Jan 2022 19:45:47 -0600, Rob Herring <robh@kernel.org> wrote:
+>
+> On Thu, 06 Jan 2022 14:54:07 +0800, Johnson Wang wrote:
+> > Add buck_vcore_sshub and ldo_vsram_others_sshub
+> > regulators to binding document for MT6358 and MT6366.
+> >
+> > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > ---
+> >  .../bindings/regulator/mt6358-regulator.txt   | 22 ++++++++++++++-----
+> >  1 file changed, 17 insertions(+), 5 deletions(-)
+> >
+>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Hi all,
-
-Today's linux-next merge of the akpm-current tree got a conflict in:
-
-  arch/nds32/mm/init.c
-
-between commit:
-
-  9f15ac318b83 ("nds32: Remove the architecture")
-
-from the asm-generic tree and commit:
-
-  311ca692496e ("mm: remove mmu_gathers storage from remaining architecture=
-s")
-
-from the akpm-current tree.
-
-I fixed it up (I removed the file) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/HLBxvijQmW7WCX/K3UnFyYe
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIgeaUACgkQAVBC80lX
-0GyaxggAhcop8wjZXukrM3Q/Js1hZcLi8yhUYb4KyNq/nrTsa4EwCdXLYZgRl87b
-frYT3Igr7q92DLW9SDdzXvGdCfW8Gl1jNEQUdEQ1JWNO2JRL50EaSv1M6lX54VRl
-gM1hmCh4ljCwPV33E9YgceN4ufF1UpaCzSqHyDVrBfP61MMCuwTtPHdiGg27R65u
-1TsjDnTCWhjp3WQPc1Qc10MBwiV5f8CKyM2XW51h41CzMakh7PPVN+YvDJhdJURG
-ONnU4NlkVzafWk8jkh93MO3/ds6w5IFOXKNdjMJlLivYXd3fOW4IdR/h1lJAndgy
-G3pvJjFeC1wDGttoPv6zluX0i0DhkA==
-=U0YK
------END PGP SIGNATURE-----
-
---Sig_/HLBxvijQmW7WCX/K3UnFyYe--
+Just a gentle ping on this - I assume there's no actionable item on
+Johnson's end? (or better to rebase & resend?)
