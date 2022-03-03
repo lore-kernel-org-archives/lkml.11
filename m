@@ -2,71 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A000CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7998FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbiCCAKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
+        id S230105AbiCCAL2 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:11:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiCCAKs (ORCPT
+        with ESMTP id S230081AbiCCALY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:10:48 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77ED6106CB5;
-        Wed,  2 Mar 2022 16:10:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=QvHwqcPwkZTykh909qxW7OL2Ilw0hy11RsbkbuYKuhE=; b=UsztW02yyvR/LKp62WuXbHExEs
-        x2G0bWabx6fVVB9yk0dBZqtz0pShoV4e0vvUMjBCeXGPq+a8MvZVPHKOWHqLa9nqjFJqLZF5se9s1
-        tMa7EUGNluTpW7bUJ4Ug2LpKo4ZYPIjOIvo3dTdyr1NXCIXOc+9tIrYsXGCrJzcl7ftPNFRMRFOET
-        opdApGAfIxPJW+1uXE5uZdmYwGKLcjk3xQGxIPF4odZ0kLJUkYIvxhHcwbo50LHkNKKe3OGrkPHgs
-        mG6L8TCUltyQ7muTFsya017FVx89uWzFPdh0MedCpFgpc9Ty7TJCjVXl33Z8A2JkpqrZ4mdgPLFGt
-        dl3wTvrA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPY6s-00EjSF-7X; Wed, 02 Mar 2022 23:10:24 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1E6A7300230;
-        Thu,  3 Mar 2022 00:10:15 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id CA92B20610E5A; Thu,  3 Mar 2022 00:10:15 +0100 (CET)
-Date:   Thu, 3 Mar 2022 00:10:15 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>, keescook@chromium.org,
-        x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, mhiramat@kernel.org,
-        alexei.starovoitov@gmail.com,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v2 01/39] kbuild: Fix clang build
-Message-ID: <Yh/5V47eetq0aoPe@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151322.072632223@infradead.org>
- <CAKwvOdkD2WY=hEHy8_0zs70AGx6LRQwxL5mEZyB30uqpruYJyA@mail.gmail.com>
- <Yh+dMJsH+ZMPfqwD@thelio-3990X>
- <CAKwvOdmouBTe5pH3JoP6EEfwNT5=6WvX3oCEZRxO0Dkf38S14w@mail.gmail.com>
- <Yh/egU1LZudfrgVy@dev-arch.thelio-3990X>
+        Wed, 2 Mar 2022 19:11:24 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D0CC10A7D4
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:10:40 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-9-TaJDYF8zPkim1JgaaMOOTA-1; Thu, 03 Mar 2022 00:10:37 +0000
+X-MC-Unique: TaJDYF8zPkim1JgaaMOOTA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 3 Mar 2022 00:10:36 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 3 Mar 2022 00:10:36 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Krzysztof Kozlowski' <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [RESEND PATCH v2 4/6] nfc: llcp: use test_bit()
+Thread-Topic: [RESEND PATCH v2 4/6] nfc: llcp: use test_bit()
+Thread-Index: AQHYLmtWg0E/2bVm5kqjDz1/h/f2VKysyObA
+Date:   Thu, 3 Mar 2022 00:10:36 +0000
+Message-ID: <7fc4cb250bb8406cadf80649e366b249@AcuMS.aculab.com>
+References: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
+ <20220302192523.57444-5-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220302192523.57444-5-krzysztof.kozlowski@canonical.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh/egU1LZudfrgVy@dev-arch.thelio-3990X>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 02:15:45PM -0700, Nathan Chancellor wrote:
-> Peter, is this approach okay with you? If so, would you like to be
-> co-author or should I use a suggested-by tag?
+From: Krzysztof Kozlowski
+> Sent: 02 March 2022 19:25
+> 
+> Use test_bit() instead of open-coding it, just like in other places
+> touching the bitmap.
 
-Yeah, this helps lots. Suggested-by seems fine. Thanks!
+Except it isn't a bitmap, it is just a structure member that contains bits.
+So all the other places should be changes to use C shifts and masks (etc).
+
+	David
+
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  net/nfc/llcp_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
+> index 5ad5157aa9c5..b70d5042bf74 100644
+> --- a/net/nfc/llcp_core.c
+> +++ b/net/nfc/llcp_core.c
+> @@ -383,7 +383,7 @@ u8 nfc_llcp_get_sdp_ssap(struct nfc_llcp_local *local,
+>  			pr_debug("WKS %d\n", ssap);
+> 
+>  			/* This is a WKS, let's check if it's free */
+> -			if (local->local_wks & BIT(ssap)) {
+> +			if (test_bit(ssap, &local->local_wks)) {
+>  				mutex_unlock(&local->sdp_lock);
+> 
+>  				return LLCP_SAP_MAX;
+> --
+> 2.32.0
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
