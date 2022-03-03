@@ -2,127 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73111C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235573AbiCCRuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:50:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
+        id S234660AbiCCRvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:51:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235548AbiCCRt5 (ORCPT
+        with ESMTP id S230513AbiCCRvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:49:57 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0516D87E;
-        Thu,  3 Mar 2022 09:49:08 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id e13so5231277plh.3;
-        Thu, 03 Mar 2022 09:49:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ruUEYX+oGrKbn1ZFxR7e2X74GRqZCSY8RPwITu5sMBQ=;
-        b=U8UL49W6S95k93kWUmUrZFOzV7AbqOjJ1bvHbZte2nKkMImfo75O4/DPZLqHC3elEp
-         c+LZNgdegz2lHbu/RdR6vG9Ln7uG/fSitvZ+uxszFFHomApmFxo+8Lcz2+48izzHzbf4
-         UiOBTkVeiHLPhO0AhY+CCq8jEARbdisLO4M1/Qio4qV7PEdJmuzR5LNMnCfVzQXSKh6F
-         CspWJg5YFdFl7tbLlAByeDrhMJV6OruBTPfRuxH9AuHQo+iUO+D20ot/ll3ZcwpDlDJI
-         Ua2+yPUkeHalmu+tZdRjZawPc6L5eGbNH78deLTVZx78YQdW0fCfMYTLg7rXDAhE4o5z
-         x5Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ruUEYX+oGrKbn1ZFxR7e2X74GRqZCSY8RPwITu5sMBQ=;
-        b=pTJifR9+MbYeLJoW/empF7Hs+1DYx98wgjMKwmByw2ibuq7spHUrZyxURaql0a07My
-         NCHyQrYEAmIEvnSZ//xNh3QbAkg6BUVQrNNx/m8hJqvZXHweHhAgF3n5LZJatLTsPfiZ
-         tnxjRYBjrOxHG52HADJdDkDrRGVGaK9sU80XqsSKx9A8VCLHKTCcFW+bma+8/CYVIZYF
-         EXbZCM4aaJNB7QqQ5oIuhTLbddYkTJxD0LJNhNd6WYj7AOaYW+nZrPHF3pOR6FKISvi3
-         wewukAUjpdkxSJ6NNu08jZrGBQJFFpW8TIwZ7v8ljOfc0QiFbiUxw1SUu75W1x8FVr7k
-         w1bg==
-X-Gm-Message-State: AOAM533fOeeyG8o4pkBaxQ7uCgAP4gc93Y56xD2WmVbbTiEuTTbgMzIS
-        DpWhLtZ4yqudYiIJwebHCFc=
-X-Google-Smtp-Source: ABdhPJzYUCmgCQ43Sq8ZW/63tx2sfXwtI21Xs+ZjEulnRLAPyr/CB2m3mSf68xNzY2i7M7IZsAqTyA==
-X-Received: by 2002:a17:902:ec8c:b0:151:b231:70da with SMTP id x12-20020a170902ec8c00b00151b23170damr2229816plg.5.1646329747662;
-        Thu, 03 Mar 2022 09:49:07 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.116])
-        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f0f0f852a4sm3209395pfx.77.2022.03.03.09.49.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 09:49:07 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, imagedong@tencent.com,
-        edumazet@google.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, alobakin@pm.me,
-        flyingpeng@tencent.com, mengensun@tencent.com, atenart@kernel.org,
-        bigeasy@linutronix.de, memxor@gmail.com, arnd@arndb.de,
-        pabeni@redhat.com, willemb@google.com, vvs@virtuozzo.com,
-        cong.wang@bytedance.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 7/7] net: dev: use kfree_skb_reason() for __netif_receive_skb_core()
-Date:   Fri,  4 Mar 2022 01:47:07 +0800
-Message-Id: <20220303174707.40431-8-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220303174707.40431-1-imagedong@tencent.com>
-References: <20220303174707.40431-1-imagedong@tencent.com>
+        Thu, 3 Mar 2022 12:51:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ADD134DF1;
+        Thu,  3 Mar 2022 09:50:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CC56B8260E;
+        Thu,  3 Mar 2022 17:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3867EC004E1;
+        Thu,  3 Mar 2022 17:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646329816;
+        bh=51aBfP9l60XsWjT3AW2tScEWeXi7FkOMBaVOzj6T4U0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aYepwbHZViE06tVzwTabGfx+dND6DkiOL5oHV2vCeJfXqPlEdeWpX+LsiInFpB65K
+         TuyTT/GKDIQCIq6JSFe6cHEpxrfX4l3R8xo+Agsk+JFo1k3m1I7k+tH5ho6fDUn5J1
+         s9fEggP0XzGvCSRZ5k67BIm7hbcSipLQWoWdalczzXwS5pTynVJrPxwpPcnRWmiqZ8
+         IFSdqp4oa0CTPNXmbmGpaZ9l+vON/lCKhqHPb5VRllJ2FeP6iAQvH5dRRJDCpdsgDc
+         SGc1FrzJrjWDIUaxWFjS9Z8nzyKfp0n/jL7UyFJ+uhrUXF/zz3mzTVjVi97nyl1Sk8
+         UXjter6yA6N+A==
+Date:   Thu, 3 Mar 2022 17:50:09 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Lucas Tanure <tanureal@opensource.cirrus.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 15/20] hda: cs35l41: Remove unnecessary log
+Message-ID: <YiD/0ZMcSGVRTZxx@sirena.org.uk>
+References: <20220303173059.269657-1-tanureal@opensource.cirrus.com>
+ <20220303173059.269657-16-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wlaslmZqugs/gzML"
+Content-Disposition: inline
+In-Reply-To: <20220303173059.269657-16-tanureal@opensource.cirrus.com>
+X-Cookie: Password:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
 
-Add reason for skb drops to __netif_receive_skb_core() when packet_type
-not found to handle the skb. For this purpose, the drop reason
-SKB_DROP_REASON_PTYPE_ABSENT is introduced. Take ether packets for
-example, this case mainly happens when L3 protocol is not supported.
+--wlaslmZqugs/gzML
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/linux/skbuff.h | 5 +++++
- net/core/dev.c         | 8 +++++---
- 2 files changed, 10 insertions(+), 3 deletions(-)
+On Thu, Mar 03, 2022 at 05:30:54PM +0000, Lucas Tanure wrote:
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 04508d15152e..f3945d21cecf 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -413,6 +413,11 @@ enum skb_drop_reason {
- 					 * failed (maybe an eBPF program
- 					 * is tricking?)
- 					 */
-+	SKB_DROP_REASON_PTYPE_ABSENT,	/* not packet_type found to handle
-+					 * the skb. For an etner packet,
-+					 * this means that L3 protocol is
-+					 * not supported
-+					 */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 429ad8265e8c..0bdea7d113f5 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5330,11 +5330,13 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
- 		*ppt_prev = pt_prev;
- 	} else {
- drop:
--		if (!deliver_exact)
-+		if (!deliver_exact) {
- 			atomic_long_inc(&skb->dev->rx_dropped);
--		else
-+			kfree_skb_reason(skb, SKB_DROP_REASON_PTYPE_ABSENT);
-+		} else {
- 			atomic_long_inc(&skb->dev->rx_nohandler);
--		kfree_skb(skb);
-+			kfree_skb(skb);
-+		}
- 		/* Jamal, now you will not able to escape explaining
- 		 * me how you were going to use this. :-)
- 		 */
--- 
-2.35.1
+> If regmap fails would fail during probe of the device.
 
+I'm pretty sure circumstances could arise which would break things at
+runtime.
+
+--wlaslmZqugs/gzML
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIg/9AACgkQJNaLcl1U
+h9Bwygf/Y5M+R1e68KG9SptbJokKsEqBQC7gRAujY/dvMRDKz/TJ2DkuYo4d2Gsq
+827x8cbebcmHHBCFlWP9ZReFuSFAeYY8n39eB3BAKAtuLPMCEasz6kUy4yWIr179
+Zbj9U/PMQL6DRIJOLdx9BHfq0Y95xk9dNd96InSsQwy9uVWcVYWSHxgNGnLRJfqW
+0lEmLhmGqMpIVDPVB96puHB2asziHmDJPjSTSk4gF0K7nIH/dFHLvn4H9GlAXvUw
+dc22X2SGYlPVzG2z8rzZHmGOLvc4qYyORC8b9ui93j8RJwFDqtTX8ZXz+yQD3v+6
+/mnzCZZESsxzpqCwqmr8GuOdw9mahg==
+=9o+e
+-----END PGP SIGNATURE-----
+
+--wlaslmZqugs/gzML--
