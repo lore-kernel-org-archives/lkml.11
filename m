@@ -2,188 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 846CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD414C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236712AbiCCWBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 17:01:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
+        id S236715AbiCCWE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 17:04:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236709AbiCCWBA (ORCPT
+        with ESMTP id S235784AbiCCWEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 17:01:00 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222754832F
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 14:00:12 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id d23so10839959lfv.13
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 14:00:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B/wWxO70VsbRWbkBNYeysd8PjZWhNsydI8SGtYmrmUE=;
-        b=OF7gv1/RXdd0nABLes0yv4StAtx74Mo5Ug13VUe6weTNGjuV4E4T0W88MozzXiY0fI
-         lV5XfBh4ZEzkEsC5SyBGXljO7ih/HoeEWLy64bQkjayhyNPqC/2F0mw879ii0ot5SPNb
-         Vdw8eSYN4EHalFhIyOtGmdEizcKf8TzwXSgUHUqKr8OOVjho0Eiy+TGi6RFNZ/C8sFGg
-         /N4V1k9mpLgY/stpOyklIbZdTzDgs085xW+qoG8ZhZKRvr7Am8hUo79RB+HA0gkivTmY
-         QZ1OfPZMOGC6/sZ+mD3K6hbPUUAOgLE7mOq9kBmM3wrDdEPGMMR2Rmma0s6sgKai/AuG
-         Gk6w==
+        Thu, 3 Mar 2022 17:04:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2DF6148643
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 14:04:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646345046;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6wGROgyYuQGjMhOFoWGJ+5bmZEJUNDacGYc0J6ktUME=;
+        b=OA2cvRkUgEUX361sLeF1kTZnuygjni7P1yPpTP32GO9MoQjiGgMSeflwq78/kk/ureZ1t4
+        FKEdfTPXSIUCVyFTZ1WV+xqlgtkzVgK1zSlVTv8h8y9oxzV14ZPc3YbS+UF1cyZXsP2e0B
+        du9jeggcmp6PYbxdJbKoYpd+dxnu6CA=
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
+ [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-499-RKjLFzSANJq-wQng3_50xw-1; Thu, 03 Mar 2022 17:04:05 -0500
+X-MC-Unique: RKjLFzSANJq-wQng3_50xw-1
+Received: by mail-oo1-f69.google.com with SMTP id s7-20020a4aeac7000000b0031d808633fbso4429605ooh.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 14:04:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B/wWxO70VsbRWbkBNYeysd8PjZWhNsydI8SGtYmrmUE=;
-        b=SNy3jGOJ8jW81S5HXWQNfj+/AHKajxYPDtMyF0sblUByGkqNjPII83LRMdUncKLwDO
-         mlQezRiDPuhbL0JZir6EP+DhKdso9WkUkrBnPf/pQx66zqr3CayxWmsCfkYepxqS+Mbo
-         7u/TQY5lVoHwrzIf+1YphbdTyX9zSc90NwRnbAOc9cKLI6u0Qzcmo751tKBUtV1y8vis
-         rjET0tvGaP1CaHqwMx3e7IayNtHSHusO4NMsatk4XsMnVk6F0eVzsiYFcwmhXs9Q2WoU
-         EdN+dpDF1c2cKcLnKLcYSB5HKu9Cll76Uy6zISouMXfp+q34A/dVMv4qMH8a8z6WdCKx
-         ht4g==
-X-Gm-Message-State: AOAM533Kl3ehlPjvSfNVSBuxP+C9+8B0/0giCMP3YcMwdj0ePief+k/j
-        0H4Qzf76nK1pDZg7RGWJWFtlEJR+Mg/V2fjXI3QBuw==
-X-Google-Smtp-Source: ABdhPJzwX9/pwl2KATvTK6EinGHCxhIoZPk7sG4YV/u64Zyckk8VI4lq/flRYvYh5sdUM6LasuIk7wDy/VD9cLVM45I=
-X-Received: by 2002:a05:6512:3d90:b0:437:73cb:8e76 with SMTP id
- k16-20020a0565123d9000b0043773cb8e76mr22691498lfv.187.1646344810110; Thu, 03
- Mar 2022 14:00:10 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=6wGROgyYuQGjMhOFoWGJ+5bmZEJUNDacGYc0J6ktUME=;
+        b=Nlq/UktNYzKs+H5onEOEl/AqOkqlcBRwld5cQYjcmggFyPn/6yj9S4Fr291YSzcPmP
+         4p23VgZBuVdpNJiNVNmwBo+cn92XnnGK8C5VTa0iHejshw5aNd7/yuJAaGzY8XfbBY+g
+         LFjdc0QM0m74oJ9Z81UXl5Ss4VbAjONDxgTZezzCUq7oNxSFwKBxwfbPMHJuxF3vsEJ6
+         253z2mOS3NdlJOArdVfCCFPxOveQFZKf6znSZhaGNC3CltZih5jTXCBcUiXQZSrXmsU9
+         SjIu8ZKpqez6NghhtzlzHu70lAi3A7uaOJS9FFjuvOMK7G9Cy8YVVKj8EHiA7If3LoV2
+         fn3g==
+X-Gm-Message-State: AOAM533nFsNX00SUObsI5j7U5AIkMPgCf+dwbnvVf+7IDPKcpCu2X/jI
+        jLawhQv4JeTLUb/zsfudsoWyqfTg4dU2RAF5IpWAKIZ82q+8KoDAO/fgDcPpr/K9rYd3hkNsPoa
+        t5RnIyZHwJlRV9RZcs1a2bfvr
+X-Received: by 2002:aca:1a04:0:b0:2d4:f855:aad1 with SMTP id a4-20020aca1a04000000b002d4f855aad1mr6496536oia.63.1646345043704;
+        Thu, 03 Mar 2022 14:04:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwKYRe1JYF3+Y9OgmsQmqUokJoxxr0aKd4vk81gnA67Q062qAtgyawzk9SpEORQGWaOqANqfA==
+X-Received: by 2002:aca:1a04:0:b0:2d4:f855:aad1 with SMTP id a4-20020aca1a04000000b002d4f855aad1mr6496506oia.63.1646345043499;
+        Thu, 03 Mar 2022 14:04:03 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id q7-20020a9d6647000000b005af185bf273sm1582024otm.25.2022.03.03.14.04.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 14:04:02 -0800 (PST)
+Subject: Re: [PATCH v2 1/2] Documentation: fpga: dfl: add PCI Identification
+ documentation
+To:     matthew.gerlach@linux.intel.com, hao.wu@intel.com,
+        yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org, corbet@lwn.net,
+        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dan.j.williams@intel.com,
+        ashok.raj@intel.com, tianfei.zhang@intel.com
+References: <20220303003534.3307971-1-matthew.gerlach@linux.intel.com>
+ <20220303003534.3307971-2-matthew.gerlach@linux.intel.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <6448f21f-7ce1-d9ce-1048-29aca14f9d3d@redhat.com>
+Date:   Thu, 3 Mar 2022 14:04:00 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20220303003034.1906898-1-jeffreyjilinux@gmail.com>
-In-Reply-To: <20220303003034.1906898-1-jeffreyjilinux@gmail.com>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Thu, 3 Mar 2022 13:59:58 -0800
-Message-ID: <CAMzD94SRmG12Zot+eZTDcSDaviceBqn6egCdGZBoy_cbJLa5xw@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net-core: add rx_otherhost_dropped counter
-To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jeffreyji <jeffreyji@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220303003534.3307971-2-matthew.gerlach@linux.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LGTM, thanks Jeffrey!
 
-Reviewed-by: Brian Vazquez <brianvv@google.com>
-
-On Wed, Mar 2, 2022 at 4:30 PM Jeffrey Ji <jeffreyjilinux@gmail.com> wrote:
+On 3/2/22 4:35 PM, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 >
-> From: jeffreyji <jeffreyji@google.com>
+> Add documentation on identifying FPGA based PCI cards prompted
+> by discussion on the linux-fpga@vger.kernel.org mailing list.
 >
-> Increment rx_otherhost_dropped counter when packet dropped due to
-> mismatched dest MAC addr.
->
-> An example when this drop can occur is when manually crafting raw
-> packets that will be consumed by a user space application via a tap
-> device. For testing purposes local traffic was generated using trafgen
-> for the client and netcat to start a server
->
-> Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
-> with "{eth(daddr=$INCORRECT_MAC...}", verified that iproute2 showed the
-> counter was incremented. (Also had to modify iproute2 to show the stat,
-> additional patch for that coming next.)
->
-> changelog:
->
-> v2: add kdoc comment
->
-> Signed-off-by: jeffreyji <jeffreyji@google.com>
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 > ---
->  include/linux/netdevice.h    | 3 +++
->  include/uapi/linux/if_link.h | 5 +++++
->  net/core/dev.c               | 2 ++
->  net/ipv4/ip_input.c          | 1 +
->  net/ipv6/ip6_input.c         | 1 +
->  5 files changed, 12 insertions(+)
+> v2: Introduced in v2.
+> ---
+>   Documentation/fpga/dfl.rst | 20 ++++++++++++++++++++
+>   1 file changed, 20 insertions(+)
 >
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index c79ee2296296..e4073c38bd77 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1741,6 +1741,8 @@ enum netdev_ml_priv_type {
->   *                     do not use this in drivers
->   *     @rx_nohandler:  nohandler dropped packets by core network on
->   *                     inactive devices, do not use this in drivers
-> + *     @rx_otherhost_dropped:  Dropped packets due to mismatch in packet dest
-> + *                             MAC address
->   *     @carrier_up_count:      Number of times the carrier has been up
->   *     @carrier_down_count:    Number of times the carrier has been down
->   *
-> @@ -2025,6 +2027,7 @@ struct net_device {
->         atomic_long_t           rx_dropped;
->         atomic_long_t           tx_dropped;
->         atomic_long_t           rx_nohandler;
-> +       atomic_long_t           rx_otherhost_dropped;
->
->         /* Stats to monitor link on/off, flapping */
->         atomic_t                carrier_up_count;
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index e315e53125f4..17e74385fca8 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -211,6 +211,9 @@ struct rtnl_link_stats {
->   * @rx_nohandler: Number of packets received on the interface
->   *   but dropped by the networking stack because the device is
->   *   not designated to receive packets (e.g. backup link in a bond).
-> + *
-> + * @rx_otherhost_dropped: Number of packets dropped due to mismatch in
-> + * packet's destination MAC address.
->   */
->  struct rtnl_link_stats64 {
->         __u64   rx_packets;
-> @@ -243,6 +246,8 @@ struct rtnl_link_stats64 {
->         __u64   rx_compressed;
->         __u64   tx_compressed;
->         __u64   rx_nohandler;
+> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+> index ef9eec71f6f3..5fb2ca8e76d7 100644
+> --- a/Documentation/fpga/dfl.rst
+> +++ b/Documentation/fpga/dfl.rst
+> @@ -502,6 +502,26 @@ Developer only needs to provide a sub feature driver with matched feature id.
+>   FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme-pr.c)
+>   could be a reference.
+>   
+> +PCI Device Identification
+> +================================
+> +Since FPGA based PCI cards can be reconfigured to a perform a completely
+> +new function at runtime, properly identifying such cards and binding the
+> +correct driver can be challenging. In many use cases, deployed FPGA based
+> +PCI cards are essentially static and the PCI Product ID and Vendor ID pair
+> +is sufficient to identify the card.  The DFL framework helps with the
+> +dynamic case of deployed FPGA cards changing at run time by providing
+> +more detailed information about card discoverable at runtime.
 > +
-> +       __u64   rx_otherhost_dropped;
->  };
->
->  /* The struct should be in sync with struct ifmap */
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 2d6771075720..d039d8fdc16a 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -10037,6 +10037,8 @@ struct rtnl_link_stats64 *dev_get_stats(struct net_device *dev,
->         storage->rx_dropped += (unsigned long)atomic_long_read(&dev->rx_dropped);
->         storage->tx_dropped += (unsigned long)atomic_long_read(&dev->tx_dropped);
->         storage->rx_nohandler += (unsigned long)atomic_long_read(&dev->rx_nohandler);
-> +       storage->rx_otherhost_dropped +=
-> +               (unsigned long)atomic_long_read(&dev->rx_otherhost_dropped);
->         return storage;
->  }
->  EXPORT_SYMBOL(dev_get_stats);
-> diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> index d94f9f7e60c3..ef97b0a4c77f 100644
-> --- a/net/ipv4/ip_input.c
-> +++ b/net/ipv4/ip_input.c
-> @@ -450,6 +450,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
->          * that it receives, do not try to analyse it.
->          */
->         if (skb->pkt_type == PACKET_OTHERHOST) {
-> +               atomic_long_inc(&skb->dev->rx_otherhost_dropped);
->                 drop_reason = SKB_DROP_REASON_OTHERHOST;
->                 goto drop;
->         }
-> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> index d4b1e2c5aa76..3f0cbe126d82 100644
-> --- a/net/ipv6/ip6_input.c
-> +++ b/net/ipv6/ip6_input.c
-> @@ -150,6 +150,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
->         struct inet6_dev *idev;
->
->         if (skb->pkt_type == PACKET_OTHERHOST) {
-> +               atomic_long_inc(&skb->dev->rx_otherhost_dropped);
->                 kfree_skb(skb);
->                 return NULL;
->         }
-> --
-> 2.35.1.616.g0bdcbb4464-goog
->
+> +At one level, the DFL on a PCI card describes the function of the card.
+> +However, the same DFL could be instantiated on different physical cards.
+> +Conversely, different DFLs could be instantiated on the same physical card.
+> +Practical management of a cloud containing a heterogeneous set of such cards
+> +requires a PCI level of card identification. While the PCI Product ID and
+> +Vendor ID may be sufficient to bind the dfl-pci driver, it is expected
+> +that FPGA PCI cards would advertise suitable Subsystem ID and Subsystem
+> +Vendor ID values. PCI Vital Product Data (VPD) can also be used for
+> +more granular information about the board.
+
+This describes a bit more of the problem, it should describe it wrt ofs 
+dev id. The introduction of the ofs dev should be explicitly called out 
+as a generic pci id.
+
+Why couldn't one of the old pci id's be reused ?
+
+How will the subvendor/subid be enforced ?
+
+Is the current security manager patchset smart enough to save the board 
+from being bricked when a user doesn't look beyond the pci id ?
+
+What happens if a board uses this device id but doesn't have a max10 to 
+do the update ?
+
+Tom
+
+> +
+>   Location of DFLs on a PCI Device
+>   ================================
+>   The original method for finding a DFL on a PCI device assumed the start of the
+
