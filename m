@@ -2,222 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F41D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C314CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234043AbiCCOWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 09:22:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        id S234040AbiCCOWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 09:22:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234017AbiCCOWW (ORCPT
+        with ESMTP id S234034AbiCCOWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 09:22:22 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772FF18DAA2;
-        Thu,  3 Mar 2022 06:21:36 -0800 (PST)
-Received: from localhost.localdomain (unknown [80.240.223.29])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 2C9AF40755C9;
-        Thu,  3 Mar 2022 14:21:34 +0000 (UTC)
-From:   Baskov Evgeniy <baskov@ispras.ru>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Baskov Evgeniy <baskov@ispras.ru>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] libstub: ensure allocated memory to be executable
-Date:   Thu,  3 Mar 2022 17:21:20 +0300
-Message-Id: <20220303142120.1975-3-baskov@ispras.ru>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220303142120.1975-1-baskov@ispras.ru>
-References: <20220303142120.1975-1-baskov@ispras.ru>
+        Thu, 3 Mar 2022 09:22:39 -0500
+Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462C118E3E6;
+        Thu,  3 Mar 2022 06:21:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description; bh=qjeRQXDRHJDEOFaM/bFhRf+N+QLbWVSGAMDaOy7ZtIw=; b=Rvpp4
+        8c8iAHDqTdLm8OD88p2G1kMMZO1W9Qi8uaYRy6VtgwIne1WnNP5cFq+1yHtWWbJKgAzkyrTZ2OD/t
+        1GAjcpLSaQ2q1Z/zbJhwn+ZgShs+EEoJtL4NtYR7Lr4tJBrTiRgJjUiYtedY05KN3wsNw56tzeXd5
+        xYsbHbNtEHBnddcHxE2yKCNmG24T3XqK0lcyH9rwZlwmW76WtWKTAsk6ZiB2mxqelhLwKG/iIkfPH
+        Q4t4f9pYMq0gttOHOmdDFCcchJpb1xwWOAz2XvzIyq0SEQiHiymNXyNpwu9qTLXc/GpjeaUg474I2
+        zs2suSeUxZ4I2VTyRjKIDlr7YdiWQ==;
+Received: from [81.174.171.191] (helo=donbot)
+        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <john@metanate.com>)
+        id 1nPmKo-0005yL-KP; Thu, 03 Mar 2022 14:21:38 +0000
+Date:   Thu, 3 Mar 2022 14:21:37 +0000
+From:   John Keeping <john@metanate.com>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     heiko@sntech.de, herbert@gondor.apana.org.au, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH v2 06/18] crypto: rockchip: add fallback for cipher
+Message-ID: <YiDO8Tt9Lhx530Oz@donbot>
+References: <20220302211113.4003816-1-clabbe@baylibre.com>
+ <20220302211113.4003816-7-clabbe@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302211113.4003816-7-clabbe@baylibre.com>
+X-Authenticated: YES
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are UEFI versions that restrict execution of memory regions,
-preventing the kernel from booting. Parts that needs to be executable
-are:
+On Wed, Mar 02, 2022 at 09:11:01PM +0000, Corentin Labbe wrote:
+> The hardware does not handle 0 size length request, let's add a
+> fallback.
+> Furthermore fallback will be used for all unaligned case the hardware
+> cannot handle.
+> 
+> Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  drivers/crypto/rockchip/rk3288_crypto.h       |  2 +
+>  .../crypto/rockchip/rk3288_crypto_skcipher.c  | 97 ++++++++++++++++---
+>  2 files changed, 86 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/crypto/rockchip/rk3288_crypto.h b/drivers/crypto/rockchip/rk3288_crypto.h
+> index c919d9a43a08..8b1e15d8ddc6 100644
+> --- a/drivers/crypto/rockchip/rk3288_crypto.h
+> +++ b/drivers/crypto/rockchip/rk3288_crypto.h
+> @@ -246,10 +246,12 @@ struct rk_cipher_ctx {
+>  	struct rk_crypto_info		*dev;
+>  	unsigned int			keylen;
+>  	u8				iv[AES_BLOCK_SIZE];
+> +	struct crypto_skcipher *fallback_tfm;
+>  };
+>  
+>  struct rk_cipher_rctx {
+>  	u32				mode;
+> +	struct skcipher_request fallback_req;   // keep at the end
+>  };
+>  
+>  enum alg_type {
+> diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+> index bbd0bf52bf07..bf9d398cc54c 100644
+> --- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+> +++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+> @@ -13,6 +13,63 @@
+>  
+>  #define RK_CRYPTO_DEC			BIT(0)
+>  
+> +static int rk_cipher_need_fallback(struct skcipher_request *req)
+> +{
+> +	struct scatterlist *sgs, *sgd;
+> +
+> +	if (!req->cryptlen)
+> +		return true;
+> +
+> +	sgs = req->src;
+> +	while (sgs) {
+> +		if (!IS_ALIGNED(sgs->offset, sizeof(u32))) {
+> +			return true;
+> +		}
+> +		if (sgs->length % 16) {
 
-* Area used for trampoline placement.
-* All memory regions that the kernel may be relocated before
-  and during extraction.
+Can this be relaxed to check for alignment to 4 rather than 16?  That's
+the requirement for programming the registers.
 
-Use DXE services to ensure aforementioned address ranges
-to be executable. Only modify attributes that does not
-have appropriate attributes.
-
-Signed-off-by: Baskov Evgeniy <baskov@ispras.ru>
-
-diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-index 2c3dac5ecb36..f44f8b746e42 100644
---- a/drivers/firmware/efi/Kconfig
-+++ b/drivers/firmware/efi/Kconfig
-@@ -91,6 +91,18 @@ config EFI_SOFT_RESERVE
- 
- 	  If unsure, say Y.
- 
-+config EFI_DXE_MEM_ATTRIBUTES
-+	bool "Adjust memory attributes in EFISTUB"
-+	depends on EFI && EFI_STUB && X86
-+	default y
-+	help
-+	  UEFI specification does not guarantee all memory to be
-+	  accessible for both write and execute as the kernel expects
-+	  it to be.
-+	  Use DXE services to check and alter memory protection
-+	  attributes during boot via EFISTUB to ensure that memory
-+	  ranges used by the kernel are writable and executable.
-+
- config EFI_PARAMS_FROM_FDT
- 	bool
- 	help
-diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
-index 47fa1c8e7f40..6e6b80884d6a 100644
---- a/drivers/firmware/efi/libstub/x86-stub.c
-+++ b/drivers/firmware/efi/libstub/x86-stub.c
-@@ -212,9 +212,110 @@ static void retrieve_apple_device_properties(struct boot_params *boot_params)
- 	}
- }
- 
-+static void
-+adjust_memory_range_protection(unsigned long start, unsigned long size)
-+{
-+	efi_status_t status;
-+	efi_gcd_memory_space_desc_t desc;
-+	unsigned long end, next;
-+	unsigned long rounded_start, rounded_end;
-+	unsigned long unprotect_start, unprotect_size;
-+	int has_system_memory = 0;
-+
-+	if (efi_dxe_table == NULL)
-+		return;
-+
-+	rounded_start = rounddown(start, EFI_PAGE_SIZE);
-+	rounded_end = roundup(start + size, EFI_PAGE_SIZE);
-+
-+	/*
-+	 * Don't modify memory region attributes, they are
-+	 * already suitable, to lower the possibility to
-+	 * encounter firmware bugs.
-+	 */
-+
-+	for (end = start + size; start < end; start = next) {
-+
-+		status = efi_dxe_call(get_memory_space_descriptor, start, &desc);
-+
-+		if (status != EFI_SUCCESS)
-+			return;
-+
-+		next = desc.base_address + desc.length;
-+
-+		/*
-+		 * Only system memory is suitable for trampoline/kernel image placement,
-+		 * so only this type of memory needs its attributes to be modified.
-+		 */
-+
-+		if (desc.gcd_memory_type != EfiGcdMemoryTypeSystemMemory ||
-+		    (desc.attributes & (EFI_MEMORY_RO | EFI_MEMORY_XP)) == 0)
-+			continue;
-+
-+		unprotect_start = max(rounded_start, (unsigned long)desc.base_address);
-+		unprotect_size = min(rounded_end, next) - unprotect_start;
-+
-+		status = efi_dxe_call(set_memory_space_attributes,
-+				      unprotect_start, unprotect_size,
-+				      EFI_MEMORY_WB);
-+
-+		if (status != EFI_SUCCESS) {
-+			efi_warn("Unable to unprotect memory range [%08lx,%08lx]: %d\n",
-+				 unprotect_start,
-+				 unprotect_start + unprotect_size,
-+				 (int)status);
-+		}
-+	}
-+}
-+
-+/*
-+ * Trampoline takes 2 pages and can be loaded in first megabyte of memory
-+ * with its end placed between 128k and 640k where BIOS might start.
-+ * (see arch/x86/boot/compressed/pgtable_64.c)
-+ *
-+ * We cannot find exact trampoline placement since memory map
-+ * can be modified by UEFI, and it can alter the computed address.
-+ */
-+
-+#define TRAMPOLINE_PLACEMENT_BASE ((128 - 8)*1024)
-+#define TRAMPOLINE_PLACEMENT_SIZE (640*1024 - (128 - 8)*1024)
-+
-+void startup_32(struct boot_params *boot_params);
-+
-+static void
-+setup_memory_protection(unsigned long image_base, unsigned long image_size)
-+{
-+	/*
-+	 * Allow execution of possible trampoline used
-+	 * for switching between 4- and 5-level page tables
-+	 * and relocated kernel image.
-+	 */
-+
-+	adjust_memory_range_protection(TRAMPOLINE_PLACEMENT_BASE,
-+				       TRAMPOLINE_PLACEMENT_SIZE);
-+
-+#ifdef CONFIG_64BIT
-+	if (image_base != (unsigned long)startup_32)
-+		adjust_memory_range_protection(image_base, image_size);
-+#else
-+	/*
-+	 * Clear protection flags on a whole range of possible
-+	 * addresses used for KASLR. We don't need to do that
-+	 * on x86_64, since KASLR/extraction is performed after
-+	 * dedicated identity page tables are built and we only
-+	 * need to remove possible protection on relocated image
-+	 * itself disregarding further relocations.
-+	 */
-+	adjust_memory_range_protection(LOAD_PHYSICAL_ADDR,
-+				       KERNEL_IMAGE_SIZE - LOAD_PHYSICAL_ADDR);
-+#endif
-+}
-+
- static const efi_char16_t apple[] = L"Apple";
- 
--static void setup_quirks(struct boot_params *boot_params)
-+static void setup_quirks(struct boot_params *boot_params,
-+			 unsigned long image_base,
-+			 unsigned long image_size)
- {
- 	efi_char16_t *fw_vendor = (efi_char16_t *)(unsigned long)
- 		efi_table_attr(efi_system_table, fw_vendor);
-@@ -223,6 +324,9 @@ static void setup_quirks(struct boot_params *boot_params)
- 		if (IS_ENABLED(CONFIG_APPLE_PROPERTIES))
- 			retrieve_apple_device_properties(boot_params);
- 	}
-+
-+	if (IS_ENABLED(CONFIG_EFI_DXE_MEM_ATTRIBUTES))
-+		setup_memory_protection(image_base, image_size);
- }
- 
- /*
-@@ -342,8 +446,6 @@ static void __noreturn efi_exit(efi_handle_t handle, efi_status_t status)
- 		asm("hlt");
- }
- 
--void startup_32(struct boot_params *boot_params);
--
- void __noreturn efi_stub_entry(efi_handle_t handle,
- 			       efi_system_table_t *sys_table_arg,
- 			       struct boot_params *boot_params);
-@@ -799,7 +901,7 @@ unsigned long efi_main(efi_handle_t handle,
- 
- 	setup_efi_pci(boot_params);
- 
--	setup_quirks(boot_params);
-+	setup_quirks(boot_params, bzimage_addr, buffer_end - buffer_start);
- 
- 	status = exit_boot(boot_params, handle);
- 	if (status != EFI_SUCCESS) {
--- 
-2.35.1
-
+But I think this check is wrong in general as it doesn't account for
+cryptlen; with fscrypt I'm seeing sgs->length == 255 but cryptlen == 16
+so the hardware can be used but at the moment the fallback path is
+triggered.
