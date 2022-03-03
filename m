@@ -2,93 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38430C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbiCCSII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:08:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
+        id S232882AbiCCSJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:09:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235663AbiCCSIB (ORCPT
+        with ESMTP id S230239AbiCCSJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:08:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CA51A360B;
-        Thu,  3 Mar 2022 10:07:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12011B82664;
-        Thu,  3 Mar 2022 18:07:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A096C004E1;
-        Thu,  3 Mar 2022 18:07:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646330832;
-        bh=EgcGMOXJyQ3AcaJAUNyt4ttitEYq2EccuguRq8IK5T8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MhPrjPEqQT4bYYon471xHSJwpVB2dLoAwjgnYAszMI/yb8szklwtOZE1zxGRrHC6b
-         M66ZG4RrXlSfjssBTyPOd9GkrP6P99N1BCcyAHJ2O4z7VbK+zAj/g5HLAvcuPGi5HH
-         B2LqpP8Ru7su2swz4XV4Rp1mwkAa7rY4HmSBrTPgk7eFktUSQTaAKcoefSevTez9gD
-         jRSj3MCyXBeidqSMD3y3szFYdj6trzZE7punHUobNUdITuvZykBuB0mduF/bWGuSC0
-         9fHDHOJszRRlcI1SveaJMmPXoZc6rz33btOOv6JiGlTqjYKekSiY2DRnTSMTRmzWT+
-         MDsYztIQVLePw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nPpr5-0000q6-7G; Thu, 03 Mar 2022 19:07:11 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        stable@vger.kernel.org,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: [PATCH] memory: renesas-rpc-if: fix platform-device leak in error path
-Date:   Thu,  3 Mar 2022 19:06:32 +0100
-Message-Id: <20220303180632.3194-1-johan@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 3 Mar 2022 13:09:37 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7CBE0A2A
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:08:51 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id w37so5220918pga.7
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 10:08:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BTYLb9HBGbhFly2fPG2qXLCkv8yykoYepo3XTTdlldU=;
+        b=hMNEn/GbmsMUtg4oxmhbIXRQPVu7NbT/WnAC+/jn+WiRKSM7xs9ti7I+wV1P4R2KS6
+         WyVaAQBYn8vI35ur6gZJAJaQMN+WKs4MtDZsOsg3sgrnOB+a+83MvWTlsNKCDHwTbVNs
+         AuNKx6JVDpCoQvMOaz4KETYS9boMeymCUkhtZW9QSbQ3vdqakdm//NbGnRRYgYv3Z0lq
+         puUAUv3NNNaHd8SeCesRLc/m6vEaOpcbH3NUoLG6sfuyIVCzVUldPEUSFQcO3DYJfflj
+         QgUdSyRbbMGqeQvDzGYp75lw3LygYoCXG/K8Uc9iyIT3sBJVfDqdm7XqMMwDJnTAqIMZ
+         jMfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BTYLb9HBGbhFly2fPG2qXLCkv8yykoYepo3XTTdlldU=;
+        b=5KYLG8vlVUd7Myc1W9k0lr1MbEzSjrH38y2C6+S0ZajdD7CoAtRN5gVsjllbiyfMd1
+         aEpczb78XtwEhVGyLA5hqKte6PKatwhkGW5Xu+vhfDUMGG8a6qvxqxFaZmPcqD3QUmfE
+         W0J8lsEHDT+JOgi1DNqVL9CM77uEwJfdJrl+DAdw1CJfEo+XRC5BrhwTheOJSMzuVrVX
+         D7BK+ntZr5S3MfHeqRXhOJu5u3A6dtYGMVJ+DP0ZZWqIJw7AIzeV5YNf56MM0ANrdPz3
+         qK1rEane6H7Igidf6mdtA8VVih//HgET6X7Mw+OfsGLw/pYGMfBgw3/CuNdahJNLDGfa
+         KSvQ==
+X-Gm-Message-State: AOAM531Fnrz+9BdSgI/NG1fs2J6BOZUGit/euewZ/PVZVbZEnHR7fD7f
+        KjlPs3JBXO0200mKpJv6ANqGzw==
+X-Google-Smtp-Source: ABdhPJwI4iCgO48anf6OIfRvqNpdDFYISkBjKns/9buSsWxjNWb2URbn2Tq6d3Jp3jtY1wj0NOs/Lg==
+X-Received: by 2002:a63:1c14:0:b0:36b:28ef:f8ce with SMTP id c20-20020a631c14000000b0036b28eff8cemr31681899pgc.96.1646330930904;
+        Thu, 03 Mar 2022 10:08:50 -0800 (PST)
+Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
+        by smtp.gmail.com with ESMTPSA id 124-20020a621682000000b004f6a2e59a4dsm963540pfw.121.2022.03.03.10.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 10:08:50 -0800 (PST)
+Date:   Thu, 3 Mar 2022 18:08:47 +0000
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>
+Subject: Re: [PATCH v3 08/28] KVM: x86/mmu: Batch TLB flushes from TDP MMU
+ for MMU notifier change_spte
+Message-ID: <YiEELzrSymLY05zm@google.com>
+References: <20220226001546.360188-1-seanjc@google.com>
+ <20220226001546.360188-9-seanjc@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220226001546.360188-9-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure to free the flash platform device in the event that
-registration fails during probe.
-
-Fixes: ca7d8b980b67 ("memory: add Renesas RPC-IF driver")
-Cc: stable@vger.kernel.org      # 5.8
-Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/memory/renesas-rpc-if.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
-index e4cc64f56019..2e545f473cc6 100644
---- a/drivers/memory/renesas-rpc-if.c
-+++ b/drivers/memory/renesas-rpc-if.c
-@@ -651,6 +651,7 @@ static int rpcif_probe(struct platform_device *pdev)
- 	struct platform_device *vdev;
- 	struct device_node *flash;
- 	const char *name;
-+	int ret;
- 
- 	flash = of_get_next_child(pdev->dev.of_node, NULL);
- 	if (!flash) {
-@@ -674,7 +675,14 @@ static int rpcif_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	vdev->dev.parent = &pdev->dev;
- 	platform_set_drvdata(pdev, vdev);
--	return platform_device_add(vdev);
-+
-+	ret = platform_device_add(vdev);
-+	if (ret) {
-+		platform_device_put(vdev);
-+		return ret;
-+	}
-+
-+	return 0;
- }
- 
- static int rpcif_remove(struct platform_device *pdev)
--- 
-2.34.1
-
+On Sat, Feb 26, 2022, Sean Christopherson wrote:
+> Batch TLB flushes (with other MMUs) when handling ->change_spte()
+> notifications in the TDP MMU.  The MMU notifier path in question doesn't
+> allow yielding and correcty flushes before dropping mmu_lock.
+nit: correctly
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Ben Gardon <bgardon@google.com>
+Reviewed-by: Mingwei Zhang <mizhang@google.com>
+> ---
+>  arch/x86/kvm/mmu/tdp_mmu.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 848448b65703..634a2838e117 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -1203,13 +1203,12 @@ static bool set_spte_gfn(struct kvm *kvm, struct tdp_iter *iter,
+>   */
+>  bool kvm_tdp_mmu_set_spte_gfn(struct kvm *kvm, struct kvm_gfn_range *range)
+>  {
+> -	bool flush = kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
+> -
+> -	/* FIXME: return 'flush' instead of flushing here. */
+> -	if (flush)
+> -		kvm_flush_remote_tlbs_with_address(kvm, range->start, 1);
+> -
+> -	return false;
+> +	/*
+> +	 * No need to handle the remote TLB flush under RCU protection, the
+> +	 * target SPTE _must_ be a leaf SPTE, i.e. cannot result in freeing a
+> +	 * shadow page.  See the WARN on pfn_changed in __handle_changed_spte().
+> +	 */
+> +	return kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
+>  }
+>  
+>  /*
+> -- 
+> 2.35.1.574.g5d30c73bfb-goog
+> 
