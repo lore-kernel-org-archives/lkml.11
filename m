@@ -2,132 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97530C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 16:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD50CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 16:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235197AbiCCQwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 11:52:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        id S235201AbiCCQwg convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 11:52:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235182AbiCCQwD (ORCPT
+        with ESMTP id S235182AbiCCQwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 11:52:03 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBF219D774
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 08:51:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646326276; x=1677862276;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Ig7CAzwnxiQ8JnTDPcOjhgPbL0HDnifuY/ihUCjFXnk=;
-  b=Worhz9HwHdikAXCruUpK4eeW5ki5Kps8l6y7jspNawc39tzLsZlL7rnp
-   boicWCaKM5kIYYmB+BCvCR+e8yKpgB84PTyITUQdLOyQ9nGQCh+IfPPmP
-   0hL/m5QCUVg7rG44s2+ZiIt41bk3MCjoEduDwowXvgXiaAu4swtdy1mmZ
-   29THs1A3vGvdJ6Kd/Iye34Og9NDvX1YWKw4xflzhVcC7Ae2vELTaYeKKq
-   B3WqrKNaXhNsPRFSLKF8mfPP3pK75aVqrGqONnNRx/qiFGk+2RBjDpraI
-   rwERa0M9UXDecX5UjT7rJ5ujoD2mFlYHh94n12M7vTfVZCtlUc5+qd1P4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="234338702"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="234338702"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 08:50:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="511502661"
-Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Mar 2022 08:50:00 -0800
-Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPoeN-0000jy-Hy; Thu, 03 Mar 2022 16:49:59 +0000
-Date:   Fri, 4 Mar 2022 00:49:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lauri Kasanen <cand@gmx.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: arch/mips/boot/compressed/decompress.c:110:57: sparse: sparse: Using
- plain integer as NULL pointer
-Message-ID: <202203040006.YLgfJuuJ-lkp@intel.com>
+        Thu, 3 Mar 2022 11:52:31 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C205119D766;
+        Thu,  3 Mar 2022 08:51:45 -0800 (PST)
+Date:   Thu, 03 Mar 2022 16:51:28 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [Letux-kernel] [PATCH v16 1/4] drm/bridge: dw-hdmi: introduce
+ dw_hdmi_enable_poll()
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-mips <linux-mips@vger.kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>
+Message-Id: <SHH68R.Z3J9KSY0GQVA2@crapouillou.net>
+In-Reply-To: <3E620AF4-402E-45EA-9D92-92EAEA9647F5@goldelico.com>
+References: <cover.1645895582.git.hns@goldelico.com>
+        <e54838849f80454b863f9f5634dd10f79ef7bb8f.1645895582.git.hns@goldelico.com>
+        <983e9064-17ad-e646-f37d-ca9173ba0967@baylibre.com>
+        <C8AE9A7A-E288-4637-ACAD-40CD33CD5F8C@goldelico.com>
+        <3E620AF4-402E-45EA-9D92-92EAEA9647F5@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   5859a2b1991101d6b978f3feb5325dad39421f29
-commit: baec970aa5ba11099ad7a91773350c91fb2113f0 mips: Add N64 machine type
-date:   1 year, 1 month ago
-config: mips-randconfig-s032-20220303 (https://download.01.org/0day-ci/archive/20220304/202203040006.YLgfJuuJ-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=baec970aa5ba11099ad7a91773350c91fb2113f0
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout baec970aa5ba11099ad7a91773350c91fb2113f0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash
+Hi Nikolaus,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Le jeu., mars 3 2022 at 17:43:05 +0100, H. Nikolaus Schaller 
+<hns@goldelico.com> a écrit :
+> Hi Neil,
+> 
+>>  Am 03.03.2022 um 17:30 schrieb H. Nikolaus Schaller 
+>> <hns@goldelico.com>:
+>> 
+>>  Hi Neil,
+>> 
+>>>  Am 03.03.2022 um 17:23 schrieb Neil Armstrong 
+>>> <narmstrong@baylibre.com>:
+>>> 
+>>>  Hi,
+>>> 
+>>>  On 26/02/2022 18:12, H. Nikolaus Schaller wrote:
+>>>>  so that specialization drivers like ingenic-dw-hdmi can enable 
+>>>> polling.
+>>>>  Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>>>>  ---
+>>>>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 9 +++++++++
+>>>>  include/drm/bridge/dw_hdmi.h              | 1 +
+>>>>  2 files changed, 10 insertions(+)
+>>>>  diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c 
+>>>> b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>>>>  index 4befc104d2200..43e375da131e8 100644
+>>>>  --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>>>>  +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>>>>  @@ -3217,6 +3217,15 @@ static int dw_hdmi_parse_dt(struct dw_hdmi 
+>>>> *hdmi)
+>>>>  	return 0;
+>>>>  }
+>>>>  +void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable)
+>>>>  +{
+>>>>  +	if (hdmi->bridge.dev)
+>>>>  +		hdmi->bridge.dev->mode_config.poll_enabled = enable;
+>>>>  +	else
+>>>>  +		dev_warn(hdmi->dev, "no hdmi->bridge.dev");
+>>>>  +}
+>>>>  +EXPORT_SYMBOL_GPL(dw_hdmi_enable_poll);
+>>>>  +
+>>>>  struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
+>>>>  			      const struct dw_hdmi_plat_data *plat_data)
+>>>>  {
+>>>>  diff --git a/include/drm/bridge/dw_hdmi.h 
+>>>> b/include/drm/bridge/dw_hdmi.h
+>>>>  index 2a1f85f9a8a3f..963960794b40e 100644
+>>>>  --- a/include/drm/bridge/dw_hdmi.h
+>>>>  +++ b/include/drm/bridge/dw_hdmi.h
+>>>>  @@ -196,5 +196,6 @@ enum drm_connector_status 
+>>>> dw_hdmi_phy_read_hpd(struct dw_hdmi *hdmi,
+>>>>  void dw_hdmi_phy_update_hpd(struct dw_hdmi *hdmi, void *data,
+>>>>  			    bool force, bool disabled, bool rxsense);
+>>>>  void dw_hdmi_phy_setup_hpd(struct dw_hdmi *hdmi, void *data);
+>>>>  +void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable);
+>>>>    #endif /* __IMX_HDMI_H__ */
+>>> 
+>>>  As I understand, this is because the IRQ line of the dw-hdmi IP 
+>>> isn't connected right ? and you use the display-connector ddc gpio 
+>>> instead ?
+>> 
+>>  Yes. The IRQ line is not connected on all boards as far as I can 
+>> see.
+>> 
+>>> 
+>>>  In this case I think the Ingenic DRM core should call 
+>>> drm_kms_helper_poll_init(drm) instead.
+>> 
+>>  Ah, that is good. it seems to do "dw_hdmi_enable_poll()" in a more 
+>> generic way.
+> 
+> Well, I looked through source code and it is defined as
+> 
+> 	void drm_kms_helper_poll_init(struct drm_device *dev)
+> 
+> But there is no direct pointer to some drm_device available.
+> Neither in dw-hdmi nor ingenic-dw-hdmi.
+
+Well he said "the Ingenic DRM core" aka ingenic-drm-drv.c. You do have 
+access to the main drm_device in the ingenic_drm_bind() function, so 
+you can add it there (with a cleanup function calling 
+drm_kms_helper_poll_fini() registered with drmm_add_action_or_reset()).
+
+Cheers,
+-Paul
+
+> What should the parameter to drm_kms_helper_poll_init(drm) be?
+> 
+> From comparing code to be able to set mode_config.poll_enabled = 
+> enable it should be
+> 
+> 	&hdmi->bridge.dev
+> 
+> but the struct dw_hdmi *hdmi is an opaque type for the 
+> ingenic-dw-hdmi driver.
+> So it can't access the hdmi-bridge directly.
+> 
+> What we can do is to make dw_hdmi_enable_poll() call 
+> drm_kms_helper_poll_init()
+> or drm_kms_helper_poll_fini().
+> 
+> BR and thanks,
+> Nikolaus
+> 
+> 
 
 
-sparse warnings: (new ones prefixed by >>)
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
->> arch/mips/boot/compressed/decompress.c:110:57: sparse: sparse: Using plain integer as NULL pointer
-   arch/mips/boot/compressed/decompress.c:110:60: sparse: sparse: Using plain integer as NULL pointer
-   arch/mips/boot/compressed/decompress.c:111:57: sparse: sparse: Using plain integer as NULL pointer
-
-vim +110 arch/mips/boot/compressed/decompress.c
-
-3b628cac65fa57f Ben Chan    2014-06-24   85  
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   86  void decompress_kernel(unsigned long boot_heap_start)
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   87  {
-1e1a77d6984a001 Wu Zhangjin 2010-06-16   88  	unsigned long zimage_start, zimage_size;
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   89  
-1e1a77d6984a001 Wu Zhangjin 2010-06-16   90  	zimage_start = (unsigned long)(&__image_begin);
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   91  	zimage_size = (unsigned long)(&__image_end) -
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   92  	    (unsigned long)(&__image_begin);
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   93  
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   94  	puts("zimage at:     ");
-1e1a77d6984a001 Wu Zhangjin 2010-06-16   95  	puthex(zimage_start);
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   96  	puts(" ");
-1e1a77d6984a001 Wu Zhangjin 2010-06-16   97  	puthex(zimage_size + zimage_start);
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   98  	puts("\n");
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14   99  
-1e1a77d6984a001 Wu Zhangjin 2010-06-16  100  	/* This area are prepared for mallocing when decompressing */
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  101  	free_mem_ptr = boot_heap_start;
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  102  	free_mem_end_ptr = boot_heap_start + BOOT_HEAP_SIZE;
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  103  
-1e1a77d6984a001 Wu Zhangjin 2010-06-16  104  	/* Display standard Linux/MIPS boot prompt */
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  105  	puts("Uncompressing Linux at load address ");
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  106  	puthex(VMLINUX_LOAD_ADDRESS_ULL);
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  107  	puts("\n");
-1e1a77d6984a001 Wu Zhangjin 2010-06-16  108  
-1b93b3c3e94be26 Wu Zhangjin 2009-10-14  109  	/* Decompress the kernel with according algorithm */
-2d3862d26e67a59 Yinghai Lu  2015-09-09 @110  	__decompress((char *)zimage_start, zimage_size, 0, 0,
-
-:::::: The code at line 110 was first introduced by commit
-:::::: 2d3862d26e67a59340ba1cf1748196c76c5787de lib/decompressors: use real out buf size for gunzip with kernel
-
-:::::: TO: Yinghai Lu <yinghai@kernel.org>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
