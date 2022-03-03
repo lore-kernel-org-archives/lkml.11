@@ -2,92 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A588EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C82EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232691AbiCCMDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 07:03:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S233056AbiCCMDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 07:03:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiCCMDi (ORCPT
+        with ESMTP id S232021AbiCCMDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 07:03:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FC43BFB2;
-        Thu,  3 Mar 2022 04:02:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB31561867;
-        Thu,  3 Mar 2022 12:02:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C15EC004E1;
-        Thu,  3 Mar 2022 12:02:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646308972;
-        bh=joVFOZmms9HBOXgoZuJ9RkqFVCdj5U89jr7ZSVH6EQM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TZZSF6TfMAQvdtUbORxyyZ1laxtoEDK+breNkO3og95FYG+sCa+lfCi20qQth4/yt
-         CED3FwKQEixoFfzJDy1Px5awEACzAjHNWNtPw7YhoX20sBuRmdZ0gN1plPHNcwN1zu
-         QsBhk0dinEYAp4Hc/tMYSHYOJ+8VGk5lg6NtzCh1PlXdy21Rx36AVYCH66UEmG2G1D
-         ObRTKStZHJ5iZw4A87eI5bTzqTzkKAedEzmkUzzKEV6+/ZarqU7pxVlKrbDq/5VjlB
-         cx4nyHUS4axCPej7NQkRqcft0KhM9ywXE3A8nbgJRN9TfgAmZa5ZQVbrW1yYPRU+E8
-         kyjdwCJC5gaZg==
-Date:   Thu, 3 Mar 2022 13:02:45 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     qii.wang@mediatek.com, matthias.bgg@gmail.com,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, Qii Wang <wii.wang@mediatek.com>
-Subject: Re: [PATCH v2] i2c: busses: i2c-mt65xx: Simplify with clk-bulk
-Message-ID: <YiCuZZs8T6AKtpbe@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        qii.wang@mediatek.com, matthias.bgg@gmail.com,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, Qii Wang <wii.wang@mediatek.com>
-References: <20220303091547.17522-1-angelogioacchino.delregno@collabora.com>
- <22eccb9e-45fa-683e-640d-6f34fa63ca52@collabora.com>
+        Thu, 3 Mar 2022 07:03:39 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A402C3C729
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 04:02:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646308973; x=1677844973;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=crhtJB5Gcuv0DdnrzUUYVTL/34Xzr9SMWGXEKewhegg=;
+  b=HaArOEzGMsdfpo3eHMGYOxgW84MQktxarEgZQmWpQzcRb9RjceWgesjO
+   sfRrc5rg5lvPYmbggd9wF3YLBey7MocU0h3kCJXkLuKW/hbY5BsjikPtS
+   KXRTl8fra/4fzpUMWMuWLiAkPwKN3xD3hU8zQ/bMFET49CHhzfBQ1CWFf
+   y/ANaeuea4JtniUAXSOCYwwqKfMp4GoCZ0gMgleQl6cl5v9lz1gcouM1i
+   mqLIRk4IRnpoz3Qw4Nkv53d2/R3L+mZUmhFSQ7aOCF1vMXAvAwg4ndKbp
+   Xi8FlQjc1+sHLS+VS3l2RbpYVw4PKmdoR8ausYW6Q3uAD/cncG6rS3wgm
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253389488"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="253389488"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 04:02:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="709901429"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 03 Mar 2022 04:02:52 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPkAV-0000Sr-Fd; Thu, 03 Mar 2022 12:02:51 +0000
+Date:   Thu, 3 Mar 2022 20:02:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jie Wang <wangjie125@huawei.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:4765:55:
+ sparse: sparse: incorrect type in argument 3 (different base types)
+Message-ID: <202203032008.59zQWB3h-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="j0lwsQweqcGwCt7j"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <22eccb9e-45fa-683e-640d-6f34fa63ca52@collabora.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   5859a2b1991101d6b978f3feb5325dad39421f29
+commit: 1813ee52433103d389da7c9c7ee5f81d113d9566 net: hns3: refactor PF rss set APIs with new common rss set APIs
+date:   8 weeks ago
+config: ia64-randconfig-s031-20220303 (https://download.01.org/0day-ci/archive/20220303/202203032008.59zQWB3h-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1813ee52433103d389da7c9c7ee5f81d113d9566
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 1813ee52433103d389da7c9c7ee5f81d113d9566
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/ethernet/hisilicon/hns3/ drivers/net/wwan/
 
---j0lwsQweqcGwCt7j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-> Please, can you fix that while applying, or should I send a v3?
+sparse warnings: (new ones prefixed by >>)
+>> drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:4765:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __le16 [usertype] rss_ind_tbl_size @@     got unsigned short [usertype] rss_ind_tbl_size @@
+   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:4765:55: sparse:     expected restricted __le16 [usertype] rss_ind_tbl_size
+   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:4765:55: sparse:     got unsigned short [usertype] rss_ind_tbl_size
+   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:5347:31: sparse: sparse: context imbalance in 'hclge_sync_fd_user_def_cfg' - unexpected unlock
 
-I'll fix it. Thank you for the rebase!
+vim +4765 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 
+  4754	
+  4755	static int hclge_get_rss(struct hnae3_handle *handle, u32 *indir,
+  4756				 u8 *key, u8 *hfunc)
+  4757	{
+  4758		struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
+  4759		struct hclge_vport *vport = hclge_get_vport(handle);
+  4760		struct hclge_comm_rss_cfg *rss_cfg = &vport->back->rss_cfg;
+  4761	
+  4762		hclge_comm_get_rss_hash_info(rss_cfg, key, hfunc);
+  4763	
+  4764		hclge_comm_get_rss_indir_tbl(rss_cfg, indir,
+> 4765					     ae_dev->dev_specs.rss_ind_tbl_size);
+  4766	
+  4767		return 0;
+  4768	}
+  4769	
 
---j0lwsQweqcGwCt7j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIgrmEACgkQFA3kzBSg
-KbZ7Vw/+P4t6jxxU+NlXS44NM14j/3DF6/rUS+26gLGmUiUUHI9Ggr63ImC/481K
-QeHlVA+WluBuP8OWKvFWReTCOM1t1KnapFDGWESqanG6W0vSN5Br3cNq2nLmD2+P
-JHdQ5m6Ssn12KkTm1i3+EpFpTlU4kx5TyvAvvQ1iM/W8jNRwmKIx93pcL1pYU9Z9
-xsNbJ6isE2ZdicxaaHuHnSy0XCIkl6YXtDwDNo3vMmmAvLvMwxGjcLO3PW+j9PWm
-YvMC+CuiyJ3l9OCA3vAEDuJdneW9sBz25mNpzE2esUuQrPyHjTTAHThbE075q40y
-5SkdcJL9G1gdPAHiJeFkW+P0j22o1JVFm7T6SZJdnvmilslBqtn7ay1QMuqDuBEr
-KuR2h9kB4wUs9bklY1coegtkNpk75O6wQ1CA5e8Ec5l6kq8S0OFxXXFa1jv9Q3a3
-kZ8si8YEH2+NWYESsbgtIQXoohFHC85x9T3PpvEewlNPpyCP6eRwfcUdkMHQuvcT
-oBkXd4OWlNZC9PLotz5NPp5xHPrKptRxoPcIfbdR9tYaSnN+vhq9VEU2qPS40iiB
-Ae1O6W82yVeTXZEQ5VUUnYdYvfBP3hUxFT+GHqBx+sV4hQrc70YDr10dVPf0IMPP
-loOnoSm7D5eXmeMecI6jxmEfd4SEApZ0E4faYO1pMMJ9SBaOtvA=
-=vPdX
------END PGP SIGNATURE-----
-
---j0lwsQweqcGwCt7j--
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
