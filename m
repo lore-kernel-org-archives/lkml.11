@@ -2,219 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B857C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 388E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbiCCHHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 02:07:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
+        id S230104AbiCCHJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 02:09:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiCCHHW (ORCPT
+        with ESMTP id S229660AbiCCHJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 02:07:22 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86077D1083
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 23:06:37 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id jr3so3426587qvb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 23:06:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8HcPSO5J8NY98uQ2bWJs7uIQP8jHLYwpTbsEfnFQ6Kc=;
-        b=gTke+FKomJbgtcblPcwsyJWe1O1L6dpL9xC4RB6BmIQnJe61/Dn8IPPfiaiEFr3pzf
-         cwte0nVrO20l0utome+glbq+FWdU8ecw/C9Y7YDd4Wkdq9iKIGbFinT2OC/yS8LFpBu9
-         7L/5SFrcap2IzLDmsBnp4TI+7PXWQM34ZWKhdG/ZPSdSyJLh/cGYduiAwJG8qtjSIPyk
-         Ur3JoeO5XqWfcJbtg6nqKuuahdnRmHZZPuPcPeQl/MYyuK66DakMDDQMVcvmxbPUOpL8
-         ToNc5/wke8v8P7RhoZym3z027YVlaIZIb+Rf3qNOZPX2zKW66lgI8mxh+SI1XK4NXyqZ
-         0qWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8HcPSO5J8NY98uQ2bWJs7uIQP8jHLYwpTbsEfnFQ6Kc=;
-        b=V0xMEz04F9be/kfovPCkq2fFIkYrLg86nQ35udtaCRuBCl8fPZnfljQGQDoPYZGVqO
-         VadaUbaPrvKTSBU1bHZ3iGs405K9HDGSO7mEBgULYKNqy7jruGZ9SVkPpUVzsBdT9SSd
-         91Z2THWCOYDUpkX3YqzCKSR1tssjFxy1E0shjTq0JChaE35i7Uq1JYk20vUEjaHJ3yQv
-         UqV0eXGpqsNtcrM7Iv08cHZvznivswwHVCqWf/Dw6cGZsnHdSrCQGYf0g0Z+jsNbffqJ
-         /8iZij7vYYEOouLSuYpZcfvtL/2czwvilCF4sZVq2WLzJr3aSRggEDdfIsJmdZl4qJhV
-         ILRA==
-X-Gm-Message-State: AOAM530bn7HZVv5MYKTErGy23gqRu/Oi9b1mJ+QG18pL/x6zzwcCICkC
-        vFqRSuyhtvjaRqaZnl84s8i3Q7N68c06NsqzJYHgpQ==
-X-Google-Smtp-Source: ABdhPJxgEHrGjaehZwVCMpI1VHaONVhbr10R7pT9rBRPyCyU3TXHNAzER80GICpogrsLdSBT1uwAn0te9XkwhuBPnWU=
-X-Received: by 2002:ad4:5883:0:b0:432:b007:962b with SMTP id
- dz3-20020ad45883000000b00432b007962bmr22084284qvb.55.1646291196714; Wed, 02
- Mar 2022 23:06:36 -0800 (PST)
-MIME-Version: 1.0
-References: <20220219183310.557435-1-robdclark@gmail.com> <6f1225ea-d889-9cf8-3a3d-181e319bd453@linaro.org>
- <CAF6AEGut-75ri+U=B2eBtNeYQu5ECKPmk51b2_pCgu91uKy1ow@mail.gmail.com>
-In-Reply-To: <CAF6AEGut-75ri+U=B2eBtNeYQu5ECKPmk51b2_pCgu91uKy1ow@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Thu, 3 Mar 2022 10:06:25 +0300
-Message-ID: <CAA8EJpoAnPDefJ9rc6fjF+6oS5EVA7JCbZs7Ui7KDE+dfEbMEA@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/gpu: Fix crash on devices without devfreq support
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        open list <linux-kernel@vger.kernel.org>
+        Thu, 3 Mar 2022 02:09:12 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE21120F5E;
+        Wed,  2 Mar 2022 23:08:25 -0800 (PST)
+X-UUID: ce64ad0c28084ac89185cb577bc88571-20220303
+X-UUID: ce64ad0c28084ac89185cb577bc88571-20220303
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1732930282; Thu, 03 Mar 2022 15:08:20 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 3 Mar 2022 15:08:19 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 3 Mar 2022 15:08:19 +0800
+Message-ID: <131c801871de28d3f124cc5b22571bcc83da199e.camel@mediatek.com>
+Subject: Re: [PATCH 0/2] Add gce support for mt8186
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <jassisinghbrar@gmail.com>, <robh+dt@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <yongqiang.niu@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 3 Mar 2022 15:08:19 +0800
+In-Reply-To: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
+References: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 at 18:46, Rob Clark <robdclark@gmail.com> wrote:
->
-> On Tue, Feb 22, 2022 at 7:11 PM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> >
-> > On 19/02/2022 21:33, Rob Clark wrote:
-> > > From: Rob Clark <robdclark@chromium.org>
-> > >
-> > > Avoid going down devfreq paths on devices where devfreq is not
-> > > initialized.
-> > >
-> > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> > > Reported-by: Anders Roxell <anders.roxell@linaro.org>
-> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > > ---
-> > >   drivers/gpu/drm/msm/msm_gpu_devfreq.c | 31 +++++++++++++++++++++------
-> > >   1 file changed, 25 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > > index 9bf319be11f6..26a3669a97b3 100644
-> > > --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > > +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > > @@ -83,12 +83,17 @@ static struct devfreq_dev_profile msm_devfreq_profile = {
-> > >   static void msm_devfreq_boost_work(struct kthread_work *work);
-> > >   static void msm_devfreq_idle_work(struct kthread_work *work);
-> > >
-> > > +static bool has_devfreq(struct msm_gpu *gpu)
-> > > +{
-> > > +     return !!gpu->funcs->gpu_busy;
-> >
-> > I see that devfreq init will be skipped if gpu_busy is NULL.
-> > Can we use gpu->devfreq instead of this condition?
->
-> We could, but then we couldn't also use the same has_devfreq() helper
-> in msm_devfreq_init().  I thought it was clearer to use the same
-> helper everywhere.
+On Wed, 2022-02-23 at 11:01 +0800, Rex-BC Chen wrote:
+> Rex-BC Chen (1):
+>   dt-bindings: mailbox: add definition for mt8186
+> 
+> Yongqiang Niu (1):
+>   dt-bindings: gce: add gce header file for mt8186
+> 
+>  .../devicetree/bindings/mailbox/mtk-gce.txt   |   8 +-
+>  include/dt-bindings/gce/mt8186-gce.h          | 421
+> ++++++++++++++++++
+>  2 files changed, 426 insertions(+), 3 deletions(-)
+>  create mode 100644 include/dt-bindings/gce/mt8186-gce.h
+> 
+Hello Jassi,
 
-Well... It is not clear at first glance how gpu_busy is related to
-devfreq. On the other hand, if gpu->devfreq is NULL, it's obvious that
-devfreq is not initialized.
+All binding patches are acked by Rob.
+Do you have any suggestion for this series?
 
-I'd propose to use if (gpu->funcs->gpu_busy) to check if we can init
-devfreq and after that to check (gpu->devfreq) as a way to know
-whether the devfreq is available.
+Thanks!
 
->
-> > I noticed that you have replaced some of gpu->devfreq checks with
-> > has_devreq() calls. Is there any difference?
->
-> It amounts to the same thing because if you don't have gpu_busy, then
-> devfreq is never initialized.  I just thought it clearer to use the
-> same check in all places.
+BRs,
+Rex
 
-See my comment above.
-
->
-> BR,
-> -R
->
-> > > +}
-> > > +
-> > >   void msm_devfreq_init(struct msm_gpu *gpu)
-> > >   {
-> > >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> > >
-> > >       /* We need target support to do devfreq */
-> > > -     if (!gpu->funcs->gpu_busy)
-> > > +     if (!has_devfreq(gpu))
-> > >               return;
-> > >
-> > >       dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
-> > > @@ -149,6 +154,9 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
-> > >   {
-> > >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> > >
-> > > +     if (!has_devfreq(gpu))
-> > > +             return;
-> > > +
-> > >       devfreq_cooling_unregister(gpu->cooling);
-> > >       dev_pm_qos_remove_request(&df->boost_freq);
-> > >       dev_pm_qos_remove_request(&df->idle_freq);
-> > > @@ -156,16 +164,24 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
-> > >
-> > >   void msm_devfreq_resume(struct msm_gpu *gpu)
-> > >   {
-> > > -     gpu->devfreq.busy_cycles = 0;
-> > > -     gpu->devfreq.time = ktime_get();
-> > > +     struct msm_gpu_devfreq *df = &gpu->devfreq;
-> > >
-> > > -     devfreq_resume_device(gpu->devfreq.devfreq);
-> > > +     if (!has_devfreq(gpu))
-> > > +             return;
-> > > +
-> > > +     df->busy_cycles = 0;
-> > > +     df->time = ktime_get();
-> > > +
-> > > +     devfreq_resume_device(df->devfreq);
-> > >   }
-> > >
-> > >   void msm_devfreq_suspend(struct msm_gpu *gpu)
-> > >   {
-> > >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> > >
-> > > +     if (!has_devfreq(gpu))
-> > > +             return;
-> > > +
-> > >       devfreq_suspend_device(df->devfreq);
-> > >
-> > >       cancel_idle_work(df);
-> > > @@ -185,6 +201,9 @@ void msm_devfreq_boost(struct msm_gpu *gpu, unsigned factor)
-> > >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> > >       uint64_t freq;
-> > >
-> > > +     if (!has_devfreq(gpu))
-> > > +             return;
-> > > +
-> > >       freq = get_freq(gpu);
-> > >       freq *= factor;
-> > >
-> > > @@ -207,7 +226,7 @@ void msm_devfreq_active(struct msm_gpu *gpu)
-> > >       struct devfreq_dev_status status;
-> > >       unsigned int idle_time;
-> > >
-> > > -     if (!df->devfreq)
-> > > +     if (!has_devfreq(gpu))
-> > >               return;
-> > >
-> > >       /*
-> > > @@ -253,7 +272,7 @@ void msm_devfreq_idle(struct msm_gpu *gpu)
-> > >   {
-> > >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> > >
-> > > -     if (!df->devfreq)
-> > > +     if (!has_devfreq(gpu))
-> > >               return;
-> > >
-> > >       msm_hrtimer_queue_work(&df->idle_work, ms_to_ktime(1),
-> >
-> >
-> > --
-> > With best wishes
-> > Dmitry
-
-
-
--- 
-With best wishes
-Dmitry
