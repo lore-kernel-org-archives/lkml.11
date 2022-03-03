@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 394DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236124AbiCCTkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:40:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58562 "EHLO
+        id S233214AbiCCTkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236032AbiCCTjs (ORCPT
+        with ESMTP id S236052AbiCCTju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:39:48 -0500
+        Thu, 3 Mar 2022 14:39:50 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A27F187B92
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A586E76E11
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646336338;
+        s=mimecast20190719; t=1646336340;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iNdn5Vk+CrEyRiXh1DB8vt1j4ccuICGhDqmAiMrsokw=;
-        b=i5BRUch40/VexlsuKiF4C0MqS8nc0ZyiKR1hberjF4We5cw18I7FS5SlFCe04q/v47pIHc
-        d6uCL02Kb7ocJhX3iZl52UQD4qHS1bcKzwhfXUp2hMs1Qsi9pS29z8XqHXBVu1VePphnUg
-        CIRIBxmBhtEh6PxAfVhMfaSg4+En5AI=
+        bh=AnfJc6MmE4s7EjO2ab8w7HMF4kJU2HMGyeifnf4n0a4=;
+        b=G8/zpE6P/2fyi6H+hJ27QkRyi2RnWPM/2sY9heSp+9DMIOMygJbsnflnO3rHxAzt5Rul9i
+        9gAL3sY5AipL4GxqOuwQoLN7+r2T8H1TGeGHLe82Dv7JE+/WTgXTOIqOdqaTwhitWn4MSB
+        i7Y6kvkG/cO193P/xq+RFLpM5EjhBsY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-673-SvCN4WF1MJOtmZwhCPrzxQ-1; Thu, 03 Mar 2022 14:38:53 -0500
-X-MC-Unique: SvCN4WF1MJOtmZwhCPrzxQ-1
+ us-mta-655-QfmXfZZOPje2yRNk4OQegQ-1; Thu, 03 Mar 2022 14:38:57 -0500
+X-MC-Unique: QfmXfZZOPje2yRNk4OQegQ-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2E45351DC;
-        Thu,  3 Mar 2022 19:38:51 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A7141091DA0;
+        Thu,  3 Mar 2022 19:38:56 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5BD025DF2E;
-        Thu,  3 Mar 2022 19:38:50 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 66C355DF3A;
+        Thu,  3 Mar 2022 19:38:55 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         David Matlack <dmatlack@google.com>,
         Ben Gardon <bgardon@google.com>,
         Mingwei Zhang <mizhang@google.com>
-Subject: [PATCH v4 07/30] KVM: x86/mmu: do not allow readers to acquire references to invalid roots
-Date:   Thu,  3 Mar 2022 14:38:19 -0500
-Message-Id: <20220303193842.370645-8-pbonzini@redhat.com>
+Subject: [PATCH v4 12/30] KVM: x86/mmu: WARN if old _or_ new SPTE is REMOVED in non-atomic path
+Date:   Thu,  3 Mar 2022 14:38:24 -0500
+Message-Id: <20220303193842.370645-13-pbonzini@redhat.com>
 In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
 References: <20220303193842.370645-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -61,53 +61,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the "shared" argument of for_each_tdp_mmu_root_yield_safe, thus ensuring
-that readers do not ever acquire a reference to an invalid root.  After this
-patch, all readers except kvm_tdp_mmu_zap_invalidated_roots() treat
-refcount=0/valid, refcount=0/invalid and refcount=1/invalid in exactly the
-same way.  kvm_tdp_mmu_zap_invalidated_roots() is different but it also
-does not acquire a reference to the invalid root, and it cannot see
-refcount=0/invalid because it is guaranteed to run after
-kvm_tdp_mmu_invalidate_all_roots().
+From: Sean Christopherson <seanjc@google.com>
 
-Opportunistically add a lockdep assertion to the yield-safe iterator.
+WARN if the new_spte being set by __tdp_mmu_set_spte() is a REMOVED_SPTE,
+which is called out by the comment as being disallowed but not actually
+checked.  Keep the WARN on the old_spte as well, because overwriting a
+REMOVED_SPTE in the non-atomic path is also disallowed (as evidence by
+lack of splats with the existing WARN).
 
+Fixes: 08f07c800e9d ("KVM: x86/mmu: Flush TLBs after zap in TDP MMU PF handler")
+Cc: Ben Gardon <bgardon@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Message-Id: <20220226001546.360188-12-seanjc@google.com>
+Reviewed-by: Mingwei Zhang <mizhang@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index d39593b9ac9e..79bc48ddb69d 100644
+index 371b6a108736..41175ee7e111 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -166,14 +166,15 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
- 	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared, _only_valid);	\
- 	     _root;								\
- 	     _root = tdp_mmu_next_root(_kvm, _root, _shared, _only_valid))	\
--		if (kvm_mmu_page_as_id(_root) != _as_id) {			\
-+		if (kvm_lockdep_assert_mmu_lock_held(_kvm, _shared) &&		\
-+		    kvm_mmu_page_as_id(_root) != _as_id) {			\
- 		} else
+@@ -626,13 +626,13 @@ static inline void __tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
+ 	lockdep_assert_held_write(&kvm->mmu_lock);
  
- #define for_each_valid_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
- 	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, true)
+ 	/*
+-	 * No thread should be using this function to set SPTEs to the
++	 * No thread should be using this function to set SPTEs to or from the
+ 	 * temporary removed SPTE value.
+ 	 * If operating under the MMU lock in read mode, tdp_mmu_set_spte_atomic
+ 	 * should be used. If operating under the MMU lock in write mode, the
+ 	 * use of the removed SPTE should not be necessary.
+ 	 */
+-	WARN_ON(is_removed_spte(iter->old_spte));
++	WARN_ON(is_removed_spte(iter->old_spte) || is_removed_spte(new_spte));
  
--#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)		\
--	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, false)
-+#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id)			\
-+	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, false, false)
- 
- /*
-  * Iterate over all TDP MMU roots.  Requires that mmu_lock be held for write,
-@@ -808,7 +809,7 @@ bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
- {
- 	struct kvm_mmu_page *root;
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id, false)
-+	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
- 		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush,
- 				      false);
+ 	kvm_tdp_mmu_write_spte(iter->sptep, new_spte);
  
 -- 
 2.31.1
