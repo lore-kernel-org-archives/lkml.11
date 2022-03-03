@@ -2,704 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00797C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231293AbiCCBQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:16:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38116 "EHLO
+        id S231288AbiCCBTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:19:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231169AbiCCBQz (ORCPT
+        with ESMTP id S231169AbiCCBTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:16:55 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F97735DC7
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:16:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646270169; x=1677806169;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UeEsE5MXvt2a+QExWGeiCc4uZd8dlEmbNFn7PaKDjBk=;
-  b=foVSbLrV7XeB6cMH88IroP38Uvzec6NCMLMmbmGE5k8mVRU+MY0k48D9
-   KHG6cF4UbG6p5o5YhyyVRkbA4cvYMspFUqPfOTjxcsM/gF6IuSZX6fjiN
-   9uNbQmMj5CS5IgN7LJXtttpM3zf7oP7D87M6bHF12IPY1e5RKqdl+5bCj
-   wPzUCihJ6whPQ4BiXZ0fmLrj0VY1Vkxxe5KDet014KFpRRAJItRTr4duV
-   zXBqhEHJE9EjDl7a40+q9r+PA5e00xDMEwV1JRxavF/7JG8JPWxsIqFua
-   6lDpuOxYm0Gehs5l78TYVpsb7BwZmjEy78qnwKBNtj4tqyVcpt38XdILr
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="240962871"
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="240962871"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 17:16:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="535609231"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 02 Mar 2022 17:16:06 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPa4b-0002C2-LQ; Thu, 03 Mar 2022 01:16:05 +0000
-Date:   Thu, 3 Mar 2022 09:15:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Will Deacon <will.deacon@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ben Hutchings <bwh@kernel.org>
-Subject: [linux-stable-rc:queue/4.9 956/9999] include/linux/bits.h:6:19:
- error: initialized field overwritten
-Message-ID: <202203030955.LTwFROCM-lkp@intel.com>
+        Wed, 2 Mar 2022 20:19:41 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3377A292
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:18:57 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id y5so2821311ill.13
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 17:18:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cI9hnRkRgND1nAn9UCiZL4IHWAfS5xa6p9XyZVM0jIQ=;
+        b=hwlCxjRFrjuY6CElpPLmzyx2+rkFQxN6FCSIvipOMLIbFKmfNA0vyxtM0sRtdcPmrm
+         xdrnBECeuTyeOr4Rle0SwrrjWs+7xiSzukDOZHsQ9EsLRUJ0q8Np7nEPqVAeXRRXVhKb
+         F15CfwFvFjREoS4ezN9q856jY0vv+XxMRkFa9/Symq3qcTFoQ91rCN2DzODYaXbVt2QO
+         GKXVm++Dr2v4nh+6nBhnrJPKFhd10EqROj129MUEKBM4G7IpdR7+RhZcbSR8c8imZIy3
+         sd0sZwnRPnKGmX+Mt+OGBs6yEUQAY4XH4gUFHJi+Fp4HBVGMRgI93wax8mMs2VYRm3tA
+         pCGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cI9hnRkRgND1nAn9UCiZL4IHWAfS5xa6p9XyZVM0jIQ=;
+        b=fd43RW7IlCpmFjAXbkcKSmo8SaCg9yEpRkf2ekQQ9DWapuDEOQUW7KQyP8OuH8nKI/
+         nGVTSrZL6oa41QRaC3bOhUQuPt7589unh9cjlPWFRyRaOnD34aita2SPYsgkq5Czc0Zc
+         XcNNRToyGA71XEiDobIOIUhKmCvaNItFYq6mnKp6CZ+OphNddgkLddHWv0a/zrJOwIih
+         qDqwM33iR07ZR9n44e/xqzlnvjXtpOJJxy47M2Yna2OVDK2PSB19mgxx1bBiICwh45c9
+         FYYUSXk+220p8peiSSBjdBX3dOUNFSPM3nx3tu3PuVdVQhd3h1esbnJDnqnAvF9JoXhG
+         MyBg==
+X-Gm-Message-State: AOAM533hyM+PjjLxEZufJK9CTUHO91tQOj8lzYQMcCLxLQK2OqkGT1h3
+        iSsPpuUlPFBhmPVXhg1PJtOC86VKuzhOg+6EHnosbC+f
+X-Google-Smtp-Source: ABdhPJw6UF/NDC1bO/sl+wOqPz+B9k9ja352maEzhVypMkHFt9AhB41okw1311jL/bHmdUY8zi3z7s8FeAKfIUWW+fc=
+X-Received: by 2002:a05:6e02:1bc5:b0:2c2:7bc9:8e8f with SMTP id
+ x5-20020a056e021bc500b002c27bc98e8fmr29704192ilv.5.1646270336576; Wed, 02 Mar
+ 2022 17:18:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220223154718.83500-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220223154718.83500-1-andriy.shevchenko@linux.intel.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Thu, 3 Mar 2022 02:18:45 +0100
+Message-ID: <CANiq72kNXwo7hpc0+XX_UsyT_3D9o=o0eVjqN-QtDd46kjdd6g@mail.gmail.com>
+Subject: Re: [PATCH v1 1/3] auxdisplay: lcd2s: Fix lcd2s_redefine_char() feature
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Lars Poeschel <poeschel@lemonage.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Will,
+On Wed, Feb 23, 2022 at 4:47 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> It seems that the lcd2s_redefine_char() has never been properly
+> tested. The buffer is filled by DEF_CUSTOM_CHAR command followed
+> by the character number (from 0 to 7), but immediately after that
+> these bytes are got rewritten by the decoded hex stream.
+>
+> Fix the index to fill the buffer after the command and number.
 
-FYI, the error/warning still remains.
+Thanks Andy, queued.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.9
-head:   443d6630b05c3eaff71448a86e4b776194f317ef
-commit: b995196b9da4e2486d50e132539c848a60ea88da [956/9999] locking/atomics, asm-generic: Move some macros from <linux/bitops.h> to a new <linux/bits.h> file
-config: i386-randconfig-a016-20211101 (https://download.01.org/0day-ci/archive/20220303/202203030955.LTwFROCM-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=b995196b9da4e2486d50e132539c848a60ea88da
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/4.9
-        git checkout b995196b9da4e2486d50e132539c848a60ea88da
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/gpu/drm/i915/i915_pci.c:69:15: error: initialized field overwritten [-Werror=override-init]
-     .num_pipes = 2, /* legal, last one wins */
-                  ^
-   drivers/gpu/drm/i915/i915_pci.c:69:15: note: (near initialization for 'intel_i830_info.num_pipes')
-   drivers/gpu/drm/i915/i915_pci.c:79:15: error: initialized field overwritten [-Werror=override-init]
-     .num_pipes = 2, /* legal, last one wins */
-                  ^
-   drivers/gpu/drm/i915/i915_pci.c:79:15: note: (near initialization for 'intel_i85x_info.num_pipes')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:161:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING,
-                  ^~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_g45_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:161:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING,
-                  ^~~~~~~~~~~
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:170:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING,
-                  ^~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_gm45_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:170:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING,
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:248:15: error: initialized field overwritten [-Werror=override-init]
-     .num_pipes = 0, /* legal, last one wins */
-                  ^
-   drivers/gpu/drm/i915/i915_pci.c:248:15: note: (near initialization for 'intel_ivybridge_q_info.num_pipes')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:283:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_haswell_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:283:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:283:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_haswell_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:283:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES,
-     ^~~~~~~~~~~~
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:294:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_broadwell_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:294:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:294:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_broadwell_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:294:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:295:9: error: initialized field overwritten [-Werror=override-init]
-     .gen = 8,
-            ^
-   drivers/gpu/drm/i915/i915_pci.c:295:9: note: (near initialization for 'intel_broadwell_info.gen')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:300:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_broadwell_gt3_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:300:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:300:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_broadwell_gt3_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:300:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:301:9: error: initialized field overwritten [-Werror=override-init]
-     .gen = 8,
-            ^
-   drivers/gpu/drm/i915/i915_pci.c:301:9: note: (near initialization for 'intel_broadwell_gt3_info.gen')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:303:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING | BSD2_RING,
-                  ^~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_broadwell_gt3_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:303:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING | BSD2_RING,
-                  ^~~~~~~~~~~
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:326:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_skylake_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:326:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:326:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_skylake_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:326:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:328:9: error: initialized field overwritten [-Werror=override-init]
-     .gen = 9,
-            ^
-   drivers/gpu/drm/i915/i915_pci.c:328:9: note: (near initialization for 'intel_skylake_info.gen')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:335:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_skylake_gt3_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:335:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:335:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_skylake_gt3_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:335:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:337:9: error: initialized field overwritten [-Werror=override-init]
-     .gen = 9,
-            ^
-   drivers/gpu/drm/i915/i915_pci.c:337:9: note: (near initialization for 'intel_skylake_gt3_info.gen')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:341:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING | BSD2_RING,
-                  ^~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_skylake_gt3_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:341:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING | BSD2_RING,
-                  ^~~~~~~~~~~
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:370:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_kabylake_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:370:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:370:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_kabylake_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:370:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:372:9: error: initialized field overwritten [-Werror=override-init]
-     .gen = 9,
-            ^
-   drivers/gpu/drm/i915/i915_pci.c:372:9: note: (near initialization for 'intel_kabylake_info.gen')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:379:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_kabylake_gt3_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:273:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING, \
-                  ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:379:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: error: initialized field overwritten [-Werror=override-init]
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:379:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:279:14: note: (near initialization for 'intel_kabylake_gt3_info.has_rc6p')
-     .has_rc6p = 0 /* RC6p removed-by HSW */, \
-                 ^
-   drivers/gpu/drm/i915/i915_pci.c:289:2: note: in expansion of macro 'HSW_FEATURES'
-     HSW_FEATURES, \
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:379:2: note: in expansion of macro 'BDW_FEATURES'
-     BDW_FEATURES,
-     ^~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:381:9: error: initialized field overwritten [-Werror=override-init]
-     .gen = 9,
-            ^
-   drivers/gpu/drm/i915/i915_pci.c:381:9: note: (near initialization for 'intel_kabylake_gt3_info.gen')
-   In file included from include/linux/bitops.h:4:0,
-                    from include/linux/kernel.h:10,
-                    from include/asm-generic/bug.h:13,
-                    from arch/x86/include/asm/bug.h:35,
-                    from include/linux/bug.h:4,
-                    from include/linux/io.h:23,
-                    from include/video/vga.h:21,
-                    from include/linux/vgaarb.h:34,
-                    from drivers/gpu/drm/i915/i915_pci.c:26:
->> include/linux/bits.h:6:19: error: initialized field overwritten [-Werror=override-init]
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:385:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING | BSD2_RING,
-                  ^~~~~~~~~~~
-   include/linux/bits.h:6:19: note: (near initialization for 'intel_kabylake_gt3_info.ring_mask')
-    #define BIT(nr)   (1UL << (nr))
-                      ^
-   drivers/gpu/drm/i915/i915_drv.h:2732:25: note: in expansion of macro 'BIT'
-    #define ENGINE_MASK(id) BIT(id)
-                            ^~~
-   drivers/gpu/drm/i915/i915_drv.h:2733:21: note: in expansion of macro 'ENGINE_MASK'
-    #define RENDER_RING ENGINE_MASK(RCS)
-                        ^~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_pci.c:385:15: note: in expansion of macro 'RENDER_RING'
-     .ring_mask = RENDER_RING | BSD_RING | BLT_RING | VEBOX_RING | BSD2_RING,
-                  ^~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +6 include/linux/bits.h
-
-     5	
-   > 6	#define BIT(nr)			(1UL << (nr))
-     7	#define BIT_ULL(nr)		(1ULL << (nr))
-     8	#define BIT_MASK(nr)		(1UL << ((nr) % BITS_PER_LONG))
-     9	#define BIT_WORD(nr)		((nr) / BITS_PER_LONG)
-    10	#define BIT_ULL_MASK(nr)	(1ULL << ((nr) % BITS_PER_LONG_LONG))
-    11	#define BIT_ULL_WORD(nr)	((nr) / BITS_PER_LONG_LONG)
-    12	#define BITS_PER_BYTE		8
-    13	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Cheers,
+Miguel
