@@ -2,96 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB28C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6964C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232072AbiCCJlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:41:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S231452AbiCCJnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:43:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbiCCJlH (ORCPT
+        with ESMTP id S230037AbiCCJnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:41:07 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7811712BD;
-        Thu,  3 Mar 2022 01:40:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646300423; x=1677836423;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=knGo+0I6kiExJnkYlOIMEDQ7SnglzfM6cRK2vpYjK+4=;
-  b=P3qy+8hU/FMWlGitcVy6Tr1ZwblsRQLkLqzxQbuAcz1lPddAkLM2OvFy
-   /6hP0/KmTWJNALEeJ5UsmGsulpm06RFqOhKIQYdwep8QizHojPHJqdmyl
-   U14OH7SsU39hyg1eibyBubz9AMvulIHnjnhiKbQcoUg7QW9iEyLbwLWvg
-   Q=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 03 Mar 2022 01:40:23 -0800
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 03 Mar 2022 01:40:22 -0800
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 03 Mar 2022 15:10:08 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id C4B943565; Thu,  3 Mar 2022 15:10:07 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com
-Subject: [PATCH v4 3/4] arm64/dts/qcom/sdm845: remove assigned-clock-rate property for mdp clk
-Date:   Thu,  3 Mar 2022 15:10:00 +0530
-Message-Id: <1646300401-9063-4-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646300401-9063-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1646300401-9063-1-git-send-email-quic_vpolimer@quicinc.com>
+        Thu, 3 Mar 2022 04:43:22 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F7515A38
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:42:36 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nPhyV-0005o7-U5; Thu, 03 Mar 2022 10:42:20 +0100
+Message-ID: <f33ff1176caa2ad8c6d314e4f766dda40bd575fa.camel@pengutronix.de>
+Subject: Re: [PATCH] dt-bindings: imx6q-pcie: Add iMX8MM PCIe compatible
+ string
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, robh@kernel.org,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, shawnguo@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Date:   Thu, 03 Mar 2022 10:42:18 +0100
+In-Reply-To: <1646293805-18248-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1646293805-18248-1-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel clock driver assumes that initial rate is the
-max rate for that clock and was not allowing it to scale
-beyond the assigned clock value.
+Am Donnerstag, dem 03.03.2022 um 15:50 +0800 schrieb Richard Zhu:
+> Add the i.MX8MM PCIe compatible string.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 
-Drop the assigned clock rate property and vote on the mdp clock as per
-calculated value during the usecase.
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
 
-Fixes: 08c2a076d1("arm64: dts: qcom: sdm845: Add dpu to sdm845 dts file")
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+> ---
+>  Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml b/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
+> index 643a6333b07b..36c8a06d17a0 100644
+> --- a/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
+> @@ -25,6 +25,7 @@ properties:
+>        - fsl,imx6qp-pcie
+>        - fsl,imx7d-pcie
+>        - fsl,imx8mq-pcie
+> +      - fsl,imx8mm-pcie
+>  
+>    reg:
+>      items:
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index 0d6286d..80dc486 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -4181,9 +4181,6 @@
- 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
- 			clock-names = "iface", "core";
- 
--			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
--			assigned-clock-rates = <300000000>;
--
- 			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
-@@ -4214,10 +4211,8 @@
- 					 <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
- 				clock-names = "gcc-bus", "iface", "bus", "core", "vsync";
- 
--				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
--						  <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
--				assigned-clock-rates = <300000000>,
--						       <19200000>;
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
-+				assigned-clock-rates = <19200000>;
- 				operating-points-v2 = <&mdp_opp_table>;
- 				power-domains = <&rpmhpd SDM845_CX>;
- 
--- 
-2.7.4
 
