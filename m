@@ -2,222 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 02:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0552DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 02:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbiCCCX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 21:23:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48230 "EHLO
+        id S231723AbiCCCZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 21:25:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbiCCCXX (ORCPT
+        with ESMTP id S231634AbiCCCZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 21:23:23 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58CCC23BEA
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 18:22:32 -0800 (PST)
-Received: from unknown (HELO lgemrelse7q.lge.com) (156.147.1.151)
-        by 156.147.23.52 with ESMTP; 3 Mar 2022 11:22:29 +0900
-X-Original-SENDERIP: 156.147.1.151
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.151 with ESMTP; 3 Mar 2022 11:22:29 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Thu, 3 Mar 2022 11:22:08 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
-        bfields@fieldses.org, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, paolo.valente@linaro.org,
-        josef@toxicpanda.com, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, jack@suse.cz, jack@suse.com,
-        jlayton@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
-        djwong@kernel.org, dri-devel@lists.freedesktop.org,
-        airlied@linux.ie, rodrigosiqueiramelo@gmail.com,
-        melissa.srw@gmail.com, hamohammed.sa@gmail.com
-Subject: Re: [PATCH v3 00/21] DEPT(Dependency Tracker)
-Message-ID: <20220303022208.GA20956@X58A-UD3R>
-References: <1646042220-28952-1-git-send-email-byungchul.park@lge.com>
- <Yh70VkRkUfwIjPWv@ip-172-31-19-208.ap-northeast-1.compute.internal>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh70VkRkUfwIjPWv@ip-172-31-19-208.ap-northeast-1.compute.internal>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+        Wed, 2 Mar 2022 21:25:20 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F41D22503;
+        Wed,  2 Mar 2022 18:24:35 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id p9so5526433wra.12;
+        Wed, 02 Mar 2022 18:24:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=bs5ojZXXlLRZXUwC3XJKXaFe2NaCdMkJfCggibvm1pE=;
+        b=jg6O0SzIZvQ0dZtavnIktpzmUozBQixShvJVM1Tj6K+wpAtQ5EK0DJTQyMjBbwV345
+         kefreXsEKX7onCIiawRPSREjXf/ZFEhxeW1itTQRt9flzXy6Ea08VxuGwfM5XPC7hBey
+         M8WBmKlICVK2wr6G2D32vIb47E58EKZ+pGPnMx8n+QEUkOp3Tu+nk/gSpS7tNXFRNtQy
+         po1UCpox9K93LsPPlD7eyun4WJ/3GCpGnAf9xmOwfuXUo8/pWyuohd+xmAmpECwXMpcH
+         6e3CkeyNHwyBl2Cc1ep4jobHnQXfRKbRj/vfUnCTo+D4HTlUUVG95K1EhoM2QImvUWWq
+         HxZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bs5ojZXXlLRZXUwC3XJKXaFe2NaCdMkJfCggibvm1pE=;
+        b=r5F4aq40arOjSG8sBAspmlBCjf9MoMRdbo6u4MDIdyCOROt44O5osXXm9Ijce/lpHL
+         Yuz2Y6dvrdbcJjN86BO9x/vx0cO9FEBo1PkT95umtevB+XSqWxfOphWwTO5rxu+wzbQq
+         1tPFuEiwlHOUNRMHUG8QsZYf0IJeSvaCThSzwfD+U4lUzsK2hH6OxAtA+TXUhQzLVTC9
+         XvHMjra2iK79NqVyewibmWssMkp19+iufAjel5u608HOa4DjQmtt6hbxCOJQNnBBfVRV
+         ZSy9JwAnVy7E3LEUN9o0fwANCAn4gQBp495XpNX3d1nLzgDOyos7zIu9k5t5M38hGuir
+         7Ptg==
+X-Gm-Message-State: AOAM533291S45gGKT67nme9M57HWQIkeyBn5KvjyHa0K90pJ14IdhalQ
+        ZJVSAna0HxtZd03k1Q+8oo8xWQuAqTY86Q==
+X-Google-Smtp-Source: ABdhPJwbyH4tQeCUC2s0hLlopCdEpRq6dM05TWo/TQpenI+bJUoLyRDH0qdHpgrQ4DqTGI6KLBB0IQ==
+X-Received: by 2002:a5d:4f03:0:b0:1ed:9eb4:9e45 with SMTP id c3-20020a5d4f03000000b001ed9eb49e45mr24240589wru.464.1646274273857;
+        Wed, 02 Mar 2022 18:24:33 -0800 (PST)
+Received: from localhost.localdomain ([64.64.123.48])
+        by smtp.gmail.com with ESMTPSA id f22-20020a1cc916000000b00380d3e49e89sm620979wmb.22.2022.03.02.18.24.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 18:24:33 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     hdegoede@redhat.com, markgross@kernel.org
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH v2] platform: x86: huawei-wmi: check the return value of device_create_file()
+Date:   Wed,  2 Mar 2022 18:24:21 -0800
+Message-Id: <20220303022421.313-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 04:36:38AM +0000, Hyeonggon Yoo wrote:
-> On Mon, Feb 28, 2022 at 06:56:39PM +0900, Byungchul Park wrote:
-> > I didn't want to bother you so I was planning to send the next spin
-> > after making more progress. However, PATCH v2 reports too many false
-> > positives because Dept tracked the bit_wait_table[] wrong way - I
-> > apologize for that. So I decided to send PATCH v3 first before going
-> > further for those who want to run Dept for now.
-> > 
-> > There might still be some false positives but not overwhelming.
-> >
-> 
-> Hello Byungchul, I'm running DEPT v3 on my system
-> and I see report below.
-> 
-> Looking at the kmemleak code and comment, I think
-> kmemleak tried to avoid lockdep recursive warning
-> but detected by DEPT?
-> 
-> ===================================================
-> DEPT: Circular dependency has been detected.
-> 5.17.0-rc1+ #1 Tainted: G        W
-> ---------------------------------------------------
-> summary
-> ---------------------------------------------------
-> *** AA DEADLOCK ***
-> 
-> context A
->     [S] __raw_spin_lock_irqsave(&object->lock:0)
->     [W] _raw_spin_lock_nested(&object->lock:0)
->     [E] spin_unlock(&object->lock:0)
-> 
-> [S]: start of the event context
-> [W]: the wait blocked
-> [E]: the event not reachable
-> ---------------------------------------------------
-> context A's detail
-> ---------------------------------------------------
-> context A
->     [S] __raw_spin_lock_irqsave(&object->lock:0)
->     [W] _raw_spin_lock_nested(&object->lock:0)
->     [E] spin_unlock(&object->lock:0)
-> 
-> [S] __raw_spin_lock_irqsave(&object->lock:0):
-> [<ffffffc00810302c>] scan_gray_list+0x84/0x13c
-> stacktrace:
->       dept_ecxt_enter+0x88/0xf4
->       _raw_spin_lock_irqsave+0xf0/0x1c4
->       scan_gray_list+0x84/0x13c
->       kmemleak_scan+0x2d8/0x54c
->       kmemleak_scan_thread+0xac/0xd4
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
+The function device_create_file() in huawei_wmi_battery_add() can fail,
+so its return value should be checked.
 
-[W]'s stack trace is missed. But I guess this issue is the same issue of
-what you reported following this one. We can discuss this issue on the
-other report's thread.
+Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+v2:
+* Fix the code format.
+  Thank Hans for good advice.
 
-Thanks,
-Byunghcul
+---
+ drivers/platform/x86/huawei-wmi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-> [E] spin_unlock(&object->lock:0):
-> [<ffffffc008102ee0>] scan_block+0x60/0x128
-> ---------------------------------------------------
-> information that might be helpful
-> ---------------------------------------------------
-> CPU: 1 PID: 38 Comm: kmemleak Tainted: G        W         5.17.0-rc1+ #1
-> Hardware name: linux,dummy-virt (DT)
-> Call trace:
->  dump_backtrace.part.0+0x9c/0xc4
->  show_stack+0x14/0x28
->  dump_stack_lvl+0x9c/0xcc
->  dump_stack+0x14/0x2c
->  print_circle+0x2d4/0x438
->  cb_check_dl+0x44/0x70
->  bfs+0x60/0x168
->  add_dep+0x88/0x11c
->  add_wait+0x2d0/0x2dc
->  __dept_wait+0x8c/0xa4
->  dept_wait+0x6c/0x88
->  _raw_spin_lock_nested+0xa8/0x1b0
->  scan_block+0xb4/0x128
->  scan_gray_list+0xc4/0x13c
->  kmemleak_scan+0x2d8/0x54c
->  kmemleak_scan_thread+0xac/0xd4
->  kthread+0xd4/0xe4
->  ret_from_fork+0x10/0x20
-> 
-> > ---
-> > 
-> > Hi Linus and folks,
-> > 
-> > I've been developing a tool for detecting deadlock possibilities by
-> > tracking wait/event rather than lock(?) acquisition order to try to
-> > cover all synchonization machanisms. It's done on v5.17-rc1 tag.
-> > 
-> > https://github.com/lgebyungchulpark/linux-dept/commits/dept1.14_on_v5.17-rc1
-> >
-> [...]
-> > Benifit:
-> > 
-> > 	0. Works with all lock primitives.
-> > 	1. Works with wait_for_completion()/complete().
-> > 	2. Works with 'wait' on PG_locked.
-> > 	3. Works with 'wait' on PG_writeback.
-> > 	4. Works with swait/wakeup.
-> > 	5. Works with waitqueue.
-> > 	6. Multiple reports are allowed.
-> > 	7. Deduplication control on multiple reports.
-> > 	8. Withstand false positives thanks to 6.
-> > 	9. Easy to tag any wait/event.
-> > 
-> > Future work:
-> > 
-> > 	0. To make it more stable.
-> > 	1. To separates Dept from Lockdep.
-> > 	2. To improves performance in terms of time and space.
-> > 	3. To use Dept as a dependency engine for Lockdep.
-> > 	4. To add any missing tags of wait/event in the kernel.
-> > 	5. To deduplicate stack trace.
-> > 
-> > How to interpret reports:
-> > 
-> > 	1. E(event) in each context cannot be triggered because of the
-> > 	   W(wait) that cannot be woken.
-> > 	2. The stack trace helping find the problematic code is located
-> > 	   in each conext's detail.
-> > 
-> > Thanks,
-> > Byungchul
-> > 
-> > ---
-> > 
-> > Changes from v2:
-> > 
-> > 	1. Disable Dept on bit_wait_table[] in sched/wait_bit.c
-> > 	   reporting a lot of false positives, which is my fault.
-> > 	   Wait/event for bit_wait_table[] should've been tagged in a
-> > 	   higher layer for better work, which is a future work.
-> > 	   (feedback from Jan Kara)
-> > 	2. Disable Dept on crypto_larval's completion to prevent a false
-> > 	   positive.
-> > 
-> > Changes from v1:
-> > 
-> > 	1. Fix coding style and typo. (feedback from Steven)
-> > 	2. Distinguish each work context from another in workqueue.
-> > 	3. Skip checking lock acquisition with nest_lock, which is about
-> > 	   correct lock usage that should be checked by Lockdep.
-> > 
-> > Changes from RFC:
-> > 
-> > 	1. Prevent adding a wait tag at prepare_to_wait() but __schedule().
-> > 	   (feedback from Linus and Matthew)
-> > 	2. Use try version at lockdep_acquire_cpus_lock() annotation.
-> > 	3. Distinguish each syscall context from another.
-> [ ... ] 
-> 
-> -- 
-> Thank you, You are awesome!
-> Hyeonggon :-)
+diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
+index a2d846c4a7ee..eac3e6b4ea11 100644
+--- a/drivers/platform/x86/huawei-wmi.c
++++ b/drivers/platform/x86/huawei-wmi.c
+@@ -470,10 +470,17 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
+ 
+ static int huawei_wmi_battery_add(struct power_supply *battery)
+ {
+-	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
+-	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	int err = 0;
+ 
+-	return 0;
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++	if (err)
++		return err;
++
++	err = device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	if (err)
++		device_remove_file(&battery->dev, &dev_attr_charge_control_start_threshold);
++
++	return err;
+ }
+ 
+ static int huawei_wmi_battery_remove(struct power_supply *battery)
+-- 
+2.17.1
+
