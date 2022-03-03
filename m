@@ -2,145 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B70C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 508CAC43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235364AbiCCRa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:30:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        id S235371AbiCCRbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:31:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235353AbiCCRaY (ORCPT
+        with ESMTP id S233589AbiCCRbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:30:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C13C8FA1
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:29:38 -0800 (PST)
+        Thu, 3 Mar 2022 12:31:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9555E199D51;
+        Thu,  3 Mar 2022 09:30:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 963296177B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 17:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2B9C004E1;
-        Thu,  3 Mar 2022 17:29:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C42DB82650;
+        Thu,  3 Mar 2022 17:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45241C340E9;
+        Thu,  3 Mar 2022 17:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646328576;
-        bh=FOw+85uwmyeCg5YFO8PbTlTtboPnRTZQlSAakLzXseA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RBGiaT51hagwMp8oY91hK6Cz8Vxfbmh7xb6MBZf9kRQZkun+DuA9cTcePc7EY6LvM
-         /pH1fOlPU+biHohqNGjvovDaI2QmwtG/ZSRzCT8FG8EteWh4F358xVG3kP5vdyj7U2
-         TkxIBm8WQhzjwx+UcD/BFDW/aMNOoV23VRvw6tMG5NRUIr/uSVDqgSIdGYgJ/EsISU
-         TBa+cT/GaLLOclth+gbqvkcu+YMNiKYp5xlPGtN4oxJ1i0gec6jdOt9Y10Tcw+Z8rq
-         APbNdFTkV4Zp4aPA8FL2cPqZ6+Hz2aeKx0uUwsoPjsfQInLDmEo1fqzd+x0pb6u5l3
-         01C/F0rtLgZ4w==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nPpGf-00C14D-UP; Thu, 03 Mar 2022 17:29:34 +0000
-Date:   Thu, 03 Mar 2022 17:29:33 +0000
-Message-ID: <87r17j0wsi.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     Will Deacon <will@kernel.org>, Quentin Perret <qperret@google.com>,
-        Fuad Tabba <tabba@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Scull <ascull@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 2/8] KVM: arm64: Introduce pkvm_alloc_private_va_range()
-In-Reply-To: <CAC_TJvfTZP9+EKFFXQUeGOWJb=WK2Wkd53bPOX2gaz0Gh5o8OA@mail.gmail.com>
-References: <20220225033548.1912117-1-kaleshsingh@google.com>
-        <20220225033548.1912117-3-kaleshsingh@google.com>
-        <87v8ww6bl0.wl-maz@kernel.org>
-        <CAC_TJvfTZP9+EKFFXQUeGOWJb=WK2Wkd53bPOX2gaz0Gh5o8OA@mail.gmail.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: kaleshsingh@google.com, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, kernel-team@android.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, catalin.marinas@arm.com, mark.rutland@arm.com, broonie@kernel.org, mhiramat@kernel.org, pcc@google.com, madvenka@linux.microsoft.com, ascull@google.com, pbonzini@redhat.com, ardb@kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        s=k20201202; t=1646328655;
+        bh=GCDTpWwAdbUUe92yPSIjZBhj5yfaiPwzu66bwylkoac=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CLQazQPiBOZrP69PhmqDFy7s/3OGcDUji9CNq78GafEhJcptBOq9ejoyBYJ2f546B
+         WTlZ8u1FFUpD/OSgSZY6He9snfv0gRmz7lyA01z+f8swbsuntwtgqOlSdC95A9rhzD
+         4EHG/xJLnX+ThYlzbEB371mF/DWMhhm1qjhNHHYZhOO7+PHV6EBURX4/QlJg2a/04b
+         cK6IxzhArX/HTp+RcLIdMrJ/+byFkhr/Hqjfdh68MR5K6wiC4kB9Fz3hjA/9cu5twz
+         SOPBjB6KiiImIA7vzXX5v1kdIK7cVQWHqIsb9S4rGhtqXcJiLS7L+LsHATv9VdVI4o
+         g0bbBtjD2FOMg==
+Date:   Thu, 3 Mar 2022 10:30:47 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     David Gow <davidgow@google.com>
+Cc:     Kees Cook <keescook@chromium.org>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-um@lists.infradead.org, linux-kbuild@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] um: clang: Strip out -mno-global-merge from USER_CFLAGS
+Message-ID: <YiD7R2wRxoWxtVq7@dev-arch.thelio-3990X>
+References: <20220303090643.241747-1-davidgow@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303090643.241747-1-davidgow@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
+Hi David,
 
-On Wed, 02 Mar 2022 17:24:53 +0000,
-Kalesh Singh <kaleshsingh@google.com> wrote:
+On Thu, Mar 03, 2022 at 05:06:42PM +0800, David Gow wrote:
+> The things built with USER_CFLAGS don't seem to recognise it as a
+> compiler option, and print a warning:
+> clang: warning: argument unused during compilation: '-mno-global-merge' [-Wunused-command-line-argument]
 > 
-> On Tue, Mar 1, 2022 at 11:46 PM Marc Zyngier <maz@kernel.org> wrote:
-> >
-> > On Fri, 25 Feb 2022 03:34:47 +0000,
-> > Kalesh Singh <kaleshsingh@google.com> wrote:
-> > >
-> > > pkvm_hyp_alloc_private_va_range() can be used to reserve private VA ranges
-> > > in the pKVM nVHE hypervisor (). Also update __pkvm_create_private_mapping()
-> > > to allow specifying an alignment for the private VA mapping.
-> > >
-> > > These will be used to implement stack guard pages for pKVM nVHE hypervisor
-> > > (in a subsequent patch in the series).
-> > >
-> > > Credits to Quentin Perret <qperret@google.com> for the idea of moving
-> > > private VA allocation out of __pkvm_create_private_mapping()
-> > >
-> > > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > > ---
-> > >
-> > > Changes in v4:
-> > >   - Handle null ptr in pkvm_alloc_private_va_range() and replace
-> > >     IS_ERR_OR_NULL checks in callers with IS_ERR checks, per Fuad
-> > >   - Fix kernel-doc comments format, per Fuad
-> > >   - Format __pkvm_create_private_mapping() prototype args (< 80 col), per Fuad
-> > >
-> > > Changes in v3:
-> > >   - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
-> > >
-> > > Changes in v2:
-> > >   - Allow specifying an alignment for the private VA allocations, per Marc
-> >
-> > I probably badly expressed my earlier concern.
-> >
-> > Yes, an alignment is necessary. But how often do we want an alignment
-> > that isn't naturally aligned to the size of the allocation (i.e. the
-> > power of 2 >= the size of the allocation)? This is what the rest of
-> > the kernel does (get_order() and co), and I thing we should follow
-> > this.
+> Fixes: 744814d2fa ("um: Allow builds with Clang")
+> Signed-off-by: David Gow <davidgow@google.com>
+> ---
 > 
-> Hi Marc,
+> This warning shows up after merging:
+> https://lore.kernel.org/lkml/20220227184517.504931-6-keescook@chromium.org/
 > 
-> Thanks for clarifying. I think making the alignment implicitly based
-> on the size here will create unnecessary holes where PAGE_SIZE
-> alignment would be ok and potentially overflow the private VA space
-> earlier. Is it not a concern?
+> I'm not 100% sure why this is necessary, but it does seem to work. All
+> the attempts to get rid of -mno-global-merge entirely have been met with
+> skepticism, but I'm guessing that it's not a problem for just the UML
+> "user" files, as they shouldn't(?) interact too much with modules.
 
-I don't think we should worry too much about this. Even when building
-the kernel with a very small VA space (commonly 39 bits), we still
-have a quarter of that reserved for private EL2 mappings. That's
-pretty big.
+Thank you for the patch! I think it is correct, as this flag only works
+for AArch64 and ARM, as it is only used in Clang::AddAArch64TargetArgs()
+and Clang::AddARMTargetArgs() in clang/lib/Driver/ToolChains/Clang.cpp,
+which are obviously never called with UML. I am not sure why we do not
+see warning during regular kernel builds, maybe something about how UML
+objects are compiled exposes this?
 
-We will use a bit more of the memory that is set aside for EL2 page
-tables, but this shouldn't be a problem either.
+Regardless, I would definitely like to clean up this instance of the
+warning because I would like to make this warning a hard error so that
+we do not get cryptic cc-option failures:
 
-Thanks,
+https://github.com/ClangBuiltLinux/linux/issues/1587
 
-	M.
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
--- 
-Without deviation from the norm, progress is not possible.
+One small comment below.
+
+>  arch/um/Makefile | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/um/Makefile b/arch/um/Makefile
+> index f2fe63bfd819..320b09cd513c 100644
+> --- a/arch/um/Makefile
+> +++ b/arch/um/Makefile
+> @@ -75,6 +75,10 @@ USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
+>  		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
+>  		-idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
+>  
+> +ifdef CONFIG_CC_IS_CLANG
+
+Is this ifdef needed?
+
+> +USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
+> +endif
+> +
+>  #This will adjust *FLAGS accordingly to the platform.
+>  include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
+>  
+> -- 
+> 2.35.1.616.g0bdcbb4464-goog
+> 
