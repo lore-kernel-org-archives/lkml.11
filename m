@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09535C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF578C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236081AbiCCTln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
+        id S236264AbiCCTly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:41:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236199AbiCCTkw (ORCPT
+        with ESMTP id S236251AbiCCTlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:40:52 -0500
+        Thu, 3 Mar 2022 14:41:17 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77CA91A615C
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 399F81965CE
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646336362;
+        s=mimecast20190719; t=1646336365;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=80NKQcnoxJqdqNMFcuhq1sCr+ueHBMeLSlxdZvx+3+k=;
-        b=Nm5tF6p67HPP10NAXnEPfvXR0mACGoC5QEc26sClTcT7ndZxszEqy/flsb/avGkMbIZRZS
-        mVXDFHGPUHT6UKjZxVOoUT17dyRq16yUASmlp3dwfY1Pdb1qVMIYisX4aHnrIzsH66D5tw
-        TTYmOFwjKjKovE9FGdP7VZPVlCAXHRU=
+        bh=6OVwiXgL2ne0o49NfEE9CnwiAA0pdzmfBWE8Lv2JZiI=;
+        b=Zve3skZ+EvXR+ykl2miTbQRsmp52Y5UTqGOpmgPc0X+7aOTuUM29eTmVnkvfTMhxHTrv1+
+        gPvy30MYtiCJ/bXnZsbVvUJngyCt75tm70nDIQdcl8RLhOXX96LFGOG8xiRuzHEoKtAkXw
+        pCpkwfKgxw5E/qoCXRkUJw2bnSeQFzk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-266-NsoSNMXkNFy7-5gFudKZFQ-1; Thu, 03 Mar 2022 14:39:19 -0500
-X-MC-Unique: NsoSNMXkNFy7-5gFudKZFQ-1
+ us-mta-452-z-x861ajMxmaonNqxfKzPA-1; Thu, 03 Mar 2022 14:39:24 -0500
+X-MC-Unique: z-x861ajMxmaonNqxfKzPA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6DA0E1883522;
-        Thu,  3 Mar 2022 19:39:18 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48C921006AAC;
+        Thu,  3 Mar 2022 19:39:20 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A6F85FC22;
-        Thu,  3 Mar 2022 19:39:17 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 759485F70B;
+        Thu,  3 Mar 2022 19:39:19 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         David Matlack <dmatlack@google.com>,
         Ben Gardon <bgardon@google.com>,
         Mingwei Zhang <mizhang@google.com>
-Subject: [PATCH v4 27/30] KVM: selftests: Move raw KVM_SET_USER_MEMORY_REGION helper to utils
-Date:   Thu,  3 Mar 2022 14:38:39 -0500
-Message-Id: <20220303193842.370645-28-pbonzini@redhat.com>
+Subject: [PATCH v4 29/30] KVM: selftests: Define cpu_relax() helpers for s390 and x86
+Date:   Thu,  3 Mar 2022 14:38:41 -0500
+Message-Id: <20220303193842.370645-30-pbonzini@redhat.com>
 In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
 References: <20220303193842.370645-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -63,130 +63,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-Move set_memory_region_test's KVM_SET_USER_MEMORY_REGION helper to KVM's
-utils so that it can be used by other tests.  Provide a raw version as
-well as an assert-success version to reduce the amount of boilerplate
-code need for basic usage.
-
-No functional change intended.
+Add cpu_relax() for s390 and x86 for use in arch-agnostic tests.  arm64
+already defines its own version.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220226001546.360188-26-seanjc@google.com>
+Message-Id: <20220226001546.360188-28-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  4 +++
- tools/testing/selftests/kvm/lib/kvm_util.c    | 24 +++++++++++++
- .../selftests/kvm/set_memory_region_test.c    | 35 +++++--------------
- 3 files changed, 36 insertions(+), 27 deletions(-)
+ tools/testing/selftests/kvm/include/s390x/processor.h  | 8 ++++++++
+ tools/testing/selftests/kvm/include/x86_64/processor.h | 5 +++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index f987cf7c0d2e..573de0354175 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -147,6 +147,10 @@ void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid,
+diff --git a/tools/testing/selftests/kvm/include/s390x/processor.h b/tools/testing/selftests/kvm/include/s390x/processor.h
+index e0e96a5f608c..255c9b990f4c 100644
+--- a/tools/testing/selftests/kvm/include/s390x/processor.h
++++ b/tools/testing/selftests/kvm/include/s390x/processor.h
+@@ -5,6 +5,8 @@
+ #ifndef SELFTEST_KVM_PROCESSOR_H
+ #define SELFTEST_KVM_PROCESSOR_H
  
- void vm_create_irqchip(struct kvm_vm *vm);
- 
-+void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
-+			       uint64_t gpa, uint64_t size, void *hva);
-+int __vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
-+				uint64_t gpa, uint64_t size, void *hva);
- void vm_userspace_mem_region_add(struct kvm_vm *vm,
- 	enum vm_mem_backing_src_type src_type,
- 	uint64_t guest_paddr, uint32_t slot, uint64_t npages,
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 64618032aa58..dcb8e96c6a54 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -839,6 +839,30 @@ static void vm_userspace_mem_region_hva_insert(struct rb_root *hva_tree,
- 	rb_insert_color(&region->hva_node, hva_tree);
- }
- 
++#include <linux/compiler.h>
 +
-+int __vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
-+				uint64_t gpa, uint64_t size, void *hva)
+ /* Bits in the region/segment table entry */
+ #define REGION_ENTRY_ORIGIN	~0xfffUL /* region/segment table origin	   */
+ #define REGION_ENTRY_PROTECT	0x200	 /* region protection bit	   */
+@@ -19,4 +21,10 @@
+ #define PAGE_PROTECT	0x200		/* HW read-only bit  */
+ #define PAGE_NOEXEC	0x100		/* HW no-execute bit */
+ 
++/* Is there a portable way to do this? */
++static inline void cpu_relax(void)
 +{
-+	struct kvm_userspace_memory_region region = {
-+		.slot = slot,
-+		.flags = flags,
-+		.guest_phys_addr = gpa,
-+		.memory_size = size,
-+		.userspace_addr = (uintptr_t)hva,
-+	};
-+
-+	return ioctl(vm->fd, KVM_SET_USER_MEMORY_REGION, &region);
++	barrier();
 +}
 +
-+void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
-+			       uint64_t gpa, uint64_t size, void *hva)
+ #endif
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 8a470da7b71a..37db341d4cc5 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -363,6 +363,11 @@ static inline unsigned long get_xmm(int n)
+ 	return 0;
+ }
+ 
++static inline void cpu_relax(void)
 +{
-+	int ret = __vm_set_user_memory_region(vm, slot, flags, gpa, size, hva);
-+
-+	TEST_ASSERT(!ret, "KVM_SET_USER_MEMORY_REGION failed, errno = %d (%s)",
-+		    errno, strerror(errno));
++	asm volatile("rep; nop" ::: "memory");
 +}
 +
- /*
-  * VM Userspace Memory Region Add
-  *
-diff --git a/tools/testing/selftests/kvm/set_memory_region_test.c b/tools/testing/selftests/kvm/set_memory_region_test.c
-index 72a1c9b4882c..73bc297dabe6 100644
---- a/tools/testing/selftests/kvm/set_memory_region_test.c
-+++ b/tools/testing/selftests/kvm/set_memory_region_test.c
-@@ -329,22 +329,6 @@ static void test_zero_memory_regions(void)
- }
- #endif /* __x86_64__ */
- 
--static int test_memory_region_add(struct kvm_vm *vm, void *mem, uint32_t slot,
--				   uint32_t size, uint64_t guest_addr)
--{
--	struct kvm_userspace_memory_region region;
--	int ret;
--
--	region.slot = slot;
--	region.flags = 0;
--	region.guest_phys_addr = guest_addr;
--	region.memory_size = size;
--	region.userspace_addr = (uintptr_t) mem;
--	ret = ioctl(vm_get_fd(vm), KVM_SET_USER_MEMORY_REGION, &region);
--
--	return ret;
--}
--
- /*
-  * Test it can be added memory slots up to KVM_CAP_NR_MEMSLOTS, then any
-  * tentative to add further slots should fail.
-@@ -382,23 +366,20 @@ static void test_add_max_memory_regions(void)
- 	TEST_ASSERT(mem != MAP_FAILED, "Failed to mmap() host");
- 	mem_aligned = (void *)(((size_t) mem + alignment - 1) & ~(alignment - 1));
- 
--	for (slot = 0; slot < max_mem_slots; slot++) {
--		ret = test_memory_region_add(vm, mem_aligned +
--					     ((uint64_t)slot * MEM_REGION_SIZE),
--					     slot, MEM_REGION_SIZE,
--					     (uint64_t)slot * MEM_REGION_SIZE);
--		TEST_ASSERT(ret == 0, "KVM_SET_USER_MEMORY_REGION IOCTL failed,\n"
--			    "  rc: %i errno: %i slot: %i\n",
--			    ret, errno, slot);
--	}
-+	for (slot = 0; slot < max_mem_slots; slot++)
-+		vm_set_user_memory_region(vm, slot, 0,
-+					  ((uint64_t)slot * MEM_REGION_SIZE),
-+					  MEM_REGION_SIZE,
-+					  mem_aligned + (uint64_t)slot * MEM_REGION_SIZE);
- 
- 	/* Check it cannot be added memory slots beyond the limit */
- 	mem_extra = mmap(NULL, MEM_REGION_SIZE, PROT_READ | PROT_WRITE,
- 			 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
- 	TEST_ASSERT(mem_extra != MAP_FAILED, "Failed to mmap() host");
- 
--	ret = test_memory_region_add(vm, mem_extra, max_mem_slots, MEM_REGION_SIZE,
--				     (uint64_t)max_mem_slots * MEM_REGION_SIZE);
-+	ret = __vm_set_user_memory_region(vm, max_mem_slots, 0,
-+					  (uint64_t)max_mem_slots * MEM_REGION_SIZE,
-+					  MEM_REGION_SIZE, mem_extra);
- 	TEST_ASSERT(ret == -1 && errno == EINVAL,
- 		    "Adding one more memory slot should fail with EINVAL");
+ bool is_intel_cpu(void);
+ bool is_amd_cpu(void);
  
 -- 
 2.31.1
