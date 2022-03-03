@@ -2,452 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96619C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17E6C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233482AbiCCTl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
+        id S234176AbiCCTnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236283AbiCCTl0 (ORCPT
+        with ESMTP id S236394AbiCCTmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:41:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8708019F455
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646336366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=51Aap4sqIo87HXyLoMH9nwND7MXh4QdVZ+PbNIzSYSM=;
-        b=FXu4kIE4Tf9wLpm1vf/wLYwfnnQ+4ghSusYhRvbIrvQrKtOpIB8AflOwc+y/NgO6Us4xnw
-        bFx5C9mK9bzayQ93P8Uq0zvC5DAvnwaRBHUKXH2DEp0rvOIzREWRXgsGhXb3r9PtU5wZ8h
-        8s4NlScO+i74Dg0toVW+D5NnRzGxs7Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-99-0-spHiZNNzyte4Y6f0rI7g-1; Thu, 03 Mar 2022 14:39:23 -0500
-X-MC-Unique: 0-spHiZNNzyte4Y6f0rI7g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 811C8824FA9;
-        Thu,  3 Mar 2022 19:39:21 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E42BADCB;
-        Thu,  3 Mar 2022 19:39:20 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Mingwei Zhang <mizhang@google.com>
-Subject: [PATCH v4 30/30] KVM: selftests: Add test to populate a VM with the max possible guest mem
-Date:   Thu,  3 Mar 2022 14:38:42 -0500
-Message-Id: <20220303193842.370645-31-pbonzini@redhat.com>
-In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
-References: <20220303193842.370645-1-pbonzini@redhat.com>
+        Thu, 3 Mar 2022 14:42:51 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF611A6378
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:41:13 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id k29-20020a05600c1c9d00b003817fdc0f00so3861333wms.4
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:41:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=2iz36OqO+jJdVuW+N+ZU8T8BnAKilg+w/Ds7DOBUBqc=;
+        b=ue5oc5VPyETrPzFUI5tMGWXNiS185SPWKtF65IQwQ8xjOEJBTsqlkLW11dFs9AUawE
+         /DqBBuqSIaymgZxjn4q4XebOpM61LpRpAasj3CBwMmaltTCAgz8RrZDoWQVARRBYOWLM
+         ZATUI/FMIHvt/Oj55HEb5KU+vio6s5llgv1ytHRWDrpdhkBny//uqi426HgraMzr8bV/
+         9DrLkA6uquYAc4QYPmNe39H/9Wg1OgFxUaJ7IV9FTiGv8nEHb8C+43FVJq1s151WMbKO
+         B4SpRlna1oorMDGQ39I4TkITXj/lN3y/5QwDPJkvW7jgaE9N/PbCjYVIi3crn9Fc/GTk
+         LHlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=2iz36OqO+jJdVuW+N+ZU8T8BnAKilg+w/Ds7DOBUBqc=;
+        b=qAyC8Dzc/C74KqcMnQyCIs2lzhUahhnJ2ONY3RypreariLpXe8GWbmxit65dL5q3PG
+         /TkJEHM9WMq/kenBRV/TX60b1gKKFi2aFgKEr/yNEHUIMX8QqVC409hJ7EVdpei+7Mss
+         qzXqlyrPZLU87XGodXKsD7BeFadW55FbOLbJ0M6pivr2WK+zrs9dN8QwmfGWPwSz1XqR
+         gpGrbW90cDXk7ZHeQx5Rdn+pxMqRr8p7jfCRrNIjH97UMm6Vle+ibpbo6VqRFUB7nBli
+         5QQ1pQZ4TiZADY6Is9NZtxvWjf2XBiOERlDzW9gIA6xfJfPDswzM7vxXF+9DaTj4sWqv
+         X3Rg==
+X-Gm-Message-State: AOAM532ounF+7eqsdzRnTExhICJfptgN7o7or0jp5OIIcJ8H1MTkD8be
+        kysDvztU7unpEbKYJNg82cs7pQ==
+X-Google-Smtp-Source: ABdhPJxeRW34laxVBvgaVBv3M2eH0QaO9wO8gWc12fv7n8JCsG+wcXFQzJGW9RUr1sYLQWexnzqMCw==
+X-Received: by 2002:a7b:c382:0:b0:388:2e76:49ed with SMTP id s2-20020a7bc382000000b003882e7649edmr3351768wmj.195.1646336452447;
+        Thu, 03 Mar 2022 11:40:52 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id e15-20020a5d6d0f000000b001ef7dca67fasm3255157wrq.114.2022.03.03.11.40.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 11:40:51 -0800 (PST)
+Date:   Thu, 3 Mar 2022 20:40:49 +0100
+From:   LABBE Corentin <clabbe@baylibre.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, heiko@sntech.de,
+        linux-crypto@vger.kernel.org, herbert@gondor.apana.org.au,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        john@metanate.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 17/18] dt-bindings: crypto: convert rockchip-crypto to
+ yaml
+Message-ID: <YiEZwetOpRhZ4iCa@Red>
+References: <20220302211113.4003816-1-clabbe@baylibre.com>
+ <20220302211113.4003816-18-clabbe@baylibre.com>
+ <1646315078.991896.1495435.nullmailer@robh.at.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <1646315078.991896.1495435.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+Le Thu, Mar 03, 2022 at 07:44:38AM -0600, Rob Herring a écrit :
+> On Wed, 02 Mar 2022 21:11:12 +0000, Corentin Labbe wrote:
+> > convert rockchip-crypto to yaml
+> > 
+> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> > ---
+> >  .../crypto/rockchip,rk3288-crypto.yaml        | 64 +++++++++++++++++++
+> >  .../bindings/crypto/rockchip-crypto.txt       | 28 --------
+> >  2 files changed, 64 insertions(+), 28 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+> >  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+> > 
+> 
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
+> 
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+> 
+> Full log is available here: https://patchwork.ozlabs.org/patch/1600075
+> 
+> 
+> cypto-controller@ff8a0000: clock-names: ['aclk', 'hclk', 'sclk', 'apb_pclk'] is too long
+> 	arch/arm/boot/dts/rk3288-evb-act8846.dt.yaml
+> 	arch/arm/boot/dts/rk3288-evb-rk808.dt.yaml
+> 	arch/arm/boot/dts/rk3288-firefly-beta.dt.yaml
+> 	arch/arm/boot/dts/rk3288-firefly.dt.yaml
+> 	arch/arm/boot/dts/rk3288-firefly-reload.dt.yaml
+> 	arch/arm/boot/dts/rk3288-miqi.dt.yaml
+> 	arch/arm/boot/dts/rk3288-phycore-rdk.dt.yaml
+> 	arch/arm/boot/dts/rk3288-popmetal.dt.yaml
+> 	arch/arm/boot/dts/rk3288-r89.dt.yaml
+> 	arch/arm/boot/dts/rk3288-rock2-square.dt.yaml
+> 	arch/arm/boot/dts/rk3288-rock-pi-n8.dt.yaml
+> 	arch/arm/boot/dts/rk3288-tinker.dt.yaml
+> 	arch/arm/boot/dts/rk3288-tinker-s.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-brain.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-fievel.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-jaq.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-jerry.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-mickey.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-mighty.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-minnie.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-pinky.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-speedy.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-tiger.dt.yaml
+> 	arch/arm/boot/dts/rk3288-vyasa.dt.yaml
+> 
+> cypto-controller@ff8a0000: clocks: [[7, 199], [7, 461], [7, 125], [7, 193]] is too long
+> 	arch/arm/boot/dts/rk3288-evb-act8846.dt.yaml
+> 	arch/arm/boot/dts/rk3288-evb-rk808.dt.yaml
+> 	arch/arm/boot/dts/rk3288-firefly-beta.dt.yaml
+> 	arch/arm/boot/dts/rk3288-firefly.dt.yaml
+> 	arch/arm/boot/dts/rk3288-firefly-reload.dt.yaml
+> 	arch/arm/boot/dts/rk3288-miqi.dt.yaml
+> 	arch/arm/boot/dts/rk3288-phycore-rdk.dt.yaml
+> 	arch/arm/boot/dts/rk3288-popmetal.dt.yaml
+> 	arch/arm/boot/dts/rk3288-r89.dt.yaml
+> 	arch/arm/boot/dts/rk3288-rock2-square.dt.yaml
+> 	arch/arm/boot/dts/rk3288-rock-pi-n8.dt.yaml
+> 	arch/arm/boot/dts/rk3288-tinker.dt.yaml
+> 	arch/arm/boot/dts/rk3288-tinker-s.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-brain.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-fievel.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-jaq.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-jerry.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-mickey.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-mighty.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-minnie.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-pinky.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-speedy.dt.yaml
+> 	arch/arm/boot/dts/rk3288-veyron-tiger.dt.yaml
+> 	arch/arm/boot/dts/rk3288-vyasa.dt.yaml
+> 
 
-Add a selftest that enables populating a VM with the maximum amount of
-guest memory allowed by the underlying architecture.  Abuse KVM's
-memslots by mapping a single host memory region into multiple memslots so
-that the selftest doesn't require a system with terabytes of RAM.
+The patch fixing thoses warning is in the serie.
 
-Default to 512gb of guest memory, which isn't all that interesting, but
-should work on all MMUs and doesn't take an exorbitant amount of memory
-or time.  E.g. testing with ~64tb of guest memory takes the better part
-of an hour, and requires 200gb of memory for KVM's page tables when using
-4kb pages.
-
-To inflicit maximum abuse on KVM' MMU, default to 4kb pages (or whatever
-the not-hugepage size is) in the backing store (memfd).  Use memfd for
-the host backing store to ensure that hugepages are guaranteed when
-requested, and to give the user explicit control of the size of hugepage
-being tested.
-
-By default, spin up as many vCPUs as there are available to the selftest,
-and distribute the work of dirtying each 4kb chunk of memory across all
-vCPUs.  Dirtying guest memory forces KVM to populate its page tables, and
-also forces KVM to write back accessed/dirty information to struct page
-when the guest memory is freed.
-
-On x86, perform two passes with a MMU context reset between each pass to
-coerce KVM into dropping all references to the MMU root, e.g. to emulate
-a vCPU dropping the last reference.  Perform both passes and all
-rendezvous on all architectures in the hope that arm64 and s390x can gain
-similar shenanigans in the future.
-
-Measure and report the duration of each operation, which is helpful not
-only to verify the test is working as intended, but also to easily
-evaluate the performance differences different page sizes.
-
-Provide command line options to limit the amount of guest memory, set the
-size of each slot (i.e. of the host memory region), set the number of
-vCPUs, and to enable usage of hugepages.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220226001546.360188-29-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   3 +
- .../selftests/kvm/max_guest_memory_test.c     | 292 ++++++++++++++++++
- 3 files changed, 296 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/max_guest_memory_test.c
-
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 052ddfe4b23a..9b67343dc4ab 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -58,6 +58,7 @@
- /hardware_disable_test
- /kvm_create_max_vcpus
- /kvm_page_table_test
-+/max_guest_memory_test
- /memslot_modification_stress_test
- /memslot_perf_test
- /rseq_test
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index f7fa5655e535..c06b1f8bc649 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -93,6 +93,7 @@ TEST_GEN_PROGS_x86_64 += dirty_log_perf_test
- TEST_GEN_PROGS_x86_64 += hardware_disable_test
- TEST_GEN_PROGS_x86_64 += kvm_create_max_vcpus
- TEST_GEN_PROGS_x86_64 += kvm_page_table_test
-+TEST_GEN_PROGS_x86_64 += max_guest_memory_test
- TEST_GEN_PROGS_x86_64 += memslot_modification_stress_test
- TEST_GEN_PROGS_x86_64 += memslot_perf_test
- TEST_GEN_PROGS_x86_64 += rseq_test
-@@ -112,6 +113,7 @@ TEST_GEN_PROGS_aarch64 += dirty_log_test
- TEST_GEN_PROGS_aarch64 += dirty_log_perf_test
- TEST_GEN_PROGS_aarch64 += kvm_create_max_vcpus
- TEST_GEN_PROGS_aarch64 += kvm_page_table_test
-+TEST_GEN_PROGS_aarch64 += max_guest_memory_test
- TEST_GEN_PROGS_aarch64 += memslot_modification_stress_test
- TEST_GEN_PROGS_aarch64 += memslot_perf_test
- TEST_GEN_PROGS_aarch64 += rseq_test
-@@ -127,6 +129,7 @@ TEST_GEN_PROGS_s390x += demand_paging_test
- TEST_GEN_PROGS_s390x += dirty_log_test
- TEST_GEN_PROGS_s390x += kvm_create_max_vcpus
- TEST_GEN_PROGS_s390x += kvm_page_table_test
-+TEST_GEN_PROGS_s390x += max_guest_memory_test
- TEST_GEN_PROGS_s390x += rseq_test
- TEST_GEN_PROGS_s390x += set_memory_region_test
- TEST_GEN_PROGS_s390x += kvm_binary_stats_test
-diff --git a/tools/testing/selftests/kvm/max_guest_memory_test.c b/tools/testing/selftests/kvm/max_guest_memory_test.c
-new file mode 100644
-index 000000000000..360c88288295
---- /dev/null
-+++ b/tools/testing/selftests/kvm/max_guest_memory_test.c
-@@ -0,0 +1,292 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <pthread.h>
-+#include <semaphore.h>
-+#include <sys/types.h>
-+#include <signal.h>
-+#include <errno.h>
-+#include <linux/bitmap.h>
-+#include <linux/bitops.h>
-+#include <linux/atomic.h>
-+
-+#include "kvm_util.h"
-+#include "test_util.h"
-+#include "guest_modes.h"
-+#include "processor.h"
-+
-+static void guest_code(uint64_t start_gpa, uint64_t end_gpa, uint64_t stride)
-+{
-+	uint64_t gpa;
-+
-+	for (gpa = start_gpa; gpa < end_gpa; gpa += stride)
-+		*((volatile uint64_t *)gpa) = gpa;
-+
-+	GUEST_DONE();
-+}
-+
-+struct vcpu_info {
-+	struct kvm_vm *vm;
-+	uint32_t id;
-+	uint64_t start_gpa;
-+	uint64_t end_gpa;
-+};
-+
-+static int nr_vcpus;
-+static atomic_t rendezvous;
-+
-+static void rendezvous_with_boss(void)
-+{
-+	int orig = atomic_read(&rendezvous);
-+
-+	if (orig > 0) {
-+		atomic_dec_and_test(&rendezvous);
-+		while (atomic_read(&rendezvous) > 0)
-+			cpu_relax();
-+	} else {
-+		atomic_inc(&rendezvous);
-+		while (atomic_read(&rendezvous) < 0)
-+			cpu_relax();
-+	}
-+}
-+
-+static void run_vcpu(struct kvm_vm *vm, uint32_t vcpu_id)
-+{
-+	vcpu_run(vm, vcpu_id);
-+	ASSERT_EQ(get_ucall(vm, vcpu_id, NULL), UCALL_DONE);
-+}
-+
-+static void *vcpu_worker(void *data)
-+{
-+	struct vcpu_info *vcpu = data;
-+	struct kvm_vm *vm = vcpu->vm;
-+	struct kvm_sregs sregs;
-+	struct kvm_regs regs;
-+
-+	vcpu_args_set(vm, vcpu->id, 3, vcpu->start_gpa, vcpu->end_gpa,
-+		      vm_get_page_size(vm));
-+
-+	/* Snapshot regs before the first run. */
-+	vcpu_regs_get(vm, vcpu->id, &regs);
-+	rendezvous_with_boss();
-+
-+	run_vcpu(vm, vcpu->id);
-+	rendezvous_with_boss();
-+	vcpu_regs_set(vm, vcpu->id, &regs);
-+	vcpu_sregs_get(vm, vcpu->id, &sregs);
-+#ifdef __x86_64__
-+	/* Toggle CR0.WP to trigger a MMU context reset. */
-+	sregs.cr0 ^= X86_CR0_WP;
-+#endif
-+	vcpu_sregs_set(vm, vcpu->id, &sregs);
-+	rendezvous_with_boss();
-+
-+	run_vcpu(vm, vcpu->id);
-+	rendezvous_with_boss();
-+
-+	return NULL;
-+}
-+
-+static pthread_t *spawn_workers(struct kvm_vm *vm, uint64_t start_gpa,
-+				uint64_t end_gpa)
-+{
-+	struct vcpu_info *info;
-+	uint64_t gpa, nr_bytes;
-+	pthread_t *threads;
-+	int i;
-+
-+	threads = malloc(nr_vcpus * sizeof(*threads));
-+	TEST_ASSERT(threads, "Failed to allocate vCPU threads");
-+
-+	info = malloc(nr_vcpus * sizeof(*info));
-+	TEST_ASSERT(info, "Failed to allocate vCPU gpa ranges");
-+
-+	nr_bytes = ((end_gpa - start_gpa) / nr_vcpus) &
-+			~((uint64_t)vm_get_page_size(vm) - 1);
-+	TEST_ASSERT(nr_bytes, "C'mon, no way you have %d CPUs", nr_vcpus);
-+
-+	for (i = 0, gpa = start_gpa; i < nr_vcpus; i++, gpa += nr_bytes) {
-+		info[i].vm = vm;
-+		info[i].id = i;
-+		info[i].start_gpa = gpa;
-+		info[i].end_gpa = gpa + nr_bytes;
-+		pthread_create(&threads[i], NULL, vcpu_worker, &info[i]);
-+	}
-+	return threads;
-+}
-+
-+static void rendezvous_with_vcpus(struct timespec *time, const char *name)
-+{
-+	int i, rendezvoused;
-+
-+	pr_info("Waiting for vCPUs to finish %s...\n", name);
-+
-+	rendezvoused = atomic_read(&rendezvous);
-+	for (i = 0; abs(rendezvoused) != 1; i++) {
-+		usleep(100);
-+		if (!(i & 0x3f))
-+			pr_info("\r%d vCPUs haven't rendezvoused...",
-+				abs(rendezvoused) - 1);
-+		rendezvoused = atomic_read(&rendezvous);
-+	}
-+
-+	clock_gettime(CLOCK_MONOTONIC, time);
-+
-+	/* Release the vCPUs after getting the time of the previous action. */
-+	pr_info("\rAll vCPUs finished %s, releasing...\n", name);
-+	if (rendezvoused > 0)
-+		atomic_set(&rendezvous, -nr_vcpus - 1);
-+	else
-+		atomic_set(&rendezvous, nr_vcpus + 1);
-+}
-+
-+static void calc_default_nr_vcpus(void)
-+{
-+	cpu_set_t possible_mask;
-+	int r;
-+
-+	r = sched_getaffinity(0, sizeof(possible_mask), &possible_mask);
-+	TEST_ASSERT(!r, "sched_getaffinity failed, errno = %d (%s)",
-+		    errno, strerror(errno));
-+
-+	nr_vcpus = CPU_COUNT(&possible_mask);
-+	TEST_ASSERT(nr_vcpus > 0, "Uh, no CPUs?");
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	/*
-+	 * Skip the first 4gb and slot0.  slot0 maps <1gb and is used to back
-+	 * the guest's code, stack, and page tables.  Because selftests creates
-+	 * an IRQCHIP, a.k.a. a local APIC, KVM creates an internal memslot
-+	 * just below the 4gb boundary.  This test could create memory at
-+	 * 1gb-3gb,but it's simpler to skip straight to 4gb.
-+	 */
-+	const uint64_t size_1gb = (1 << 30);
-+	const uint64_t start_gpa = (4ull * size_1gb);
-+	const int first_slot = 1;
-+
-+	struct timespec time_start, time_run1, time_reset, time_run2;
-+	uint64_t max_gpa, gpa, slot_size, max_mem, i;
-+	int max_slots, slot, opt, fd;
-+	bool hugepages = false;
-+	pthread_t *threads;
-+	struct kvm_vm *vm;
-+	void *mem;
-+
-+	/*
-+	 * Default to 2gb so that maxing out systems with MAXPHADDR=46, which
-+	 * are quite common for x86, requires changing only max_mem (KVM allows
-+	 * 32k memslots, 32k * 2gb == ~64tb of guest memory).
-+	 */
-+	slot_size = 2 * size_1gb;
-+
-+	max_slots = kvm_check_cap(KVM_CAP_NR_MEMSLOTS);
-+	TEST_ASSERT(max_slots > first_slot, "KVM is broken");
-+
-+	/* All KVM MMUs should be able to survive a 512gb guest. */
-+	max_mem = 512 * size_1gb;
-+
-+	calc_default_nr_vcpus();
-+
-+	while ((opt = getopt(argc, argv, "c:h:m:s:u")) != -1) {
-+		switch (opt) {
-+		case 'c':
-+			nr_vcpus = atoi(optarg);
-+			TEST_ASSERT(nr_vcpus, "#DE");
-+			break;
-+		case 'm':
-+			max_mem = atoi(optarg) * size_1gb;
-+			TEST_ASSERT(max_mem, "#DE");
-+			break;
-+		case 's':
-+			slot_size = atoi(optarg) * size_1gb;
-+			TEST_ASSERT(slot_size, "#DE");
-+			break;
-+		case 'u':
-+			hugepages = true;
-+			break;
-+		case 'h':
-+		default:
-+			printf("usage: %s [-c nr_vcpus] [-m max_mem_in_gb] [-s slot_size_in_gb] [-u [huge_page_size]]\n", argv[0]);
-+			exit(1);
-+		}
-+	}
-+
-+	vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
-+
-+	max_gpa = vm_get_max_gfn(vm) << vm_get_page_shift(vm);
-+	TEST_ASSERT(max_gpa > (4 * slot_size), "MAXPHYADDR <4gb ");
-+
-+	fd = kvm_memfd_alloc(slot_size, hugepages);
-+	mem = mmap(NULL, slot_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-+	TEST_ASSERT(mem != MAP_FAILED, "mmap() failed");
-+
-+	TEST_ASSERT(!madvise(mem, slot_size, MADV_NOHUGEPAGE), "madvise() failed");
-+
-+	/* Pre-fault the memory to avoid taking mmap_sem on guest page faults. */
-+	for (i = 0; i < slot_size; i += vm_get_page_size(vm))
-+		((uint8_t *)mem)[i] = 0xaa;
-+
-+	gpa = 0;
-+	for (slot = first_slot; slot < max_slots; slot++) {
-+		gpa = start_gpa + ((slot - first_slot) * slot_size);
-+		if (gpa + slot_size > max_gpa)
-+			break;
-+
-+		if ((gpa - start_gpa) >= max_mem)
-+			break;
-+
-+		vm_set_user_memory_region(vm, slot, 0, gpa, slot_size, mem);
-+
-+#ifdef __x86_64__
-+		/* Identity map memory in the guest using 1gb pages. */
-+		for (i = 0; i < slot_size; i += size_1gb)
-+			__virt_pg_map(vm, gpa + i, gpa + i, X86_PAGE_SIZE_1G);
-+#else
-+		for (i = 0; i < slot_size; i += vm_get_page_size(vm))
-+			virt_pg_map(vm, gpa + i, gpa + i);
-+#endif
-+	}
-+
-+	atomic_set(&rendezvous, nr_vcpus + 1);
-+	threads = spawn_workers(vm, start_gpa, gpa);
-+
-+	pr_info("Running with %lugb of guest memory and %u vCPUs\n",
-+		(gpa - start_gpa) / size_1gb, nr_vcpus);
-+
-+	rendezvous_with_vcpus(&time_start, "spawning");
-+	rendezvous_with_vcpus(&time_run1, "run 1");
-+	rendezvous_with_vcpus(&time_reset, "reset");
-+	rendezvous_with_vcpus(&time_run2, "run 2");
-+
-+	time_run2  = timespec_sub(time_run2,   time_reset);
-+	time_reset = timespec_sub(time_reset, time_run1);
-+	time_run1  = timespec_sub(time_run1,   time_start);
-+
-+	pr_info("run1 = %ld.%.9lds, reset = %ld.%.9lds, run2 =  %ld.%.9lds\n",
-+		time_run1.tv_sec, time_run1.tv_nsec,
-+		time_reset.tv_sec, time_reset.tv_nsec,
-+		time_run2.tv_sec, time_run2.tv_nsec);
-+
-+	/*
-+	 * Delete even numbered slots (arbitrary) and unmap the first half of
-+	 * the backing (also arbitrary) to verify KVM correctly drops all
-+	 * references to the removed regions.
-+	 */
-+	for (slot = (slot - 1) & ~1ull; slot >= first_slot; slot -= 2)
-+		vm_set_user_memory_region(vm, slot, 0, 0, 0, NULL);
-+
-+	munmap(mem, slot_size / 2);
-+
-+	/* Sanity check that the vCPUs actually ran. */
-+	for (i = 0; i < nr_vcpus; i++)
-+		pthread_join(threads[i], NULL);
-+
-+	/*
-+	 * Deliberately exit without deleting the remaining memslots or closing
-+	 * kvm_fd to test cleanup via mmu_notifier.release.
-+	 */
-+}
--- 
-2.31.1
-
+Regards
