@@ -2,79 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A2E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbiCCBq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:46:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S231480AbiCCBrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:47:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiCCBqx (ORCPT
+        with ESMTP id S231420AbiCCBrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:46:53 -0500
-X-Greylist: delayed 914 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 17:46:07 PST
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67AC21B6E18;
-        Wed,  2 Mar 2022 17:46:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=XAi7D
-        k9Yg7EF/mSMo8raLyxYjVznmUNk90i0YbDYo5A=; b=ZEmq/qzrJtrY9zC207PgZ
-        REzIQycl5G5Qj/X4NlmoD0WDcQJJIo/2XwUaDq+pebvUyOZ0q/RK6IWhS58FaZaj
-        NLHKooZXW2WFd1/q87NjPrpNq51uyfD7UAx3EZeW/lM1eAo2Q/pFkztOqoXHwAnJ
-        FqL/lfJ8JYmk+SV6qQxKps=
-Received: from localhost.localdomain (unknown [218.106.182.227])
-        by smtp4 (Coremail) with SMTP id HNxpCgBnPKQzGiBi+_cuEw--.7369S4;
-        Thu, 03 Mar 2022 09:30:37 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
-Date:   Thu,  3 Mar 2022 09:30:22 +0800
-Message-Id: <20220303013022.459154-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 2 Mar 2022 20:47:23 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467E01B6E05
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:46:39 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id v5so2891304qkj.4
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 17:46:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version;
+        bh=J7xXuqfykwCtxVDAzhMeaJ1p1sPJc+/o/m7algVP+XU=;
+        b=LxbbblGvWdIwXNSBF/l440APj7rIdhHp3HbEjtRK6L+Kc3gy9EQf03FaC5R/XK3LGt
+         34+6YQzy7MKI31d2l4ru7+5wvpa769J89UtoUHyCqA5Ie7oOOiCDKaclgTDzvcrffmtY
+         c9UFxxTh+n/E/3DBq+q/EkPPLLANyCX6Ia3dQWXwEEoyVZ3JhI3Q7+EUbKmZB1yob3Df
+         rj0gVKG98Nkf10bdoTf43cIfwwYrZYe2ad6ExVNheohwS0HpAcOhkrg8ZTcIysb6Mt/T
+         knGYfkxF547Jz/pqxpdhtzUHNHoXfblXEn+cJXM7zNjNPsNg/dmBmdaQRLKAg3AtQSNu
+         FD9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
+        bh=J7xXuqfykwCtxVDAzhMeaJ1p1sPJc+/o/m7algVP+XU=;
+        b=m0pj7y4vIVWKx8bl61St4VajlmxM+KfQgqymrqukq7y+YR7J5hq/T2tWVWLQsJcoF9
+         kwmUlMKV9zYHmqDUlhHHQ1Ghs8wta9DC7U+6TmnrVXZeBTaGFovzbbukU0tJAX/1W+V+
+         CDRr0mU8mR1BWonxJ4ZL3aFhqGLkqXvtzrvg6+qsLewglCHhr+P490M+zrJSWBHGbCmz
+         2d8XKFnCfJMH96ASHh0x19MrI+sErzwZuI3sFSG30ZVH3kvfGR8cIxZqLRFtd5jQ04tD
+         eF22+Qz2onNszJwj0U7xmkuv2KCoYvpdB8lAAQlVByFQ7pw7CkzY93yfqoYw0OQNpfs/
+         BpTw==
+X-Gm-Message-State: AOAM532TVF5SQqANeFBm3Ul9vOIiau+8mKrfQJu8hTT65SLn0ZXl7K4Y
+        4TGftrtZii6YMt4Kl5FreePV6g==
+X-Google-Smtp-Source: ABdhPJzSdm9kJNA7iq0MRCiU5ChVHuEyiGnzJ9xrtAreIygjRATU8KqqwoV0BFz8ybLGwsbBA4wiMw==
+X-Received: by 2002:a37:5d4:0:b0:508:18c2:30c1 with SMTP id 203-20020a3705d4000000b0050818c230c1mr17681554qkf.376.1646271998161;
+        Wed, 02 Mar 2022 17:46:38 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id t66-20020ae9df45000000b0064915aff85fsm411000qkf.45.2022.03.02.17.46.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 17:46:37 -0800 (PST)
+Date:   Wed, 2 Mar 2022 17:46:35 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Andrew Morton <akpm@linux-foundation.org>
+cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH mmotm] mm/thp: fix NR_FILE_MAPPED accounting in
+ page_*_file_rmap()
+Message-ID: <e02e52a1-8550-a57c-ed29-f51191ea2375@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgBnPKQzGiBi+_cuEw--.7369S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gw45KFyDGF47urW7GrW3Wrg_yoWDZFgE9w
-        18Za43Jw43tr90gw4j9F4ayryvk3yUXrs3uF4fKr9xAr9rCr47X3WkuF93Jr1kuws2qF9I
-        qayayrW7u348KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREzuWtUUUUU==
-X-Originating-IP: [218.106.182.227]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiQx24jFc7XpwVewAAsq
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
-the "bus". But bus->name is still used in the next line, which will lead
-to a use after free.
+NR_FILE_MAPPED accounting in mm/rmap.c (for /proc/meminfo "Mapped" and
+/proc/vmstat "nr_mapped" and the memcg's memory.stat "mapped_file") is
+slightly flawed for file or shmem huge pages.
 
-We can fix it by assigning dev_err_probe() to dev_err before the bus is
-freed to avoid the uaf.
+It is well thought out, and looks convincing, but there's a racy case
+when the careful counting in page_remove_file_rmap() (without page lock)
+gets discarded.  So that in a workload like two "make -j20" kernel builds
+under memory pressure, with cc1 on hugepage text, "Mapped" can easily
+grow by a spurious 5MB or more on each iteration, ending up implausibly
+bigger than most other numbers in /proc/meminfo.  And, hypothetically,
+might grow to the point of seriously interfering in mm/vmscan.c's
+heuristics, which do take NR_FILE_MAPPED into some consideration.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Fixed by moving the __mod_lruvec_page_state() down to where it will not
+be missed before return (and I've grown a bit tired of that oft-repeated
+but-not-everywhere comment on the __ness: it gets lost in the move here).
+
+Does page_add_file_rmap() need the same change?  I suspect not, because
+page lock is held in all relevant cases, and its skipping case looks safe;
+but it's much easier to be sure, if we do make the same change.
+
+Fixes: dd78fedde4b9 ("rmap: support file thp")
+Signed-off-by: Hugh Dickins <hughd@google.com>
 ---
- drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+If this were thought serious enough to backport (I don't feel strongly,
+but it is something I keep in my own trees), it needs a little more care
+near "out", because the mm/munlock series has removed some action there.
 
-diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
-index 9acf589b1178..795a25c5848a 100644
---- a/drivers/net/ethernet/arc/emac_mdio.c
-+++ b/drivers/net/ethernet/arc/emac_mdio.c
-@@ -165,9 +165,10 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ mm/rmap.c | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
+
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1238,14 +1238,14 @@ void page_add_new_anon_rmap(struct page *page,
+ void page_add_file_rmap(struct page *page,
+ 	struct vm_area_struct *vma, bool compound)
+ {
+-	int i, nr = 1;
++	int i, nr = 0;
  
- 	error = of_mdiobus_register(bus, priv->dev->of_node);
- 	if (error) {
--		mdiobus_free(bus);
--		return dev_err_probe(priv->dev, error,
-+		int dev_err = dev_err_probe(priv->dev, error,
- 				     "cannot register MDIO bus %s\n", bus->name);
-+		mdiobus_free(bus);
-+		return dev_err;
+ 	VM_BUG_ON_PAGE(compound && !PageTransHuge(page), page);
+ 	lock_page_memcg(page);
+ 	if (compound && PageTransHuge(page)) {
+ 		int nr_pages = thp_nr_pages(page);
+ 
+-		for (i = 0, nr = 0; i < nr_pages; i++) {
++		for (i = 0; i < nr_pages; i++) {
+ 			if (atomic_inc_and_test(&page[i]._mapcount))
+ 				nr++;
+ 		}
+@@ -1262,11 +1262,12 @@ void page_add_file_rmap(struct page *page,
+ 			VM_WARN_ON_ONCE(!PageLocked(page));
+ 			SetPageDoubleMap(compound_head(page));
+ 		}
+-		if (!atomic_inc_and_test(&page->_mapcount))
+-			goto out;
++		if (atomic_inc_and_test(&page->_mapcount))
++			nr++;
  	}
+-	__mod_lruvec_page_state(page, NR_FILE_MAPPED, nr);
+ out:
++	if (nr)
++		__mod_lruvec_page_state(page, NR_FILE_MAPPED, nr);
+ 	unlock_page_memcg(page);
  
- 	return 0;
--- 
-2.25.1
-
+ 	mlock_vma_page(page, vma, compound);
+@@ -1274,7 +1275,7 @@ void page_add_file_rmap(struct page *page,
+ 
+ static void page_remove_file_rmap(struct page *page, bool compound)
+ {
+-	int i, nr = 1;
++	int i, nr = 0;
+ 
+ 	VM_BUG_ON_PAGE(compound && !PageHead(page), page);
+ 
+@@ -1289,12 +1290,12 @@ static void page_remove_file_rmap(struct page *page, bool compound)
+ 	if (compound && PageTransHuge(page)) {
+ 		int nr_pages = thp_nr_pages(page);
+ 
+-		for (i = 0, nr = 0; i < nr_pages; i++) {
++		for (i = 0; i < nr_pages; i++) {
+ 			if (atomic_add_negative(-1, &page[i]._mapcount))
+ 				nr++;
+ 		}
+ 		if (!atomic_add_negative(-1, compound_mapcount_ptr(page)))
+-			return;
++			goto out;
+ 		if (PageSwapBacked(page))
+ 			__mod_lruvec_page_state(page, NR_SHMEM_PMDMAPPED,
+ 						-nr_pages);
+@@ -1302,16 +1303,12 @@ static void page_remove_file_rmap(struct page *page, bool compound)
+ 			__mod_lruvec_page_state(page, NR_FILE_PMDMAPPED,
+ 						-nr_pages);
+ 	} else {
+-		if (!atomic_add_negative(-1, &page->_mapcount))
+-			return;
++		if (atomic_add_negative(-1, &page->_mapcount))
++			nr++;
+ 	}
+-
+-	/*
+-	 * We use the irq-unsafe __{inc|mod}_lruvec_page_state because
+-	 * these counters are not modified in interrupt context, and
+-	 * pte lock(a spinlock) is held, which implies preemption disabled.
+-	 */
+-	__mod_lruvec_page_state(page, NR_FILE_MAPPED, -nr);
++out:
++	if (nr)
++		__mod_lruvec_page_state(page, NR_FILE_MAPPED, -nr);
+ }
+ 
+ static void page_remove_anon_compound_rmap(struct page *page)
