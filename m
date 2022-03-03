@@ -2,131 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 837E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ED5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiCCABW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:01:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        id S229909AbiCCABg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiCCABI (ORCPT
+        with ESMTP id S229869AbiCCABc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:01:08 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019444FC6E;
-        Wed,  2 Mar 2022 16:00:07 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id 185so2739074qkh.1;
-        Wed, 02 Mar 2022 16:00:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s2VoxRcgzayXC4zVf8d2bV7EKQmBNoz4BFBzN6+8sx8=;
-        b=irtUW00dYBE7kRhx89tLLgo+OiHCquwUTazjhPRpgra/Ng8ZdA8XxCmleB4NvxllKh
-         4pKE6dlj50+3l1NtV4o9/4ebYa6MzILugoiY6A7PIbHurAxsmGNDq+Azak/YPX7TvXqp
-         vWKgPbmVn8eSbnf0s0rlwVptu1i33O5KFWx6cgKlB1Iv/ADRAyqTCutf86BCCCum8X2/
-         Bf0AFz6Uc9OqJ9+suUpqFsrW1IvnGHcoqc6V2ESgWgVivWiJrGD9dv/iy4uRrGM+OgIG
-         JzhbU+mrHknnWfDH4bhT9zMXZNaDWIeBUzcbCDaaOTAZ4EeZTnnWYTbM3mDIlJ1KSgyy
-         PikQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s2VoxRcgzayXC4zVf8d2bV7EKQmBNoz4BFBzN6+8sx8=;
-        b=wCLGp7OUJp/fLsZela7DxIvXWMqB8fMTaKGEFbVYBpJVhW5arTt6ymEBh+LPLVEJoB
-         SBitD97j/9axjRTC5GzF8BYKe0LIwXvp+8KyFUx02QRApxCPyYgOy5yCJBzjSBDR6SEf
-         tzAUuLR/0Dxip33xVNuSNyqvSr4CLSpBewlV4bMI2y8CR3ALVHsIRgnBJrZhjrzDHY4L
-         4QQTfvAlGrKVe5C47SWMfAJBYoQzSMu+s4vXQRXGiG+futo0FRgWFpP5zX+uv9/EYBZv
-         PV9OvMQmw8H+4EplRUvT2mGrKM7g+0Nq+2sILaHvIgXScDwjnhp8el0sXeOJ+NszTQfJ
-         euow==
-X-Gm-Message-State: AOAM530/h/YHG3cvh0tVvANRZMBksuBNc9m19b9MQE+GzLwZzjR/NQWO
-        kfBELprPAxqy7sRyqyySHYOjoL5psvJ9dX7l2+qacind//ASHw==
-X-Google-Smtp-Source: ABdhPJxo/W0o2SxPKcSkXdGg8CN8B7z5+TwZFM+qdHIf07npd47aBOy5NLnFlh9FXRccJ7EOY1O/tmylybId+gaV5XE=
-X-Received: by 2002:a02:aa85:0:b0:314:c152:4c89 with SMTP id
- u5-20020a02aa85000000b00314c1524c89mr26976369jai.93.1646263965076; Wed, 02
- Mar 2022 15:32:45 -0800 (PST)
+        Wed, 2 Mar 2022 19:01:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B365007D;
+        Wed,  2 Mar 2022 16:00:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 945BE61BA9;
+        Thu,  3 Mar 2022 00:00:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00CE8C36AE3;
+        Thu,  3 Mar 2022 00:00:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646265647;
+        bh=Gh+Iw395lx9OcmDBaop4139TbIG8zRBjlYsZzNBFWco=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BocpuqTmutORsZYOiNSdm6lbdqku4oUyiaGBbawYajhypmeyVq/AFKrfpskEbcDf1
+         Q4/3uRPtQVWQFi13n7scGMH2Wid9LMjelDkVKUG+YEX7DHDQZ0KWBXrrawYLftXc3k
+         imwIMLlwqpUJdpgJFKoH1Z3B51kHkMs0QNYnA8bhbSTXwnhU0Cu1B3wklft1sYv1Q5
+         sZrEciaPDY3ZaKJyqH1bwFDtdS/e3oeCQj2G8VxNKQ5Z3e8195bISM1iV0JOy11v3j
+         OMssM1DtJK+tk/y6B7eunZOi4e+gNL/pU1dRgivstJDAtlfMwXfKDmZjslIiDbLCgP
+         ZdiHHAR5HAnQQ==
+Received: by mail-ed1-f50.google.com with SMTP id y11so3921809eda.12;
+        Wed, 02 Mar 2022 16:00:46 -0800 (PST)
+X-Gm-Message-State: AOAM5322o6RgSTMaVRROWjOUvDSonuRi5Mz0sizM6JGQY6JDMqWB4vnE
+        BtX3oFBEUZlJqqEC969QDVjoY3UBrp98QXXdYQ==
+X-Google-Smtp-Source: ABdhPJyCWS2G7IAO37h6jGUTcYx1AHcHdPNzIqNZZelMR25IBMLn05AR7M7SJt01irflojL+S4EdT9nvnMtxT4pRjgc=
+X-Received: by 2002:aa7:df12:0:b0:410:a50b:de00 with SMTP id
+ c18-20020aa7df12000000b00410a50bde00mr31738511edy.2.1646265645243; Wed, 02
+ Mar 2022 16:00:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20220301165737.672007-1-ytcoode@gmail.com>
-In-Reply-To: <20220301165737.672007-1-ytcoode@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Mar 2022 15:32:34 -0800
-Message-ID: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Add a check to ensure that page_cnt is non-zero
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20220126071932.32615-1-jason-jh.lin@mediatek.com>
+ <20220126071932.32615-4-jason-jh.lin@mediatek.com> <CAAOTY__K_0sp6+VdL0yi=wF9wA_uag4HKqK3ST7uySdkzfCHBA@mail.gmail.com>
+ <CAAOTY__Xz0Pu30tmUrNJ=Nji=03Xv_3Qw526_hT-zELME36Bxw@mail.gmail.com>
+In-Reply-To: <CAAOTY__Xz0Pu30tmUrNJ=Nji=03Xv_3Qw526_hT-zELME36Bxw@mail.gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 2 Mar 2022 18:00:34 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLU0m9C1OPdiBPTkofB4sfiAeUPbFHp0w8caWyP4XPOEw@mail.gmail.com>
+Message-ID: <CAL_JsqLU0m9C1OPdiBPTkofB4sfiAeUPbFHp0w8caWyP4XPOEw@mail.gmail.com>
+Subject: Re: [PATCH v15 03/12] dt-bindings: display: mediatek: disp: split
+ each block to individual yaml
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        "jason-jh . lin" <jason-jh.lin@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fei Shao <fshao@chromium.org>,
+        Moudy Ho <moudy.ho@mediatek.com>,
+        "roy-cw.yeh" <roy-cw.yeh@mediatek.com>, CK Hu <ck.hu@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Jitao shi <jitao.shi@mediatek.com>,
+        Nancy Lin <nancy.lin@mediatek.com>, singo.chang@mediatek.com,
+        DTML <devicetree@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 8:57 AM Yuntao Wang <ytcoode@gmail.com> wrote:
+On Mon, Feb 7, 2022 at 5:07 PM Chun-Kuang Hu <chunkuang.hu@kernel.org> wrote:
 >
-> The page_cnt parameter is used to specify the number of memory pages
-> allocated for each per-CPU buffer, it must be non-zero and a power of 2.
->
-> Currently, the __perf_buffer__new() function attempts to validate that
-> the page_cnt is a power of 2 but forgets checking for the case where
-> page_cnt is zero, we can fix it by replacing 'page_cnt & (page_cnt - 1)'
-> with '!is_power_of_2(page_cnt)'.
->
-> Thus we also don't need to add a check in perf_buffer__new_v0_6_0() to
-> make sure that page_cnt is non-zero and the check for zero in
-> perf_buffer__new_raw_v0_6_0() can also be removed.
->
-> The code is cleaner and more readable.
->
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> ---
->  tools/lib/bpf/libbpf.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index be6480e260c4..4dd1d82cd5b9 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -33,6 +33,7 @@
->  #include <linux/filter.h>
->  #include <linux/list.h>
->  #include <linux/limits.h>
-> +#include <linux/log2.h>
+> OK, it seems no one has comment on this patch, so
 
-we don't have this header implemented in Github repo, so this will be
-unnecessary painful
+No comment because the patch was not in PW. That's most likely due to this:
 
+Subject: [PATCH v15 03/12] dt-bindings: display: mediatek: disp: split
+each block to individual yaml
+Date: Wed, 26 Jan 2022 15:19:23 +0800 [thread overview]
+Message-ID: <20220126071932.32615-4-jason-jh.lin@mediatek.com> (raw)
+In-Reply-To: <20220126071932.32615-1-jason-jh.lin@mediatek.com>
 
->  #include <linux/perf_event.h>
->  #include <linux/ring_buffer.h>
->  #include <linux/version.h>
-> @@ -10951,7 +10952,7 @@ struct perf_buffer *perf_buffer__new_raw_v0_6_0(int map_fd, size_t page_cnt,
->  {
->         struct perf_buffer_params p = {};
->
-> -       if (page_cnt == 0 || !attr)
-> +       if (!attr)
->                 return libbpf_err_ptr(-EINVAL);
->
->         if (!OPTS_VALID(opts, perf_buffer_raw_opts))
-> @@ -10992,7 +10993,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
->         __u32 map_info_len;
->         int err, i, j, n;
->
-> -       if (page_cnt & (page_cnt - 1)) {
-> +       if (!is_power_of_2(page_cnt)) {
+[-- Warning: decoded text below may be mangled, UTF-8 assumed --]
+[-- Attachment #1: Type: text/plain; charset="y", Size: 50916 bytes --]
 
-so let's instead just use `page_cnt == 0 || (page_cnt & (page_cnt -
-1))` here explicitly
+"y" is not a valid charset. This is caused when git-send-email asks
+for the encoding and you answer 'y' rather than <enter>.
 
->                 pr_warn("page count should be power of two, but is %zu\n",
->                         page_cnt);
->                 return ERR_PTR(-EINVAL);
-> --
-> 2.35.1
->
+Rob
