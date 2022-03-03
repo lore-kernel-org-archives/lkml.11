@@ -2,229 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 160AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A588EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbiCCL46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34482 "EHLO
+        id S232691AbiCCMDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 07:03:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233020AbiCCL4n (ORCPT
+        with ESMTP id S231488AbiCCMDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:56:43 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9085210DA69;
-        Thu,  3 Mar 2022 03:55:58 -0800 (PST)
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 03 Mar 2022 03:55:58 -0800
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 03 Mar 2022 03:55:57 -0800
-X-QCInternal: smtphost
-Received: from unknown (HELO youghand-linux.qualcomm.com) ([10.206.66.115])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 03 Mar 2022 17:25:49 +0530
-Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
-        id 764B722770; Thu,  3 Mar 2022 17:25:48 +0530 (IST)
-From:   Youghandhar Chintala <youghand@codeaurora.org>
-To:     ath10k@lists.infradead.org
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pillair@codeaurora.org, dianders@chromium.org, kuabhs@chromium.org,
-        briannorris@chromium.org, mpubbise@codeaurora.org,
-        Youghandhar Chintala <youghand@codeaurora.org>
-Subject: [PATCH v4 1/2] mac80211: Add support to trigger sta disconnect on  hardware restart
-Date:   Thu,  3 Mar 2022 17:25:40 +0530
-Message-Id: <20220303115541.15892-2-youghand@codeaurora.org>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20220303115541.15892-1-youghand@codeaurora.org>
-References: <20220303115541.15892-1-youghand@codeaurora.org>
+        Thu, 3 Mar 2022 07:03:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FC43BFB2;
+        Thu,  3 Mar 2022 04:02:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB31561867;
+        Thu,  3 Mar 2022 12:02:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C15EC004E1;
+        Thu,  3 Mar 2022 12:02:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646308972;
+        bh=joVFOZmms9HBOXgoZuJ9RkqFVCdj5U89jr7ZSVH6EQM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TZZSF6TfMAQvdtUbORxyyZ1laxtoEDK+breNkO3og95FYG+sCa+lfCi20qQth4/yt
+         CED3FwKQEixoFfzJDy1Px5awEACzAjHNWNtPw7YhoX20sBuRmdZ0gN1plPHNcwN1zu
+         QsBhk0dinEYAp4Hc/tMYSHYOJ+8VGk5lg6NtzCh1PlXdy21Rx36AVYCH66UEmG2G1D
+         ObRTKStZHJ5iZw4A87eI5bTzqTzkKAedEzmkUzzKEV6+/ZarqU7pxVlKrbDq/5VjlB
+         cx4nyHUS4axCPej7NQkRqcft0KhM9ywXE3A8nbgJRN9TfgAmZa5ZQVbrW1yYPRU+E8
+         kyjdwCJC5gaZg==
+Date:   Thu, 3 Mar 2022 13:02:45 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     qii.wang@mediatek.com, matthias.bgg@gmail.com,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, Qii Wang <wii.wang@mediatek.com>
+Subject: Re: [PATCH v2] i2c: busses: i2c-mt65xx: Simplify with clk-bulk
+Message-ID: <YiCuZZs8T6AKtpbe@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        qii.wang@mediatek.com, matthias.bgg@gmail.com,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, Qii Wang <wii.wang@mediatek.com>
+References: <20220303091547.17522-1-angelogioacchino.delregno@collabora.com>
+ <22eccb9e-45fa-683e-640d-6f34fa63ca52@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="j0lwsQweqcGwCt7j"
+Content-Disposition: inline
+In-Reply-To: <22eccb9e-45fa-683e-640d-6f34fa63ca52@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently in case of target hardware restart, we just reconfig and
-re-enable the security keys and enable the network queues to start
-data traffic back from where it was interrupted.
 
-Many ath10k wifi chipsets have sequence numbers for the data
-packets assigned by firmware and the mac sequence number will
-restart from zero after target hardware restart leading to mismatch
-in the sequence number expected by the remote peer vs the sequence
-number of the frame sent by the target firmware.
+--j0lwsQweqcGwCt7j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-This mismatch in sequence number will cause out-of-order packets
-on the remote peer and all the frames sent by the device are dropped
-until we reach the sequence number which was sent before we restarted
-the target hardware
 
-In order to fix this, we trigger a sta disconnect, in case of target
-hw restart. After this there will be a fresh connection and thereby
-avoiding the dropping of frames by remote peer.
+> Please, can you fix that while applying, or should I send a v3?
 
-The right fix would be to pull the entire data path into the host
-which is not feasible or would need lots of complex changes and
-will still be inefficient.
+I'll fix it. Thank you for the rebase!
 
-Tested on ath10k using WCN3990, QCA6174
 
-Signed-off-by: Youghandhar Chintala <youghand@codeaurora.org>
----
- include/net/mac80211.h     | 11 +++++++++++
- net/mac80211/ieee80211_i.h |  3 +++
- net/mac80211/mlme.c        | 12 ++++++++++++
- net/mac80211/util.c        | 33 ++++++++++++++++++++++++++++++---
- 4 files changed, 56 insertions(+), 3 deletions(-)
+--j0lwsQweqcGwCt7j
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index bd6912d0292b..0773c50fa182 100644
---- a/include/net/mac80211.h
-+++ b/include/net/mac80211.h
-@@ -6064,6 +6064,17 @@ void ieee80211_disconnect(struct ieee80211_vif *vif, bool reconnect);
-  */
- void ieee80211_resume_disconnect(struct ieee80211_vif *vif);
- 
-+/**
-+ * ieee80211_hw_restart_disconnect - disconnect from AP after
-+ * hardware  restart
-+ *
-+ * @vif: &struct ieee80211_vif pointer from the add_interface callback.
-+ *
-+ * Instructs mac80211 to disconnect from the AP after
-+ * hardware restart.
-+ */
-+void ieee80211_hw_restart_disconnect(struct ieee80211_vif *vif);
-+
- /**
-  * ieee80211_cqm_rssi_notify - inform a configured connection quality monitoring
-  *	rssi threshold triggered
-diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index da35791b8378..7819cdf7ddfa 100644
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -765,6 +765,8 @@ struct ieee80211_if_mesh {
-  *	back to wireless media and to the local net stack.
-  * @IEEE80211_SDATA_DISCONNECT_RESUME: Disconnect after resume.
-  * @IEEE80211_SDATA_IN_DRIVER: indicates interface was added to driver
-+ * @IEEE80211_SDATA_DISCONNECT_HW_RESTART: Disconnect after hardware restart
-+ *  recovery
-  */
- enum ieee80211_sub_if_data_flags {
- 	IEEE80211_SDATA_ALLMULTI		= BIT(0),
-@@ -772,6 +774,7 @@ enum ieee80211_sub_if_data_flags {
- 	IEEE80211_SDATA_DONT_BRIDGE_PACKETS	= BIT(3),
- 	IEEE80211_SDATA_DISCONNECT_RESUME	= BIT(4),
- 	IEEE80211_SDATA_IN_DRIVER		= BIT(5),
-+	IEEE80211_SDATA_DISCONNECT_HW_RESTART	= BIT(6),
- };
- 
- /**
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 20b57ddf149c..7e5be39dc6cc 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -4863,6 +4863,18 @@ void ieee80211_sta_restart(struct ieee80211_sub_if_data *sdata)
- 		sdata_unlock(sdata);
- 		return;
- 	}
-+
-+	if (sdata->flags & IEEE80211_SDATA_DISCONNECT_HW_RESTART) {
-+		sdata->flags &= ~IEEE80211_SDATA_DISCONNECT_HW_RESTART;
-+		mlme_dbg(sdata, "driver requested disconnect after hardware restart\n");
-+		ieee80211_sta_connection_lost(sdata,
-+					      ifmgd->associated->bssid,
-+					      WLAN_REASON_UNSPECIFIED,
-+					      true);
-+		sdata_unlock(sdata);
-+		return;
-+	}
-+
- 	sdata_unlock(sdata);
- }
- #endif
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index abc29df6834c..4b791f94751f 100644
---- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -2321,6 +2321,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
- 	struct cfg80211_sched_scan_request *sched_scan_req;
- 	bool sched_scan_stopped = false;
- 	bool suspended = local->suspended;
-+	bool in_reconfig = false;
- 
- 	/* nothing to do if HW shouldn't run */
- 	if (!local->open_count)
-@@ -2672,6 +2673,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
- 		drv_reconfig_complete(local, IEEE80211_RECONFIG_TYPE_RESTART);
- 
- 	if (local->in_reconfig) {
-+		in_reconfig = local->in_reconfig;
- 		local->in_reconfig = false;
- 		barrier();
- 
-@@ -2689,6 +2691,15 @@ int ieee80211_reconfig(struct ieee80211_local *local)
- 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
- 					false);
- 
-+	if (in_reconfig) {
-+		list_for_each_entry(sdata, &local->interfaces, list) {
-+			if (!ieee80211_sdata_running(sdata))
-+				continue;
-+			if (sdata->vif.type == NL80211_IFTYPE_STATION)
-+				ieee80211_sta_restart(sdata);
-+		}
-+	}
-+
- 	if (!suspended)
- 		return 0;
- 
-@@ -2718,7 +2729,7 @@ int ieee80211_reconfig(struct ieee80211_local *local)
- 	return 0;
- }
- 
--void ieee80211_resume_disconnect(struct ieee80211_vif *vif)
-+static void ieee80211_reconfig_disconnect(struct ieee80211_vif *vif, u8 flag)
- {
- 	struct ieee80211_sub_if_data *sdata;
- 	struct ieee80211_local *local;
-@@ -2730,19 +2741,35 @@ void ieee80211_resume_disconnect(struct ieee80211_vif *vif)
- 	sdata = vif_to_sdata(vif);
- 	local = sdata->local;
- 
--	if (WARN_ON(!local->resuming))
-+	if (WARN_ON(flag & IEEE80211_SDATA_DISCONNECT_RESUME &&
-+		    !local->resuming))
-+		return;
-+
-+	if (WARN_ON(flag & IEEE80211_SDATA_DISCONNECT_HW_RESTART &&
-+		    !local->in_reconfig))
- 		return;
- 
- 	if (WARN_ON(vif->type != NL80211_IFTYPE_STATION))
- 		return;
- 
--	sdata->flags |= IEEE80211_SDATA_DISCONNECT_RESUME;
-+	sdata->flags |= flag;
- 
- 	mutex_lock(&local->key_mtx);
- 	list_for_each_entry(key, &sdata->key_list, list)
- 		key->flags |= KEY_FLAG_TAINTED;
- 	mutex_unlock(&local->key_mtx);
- }
-+
-+void ieee80211_hw_restart_disconnect(struct ieee80211_vif *vif)
-+{
-+	ieee80211_reconfig_disconnect(vif, IEEE80211_SDATA_DISCONNECT_HW_RESTART);
-+}
-+EXPORT_SYMBOL_GPL(ieee80211_hw_restart_disconnect);
-+
-+void ieee80211_resume_disconnect(struct ieee80211_vif *vif)
-+{
-+	ieee80211_reconfig_disconnect(vif, IEEE80211_SDATA_DISCONNECT_RESUME);
-+}
- EXPORT_SYMBOL_GPL(ieee80211_resume_disconnect);
- 
- void ieee80211_recalc_smps(struct ieee80211_sub_if_data *sdata)
--- 
-2.29.0
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIgrmEACgkQFA3kzBSg
+KbZ7Vw/+P4t6jxxU+NlXS44NM14j/3DF6/rUS+26gLGmUiUUHI9Ggr63ImC/481K
+QeHlVA+WluBuP8OWKvFWReTCOM1t1KnapFDGWESqanG6W0vSN5Br3cNq2nLmD2+P
+JHdQ5m6Ssn12KkTm1i3+EpFpTlU4kx5TyvAvvQ1iM/W8jNRwmKIx93pcL1pYU9Z9
+xsNbJ6isE2ZdicxaaHuHnSy0XCIkl6YXtDwDNo3vMmmAvLvMwxGjcLO3PW+j9PWm
+YvMC+CuiyJ3l9OCA3vAEDuJdneW9sBz25mNpzE2esUuQrPyHjTTAHThbE075q40y
+5SkdcJL9G1gdPAHiJeFkW+P0j22o1JVFm7T6SZJdnvmilslBqtn7ay1QMuqDuBEr
+KuR2h9kB4wUs9bklY1coegtkNpk75O6wQ1CA5e8Ec5l6kq8S0OFxXXFa1jv9Q3a3
+kZ8si8YEH2+NWYESsbgtIQXoohFHC85x9T3PpvEewlNPpyCP6eRwfcUdkMHQuvcT
+oBkXd4OWlNZC9PLotz5NPp5xHPrKptRxoPcIfbdR9tYaSnN+vhq9VEU2qPS40iiB
+Ae1O6W82yVeTXZEQ5VUUnYdYvfBP3hUxFT+GHqBx+sV4hQrc70YDr10dVPf0IMPP
+loOnoSm7D5eXmeMecI6jxmEfd4SEApZ0E4faYO1pMMJ9SBaOtvA=
+=vPdX
+-----END PGP SIGNATURE-----
+
+--j0lwsQweqcGwCt7j--
