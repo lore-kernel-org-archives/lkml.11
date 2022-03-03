@@ -2,95 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD928C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE931C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235242AbiCCRL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:11:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        id S235253AbiCCRME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:12:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235151AbiCCRL0 (ORCPT
+        with ESMTP id S230229AbiCCRMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:11:26 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC4E18886D
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:10:40 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C9B233F1C5
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 17:10:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646327438;
-        bh=yOpfl3Hcjndvk/B6vqY0qQ9g4TjpRuVNspq+zRHWaMY=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=D1fNvbz+8Cgoym0nTo1cYmPsHj2mGebSJ3fwWY06T62VptzQzOLil7vwL7KCVzwYe
-         rMSjz35C8TIExrZxhquqQzQ4IDhoqfq4PLwToNHfdTSTjm1qc6t60oQJTq/3TGXPfH
-         lKA34/ezbkeuZzHXpG4OoKiPFzkU1liRReem6R6OMIJ/vjGpBLek7d6bNgesdp2dML
-         5nfAnA//x65ow60PGpVNNj5zq2TtW2fe2p8zuUze8t1XM6Ssp1EJGY0+ygC0lZK0bx
-         MCJXYR1cO3CTgbFRZWQMYUkhSl1c+9AEAfvc9kB9Y6lBPDtZUzqDCIw6BNBcr/eUnE
-         17fL5ji7DUemA==
-Received: by mail-ed1-f71.google.com with SMTP id l14-20020a056402344e00b0041593c729adso3200576edc.18
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:10:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yOpfl3Hcjndvk/B6vqY0qQ9g4TjpRuVNspq+zRHWaMY=;
-        b=etRscFuGog5hhdZ9Gr9yZwVw3NYfUwVBSNuvRfBm6IWMdPlEF7EzRMsT0l0j8163PB
-         IYgAv9smvQYlQoDoslKwtZgcCpohQAlKA5TWSsR3Jca0PlWRzE+QAcBJZpbvGCMRQhOZ
-         w7gVDVP5ZHgRKMJJzLRFqQyTFKI68z0O33pjSeuxqK8ndZHFzbCsctIy9zzPdXuKVqQu
-         rg7irq4rwMnvxwKHFIgB2BsdwY1HOA9WAyUwB0IEm1KHMSXt01pCqh2NGOYUC8rdUENw
-         Ioawos4c7AVNscFszQbn9MN3JQ4zmEpox6ZW6j82cjYLQPYKkZeOKOPGtVvOa/QX5aZb
-         GwOA==
-X-Gm-Message-State: AOAM533r24M00CJCLmTvvwYr4WU7zrfSz+loYqj23s9DwAvxITQ3zurA
-        GpM/ntsQ3SNmAfgPVZoBgQxuvGnrkwmEwjr9s60Z1fVNARNCjZdnRwOX9gG1TnlG59Lmx4dfakS
-        AFPQ1aY2rEYHf2pkysgZsPk7XbgA4IK8f7OHgXxJ4sA==
-X-Received: by 2002:a50:fb19:0:b0:404:eb52:62cb with SMTP id d25-20020a50fb19000000b00404eb5262cbmr35228376edq.363.1646327438494;
-        Thu, 03 Mar 2022 09:10:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy6bnmzjskCorkUY/nXeAQY/98C8GWRr5oY3xWGOPL3+b/RpQKLOt1AzH6nS2grakO845503w==
-X-Received: by 2002:a50:fb19:0:b0:404:eb52:62cb with SMTP id d25-20020a50fb19000000b00404eb5262cbmr35228353edq.363.1646327438262;
-        Thu, 03 Mar 2022 09:10:38 -0800 (PST)
-Received: from [192.168.0.137] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id w10-20020a17090652ca00b006c605703245sm913234ejn.43.2022.03.03.09.10.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 09:10:37 -0800 (PST)
-Message-ID: <4df511e4-a1f9-d4ac-4971-028c3681e5fd@canonical.com>
-Date:   Thu, 3 Mar 2022 18:10:37 +0100
+        Thu, 3 Mar 2022 12:12:01 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E997188A35;
+        Thu,  3 Mar 2022 09:11:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646327475; x=1677863475;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=vaOGjw7VdBKeP6eHbl1iLmTW0NFWNNn5qWcGsk5ZbQE=;
+  b=IBsdkHHXV4wbifK/fQcmch4j2dCl+OIeR+9I3TJLZJbc+X/7oOpfuHrQ
+   hdqWWgZKCK/GlUACOQgFuuVbD0kKsFRoFPX0tZLLV0DZKF5Lief0biL/g
+   uJSJbwueN8QPoCzBPrzyqVHRWB26Lyd+6hL+oQ1UmpJAtO/Y9OtgKdJuP
+   fSkQOcrY2PA1x2FHWQULaGWNOneVdNkWhFJ+ViFama+IcUdAjTLHxJC+1
+   u4vGQ5U4RrxBvO/rfHAEqcp1ymommJHwYMuC3273UixpEI8nyE/ortQ+7
+   Utv5idK+y1GauVyHG025EgKtJwZraG+BGZQUwgdoDFfr2W9pbSunDNdCV
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="253928899"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="253928899"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 09:09:44 -0800
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="642184867"
+Received: from eabada-mobl2.amr.corp.intel.com (HELO [10.209.6.252]) ([10.209.6.252])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 09:09:43 -0800
+Message-ID: <5ca2583b-a873-fc5d-ece6-d4bdbd133a89@intel.com>
+Date:   Thu, 3 Mar 2022 09:09:37 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] dt-bindings: arm: Allow 32-bit 'cpu-release-addr' values
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220303165710.1859862-1-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220303165710.1859862-1-robh@kernel.org>
+To:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+References: <20220224165625.2175020-1-brijesh.singh@amd.com>
+ <20220224165625.2175020-23-brijesh.singh@amd.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH v11 22/45] x86/sev: Use SEV-SNP AP creation to start
+ secondary CPUs
+In-Reply-To: <20220224165625.2175020-23-brijesh.singh@amd.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/03/2022 17:57, Rob Herring wrote:
-> While the DT Spec says 'cpu-release-addr' is always 64-bit, some 32-bit Arm
-> DTs used a 32-bit value. We're now stuck with those cases, so add uint32 as
-> a valid type.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/arm/cpus.yaml | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
+On 2/24/22 08:56, Brijesh Singh wrote:
+> +	/*
+> +	 * Allocate VMSA page to work around the SNP erratum where the CPU will
+> +	 * incorrectly signal an RMP violation #PF if a large page (2MB or 1GB)
+> +	 * collides with the RMP entry of VMSA page. The recommended workaround
+> +	 * is to not use a large page.
+> +	 *
+> +	 * Allocate one extra page, use a page which is not 2MB-aligned
+> +	 * and free the other.
+> +	 */
+> +	p = alloc_pages(GFP_KERNEL_ACCOUNT | __GFP_ZERO, 1);
+> +	if (!p)
+> +		return NULL;
+> +
+> +	split_page(p, 1);
+> +
+> +	pfn = page_to_pfn(p);
+> +	if (IS_ALIGNED(__pfn_to_phys(pfn), PMD_SIZE)) {
+> +		pfn++;
+> +		__free_page(p);
+> +	} else {
+> +		__free_page(pfn_to_page(pfn + 1));
+> +	}
+> +
+> +	return page_address(pfn_to_page(pfn));
+> +}
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+This can be simplified.  There's no need for all the sill pfn_to_page()
+conversions or even an alignment check.  The second page (page[1]) of an
+order-1 page is never 2M/1G aligned.  Just use that:
 
+	// Alloc an 8k page which is also 8k-aligned:
+	p = alloc_pages(GFP_KERNEL_ACCOUNT | __GFP_ZERO, 1);
+	if (!p)
+		return NULL;
 
-Best regards,
-Krzysztof
+	split_page(p, 1);
+
+	// Free the first 4k.  This page _may_
+	// be 2M/1G aligned and can not be used:
+	__free_page(p);
+	
+	// Return the unaligned page:
+	return page_address(p+1);
