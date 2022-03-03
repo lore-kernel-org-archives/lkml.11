@@ -2,168 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE348C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 504E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiCCHyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 02:54:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        id S230412AbiCCHy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 02:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbiCCHyg (ORCPT
+        with ESMTP id S229961AbiCCHy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 02:54:36 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B6A16F954
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 23:53:48 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id j15so1562855lfg.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 23:53:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SSFcHIZRKG8q+pVp4JuQk89OuVsOKCLaKsxq/8EH1wA=;
-        b=Pmtg0yQ3A46d4sZ2+1rKpOInipMWjQlfPtDgvBGkH8k9R8Z9XwB6z2TngB8HG1I9QD
-         H/gELtT5ro925eZP9YEbpLWo1D1zE/zaivFTVx+8zsTqCgM+v4CNAHEFIneNMNp9STxi
-         aidW7SCgu6z66NkJbz/+BHW+N1xHTsYHQEN99JwB6I/ca042mJwrDLsYqFAesp4Sa2C6
-         St/HCM37aweiaTbXs10qh436JCwa4dUhMmGqkyPv161jjWGj/VRPHKPCWsqNMR2DPei8
-         72RzO0+eZYm9fFdmcG4f1t6EzzB5wLyFKFC6ZPfVwXL3aUueyFmdQBBidOo2PtLdcRhf
-         Mt+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SSFcHIZRKG8q+pVp4JuQk89OuVsOKCLaKsxq/8EH1wA=;
-        b=voJ17xelb7MdPGlUsBOEM/uLc1OeT8B40sCqxs8P8Ai4QfMuu4Xr0bCWr6DiMwDVJC
-         4M31Ud0z9EIoDpec0J00QZ8cZ/VtHzdaIbM5LtXyH08CfncYWEmrfkwqlNFDfW9QP+gc
-         fLwlbp9GvUBWNWDBP4EIU8k7NUxIxGblYY7GeF0oFGLtVRWeYrpBpk+dSIWATPXxGQDs
-         9gWykkGEwasuzKR39bC5Nxbe0RQ/jEMtnoDuGBmiN8rNO4ktaRlS2LJGhprIRj+GoKhB
-         ZMoLkwLUeR55eseM6jerIq2b68NHDYJe/l1vMzXZtTqOqEBV7zFLweYb30ZdM1MbWLhT
-         Hdjg==
-X-Gm-Message-State: AOAM5315zS2Y+hq8Gr/cApVFSmUM0wwKlvboM1bZbZtCUedgGOPz0/0w
-        05JbCvcjpDEkH04tXfKERk6mqjD7R1A4TfclIrhk1g==
-X-Google-Smtp-Source: ABdhPJxkZj22etsDGZKCWOW+mI6FIW6VN8RNgI79VpmA0rC46M82JLVIIOiyfPgaXs+7NgTpw7zSzE1I9/il54zLqMo=
-X-Received: by 2002:a19:2d11:0:b0:445:65c7:5f1e with SMTP id
- k17-20020a192d11000000b0044565c75f1emr20676352lfj.184.1646294026898; Wed, 02
- Mar 2022 23:53:46 -0800 (PST)
+        Thu, 3 Mar 2022 02:54:58 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44AC416F960;
+        Wed,  2 Mar 2022 23:54:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646294053; x=1677830053;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=b/d2xM5QHwo48QlJhIIi1Xm1eu2owKNVfYPj+uvB7DE=;
+  b=E5XWVMiFXWfa50RdckcLz4v0p17w4Kw015LpUCgZ0VH7fFFCuDoHQkDw
+   OnMzMeBEy1CsdXdSwsjwLua1dU+FlzCu4FWvr8Iu/hIkQapkhZuuYtQQ3
+   O5GKdW6IilfR/hKdRKyIBKuW2JDYjfLsDTObpHhnfagbXjgs2KCL4Sk0J
+   sLR5G3s2M7SaupOSKCzYHwmq2DPG0tg3ZaVb/0jsAv1e5ZrUjcJ2jcWn3
+   9KA2nnctT/MCESSdHkRvktnf5LjtYnbDLvlMK/3s4cPHS178s5HbSBA+y
+   YCQ9RTM2vk/pERE0TbRZfw3+VCH6KpkBHsW754Ydydr0WaUs3uc4HLiuY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="241023334"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="241023334"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 23:54:12 -0800
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="508496453"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 23:54:10 -0800
+Received: by lahna (sSMTP sendmail emulation); Thu, 03 Mar 2022 09:54:08 +0200
+Date:   Thu, 3 Mar 2022 09:54:08 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Sanju.Mehta@amd.com
+Subject: Re: [PATCH 4/5] drivers/thunderbolt: Clarify/correct register
+ offsets for tb_cap_plug_events
+Message-ID: <YiB0IFe96XIORdUz@lahna>
+References: <20220302220709.3138846-1-mario.limonciello@amd.com>
+ <20220302220709.3138846-4-mario.limonciello@amd.com>
 MIME-Version: 1.0
-References: <20220303015151.1711860-1-pgwipeout@gmail.com>
-In-Reply-To: <20220303015151.1711860-1-pgwipeout@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 3 Mar 2022 08:53:09 +0100
-Message-ID: <CAPDyKFrk+HCbSZtB7uv6u9tjTgzFDjpB9oP9FYJUqNxcCzQ9iw@mail.gmail.com>
-Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: fix handling invalid clock rates
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     robin.murphy@arm.com, Jaehoon Chung <jh80.chung@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Addy Ke <addy.ke@rock-chips.com>,
-        Doug Anderson <dianders@chromium.org>,
-        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302220709.3138846-4-mario.limonciello@amd.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 at 02:52, Peter Geis <pgwipeout@gmail.com> wrote:
->
-> The Rockchip ciu clock cannot be set as low as the dw-mmc hardware
-> supports. This leads to a situation during card initialization where the
-> ciu clock is set lower than the clock driver can support. The
-> dw-mmc-rockchip driver spews errors when this happens.
-> For normal operation this only happens a few times during boot, but when
-> cd-broken is enabled (in cases such as the SoQuartz module) this fires
-> multiple times each poll cycle.
->
-> Fix this by testing the minimum frequency the clock driver can support
-> that is within the mmc specification, then divide that by the internal
-> clock divider. Set the f_min frequency to this value, or if it fails,
-> set f_min to the downstream driver's default.
->
-> Fixes: f629ba2c04c9 ("mmc: dw_mmc: add support for RK3288")
->
-> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+On Wed, Mar 02, 2022 at 04:07:08PM -0600, Mario Limonciello wrote:
+> The USB4 1.0 specification outlines the `cap_plug_events` structure in
+> table 13-14 located on page 507.  This shows that there was a mistake
+> in VSC_CS_1 where plug events disable should be 4 bits and
+> "TBT3-Compatible" should be 3 bits.
+> 
+> While correcting the mistake, update the names and comments to more
+> closely match the specification.  This should not change anything
+> functionally.
+> 
+> Link: https://www.usb.org/sites/default/files/USB4%20Specification%2020211116.zip
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 > ---
->  drivers/mmc/host/dw_mmc-rockchip.c | 31 ++++++++++++++++++++++++++----
->  1 file changed, 27 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
-> index 95d0ec0f5f3a..c198590cd74a 100644
-> --- a/drivers/mmc/host/dw_mmc-rockchip.c
-> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
-> @@ -15,7 +15,9 @@
->  #include "dw_mmc.h"
->  #include "dw_mmc-pltfm.h"
->
-> -#define RK3288_CLKGEN_DIV       2
-> +#define RK3288_CLKGEN_DIV      2
-> +#define RK3288_MIN_INIT_FREQ   375000
-> +#define MMC_MAX_INIT_FREQ      400000
->
->  struct dw_mci_rockchip_priv_data {
->         struct clk              *drv_clk;
-> @@ -27,6 +29,7 @@ struct dw_mci_rockchip_priv_data {
->  static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->  {
->         struct dw_mci_rockchip_priv_data *priv = host->priv;
-> +       struct mmc_host *mmc = mmc_from_priv(host);
->         int ret;
->         unsigned int cclkin;
->         u32 bus_hz;
-> @@ -34,6 +37,10 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->         if (ios->clock == 0)
->                 return;
->
-> +       /* the clock will fail if below the f_min rate */
-> +       if (ios->clock < mmc->f_min)
-> +               ios->clock = mmc->f_min;
-> +
+>  drivers/thunderbolt/tb_regs.h | 18 +++++++++++-------
+>  1 file changed, 11 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/thunderbolt/tb_regs.h b/drivers/thunderbolt/tb_regs.h
+> index 70795a2aa9bb..8c42f8bc679e 100644
+> --- a/drivers/thunderbolt/tb_regs.h
+> +++ b/drivers/thunderbolt/tb_regs.h
+> @@ -146,14 +146,14 @@ struct tb_eeprom_ctl {
+>  
+>  struct tb_cap_plug_events {
+>  	struct tb_cap_extended_short cap_header;
+> -	u32 __unknown1:2;
+> -	u32 plug_events:5;
+> -	u32 __unknown2:25;
+> -	u32 __unknown3;
+> -	u32 __unknown4;
+> +	u32 __unknown1:3; /* VSC_CS_1 */
+> +	u32 plug_events:4; /* VSC_CS_1 */
+> +	u32 __unknown2:25; /* VSC_CS_1 */
+> +	u32 vsc_cs_2;
+> +	u32 vsc_cs_3;
+>  	struct tb_eeprom_ctl eeprom_ctl;
+> -	u32 __unknown5[7];
+> -	u32 drom_offset; /* 32 bit register, but eeprom addresses are 16 bit */
+> +	u32 __unknown5[7]; /* VSC_CS_5 -> VSC_CS_11 */
+> +	u32 drom_offset; /* VSC_CS_12: 32 bit register, but eeprom addresses are 16 bit */
+>  } __packed;
+>  
+>  /* device headers */
+> @@ -464,6 +464,10 @@ struct tb_regs_hop {
+>  
+>  /* Plug Events registers */
+>  #define TB_PLUG_EVENTS_USB_DISABLE		BIT(2)
+> +#define USB4_PLUG_EVENTS_LANE_DISABLE		BIT(3)
+> +#define USB4_PLUG_EVENTS_DPOUT_DISABLE		BIT(4)
+> +#define USB4_PLUG_EVENTS_LOW_DPIN_DISABLE	BIT(5)
+> +#define USB4_PLUG_EVENTS_HIGH_DPIN_DISABLE	BIT(6)
 
-You shouldn't need this. The mmc core should manage this already.
+Since this is TBT3 "compatible" we should use TB_ prefix. What about:
 
->         /*
->          * cclkin: source clock of mmc controller
->          * bus_hz: card interface clock generated by CLKGEN
-> @@ -51,7 +58,7 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->
->         ret = clk_set_rate(host->ciu_clk, cclkin);
->         if (ret)
-> -               dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
-> +               dev_warn(host->dev, "failed to set rate %uHz err: %d\n", cclkin, ret);
->
->         bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
->         if (bus_hz != host->bus_hz) {
-> @@ -290,13 +297,29 @@ static int dw_mci_rk3288_parse_dt(struct dw_mci *host)
->
->  static int dw_mci_rockchip_init(struct dw_mci *host)
->  {
-> +       struct mmc_host *mmc = mmc_from_priv(host);
-> +       int ret;
-> +
->         /* It is slot 8 on Rockchip SoCs */
->         host->sdio_id0 = 8;
->
-> -       if (of_device_is_compatible(host->dev->of_node,
-> -                                   "rockchip,rk3288-dw-mshc"))
-> +       if (of_device_is_compatible(host->dev->of_node, "rockchip,rk3288-dw-mshc")) {
->                 host->bus_hz /= RK3288_CLKGEN_DIV;
->
-> +               /* clock driver will fail if the clock is less than the lowest source clock
-> +                * divided by the internal clock divider. Test for the lowest available
-> +                * clock and set the f_min freq to clock / clock divider. If we fail, set
-> +                * it to the downstream hardcoded value.
-> +                */
-> +               ret = clk_round_rate(host->ciu_clk, MMC_MAX_INIT_FREQ * RK3288_CLKGEN_DIV);
-> +               if (ret < 0) {
-> +                       dev_warn(host->dev, "mmc safe rate failed: %d\n", ret);
-> +                       mmc->f_min = RK3288_MIN_INIT_FREQ;
-> +               } else {
-> +                       mmc->f_min = ret / RK3288_CLKGEN_DIV;
-> +               }
-> +       }
-> +
->         return 0;
->  }
->
+TB_PLUG_EVENTS_CS_1_ ?
 
-Kind regards
-Uffe
+or 
+
+TB_VSEC_3_CS_1_ ?
+
+something that is easy to match with the register name in the USB4 spec.
