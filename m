@@ -2,128 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 06:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A98C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 06:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbiCCGzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 01:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
+        id S229994AbiCCG63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 01:58:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbiCCGza (ORCPT
+        with ESMTP id S229613AbiCCG6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 01:55:30 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D35016A5B0
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 22:54:45 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id n33-20020a05600c3ba100b003832caf7f3aso2047608wms.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 22:54:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E7Ew53yfjewVk3HWOkuEB6l85pgjkhws9cTt9TXMGuQ=;
-        b=pr4obOLhlupgLuaBUf/izWSxSovMzmddb/AVhCbU1PC44nH9PWqUXwu8rDkLwLZIXP
-         Hpv0x6QzeksAZz+t+A0zu6b+mz92zDKCVYWYzQanxeRZmhNNeKx7GUzvfydev3437j0D
-         4T8f2bmg98LO+FNmHGDYk15C1NR6OT2nhz/y63IpmFVxfokYbfVbwcklt3vXOXQ0Bf9w
-         XMaPo+6MhRfAG7kZP3m5t0tiHE6pRbVOzAup5XVsyWNmIB4BlTVYkbOGKR0qnWwo4ybS
-         Dg2ZJiwnUIHIgB/qxtHsNnP8TY889ivUBbDmM+CqDBnFDslA9f4WlaxiHmwsAlrx5hkQ
-         UqZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E7Ew53yfjewVk3HWOkuEB6l85pgjkhws9cTt9TXMGuQ=;
-        b=Kja16RIoH+ESsZq393GJ1MOR3oqvkFuVo9DUAkzGXDdiI8eDxE3VB3xdvDg7XAXqA2
-         odsMsr1HM7zGZ4f1TXJIFXf6IEU0Q1YMadj5e0yJZYryBccG6eZ0ofFYQpBT2NH0u52X
-         mOQF4KWRxiZnkUK0bnB+kjYXRHYUbmxj+E7+VgVPd0M1U/gQZDLRVB2WR7+YgHHi6Zhx
-         c1d/52foxQE/xxRaRiu8dZ4mxWD1O6LiGSJIuHOL7IAxVklHoOvFynnqDfdVGogzOCpc
-         Buv67jmgsIT7XtirL0QC3UC/c6BQ2EDKBF+GiSHTtQAxqMQtGngguzUN0AAiQgSPtizm
-         tZ+w==
-X-Gm-Message-State: AOAM532reET/80odZrx04fm+ocKD06cpq3UWTWMOcggigF2ehzK8AhDA
-        XVGN5SFz6KuP1VO0hPmNFzU=
-X-Google-Smtp-Source: ABdhPJw2uoUZvKyDoAgLWCGMAPCvsVIrIKS3kIRjPO3oQNH/HYS0Lx97JwAnRf5+oAkQEdfKN6xMYg==
-X-Received: by 2002:a7b:c14c:0:b0:381:32fb:a128 with SMTP id z12-20020a7bc14c000000b0038132fba128mr2571355wmi.116.1646290483686;
-        Wed, 02 Mar 2022 22:54:43 -0800 (PST)
-Received: from localhost.localdomain ([185.239.71.98])
-        by smtp.gmail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm1079902wrw.49.2022.03.02.22.54.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 22:54:43 -0800 (PST)
-From:   Xiaolong Huang <butterflyhuangxx@gmail.com>
-To:     fei1.li@intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>
-Subject: [RESEND PATCH] virt: acrn: fix a memory leak in acrn_dev_ioctl()
-Date:   Thu,  3 Mar 2022 14:54:00 +0800
-Message-Id: <20220303065401.259202-1-butterflyhuangxx@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 3 Mar 2022 01:58:23 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E542DFB;
+        Wed,  2 Mar 2022 22:57:33 -0800 (PST)
+X-UUID: 5b3f34bd8fa94120a9fee4ac0438ba0e-20220303
+X-UUID: 5b3f34bd8fa94120a9fee4ac0438ba0e-20220303
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 335543140; Thu, 03 Mar 2022 14:57:28 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 3 Mar 2022 14:57:27 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 3 Mar 2022 14:57:27 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <jassisinghbrar@gmail.com>, <fparent@baylibre.com>,
+        <yongqiang.niu@mediatek.com>, <hsinyi@chromium.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [RESEND V6 2/5] dt-bindings: display: mediatek: revise enum to const
+Date:   Thu, 3 Mar 2022 14:57:22 +0800
+Message-ID: <20220303065725.23384-3-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220303065725.23384-1-rex-bc.chen@mediatek.com>
+References: <20220303065725.23384-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The vm_param and cpu_regs need to be freed via kfree()
-before return -EINVAL error.
+There won't be more than 1 fallback for these bindings, so we modify
+them to use const instead of enum.
 
-Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
-Fixes: 2ad2aaee1bc9 ("virt: acrn: Introduce an ioctl to set vCPU registers state")
-Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 ---
- drivers/virt/acrn/hsm.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ .../devicetree/bindings/display/mediatek/mediatek,aal.yaml  | 3 +--
+ .../bindings/display/mediatek/mediatek,ccorr.yaml           | 3 +--
+ .../bindings/display/mediatek/mediatek,color.yaml           | 6 ++----
+ .../bindings/display/mediatek/mediatek,dither.yaml          | 3 +--
+ .../bindings/display/mediatek/mediatek,gamma.yaml           | 3 +--
+ .../devicetree/bindings/display/mediatek/mediatek,ovl.yaml  | 6 ++----
+ .../devicetree/bindings/display/mediatek/mediatek,rdma.yaml | 6 ++----
+ 7 files changed, 10 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/virt/acrn/hsm.c b/drivers/virt/acrn/hsm.c
-index 5419794fccf1..423ea888d79a 100644
---- a/drivers/virt/acrn/hsm.c
-+++ b/drivers/virt/acrn/hsm.c
-@@ -136,8 +136,10 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
- 		if (IS_ERR(vm_param))
- 			return PTR_ERR(vm_param);
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+index 191b56e16bee..1528b2486f8f 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+@@ -31,8 +31,7 @@ properties:
+               - mediatek,mt8183-disp-aal
+               - mediatek,mt8192-disp-aal
+               - mediatek,mt8195-disp-aal
+-          - enum:
+-              - mediatek,mt8173-disp-aal
++          - const: mediatek,mt8173-disp-aal
  
--		if ((vm_param->reserved0 | vm_param->reserved1) != 0)
-+		if ((vm_param->reserved0 | vm_param->reserved1) != 0) {
-+			kfree(vm_param);
- 			return -EINVAL;
-+		}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+index 6894b6999412..1d8d2e214aca 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+@@ -28,8 +28,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt8195-disp-ccorr
+-          - enum:
+-              - mediatek,mt8192-disp-ccorr
++          - const: mediatek,mt8192-disp-ccorr
  
- 		vm = acrn_vm_create(vm, vm_param);
- 		if (!vm) {
-@@ -182,21 +184,29 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
- 			return PTR_ERR(cpu_regs);
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+index bc83155b3b4c..feb9999e4c00 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+@@ -32,15 +32,13 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-color
+               - mediatek,mt2712-disp-color
+-          - enum:
+-              - mediatek,mt2701-disp-color
++          - const: mediatek,mt2701-disp-color
+       - items:
+           - enum:
+               - mediatek,mt8183-disp-color
+               - mediatek,mt8192-disp-color
+               - mediatek,mt8195-disp-color
+-          - enum:
+-              - mediatek,mt8173-disp-color
++          - const: mediatek,mt8173-disp-color
+   reg:
+     maxItems: 1
  
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->reserved); i++)
--			if (cpu_regs->reserved[i])
-+			if (cpu_regs->reserved[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
+index 9d89297f5f1d..68e982bdee39 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
+@@ -28,8 +28,7 @@ properties:
+           - enum:
+               - mediatek,mt8192-disp-dither
+               - mediatek,mt8195-disp-dither
+-          - enum:
+-              - mediatek,mt8183-disp-dither
++          - const: mediatek,mt8183-disp-dither
  
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_32); i++)
--			if (cpu_regs->vcpu_regs.reserved_32[i])
-+			if (cpu_regs->vcpu_regs.reserved_32[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
+index 247baad147b3..fd52995d8307 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
+@@ -29,8 +29,7 @@ properties:
+           - enum:
+               - mediatek,mt8192-disp-gamma
+               - mediatek,mt8195-disp-gamma
+-          - enum:
+-              - mediatek,mt8183-disp-gamma
++          - const: mediatek,mt8183-disp-gamma
  
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_64); i++)
--			if (cpu_regs->vcpu_regs.reserved_64[i])
-+			if (cpu_regs->vcpu_regs.reserved_64[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+index e71f79bc2dee..84ee403dddd7 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+@@ -33,13 +33,11 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-ovl
+               - mediatek,mt2712-disp-ovl
+-          - enum:
+-              - mediatek,mt2701-disp-ovl
++          - const: mediatek,mt2701-disp-ovl
+       - items:
+           - enum:
+               - mediatek,mt8195-disp-ovl
+-          - enum:
+-              - mediatek,mt8183-disp-ovl
++          - const: mediatek,mt8183-disp-ovl
  
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.gdt.reserved); i++)
- 			if (cpu_regs->vcpu_regs.gdt.reserved[i] |
--			    cpu_regs->vcpu_regs.idt.reserved[i])
-+			    cpu_regs->vcpu_regs.idt.reserved[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
+index 8ef821641672..30f89afd3ab9 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
+@@ -35,13 +35,11 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-rdma
+               - mediatek,mt2712-disp-rdma
+-          - enum:
+-              - mediatek,mt2701-disp-rdma
++          - const: mediatek,mt2701-disp-rdma
+       - items:
+           - enum:
+               - mediatek,mt8192-disp-rdma
+-          - enum:
+-              - mediatek,mt8183-disp-rdma
++          - const: mediatek,mt8183-disp-rdma
  
- 		ret = hcall_set_vcpu_regs(vm->vmid, virt_to_phys(cpu_regs));
- 		if (ret < 0)
-
-base-commit: 5859a2b1991101d6b978f3feb5325dad39421f29
+   reg:
+     maxItems: 1
 -- 
-2.25.1
+2.18.0
 
