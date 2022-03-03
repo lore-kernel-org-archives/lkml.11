@@ -2,94 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6275FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F41CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbiCCB4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:56:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
+        id S231551AbiCCB47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:56:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiCCB4n (ORCPT
+        with ESMTP id S231531AbiCCB46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:56:43 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0801CC3C1C;
-        Wed,  2 Mar 2022 17:55:59 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so2353727wmp.5;
-        Wed, 02 Mar 2022 17:55:58 -0800 (PST)
+        Wed, 2 Mar 2022 20:56:58 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9760D140C1
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:56:14 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id u17-20020a056830231100b005ad13358af9so3306540ote.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 17:56:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=GvqqsXp9JqRW+QoRebFXnXLKeWDJccxwpi7zx7aah6k=;
-        b=enhTd8NLMcPGtMzrxXlO6sQ4IUzfhtLJdzJZRVTG1u19GurckZA1UnbtdorF3sVe3h
-         9udPBxjZZ1yUiWNU2I6L48t5rEynB+rAERTsffdK4G3vObAtj4q5smzQ7SOu2EseZrr3
-         22Bk/NpXVtZCsEpk36vgFNoLy/OYBa/NpzEZpsoPZtUpQF3J3lCKLIVRaPE4jFthNglf
-         VItuwvFt3YLxRXl6b56FE68wq5CExiMLEOxM9HdOBS8M1r+v2bOAGS929cC9j4kNfXfj
-         hJrMwwLCKHftrH+fDcUKYy0mpszEjex3wsEuU1O2G3svnRsycT+M8XAfoF4febdKee22
-         PSyg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version;
+        bh=aA7IZZm4zyyhiO5xDecbrXdcaMTK2IMv+LtAOtcYUws=;
+        b=UfNPa4oNTZc+bYm0qOheqHrAgDQa2Fbq+wftjdDYMglREQu0FOhiNinlLbGUmJMExn
+         aElYwa/R7YjjdfXf3Akr8ghfT4Z4RwDK/HkmMj3Mt3fIKj44Jfe86teJrx89zX1TGG2Q
+         Nhy6GKoafaXDSlNBfD3BJs8qXOtGkhtG67KoZLFSYkhq5mrsBSyzFrh1ctN1sPB8t+qx
+         qBxjwQ7yIV875tlUD9HY9SbP6xA8cvZy8gISuXGoBBVL/L++u0Ck4y6NSUAkO/u5shPE
+         E/PrhviHT3yBED6mlbRm/+3PY6rE6izYU5BPXv1gszN6HQ+UMypb1r0b1iHqW9T9KYRT
+         q7tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=GvqqsXp9JqRW+QoRebFXnXLKeWDJccxwpi7zx7aah6k=;
-        b=NxsEpqreGOHduVzZeJMKqdyy23ffhYhUhLB8IahWpFAwAPgKp0j4RTB/bz2E00L6wK
-         rQcygKlskCzInlrbvZwTj6BnMFM/JU+3txf7yrO9/q3ZXx/fCWOKSknNTCMMFeC/hQ+d
-         9ru02iAODZg9ntVrHG151QZNy9u2b317HdUXgF5J00ViGSSRQqzO6N4D9w8WnbXiAvTF
-         bzbFmslVcSaHS7TX7DZR0lx1xCOpXqIogMNRNI/JrjM7K8Gxf7li6GkmVHB4oyU4W9Na
-         xpWkREGrC5y8+wX5P6g1WqfI7s/8hKKkhmjo1Sf5qq7cgwIlJONuGhFsLQRuB8xCtB+M
-         myxA==
-X-Gm-Message-State: AOAM532gLsRydTGzb5Eg2IEfRRAn4pGf6yXj0M9zGOovBrpSZoyUTvsY
-        OHpZKASNLNzep4N5w2J0Lq5llmKIW91y1Q==
-X-Google-Smtp-Source: ABdhPJyeYSFf/E4+nUJRgOAUTZovbk5817KycshSDPhgCy+Q2hQU6FKOamdYe3wA9rVDY1OGdFiimQ==
-X-Received: by 2002:a05:600c:1c9c:b0:386:f4ed:3f59 with SMTP id k28-20020a05600c1c9c00b00386f4ed3f59mr1788258wms.27.1646272557491;
-        Wed, 02 Mar 2022 17:55:57 -0800 (PST)
-Received: from localhost.localdomain ([64.64.123.48])
-        by smtp.gmail.com with ESMTPSA id l12-20020a05600012cc00b001f059bcbd7asm88093wrx.31.2022.03.02.17.55.55
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
+        bh=aA7IZZm4zyyhiO5xDecbrXdcaMTK2IMv+LtAOtcYUws=;
+        b=zLk6pTMs+3xu0KyPd96gloEzN5p/bu00ThGiiAlnAWaB4qur3RjM5xVMF9OD0Hi5wX
+         RmsAc9cvBCw3bqoev0XeGDX++XNZ3gFiovmh0iREgdWWfKHexE8d7fbBHL4oy7StDU+s
+         WIQJX+IcQf49s2Oc0vTzPQLHskgFtjUDJjTAZC+5hDImdImge9cC9c/RaB3ceP8VvqWZ
+         wkZmxjxqeI7UHvz4t0vwJvF2KMHfYjdsIMPL+1mZyLffhpnk4N92mjZdIdrGhc6Ohjna
+         0uszQ+X5gTWRp1DiVsUBYgP7ScJA4ULVX+/m8NlLIcQKh0aRUJycd3+MuahvPtE8EVII
+         e86A==
+X-Gm-Message-State: AOAM530VegW0rOSieGdg5MZm5dSXxMXyk0sbITrOb/ZWXNUhnfmWGfPE
+        uMCKyJSckbioCm4ExNmFIKXsHQ==
+X-Google-Smtp-Source: ABdhPJxmUisfwugiR3RBhee8kl5Y+/lwmVxZqlQOEK81+pR4wIF61AxDI5Jf4JZesOO1MZ+gewdBww==
+X-Received: by 2002:a05:6830:25cc:b0:5ad:7fe:3bbd with SMTP id d12-20020a05683025cc00b005ad07fe3bbdmr17009974otu.354.1646272573599;
+        Wed, 02 Mar 2022 17:56:13 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id q13-20020a0568080ecd00b002d44f01f1d7sm323654oiv.40.2022.03.02.17.56.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 17:55:57 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     colyli@suse.de, kent.overstreet@gmail.com
-Cc:     linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH v2] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
-Date:   Wed,  2 Mar 2022 17:55:44 -0800
-Message-Id: <20220303015544.32186-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 02 Mar 2022 17:56:12 -0800 (PST)
+Date:   Wed, 2 Mar 2022 17:56:11 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Andrew Morton <akpm@linux-foundation.org>
+cc:     Matthew Wilcox <willy@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Yu Zhao <yuzhao@google.com>, Yang Shi <shy828301@gmail.com>,
+        Michal Hocko <mhocko@suse.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH mmotm] mm: delete __ClearPageWaiters()
+Message-ID: <351df0af-78f2-c20-2a6d-e5f978e5ca1@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function kzalloc() in detached_dev_do_request() can fail, so its
-return value should be checked.
+The PG_waiters bit is not included in PAGE_FLAGS_CHECK_AT_FREE, and
+vmscan.c's free_unref_page_list() callers rely on that not to generate
+bad_page() alerts.  So __page_cache_release() and release_pages() (and
+the presumably copy-and-pasted put_zone_device_private_or_public_page())
+are redundant and misleading to make a special point of clearing it (as
+the "__" implies, it could only safely be used on the freeing path).
 
-Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Delete __ClearPageWaiters().  Remark on this in one of the "possible"
+comments in wake_up_page_bit(), and delete the superfluous comments.
+
+Signed-off-by: Hugh Dickins <hughd@google.com>
 ---
-v2:
-* Fix the error handling code when ddip is NULL.
-  Thank Coly for good advice.
+We've used this since 2018, and I see Yu Zhao posted similar in 2020:
+https://lore.kernel.org/linux-mm/20200818184704.3625199-3-yuzhao@google.com/
+I couldn't join in at that time, but think its reception was over-cautious.
 
----
- drivers/md/bcache/request.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/linux/page-flags.h |  2 +-
+ mm/filemap.c               | 22 +++++++---------------
+ mm/memremap.c              |  2 --
+ mm/swap.c                  |  4 ----
+ 4 files changed, 8 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/md/bcache/request.c b/drivers/md/bcache/request.c
-index d15aae6c51c1..673a680240a9 100644
---- a/drivers/md/bcache/request.c
-+++ b/drivers/md/bcache/request.c
-@@ -1107,6 +1107,12 @@ static void detached_dev_do_request(struct bcache_device *d, struct bio *bio,
- 	 * which would call closure_get(&dc->disk.cl)
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -481,7 +481,7 @@ static unsigned long *folio_flags(struct folio *folio, unsigned n)
+ 	TESTSETFLAG_FALSE(uname, lname) TESTCLEARFLAG_FALSE(uname, lname)
+ 
+ __PAGEFLAG(Locked, locked, PF_NO_TAIL)
+-PAGEFLAG(Waiters, waiters, PF_ONLY_HEAD) __CLEARPAGEFLAG(Waiters, waiters, PF_ONLY_HEAD)
++PAGEFLAG(Waiters, waiters, PF_ONLY_HEAD)
+ PAGEFLAG(Error, error, PF_NO_TAIL) TESTCLEARFLAG(Error, error, PF_NO_TAIL)
+ PAGEFLAG(Referenced, referenced, PF_HEAD)
+ 	TESTCLEARFLAG(Referenced, referenced, PF_HEAD)
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -1179,24 +1179,16 @@ static void folio_wake_bit(struct folio *folio, int bit_nr)
+ 	}
+ 
+ 	/*
+-	 * It is possible for other pages to have collided on the waitqueue
+-	 * hash, so in that case check for a page match. That prevents a long-
+-	 * term waiter
++	 * It's possible to miss clearing waiters here, when we woke our page
++	 * waiters, but the hashed waitqueue has waiters for other pages on it.
+ 	 *
+-	 * It is still possible to miss a case here, when we woke page waiters
+-	 * and removed them from the waitqueue, but there are still other
+-	 * page waiters.
++	 * That's okay, it's a rare case. The next waker will clear it. Or,
++	 * it might be left set until the page is freed: when it's masked off
++	 * with others in PAGE_FLAGS_CHECK_AT_PREP, by free_pages_prepare().
  	 */
- 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
-+	if (!ddip) {
-+		bio->bi_status = BLK_STS_RESOURCE;
-+		bio->bi_end_io(bio);
-+		return;
-+	}
+-	if (!waitqueue_active(q) || !key.page_match) {
++	if (!waitqueue_active(q) || !key.page_match)
+ 		folio_clear_waiters(folio);
+-		/*
+-		 * It's possible to miss clearing Waiters here, when we woke
+-		 * our page waiters, but the hashed waitqueue has waiters for
+-		 * other pages on it.
+-		 *
+-		 * That's okay, it's a rare case. The next waker will clear it.
+-		 */
+-	}
 +
- 	ddip->d = d;
- 	/* Count on the bcache device */
- 	ddip->orig_bdev = orig_bdev;
--- 
-2.17.1
-
+ 	spin_unlock_irqrestore(&q->lock, flags);
+ }
+ 
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -487,8 +487,6 @@ void free_zone_device_page(struct page *page)
+ 	if (WARN_ON_ONCE(!page->pgmap->ops || !page->pgmap->ops->page_free))
+ 		return;
+ 
+-	__ClearPageWaiters(page);
+-
+ 	mem_cgroup_uncharge(page_folio(page));
+ 
+ 	/*
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -97,7 +97,6 @@ static void __page_cache_release(struct page *page)
+ 		mod_zone_page_state(page_zone(page), NR_MLOCK, -nr_pages);
+ 		count_vm_events(UNEVICTABLE_PGCLEARED, nr_pages);
+ 	}
+-	__ClearPageWaiters(page);
+ }
+ 
+ static void __put_single_page(struct page *page)
+@@ -152,7 +151,6 @@ void put_pages_list(struct list_head *pages)
+ 			continue;
+ 		}
+ 		/* Cannot be PageLRU because it's passed to us using the lru */
+-		__ClearPageWaiters(page);
+ 	}
+ 
+ 	free_unref_page_list(pages);
+@@ -966,8 +964,6 @@ void release_pages(struct page **pages, int nr)
+ 			count_vm_event(UNEVICTABLE_PGCLEARED);
+ 		}
+ 
+-		__ClearPageWaiters(page);
+-
+ 		list_add(&page->lru, &pages_to_free);
+ 	}
+ 	if (lruvec)
