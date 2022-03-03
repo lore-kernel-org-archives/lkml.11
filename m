@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A56C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05305C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:33:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232905AbiCCLe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
+        id S232944AbiCCLee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232772AbiCCLbR (ORCPT
+        with ESMTP id S232757AbiCCLbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:17 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4114517CC5F
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:24 -0800 (PST)
+        Thu, 3 Mar 2022 06:31:13 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F7F17C43E
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=PdND8HGIsOPdG5e8FfFN8zhUpvOGMjFSGfPPImo+dI8=; b=jjMOir2mX3nnjb5nac+Vrilp4+
-        rqq1C0Eg81B456vS9lKXJPx9Siy2CBaQB5ek/06/a2exXU904p50gnV5cc2WNx7Q/xz0tSp3g/6h7
-        LwntQSL0joTCtvcIOwkrgaiN5IYOWD2+GceD66srINpm5vrJKrMzaH8EpjS6O8Alf/ASdr0iUe37V
-        UJlOVnq+IrroZkWp5gFZNNRN5X9+5L2Ipfb/2hsFfOkMxd2x2R4/JFP90pc6V55bXDpRBVgIfBv+H
-        Hz03FqAcg3QBOMnPfyLTU6Cy8hUbBYeWnA2KlIKytMbS53DZVxZcwb/bZefPDzZ2PM2bJl3qJIR81
-        NxeODO6Q==;
+        bh=xB4u1Jy3hvc7M0RTBy37w5M/ndZ42JCBNtJfPEBqWsQ=; b=KEf+27uqmVOCXbYPLDqOuNo1/X
+        qg5rPn0kyTMHmguWRyF6ett2gaZlJYZbDghUhNY/R5MJlYOJDV/wBKSNr949ejJ3EkJU5sSKf7Ooq
+        ppArmtbT/sr85FwIWukbKssPhK3RoA5gkeQBtAK5su0znPSTAvhlIeVNEBxpXyBCDB1hhiu17fpUO
+        fgsHluAhlHq1m+CM9n9kEfy//s+WVROnGO8aIPWC3XEigYS5JRFcH4bw3ZRSQmkEsDYcMnZtRD+te
+        bJ7CD15SNmuZQ3r6lpprMVyJBSNxYokdiJNufpCGsLWnmZ36boGRpACEtErApsix61riroaFOuBJw
+        KekwM7Ew==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeh-00Etpc-5s; Thu, 03 Mar 2022 11:29:59 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPjeh-00BaH7-Be; Thu, 03 Mar 2022 11:29:59 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F04BA30218C;
-        Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0CA96302D58;
+        Thu,  3 Mar 2022 12:29:57 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 5897830031589; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112825.984285515@infradead.org>
+        id 8438130126B5C; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112826.604331683@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:38 +0100
+Date:   Thu, 03 Mar 2022 12:23:48 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 17/39] x86/livepatch: Validate __fentry__ location
+Subject: [PATCH v3 27/39] x86/ibt,ftrace: Annotate ftrace code patching
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,78 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently livepatch assumes __fentry__ lives at func+0, which is most
-likely untrue with IBT on. Instead make it use ftrace_location() by
-default which both validates and finds the actual ip if there is any
-in the same symbol.
+These are code patching sites, not indirect targets.
 
-Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/powerpc/include/asm/livepatch.h |   10 ----------
- kernel/livepatch/patch.c             |   19 ++-----------------
- 2 files changed, 2 insertions(+), 27 deletions(-)
+ arch/x86/kernel/ftrace_64.S |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/powerpc/include/asm/livepatch.h
-+++ b/arch/powerpc/include/asm/livepatch.h
-@@ -19,16 +19,6 @@ static inline void klp_arch_set_pc(struc
- 	regs_set_return_ip(regs, ip);
- }
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -145,6 +145,7 @@ SYM_FUNC_START(ftrace_caller)
+ 	movq %rcx, RSP(%rsp)
  
--#define klp_get_ftrace_location klp_get_ftrace_location
--static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
--{
--	/*
--	 * Live patch works only with -mprofile-kernel on PPC. In this case,
--	 * the ftrace location is always within the first 16 bytes.
--	 */
--	return ftrace_location_range(faddr, faddr + 16);
--}
--
- static inline void klp_init_thread_info(struct task_struct *p)
- {
- 	/* + 1 to account for STACK_END_MAGIC */
---- a/kernel/livepatch/patch.c
-+++ b/kernel/livepatch/patch.c
-@@ -124,19 +124,6 @@ static void notrace klp_ftrace_handler(u
- 	ftrace_test_recursion_unlock(bit);
- }
+ SYM_INNER_LABEL(ftrace_caller_op_ptr, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	/* Load the ftrace_ops into the 3rd parameter */
+ 	movq function_trace_op(%rip), %rdx
  
--/*
-- * Convert a function address into the appropriate ftrace location.
-- *
-- * Usually this is just the address of the function, but on some architectures
-- * it's more complicated so allow them to provide a custom behaviour.
-- */
--#ifndef klp_get_ftrace_location
--static unsigned long klp_get_ftrace_location(unsigned long faddr)
--{
--	return faddr;
--}
--#endif
--
- static void klp_unpatch_func(struct klp_func *func)
- {
- 	struct klp_ops *ops;
-@@ -153,8 +140,7 @@ static void klp_unpatch_func(struct klp_
- 	if (list_is_singular(&ops->func_stack)) {
- 		unsigned long ftrace_loc;
+@@ -155,6 +156,7 @@ SYM_INNER_LABEL(ftrace_caller_op_ptr, SY
+ 	movq $0, CS(%rsp)
  
--		ftrace_loc =
--			klp_get_ftrace_location((unsigned long)func->old_func);
-+		ftrace_loc = ftrace_location((unsigned long)func->old_func);
- 		if (WARN_ON(!ftrace_loc))
- 			return;
+ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	call ftrace_stub
  
-@@ -186,8 +172,7 @@ static int klp_patch_func(struct klp_fun
- 	if (!ops) {
- 		unsigned long ftrace_loc;
+ 	/* Handlers can change the RIP */
+@@ -169,6 +171,7 @@ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBA
+ 	 * layout here.
+ 	 */
+ SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
  
--		ftrace_loc =
--			klp_get_ftrace_location((unsigned long)func->old_func);
-+		ftrace_loc = ftrace_location((unsigned long)func->old_func);
- 		if (!ftrace_loc) {
- 			pr_err("failed to find location for function '%s'\n",
- 				func->old_name);
+ 	jmp ftrace_epilogue
+ SYM_FUNC_END(ftrace_caller);
+@@ -192,6 +195,7 @@ SYM_FUNC_START(ftrace_regs_caller)
+ 	/* save_mcount_regs fills in first two parameters */
+ 
+ SYM_INNER_LABEL(ftrace_regs_caller_op_ptr, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	/* Load the ftrace_ops into the 3rd parameter */
+ 	movq function_trace_op(%rip), %rdx
+ 
+@@ -221,6 +225,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_op_pt
+ 	leaq (%rsp), %rcx
+ 
+ SYM_INNER_LABEL(ftrace_regs_call, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	call ftrace_stub
+ 
+ 	/* Copy flags back to SS, to restore them */
+@@ -248,6 +253,7 @@ SYM_INNER_LABEL(ftrace_regs_call, SYM_L_
+ 	 */
+ 	testq	%rax, %rax
+ SYM_INNER_LABEL(ftrace_regs_caller_jmp, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	jnz	1f
+ 
+ 	restore_mcount_regs
+@@ -261,6 +267,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_jmp,
+ 	 * to the return.
+ 	 */
+ SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	jmp ftrace_epilogue
+ 
+ 	/* Swap the flags with orig_rax */
 
 
