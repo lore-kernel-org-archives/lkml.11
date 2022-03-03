@@ -2,115 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88738C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234657AbiCCPnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
+        id S234681AbiCCPoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234485AbiCCPnl (ORCPT
+        with ESMTP id S234680AbiCCPoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:43:41 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B9226C1
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:42:53 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0CC813F5F9
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 15:42:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646322172;
-        bh=ME4I2xtDxLjtSdGBX3DKk+XrqVNliOSTqfJoYUoRWk0=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=UOyA3UQCRiTXq3BUUQLdGK40qlctSLcRko7WtSOm4zJRti1g0/cnpZsVW+AQ0O2Ld
-         ubJFtJ4yJtLMYiQw28qA3zrF5+f9/tfUuwyTEkEqlLx2w8TWilsXirgvR3kK8TpllB
-         qPm8UlUaVRyYPv4zx0AuttJeYT1bktvs9R8jBSurfUtXNlxLPVo7sAW3wSInsOGwI+
-         GnG1iieKNa2wl+GUlqU5r+XkP6ux09h3C46UTGDvr+Oy6JR6CkIw1e7IMck2IRlHZw
-         1A696/WvfDdpdbt+EYZqhe71oTeYtAxRGJZmTAQxCBA8FsRQOHC1V0LvZGQ9rQ5FHi
-         05f6pH5mLAC7w==
-Received: by mail-ed1-f72.google.com with SMTP id cm27-20020a0564020c9b00b004137effc24bso3071792edb.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:42:52 -0800 (PST)
+        Thu, 3 Mar 2022 10:44:01 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BA6155C28
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:43:09 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id l1-20020a05600c4f0100b00389645443d2so633010wmq.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:43:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qvgDxfixSnBIC4U2Qx+y1rXDt5KCfDdRN+geS33dt8U=;
+        b=LJc5EsSRKwC/y9D83XKQh92YQEPc97j9frFC9tKxEC7VHc8L47EtFEbGsT3Sxd4XY1
+         5Z4jMy5Ff16QFqtE3aX01uwhWI6fLiGxl9VXwHyCHI5unMneXInPdmONYuWOEhZ747sN
+         COn1suGOQslk19IZgEMRzpqDvWjiQP6BxcXzruD1nvgbLRYrkyQB6bvCvoOoubtJlqAE
+         hb+hSY7/o03G5mO3T6wvwkYjUYL+/EYEmMqBQLR0S/HZprBmOlo8lFVpSJ/ayS80sA9O
+         3WJTK1K08gLAKX/e95L0ed02Vj2WpB6GNff4Bu8zyHLnvTYGjk61RF5UskHNYTffbKVm
+         +tLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ME4I2xtDxLjtSdGBX3DKk+XrqVNliOSTqfJoYUoRWk0=;
-        b=SsbJmg9NJKBlBjfSu8QrSGnBNBqpg4olKmfdi7+PyP6F+za0u1gtJ3iyP2xjK2iY4Q
-         px/jNKh7TAdIYPido1DaIqs/B/5SZ92MD25Pn+a40kv943ko7C+CSnTQv25kgglm3dzH
-         qTaHvK4dxviQi5sWZbEqiT9ciPube0MsOY/MnpmMqidu0pGAwWDiCBi5CPBaaHSV55Vz
-         ox8Gzj8z7h2ymLU9rrpVzfnAqzbcLk6NFjMbTc/+ShrpEKQNvJ2ZHiESPUgm3p4u188Y
-         ZFi7NMY3aSGwjJW+mW78AdeGHWhMAUn7zwQSAWdbx7jS0gNo1f56H7xs9wnQcl7didpr
-         E1Zg==
-X-Gm-Message-State: AOAM533f0tTpX6ZoRfPPhnzXdmMAHgA1UkRNGd1IO8TZC9cyBWF9IEIL
-        mmhC3rXGsCRWf76q//L1AcyylK7+UTfKc+1W2BZNM5N5XriliGFJZ/9J3b24IIfozPTzLOg9R36
-        kKlgoaeXoIA7WZPy82LPD/lSInxXlgBjbDidXASb6Xg==
-X-Received: by 2002:a17:907:3e22:b0:6da:83fd:418 with SMTP id hp34-20020a1709073e2200b006da83fd0418mr4705167ejc.321.1646322171423;
-        Thu, 03 Mar 2022 07:42:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzo2mCEi6JNvhbFVtiZ/5DeFZMU3OF1EMgZti7mkxs4OomQXS6Xn1JoWk2kQOUgUWbTOWbjDQ==
-X-Received: by 2002:a17:907:3e22:b0:6da:83fd:418 with SMTP id hp34-20020a1709073e2200b006da83fd0418mr4705157ejc.321.1646322171259;
-        Thu, 03 Mar 2022 07:42:51 -0800 (PST)
-Received: from [192.168.0.137] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id w15-20020a1709062f8f00b006cd545d4af6sm817849eji.45.2022.03.03.07.42.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 07:42:50 -0800 (PST)
-Message-ID: <758fc38c-53ec-4351-534a-95e1a54fb60d@canonical.com>
-Date:   Thu, 3 Mar 2022 16:42:49 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/3] dt-bindings: clock: add QCOM SM6125 display clock
- bindings
-Content-Language: en-US
-To:     Marijn Suijten <marijn.suijten@somainline.org>,
-        phone-devel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Pavel Dubrova <pashadubrova@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qvgDxfixSnBIC4U2Qx+y1rXDt5KCfDdRN+geS33dt8U=;
+        b=tBTp2faCkZ9U5LIWvlXK6k7KnKku9GgiCPuM/uMYh9+205PCGaOuEy2Zz65qfw93kN
+         ci7lTw/R0BpbmyF+SRvWsSt4dIOeeYnAzA0J7+kU0UkMJURUiYQNWFCJKrbjXWFugDmP
+         o+OiQBuFDZmRQHv88rI7MoRWUq8R2Oy7oRHNTbPtqE7Spf43GhFf6BBFrMSgKiEAOGU9
+         WLnVG3SgU+4jwDzPjQNLuAb9RhW4/09QVbiMSa1zckpKjza2JFq87qDCVDQjleiWXRo9
+         6USaZ7xmDKa1B+IszJpaKzEKsHem1aevgxJbdDBC2VGtGK9OScz+MX2GFJ9FqV6++i5q
+         Zpow==
+X-Gm-Message-State: AOAM5306ib3ij1QxJ+rBaqsIn5ffNtB0ypGStJPzQGisnR3kQpuH7x8+
+        Zr/T5uBp8XMbpumyqLs4tJH2gg==
+X-Google-Smtp-Source: ABdhPJyKxcIjDMZvDj1Q88hFM1nS7uCRsMbcaWtJ8QIvbD9LrP9UTTU0vAwO2xjUAHNha8wkdlZB5Q==
+X-Received: by 2002:a05:600c:3b83:b0:37c:e735:ad87 with SMTP id n3-20020a05600c3b8300b0037ce735ad87mr4134101wms.120.1646322188478;
+        Thu, 03 Mar 2022 07:43:08 -0800 (PST)
+Received: from localhost.localdomain ([2a01:cb19:8b2c:5e00:e059:ffd7:be1c:ef2c])
+        by smtp.gmail.com with ESMTPSA id d8-20020a056000114800b001f045f3435asm3272452wrx.108.2022.03.03.07.43.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 07:43:08 -0800 (PST)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marco Felsch <m.felsch@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220303131812.302302-1-marijn.suijten@somainline.org>
- <20220303131812.302302-3-marijn.suijten@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220303131812.302302-3-marijn.suijten@somainline.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Fengping Yu <fengping.yu@mediatek.com>,
+        Yingjoe Chen <yingjoe.chen@mediatek.com>
+Cc:     Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v21 1/3] dt-bindings: input: Add bindings for Mediatek matrix keypad
+Date:   Thu,  3 Mar 2022 16:43:00 +0100
+Message-Id: <20220303154302.252041-2-mkorpershoek@baylibre.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220303154302.252041-1-mkorpershoek@baylibre.com>
+References: <20220303154302.252041-1-mkorpershoek@baylibre.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/03/2022 14:18, Marijn Suijten wrote:
-> From: Martin Botka <martin.botka@somainline.org>
-> 
-> Add device tree bindings for display clock controller for
-> Qualcomm Technology Inc's SM6125 SoC.
-> 
-> Signed-off-by: Martin Botka <martin.botka@somainline.org>
-> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-> ---
->  .../bindings/clock/qcom,dispcc-sm6125.yaml    | 87 +++++++++++++++++++
->  .../dt-bindings/clock/qcom,dispcc-sm6125.h    | 41 +++++++++
->  2 files changed, 128 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,dispcc-sm6125.yaml
->  create mode 100644 include/dt-bindings/clock/qcom,dispcc-sm6125.h
-> 
+From: "fengping.yu" <fengping.yu@mediatek.com>
 
+This patch add devicetree bindings for Mediatek matrix keypad driver.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: fengping.yu <fengping.yu@mediatek.com>
+Reviewed-by: Marco Felsch <m.felsch@pengutronix.de>
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../input/mediatek,mt6779-keypad.yaml         | 77 +++++++++++++++++++
+ 1 file changed, 77 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
 
+diff --git a/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml b/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+new file mode 100644
+index 000000000000..b1770640f94b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/mediatek,mt6779-keypad.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek's Keypad Controller device tree bindings
++
++maintainers:
++  - Fengping Yu <fengping.yu@mediatek.com>
++
++allOf:
++  - $ref: "/schemas/input/matrix-keymap.yaml#"
++
++description: |
++  Mediatek's Keypad controller is used to interface a SoC with a matrix-type
++  keypad device. The keypad controller supports multiple row and column lines.
++  A key can be placed at each intersection of a unique row and a unique column.
++  The keypad controller can sense a key-press and key-release and report the
++  event using a interrupt to the cpu.
++
++properties:
++  compatible:
++    oneOf:
++      - const: mediatek,mt6779-keypad
++      - items:
++          - enum:
++              - mediatek,mt6873-keypad
++          - const: mediatek,mt6779-keypad
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: kpd
++
++  wakeup-source:
++    description: use any event on keypad as wakeup event
++    type: boolean
++
++  debounce-delay-ms:
++    maximum: 256
++    default: 16
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        keyboard@10010000 {
++          compatible = "mediatek,mt6779-keypad";
++          reg = <0 0x10010000 0 0x1000>;
++          interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_FALLING>;
++          clocks = <&clk26m>;
++          clock-names = "kpd";
++        };
++    };
+-- 
+2.32.0
 
-Best regards,
-Krzysztof
