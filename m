@@ -2,125 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38805C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F16DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232508AbiCCKxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        id S232515AbiCCKyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:54:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiCCKxH (ORCPT
+        with ESMTP id S230272AbiCCKyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:53:07 -0500
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481A117B8AA;
-        Thu,  3 Mar 2022 02:52:21 -0800 (PST)
-Received: by mail-ua1-f54.google.com with SMTP id y44so2007628uac.11;
-        Thu, 03 Mar 2022 02:52:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jy/eLWfmHZk4p4Njv6BVmkKZB0XpsQJckLrKwVAajxo=;
-        b=55T5txiZ/UyE7az+tHRha/fNAkATpyoxBdJmMK0VsYa3yUTafkQ5G3adhCybqyX6Ic
-         laVc9k2PL82enFRU8RB8g2mtUHnJWNJJMUK6mFl883wpXT4mroYcnXEJZOk/t3ovMmjp
-         0vuxbyXDIKfc2bOZZ66huee1kwG26LVWj9A27InqOVGtGC2gDoQ9uCXaPFLQByVP3ETw
-         0eXGCuPQ1H/YmlTLHZ7HRAZA/HQ6J2yHS5iBtQkq6SFrYa+ESOyievlssaUPmGhjjxEY
-         6BlZgjoy1QvOb/zred8jZf4/U5DTAXMLDpUuTiIvjYtxY5wUsIGDB0vul1GTZtBd/Bkn
-         M9RA==
-X-Gm-Message-State: AOAM533XoLj9NNYTFX5yfOv4s4pIEht5R6vRnM8r3E/5txih3m9S+9fs
-        nsAq+0zocEaKvPEBXjcZIZkDCVniyKTX1g==
-X-Google-Smtp-Source: ABdhPJyzSUsCIT4ySRKwEi5H8KMecSV7EdJspiJYoctwCtJkubJAYMsYIAMkDVLonfGlVF0f5QtxgQ==
-X-Received: by 2002:a9f:24d6:0:b0:348:d872:5917 with SMTP id 80-20020a9f24d6000000b00348d8725917mr4847247uar.118.1646304740321;
-        Thu, 03 Mar 2022 02:52:20 -0800 (PST)
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com. [209.85.217.46])
-        by smtp.gmail.com with ESMTPSA id d13-20020ab0378d000000b00342bf7d383dsm290250uav.11.2022.03.03.02.52.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 02:52:20 -0800 (PST)
-Received: by mail-vs1-f46.google.com with SMTP id q9so5053751vsg.2;
-        Thu, 03 Mar 2022 02:52:19 -0800 (PST)
-X-Received: by 2002:a67:c499:0:b0:320:2cd8:9e1a with SMTP id
- d25-20020a67c499000000b003202cd89e1amr2476378vsk.38.1646304739297; Thu, 03
- Mar 2022 02:52:19 -0800 (PST)
+        Thu, 3 Mar 2022 05:54:32 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FACD177D30
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:53:46 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 280DC1F37B;
+        Thu,  3 Mar 2022 10:53:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646304825; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1fQZTMimSCOOyhM5uu37na2oMa/18fIoZEJlOGor0Dc=;
+        b=EaKUBwIE5rN3e4I89XWfER9PCH/kgIfZQt84/C0mUoEgtv4Ym6oyWm0LheMy+QAu8x5ZcI
+        cDrL9l4vPPL9XtOt5VEQr9ltXfvTpi0ezJL0bgQdCTxd/ABdv+709AdcHPCNef4TnJT4kN
+        k5Sh47pDMYCZ72IdwnhdbkuU2vY5v2s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646304825;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1fQZTMimSCOOyhM5uu37na2oMa/18fIoZEJlOGor0Dc=;
+        b=Vs2yjuRjKTHacQLzsw8JqSHimyds3/eAM5T/sroVknPLrIZNZoHlIA/uVL/YWrMLwvBrsN
+        dpkleBcO8r9iHPAg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C3235A3B81;
+        Thu,  3 Mar 2022 10:53:44 +0000 (UTC)
+Date:   Thu, 3 Mar 2022 11:53:44 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Peter Zijlstra <peterz@infradead.org>
+cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
+        keescook@chromium.org, samitolvanen@google.com,
+        mark.rutland@arm.com, alyssa.milburn@intel.com,
+        rostedt@goodmis.org, mhiramat@kernel.org,
+        alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 33/39] objtool: Add IBT/ENDBR decoding
+In-Reply-To: <20220224151323.959862564@infradead.org>
+Message-ID: <alpine.LSU.2.21.2203031138040.704@pobox.suse.cz>
+References: <20220224145138.952963315@infradead.org> <20220224151323.959862564@infradead.org>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-References: <20220228172528.3489-1-srinivas.kandagatla@linaro.org> <20220228172528.3489-2-srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220228172528.3489-2-srinivas.kandagatla@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 3 Mar 2022 11:52:08 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUYWs=PYLJhg54wDEcTzxMtkPn2dvL7_AdqxRVJn_JUGA@mail.gmail.com>
-Message-ID: <CAMuHMdUYWs=PYLJhg54wDEcTzxMtkPn2dvL7_AdqxRVJn_JUGA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] soundwire: qcom: add runtime pm support
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Vinod <vkoul@kernel.org>,
-        yung-chuan.liao@linux.intel.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        quic_srivasam@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Srinivas,
+Hi,
 
-On Mon, Feb 28, 2022 at 7:13 PM Srinivas Kandagatla
-<srinivas.kandagatla@linaro.org> wrote:
-> Add support to runtime PM using SoundWire clock stop Mode0 on supported
-> controller instances and soft reset on instances that do not support
-> clock stop.
->
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+On Thu, 24 Feb 2022, Peter Zijlstra wrote:
 
-Thanks for your patch, which is now commit 74e79da9fd46a597
-("soundwire: qcom: add runtime pm support") in next-20220303.
+> Decode ENDBR instructions and WARN about NOTRACK prefixes.
 
-> --- a/drivers/soundwire/qcom.c
-> +++ b/drivers/soundwire/qcom.c
+I guess it has been already mentioned somewhere, but could you explain 
+NOTRACK prefix here, please? If I understand it right, it disables IBT for 
+the indirect branch instruction meaning that its target does not have to 
+start with ENDBR? 
 
-> @@ -1345,6 +1399,105 @@ static int qcom_swrm_remove(struct platform_device *pdev)
->         return 0;
->  }
->
-> +static bool swrm_wait_for_frame_gen_enabled(struct qcom_swrm_ctrl *swrm)
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  tools/objtool/arch/x86/decode.c      |   34 +++++++++++++++++++++++++++++-----
+>  tools/objtool/include/objtool/arch.h |    1 +
+>  2 files changed, 30 insertions(+), 5 deletions(-)
+> 
+> --- a/tools/objtool/arch/x86/decode.c
+> +++ b/tools/objtool/arch/x86/decode.c
+> @@ -103,6 +103,18 @@ unsigned long arch_jump_destination(stru
+>  #define rm_is_mem(reg)	(mod_is_mem() && !is_RIP() && rm_is(reg))
+>  #define rm_is_reg(reg)	(mod_is_reg() && modrm_rm == (reg))
+>  
+> +static bool has_notrack_prefix(struct insn *insn)
 > +{
-
-[...]
-
+> +	int i;
+> +
+> +	for (i = 0; i < insn->prefixes.nbytes; i++) {
+> +		if (insn->prefixes.bytes[i] == 0x3e)
+> +			return true;
+> +	}
+> +
+> +	return false;
 > +}
 > +
-> +static int __maybe_unused swrm_runtime_suspend(struct device *dev)
 
-This is causing build failures if CONFIG_PM=n:
+...
 
-drivers/soundwire/qcom.c:1460:12: error: 'swrm_runtime_resume' defined
-but not used [-Werror=unused-function]
+> @@ -636,20 +656,24 @@ int arch_decode_instruction(struct objto
+>  		break;
+>  
+>  	case 0xff:
+> -		if (modrm_reg == 2 || modrm_reg == 3)
+> +		if (modrm_reg == 2 || modrm_reg == 3) {
+>  
+>  			*type = INSN_CALL_DYNAMIC;
+> +			if (has_notrack_prefix(&insn))
+> +				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
+>  
+> -		else if (modrm_reg == 4)
+> +		} else if (modrm_reg == 4) {
+>  
+>  			*type = INSN_JUMP_DYNAMIC;
+> +			if (has_notrack_prefix(&insn))
+> +				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
 
-http://kisskb.ellerman.id.au/kisskb/buildresult/14704362/
+And we want to warn about it here so that we can have it all in the kernel 
+control?
 
-> +{
-
-[...]
-
-> +}
-> +
-> +static const struct dev_pm_ops swrm_dev_pm_ops = {
-> +       SET_RUNTIME_PM_OPS(swrm_runtime_suspend, swrm_runtime_resume, NULL)
-> +};
-> +
->  static const struct of_device_id qcom_swrm_of_match[] = {
->         { .compatible = "qcom,soundwire-v1.3.0", .data = &swrm_v1_3_data },
->         { .compatible = "qcom,soundwire-v1.5.1", .data = &swrm_v1_5_data },
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Miroslav
