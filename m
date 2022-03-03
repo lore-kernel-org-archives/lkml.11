@@ -2,135 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6861C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38581C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235580AbiCCSGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:06:54 -0500
+        id S235624AbiCCSG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:06:58 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235337AbiCCSGr (ORCPT
+        with ESMTP id S235602AbiCCSGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:06:47 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189C91A361C
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:06:01 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id z12-20020a17090ad78c00b001bf022b69d6so4487943pju.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 10:06:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ytDVomIxpjGb2qjgXEq93PyaRHm5ANEGEJZH8glaas4=;
-        b=CUAbix9MtjcqpRdtyhtGovqmylJLViqR5FtwAP5KKHGga3evvU2Ez85M1aY7CA56W8
-         Y7I4vuZJQU5kQOBDbDi6kSq1bWDpn+IbS/Q2WjY7dI2zZLLKsSLd5g4c91/xgUxULnBi
-         cmA6IICSF8Z+YtJH7D/7jrXItN6yRbDERVonY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ytDVomIxpjGb2qjgXEq93PyaRHm5ANEGEJZH8glaas4=;
-        b=n8NVkHNv4BiFX6zSO+ht5ItaTQQSuwWuc3D9tTNbGCkFNs5YIlI1MnBwFi4sHQXDlT
-         38pfwV9nbBUGyjteFNAJ/gcbZYz69mvWiM0Ymwcn6k6pXP9f3c7nlFSR+Jz64IGckzQX
-         40LIt8X0o4TpE0gl0hkO/WcEbj5qg9mhCrtjSiWsFUFE3UimdN4RzG2R2jP0Sq7ieV67
-         PEcctsTwDRzO2WTlT9UZb/1NUf8Ahajo/f4gJG4J37r6Pc2/4sha9mkyTCCbFiqAQQx/
-         1Wzz1d3LmU9QeG6pdF88YwcKS06LSMoT5ZM7heCKBkihWF5jYtyvoUUUSi8NDAX2VHr7
-         65sQ==
-X-Gm-Message-State: AOAM531d2qY/ZVGAcZXOBsdTDEaC4Bze1EyncjIvTziFAogWbVsPu+uD
-        NHu5PVG+r/NC/4kBRIo4Rfb6VQ==
-X-Google-Smtp-Source: ABdhPJyimIYUd16cvHRM0gj9aFETprJoM2fd5tAldgzlYqZlMMDbFaBq2Zf+4bMVaNjKn+F2wJ8FRw==
-X-Received: by 2002:a17:902:cf0e:b0:14f:8a60:475c with SMTP id i14-20020a170902cf0e00b0014f8a60475cmr37080905plg.146.1646330760447;
-        Thu, 03 Mar 2022 10:06:00 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id nn15-20020a17090b38cf00b001b90c745188sm2726192pjb.25.2022.03.03.10.05.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 10:05:59 -0800 (PST)
-Date:   Thu, 3 Mar 2022 10:05:58 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Eric Biggers <ebiggers@kernel.org>, Adam Langley <agl@google.com>,
-        linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>, keyrings@vger.kernel.org
-Subject: Re: [PATCH 1/1] sign-file: Use OpenSSL provided define to compile
- out deprecated APIs
-Message-ID: <202203031005.5CEDBD659@keescook>
-References: <20211005161833.1522737-1-lee.jones@linaro.org>
- <YVyE3Ax1PRtiBwf+@gmail.com>
- <CAL9PXLws4DjvPB=1KNpom3W52pXNauXQ4V==MprDx73YQ1-sgg@mail.gmail.com>
- <YVyKc51r2tfMmQuO@gmail.com>
- <YVyVNkijABL7CxnM@google.com>
- <202203021251.1DB0383C@keescook>
- <YiCJuPTfea5nf1G+@google.com>
+        Thu, 3 Mar 2022 13:06:51 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6C91A361D;
+        Thu,  3 Mar 2022 10:06:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EAE04CE2831;
+        Thu,  3 Mar 2022 18:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 084EDC004E1;
+        Thu,  3 Mar 2022 18:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646330758;
+        bh=F9iwprtNaRJjBnUEjFdmW6ta4K/2GnymPy2rVBQRnus=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rxglb5n9L5ar78FZqpSuQHzrodJqPiY9ewfpeAr8xuHubq7EIeXsdg+0Rp3+aSsdw
+         5ydA0g6soKieQra0goN1kvE7TowKPy813ncxQUWPhI8PFUdwgoOoGXhSLknpVcHlus
+         5kB/Svua4rPEJDY2ENgvHeKB+k70Zk0rWvWxokh+Eeu4i1hLrYDjeJ4Tu+5cYN7ScH
+         76jat2/M5Ao3jW8CnQOgDISrT6B+J87beDNyAJaiOl1cblQz3fO9h6/5tcRUAW3eb+
+         yedMIFPci+QJm9yZGXBUEL1rLm63VxLtpqKKu0+ks/X0qHnFSv9S218D+2jDUZkGAP
+         OvXtfGZZQYDlA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nPpps-0000on-Mk; Thu, 03 Mar 2022 19:05:56 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: [PATCH] firmware: sysfb: fix platform-device leak in error path
+Date:   Thu,  3 Mar 2022 19:05:19 +0100
+Message-Id: <20220303180519.3117-1-johan@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiCJuPTfea5nf1G+@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 09:26:16AM +0000, Lee Jones wrote:
-> On Wed, 02 Mar 2022, Kees Cook wrote:
-> 
-> > On Tue, Oct 05, 2021 at 07:11:02PM +0100, Lee Jones wrote:
-> > > On Tue, 05 Oct 2021, Eric Biggers wrote:
-> > > 
-> > > > On Tue, Oct 05, 2021 at 10:14:58AM -0700, Adam Langley wrote:
-> > > > > On Tue, Oct 5, 2021 at 10:01 AM Eric Biggers <ebiggers@kernel.org> wrote:
-> > > > > > I ran into these same -Wdeprecated-declarations compiler warnings on another
-> > > > > > project that uses the ENGINE API to access OpenSSL's support for PKCS#11 tokens.
-> > > > > > The conclusion was that in OpenSSL 3.0, the new API for PKCS#11 support isn't
-> > > > > > actually ready yet, so we had to keep using the ENGINE API and just add
-> > > > > > -Wno-deprecated-declarations to the compiler flags.
-> > > > > >
-> > > > > > Your patch just removes support for PKCS#11 in that case, which seems
-> > > > > > undesirable.  (Unless no one is actually using it?)
-> > > > > 
-> > > > > The patch removes support when OPENSSL_NO_ENGINE is defined, but
-> > > > > that's not defined by default in OpenSSL 3.0. (Unless something
-> > > > > changed recently.)
-> > > > > 
-> > > > > When OPENSSL_NO_ENGINE is defined, ENGINE support is not compiled into
-> > > > > OpenSSL and the headers don't include the functions:
-> > > > > https://github.com/openssl/openssl/blob/master/include/openssl/engine.h
-> > > > > .
-> > > > 
-> > > > Okay so this patch is actually a build fix for when OpenSSL doesn't include
-> > > > ENGINE support?
-> > > 
-> > > Correct.
-> > > 
-> > > > Currently this patch claims that it's removing the use of a
-> > > > "deprecated" API, which is something entirely different.
-> > > 
-> > > I see your point.
-> > > 
-> > > Happy to rejig the commit message if that would help.
-> > 
-> > *thread necromancy*
-> > 
-> > Hi,
-> > 
-> > These warnings are quite noisy on Fedora rawhide and other distros that
-> > have moved to OpenSSL 3.0. It's not clear to me from this thread if this
-> > patch is actually the correct fix?
-> 
-> I believe it is the correct fix.
-> 
-> However the commit message seemed to cause Eric some confusion.
-> 
-> Would you like me to resubmit?
+Make sure to free the platform device also in the unlikely event that
+registration fails.
 
-Yes, please. :)
+Fixes: 0589e8889dce ("drivers/firmware: Add missing platform_device_put() in sysfb_create_simplefb")
+Fixes: 8633ef82f101 ("drivers/firmware: consolidate EFI framebuffer setup for all arches")
+Cc: stable@vger.kernel.org      # 5.14
+Cc: Miaoqian Lin <linmq006@gmail.com>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/firmware/sysfb_simplefb.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-> It would be nice to get some input from the maintainers at one point.
-
-David, do you have an opinion on this? I'd like to see this fixed so
-that rawhide builds stop spewing warnings.
-
-Thanks!
-
--Kees
-
+diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
+index 303a491e520d..757cc8b9f3de 100644
+--- a/drivers/firmware/sysfb_simplefb.c
++++ b/drivers/firmware/sysfb_simplefb.c
+@@ -113,16 +113,21 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	sysfb_apply_efi_quirks(pd);
+ 
+ 	ret = platform_device_add_resources(pd, &res, 1);
+-	if (ret) {
+-		platform_device_put(pd);
+-		return ret;
+-	}
++	if (ret)
++		goto err_put_device;
+ 
+ 	ret = platform_device_add_data(pd, mode, sizeof(*mode));
+-	if (ret) {
+-		platform_device_put(pd);
+-		return ret;
+-	}
++	if (ret)
++		goto err_put_device;
++
++	ret = platform_device_add(pd);
++	if (ret)
++		goto err_put_device;
++
++	return 0;
++
++err_put_device:
++	platform_device_put(pd);
+ 
+-	return platform_device_add(pd);
++	return ret;
+ }
 -- 
-Kees Cook
+2.34.1
+
