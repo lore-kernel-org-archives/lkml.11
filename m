@@ -2,122 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABD8C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbiCCKe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
+        id S232400AbiCCKfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232382AbiCCKeW (ORCPT
+        with ESMTP id S231175AbiCCKfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:34:22 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F10832EFD
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:33:32 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id bc10so4172364qtb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:33:32 -0800 (PST)
+        Thu, 3 Mar 2022 05:35:30 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C44338B0
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:34:44 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id bm39so3577487qkb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:34:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hIUIRXFBoXE7LKj0blqQPxppbo/nPIraWqBU8j6waVY=;
-        b=VdUl2d8LLr7udWRlgutHX9PzKUBiepsWR4ZGSOZOMFfx4AWeOCur+bRsfqi1tbR81u
-         A4E/PYgAMzgVyMWZQZuiIiscLz1FUCnSRb6F+V9OV+YTEokff5b7+/uMR8jigHZ6wIeR
-         Ca1blU08Qz0fVJqoNlwxrclYlnOgMQMiZuuFvn9ass0VJRZLfggditK3iHpmZOAFOQY6
-         8CsOIemjBsMfjJ/dkxgBtrdOdEEStNkmr8W+cY3bLg/4ONpw8zJ6OtSum7vTE2hSmo5q
-         cjv83xod6p2z7GZYj6Vn6C5Z60uj5hrtl/baKGgHEuMRwsApzircFKgSM+k/H5wxlDMg
-         exKg==
+        bh=Paj8FNxOly+Z1sFlHaZ1IXLZB2+GxhjkskQqoM3JxY8=;
+        b=MOxX/pIfiTOHdcUuGfh6LT1Cc8tLMfyk3Kw99M3VF33JijFC6ckUJO1x69xBW1P26N
+         sUWWm3HwoEgSn6edanOXeaqALRNvLDAkFWPe6wpn4pGtIGAxVkGqX4AQYhak6lzWNm/u
+         0ps0yB/+WjA2yEayDqcUmErk48dHwvz1j8MkHWfwsOvnk+Ocumjo9nVHu3V3QKxzJh8R
+         iryNVi1grlruL0lxxIukQto7olpV1KJXn0K5SMUb3a/uTBL24O1rQu/FDjAx5lD63N6I
+         NUi9DvCs3DwRNknUOB43Vd1SHL+CBCIb/aYoWLkHpzlhttHUmKoz4Fm8z+OpodTH3s09
+         OKfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hIUIRXFBoXE7LKj0blqQPxppbo/nPIraWqBU8j6waVY=;
-        b=ly72IS67gfXZm2AecE1YRTZjLDA40EQ9TQhkYBb25yR7i4R2QYDtlgq1wk3N69tBCb
-         YuZxvbXWVQUlmiQm8gun0qEV0q8lw5ktYA3JCbTMIMS7QvUfVk0ECrYiWyinNq38Bdxj
-         B14SsXSZDEqZQHyBa2QVpJzcV0ay1rD5kU16yTuiQsdg9JZ0OoIVK7Im26/FJx3kpFko
-         IK0ap6ACBRGB/lT+S7RP56u/cAnzsF2MKAfPiVM1seo3lVA2jGTHTWxrSbmVVelDGMG8
-         THN69fLhpn4BIjHUWjbJrVqIuAFFx6pDwQPRrabM+Z9r5A0rLbKPqmCW77jlCpJLfmZF
-         NqqA==
-X-Gm-Message-State: AOAM531XNAJn1JAgVxrubjii1QkftctTr70hw//KMjTjkzOMPMVsCkNg
-        AptpHiGOeBqpHbIgNmG7nj9wQzWI2v+KKHN74iY4Ig==
-X-Google-Smtp-Source: ABdhPJyr88hvBfvOgw+m1GCaBzh3gAlaA1b0BQe2hsLrUNDuXnLB77Rt8WPohBlyTN1KHHsy5mCgRdnHWPadzhTlr6s=
-X-Received: by 2002:a05:622a:1206:b0:2de:6fa4:41fb with SMTP id
- y6-20020a05622a120600b002de6fa441fbmr26633601qtx.295.1646303611639; Thu, 03
- Mar 2022 02:33:31 -0800 (PST)
+        bh=Paj8FNxOly+Z1sFlHaZ1IXLZB2+GxhjkskQqoM3JxY8=;
+        b=AUjPbgQo1JbemumXbgsl2xTbZU0ELmGg9lTyhLJBnZlemGPtgayUiipX0wEs7hktnB
+         1uP2wCewRYBUxWeXDeeoqtovclomwHMJ1pZbz5vAsk96z5GwBoPPNGlkncbP4LFBfRmS
+         Dq0Fha5Gj262MLXEEO/DnXEGyqAAEj7J7YNzLO0rrWKvXLCltnXgRVd37y4fB8nMtwHj
+         2J7uE7XjggXHnc8Yc0YeubBFINKBII43o41B6r9HxVZ7kNKiKYiRChZANm2DuJjy2182
+         WlQz5ABqEn6xoH3xhGNdBY7nMNN6EKGzfuEFdwHhczn78wShSB5ZdFm593QG4A6+sbjY
+         QDqA==
+X-Gm-Message-State: AOAM532AEACIIUG/+oN8WlbNjF2neqFI1w25OqXeFQkodI6pHXl0X+SV
+        xNqxlt+hR18htc4gPF+L8XRwwrSC5sa30mj3eS+N8w==
+X-Google-Smtp-Source: ABdhPJwo7qYsBN4V7J+1DL7V0IsCYkDt2z/F+5SxCYlKEhf0gzrrQAla1e+8qSFyuEdV0xn468wsWrAwkznC6fcjC24=
+X-Received: by 2002:a37:6215:0:b0:508:c213:72de with SMTP id
+ w21-20020a376215000000b00508c21372demr18862608qkb.30.1646303683187; Thu, 03
+ Mar 2022 02:34:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20220303084824.284946-1-bhupesh.sharma@linaro.org> <20220303084824.284946-4-bhupesh.sharma@linaro.org>
-In-Reply-To: <20220303084824.284946-4-bhupesh.sharma@linaro.org>
+References: <20220303084824.284946-1-bhupesh.sharma@linaro.org> <20220303084824.284946-6-bhupesh.sharma@linaro.org>
+In-Reply-To: <20220303084824.284946-6-bhupesh.sharma@linaro.org>
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Thu, 3 Mar 2022 13:33:20 +0300
-Message-ID: <CAA8EJpow=NPM5TrK24qsziVWgrD0cfbtwUxBD45CE2EQAg-msA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/6] clk: qcom: gcc: Add emac GDSC support for SM8150
+Date:   Thu, 3 Mar 2022 13:34:32 +0300
+Message-ID: <CAA8EJprSU5KAN-pOE1kz49_f8sDD1+1qB80Ga5+RWe5WRnuKPA@mail.gmail.com>
+Subject: Re: [PATCH v3 5/6] arm64: dts: qcom: sm8150: add ethernet node
 To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
 Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
         agross@kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
         mturquette@baylibre.com, linux-clk@vger.kernel.org,
-        robh+dt@kernel.org, bjorn.andersson@linaro.org
+        robh+dt@kernel.org, bjorn.andersson@linaro.org,
+        Vinod Koul <vkoul@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 at 11:48, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
+On Thu, 3 Mar 2022 at 11:49, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
 >
-> Add the EMAC GDSC defines and driver structures for SM8150.
+> From: Vinod Koul <vkoul@kernel.org>
 >
-> Cc: Stephen Boyd <sboyd@kernel.org>
+> SM8150 SoC supports ethqos ethernet controller so add the node for it
+
+Is it available e.g. in the sm8150 SoC that I have in the phone?
+
+>
 > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> [bhsharma: Correct ethernet interrupt numbers and add power-domain]
 > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 > ---
->  drivers/clk/qcom/gcc-sm8150.c               | 10 ++++++++++
->  include/dt-bindings/clock/qcom,gcc-sm8150.h |  1 +
->  2 files changed, 11 insertions(+)
+>  arch/arm64/boot/dts/qcom/sm8150.dtsi | 27 +++++++++++++++++++++++++++
+>  1 file changed, 27 insertions(+)
 >
-> diff --git a/drivers/clk/qcom/gcc-sm8150.c b/drivers/clk/qcom/gcc-sm8150.c
-> index 85a431ac417b..08ba29e3a835 100644
-> --- a/drivers/clk/qcom/gcc-sm8150.c
-> +++ b/drivers/clk/qcom/gcc-sm8150.c
-> @@ -3448,6 +3448,15 @@ static struct clk_branch gcc_video_xo_clk = {
->         },
->  };
+> diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> index 6012322a5984..2ed231767535 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> @@ -915,6 +915,33 @@ gpi_dma0: dma-controller@800000 {
+>                         status = "disabled";
+>                 };
 >
-
-Is it available on sm8150 or only on sa8155au? I think this deserves
-at least a comment.
-
-> +static struct gdsc emac_gdsc = {
-> +       .gdscr = 0x6004,
-> +       .pd = {
-> +               .name = "emac_gdsc",
-> +       },
-> +       .pwrsts = PWRSTS_OFF_ON,
-> +       .flags = POLL_CFG_GDSCR,
-> +};
+> +               ethernet: ethernet@20000 {
+> +                       compatible = "qcom,sm8150-ethqos";
+> +                       reg = <0x0 0x00020000 0x0 0x10000>,
+> +                             <0x0 0x00036000 0x0 0x100>;
+> +                       reg-names = "stmmaceth", "rgmii";
+> +                       clock-names = "stmmaceth", "pclk", "ptp_ref", "rgmii";
+> +                       clocks = <&gcc GCC_EMAC_AXI_CLK>,
+> +                               <&gcc GCC_EMAC_SLV_AHB_CLK>,
+> +                               <&gcc GCC_EMAC_PTP_CLK>,
+> +                               <&gcc GCC_EMAC_RGMII_CLK>;
+> +                       interrupts = <GIC_SPI 689 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <GIC_SPI 699 IRQ_TYPE_LEVEL_HIGH>;
+> +                       interrupt-names = "macirq", "eth_lpi";
 > +
->  static struct gdsc usb30_prim_gdsc = {
->         .gdscr = 0xf004,
->         .pd = {
-> @@ -3714,6 +3723,7 @@ static const struct qcom_reset_map gcc_sm8150_resets[] = {
->  };
->
->  static struct gdsc *gcc_sm8150_gdscs[] = {
-> +       [EMAC_GDSC] = &emac_gdsc,
->         [USB30_PRIM_GDSC] = &usb30_prim_gdsc,
->         [USB30_SEC_GDSC] = &usb30_sec_gdsc,
->  };
-> diff --git a/include/dt-bindings/clock/qcom,gcc-sm8150.h b/include/dt-bindings/clock/qcom,gcc-sm8150.h
-> index 3e1a91876610..40596b9ded06 100644
-> --- a/include/dt-bindings/clock/qcom,gcc-sm8150.h
-> +++ b/include/dt-bindings/clock/qcom,gcc-sm8150.h
-> @@ -243,5 +243,6 @@
->  /* GCC GDSCRs */
->  #define USB30_PRIM_GDSC                     4
->  #define USB30_SEC_GDSC                                         5
-> +#define EMAC_GDSC                                              6
->
->  #endif
+> +                       power-domains = <&gcc EMAC_GDSC>;
+> +                       resets = <&gcc GCC_EMAC_BCR>;
+> +
+> +                       iommus = <&apps_smmu 0x3C0 0x0>;
+> +
+> +                       snps,tso;
+> +                       rx-fifo-depth = <4096>;
+> +                       tx-fifo-depth = <4096>;
+> +
+> +                       status = "disabled";
+> +               };
+> +
+> +
+>                 qupv3_id_0: geniqup@8c0000 {
+>                         compatible = "qcom,geni-se-qup";
+>                         reg = <0x0 0x008c0000 0x0 0x6000>;
 > --
 > 2.35.1
 >
