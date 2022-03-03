@@ -2,182 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237288AbiCCXEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 18:04:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+        id S231526AbiCCXEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 18:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237263AbiCCXD4 (ORCPT
+        with ESMTP id S237208AbiCCXE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 18:03:56 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EEEDF497;
-        Thu,  3 Mar 2022 15:03:09 -0800 (PST)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K8mhJ6zGFz67bZ1;
-        Fri,  4 Mar 2022 07:01:52 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Fri, 4 Mar 2022 00:03:07 +0100
-Received: from A2006125610.china.huawei.com (10.47.82.4) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 3 Mar 2022 23:03:01 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
-        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
-        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
-        <liulongfang@huawei.com>, <prime.zeng@hisilicon.com>,
-        <jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
-Subject: [PATCH v8 9/9] hisi_acc_vfio_pci: Use its own PCI reset_done error handler
-Date:   Thu, 3 Mar 2022 23:01:31 +0000
-Message-ID: <20220303230131.2103-10-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
+        Thu, 3 Mar 2022 18:04:26 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5D871795FE
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 15:03:33 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5023A1424;
+        Thu,  3 Mar 2022 15:03:33 -0800 (PST)
+Received: from ewhatever.cambridge.arm.com (ewhatever.cambridge.arm.com [10.1.197.1])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 69C6E3F73D;
+        Thu,  3 Mar 2022 15:03:32 -0800 (PST)
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+To:     gregkh@linuxfoundation.org
+Cc:     mathieu.poirier@linaro.org, coresight@lists.linaro.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [GIT PULL] coresight changes for v5.18
+Date:   Thu,  3 Mar 2022 23:03:01 +0000
+Message-Id: <20220303230301.255049-1-suzuki.poulose@arm.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.82.4]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register private handler for pci_error_handlers.reset_done and update
-state accordingly.
+Hi Greg
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- .../vfio/pci/hisilicon/hisi_acc_vfio_pci.c    | 57 ++++++++++++++++++-
- .../vfio/pci/hisilicon/hisi_acc_vfio_pci.h    |  4 +-
- 2 files changed, 57 insertions(+), 4 deletions(-)
+Please find the pull request for coresight subsystem for v5.18.
 
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-index aa2e4b6bf598..53e4c5cb3a71 100644
---- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-@@ -625,6 +625,27 @@ static void hisi_acc_vf_disable_fds(struct hisi_acc_vf_core_device *hisi_acc_vde
- 	}
- }
- 
-+/*
-+ * This function is called in all state_mutex unlock cases to
-+ * handle a 'deferred_reset' if exists.
-+ */
-+static void
-+hisi_acc_vf_state_mutex_unlock(struct hisi_acc_vf_core_device *hisi_acc_vdev)
-+{
-+again:
-+	spin_lock(&hisi_acc_vdev->reset_lock);
-+	if (hisi_acc_vdev->deferred_reset) {
-+		hisi_acc_vdev->deferred_reset = false;
-+		spin_unlock(&hisi_acc_vdev->reset_lock);
-+		hisi_acc_vdev->vf_qm_state = QM_NOT_READY;
-+		hisi_acc_vdev->mig_state = VFIO_DEVICE_STATE_RUNNING;
-+		hisi_acc_vf_disable_fds(hisi_acc_vdev);
-+		goto again;
-+	}
-+	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	spin_unlock(&hisi_acc_vdev->reset_lock);
-+}
-+
- static void hisi_acc_vf_start_device(struct hisi_acc_vf_core_device *hisi_acc_vdev)
- {
- 	struct hisi_qm *vf_qm = &hisi_acc_vdev->vf_qm;
-@@ -921,7 +942,7 @@ hisi_acc_vfio_pci_set_device_state(struct vfio_device *vdev,
- 			break;
- 		}
- 	}
--	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
- 	return res;
- }
- 
-@@ -934,10 +955,35 @@ hisi_acc_vfio_pci_get_device_state(struct vfio_device *vdev,
- 
- 	mutex_lock(&hisi_acc_vdev->state_mutex);
- 	*curr_state = hisi_acc_vdev->mig_state;
--	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
- 	return 0;
- }
- 
-+static void hisi_acc_vf_pci_aer_reset_done(struct pci_dev *pdev)
-+{
-+	struct hisi_acc_vf_core_device *hisi_acc_vdev = dev_get_drvdata(&pdev->dev);
-+
-+	if (hisi_acc_vdev->core_device.vdev.migration_flags !=
-+				VFIO_MIGRATION_STOP_COPY)
-+		return;
-+
-+	/*
-+	 * As the higher VFIO layers are holding locks across reset and using
-+	 * those same locks with the mm_lock we need to prevent ABBA deadlock
-+	 * with the state_mutex and mm_lock.
-+	 * In case the state_mutex was taken already we defer the cleanup work
-+	 * to the unlock flow of the other running context.
-+	 */
-+	spin_lock(&hisi_acc_vdev->reset_lock);
-+	hisi_acc_vdev->deferred_reset = true;
-+	if (!mutex_trylock(&hisi_acc_vdev->state_mutex)) {
-+		spin_unlock(&hisi_acc_vdev->reset_lock);
-+		return;
-+	}
-+	spin_unlock(&hisi_acc_vdev->reset_lock);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
-+}
-+
- static int hisi_acc_vf_qm_init(struct hisi_acc_vf_core_device *hisi_acc_vdev)
- {
- 	struct vfio_pci_core_device *vdev = &hisi_acc_vdev->core_device;
-@@ -1252,12 +1298,17 @@ static const struct pci_device_id hisi_acc_vfio_pci_table[] = {
- 
- MODULE_DEVICE_TABLE(pci, hisi_acc_vfio_pci_table);
- 
-+static const struct pci_error_handlers hisi_acc_vf_err_handlers = {
-+	.reset_done = hisi_acc_vf_pci_aer_reset_done,
-+	.error_detected = vfio_pci_core_aer_err_detected,
-+};
-+
- static struct pci_driver hisi_acc_vfio_pci_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = hisi_acc_vfio_pci_table,
- 	.probe = hisi_acc_vfio_pci_probe,
- 	.remove = hisi_acc_vfio_pci_remove,
--	.err_handler = &vfio_pci_core_err_handlers,
-+	.err_handler = &hisi_acc_vf_err_handlers,
- };
- 
- module_pci_driver(hisi_acc_vfio_pci_driver);
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h
-index 1c7d75408790..5494f4983bbe 100644
---- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h
-@@ -98,6 +98,7 @@ struct hisi_acc_vf_migration_file {
- 
- struct hisi_acc_vf_core_device {
- 	struct vfio_pci_core_device core_device;
-+	u8 deferred_reset:1;
- 	/* for migration state */
- 	struct mutex state_mutex;
- 	enum vfio_device_mig_state mig_state;
-@@ -107,7 +108,8 @@ struct hisi_acc_vf_core_device {
- 	struct hisi_qm vf_qm;
- 	u32 vf_qm_state;
- 	int vf_id;
--
-+	/* for reset handler */
-+	spinlock_t reset_lock;
- 	struct hisi_acc_vf_migration_file *resuming_migf;
- 	struct hisi_acc_vf_migration_file *saving_migf;
- };
--- 
-2.25.1
+Suzuki
 
+The following changes since commit dfd42facf1e4ada021b939b4e19c935dcdd55566:
+
+  Linux 5.17-rc3 (2022-02-06 12:20:50 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git tags/coresight-next-v5.18
+
+for you to fetch changes up to b54f53bc11a584713f79a704c70c488489f524b8:
+
+  coresight: Drop unused 'none' enum value for each component (2022-02-28 09:51:40 -0700)
+
+----------------------------------------------------------------
+coresight: changes for v5.18
+
+The coresight update for v5.18 includes
+  - TRBE erratum workarounds for Arm Cortex-A510
+  - Fixes for leaking root namespace PIDs into non-root namespace
+    trace sessions
+  - Miscellaneous fixes and cleanups
+
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+
+----------------------------------------------------------------
+Anshuman Khandual (4):
+      coresight: trbe: Work around the ignored system register writes
+      coresight: trbe: Work around the invalid prohibited states
+      coresight: trbe: Work around the trace data corruption
+      coresight: Drop unused 'none' enum value for each component
+
+James Clark (2):
+      coresight: Fix TRCCONFIGR.QE sysfs interface
+      coresight: no-op refactor to make INSTP0 check more idiomatic
+
+Leo Yan (4):
+      coresight: etm4x: Add lock for reading virtual context ID comparator
+      coresight: etm4x: Don't use virtual contextID for non-root PID namespace
+      coresight: etm4x: Don't trace PID for non-root PID namespace
+      coresight: etm3x: Don't trace PID for non-root PID namespace
+
+Miaoqian Lin (1):
+      coresight: syscfg: Fix memleak on registration failure in cscfg_create_device
+
+Rafael J. Wysocki (1):
+      hwtracing: coresight: Replace acpi_bus_get_device()
+
+Sudeep Holla (1):
+      coresight: trbe: Move check for kernel page table isolation from EL0 to probe
+
+ arch/arm64/Kconfig                                 |   6 +-
+ drivers/hwtracing/coresight/coresight-core.c       |   3 -
+ drivers/hwtracing/coresight/coresight-etm3x-core.c |   4 +
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  12 +-
+ .../hwtracing/coresight/coresight-etm4x-sysfs.c    |  38 ++++++-
+ drivers/hwtracing/coresight/coresight-platform.c   |   8 +-
+ drivers/hwtracing/coresight/coresight-syscfg.c     |   2 +-
+ drivers/hwtracing/coresight/coresight-trbe.c       | 125 +++++++++++++++------
+ drivers/hwtracing/coresight/coresight-trbe.h       |   8 --
+ include/linux/coresight.h                          |   5 -
+ 10 files changed, 149 insertions(+), 62 deletions(-)
