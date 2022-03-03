@@ -2,180 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9739C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95666C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbiCCHso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 02:48:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        id S230382AbiCCHtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 02:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230353AbiCCHs3 (ORCPT
+        with ESMTP id S229609AbiCCHtU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 02:48:29 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EB635242;
-        Wed,  2 Mar 2022 23:47:43 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id y5so2627952wmi.0;
-        Wed, 02 Mar 2022 23:47:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DLwnShhOGzDJRPDrMuARp5HnoES190FJM3KiBVtCeYQ=;
-        b=T57L1WWKK6HHcKrxCPQ4A8dcb7lCYMWZpDF3b6MnTpgrmh0kjsUX7gzAf8305XPtxh
-         Us1D88TL1n5kg3vpMvIaPLXMN54Wcr7CPlDeDGe5azqIWH92KgvA3LPqjc4utwiKkk4Y
-         AYLXkPlX5CXMv9RVehK+W2yBBMJmwKTG1ZXtXL/Q0QjkAv5iWaa2US07B1s0W99JMnhN
-         WSnpWw+TgFMjialPcshbIHo5hcsga8qHaRoE+eWqxEaCrzeBYs2Kr7ef2H21AZ1XfgUy
-         5ieGxSuKt+K4NLTubPMPADiSaqb0E1PjwL9UN+cOJQvilmxHR310kN9GvHGIOBvsVHZ9
-         nnQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DLwnShhOGzDJRPDrMuARp5HnoES190FJM3KiBVtCeYQ=;
-        b=aDGAowGyQ1a6NOwrmeZR8iZoYJ1wu2Ie7qZv6DIzzrdkLPePs+qUGKHQECYoC5D8ON
-         I2vvBnOcMUaehVtbIt/mKtykE2v6GxuPcA41UW5iMaesTj1DKQNiNv2AK0fFONwqJXer
-         hYyFU4+QU3X/Q7zil+YIi2SFMhyXR6YWtFTpNgQCg/Iqh+pi71pTedtPAMjJhz88StKl
-         BVKzTzMQMsqimHI54zo2ukAGwi4wk4NLle0+GxTUBrfB8J47MZkSuoj2JcVuuwBNkEBw
-         wfXFGOf3ehhOA2vAt7+IVfcJG9fmUKs+YwRASD6R8FoMmyJlVwszg93og/gmUvOqleeC
-         BEcw==
-X-Gm-Message-State: AOAM533A2xVoC+ViDDB4yiG63vY/z19wdUNKijchBfF4U33rp2r9z8qL
-        f5JwLttidqDh9qckCpjwxXs=
-X-Google-Smtp-Source: ABdhPJwobsLcgHBkl7FS/U3xZDGFU2ScOH6+8J9oX0ut67KX7hy9C/groYAsqnbga+Vr9jZxn3+EJg==
-X-Received: by 2002:a05:600c:4f83:b0:37c:d057:3efe with SMTP id n3-20020a05600c4f8300b0037cd0573efemr2685205wmq.143.1646293661633;
-        Wed, 02 Mar 2022 23:47:41 -0800 (PST)
-Received: from localhost.localdomain ([94.73.33.246])
-        by smtp.gmail.com with ESMTPSA id d3-20020a05600c34c300b003884e826642sm841169wmq.12.2022.03.02.23.47.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 23:47:41 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH for-5.18/uclogic 3/4] HID: uclogic: Allow three frame parameter sets
-Date:   Thu,  3 Mar 2022 08:47:33 +0100
-Message-Id: <20220303074734.7235-4-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220303074734.7235-1-jose.exposito89@gmail.com>
-References: <20220303074734.7235-1-jose.exposito89@gmail.com>
+        Thu, 3 Mar 2022 02:49:20 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FB6674E3
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 23:48:34 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 775E41F381;
+        Thu,  3 Mar 2022 07:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646293713; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+M2pNqHE/aOs6jr/fL87EioeI0y3A/KHNWJGqCoCUD8=;
+        b=pX+XjyCUfQW5kB4qA25NsEQDvzQRSLFFlTDKAMkS2yp5RD1QYBkWrAO9n405sJviTesbKt
+        urQ6rNtrV+G5cx/YpV2s2wJXtl7BsXEc6C6O/lYvfQ5w7mtLPmLEFgDG+TqDaaWqYKOoot
+        HC20m7D9tEX9lf8VVr+f4m/H+Huc6L8=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4B0E2A3B81;
+        Thu,  3 Mar 2022 07:48:28 +0000 (UTC)
+Date:   Thu, 3 Mar 2022 08:48:32 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Nico Pache <npache@redhat.com>
+Cc:     Waiman Long <longman@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        jsavitz@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        mingo@redhat.com, dvhart@infradead.org, dave@stgolabs.net,
+        andrealmeid@collabora.com
+Subject: Re: [PATCH v3] mm/oom: do not oom reap task with an unresolved
+ robust futex
+Message-ID: <YiBy0MXkefqfFvKk@dhcp22.suse.cz>
+References: <20220114180135.83308-1-npache@redhat.com>
+ <YeUuWcNArnDhOjFY@dhcp22.suse.cz>
+ <ad639326-bea8-9bfb-23e3-4e2b216d9645@redhat.com>
+ <43a6c470-9fc2-6195-9a25-5321d17540e5@redhat.com>
+ <YeZ/mL808DpA8mdG@dhcp22.suse.cz>
+ <118fc685-c68d-614f-006a-7d5487302122@redhat.com>
+ <Yh9+O/xqNLnV1jmA@dhcp22.suse.cz>
+ <7f1ba14f-34e8-5f05-53b7-c12913693df8@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7f1ba14f-34e8-5f05-53b7-c12913693df8@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolai Kondrashov <spbnick@gmail.com>
+On Wed 02-03-22 12:26:45, Nico Pache wrote:
+> 
+> 
+> On 3/2/22 09:24, Michal Hocko wrote:
+> > Sorry, this has slipped through cracks.
+> > 
+> > On Mon 14-02-22 15:39:31, Nico Pache wrote:
+> > [...]
+> >> We've recently been discussing the following if statement in __oom_reap_task_mm:
+> >> 	if (vma_is_anonymous(vma) || !(vma->vm_flags & VM_SHARED))
+> >>
+> >> Given the comment above it, and some of the upstream discussion the original
+> >> RFC, we are struggling to see why this should be a `||` and not an `&&`. If we
+> >> only want to reap anon memory and reaping shared memory can be dangerous is this
+> >> statement incorrect?
+> >>
+> >> We have a patch queued up to make this change, but wanted to get your opinion on
+> >> why this was originally designed this way in case we are missing something.
+> > 
+> > I do not really see why this would be wrong. Private file backed
+> > mappings can contain a reapable memory as well. I do not see how this
+> > would solve the futex issue.
+> We were basing our discussion around the following comment:
+> /*
+>  * Only anonymous pages have a good chance to be dropped
+>  * without additional steps which we cannot afford as we
+>  * are OOM already.
+>  *
+>  * We do not even care about fs backed pages because all
+>  * which are reclaimable have already been reclaimed and
+>  * we do not want to block exit_mmap by keeping mm ref
+>  * count elevated without a good reason.
+>  */
+> 
+> So changing to an && would align the functionality with this comment by ignoring
+> fs backed pages, and additionally it prevents shared mappings from being reaped.
+> We have tested this change and found we can no longer reproduce the issue. In
+> our case we allocate the mutex on a MAP_SHARED|MAP_ANONYMOUS mmap so the if-
+> statement in question would no longer return true after the && change.
+> 
+> If it is the case that private fs backed pages matter perhaps we want something
+> like this:
+> 	if ((vma_is_anonymous(vma) && !(vma->vm_flags & VM_SHARED))
+> 	||(!vma_is_anonymous(vma) && !(vma->vm_flags & VM_SHARED)))
+> 
+> or more simply:
+> 	if(!(vma->vm_flags & VM_SHARED))
+> 
+> to exclude all VM_SHARED mappings.
 
-Allow three frame parameter sets per each UC-Logic tablet interface.
-Bump the number of supported subreports to three as well to accommodate
-ID routing. This allows supporting the dial on Huion Q620M.
+I would have to think about that some more but I do not really see how
+this is related to the futex issue. In other words what kind of problem
+does this solve?
 
-Signed-off-by: Nikolai Kondrashov <spbnick@gmail.com>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/hid/hid-uclogic-params.h | 52 +++++++++++++++++++++++++++++---
- 1 file changed, 47 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/hid/hid-uclogic-params.h b/drivers/hid/hid-uclogic-params.h
-index 8042820e78b1..f2649e8f959d 100644
---- a/drivers/hid/hid-uclogic-params.h
-+++ b/drivers/hid/hid-uclogic-params.h
-@@ -73,8 +73,8 @@ struct uclogic_params_pen {
- 	unsigned int desc_size;
- 	/* Report ID, if reports should be tweaked, zero if not */
- 	unsigned int id;
--	/* The list of subreports */
--	struct uclogic_params_pen_subreport subreport_list[1];
-+	/* The list of subreports, only valid if "id" is not zero */
-+	struct uclogic_params_pen_subreport subreport_list[3];
- 	/* Type of in-range reporting, only valid if "id" is not zero */
- 	enum uclogic_params_pen_inrange inrange;
- 	/*
-@@ -194,7 +194,7 @@ struct uclogic_params {
- 	 * The list of frame control parameters and optional report descriptor
- 	 * parts. Only valid, if "invalid" is false.
- 	 */
--	struct uclogic_params_frame frame_list[1];
-+	struct uclogic_params_frame frame_list[3];
- };
- 
- /* Initialize a tablet interface and discover its parameters */
-@@ -210,6 +210,8 @@ extern int uclogic_params_init(struct uclogic_params *params,
- 		".pen.desc_size = %u\n"                         \
- 		".pen.id = %u\n"                                \
- 		".pen.subreport_list[0] = {0x%02hhx, %hhu}\n"   \
-+		".pen.subreport_list[1] = {0x%02hhx, %hhu}\n"   \
-+		".pen.subreport_list[2] = {0x%02hhx, %hhu}\n"   \
- 		".pen.inrange = %s\n"                           \
- 		".pen.fragmented_hires = %s\n"                  \
- 		".pen.tilt_y_flipped = %s\n"                    \
-@@ -221,7 +223,25 @@ extern int uclogic_params_init(struct uclogic_params *params,
- 		".frame_list[0].dev_id_byte = %u\n"             \
- 		".frame_list[0].touch_ring_byte = %u\n"         \
- 		".frame_list[0].touch_ring_max = %hhd\n"        \
--		".frame_list[0].touch_ring_flip_at = %hhd\n"
-+		".frame_list[0].touch_ring_flip_at = %hhd\n"    \
-+		".frame_list[1].desc_ptr = %p\n"                \
-+		".frame_list[1].desc_size = %u\n"               \
-+		".frame_list[1].id = %u\n"                      \
-+		".frame_list[1].suffix = %s\n"                  \
-+		".frame_list[1].re_lsb = %u\n"                  \
-+		".frame_list[1].dev_id_byte = %u\n"             \
-+		".frame_list[1].touch_ring_byte = %u\n"         \
-+		".frame_list[1].touch_ring_max = %hhd\n"        \
-+		".frame_list[1].touch_ring_flip_at = %hhd\n"    \
-+		".frame_list[2].desc_ptr = %p\n"                \
-+		".frame_list[2].desc_size = %u\n"               \
-+		".frame_list[2].id = %u\n"                      \
-+		".frame_list[2].suffix = %s\n"                  \
-+		".frame_list[2].re_lsb = %u\n"                  \
-+		".frame_list[2].dev_id_byte = %u\n"             \
-+		".frame_list[2].touch_ring_byte = %u\n"         \
-+		".frame_list[2].touch_ring_max = %hhd\n"        \
-+		".frame_list[2].touch_ring_flip_at = %hhd\n"
- 
- /* Tablet interface parameters *printf format arguments */
- #define UCLOGIC_PARAMS_FMT_ARGS(_params) \
-@@ -233,6 +253,10 @@ extern int uclogic_params_init(struct uclogic_params *params,
- 		(_params)->pen.id,                                          \
- 		(_params)->pen.subreport_list[0].value,                     \
- 		(_params)->pen.subreport_list[0].id,                        \
-+		(_params)->pen.subreport_list[1].value,                     \
-+		(_params)->pen.subreport_list[1].id,                        \
-+		(_params)->pen.subreport_list[2].value,                     \
-+		(_params)->pen.subreport_list[2].id,                        \
- 		uclogic_params_pen_inrange_to_str((_params)->pen.inrange),  \
- 		((_params)->pen.fragmented_hires ? "true" : "false"),       \
- 		((_params)->pen.tilt_y_flipped ? "true" : "false"),         \
-@@ -244,7 +268,25 @@ extern int uclogic_params_init(struct uclogic_params *params,
- 		(_params)->frame_list[0].dev_id_byte,                       \
- 		(_params)->frame_list[0].touch_ring_byte,                   \
- 		(_params)->frame_list[0].touch_ring_max,                    \
--		(_params)->frame_list[0].touch_ring_flip_at
-+		(_params)->frame_list[0].touch_ring_flip_at,                \
-+		(_params)->frame_list[1].desc_ptr,                          \
-+		(_params)->frame_list[1].desc_size,                         \
-+		(_params)->frame_list[1].id,                                \
-+		(_params)->frame_list[1].suffix,                            \
-+		(_params)->frame_list[1].re_lsb,                            \
-+		(_params)->frame_list[1].dev_id_byte,                       \
-+		(_params)->frame_list[1].touch_ring_byte,                   \
-+		(_params)->frame_list[1].touch_ring_max,                    \
-+		(_params)->frame_list[1].touch_ring_flip_at,                \
-+		(_params)->frame_list[2].desc_ptr,                          \
-+		(_params)->frame_list[2].desc_size,                         \
-+		(_params)->frame_list[2].id,                                \
-+		(_params)->frame_list[2].suffix,                            \
-+		(_params)->frame_list[2].re_lsb,                            \
-+		(_params)->frame_list[2].dev_id_byte,                       \
-+		(_params)->frame_list[2].touch_ring_byte,                   \
-+		(_params)->frame_list[2].touch_ring_max,                    \
-+		(_params)->frame_list[2].touch_ring_flip_at
- 
- /* Get a replacement report descriptor for a tablet's interface. */
- extern int uclogic_params_get_desc(const struct uclogic_params *params,
 -- 
-2.25.1
-
+Michal Hocko
+SUSE Labs
