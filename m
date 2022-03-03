@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E676DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbiCCTk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:40:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+        id S234766AbiCCTlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:41:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236090AbiCCTj4 (ORCPT
+        with ESMTP id S236221AbiCCTki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:39:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F51C192CBA
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:04 -0800 (PST)
+        Thu, 3 Mar 2022 14:40:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A5671A2735
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646336344;
+        s=mimecast20190719; t=1646336358;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Kr/QlDfPYfgXI5F7gDV3N2zVhDyusEBiKLrYcGqO6d0=;
-        b=IOWtODJByjLe19b3/BPW+JctCNvlmUjMtSZel4OMRSWjeF+/JhN02sEhWQqNSzDBEhD/sY
-        sY03t8oMu4DZTe+7YIPVXYtjuJeZmPB4KGseTeNkMiznoDl+NZ9P48RX2+8cs8des8GIF6
-        gTMIW5HfmMUBxdPqp/n0XQC2m4iY5Bw=
+        bh=uXMJFnpMtnH5wSFYNxP8RRVBPwgpGiauSF2oRw961Ug=;
+        b=KIE0l2mD+BUqfnryqUtOUH+OggZjD8ao9Aac+/kazwf5sERaOfZSOWcxxxufBAuTyJ47bq
+        giyDmK3dzl3sjLvNgpyKYt4R3qV1zCQ1a3zEvAQ2QzU/eub+W2ZB3Rak4BslQDYKwZSBcJ
+        eCYBb3EeSz5YkJmJCq0g0UXV9wNZKFI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-615-eMFnbR1TOsaWiBsna7pgRg-1; Thu, 03 Mar 2022 14:39:01 -0500
-X-MC-Unique: eMFnbR1TOsaWiBsna7pgRg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-50-EDxymfhwNtWtyuhC7jxDgQ-1; Thu, 03 Mar 2022 14:39:13 -0500
+X-MC-Unique: EDxymfhwNtWtyuhC7jxDgQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 427661883521;
-        Thu,  3 Mar 2022 19:38:59 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A77E81006AA5;
+        Thu,  3 Mar 2022 19:39:11 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6F3A25DF2E;
-        Thu,  3 Mar 2022 19:38:58 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 652E468D90;
+        Thu,  3 Mar 2022 19:39:03 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,59 +49,167 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         David Matlack <dmatlack@google.com>,
         Ben Gardon <bgardon@google.com>,
         Mingwei Zhang <mizhang@google.com>
-Subject: [PATCH v4 15/30] KVM: x86/mmu: Skip remote TLB flush when zapping all of TDP MMU
-Date:   Thu,  3 Mar 2022 14:38:27 -0500
-Message-Id: <20220303193842.370645-16-pbonzini@redhat.com>
+Subject: [PATCH v4 20/30] KVM: x86/mmu: Defer TLB flush to caller when freeing TDP MMU shadow pages
+Date:   Thu,  3 Mar 2022 14:38:32 -0500
+Message-Id: <20220303193842.370645-21-pbonzini@redhat.com>
 In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
 References: <20220303193842.370645-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-Don't flush the TLBs when zapping all TDP MMU pages, as the only time KVM
-uses the slow version of "zap everything" is when the VM is being
-destroyed or the owning mm has exited.  In either case, KVM_RUN is
-unreachable for the VM, i.e. the guest TLB entries cannot be consumed.
+Defer TLB flushes to the caller when freeing TDP MMU shadow pages instead
+of immediately flushing.  Because the shadow pages are freed in an RCU
+callback, so long as at least one CPU holds RCU, all CPUs are protected.
+For vCPUs running in the guest, i.e. consuming TLB entries, KVM only
+needs to ensure the caller services the pending TLB flush before dropping
+its RCU protections.  I.e. use the caller's RCU as a proxy for all vCPUs
+running in the guest.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Deferring the flushes allows batching flushes, e.g. when installing a
+1gb hugepage and zapping a pile of SPs.  And when zapping an entire root,
+deferring flushes allows skipping the flush entirely (because flushes are
+not needed in that case).
+
+Avoiding flushes when zapping an entire root is especially important as
+synchronizing with other CPUs via IPI after zapping every shadow page can
+cause significant performance issues for large VMs.  The issue is
+exacerbated by KVM zapping entire top-level entries without dropping
+RCU protection, which can lead to RCU stalls even when zapping roots
+backing relatively "small" amounts of guest memory, e.g. 2tb.  Removing
+the IPI bottleneck largely mitigates the RCU issues, though it's likely
+still a problem for 5-level paging.  A future patch will further address
+the problem by zapping roots in multiple passes to avoid holding RCU for
+an extended duration.
+
 Reviewed-by: Ben Gardon <bgardon@google.com>
-Message-Id: <20220226001546.360188-15-seanjc@google.com>
-Reviewed-by: Mingwei Zhang <mizhang@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220226001546.360188-20-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/x86/kvm/mmu/mmu.c      | 13 +++++++++++++
+ arch/x86/kvm/mmu/tdp_iter.h |  7 +++----
+ arch/x86/kvm/mmu/tdp_mmu.c  | 20 ++++++++++----------
+ 3 files changed, 26 insertions(+), 14 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index dc9db5057f3b..f59f3ff5cb75 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -860,14 +860,15 @@ bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
- 
- void kvm_tdp_mmu_zap_all(struct kvm *kvm)
- {
--	bool flush = false;
- 	int i;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index febdcaaa7b94..0b88592495f8 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6349,6 +6349,13 @@ static void kvm_recover_nx_lpages(struct kvm *kvm)
+ 	rcu_idx = srcu_read_lock(&kvm->srcu);
+ 	write_lock(&kvm->mmu_lock);
  
 +	/*
-+	 * A TLB flush is unnecessary, KVM zaps everything if and only the VM
-+	 * is being destroyed or the userspace VMM has exited.  In both cases,
-+	 * KVM_RUN is unreachable, i.e. no vCPUs will ever service the request.
++	 * Zapping TDP MMU shadow pages, including the remote TLB flush, must
++	 * be done under RCU protection, because the pages are freed via RCU
++	 * callback.
 +	 */
- 	for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++)
--		flush = kvm_tdp_mmu_zap_gfn_range(kvm, i, 0, -1ull, flush);
++	rcu_read_lock();
++
+ 	ratio = READ_ONCE(nx_huge_pages_recovery_ratio);
+ 	to_zap = ratio ? DIV_ROUND_UP(nx_lpage_splits, ratio) : 0;
+ 	for ( ; to_zap; --to_zap) {
+@@ -6373,12 +6380,18 @@ static void kvm_recover_nx_lpages(struct kvm *kvm)
+ 
+ 		if (need_resched() || rwlock_needbreak(&kvm->mmu_lock)) {
+ 			kvm_mmu_remote_flush_or_zap(kvm, &invalid_list, flush);
++			rcu_read_unlock();
++
+ 			cond_resched_rwlock_write(&kvm->mmu_lock);
+ 			flush = false;
++
++			rcu_read_lock();
+ 		}
+ 	}
+ 	kvm_mmu_remote_flush_or_zap(kvm, &invalid_list, flush);
+ 
++	rcu_read_unlock();
++
+ 	write_unlock(&kvm->mmu_lock);
+ 	srcu_read_unlock(&kvm->srcu, rcu_idx);
+ }
+diff --git a/arch/x86/kvm/mmu/tdp_iter.h b/arch/x86/kvm/mmu/tdp_iter.h
+index e2a7e267a77d..b1eaf6ec0e0b 100644
+--- a/arch/x86/kvm/mmu/tdp_iter.h
++++ b/arch/x86/kvm/mmu/tdp_iter.h
+@@ -9,10 +9,9 @@
+ 
+ /*
+  * TDP MMU SPTEs are RCU protected to allow paging structures (non-leaf SPTEs)
+- * to be zapped while holding mmu_lock for read.  Holding RCU isn't required for
+- * correctness if mmu_lock is held for write, but plumbing "struct kvm" down to
+- * the lower depths of the TDP MMU just to make lockdep happy is a nightmare, so
+- * all accesses to SPTEs are done under RCU protection.
++ * to be zapped while holding mmu_lock for read, and to allow TLB flushes to be
++ * batched without having to collect the list of zapped SPs.  Flows that can
++ * remove SPs must service pending TLB flushes prior to dropping RCU protection.
+  */
+ static inline u64 kvm_tdp_mmu_read_spte(tdp_ptep_t sptep)
+ {
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index 3a866fcb5ea9..5038de0c872d 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -391,9 +391,6 @@ static void handle_removed_pt(struct kvm *kvm, tdp_ptep_t pt, bool shared)
+ 				    shared);
+ 	}
+ 
+-	kvm_flush_remote_tlbs_with_address(kvm, base_gfn,
+-					   KVM_PAGES_PER_HPAGE(level + 1));
 -
--	if (flush)
--		kvm_flush_remote_tlbs(kvm);
-+		(void)kvm_tdp_mmu_zap_gfn_range(kvm, i, 0, -1ull, false);
+ 	call_rcu(&sp->rcu_head, tdp_mmu_free_sp_rcu_callback);
  }
  
- static struct kvm_mmu_page *next_invalidated_root(struct kvm *kvm,
+@@ -817,19 +814,13 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+ 	if (WARN_ON_ONCE(!sp->ptep))
+ 		return false;
+ 
+-	rcu_read_lock();
+-
+ 	old_spte = kvm_tdp_mmu_read_spte(sp->ptep);
+-	if (WARN_ON_ONCE(!is_shadow_present_pte(old_spte))) {
+-		rcu_read_unlock();
++	if (WARN_ON_ONCE(!is_shadow_present_pte(old_spte)))
+ 		return false;
+-	}
+ 
+ 	__tdp_mmu_set_spte(kvm, kvm_mmu_page_as_id(sp), sp->ptep, old_spte, 0,
+ 			   sp->gfn, sp->role.level + 1, true, true);
+ 
+-	rcu_read_unlock();
+-
+ 	return true;
+ }
+ 
+@@ -870,6 +861,11 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+ 	}
+ 
+ 	rcu_read_unlock();
++
++	/*
++	 * Because this flow zaps _only_ leaf SPTEs, the caller doesn't need
++	 * to provide RCU protection as no 'struct kvm_mmu_page' will be freed.
++	 */
+ 	return flush;
+ }
+ 
+@@ -1036,6 +1032,10 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
+ 		ret = RET_PF_SPURIOUS;
+ 	else if (tdp_mmu_set_spte_atomic(vcpu->kvm, iter, new_spte))
+ 		return RET_PF_RETRY;
++	else if (is_shadow_present_pte(iter->old_spte) &&
++		 !is_last_spte(iter->old_spte, iter->level))
++		kvm_flush_remote_tlbs_with_address(vcpu->kvm, sp->gfn,
++						   KVM_PAGES_PER_HPAGE(iter->level + 1));
+ 
+ 	/*
+ 	 * If the page fault was caused by a write but the page is write
 -- 
 2.31.1
 
