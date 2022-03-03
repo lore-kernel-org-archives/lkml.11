@@ -2,97 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47704C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 13:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF1D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 13:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233576AbiCCNGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 08:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
+        id S233539AbiCCNIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 08:08:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233570AbiCCNGv (ORCPT
+        with ESMTP id S231362AbiCCNIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 08:06:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7650552E3B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 05:06:06 -0800 (PST)
+        Thu, 3 Mar 2022 08:08:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5E47186B8E
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 05:07:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646312765;
+        s=mimecast20190719; t=1646312844;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=sGGDuVdhwcgwx2SrnK8/gblmV0d5e2AdCaqPp9vXJSk=;
-        b=AnTGzoFJq0MYhdbUMaB39WBF0wKR9lc4g4TyeJA5fgJYzw/TJFEX08W6jUwh96MjQyJ1/I
-        opGUDkzrFz6NTu9mfBgY0IMBRIlRFWRUuqeemRLU6HxiIFGxoflhPfNm348XDWT2B7VpUl
-        37O0FzL5ymcJZLNHQ9lcKIVj2j6jCUM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+         in-reply-to:in-reply-to:references:references;
+        bh=lj6VpxefHrxOOwhnhf4/p/2XcRsNuTwXL6WEnQsA11I=;
+        b=AFKMr6vLTJWojOBP40PvbVBn1m5IyHKXATf+pa5Hobu4V5OMP8sbaNFrn+rxqJIZMY15iN
+        DpEF1aJMLtM2sKgimKisKN0yB7SxGzq99mg2ISELIhDlyS9YhsahXYv2X/4KtBnimaT9GD
+        VzKKoNEgpTnrfsm+cqLLd7wlZiJ2S+w=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-357-Pf9F7lb2P8OIppZEskDrrA-1; Thu, 03 Mar 2022 08:06:02 -0500
-X-MC-Unique: Pf9F7lb2P8OIppZEskDrrA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3AC411091DAB;
-        Thu,  3 Mar 2022 13:06:01 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3003A83289;
-        Thu,  3 Mar 2022 13:05:19 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH] cachefiles: Fix incorrect length to fallocate()
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Jeff Layton <jlayton@kernel.org>, linux-cachefs@redhat.com,
-        dhowells@redhat.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 03 Mar 2022 13:05:18 +0000
-Message-ID: <164631271818.3677819.29893671575083538.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+ us-mta-442-oYzW5TAAPWSZWZTWOKdcgA-1; Thu, 03 Mar 2022 08:07:23 -0500
+X-MC-Unique: oYzW5TAAPWSZWZTWOKdcgA-1
+Received: by mail-wm1-f70.google.com with SMTP id l19-20020a05600c4f1300b003818783847eso1313204wmq.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 05:07:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lj6VpxefHrxOOwhnhf4/p/2XcRsNuTwXL6WEnQsA11I=;
+        b=r69PDDubewmgTQzgdZNULLJ7V+DC4AwoMqTnk/2MC9XXFwh0P+ZPRxIs61oM0sp49w
+         nNUePKfR4EBsb9iAGvtidMFAKi1V7EWBqgukW2slTBwPGzOBuw7yu2e/B6ZfXcJhnvVJ
+         B9AZ6EQxbUdUUkwO362AvVTd2vLrkGPe1UYvRtB1yx/Q/vIK5ZULqRk1uPQIq9rdfgtl
+         Gh/wgj/hbnz3DpvHRo+TruOoz92ytRUdfNoY4dv0+9Vt4Eyy08D/iTmGYdDIJwTDOWzo
+         YO/8vl86pAZkih/Vruf+m25s7glS2cdiybvh+Ye46bcxfmk3iFnn9sWdSvvr2C6pTImB
+         wcJg==
+X-Gm-Message-State: AOAM531VFYuRuOXQtmCPNZMgCaRpc1X5e1Cj0WeGnjE2H7UGiGQFCHX9
+        9IE9M5c9NnQ8JacHPnBDEVIn03KBGF8cr+rAqnfbjAqMoxRWcmf7VA6otxIYXjbTfiysscG+Yb4
+        eZHdaJtW7igf+pf8XFE5Yc8KV
+X-Received: by 2002:a5d:5512:0:b0:1ef:5f08:29fb with SMTP id b18-20020a5d5512000000b001ef5f0829fbmr23412283wrv.653.1646312842498;
+        Thu, 03 Mar 2022 05:07:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwBprWCBbiaeng1f6eFEkBly6o9vzAc3MArh79lj54xDzLKMIA0Xs/dF3R5oQGH8dSoCNnPBA==
+X-Received: by 2002:a5d:5512:0:b0:1ef:5f08:29fb with SMTP id b18-20020a5d5512000000b001ef5f0829fbmr23412254wrv.653.1646312842242;
+        Thu, 03 Mar 2022 05:07:22 -0800 (PST)
+Received: from redhat.com ([2.55.143.133])
+        by smtp.gmail.com with ESMTPSA id f1-20020a5d4dc1000000b001eeadc98c0csm1908052wru.101.2022.03.03.05.07.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 05:07:20 -0800 (PST)
+Date:   Thu, 3 Mar 2022 08:07:16 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Laszlo Ersek <lersek@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        QEMU Developers <qemu-devel@nongnu.org>,
+        linux-hyperv@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        adrian@parity.io,
+        Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: propagating vmgenid outward and upward
+Message-ID: <20220303075426-mutt-send-email-mst@kernel.org>
+References: <20220302031738-mutt-send-email-mst@kernel.org>
+ <CAHmME9pf-bjnZuweoLqoFEmPy1OK7ogEgGEAva1T8uVTufhCuw@mail.gmail.com>
+ <20220302074503-mutt-send-email-mst@kernel.org>
+ <Yh93UZMQSYCe2LQ7@zx2c4.com>
+ <20220302092149-mutt-send-email-mst@kernel.org>
+ <CAHmME9rf7hQP78kReP2diWNeX=obPem=f8R-dC7Wkpic2xmffg@mail.gmail.com>
+ <20220302101602-mutt-send-email-mst@kernel.org>
+ <Yh+PET49oHNpxn+H@zx2c4.com>
+ <20220302111737-mutt-send-email-mst@kernel.org>
+ <Yh+cB5bWarl8CFN1@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh+cB5bWarl8CFN1@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When cachefiles_shorten_object() calls fallocate() to shape the cache file
-to match the DIO size, it passes the total file size it wants to achieve,
-not the amount of zeros that should be inserted.  Since this is meant to
-preallocate that amount of storage for the file, it can cause the cache to
-fill up the disk and hit ENOSPC.
+On Wed, Mar 02, 2022 at 05:32:07PM +0100, Jason A. Donenfeld wrote:
+> Hi Michael,
+> 
+> On Wed, Mar 02, 2022 at 11:22:46AM -0500, Michael S. Tsirkin wrote:
+> > > Because that 16 byte read of vmgenid is not atomic. Let's say you read
+> > > the first 8 bytes, and then the VM is forked.
+> > 
+> > But at this point when VM was forked plaintext key and nonce are all in
+> > buffer, and you previously indicated a fork at this point is harmless.
+> > You wrote "If it changes _after_ that point of check ... it doesn't
+> > matter:"
+> 
+> Ahhh, fair point. I think you're right.
+> 
+> Alright, so all we're talking about here is an ordinary 16-byte read,
+> and 16 bytes of storage per keypair, and a 16-byte comparison.
+> 
+> Still seems much worse than just having a single word...
+> 
+> Jason
 
-Fix this by passing the length actually required to go from the current EOF
-to the desired EOF.
+Oh I forgot about __int128.
 
-Fixes: 7623ed6772de ("cachefiles: Implement cookie resize for truncate")
-Reported-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Tested-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-cc: linux-cachefs@redhat.com
-Link: https://lore.kernel.org/r/164630854858.3665356.17419701804248490708.stgit@warthog.procyon.org.uk # v1
----
 
- fs/cachefiles/interface.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/cachefiles/interface.c b/fs/cachefiles/interface.c
-index 51c968cd00a6..ae93cee9d25d 100644
---- a/fs/cachefiles/interface.c
-+++ b/fs/cachefiles/interface.c
-@@ -254,7 +254,7 @@ static bool cachefiles_shorten_object(struct cachefiles_object *object,
- 		ret = cachefiles_inject_write_error();
- 		if (ret == 0)
- 			ret = vfs_fallocate(file, FALLOC_FL_ZERO_RANGE,
--					    new_size, dio_size);
-+					    new_size, dio_size - new_size);
- 		if (ret < 0) {
- 			trace_cachefiles_io_error(object, file_inode(file), ret,
- 						  cachefiles_trace_fallocate_error);
+#include <stdio.h>
+#include <assert.h>
+#include <limits.h>
+#include <string.h>
 
+struct lng {
+	__int128 l;
+};
+
+struct shrt {
+	unsigned long s;
+};
+
+
+struct lng l = { 1 };
+struct shrt s = { 3 };
+
+static void test1(volatile struct shrt *sp)
+{
+	if (sp->s != s.s) {
+		printf("short mismatch!\n");
+		s.s = sp->s;
+	}
+}
+static void test2(volatile struct lng *lp)
+{
+	if (lp->l != l.l) {
+		printf("long mismatch!\n");
+		l.l = lp->l;
+	}
+}
+
+int main(int argc, char **argv)
+{
+	volatile struct shrt sv = { 4 };
+	volatile struct lng lv = { 5 };
+
+	if (argc > 1) {
+		printf("test 1\n");
+		for (int i = 0; i < 100000000; ++i) 
+			test1(&sv);
+	} else {
+		printf("test 2\n");
+		for (int i = 0; i < 100000000; ++i)
+			test2(&lv);
+	}
+	return 0;
+}
+
+
+with that the compiler has an easier time to produce optimal
+code, so the difference is smaller.
+Note: compiled with
+gcc -O2 -mno-sse -mno-sse2 -ggdb bench3.c 
+
+since with sse there's no difference at all.
+
+
+[mst@tuck ~]$ perf stat -r 100 ./a.out 1 > /dev/null 
+
+
+ Performance counter stats for './a.out 1' (100 runs):
+
+             94.55 msec task-clock:u              #    0.996 CPUs utilized            ( +-  0.09% )
+                 0      context-switches:u        #    0.000 /sec                   
+                 0      cpu-migrations:u          #    0.000 /sec                   
+                52      page-faults:u             #  548.914 /sec                     ( +-  0.21% )
+       400,459,851      cycles:u                  #    4.227 GHz                      ( +-  0.03% )
+       500,147,935      instructions:u            #    1.25  insn per cycle           ( +-  0.00% )
+       200,032,462      branches:u                #    2.112 G/sec                    ( +-  0.00% )
+             1,810      branch-misses:u           #    0.00% of all branches          ( +-  0.73% )
+
+         0.0949732 +- 0.0000875 seconds time elapsed  ( +-  0.09% )
+
+[mst@tuck ~]$ 
+[mst@tuck ~]$ perf stat -r 100 ./a.out > /dev/null 
+
+ Performance counter stats for './a.out' (100 runs):
+
+            110.19 msec task-clock:u              #    1.136 CPUs utilized            ( +-  0.18% )
+                 0      context-switches:u        #    0.000 /sec                   
+                 0      cpu-migrations:u          #    0.000 /sec                   
+                52      page-faults:u             #  537.743 /sec                     ( +-  0.22% )
+       428,518,442      cycles:u                  #    4.431 GHz                      ( +-  0.07% )
+       900,147,986      instructions:u            #    2.24  insn per cycle           ( +-  0.00% )
+       200,032,505      branches:u                #    2.069 G/sec                    ( +-  0.00% )
+             2,139      branch-misses:u           #    0.00% of all branches          ( +-  0.77% )
+
+          0.096956 +- 0.000203 seconds time elapsed  ( +-  0.21% )
+
+-- 
+MST
 
