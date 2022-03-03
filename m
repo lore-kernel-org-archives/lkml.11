@@ -2,164 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B706AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E048FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233005AbiCCLyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:54:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
+        id S233016AbiCCL4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:56:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiCCLyk (ORCPT
+        with ESMTP id S229848AbiCCL4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:54:40 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BA013E5F3;
-        Thu,  3 Mar 2022 03:53:55 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D70C01424;
-        Thu,  3 Mar 2022 03:53:54 -0800 (PST)
-Received: from [10.57.39.47] (unknown [10.57.39.47])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A9E733F70D;
-        Thu,  3 Mar 2022 03:53:52 -0800 (PST)
-Message-ID: <07977a52-a492-4568-7259-7f213af0b0b0@arm.com>
-Date:   Thu, 3 Mar 2022 11:53:48 +0000
+        Thu, 3 Mar 2022 06:56:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BD51C3300
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:55:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646308552;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IY8lWVSOV3bu6U2dVFxqTE5k4e4xoGosytCtjhB+xz0=;
+        b=fqsHsQEGTpBqNHppoC1FGaeOV3a82oHFXun8hmKEZEFh3l6fWZxR+rytbTxG0Qrb1a9735
+        kW27fGlZQhE7Nb4YFNLHFfn1pzdNnHUWNYefOGMxR+QUZiWEupoZAQ1X2DCGsOSsmtZbTE
+        /L/pT5Wq4djYhohWiuhk/R/h59tnUm8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-247-gl5wym27Ng2KQYmErdbzSQ-1; Thu, 03 Mar 2022 06:55:51 -0500
+X-MC-Unique: gl5wym27Ng2KQYmErdbzSQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A43E91091DA0;
+        Thu,  3 Mar 2022 11:55:50 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 76C0F842D4;
+        Thu,  3 Mar 2022 11:55:49 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] cachefiles: Fix incorrect length to fallocate()
+From:   David Howells <dhowells@redhat.com>
+To:     jlayton@kernel.org
+Cc:     Jeffle Xu <jefflexu@linux.alibaba.com>, linux-cachefs@redhat.com,
+        dhowells@redhat.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 03 Mar 2022 11:55:48 +0000
+Message-ID: <164630854858.3665356.17419701804248490708.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: fix handling invalid clock
- rates
-Content-Language: en-GB
-To:     Peter Geis <pgwipeout@gmail.com>,
-        Jaehoon Chung <jh80.chung@samsung.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Addy Ke <addy.ke@rock-chips.com>,
-        Doug Anderson <dianders@chromium.org>
-Cc:     linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220303015151.1711860-1-pgwipeout@gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220303015151.1711860-1-pgwipeout@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-03 01:51, Peter Geis wrote:
-> The Rockchip ciu clock cannot be set as low as the dw-mmc hardware
-> supports.
+When cachefiles_shorten_object() calls fallocate() to shape the cache file
+to match the DIO size, it passes the total file size it wants to achieve,
+not the amount of zeros that should be inserted.  Since this is meant to
+preallocate that amount of storage for the file, it can cause the cache to
+fill up the disk and hit ENOSPC.
 
-Isn't that specific to RK3568, per the downstream fix? Certainly my 
-RK3399 has no problem if I simulate polling by plugging in an empty adapter:
+Fix this by passing the length actually required to go from the current EOF
+to the desired EOF.
 
-[499969.392530] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 
-400000Hz, actual 400000HZ div = 0)
-[499969.467709] mmc_host mmc1: Bus speed (slot 0) = 300000Hz (slot req 
-300000Hz, actual 300000HZ div = 0)
-[499969.545975] mmc_host mmc1: Bus speed (slot 0) = 200000Hz (slot req 
-200000Hz, actual 200000HZ div = 0)
-[499969.629824] mmc_host mmc1: Bus speed (slot 0) = 100000Hz (slot req 
-100000Hz, actual 100000HZ div = 0)
+Fixes: 7623ed6772de ("cachefiles: Implement cookie resize for truncate")
+Reported-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-cachefs@redhat.com
+---
 
-Even though every card within arm's reach of my desk does seem happy to 
-identify at 400KHz, there are apparently some that only work towards the 
-lower end of the range, so it's less than ideal to impose this 
-limitation where it isn't necessary.
+ fs/cachefiles/interface.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Robin.
+diff --git a/fs/cachefiles/interface.c b/fs/cachefiles/interface.c
+index 51c968cd00a6..ae93cee9d25d 100644
+--- a/fs/cachefiles/interface.c
++++ b/fs/cachefiles/interface.c
+@@ -254,7 +254,7 @@ static bool cachefiles_shorten_object(struct cachefiles_object *object,
+ 		ret = cachefiles_inject_write_error();
+ 		if (ret == 0)
+ 			ret = vfs_fallocate(file, FALLOC_FL_ZERO_RANGE,
+-					    new_size, dio_size);
++					    new_size, dio_size - new_size);
+ 		if (ret < 0) {
+ 			trace_cachefiles_io_error(object, file_inode(file), ret,
+ 						  cachefiles_trace_fallocate_error);
 
-> This leads to a situation during card initialization where the
-> ciu clock is set lower than the clock driver can support. The
-> dw-mmc-rockchip driver spews errors when this happens.
-> For normal operation this only happens a few times during boot, but when
-> cd-broken is enabled (in cases such as the SoQuartz module) this fires
-> multiple times each poll cycle.
-> 
-> Fix this by testing the minimum frequency the clock driver can support
-> that is within the mmc specification, then divide that by the internal
-> clock divider. Set the f_min frequency to this value, or if it fails,
-> set f_min to the downstream driver's default.
-> 
-> Fixes: f629ba2c04c9 ("mmc: dw_mmc: add support for RK3288")
-> 
-> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> ---
->   drivers/mmc/host/dw_mmc-rockchip.c | 31 ++++++++++++++++++++++++++----
->   1 file changed, 27 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
-> index 95d0ec0f5f3a..c198590cd74a 100644
-> --- a/drivers/mmc/host/dw_mmc-rockchip.c
-> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
-> @@ -15,7 +15,9 @@
->   #include "dw_mmc.h"
->   #include "dw_mmc-pltfm.h"
->   
-> -#define RK3288_CLKGEN_DIV       2
-> +#define RK3288_CLKGEN_DIV	2
-> +#define RK3288_MIN_INIT_FREQ	375000
-> +#define MMC_MAX_INIT_FREQ	400000
->   
->   struct dw_mci_rockchip_priv_data {
->   	struct clk		*drv_clk;
-> @@ -27,6 +29,7 @@ struct dw_mci_rockchip_priv_data {
->   static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->   {
->   	struct dw_mci_rockchip_priv_data *priv = host->priv;
-> +	struct mmc_host *mmc = mmc_from_priv(host);
->   	int ret;
->   	unsigned int cclkin;
->   	u32 bus_hz;
-> @@ -34,6 +37,10 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->   	if (ios->clock == 0)
->   		return;
->   
-> +	/* the clock will fail if below the f_min rate */
-> +	if (ios->clock < mmc->f_min)
-> +		ios->clock = mmc->f_min;
-> +
->   	/*
->   	 * cclkin: source clock of mmc controller
->   	 * bus_hz: card interface clock generated by CLKGEN
-> @@ -51,7 +58,7 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->   
->   	ret = clk_set_rate(host->ciu_clk, cclkin);
->   	if (ret)
-> -		dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
-> +		dev_warn(host->dev, "failed to set rate %uHz err: %d\n", cclkin, ret);
->   
->   	bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
->   	if (bus_hz != host->bus_hz) {
-> @@ -290,13 +297,29 @@ static int dw_mci_rk3288_parse_dt(struct dw_mci *host)
->   
->   static int dw_mci_rockchip_init(struct dw_mci *host)
->   {
-> +	struct mmc_host *mmc = mmc_from_priv(host);
-> +	int ret;
-> +
->   	/* It is slot 8 on Rockchip SoCs */
->   	host->sdio_id0 = 8;
->   
-> -	if (of_device_is_compatible(host->dev->of_node,
-> -				    "rockchip,rk3288-dw-mshc"))
-> +	if (of_device_is_compatible(host->dev->of_node, "rockchip,rk3288-dw-mshc")) {
->   		host->bus_hz /= RK3288_CLKGEN_DIV;
->   
-> +		/* clock driver will fail if the clock is less than the lowest source clock
-> +		 * divided by the internal clock divider. Test for the lowest available
-> +		 * clock and set the f_min freq to clock / clock divider. If we fail, set
-> +		 * it to the downstream hardcoded value.
-> +		 */
-> +		ret = clk_round_rate(host->ciu_clk, MMC_MAX_INIT_FREQ * RK3288_CLKGEN_DIV);
-> +		if (ret < 0) {
-> +			dev_warn(host->dev, "mmc safe rate failed: %d\n", ret);
-> +			mmc->f_min = RK3288_MIN_INIT_FREQ;
-> +		} else {
-> +			mmc->f_min = ret / RK3288_CLKGEN_DIV;
-> +		}
-> +	}
-> +
->   	return 0;
->   }
->   
+
