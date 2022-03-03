@@ -2,93 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D677C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:01:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8835CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235831AbiCCTBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:01:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        id S235839AbiCCTB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:01:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233939AbiCCTBm (ORCPT
+        with ESMTP id S235834AbiCCTBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:01:42 -0500
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD8E19F455;
-        Thu,  3 Mar 2022 11:00:56 -0800 (PST)
-Received: by mail-ot1-f51.google.com with SMTP id 40-20020a9d032b000000b005b02923e2e6so5433472otv.1;
-        Thu, 03 Mar 2022 11:00:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=dEqyBR6kCW9UlA1zBsmnhStMOP8YHEJxcgst1aAegPQ=;
-        b=H9Bm1qDHs+wwHE0iRAblNg/OsVzOiZycfj62BffYX/R89swZKWOpLXtdjBAyE/tDTT
-         AjwpLg66J9bLD+6aO+glB/iB+AuWVdc+/qj3L0r4F16GfnaGo/DVcBEhqXNrboBYOcN5
-         vpH466Mk9Y0FCOFA9Ibg//x5r7b7o2qSPYkwhPFciyUga+ze0jqmx0R6s9H0njiEX67N
-         Y1WIq9Ij7RkNMrQ4NDmQTweShOQn6KNSahm0Jmy3MfeYAGkzbsDe4WkY5vvY9YDP1zLZ
-         Ugm8beTNRJFYLDzc1nXsAaXzC5GeFvOf815Vb111kiBfHmBLufgqpnWSxz2dj6yaVdGI
-         JLLQ==
-X-Gm-Message-State: AOAM530kAvBUxXgPWS4HKsktYVkM8cpSLCg8u3gudRjQH0Yki/W0P+ts
-        f4E7ZeO5oN8yCvSrcl27Jq4rPuiCmg==
-X-Google-Smtp-Source: ABdhPJzs7+4gMhuA2iPpZzX05xAcl9nkwd4vsQrGe/23G32SXPHyHmKj5dA92zRXVBLstlHcEeuVSA==
-X-Received: by 2002:a05:6830:2783:b0:5ac:e99f:70fe with SMTP id x3-20020a056830278300b005ace99f70femr20213907otu.122.1646334055673;
-        Thu, 03 Mar 2022 11:00:55 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x25-20020a056830409900b005af164235b4sm1318358ott.2.2022.03.03.11.00.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 11:00:54 -0800 (PST)
-Received: (nullmailer pid 2139596 invoked by uid 1000);
-        Thu, 03 Mar 2022 19:00:53 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Lucas Tanure <tanureal@opensource.cirrus.com>
-Cc:     devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
-        David Rhodes <drhodes@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        patches@opensource.cirrus.com, Rob Herring <robh+dt@kernel.org>
-In-Reply-To: <20220303173059.269657-21-tanureal@opensource.cirrus.com>
-References: <20220303173059.269657-1-tanureal@opensource.cirrus.com> <20220303173059.269657-21-tanureal@opensource.cirrus.com>
-Subject: Re: [PATCH 20/20] Documentation: devicetree: CS35l41 External Boost
-Date:   Thu, 03 Mar 2022 13:00:53 -0600
-Message-Id: <1646334053.475639.2139595.nullmailer@robh.at.kernel.org>
+        Thu, 3 Mar 2022 14:01:55 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2B219F45A;
+        Thu,  3 Mar 2022 11:01:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7B672CE283C;
+        Thu,  3 Mar 2022 19:01:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E70AC340EF;
+        Thu,  3 Mar 2022 19:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646334066;
+        bh=6ZgQZFPjT4ERYD4AAFuJJu62nDV2iPyeqpdTkS/jbPA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LA9aPS607DbiaCU7BdQJAuw9Dv5ntB4rTI+iV7+179CS3sby2VU5KZMwRUf8SuFSp
+         56JJMxjvc5rtNAwEBqFtbkQgXvtNKe+gmqzd53BMPlSzQtS7vIyA6IujnN+tikUr+o
+         tcV9M+DgqBDLgmb7TZeaQzEXkzMAralMhGi0MwQiiSGAkFFk6mr1fhrvaTZMJjs85A
+         zJ+q62IRRqjjrSwA5aduT7qcQMmcZFijZBuIj0zQbfqX42tXi/8qRHeIgggnU1/Dxk
+         h8G0xAj811KKPGN0u1K3PGncqr0FU8IH6E9hP51FVnJSTaTQzblHuWBOqRdjoWom3S
+         Z1QATBkDUpLow==
+Date:   Thu, 3 Mar 2022 20:25:31 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     jgg@nvidia.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH for-next] RDMA/core: Fix ib_qp_usecnt_dec() called when
+ error
+Message-ID: <YiEIG4bFVFlEDHML@unreal>
+References: <20220303024232.2847388-1-yajun.deng@linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303024232.2847388-1-yajun.deng@linux.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 03 Mar 2022 17:30:59 +0000, Lucas Tanure wrote:
-> From: David Rhodes <drhodes@opensource.cirrus.com>
+On Thu, Mar 03, 2022 at 10:42:32AM +0800, Yajun Deng wrote:
+> ib_destroy_qp() would called by ib_create_qp_user() if error, the former
+> contains ib_qp_usecnt_dec(), but ib_qp_usecnt_inc() was not called before.
 > 
-> Document external boost feature on CS35L41
+> So move ib_qp_usecnt_inc() into create_qp().
 > 
-> Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
+> Fixes: d2b10794fc13 ("RDMA/core: Create clean QP creations interface for uverbs")
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 > ---
->  .../bindings/sound/cirrus,cs35l41.yaml        | 42 +++++++++++++++++--
->  1 file changed, 39 insertions(+), 3 deletions(-)
+>  drivers/infiniband/core/uverbs_cmd.c          | 1 -
+>  drivers/infiniband/core/uverbs_std_types_qp.c | 1 -
+>  drivers/infiniband/core/verbs.c               | 3 +--
+>  3 files changed, 1 insertion(+), 4 deletions(-)
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/cirrus,cs35l41.example.dt.yaml: cs35l41@2: 'cirrus,gpio1-output-enable' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1600514
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
