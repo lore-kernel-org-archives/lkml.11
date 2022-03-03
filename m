@@ -2,136 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4DCC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236911AbiCCW3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 17:29:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47180 "EHLO
+        id S236914AbiCCWag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 17:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236922AbiCCW3q (ORCPT
+        with ESMTP id S236913AbiCCWac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 17:29:46 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C319A60046
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 14:28:59 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id z8so2833790oix.3
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 14:28:59 -0800 (PST)
+        Thu, 3 Mar 2022 17:30:32 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B05311EF20;
+        Thu,  3 Mar 2022 14:29:46 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id s1so8428921edd.13;
+        Thu, 03 Mar 2022 14:29:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=ZitNuTrI/UQapwn2GiYljxe5fq629INgptH72e1M85g=;
-        b=Q/s/lFgi2vAnQUNIfe6ltvc25/t1Io8AISgNKYUNg4p/aKRPCJB86Z6fXBLhKndFVH
-         JcBq8nylOFBzIb4UxZt9hJe60/lfD+M6lRwYgEPCgbG7xZkn9I9RoPmLcXbrd6eRBy80
-         uw8eTrcNUI+58iefr83oyq1w/jSYBYOWn9MxbfqTlkTfu/yM1iG+pqFx/DnhG05brs5M
-         OS4f6rTi471PDC9lHlztrf2XUPXo0tcPNszahut/G5C9b5lDq59ESbjVVrSc4quGtPgt
-         nv4aS3mSuALfvOsp+O/xFk9Pp0tiZh48LXsOQkef1HkR1ySA//5DL7ofNhkRMUFrp5+U
-         50Jw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qURyynMi/HgXpmSfLyUFNqbqAu/l3MGX7Mv0yI+XyPQ=;
+        b=Ep3QG/4ZU24+B32NtMclXeYMmGtv/CULxCL1Xcm8LpSfsHlwc1RTO4xFbc2BtrbqRI
+         wDXQD3JBhvqiFguK4cLM0aMfivTA8qyy0+Hnf+PP/zfio3r48S7rMkJeCF35l9tWeIJ9
+         mYwxrsKxnteK0lvvQUrJlMPI0Sk2yD/jrwglf9Wv3ZEk+QCLUDHd7m8QPxYd726BqHi7
+         8KYmUHMI7xBVqF/1QJPn4zifeyxo/cOQYMIPV9na6+SiN3Wo5GEnLYo9GjPtjmuA9BvE
+         Uzuiej//fqAXgRzjnqLsRzkRu3JqXTga+bPwZPb7aSJRoNSMim0pbBcv3PeymH4LOt94
+         ClqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=ZitNuTrI/UQapwn2GiYljxe5fq629INgptH72e1M85g=;
-        b=HuJiNysl++gPdcPicZ+ytrJnWID31TYUfjCY1ETnj5E5mmeBcNWanN6cmZxX0zsM+k
-         PXVXoJRcsqvgEdfLGaMTHjSeZ1iZxlorccInJTIhayDD7xjkJcGzRWNpb+EXRj/kbXC2
-         I0UMjQevxaMH/7Uek0PXIuv9w/6YxFwWsuH0TrXCvjLkKN6piYXZlxfvY+IZhriXWTZT
-         tz1kyyCe9GEDyL7YVjAt1FztCcmvExRRT+pBgOBGpMLHa2xC69RkFIP97/s9L0UnOtR1
-         bx+NiZ2u3PgVDVDCE7y0dusUyoi525H+mjmGjjQmY6cloBiqF7pZKnsNDOY3L6CdxTH4
-         Xqmg==
-X-Gm-Message-State: AOAM5310zse7KjUohwxDX4hGwD6t/4cO6tqGZzzheWbRILA1BgE0frRH
-        6qfDgIXw1T91+EDOdtNYh50nQw==
-X-Google-Smtp-Source: ABdhPJy7CvRfPckxX4gtN7y/KZCotuF9/rGE6qrqB642Eus6Z7w124d4+V7V/4U9ixcrjHEnAQZGOQ==
-X-Received: by 2002:a05:6808:14c3:b0:2d9:9229:7d25 with SMTP id f3-20020a05680814c300b002d992297d25mr728807oiw.49.1646346538920;
-        Thu, 03 Mar 2022 14:28:58 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id t11-20020a4ae40b000000b0031cc933b418sm1534025oov.40.2022.03.03.14.28.56
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qURyynMi/HgXpmSfLyUFNqbqAu/l3MGX7Mv0yI+XyPQ=;
+        b=i/xnce6N0pC3N+PGlROlgQkh4OOqMmILT9MJyBi0arboJXbWqKwKZoU0JMo9/c3TAf
+         GN8zSsQiHVmw+Zwh73FggHJTLWRFK7HBPhD4n+K1F0REcROIHkGYWYfF5wumzJGiFAlT
+         KotwGabpX8X7a4lUQS3ppN0cJgwHzCjDAw/j1g1pnkr8ZyVEZTtKYxAGxG9EvhisAyb5
+         Bb5oKYVm2jM+o6yNBAA/aRqIA5pFl4xbTlzhr+7gh/3MWUSB5u8zVpYkDlLqhM4Y/Q+w
+         brFYM+O6C12RCVrji1c21iv22pAqk8k8qtSErdkxsG6QquKKvdzUa1S+ogdxF4ZqAUZC
+         geLQ==
+X-Gm-Message-State: AOAM5335tkz8s/0muaTloTmzznakYKFQ5uL5QPln2MenACr8SgEnyo7i
+        Gx93+3gSDWZYK3rqkr37UE0=
+X-Google-Smtp-Source: ABdhPJycAcEdH9myQCMw6g6i+TkljUrgPIVf7+QgiP17Bb4KxbhWSFhcGDjT5Qr7OEZT7GxjdIz8hQ==
+X-Received: by 2002:a05:6402:270a:b0:410:63d:a66d with SMTP id y10-20020a056402270a00b00410063da66dmr36458587edd.48.1646346584524;
+        Thu, 03 Mar 2022 14:29:44 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id v2-20020a509d02000000b00412d53177a6sm1369846ede.20.2022.03.03.14.29.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 14:28:57 -0800 (PST)
-Date:   Thu, 3 Mar 2022 14:28:46 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     David Hildenbrand <david@redhat.com>
-cc:     Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Yu Zhao <yuzhao@google.com>, Yang Shi <shy828301@gmail.com>,
-        Michal Hocko <mhocko@suse.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH mmotm] mm: delete __ClearPageWaiters()
-In-Reply-To: <a2f6aa01-8003-6791-718d-3898f77ef643@redhat.com>
-Message-ID: <9dda55d5-eafa-3177-2a4c-32ccb7e146e3@google.com>
-References: <351df0af-78f2-c20-2a6d-e5f978e5ca1@google.com> <a2f6aa01-8003-6791-718d-3898f77ef643@redhat.com>
+        Thu, 03 Mar 2022 14:29:44 -0800 (PST)
+Date:   Fri, 4 Mar 2022 00:29:42 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 06/10] net: dsa: Pass VLAN MSTI migration
+ notifications to driver
+Message-ID: <20220303222942.dkz7bfuagkv7hbpp@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
+ <20220301100321.951175-7-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301100321.951175-7-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022, David Hildenbrand wrote:
-> On 03.03.22 02:56, Hugh Dickins wrote:
-> > The PG_waiters bit is not included in PAGE_FLAGS_CHECK_AT_FREE, and
-> > vmscan.c's free_unref_page_list() callers rely on that not to generate
-> > bad_page() alerts.  So __page_cache_release() and release_pages() (and
-> > the presumably copy-and-pasted put_zone_device_private_or_public_page())
-
-Hah, I'm showing my age there, or the patch's age: it's been rebranded
-frequently since then, with linux-next calling it free_zone_device_page(),
-as you kindly point out.  How long before it's free_zone_device_folio()?
-
-> > are redundant and misleading to make a special point of clearing it (as
-> > the "__" implies, it could only safely be used on the freeing path).
-> > 
-> > Delete __ClearPageWaiters().  Remark on this in one of the "possible"
-> > comments in wake_up_page_bit(), and delete the superfluous comments.
-> > 
-> > Signed-off-by: Hugh Dickins <hughd@google.com>
-> > ---
-> > We've used this since 2018, and I see Yu Zhao posted similar in 2020:
-> > https://lore.kernel.org/linux-mm/20200818184704.3625199-3-yuzhao@google.com/
-> > I couldn't join in at that time, but think its reception was over-cautious.
-> > 
-> >  include/linux/page-flags.h |  2 +-
-> >  mm/filemap.c               | 22 +++++++---------------
-> >  mm/memremap.c              |  2 --
-> >  mm/swap.c                  |  4 ----
-> >  4 files changed, 8 insertions(+), 22 deletions(-)
-> > 
-> > --- a/mm/filemap.c
-> > +++ b/mm/filemap.c
-> > @@ -1179,24 +1179,16 @@ static void folio_wake_bit(struct folio *folio, int bit_nr)
-> >  	}
-> >  
-> >  	/*
-> > -	 * It is possible for other pages to have collided on the waitqueue
-> > -	 * hash, so in that case check for a page match. That prevents a long-
-> > -	 * term waiter
-> > +	 * It's possible to miss clearing waiters here, when we woke our page
-> > +	 * waiters, but the hashed waitqueue has waiters for other pages on it.
-> >  	 *
-> > -	 * It is still possible to miss a case here, when we woke page waiters
-> > -	 * and removed them from the waitqueue, but there are still other
-> > -	 * page waiters.
-> > +	 * That's okay, it's a rare case. The next waker will clear it. Or,
-> > +	 * it might be left set until the page is freed: when it's masked off
-> > +	 * with others in PAGE_FLAGS_CHECK_AT_PREP, by free_pages_prepare().
-> >  	 */
+On Tue, Mar 01, 2022 at 11:03:17AM +0100, Tobias Waldekranz wrote:
+> Add the usual trampoline functionality from the generic DSA layer down
+> to the drivers for VLAN MSTI migrations.
 > 
-> Does that also apply to ZONE_DEVICE pages via free_zone_device_page()?
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  include/net/dsa.h  |  3 +++
+>  net/dsa/dsa_priv.h |  1 +
+>  net/dsa/port.c     | 10 ++++++++++
+>  net/dsa/slave.c    |  6 ++++++
+>  4 files changed, 20 insertions(+)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index cfedcfb86350..cc8acb01bd9b 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -962,6 +962,9 @@ struct dsa_switch_ops {
+>  				 struct netlink_ext_ack *extack);
+>  	int	(*port_vlan_del)(struct dsa_switch *ds, int port,
+>  				 const struct switchdev_obj_port_vlan *vlan);
+> +	int	(*vlan_msti_set)(struct dsa_switch *ds,
+> +				 const struct switchdev_attr *attr);
 
-I'm sure you could tell me a lot more about ZONE_DEVICE pages than I
-could ever tell you.  But, if they don't ever reach the main page freer,
-then they're in the same category as other pages not freed until reboot:
-any clearing of left-behind PG_waiters will be done by the next waker,
-not by reaching free_pages_prepare().  Does that really require special
-mention of ZONE_DEVICE pages here?  Would I do better just to remove
-the comment on PAGE_FLAGS_CHECK_AT_PREP being one of the clearers?
+I would rather pass the struct switchdev_vlan_attr and the orig_dev
+(bridge) as separate arguments here. Or even the struct dsa_bridge, for
+consistency to the API changes for database isolation.
 
-(I had to do a bit of research before answering: temporarily confused
-about the role of PG_waiters, I worried that removing copy-and-pasted
-__ClearPageWaiters from free_zone_device_page() might risk gradually
-clogging up the hash queues with spuriously waited pages; no, nonsense,
-it's just a matter of how efficient the next folio_unlock() will be.)
+> +
+>  	/*
+>  	 * Forwarding database
+>  	 */
+> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> index 07c0ad52395a..87ec0697e92e 100644
+> --- a/net/dsa/dsa_priv.h
+> +++ b/net/dsa/dsa_priv.h
+> @@ -217,6 +217,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+>  			    struct netlink_ext_ack *extack);
+>  bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+>  int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
+> +int dsa_port_vlan_msti(struct dsa_port *dp, const struct switchdev_attr *attr);
+>  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+>  			bool targeted_match);
+>  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+> diff --git a/net/dsa/port.c b/net/dsa/port.c
+> index d9da425a17fb..5f45cb7d70ba 100644
+> --- a/net/dsa/port.c
+> +++ b/net/dsa/port.c
+> @@ -778,6 +778,16 @@ int dsa_port_bridge_flags(struct dsa_port *dp,
+>  	return 0;
+>  }
+>  
+> +int dsa_port_vlan_msti(struct dsa_port *dp, const struct switchdev_attr *attr)
+> +{
+> +	struct dsa_switch *ds = dp->ds;
+> +
+> +	if (!ds->ops->vlan_msti_set)
+> +		return -EOPNOTSUPP;
+> +
+> +	return ds->ops->vlan_msti_set(ds, attr);
 
-Hugh
+I guess this doesn't need to be a cross-chip notifier event for all
+switches, because replication to all bridge ports is handled by
+switchdev_handle_port_attr_set(). Ok. But isn't it called too many times
+per switch?
+
+> +}
+> +
+>  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+>  			bool targeted_match)
+>  {
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 089616206b11..c6ffcd782b5a 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -314,6 +314,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
+>  
+>  		ret = dsa_port_bridge_flags(dp, attr->u.brport_flags, extack);
+>  		break;
+> +	case SWITCHDEV_ATTR_ID_VLAN_MSTI:
+> +		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
+> +			return -EOPNOTSUPP;
+> +
+> +		ret = dsa_port_vlan_msti(dp, attr);
+> +		break;
+>  	default:
+>  		ret = -EOPNOTSUPP;
+>  		break;
+> -- 
+> 2.25.1
+> 
+
