@@ -2,106 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ABEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B70C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235352AbiCCR26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:28:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
+        id S235364AbiCCRa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiCCR2z (ORCPT
+        with ESMTP id S235353AbiCCRaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:28:55 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616D928E24
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:28:08 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id c16-20020a17090aa61000b001befad2bfaaso5009733pjq.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:28:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ucEA3J1ya4GRs+I0A0pxTRPbekYvscFzYo/razXDByg=;
-        b=Z0uYSem8nCEuzkLQw4trl/0KBRyeSAZdP+h9TK9qjKeFB7hJVjfN6qYzPVvZCWUsix
-         GMKeMh8GMvp1HIO4vK85RsmY2JcqYXSfEt2sL2d1pZ+tAnb+3/NLiEJKmLTsBn2QYk8M
-         UaCwZ/3Z1UXG/seNFK/fjDU0v04eieZak7kLA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ucEA3J1ya4GRs+I0A0pxTRPbekYvscFzYo/razXDByg=;
-        b=dS24RZ2U4qd4DbGi2zUIp+Y1ZSist10SlSuh4Zqsggeohq6286iTdIndREDgfEHCN5
-         dJtKpv5k+EIfA2fVdiWJORaJ/cMJ8oLfGbEItnuBUF+oJhre+M5O9tkvw6G414kuAGoG
-         Rbox/xwFTPO6AJhI2bnnOwFBjuEWlNN0HNsVU8JmQ++jKsKSqoMnluTTHyKBGS3F9pzj
-         l/WR9IyMjqO9FDINz94t4B9JUAzQJwIs4+owoHtTxIpR1uO9mNrBBhITOEAWa0fLAuG7
-         BKvSEU+1oY8ELU3VhZPCGauvGZQDhGJEI82WtljtxAvV5uMI8RA8/kK+hgP5tWZVEA9O
-         3/uQ==
-X-Gm-Message-State: AOAM533rAhhLWdmEw7RVHY+T3MzP7mzBqzUIr+kjdJ0La2BZoJsanpDu
-        L6VTh4X3oucof/fU3yXniYxsxg==
-X-Google-Smtp-Source: ABdhPJy2mzFw4jO2AzK0JYWGiB+koyjvh1Dy0wGqm4Vkn9fhv16PKbXZ5sesO86D7nyMcNXd9iCe1Q==
-X-Received: by 2002:a17:902:d4cc:b0:151:3857:817b with SMTP id o12-20020a170902d4cc00b001513857817bmr31774133plg.139.1646328487821;
-        Thu, 03 Mar 2022 09:28:07 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id s9-20020a056a00194900b004e1583f88a2sm3050692pfk.0.2022.03.03.09.28.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 09:28:07 -0800 (PST)
-Date:   Thu, 3 Mar 2022 09:28:04 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     David Gow <davidgow@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-kbuild@vger.kernel.org,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        llvm@lists.linux.dev, x86@kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v3 7/7] UAPI: Introduce KUnit userspace compatibility
-Message-ID: <202203030927.2D794F4@keescook>
-References: <20220227184517.504931-1-keescook@chromium.org>
- <20220227184517.504931-8-keescook@chromium.org>
- <CABVgOSn6Oe8Ke=fnuVwgLh2r8HKjBW8pCe44Z35Qo1bVfz9A-A@mail.gmail.com>
- <YiC9NBjFgGv5T+gF@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiC9NBjFgGv5T+gF@kroah.com>
+        Thu, 3 Mar 2022 12:30:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C13C8FA1
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:29:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 963296177B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 17:29:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2B9C004E1;
+        Thu,  3 Mar 2022 17:29:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646328576;
+        bh=FOw+85uwmyeCg5YFO8PbTlTtboPnRTZQlSAakLzXseA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RBGiaT51hagwMp8oY91hK6Cz8Vxfbmh7xb6MBZf9kRQZkun+DuA9cTcePc7EY6LvM
+         /pH1fOlPU+biHohqNGjvovDaI2QmwtG/ZSRzCT8FG8EteWh4F358xVG3kP5vdyj7U2
+         TkxIBm8WQhzjwx+UcD/BFDW/aMNOoV23VRvw6tMG5NRUIr/uSVDqgSIdGYgJ/EsISU
+         TBa+cT/GaLLOclth+gbqvkcu+YMNiKYp5xlPGtN4oxJ1i0gec6jdOt9Y10Tcw+Z8rq
+         APbNdFTkV4Zp4aPA8FL2cPqZ6+Hz2aeKx0uUwsoPjsfQInLDmEo1fqzd+x0pb6u5l3
+         01C/F0rtLgZ4w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nPpGf-00C14D-UP; Thu, 03 Mar 2022 17:29:34 +0000
+Date:   Thu, 03 Mar 2022 17:29:33 +0000
+Message-ID: <87r17j0wsi.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     Will Deacon <will@kernel.org>, Quentin Perret <qperret@google.com>,
+        Fuad Tabba <tabba@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 2/8] KVM: arm64: Introduce pkvm_alloc_private_va_range()
+In-Reply-To: <CAC_TJvfTZP9+EKFFXQUeGOWJb=WK2Wkd53bPOX2gaz0Gh5o8OA@mail.gmail.com>
+References: <20220225033548.1912117-1-kaleshsingh@google.com>
+        <20220225033548.1912117-3-kaleshsingh@google.com>
+        <87v8ww6bl0.wl-maz@kernel.org>
+        <CAC_TJvfTZP9+EKFFXQUeGOWJb=WK2Wkd53bPOX2gaz0Gh5o8OA@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: kaleshsingh@google.com, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, kernel-team@android.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, catalin.marinas@arm.com, mark.rutland@arm.com, broonie@kernel.org, mhiramat@kernel.org, pcc@google.com, madvenka@linux.microsoft.com, ascull@google.com, pbonzini@redhat.com, ardb@kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 02:05:56PM +0100, Greg KH wrote:
-> On Thu, Mar 03, 2022 at 04:27:13PM +0800, David Gow wrote:
-> > On Mon, Feb 28, 2022 at 2:45 AM Kees Cook <keescook@chromium.org> wrote:
-> > > diff --git a/include/uapi/misc/kunit.h b/include/uapi/misc/kunit.h
-> > > new file mode 100644
-> > > index 000000000000..afdffda583ae
-> > > --- /dev/null
-> > > +++ b/include/uapi/misc/kunit.h
-> > > @@ -0,0 +1,181 @@
-> > > +#ifndef __UAPI_MISC_KUNIT_H__
-> > > +#define __UAPI_MISC_KUNIT_H__
-> > > +/*
-> > > + * This is a light-weight userspace drop-in replacement for the in-kernel
-> 
-> <snip>
-> 
-> Someone forgot a SPDX license line for the new file.  Didn't checkpatch
-> complain about this?  :(
+Hi Kalesh,
 
-Yeah, that file has a bunch of problems. ;) The UAPI header checking
-logic also freaks out, etc, etc. I'll being fixing that and the other
-issues.
+On Wed, 02 Mar 2022 17:24:53 +0000,
+Kalesh Singh <kaleshsingh@google.com> wrote:
+> 
+> On Tue, Mar 1, 2022 at 11:46 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Fri, 25 Feb 2022 03:34:47 +0000,
+> > Kalesh Singh <kaleshsingh@google.com> wrote:
+> > >
+> > > pkvm_hyp_alloc_private_va_range() can be used to reserve private VA ranges
+> > > in the pKVM nVHE hypervisor (). Also update __pkvm_create_private_mapping()
+> > > to allow specifying an alignment for the private VA mapping.
+> > >
+> > > These will be used to implement stack guard pages for pKVM nVHE hypervisor
+> > > (in a subsequent patch in the series).
+> > >
+> > > Credits to Quentin Perret <qperret@google.com> for the idea of moving
+> > > private VA allocation out of __pkvm_create_private_mapping()
+> > >
+> > > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> > > ---
+> > >
+> > > Changes in v4:
+> > >   - Handle null ptr in pkvm_alloc_private_va_range() and replace
+> > >     IS_ERR_OR_NULL checks in callers with IS_ERR checks, per Fuad
+> > >   - Fix kernel-doc comments format, per Fuad
+> > >   - Format __pkvm_create_private_mapping() prototype args (< 80 col), per Fuad
+> > >
+> > > Changes in v3:
+> > >   - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
+> > >
+> > > Changes in v2:
+> > >   - Allow specifying an alignment for the private VA allocations, per Marc
+> >
+> > I probably badly expressed my earlier concern.
+> >
+> > Yes, an alignment is necessary. But how often do we want an alignment
+> > that isn't naturally aligned to the size of the allocation (i.e. the
+> > power of 2 >= the size of the allocation)? This is what the rest of
+> > the kernel does (get_order() and co), and I thing we should follow
+> > this.
+> 
+> Hi Marc,
+> 
+> Thanks for clarifying. I think making the alignment implicitly based
+> on the size here will create unnecessary holes where PAGE_SIZE
+> alignment would be ok and potentially overflow the private VA space
+> earlier. Is it not a concern?
+
+I don't think we should worry too much about this. Even when building
+the kernel with a very small VA space (commonly 39 bits), we still
+have a quarter of that reserved for private EL2 mappings. That's
+pretty big.
+
+We will use a bit more of the memory that is set aside for EL2 page
+tables, but this shouldn't be a problem either.
+
+Thanks,
+
+	M.
 
 -- 
-Kees Cook
+Without deviation from the norm, progress is not possible.
