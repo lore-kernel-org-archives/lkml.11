@@ -2,276 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4064C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B91DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbiCCJu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:50:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
+        id S229838AbiCCJw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:52:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiCCJuz (ORCPT
+        with ESMTP id S230262AbiCCJwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:50:55 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7CA154720;
-        Thu,  3 Mar 2022 01:50:06 -0800 (PST)
-X-UUID: 6458af24639e4c5faa4da39d32278789-20220303
-X-UUID: 6458af24639e4c5faa4da39d32278789-20220303
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1526891784; Thu, 03 Mar 2022 17:44:51 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 3 Mar 2022 17:44:50 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Mar
- 2022 17:44:49 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 3 Mar 2022 17:44:49 +0800
-Message-ID: <db8c94fc5a7401af2d8a2d8c4135f6e13d6eac08.camel@mediatek.com>
-Subject: Re: [PATCH V5 3/6] dt-bindings: display: mediatek: revise enum to
- const
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <jassisinghbrar@gmail.com>, <fparent@baylibre.com>,
-        <yongqiang.niu@mediatek.com>, <hsinyi@chromium.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 3 Mar 2022 17:44:49 +0800
-In-Reply-To: <Yh+3fPzns86LSIdi@robh.at.kernel.org>
-References: <20220301080105.31323-1-rex-bc.chen@mediatek.com>
-         <20220301080105.31323-4-rex-bc.chen@mediatek.com>
-         <Yh+3fPzns86LSIdi@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 3 Mar 2022 04:52:54 -0500
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E15179248
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:52:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1646301128; x=1677837128;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=q8qxz42HaO+JR55NT5n/z+nUeTPKq/2B9ARU+jmiFTI=;
+  b=qY/FcimnuWBOb+s0wGwglAdoJg7R2sO05mdBB6qDTz15bcTBdhMOyD8r
+   aiNrpYh8QgHPfgLArlffCNh0hlB1E6LGVIE3o+v55V+nGRwvz6EEb9mRI
+   xEmCqZJdyrbKiUSD4tRRhr7v4vcPBeINIx5LcI1Nlxo+j8e2gV56g+3QS
+   kl2sopyKru9/OKLdDMu61iIAdfzLkHy5o7ipV+MUySET+WG3kTJcohheU
+   Pxa7dCwM+2xvwYTZ9pedw5Z3fcMHz2Os90DY5WctfYJroT2hEb/Rbyqor
+   3MXfbwJUXA+xhqJ6O8GuyYqvo8jNAxnLZjm2A9vZs6eInirKNgR06QVlk
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,151,1643644800"; 
+   d="scan'208";a="199215164"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 03 Mar 2022 17:52:07 +0800
+IronPort-SDR: Y0C+5tsbV4LJZj6jlURG66g6iGtElKH4iHmnonMIttJvfE8jdkitMNZGemJs2dqyS01/JX4WHf
+ pCSIgoNV7nugFK4/kUjtLYhULi0PXXVGHyxXS3vhh58Rta9J6TbIkzrnuTsDcSYYrmAWGPCvmX
+ w73UEeHGu4J0AyWcdyY6EZrGCz8nHk+PYcQhiMCRpULKhG+T2NEF5L5K8NbjG3bPJUbT4FV4ud
+ HWd2bRVO+tDYcmAnk1+8OdQ+kUBnPA+JtJrJXqURIRS8+gjKGcupKO7paRpLalOihr01HJ2woO
+ uwjr9OUJHA8DjraUafwPHzn8
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 01:23:30 -0800
+IronPort-SDR: 0UeLeTFhBEP6nN1IiGQotSuBfOQYRBGm/4swLDgWFK5M4bzHXSDtGXmPvKja9XNKpctniGN/mz
+ xDxSohRHSnWm9jGKK51Oj+okLnVSsGDdAwWJeJRvXZhRBY3bjrqfcb0Y/SAJUmh2w1GJj3XEIn
+ 7NldDNZ7tNaAbeuydKF58DGcqgpi5oI9Zw0BgVK3n0aIdHUX4iWXAaiSazBTwTMraJTAdZDD+3
+ NUdC8znohdnizL1AiD6rZKip99PkISOeCu0jBGdZGUNEf/gcTI8yXKr07X3vRib6jV/YRRxTnV
+ P9s=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 01:52:08 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4K8R932JBLz1SVny
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:52:07 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1646301126; x=1648893127; bh=q8qxz42HaO+JR55NT5n/z+nUeTPKq/2B9AR
+        U+jmiFTI=; b=V95OPQWNQJcum+7QVTyr3LqR0oYpKPCX0pH0GMuL9NEH5Y37bTf
+        yQ4BPBql5jyCK8tNMqh8nWSM0J9qDzhs9cCZu65O0N3R5biJIA7eq2x2skRlHMFx
+        6xXI4Lnc5IHpdfvw5Tc+ddFTrOE7DVmG2iArozgwq/dSCMaXWF4F+jUFKcFeruZa
+        MRkFiDujZkLJ0cDnB9BnUtFBM1bvQbLy2eXQ597ktlmXPEWEzf3zxSbhjQx9S4E+
+        M/wbvMKdpaMW5vUR0m2kx339uA3Dzd1DtM2MowSt48aHxZbyPNHA0wzppNJkiOe/
+        uYITJcr7NNTqArVrSTscAW4FF21QFGVDVSA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id csbWqRvD9k2O for <linux-kernel@vger.kernel.org>;
+        Thu,  3 Mar 2022 01:52:06 -0800 (PST)
+Received: from [10.225.33.67] (unknown [10.225.33.67])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4K8R914Prlz1Rvlx;
+        Thu,  3 Mar 2022 01:52:05 -0800 (PST)
+Message-ID: <3a8c29c7-515f-6e0e-323c-b2b00a9f9d8c@opensource.wdc.com>
+Date:   Thu, 3 Mar 2022 11:52:02 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v2 2/2] ata: ahci: Protect users from setting policies
+ their drives don't support
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, hdegoede@redhat.com
+References: <20220303034912.3615390-1-mario.limonciello@amd.com>
+ <20220303034912.3615390-2-mario.limonciello@amd.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220303034912.3615390-2-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Rob,
-
-Thanks for your review.
-I have sent v6 to fix this error.
-
-
-https://lore.kernel.org/all/20220303065725.23384-3-rex-bc.chen@mediatek.com/
-
-BRs,
-Rex
-
-On Wed, 2022-03-02 at 12:29 -0600, Rob Herring wrote:
-> On Tue, Mar 01, 2022 at 04:01:02PM +0800, Rex-BC Chen wrote:
-> > There won't be more than 1 fallback for these bindings, so we
-> > modify
-> > them to use const instead of enum.
-> > 
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >  .../devicetree/bindings/display/mediatek/mediatek,aal.yaml    | 2
-> > +-
-> >  .../devicetree/bindings/display/mediatek/mediatek,ccorr.yaml  | 2
-> > +-
-> >  .../devicetree/bindings/display/mediatek/mediatek,color.yaml  | 4
-> > ++--
-> >  .../devicetree/bindings/display/mediatek/mediatek,dither.yaml | 2
-> > +-
-> >  .../devicetree/bindings/display/mediatek/mediatek,gamma.yaml  | 2
-> > +-
-> >  .../devicetree/bindings/display/mediatek/mediatek,ovl.yaml    | 4
-> > ++--
-> >  .../devicetree/bindings/display/mediatek/mediatek,rdma.yaml   | 4
-> > ++--
-> >  7 files changed, 10 insertions(+), 10 deletions(-)
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.y
-> > aml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.y
-> > aml
-> > index 191b56e16bee..bc1c70d089ba 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.y
-> > aml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.y
-> > aml
-> > @@ -31,7 +31,7 @@ properties:
-> >                - mediatek,mt8183-disp-aal
-> >                - mediatek,mt8192-disp-aal
-> >                - mediatek,mt8195-disp-aal
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8173-disp-aal
+On 2022/03/03 5:49, Mario Limonciello wrote:
+> As the default low power policy applies to more chipsets and drives, it's
+> important to make sure that drives actually support the policy that a user
+> selected in their kernel configuration.
 > 
-> Run 'make dt_binding_check'. This will fail.
+> If the drive doesn't support slumber, don't let the default policies
+> dependent upon slumber (`min_power` or `min_power_with_partial`) affect the
+> disk.
 > 
-> >  
-> >    reg:
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr
-> > .yaml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr
-> > .yaml
-> > index 6894b6999412..fc40e2981eaa 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr
-> > .yaml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr
-> > .yaml
-> > @@ -28,7 +28,7 @@ properties:
-> >        - items:
-> >            - enum:
-> >                - mediatek,mt8195-disp-ccorr
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8192-disp-ccorr
-> >  
-> >    reg:
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,color
-> > .yaml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,color
-> > .yaml
-> > index bc83155b3b4c..22ed5d368cbe 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,color
-> > .yaml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,color
-> > .yaml
-> > @@ -32,14 +32,14 @@ properties:
-> >            - enum:
-> >                - mediatek,mt7623-disp-color
-> >                - mediatek,mt2712-disp-color
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt2701-disp-color
-> >        - items:
-> >            - enum:
-> >                - mediatek,mt8183-disp-color
-> >                - mediatek,mt8192-disp-color
-> >                - mediatek,mt8195-disp-color
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8173-disp-color
-> >    reg:
-> >      maxItems: 1
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dithe
-> > r.yaml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dithe
-> > r.yaml
-> > index 9d89297f5f1d..2a82792b2625 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dithe
-> > r.yaml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dithe
-> > r.yaml
-> > @@ -28,7 +28,7 @@ properties:
-> >            - enum:
-> >                - mediatek,mt8192-disp-dither
-> >                - mediatek,mt8195-disp-dither
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8183-disp-dither
-> >  
-> >    reg:
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma
-> > .yaml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma
-> > .yaml
-> > index 247baad147b3..45f88bdf07bb 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma
-> > .yaml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma
-> > .yaml
-> > @@ -29,7 +29,7 @@ properties:
-> >            - enum:
-> >                - mediatek,mt8192-disp-gamma
-> >                - mediatek,mt8195-disp-gamma
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8183-disp-gamma
-> >  
-> >    reg:
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.y
-> > aml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.y
-> > aml
-> > index e71f79bc2dee..88ba3f27b0e4 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.y
-> > aml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.y
-> > aml
-> > @@ -33,12 +33,12 @@ properties:
-> >            - enum:
-> >                - mediatek,mt7623-disp-ovl
-> >                - mediatek,mt2712-disp-ovl
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt2701-disp-ovl
-> >        - items:
-> >            - enum:
-> >                - mediatek,mt8195-disp-ovl
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8183-disp-ovl
-> >  
-> >    reg:
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.
-> > yaml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.
-> > yaml
-> > index 8ef821641672..56368c10d904 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.
-> > yaml
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.
-> > yaml
-> > @@ -35,12 +35,12 @@ properties:
-> >            - enum:
-> >                - mediatek,mt7623-disp-rdma
-> >                - mediatek,mt2712-disp-rdma
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt2701-disp-rdma
-> >        - items:
-> >            - enum:
-> >                - mediatek,mt8192-disp-rdma
-> > -          - enum:
-> > +          - const:
-> >                - mediatek,mt8183-disp-rdma
-> >  
-> >    reg:
-> > -- 
-> > 2.18.0
-> > 
-> > 
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > 
-https://urldefense.com/v3/__http://lists.infradead.org/mailman/listinfo/linux-arm-kernel__;!!CTRNKA9wMg0ARbw!xcy2G7LgKWqMWhM9wMaommKbXGVMY6gc6B0zZRk4uP8AWS0KwLAg2O5buJuUVkOXiMa-$
-> >  
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> Changes from v1->v2:
+> * Move deeper into codepaths
+> * Reset to MED_POWER rather than ignore
+>  drivers/ata/libata-sata.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+> index 071158c0c44c..0dc03888c62b 100644
+> --- a/drivers/ata/libata-sata.c
+> +++ b/drivers/ata/libata-sata.c
+> @@ -13,6 +13,7 @@
+>  #include <scsi/scsi_device.h>
+>  #include <linux/libata.h>
+>  
+> +#include "ahci.h"
+>  #include "libata.h"
+>  #include "libata-transport.h"
+>  
+> @@ -368,10 +369,20 @@ int sata_link_scr_lpm(struct ata_link *link, enum ata_lpm_policy policy,
+>  		      bool spm_wakeup)
+>  {
+>  	struct ata_eh_context *ehc = &link->eh_context;
+> +	struct ata_port *ap = link->ap;
+> +	struct ahci_host_priv *hpriv;
+>  	bool woken_up = false;
+>  	u32 scontrol;
+>  	int rc;
+>  
+> +	hpriv = ap->host->private_data;
+> +	if (policy >= ATA_LPM_MIN_POWER_WITH_PARTIAL &&
+> +	  !(hpriv->cap & HOST_CAP_SSC)) {
 
+Weird indentation.
+
+> +		dev_warn(ap->host->dev,
+> +			"This drive doesn't support slumber; restting policy to MED_POWER\n");
+
+Typo. I would change this to:
+
+"This device does not support slumber; defaulting to MED_POWER policy\n"
+
+> +		policy = ATA_LPM_MED_POWER;
+> +	}
+> +
+>  	rc = sata_scr_read(link, SCR_CONTROL, &scontrol);
+>  	if (rc)
+>  		return rc;
+
+
+-- 
+Damien Le Moal
+Western Digital Research
