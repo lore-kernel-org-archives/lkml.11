@@ -2,172 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9154C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234246AbiCCPA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:00:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
+        id S234247AbiCCPBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:01:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232252AbiCCPAx (ORCPT
+        with ESMTP id S230525AbiCCPBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:00:53 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A00DEA14
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:00:06 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id j17so8338422wrc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:00:06 -0800 (PST)
+        Thu, 3 Mar 2022 10:01:39 -0500
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088A912B75E;
+        Thu,  3 Mar 2022 07:00:54 -0800 (PST)
+Received: by mail-oo1-xc29.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so6038379oos.9;
+        Thu, 03 Mar 2022 07:00:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iSr9Qn9Bz4exSvEIEKJ560kFdgKVqwLanGXFW+iTqRM=;
-        b=jQ1YpTJ1Ll/9O3lki/NjFoQNdp1yiVr3Pt2tjAcuEzvv8bTqWSx7nP7Xnt8kv3QbyL
-         vjHge3gDM7u7t+4ZBWzpEC5dvN9IuhJFgri2ZNF1XbvFmMq4emqLXYoHigyQpGH8PWHp
-         yaesPGBBKpxzFjTf4+dUk4KFCCCvl+zcHdmGGPPUULnzRgw3l0/pIMZJzy8jrejt5oDj
-         NOX/EGVI73j662MmjO9O3TnF/yVFefVCcgcP3ejkNfcDyRJg6FAJ7WgOz+8q2ACfYESd
-         xJZy0Y1uNfJmg4KauRT70vX3pJAszb+aUF0oEGyQBt+Y7kv0BzaHEhOJAW0xQ0K8IaO9
-         kskA==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=10OK83BK3wd/+Jzs3VqES1HpsZ+99tSuosXReiZfY9U=;
+        b=Zsl2FR1Rt89oDXt0jx/pKoR5NO1lTPdG3XtfNI2tuYwp7igpfwGVubLOrNW+p5ZwOe
+         DEhaZuAVzsAMX4EVokCYFxEBwBSf1rl5Lq/8//TAlc7D2JoV+DY3HYL3hHhJW3V44kAu
+         AN2I426wxsBGMizMtmNNWjjjzUkWxKx303SEGOrsVaF6YZjEyStrY9+zMrFHozcy4aLS
+         Ms2AwzxwkK+TNnOcbs5+09iRq7Od88TjoDfk6qZsluztUimQIrbUUJL1H6DK7MBHq0GM
+         3BtaXrupnBx0uwgpusq3RMdXJDcBVaT0ZuLxh+OBetpfSG0AOCgpmM/9QP902qc9MOaP
+         Uftw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iSr9Qn9Bz4exSvEIEKJ560kFdgKVqwLanGXFW+iTqRM=;
-        b=sC1HfNDqXYMFVSEhgDNo31ZjF8an/c2pcAN2LuoCXE+LFcS6uafR5e5jVHnsvV0VeF
-         tHDij7qUeAC6ZM6cv3YnbNNbGZSVTfJI4XB5C98NGGEqxdtFgZFj0Ki8mjk/czOk713O
-         0sQM9TEFwlOTJVCtmVxV1l/f3swIbISiAqjTjydlC0SC5LDEZMp9dtj2Nu0eubKmSWuU
-         jMgyrA/run4vEGVXoczzS/6DM7V7IZLlHPP9sxWj4chOaSryyOo/50lwOidgV0nV0aZH
-         cs8lsYPJdKItORSVZNXQo8mTSEoRNR1B4SdiHvWsp3aKH5JkS7NbyBgSrVbjF/v2iBwh
-         7tWQ==
-X-Gm-Message-State: AOAM530S8ZJFw/9AJdmLiaIIBbaGi7tyC8bBwp/20ryG3nPx0/m/s1N7
-        SPyQjYc42TTM2o5pJ1EvV7Z0DA==
-X-Google-Smtp-Source: ABdhPJyEf2EHXO3BVWONDnMa14Ao/RzwdbENiJaMea2ppdwcPZbQ/wag664EK5SDdJHuReSkBZ+zAg==
-X-Received: by 2002:adf:ec41:0:b0:1ed:beee:6f8f with SMTP id w1-20020adfec41000000b001edbeee6f8fmr26073123wrn.110.1646319605099;
-        Thu, 03 Mar 2022 07:00:05 -0800 (PST)
-Received: from localhost.localdomain ([49.206.7.17])
-        by smtp.gmail.com with ESMTPSA id i15-20020a5d522f000000b001e85b14dadcsm2224166wra.5.2022.03.03.06.59.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 07:00:04 -0800 (PST)
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Cc:     Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Abner Chang <abner.chang@hpe.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Sunil V L <sunilvl@ventanamicro.com>
-Subject: [RFC PATCH V2 1/1] riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
-Date:   Thu,  3 Mar 2022 20:29:44 +0530
-Message-Id: <20220303145944.307321-2-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220303145944.307321-1-sunilvl@ventanamicro.com>
-References: <20220303145944.307321-1-sunilvl@ventanamicro.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=10OK83BK3wd/+Jzs3VqES1HpsZ+99tSuosXReiZfY9U=;
+        b=Th6LKKgVVjlpHIviR90Bk7igkRqRSXUDrErNVBmRO53s6hGqPjMtyQH91X3bqZ7SdT
+         eSAhcykHJFTSABQrUNZt/WKqWAZNa8yVJ+gg528i+yATNCexIffApNBqi4714A9BaoPg
+         ekOZxviKJOtLqH0zJj6CCU+l4XQ3q7ph9aBD0HWdYAanzHt8/pjm6YZ0bZwgF2oujQYe
+         ZLExlaBo8cTL5nGajSDk8y6Z7uHo2Twy3DLQNCs/kN8PmGhjyWPznl3KJtFBpObb+edA
+         hjc/76vt56g5A9RWUs6SzSZzoW3I10gqiPVTu8itelGZwZOBehQCVk/c9Q7uqAvt4nwY
+         rxwA==
+X-Gm-Message-State: AOAM532JDbCSZJsnlU/7cblDbytuIzNeELFmB9WTD33iZ8iP+DUt8pmk
+        7LXr+BOcYEU9F/257P7peCw=
+X-Google-Smtp-Source: ABdhPJxHvgTQlffRki4jCveE/mEGrwH/EKqAPG0vUlGiDM4sw9IB2wT/h8Ws1fR8mOvykyPEnbM11g==
+X-Received: by 2002:a05:6870:d69b:b0:d9:a353:c12f with SMTP id z27-20020a056870d69b00b000d9a353c12fmr4408004oap.118.1646319653274;
+        Thu, 03 Mar 2022 07:00:53 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r14-20020a056870e98e00b000d43a8c3065sm1126598oao.28.2022.03.03.07.00.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 07:00:52 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <abde8dce-810b-fd39-b0aa-4f1b2ec8f8d7@roeck-us.net>
+Date:   Thu, 3 Mar 2022 07:00:50 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 2/2] hwmon: Add driver for Texas Instruments TMP464 and
+ TMP468
+Content-Language: en-US
+To:     Agathe Porte <agathe.porte@nokia.com>, linux-hwmon@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Adamski <krzysztof.adamski@nokia.com>
+References: <20220222223610.23098-1-linux@roeck-us.net>
+ <20220222223610.23098-2-linux@roeck-us.net>
+ <20220302175941.GA2523098@roeck-us.net>
+ <9e868438-c0ad-464f-358c-5ee77bfb7f4f@nokia.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <9e868438-c0ad-464f-358c-5ee77bfb7f4f@nokia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the support for getting the boot hart ID in
-Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL. This protocol
-is preferred method over existing DT based solution since it
-works irrespective of DT or ACPI.
+On 3/3/22 00:57, Agathe Porte wrote:
+> Hi Guenter,
+> 
+> Le 02/03/2022 à 18:59, Guenter Roeck a écrit :
+>> Any review / test feedback on this patch ? I would like to apply it
+>> before the commit window opens, but the time is getting short.
+> 
+> I thought that you did receive the TMP464 samples and had the opportunity to test on it. I will test v7 on our hardware equipped with TMP464, verify that DT support works fine, and will reply to this email with my findings.
+> 
 
-The specification of the protocol is hosted at:
-https://github.com/riscv-non-isa/riscv-uefi
+Yes, I did, and thanks a lot for it! I even wrote a qemu emulation
+for the chip to be able to test the devicetree code.
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
----
- drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
- drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
- include/linux/efi.h                       |  1 +
- 3 files changed, 32 insertions(+), 5 deletions(-)
+Still, I need to have someone else confirm that I didn't mess up.
 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index edb77b0621ea..aced62a0907e 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -720,6 +720,13 @@ union efi_tcg2_protocol {
- 	} mixed_mode;
- };
- 
-+struct riscv_efi_boot_protocol {
-+	u64 revision;
-+
-+	efi_status_t (__efiapi * get_boot_hartid)(struct riscv_efi_boot_protocol *this,
-+						  size_t *boot_hartid);
-+};
-+
- typedef union efi_load_file_protocol efi_load_file_protocol_t;
- typedef union efi_load_file_protocol efi_load_file2_protocol_t;
- 
-diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-index 9c460843442f..915ad209d004 100644
---- a/drivers/firmware/efi/libstub/riscv-stub.c
-+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-@@ -23,7 +23,7 @@
- 
- typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
- 
--static u32 hartid;
-+static size_t hartid;
- 
- static int get_boot_hartid_from_fdt(void)
- {
-@@ -47,14 +47,33 @@ static int get_boot_hartid_from_fdt(void)
- 	return 0;
- }
- 
-+static efi_status_t get_boot_hartid_from_efi(void)
-+{
-+	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-+	efi_status_t status;
-+	struct riscv_efi_boot_protocol *boot_protocol;
-+
-+	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-+			     (void **)&boot_protocol);
-+	if (status == EFI_SUCCESS) {
-+		status = efi_call_proto(boot_protocol,
-+					get_boot_hartid, &hartid);
-+	}
-+	return status;
-+}
-+
- efi_status_t check_platform_features(void)
- {
- 	int ret;
-+	efi_status_t status;
- 
--	ret = get_boot_hartid_from_fdt();
--	if (ret) {
--		efi_err("/chosen/boot-hartid missing or invalid!\n");
--		return EFI_UNSUPPORTED;
-+	status = get_boot_hartid_from_efi();
-+	if (status != EFI_SUCCESS) {
-+		ret = get_boot_hartid_from_fdt();
-+		if (ret) {
-+			efi_err("/chosen/boot-hartid missing or invalid!\n");
-+			return EFI_UNSUPPORTED;
-+		}
- 	}
- 	return EFI_SUCCESS;
- }
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..9822c730207c 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
- #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
- #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
- #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
- #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
- #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
- #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
--- 
-2.25.1
-
+Thanks,
+Guenter
