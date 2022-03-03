@@ -2,118 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F29C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A65AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbiCCItl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:49:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        id S231617AbiCCIto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:49:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231607AbiCCItg (ORCPT
+        with ESMTP id S230154AbiCCIti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:49:36 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB56175848
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:48:48 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id q8so4998869iod.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 00:48:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MSMHKR0pmUBVsu3Vu2wBxwFcKUCdAyp38lru1FeWzYE=;
-        b=mNlWeTevAfC6NBCmgAqO7gQgNy0HxOaeX7ypa+R+i8lHm7E6Qxfqktf+3G+1FmnWs+
-         FisZv0YRzClLKs3OT/u3rNZViWcMFBkMKWI5jYipSyNSWfdqYUF74IZG4zVqAeSXnN8E
-         p+lRi9exYQ3G7hoP3v5jvTdw2TbgtOJB85OfKvCNmp0mZzGsCEXzKYxeYRHU1t2Xf0cy
-         JtkSkUVrWrCaDKV+As6AGNtxH1O5nzkHvvcBRl2lN58ZMhJCTiA/VJGBfzBL9fgcDlGg
-         Lu6nzgydgwClyT4CoFKgG3XdNkgGIBu+gK8y3XyUAtZ/uTYH0QYxUGnwEpJlAt4aYlLG
-         y+DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MSMHKR0pmUBVsu3Vu2wBxwFcKUCdAyp38lru1FeWzYE=;
-        b=aGqAqCn0C2XZ7inbhgeXoxARdHwKgauVcoTeYFW9JGmCapTkgW/wxNU/niJWA3rm6k
-         3spaEqMTcMmkyeoipXwEuGwFVZNbfe4TcA/z/UYR/brPlyWKkhtHo99PjDW2e2KBs4n/
-         cVoGFV71uPeyaUKcLm4g2W9n5rz7L8FQdEbahFtZd69vFAtPRiZMO+VEiSN02WbjtThJ
-         DMB0oblSXRXCCjqvnI598W56lvXrLe8s8D63sh6OuFhuLTlS7b5l/DeDlk6QgVeSeNJ8
-         Q/uSxWcZFIP+zq3eYrsFxAXX54biFw2nb5QbUiJD5IKFXtY/Hb5zXS/IZIH5Bbx48PkS
-         U29w==
-X-Gm-Message-State: AOAM533S2NPaECgFTussLygnXygrw6SsEhSX4sC+YZKUVgJP0EfrvUrZ
-        SAg93ex2GXczBiX7Ib18JWNNqA==
-X-Google-Smtp-Source: ABdhPJxk4BEn7tYqG9TYEaBYdHLNzALSFZ3qp6vUvK8puPIYmfuW2OoY4zgtrIqQFLL42BG5MiF1Iw==
-X-Received: by 2002:a5e:881a:0:b0:640:d0a5:2bfe with SMTP id l26-20020a5e881a000000b00640d0a52bfemr25696913ioj.34.1646297327976;
-        Thu, 03 Mar 2022 00:48:47 -0800 (PST)
-Received: from localhost.localdomain ([182.64.85.91])
-        by smtp.gmail.com with ESMTPSA id m9-20020a923f09000000b002c2a1a3a888sm1480704ila.50.2022.03.03.00.48.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 00:48:47 -0800 (PST)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
-        mturquette@baylibre.com, linux-clk@vger.kernel.org,
-        robh+dt@kernel.org, bjorn.andersson@linaro.org
-Subject: [PATCH v3 2/6] clk: qcom: gcc: sm8150: Fix some identation issues
-Date:   Thu,  3 Mar 2022 14:18:20 +0530
-Message-Id: <20220303084824.284946-3-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220303084824.284946-1-bhupesh.sharma@linaro.org>
-References: <20220303084824.284946-1-bhupesh.sharma@linaro.org>
+        Thu, 3 Mar 2022 03:49:38 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DDB16AA6F
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:48:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646297332; x=1677833332;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=VlcyLQ5ai/E6M52ub7EHhYWy2lSmU2OUI8uxUpWQKyc=;
+  b=N7Sn0P59tkpnxNHO0xktL0ITP3dXsGT0+3Nws3qIphUje0Z/8nU4ayHi
+   Re8FotDFJsr6meRL4RzIrMPAa2FBtI87ckGkcbnRXCe5G3vdTjok/WLBS
+   JJmh+9PJGUaUMKO8zs2xetevKbJYhwwAnTdR4k0UHTLgZHcitQ5gwFZCP
+   +k0QH8pyq7LxbSJoPMMvQ0ylqrIQYkx9xmgPfPjofwH+9+eeSaEXz55b6
+   NLxGn0gDYW8+IyW5rhFNkITyoPXIIMQLFIF1tPhC8C//GYrWUlQc0iYXr
+   cpbgKjh5uFlx/jRZZv6aT3RhDjf0A/BKS6h+kLHs43d5A93KMlgvSHQjQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="316837453"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="316837453"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 00:48:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="576416853"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 03 Mar 2022 00:48:49 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPh8i-0000Kd-F2; Thu, 03 Mar 2022 08:48:48 +0000
+Date:   Thu, 3 Mar 2022 16:48:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Connor O'Brien <connoro@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.14-stable
+ 642/9999] kernel/bpf/core.c:1532:34: sparse: sparse: incorrect type in
+ initializer (different address spaces)
+Message-ID: <202203031610.5qGpCgJS-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix identation issues with usb30 gdsc structs in gcc-sm8150.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.14-stable
+head:   4ab5bac1598e3ed91a6267f6cada336467312112
+commit: 5179a6a673e1bff5b9823b1317c59127bacd4641 [642/9999] UPSTREAM: bpf: permit multiple bpf attachments for a single perf event
+config: i386-randconfig-s001-20211019 (https://download.01.org/0day-ci/archive/20220303/202203031610.5qGpCgJS-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/5179a6a673e1bff5b9823b1317c59127bacd4641
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.14-stable
+        git checkout 5179a6a673e1bff5b9823b1317c59127bacd4641
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
 
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+   kernel/bpf/core.c:1095:43: sparse: sparse: arithmetics on pointers to functions
+   kernel/bpf/core.c:1514:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected struct bpf_prog_array [noderef] <asn:4> * @@     got void * @@
+   kernel/bpf/core.c:1514:31: sparse:     expected struct bpf_prog_array [noderef] <asn:4> *
+   kernel/bpf/core.c:1514:31: sparse:     got void *
+   kernel/bpf/core.c:1518:17: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected struct bpf_prog_array [noderef] <asn:4> * @@     got struct bpf_prog_array * @@
+   kernel/bpf/core.c:1518:17: sparse:     expected struct bpf_prog_array [noderef] <asn:4> *
+   kernel/bpf/core.c:1518:17: sparse:     got struct bpf_prog_array *
+   kernel/bpf/core.c:1526:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct callback_head *head @@     got struct callback_head [noderef] <asn:4> * @@
+   kernel/bpf/core.c:1526:9: sparse:     expected struct callback_head *head
+   kernel/bpf/core.c:1526:9: sparse:     got struct callback_head [noderef] <asn:4> *
+>> kernel/bpf/core.c:1532:34: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct bpf_prog **prog @@     got struct bpf_prog *[noderef] <asn:4> * @@
+   kernel/bpf/core.c:1532:34: sparse:     expected struct bpf_prog **prog
+   kernel/bpf/core.c:1532:34: sparse:     got struct bpf_prog *[noderef] <asn:4> *
+>> kernel/bpf/core.c:1555:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct bpf_prog **existing_prog @@     got struct bpf_prog *[noderef] <asn:4> * @@
+   kernel/bpf/core.c:1555:31: sparse:     expected struct bpf_prog **existing_prog
+   kernel/bpf/core.c:1555:31: sparse:     got struct bpf_prog *[noderef] <asn:4> *
+>> kernel/bpf/core.c:1577:15: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct bpf_prog_array *array @@     got struct bpf_prog_array [noderef] <asn:4> * @@
+   kernel/bpf/core.c:1577:15: sparse:     expected struct bpf_prog_array *array
+   kernel/bpf/core.c:1577:15: sparse:     got struct bpf_prog_array [noderef] <asn:4> *
+>> kernel/bpf/core.c:1583:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct bpf_prog **[assigned] existing_prog @@     got struct bpf_prog *[noderef] <asn:4> * @@
+   kernel/bpf/core.c:1583:31: sparse:     expected struct bpf_prog **[assigned] existing_prog
+   kernel/bpf/core.c:1583:31: sparse:     got struct bpf_prog *[noderef] <asn:4> *
+
+vim +1532 kernel/bpf/core.c
+
+  1528	
+  1529	void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *progs,
+  1530					struct bpf_prog *old_prog)
+  1531	{
+> 1532		struct bpf_prog **prog = progs->progs;
+  1533	
+  1534		for (; *prog; prog++)
+  1535			if (*prog == old_prog) {
+  1536				WRITE_ONCE(*prog, &dummy_bpf_prog.prog);
+  1537				break;
+  1538			}
+  1539	}
+  1540	
+  1541	int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
+  1542				struct bpf_prog *exclude_prog,
+  1543				struct bpf_prog *include_prog,
+  1544				struct bpf_prog_array **new_array)
+  1545	{
+  1546		int new_prog_cnt, carry_prog_cnt = 0;
+  1547		struct bpf_prog **existing_prog;
+  1548		struct bpf_prog_array *array;
+  1549		int new_prog_idx = 0;
+  1550	
+  1551		/* Figure out how many existing progs we need to carry over to
+  1552		 * the new array.
+  1553		 */
+  1554		if (old_array) {
+> 1555			existing_prog = old_array->progs;
+  1556			for (; *existing_prog; existing_prog++) {
+  1557				if (*existing_prog != exclude_prog &&
+  1558				    *existing_prog != &dummy_bpf_prog.prog)
+  1559					carry_prog_cnt++;
+  1560				if (*existing_prog == include_prog)
+  1561					return -EEXIST;
+  1562			}
+  1563		}
+  1564	
+  1565		/* How many progs (not NULL) will be in the new array? */
+  1566		new_prog_cnt = carry_prog_cnt;
+  1567		if (include_prog)
+  1568			new_prog_cnt += 1;
+  1569	
+  1570		/* Do we have any prog (not NULL) in the new array? */
+  1571		if (!new_prog_cnt) {
+  1572			*new_array = NULL;
+  1573			return 0;
+  1574		}
+  1575	
+  1576		/* +1 as the end of prog_array is marked with NULL */
+> 1577		array = bpf_prog_array_alloc(new_prog_cnt + 1, GFP_KERNEL);
+  1578		if (!array)
+  1579			return -ENOMEM;
+  1580	
+  1581		/* Fill in the new prog array */
+  1582		if (carry_prog_cnt) {
+> 1583			existing_prog = old_array->progs;
+  1584			for (; *existing_prog; existing_prog++)
+  1585				if (*existing_prog != exclude_prog &&
+  1586				    *existing_prog != &dummy_bpf_prog.prog)
+  1587					array->progs[new_prog_idx++] = *existing_prog;
+  1588		}
+  1589		if (include_prog)
+  1590			array->progs[new_prog_idx++] = include_prog;
+  1591		array->progs[new_prog_idx] = NULL;
+  1592		*new_array = array;
+  1593		return 0;
+  1594	}
+  1595	
+
 ---
- drivers/clk/qcom/gcc-sm8150.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/clk/qcom/gcc-sm8150.c b/drivers/clk/qcom/gcc-sm8150.c
-index 245794485719..85a431ac417b 100644
---- a/drivers/clk/qcom/gcc-sm8150.c
-+++ b/drivers/clk/qcom/gcc-sm8150.c
-@@ -3449,21 +3449,21 @@ static struct clk_branch gcc_video_xo_clk = {
- };
- 
- static struct gdsc usb30_prim_gdsc = {
--		.gdscr = 0xf004,
--		.pd = {
--			.name = "usb30_prim_gdsc",
--		},
--		.pwrsts = PWRSTS_OFF_ON,
--		.flags = POLL_CFG_GDSCR,
-+	.gdscr = 0xf004,
-+	.pd = {
-+		.name = "usb30_prim_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = POLL_CFG_GDSCR,
- };
- 
- static struct gdsc usb30_sec_gdsc = {
--		.gdscr = 0x10004,
--		.pd = {
--			.name = "usb30_sec_gdsc",
--		},
--		.pwrsts = PWRSTS_OFF_ON,
--		.flags = POLL_CFG_GDSCR,
-+	.gdscr = 0x10004,
-+	.pd = {
-+		.name = "usb30_sec_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = POLL_CFG_GDSCR,
- };
- 
- static struct clk_regmap *gcc_sm8150_clocks[] = {
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
