@@ -2,93 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BED3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbiCCIUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:20:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52942 "EHLO
+        id S231277AbiCCIVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:21:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbiCCIUd (ORCPT
+        with ESMTP id S230102AbiCCIVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:20:33 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49A6171844
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:19:48 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id c4so3977634qtx.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 00:19:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eBbghWmyN77JF7RUpoIN9lkaA23tcjbHORN7ZoYwWzA=;
-        b=O33UcScGamI/CbJS2qdYJFMnkoGyvajYHAEDnA1q32GaQGdYlOFF7E/Wu4I2A6awOB
-         8kHS3FMUK2LE41rzxdVjPjRD9UKIjJgcB730BEVO9EFbgrwPgXVRpI2j0WITQtJrjn4v
-         cVeafQ/DY+JzVcs8qekyK+4EZn/xF0kAVhJNY0eX56zgfPsIpB3vQ92roJgu8daAvomr
-         fL6PV8jZKzTYn+t2bn9N/tWswi4bxc71DF6zMvRz50BOSDS/whVmIdG4MoA4nBKNmwEI
-         ENNeJnXecQxETQlmR0yjeMH6vWpP18HnOa30Jt3D8T1DHzWE5IQIAuA4+FGcjHqlBSxf
-         zAXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eBbghWmyN77JF7RUpoIN9lkaA23tcjbHORN7ZoYwWzA=;
-        b=bBjS4KObaFrf0siPKufbpDFu+MCWkO8gWw+QUlnCMBMQqUUcI/tziJzf4oyJxOr0iV
-         KCzpzN3Sgz2rKnSaQXO/zpdhreykGc6pl/T7wELoTwUCxAdCcK5iSX+/E4oBPYvb9hxt
-         X5aPtawjGx/G0FWvQs/UIkMV5T+YRjqXAvMOPHp9omYigXFEnyhyHDMPGYbz3fgjiPow
-         kku91gkVHw2W3sc+oQPx1szHtz2qIBAr9msjGKXhwsHr8A3zN4yHqwnl7yuk7Scg/rSp
-         OhroFhPjVZWU9yaFu+wgtcBU++5Rc/IDaBcwr0tm+Eyqyuzz7Tedj+afTSVxO10/UVdr
-         qrtA==
-X-Gm-Message-State: AOAM532MM/ijz8dj/VWDVOrACZxuX2iu31B7Cf8H9SGQvrROGn0wDi+L
-        1f/X5Gg670keUwvCvgbI0ptT/aSMaCyyiQ/TYdaED2O+n1Q=
-X-Google-Smtp-Source: ABdhPJzwybpbRKv/JsGwbbxWqXiPUR4uibbx0YjX5VRLF4ZSmc8ArqQjtlAMg4s/pfikPz32DA/3T3dwuz1Doz+bPUQ=
-X-Received: by 2002:ac8:5713:0:b0:2de:4e16:5b25 with SMTP id
- 19-20020ac85713000000b002de4e165b25mr26214309qtw.682.1646295587875; Thu, 03
- Mar 2022 00:19:47 -0800 (PST)
+        Thu, 3 Mar 2022 03:21:37 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A6B171857;
+        Thu,  3 Mar 2022 00:20:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646295652; x=1677831652;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Sk6+O6+y+LcuLAi9FL2+v3ef2pvnDvKpS+B2HESK5P4=;
+  b=NNpa00Mt2Bqd9ff1xrzUpPxrJG0H0P0osYrX/z/paXC0B+pcayFEE1Tr
+   CbdqWKLG27mD8z2+MVLl0CRxC0KfeCnXpCYY32vb6GjIwi1N1D6XV/tig
+   lu+kv8QPh9+3jHrEFPh/iimCf1VsduNxXaxg+ZcBnNshC9EdeZzyM1tpY
+   Fvg0wvlN3L/kpmhH2B73vBMJa4db/dQwvA/YkDyfmxqnITghm3KmzT4XA
+   G3p8vDlwKpi5LuE9l03ecQIz578biG9QT1XWRhwHBkHo4zvn4hSFHgljM
+   KQr5NA4zF3F24hHf9+vL7LzOYj0azZ4dD7nqlHgH9tWd73KiGVDvBlnQH
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253802431"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="253802431"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 00:20:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="535732673"
+Received: from shbuild999.sh.intel.com ([10.239.146.189])
+  by orsmga007.jf.intel.com with ESMTP; 03 Mar 2022 00:20:49 -0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kernel test robot <lkp@intel.com>,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Feng Tang <feng.tang@intel.com>, Guo Ren <guoren@kernel.org>
+Subject: [PATCH] lib/Kconfig.debug: add ARCH dependency for FUNCTION_ALIGN option
+Date:   Thu,  3 Mar 2022 16:20:48 +0800
+Message-Id: <20220303082048.16558-1-feng.tang@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <1646294904-4753-1-git-send-email-quic_vpolimer@quicinc.com>
-In-Reply-To: <1646294904-4753-1-git-send-email-quic_vpolimer@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Thu, 3 Mar 2022 11:19:36 +0300
-Message-ID: <CAA8EJppbk+yCmVgRbUNBn+BO09xDZe93RXK_cUxbX9HZM9ZXmw@mail.gmail.com>
-Subject: Re: [PATCH v3 0/3] Update mdp clk to max supported value to support
- higher refresh rates
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 at 11:08, Vinod Polimera <quic_vpolimer@quicinc.com> wrote:
->
-> *** BLURB HERE ***
+0Day robots reported there is compiling issue for 'csky' ARCH
+when CONFIG_DEBUG_FORCE_DATA_SECTION_ALIGNED is enabled [1]:
 
-Description, dependencies, etc?
+"
+All errors (new ones prefixed by >>):
 
->
-> Vinod Polimera (3):
->   arm64/dts/qcom/sc7280: remove assigned-clock-rate property for mdp clk
->   arm64/dts/qcom/sc7180: remove assigned-clock-rate property for mdp clk
->   arm64/dts/qcom/sdm845: remove assigned-clock-rate property for mdp clk
+   {standard input}: Assembler messages:
+>> {standard input}:2277: Error: pcrel offset for branch to .LS000B too far (0x3c)
+"
 
-sm8250.dtsi is missing
+Which has been discussed in [2]. And as there is no solution for csky
+yet, add some dependency for this config to limit it to several ARCHs
+which have no compiling issue so far.
 
->
->  arch/arm64/boot/dts/qcom/sc7180.dtsi | 9 ++-------
->  arch/arm64/boot/dts/qcom/sc7280.dtsi | 9 ++-------
->  arch/arm64/boot/dts/qcom/sdm845.dtsi | 9 ++-------
->  3 files changed, 6 insertions(+), 21 deletions(-)
->
-> --
-> 2.7.4
->
+[1]. https://lore.kernel.org/lkml/202202271612.W32UJAj2-lkp@intel.com/
+[2]. https://www.spinics.net/lists/linux-kbuild/msg30298.html
 
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Guo Ren <guoren@kernel.org>
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ lib/Kconfig.debug | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index d6b5c94df099..a270a64e4429 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -401,8 +401,8 @@ config SECTION_MISMATCH_WARN_ONLY
+ 	  If unsure, say Y.
+ 
+ config DEBUG_FORCE_FUNCTION_ALIGN_64B
+-	bool "Force all function address 64B aligned" if EXPERT
+-	depends on PPC || ARM || X86
++	bool "Force all function address 64B aligned"
++	depends on EXPERT && (X86_64 || ARM64 || PPC32 || PPC64 || ARC)
+ 	help
+ 	  There are cases that a commit from one domain changes the function
+ 	  address alignment of other domains, and cause magic performance
 -- 
-With best wishes
-Dmitry
+2.27.0
+
