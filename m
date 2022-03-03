@@ -2,227 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A18C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 13:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82889C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 13:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiCCNQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 08:16:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36366 "EHLO
+        id S230096AbiCCNRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 08:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233626AbiCCNQb (ORCPT
+        with ESMTP id S232996AbiCCNRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 08:16:31 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2080.outbound.protection.outlook.com [40.107.243.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48DF170D79;
-        Thu,  3 Mar 2022 05:15:45 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oaTEVTJjqNJczV8KoARWHTwZ/9RxHMv9zQEOra8ZtnBpyN4ODTfdjhpfHUHoJeg2fFKFffEq+u+CUXy3uxNddTMaAJhaAUl4PN6QbPCt5UdSTMNyvC3KtjIlaiGFjp29KVaGSb1r4u91T+Qqev3IQbds/YBuyDMB1HAFUKwc4P46wHqiBbcUwzZUGYDJ1uGMU3wC2Xv1zzY5NrvxM+iZBHdQ6p1M+G1jxsj+pMiFzIa/kmhJJ+yItMAtZIg/z5AD3Cfq8Zvj6t+KDXsSlOVzOkdpaWWe+u/2zwdMSAsyOxa81ZnLbrC2T6zQg+WXBqp1KtJbZbPEWejcKhfvD3szmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E2NRF3zG5GTlITHNDIEFEyDjbn3EZCXYSkaV3O9354A=;
- b=JRyxOK9A84qnfZ5gE/r8/YNzX/zE0sps3bnCnvLrRMUfEHZ+vM/vIXCde7kAQ1VSaHoAy8f9Na31yNjrvqSRcri3NwAURMg6+CI/r82UcTWTwj5FFhHAv/KiL9giYDVTz7kONFq9CPpRIsnZ776Kfiy435ah2LomAhqZVCru4+2DUfDpCYviI7YjRMP+0ckzc7hNlyzhu8MFEhUsa7NnejSQYVVWZ5mSdEwNMM2ZciKBBjMiGNmCDmyeWLg6mui7Zw2hKJeoi9C3w3sWAkafueWGtFbiQm3VlIJ3CoxpPuMWUlvJTMeShULBlmDEpPo1tMzt4TqzUltKbnnkicJmzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E2NRF3zG5GTlITHNDIEFEyDjbn3EZCXYSkaV3O9354A=;
- b=veoQ1JT9iQLvAzYQff48q3DQugpGcaoyfVTRF3RYI/MHjyCDLNwCp2uvOIcBNQxXDnu7+/OO0jtdsvEX6uMTHLJoecWLInuOFqCEZegRkuIBeAfeLyOQJPb9PchNdpk71FN9AvZCX/4D1zQEKLRCZ0WtOQorJrDU/CeVoGVnSjE=
-Received: from DM5PR20CA0032.namprd20.prod.outlook.com (2603:10b6:3:13d::18)
- by DM6PR12MB2810.namprd12.prod.outlook.com (2603:10b6:5:41::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Thu, 3 Mar
- 2022 13:15:43 +0000
-Received: from DM6NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:13d:cafe::d2) by DM5PR20CA0032.outlook.office365.com
- (2603:10b6:3:13d::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Thu, 3 Mar 2022 13:15:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT028.mail.protection.outlook.com (10.13.173.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Thu, 3 Mar 2022 13:15:42 +0000
-Received: from localhost.localdomain (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 3 Mar
- 2022 07:15:39 -0600
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-CC:     "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <Sanju.Mehta@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v2 5/5] thunderbolt: Rename EEPROM handling bits to match USB4 spec
-Date:   Thu, 3 Mar 2022 07:13:28 -0600
-Message-ID: <20220303131328.4150454-5-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220303131328.4150454-1-mario.limonciello@amd.com>
-References: <20220303131328.4150454-1-mario.limonciello@amd.com>
+        Thu, 3 Mar 2022 08:17:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC6D186BBB;
+        Thu,  3 Mar 2022 05:16:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF115B82541;
+        Thu,  3 Mar 2022 13:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D76ADC004E1;
+        Thu,  3 Mar 2022 13:16:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646313366;
+        bh=UaYaEq+pX/N3FkTVSSi0NSINkxW2/wj3aygGq0naqdA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NxPFm9Gbp/VMWnlo+La5qqdWFdPTBBvGyZVtnhF4vF3D66Q3Q2JrO4nA6t76l3qyl
+         ttqUonv074fY1l+GJ5piObSJmFOzVyn/JKp+oxTi6BXoRfNz4AC7FEkPH8HFm7vqJS
+         NEq//pdy0Fa6m/3YcD70oeClS44vyEnBrhBdh5iI=
+Date:   Thu, 3 Mar 2022 14:16:03 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Iouri Tarassov <iourit@linux.microsoft.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        spronovo@microsoft.com, spronovo@linux.microsoft.com
+Subject: Re: [PATCH v3 02/30] drivers: hv: dxgkrnl: Driver initialization and
+ loading
+Message-ID: <YiC/k1pKTUV12APe@kroah.com>
+References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
+ <739cf89e71ff72436d7ca3f846881dfb45d07a6a.1646163378.git.iourit@linux.microsoft.com>
+ <Yh6F9cG6/SV6Fq8Q@kroah.com>
+ <20220301222321.yradz24nuyhzh7om@liuwe-devbox-debian-v2>
+ <Yh8ia7nJNN7ISR1l@kroah.com>
+ <20220302115334.wemdkznokszlzcpe@liuwe-devbox-debian-v2>
+ <6ac1dd87-3c78-66ca-c526-d1f6cf253400@linux.microsoft.com>
+ <Yh/Rq9PwWZAN8Mu2@kroah.com>
+ <78df3646-4df6-5e2b-2f6e-e14824b08d85@linux.microsoft.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bfff270-3284-441d-796c-08d9fd17eb4f
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2810:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB28109BB204388D847909C219E2049@DM6PR12MB2810.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TZZXV5bRR4MBMUposappupUu1nt3kSr+0nALr/WYBFM0NIliZTamDwhJZvPihi9eUMqPXliRSEbsPBMUbGTyii8iHKTlatJvu4DqtBcDlId00HiyfM3eokIRqLtIEyK/xmRN73/ZGXW9P4ebltYwXE1c4KI8O/n4GXxcPkdAGoWgY4ri90q/UmDKI0FIX62KVTCmV7FWIYteNf3qk1UcbeyTO0D7UjMimUfFq/j5Gtb54ywxFJ/rnzlWKb80D3hWrK5/6nvJ72tsqTdUZFKNeNJRz3m3m9nH0d0rvoHGbgoLTWN7wmLOO9wcRjeaR7Yw96hH7KGFj3lmFpQEnK7imlj6iCOmuLnr0FyxMC6PNiVNKs7153VqhOjBlpM7wrSzUfGsgghZuJXVKDl5smq03tt6aqlVaSFkLyPUni3YaofmxjehGc3jBbmQ39njloAlCkMePJCJv4jiRqDSmMjoeXvJJJ50nk2xH1AVFVTAX3g93+720LhlEznOb5opyL2sz4npUn3474ZRwTtEIajBKXPY6SdyMB+YDBEkrYjQln3j/+xho2NLtoDQDuZP0ooQ1S0SthTxVSEIMMp1zQeofQFLaDKLD1vFJgysLApsQaF3GlJ/bnjB0OCmqO7eNCT4KHb3t0lqxHTPGywtZUSps2n8wUeXJOoXzs/GYI8F53x5pcPFJzb1HoVQRLfpcE2L8tj+jfPicJxsdXREVqvjZA7vrsg1PK2/3vvQulXnV2s94bObKyNvTnVh9W5eCQOs
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(356005)(81166007)(6666004)(82310400004)(186003)(16526019)(2616005)(1076003)(26005)(36860700001)(336012)(83380400001)(54906003)(66574015)(426003)(44832011)(36756003)(86362001)(47076005)(70206006)(70586007)(8936002)(8676002)(4326008)(5660300002)(316002)(40460700003)(6916009)(2906002)(508600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2022 13:15:42.2471
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bfff270-3284-441d-796c-08d9fd17eb4f
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT028.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2810
+In-Reply-To: <78df3646-4df6-5e2b-2f6e-e14824b08d85@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The structure `tb_eeprom_ctl` is used to show the bits accessed when
-reading/writing EEPROM.
+On Wed, Mar 02, 2022 at 02:27:05PM -0800, Iouri Tarassov wrote:
+> 
+> On 3/2/2022 12:20 PM, Greg KH wrote:
+> > On Wed, Mar 02, 2022 at 10:49:15AM -0800, Iouri Tarassov wrote:
+> > > On 3/2/2022 3:53 AM, Wei Liu wrote:
+> > > > On Wed, Mar 02, 2022 at 08:53:15AM +0100, Greg KH wrote:
+> > > > > On Tue, Mar 01, 2022 at 10:23:21PM +0000, Wei Liu wrote:
+> > > > > > > > +struct dxgglobal *dxgglobal;
+> > > > > > > 
+> > > > > > > No, make this per-device, NEVER have a single device for your driver.
+> > > > > > > The Linux driver model makes it harder to do it this way than to do it
+> > > > > > > correctly.  Do it correctly please and have no global structures like
+> > > > > > > this.
+> > > > > > > 
+> > > > > > 
+> > > > > > This may not be as big an issue as you thought. The device discovery is
+> > > > > > still done via the normal VMBus probing routine. For all intents and
+> > > > > > purposes the dxgglobal structure can be broken down into per device
+> > > > > > fields and a global structure which contains the protocol versioning
+> > > > > > information -- my understanding is there will always be a global
+> > > > > > structure to hold information related to the backend, regardless of how
+> > > > > > many devices there are.
+> > > > > 
+> > > > > Then that is wrong and needs to be fixed.  Drivers should almost never
+> > > > > have any global data, that is not how Linux drivers work.  What happens
+> > > > > when you get a second device in your system for this?  Major rework
+> > > > > would have to happen and the code will break.  Handle that all now as it
+> > > > > takes less work to make this per-device than it does to have a global
+> > > > > variable.
+> > > > > 
+> > > >
+> > > > It is perhaps easier to draw parallel from an existing driver. I feel
+> > > > like we're talking past each other.
+> > > >
+> > > > Let's look at drivers/iommu/intel/iommu.c. There are a bunch of lists
+> > > > like `static LIST_HEAD(dmar_rmrr_units)`. During the probing phase, new
+> > > > units will be added to the list. I this the current code is following
+> > > > this model. dxgglobal fulfills the role of a list.
+> > > >
+> > > > Setting aside the question of whether it makes sense to keep a copy of
+> > > > the per-VM state in each device instance, I can see the code be changed
+> > > > to:
+> > > >
+> > > >     struct mutex device_mutex; /* split out from dxgglobal */
+> > > >     static LIST_HEAD(dxglist);
+> > > >     
+> > > >     /* Rename struct dxgglobal to struct dxgstate */
+> > > >     struct dxgstate {
+> > > >        struct list_head dxglist; /* link for dxglist */
+> > > >        /* ... original fields sans device_mutex */
+> > > >     }
+> > > >
+> > > >     /*
+> > > >      * Provide a bunch of helpers manipulate the list. Called in probe /
+> > > >      * remove etc.
+> > > >      */
+> > > >     struct dxgstate *find_dxgstate(...);
+> > > >     void remove_dxgstate(...);
+> > > >     int add_dxgstate(...);
+> > > >
+> > > > This model is well understood and used in tree. It is just that it
+> > > > doesn't provide much value in doing this now since the list will only
+> > > > contain one element. I hope that you're not saying we cannot even use a
+> > > > per-module pointer to quickly get the data structure we want to use,
+> > > > right?
+> > > >
+> > > > Are you suggesting Iouri use dev_set_drvdata to stash the dxgstate
+> > > > into the device object? I think that can be done too.
+> > > >
+> > > > The code can be changed as:
+> > > >
+> > > >     /* Rename struct dxgglobal to dxgstate and remove unneeded fields */
+> > > >     struct dxgstate { ... };
+> > > >
+> > > >     static int dxg_probe_vmbus(...) {
+> > > >
+> > > >         /* probe successfully */
+> > > >
+> > > > 	struct dxgstate *state = kmalloc(...);
+> > > > 	/* Fill in dxgstate with information from backend */
+> > > >
+> > > > 	/* hdev->dev is the device object from the core driver framework */
+> > > > 	dev_set_drvdata(&hdev->dev, state);
+> > > >     }
+> > > >
+> > > >     static int dxg_remove_vmbus(...) {
+> > > >         /* Normal stuff here ...*/
+> > > >
+> > > > 	struct dxgstate *state = dev_get_drvdata(...);
+> > > > 	dev_set_drvdata(..., NULL);
+> > > > 	kfree(state);
+> > > >     }
+> > > >
+> > > >     /* In all other functions */
+> > > >     void do_things(...) {
+> > > >         struct dxgstate *state = dev_get_drvdata(...);
+> > > >
+> > > > 	/* Use state in place of where dxgglobal was needed */
+> > > >
+> > > >     }
+> > > >
+> > > > Iouri, notice this doesn't change anything regarding how userspace is
+> > > > designed. This is about how kernel organises its data.
+> > > >
+> > > > I hope what I wrote above can bring our understanding closer.
+> > > >
+> > > > Thanks,
+> > > > Wei.
+> > > 
+> > > 
+> > > I can certainly remove dxgglobal and keep the  pointer to the global
+> > > state in the device object.
+> > > 
+> > > This will require passing of the global pointer to all functions, which
+> > > need to access it.
+> > > 
+> > > 
+> > > Maybe my understanding of the Greg's suggestion was not correct. I
+> > > thought the suggestion was
+> > > 
+> > > to have multiple /dev/dxgN devices (one per virtual compute device).
+> >
+> > You have one device per HV device, as the bus already provides you.
+> > That's all you really need, right?  Who would be opening the same device
+> > node multiple times?
+> > > This would change how the user mode
+> > > clients enumerate and communicate with compute devices.
+> >
+> > What does userspace have to do here?  It should just open the device
+> > node that is present when needed.  How will there be multiple userspace
+> > clients for a single HV device?
+> 
+> 
+> Dxgkrnl creates a single user mode visible device node /dev/dxg.
 
-As this structure is specified in the USB4 spec as `VSC_CS_4` update
-the names and use of members to match the specification. This should not
-change anything functionally.
+When you do that, you have a device to put all of your data on.  Use
+that.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-v1->v2:
- * Update commit message
- drivers/thunderbolt/eeprom.c  | 24 ++++++++++++------------
- drivers/thunderbolt/tb_regs.h | 10 +++++-----
- 2 files changed, 17 insertions(+), 17 deletions(-)
+> It has
+> nothing to do with a specific hardware compute device on the host. Its
+> purpose is to provide services (IOCTLs) to enumerate and manage virtual
+> compute devices, which represent hardware devices on the host. The VMBus
+> devices are not used directly by user mode clients in the current design.
 
-diff --git a/drivers/thunderbolt/eeprom.c b/drivers/thunderbolt/eeprom.c
-index 10cdbcb55df9..c90d22f56d4e 100644
---- a/drivers/thunderbolt/eeprom.c
-+++ b/drivers/thunderbolt/eeprom.c
-@@ -17,7 +17,7 @@
-  */
- static int tb_eeprom_ctl_write(struct tb_switch *sw, struct tb_eeprom_ctl *ctl)
- {
--	return tb_sw_write(sw, ctl, TB_CFG_SWITCH, sw->cap_plug_events + 4, 1);
-+	return tb_sw_write(sw, ctl, TB_CFG_SWITCH, sw->cap_plug_events + ROUTER_CS_4, 1);
- }
- 
- /*
-@@ -25,7 +25,7 @@ static int tb_eeprom_ctl_write(struct tb_switch *sw, struct tb_eeprom_ctl *ctl)
-  */
- static int tb_eeprom_ctl_read(struct tb_switch *sw, struct tb_eeprom_ctl *ctl)
- {
--	return tb_sw_read(sw, ctl, TB_CFG_SWITCH, sw->cap_plug_events + 4, 1);
-+	return tb_sw_read(sw, ctl, TB_CFG_SWITCH, sw->cap_plug_events + ROUTER_CS_4, 1);
- }
- 
- enum tb_eeprom_transfer {
-@@ -46,18 +46,18 @@ static int tb_eeprom_active(struct tb_switch *sw, bool enable)
- 	if (res)
- 		return res;
- 	if (enable) {
--		ctl.access_high = 1;
-+		ctl.bit_banging_enable = 1;
- 		res = tb_eeprom_ctl_write(sw, &ctl);
- 		if (res)
- 			return res;
--		ctl.access_low = 0;
-+		ctl.fl_cs = 0;
- 		return tb_eeprom_ctl_write(sw, &ctl);
- 	} else {
--		ctl.access_low = 1;
-+		ctl.fl_cs = 1;
- 		res = tb_eeprom_ctl_write(sw, &ctl);
- 		if (res)
- 			return res;
--		ctl.access_high = 0;
-+		ctl.bit_banging_enable = 0;
- 		return tb_eeprom_ctl_write(sw, &ctl);
- 	}
- }
-@@ -65,8 +65,8 @@ static int tb_eeprom_active(struct tb_switch *sw, bool enable)
- /*
-  * tb_eeprom_transfer - transfer one bit
-  *
-- * If TB_EEPROM_IN is passed, then the bit can be retrieved from ctl->data_in.
-- * If TB_EEPROM_OUT is passed, then ctl->data_out will be written.
-+ * If TB_EEPROM_IN is passed, then the bit can be retrieved from ctl->fl_do.
-+ * If TB_EEPROM_OUT is passed, then ctl->fl_di will be written.
-  */
- static int tb_eeprom_transfer(struct tb_switch *sw, struct tb_eeprom_ctl *ctl,
- 			      enum tb_eeprom_transfer direction)
-@@ -77,7 +77,7 @@ static int tb_eeprom_transfer(struct tb_switch *sw, struct tb_eeprom_ctl *ctl,
- 		if (res)
- 			return res;
- 	}
--	ctl->clock = 1;
-+	ctl->fl_sk = 1;
- 	res = tb_eeprom_ctl_write(sw, ctl);
- 	if (res)
- 		return res;
-@@ -86,7 +86,7 @@ static int tb_eeprom_transfer(struct tb_switch *sw, struct tb_eeprom_ctl *ctl,
- 		if (res)
- 			return res;
- 	}
--	ctl->clock = 0;
-+	ctl->fl_sk = 0;
- 	return tb_eeprom_ctl_write(sw, ctl);
- }
- 
-@@ -101,7 +101,7 @@ static int tb_eeprom_out(struct tb_switch *sw, u8 val)
- 	if (res)
- 		return res;
- 	for (i = 0; i < 8; i++) {
--		ctl.data_out = val & 0x80;
-+		ctl.fl_di = val & 0x80;
- 		res = tb_eeprom_transfer(sw, &ctl, TB_EEPROM_OUT);
- 		if (res)
- 			return res;
-@@ -126,7 +126,7 @@ static int tb_eeprom_in(struct tb_switch *sw, u8 *val)
- 		res = tb_eeprom_transfer(sw, &ctl, TB_EEPROM_IN);
- 		if (res)
- 			return res;
--		*val |= ctl.data_in;
-+		*val |= ctl.fl_do;
- 	}
- 	return 0;
- }
-diff --git a/drivers/thunderbolt/tb_regs.h b/drivers/thunderbolt/tb_regs.h
-index db3005cba203..b301eeb0c89b 100644
---- a/drivers/thunderbolt/tb_regs.h
-+++ b/drivers/thunderbolt/tb_regs.h
-@@ -133,11 +133,11 @@ struct tb_cap_phy {
- } __packed;
- 
- struct tb_eeprom_ctl {
--	bool clock:1; /* send pulse to transfer one bit */
--	bool access_low:1; /* set to 0 before access */
--	bool data_out:1; /* to eeprom */
--	bool data_in:1; /* from eeprom */
--	bool access_high:1; /* set to 1 before access */
-+	bool fl_sk:1; /* send pulse to transfer one bit */
-+	bool fl_cs:1; /* set to 0 before access */
-+	bool fl_di:1; /* to eeprom */
-+	bool fl_do:1; /* from eeprom */
-+	bool bit_banging_enable:1; /* set to 1 before access */
- 	bool not_present:1; /* should be 0 */
- 	bool unknown1:1;
- 	bool present:1; /* should be 1 */
--- 
-2.34.1
+That's horrid, why not just export the virtual compute devices properly
+through individual device nodes instead?
 
+In essence, you are creating a new syscall here to manage and handle
+devices for just your driver with the use of this ioctl.  That's
+generally a bad idea.
+
+> Virtual compute devices are shared between processes. There could be a
+> Cuda application, Gimp and a Direct3D12 application working at the same
+> time.
+
+Why are all of those applications sharing anything?  How are they
+sharing anything?  If you need to share something across processes, use
+the existing inter-process ways of sharing stuff that we have today (12+
+different apis and counting).  Don't create yet-another-one just for
+your tiny little driver here.  That's rude to the rest of the kernel.
+
+> This is what I mean by saying that there are multiple user mode
+> clients who use the /dev/dxg driver interface. Each of this applications
+> will open the /dev/dxg device node and enumerate/use virtual compute
+> devices.
+
+That seems like an odd model to follow.  How many virtual devices do you
+support?  Is there a limit?  Why not just enumerate them all to start
+with?  Or if there are too many, why not do it like the raw device and
+have a single device node that is used to create the virtual devices you
+wish to use?
+
+> If we change the way how the virtual compute devices are visible to user
+> mode, the Cuda runtime, Direct3D runtime would need to be changed.
+
+We do not care about existing userspace code at this point in time, you
+are trying to get the kernel api correct here.  Once you have done that,
+then you can go fix up your userspace code to work properly.  Anything
+that came before today is pointless here, right?  :)
+
+> I think we agreed that I will keep the global driver state in the device
+> object as Wei suggested and remove global variables. There still will be
+> a single /dev/dxg device node. Correct?
+
+I do not know, as I can't figure out your goals here at all, sorry.
+
+Please go work with some experienced Linux developers in your company.
+They should be the ones answering these questions for you, not me :)
+
+thanks,
+
+greg k-h
