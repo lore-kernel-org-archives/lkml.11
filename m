@@ -2,165 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF490C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231673AbiCCIuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
+        id S231629AbiCCIuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:50:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231626AbiCCItq (ORCPT
+        with ESMTP id S231643AbiCCIt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:49:46 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE6D14893E
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:48:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646297336; x=1677833336;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=B9XqYWHLvkaa/TjL816Vc0P9ZGschj6nW7UtG9d7IQA=;
-  b=F9wtpKX9J1PmB4iXJJtA5Q070lwSMxpvqVZDI7lcn4haIieyu5KMEZoV
-   ZNRdMSXQbrsmTdvokXKgC7NTYXZCgEGM7neRErtqE87Rx9HBPTYHm8ahO
-   M5O61xLNtNl8BXn7eLRU1ZthyS7llTowy3z48iI4igmrrKtLpsmq0WVzc
-   LG5kxYhN/45vcl2b37XuO5o0EyKooLNV4iFAq+IUaVue915LTGjiCUVvX
-   3qrvZyM6qa+bQYZ7wROSIAnDlE5TZi1oUVZyD4Q7NZQmqCUcG8GflmwpQ
-   WTZgQv20f5MsGRhGm+B1OIoXAmJDdQ02ViATLNnrdcp4wu+kaq9irX1Yw
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="314335223"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="314335223"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 00:48:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="576416871"
-Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 03 Mar 2022 00:48:54 -0800
-Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPh8i-0000KZ-Dv; Thu, 03 Mar 2022 08:48:48 +0000
-Date:   Thu, 3 Mar 2022 16:48:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vincenzo Frascino <vincenzo.frascino@arm.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Mark Salyzyn <salyzyn@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.19-stable
- 811/9999] arch/mips/vdso/vgettimeofday.c:17:16: error: implicit declaration
- of function '__cvdso_clock_gettime32'; did you mean '__cvdso_clock_gettime'?
-Message-ID: <202203031603.lmtSJ2SY-lkp@intel.com>
+        Thu, 3 Mar 2022 03:49:56 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7373A17585A
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:49:09 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id x14so3453920ill.12
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 00:49:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=31oR/5R8uiOoYLaqojfd9sfVOvx41Qx3BFeK4/Ytd84=;
+        b=j5CDqRS3oxPTE35yyFrHx2Y6GB2DlGJtO1iBOz3pvlLX8PTZyPdSu/k/MLAFVdzMdM
+         WI9TdX0wk42+MOxOtu4a5Tz8h8cw0KwEDv4EKo5pIzBWME8qpuq6MbGHgKPpeNNbRE77
+         9TKifPjcQSQzE+W9OZUSdKgA6FFRCCsXKvU63O2nMiQw248a4c6xQDUeY0MMkBERCopw
+         BtfK7bSiJ9jtqkj6DcVbpFE22wS/gbrHcHuZUlUtZX2yo/8axZqS5aeV5waqSET/uOHQ
+         7Utib7uaAZUc2eCJhMiVrezn2YYr10VwkBY8JdWuAUpOb5CHIJea6BQ/t6bS6xrOfwWL
+         qNfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=31oR/5R8uiOoYLaqojfd9sfVOvx41Qx3BFeK4/Ytd84=;
+        b=Q0wV7ff4kIxZ2HvXW4sj5uZHMEgh3aJsDYe6i0ezWPjFDvHoF+TRWGgoHAVAGHJBnP
+         MvfBsxrH9/OCP58tzdwkZdb0cQ40mukH+8p2/iHZnszViwXMdCshtl1eAtjLnWp94q9Z
+         bhWf/1WwWqf76w3bLtfNoHo+Sc86EdPKjYMXy6If6uWohgY0uiJUJVWHyHLR9Ev02Oda
+         rW63c63mbZDfCy1YU3QYeRdWHDHn6BGhVZA9AQzTRa9WtrF553i5sO/MXUvDKIorhGrj
+         YqnjQlTIo4KKVqFSLH6B3MubTQBLmxIV4HPTY+t4X6DUh7E827OjQw4+qjg2SZSHU98f
+         +RyQ==
+X-Gm-Message-State: AOAM533YJzVz9dt2Vu4ggVGjA/WbZ38bN6tdElULNrV3fE507dxOdKYJ
+        CsAHiq+v4kF3z+bTxjG2SHi4nw==
+X-Google-Smtp-Source: ABdhPJwPOMyXQ3RYefx6bbUpZKR8O4u9lKzqY1zOzCWZGh6vbFl1jFWIQFFAAaSdqNoF7NR8nEpD4w==
+X-Received: by 2002:a05:6e02:15c8:b0:2bd:fdca:18a8 with SMTP id q8-20020a056e0215c800b002bdfdca18a8mr30638024ilu.320.1646297348867;
+        Thu, 03 Mar 2022 00:49:08 -0800 (PST)
+Received: from localhost.localdomain ([182.64.85.91])
+        by smtp.gmail.com with ESMTPSA id m9-20020a923f09000000b002c2a1a3a888sm1480704ila.50.2022.03.03.00.49.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 00:49:08 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
+        mturquette@baylibre.com, linux-clk@vger.kernel.org,
+        robh+dt@kernel.org, bjorn.andersson@linaro.org,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH v3 6/6] arm64: dts: qcom: sa8155p-adp: Enable ethernet node
+Date:   Thu,  3 Mar 2022 14:18:24 +0530
+Message-Id: <20220303084824.284946-7-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220303084824.284946-1-bhupesh.sharma@linaro.org>
+References: <20220303084824.284946-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vincenzo,
+From: Vinod Koul <vkoul@kernel.org>
 
-FYI, the error/warning still remains.
+Enable the etheret node, add the phy node and pinctrl for ethernet.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.19-stable
-head:   90a691fca4c2525068d9908ac203e9f09e4e33c0
-commit: 0854e59101a9219eb1607fb584dde8da4dea220e [811/9999] UPSTREAM: lib/vdso: Build 32 bit specific functions in the right context
-config: mips-randconfig-r016-20211028 (https://download.01.org/0day-ci/archive/20220303/202203031603.lmtSJ2SY-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/0854e59101a9219eb1607fb584dde8da4dea220e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.19-stable
-        git checkout 0854e59101a9219eb1607fb584dde8da4dea220e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/vdso/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from lib/vdso/gettimeofday.c:26,
-                    from <command-line>:
-   arch/mips/include/asm/vdso/gettimeofday.h: In function 'clock_gettime_fallback':
-   arch/mips/include/asm/vdso/gettimeofday.h:59:38: error: '__NR_clock_gettime64' undeclared (first use in this function)
-      59 |         register long nr asm("v0") = __NR_clock_gettime64;
-         |                                      ^~~~~~~~~~~~~~~~~~~~
-   arch/mips/include/asm/vdso/gettimeofday.h:59:38: note: each undeclared identifier is reported only once for each function it appears in
-   arch/mips/include/asm/vdso/gettimeofday.h: In function 'clock_getres_fallback':
-   arch/mips/include/asm/vdso/gettimeofday.h:83:38: error: '__NR_clock_getres_time64' undeclared (first use in this function)
-      83 |         register long nr asm("v0") = __NR_clock_getres_time64;
-         |                                      ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/mips/vdso/vgettimeofday.c: At top level:
-   arch/mips/vdso/vgettimeofday.c:14:5: warning: no previous prototype for '__vdso_clock_gettime' [-Wmissing-prototypes]
-      14 | int __vdso_clock_gettime(clockid_t clock,
-         |     ^~~~~~~~~~~~~~~~~~~~
-   arch/mips/vdso/vgettimeofday.c: In function '__vdso_clock_gettime':
->> arch/mips/vdso/vgettimeofday.c:17:16: error: implicit declaration of function '__cvdso_clock_gettime32'; did you mean '__cvdso_clock_gettime'? [-Werror=implicit-function-declaration]
-      17 |         return __cvdso_clock_gettime32(clock, ts);
-         |                ^~~~~~~~~~~~~~~~~~~~~~~
-         |                __cvdso_clock_gettime
-   arch/mips/vdso/vgettimeofday.c: At top level:
-   arch/mips/vdso/vgettimeofday.c:36:5: warning: no previous prototype for '__vdso_clock_getres' [-Wmissing-prototypes]
-      36 | int __vdso_clock_getres(clockid_t clock_id,
-         |     ^~~~~~~~~~~~~~~~~~~
-   arch/mips/vdso/vgettimeofday.c: In function '__vdso_clock_getres':
->> arch/mips/vdso/vgettimeofday.c:39:16: error: implicit declaration of function '__cvdso_clock_getres_time32'; did you mean '__cvdso_clock_getres_common'? [-Werror=implicit-function-declaration]
-      39 |         return __cvdso_clock_getres_time32(clock_id, res);
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                __cvdso_clock_getres_common
-   arch/mips/vdso/vgettimeofday.c: At top level:
-   arch/mips/vdso/vgettimeofday.c:42:5: warning: no previous prototype for '__vdso_clock_gettime64' [-Wmissing-prototypes]
-      42 | int __vdso_clock_gettime64(clockid_t clock,
-         |     ^~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +17 arch/mips/vdso/vgettimeofday.c
-
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  12  
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  13  #if _MIPS_SIM != _MIPS_SIM_ABI64
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  14  int __vdso_clock_gettime(clockid_t clock,
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  15  			 struct old_timespec32 *ts)
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  16  {
-6b7f832e465d88 Vincenzo Frascino 2019-06-21 @17  	return __cvdso_clock_gettime32(clock, ts);
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  18  }
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  19  
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  20  #ifdef CONFIG_MIPS_CLOCK_VSYSCALL
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  21  
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  22  /*
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  23   * This is behind the ifdef so that we don't provide the symbol when there's no
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  24   * possibility of there being a usable clocksource, because there's nothing we
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  25   * can do without it. When libc fails the symbol lookup it should fall back on
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  26   * the standard syscall path.
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  27   */
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  28  int __vdso_gettimeofday(struct __kernel_old_timeval *tv,
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  29  			struct timezone *tz)
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  30  {
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  31  	return __cvdso_gettimeofday(tv, tz);
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  32  }
-6b7f832e465d88 Vincenzo Frascino 2019-06-21  33  
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  34  #endif /* CONFIG_MIPS_CLOCK_VSYSCALL */
-cf84512fe7aac9 Vincenzo Frascino 2019-11-29  35  
-23dea1cf7ed384 Vincenzo Frascino 2019-06-21  36  int __vdso_clock_getres(clockid_t clock_id,
-23dea1cf7ed384 Vincenzo Frascino 2019-06-21  37  			struct old_timespec32 *res)
-23dea1cf7ed384 Vincenzo Frascino 2019-06-21  38  {
-23dea1cf7ed384 Vincenzo Frascino 2019-06-21 @39  	return __cvdso_clock_getres_time32(clock_id, res);
-23dea1cf7ed384 Vincenzo Frascino 2019-06-21  40  }
-23dea1cf7ed384 Vincenzo Frascino 2019-06-21  41  
-
-:::::: The code at line 17 was first introduced by commit
-:::::: 6b7f832e465d88fca5f3a07b85e664f962c88e0b BACKPORT: mips: Add support for generic vDSO
-
-:::::: TO: Vincenzo Frascino <vincenzo.frascino@arm.com>
-:::::: CC: Alistair Delva <adelva@google.com>
-
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[bhsharma: Correct ethernet/rgmii related pinmuxs, specify multi-queues and
+ plug in the PHY interrupt for WOL]
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 144 +++++++++++++++++++++++
+ 1 file changed, 144 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+index 8756c2b25c7e..474f688f14a2 100644
+--- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
++++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+@@ -47,6 +47,65 @@ vreg_s4a_1p8: smps4 {
+ 
+ 		vin-supply = <&vreg_3p3>;
+ 	};
++
++	mtl_rx_setup: rx-queues-config {
++		snps,rx-queues-to-use = <4>;
++		snps,rx-sched-sp;
++
++		queue0 {
++			snps,dcb-algorithm;
++			snps,map-to-dma-channel = <0x0>;
++			snps,route-up;
++			snps,priority = <0x1>;
++		};
++
++		queue1 {
++			snps,dcb-algorithm;
++			snps,map-to-dma-channel = <0x1>;
++			snps,route-ptp;
++		};
++
++		queue2 {
++			snps,avb-algorithm;
++			snps,map-to-dma-channel = <0x2>;
++			snps,route-avcp;
++		};
++
++		queue3 {
++			snps,avb-algorithm;
++			snps,map-to-dma-channel = <0x3>;
++			snps,priority = <0xC>;
++		};
++	};
++
++	mtl_tx_setup: tx-queues-config {
++		snps,tx-queues-to-use = <4>;
++		snps,tx-sched-wrr;
++
++		queue0 {
++			snps,weight = <0x10>;
++			snps,dcb-algorithm;
++			snps,priority = <0x0>;
++		};
++
++		queue1 {
++			snps,weight = <0x11>;
++			snps,dcb-algorithm;
++			snps,priority = <0x1>;
++		};
++
++		queue2 {
++			snps,weight = <0x12>;
++			snps,dcb-algorithm;
++			snps,priority = <0x2>;
++		};
++
++		queue3 {
++			snps,weight = <0x13>;
++			snps,dcb-algorithm;
++			snps,priority = <0x3>;
++		};
++	};
+ };
+ 
+ &apps_rsc {
+@@ -317,6 +376,42 @@ &remoteproc_cdsp {
+ 	firmware-name = "qcom/sa8155p/cdsp.mdt";
+ };
+ 
++&ethernet {
++	status = "okay";
++
++	snps,reset-gpio = <&tlmm 79 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	snps,reset-delays-us = <0 11000 70000>;
++
++	snps,ptp-ref-clk-rate = <250000000>;
++	snps,ptp-req-clk-rate = <96000000>;
++
++	snps,mtl-rx-config = <&mtl_rx_setup>;
++	snps,mtl-tx-config = <&mtl_tx_setup>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&ethernet_defaults>;
++
++	phy-handle = <&rgmii_phy>;
++	phy-mode = "rgmii";
++	mdio {
++		#address-cells = <0x1>;
++		#size-cells = <0x0>;
++
++		compatible = "snps,dwmac-mdio";
++
++		/* Micrel KSZ9031RNZ PHY */
++		rgmii_phy: phy@7 {
++			reg = <0x7>;
++
++			interrupt-parent = <&tlmm>;
++			interrupts-extended = <&tlmm 124 IRQ_TYPE_EDGE_FALLING>; /* phy intr */
++			device_type = "ethernet-phy";
++			compatible = "ethernet-phy-ieee802.3-c22";
++		};
++	};
++};
++
+ &uart2 {
+ 	status = "okay";
+ };
+@@ -407,4 +502,53 @@ mux {
+ 			drive-strength = <2>;
+ 		};
+ 	};
++
++	ethernet_defaults: ethernet-defaults {
++		mdc {
++			pins = "gpio7";
++			function = "rgmii";
++			bias-pull-up;
++		};
++
++		mdio {
++			pins = "gpio59";
++			function = "rgmii";
++			bias-pull-up;
++		};
++
++		rgmii-rx {
++			pins = "gpio117", "gpio118", "gpio119", "gpio120", "gpio115", "gpio116";
++			function = "rgmii";
++			bias-disable;
++			drive-strength = <2>;
++		};
++
++		rgmii-tx {
++			pins = "gpio122", "gpio4", "gpio5", "gpio6", "gpio114", "gpio121";
++			function = "rgmii";
++			bias-pull-up;
++			drive-strength = <16>;
++		};
++
++		phy-intr {
++			pins = "gpio124";
++			function = "emac_phy";
++			bias-disable;
++			drive-strength = <8>;
++		};
++
++		pps {
++			pins = "gpio81";
++			function = "emac_pps";
++			bias-disable;
++			drive-strength = <8>;
++		};
++
++		phy-reset {
++			pins = "gpio79";
++			function = "gpio";
++			bias-pull-up;
++			drive-strength = <16>;
++		};
++	};
+ };
+-- 
+2.35.1
+
