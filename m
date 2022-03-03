@@ -2,216 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 035ADC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E92C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbiCCXDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 18:03:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
+        id S237221AbiCCXDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 18:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234381AbiCCXDZ (ORCPT
+        with ESMTP id S237183AbiCCXDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Mar 2022 18:03:25 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDAB42EC6;
-        Thu,  3 Mar 2022 15:02:34 -0800 (PST)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K8mhr4X3Hz67Xd6;
-        Fri,  4 Mar 2022 07:02:20 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Fri, 4 Mar 2022 00:02:32 +0100
-Received: from A2006125610.china.huawei.com (10.47.82.4) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 3 Mar 2022 23:02:25 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
-        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
-        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
-        <liulongfang@huawei.com>, <prime.zeng@hisilicon.com>,
-        <jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
-Subject: [PATCH v8 5/9] hisi_acc_vfio_pci: Restrict access to VF dev BAR2 migration region
-Date:   Thu, 3 Mar 2022 23:01:27 +0000
-Message-ID: <20220303230131.2103-6-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD01090CDF
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 15:02:34 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id i11so8520212eda.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 15:02:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QYz72xS4UEUEZyA/zmJjeRPqsPKoO6eSb+1q4FNlVR8=;
+        b=l6FIj3aats2SLjz57UHUFzeX+1E7k3S4Dlpstfnlv80RVlxrN8PxjndVH7iYewpCSq
+         Xyhxd+QRKRv3vVvSZb2z4KiSw3xMy1qgAriSSd2zu2wTAj9I5snO+A0DBK9Sv3Cr4A7n
+         f39aaXyoc2P3YxjLzmAQQ0cYuuX07Cz/93Qug=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QYz72xS4UEUEZyA/zmJjeRPqsPKoO6eSb+1q4FNlVR8=;
+        b=F07lkiCAiuKGv3gJiSw2SjVKtNkZ/rt/VSeR353tGFZRRP/SGijcR7nWnDg+kGW6XS
+         X3EZ2sikKOnsznpncX4r9ALVBvCCuMUqwV0EbOLgkLD6FX0xlg0fpIe/H2Hrgj7aPFus
+         NGdRA8nVJj5OAdSO5DB231K1uDcmWekYuf3PdE7TNmE+IZps/EuDureFG8J0QnL8mRK9
+         Vv6fbP7geKCe4WUxEYCQKMWrAO+a262SS3P7IseswaNuKAA6MJ58k6Hp1n0DKc6k5Bpw
+         M+YIdbw+9rfVWaGHbAEYrSY2DCrZR79tidQHVUCPh0cZYilbr492noZ2zezFD954SoxL
+         /1Vg==
+X-Gm-Message-State: AOAM533SBZQO6nC8ZQv6a+t5xOKDlSJL9oG76LwO1rF7a+6IupE3rDAw
+        10MzL3j59yx1frzBfjcdAAe6IzFY1dXE8w==
+X-Google-Smtp-Source: ABdhPJyIZdb8Szc0KviewFA/v8XW0TOZsUgOnLWKNu3fjnSvFvVjmzxpwXF+PirClYV9EpsxF+AxZg==
+X-Received: by 2002:a05:6402:424b:b0:410:92aa:30b1 with SMTP id g11-20020a056402424b00b0041092aa30b1mr36374049edb.297.1646348552763;
+        Thu, 03 Mar 2022 15:02:32 -0800 (PST)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id p14-20020aa7cc8e000000b0040f13865fa9sm1389343edt.3.2022.03.03.15.02.31
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 15:02:32 -0800 (PST)
+Received: by mail-wr1-f53.google.com with SMTP id d3so10051561wrf.1
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 15:02:31 -0800 (PST)
+X-Received: by 2002:a5d:64ed:0:b0:1f0:6672:f10c with SMTP id
+ g13-20020a5d64ed000000b001f06672f10cmr1270642wri.679.1646348551347; Thu, 03
+ Mar 2022 15:02:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.82.4]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
+ <20220301181107.v4.2.I48b18ab197c9b649d376cf8cfd934e59d338f86d@changeid>
+In-Reply-To: <20220301181107.v4.2.I48b18ab197c9b649d376cf8cfd934e59d338f86d@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 3 Mar 2022 15:02:18 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=X6jf-UbCzB23MjBWwfs0HcHuoE9ozd3FZxN1U-H_8Saw@mail.gmail.com>
+Message-ID: <CAD=FV=X6jf-UbCzB23MjBWwfs0HcHuoE9ozd3FZxN1U-H_8Saw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] drm/bridge: analogix_dp: Enable autosuspend
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>, Sean Paul <sean@poorly.run>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HiSilicon ACC VF device BAR2 region consists of both functional
-register space and migration control register space. From a
-security point of view, it's not advisable to export the migration
-control region to Guest.
+Hi,
 
-Hence, introduce a separate struct vfio_device_ops for migration
-support which will override the ioctl/read/write/mmap methods to
-hide the migration region and limit the access only to the
-functional register space.
+On Tue, Mar 1, 2022 at 6:11 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> DP AUX transactions can consist of many short operations. There's no
+> need to power things up/down in short intervals.
+>
+> I pick an arbitrary 100ms; for the systems I'm testing (Rockchip
+> RK3399), runtime-PM transitions only take a few microseconds.
+>
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+>
+> Changes in v4:
+>  - call pm_runtime_mark_last_busy() and
+>    pm_runtime_dont_use_autosuspend()
+>  - drop excess pm references around drm_get_edid(), now that we grab and
+>    hold in the dp-aux helper
+>
+> Changes in v3:
+>  - New in v3
+>
+>  drivers/gpu/drm/bridge/analogix/analogix_dp_core.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 
-This will be used in subsequent patches when we add migration
-support to the driver.
+This looks great to me now, thanks.
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- .../vfio/pci/hisilicon/hisi_acc_vfio_pci.c    | 126 ++++++++++++++++++
- 1 file changed, 126 insertions(+)
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-index 8129c3457b3b..582ee4fa4109 100644
---- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-@@ -13,6 +13,119 @@
- #include <linux/vfio.h>
- #include <linux/vfio_pci_core.h>
- 
-+static int hisi_acc_pci_rw_access_check(struct vfio_device *core_vdev,
-+					size_t count, loff_t *ppos,
-+					size_t *new_count)
-+{
-+	unsigned int index = VFIO_PCI_OFFSET_TO_INDEX(*ppos);
-+	struct vfio_pci_core_device *vdev =
-+		container_of(core_vdev, struct vfio_pci_core_device, vdev);
-+
-+	if (index == VFIO_PCI_BAR2_REGION_INDEX) {
-+		loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
-+		resource_size_t end = pci_resource_len(vdev->pdev, index) / 2;
-+
-+		/* Check if access is for migration control region */
-+		if (pos >= end)
-+			return -EINVAL;
-+
-+		*new_count = min(count, (size_t)(end - pos));
-+	}
-+
-+	return 0;
-+}
-+
-+static int hisi_acc_vfio_pci_mmap(struct vfio_device *core_vdev,
-+				  struct vm_area_struct *vma)
-+{
-+	struct vfio_pci_core_device *vdev =
-+		container_of(core_vdev, struct vfio_pci_core_device, vdev);
-+	unsigned int index;
-+
-+	index = vma->vm_pgoff >> (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT);
-+	if (index == VFIO_PCI_BAR2_REGION_INDEX) {
-+		u64 req_len, pgoff, req_start;
-+		resource_size_t end = pci_resource_len(vdev->pdev, index) / 2;
-+
-+		req_len = vma->vm_end - vma->vm_start;
-+		pgoff = vma->vm_pgoff &
-+			((1U << (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
-+		req_start = pgoff << PAGE_SHIFT;
-+
-+		if (req_start + req_len > end)
-+			return -EINVAL;
-+	}
-+
-+	return vfio_pci_core_mmap(core_vdev, vma);
-+}
-+
-+static ssize_t hisi_acc_vfio_pci_write(struct vfio_device *core_vdev,
-+				       const char __user *buf, size_t count,
-+				       loff_t *ppos)
-+{
-+	size_t new_count = count;
-+	int ret;
-+
-+	ret = hisi_acc_pci_rw_access_check(core_vdev, count, ppos, &new_count);
-+	if (ret)
-+		return ret;
-+
-+	return vfio_pci_core_write(core_vdev, buf, new_count, ppos);
-+}
-+
-+static ssize_t hisi_acc_vfio_pci_read(struct vfio_device *core_vdev,
-+				      char __user *buf, size_t count,
-+				      loff_t *ppos)
-+{
-+	size_t new_count = count;
-+	int ret;
-+
-+	ret = hisi_acc_pci_rw_access_check(core_vdev, count, ppos, &new_count);
-+	if (ret)
-+		return ret;
-+
-+	return vfio_pci_core_read(core_vdev, buf, new_count, ppos);
-+}
-+
-+static long hisi_acc_vfio_pci_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
-+				    unsigned long arg)
-+{
-+	if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
-+		struct vfio_pci_core_device *vdev =
-+			container_of(core_vdev, struct vfio_pci_core_device, vdev);
-+		struct pci_dev *pdev = vdev->pdev;
-+		struct vfio_region_info info;
-+		unsigned long minsz;
-+
-+		minsz = offsetofend(struct vfio_region_info, offset);
-+
-+		if (copy_from_user(&info, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (info.argsz < minsz)
-+			return -EINVAL;
-+
-+		if (info.index == VFIO_PCI_BAR2_REGION_INDEX) {
-+			info.offset = VFIO_PCI_INDEX_TO_OFFSET(info.index);
-+
-+			/*
-+			 * ACC VF dev BAR2 region consists of both functional
-+			 * register space and migration control register space.
-+			 * Report only the functional region to Guest.
-+			 */
-+			info.size = pci_resource_len(pdev, info.index) / 2;
-+
-+			info.flags = VFIO_REGION_INFO_FLAG_READ |
-+					VFIO_REGION_INFO_FLAG_WRITE |
-+					VFIO_REGION_INFO_FLAG_MMAP;
-+
-+			return copy_to_user((void __user *)arg, &info, minsz) ?
-+					    -EFAULT : 0;
-+		}
-+	}
-+	return vfio_pci_core_ioctl(core_vdev, cmd, arg);
-+}
-+
- static int hisi_acc_vfio_pci_open_device(struct vfio_device *core_vdev)
- {
- 	struct vfio_pci_core_device *vdev =
-@@ -28,6 +141,19 @@ static int hisi_acc_vfio_pci_open_device(struct vfio_device *core_vdev)
- 	return 0;
- }
- 
-+static const struct vfio_device_ops hisi_acc_vfio_pci_migrn_ops = {
-+	.name = "hisi-acc-vfio-pci-migration",
-+	.open_device = hisi_acc_vfio_pci_open_device,
-+	.close_device = vfio_pci_core_close_device,
-+	.ioctl = hisi_acc_vfio_pci_ioctl,
-+	.device_feature = vfio_pci_core_ioctl_feature,
-+	.read = hisi_acc_vfio_pci_read,
-+	.write = hisi_acc_vfio_pci_write,
-+	.mmap = hisi_acc_vfio_pci_mmap,
-+	.request = vfio_pci_core_request,
-+	.match = vfio_pci_core_match,
-+};
-+
- static const struct vfio_device_ops hisi_acc_vfio_pci_ops = {
- 	.name = "hisi-acc-vfio-pci",
- 	.open_device = hisi_acc_vfio_pci_open_device,
--- 
-2.25.1
+Though I'm not a massive expert on the Analogix DP driver, I'm pretty
+confident about the DP AUX stuff that Brian is touching. I just
+checked and I see that this driver isn't changing lots and the last
+change landed in drm-misc, which means that I can commit this. Thus,
+unless someone else shouts, I'll plan to wait until next week and
+commit these two patches to drm-misc.
 
+The first of the two patches is a "Fix" but since it's been broken
+since 2016 I'll assume that nobody is chomping at the bit for these to
+get into stable and that it would be easier to land both in
+"drm-misc-next". Please yell if someone disagrees.
+
+-Doug
