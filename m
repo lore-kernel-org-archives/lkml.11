@@ -2,91 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 257FFC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 23:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237300AbiCCXps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 18:45:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        id S237307AbiCCXrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 18:47:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231986AbiCCXpp (ORCPT
+        with ESMTP id S231986AbiCCXrx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 18:45:45 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D71F13DE16;
-        Thu,  3 Mar 2022 15:44:58 -0800 (PST)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nPv7p-0007pg-Ju; Fri, 04 Mar 2022 00:44:49 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nPv7p-000O97-5z; Fri, 04 Mar 2022 00:44:49 +0100
-Subject: Re: [PATCH v3 sysctl-next] bpf: move bpf sysctls from kernel/sysctl.c
- to bpf module
-To:     Luis Chamberlain <mcgrof@kernel.org>, Yan Zhu <zhuyan34@huawei.com>
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, keescook@chromium.org,
-        kpsingh@kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liucheng32@huawei.com,
-        netdev@vger.kernel.org, nixiaoming@huawei.com,
-        songliubraving@fb.com, xiechengliang1@huawei.com, yhs@fb.com,
-        yzaikin@google.com, zengweilin@huawei.com
-References: <Yh1dtBTeRtjD0eGp@bombadil.infradead.org>
- <20220302020412.128772-1-zhuyan34@huawei.com>
- <Yh/V5QN1OhN9IKsI@bombadil.infradead.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <d8843ebe-b8df-8aa0-a930-c0742af98157@iogearbox.net>
-Date:   Fri, 4 Mar 2022 00:44:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Thu, 3 Mar 2022 18:47:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7177213DE25;
+        Thu,  3 Mar 2022 15:47:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0145861656;
+        Thu,  3 Mar 2022 23:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86318C004E1;
+        Thu,  3 Mar 2022 23:47:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646351225;
+        bh=qELuvZR37Ylzxt28jAAWXFUW9hvkb8Eiv69yFb0SIoA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=nS2f7nYM9TgElWijog1JiXagEXXVaFfQytIsiIBNYNKlaUuiwqUx6v04ZKvrvc5n8
+         2V78AbMplcPXOZPzmh5B1orkMsnflzm2Tr0S1LE4vLWpVg2fT/jD8dXsu2mqMDbGap
+         uU21tn9KETkGlaN4CitCCy89q7IFdsVUDcItgo/cb/EVNfQy9VZzIDuCFZy9GVvnvA
+         8FbB2RDdpbWz9LcuMFgU286GsRopZT0AQ8TDyJt5+nHJ2EirafieoTCvg6s3bf772R
+         TUMLmLmOKth4mpwj3o141y/rljXDTuR09eqlD8/pLa06BuBrzIZzz1Nkq1PZY4V94/
+         7o6tx1E/UutrQ==
+Date:   Thu, 3 Mar 2022 17:55:21 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Hannes Reinecke <hare@suse.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Robert Love <robert.w.love@intel.com>,
+        James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] scsi: fcoe: Fix Wstringop-overflow warnings in
+ fcoe_wwn_from_mac()
+Message-ID: <20220303235521.GA1745589@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <Yh/V5QN1OhN9IKsI@bombadil.infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26470/Thu Mar  3 10:49:16 2022)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 9:39 PM, Luis Chamberlain wrote:
-> On Wed, Mar 02, 2022 at 10:04:12AM +0800, Yan Zhu wrote:
->> We're moving sysctls out of kernel/sysctl.c as its a mess. We
->> already moved all filesystem sysctls out. And with time the goal is
->> to move all sysctls out to their own susbsystem/actual user.
->>
->> kernel/sysctl.c has grown to an insane mess and its easy to run
->> into conflicts with it. The effort to move them out is part of this.
->>
->> Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
-> 
-> Daniel, let me know if this makes more sense now, and if so I can
-> offer take it through sysctl-next to avoid conflicts more sysctl knobs
-> get moved out from kernel/sysctl.c.
+Fix the following Wstringop-overflow warnings when building with GCC-11:
 
-If this is a whole ongoing effort rather than drive-by patch, then it's
-fine with me. Btw, the patch itself should also drop the linux/bpf.h
-include from kernel/sysctl.c since nothing else is using it after the
-patch.
+drivers/scsi/fcoe/fcoe.c: In function ‘fcoe_netdev_config’:
+drivers/scsi/fcoe/fcoe.c:744:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  744 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr, 1, 0);
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/scsi/fcoe/fcoe.c:744:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/fcoe/fcoe.c:36:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+drivers/scsi/fcoe/fcoe.c:747:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  747 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  748 |                                                  2, 0);
+      |                                                  ~~~~~
+drivers/scsi/fcoe/fcoe.c:747:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/fcoe/fcoe.c:36:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+  CC      drivers/scsi/bnx2fc/bnx2fc_io.o
+In function ‘bnx2fc_net_config’,
+    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  833 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  834 |                                                  1, 0);
+      |                                                  ~~~~~
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
+                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+In function ‘bnx2fc_net_config’,
+    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  839 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  840 |                                                  2, 0);
+      |                                                  ~~~~~
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
+                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c: In function ‘__qedf_probe’:
+drivers/scsi/qedf/qedf_main.c:3520:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+ 3520 |                 qedf->wwnn = fcoe_wwn_from_mac(qedf->mac, 1, 0);
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c:3520:30: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/qedf/qedf.h:9,
+                 from drivers/scsi/qedf/qedf_main.c:23:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c:3521:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+ 3521 |                 qedf->wwpn = fcoe_wwn_from_mac(qedf->mac, 2, 0);
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c:3521:30: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/qedf/qedf.h:9,
+                 from drivers/scsi/qedf/qedf_main.c:23:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
 
-Btw, related to cleanups.. historically, we have a bunch of other knobs
-for BPF under net (in net_core_table), that is:
+by changing the array size to the correct value of ETH_ALEN in the
+argument declaration.
 
-   /proc/sys/net/core/bpf_jit_enable
-   /proc/sys/net/core/bpf_jit_harden
-   /proc/sys/net/core/bpf_jit_kallsyms
-   /proc/sys/net/core/bpf_jit_limit
+Also, fix a couple of checkpatch warnings:
+WARNING: function definition argument 'unsigned int' should also have an identifier name
 
-Would be nice to consolidate all under e.g. /proc/sys/kernel/bpf_* for
-future going forward, and technically, they should be usable also w/o
-net configured into kernel. Is there infra to point the sysctl knobs
-e.g. under net/core/ to kernel/, or best way would be to have single
-struct ctl_table and register for both?
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
 
-Cheers,
-Daniel
+Link: https://github.com/KSPP/linux/issues/181
+Fixes: 85b4aa4926a5 ("[SCSI] fcoe: Fibre Channel over Ethernet")
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/scsi/fcoe/fcoe_ctlr.c | 2 +-
+ include/scsi/libfcoe.h        | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
+index 1756a0ac6f08..558f3f4e1859 100644
+--- a/drivers/scsi/fcoe/fcoe_ctlr.c
++++ b/drivers/scsi/fcoe/fcoe_ctlr.c
+@@ -1969,7 +1969,7 @@ EXPORT_SYMBOL(fcoe_ctlr_recv_flogi);
+  *
+  * Returns: u64 fc world wide name
+  */
+-u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN],
++u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN],
+ 		      unsigned int scheme, unsigned int port)
+ {
+ 	u64 wwn;
+diff --git a/include/scsi/libfcoe.h b/include/scsi/libfcoe.h
+index fac8e89aed81..310e0dbffda9 100644
+--- a/include/scsi/libfcoe.h
++++ b/include/scsi/libfcoe.h
+@@ -249,7 +249,8 @@ int fcoe_ctlr_recv_flogi(struct fcoe_ctlr *, struct fc_lport *,
+ 			 struct fc_frame *);
+ 
+ /* libfcoe funcs */
+-u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
++u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN], unsigned int scheme,
++		      unsigned int port);
+ int fcoe_libfc_config(struct fc_lport *, struct fcoe_ctlr *,
+ 		      const struct libfc_function_template *, int init_fcp);
+ u32 fcoe_fc_crc(struct fc_frame *fp);
+-- 
+2.27.0
+
