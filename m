@@ -2,124 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 13:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED23C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 13:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233562AbiCCNGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 08:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S233563AbiCCNGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 08:06:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233564AbiCCNGF (ORCPT
+        with ESMTP id S230262AbiCCNGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 08:06:05 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1E452E47
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 05:05:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vG1GugHzH65ALQjC843dza+LXMjw3Fb66FqmyCiZVR4=; b=FXzr3bF61pYzyirdZSeI9suUOI
-        YL4nDXwe7OjjNA5PS4vMiOf64WWhkNxkYXjlHwXkV7ORoVfffEVLc3ZuZFuAAlBjcaFBOVrUYkrJm
-        DdHYlxt2JmNeAW89wbVtt1N1uuS+amEV9iPYSrx8ZLBacutKXyyxm8rB2uc/G5QOYIhgfY67gEQ6l
-        bjcnc7mQecXc4L6JEF3wJs1q2R3Jsboyi87C7AfxJDbwjJOYGiNPJi8+cEpoBH4zuY+c76/dQmiRy
-        3Q72gCDzxYuBB2hTbBVsZSkuoLAOGcLKWYkASVYxpMMvK12AWks9YvvNkFwmQyhRfA+FxtN1KLUYN
-        GRByxIDg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPl8Y-00BetW-7h; Thu, 03 Mar 2022 13:04:54 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A4661300242;
-        Thu,  3 Mar 2022 14:04:52 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6146930227409; Thu,  3 Mar 2022 14:04:52 +0100 (CET)
-Date:   Thu, 3 Mar 2022 14:04:52 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, alexei.starovoitov@gmail.com,
-        alyssa.milburn@intel.com, andrew.cooper3@citrix.com,
-        hjl.tools@gmail.com, joao@overdrivepizza.com, jpoimboe@redhat.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, mbenes@suse.cz,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        ndesaulniers@google.com, samitolvanen@google.com, x86@kernel.org
-Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
-Message-ID: <YiC89O5WtsU871Sf@hirez.programming.kicks-ass.net>
-References: <20220224211919.0612a3f6@rorschach.local.home>
- <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
- <20220225083647.12ceb54b@gandalf.local.home>
- <1646159447.ngbqgzj71t.naveen@linux.ibm.com>
- <20220301142016.22e787fb@gandalf.local.home>
- <Yh9vF8REB1JlhQCJ@hirez.programming.kicks-ass.net>
- <20220302110138.6d2abcec@gandalf.local.home>
- <20220302144716.1772020c@gandalf.local.home>
- <Yh/Y2FHw90m00owK@hirez.programming.kicks-ass.net>
- <1646300416.yyrqygami4.naveen@linux.ibm.com>
+        Thu, 3 Mar 2022 08:06:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0F651305;
+        Thu,  3 Mar 2022 05:06:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58B71B8253F;
+        Thu,  3 Mar 2022 13:06:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F8CCC004E1;
+        Thu,  3 Mar 2022 13:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646312759;
+        bh=rH7GMRdryJ4vXOlSLW4fYujXOBHUP2yNPBkxdY3/pqc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XKjBjXMyfVBu2K3GUcQCQc1njLV/s3+M4ZWtxKF4NAU5NxrVy9KXWuvtqBcyWdtqV
+         RezoeSmnvUU25H5afMgJ3RLNtTTER8TDPcItb9bade2MSwFELbeq4ZuW+iEsFBrFiZ
+         LrlNMt5fsW8+bsUFCaAE9Am+UU/TJn5iQDJYZ+Ok=
+Date:   Thu, 3 Mar 2022 14:05:56 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     David Gow <davidgow@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Vitor Massaru Iha <vitor@massaru.org>,
+        Daniel Latypov <dlatypov@google.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        linux-kbuild@vger.kernel.org,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        llvm@lists.linux.dev, x86@kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3 7/7] UAPI: Introduce KUnit userspace compatibility
+Message-ID: <YiC9NBjFgGv5T+gF@kroah.com>
+References: <20220227184517.504931-1-keescook@chromium.org>
+ <20220227184517.504931-8-keescook@chromium.org>
+ <CABVgOSn6Oe8Ke=fnuVwgLh2r8HKjBW8pCe44Z35Qo1bVfz9A-A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1646300416.yyrqygami4.naveen@linux.ibm.com>
+In-Reply-To: <CABVgOSn6Oe8Ke=fnuVwgLh2r8HKjBW8pCe44Z35Qo1bVfz9A-A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 03:15:14PM +0530, Naveen N. Rao wrote:
+On Thu, Mar 03, 2022 at 04:27:13PM +0800, David Gow wrote:
+> On Mon, Feb 28, 2022 at 2:45 AM Kees Cook <keescook@chromium.org> wrote:
+> > diff --git a/include/uapi/misc/kunit.h b/include/uapi/misc/kunit.h
+> > new file mode 100644
+> > index 000000000000..afdffda583ae
+> > --- /dev/null
+> > +++ b/include/uapi/misc/kunit.h
+> > @@ -0,0 +1,181 @@
+> > +#ifndef __UAPI_MISC_KUNIT_H__
+> > +#define __UAPI_MISC_KUNIT_H__
+> > +/*
+> > + * This is a light-weight userspace drop-in replacement for the in-kernel
 
-> > diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
-> > index 7f0ce42f8ff9..4c13406e0bc4 100644
-> > --- a/arch/x86/kernel/kprobes/core.c
-> > +++ b/arch/x86/kernel/kprobes/core.c
-> > @@ -198,13 +198,14 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
-> > 
-> >  	kp = get_kprobe((void *)addr);
-> >  	faddr = ftrace_location(addr);
-> > +
-> >  	/*
-> > -	 * Addresses inside the ftrace location are refused by
-> > -	 * arch_check_ftrace_location(). Something went terribly wrong
-> > -	 * if such an address is checked here.
-> > +	 * In case addr maps to sym+0 ftrace_location() might return something
-> > +	 * other than faddr. In that case consider it the same as !faddr.
-> >  	 */
-> > -	if (WARN_ON(faddr && faddr != addr))
-> > -		return 0UL;
-> > +	if (faddr && faddr != addr)
-> > +		faddr = 0;
-> > +
-> >  	/*
-> >  	 * Use the current code if it is not modified by Kprobe
-> >  	 * and it cannot be modified by ftrace.
-> 
-> I hit this issue yesterday in kprobe generic code in
-> check_ftrace_location().
+<snip>
 
-What exactly where you running to trigger this? (so that I can extend my
-test coverage etc..)
+Someone forgot a SPDX license line for the new file.  Didn't checkpatch
+complain about this?  :(
 
-> In both these scenarios, we just want to check if a
-> particular instruction is reserved by ftrace.  ftrace_location_range()
-> should still work for that purpose, so that may be the easier fix:
-> 
-> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> index 066fa644e9dfa3..ee3cd035403ca2 100644
-> --- a/kernel/kprobes.c
-> +++ b/kernel/kprobes.c
-> @@ -1596,7 +1596,7 @@ static int check_ftrace_location(struct kprobe *p)
-> {
-> 	unsigned long ftrace_addr;
-> 
-> -	ftrace_addr = ftrace_location((unsigned long)p->addr);
-> +	ftrace_addr = ftrace_location_range((unsigned long)p->addr, (unsigned long)p->addr);
+thanks,
 
-Yes, although perhaps a new helper. I'll go ponder during lunch.
-
-PS. I posted v3 but forgot to Cc you:
-
-  https://lkml.kernel.org/r/20220303112321.422525803@infradead.org
-
-I think the above hunk ended up in the kprobe patch, but on second
-thought I should've put it in the ftrace one. I'll go ammend and add
-this other site you found.
+greg k-h
