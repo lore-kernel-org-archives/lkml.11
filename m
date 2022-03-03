@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B80C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiCCLbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:31:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
+        id S232559AbiCCLb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:31:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232727AbiCCLbJ (ORCPT
+        with ESMTP id S232719AbiCCLbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:09 -0500
+        Thu, 3 Mar 2022 06:31:12 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF8E5A15A
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879B317B8AE
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=US8ZPhQJNtTuXAaSYwszqbhTXFzlWOhgw5xA4hNWF88=; b=KubPhp0MYFb2Ku6Zm47FjXoORB
-        2RPF4OK8AM1ZRu2zgKnNlJG1e0LjK39NJbteEKfXu4yDCEJ1QHPbe7KXOi/URXMb6RB47pTOqR//2
-        kp2Sl/2yvHnIU4jjDIxDsIq5RVlZuKRodnYcDB90vTShuHwK7USpM3OQt0D+J1tnNATovvTGFGGbc
-        wz2OIzh5EJlSjjpUv/IdrOGJs4BYSmh2WI6R5J0Gs2XlnWEoxsVLPgCbPEe2JxWA8vWIjC17kZs/s
-        IaSiCaPl/iCPor7SRlQLrCo7SU+GZxa4eSwPBeRnRj+05MsvUJk0UyZmE3YYC9mUD9qpPz7spsWlH
-        Ccc5tdyg==;
+        bh=a8RzkWIyNVeQCr7WhMgSPa2HnZwX8Lz4UbWUw4JBOXo=; b=VgWjrT3gdB5AHxffTAiIJJCe4Y
+        Wvex6wg/5n9IbCebS1eofPWSdNA+pK3nriNNQeb7/8B7hlnyFAjJYLz9NnmmVF8iswZuaiH5eNN76
+        dp36RYlHP/iHy9ma46048yiAQANU5LslgKpkFnAz0bTWmPvlOc5nMt35A1Yf0W7nxu0UUiZM72DmH
+        bRs4m3L/lSEGE8cYaJSLKQPg3/aJ089F8896hWUwrDXloRx5NcxOctx/PGdcGnurQ7NWaWLkpv2Ve
+        /YUwu5jr216ETDFwyyz5hZCNtFitOQjO3FShaClNf8YQCrjTFDfRtHIk1pAanDqUTA5ZLyn0zIKqr
+        Smq1QCTw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeg-00BaGo-Dv; Thu, 03 Mar 2022 11:29:58 +0000
+        id 1nPjeg-00BaGr-FB; Thu, 03 Mar 2022 11:30:00 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DDD513008CA;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EF3E2301CD4;
         Thu,  3 Mar 2022 12:29:56 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 22B9930015917; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112825.251775688@infradead.org>
+        id 4E28830028316; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112825.803096929@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:26 +0100
+Date:   Thu, 03 Mar 2022 12:23:35 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 05/39] x86/ibt: Add ANNOTATE_NOENDBR
+Subject: [PATCH v3 14/39] x86/ibt,crypto: Add ENDBR for the jump-table entries
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,61 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to have objtool warn about code references to !ENDBR
-instruction, we need an annotation to allow this for non-control-flow
-instances -- consider text range checks, text patching, or return
-trampolines etc.
+The code does:
+
+	## branch into array
+	mov     jump_table(,%rax,8), %bufp
+	JMP_NOSPEC bufp
+
+resulting in needing to mark the jump-table entries with ENDBR.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- include/linux/objtool.h |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/x86/crypto/crc32c-pcl-intel-asm_64.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -77,6 +77,12 @@ struct unwind_hint {
- #define STACK_FRAME_NON_STANDARD_FP(func)
- #endif
+--- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
++++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
+@@ -195,6 +195,7 @@ SYM_FUNC_START(crc_pcl)
+ .altmacro
+ LABEL crc_ %i
+ .noaltmacro
++	ENDBR
+ 	crc32q   -i*8(block_0), crc_init
+ 	crc32q   -i*8(block_1), crc1
+ 	crc32q   -i*8(block_2), crc2
+@@ -204,6 +205,7 @@ LABEL crc_ %i
+ .altmacro
+ LABEL crc_ %i
+ .noaltmacro
++	ENDBR
+ 	crc32q   -i*8(block_0), crc_init
+ 	crc32q   -i*8(block_1), crc1
+ # SKIP  crc32  -i*8(block_2), crc2 ; Don't do this one yet
+@@ -237,6 +239,7 @@ LABEL crc_ %i
+ 	################################################################
  
-+#define ANNOTATE_NOENDBR					\
-+	"986: \n\t"						\
-+	".pushsection .discard.noendbr\n\t"			\
-+	_ASM_PTR " 986b\n\t"					\
-+	".popsection\n\t"
-+
- #else /* __ASSEMBLY__ */
- 
- /*
-@@ -129,6 +135,13 @@ struct unwind_hint {
- 	.popsection
- .endm
- 
-+.macro ANNOTATE_NOENDBR
-+.Lhere_\@:
-+	.pushsection .discard.noendbr
-+	.quad	.Lhere_\@
-+	.popsection
-+.endm
-+
- #endif /* __ASSEMBLY__ */
- 
- #else /* !CONFIG_STACK_VALIDATION */
-@@ -139,12 +152,15 @@ struct unwind_hint {
- 	"\n\t"
- #define STACK_FRAME_NON_STANDARD(func)
- #define STACK_FRAME_NON_STANDARD_FP(func)
-+#define ANNOTATE_NOENDBR
- #else
- #define ANNOTATE_INTRA_FUNCTION_CALL
- .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
- .endm
- .macro STACK_FRAME_NON_STANDARD func:req
- .endm
-+.macro ANNOTATE_NOENDBR
-+.endm
- #endif
- 
- #endif /* CONFIG_STACK_VALIDATION */
+ LABEL crc_ 0
++	ENDBR
+ 	mov     tmp, len
+ 	cmp     $128*24, tmp
+ 	jae     full_block
 
 
