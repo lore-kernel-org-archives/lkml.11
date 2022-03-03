@@ -2,117 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F504C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233520AbiCCTpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47464 "EHLO
+        id S232864AbiCCTtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:49:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233645AbiCCToq (ORCPT
+        with ESMTP id S230395AbiCCTtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:44:46 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF78217CC75
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:43:58 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id c7so4755782qka.7
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:43:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OQRGmRac3HoqPUI4eVx9DWNAF0av56DUKyJ6WrJqlvc=;
-        b=tHE27GKzaq8/s+SrNHsu2bVFELPKQrOGq2k5ap+pGfutc6xtgH36rG6YuqRTucIHTQ
-         zW3leSl9K+3AyvBQnkvwWJcgbEY3SnimmpAGO36MSJAKoJ/a+P9rSv+e4GGsMR6cbs8j
-         sy9R+Dv/L7ytx2sLRr1pRTp8l+9JjwKjS6fUQaHfYd9LUn+vOpWabF8P3tyDmeB2t9tg
-         Cq/5H5s+EvhA2DJjCwYrwoHk4WZUk5JLI9G1lVC8YZ5ILi6pK0q+EojgVohg1UaEFr0N
-         da3mxve4ghOjCUor36+x0betMRDiuCJJ0Vq3JPeDIwaoTouRIEc+RiMV/GbtRcfEf3Eb
-         DuPQ==
+        Thu, 3 Mar 2022 14:49:01 -0500
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3A5193F0;
+        Thu,  3 Mar 2022 11:48:12 -0800 (PST)
+Received: by mail-oo1-f41.google.com with SMTP id d134-20020a4a528c000000b00319244f4b04so6981954oob.8;
+        Thu, 03 Mar 2022 11:48:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OQRGmRac3HoqPUI4eVx9DWNAF0av56DUKyJ6WrJqlvc=;
-        b=sgk+NkqHGka0b2QObZpDOdb1C/7nKLLQiJ6IOK1Oq9EX7YSWgmUO+fbGjH7vjm7cif
-         X1VGZN3U9Vh7Y6+vWjv0sssNk9Sj/eu6O01kUkr+ikVyoPpreKYgqjZzIVeDoZl7Uehu
-         P6diRogdVTPCGkIK3bqJ2KXcMOkkUuTQ1OCkaUI2BSWKpQVb+DoM+4B72MeztFZHqd0P
-         Q/5KlV8pOUHelfuka21NAqg97MKgCQ9+6PQ3RCKcZQfRlQPG2e/rUMQP7SpXgXsUfs7s
-         mwnQAT13lJm+m+RcvHpPhBSBWx4A5x/+2J2vFR79Xgm/Wa9hkzzmBfJ5XBZmK1PXaouc
-         O3pA==
-X-Gm-Message-State: AOAM5311l/2gRiMRknBQvqTA+BlcBVVfczpD+C1eHZ3RuVnsTRr3n9ez
-        pu8ShH/qUA0xkPEx2bNqGB+ORGGXH8cCFzdcM343G/eZH8o=
-X-Google-Smtp-Source: ABdhPJxeXoteXrOiqMqkfLkzjWg29B1Vx+7pl8RRzri12jbgH+IoZqPGUaSkWIYkFq1H5ptOTMVAci0rzRoCLSR1SxI=
-X-Received: by 2002:ae9:c10c:0:b0:663:2047:2eed with SMTP id
- z12-20020ae9c10c000000b0066320472eedmr480140qki.221.1646336637693; Thu, 03
- Mar 2022 11:43:57 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9yFbGp0EZ8ry89Lh1bMjpmj2K73JEWfQSj/2tdftbTg=;
+        b=xat+9QLI4xvVwbOo7NW0sbGf7fBokAJR5RmpiG1x3Mgl4pfqUmkLibIFj62R9U/aVP
+         5WDp/HhiAL/11y5oGlmqh5aP0mYHinbN5sFcvpkCTOEEsKy2NyzIpA4VjG8+FUc1Snzq
+         EEJxumGVWb7zbEdvxPO48P+5wqNwIzlYK+7p5Q2JaqBMYW12oKpx1TJEU6Q2bZUG+wTk
+         tIxMBcDO34/p3deLm9jksQAqcvApLej4XfQDJZMD/MsFB3SW4RJts9LfO9tDUxp4/JPO
+         ed+5BBPOnY2wko5TCVdJI3RJ+FsTsm+URR7rzxkyQz/rcpLnCnkN6kCLdrhMcrOfHmWm
+         e6vA==
+X-Gm-Message-State: AOAM532CHWkv4tcJumPJ1yNu17PTQ/tsePTstOApoinKf+h1V035evlg
+        FNuyxjYu0H/XhVtgptRw7i/pn2BKNQ==
+X-Google-Smtp-Source: ABdhPJyTGsyf+8qFhYYvUNW2ISTyF/8adw+l7DqOzzvPLIU9gt+qyaJ1gyJmKaUVl9jH6aWYPV40sw==
+X-Received: by 2002:a05:6870:b427:b0:d3:5044:db1b with SMTP id x39-20020a056870b42700b000d35044db1bmr5123974oap.2.1646336892232;
+        Thu, 03 Mar 2022 11:48:12 -0800 (PST)
+Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.googlemail.com with ESMTPSA id w15-20020a9d70cf000000b005ad26785e7dsm1360906otj.57.2022.03.03.11.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 11:48:11 -0800 (PST)
+From:   Rob Herring <robh@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        - <patches@opensource.cirrus.com>
+Cc:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-gpio@vger.kernel.org
+Subject: [PATCH] dt-bindings: mfd: Fix pinctrl node name warnings
+Date:   Thu,  3 Mar 2022 13:47:37 -0600
+Message-Id: <20220303194737.2258809-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220225234339.2386398-1-haoluo@google.com> <20220225234339.2386398-5-haoluo@google.com>
- <c323bce9-a04e-b1c3-580a-783fde259d60@fb.com> <CAADnVQ+q0vF03cH8w0c50XMZU1yf_0UjZ+ZarQ_RqMQrVpOFPA@mail.gmail.com>
- <93c3fc30-ad38-96fa-cf8e-20e55b267a3b@fb.com> <CAADnVQL4yxhDCLjvCCmpOtg0+8-HSg32KG07TCxx+L+Gji7n6g@mail.gmail.com>
-In-Reply-To: <CAADnVQL4yxhDCLjvCCmpOtg0+8-HSg32KG07TCxx+L+Gji7n6g@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 3 Mar 2022 11:43:46 -0800
-Message-ID: <CA+khW7gyOGgqJjyuSjJMJ8+iQmozZ6VhSJ7exZF0gGLOeS5gog@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 4/9] bpf: Introduce sleepable tracepoints
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Josh Don <joshdon@google.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 6:29 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Mar 2, 2022 at 5:09 PM Yonghong Song <yhs@fb.com> wrote:
-> >
-> >
-> >
-> > On 3/2/22 1:30 PM, Alexei Starovoitov wrote:
-> > > On Wed, Mar 2, 2022 at 1:23 PM Yonghong Song <yhs@fb.com> wrote:
-> > >>
-> > >>
-> > >>
-> > >> On 2/25/22 3:43 PM, Hao Luo wrote:
-> > >>> Add a new type of bpf tracepoints: sleepable tracepoints, which allows
-> > >>> the handler to make calls that may sleep. With sleepable tracepoints, a
-> > >>> set of syscall helpers (which may sleep) may also be called from
-> > >>> sleepable tracepoints.
-> > >>
-> > >> There are some old discussions on sleepable tracepoints, maybe
-> > >> worthwhile to take a look.
-> > >>
-> > >> https://lore.kernel.org/bpf/20210218222125.46565-5-mjeanson@efficios.com/T/
-> > >
-> > > Right. It's very much related, but obsolete too.
-> > > We don't need any of that for sleeptable _raw_ tps.
-> > > I prefer to stay with "sleepable" name as well to
-> > > match the rest of the bpf sleepable code.
-> > > In all cases it's faultable.
-> >
-> > sounds good to me. Agree that for the bpf user case, Hao's
-> > implementation should be enough.
->
-> Just remembered that we can also do trivial noinline __weak
-> nop function and mark it sleepable on the verifier side.
-> That's what we were planning to do to trace map update/delete ops
-> in Joe Burton's series.
-> Then we don't need to extend tp infra.
-> I'm fine whichever way. I see pros and cons in both options.
+The recent addition pinctrl.yaml in commit c09acbc499e8 ("dt-bindings:
+pinctrl: use pinctrl.yaml") resulted in some node name warnings:
 
-Joe is also cc'ed in this patchset, I will sync up with him on the
-status of trace map work.
+Documentation/devicetree/bindings/mfd/cirrus,lochnagar.example.dt.yaml: \
+ lochnagar-pinctrl: $nodename:0: 'lochnagar-pinctrl' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
+Documentation/devicetree/bindings/mfd/cirrus,madera.example.dt.yaml: \
+ codec@1a: $nodename:0: 'codec@1a' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
+Documentation/devicetree/bindings/mfd/brcm,cru.example.dt.yaml: \
+ pin-controller@1c0: $nodename:0: 'pin-controller@1c0' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
 
-Alexei, do we have potentially other variants of tp? We can make the
-current u16 sleepable a flag, so we can reuse this flag later when we
-have another type of tracepoints.
+Fix the node names to the preferred 'pinctrl'. For cirrus,madera,
+nothing from pinctrl.yaml schema is used, so just drop the reference.
+
+Fixes: c09acbc499e8 ("dt-bindings: pinctrl: use pinctrl.yaml")
+Cc: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/mfd/brcm,cru.yaml          | 4 ++--
+ Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml  | 2 +-
+ Documentation/devicetree/bindings/pinctrl/cirrus,madera.yaml | 3 ---
+ 3 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/mfd/brcm,cru.yaml b/Documentation/devicetree/bindings/mfd/brcm,cru.yaml
+index be4a2df71c25..b85819fbb07c 100644
+--- a/Documentation/devicetree/bindings/mfd/brcm,cru.yaml
++++ b/Documentation/devicetree/bindings/mfd/brcm,cru.yaml
+@@ -39,7 +39,7 @@ patternProperties:
+   '^phy@[a-f0-9]+$':
+     $ref: ../phy/bcm-ns-usb2-phy.yaml
+ 
+-  '^pin-controller@[a-f0-9]+$':
++  '^pinctrl@[a-f0-9]+$':
+     $ref: ../pinctrl/brcm,ns-pinmux.yaml
+ 
+   '^syscon@[a-f0-9]+$':
+@@ -94,7 +94,7 @@ examples:
+             reg = <0x180 0x4>;
+         };
+ 
+-        pin-controller@1c0 {
++        pinctrl@1c0 {
+             compatible = "brcm,bcm4708-pinmux";
+             reg = <0x1c0 0x24>;
+             reg-names = "cru_gpio_control";
+diff --git a/Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml b/Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml
+index c00ad3e21c21..975a46f3c46f 100644
+--- a/Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml
++++ b/Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml
+@@ -126,7 +126,7 @@ properties:
+       clock-frequency:
+         const: 12288000
+ 
+-  lochnagar-pinctrl:
++  pinctrl:
+     type: object
+     $ref: /schemas/pinctrl/cirrus,lochnagar.yaml#
+ 
+diff --git a/Documentation/devicetree/bindings/pinctrl/cirrus,madera.yaml b/Documentation/devicetree/bindings/pinctrl/cirrus,madera.yaml
+index c85f759ae5a3..8a90d8273767 100644
+--- a/Documentation/devicetree/bindings/pinctrl/cirrus,madera.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/cirrus,madera.yaml
+@@ -107,9 +107,6 @@ properties:
+ 
+     additionalProperties: false
+ 
+-allOf:
+-  - $ref: "pinctrl.yaml#"
+-
+ required:
+   - pinctrl-0
+   - pinctrl-names
+-- 
+2.32.0
+
