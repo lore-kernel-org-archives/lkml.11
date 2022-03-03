@@ -2,126 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D507C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235270AbiCCRRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
+        id S235281AbiCCRTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233552AbiCCRRh (ORCPT
+        with ESMTP id S233121AbiCCRTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:17:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0A0F47ED;
-        Thu,  3 Mar 2022 09:16:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE88EB824C8;
-        Thu,  3 Mar 2022 17:16:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72976C004E1;
-        Thu,  3 Mar 2022 17:16:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646327808;
-        bh=sdUx4pmy1wPJZfj6t7Mf+fkJVick/R8Ggpu5sR4Dt+Y=;
-        h=Date:From:To:Cc:Subject:From;
-        b=NwmIXYrrvH7iS9aCfeSxw0PbeX4QcPjSaApJqB1fJ3O9q1sfze3jXHZKmO74LRbKI
-         Xg7d3NyzLFwg8NhGr2Xvt7XHe7x4FyWCAX3AJQZL49HW4+ADRsQzeivFqsZQ7M7GCj
-         6CkPQaC/MIEh2T4NMU2Yf1s/JfFpSO9dDC1FuHpTRiaOnpF0JrP95xdKY/isOQj2WO
-         EjcjiiHjKV8ecFFd6lMkH5r7IVEY+6vQOoHliejS8mrNDXtpnw++kBkNMxQEOGTdWs
-         GwWsgCJDLn0v9B9vOGDFOqN9JyHWuxPwLQUtXhT4g9cnKjIqrgbbNNRdX/CiLOi7Fq
-         Mz8VMs5IbQc/A==
-Date:   Thu, 3 Mar 2022 11:25:03 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] drm/amd/display: Fix Wstringop-overflow warnings in
- dc_link_dp.c
-Message-ID: <20220303172503.GA1731116@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        Thu, 3 Mar 2022 12:19:18 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949B7DF495;
+        Thu,  3 Mar 2022 09:18:30 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id q8so6622814iod.2;
+        Thu, 03 Mar 2022 09:18:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Piv/cwjRM38ctXaerZYeTWxIVh1IQ5zV9gRucqSt5Ow=;
+        b=cMp0QepwF0b2BjbjvXzC51xZri/it7a7dc6vo6hmUJswJbmpu+3Jf45b1/r4+wWg1I
+         AoFqnZeWVaXGz8MNSE9A9edYSC3s1ySmJpfah7zmprgz4mlvia9acs8l/lxWpQVEyQ2n
+         5dAd9JC9m9kEkKfebe9oT+HPjHZOjO9Nczg2TN+U1YFbaQpfxV985vp/KTsa6W59D6Qm
+         s9BGpI9yMuFlmgAP1a7A24Xg5i1QcJdggMuaulJnPWF021g23LoJVrgxp0e86jksNXgd
+         Emn6tMKRyYhG1j85bZxiD9NHVYdd0MYrQTW17piCR6yiPHnce1uQWesrk7ejIvNBQhso
+         kEFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Piv/cwjRM38ctXaerZYeTWxIVh1IQ5zV9gRucqSt5Ow=;
+        b=jAzDWFuc+Hk3KcmmE6nlsB8HwrAkF9QzCegfq9FaRCCnZd+bKkA69AXC7+861WIbEW
+         zoGb+Tbuff1hZej180AA45BL4vVhWmaSz8eHUYW1qqPkHI+aJBlwkSAWZ09La74xh8EL
+         kPX/Ng2YXwGEY3u/SduuOjv7eXwe+McqjLSNWmYFP1mpzeCKjhK9OtC0Pr0QSCq7pKMc
+         I39wU9Sd2Ki6Hr7Rks/T+PHEzho+UbwZt15swTxvZpIb+Rr/16mNLBjzut9YshB7erlM
+         LyAGgYyRri3Vv+z+5XucUc2OfjtPco7RhM5HyAxsPk256T42vftyT+F3wfTL1/OkYd4c
+         jJ3g==
+X-Gm-Message-State: AOAM530ZIdIEnvuhwdHCkQf4j1hNiJg2/MupRr/WfJ6Hrql8nR09frzY
+        eVNZxEgsfQA3yWuvPx+fA2+uDXqSzecMcA==
+X-Google-Smtp-Source: ABdhPJySCXHAFG/fVPd8LxSkhMoMH6R6svTkOcUbDAYgbbRNVTTk8ONZtwcFqggyW74gHFRY7gNjJA==
+X-Received: by 2002:a6b:8e17:0:b0:60d:c43a:6992 with SMTP id q23-20020a6b8e17000000b0060dc43a6992mr28061136iod.24.1646327909291;
+        Thu, 03 Mar 2022 09:18:29 -0800 (PST)
+Received: from aford-OptiPlex-7050.logicpd.com ([174.46.170.158])
+        by smtp.gmail.com with ESMTPSA id b11-20020a92c56b000000b002c5ff65adffsm3016655ilj.31.2022.03.03.09.18.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 09:18:28 -0800 (PST)
+From:   Adam Ford <aford173@gmail.com>
+To:     linux-omap@vger.kernel.org
+Cc:     aford@beaconembedded.com, Adam Ford <aford173@gmail.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] ARM: dts: logicpd-som-lv: Fix wrong pinmuxing on OMAP35
+Date:   Thu,  3 Mar 2022 11:18:17 -0600
+Message-Id: <20220303171818.11060-1-aford173@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following Wstringop-overflow warnings when building with GCC-11:
+The pinout of the OMAP35 and DM37 variants of the SOM-LV are the
+same, but the macros which define the pinmuxing are different
+between OMAP3530 and DM3730.  The pinmuxing was correct for
+for the DM3730, but wrong for the OMAP3530.  Since the boot loader
+was correctly pin-muxing the pins, this was not obvious. As the
+bootloader not guaranteed to pinmux all the pins any more, this
+causes an issue, so the pinmux needs to be moved from a common
+file to their respective board files.
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:388:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:388:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:388:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:1491:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:2613:25: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:2613:25: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+Fixes: f8a2e3ff7103 ("ARM: dts: Add minimal support for LogicPD OMAP35xx SOM-LV devkit")
+Signed-off-by: Adam Ford <aford173@gmail.com>
 
-by removing the over-specified array size from the argument declarations.
-
-This helps with the ongoing efforts to globally enable
--Wstringop-overflow.
-
-Link: https://github.com/KSPP/linux/issues/181
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 4 ++--
- drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h  | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-index f11a8d97fb60..81952e07acf6 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -823,7 +823,7 @@ bool dp_is_interlane_aligned(union lane_align_status_updated align_status)
- void dp_hw_to_dpcd_lane_settings(
- 		const struct link_training_settings *lt_settings,
- 		const struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
--		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
-+		union dpcd_training_lane dpcd_lane_settings[])
- {
- 	uint8_t lane = 0;
+diff --git a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
+index 2a0a98fe67f0..3240c67e0c39 100644
+--- a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
++++ b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
+@@ -11,3 +11,18 @@
+ 	model = "LogicPD Zoom OMAP35xx SOM-LV Development Kit";
+ 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3430", "ti,omap3";
+ };
++
++&omap3_pmx_core2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb2_2_pins>;
++	hsusb2_2_pins: pinmux_hsusb2_2_pins {
++		pinctrl-single,pins = <
++			OMAP3430_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
++			OMAP3430_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
++			OMAP3430_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
++			OMAP3430_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
++			OMAP3430_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
++			OMAP3430_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
++		>;
++	};
++};
+diff --git a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
+index a604d92221a4..c757f0d7781c 100644
+--- a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
++++ b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
+@@ -11,3 +11,18 @@
+ 	model = "LogicPD Zoom DM3730 SOM-LV Development Kit";
+ 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3630", "ti,omap3";
+ };
++
++&omap3_pmx_core2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb2_2_pins>;
++	hsusb2_2_pins: pinmux_hsusb2_2_pins {
++		pinctrl-single,pins = <
++			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
++			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
++			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
++			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
++			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
++			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
++		>;
++	};
++};
+diff --git a/arch/arm/boot/dts/logicpd-som-lv.dtsi b/arch/arm/boot/dts/logicpd-som-lv.dtsi
+index b56524cc7fe2..55b619c99e24 100644
+--- a/arch/arm/boot/dts/logicpd-som-lv.dtsi
++++ b/arch/arm/boot/dts/logicpd-som-lv.dtsi
+@@ -265,21 +265,6 @@
+ 	};
+ };
  
-@@ -853,7 +853,7 @@ void dp_decide_lane_settings(
- 		const struct link_training_settings *lt_settings,
- 		const union lane_adjust ln_adjust[LANE_COUNT_DP_MAX],
- 		struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
--		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
-+		union dpcd_training_lane dpcd_lane_settings[])
- {
- 	uint32_t lane;
- 
-diff --git a/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h b/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h
-index ab9939db8cea..0d00da1640a7 100644
---- a/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h
-+++ b/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h
-@@ -147,12 +147,12 @@ bool dp_is_max_vs_reached(
- void dp_hw_to_dpcd_lane_settings(
- 	const struct link_training_settings *lt_settings,
- 	const struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
--	union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX]);
-+	union dpcd_training_lane dpcd_lane_settings[]);
- void dp_decide_lane_settings(
- 	const struct link_training_settings *lt_settings,
- 	const union lane_adjust ln_adjust[LANE_COUNT_DP_MAX],
- 	struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
--	union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX]);
-+	union dpcd_training_lane dpcd_lane_settings[]);
- 
- uint32_t dp_translate_training_aux_read_interval(uint32_t dpcd_aux_read_interval);
- 
+-&omap3_pmx_core2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb2_2_pins>;
+-	hsusb2_2_pins: pinmux_hsusb2_2_pins {
+-		pinctrl-single,pins = <
+-			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
+-			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
+-			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
+-			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
+-			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
+-			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
+-		>;
+-	};
+-};
+-
+ &uart2 {
+ 	interrupts-extended = <&intc 73 &omap3_pmx_core OMAP3_UART2_RX>;
+ 	pinctrl-names = "default";
 -- 
-2.27.0
+2.17.1
 
