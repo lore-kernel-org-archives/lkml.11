@@ -2,86 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74176C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83448C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237041AbiCCWko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 17:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
+        id S237021AbiCCWma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 17:42:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237021AbiCCWke (ORCPT
+        with ESMTP id S231782AbiCCWm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 17:40:34 -0500
+        Thu, 3 Mar 2022 17:42:29 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1CD154709;
-        Thu,  3 Mar 2022 14:39:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539751662FF
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 14:41:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:References:To:From:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=8xS4vyGXrvaXNSOoyEcAyKtTk6VII0GHY+1sEXjj3ZU=; b=Rcw5rZDPcRxvOBX/MWRLhvjObC
-        TRLMEin0NOHkkJylcRVj4A3PpWkMgnYl4tavHCyPUssyKSe2djvNzofUU1gk8S2nz0GAFygh+nuwR
-        O31wvhqdWnRLnp+l8t2g4ddXWAIjh/2bJObFM2ICcgRTj/6DflgExi/wpPdSTp57TJ90O9sJjNSzC
-        T2WIKZ8VDxldgThha0UkE1k2V0Wcb/z2Bbbdb+GaGL36tnnV4De2KeBKtPDJhwnmFgzGoCaiyApow
-        5f/YUwfnY/HqoLJmT4240vVtk4VLwwlqr7vftKdCCg4MMJkBZQbcmB2jdPq6fUQ0v36toepHhAuYN
-        YWy4Iy5g==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPu6m-00C3HB-VQ; Thu, 03 Mar 2022 22:39:41 +0000
-Message-ID: <f2b86182-97d1-4341-1b2c-9598a90fdecc@infradead.org>
-Date:   Thu, 3 Mar 2022 14:39:36 -0800
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=52IPoiZlULRFsRfp7a+MOcHPPK5OVaKArRJeKTkzhvo=; b=KRjqs5qByXCCtDLJuVi6CXCPEi
+        Lpe0SgN11Y9rnKZhPft2uhbuREDPHnG+3PYR9R9faV5PJG2TCg9lOpWNOZHWAzJaT1lfLmOojK3xL
+        1P00Mu4GJnFpxvLRLiGHRJg1rmHpX3zEgakW1IWBZbdAnXP77Kp6GEI0XJGNfYbprut/I6tYMccVY
+        R7AiMS81A4YWCTxb2MK1mCg6sLoiWcWzmYpvJiv+sagrOqn0TYMAIW8dpAC7qCWSThbsurU/ahF3P
+        nSvw2sANT59tduACOlNAgWIVloDzRiiJPl2oDSOmqF6/3QLpFKZY5Epf3+UtBH2DVIFL2M4/PhNyt
+        gHkqkyrw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPu8g-00C3LQ-Kt; Thu, 03 Mar 2022 22:41:38 +0000
+Date:   Thu, 3 Mar 2022 22:41:38 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Hugh Dickins <hughd@google.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Yu Zhao <yuzhao@google.com>, Yang Shi <shy828301@gmail.com>,
+        Michal Hocko <mhocko@suse.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH mmotm] mm: delete __ClearPageWaiters()
+Message-ID: <YiFEIslJ9m57G6wM@casper.infradead.org>
+References: <351df0af-78f2-c20-2a6d-e5f978e5ca1@google.com>
+ <a2f6aa01-8003-6791-718d-3898f77ef643@redhat.com>
+ <9dda55d5-eafa-3177-2a4c-32ccb7e146e3@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: mmotm 2022-02-23-21-20 uploaded (Kconfig warning:
- SND_SOC_WCD938X)
-Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
-        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-References: <20220224052137.BFB10C340E9@smtp.kernel.org>
- <6bd5ec04-dedc-5d1f-23d7-4fd6f4efb95f@infradead.org>
-In-Reply-To: <6bd5ec04-dedc-5d1f-23d7-4fd6f4efb95f@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9dda55d5-eafa-3177-2a4c-32ccb7e146e3@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Still seeing this build (Kconfig) warning in
-mmotm of 20220322:
+On Thu, Mar 03, 2022 at 02:28:46PM -0800, Hugh Dickins wrote:
+> On Thu, 3 Mar 2022, David Hildenbrand wrote:
+> > On 03.03.22 02:56, Hugh Dickins wrote:
+> > > The PG_waiters bit is not included in PAGE_FLAGS_CHECK_AT_FREE, and
+> > > vmscan.c's free_unref_page_list() callers rely on that not to generate
+> > > bad_page() alerts.  So __page_cache_release() and release_pages() (and
+> > > the presumably copy-and-pasted put_zone_device_private_or_public_page())
+> 
+> Hah, I'm showing my age there, or the patch's age: it's been rebranded
+> frequently since then, with linux-next calling it free_zone_device_page(),
+> as you kindly point out.  How long before it's free_zone_device_folio()?
 
-On 2/24/22 09:13, Randy Dunlap wrote:
-> 
-> 
-> On 2/23/22 21:21, Andrew Morton wrote:
->> The mm-of-the-moment snapshot 2022-02-23-21-20 has been uploaded to
->>
->>    https://www.ozlabs.org/~akpm/mmotm/
->>
->> mmotm-readme.txt says
->>
->> README for mm-of-the-moment:
->>
->> https://www.ozlabs.org/~akpm/mmotm/
->>
->> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
->> more than once a week.
-> 
-> on x86_64:
-> 
-> WARNING: unmet direct dependencies detected for SND_SOC_WCD938X
->   Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=m] && SND_SOC_WCD938X_SDW [=n] && (SOUNDWIRE [=n] || !SOUNDWIRE [=n])
->   Selected by [m]:
->   - SND_SOC_SC7280 [=m] && SOUND [=y] && !UML && SND [=y] && SND_SOC [=m] && SND_SOC_QCOM [=m] && (I2C [=y] && SOUNDWIRE [=n] || COMPILE_TEST [=y])
-> 
-> 
-> Full randconfig file is attached.
-> 
-
--- 
-~Randy
+Probably not a serious question, but within the next year, I expect.
+I have a prototype patch to do the entire page freeing path, but it
+wasn't a priority for this merge window.
