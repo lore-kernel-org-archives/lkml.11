@@ -2,179 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB97DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB55C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:14:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbiCCBK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:10:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
+        id S231271AbiCCBO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:14:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231169AbiCCBK2 (ORCPT
+        with ESMTP id S231169AbiCCBOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:10:28 -0500
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3B6F5430;
-        Wed,  2 Mar 2022 17:09:44 -0800 (PST)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 222JMiOk029824;
-        Wed, 2 Mar 2022 17:09:06 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=vvUDA4V5Y58U0rcUf6z3or8jqpZUsp1Zq/Rtm56GTsg=;
- b=mQyPZY0FTwWaN+xGmetGiJ+2tQ0wFloMW/XnGRStjZ0/97a0G+B38pi25YER6spQiXgq
- aV2DxNp5KJbU8pqN9WCHu0DKPKDkUxYmilt6ZMwqI/tFcKm3sEPeuoyFm02aNtGQAnG2
- T6iOdeUzgJb5MtCH9m5xpN4DHhU+JYF3PKw= 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2109.outbound.protection.outlook.com [104.47.55.109])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ej1r0sd4m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 17:09:05 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I2K2hYuXPlEVYa+WXWNw5xXn2i3VSoxkRHVNcdZ3KKf9w/Qn1Mf5RHtwQ0MtVBAA3hxB8j+KtQt982qC+nA1HSw7FRzZ1AwPILGb+/co/jyQwUQNde6GTZ/8DWXVND5hufY+Cyc1YVbVjRzzMJ2p2vfz0VZdCQwrDvwCC7leKZQZK52ejl/2L6O+aOBBuEsB5qSfgCq0esVIDrqMqTGBOBm0E/6xvQiaMa9ZbBIpjdmJorIvlxUwXg6n6hqSTVx03X6xqnjmkH1eAKxH8Qe5Hfl83aMhZ8DQaIRr2sq0r5bpPYf/ZTJX5usN2sRMQtcqzxlNjMOqX1E91+Oc1znQIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vvUDA4V5Y58U0rcUf6z3or8jqpZUsp1Zq/Rtm56GTsg=;
- b=c5vFxhVfnkJmWaGrrZstJJ5ScHHC05QaSKLnrQgbAj9KizdBQUC5i54alNwn72jFG1i7vgivt5gripEPv0MGHtkdAqGvpOhqPI/WxBCgqLeBbXkh/DBlNOlQqBNz80h3jd6xxUj2Fy7J9KrArqKM95lQCJ7zvrcoSTfERHT7Xd3NUVY/rttezycZTs0x+AfH6e2bwkZFZL9WUz5hJSqRBSYeih3aczLu4fsCuBFCoRPA93qvla206iepstgzabFOavcziUfc3iJu7pZgsRVoK1Yb+htWkexJ9CUS/N0KHubFfMOIu7Fxl6EExejPmAad6FAzHQjGCAFjcw5stP6VUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by BN6PR15MB1892.namprd15.prod.outlook.com (2603:10b6:405:54::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Thu, 3 Mar
- 2022 01:09:03 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::91dd:facd:e7a5:a8d1]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::91dd:facd:e7a5:a8d1%3]) with mapi id 15.20.5017.027; Thu, 3 Mar 2022
- 01:09:02 +0000
-Message-ID: <93c3fc30-ad38-96fa-cf8e-20e55b267a3b@fb.com>
-Date:   Wed, 2 Mar 2022 17:08:57 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH bpf-next v1 4/9] bpf: Introduce sleepable tracepoints
-Content-Language: en-US
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Hao Luo <haoluo@google.com>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, joshdon@google.com,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220225234339.2386398-1-haoluo@google.com>
- <20220225234339.2386398-5-haoluo@google.com>
- <c323bce9-a04e-b1c3-580a-783fde259d60@fb.com>
- <CAADnVQ+q0vF03cH8w0c50XMZU1yf_0UjZ+ZarQ_RqMQrVpOFPA@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <CAADnVQ+q0vF03cH8w0c50XMZU1yf_0UjZ+ZarQ_RqMQrVpOFPA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-ClientProxiedBy: MW4PR04CA0154.namprd04.prod.outlook.com
- (2603:10b6:303:85::9) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7fa4aafd-e6ca-4172-dc86-08d9fcb267e1
-X-MS-TrafficTypeDiagnostic: BN6PR15MB1892:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR15MB189201D0FA5A3A53430DF387D3049@BN6PR15MB1892.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /QMpHbwo40SG89Z5prPw5Hj1cbdtiF+CmOLvjv0ZWh6gfR6g16WsUDUi2sPAiAC4kCjZiAq7L72Sxe2tNPJ6Oe5DGIjUfxx5J4BrUgWogoDZEza8end+n1sW+rbkxv4FUIW3vvm2kgvFfYtP7kQ+74ay8gmnt9hOHkAmusPUW/eLQJAK1MXa6Cte+aaAnXBrvTnggoexGY8CXO1QuFA2lBTjaqs7sQGXYAEE1DMlttIN2gmWbR6IGmiZQSbpjK7VFnwm2uNV0TQZPw9v9TUBPkgB2SBi3iMcGcx/65Jwaf7wXXFgvN5KDKGT/Ps6h+Men9GZUKl8O0HyvlPNhIzIoGSJQI0M/wKnH6UuJiQh2yk3fk9Ga6Dfu7NiWcLlYWJ4HI6zk4zPOMSzaTOxaDoqHkL08IzUIKcBx7UrsEvUi7FadXQuSijbPq/T9pOgiE+JXf+uONOIfHyY9WoruFyOl8GWWmGf4DwBEN7XZR+yOVaXNL4HDxLfvjo+9ii08z1bg796SP3slauirC1EtGwD9fJeVoB1f6evHpRfhPMY1BlezaurMWXN/4ts6sKCEpvPUQtuMxTkZlEYk8abjKq/U5h2Gh89FZkPIso0pPEJ747SVD6oGIckovHfJAVowvoGrmwfm4ksX8qTRY1b7xn4OG94+gK7BhVvhkyT5i8dFD8Zef3PLwqz4UfQsVySUgk364R1QKgj9FSSS0Fp/Moy2ik2t6UDrnxgvaaevgTI2LkTUS7mNL6svY5Boh9Sb8FZq6iwCkiTVhMrsKkIpZwpNNXvCTD7J7uEyadW6AkBTrNgwTgOaM0BLKan29kBNXlg
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(31686004)(186003)(7416002)(8936002)(5660300002)(4744005)(2616005)(38100700002)(53546011)(52116002)(6486002)(966005)(508600001)(6666004)(6916009)(316002)(54906003)(6506007)(8676002)(86362001)(66946007)(31696002)(66476007)(66556008)(4326008)(2906002)(36756003)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZlZkOVR6OVd4OVJJcDl1WU1FQ3kvd0RuQXk2ZjMwYUV4OFFIelB6Y1NDa3Rl?=
- =?utf-8?B?WkR1RzUwMk1zVGdRRHlQRmVZVXlCLytURGs0a05WZk9BU2VoV0Y0cldwSjJ4?=
- =?utf-8?B?dkM2S0NXN1NCYjFlYW5kaC9sbEx6RUVBNHczUS9xOEc0bEg2SFI0VU5CcEVo?=
- =?utf-8?B?OFdEZHZxNld1YkRPVGlCQ2I4N1NGdEEvKzlKeDBFbUF2d0ZhWko3WjIwQWFZ?=
- =?utf-8?B?L1RLS1lEd0FMUWhycW0rWkR0cmtpaSsxM1h6UFZraVlvdzlicEFHdXZGa2J2?=
- =?utf-8?B?RVNJcFNnNVpPSDdiNkl2VW40ZU9YQnI1ektCd29aMHNCa1QyTlVzdDU5MWtw?=
- =?utf-8?B?YlFZRkVqd1N3b2pvS0lhOW5XSDd1UzQ2L1Q0NEtuWU4wemozb3hCVWgxNlBO?=
- =?utf-8?B?VW0yemJRK0hEQS9QZVFtK1hKY05RaWQxTmcvTGt1Q0V6enpNVCtLWlg3bkhD?=
- =?utf-8?B?Vi85NWNINGFjOWNzT1JLSi9KQ2dRVW5PbUFnNnZ2RVpCNzV1L2F6WVJnMElt?=
- =?utf-8?B?aTdibVQ4NGpia1MrbGlaeHNpeENHRDJLd2RwNEUrekQ3WDM2MnlZek1oNVJk?=
- =?utf-8?B?UWV3RktMLzU3b3ZwbjJHQ3RIamxGRXVGMXVFWG45bHBrSU9iT0Z4aVlFQ3Iv?=
- =?utf-8?B?Y0pLa0JZTjYxY2FDQnhVSU5oNUgzdDcyY3cvTTZSeEd1RGJrOWptUDVXS2hF?=
- =?utf-8?B?Yi9VK2tiTUZid00xNnM3MnZLb1hSOUw2eldrL3E5MkxUTDhhekJhWTdINXZU?=
- =?utf-8?B?Nm5hNWVjUVZKbEpqL3VLLzYyckZFWVRYWEFvM29uWlUrYmFyZUhPcVdMeDZl?=
- =?utf-8?B?b0x0Ynd0UHV5YUlUK3Zvd2cvWlhQcnFDdnE1SVdYZmkycmF6eksxenhpY3Ft?=
- =?utf-8?B?MTVDOU5mc250WE9iNitrOUwwTHNZUXoyNmRud2FmcEd4OFVrVTdnMDJDZDJD?=
- =?utf-8?B?Y0JCZkFrU3RPVUp3VnRHUU9kbEN6WGZvZnh0bWtweldGSldoMElGWlhmSnhK?=
- =?utf-8?B?V0pLSGxZWkdROVF4a1ZUclNCTDJHeVZlSUZnTXp1UlRhWjRtSzhwMjJzREhm?=
- =?utf-8?B?M3ptODBRbGdBd1g3Vk0wK3NQNG52REgweW1TMXJLTElBRUhlbFd5SnpiRmZr?=
- =?utf-8?B?MnhvcUVXekE1c2tUZHFOc1hJL3dMc1VGVlFOVks0akFoOXZsUkM5aWhraXI2?=
- =?utf-8?B?R1liVTlVSktGQnUxeEI4UFB6UU5JbGFVeW1OYmgweUdyOWdDODRNaE1SMlZ6?=
- =?utf-8?B?VUtsTktqcnYzdTdNTFI2NGRvYmRCK2Z1UWY2RWtTMHQwT1F2L3hORHF4bkEy?=
- =?utf-8?B?aWo4RE9reTI1R1hyUFkrMWt6bXhFS1JVSVhoeEtrTklyOHpVMmdSQlVVWlNr?=
- =?utf-8?B?WTlvT3l6bnlpL0QrYlYwRU93QktPZ1hJaW5NeEdBOXdDSU9KRDRUc2NkTmlk?=
- =?utf-8?B?UnVqZk9kZTZQckFlSlloZFMrbVIyNEE2bE5wOXIxTVZnQnRZZk4zTHlPMk8r?=
- =?utf-8?B?K0pVZ1lmZ0FjcURjOXQrWnJsTEZ1VzZPZDhIY1BhaENpcUxsNzErN2kxU3Fw?=
- =?utf-8?B?VUlKMi9WbVcwWVJRUTlKNy83U2x5RDBEemR3RndPdDlvMFBMMWpHZ2g1ZFJJ?=
- =?utf-8?B?S3k1SlZJMUdXd3N0OFd0S0x4cktlVE9xSTBmNEJwQzU5RG9TRkxUVmRqYjRt?=
- =?utf-8?B?eTQ0L1dUbGtjcTVKN29uMlpxSmhhcTFIQlZzVjA5bWVMQVNNZmRqVGZaaGtr?=
- =?utf-8?B?M2YwWkJOTm9uWHZZdTZzTkRSTzFwVWJkZzNzMm5DQ2t2S1FQdzh6NWFsd2U5?=
- =?utf-8?B?VVdNRTZXN3lKOXhHandNTzU2QlZQVHFIeldrbnJjNndqd2RxV1VyRHU4a2JC?=
- =?utf-8?B?VlA4SC8xUUtEVFBNVllMQlJHY0tDb2h2b2JDUnRabUtjblhTRldxVmE0dk9z?=
- =?utf-8?B?YzV1RXZtblRSYlBnT08yUHRYbnJNdjlzQjQ3WWlkN1BUcVB1b2RjblFTR1dE?=
- =?utf-8?B?Z09PS2g5MUxJbVNuNUVqa29xTXJ4Yy9GTUFsakR6ZDMwTmFkTTBCQWlIRHdM?=
- =?utf-8?B?YUhnYm5DakE4TUxENjVjSldZTFNleitqYzcrOXhSL0o0RDZlTUEwek5yby9Q?=
- =?utf-8?Q?Le58CDVAFBE6pn1L3UJp3Pkvn?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7fa4aafd-e6ca-4172-dc86-08d9fcb267e1
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2022 01:09:02.8588
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m/zUGx2cSJZJDX/U4hHTNP90DW4cYul8WZUQg0WgyOq69aGX3a4Lz5gZJ6tb5vNW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR15MB1892
-X-Proofpoint-ORIG-GUID: uVqz-R6VM9uTCAPvU6UenXk80olUmI6S
-X-Proofpoint-GUID: uVqz-R6VM9uTCAPvU6UenXk80olUmI6S
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 2 Mar 2022 20:14:53 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0CC28980
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:14:07 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id d84so2816311qke.8
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 17:14:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=profian-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Wi6L8alYy4V4SsfLlVtyi/z2L0oc5Zl5QzoxxcNQf/I=;
+        b=vo9Yjirf0Zq3WgOxoTSy4UnGcRGG9B7+HsAJscLXwWmP9qV1b/MahfajWNyyE8Sbi3
+         LoS/+1v4TlWzgY4VkHPbYp8oExikdPztGL8i3ud5cvw2zdWx1oXnuAtpeVjtQXMVtRA9
+         VI4JMQTQ13rs34E1Bd99Nxl3Ar2WLW2ajs5hgAfHzS6cUXbG2+/uzWMRKsD+DtnEpw+G
+         OSdi06S3b4+/sr+jth4ZhmKCXdqgqIG/gMtTCfedCadCDxqNizpmlnUTHSod80P2xB14
+         W/c9uhvH5EBBB0BH6MBn/mBMF8uxmZU/90h+UXXL5cyzBZvyKmWPkEUen6AynlIvDpKV
+         TQoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Wi6L8alYy4V4SsfLlVtyi/z2L0oc5Zl5QzoxxcNQf/I=;
+        b=6KqT2655QxzHevR8Oii8dHPizxZVM77kAMUVpYR77w1BTVzAjzKubNTR/eBJgcSvM+
+         bhMQkjLd9fbtkUpDUxrOM4311bftCm5LG2mD9VNPBpt+3aKg7RMzKtusfu9rfkDRDTi2
+         3Fsm29SyShjaxfwK1DxjA1Hf5/A8jGFxVCdec7dkERMR5Vdp3K2FOZ4k7CuYZHPHp2QX
+         5h9BnTvWJ4OjaNOLLNciJsLB+NWiNNNBdGlrnSsE8i6dQlLBxwW7MFDdLWqHizAdRizL
+         FN668DVNMbJFmAc31pL8eNj/K1+cquRVMj+gmZ1sxp/vCQP4bDlK7+dVuwk9+D1sB5DW
+         8VPA==
+X-Gm-Message-State: AOAM532VasPyxAhUnRwFXwZNqWV4C/ImaLC8mcnACq5Cux9MWWausm5e
+        IdlAT7i0jpYKOXBVNhL5zU8iphm3Ce0DIcxdF7EgjQ==
+X-Google-Smtp-Source: ABdhPJy9iknoyuZ0ItWdiDqHtIn9q0sub8CXf8vcFX5YBLNwfzRFvmxFbQAWud9UXKfFN7tKSPUrUqM/GN6B4w6HLHg=
+X-Received: by 2002:a05:620a:1981:b0:477:6e45:3e7d with SMTP id
+ bm1-20020a05620a198100b004776e453e7dmr17386067qkb.407.1646270046597; Wed, 02
+ Mar 2022 17:14:06 -0800 (PST)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-02_12,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 bulkscore=0
- phishscore=0 mlxscore=0 impostorscore=0 lowpriorityscore=0 mlxlogscore=701
- clxscore=1015 spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203030004
-X-FB-Internal: deliver
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <CAHAy0tR-64vxtFo4KXiJP_va2=WF++Q6gDaPksNxiaSB5wWvhA@mail.gmail.com>
+ <86495779-a9c5-45d5-0017-c491bf6354ab@intel.com> <CAHAy0tQYBD2b0jdim=6Zv+hwskyd1FhpycyGF+1FBHDih9TP3g@mail.gmail.com>
+ <e746026c-33f3-fd15-5303-563b3eb761d3@intel.com> <CAHAy0tRXxDQSuBVoEW9jzpFaWns4DzWqmFASFNGgGb5vjnYuPw@mail.gmail.com>
+ <b2733dba-278a-4574-f7ab-f035e97f762e@intel.com>
+In-Reply-To: <b2733dba-278a-4574-f7ab-f035e97f762e@intel.com>
+From:   Nathaniel McCallum <nathaniel@profian.com>
+Date:   Wed, 2 Mar 2022 20:13:55 -0500
+Message-ID: <CAHAy0tRoy=qpn-OqKmEHaWSngO+_Ko+YYd3Aq7WGk+1=n8=2mA@mail.gmail.com>
+Subject: Re: [PATCH V2 00/32] x86/sgx and selftests/sgx: Support SGX2
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, Jarkko Sakkinen <jarkko@kernel.org>,
+        tglx@linutronix.de, bp@alien8.de,
+        Andy Lutomirski <luto@kernel.org>, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org, seanjc@google.com,
+        kai.huang@intel.com, cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 2, 2022 at 4:20 PM Reinette Chatre
+<reinette.chatre@intel.com> wrote:
+>
+> Hi Nathaniel,
+>
+> On 3/2/2022 8:57 AM, Nathaniel McCallum wrote:
+> > Perhaps it would be better for us to have a shared understanding on
+> > how the patches as posted are supposed to work in the most common
+> > cases? I'm thinking here of projects such as Enarx, Gramine and
+> > Occulum, which all have a similar process. Namely they execute an
+> > executable (called exec in the below chart) which has things like
+> > syscalls handled by a shim. These two components (shim and exec) are
+> > supported by a non-enclave userspace runtime. Given this common
+> > architectural pattern, this is how I understand adding pages via an
+> > exec call to mmap() to work.
+> >
+> > https://mermaid.live/edit#pako:eNp1k81qwzAQhF9F6NRCAu1Vh0BIRemhoeSHBuIe=
+ttYmFpElVZZLQ8i7144sJ8aOT2bmY3d2vT7R1AikjBb4U6JO8UXC3kGeaFI9FpyXqbSgPTmg06j=
+6uiu1lzn2jSKTA2XwD9NEB31uPBLzi-6iMpLnYB8Wn4-kOBYpKBW52iXj8WQSmzEy5Zvt01ewG5=
+HUQN2UEc7nK77YPjdALd64GWih8NpkALGwR_JtzOGAaKXexyTKGEt2pgoMaXahgj5Qgk9nM_6xG=
+vDDJpsmOyiVv0LB62B8un4dBDrLiLPeWciCL9fvvKVQizhSG6stFz9Df7sxUpcYitR-SodFO2A_=
+Vw-7l4nzzduqjX9bKJxOHDDeBB3RHF0OUlS3faq1hPoMqzulrHoVGPZOE32u0NIK8MiF9MZRtgN=
+V4IhC6c3yqFPKvCsxQs3_0VDnfzf-CPg
+> >
+> > This only covers adding RW pages. I haven't even tackled permission
+> > changes yet. Is that understanding correct? If not, please provide an
+> > alternative sequence diagram to explain how you expect this to be
+> > used.
+>
+> Please find my attempt linked below:
+>
+> https://mermaid.live/edit#pako:eNqFUsFqAjEQ_ZWQUwsK7XUPgthQeqiUVang9jAkox=
+u6m2yzWVsR_72J2WTbKnSOb97MvPeSI-VaIM1oix8dKo4PEnYG6kIRVw0YK7lsQFlSghGfYPCy8=
+45GYXWJm05ZWV8ZaEt55QB-IS9UwOfaItF7NGc0I3UNzU3-ekvaQ8uhqiLPd8l4PJnEYxmZsvXm=
+7i20e5B4QlA5rAqMgJJfG9Ixg21X2ctVXn9GGJsvWb65729FSZXWDdlqpxx46Qzu-gB8-cHzhhi=
+m2zKdzdjLcuAAt3IPzv6Qkq84EdxGM3492UJS-cdSpLHp6nEgCPz3RjI5NPvAlRisJjspOsbWT8=
+sUyc_MwjuynC1Wzyw9EB3RGk0NUrgvePRYQW2J7tNQd5sKDN5ooU6O2jXCiWZCWm1otoWqxRGFz=
+urFQXGaWdNhJPXfuGedvgFejOuH
+>
+> The changes include:
+> * Move mmap() to occur before attempting EACCEPT on the addresses. This i=
+s
+>   required for EACCEPT (as well as any subsequent access from within the =
+enclave)
+>   to be able to access the pages.
+> * Remove AEX[1] to the runtime within the loop. After EAUG returns execut=
+ion
+>   will return to the instruction pointer that triggered the #PF, EACCEPT,
+>   this will cause the EACCEPT to be run again, this time succeeding.
+>
+> This is based on the implementation within this series. When supporting
+> the new ioctl() requested by Jarkko there will be an additional ioctl()
+> required before the loop.
 
+https://mermaid.live/edit/#pako:eNp1U9FqgzAU_ZWQpw1a2F6FFaQLYw8ro7asUPeQmWs=
+NNYlL4rZS-u-LRmut1ie953jvOecmR5woBjjABr5LkAk8c7rTVMQSuYeWVslSfIH23wXVlie8oN=
+KijGr2SzUMkT1oCfmwrktpuRj5wWRcDKvwB0ksfX2hLCD1A7quBkgIWtwtP-6ROZiE5nnLq1A0n=
+c5m7bAAhWSzffj0cFNEFaEaGiBCFiuy3D42hKp4gWZUshy6ISOUL6X2e4CCy10rQhUW8dR52QES=
+ivGUJ9RyJQ2SAAyYZ_V6ndUSsnldneVca_bJdvY7lkf6vc4haTBlbsdbDmLoaLlSBUqVy5wmWW2=
+nw3rq26Pg-oTzOXlf9Xkt7BfTeqjjSWlP2JWTlkrC9cutlmcLlUlxoRBkE3T9Mrq7KArd0UBPqF=
+DGTpstI2OphSv-jf1cBukPJlmSaP1GXFs8wQK0oJy523Ws-DG2GTiJOHCvDLx3HMuTo5YFc1MJ4=
+1ZpHKQ0NzDB1fWLDjLBgdUltKTmhjas0z-kWy8L
 
-On 3/2/22 1:30 PM, Alexei Starovoitov wrote:
-> On Wed, Mar 2, 2022 at 1:23 PM Yonghong Song <yhs@fb.com> wrote:
->>
->>
->>
->> On 2/25/22 3:43 PM, Hao Luo wrote:
->>> Add a new type of bpf tracepoints: sleepable tracepoints, which allows
->>> the handler to make calls that may sleep. With sleepable tracepoints, a
->>> set of syscall helpers (which may sleep) may also be called from
->>> sleepable tracepoints.
->>
->> There are some old discussions on sleepable tracepoints, maybe
->> worthwhile to take a look.
->>
->> https://lore.kernel.org/bpf/20210218222125.46565-5-mjeanson@efficios.com/T/
-> 
-> Right. It's very much related, but obsolete too.
-> We don't need any of that for sleeptable _raw_ tps.
-> I prefer to stay with "sleepable" name as well to
-> match the rest of the bpf sleepable code.
-> In all cases it's faultable.
+My comments below correspond to the arrow numbers in the diagram.
 
-sounds good to me. Agree that for the bpf user case, Hao's 
-implementation should be enough.
+2. When the runtime receives the AEX, it doesn't have enough knowledge
+to know whether or not to ask the kernel for an mmap(). So it has to
+reenter the shim.
+
+3. The shim has to handle the syscall instruction routing it to the
+enclave's memory management subsystem.
+
+4. The shim has to do bookkeeping and decide if additional pages are
+even needed. If pages are already allocated, for example, it can skip
+directly to step 13. However, if modifications are needed, it will go
+to steps 5-12.
+
+5-12. This is the part that represents new code from the kernel's
+perspective for SGX2. It is also in a performance critical path and
+should be evaluated with greater scrutiny. The number of context
+switches is O(2N + 4) for each new allocated block, where N is the
+number of pages: a context switch occurs at step 5, 6, 7,  8, 9/10 and
+12. However, this can be reduced to O(4) for each new allocated block
+with a simple modification:
+
+https://mermaid.live/edit/#pako:eNqNk11rwyAUhv-KeLVBC9ttYIXQydjFymhaVmh24fS=
+kkUbN1Gwrpf99pvlsk8G80nMez3l91SNmmgMOsIXPAhSDR0F3hspYIT9o4bQq5AeYap1T4wQTOV=
+UOpdTwb2pgmNmDUZAN46ZQTsiRDTYVchiFH2CxquIL7QDpLzDnaICkpPnN8u0W2YNlNMsarsyi6=
+XQ2a5oFKCSb7d17la6DqATKpgEiZLEiy-19DZTBXjalimfQNRlBPrTe7wFyoXaNCJ07JBJ_lh0g=
+qblIBKNOaGWRAuDAK-qiVquWkM3zqpVzrblytjt-R2Va5yjR3h_K0nPrLleOaudFERKunzoIVE9=
+Xj26VtZYbsEXmxgUOTP2_witfSTifk9fViMDzZPQuoij0V40eUK6tm9a3hqyjDq74P_zuH6V6aG=
+RJovUL8WXxBEswkgruf8ux5GPsUvDvGQd-yiGhpS04ViePFjn3XQkXThscJDSzMMHld4oOiuHAm=
+QIaqP5xNXX6BeBJIEk
+
+The interesting thing about this pattern is that this can be done for
+all page modification types except EMODT. For example, here's the same
+process for changing a mapping from RW to RX:
+
+https://mermaid.live/edit/#pako:eNqNk11rwyAUhv-KeLVBC9ttYIVCvdhFu5F0UGh24fS=
+kkUbN1Gwrpf995jttMphXes7jOa-vesZMc8ABtvBZgGKwEvRgqIwV8oMWTqtCfoCp1zk1TjCRU-=
+VQSg3_pgbGmSMYBdk4bgrlhJzYYFMhx1H4ARarOr7RDpD-AlNFAyQlze_C3T2yJ8tolrVcmUXz-=
+WLRNgvQkuz2D-91ugmiEiibBoiQzZaE-8cGKIODbEoVz6BvMoF8aH08AuRCHVoROndIJP4sB0BS=
+c5EIRp3QyiIFwIHX1FWtTi0hu-dtJ-dWc-1sf_yeyrTOUaK9P5SlVes-V45651URsn5ZvYY9Bmq=
+gbMB32jrTDdgic9MSR7b-X-ONs5U-MqGvmkxeRhQt_V2jJ5Rr6-bNtSHrqIMb_g_DhyepXxoJSf=
+S2Jr4snmEJRlLB_Xc5l3yMXQr-QePATzkktHQFx-ri0SLnvivhwmmDg4RmFma4_E_RSTEcOFNAC=
+zVfrqEuvytQILY
+
+My point in this thread has always been that it is an anti-feature to
+presume that there is a need to treat EPC and VLA permissions
+separately. This is a performance sink and it optimizes for a use case
+which doesn't exist. Nobody actually wants there to be a mismatch
+between EPC and VLA permissions.
+
+So, besides EMODT, the only userspace interface we need is
+mmap()/mprotect()/munmap(). The kernel should either succeed the
+mmap()/mprotect()/munmap() syscall if the EPC permissions can be made
+compatible or should fail otherwise.
+
+Another interesting property arises from this flow. Since the EPC and
+VLA permissions are always synchronized from the perspective of
+userspace, in cases where the memory state between the kernel and the
+exec layer is roughly synchronous, bookkeeping in the shim can be
+implemented without any persistent memory between syscall handling
+events. So, for example, the shim can implement brk() and
+mmap()/munmap()/mprotect() with just two pointers: one to the break
+position and one to the lowest mmap().
+
+It is true that this basically commits enclave authors to doing all
+EACCEPT calls immediately after modifications. But I suspect everyone
+will do this anyway since there is no efficient (read: performant) way
+for shims to handle page faults. So trying to do this lazily will just
+result in a huge decrease in performance.
