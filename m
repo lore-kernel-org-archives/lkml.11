@@ -2,93 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C48EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235804AbiCCSpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:45:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
+        id S235805AbiCCSsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:48:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiCCSpO (ORCPT
+        with ESMTP id S233217AbiCCSsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:45:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A4817AED6
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:44:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A4BDB81E67
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 18:44:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B57C004E1;
-        Thu,  3 Mar 2022 18:44:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646333065;
-        bh=3O+xj138CKdSRUjGT/Vt82Xrl+Z2mQQ8p+Q3rCPCPbQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BfUHnONYl3vtbDnVUTjjryKV4FphJ1R8XnmmZNdDzDZm1R44ZTNl8qHI5z7iuBhX2
-         5ievjiz0wLG+6qyX0aZLRlasloKj9nHdgdHSWvaPoDrVF2F905TQ3+bPJq89QAyw86
-         +fjnbUpDpOKlqLi37JbZB4jYs+IGG/ydVxV8rE8VrJG4Qfdxk9X9jIBUP8JojXGFF/
-         fuGZXY1x4gggZk4RkkGb2W38+kVZMT6JQ/XaiVmozAUqLaKpRD7HHmcaizvaeWZyzj
-         dj+6xRAVZXFflJRnqXiZ5lnGvOmaCVVDuezxp7y0DGc91Kyb33U3/Aqxpp03nOSqfc
-         F3voKhLEp+Esg==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, patches@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH -next] clocksource/drivers/imx-tpm: Move tpm_read_sched_clock() under CONFIG_ARM
-Date:   Thu,  3 Mar 2022 11:42:12 -0700
-Message-Id: <20220303184212.2356245-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 3 Mar 2022 13:48:50 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D1D5E140
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:48:00 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id z11so5454539pla.7
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 10:48:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p7fhDS5lYFCTZC+D85sVdozKwDtg+g9RjPaejvj9554=;
+        b=dB8mtC6VM7kHHTyoxH5/QJKjVMIR277NeZ85hG44JH5v/jSPveyQlMXnFAYPTeYTE+
+         ru5G4JV6wDdcmKBn+lXnLb80ODe/fPvo7IUv8V652dQ9pDmcwshSm6WF4DlrMM+TUG6m
+         K25VJuCVmRJhJxpNV6RgHsJ1XrNuRy5u9xtSsAWRANJjUIf6clAsoKR7Ihkc/yyVfTCC
+         RzWOiLSmppt17Tpj6GkIU3wJgEBeLVsUIss+hlqeM384Y1MUHkRgro+yyTr5Ebc+LEYw
+         2XvoC87Dw3DYUxxA+Eoq4kstx+IhPRq9ilBEkvAYicr5zEqX4mZZuDosiAk+z8InzQv0
+         uVLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p7fhDS5lYFCTZC+D85sVdozKwDtg+g9RjPaejvj9554=;
+        b=NYtoSw2EOubBpRFeGCXvn/tI6XPTRDmi7Sc9/fH2Pj3xaqu4ucpPNqcxRAayS9JcVq
+         ZM2leFqkxUqnP/cHEsUdmdWo+Ngy2heebTxQ2Oq7+4De5cRK2AJGOHFsc7qOob7nGie7
+         1lcW9huGbImCT/G/h2OtMX4e9etkBBf8lAV61dN3Tx0lbZZS4FUygI5ER8XdeG8dT3KS
+         Oiz8/BJNa/ZfUmcPOduItF6kcN6hChVwN9wU8ytPNi5lEZOG8tnJXeyIOUkuP+nZSXrT
+         WQckDF21soBY7dqn7DdlwwH52KcKXj3f1tskfhL2UkXELDgXKlyePDAr/20WZ1/cF30s
+         gMtA==
+X-Gm-Message-State: AOAM5336eHfPxjyg5P4FM+BXPcOvj3vdnb6P1SRFRfgM4tl0IPeR/lfK
+        0hfQIBUpocyYsSnKOE3UrM7/6A==
+X-Google-Smtp-Source: ABdhPJymlZyWv19HlXRmNhb0DuWfd4UTVZi8t9hyR5Fg/bFTNpoepuiPPT4hR9BqH07InBiRmc61Bg==
+X-Received: by 2002:a17:902:a613:b0:151:7d6d:aa69 with SMTP id u19-20020a170902a61300b001517d6daa69mr16183298plq.89.1646333279704;
+        Thu, 03 Mar 2022 10:47:59 -0800 (PST)
+Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
+        by smtp.gmail.com with ESMTPSA id i128-20020a626d86000000b004f3f2929d7asm3095289pfc.217.2022.03.03.10.47.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 10:47:59 -0800 (PST)
+Date:   Thu, 3 Mar 2022 18:47:55 +0000
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>
+Subject: Re: [PATCH v3 12/28] KVM: x86/mmu: Refactor low-level TDP MMU set
+ SPTE helper to take raw vals
+Message-ID: <YiENWyDecwhlwJRi@google.com>
+References: <20220226001546.360188-1-seanjc@google.com>
+ <20220226001546.360188-13-seanjc@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220226001546.360188-13-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building this driver for an architecture other than ARCH=arm:
+On Sat, Feb 26, 2022, Sean Christopherson wrote:
+> Refactor __tdp_mmu_set_spte() to work with raw values instead of a
+> tdp_iter objects so that a future patch can modify SPTEs without doing a
+> walk, and without having to synthesize a tdp_iter.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Ben Gardon <bgardon@google.com>
 
-  drivers/clocksource/timer-imx-tpm.c:78:20: error: unused function 'tpm_read_sched_clock' [-Werror,-Wunused-function]
-  static u64 notrace tpm_read_sched_clock(void)
-                     ^
-  1 error generated.
+Reviewed-by: Mingwei Zhang <mizhang@google.com>
 
-Move the function definition under the existing CONFIG_ARM section so
-there is no more warning.
-
-Fixes: 10720e120e2b ("clocksource/drivers/imx-tpm: Exclude sched clock for ARM64")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/clocksource/timer-imx-tpm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/clocksource/timer-imx-tpm.c b/drivers/clocksource/timer-imx-tpm.c
-index 60cefc247b71..bd64a8a8427f 100644
---- a/drivers/clocksource/timer-imx-tpm.c
-+++ b/drivers/clocksource/timer-imx-tpm.c
-@@ -73,12 +73,12 @@ static unsigned long tpm_read_current_timer(void)
- {
- 	return tpm_read_counter();
- }
--#endif
- 
- static u64 notrace tpm_read_sched_clock(void)
- {
- 	return tpm_read_counter();
- }
-+#endif
- 
- static int tpm_set_next_event(unsigned long delta,
- 				struct clock_event_device *evt)
-
-base-commit: b22a1c270f533e30bc5d5d4cab6199a2cbb07b07
--- 
-2.35.1
-
+> ---
+>  arch/x86/kvm/mmu/tdp_mmu.c | 51 +++++++++++++++++++++++---------------
+>  1 file changed, 31 insertions(+), 20 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 1dcdf1a4fcc1..9e8ba6f12ebf 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -617,9 +617,13 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
+>  
+>  /*
+>   * __tdp_mmu_set_spte - Set a TDP MMU SPTE and handle the associated bookkeeping
+> - * @kvm: kvm instance
+> - * @iter: a tdp_iter instance currently on the SPTE that should be set
+> - * @new_spte: The value the SPTE should be set to
+> + * @kvm:	      KVM instance
+> + * @as_id:	      Address space ID, i.e. regular vs. SMM
+> + * @sptep:	      Pointer to the SPTE
+> + * @old_spte:	      The current value of the SPTE
+> + * @new_spte:	      The new value that will be set for the SPTE
+> + * @gfn:	      The base GFN that was (or will be) mapped by the SPTE
+> + * @level:	      The level _containing_ the SPTE (its parent PT's level)
+>   * @record_acc_track: Notify the MM subsystem of changes to the accessed state
+>   *		      of the page. Should be set unless handling an MMU
+>   *		      notifier for access tracking. Leaving record_acc_track
+> @@ -631,12 +635,10 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
+>   *		      Leaving record_dirty_log unset in that case prevents page
+>   *		      writes from being double counted.
+>   */
+> -static inline void __tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
+> -				      u64 new_spte, bool record_acc_track,
+> -				      bool record_dirty_log)
+> +static void __tdp_mmu_set_spte(struct kvm *kvm, int as_id, tdp_ptep_t sptep,
+> +			       u64 old_spte, u64 new_spte, gfn_t gfn, int level,
+> +			       bool record_acc_track, bool record_dirty_log)
+>  {
+> -	WARN_ON_ONCE(iter->yielded);
+> -
+>  	lockdep_assert_held_write(&kvm->mmu_lock);
+>  
+>  	/*
+> @@ -646,39 +648,48 @@ static inline void __tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
+>  	 * should be used. If operating under the MMU lock in write mode, the
+>  	 * use of the removed SPTE should not be necessary.
+>  	 */
+> -	WARN_ON(is_removed_spte(iter->old_spte) || is_removed_spte(new_spte));
+> +	WARN_ON(is_removed_spte(old_spte) || is_removed_spte(new_spte));
+>  
+> -	kvm_tdp_mmu_write_spte(iter->sptep, new_spte);
+> +	kvm_tdp_mmu_write_spte(sptep, new_spte);
+> +
+> +	__handle_changed_spte(kvm, as_id, gfn, old_spte, new_spte, level, false);
+>  
+> -	__handle_changed_spte(kvm, iter->as_id, iter->gfn, iter->old_spte,
+> -			      new_spte, iter->level, false);
+>  	if (record_acc_track)
+> -		handle_changed_spte_acc_track(iter->old_spte, new_spte,
+> -					      iter->level);
+> +		handle_changed_spte_acc_track(old_spte, new_spte, level);
+>  	if (record_dirty_log)
+> -		handle_changed_spte_dirty_log(kvm, iter->as_id, iter->gfn,
+> -					      iter->old_spte, new_spte,
+> -					      iter->level);
+> +		handle_changed_spte_dirty_log(kvm, as_id, gfn, old_spte,
+> +					      new_spte, level);
+> +}
+> +
+> +static inline void _tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
+> +				     u64 new_spte, bool record_acc_track,
+> +				     bool record_dirty_log)
+> +{
+> +	WARN_ON_ONCE(iter->yielded);
+> +
+> +	__tdp_mmu_set_spte(kvm, iter->as_id, iter->sptep, iter->old_spte,
+> +			   new_spte, iter->gfn, iter->level,
+> +			   record_acc_track, record_dirty_log);
+>  }
+>  
+>  static inline void tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
+>  				    u64 new_spte)
+>  {
+> -	__tdp_mmu_set_spte(kvm, iter, new_spte, true, true);
+> +	_tdp_mmu_set_spte(kvm, iter, new_spte, true, true);
+>  }
+>  
+>  static inline void tdp_mmu_set_spte_no_acc_track(struct kvm *kvm,
+>  						 struct tdp_iter *iter,
+>  						 u64 new_spte)
+>  {
+> -	__tdp_mmu_set_spte(kvm, iter, new_spte, false, true);
+> +	_tdp_mmu_set_spte(kvm, iter, new_spte, false, true);
+>  }
+>  
+>  static inline void tdp_mmu_set_spte_no_dirty_log(struct kvm *kvm,
+>  						 struct tdp_iter *iter,
+>  						 u64 new_spte)
+>  {
+> -	__tdp_mmu_set_spte(kvm, iter, new_spte, true, false);
+> +	_tdp_mmu_set_spte(kvm, iter, new_spte, true, false);
+>  }
+>  
+>  #define tdp_root_for_each_pte(_iter, _root, _start, _end) \
+> -- 
+> 2.35.1.574.g5d30c73bfb-goog
+> 
