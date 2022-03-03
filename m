@@ -2,117 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA998C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233204AbiCCMYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 07:24:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        id S233224AbiCCMZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 07:25:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233191AbiCCMYl (ORCPT
+        with ESMTP id S233191AbiCCMZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 07:24:41 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BD1F47E9
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 04:23:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646310234; x=1677846234;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YlWiPlnQT/J4CWX3oOcwnxjiyCoPKF45JgGeKXxefBw=;
-  b=Ha469Kt3jK7NrAeiI8sYr0YGDXlI2Fq2duk6tnhUsT5LpC7gDgs+toki
-   3LhngEzAC/aRDkDAFDaECyjHP63b+sqFhazDLdA9cGrr5xY6xZcr/0e2c
-   HYP6CNcH7brTbtlJPhtZdXy74JQWRf/uhqBBIe36sLdDWDBw5aWOO1svg
-   5j+n7wQWzJswXVoI3deam/2Iww004lvbSOdRP70tXGFKSghMxXrUHWvyj
-   SLROkRJeggZhK2xOpeDBb0z+pqgp9fsCQqeK/2dnfUX2KZWpACfI2GGog
-   8alNj/lMe6gem8ygF6iUCHk9Lm8K/Thel25bv3dQ3IxubmJsVXsM8TVse
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="234273266"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="234273266"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 04:23:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="511412803"
-Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Mar 2022 04:23:52 -0800
-Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPkUq-0000UP-34; Thu, 03 Mar 2022 12:23:52 +0000
-Date:   Thu, 3 Mar 2022 20:23:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [netfilter-nf-next:master 9/12]
- net/netfilter/nf_conntrack_core.c:670:19: error: no member named 'ecache' in
- 'struct nf_conntrack_net'
-Message-ID: <202203032033.frsNjH8R-lkp@intel.com>
+        Thu, 3 Mar 2022 07:25:19 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F6FF1186;
+        Thu,  3 Mar 2022 04:24:32 -0800 (PST)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K8VXf75N1z67x9f;
+        Thu,  3 Mar 2022 20:24:18 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 3 Mar 2022 13:24:29 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 3 Mar 2022 12:24:25 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <jinpu.wang@cloud.ionos.com>, <damien.lemoal@opensource.wdc.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Ajish.Koshy@microchip.com>, <linuxarm@huawei.com>,
+        <Viswas.G@microchip.com>, <hch@lst.de>, <liuqi115@huawei.com>,
+        <chenxiang66@hisilicon.com>, John Garry <john.garry@huawei.com>
+Subject: [PATCH 0/4] scsi: libsas and users: Factor out internal abort code
+Date:   Thu, 3 Mar 2022 20:18:46 +0800
+Message-ID: <1646309930-138960-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git master
-head:   25485ffb54ac073e82957218404e303469477c2f
-commit: 3ad61edaa5ac46811b4ea07a994428ead31e7468 [9/12] netfilter: conntrack: remove the percpu dying list
-config: riscv-randconfig-r042-20220303 (https://download.01.org/0day-ci/archive/20220303/202203032033.frsNjH8R-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git/commit/?id=3ad61edaa5ac46811b4ea07a994428ead31e7468
-        git remote add netfilter-nf-next git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-        git fetch --no-tags netfilter-nf-next master
-        git checkout 3ad61edaa5ac46811b4ea07a994428ead31e7468
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash net/netfilter/
+This is a follow-on from the series to factor out the TMF code shared
+between libsas LLDDs.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The hisi_sas and pm8001 have an internal abort feature to abort pending
+commands in the host controller, prior to being sent to the target. The
+driver support implementation is naturally quite similar, so factor it
+out.
 
-All errors (new ones prefixed by >>):
+Again, testing and review would be appreciated.
 
->> net/netfilter/nf_conntrack_core.c:670:19: error: no member named 'ecache' in 'struct nf_conntrack_net'
-           spin_lock(&cnet->ecache.dying_lock);
-                      ~~~~  ^
-   net/netfilter/nf_conntrack_core.c:672:13: error: no member named 'ecache' in 'struct nf_conntrack_net'
-                                    &cnet->ecache.dying_list);
-                                     ~~~~  ^
-   net/netfilter/nf_conntrack_core.c:673:21: error: no member named 'ecache' in 'struct nf_conntrack_net'
-           spin_unlock(&cnet->ecache.dying_lock);
-                        ~~~~  ^
-   3 errors generated.
+This is based on mkp-scsi 5.18 staging queue @ commit f2ddbbea7780
 
+John Garry (4):
+  scsi: libsas: Add sas_execute_internal_abort_single()
+  scsi: libsas: Add sas_execute_internal_abort_dev()
+  scsi: pm8001: Use libsas internal abort support
+  scsi: hisi_sas: Use libsas internal abort support
 
-vim +670 net/netfilter/nf_conntrack_core.c
+ drivers/scsi/hisi_sas/hisi_sas.h       |   8 +-
+ drivers/scsi/hisi_sas/hisi_sas_main.c  | 453 +++++++++----------------
+ drivers/scsi/hisi_sas/hisi_sas_v2_hw.c |  11 +-
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |  18 +-
+ drivers/scsi/libsas/sas_scsi_host.c    |  89 +++++
+ drivers/scsi/pm8001/pm8001_hwi.c       |  27 +-
+ drivers/scsi/pm8001/pm8001_hwi.h       |   5 -
+ drivers/scsi/pm8001/pm8001_sas.c       | 186 ++++------
+ drivers/scsi/pm8001/pm8001_sas.h       |   6 +-
+ drivers/scsi/pm8001/pm80xx_hwi.h       |   5 -
+ include/scsi/libsas.h                  |  24 ++
+ include/scsi/sas.h                     |   2 +
+ 12 files changed, 368 insertions(+), 466 deletions(-)
 
-dd7669a92c6066 Pablo Neira Ayuso 2009-06-13  665  
-38a419ee4e646c Florian Westphal  2022-02-24  666  static void nf_ct_add_to_ecache_list(struct nf_conn *ct)
-38a419ee4e646c Florian Westphal  2022-02-24  667  {
-38a419ee4e646c Florian Westphal  2022-02-24  668  	struct nf_conntrack_net *cnet = nf_ct_pernet(nf_ct_net(ct));
-38a419ee4e646c Florian Westphal  2022-02-24  669  
-38a419ee4e646c Florian Westphal  2022-02-24 @670  	spin_lock(&cnet->ecache.dying_lock);
-38a419ee4e646c Florian Westphal  2022-02-24  671  	hlist_nulls_add_head_rcu(&ct->tuplehash[IP_CT_DIR_ORIGINAL].hnnode,
-38a419ee4e646c Florian Westphal  2022-02-24  672  				 &cnet->ecache.dying_list);
-38a419ee4e646c Florian Westphal  2022-02-24  673  	spin_unlock(&cnet->ecache.dying_lock);
-38a419ee4e646c Florian Westphal  2022-02-24  674  }
-38a419ee4e646c Florian Westphal  2022-02-24  675  
+-- 
+2.26.2
 
-:::::: The code at line 670 was first introduced by commit
-:::::: 38a419ee4e646c1a6427f98717ad0bfac9762607 netfilter: ecache: use dedicated list for event redelivery
-
-:::::: TO: Florian Westphal <fw@strlen.de>
-:::::: CC: Pablo Neira Ayuso <pablo@netfilter.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
