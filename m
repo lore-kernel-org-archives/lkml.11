@@ -2,147 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037CAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F959C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235194AbiCCRli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
+        id S232570AbiCCRoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:44:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235456AbiCCRlb (ORCPT
+        with ESMTP id S229805AbiCCRoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:41:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DC6C1A1C7B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:40:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646329239;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=75fiNtP6TryBTCoq0L/i/NBN7hNVOksPnCdMHr7ZliA=;
-        b=dQejRnglxA2Q1TYu31sMo4wV6Z40MdmCP7dUbw0n+lH+fFQHENYTnGR9MNo1mgmZB1Ox5r
-        fpbP75wjlvQAJ9m6Ddebx+m/ArAUBut2+4O3mD5kijp0+f41VZk7p5s1aCIpjW5R1dGe2R
-        mAd/iPmEWjq6+G38MWet3I0wCaxzgNY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-355-nrzwoSsEPMSvrs6vDyll6g-1; Thu, 03 Mar 2022 12:40:36 -0500
-X-MC-Unique: nrzwoSsEPMSvrs6vDyll6g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 968F81091DA3;
-        Thu,  3 Mar 2022 17:40:34 +0000 (UTC)
-Received: from cmirabil.remote.csb (unknown [10.22.9.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6BFFE804F7;
-        Thu,  3 Mar 2022 17:40:33 +0000 (UTC)
-From:   Charles Mirabile <cmirabil@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Charles Mirabile <cmirabil@redhat.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
-        Mwesigwa Guma <mguma@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH v7 6/6] DO NOT MERGE: full sensehat device tree overlay for raspberry pi 4
-Date:   Thu,  3 Mar 2022 12:39:35 -0500
-Message-Id: <20220303173935.100622-7-cmirabil@redhat.com>
-In-Reply-To: <20220303173935.100622-1-cmirabil@redhat.com>
-References: <20220303173935.100622-1-cmirabil@redhat.com>
+        Thu, 3 Mar 2022 12:44:15 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCA110C6
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:43:29 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id p17so5194594plo.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:43:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=3mNZQL2VC2uYb431PEz6jnFD5ZTmVgeO3AWfSaB6+TY=;
+        b=TSou/dg3MxKfuVnSlJ7/9Ygb6rTt3uj1IAV4FuRAP0EFPtQzGCi18SqZsbllXX+6S8
+         ntcMT0x0I5bMkPvRf+RymUl7ybQA3dv1GWojQ1350VFS3FT8qE2h7SFFXSceT7yfD2T8
+         voM8RJe8gyMdGEmB0QSQndTKjgdU+d71aw2BA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=3mNZQL2VC2uYb431PEz6jnFD5ZTmVgeO3AWfSaB6+TY=;
+        b=027n+OYSTT4wE7GlCZ9/cDNnSQpFv2d9f8eU/oEvdm9DISq9Az2dw741GLgs6g3Es5
+         SYjNXdjD9UyCOxgBYGMlJ4vEzlPTfyQa2Zlqbk3fzGzT2VHFgiR+YHiMWOxyeO1LGNP4
+         ZMvNLnn4Ft9GnGGZGvO4w+qcq1lyIFY83Y3w+6ecUtMydk1GOZ6VuTtZMB33vZu2CvAL
+         C35bcEANovMIcsdvWAHx2b6rcxs839FW81UAsDPlcQsqlGxU73KcIymnBV99sAgO6ig5
+         Cun1aA4qOEiDaNwilqg8LjLOR7XtuRU+2vTFuTNrcqvHHefMYaZHJ2xgvKzOYe7O9mKE
+         AY1g==
+X-Gm-Message-State: AOAM5324WTK5OJA7cseL6fhLAGvXL68FuTXwv+CJ0gDLB3s+c6TKerOP
+        HYgT4ueqybbs2gmonFWuh4IP4w==
+X-Google-Smtp-Source: ABdhPJwuuWN6vPSVt7Mv7dHURNIv9eDx1oLiv+vp7zPxRp6zIMVlyTuNFHJ/8c8jo+dQfkkeI/rm5Q==
+X-Received: by 2002:a17:902:d2cd:b0:14f:c169:dc6f with SMTP id n13-20020a170902d2cd00b0014fc169dc6fmr36769598plc.170.1646329409448;
+        Thu, 03 Mar 2022 09:43:29 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id t9-20020a655549000000b0036570f81245sm2536433pgr.84.2022.03.03.09.43.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 09:43:29 -0800 (PST)
+Date:   Thu, 3 Mar 2022 09:43:28 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] drm/amd/display: Fix Wstringop-overflow warnings
+ in dc_link_dp.c
+Message-ID: <202203030937.5BFE3EF@keescook>
+References: <20220303172503.GA1731116@embeddedor>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20220303172503.GA1731116@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch should not be merged - dtbs files are not stored in the
-kernel tree. We just provide this file so the code can be tested.
+On Thu, Mar 03, 2022 at 11:25:03AM -0600, Gustavo A. R. Silva wrote:
+> Fix the following Wstringop-overflow warnings when building with GCC-11:
+> 
+> drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
 
-This overlay is suitable for testing the driver, it can be compiled with
-dtc and put in the /boot/overlays/ folder then specified in config.txt
-by putting the lines:
+Can you "show your work" a little more here? I don't actually see the
+what is getting fixed:
 
-dtoverlay=		#suppress loading of default overlay for HAT
-dtoverlay=sensehat	#load custom overlay
+enum dc_lane_count {
+	...
+        LANE_COUNT_FOUR = 4,
+	...
+        LANE_COUNT_DP_MAX = LANE_COUNT_FOUR
+};
 
-at the beginning before any other lines in config.txt
+struct link_training_settings {
+	...
+        union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX];
+};
 
-Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
-Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
-Co-developed-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
----
- sensehat.dtbs | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 sensehat.dtbs
+void dp_hw_to_dpcd_lane_settings(
+		...
+		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
+{
+	...
+}
 
-diff --git a/sensehat.dtbs b/sensehat.dtbs
-new file mode 100644
-index 000000000000..82d129c847fb
---- /dev/null
-+++ b/sensehat.dtbs
-@@ -0,0 +1,54 @@
-+/dts-v1/;
-+/plugin/;
-+
-+/ {
-+	compatible = "brcm,bcm2835";
-+};
-+
-+&i2c1 {
-+	#address-cells = <0x01>;
-+	#size-cells = <0x00>;
-+	status = "okay";
-+
-+	sensehat@46 {
-+		#address-cells = <0x01>;
-+		#size-cells = <0x00>;
-+		compatible = "raspberrypi,sensehat";
-+		reg = <0x46>;
-+		interrupt-parent = <&gpio>;
-+		status = "okay";
-+		display {
-+			compatible = "raspberrypi,sensehat-display";
-+			status = "okay";
-+		};
-+		joystick {
-+			compatible = "raspberrypi,sensehat-joystick";
-+			interrupts = <23 1>;
-+			status = "okay";
-+		};
-+	};
-+
-+	lsm9ds1-magn@1c {
-+		compatible = "st,lsm9ds1-magn";
-+		reg = <0x1c>;
-+		status = "okay";
-+	};
-+
-+	lsm9ds1-accel@6a {
-+		compatible = "st,lsm9ds1-accel";
-+		reg = <0x6a>;
-+		status = "okay";
-+	};
-+
-+	lps25h-press@5c {
-+		compatible = "st,lps25h-press";
-+		reg = <0x5c>;
-+		status = "okay";
-+	};
-+
-+	hts221-humid@5f {
-+		compatible = "st,hts221-humid\0st,hts221";
-+		reg = <0x5f>;
-+		status = "okay";
-+	};
-+};
+static enum link_training_result dpia_training_cr_transparent(
+		...
+                struct link_training_settings *lt_settings)
+{
+	...
+                dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
+                                lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
+	...
+}
+
+Everything looks to be the correct size?
+
 -- 
-2.31.1
-
+Kees Cook
