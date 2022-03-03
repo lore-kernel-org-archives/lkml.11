@@ -2,127 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7609DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 577DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234750AbiCCPyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:54:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
+        id S234159AbiCCPzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:55:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234753AbiCCPy2 (ORCPT
+        with ESMTP id S230513AbiCCPzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:54:28 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21083CCC48
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:53:43 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id d3so4331940ilr.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:53:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=V4T+72bNaixsP6whwl4epw9DvUMQf2MR/4xeNX8CKus=;
-        b=e0Zgh+DqhD52J8WAaHGlSKClW1RHp7C3vneMlmKxXj+AIA9ZmSUXGv8yDlk6Tdhqvq
-         RqVvE8CHzOTBINmEe00AP4oEruoxrK+y+fsEZeELmkRZQOObWcWtJ2+kQwpFLeoNc7Tr
-         X0milOeSx/Wd1JtkaPXfj8VXBQxmRPj3UeYIw2uKhx/sdU+K3WTbhuVSlrHThtRdXJ1j
-         YmeJi9Y7Y6CyWjlNZpmCOnW/mQB4k0IUFKG57y7Elc2JaLX11D1Fb0slGXFfPtqgpecx
-         zHNjZsknyUGxfsYJ+nLCsMVZFP5ug8PgcL30zB1K3tnmlU7b31IBx6+9jbbGwdnuc7iZ
-         dDQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=V4T+72bNaixsP6whwl4epw9DvUMQf2MR/4xeNX8CKus=;
-        b=ZMagKm9wF3TqFW7AeFPskhv90gkUxQfzPfq9t2ZbY2c4dMz+i3hMeO5Fn3H0WtjktL
-         R+/buWVTVIm4TiJNQXEscXn/65TCATpz/YnObwjXhKwj2BKBMov7gg7JANMW3B3OHcGR
-         3Yk7L4NC7xAY7SzAJNsmM/8ShhSO23vxBBq/0qO7WU2zfK5J38TcjIwSFlBw6wZz89pf
-         uaOePmvIxvD9Fn3zZ8NeWAXiUjEGtcEz+5CP8zK+FON1L9dAWAPmm+SCm8evoM+Hf1li
-         gNSCxuj0eNdRI0aZBNtYRAz5jVfmcSl/HIBgpJaA/mPJSaSHNNRfk2ENIOdl8bXwpPrm
-         xLQg==
-X-Gm-Message-State: AOAM531aJ0fdE/YDmgIBI1L94523jlRpTdki/P4caASttPOpr+4+OgKd
-        6OWruHSIqlFmCBUNsxhH9Z8=
-X-Google-Smtp-Source: ABdhPJxH6IIYwY/ncZSCvF9ZK0v4MZotRSe9o4+oEvT+7kco2Y5wYpueeUw/dgWQykh7qLnOswxiew==
-X-Received: by 2002:a05:6e02:190c:b0:2c2:6851:bce3 with SMTP id w12-20020a056e02190c00b002c26851bce3mr31911042ilu.28.1646322822581;
-        Thu, 03 Mar 2022 07:53:42 -0800 (PST)
-Received: from localhost.localdomain ([122.164.186.156])
-        by smtp.googlemail.com with ESMTPSA id a6-20020a92d346000000b002c1a6040691sm2506599ilh.70.2022.03.03.07.53.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 07:53:42 -0800 (PST)
-From:   Abdun Nihaal <abdun.nihaal@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        straube.linux@gmail.com, paskripkin@gmail.com, martin@kaiser.cx,
-        abdun.nihaal@gmail.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 9/9] staging: r8188eu: remove unused fields in struct recv_buf
-Date:   Thu,  3 Mar 2022 21:21:11 +0530
-Message-Id: <d731acb15f82c597de53ecce8fdf1bb82dc4c386.1646321515.git.abdun.nihaal@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1646321515.git.abdun.nihaal@gmail.com>
-References: <cover.1646321515.git.abdun.nihaal@gmail.com>
+        Thu, 3 Mar 2022 10:55:17 -0500
+X-Greylist: delayed 227 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Mar 2022 07:54:31 PST
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA59F1AEB
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:54:30 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2235lqur030833;
+        Thu, 3 Mar 2022 09:50:31 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=AG0n2ijCgNT2DbNgl3H2xjT8rhgbgXbGPEN/ZYtBqco=;
+ b=lqXLsyqRWdUiwJ6Mdlf7lU/J3mvF90N4A+D7VLu+E+ji2A+Vz3h/QtaClpx47fuL2egt
+ qCDQlCI+mv2qaD6I+jQPkeBNlu7yWvn0vIHiP1S3MWQHjYzsJKH9LrbGVYzaq7k2TNYo
+ DoSCbeR5aY9FRp8DIQO3WQ2OQtSMLJyXGvlaPgZyAvwF/l8LpWGm1NWCuzlfRC0ZiJms
+ fSnJvpOzv3LIpDcnDBjNW2K5m7tLQksoQcn/ovc6nlkcGn14xyiBHKrrzwqFkPuYAkHE
+ 8JImXFN+9yT7VHsN08ihK9Abp8hMVk23o2j7cS/nW+D7bUjuHrfFAtkmrKMZtumEX3+Q 9A== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ejncq8tkw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 03 Mar 2022 09:50:31 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 3 Mar
+ 2022 15:50:29 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Thu, 3 Mar 2022 15:50:29 +0000
+Received: from simont-vb.lan?044ad.cirrus.com (LONN13613Z2.ad.cirrus.com [198.61.64.32])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 913537C;
+        Thu,  3 Mar 2022 15:50:29 +0000 (UTC)
+From:   Simon Trimmer <simont@opensource.cirrus.com>
+To:     <broonie@kernel.org>
+CC:     <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>,
+        Simon Trimmer <simont@opensource.cirrus.com>
+Subject: [PATCH] ASoC: wm_adsp: Expand firmware loading search options
+Date:   Thu, 3 Mar 2022 15:50:16 +0000
+Message-ID: <20220303155016.122125-1-simont@opensource.cirrus.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: wPaagACGvGse1HA0xYdRgPLNwX3odZaY
+X-Proofpoint-GUID: wPaagACGvGse1HA0xYdRgPLNwX3odZaY
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The fields alloc_sz, irp_pending and pallocated_buf in struct recv_buf
-are set but not used. And the field dma_transfer_addr is not used.
-Remove them.
+The parts supported by this driver can have product-specific
+firmware and tunings files. Typically these have been used on
+embedded systems where the manufacturer is responsible for
+installing the correct product-specific firmware files into
+/lib/firmware. However, the linux-firmware repository places all
+available firmwares into /lib/firmware and it is up to the driver to
+select the correct product-specific firmware from that directory.
 
-Signed-off-by: Abdun Nihaal <abdun.nihaal@gmail.com>
+For example a product containing four smart amplifiers may provide
+firmware specific for that product and each of the amplifiers may
+have coefficient files containing tunings for their placement in the
+mechanical design.
+
+This change extends firmware (wmfw) and coefficient (bin) filenames
+to be of the general form:
+
+<cirrus/>part-dspN-fwtype<-system_name<-asoc_component_prefix>>.type
+
+Where the cirrus subdirectory, system_name and asoc_component_prefix
+are optional.
+
+New files will be placed in the cirrus subdirectory to avoid
+polluting the main /lib/firmware/ location. The generic name must be
+searched in /lib/firmware before /lib/firmware/cirrus so that a
+generic file in the new location does not override existing
+product-specific files in the legacy location.
+
+The search order for firmware files is:
+  - cirrus/part-dspN-fwtype-system_name-asoc_component_prefix.wmfw
+  - cirrus/part-dspN-fwtype-system_name.wmfw
+  - part-dspN-fwtype.wmfw
+  - cirrus/part-dspN-fwtype.wmfw
+
+- Qualifications are added to the filename so that rightwards is more
+  specific.
+- The system_name is provided by the codec driver.
+- The asoc_component_prefix is used to identify tunings for individual
+  parts because it would already exist to disambiguate the controls
+  and it makes it obvious which firmware file applies to which device.
+
+The optional coefficient file must have the same filename
+construction as the discovered wmfw except:
+  - where the wmfw has only system_name then the bin file can
+    optionally include the asoc_component_prefix. This is to allow a
+    common wmfw for all amps but separate tunings per amp.
+
+Signed-off-by: Simon Trimmer <simont@opensource.cirrus.com>
 ---
- drivers/staging/r8188eu/hal/rtl8188eu_recv.c | 1 -
- drivers/staging/r8188eu/include/rtw_recv.h   | 4 ----
- drivers/staging/r8188eu/os_dep/recv_linux.c  | 2 --
- 3 files changed, 7 deletions(-)
+ sound/soc/codecs/wm_adsp.c | 99 +++++++++++++++++++++++++++++++++-----
+ sound/soc/codecs/wm_adsp.h |  1 +
+ 2 files changed, 88 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_recv.c b/drivers/staging/r8188eu/hal/rtl8188eu_recv.c
-index 2960e349638d..322b4549a92d 100644
---- a/drivers/staging/r8188eu/hal/rtl8188eu_recv.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188eu_recv.c
-@@ -38,7 +38,6 @@ int	rtl8188eu_init_recv_priv(struct adapter *padapter)
- 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
- 
- 	for (i = 0; i < NR_RECVBUFF; i++) {
--		precvbuf->alloc_sz = MAX_RECVBUF_SZ;
- 		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
- 		if (res == _FAIL)
- 			break;
-diff --git a/drivers/staging/r8188eu/include/rtw_recv.h b/drivers/staging/r8188eu/include/rtw_recv.h
-index e62cda94bc90..4ac4e6b3e177 100644
---- a/drivers/staging/r8188eu/include/rtw_recv.h
-+++ b/drivers/staging/r8188eu/include/rtw_recv.h
-@@ -208,11 +208,7 @@ struct sta_recv_priv {
- 
- struct recv_buf {
- 	struct adapter *adapter;
--	u8	*pallocated_buf;
- 	struct urb *purb;
--	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
--	u32 alloc_sz;
--	u8  irp_pending;
- 	struct sk_buff *pskb;
- 	u8	reuse;
- };
-diff --git a/drivers/staging/r8188eu/os_dep/recv_linux.c b/drivers/staging/r8188eu/os_dep/recv_linux.c
-index 898ae944bd7d..1e14b6d49795 100644
---- a/drivers/staging/r8188eu/os_dep/recv_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/recv_linux.c
-@@ -18,13 +18,11 @@ int rtw_os_recvbuf_resource_alloc(struct adapter *padapter,
- {
- 	int res = _SUCCESS;
- 
--	precvbuf->irp_pending = false;
- 	precvbuf->purb = usb_alloc_urb(0, GFP_KERNEL);
- 	if (!precvbuf->purb)
- 		res = _FAIL;
- 	precvbuf->pskb = NULL;
- 	precvbuf->reuse = false;
--	precvbuf->pallocated_buf = NULL;
- 	return res;
+diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+index 0582585236a2..5ba88c5272d0 100644
+--- a/sound/soc/codecs/wm_adsp.c
++++ b/sound/soc/codecs/wm_adsp.c
+@@ -744,21 +744,48 @@ static void wm_adsp_release_firmware_files(struct wm_adsp *dsp,
  }
  
+ static int wm_adsp_request_firmware_file(struct wm_adsp *dsp,
+-					 const struct firmware **firmware,
+-					 char **filename,
+-					 char *suffix)
++					 const struct firmware **firmware, char **filename,
++					 const char *dir, const char *system_name,
++					 const char *asoc_component_prefix,
++					 const char *filetype)
+ {
+ 	struct cs_dsp *cs_dsp = &dsp->cs_dsp;
++	char *s, c;
+ 	int ret = 0;
+ 
+-	*filename = kasprintf(GFP_KERNEL, "%s-%s-%s.%s", dsp->part, dsp->fwf_name,
+-			      wm_adsp_fw[dsp->fw].file, suffix);
++	if (system_name && asoc_component_prefix)
++		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s-%s.%s", dir, dsp->part,
++				      dsp->fwf_name, wm_adsp_fw[dsp->fw].file, system_name,
++				      asoc_component_prefix, filetype);
++	else if (system_name)
++		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s-%s.%s", dir, dsp->part,
++				      dsp->fwf_name, wm_adsp_fw[dsp->fw].file, system_name,
++				      filetype);
++	else
++		*filename = kasprintf(GFP_KERNEL, "%s%s-%s-%s.%s", dir, dsp->part, dsp->fwf_name,
++				      wm_adsp_fw[dsp->fw].file, filetype);
++
+ 	if (*filename == NULL)
+ 		return -ENOMEM;
+ 
+-	ret = request_firmware(firmware, *filename, cs_dsp->dev);
++	/*
++	 * Make sure that filename is lower-case and any non alpha-numeric
++	 * characters except full stop and forward slash are replaced with
++	 * hyphens.
++	 */
++	s = *filename;
++	while (*s) {
++		c = *s;
++		if (isalnum(c))
++			*s = tolower(c);
++		else if ((c != '.') && (c != '/'))
++			*s = '-';
++		s++;
++	}
++
++	ret = firmware_request_nowarn(firmware, *filename, cs_dsp->dev);
+ 	if (ret != 0) {
+-		adsp_err(dsp, "Failed to request '%s'\n", *filename);
++		adsp_dbg(dsp, "Failed to request '%s'\n", *filename);
+ 		kfree(*filename);
+ 		*filename = NULL;
+ 	}
+@@ -766,21 +793,69 @@ static int wm_adsp_request_firmware_file(struct wm_adsp *dsp,
+ 	return ret;
+ }
+ 
++static const char *cirrus_dir = "cirrus/";
+ static int wm_adsp_request_firmware_files(struct wm_adsp *dsp,
+ 					  const struct firmware **wmfw_firmware,
+ 					  char **wmfw_filename,
+ 					  const struct firmware **coeff_firmware,
+ 					  char **coeff_filename)
+ {
++	const char *system_name = dsp->system_name;
++	const char *asoc_component_prefix = dsp->component->name_prefix;
+ 	int ret = 0;
+ 
+-	ret = wm_adsp_request_firmware_file(dsp, wmfw_firmware, wmfw_filename, "wmfw");
+-	if (ret != 0)
+-		return ret;
++	if (system_name && asoc_component_prefix) {
++		if (!wm_adsp_request_firmware_file(dsp, wmfw_firmware, wmfw_filename,
++						   cirrus_dir, system_name,
++						   asoc_component_prefix, "wmfw")) {
++			adsp_dbg(dsp, "Found '%s'\n", *wmfw_filename);
++			wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
++						      cirrus_dir, system_name,
++						      asoc_component_prefix, "bin");
++			return 0;
++		}
++	}
+ 
+-	wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename, "bin");
++	if (system_name) {
++		if (!wm_adsp_request_firmware_file(dsp, wmfw_firmware, wmfw_filename,
++						   cirrus_dir, system_name,
++						   NULL, "wmfw")) {
++			adsp_dbg(dsp, "Found '%s'\n", *wmfw_filename);
++			if (asoc_component_prefix)
++				wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
++							      cirrus_dir, system_name,
++							      asoc_component_prefix, "bin");
++
++			if (!*coeff_firmware)
++				wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
++							      cirrus_dir, system_name,
++							      NULL, "bin");
++			return 0;
++		}
++	}
+ 
+-	return 0;
++	if (!wm_adsp_request_firmware_file(dsp, wmfw_firmware, wmfw_filename,
++					   "", NULL, NULL, "wmfw")) {
++		adsp_dbg(dsp, "Found '%s'\n", *wmfw_filename);
++		wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
++					      "", NULL, NULL, "bin");
++		return 0;
++	}
++
++	ret = wm_adsp_request_firmware_file(dsp, wmfw_firmware, wmfw_filename,
++					    cirrus_dir, NULL, NULL, "wmfw");
++	if (!ret) {
++		adsp_dbg(dsp, "Found '%s'\n", *wmfw_filename);
++		wm_adsp_request_firmware_file(dsp, coeff_firmware, coeff_filename,
++					      cirrus_dir, NULL, NULL, "bin");
++		return 0;
++	}
++
++	adsp_err(dsp, "Failed to request firmware <%s>%s-%s-%s<-%s<%s>>.wmfw\n",
++		 cirrus_dir, dsp->part, dsp->fwf_name, wm_adsp_fw[dsp->fw].file,
++		 system_name, asoc_component_prefix);
++
++	return -ENOENT;
+ }
+ 
+ static int wm_adsp_common_init(struct wm_adsp *dsp)
+diff --git a/sound/soc/codecs/wm_adsp.h b/sound/soc/codecs/wm_adsp.h
+index 7f4fabbc6ad3..375009a65828 100644
+--- a/sound/soc/codecs/wm_adsp.h
++++ b/sound/soc/codecs/wm_adsp.h
+@@ -28,6 +28,7 @@ struct wm_adsp {
+ 	struct cs_dsp cs_dsp;
+ 	const char *part;
+ 	const char *fwf_name;
++	const char *system_name;
+ 	struct snd_soc_component *component;
+ 
+ 	unsigned int sys_config_size;
 -- 
-2.35.1
+2.34.1
 
