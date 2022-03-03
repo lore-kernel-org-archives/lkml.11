@@ -2,134 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C96C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60871C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbiCCKVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:21:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        id S232242AbiCCKVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:21:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbiCCKVK (ORCPT
+        with ESMTP id S231436AbiCCKVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:21:10 -0500
+        Thu, 3 Mar 2022 05:21:37 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501BA488A3;
-        Thu,  3 Mar 2022 02:20:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693C8488AE
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:20:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646302825; x=1677838825;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4Otr+JQyp8IM/RF61Ihr+OMf6poonNq4fmWZEgecv5k=;
-  b=LPMPaQdr1+yzrSUw4rffpZKeVM0rWNGfjdLkNBgTB3h70AUqOlogRbFJ
-   BZexuWWeOUQh7udIFu9uE3VU/DvTXklgPVi7Teogt2BC+fqnM6rXicQw4
-   /e6RQW7YO18pQiroWdpBAI2nXq5M0yK6EXpASk4zSwEjpzriBZ5rYrgs8
-   rjIImx/t1lVvzZRb1ofxYI04N296Bsgo0R+UcNhI5mWZnsNAngudz/XNg
-   dV8T2wmjEX6Pw8MrUbkLDJb2lpNsRSas3nEg6H4l1Uy4z7+aflyWgdGlz
-   etNoLCo3g+4x5h5oZ/qv6NOFqRs2PU7Tq+szGkw6ye0w3R4mxyvexzKeF
+  t=1646302852; x=1677838852;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g56pX/GSAWQSlgJNt88yTdMvqnz41826tIjouC0R+PE=;
+  b=ayFUGX6DEkoHnatl0XFulMiQKZb0K6vYOxjYbP87/fPJyp1bTzrixNLe
+   huQWN692sHxxxSJGRa/JMTnqpxNsrhT5IoOrS4pOhBriDoinqCpveOdJV
+   61A/cJmPiL/YnLYSum62EDmiw19UTz0jt2RqxYX6JDAHiS8kls+2/u6Fg
+   7vXuFNt/aRYykQ3qbw6hI1dgqC13Y9NDumzjhmpgB9KQkbc/BtaSxXOlV
+   LwGTmAyIFzsPIO2gCN1+j/K2AN6Xe7RuMQMFNWVHezjpE/YBA/DVKUG1s
+   s/+uTQQpS4I1m5/FULFsdV+g4r6NW0zf/pbNA8yg0cbQiKN6XtwLjm0jp
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="234250005"
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="234250086"
 X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="234250005"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 02:20:25 -0800
+   d="scan'208";a="234250086"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 02:20:52 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="551694758"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 02:20:21 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nPiYY-00Ajk2-Cp;
-        Thu, 03 Mar 2022 12:19:34 +0200
-Date:   Thu, 3 Mar 2022 12:19:33 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Michael Mueller <mimu@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+   d="scan'208";a="508539007"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 03 Mar 2022 02:20:50 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPiZl-0000Ny-Pr; Thu, 03 Mar 2022 10:20:49 +0000
+Date:   Thu, 3 Mar 2022 18:20:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
         linux-kernel@vger.kernel.org,
-        Janosch Frank <frankja@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>
-Subject: Re: [PATCH v1 1/1] KVM: s390: Don't cast parameter in bit operations
-Message-ID: <YiCWNdWd+AsLbDkp@smile.fi.intel.com>
-References: <20220223164420.45344-1-andriy.shevchenko@linux.intel.com>
- <20220224123620.57fd6c8b@p-imbrenda>
- <3640a910-60fe-0935-4dfc-55bb65a75ce5@linux.ibm.com>
- <Yh+Qw6Pb+Cd9JDNa@smile.fi.intel.com>
- <Yh+m65BSfQgaDFwi@yury-laptop>
- <Yh+qDhd6FL9nlQdD@smile.fi.intel.com>
- <Yh+66v3OJZanfBLb@yury-laptop>
+        Suren Baghdasaryan <surenb@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.9-q-release
+ 7912/9999] include/linux/delayacct.h: linux/sched.h is included more than
+ once.
+Message-ID: <202203031850.vSFz8tmp-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yh+66v3OJZanfBLb@yury-laptop>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 10:43:54AM -0800, Yury Norov wrote:
-> On Wed, Mar 02, 2022 at 07:31:58PM +0200, Andy Shevchenko wrote:
-> > On Wed, Mar 02, 2022 at 09:18:35AM -0800, Yury Norov wrote:
-> > > On Wed, Mar 02, 2022 at 05:44:03PM +0200, Andy Shevchenko wrote:
-> > > > On Thu, Feb 24, 2022 at 01:10:34PM +0100, Michael Mueller wrote:
-> > > > > On 24.02.22 12:36, Claudio Imbrenda wrote:
-> > > > 
-> > > > ...
-> > > > 
-> > > > > we do that at several places
-> > > > 
-> > > > Thanks for pointing out.
-> > > > 
-> > > > > arch/s390/kernel/processor.c:	for_each_set_bit_inv(bit, (long
-> > > > > *)&stfle_fac_list, MAX_FACILITY_BIT)
-> > > > 
-> > > > This one requires a separate change, not related to this patch.
-> > > > 
-> > > > > arch/s390/kvm/interrupt.c:	set_bit_inv(IPM_BIT_OFFSET + gisc, (unsigned long
-> > > > > *) gisa);
-> > > > 
-> > > > This is done in the patch. Not sure how it appears in your list.
-> > > > 
-> > > > > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
-> > > > > sca->mcn);
-> > > > > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
-> > > > > &sca->mcn);
-> > > > 
-> > > > These two should be fixed in a separate change.
-> > > > 
-> > > > Also this kind of stuff:
-> > > > 
-> > > > 	bitmap_copy(kvm->arch.cpu_feat, (unsigned long *) data.feat,
-> > > > 	            KVM_S390_VM_CPU_FEAT_NR_BITS);
-> > > > 
-> > > > might require a new API like
-> > > > 
-> > > > bitmap_from_u64_array()
-> > > > bitmap_to_u64_array()
-> > > > 
-> > > > Yury?
-> > > 
-> > > If BE32 is still the case then yes.
-> > 
-> > The whole point is to get rid of the bad pattern, while it may still work
-> > in the particular case.
-> 
-> Then yes unconditionally. Is it already on table of s390 folks? If no,
-> I can do it myself.
-> 
-> We have bitmap_from_arr32 and bitmap_to_arr32, so for 64-bit versions,
-> we'd start from that.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.9-q-release
+head:   4be78b108a3a1d1ffbc2367c5a45855715451482
+commit: 0f3e95cb46285a27db306d7a6e48fcf8a317b762 [7912/9999] UPSTREAM: sched/headers, delayacct: Move the 'struct task_delay_info' definition from <linux/sched.h> to <linux/delayacct.h>
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
 
-Yep, thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+includecheck warnings: (new ones prefixed by >>)
+>> include/linux/delayacct.h: linux/sched.h is included more than once.
+>> /kbuild/src/consumer/include/linux/delayacct.h: linux/slab.h is included more than once.
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
