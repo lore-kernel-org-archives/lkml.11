@@ -2,122 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 382E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A774DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231871AbiCCJV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:21:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
+        id S231875AbiCCJWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:22:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiCCJVW (ORCPT
+        with ESMTP id S230352AbiCCJWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:21:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E6B16AA4E
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:20:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35BDD61C31
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:20:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21679C004E1;
-        Thu,  3 Mar 2022 09:20:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646299236;
-        bh=BujV7lNeAWkNsMofyT66pdBcFGsUyYMTJ5RRJQhoH8w=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=UvnHTsEIHOU3TOu3c/X0BUVu6evrc6wo5Q1SFWDfvADwgZlV0gRM6SBbsr6cknc/8
-         TC7//pjpGSwYltyiVkVW2lmGo+2DZJ6h1DRAy7tQ8Mh4g8FpZcay1b4tYqFt3OZztj
-         773ndMVdHHJqO3VquWWfz2ZZjj8/pU/nEkbgQdV0i7N8NJlNUGfeQpzCp9wJxoHxzF
-         7WCeT8BisYu5g3wmGvUAD9+1gq3BjgLR7z+217t9sN2Mq/l2c8Dfnh0s7DJ7vsJpNi
-         32LWikPC0jYsW1zRmAz6E2sZ2XeXOg2n/4e1tzHCOlyTn+K7rpZclJ1ZRCtdS8qcF7
-         5rnhtpdGqoJVg==
-Message-ID: <32165383-5ccf-e6a1-92ef-cde14c401eaa@kernel.org>
-Date:   Thu, 3 Mar 2022 11:20:31 +0200
+        Thu, 3 Mar 2022 04:22:10 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6FD16BCC8
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:21:24 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id m6so6762897wrr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 01:21:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DvPDduUxIuKL+yC0AJiEs10ttn/sVwtbIKSiINsPfck=;
+        b=Whs7i/l7Ta41ISRWqYoptObsB6bgijpRsSUQ44ORzGWV0eiv3MSdzllcgvNtcbgOzV
+         qEsNocRqROECrQoXT6nSFau837L0OZpiRLHG8FOGgmDtmMYRIkz6qn9o9QlYjnMQf/8J
+         E6wtNZwzdQKTs8NxFcu6iseMmGML1DLObOb+bunR8gwBluzuLLJf3GELwctxeXkv5xu4
+         d2gEUduPCFVu6XwxxjKDTnNrJLyiwvP4urthL0bZKFcDDV+q/rc89oPx3PNHFRQFdWey
+         uCvmgVQ75ezYhb05odw7aZVpXf01MrhHlXimTlb1UQvYmIIXSAizC7fST9LoQrS12GYn
+         uyNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DvPDduUxIuKL+yC0AJiEs10ttn/sVwtbIKSiINsPfck=;
+        b=ZkLbXTI9veBZVJqeQfgHkPtDDAc+yOwhjvcB4DAoebgTvxZJFVxFxw/ibHmQkPfKfa
+         8otGjRRuoVFx1Nh4ImzqylpwsEypSo01MRLWbwNW0Pd3tPNlInyNuIJroyRcHqiLCWf6
+         76cOtNAxcl5+bsTOZLQiijKj2aKMZnX+uhdLBAm6yPLa9sVCWmigEpHjXT7Eoo0N8/zd
+         NE1OSHScEx/IZJeA7NpCZw/JcMzRRLUYyU50Lx+pbuUquchm9gMhnzNrPuXvyol0Qbao
+         LSWRq8j1vorqkJz0t2vD+gsB2KIv1XznKxx0eaT2NACGMEPlCYDkdWMGPsySVzHXuQgF
+         G6vg==
+X-Gm-Message-State: AOAM5321FZDyME5Kj41LXupjPhfBsWznDgo8wG8OrSzZic+Nbt83fuM0
+        lFzh1Nw5d5qONIqWMwRWkbx9EA==
+X-Google-Smtp-Source: ABdhPJyr7pVJbeXlptM3psyRHARpgFUUaoaGjdJbuLZWvib+4ssC3GztiHJ961bWXmr+1LqoREKl5w==
+X-Received: by 2002:a05:6000:1b0a:b0:1ef:7c04:9bad with SMTP id f10-20020a0560001b0a00b001ef7c049badmr20292282wrz.54.1646299283022;
+        Thu, 03 Mar 2022 01:21:23 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id p16-20020adff210000000b001f062b80091sm353137wro.34.2022.03.03.01.21.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 01:21:22 -0800 (PST)
+Date:   Thu, 3 Mar 2022 09:21:20 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     Eric Biggers <ebiggers@kernel.org>, linux-ext4@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Chinner <dchinner@redhat.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        "Darrick J . Wong" <darrick.wong@oracle.com>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, cluster-devel@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -v4] ext4: don't BUG if kernel subsystems dirty pages
+ without asking ext4 first
+Message-ID: <YiCIkNci2V3IBRme@google.com>
+References: <Yg0m6IjcNmfaSokM@google.com>
+ <Yhks88tO3Em/G370@mit.edu>
+ <YhlBUCi9O30szf6l@sol.localdomain>
+ <YhlFRoJ3OdYMIh44@mit.edu>
+ <YhlIvw00Y4MkAgxX@mit.edu>
+ <YiBDf7XLnTe4Gwis@mit.edu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V1] extcon/usb: Remove disable irq operation in system
- sleep.
-Content-Language: en-US
-To:     Bruce Chen <brucechen251@gmail.com>, bruce.chen@unisoc.com,
-        myungjoo.ham@samsung.com, cw00.choi@samsung.com,
-        linux-kernel@vger.kernel.org,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     orsonzhai@gmail.com, gengcixi@gmail.com, baolin.wang7@gmail.com,
-        zhang.lyra@gmail.com
-References: <1646292963-20570-1-git-send-email-brucechen251@gmail.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <1646292963-20570-1-git-send-email-brucechen251@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YiBDf7XLnTe4Gwis@mit.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+TI folks Aswath & Vignesh.
+On Wed, 02 Mar 2022, Theodore Ts'o wrote:
 
-Hi Bruce,
-
-On 03/03/2022 09:36, Bruce Chen wrote:
-> From: Bruce Chen <bruce.chen@unisoc.com>
+> [un]pin_user_pages_remote is dirtying pages without properly warning
+> the file system in advance.  A related race was noted by Jan Kara in
+> 2018[1]; however, more recently instead of it being a very hard-to-hit
+> race, it could be reliably triggered by process_vm_writev(2) which was
+> discovered by Syzbot[2].
 > 
-> If disable vbus/id irq, it will lead to wakeup system fail
-> in unisoc platform. In unisoc platform, Irq enable and irq
-> wakeup are the same interrupt line. So remove disable vbus/id
-> irq operation is a way to solve the issue> 
-> Signed-off-by: Bruce Chen <bruce.chen@unisoc.com>
+> This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+> that if some other kernel subsystem dirty pages without properly
+> notifying the file system using page_mkwrite(), ext4 will BUG, while
+> other file systems will not BUG (although data will still be lost).
+> 
+> So instead of crashing with a BUG, issue a warning (since there may be
+> potential data loss) and just mark the page as clean to avoid
+> unprivileged denial of service attacks until the problem can be
+> properly fixed.  More discussion and background can be found in the
+> thread starting at [2].
+> 
+> [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+> 
+> Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+> Reported-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+> Cc: stable@kernel.org
 > ---
->  drivers/extcon/extcon-usb-gpio.c | 15 ---------------
->  1 file changed, 15 deletions(-)
+> v4 - only changes to the commit description to eliminate some inaccuracies
+>      and clarify the text.
 > 
-> diff --git a/drivers/extcon/extcon-usb-gpio.c b/drivers/extcon/extcon-usb-gpio.c
-> index f2b65d9..40d967a 100644
-> --- a/drivers/extcon/extcon-usb-gpio.c
-> +++ b/drivers/extcon/extcon-usb-gpio.c
-> @@ -226,16 +226,6 @@ static int usb_extcon_suspend(struct device *dev)
->  		}
->  	}
->  
-> -	/*
-> -	 * We don't want to process any IRQs after this point
-> -	 * as GPIOs used behind I2C subsystem might not be
-> -	 * accessible until resume completes. So disable IRQ.
-> -	 */
+>  fs/ext4/inode.c | 27 ++++++++++++++++++++++++++-
+>  1 file changed, 26 insertions(+), 1 deletion(-)
 
-I think the reason this was added was that if USB cable is plugged/unplugged
-while system was suspending it was causing some faults on TI DRA7 EVM
-at usb_irq_handler()/usb_extcon_detect_cable() when it tries to read GPIO status
-when I2C based GPIO controller was used but already suspended.
-But looks like disabling the IRQ is not the right approach either so your patch
-is right.
+Thanks a bunch for sticking with this Ted.
 
-However I'm not sure if the above issue will still exist on DRA7 and other TI EVMS
-using ID/VBUS GPIO over I2C device.
+I've been following along with great interest.
 
-Let's wait for Aswath/Vignesh to confirm. If no issues I'm OK with this patch.
+Sadly I am not in a position to provide a review.
 
-> -	if (info->id_gpiod)
-> -		disable_irq(info->id_irq);
-> -	if (info->vbus_gpiod)
-> -		disable_irq(info->vbus_irq);
-> -
->  	if (!device_may_wakeup(dev))
->  		pinctrl_pm_select_sleep_state(dev);
->  
-> @@ -267,11 +257,6 @@ static int usb_extcon_resume(struct device *dev)
->  		}
->  	}
->  
-> -	if (info->id_gpiod)
-> -		enable_irq(info->id_irq);
-> -	if (info->vbus_gpiod)
-> -		enable_irq(info->vbus_irq);
-> -
->  	queue_delayed_work(system_power_efficient_wq,
->  			   &info->wq_detcable, 0);
->  
+Just wanted to pop by and say thank you.
 
-cheers,
--roger
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
