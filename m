@@ -2,77 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 06:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 06:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbiCCG6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 01:58:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        id S230079AbiCCG6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 01:58:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiCCG6Y (ORCPT
+        with ESMTP id S230035AbiCCG6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 01:58:24 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D305FB2;
-        Wed,  2 Mar 2022 22:57:35 -0800 (PST)
-X-UUID: 21700996603c451292d80fe336026f0f-20220303
-X-UUID: 21700996603c451292d80fe336026f0f-20220303
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1221818509; Thu, 03 Mar 2022 14:57:28 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 3 Mar 2022 14:57:27 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 3 Mar 2022 14:57:27 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <jassisinghbrar@gmail.com>, <fparent@baylibre.com>,
-        <yongqiang.niu@mediatek.com>, <hsinyi@chromium.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [RESEND V6 1/5] dt-bindings: display: mediatek: add aal binding for MT8183
-Date:   Thu, 3 Mar 2022 14:57:21 +0800
-Message-ID: <20220303065725.23384-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220303065725.23384-1-rex-bc.chen@mediatek.com>
-References: <20220303065725.23384-1-rex-bc.chen@mediatek.com>
+        Thu, 3 Mar 2022 01:58:40 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D8D013F7C;
+        Wed,  2 Mar 2022 22:57:53 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 671ED1424;
+        Wed,  2 Mar 2022 22:57:53 -0800 (PST)
+Received: from [10.57.21.106] (unknown [10.57.21.106])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 68FBB3F66F;
+        Wed,  2 Mar 2022 22:57:51 -0800 (PST)
+Message-ID: <c2dabec3-ffdb-909a-a8dd-f8e77a8108ed@arm.com>
+Date:   Thu, 3 Mar 2022 06:57:49 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 0/5] Introduce "opp-microwatt" and Energy Model from DT
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
+        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220302112917.27270-1-lukasz.luba@arm.com>
+ <20220303040539.ocnslxyswnvua3o7@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220303040539.ocnslxyswnvua3o7@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add aal binding for MT8183.
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- .../devicetree/bindings/display/mediatek/mediatek,aal.yaml      | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
-index 225f9dd726d2..191b56e16bee 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
-@@ -23,6 +23,8 @@ properties:
-     oneOf:
-       - items:
-           - const: mediatek,mt8173-disp-aal
-+      - items:
-+          - const: mediatek,mt8183-disp-aal
-       - items:
-           - enum:
-               - mediatek,mt2712-disp-aal
--- 
-2.18.0
+On 3/3/22 04:05, Viresh Kumar wrote:
+> On 02-03-22, 11:29, Lukasz Luba wrote:
+>> Hi all,
+>>
+>> This patch set solves a few issues:
+>> 1. It allows to register EM from DT, when the voltage information is not
+>>     available. (Some background of the issues present on Chromebook devices
+>>     can be checked at [1].)
+>> 2. It allows to register 'advanced' EM from the DT, which is more accurate
+>>     and reflects total power (dynamic + static).
+>>
+>> Implementation details:
+>> Existing machinery in the OPP framework now handles "opp-microwatt", similarly
+>> to "opp-microamp". It also has helper exported function to get power from OPP.
+>> For the EM, it adds a new callback in OPP framework to use this new API and
+>> read power while having an opp pointer. It's agreed to work with OPP-v2.
+>>
+>> Comments, suggestions are very welcome.
+>>
+>> changelog:
+>> v5:
+>> - added dual-macro to conditionally setup needed callback and compile
+>>    on !EM kernel gently
+>> - removed 'advanced' word from OPP patch header description
+>> v4 [2]
+> 
+> Applied. Thanks.
+> 
 
+Thank you Viresh for your reviews.
+
+Regards,
+Lukasz
