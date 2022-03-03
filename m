@@ -2,92 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E048FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D968C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiCCL4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:56:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
+        id S233043AbiCCL4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:56:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiCCL4j (ORCPT
+        with ESMTP id S233008AbiCCL4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:56:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BD51C3300
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:55:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646308552;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IY8lWVSOV3bu6U2dVFxqTE5k4e4xoGosytCtjhB+xz0=;
-        b=fqsHsQEGTpBqNHppoC1FGaeOV3a82oHFXun8hmKEZEFh3l6fWZxR+rytbTxG0Qrb1a9735
-        kW27fGlZQhE7Nb4YFNLHFfn1pzdNnHUWNYefOGMxR+QUZiWEupoZAQ1X2DCGsOSsmtZbTE
-        /L/pT5Wq4djYhohWiuhk/R/h59tnUm8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-247-gl5wym27Ng2KQYmErdbzSQ-1; Thu, 03 Mar 2022 06:55:51 -0500
-X-MC-Unique: gl5wym27Ng2KQYmErdbzSQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A43E91091DA0;
-        Thu,  3 Mar 2022 11:55:50 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 76C0F842D4;
-        Thu,  3 Mar 2022 11:55:49 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH] cachefiles: Fix incorrect length to fallocate()
-From:   David Howells <dhowells@redhat.com>
-To:     jlayton@kernel.org
-Cc:     Jeffle Xu <jefflexu@linux.alibaba.com>, linux-cachefs@redhat.com,
-        dhowells@redhat.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 03 Mar 2022 11:55:48 +0000
-Message-ID: <164630854858.3665356.17419701804248490708.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        Thu, 3 Mar 2022 06:56:42 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED74F7465;
+        Thu,  3 Mar 2022 03:55:57 -0800 (PST)
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 03 Mar 2022 03:55:57 -0800
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 03 Mar 2022 03:55:56 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO youghand-linux.qualcomm.com) ([10.206.66.115])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 03 Mar 2022 17:25:45 +0530
+Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
+        id 32DFD22770; Thu,  3 Mar 2022 17:25:44 +0530 (IST)
+From:   Youghandhar Chintala <youghand@codeaurora.org>
+To:     ath10k@lists.infradead.org
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pillair@codeaurora.org, dianders@chromium.org, kuabhs@chromium.org,
+        briannorris@chromium.org, mpubbise@codeaurora.org,
+        Youghandhar Chintala <youghand@codeaurora.org>
+Subject: [PATCH v4 0/2] mac80211: Trigger disconnect for STA during target hardware restart
+Date:   Thu,  3 Mar 2022 17:25:39 +0530
+Message-Id: <20220303115541.15892-1-youghand@codeaurora.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When cachefiles_shorten_object() calls fallocate() to shape the cache file
-to match the DIO size, it passes the total file size it wants to achieve,
-not the amount of zeros that should be inserted.  Since this is meant to
-preallocate that amount of storage for the file, it can cause the cache to
-fill up the disk and hit ENOSPC.
+Currently in case of target hardware restart ,we just reconfig and
+re-enable the security keys and enable the network queues to start
+data traffic back from where it was interrupted.
 
-Fix this by passing the length actually required to go from the current EOF
-to the desired EOF.
+Many ath10k wifi chipsets have sequence numbers for the data
+packets assigned by firmware and the mac sequence number will
+restart from zero after target hardware restart leading to mismatch
+in the sequence number expected by the remote peer vs the sequence
+number of the frame sent by the target firmware.
 
-Fixes: 7623ed6772de ("cachefiles: Implement cookie resize for truncate")
-Reported-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-cachefs@redhat.com
+This mismatch in sequence number will cause out-of-order packets
+on the remote peer and all the frames sent by the device are dropped
+until we reach the sequence number which was sent before we restarted
+the target hardware
+
+In order to fix this, we trigger a disconnect in case of hardware
+restart. After this there will be a fresh connection and thereby
+avoiding the dropping of frames by remote peer.
+
+The right fix would be to pull the entire data path into the host
+which is not feasible or would need lots of complex/inefficient
+datapath changes.
+
 ---
+Changes from v3:
+- Added common API to trigger disconnect.
 
- fs/cachefiles/interface.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Youghandhar Chintala (2):
+  mac80211: Add support to trigger sta disconnect on  hardware restart
+  ath10k:trigger sta disconnect on hardware restart
 
-diff --git a/fs/cachefiles/interface.c b/fs/cachefiles/interface.c
-index 51c968cd00a6..ae93cee9d25d 100644
---- a/fs/cachefiles/interface.c
-+++ b/fs/cachefiles/interface.c
-@@ -254,7 +254,7 @@ static bool cachefiles_shorten_object(struct cachefiles_object *object,
- 		ret = cachefiles_inject_write_error();
- 		if (ret == 0)
- 			ret = vfs_fallocate(file, FALLOC_FL_ZERO_RANGE,
--					    new_size, dio_size);
-+					    new_size, dio_size - new_size);
- 		if (ret < 0) {
- 			trace_cachefiles_io_error(object, file_inode(file), ret,
- 						  cachefiles_trace_fallocate_error);
+ drivers/net/wireless/ath/ath10k/core.c | 27 ++++++++++++++++++++
+ drivers/net/wireless/ath/ath10k/hw.h   |  2 ++
+ include/net/mac80211.h                 | 23 +++++++++++++++++
+ net/mac80211/ieee80211_i.h             |  3 +++
+ net/mac80211/mlme.c                    | 12 +++++++++
+ net/mac80211/util.c                    | 34 +++++++++++++++++++++++---
+ 6 files changed, 98 insertions(+), 3 deletions(-)
 
+-- 
+2.29.0
 
