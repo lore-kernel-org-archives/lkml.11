@@ -2,118 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2790C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230441AbiCCH5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 02:57:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
+        id S230434AbiCCH7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 02:59:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbiCCH5L (ORCPT
+        with ESMTP id S229698AbiCCH7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 02:57:11 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8AD16FDDA;
-        Wed,  2 Mar 2022 23:56:26 -0800 (PST)
-X-UUID: a1b45fee22bd4677baa95a5857ed4a1e-20220303
-X-UUID: a1b45fee22bd4677baa95a5857ed4a1e-20220303
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <alice.chao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1216922223; Thu, 03 Mar 2022 15:56:19 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 3 Mar 2022 15:56:18 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 3 Mar 2022 15:56:18 +0800
-From:   Alice Chao <alice.chao@mediatek.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <matthias.bgg@gmail.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-CC:     <stanley.chu@mediatek.com>, <peter.wang@mediatek.com>,
-        <chun-hung.wu@mediatek.com>, <alice.chao@mediatek.com>,
-        <jonathan.hsu@mediatek.com>, <powen.kao@mediatek.com>,
-        <cc.chou@mediatek.com>, <chaotian.jing@mediatek.com>,
-        <jiajie.hao@mediatek.com>, <qilin.tan@mediatek.com>,
-        <lin.gui@mediatek.com>, <yanxu.wei@mediatek.com>,
-        <wsd_upstream@mediatek.com>
-Subject: [PATCH 1/1] scsi: Fix racing between dev init and dev reset
-Date:   Thu, 3 Mar 2022 15:55:29 +0800
-Message-ID: <20220303075527.25258-2-alice.chao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220303075527.25258-1-alice.chao@mediatek.com>
-References: <20220303075527.25258-1-alice.chao@mediatek.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+        Thu, 3 Mar 2022 02:59:37 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634E54968F;
+        Wed,  2 Mar 2022 23:58:52 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C97A61A19F6;
+        Thu,  3 Mar 2022 08:58:50 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 82B661A27AD;
+        Thu,  3 Mar 2022 08:58:50 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id BBEBB183AC97;
+        Thu,  3 Mar 2022 15:58:48 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     robh@kernel.org, l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, kernel@pengutronix.de,
+        Richard Zhu <hongxing.zhu@nxp.com>
+Subject: [PATCH] dt-bindings: imx6q-pcie: Add iMX8MM PCIe compatible string
+Date:   Thu,  3 Mar 2022 15:50:05 +0800
+Message-Id: <1646293805-18248-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Device reset thread uses kobject_uevent_env() to get kobj.parent
-after scsi_evt_emit(), and it races with device init thread which
-calls device_add() to create kobj.parent before kobject_uevent_env().
+Add the i.MX8MM PCIe compatible string.
 
-Device reset call trace:
-fill_kobj_path
-kobject_get_path
-kobject_uevent_env
-scsi_evt_emit			<- add wait_event()
-scsi_evt_thread
-
-Device init call trace:
-fill_kobj_path
-kobject_get_path
-kobject_uevent_env
-device_add				<- create kobj.parent
-scsi_target_add
-scsi_sysfs_add_sdev
-scsi_add_lun
-scsi_probe_and_add_lun
-
-These two jobs are scheduled asynchronously, we can't guaranteed that
-kobj.parent will be created in device init thread before device reset
-thread calls kobj_get_path().
-
-To resolve the racing issue between device init thread and device
-reset thread, we use wait_event() in scsi_evt_emit() to wait for
-device_add() to complete the creation of kobj.parent.
-
-Signed-off-by: Alice Chao <alice.chao@mediatek.com>
-Change-Id: I2848cf054186739d3a125a0635dbed5539557e64
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 ---
- drivers/scsi/scsi_lib.c  | 1 +
- drivers/scsi/scsi_scan.c | 1 +
- 2 files changed, 2 insertions(+)
+ Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
-index 0a70aa763a96..abf9a71ed77c 100644
---- a/drivers/scsi/scsi_lib.c
-+++ b/drivers/scsi/scsi_lib.c
-@@ -2461,6 +2461,7 @@ static void scsi_evt_emit(struct scsi_device *sdev, struct scsi_event *evt)
- 		break;
- 	case SDEV_EVT_POWER_ON_RESET_OCCURRED:
- 		envp[idx++] = "SDEV_UA=POWER_ON_RESET_OCCURRED";
-+		wait_event(sdev->host->host_wait, sdev->sdev_gendev.kobj.parent != NULL);
- 		break;
- 	default:
- 		/* do nothing */
-diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
-index f4e6c68ac99e..431f229ac435 100644
---- a/drivers/scsi/scsi_scan.c
-+++ b/drivers/scsi/scsi_scan.c
-@@ -1904,6 +1904,7 @@ static void do_scsi_scan_host(struct Scsi_Host *shost)
- 	} else {
- 		scsi_scan_host_selected(shost, SCAN_WILD_CARD, SCAN_WILD_CARD,
- 				SCAN_WILD_CARD, 0);
-+		wake_up(&shost->host_wait);
- 	}
- }
+diff --git a/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml b/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
+index 643a6333b07b..36c8a06d17a0 100644
+--- a/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml
+@@ -25,6 +25,7 @@ properties:
+       - fsl,imx6qp-pcie
+       - fsl,imx7d-pcie
+       - fsl,imx8mq-pcie
++      - fsl,imx8mm-pcie
  
+   reg:
+     items:
 -- 
-2.18.0
+2.25.1
 
