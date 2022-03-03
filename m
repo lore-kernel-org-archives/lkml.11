@@ -2,93 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 305D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbiCCAgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:36:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
+        id S230429AbiCCAgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:36:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230413AbiCCAgS (ORCPT
+        with ESMTP id S229664AbiCCAgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:36:18 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49C5F6E29E
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:35:31 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-311-7RM7CtFePyCzuKvpOGMVlQ-1; Thu, 03 Mar 2022 00:35:28 +0000
-X-MC-Unique: 7RM7CtFePyCzuKvpOGMVlQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Thu, 3 Mar 2022 00:35:27 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Thu, 3 Mar 2022 00:35:27 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alviro Iskandar Setiawan' <alviro.iskandar@gnuweeb.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-CC:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        Wed, 2 Mar 2022 19:36:52 -0500
+X-Greylist: delayed 328 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 16:36:05 PST
+Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6614667E;
+        Wed,  2 Mar 2022 16:36:05 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 2A8542B00248;
+        Wed,  2 Mar 2022 19:30:34 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute3.internal (MEProxy); Wed, 02 Mar 2022 19:30:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=eiWLYfA4t1gGk/
+        mdor81f7EceQWpUlzsDTwnD33Z67w=; b=yQDCr14Q8vFd8Vhl2mpgM/1hWafyyc
+        ZnMCn0SfsF+PTDm74K1cEXva4K6RLAEPRM4ylBbgIYHO88HYJA3N3D8SpJFMaUYu
+        Ey4ZvPi9EAi3BlxWTcSCKL0R/dsPChEZ9UZkeTQbutnY8G3eMls+P59QIngpwwY5
+        TiTMprrDj2LRpXIyXntMIFT6spzAFRn+B56UoSoiDaFYCJ+ybkT2/7GtJGjfuQVk
+        +tjqFKihAfKNA5kLdWoJ4rVpWW5sDZF1PSYv3aS9Qj19Tz4d5aA79MhI1UDjQv7z
+        R+9DMFTStMw87Xhs7VY6o99jtEvh/FGwcOolOUAd7cbDr5FzBkoHeTpg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=eiWLYfA4t1gGk/mdor81f7EceQWpUlzsDTwnD33Z6
+        7w=; b=EI7+GdstVl79yq9Fm3hvRTD1YZ66On6ZvCyB53SB/KQSa9RXa3DBnRbCb
+        PTei6GReqFjZ1/vOUq4R9aOzx1rr5XsGHiNRZtYr31ZkZwnwGmSomkFDW/60vxcr
+        BH/tVQixKpfHx+vwSob7ciWRp2AuACf7dl85tYxnXp/qt40xOg5bup2ZOWxjvhXb
+        UVJbPfRbKTgnZqTgqQKw5DSkC6qJHsfjOfZSy7Olt7aUaF3c7KQE0KaIQvyNPCYI
+        lConQVqasVzznECBA2PE4dE/0kRbz64BKUVBu4jzdzjpBcqiaVJBAO0kAD+QMd4Y
+        W/5KOkb1B+WAO9mLkjxTfC+8jGP6w==
+X-ME-Sender: <xms:KAwgYiXUVobGGbgnfnTqlkjK2bFjiR41JDSh9efIYb7Kr86RhKUoJQ>
+    <xme:KAwgYumtoyVlM_S-4LeNPryd2PF452B0XmPHD4G5OFe-P2ZvwnK2Cp1KpCWWTpVIo
+    JUAqi23R0jcmXlUWw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddthedgvdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgfgsehtqhertderreejnecuhfhrohhmpedftehn
+    ughrvgifucflvghffhgvrhihfdcuoegrnhgurhgvfiesrghjrdhiugdrrghuqeenucggtf
+    frrghtthgvrhhnpeekheejieeigfefvdffheevveekfeejgffgvdeuueegjeeghfffhffg
+    ieelffdvfeenucffohhmrghinhepudekrdhithenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpegrnhgurhgvfiesrghjrdhiugdrrghu
+X-ME-Proxy: <xmx:KAwgYma6HG35WC5hESTOpwPiuqjPmuoeIo7ZXNUwlQL_Oo1HTjUQOA>
+    <xmx:KAwgYpVtntNyqwhaBKeH11g6GTYa_udNOtqrc4m6AQ4FARFF33PWeQ>
+    <xmx:KAwgYslKiOhNMqSehKqeVgwB8x53TCLR5MgrimauAeyTWb9y6fNGHw>
+    <xmx:KQwgYpgdrpzcgPjU1XtxQD_qfXwN0QMsqpgqF1xhU09yJYgyZbgT4T92eDo>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 8700FF6007E; Wed,  2 Mar 2022 19:30:32 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4778-g14fba9972e-fm-20220217.001-g14fba997
+Mime-Version: 1.0
+Message-Id: <a42db25f-33af-4232-9acd-815f7b116c71@www.fastmail.com>
+In-Reply-To: <20220302085432.GA11054@duo.ucw.cz>
+References: <20210921043936.468001-1-andrew@aj.id.au>
+ <d2b85ad7-aef7-6088-03f5-cbd6e0bcab5d@kaod.org>
+ <CACPK8Xdvns7PK9t1ZutAbkJqhb5eRcoWCDySQGsfbtLv+XMvqQ@mail.gmail.com>
+ <20220302085432.GA11054@duo.ucw.cz>
+Date:   Thu, 03 Mar 2022 11:00:11 +1030
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Pavel Machek" <pavel@ucw.cz>, "Joel Stanley" <joel@jms.id.au>
+Cc:     "Linus Walleij" <linus.walleij@linaro.org>,
+        =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>,
+        linux-leds@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
         "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Jiri Hladky <hladky.jiri@googlemail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: RE: [PATCH v4 1/2] x86/delay: Fix the wrong asm constraint in
- `delay_loop()`
-Thread-Topic: [PATCH v4 1/2] x86/delay: Fix the wrong asm constraint in
- `delay_loop()`
-Thread-Index: AQHYLWA7QzUkKsf/ZkuVhNGB2yFzFqyszW4Q
-Date:   Thu, 3 Mar 2022 00:35:27 +0000
-Message-ID: <66212b59eb1647b59b900ca85e00f195@AcuMS.aculab.com>
-References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org>
- <20220301094608.118879-2-ammarfaizi2@gnuweeb.org>
- <CAOG64qPgTv5tQNknuG9d-=oL2EPQQ1ys7xu2FoBpNLyzv1qYzA@mail.gmail.com>
-In-Reply-To: <CAOG64qPgTv5tQNknuG9d-=oL2EPQQ1ys7xu2FoBpNLyzv1qYzA@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+        "Andy Shevchenko" <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 0/2] leds: pca955x: Expose GPIOs for all pins
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQWx2aXJvIElza2FuZGFyIFNldGlhd2FuDQo+IFNlbnQ6IDAxIE1hcmNoIDIwMjIgMTE6
-MzQNCj4gDQo+IE9uIFR1ZSwgTWFyIDEsIDIwMjIgYXQgNDo0NiBQTSBBbW1hciBGYWl6aSB3cm90
-ZToNCj4gPiBGb3J0dW5hdGVseSwgdGhlIGNvbnN0cmFpbnQgdmlvbGF0aW9uIHRoYXQncyBmaXhl
-ZCBieSBwYXRjaCAxIGRvZXNuJ3QNCj4gPiB5aWVsZCBhbnkgYnVnIGR1ZSB0byB0aGUgbmF0dXJl
-IG9mIFN5c3RlbSBWIEFCSS4gU2hvdWxkIHdlIGJhY2twb3J0DQo+ID4gdGhpcz8NCj4gDQo+IGhp
-IHNpciwgaXQgbWlnaHQgYWxzbyBiZSBpbnRlcmVzdGluZyB0byBrbm93IHRoYXQgZXZlbiBpZiBp
-dCBuZXZlciBiZQ0KPiBpbmxpbmVkLCBpdCdzIHN0aWxsIHBvdGVudGlhbCB0byBicmVhay4NCj4g
-DQo+IGZvciBleGFtcGxlIHRoaXMgY29kZSAoaHR0cHM6Ly9nb2Rib2x0Lm9yZy96L3hXTVR4aFRF
-VCkNCj4gDQo+ICAgX19hdHRyaWJ1dGVfXygoX19ub2lubGluZV9fKSkgc3RhdGljIHZvaWQgeChp
-bnQgYSkNCj4gICB7DQo+ICAgICAgIGFzbSgieG9ybFx0JSVyOGQsICUlcjhkIjo6ImEiKGEpKTsN
-Cj4gICB9DQoNCkJ1dCB0aGlzIGNvZGUgaXNuJ3QgZG9pbmcgdGhhdC4NCkluIHlvdXIgZXhhbXBs
-ZSB0aGUgY29tcGlsZXIgaGFzIGxvb2tlZCBhdCB0aGUgc3RhdGljIGZ1bmN0aW9uDQphbmQgcmVh
-bGlzZWQgdGhhdCBpcyBkb2Vzbid0IHVzZSByOCBzbyBpdCBuZWVkIG5vdCBiZSBzYXZlZA0KZXZl
-biB0aG91Z2ggaXQgaXMgYSB2b2xhdGlsZSByZWdpc3Rlci4NCg0KSW4gdGhpcyBjb2RlIHRoZSBj
-b21waWxlciBrbm93cyAlYXggaXMgYmVpbmcgdXNlZCwgaXQganVzdA0KZG9lc24ndCBrbm93IGl0
-IGlzIGNoYW5nZWQgLSBzbyBjb3VsZCBhc3N1bWUgdGhlIHZhbHVlDQppcyB1bmNoYW5nZWQuDQoN
-ClRoZSBvbmx5IGNvZGUgdGhhdCBpcyBsaWtlbHkgdG8gYnJlYWsgaXM6DQoNCmludCBmKGludCBk
-KQ0Kew0KCWQgKz0gMTA7DQoJX19kZWxheShkKTsNCglyZXR1cm4gZDsNCn0NCg0KV2hpY2ggbWln
-aHQgbWFuYWdlIHRvIHJldHVybiB0aGUgdmFsdWUgb2YgJWVheCBtb2RpZmllZCBieSB0aGUgYXNt
-Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJv
-YWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24g
-Tm86IDEzOTczODYgKFdhbGVzKQ0K
 
+
+On Wed, 2 Mar 2022, at 19:24, Pavel Machek wrote:
+> Hi!
+>
+>> > > Without these patches the driver limits the number of pins expose=
+d on
+>> > > the gpiochip to the number of pins specified as GPIO in the devic=
+etree,
+>> > > but doesn't map between the GPIO and pin number spaces. The resul=
+t is
+>> > > that specifying offset or interleaved GPIOs in the devicetree giv=
+es
+>> > > unexpected behaviour in userspace.
+>> > >
+>> > > By always exposing all pins as GPIOs the patches resolve the lack=
+ of
+>> > > mapping between GPIO offsets and pins on the package in the drive=
+r by
+>> > > ensuring we always have a 1-to-1 mapping.
+>> > >
+>> > > The issue is primarily addressed by patch 1/2. Patch 2/2 makes it
+>> > > possible to not expose any pins as LEDs (and therefore make them =
+all
+>> > > accessible as GPIOs). This has a follow-on effect of allowing the=
+ driver
+>> > > to bind to a device instantiated at runtime without requiring a
+>> > > description in the devicetree.
+>> > >
+>> > > I've tested the series under qemu to inspect the various interact=
+ions
+>> > > between LEDs vs GPIOs as well as conflicting GPIO requests.
+>>=20
+>> > > Please review!
+>> >
+>> > This is simpler than the 'ngpio' business we had before.
+>> >
+>> > Reviewed-by: C=C3=A9dric Le Goater <clg@kaod.org>
+>>=20
+>> I saw that you recently merged some LED patches. I was wondering if
+>> you could consider this series for v5.18. It still applies cleanly,
+>> and we've been running it for a while now, so it's very well tested.
+>
+> Thanks, applied. I must say this is really ninja-mutant driver, but I
+> see no better way.
+>
+> +++ b/drivers/leds/leds-pca955x.c
+> @@ -429,7 +429,7 @@ pca955x_get_pdata(struct i2c_client *client, struc=
+t=20
+> pca955x_chipdef *chip)
+>         int count;
+>
+> This really should be unsigned. Care to fix/submit a patch?
+
+I'll send a fix.
+
+Andrew
