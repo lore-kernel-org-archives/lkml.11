@@ -2,208 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF09DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235707AbiCCTjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:39:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
+        id S235959AbiCCTjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:39:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232927AbiCCTjM (ORCPT
+        with ESMTP id S235742AbiCCTjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:39:12 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8F05044A
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:38:26 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id e2so5644310pls.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:38:26 -0800 (PST)
+        Thu, 3 Mar 2022 14:39:16 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EEA5D670
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:38:30 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id ay10so9422707wrb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:38:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=M9gCpDsUpLGqQcUkdGHYkjRzuoDu54KLsE+14sxkm3c=;
-        b=RvBfaAqZtgNzfep6vsHoWlPFtU7qMWhDRPJJk35YQu1rluHwIC/xz6ez3wKGG6PC0A
-         8sm9grasluAZncFRknNM7jwjd0z3mdD6BzdQccr4tgt+ZCpCdhkGZw7deQsW/RecZkjv
-         73HGm7fc9c+EO42e071G6qD6/JASyVDkWa624RsLekL+0u06uOXqDQYxefF/hv1I+4BC
-         Fs9s6suRG3RJSYTBZHHj5vrCJvSZgmWqhitnaiGmTOHRtbmL2xCIhLQSj68yNkl46pP8
-         hCsDhMIstFRh0hz6fHAS9pAtnBtajLOf/v44yepvJARYbt+wX3nlAgd6Ja0ReT0ngfmv
-         +2gA==
+        bh=K/Uvx4MIMduNNDUv4nDfaCXMVJaGsHQl+DgmzbLveXQ=;
+        b=e2UXZ2yMHjPpoZgPSa1aRHFYjLtrivnIS2MfokW9t+URqQaA2lz0Jk892K6CpV4Can
+         fI2Dn7TVWCTVCMo/IbIhYVani9D/KsdjabsR13UQNjbxDvfYT8FQqnms61kik5HvSXLT
+         8SNiyCOcpYUsDJd96EhjKTrn3qFsYHWOaiFvG0v+Og2ywiklUW45/qieIvuFe1kRN2Wq
+         ABfxlSHYHSh1PvX3ydZW9WZP4x+sro+5PnYnjrbSJ035qgD5eiQXMsShISpMlpJsBfwc
+         YCl4eCNMO1TVH1gA4Q/kAgG5fFFQ+sSGPMS9WqK3+W5lARa245KVDXUOXwNKDeEdoEMx
+         XvAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=M9gCpDsUpLGqQcUkdGHYkjRzuoDu54KLsE+14sxkm3c=;
-        b=pluwIDHubvr+EUGbCmB6t5v4X4wJvfNeoMnwu7jjFVfD5420jCUs9sIR6lL4El/wDh
-         UVJyoO3sxcA9x2+kxzIpWA3GpFuFxvxVc3FaAXH4/NZysOl5uBD0jbM0ZD2Fn4YWHXcc
-         ls5BYP49+OzqBraueAxvdtG9PfIoAH3bQ9HSbVnUB1YPOfvIqYTqPtDUAy0tyb6jFfpQ
-         vw6hN2fWpwoQY2pbA5GRwziy01tVNrgF479LCn4G9bQbO7L9DndNEro1KeEBq+wjfKKx
-         hMM/cr11e/GEX1lVoyuCkE/2zER8EpmNUsX7rM0B2EImDaaaCA8k2250f4alQjqgNVPZ
-         e+tw==
-X-Gm-Message-State: AOAM532OS3CSyLU9dalbxgkYj5nITzk2adpZm2HFIeiXpKAALtai9+Sy
-        SLnZa6paKwYogiIEfDlsPuHDAw==
-X-Google-Smtp-Source: ABdhPJzYw5BOAQJxGoynOgUYpzsVApgErc8BTD7uxvGNhfW+ShvWmc6fU3tS42tm/T8H5lK/StVxCg==
-X-Received: by 2002:a17:90b:1a81:b0:1bc:ec26:40a6 with SMTP id ng1-20020a17090b1a8100b001bcec2640a6mr7024774pjb.0.1646336305747;
-        Thu, 03 Mar 2022 11:38:25 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm8750694pju.44.2022.03.03.11.38.24
+        bh=K/Uvx4MIMduNNDUv4nDfaCXMVJaGsHQl+DgmzbLveXQ=;
+        b=XSq7L4YU6Si/x8W+mLpyru4eeoWbyP8wpdgYtl9JsXcgH6z4YVrkEgqiozuQRp8JAS
+         z7sPUPq3PSNduUvXS7dATJ45HkdvCnnN2mlnG+5RbuuKMjMrP09Npplj7WITVYaKl0Dc
+         XbovRbxbYQgxl9dYIyWD+6oxuMU2MYqsZG+xT8pBBvq3t2KIq2IRmm/NZ0mUNv5c0EYj
+         2l90opFLyBp+X/02L0i46NDmrMmDvJens/JN5lQMxj7kCEhyxJ5q7wji5eLzyacZwC4r
+         YJ3MOqBAXJ/6OxXGEBOLy/OGWrjVSAS3bKVh2lNVD/Hj8diz/e1TbfN0sto9XJ7s+9u3
+         /yzQ==
+X-Gm-Message-State: AOAM531Xu5FMV+BDaVIcSa33kg+TQye7OOS6nNsKRKtSgPG1v4Ms2UMM
+        4silAK788J23nVgQwmzViDya0g==
+X-Google-Smtp-Source: ABdhPJxF1hwyx/TulXuxizSn127hf9j+oayH5mwMGUSVqCtOFlbiXVw7t2v5rHwBQTtwhb5/KdQc7A==
+X-Received: by 2002:a5d:43c2:0:b0:1ed:c331:9a96 with SMTP id v2-20020a5d43c2000000b001edc3319a96mr29299741wrr.389.1646336308813;
+        Thu, 03 Mar 2022 11:38:28 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bi21-20020a05600c3d9500b003814de297fcsm9093215wmb.16.2022.03.03.11.38.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 11:38:25 -0800 (PST)
-Date:   Thu, 3 Mar 2022 19:38:15 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org
-Subject: Re: [PATCH 4/4] KVM: x86: lapic: don't allow to set non default apic
- id when not using x2apic api
-Message-ID: <YiEZJ6tg0+I+MdW5@google.com>
-References: <20220301135526.136554-1-mlevitsk@redhat.com>
- <20220301135526.136554-5-mlevitsk@redhat.com>
- <Yh5QJ4dJm63fC42n@google.com>
- <6f4819b4169bd4e2ca9ab710388ebd44b7918eed.camel@redhat.com>
- <Yh5b3eBYK/rGzFfj@google.com>
- <297c8e41f512587230a54130a71ddfd9004c9507.camel@redhat.com>
- <eae0b69fb8f5c47457fac853cc55b41a30762994.camel@redhat.com>
- <YiDx/uYAMSZDvobO@google.com>
- <df1ed2b01c74310bd4918196ba632e906e4c78f1.camel@redhat.com>
+        Thu, 03 Mar 2022 11:38:28 -0800 (PST)
+Date:   Thu, 3 Mar 2022 19:38:24 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] vhost: Provide a kernel warning if mutex is held
+ whilst clean-up in progress
+Message-ID: <YiEZMHJ6urZTffsq@google.com>
+References: <20220303151929.2505822-1-lee.jones@linaro.org>
+ <YiETnIcfZCLb63oB@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <df1ed2b01c74310bd4918196ba632e906e4c78f1.camel@redhat.com>
+In-Reply-To: <YiETnIcfZCLb63oB@unreal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022, Maxim Levitsky wrote:
-> On Thu, 2022-03-03 at 16:51 +0000, Sean Christopherson wrote:
-> > On Wed, Mar 02, 2022, Maxim Levitsky wrote:
-> > > When APIC state is loading while APIC is in *x2apic* mode it does enforce that
-> > > value in this 0x20 offset is initial apic id if KVM_CAP_X2APIC_API.
-> > >  
-> > > I think that it is fair to also enforce this when KVM_CAP_X2APIC_API is not used,
-> > > especially if we make apic id read-only.
+On Thu, 03 Mar 2022, Leon Romanovsky wrote:
+
+> On Thu, Mar 03, 2022 at 03:19:29PM +0000, Lee Jones wrote:
+> > All workers/users should be halted before any clean-up should take place.
 > > 
-> > I don't disagree in principle.  But, (a) this loophole as existing for nearly 6
-> > years, (b) closing the loophole could break userspace, (c) false positive are
-> > possible due to truncation, and (d) KVM gains nothing meaningful by closing the
-> > loophole.
+> > Suggested-by:  Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > ---
+> >  drivers/vhost/vhost.c | 3 +++
+> >  1 file changed, 3 insertions(+)
 > > 
-> > (d) changes when we add a knob to make xAPIC ID read-only, but we can simply
-> > require userspace to enable KVM_CAP_X2APIC_API (or force it).  That approach
-> > avoids (c) by eliminating truncation, and avoids (b) by virtue of being opt-in.
-> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index bbaff6a5e21b8..d935d2506963f 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -693,6 +693,9 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> >  	int i;
+> >  
+> >  	for (i = 0; i < dev->nvqs; ++i) {
+> > +		/* Ideally all workers should be stopped prior to clean-up */
+> > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > +
+> >  		mutex_lock(&dev->vqs[i]->mutex);
 > 
-> (a) - doesn't matter.
+> I know nothing about vhost, but this construction and patch looks
+> strange to me.
+> 
+> If all workers were stopped, you won't need mutex_lock(). The mutex_lock
+> here suggests to me that workers can still run here.
 
-Yes, it absolutely matters.  If KVM_CAP_X2APIC_API was added in the 5.17 cycle
-then I would not be objecting because there is zero chance of breaking userspace.
+The suggestion for this patch came from the maintainer.
 
-> (b) - if userspace wants to have non default apic id with x2apic mode,
->       which (*)can't even really be set from the guest - this is ridiculous.
->  
->       (*) Yes I know that in *theory* user can change apic id in xapic mode
->       and then switch to x2apic mode - but I really doubt that KVM
->       would even honor this - there are already places which assume
->       that this is not the case. In fact it would be nice to audit KVM
->       on what happens when userspace does this, there might be a nice
->       CVE somewhere....
->  
-> (c) - without KVM_CAP_X2APIC_API, literally just call to KVM_GET_LAPIC/KVM_SET_LAPIC
-> will truncate x2apic id if > 255 regardless of my patch - literally this cap
-> was added to avoid this.
-> What we should do is to avoid creating cpu with vcpu_id > 256 when this cap is not set…
+Please see the conversation here:
 
-Yes, but _rejecting_ that behavior is a change in KVM's ABI.  That's why (a) matters.
+https://lore.kernel.org/all/20220302082021-mutt-send-email-mst@kernel.org/
 
-> (d) - doesn't matter - again we are talking about x2apic mode in which apic id is read only.
-
-It does matter that changes that potentially break userspace provide value to KVM.
-Not theoretical, make us feel warm and fuzzy value, but actual value to KVM or
-userspace.  KVM is no worse off for this loophole.  For userspace, at best this
-will break a flawed but functional setup.
-
-Concretely, the below example of using x2APIC with an ID > 255 works because KVM
-calculates its APIC maps using what KVM thinks is the x2APIC ID. 
-
-With your proposed change, KVM_SET_LAPIC will fail and we've broken a functional,
-if sketchy, setup.  Is there likely to be such a real-world setup that doesn't
-barf on the inconsistent x2APIC ID?  Probably not, but I don't see any reason to
-find out.
-
-==== Test Assertion Failure ====
-  lib/kvm_util.c:1953: ret == 0
-  pid=837 tid=837 errno=22 - Invalid argument
-     1	0x0000000000403c0e: vcpu_ioctl at kvm_util.c:1952
-     2	0x0000000000401548: main at smm_test.c:151
-     3	0x00007ff76518ebf6: ?? ??:0
-     4	0x0000000000401829: _start at ??:?
-  vcpu ioctl 1140895375 failed, rc: -1 errno: 22 (Invalid argument)
-
-
-diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
-index a626d40fdb48..cce44d99c919 100644
---- a/tools/testing/selftests/kvm/x86_64/smm_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
-@@ -19,7 +19,7 @@
- #include "vmx.h"
- #include "svm_util.h"
-
--#define VCPU_ID              1
-+#define VCPU_ID              256
-
- #define PAGE_SIZE  4096
-
-@@ -56,7 +56,7 @@ static inline void sync_with_host(uint64_t phase)
- static void self_smi(void)
- {
-        x2apic_write_reg(APIC_ICR,
--                        APIC_DEST_SELF | APIC_INT_ASSERT | APIC_DM_SMI);
-+                        ((uint64_t)VCPU_ID << 32) | APIC_INT_ASSERT | APIC_DM_SMI);
- }
-
- static void l2_guest_code(void)
-@@ -72,14 +72,10 @@ static void guest_code(void *arg)
- {
-        #define L2_GUEST_STACK_SIZE 64
-        unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
--       uint64_t apicbase = rdmsr(MSR_IA32_APICBASE);
-        struct svm_test_data *svm = arg;
-        struct vmx_pages *vmx_pages = arg;
-
-        sync_with_host(1);
--
--       wrmsr(MSR_IA32_APICBASE, apicbase | X2APIC_ENABLE);
--
-        sync_with_host(2);
-
-        self_smi();
-@@ -139,12 +135,21 @@ int main(int argc, char *argv[])
-        struct kvm_run *run;
-        struct kvm_x86_state *state;
-        int stage, stage_reported;
-+       struct kvm_lapic_state lapic;
-
-        /* Create VM */
-        vm = vm_create_default(VCPU_ID, 0, guest_code);
-
-        run = vcpu_state(vm, VCPU_ID);
-
-+       vcpu_set_msr(vm, VCPU_ID, MSR_IA32_APICBASE,
-+                    vcpu_get_msr(vm, VCPU_ID, MSR_IA32_APICBASE) | X2APIC_ENABLE);
-+
-+       vcpu_ioctl(vm, VCPU_ID, KVM_GET_LAPIC, &lapic);
-+       TEST_ASSERT(*((u32 *)&lapic.regs[0x20]) == 0,
-+                   "x2APIC ID == %u", *((u32 *)&lapic.regs[0x20]));
-+       vcpu_ioctl(vm, VCPU_ID, KVM_SET_LAPIC, &lapic);
-+
-        vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, SMRAM_GPA,
-                                    SMRAM_MEMSLOT, SMRAM_PAGES, 0);
-        TEST_ASSERT(vm_phy_pages_alloc(vm, SMRAM_PAGES, SMRAM_GPA, SMRAM_MEMSLOT)
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
