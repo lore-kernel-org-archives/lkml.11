@@ -2,208 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1EEC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234833AbiCCS1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:27:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
+        id S235110AbiCCS3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:29:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbiCCS1N (ORCPT
+        with ESMTP id S232898AbiCCS3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:27:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D472A1A41D6;
-        Thu,  3 Mar 2022 10:26:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 716E961A07;
-        Thu,  3 Mar 2022 18:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 167ABC004E1;
-        Thu,  3 Mar 2022 18:26:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646331985;
-        bh=UyDeKHI7dMAM4zVTsiTp9XCr+V7GBwf1HouH+vGDAPk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i6IJzN2V+XixOYQh9aLhWcotiw7BnCmxO+Yq/CXWgTzonU9Jo7K37jtfRXYN7W9kZ
-         cf6tulxMstjto8kNEYhLI4+V6xnpq7wKOnVSNOoqLGCphwdGvJ/6msFAUz/h0VK+nX
-         2eCLxyHoZvYHWLSrWdM8yFgc/9A2tsAGqpZC4wLac1Y5yTt5Q/MaEFyCdYjQyOnaKE
-         wf2nuoNU98I2wdLKs7Gr3/lHO5OHzKabZBwku9YjiTc/r5ulPmQHXmeNWzAg+2J2HZ
-         9KNsSzhQccn38XIXCftVMa/2ss75Jt/bMZvoZVLeh+uec61Vt077T6evs8t9khD4h9
-         02OqS7IjcFDDw==
-Date:   Thu, 3 Mar 2022 11:26:18 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     David Gow <davidgow@google.com>, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-um@lists.infradead.org, linux-kbuild@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] um: clang: Strip out -mno-global-merge from USER_CFLAGS
-Message-ID: <YiEISsoS/XrbEtbm@thelio-3990X>
-References: <20220303090643.241747-1-davidgow@google.com>
- <YiD7R2wRxoWxtVq7@dev-arch.thelio-3990X>
- <202203030947.E2FA3D9@keescook>
+        Thu, 3 Mar 2022 13:29:12 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B894EB7170;
+        Thu,  3 Mar 2022 10:28:25 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 53D1D1F386;
+        Thu,  3 Mar 2022 18:28:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646332104;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aeAcL7K8crpzfQmCbSBQTf9/hIKSAhKoB1dP+78DkD0=;
+        b=L0KF70U1FkNPIc9RgtYSNOD6izyZjG1efUMBcPmBQgnUGsfDjPO5Wtw/TppWl8QR0qpO4r
+        82xUekSzfB/BXYyXgkj8DtKsWQWjZbB0ZgqF+AsGpzVarMGdD5H+kYaWK+V1B8oOeq/byi
+        H2Oc8yQrd6nS95pShptRpw3weQ/xC3o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646332104;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aeAcL7K8crpzfQmCbSBQTf9/hIKSAhKoB1dP+78DkD0=;
+        b=ZDjUIe0MyTkr6wyYci+OIGWdnRasnSCiBjGhUiIhxbcCwraGrzdNP+TYgeVDSgxrDIdvOv
+        gL8ktkRaAhuB6GDA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 16084A3B81;
+        Thu,  3 Mar 2022 18:28:24 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 84767DA80E; Thu,  3 Mar 2022 19:24:31 +0100 (CET)
+Date:   Thu, 3 Mar 2022 19:24:31 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Dongliang Mu <dzm91@hust.edu.cn>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] btrfs: don't access possibly stale fs_info data in
+ device_list_add
+Message-ID: <20220303182431.GW12643@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Dongliang Mu <dzm91@hust.edu.cn>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220303144027.1981835-1-dzm91@hust.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202203030947.E2FA3D9@keescook>
+In-Reply-To: <20220303144027.1981835-1-dzm91@hust.edu.cn>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 10:04:28AM -0800, Kees Cook wrote:
-> On Thu, Mar 03, 2022 at 10:30:47AM -0700, Nathan Chancellor wrote:
-> > Hi David,
-> > 
-> > On Thu, Mar 03, 2022 at 05:06:42PM +0800, David Gow wrote:
-> > > The things built with USER_CFLAGS don't seem to recognise it as a
-> > > compiler option, and print a warning:
-> > > clang: warning: argument unused during compilation: '-mno-global-merge' [-Wunused-command-line-argument]
-> > > 
-> > > Fixes: 744814d2fa ("um: Allow builds with Clang")
-> > > Signed-off-by: David Gow <davidgow@google.com>
-> > > ---
-> > > 
-> > > This warning shows up after merging:
-> > > https://lore.kernel.org/lkml/20220227184517.504931-6-keescook@chromium.org/
-> > > 
-> > > I'm not 100% sure why this is necessary, but it does seem to work. All
-> > > the attempts to get rid of -mno-global-merge entirely have been met with
-> > > skepticism, but I'm guessing that it's not a problem for just the UML
-> > > "user" files, as they shouldn't(?) interact too much with modules.
-> > 
-> > Thank you for the patch! I think it is correct, as this flag only works
-> > for AArch64 and ARM, as it is only used in Clang::AddAArch64TargetArgs()
-> > and Clang::AddARMTargetArgs() in clang/lib/Driver/ToolChains/Clang.cpp,
-> > which are obviously never called with UML. I am not sure why we do not
-> > see warning during regular kernel builds, maybe something about how UML
-> > objects are compiled exposes this?
+On Thu, Mar 03, 2022 at 10:40:27PM +0800, Dongliang Mu wrote:
+> From: Dongliang Mu <mudongliangabcd@gmail.com>
 > 
-> Yeah, I got really turned around when I tried to find this last week.
+> Syzbot reported a possible use-after-free in printing information
+> in device_list_add.
 > 
-> > 
-> > Regardless, I would definitely like to clean up this instance of the
-> > warning because I would like to make this warning a hard error so that
-> > we do not get cryptic cc-option failures:
-> > 
-> > https://github.com/ClangBuiltLinux/linux/issues/1587
-> > 
-> > Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-> > 
-> > One small comment below.
-> > 
-> > >  arch/um/Makefile | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/arch/um/Makefile b/arch/um/Makefile
-> > > index f2fe63bfd819..320b09cd513c 100644
-> > > --- a/arch/um/Makefile
-> > > +++ b/arch/um/Makefile
-> > > @@ -75,6 +75,10 @@ USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
-> > >  		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
-> > >  		-idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
-> > >  
-> > > +ifdef CONFIG_CC_IS_CLANG
-> > 
-> > Is this ifdef needed?
-> > 
-> > > +USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
-> > > +endif
+> Very similar with the bug fixed by commit 0697d9a61099 ("btrfs: don't
+> access possibly stale fs_info data for printing duplicate device"),
+> but this time the use occurs in btrfs_info_in_rcu.
 > 
-> How does -mno-global-merge get KBUILD_CFLAGS in the first place? If it's
-> arm/arm64 only, shouldn't that get relocated to those architectures?
+> ============================================================
+> Call Trace:
+>  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+>  btrfs_printk+0x395/0x425 fs/btrfs/super.c:244
+>  device_list_add.cold+0xd7/0x2ed fs/btrfs/volumes.c:957
+>  btrfs_scan_one_device+0x4c7/0x5c0 fs/btrfs/volumes.c:1387
+>  btrfs_control_ioctl+0x12a/0x2d0 fs/btrfs/super.c:2409
+>  vfs_ioctl fs/ioctl.c:51 [inline]
+>  __do_sys_ioctl fs/ioctl.c:874 [inline]
+>  __se_sys_ioctl fs/ioctl.c:860 [inline]
+>  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> ============================================================
 > 
-> *time travel* found it:
+> Fix this by modifying device->fs_info to NULL too.
 > 
-> 61163efae020 ("kbuild: LLVMLinux: Add Kbuild support for building kernel with Clang")
+> Reported-and-tested-by: syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com
+> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> ---
+>  fs/btrfs/volumes.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> So I think this may have been universally true long ago, and now only
-> arm/arm64 need it?
+> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+> index b07d382d53a8..c1325bdae9a1 100644
+> --- a/fs/btrfs/volumes.c
+> +++ b/fs/btrfs/volumes.c
+> @@ -954,7 +954,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
+>  						  task_pid_nr(current));
+>  				return ERR_PTR(-EEXIST);
+>  			}
+> -			btrfs_info_in_rcu(device->fs_info,
+> +			btrfs_info_in_rcu(NULL,
 
-I don't think so. -mno-global-merge was introduced in [1], which only
-added the option handling in Clang::AddARMTargetArgs(). In fact, when
--mglobal-merge was added, there was a test added that checked that
--mglobal-merge/-mno-global-merge had no impact with an x86_64 triple [2].
-
-Perhaps at the time that 61163efae020 was written, they were testing
-against either ARCH=arm or ARCH=arm64, which would have shown the
-problem that they mentioned? There is no context in the commit message
-so *shrug*.
-
-Regardless, I think your patch is equally viable, perhaps even better,
-as I am sure this is not the only area where this warning might show up.
-
-[1]: https://github.com/llvm/llvm-project/commit/ba3df1d3ca8569ff8f6e289594c53926e71e519a
-[2]: https://github.com/llvm/llvm-project/commit/256a869d312b37ed7b5d131329050fcdadb11148
-
-Cheers,
-Nathan
-
-> diff --git a/Makefile b/Makefile
-> index 2f6fbba88a0e..fbc42c3c389e 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -852,10 +852,6 @@ ifdef CONFIG_CC_IS_CLANG
->  KBUILD_CPPFLAGS += -Qunused-arguments
->  # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
->  KBUILD_CFLAGS += -Wno-gnu
-> -# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
-> -# source of a reference will be _MergedGlobals and not on of the whitelisted names.
-> -# See modpost pattern 2
-> -KBUILD_CFLAGS += -mno-global-merge
->  else
->  
->  # gcc inanely warns about local variables called 'main'
-> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-> index a2391b8de5a5..dcab28c44c26 100644
-> --- a/arch/arm/Makefile
-> +++ b/arch/arm/Makefile
-> @@ -48,6 +48,13 @@ CHECKFLAGS	+= -D__ARMEL__
->  KBUILD_LDFLAGS	+= -EL
->  endif
->  
-> +ifdef CONFIG_CC_IS_CLANG
-> +# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
-> +# source of a reference will be _MergedGlobals and not on of the whitelisted names.
-> +# See modpost pattern 2
-> +KBUILD_CFLAGS	+= -mno-global-merge
-> +endif
-> +
->  #
->  # The Scalar Replacement of Aggregates (SRA) optimization pass in GCC 4.9 and
->  # later may result in code being generated that handles signed short and signed
-> diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-> index 2f1de88651e6..2d20fb2ea664 100644
-> --- a/arch/arm64/Makefile
-> +++ b/arch/arm64/Makefile
-> @@ -36,6 +36,13 @@ ifeq ($(CONFIG_BROKEN_GAS_INST),y)
->  $(warning Detected assembler with broken .inst; disassembly will be unreliable)
->  endif
->  
-> +ifdef CONFIG_CC_IS_CLANG
-> +# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
-> +# source of a reference will be _MergedGlobals and not on of the whitelisted names.
-> +# See modpost pattern 2
-> +KBUILD_CFLAGS	+= -mno-global-merge
-> +endif
-> +
->  KBUILD_CFLAGS	+= -mgeneral-regs-only	\
->  		   $(compat_vdso) $(cc_has_k_constraint)
->  KBUILD_CFLAGS	+= $(call cc-disable-warning, psabi)
-> 
-> > > +
-> > >  #This will adjust *FLAGS accordingly to the platform.
-> > >  include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
-> > >  
-> > > -- 
-> > > 2.35.1.616.g0bdcbb4464-goog
-> > > 
-> 
-> -- 
-> Kees Cook
+A few lines above this is also NULL and was fixed by 0697d9a61099
+("btrfs: don't access possibly stale fs_info data for printing duplicate
+device"), so yeah we probably need the same here.
