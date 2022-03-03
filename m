@@ -2,180 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB57C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 427AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbiCCLpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:45:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S232919AbiCCLp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232868AbiCCLpg (ORCPT
+        with ESMTP id S232956AbiCCLps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:45:36 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12110BF7C;
-        Thu,  3 Mar 2022 03:44:51 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 223AO3Bx028647;
-        Thu, 3 Mar 2022 11:44:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=DTIFQfAsQ9HRNExt3rNojfwxqI2Uht9mWifm6YtDZPE=;
- b=okXwPfgnbGSgqULZVsVUfhzfIHKPAosLCmSPzKTheuf0MzpUZhtnTUSqGF75a9MT77wD
- gQ7CJEYQcmpFB4io9LlyHmmqlHFYZcHreBApgUp8CQXk3AUHjvT7nkhLqz8Vr6zOailR
- dxqkaz1b/L6ieOcQK/GTRGg0kiv9Aca46XRVNNcFn5VApB2wA/T+HUThCHqViGwD4EP6
- oYUzPBhe8BQItVCtmAhcJa5tG2obw9qwojGj14L0qDSwfOc42cARFmFURshoz6GFuNzL
- 63OR+WVQK/TEgOCq/mGuxvb2hMrnQuQpsb1d/su1d/oVVXZ6c/rYBrKnUBEWCqu5la1d Ag== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3ejuvy9he4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Mar 2022 11:44:26 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 223Bcd9k010957;
-        Thu, 3 Mar 2022 11:44:26 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01wdc.us.ibm.com with ESMTP id 3efbua45ce-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Mar 2022 11:44:26 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 223BiP2u51446208
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 3 Mar 2022 11:44:25 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 29677AC062;
-        Thu,  3 Mar 2022 11:44:25 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 59E50AC05E;
-        Thu,  3 Mar 2022 11:44:18 +0000 (GMT)
-Received: from [9.43.91.43] (unknown [9.43.91.43])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu,  3 Mar 2022 11:44:17 +0000 (GMT)
-Message-ID: <7223fa7d-56ef-ecee-218c-03d67c6aac4e@linux.vnet.ibm.com>
-Date:   Thu, 3 Mar 2022 17:11:15 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [next-20220225] powerpc boot broken with maple tree code ?
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     linux-next <linux-next@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "hca@linux.ibm.com" <hca@linux.ibm.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        sachinp <sachinp@linux.vnet.ibm.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        "aneesh.kumar" <aneesh.kumar@linux.vnet.ibm.com>
-References: <d36d1a56-7946-723b-a255-dab5a9a77592@linux.vnet.ibm.com>
- <20220302145225.5t2ia356ez3ewq2k@revolver>
-From:   Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-In-Reply-To: <20220302145225.5t2ia356ez3ewq2k@revolver>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 6Dz7xnxTDhSZdCYqshQEzf4H57VB7Pau
-X-Proofpoint-ORIG-GUID: 6Dz7xnxTDhSZdCYqshQEzf4H57VB7Pau
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 3 Mar 2022 06:45:48 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82C23EF2D;
+        Thu,  3 Mar 2022 03:44:59 -0800 (PST)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2238ZIDB003629;
+        Thu, 3 Mar 2022 11:44:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2021-07-09; bh=sYYeJ1k9niXYGD7+ZSmy0+2xLMsq/d5AfM8m41QBrAU=;
+ b=kfEooVRHnF9JNYbuTdMXm7BDeEq2py8qktyPIX3L9gpW2qWI1oAMlS3nWwiEK1hHwPP4
+ XMzyMTXWHVVW5oKPiifS/YSNzSPXdb3jFj88ibUAMx9QQtiOejOEcFWiCcT9c+5qXnHW
+ xBHySV/eCPX0cB6+0qp2mWwPYSz/5yG81RkuwjW2WvfJGYl3MtsVXU5BL0qyacAVbQM5
+ BzxOVv7CD2tcdl+QL6A1QpfbtGWs3jA9FI1/EDU57nA1BUcOZEx6FZ/X3RmmfomLIxDE
+ VZrSHqJkdI7hgtes12ZiP22QDvij1hZItQYr4Wv00MO8+duubU3YAlH3PIJFEJA83gRH +w== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ehh2epfh1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 03 Mar 2022 11:44:34 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 223BfbhQ154294;
+        Thu, 3 Mar 2022 11:44:33 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2102.outbound.protection.outlook.com [104.47.55.102])
+        by aserp3030.oracle.com with ESMTP id 3efa8hxh7t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 03 Mar 2022 11:44:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZfNA8CBdT0Sp/kVNXM6seCaK1smUR3CyrDNAEu8H2MpmM0DVDY35/kTbIbmgV7+o+kz+S/vAM+/3Sv1YMa7vR11LYgSaTg/JSNVPFzFYGQgQk6fDoMpp3ZOMB5IC+9f/ZyVOD3D/1qn1d6iXSbrrb3Dp9VNSc54ZoH8bcmKuTkO29SJ54UJe92kTShtY8PhUaM6yccIhv+xr3/eCNaUK4rF607RU7qfvO0HkCNfk5KKb9OLxh0HY6mpEzjfmRJoFkJd/Pvp9tJTF0eM8z9k7snCy5MRog9nVXKnOm7kfUX8aA9INQ79oaUmZa+ClncnMY0gVO8kho0RwbxXisOqriA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sYYeJ1k9niXYGD7+ZSmy0+2xLMsq/d5AfM8m41QBrAU=;
+ b=LnYjyCgDNOz4R3/zh12FKNj0pMDD9SHiqp/G2+M7KEm+HZQ8oltYgVkOQeuLh75WlgZGctifwNefpL1Y0Tn+bYNXoqk9TktmADrPFyt+XrxX679l9fCgY+OVXRQZtzZRTXGUL4eYbJOu2QGs7DJKCvpCvqMc6BR9Dq2P82wlwTRbnVoqvvRsAkrTyI65x8jULi0PFEFDiv8zEK1J+tvVe0UK0GlReQCQXzcaMG7+RU8AJWr5gwSDWCFaWXpyzTW2XlKwsx3FRjS0OVgIHlljYk+JTT7aGeF2shnkd6rgRH4dhive0ePBII0uf+9Crc9inXj6RHAC+7UyUIOVy65jxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sYYeJ1k9niXYGD7+ZSmy0+2xLMsq/d5AfM8m41QBrAU=;
+ b=aIA95doZqsyV4H7OlD2wj0AYnTykEbSkqotnlPT4nauynC5q5y8DRVFb/vahSqVGszwC9oaysN0TKGtIzoOQS8dG/GU3mLVD58P5g1RMqYpRoE4JI52S+xpumlkpsgHcbwjXIicoAn3iMzsGoKWXSTuXSN2eeUziy+t9CW2uKxE=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BYAPR10MB2646.namprd10.prod.outlook.com
+ (2603:10b6:a02:aa::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Thu, 3 Mar
+ 2022 11:44:30 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.5017.027; Thu, 3 Mar 2022
+ 11:44:29 +0000
+Date:   Thu, 3 Mar 2022 14:43:53 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Yang Shi <shy828301@gmail.com>,
+        vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        songliubraving@fb.com, linmiaohe@huawei.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, akpm@linux-foundation.org,
+        tytso@mit.edu, adilger.kernel@dilger.ca, darrick.wong@oracle.com
+Cc:     lkp@intel.com, kbuild-all@lists.01.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/8] mm: thp: only regular file could be THP eligible
+Message-ID: <202203020034.2Ii9kTrs-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228235741.102941-5-shy828301@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MR2P264CA0049.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:31::13) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-03_07,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- phishscore=0 priorityscore=1501 lowpriorityscore=0 mlxlogscore=992
- adultscore=0 mlxscore=0 suspectscore=0 impostorscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203030055
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 99673b18-0f42-43c2-8075-08d9fd0b2d31
+X-MS-TrafficTypeDiagnostic: BYAPR10MB2646:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR10MB264600CE43EF4D1563CD746E8E049@BYAPR10MB2646.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wg85Y2ztwpjkdUXgDGnQo0h7aUN4MiiOxdAJSSaMJSrgBwjsSzlr3rZUQBUh61O+TacJJR9pX1yYC3drSNQWw3596jd/wiWYIuS2vjWP/cdWqIOHlwp6tjGkoah6dPQ1ON+dUa9jE81/tTmgtAvaIQStkyxQYJVMPfvxC29Pa3ZumE8lAgb7Z7l+fUFvhJ2yfO/Z1RyVO5yzgoeguMGkinfctlHuguiC4ujIDFz1oq9uezLyHeE+ZBfnuQIpfzBhPYnKVQXuL50ecfFG8XHnLuVez54E3DFl9FlatfxvIdDvx8zAZmay4reY+qYbxFyAFa+wCIzYCq4wDLY2+HKkiUXrG+UC5iuvVlU0SL9VPrPCtQ+1HyPJDKQyoJfC25sSzWtb397dVQ49HTu78u3Vx5on0w5E8cS3Mc+U6dwy4Ld785UGENj0nOX6r7mRiRvbuNpS9DCbZRgpHr1Oo1I1pi04GxnjBYzfb5xP82aUquOz/pXu0EJYvXYsJSJLjycDbgAVMhBRP2256klLhiXBPwd2QZC5sptO065RQ6jVtYhOFDrUM/u6eDBwz/wLXTWgmqpxUfM1sp7iWLgP6IMS/sKNq74kcy2AQZM9VCu/rabGjywN2RXf6qbHTaQdxBmug2tycX5ZpMwbLdEvvM833JOMHK6kTUv1g8WVje3jpAJB+0UkeUjybKJOFefmHwyh6dhp/t9CFUwQ/6QsmtZSTYkAaL8hEJUeKIwlrwFxpRercPLtYDmcIMareGzCiQzidJFii5zh/gCRMoGViCIInT1NdYBoEK9M96POyf2buT2rbRAO+s/m8BAKJTbpegyKdMBiMXWIUsa1hvfo7i0ARJFotPnucYCK4VmA/p52f0k=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(9686003)(6512007)(2906002)(5660300002)(8936002)(1076003)(8676002)(7416002)(66946007)(66476007)(44832011)(26005)(4326008)(186003)(86362001)(6666004)(38350700002)(38100700002)(921005)(6506007)(6486002)(316002)(66556008)(966005)(508600001)(83380400001)(52116002)(6636002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u/8pcs106ir03pneBq/9XzuVSSClg6ZjojxWxi32wml7lzZI48xOvo6at7Yw?=
+ =?us-ascii?Q?vz1HlSWYyMeNNp9MSQ+p2mOLNzkGl5AbwKyFLMgDxug5tbDaUSeQ/V/SmmGc?=
+ =?us-ascii?Q?dXQd8QiROoNt+ST4VTJ5+5omQ0K9E6YFqNdY8dKJVxKTbM23+SCgJjTygZRM?=
+ =?us-ascii?Q?1YU1NRKnGIOIaj5msKLmWConfflWZG3C87VP6KPeO798ZYi++DGFDQLoJA3f?=
+ =?us-ascii?Q?mYtgJOwrVQ1Lq2Vx5qKL5uaKqWuTuf5X1NGO+BSR2TtJxp2q4UpxXjs2hZTl?=
+ =?us-ascii?Q?KWzPwGcoszgwYT1UrbQVBP98Ye5NprUSNlxzaMTal/TnDMG7E3YpOYeLveQL?=
+ =?us-ascii?Q?cB4ixONdhkz7r0k4bcc5cYeXFhuGpO9j2HZDUQvCchMX7oIBDMUezgrO6fXL?=
+ =?us-ascii?Q?CleJ4CGlQNqQZ/gXIz0MxyPE4IiBFROAmYj4K4YOUHJqT7WprFoNEUFYojLJ?=
+ =?us-ascii?Q?gN9/Z5uWJhPJ1EJrwQmjzQH0p2FW0Xa/6k+WjtDjXPu5tPMJoU4xYPavSviv?=
+ =?us-ascii?Q?lIcHnj2T8aBsVZ1tJBIFM8Eh8LDd9UauuZVvJoYb75OLgMQ6S7NSfBmYixfY?=
+ =?us-ascii?Q?Ksm3S5PpO4AasZqAE51Y/DuqPKwl083xpyZPfifYJQy5B2Ra6mkJpFx4I5TC?=
+ =?us-ascii?Q?l9uE4D8EPiotIP8HddqebjVGRVLuc03NlW8U7ZUxULKcAB/FqPcyvFbp28Ee?=
+ =?us-ascii?Q?29iU7KPhUuYfQ9klfGK51nqg9vURSL+uaQ1W8tkZLezemylqN3z4h3GU74eD?=
+ =?us-ascii?Q?14bfUyVBBGq+5at6WUPZ+70DaZgZ3kv/i09RZwzOqhIk8VeIcJTAnrlVOfkv?=
+ =?us-ascii?Q?cL4MeIYs+af9zjeHuYmaolKXSA4sq89QvLtCXzioe2DQi4UQbhlm39L8wqEQ?=
+ =?us-ascii?Q?YnHgSGacXGIvFPS/kTkr6Tv6ZvY01eqE64MBByz88OuoPvueQeXWwI2dQGk9?=
+ =?us-ascii?Q?9eT6of+9IjqByhlZNV2q7V2S89GvuqHcrk5AR3EekMdQMO3bi1p5baxFp6GN?=
+ =?us-ascii?Q?eo0zQIQNM6pyLKOpxoqBJ/274YhsHJXwCIf9a/2gvKG/3JOYlktWE2wBSFnc?=
+ =?us-ascii?Q?bXZYRjSD9OdFO/bVtMZ38TmSJy2vvEJFtgb9S817pARMf661IqSJjGqd2ni0?=
+ =?us-ascii?Q?mnwrQlwoMqcmRctwbL5JyDxzMISTNZsuMv9r9wnAC2u5M9VuJS5TSRV4m+uM?=
+ =?us-ascii?Q?Mmtv3UEja36wpUc5Vh0ec/JQzaK+HtTbhTvbRP4QlLX0TITDb2OBlE0rPyri?=
+ =?us-ascii?Q?D35j+PEK/EtAh/yvxFKi2NH+Hg92lfcdb6gLwqfEpzR4OElxR7Ebz1Rx3DB+?=
+ =?us-ascii?Q?CKMm+JGWNYPifXlF7LjA72k4CkYck3XGqUsNGk4/qlNyXCSwnAwasfQRbeqc?=
+ =?us-ascii?Q?lAxtPrg+VnBVQpK+7ccTUbEcxpIP4pdO/nHcfFTZdfWT9XADILKyrrrj0w+C?=
+ =?us-ascii?Q?7Un/iA1dCfzJAhGFARaHb9GVftCQSuALumEKvL0DbDgwPPDXL9dBKRii+1/Z?=
+ =?us-ascii?Q?lk4YfIL1LW2ihTjGz7nKdReVc4mXPTlfU92NqQ8NJt+fS8LRJlHJv9jWLSnx?=
+ =?us-ascii?Q?GSbE7dpxOUJIGyRF6A1PtfkJiubKJKG8xId/hW2CA3kpNdlttzug2wQtihCp?=
+ =?us-ascii?Q?Zo5Snci/SMBuzJ2QBtrs0icjl19lJ8tiyFsZQ4kR5ZKG4UQiR/8T59TmxAa3?=
+ =?us-ascii?Q?3wtMZA=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99673b18-0f42-43c2-8075-08d9fd0b2d31
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2022 11:44:29.8696
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QGYM8wR0lzQLy9wf+WCWZEFddc9jKfEa8T2qRL6lCnJ9WqDLe/bVYEdoURNh/j1Ai62HfqmyOLelY9+hKeNOWEhDV5p4tI9mI/k3HQkCWOQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2646
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10274 signatures=686787
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 phishscore=0
+ malwarescore=0 mlxscore=0 suspectscore=0 spamscore=0 mlxlogscore=862
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2203030056
+X-Proofpoint-ORIG-GUID: oJ3hnQwkr4hx2gm-2r0yhZwe6poyy6pz
+X-Proofpoint-GUID: oJ3hnQwkr4hx2gm-2r0yhZwe6poyy6pz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 8:22 PM, Liam Howlett wrote:
+Hi Yang,
 
-> * Abdul Haleem <abdhalee@linux.vnet.ibm.com> [220302 01:22]:
->> Greeting's
->>
->> linux-next kernel 5.17.0-rc5-next-20220225 boot is broken on powerpc
->>
->> Is this due to Introduction of maple patch series ?
-> It could be - those are certainly maple tree functions.  I do have a
-> ppc64le VM booting here with a bunch of debug turned on.
->
-> Could you test the maple tree branch itself?
-> https://github.com/oracle/linux-uek/tree/howlett/maple/20220301
+url:    https://github.com/0day-ci/linux/commits/Yang-Shi/Make-khugepaged-collapse-readonly-FS-THP-more-consistent/20220301-075903
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git dev
+config: arm64-randconfig-m031-20220227 (https://download.01.org/0day-ci/archive/20220302/202203020034.2Ii9kTrs-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
 
-Kernel crash is not seen with howlett/maple/20220301 branch, boots fine on my powerpc box.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Thanks
+smatch warnings:
+include/linux/huge_mm.h:179 file_thp_enabled() warn: variable dereferenced before check 'vma->vm_file' (see line 177)
+mm/khugepaged.c:468 hugepage_vma_check() error: we previously assumed 'vma->vm_file' could be null (see line 455)
+include/linux/huge_mm.h:179 file_thp_enabled() warn: variable dereferenced before check 'vma->vm_file' (see line 177)
 
->> Kernel attempted to read user page (0) - exploit attempt? (uid: 0)
->>   BUG: Kernel NULL pointer dereference on read at 0x00000000
->>   Faulting instruction address: 0xc0000000006f1560
->>   Oops: Kernel access of bad area, sig: 11 [#1]
->>   LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
->>   Modules linked in: nfnetlink tcp_diag udp_diag inet_diag unix_diag af_packet_diag ibmvnic netlink_diag bonding rfkill sunrpc pseries_rng xts vmx_crypto gf128mul sch_fq_codel binfmt_misc ip_tables ext4 mbcache jbd2 dm_service_time sd_mod t10_pi sg ibmvfc scsi_transport_fc ibmveth dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse [last unloaded: ibmvnic]
->>   CPU: 31 PID: 7527 Comm: pmpost Not tainted 5.17.0-rc5-next-20220225-autotest #1
->>   NIP:  c0000000006f1560 LR: c0000000006f6f48 CTR: 0000000000000000
->>   REGS: c0000000251732f0 TRAP: 0300   Not tainted  (5.17.0-rc5-next-20220225-autotest)
->>   MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 24422888  XER: 20040000
->>   CFAR: c0000000006f17a4 DAR: 0000000000000000 DSISR: 40000000 IRQMASK: 0
->>   GPR00: c0000000006feb04 c000000025173590 c0000000028d1400 c0000000251735b8
->>   GPR04: 0000000000000001 c000000028364200 c0000000251735b8 0000000000000000
->>   GPR08: 0000000000000004 0000000000000002 0000000000000000 c000000028364200
->>   GPR12: 0000000044422888 c0000013ffaa4e80 0000000000000003 c0000000355eef48
->>   GPR16: 00007ffff23ee710 00000000003a164c 0000000000000002 0000000000000001
->>   GPR20: 0000000000000000 0000000000000073 000000007fff8a79 0000000000000000
->>   GPR24: c000000018aade00 00007fff8a79ffff c000000025173680 0000000000000002
->>   GPR28: c000000000d448e8 0000000000000002 0000000000000001 c0000000251736c0
->>   NIP [c0000000006f1560] mas_ascend+0x60/0x2e0
->>   LR [c0000000006f6f48] mas_next_sibling+0xd8/0x290
->>   Call Trace:
->>   [c000000025173590] [c000000025173b18] 0xc000000025173b18 (unreliable)
->>   [c000000025173620] [c0000000006feb04] mas_wr_modify+0x6c4/0x910
->>   [c0000000251739a0] [c0000000006ff0b8] mas_wr_store_entry+0x198/0x3f0
->>   [c0000000251739d0] [c00000000070167c] mas_store_gfp+0x6c/0x190
->>   [c000000025173a80] [c0000000003b1164] mmap_region+0x304/0xda0
->>   [c000000025173bf0] [c0000000003b1fcc] do_mmap+0x3cc/0x5e0
->>   [c000000025173c90] [c000000000372ea0] vm_mmap_pgoff+0x130/0x1f0
->>   [c000000025173d20] [c0000000003adc8c] ksys_mmap_pgoff+0x6c/0x2c0
->>   [c000000025173d90] [c000000000013780] sys_mmap+0x40/0xb0
->>   [c000000025173db0] [c00000000002f7e8] system_call_exception+0x178/0x380
->>   [c000000025173e10] [c00000000000c64c] system_call_common+0xec/0x250
->>   --- interrupt: c00 at 0x7fff8a7678b8
->>   NIP:  00007fff8a7678b8 LR: 00007fff8a749e84 CTR: 0000000000000000
->>   REGS: c000000025173e80 TRAP: 0c00   Not tainted  (5.17.0-rc5-next-20220225-autotest)
->>   MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 24422284  XER: 00000000
->>   IRQMASK: 0
->>   GPR00: 000000000000005a 00007ffff23ee680 00007fff8a797e00 00007fff8a790000
->>   GPR04: 0000000000000008 0000000000000003 0000000000000032 ffffffffffffffff
->>   GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
->>   GPR12: 0000000000000000 0000000000000000 0000000000000003 00007ffff23ee740
->>   GPR16: 00007ffff23ee710 00000000003a164c 0000000000000002 0000000000000006
->>   GPR20: 0000000000000000 00007fff8a790000 00007fff8a5fa1eb 00007fff8a793d70
->>   GPR24: 00007fff8a791178 0000000000000000 0000000000000003 00007ffff23eea40
->>   GPR28: 0000000000000000 000000000000fd04 00007fff8a793d90 00007ffff23ee7d0
->>   NIP [00007fff8a7678b8] 0x7fff8a7678b8
->>   LR [00007fff8a749e84] 0x7fff8a749e84
->>   --- interrupt: c00
->>   Instruction dump:
->>   712a0002 e8a30000 552a067a 41820264 71290086 2ba90006 419e01a8 39200003
->>   7d4a4c36 61080004 99460039 f9060018 <e9270000> 792a07e0 2eaa0000 7d4c5378
->>   ---[ end trace 0000000000000000 ]---
->>   Kernel panic - not syncing: Fatal exception
->>
->> kernel config attached
->>
->> -- 
->> Regard's
->>
->> Abdul Haleem
->> IBM Linux Technology Center
+vim +179 include/linux/huge_mm.h
 
--- 
-Regard's
+2224ed1155c07b Yang Shi     2022-02-28  175  static inline bool file_thp_enabled(struct vm_area_struct *vma)
+2224ed1155c07b Yang Shi     2022-02-28  176  {
+2224ed1155c07b Yang Shi     2022-02-28 @177  	struct inode *inode = vma->vm_file->f_inode;
+                                                                      ^^^^^^^^^^^^^^
+Dereference.
 
-Abdul Haleem
-IBM Linux Technology Center
+2224ed1155c07b Yang Shi     2022-02-28  178  
+2224ed1155c07b Yang Shi     2022-02-28 @179  	return (IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS)) && vma->vm_file &&
+                                                                                                    ^^^^^^^^^^^^
+Checked too late.
+
+2224ed1155c07b Yang Shi     2022-02-28  180  	       (vma->vm_flags & VM_EXEC) &&
+2224ed1155c07b Yang Shi     2022-02-28  181  	       !inode_is_open_for_write(inode) && S_ISREG(inode->i_mode);
+2224ed1155c07b Yang Shi     2022-02-28  182  }
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
