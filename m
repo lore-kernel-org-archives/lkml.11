@@ -2,78 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49420C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232366AbiCCKbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
+        id S232373AbiCCKbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:31:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232340AbiCCKa6 (ORCPT
+        with ESMTP id S232344AbiCCKa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:30:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E627E179A24;
+        Thu, 3 Mar 2022 05:30:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67CC179A25;
         Thu,  3 Mar 2022 02:30:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E2C560BFF;
-        Thu,  3 Mar 2022 10:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 00B73C340F2;
-        Thu,  3 Mar 2022 10:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646303412;
-        bh=GhhKCDrH4JQOA+Apel0fm/Fn8ks4tUJHd3WuIEOhKd4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XBN13Z3xtAnUduC/ZWUmLQisZhnsiiPQqZUcL2qtUSb0FaqWBjWeMLNfyEnxcG/Ys
-         +u1IWb7Pov671VOybutobIKsLSSWtuRQy6AHHtBD30VVJ6+wZTrghaoWj5vmShfUcl
-         /1bYhxl09X6JytX396iSvgf8njm6Nh5YbdOhUx1xtz4mgzJjvMUxXFyLJeLp/KNXmk
-         pCRnM5LU1x251eAhDqekXyPhozQ3CU9ns56c9JDEGCRWIE9Hoq9OuzFqOorGPfkef7
-         GRMXjSCP+eP3f6qHRyghZPgOIldB39jjoba0PADZNdfgRZEASZ+umSXBkNy+P38uXC
-         vJLoHOJ/U6aeA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC319E5D087;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C99BB824B5;
         Thu,  3 Mar 2022 10:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EBA83C340F0;
+        Thu,  3 Mar 2022 10:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646303410;
+        bh=XVR3iwjDM2lRJRdwj9pCEZ/DxoA/4L11Kz7WqsiiQXQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lh0/CR0UvGBN/FOJWN4IxhWL8JPeMegYxg522Jff2+HZuUqq9NpMG9xw22i3L6LOx
+         Ql3hYBg+3mhY00otD4/c4E7zolHkCzJ72fkssdgD5SVfezxqEC+jHstLE8hruTfeU8
+         AJ1tw3o50azodAg1BPdLajU3zL+FUWLx7zR54hnxU7UI5o7vkQUQmK7gdqpa0EBp+I
+         bKCvbBR5Ozm0BBBpYHDKZchTouMlHqnvJQdTvKDBG1+K7pAxEOBLPwa8rFTkNJKAJz
+         NbOACJWTyi2AcVdzIKmE3caHvUM8K+HyfmnSSxDaa5SwTx+7NRfV0HJO2emzHlvgBw
+         +LCSqrmyWOvlg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5F01E8DD5B;
+        Thu,  3 Mar 2022 10:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/2 net-next] net: stmmac: Enable support for Qualcomm
- SA8155p-ADP board
+Subject: Re: [PATCH v2] net: arcnet: com20020: Fix null-ptr-deref in
+ com20020pci_probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164630341189.19668.6956989790890987614.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Mar 2022 10:30:11 +0000
-References: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
-In-Reply-To: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     netdev@vger.kernel.org, bhupesh.linux@gmail.com, vkoul@kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org
+Message-Id: <164630340987.19668.16225347159086469942.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Mar 2022 10:30:09 +0000
+References: <20220302122423.4029168-1-zheyuma97@gmail.com>
+In-Reply-To: <20220302122423.4029168-1-zheyuma97@gmail.com>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     m.grzeschik@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed,  2 Mar 2022 16:09:48 +0530 you wrote:
-> Changes since v1:
-> -----------------
-> - v1 can be seen here: https://lore.kernel.org/netdev/20220126221725.710167-1-bhupesh.sharma@linaro.org/t/
-> - Fixed review comments from Bjorn - broke the v1 series into two
->   separate series - one each for 'net' tree and 'arm clock/dts' tree
->   - so as to ease review of the same from the respective maintainers.
-> - This series is intended for the 'net' tree.
+On Wed,  2 Mar 2022 20:24:23 +0800 you wrote:
+> During driver initialization, the pointer of card info, i.e. the
+> variable 'ci' is required. However, the definition of
+> 'com20020pci_id_table' reveals that this field is empty for some
+> devices, which will cause null pointer dereference when initializing
+> these devices.
+> 
+> The following log reveals it:
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/2,net-next] net: stmmac: Add support for SM8150
-    https://git.kernel.org/netdev/net-next/c/d90b3120473a
-  - [v2,2/2,net-next] net: stmmac: dwmac-qcom-ethqos: Adjust rgmii loopback_en per platform
-    https://git.kernel.org/netdev/net-next/c/a7bf6d7c9249
+  - [v2] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+    https://git.kernel.org/netdev/net/c/bd6f1fd5d33d
 
 You are awesome, thank you!
 -- 
