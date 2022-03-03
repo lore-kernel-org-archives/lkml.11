@@ -2,95 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13887C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4045C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232710AbiCCLYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:24:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        id S232731AbiCCLbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:31:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiCCLYF (ORCPT
+        with ESMTP id S232719AbiCCLbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:24:05 -0500
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0BD9512E775;
-        Thu,  3 Mar 2022 03:23:18 -0800 (PST)
-Received: from localhost (unknown [192.168.98.254])
-        by app1 (Coremail) with SMTP id C4KowAB36FDLpCBiuLw6AA--.16098S2;
-        Thu, 03 Mar 2022 19:21:48 +0800 (CST)
-Date:   Thu, 3 Mar 2022 19:21:47 +0800
-From:   fuyao <fuyao1697@cyg.com>
-To:     Rob@scg, Herring@scg, robh+dt@kernel.org, Maxime@scg, Ripard@scg,
-        mripard@kernel.org, Chen-Yu@scg, Tsai@scg, wens@csie.org,
-        Jernej@scg, Skrabec@scg, jernej.skrabec@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     =?utf-8?B?6bqm5YGl5qif?= <maijianzhang@allwinnertech.com>
-Subject: [PATCH] sunxi:dts: remove r40 can node
-Message-ID: <YiCky/6luAPcmiEB@scg>
-Mail-Followup-To: Rob@scg, Herring@scg, robh+dt@kernel.org, Maxime@scg,
-        Ripard@scg, mripard@kernel.org, Chen-Yu@scg, Tsai@scg,
-        wens@csie.org, Jernej@scg, Skrabec@scg, jernej.skrabec@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        =?utf-8?B?6bqm5YGl5qif?= <maijianzhang@allwinnertech.com>
+        Thu, 3 Mar 2022 06:31:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B009F1795FE;
+        Thu,  3 Mar 2022 03:30:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FEE860F5A;
+        Thu,  3 Mar 2022 11:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 39626C34106;
+        Thu,  3 Mar 2022 11:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646307015;
+        bh=jnrle6jJxiHm+6f07oky9Uxo0yIL90UlMOyvDaWTzS8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jbkPaee8wUakiJk4dpjV1G2FkCC0xQOXRFFKk5QQL7YmBfloakCZgY4knJwGkbwoG
+         /24NyOtQU2G/8bfVcToUAalLdCXDYmOvWTxdKrKaDXt2apT3TR9Gex0FVgMMjs5b27
+         t4bBRXvOcoSghuLM29FG2GjptwF8r6oPQfXh2gLHw0nke9by06k6pfoAXuk0M4Mo0r
+         nvMoUOhGjkEwcEQvsXvTO2Gv3lIzS+iUSsUShI4OYgOCEm7k+HnBm/aazZTSvQwRC7
+         56SOHRsnizsZLbKaTJR7xkhPwkTaJe/8esxD1Ye4WT5PF3X+0LQrHU/h46LpwShkhO
+         tzcn80gAJNHHw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4612E7BB08;
+        Thu,  3 Mar 2022 11:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Organization: work_work_work
-X-CM-TRANSID: C4KowAB36FDLpCBiuLw6AA--.16098S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GF18CFWUuw4xWF4fGFyDZFb_yoW3KFb_Ka
-        4fGa15WFWrArZ8trn5Jw43Jw18Zw48C3s3X34IqF4UJanIvws5XF4DJa93Xw15WrW2gFZY
-        yay5XF98tw1Y9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbs8YjsxI4VWkKwAYFVCjjxCrM7CY07I20VC2zVCF04k26cxKx2IY
-        s7xG6rWj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI
-        8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E
-        87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24V
-        AvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xf
-        McIj6x8ErcxFaVAv8VW8GwAv7VCY1x0262k0Y48FwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVCm-wCF04k2
-        0xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r48MxC20s026xCaFVCjc4AY6r1j6r4UMI
-        8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AK
-        xVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI
-        8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280
-        aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43
-        ZEXa7IUeeVbPUUUUU==
-X-CM-SenderInfo: 5ix1t0irwzlqxf1jhudrp/
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND PATCH v2 0/6] nfc: llcp: few cleanups/improvements
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164630701493.19662.16097017593505369271.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Mar 2022 11:30:14 +0000
+References: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-it does not have can in r40/a40i/t3.so delete it.
+Hello:
 
-Signed-off-by: fuyao <fuyao1697@cyg.com>
----
- arch/arm/boot/dts/sun8i-r40.dtsi | 9 ---------
- 1 file changed, 9 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
-index 03d3e5f45a09..dde803b6ada0 100644
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-@@ -936,15 +936,6 @@ i2c3: i2c@1c2b800 {
- 			#size-cells = <0>;
- 		};
- 
--		can0: can@1c2bc00 {
--			compatible = "allwinner,sun8i-r40-can";
--			reg = <0x01c2bc00 0x400>;
--			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&ccu CLK_BUS_CAN>;
--			resets = <&ccu RST_BUS_CAN>;
--			status = "disabled";
--		};
--
- 		i2c4: i2c@1c2c000 {
- 			compatible = "allwinner,sun6i-a31-i2c";
- 			reg = <0x01c2c000 0x400>;
+On Wed,  2 Mar 2022 20:25:17 +0100 you wrote:
+> Hi,
+> 
+> These are improvements, not fixing any experienced issue, just looking correct
+> to me from the code point of view.
+> 
+> Changes since v1
+> ================
+> 1. Split from the fix.
+> 
+> [...]
+
+Here is the summary with links:
+  - [RESEND,v2,1/6] nfc: llcp: nullify llcp_sock->dev on connect() error paths
+    https://git.kernel.org/netdev/net-next/c/13a3585b264b
+  - [RESEND,v2,2/6] nfc: llcp: simplify llcp_sock_connect() error paths
+    https://git.kernel.org/netdev/net-next/c/ec10fd154d93
+  - [RESEND,v2,3/6] nfc: llcp: use centralized exiting of bind on errors
+    https://git.kernel.org/netdev/net-next/c/4dbbf673f7d7
+  - [RESEND,v2,4/6] nfc: llcp: use test_bit()
+    https://git.kernel.org/netdev/net-next/c/a736491239f4
+  - [RESEND,v2,5/6] nfc: llcp: protect nfc_llcp_sock_unlink() calls
+    https://git.kernel.org/netdev/net-next/c/a06b8044169f
+  - [RESEND,v2,6/6] nfc: llcp: Revert "NFC: Keep socket alive until the DISC PDU is actually sent"
+    https://git.kernel.org/netdev/net-next/c/44cd5765495b
+
+You are awesome, thank you!
 -- 
-2.32.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-
--- 
-Technology is exciting
 
