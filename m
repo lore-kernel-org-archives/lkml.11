@@ -2,100 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 016DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F38C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233968AbiCCOON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 09:14:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
+        id S233203AbiCCOPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 09:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233933AbiCCOOE (ORCPT
+        with ESMTP id S230329AbiCCOPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 09:14:04 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CAA38DB9;
-        Thu,  3 Mar 2022 06:13:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646316798; x=1677852798;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4PhgPXNH3gn0Jlm6gmCHX35CmgC3EbWH5a420lKVhHk=;
-  b=H5vuEzpnxrY7WW0RWTcO452HJR++VfNrV1PTeKl0JF/VcGm0b4G3w6WG
-   tCQzueV9YQNuycL51DIgJjY4f97NGM70d5H8Ol2jiMGaoRBLVPL/VT7y/
-   bSQsoaIKJPxdhrPToaL3ApBHZqThB77hlznQMkxWBfz3auzrZojz+OaH3
-   scJIcJhkIguTgOobSnwOUbDD1ggdYyiOppY4Y8476EPPE/zv8SSW6r2WU
-   9zwOej5rzVVpMCttCye+AH688ZW2Y40i82SPv06TLODczu5RfY1aS6dKT
-   NtUUiOozFpYmFaC9Xn0mI908rK3YfijMTc5CKcp1jF+wmcG/qtiJlKVUf
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,151,1643698800"; 
-   d="scan'208";a="87698040"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Mar 2022 07:13:12 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 3 Mar 2022 07:12:44 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 3 Mar 2022 07:12:40 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
-CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH v2 3/5] ARM: dts: at91: Use the generic "rtc" node name for the rtt IPs
-Date:   Thu, 3 Mar 2022 16:06:24 +0200
-Message-ID: <20220303140626.38129-4-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220303140626.38129-1-sergiu.moga@microchip.com>
-References: <20220303140626.38129-1-sergiu.moga@microchip.com>
+        Thu, 3 Mar 2022 09:15:14 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691FA18C7B4;
+        Thu,  3 Mar 2022 06:14:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646316869; x=1677852869;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5QG9h5lx2anIO5uIyhVHkmCiySJytsOAX/CGcMce8NM=;
+  b=LbxnWVSe5MLrk+r0E9HQpM3q9hRl+sToWPrC+eziFpgNYkhGwgHOisJy
+   Yskv1fe5pwch43V6V2lZ3SSv3cmdJ7eoJnLrJ6qcRaHC3b/N6SH1akHoY
+   1blNHAgunH0GSoB2qlXd3fit6HMGZbE6R6ZgtdrMFW8XLILNt+6ZT6TWx
+   2Dt2ghoVS7Ds7hUb0MFs3FGCObASTm0tnfMgGqhLAEt8GEpoq2c8FMMHI
+   9vnwBnGMyCSbjb0FtCQ7QHcf15xB2NKymHX86Y8DmuCcSkPAXQe/XieJV
+   aeAS2snnVB71ewA2X92snXNkwM6nNHbwye4ZuGSl9ed31/scJlWNZLP5n
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251258796"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="251258796"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:14:29 -0800
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="511442309"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:14:22 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nPmD0-00ApIt-Ho;
+        Thu, 03 Mar 2022 16:13:34 +0200
+Date:   Thu, 3 Mar 2022 16:13:34 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tali Perry <tali.perry1@gmail.com>
+Cc:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
+        Wolfram Sang <wsa@kernel.org>, jie.deng@intel.com,
+        sven@svenpeter.dev, bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
+        arnd@arndb.de, olof@lixom.net, Tali Perry <tali.perry@nuvoton.com>,
+        Avi Fishman <Avi.Fishman@nuvoton.com>,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 09/11] i2c: npcm: Handle spurious interrupts
+Message-ID: <YiDNDsPWKyaIUlQR@smile.fi.intel.com>
+References: <20220303083141.8742-1-warp5tw@gmail.com>
+ <20220303083141.8742-10-warp5tw@gmail.com>
+ <YiCaSSbbszm3qYIQ@smile.fi.intel.com>
+ <CAHb3i=sStqdSpLKtF_UGmTsOssR_swssTd3pv6c2-z_kiUPTTA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHb3i=sStqdSpLKtF_UGmTsOssR_swssTd3pv6c2-z_kiUPTTA@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the DT specification recommends, the node names should be of a
-generic nature. Thus, the most appropriate generic node name for
-the at91 rtt IPs is the "rtc" node name.
+On Thu, Mar 03, 2022 at 02:48:20PM +0200, Tali Perry wrote:
+> > On Thu, Mar 3, 2022 at 12:37 PM Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > >
+> > > On Thu, Mar 03, 2022 at 04:31:39PM +0800, Tyrone Ting wrote:
+> > > > From: Tali Perry <tali.perry1@gmail.com>
+> > > >
+> > > > In order to better handle spurious interrupts:
+> > > > 1. Disable incoming interrupts in master only mode.
+> > > > 2. Clear end of busy (EOB) after every interrupt.
+> > > > 3. Return correct status during interrupt.
+> > >
+> > > This is bad commit message, it doesn't explain "why" you are doing these.
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
- arch/arm/boot/dts/sam9x60.dtsi | 2 +-
- arch/arm/boot/dts/sama7g5.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+...
 
-diff --git a/arch/arm/boot/dts/sam9x60.dtsi b/arch/arm/boot/dts/sam9x60.dtsi
-index 57ba47c54043..af7602cb65f7 100644
---- a/arch/arm/boot/dts/sam9x60.dtsi
-+++ b/arch/arm/boot/dts/sam9x60.dtsi
-@@ -688,7 +688,7 @@ shutdown_controller: shdwc@fffffe10 {
- 				status = "disabled";
- 			};
- 
--			rtt: rtt@fffffe20 {
-+			rtt: rtc@fffffe20 {
- 				compatible = "microchip,sam9x60-rtt", "atmel,at91sam9260-rtt";
- 				reg = <0xfffffe20 0x20>;
- 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
-diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-index 1530d88ce80f..87af6c680322 100644
---- a/arch/arm/boot/dts/sama7g5.dtsi
-+++ b/arch/arm/boot/dts/sama7g5.dtsi
-@@ -133,7 +133,7 @@ shdwc: shdwc@e001d010 {
- 			status = "disabled";
- 		};
- 
--		rtt: rtt@e001d020 {
-+		rtt: rtc@e001d020 {
- 			compatible = "microchip,sama7g5-rtt", "microchip,sam9x60-rtt", "atmel,at91sam9260-rtt";
- 			reg = <0xe001d020 0x30>;
- 			interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
+> BMC users connect a huge tree of i2c devices and muxes.
+> This tree suffers from spikes, noise and double clocks.
+> All these may cause spurious interrupts to the BMC.
+> 
+> If the driver gets an IRQ which was not expected and was not handled
+> by the IRQ handler,
+> there is nothing left to do but to clear the interrupt and move on.
+
+Yes, the problem is what "move on" means in your case.
+If you get a spurious interrupts there are possibilities what's wrong:
+1) HW bug(s)
+2) FW bug(s)
+3) Missed IRQ mask in the driver
+4) Improper IRQ mask in the driver
+
+The below approach seems incorrect to me.
+
+> If the transaction failed, driver has a recovery function.
+> After that, user may retry to send the message.
+> 
+> Indeed the commit message doesn't explain all this.
+> We will fix and add to the next patchset.
+> 
+> > > > +     /*
+> > > > +      * if irq is not one of the above, make sure EOB is disabled and all
+> > > > +      * status bits are cleared.
+> > >
+> > > This does not explain why you hide the spurious interrupt.
+> > >
+> > > > +      */
+> > > > +     if (ret == IRQ_NONE) {
+> > > > +             npcm_i2c_eob_int(bus, false);
+> > > > +             npcm_i2c_clear_master_status(bus);
+> > > > +     }
+> > > > +
+> > > > +     return IRQ_HANDLED;
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
