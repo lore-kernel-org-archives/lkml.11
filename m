@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC6E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D50C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236218AbiCCTld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:41:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S236225AbiCCTlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:41:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236263AbiCCTkm (ORCPT
+        with ESMTP id S236217AbiCCTky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:40:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66DB41A6141
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:29 -0800 (PST)
+        Thu, 3 Mar 2022 14:40:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 325B01A6353
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646336361;
+        s=mimecast20190719; t=1646336364;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ahr/fiGSTrMbHbDr7E8nI7nMuNvsjz26M208s7cL90U=;
-        b=TFbm6b7jZBtb9X+wJIXu5a7pdNsHAWqYcFS8OnufziuCYIEXhfcrlTgWTI7ezaI4hUgf3B
-        ZN9zmKIbXL/89PWRCokCXQwQGq5XaqhzGcpvbrAYvzTwTX+zX8hzbP55+hKT6RIdBUJddk
-        UBn5ZY8CJIn4nl5u6ZOq+m2qBpLRBFY=
+        bh=3S94nz0psd43uT5tjnVxrAMKMmNoTXAksjmb0Kl0LAY=;
+        b=dZKl/rOcUDFJ6Y81TTXlB3mS60uzxWVEOdQst6HqHPoOBtb7aTp0WGcM8mbRO+YQF2hfWp
+        GVQT1mJ1AMJd/6sy4aYl25QRA7ud3iFgpYrASVk5njzDXIk1LUZkk1EDN/7Y81HjhcZdyj
+        iPZJDuIiKHu29lCCYVVYIazoe7tRSmM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-52-Hyvb77uAPpC0VYFvx4xz3g-1; Thu, 03 Mar 2022 14:39:19 -0500
-X-MC-Unique: Hyvb77uAPpC0VYFvx4xz3g-1
+ us-mta-479-n1So81VfNoSEmDRHW6Em-w-1; Thu, 03 Mar 2022 14:39:21 -0500
+X-MC-Unique: n1So81VfNoSEmDRHW6Em-w-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 801AE51DC;
-        Thu,  3 Mar 2022 19:39:17 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 77DC11883526;
+        Thu,  3 Mar 2022 19:39:19 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D6DA5FC22;
-        Thu,  3 Mar 2022 19:39:16 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 87D5B5C64D;
+        Thu,  3 Mar 2022 19:39:18 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         David Matlack <dmatlack@google.com>,
         Ben Gardon <bgardon@google.com>,
         Mingwei Zhang <mizhang@google.com>
-Subject: [PATCH v4 26/30] KVM: x86/mmu: WARN on any attempt to atomically update REMOVED SPTE
-Date:   Thu,  3 Mar 2022 14:38:38 -0500
-Message-Id: <20220303193842.370645-27-pbonzini@redhat.com>
+Subject: [PATCH v4 28/30] KVM: selftests: Split out helper to allocate guest mem via memfd
+Date:   Thu,  3 Mar 2022 14:38:40 -0500
+Message-Id: <20220303193842.370645-29-pbonzini@redhat.com>
 In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
 References: <20220303193842.370645-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -63,61 +63,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-Disallow calling tdp_mmu_set_spte_atomic() with a REMOVED "old" SPTE.
-This solves a conundrum introduced by commit 3255530ab191 ("KVM: x86/mmu:
-Automatically update iter->old_spte if cmpxchg fails"); if the helper
-doesn't update old_spte in the REMOVED case, then theoretically the
-caller could get stuck in an infinite loop as it will fail indefinitely
-on the REMOVED SPTE.  E.g. until recently, clear_dirty_gfn_range() didn't
-check for a present SPTE and would have spun until getting rescheduled.
+Extract the code for allocating guest memory via memfd out of
+vm_userspace_mem_region_add() and into a new helper, kvm_memfd_alloc().
+A future selftest to populate a guest with the maximum amount of guest
+memory will abuse KVM's memslots to alias guest memory regions to a
+single memfd-backed host region, i.e. needs to back a guest with memfd
+memory without a 1:1 association between a memslot and a memfd instance.
 
-In practice, only the page fault path should "create" a new SPTE, all
-other paths should only operate on existing, a.k.a. shadow present,
-SPTEs.  Now that the page fault path pre-checks for a REMOVED SPTE in all
-cases, require all other paths to indirectly pre-check by verifying the
-target SPTE is a shadow-present SPTE.
+No functional change intended.
 
-Note, this does not guarantee the actual SPTE isn't REMOVED, nor is that
-scenario disallowed.  The invariant is only that the caller mustn't
-invoke tdp_mmu_set_spte_atomic() if the SPTE was REMOVED when last
-observed by the caller.
-
-Cc: David Matlack <dmatlack@google.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220226001546.360188-25-seanjc@google.com>
+Message-Id: <20220226001546.360188-27-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     |  1 +
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 42 +++++++++++--------
+ 2 files changed, 25 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 89e6eb6640fe..a0e24d260983 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -622,16 +622,15 @@ static inline int tdp_mmu_set_spte_atomic(struct kvm *kvm,
- 	u64 *sptep = rcu_dereference(iter->sptep);
- 	u64 old_spte;
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 573de0354175..92cef0ffb19e 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -123,6 +123,7 @@ int kvm_memcmp_hva_gva(void *hva, struct kvm_vm *vm, const vm_vaddr_t gva,
+ 		       size_t len);
  
--	WARN_ON_ONCE(iter->yielded);
--
--	lockdep_assert_held_read(&kvm->mmu_lock);
--
- 	/*
--	 * Do not change removed SPTEs. Only the thread that froze the SPTE
--	 * may modify it.
-+	 * The caller is responsible for ensuring the old SPTE is not a REMOVED
-+	 * SPTE.  KVM should never attempt to zap or manipulate a REMOVED SPTE,
-+	 * and pre-checking before inserting a new SPTE is advantageous as it
-+	 * avoids unnecessary work.
- 	 */
--	if (is_removed_spte(iter->old_spte))
--		return -EBUSY;
-+	WARN_ON_ONCE(iter->yielded || is_removed_spte(iter->old_spte));
+ void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename);
++int kvm_memfd_alloc(size_t size, bool hugepages);
+ 
+ void vm_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index dcb8e96c6a54..1665a220abcb 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -718,6 +718,27 @@ void kvm_vm_free(struct kvm_vm *vmp)
+ 	free(vmp);
+ }
+ 
++int kvm_memfd_alloc(size_t size, bool hugepages)
++{
++	int memfd_flags = MFD_CLOEXEC;
++	int fd, r;
 +
-+	lockdep_assert_held_read(&kvm->mmu_lock);
++	if (hugepages)
++		memfd_flags |= MFD_HUGETLB;
++
++	fd = memfd_create("kvm_selftest", memfd_flags);
++	TEST_ASSERT(fd != -1, "memfd_create() failed, errno: %i (%s)",
++		    errno, strerror(errno));
++
++	r = ftruncate(fd, size);
++	TEST_ASSERT(!r, "ftruncate() failed, errno: %i (%s)", errno, strerror(errno));
++
++	r = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, size);
++	TEST_ASSERT(!r, "fallocate() failed, errno: %i (%s)", errno, strerror(errno));
++
++	return fd;
++}
++
+ /*
+  * Memory Compare, host virtual to guest virtual
+  *
+@@ -970,24 +991,9 @@ void vm_userspace_mem_region_add(struct kvm_vm *vm,
+ 		region->mmap_size += alignment;
  
- 	/*
- 	 * Note, fast_pf_fix_direct_spte() can also modify TDP MMU SPTEs and
+ 	region->fd = -1;
+-	if (backing_src_is_shared(src_type)) {
+-		int memfd_flags = MFD_CLOEXEC;
+-
+-		if (src_type == VM_MEM_SRC_SHARED_HUGETLB)
+-			memfd_flags |= MFD_HUGETLB;
+-
+-		region->fd = memfd_create("kvm_selftest", memfd_flags);
+-		TEST_ASSERT(region->fd != -1,
+-			    "memfd_create failed, errno: %i", errno);
+-
+-		ret = ftruncate(region->fd, region->mmap_size);
+-		TEST_ASSERT(ret == 0, "ftruncate failed, errno: %i", errno);
+-
+-		ret = fallocate(region->fd,
+-				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0,
+-				region->mmap_size);
+-		TEST_ASSERT(ret == 0, "fallocate failed, errno: %i", errno);
+-	}
++	if (backing_src_is_shared(src_type))
++		region->fd = kvm_memfd_alloc(region->mmap_size,
++					     src_type == VM_MEM_SRC_SHARED_HUGETLB);
+ 
+ 	region->mmap_start = mmap(NULL, region->mmap_size,
+ 				  PROT_READ | PROT_WRITE,
 -- 
 2.31.1
 
