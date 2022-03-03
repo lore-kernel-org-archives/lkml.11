@@ -2,32 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233278AbiCCPRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:17:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
+        id S234062AbiCCPSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:18:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbiCCPRj (ORCPT
+        with ESMTP id S233446AbiCCPSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:17:39 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C189190C36;
-        Thu,  3 Mar 2022 07:16:48 -0800 (PST)
-X-UUID: 7b8c7df88d48468daf249bb20b8724b0-20220303
-X-UUID: 7b8c7df88d48468daf249bb20b8724b0-20220303
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        Thu, 3 Mar 2022 10:18:20 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6299FC3;
+        Thu,  3 Mar 2022 07:17:29 -0800 (PST)
+X-UUID: 246abe8959de44a7bad1a8cf6e97d532-20220303
+X-UUID: 246abe8959de44a7bad1a8cf6e97d532-20220303
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1251532998; Thu, 03 Mar 2022 23:16:43 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 3 Mar 2022 23:16:42 +0800
+        with ESMTP id 1460712382; Thu, 03 Mar 2022 23:17:26 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 3 Mar 2022 23:17:25 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Mar
+ 2022 23:17:24 +0800
 Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 3 Mar 2022 23:16:41 +0800
-Message-ID: <bab4302fbab4d2887e4ebd247c2da78128abaf21.camel@mediatek.com>
+ Transport; Thu, 3 Mar 2022 23:17:23 +0800
+Message-ID: <9c58c560ef0dffb3f9ab55fee483e721f660f382.camel@mediatek.com>
 Subject: Re: [v2 10/17] ASoC: mediatek: mt8186: support audio clock control
  in platform driver
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
@@ -42,7 +46,7 @@ CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Date:   Thu, 3 Mar 2022 23:16:40 +0800
+Date:   Thu, 3 Mar 2022 23:17:23 +0800
 In-Reply-To: <e2d28d1a-4bbc-931d-3534-776ee18369f4@collabora.com>
 References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
          <20220217134205.15400-11-jiaxin.yu@mediatek.com>
@@ -255,8 +259,6 @@ On Fri, 2022-02-18 at 15:54 +0100, AngeloGioacchino Del Regno wrote:
 > > +	return 0;
 > 
 > You're returning 0 even in error cases, this is wrong.
-Thanka for your careful review. I will fix this issue in next version.
-
 > 
 > > +}
 > > +
@@ -706,9 +708,6 @@ Thanka for your careful review. I will fix this issue in next version.
 > may not
 > ever be less than zero.
 > 
-Yes, your suggestion is very correct. But I will remove some member fo
-this strcut because they are not needed in audio driver.
-
 > 
 > > +};
 > > +
@@ -984,8 +983,6 @@ this strcut because they are not needed in audio driver.
 > 
 > #define CLK_AUD_INTBUS_SEL_MASK_SFT		GENMASK(23, 22)
 > 
-I will remove these define because they are not used in audio driver.
-
 > > +
 > > +/* CLK_AUDDIV_0 */
 > > +#define APLL12_DIV0_PDN_SFT                0
@@ -993,8 +990,6 @@ I will remove these define because they are not used in audio driver.
 > > +#define APLL12_DIV0_PDN_MASK_SFT           (0x1 << 0)
 > 
 > BIT() macro please
-same
-
 > 
 > #define APLL12_DIV0_PDN_MASK_SFT		BIT(0)
 > 
@@ -1005,8 +1000,6 @@ same
 > > +#define APLL12_DIV1_PDN_MASK_SFT           (0x1 << 1)
 > 
 > Of course, BIT() macro again, here and everywhere else applicable.
-Yes, you are right.
-
 > 
 > > +#define APLL12_DIV2_PDN_SFT                2
 > > +#define APLL12_DIV2_PDN_MASK               0x1
