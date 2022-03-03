@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8590C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 862FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232328AbiCCLcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:32:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        id S232830AbiCCLcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:32:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232724AbiCCLbJ (ORCPT
+        with ESMTP id S232733AbiCCLbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:09 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2469B1795D4
+        Thu, 3 Mar 2022 06:31:12 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2685F1795F4
         for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=N852q9aWEiK0I+Tjg4v4NRP8lVB+Lypx5hQ0mJxyRSo=; b=Natgi1cpc+CeIwbllRxYMLcq24
-        uPs9h6Bhmv34lxQVFKJPJjfwFke59Xj47zuA7+sd2qmgMHjXB/8zy93bnreuawQp6ZUV8/R1RG5bY
-        oNYw54bUyEVOdxfa5ouLl1/V5hAzftAMjfxUUQ2lvbIzixPpLI6d0XSoSFuBEETJbsteI8sH8Fx8n
-        wKO6XXrUUbzPsKTJooROSJQ6MkxOZSueyUlr2yRxlIAj7fMxoP7v6Nq6AXn5WMiWHa9v8WHwKiSC6
-        pVcEBxx62Ka+UU7xjvEmJkGdVetqwdNjUFnYbrSEVGoAeekrNeL8EDFsXSP3RW9H7veFAahM/VT1v
-        6rxca0UQ==;
+        bh=IohWcADSyrLcY0xycx9rxyokf4tptimeZa99EzTF0HM=; b=KVDgAyfls0U/n/Nq/uB/oWtdW4
+        5C4GMSf3gW00sCXHjZ5JqQnlfB1p+O7GyfTALLs3KvCU4q7WV6KP7ZDMZneonXbqJx5sL+7PSw9qE
+        +nBNoRCMUBHn96A2F7bzlrGLTX9JF+vT2rs+RvDZYfKNSWPh2vkxn636x8LtJpTmEfVwoe9sgqsOP
+        rOnyr+lu5R11ne42EjpDF4ak2spwIHzgym29e37EY5QosdaJpw8IKZp0xtPJ+Oa4Bs78sXxXX/jBv
+        G1s6pTg+UIx5RoPnBu1aj7EaDvnNF2R0Jfx3aW0Lg4WFLU8B7pvOqtvvCXstDer1uR3Y+7ov8yhTi
+        h5lAqj9g==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeg-00Etpa-VQ; Thu, 03 Mar 2022 11:29:59 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPjeg-00BaGn-D8; Thu, 03 Mar 2022 11:29:58 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F04D93021AE;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DCD9D300813;
         Thu,  3 Mar 2022 12:29:56 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 505183002B44C; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112825.864704778@infradead.org>
+        id 3897F3001BA99; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112825.496708326@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:36 +0100
+Date:   Thu, 03 Mar 2022 12:23:30 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -46,8 +46,9 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         ndesaulniers@google.com, keescook@chromium.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 15/39] x86/ibt,kvm: Add ENDBR to fastops
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>
+Subject: [PATCH v3 09/39] x86/entry,xen: Early rewrite of restore_regs_and_return_to_kernel()
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,40 +56,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+By doing an early rewrite of 'jmp native_iret` in
+restore_regs_and_return_to_kernel() we can get rid of the last
+INTERRUPT_RETURN user and paravirt_iret.
 
+Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kvm/emulate.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/entry/entry_64.S             |   11 ++++++++---
+ arch/x86/include/asm/irqflags.h       |    5 -----
+ arch/x86/include/asm/paravirt_types.h |    1 -
+ arch/x86/kernel/head_64.S             |    3 ++-
+ arch/x86/kernel/paravirt.c            |    4 ----
+ arch/x86/xen/enlighten_pv.c           |    7 ++++++-
+ arch/x86/xen/xen-asm.S                |    1 +
+ 7 files changed, 17 insertions(+), 15 deletions(-)
 
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -189,7 +189,7 @@
- #define X16(x...) X8(x), X8(x)
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -609,7 +609,7 @@ SYM_INNER_LABEL(swapgs_restore_regs_and_
+ 	/* Restore RDI. */
+ 	popq	%rdi
+ 	swapgs
+-	jmp	native_iret
++	jmp	.Lnative_iret
  
- #define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
--#define FASTOP_SIZE 8
-+#define FASTOP_SIZE (8 * (1 + HAS_KERNEL_IBT))
  
- struct opcode {
- 	u64 flags;
-@@ -311,7 +311,8 @@ static int fastop(struct x86_emulate_ctx
- #define __FOP_FUNC(name) \
- 	".align " __stringify(FASTOP_SIZE) " \n\t" \
- 	".type " name ", @function \n\t" \
--	name ":\n\t"
-+	name ":\n\t" \
-+	ASM_ENDBR
+ SYM_INNER_LABEL(restore_regs_and_return_to_kernel, SYM_L_GLOBAL)
+@@ -626,9 +626,14 @@ SYM_INNER_LABEL(restore_regs_and_return_
+ 	 * ARCH_HAS_MEMBARRIER_SYNC_CORE rely on IRET core serialization
+ 	 * when returning from IPI handler.
+ 	 */
+-	INTERRUPT_RETURN
++#ifdef CONFIG_XEN_PV
++SYM_INNER_LABEL(early_xen_iret_patch, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
++	.byte 0xe9
++	.long .Lnative_iret - (. + 4)
++#endif
  
- #define FOP_FUNC(name) \
- 	__FOP_FUNC(#name)
-@@ -433,6 +434,7 @@ static int fastop(struct x86_emulate_ctx
- 	".align 4 \n\t" \
- 	".type " #op ", @function \n\t" \
- 	#op ": \n\t" \
-+	ASM_ENDBR \
- 	#op " %al \n\t" \
- 	__FOP_RET(#op)
+-SYM_INNER_LABEL_ALIGN(native_iret, SYM_L_GLOBAL)
++.Lnative_iret:
+ 	UNWIND_HINT_IRET_REGS
+ 	/*
+ 	 * Are we returning to a stack segment from the LDT?  Note: in
+--- a/arch/x86/include/asm/irqflags.h
++++ b/arch/x86/include/asm/irqflags.h
+@@ -141,13 +141,8 @@ static __always_inline void arch_local_i
+ #ifdef CONFIG_X86_64
+ #ifdef CONFIG_XEN_PV
+ #define SWAPGS	ALTERNATIVE "swapgs", "", X86_FEATURE_XENPV
+-#define INTERRUPT_RETURN						\
+-	ANNOTATE_RETPOLINE_SAFE;					\
+-	ALTERNATIVE_TERNARY("jmp *paravirt_iret(%rip);",		\
+-		X86_FEATURE_XENPV, "jmp xen_iret;", "jmp native_iret;")
+ #else
+ #define SWAPGS	swapgs
+-#define INTERRUPT_RETURN	jmp native_iret
+ #endif
+ #endif
+ #endif /* !__ASSEMBLY__ */
+--- a/arch/x86/include/asm/paravirt_types.h
++++ b/arch/x86/include/asm/paravirt_types.h
+@@ -272,7 +272,6 @@ struct paravirt_patch_template {
  
+ extern struct pv_info pv_info;
+ extern struct paravirt_patch_template pv_ops;
+-extern void (*paravirt_iret)(void);
+ 
+ #define PARAVIRT_PATCH(x)					\
+ 	(offsetof(struct paravirt_patch_template, x) / sizeof(void *))
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -345,7 +345,6 @@ SYM_CODE_START_NOALIGN(vc_boot_ghcb)
+ 	/* Remove Error Code */
+ 	addq    $8, %rsp
+ 
+-	/* Pure iret required here - don't use INTERRUPT_RETURN */
+ 	iretq
+ SYM_CODE_END(vc_boot_ghcb)
+ #endif
+@@ -426,6 +425,8 @@ SYM_CODE_END(early_idt_handler_common)
+  * early_idt_handler_array can't be used because it returns via the
+  * paravirtualized INTERRUPT_RETURN and pv-ops don't work that early.
+  *
++ * XXX it does, fix this.
++ *
+  * This handler will end up in the .init.text section and not be
+  * available to boot secondary CPUs.
+  */
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -132,8 +132,6 @@ void paravirt_set_sched_clock(u64 (*func
+ }
+ 
+ /* These are in entry.S */
+-extern void native_iret(void);
+-
+ static struct resource reserve_ioports = {
+ 	.start = 0,
+ 	.end = IO_SPACE_LIMIT,
+@@ -397,8 +395,6 @@ struct paravirt_patch_template pv_ops =
+ 
+ #ifdef CONFIG_PARAVIRT_XXL
+ NOKPROBE_SYMBOL(native_load_idt);
+-
+-void (*paravirt_iret)(void) = native_iret;
+ #endif
+ 
+ EXPORT_SYMBOL(pv_ops);
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@ -1177,6 +1177,8 @@ static void __init xen_domu_set_legacy_f
+ 	x86_platform.legacy.rtc = 0;
+ }
+ 
++extern void early_xen_iret_patch(void);
++
+ /* First C function to be called on Xen boot */
+ asmlinkage __visible void __init xen_start_kernel(void)
+ {
+@@ -1187,6 +1189,10 @@ asmlinkage __visible void __init xen_sta
+ 	if (!xen_start_info)
+ 		return;
+ 
++	__text_gen_insn(&early_xen_iret_patch,
++			JMP32_INSN_OPCODE, &early_xen_iret_patch, &xen_iret,
++			JMP32_INSN_SIZE);
++
+ 	xen_domain_type = XEN_PV_DOMAIN;
+ 	xen_start_flags = xen_start_info->flags;
+ 
+@@ -1195,7 +1201,6 @@ asmlinkage __visible void __init xen_sta
+ 	/* Install Xen paravirt ops */
+ 	pv_info = xen_info;
+ 	pv_ops.cpu = xen_cpu_ops.cpu;
+-	paravirt_iret = xen_iret;
+ 	xen_init_irq_ops();
+ 
+ 	/*
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -189,6 +189,7 @@ hypercall_iret = hypercall_page + __HYPE
+  */
+ SYM_CODE_START(xen_iret)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	pushq $0
+ 	jmp hypercall_iret
+ SYM_CODE_END(xen_iret)
 
 
