@@ -2,99 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D97C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232217AbiCCKRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
+        id S232221AbiCCKS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:18:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbiCCKRn (ORCPT
+        with ESMTP id S232151AbiCCKSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:17:43 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B0F1768C0;
-        Thu,  3 Mar 2022 02:16:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1646302607;
-        bh=+bhroAtJ81iqkmtFGoio6lBWrbhrF+LZq/qVjq8m/XA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=IJeIYfvCrb6qmT54lw8a5UDlBuZ2M2VwfoMVimJYq3z2UIL3MGwA9W5Mgi1iCU4UV
-         3vbcfTLKZrx0AG7dvV71l8usAJugm8gUvePh5RMvuQ+TStVfy8lBXvCnryAGRoHupW
-         OXOqzwirNvbS5R02g/cVRXM05daCLSoolRKR1DOg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.242.61] ([80.187.120.72]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Md6R1-1nzbQa1AI7-00a9xc; Thu, 03
- Mar 2022 11:16:47 +0100
-Message-ID: <cdeb8c40-1861-ac1e-338f-6ffdd6ddddb9@gmx.de>
-Date:   Thu, 3 Mar 2022 11:15:20 +0100
+        Thu, 3 Mar 2022 05:18:24 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A795B3E
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:17:37 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id i66so2811301wma.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:17:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TtOHWLLsa7rSXRza0fGN1cBKMNwfwygfgSB4i7ej/Go=;
+        b=Nbxsqfpf4U//4kMEYQgwampDN3L5Q2TZvU6x4HLIh5rHGeSfTWOiwOWf7WlZqw6Frz
+         zabhNvVrT6tq8E8cRpfzQby2OfWLCvBQS6NEKRHlj/5MZ486/unuIlHEcozP6A2obxrZ
+         vgvn9NR7WrxE6k4h/FVtUhMxA0XamBacTNXmPndxgT1s1Gzq1iOClFR7LzN8VEfyDUNC
+         CPyh7ZV2CDvjdanG5kRemUYkgHYqpusnawgCP2gFBEL0axzKiQyl7FN0TM/0pSmF7XrP
+         rg+gzo7zHRPIMjtAOSzVsLtTBGl1VLlODl7eu5qVrzYcg95eWFhHCKqTy7XYy/L5UnL1
+         6HXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TtOHWLLsa7rSXRza0fGN1cBKMNwfwygfgSB4i7ej/Go=;
+        b=2R30nmmSs8Xl/BlhBi+dv4nKmcbPSFfSh3Ps0xUR2lVm+rbZ46bnpf3ILDCUjrXrPu
+         EO8s7o8QT34lH+iBDD/GzOZUVhSsZxOL76OteIiTRZDfxteejTdz09necghPGRXRWSR4
+         0dFrInsAjXCwaR/Kw6WFlC8D4sctbAISKF/rTh2J7sciIL1kPj0yvYZzmBmtSLHq6dRR
+         ICUt+q4lbgF0czlr+T2oOc8ddK4d8yL2WFa71UgIIXaN55rU6YL/D31tnoBTTpbl4jtb
+         ISmrYwCziCMwkfzHtD6oSdq0q5FpbKJUQz9AkrcnS3URqYb8SwVK6imQ8sZqoHCXJ9W7
+         8uRA==
+X-Gm-Message-State: AOAM533nL0eVivXHYWA3YpIe9gMDyYnJCDoTI+gXCfZK9aNlqFTPXkxS
+        d5X65FEallvH3gmorqN5i9eqhQ==
+X-Google-Smtp-Source: ABdhPJymkgSussHvNIxK2wwqP7NcLV6g47ibW+vjezWNLiFeFT+TfibQHdlBZqfWNbFWWCD8pOD30Q==
+X-Received: by 2002:a05:600c:4401:b0:387:1bcb:af41 with SMTP id u1-20020a05600c440100b003871bcbaf41mr2793032wmn.101.1646302655488;
+        Thu, 03 Mar 2022 02:17:35 -0800 (PST)
+Received: from ?IPV6:2a01:e34:ed2f:f020:b9e3:8853:bc0:bb98? ([2a01:e34:ed2f:f020:b9e3:8853:bc0:bb98])
+        by smtp.googlemail.com with ESMTPSA id e18-20020adfdbd2000000b001e4bbbe5b92sm1713098wrj.76.2022.03.03.02.17.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 02:17:34 -0800 (PST)
+Message-ID: <ce516de7-f1cf-c614-f9ff-439626dfafea@linaro.org>
+Date:   Thu, 3 Mar 2022 11:17:33 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] video: fbdev: s3c-fb: fix platform_get_irq.cocci warning
+Subject: Re: [PATCH v8 2/2] clocksource: Add Intel Keem Bay timer support
 Content-Language: en-US
-To:     Yihao Han <hanyihao@vivo.com>, Jingoo Han <jingoohan1@gmail.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Cc:     kernel@vivo.com
-References: <20220302034408.5990-1-hanyihao@vivo.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220302034408.5990-1-hanyihao@vivo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:xrVWrDszjcfyLKzbfKYWPUPXbXvqh6mQun+TX3E1XHmjS+YWhBL
- 2XTCq31nzshja3unhJ1Qr0lQyiymrmSPn7BrJyATz8XLURZ1zxoiskGWvZUc019+RF9bl+F
- KQh0Hll0rKESWNTe9sG7gpoXk+fL6GQ+DNkTDRtlydM0IzzzJpbga03r1KdI9mRbx1AmAtp
- wsu1xst9Xo3/Bov4jLj/w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:fJu/sc3RDaM=:xtZ6TeM+bVrP1Hp58roXZj
- tLRSszeX3pkdMA5toeFDxVzc3I9t3gwSvOct+OgoOIU1vIYhxdJaqOSL35DtkZvf/Vx4yDL/L
- M0e/QIZ55TI1UZ88A2SNHbMKdX+dzBy1poLT9jrm4woOKmBwpfSHiL+QWnvEciBA2dyZVbHii
- hIlv4HnCwiFp1GRWvCCiHxvfqnGHF20Z9l0e6VGzjX4NjgTP47QKit5ZJirqdGhQ8oMIQnyxr
- TCmt47YfLG2k5I5Xn5Ntu0OEfQ9NDnn04pl0kKhEZEJy+T1JYOaka9KaTJVu9Cl1BFwtsOdVl
- gwlAhFUYRzmHT/Aw6TPWFkq1ONxV+Kh7RixyLCraqc3jUH1uKSh5ufV0oWhTrKhwaVc+Miy5T
- 1N8k3+TknmQLoFd0onO8mGYnsbX5SHVX+zLWV0MIQ/ozUNNNpDb2cWi9VKanzjs5MJEdeQO/r
- n65sTGqCRljS2ZapRz9mhS5X/9WVll+Pn+tcP1IEz5x0mdpa6It7AtQmyglbLrmLYSBp13+RO
- PcT6s55SlJff+/qsfQ4oXQ5xaytg7yfTqcKosJnx/R72Dq9qrnG8HFxF/MObwhTeSh7e0wTxt
- pes816keFIwNkOtXtySadzA/wpJ9Ehd2bWGXPbMZ3qPUN9L6Z3g5TybZuqSnIkqF6h2LXe22X
- oQ6iHlfrhSPrGEYutcGUSC89UznwqP6B0gQXmRLZeUb3RJYWgk+mfU062oo0X/bBpUlFDydsm
- 8r7fRkGGJSWMjq+oSHIQqy7vkjey+qOc/v9OZmHwZtmwZ/aPk25ZiOVIgozIs9uYWwTVGGjbe
- +jlxadVUVb/RMz7aB1xHsVBN3Yviumgvp1Xjrj1cmHzbBnt3E+yqqBBvKiAnlo18SLxr5EY5s
- 9r22739o3sbKWDJJtMzkGRyt/newkbw2FVyyywzuLQpcinWxId+QuCnLIzNWcztrFm1RKqKzr
- Yf9vcpl3ZRAnEXPJPEVcFxkPae4zU/6leK79OZCzcvWH0AAzeF4hT3kgax8FYxCdJ8OShXr0y
- ZqP1h6OTdFJEoGmk8UttiSfOfyS71YjNVnDU/kpFD+9VeGACaZT/9qFgEGDl2/pNNk/u0JSJV
- SDdrDxvwf/NdBk=
+To:     "Sanil, Shruthi" <shruthi.sanil@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc:     "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "mgross@linux.intel.com" <mgross@linux.intel.com>,
+        "Thokala, Srikanth" <srikanth.thokala@intel.com>,
+        "Raja Subramanian, Lakshmi Bai" 
+        <lakshmi.bai.raja.subramanian@intel.com>,
+        "Sangannavar, Mallikarjunappa" 
+        <mallikarjunappa.sangannavar@intel.com>
+References: <20220222095654.9097-1-shruthi.sanil@intel.com>
+ <20220222095654.9097-3-shruthi.sanil@intel.com>
+ <91653d8d-1dc6-0170-2c3c-1187b0bad899@linaro.org>
+ <BN9PR11MB55451DB929086919F8D06390F1039@BN9PR11MB5545.namprd11.prod.outlook.com>
+ <23f86de0-3869-ee22-812d-ba610bac48b3@linaro.org>
+ <BN9PR11MB55458A882EB4A681C4A63B26F1039@BN9PR11MB5545.namprd11.prod.outlook.com>
+ <3ff11b85-249f-2f47-cbc4-41d2ab6d168f@linaro.org>
+ <DM4PR11MB554994532B3D128F85553C38F1049@DM4PR11MB5549.namprd11.prod.outlook.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <DM4PR11MB554994532B3D128F85553C38F1049@DM4PR11MB5549.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 04:44, Yihao Han wrote:
-> Remove dev_err() messages after platform_get_irq*() failures.
-> platform_get_irq() already prints an error.
->
-> Generated by: scripts/coccinelle/api/platform_get_irq.cocci
->
-> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+On 03/03/2022 07:18, Sanil, Shruthi wrote:
 
-applied to the fbdev for-next git tree.
+[ ... ]
 
-Thanks!
-Helge
+>>>>>>> +	if (!(val & TIM_CONFIG_PRESCALER_ENABLE)) { + 
+>>>>>>> pr_err("%pOF: Prescaler is not enabled\n", np); +		ret = 
+>>>>>>> -ENODEV; +	}
+>>>>>> 
+>>>>>> Why bail out instead of enabling the prescalar ?
+>>>>> 
+>>>>> Because it is a secure register and it would be updated by
+>>>>> the bootloader.
+>>>> Should it be considered as a firmware bug ?
+>>> 
+>>> No. This is a common driver across products in the series and 
+>>> enablement of this bit depends on the project requirements. Hence
+>>> to be sure from driver, we added this check to avoid
+>>> initialization of the driver in the case where it cannot be
+>>> functional.
+>> 
+>> I'm not sure to get the meaning of 'project requirements' but (for
+>> my understanding) why not describe the timer in the DT for such
+>> projects?
+>> 
+> 
+> OK, I understand your point now. We can control the driver
+> initialization from device tree binding rather than add a check in
+> the driver. But isn't it good to have a check, if enabling of the bit
+> is missed out in the FW? This can help in debugging.
 
-> ---
->  drivers/video/fbdev/s3c-fb.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/video/fbdev/s3c-fb.c b/drivers/video/fbdev/s3c-fb.c
-> index 208514054c23..3abbc5737c3b 100644
-> --- a/drivers/video/fbdev/s3c-fb.c
-> +++ b/drivers/video/fbdev/s3c-fb.c
-> @@ -1418,7 +1418,6 @@ static int s3c_fb_probe(struct platform_device *pd=
-ev)
->
->  	sfb->irq_no =3D platform_get_irq(pdev, 0);
->  	if (sfb->irq_no < 0) {
-> -		dev_err(dev, "failed to acquire irq resource\n");
->  		ret =3D -ENOENT;
->  		goto err_lcd_clk;
->  	}
+So if the description is in the DT but the prescaler bit is not enabled 
+then the firmware is buggy, IIUC. Yeah, this check would help, may be 
+add more context in the error message, eg. "Firmware has not enabled the 
+prescaler bit" or something like that
 
+Thanks for the clarification
+
+   -- D.
+
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
