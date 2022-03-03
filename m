@@ -2,138 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 151B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C63C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231591AbiCCB7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
+        id S231574AbiCCCA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 21:00:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbiCCB70 (ORCPT
+        with ESMTP id S231580AbiCCCA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:59:26 -0500
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B01C1D0E4;
-        Wed,  2 Mar 2022 17:58:40 -0800 (PST)
-Received: from localhost.localdomain (unknown [138.197.159.143])
-        by gnuweeb.org (Postfix) with ESMTPSA id 263627E216;
-        Thu,  3 Mar 2022 01:58:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1646272719;
-        bh=4+k143TpGDWGZE7ivmqrV4mMaZsznJilER3TE6gUYVs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YZWdRa4iQq4fHPJE7c41QlUkjyxU/XUN/ZfMoYB976vroshgWVWfckORy71AeIEiX
-         FWOQCqf031hwcaJwy970w2mS/pMkYVnR38L/WzZMeLwb8cn3gF/+bhHCYs89t6EKLD
-         ghIq2Vgyz9QnW1JKAUJcRpy0duYZTC2V6nQfJXB0dfcR3Mif79HCf4EiqecMHsvS+P
-         5IOZ6JBM/DjP+WcJ1v+Ct3rCDEAaII3PW5Bmz1LxCPQxEsYrTHSe0OjezrUMJPeL3w
-         jzm+5XTXE3TENc47b1TxgXyvfZaRqUkLwio1EK6eF1BHvbncqIAyXb0uWRz/HoS+QT
-         KMr1VyYTWmSCw==
-From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org,
-        x86@kernel.org, stable@vger.kernel.org,
-        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
-        Jiri Hladky <hladky.jiri@googlemail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 2/2] x86/mce/amd: Fix memory leak when `threshold_create_bank()` fails
-Date:   Thu,  3 Mar 2022 01:58:26 +0000
-Message-Id: <20220303015826.4176416-1-alviro.iskandar@gnuweeb.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <109a10da-d1d1-c47a-2f04-31796457f6ff@gnuweeb.org>
-References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org> <20220301094608.118879-3-ammarfaizi2@gnuweeb.org> <Yh+oyD/5M3TW5ZMM@yaz-ubuntu> <4371a592-6686-c535-4daf-993dedb43cd4@gnuweeb.org> <109a10da-d1d1-c47a-2f04-31796457f6ff@gnuweeb.org>
+        Wed, 2 Mar 2022 21:00:26 -0500
+X-Greylist: delayed 932 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 17:59:40 PST
+Received: from baidu.com (mx24.baidu.com [111.206.215.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9884838BD5;
+        Wed,  2 Mar 2022 17:59:40 -0800 (PST)
+Received: from BC-Mail-Ex06.internal.baidu.com (unknown [172.31.51.46])
+        by Forcepoint Email with ESMTPS id AFF197E458F57ABBF49E;
+        Thu,  3 Mar 2022 09:44:01 +0800 (CST)
+Received: from BJHW-MAIL-EX25.internal.baidu.com (10.127.64.40) by
+ BC-Mail-Ex06.internal.baidu.com (172.31.51.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.20; Thu, 3 Mar 2022 09:44:01 +0800
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BJHW-MAIL-EX25.internal.baidu.com (10.127.64.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.20; Thu, 3 Mar 2022 09:44:01 +0800
+Received: from BJHW-MAIL-EX27.internal.baidu.com ([169.254.58.247]) by
+ BJHW-MAIL-EX27.internal.baidu.com ([169.254.58.247]) with mapi id
+ 15.01.2308.020; Thu, 3 Mar 2022 09:44:01 +0800
+From:   "Cai,Huoqing" <caihuoqing@baidu.com>
+To:     Jianglei Nie <niejianglei2021@163.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
+Thread-Topic: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
+Thread-Index: AQHYLp5LKcUpXpLQGUa95DdJWAWshKys4eVw
+Date:   Thu, 3 Mar 2022 01:44:01 +0000
+Message-ID: <b2cfc764839a459f86eb46ae0286e9a0@baidu.com>
+References: <20220303013022.459154-1-niejianglei2021@163.com>
+In-Reply-To: <20220303013022.459154-1-niejianglei2021@163.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.18.80.46]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 06:27:33 +0700, Ammar Faizi wrote:
-> +static void _mce_threshold_remove_device(struct threshold_bank **bp)
-> +{
-> +	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
-> +
-> +	for (bank = 0; bank < numbanks; bank++) {
-> +		if (bp[bank]) {
-> +			threshold_remove_bank(bp[bank]);
-> +			bp[bank] = NULL;
-> +		}
-> +	}
-> +	kfree(bp);
-> +}
-
-hi sir, i think this can be improved again, we can avoid calling
-this_cpu_read(mce_num_banks) twice if we pass the numbanks as an
-argument, plz review the changes below
-
-diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
-index 9f4b508886dd..e492efab68a2 100644
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -1293,10 +1293,23 @@ static void threshold_remove_bank(struct threshold_bank *bank)
- 	kfree(bank);
- }
- 
-+static void _mce_threshold_remove_device(struct threshold_bank **bp,
-+					 unsigned int numbanks)
-+{
-+	unsigned int bank;
-+
-+	for (bank = 0; bank < numbanks; bank++) {
-+		if (bp[bank]) {
-+			threshold_remove_bank(bp[bank]);
-+			bp[bank] = NULL;
-+		}
-+	}
-+	kfree(bp);
-+}
-+
- int mce_threshold_remove_device(unsigned int cpu)
- {
- 	struct threshold_bank **bp = this_cpu_read(threshold_banks);
--	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
- 
- 	if (!bp)
- 		return 0;
-@@ -1307,13 +1320,7 @@ int mce_threshold_remove_device(unsigned int cpu)
- 	 */
- 	this_cpu_write(threshold_banks, NULL);
- 
--	for (bank = 0; bank < numbanks; bank++) {
--		if (bp[bank]) {
--			threshold_remove_bank(bp[bank]);
--			bp[bank] = NULL;
--		}
--	}
--	kfree(bp);
-+	_mce_threshold_remove_device(bp, this_cpu_read(mce_num_banks));
- 	return 0;
- }
- 
-@@ -1350,15 +1357,14 @@ int mce_threshold_create_device(unsigned int cpu)
- 		if (!(this_cpu_read(bank_map) & (1 << bank)))
- 			continue;
- 		err = threshold_create_bank(bp, cpu, bank);
--		if (err)
--			goto out_err;
-+		if (err) {
-+			_mce_threshold_remove_device(bp, numbanks);
-+			return err;
-+		}
- 	}
- 	this_cpu_write(threshold_banks, bp);
- 
- 	if (thresholding_irq_en)
- 		mce_threshold_vector = amd_threshold_interrupt;
- 	return 0;
--out_err:
--	mce_threshold_remove_device(cpu);
--	return err;
- }
-
--- Viro
+SGVsbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmlhbmdsZWkg
+TmllIDxuaWVqaWFuZ2xlaTIwMjFAMTYzLmNvbT4NCj4gU2VudDogMjAyMsTqM9TCM8jVIDk6MzAN
+Cj4gVG86IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsgQ2FpLEh1b3FpbmcN
+Cj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
+cmc7IEppYW5nbGVpIE5pZQ0KPiBTdWJqZWN0OiBbUEFUQ0hdIG5ldDogYXJjX2VtYWM6IEZpeCB1
+c2UgYWZ0ZXIgZnJlZSBpbiBhcmNfbWRpb19wcm9iZSgpDQo+IA0KPiBJZiBidXMtPnN0YXRlIGlz
+IGVxdWFsIHRvIE1ESU9CVVNfQUxMT0NBVEVELCBtZGlvYnVzX2ZyZWUoYnVzKSB3aWxsIGZyZWUN
+Cj4gdGhlICJidXMiLiBCdXQgYnVzLT5uYW1lIGlzIHN0aWxsIHVzZWQgaW4gdGhlIG5leHQgbGlu
+ZSwgd2hpY2ggd2lsbCBsZWFkDQo+IHRvIGEgdXNlIGFmdGVyIGZyZWUuDQo+IA0KPiBXZSBjYW4g
+Zml4IGl0IGJ5IGFzc2lnbmluZyBkZXZfZXJyX3Byb2JlKCkgdG8gZGV2X2VyciBiZWZvcmUgdGhl
+IGJ1cyBpcw0KPiBmcmVlZCB0byBhdm9pZCB0aGUgdWFmLg0KQWRkIGZpeCBsb2cgaGVyZTopDQpG
+aXhlczogOTViNWZjMDNjMTg5ICgibmV0OiBhcmNfZW1hYzogTWFrZSB1c2Ugb2YgdGhlIGhlbHBl
+ciBmdW5jdGlvbiBkZXZfZXJyX3Byb2JlKCkiKQ0KPiANCj4gU2lnbmVkLW9mZi1ieTogSmlhbmds
+ZWkgTmllIDxuaWVqaWFuZ2xlaTIwMjFAMTYzLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9l
+dGhlcm5ldC9hcmMvZW1hY19tZGlvLmMgfCA1ICsrKy0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMyBp
+bnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+bmV0L2V0aGVybmV0L2FyYy9lbWFjX21kaW8uYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Fy
+Yy9lbWFjX21kaW8uYw0KPiBpbmRleCA5YWNmNTg5YjExNzguLjc5NWEyNWM1ODQ4YSAxMDA2NDQN
+Cj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXJjL2VtYWNfbWRpby5jDQo+ICsrKyBiL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L2FyYy9lbWFjX21kaW8uYw0KPiBAQCAtMTY1LDkgKzE2NSwxMCBA
+QCBpbnQgYXJjX21kaW9fcHJvYmUoc3RydWN0IGFyY19lbWFjX3ByaXYgKnByaXYpDQo+IA0KPiAg
+CWVycm9yID0gb2ZfbWRpb2J1c19yZWdpc3RlcihidXMsIHByaXYtPmRldi0+b2Zfbm9kZSk7DQo+
+ICAJaWYgKGVycm9yKSB7DQo+IC0JCW1kaW9idXNfZnJlZShidXMpOw0KPiAtCQlyZXR1cm4gZGV2
+X2Vycl9wcm9iZShwcml2LT5kZXYsIGVycm9yLA0KPiArCQlpbnQgZGV2X2VyciA9IGRldl9lcnJf
+cHJvYmUocHJpdi0+ZGV2LCBlcnJvciwNCj4gIAkJCQkgICAgICJjYW5ub3QgcmVnaXN0ZXIgTURJ
+TyBidXMgJXNcbiIsIGJ1cy0NCj4gPm5hbWUpOw0KPiArCQltZGlvYnVzX2ZyZWUoYnVzKTsNCj4g
+KwkJcmV0dXJuIGRldl9lcnI7DQo+ICAJfQ0KPiANCj4gIAlyZXR1cm4gMDsNCj4gLS0NCj4gMi4y
+NS4xDQoNCg==
