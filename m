@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0202EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E05C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231922AbiCCJX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:23:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35730 "EHLO
+        id S231931AbiCCJZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:25:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231935AbiCCJW4 (ORCPT
+        with ESMTP id S230476AbiCCJZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:22:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682F21768CD;
-        Thu,  3 Mar 2022 01:22:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0756261C3F;
-        Thu,  3 Mar 2022 09:22:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69242C34101;
-        Thu,  3 Mar 2022 09:22:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646299329;
-        bh=iXq0ELG0V7/AnDh81T6u19yP5MwiSYcM6qTcBJBe4OA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BLN8UtJxH2XlmmKj6rKAbVrjo3Pon/hgpSka8U3+lkFp83NAiJPVWDlenOAuu40Zu
-         JshkUbmydrKwtwN8VZjMUeRtJFeaXG0VX7bKkd27RGXG1TIIX1EGU1hvag1kRwT0dO
-         E6fyVvn4RzWjt772MSVPyl8GRYpowkXv+cDAXglgV7lXIUDniyBoKZGqNxd7Ln1MYP
-         fiOzU2YuRWuEZIdSGi/E3OfTjycqqkYll8bP7dIPybg4wEJvvf70/RD5md268T6fPC
-         yoHz3VHHbQzueVLBvJTt8aB5F8/zNasWgOh1BQhZukuND+2NmCgKw38T22Tlvt39pr
-         IZpNbHU7B909w==
-Received: by mail-yb1-f178.google.com with SMTP id f38so8956524ybi.3;
-        Thu, 03 Mar 2022 01:22:09 -0800 (PST)
-X-Gm-Message-State: AOAM5302Z5u2pfmbKE7QZzzGeYSVLEq58A+4Jk6Cb9FB37dZbPLckMKr
-        WRlKZgGTYcfug2VCEehQLMIIc+4RcVBF+wyUhgs=
-X-Google-Smtp-Source: ABdhPJzGxW9K6XK02dNQgFGymwfkQglSqb+hdrqFixJgS607dC1+UsEFXJMQe/H318w5RYW/Cg+KjYeLPNx5dYV37BA=
-X-Received: by 2002:a25:585:0:b0:628:9860:39da with SMTP id
- 127-20020a250585000000b00628986039damr7949048ybf.383.1646299328178; Thu, 03
- Mar 2022 01:22:08 -0800 (PST)
+        Thu, 3 Mar 2022 04:25:50 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB1736B40;
+        Thu,  3 Mar 2022 01:25:04 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id gm1so3632152qvb.7;
+        Thu, 03 Mar 2022 01:25:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dNW5LS4vhAwkIaVU+2IP0rY0q8Okjc/r0hmM5gzh7KU=;
+        b=Ts1UbuXzl4NSXZMOXmc88YX7HmSMmmr/tiddGJYBwWw5mR5PtLO2wkjRacVSe7nTfe
+         zU1aZyvykIgjQpFoAPGre8A1slhPWZTi1TVJd5upP4VI1GGNcSZR2wuKrEndQeJndw/H
+         B6grXZaacOhTQ86OiWSRx/jlcYrYuGC/87w1I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dNW5LS4vhAwkIaVU+2IP0rY0q8Okjc/r0hmM5gzh7KU=;
+        b=geQSRFe6Fi6oZff4VdnxQmGaGMq0apqxzGFnE0zo/XBn2mhWzYqJfuY1cr4J8xbBAz
+         d1xpxRBjUKjzWg4DPleZow2bsC+jFQdwEkatXc2LAoBKXHfXKUW04Vn57gmYFU1DX5BJ
+         Sb81a/48PO3n6NuZfc7PBEXFNRccbtOjAWfC6Qht6jSuI9T3chOsAYUDUwOECO7bWjW6
+         zEzEhdeIFWbpC5ucmghyexSz/6yfvyHKE11a72qyC82ADsh5kdZF2ValQqY7oCKkvwJi
+         HyvvOwJCIeezBvGBGMp3ZJXdEvK3Hr5aphbXbS/0tJg2deSoyO3IQO8qYH25Ku1wH8hS
+         lGfA==
+X-Gm-Message-State: AOAM5328f9ooyE1/Zvb28q2YqPbFxUzhTHatXnqKoxAVB0kmk7KpHNh9
+        B+bgFVqG0O9wb4npI/Hj1I5EqODWJQwU1dkQ4gA=
+X-Google-Smtp-Source: ABdhPJyOi/7U0YJ/wIJevTXD8zhlCiS7cwxhklzH0U5oMUwKh/uxLXtK0TqP5HXlA4zB0StmRaEyJEzhxelasXBOrm4=
+X-Received: by 2002:a05:6214:1769:b0:432:dc20:f006 with SMTP id
+ et9-20020a056214176900b00432dc20f006mr18286473qvb.130.1646299503959; Thu, 03
+ Mar 2022 01:25:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20220224165625.2175020-1-brijesh.singh@amd.com>
- <20220224165625.2175020-30-brijesh.singh@amd.com> <Yh3r1PSx/fjqoBB3@nazgul.tnic>
- <671a6137-0d45-3a8c-433a-32448019961f@amd.com> <Yh+Jc20ed82Vyxge@nazgul.tnic>
-In-Reply-To: <Yh+Jc20ed82Vyxge@nazgul.tnic>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 3 Mar 2022 09:21:57 +0000
-X-Gmail-Original-Message-ID: <CAMj1kXH7vYQ4yjVUpB3wur9UkRxWf=1DEiX8TArk1vpm-8KPuQ@mail.gmail.com>
-Message-ID: <CAMj1kXH7vYQ4yjVUpB3wur9UkRxWf=1DEiX8TArk1vpm-8KPuQ@mail.gmail.com>
-Subject: Re: [PATCH v11 29/45] x86/boot: Add Confidential Computing type to setup_data
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Brijesh Singh <brijesh.singh@amd.com>, X86 ML <x86@kernel.org>,
+References: <20220301224446.21236-1-eajames@linux.ibm.com> <YiB7gz0GJ1Uz0mE2@hovoldconsulting.com>
+ <CACPK8XfoCXisL=udkuO-x4LZ3r-9iKA2d7oLb7KmXs3+LkQgnQ@mail.gmail.com> <YiCHPuNkMuO4uARu@hovoldconsulting.com>
+In-Reply-To: <YiCHPuNkMuO4uARu@hovoldconsulting.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Thu, 3 Mar 2022 09:24:51 +0000
+Message-ID: <CACPK8XfUCyVgwVYLt_99CgQWuoFTw7O9d2NiuzMzGPa1VFVUyg@mail.gmail.com>
+Subject: Re: [PATCH v2] USB: serial: pl2303: Add IBM device IDs
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Eddie James <eajames@linux.ibm.com>, linux-usb@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-coco@lists.linux.dev,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, Tony Luck <tony.luck@intel.com>,
-        marcorr@google.com, sathyanarayanan.kuppuswamy@linux.intel.com
+        Greg KH <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 at 15:13, Borislav Petkov <bp@alien8.de> wrote:
+On Thu, 3 Mar 2022 at 09:15, Johan Hovold <johan@kernel.org> wrote:
 >
-> On Wed, Mar 02, 2022 at 08:25:45AM -0600, Brijesh Singh wrote:
-> > Yep, I am waiting for Linux patches to finalize and then sync OVMF with it.
-> > I will rename the field to magic in OVMF to keep both of them in sync.
+> On Thu, Mar 03, 2022 at 08:52:29AM +0000, Joel Stanley wrote:
+> > On Thu, 3 Mar 2022 at 08:25, Johan Hovold <johan@kernel.org> wrote:
+> > >
+> > > On Tue, Mar 01, 2022 at 04:44:46PM -0600, Eddie James wrote:
+> > > > IBM manufactures a PL2303 device for UPS communications. Add the vendor
+> > > > and product IDs so that the PL2303 driver binds to the device.
+> > > >
+> > > > Signed-off-by: Joel Stanley <joel@jms.id.au>
+> > > > Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> > > > ---
+> > > > Changes since v1:
+> > > >  - Fix commit message Signed-off-by ordering.
+> > >
+> > > Almost there. You're still missing a Co-developed-by tag, a From line,
+> > > or both.
+> >
+> > It's neither. This patch was applied to a tree by myself, and I asked
+> > Eddie to send it to mainline for merging.
 >
-> Ok, thx.
->
-> Btw, Ard, ACK for the EFI hunk?
->
+> Then you are missing a From line. As the patch looks like know, Eddie is
+> considered the author and not you.
 
-Yep,
+You are incorrect. Eddie is the author.
 
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+>
+> > Given it's come through me, and now has been sent to you, I think the
+> > chain of s-o-b is appropriate.
+>
+> So the chain of SoB is correct, but the authorship is not.
+>
+> You can use git-format-patch and git-send-email to avoid this kind of
+> problems, but just manually inserting a From line in the body of the
+> mail works too.
+>
+> Johan
