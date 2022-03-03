@@ -2,144 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD414C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E01C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 22:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236715AbiCCWE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 17:04:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
+        id S236723AbiCCWG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 17:06:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235784AbiCCWEy (ORCPT
+        with ESMTP id S231673AbiCCWG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 17:04:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2DF6148643
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 14:04:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646345046;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6wGROgyYuQGjMhOFoWGJ+5bmZEJUNDacGYc0J6ktUME=;
-        b=OA2cvRkUgEUX361sLeF1kTZnuygjni7P1yPpTP32GO9MoQjiGgMSeflwq78/kk/ureZ1t4
-        FKEdfTPXSIUCVyFTZ1WV+xqlgtkzVgK1zSlVTv8h8y9oxzV14ZPc3YbS+UF1cyZXsP2e0B
-        du9jeggcmp6PYbxdJbKoYpd+dxnu6CA=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-499-RKjLFzSANJq-wQng3_50xw-1; Thu, 03 Mar 2022 17:04:05 -0500
-X-MC-Unique: RKjLFzSANJq-wQng3_50xw-1
-Received: by mail-oo1-f69.google.com with SMTP id s7-20020a4aeac7000000b0031d808633fbso4429605ooh.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 14:04:04 -0800 (PST)
+        Thu, 3 Mar 2022 17:06:27 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038CE15D3AC
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 14:05:41 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id k2so6128498oia.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 14:05:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=PKohUg2qG/pCEPlXibG2AgUnEJqrXhfRLiwdaT8RtZw=;
+        b=D7YSxbf9YXlA/4GXf6hdHT3HLvlA58JNPLh26N+ob5BKmSnH4xtDfs1DKlG+a90Rv4
+         ZO6EG+FZRdzqxbfeZimjrs6Kb+2JcEXIB0O+cBLy7GH5s4NOT7pSYnmyW3G8ySdnTQDh
+         zZfjkPYBJYi+jjdSHrHTw0Oz/FOmDKscxJib4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=6wGROgyYuQGjMhOFoWGJ+5bmZEJUNDacGYc0J6ktUME=;
-        b=Nlq/UktNYzKs+H5onEOEl/AqOkqlcBRwld5cQYjcmggFyPn/6yj9S4Fr291YSzcPmP
-         4p23VgZBuVdpNJiNVNmwBo+cn92XnnGK8C5VTa0iHejshw5aNd7/yuJAaGzY8XfbBY+g
-         LFjdc0QM0m74oJ9Z81UXl5Ss4VbAjONDxgTZezzCUq7oNxSFwKBxwfbPMHJuxF3vsEJ6
-         253z2mOS3NdlJOArdVfCCFPxOveQFZKf6znSZhaGNC3CltZih5jTXCBcUiXQZSrXmsU9
-         SjIu8ZKpqez6NghhtzlzHu70lAi3A7uaOJS9FFjuvOMK7G9Cy8YVVKj8EHiA7If3LoV2
-         fn3g==
-X-Gm-Message-State: AOAM533nFsNX00SUObsI5j7U5AIkMPgCf+dwbnvVf+7IDPKcpCu2X/jI
-        jLawhQv4JeTLUb/zsfudsoWyqfTg4dU2RAF5IpWAKIZ82q+8KoDAO/fgDcPpr/K9rYd3hkNsPoa
-        t5RnIyZHwJlRV9RZcs1a2bfvr
-X-Received: by 2002:aca:1a04:0:b0:2d4:f855:aad1 with SMTP id a4-20020aca1a04000000b002d4f855aad1mr6496536oia.63.1646345043704;
-        Thu, 03 Mar 2022 14:04:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwKYRe1JYF3+Y9OgmsQmqUokJoxxr0aKd4vk81gnA67Q062qAtgyawzk9SpEORQGWaOqANqfA==
-X-Received: by 2002:aca:1a04:0:b0:2d4:f855:aad1 with SMTP id a4-20020aca1a04000000b002d4f855aad1mr6496506oia.63.1646345043499;
-        Thu, 03 Mar 2022 14:04:03 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id q7-20020a9d6647000000b005af185bf273sm1582024otm.25.2022.03.03.14.04.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 14:04:02 -0800 (PST)
-Subject: Re: [PATCH v2 1/2] Documentation: fpga: dfl: add PCI Identification
- documentation
-To:     matthew.gerlach@linux.intel.com, hao.wu@intel.com,
-        yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org, corbet@lwn.net,
-        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dan.j.williams@intel.com,
-        ashok.raj@intel.com, tianfei.zhang@intel.com
-References: <20220303003534.3307971-1-matthew.gerlach@linux.intel.com>
- <20220303003534.3307971-2-matthew.gerlach@linux.intel.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <6448f21f-7ce1-d9ce-1048-29aca14f9d3d@redhat.com>
-Date:   Thu, 3 Mar 2022 14:04:00 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=PKohUg2qG/pCEPlXibG2AgUnEJqrXhfRLiwdaT8RtZw=;
+        b=e6cGMdnDt37jzD1cpibJJA1ZNQOv7tN/9cqDw8nEqpIu+cn8h401OnSaC93RJvL4zo
+         Pdcjy9y15OpQlTyqY5JkXxlTWlgxBkZ71e01ZG60QwOt+PhQ3CiCN6qg9NZqa9DeAKfp
+         M75L0c+1iTa2LUJm2wbuiMRQYpIdcEcuW0eOj27ir0Zu0ZlLdhwtFWuRP4n/r9ZHZRw7
+         yRQey+wpj2swkjgu0Ko33efyrmzcpGvannO4f9yh19z+LXZdaSioq4ybkTLda4bWiOkE
+         zDgtRQ/AQjeHb3HsiO9uJ8hI/pYJPSgLjhDEowt4LsDSG5Gua1UYiyJYJRHIIBGnd0bO
+         4yJg==
+X-Gm-Message-State: AOAM530hfmNEFRFQLfZZn+DVMk5TpWp2yExdU87ZO/qhjOdrvfSW0UQF
+        NoK3mhClMxxzlh+p2j5y3+r60oiPRQ3xKbkH4vDfAA==
+X-Google-Smtp-Source: ABdhPJy47x1D2qJGCMALwvxUqjRjAF8d7zyb8QVQXnlC6qzKxDZbC7qJi/ar2Vw+nacHvEUEoLG1Gb9z04TrKcGKOvM=
+X-Received: by 2002:a05:6808:20a7:b0:2d4:d2f1:9edc with SMTP id
+ s39-20020a05680820a700b002d4d2f19edcmr6563793oiw.64.1646345140349; Thu, 03
+ Mar 2022 14:05:40 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 3 Mar 2022 14:05:39 -0800
 MIME-Version: 1.0
-In-Reply-To: <20220303003534.3307971-2-matthew.gerlach@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+In-Reply-To: <1646300401-9063-2-git-send-email-quic_vpolimer@quicinc.com>
+References: <1646300401-9063-1-git-send-email-quic_vpolimer@quicinc.com> <1646300401-9063-2-git-send-email-quic_vpolimer@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 3 Mar 2022 14:05:39 -0800
+Message-ID: <CAE-0n53FVc_JNN-gkXeaQjt810e7_nV6kCireqgPfPsE7rq4Bw@mail.gmail.com>
+Subject: Re: [PATCH v4 1/4] arm64/dts/qcom/sc7280: remove assigned-clock-rate
+ property for mdp clk
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dianders@chromium.org, quic_kalyant@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Quoting Vinod Polimera (2022-03-03 01:39:58)
+> Kernel clock driver assumes that initial rate is the
+> max rate for that clock and was not allowing it to scale
+> beyond the assigned clock value.
+>
+> Drop the assigned clock rate property and vote on the mdp clock as per
+> calculated value during the usecase.
+>
+> Changes in v2:
+> - Remove assigned-clock-rate property and set mdp clk during resume sequence.
+> - Add fixes tag.
+>
+> Changes in v3:
+> - Remove extra line after fixes tag.(Stephen Boyd)
+>
 
-On 3/2/22 4:35 PM, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->
-> Add documentation on identifying FPGA based PCI cards prompted
-> by discussion on the linux-fpga@vger.kernel.org mailing list.
->
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+This changelog goes below triple dash when they aren't intended for drm.
+
+> Fixes: 62fbdce91("arm64: dts: qcom: sc7280: add display dt nodes")
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 > ---
-> v2: Introduced in v2.
-> ---
->   Documentation/fpga/dfl.rst | 20 ++++++++++++++++++++
->   1 file changed, 20 insertions(+)
->
-> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-> index ef9eec71f6f3..5fb2ca8e76d7 100644
-> --- a/Documentation/fpga/dfl.rst
-> +++ b/Documentation/fpga/dfl.rst
-> @@ -502,6 +502,26 @@ Developer only needs to provide a sub feature driver with matched feature id.
->   FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme-pr.c)
->   could be a reference.
->   
-> +PCI Device Identification
-> +================================
-> +Since FPGA based PCI cards can be reconfigured to a perform a completely
-> +new function at runtime, properly identifying such cards and binding the
-> +correct driver can be challenging. In many use cases, deployed FPGA based
-> +PCI cards are essentially static and the PCI Product ID and Vendor ID pair
-> +is sufficient to identify the card.  The DFL framework helps with the
-> +dynamic case of deployed FPGA cards changing at run time by providing
-> +more detailed information about card discoverable at runtime.
-> +
-> +At one level, the DFL on a PCI card describes the function of the card.
-> +However, the same DFL could be instantiated on different physical cards.
-> +Conversely, different DFLs could be instantiated on the same physical card.
-> +Practical management of a cloud containing a heterogeneous set of such cards
-> +requires a PCI level of card identification. While the PCI Product ID and
-> +Vendor ID may be sufficient to bind the dfl-pci driver, it is expected
-> +that FPGA PCI cards would advertise suitable Subsystem ID and Subsystem
-> +Vendor ID values. PCI Vital Product Data (VPD) can also be used for
-> +more granular information about the board.
 
-This describes a bit more of the problem, it should describe it wrt ofs 
-dev id. The introduction of the ofs dev should be explicitly called out 
-as a generic pci id.
-
-Why couldn't one of the old pci id's be reused ?
-
-How will the subvendor/subid be enforced ?
-
-Is the current security manager patchset smart enough to save the board 
-from being bricked when a user doesn't look beyond the pci id ?
-
-What happens if a board uses this device id but doesn't have a max10 to 
-do the update ?
-
-Tom
-
-> +
->   Location of DFLs on a PCI Device
->   ================================
->   The original method for finding a DFL on a PCI device assumed the start of the
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
