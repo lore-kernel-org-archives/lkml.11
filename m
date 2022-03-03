@@ -2,176 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D71C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CC5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbiCCMNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 07:13:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
+        id S233136AbiCCMR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 07:17:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbiCCMNF (ORCPT
+        with ESMTP id S233126AbiCCMRX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 07:13:05 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D764172E4B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 04:12:17 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 223BJQUx023455;
-        Thu, 3 Mar 2022 12:11:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=Xn1eGr/Sp9q1/T2R2AS3XQ/yIyijiv4dsUS5sUa8Agk=;
- b=kAiJZpJXYE0ceZBLamuHCks7rKj7V12Q2pz8wXQbFNtDLz68yYSu7jXk3sNYentpdsVn
- +8PncUgnl23/hRwdWWhaS6nDz6x53h+KlQnMjlDH1zbZjd9WJeUlt6En+9cmVI9LWAa9
- DQKBVx8QM049JVV+9LNeUj70EaOb4ZIE4czlt5LPiDgk6cFGV4rctgnCVrz7kWEe6zqq
- 0tjNGfQqg/rQfUKQRSuhZnqKrh3YqoOoLN9v8wtAC28dQg3vsrKmVpnUKlPJBBo7xdtW
- 8MUtFNLRrAPBouhXWIDul8VRFQBkyYwIKGTlP1CO/bpzP1PyuVdcEuu/IhDp5czVHAOQ VA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3ejvpqgxfd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Mar 2022 12:11:30 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 223C6Kgd028957;
-        Thu, 3 Mar 2022 12:11:29 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3ejvpqgxew-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Mar 2022 12:11:29 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 223C7WBm013584;
-        Thu, 3 Mar 2022 12:11:27 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3efbfjst1m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Mar 2022 12:11:27 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 223C0R9L50266484
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 3 Mar 2022 12:00:27 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 956284204B;
-        Thu,  3 Mar 2022 12:11:24 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EE11742045;
-        Thu,  3 Mar 2022 12:11:23 +0000 (GMT)
-Received: from localhost (unknown [9.43.78.131])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  3 Mar 2022 12:11:23 +0000 (GMT)
-Date:   Thu, 03 Mar 2022 17:41:22 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH v2 15/39] x86/ibt,kprobes: Fix more +0 assumptions
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     alexei.starovoitov@gmail.com, alyssa.milburn@intel.com,
-        andrew.cooper3@citrix.com, hjl.tools@gmail.com,
-        joao@overdrivepizza.com, jpoimboe@redhat.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, mbenes@suse.cz,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        ndesaulniers@google.com, rostedt@goodmis.org,
-        samitolvanen@google.com, x86@kernel.org
-References: <20220224151322.892372059@infradead.org>
-        <20220228150705.aab2d654b973109bab070ffe@kernel.org>
-        <20220228232513.GH11184@worktop.programming.kicks-ass.net>
-        <20220301114905.e11146ad69d6e01998101c3b@kernel.org>
-        <Yh3ZQQv8GjtqgUF4@hirez.programming.kicks-ass.net>
-        <1646154463.4r1sh4kjf0.naveen@linux.ibm.com>
-        <20220301191245.GI11184@worktop.programming.kicks-ass.net>
-        <20220301200547.GK11184@worktop.programming.kicks-ass.net>
-        <1646236764.vx04n8yp12.naveen@linux.ibm.com>
-        <Yh/GXaqzDNfp93Jd@hirez.programming.kicks-ass.net>
-        <Yh/H+IyKnnC0w5TN@hirez.programming.kicks-ass.net>
-In-Reply-To: <Yh/H+IyKnnC0w5TN@hirez.programming.kicks-ass.net>
+        Thu, 3 Mar 2022 07:17:23 -0500
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E6D15F087
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 04:16:34 -0800 (PST)
+Received: from epcas1p3.samsung.com (unknown [182.195.41.47])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220303121627epoutp027d4e13a8d55a12fb998c31728ead2055~Y3geVsPfR2806828068epoutp02E
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 12:16:27 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220303121627epoutp027d4e13a8d55a12fb998c31728ead2055~Y3geVsPfR2806828068epoutp02E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646309788;
+        bh=abFjtJPmEoNg2ozi6aQR10wX7+g3Ea4YNi0vgPlcFMA=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=BnAyYPLkLQPBA8d6bngGpO/2KFxUJ0MvXtau2S/l6dpMTcs5Zry3ATEircssFjk7h
+         EXqm9ZZXGCcLbi92bIqLhIEmcln1N/eKftpjfTXHCbxKPge2Gdp0Pyj83h//bN4CG2
+         t/4owBHjX5WttKrqMhSSkcs5YoTZBP8gFw8x93Gs=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220303121627epcas1p197895b85371cf654c64b695047453d23~Y3gd2XTS70702807028epcas1p1M;
+        Thu,  3 Mar 2022 12:16:27 +0000 (GMT)
+Received: from epsmges1p2.samsung.com (unknown [182.195.38.241]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4K8VMZ0Gxjz4x9Q2; Thu,  3 Mar
+        2022 12:16:26 +0000 (GMT)
+Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
+        epsmges1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        80.2A.08277.991B0226; Thu,  3 Mar 2022 21:16:25 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas1p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220303121624epcas1p3781f58f2f04b0a26c35311aa0f4defcf~Y3gbZajmP0976309763epcas1p3T;
+        Thu,  3 Mar 2022 12:16:24 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220303121624epsmtrp1e909b922805652a98179a2635067cee0~Y3gbYdir71144211442epsmtrp1t;
+        Thu,  3 Mar 2022 12:16:24 +0000 (GMT)
+X-AuditID: b6c32a36-203ff70000002055-5f-6220b199474b
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5E.28.29871.891B0226; Thu,  3 Mar 2022 21:16:24 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.88.98.193]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220303121624epsmtip2117f5f63874145e0e41c807665ac1538~Y3gbKDcA30633506335epsmtip2J;
+        Thu,  3 Mar 2022 12:16:24 +0000 (GMT)
+From:   Huijin Park <huijin.park@samsung.com>
+To:     "H . Nikolaus Schaller" <hns@goldelico.com>,
+        Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+Cc:     linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-mmc@vger.kernel.org, letux-kernel@openphoenux.org,
+        Ulf Hansson <ulf.hansson@linaro.org>, tony@atomide.com,
+        huijin.park@samsung.com, bbanghj.park@gmail.com
+Subject: RE: [BUG] mmc: core: adjust polling interval for CMD1 
+Date:   Thu,  3 Mar 2022 21:16:16 +0900
+Message-Id: <20220303121616.2285-1-huijin.park@samsung.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1646305566.4wf34z8v3g.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: RIDjZCZ5Y1gPYf81X8CKbiAp5bdl86qq
-X-Proofpoint-GUID: pLjc-O3E4cZ3dsniKb4sLE0asZ9RjT9P
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-03_07,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
- mlxscore=0 priorityscore=1501 malwarescore=0 impostorscore=0 adultscore=0
- clxscore=1015 mlxlogscore=999 bulkscore=0 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203030058
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFJsWRmVeSWpSXmKPExsWy7bCmvu7MjQpJBlvuW1q83HuI2eLHtq9M
+        Fh0XXSwe3LvEarH1zyU2i8u75rBZHPnfz2gxe0k/i8X+K14Wx9eGO3B5fPs6icVj56y77B5r
+        3p9i9rhzbQ+bx79j7B4tk3axe/RtWcXo8XmTXABHVLZNRmpiSmqRQmpecn5KZl66rZJ3cLxz
+        vKmZgaGuoaWFuZJCXmJuqq2Si0+ArltmDtCBSgpliTmlQKGAxOJiJX07m6L80pJUhYz84hJb
+        pdSClJwCswK94sTc4tK8dL281BIrQwMDI1OgwoTsjK3THzEW3NWpOLLrDnMD4wrlLkZODgkB
+        E4nX3/4ydTFycQgJ7GCU2HRlJjuE84lR4u6c08wQzjdGifnHfzDBtFy/eQKqai+jxM+zBxnh
+        Wo72nmIGqWIT0Ja4vnYrI4gtIpAosbepnw2kiFngCaNE+5MNrCAJYQF7iS2Td4GNZRFQlXi1
+        9w0LiM0rYC2xpukcC8Q6eYmZl76zQ8QFJU7OfAIWZwaKN2+dzQxR85Nd4tY+aQjbRWLd2ylQ
+        vcISr45vYYewpSRe9rdB2ekSGyYfhaopkFgxdw0bhG0s8e7tWqCZHEDzNSXW79KHCCtK7Pw9
+        lxFiLZ/Eu689rCAlEgK8Eh1tQhAlqhKLr35khbClJQ49uMsIYXtI3N0EcbGQQKxEy4P3TBMY
+        5WcheWYWkmdmISxewMi8ilEstaA4Nz212LDACB6ryfm5mxjBiVTLbAfjpLcf9A4xMnEwHmKU
+        4GBWEuG11FRIEuJNSaysSi3Kjy8qzUktPsRoCgzeicxSosn5wFSeVxJvaGJpYGJmZGJhbGls
+        piTOu2ra6UQhgfTEktTs1NSC1CKYPiYOTqkGJnMWJWXOU6uCQud/29p3TDLD/snN4kL7jXtb
+        pguqPS3879w28cy6cOnDP49WvPBz9Cvm23BlReQb+zeLLh18tLSzc39q7d3bR+JUg7ovfZ0Q
+        sGOv4u3Iummrfby3P294LMIWazlrlmL4OddDW35Epa40nWCfsLiOS6pgQmhj6PKrdgLfLCMD
+        5JTnPFsZ65DheODuzNzLIcvUpN93FhzXZ3q7WXLuoQdqTLnHHjXwH9DdyrOiSGhWlt1aqXvW
+        cX5fNkd/U10X8PfXh4DGQ2KZCyus7e9E5jGeKk7cmmMtoR6gxa5+93Xx1AUF3KsbWuzXdaY1
+        LuUub/q1RG3jkv2bb2ksnpzleV7i5b9J2+Q9pyqxFGckGmoxFxUnAgCT8vt/LQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOLMWRmVeSWpSXmKPExsWy7bCSvO6MjQpJBr+eqlu83HuI2eLHtq9M
+        Fh0XXSwe3LvEarH1zyU2i8u75rBZHPnfz2gxe0k/i8X+K14Wx9eGO3B5fPs6icVj56y77B5r
+        3p9i9rhzbQ+bx79j7B4tk3axe/RtWcXo8XmTXABHFJdNSmpOZllqkb5dAlfG1umPGAvu6lQc
+        2XWHuYFxhXIXIyeHhICJxPWbJ9hBbCGB3YwSLesMIeLSEu92XmftYuQAsoUlDh8uhij5wChx
+        4p00iM0moC1xfe1WRhBbRCBRouviNaYuRi4OZoE3jBLTL00DSwgL2EtsmbyLCcRmEVCVeLX3
+        DQuIzStgLbGm6RwLxC55iZmXvrNDxAUlTs58AhZnBoo3b53NPIGRbxaS1CwkqQWMTKsYJVML
+        inPTc4sNCwzzUsv1ihNzi0vz0vWS83M3MYLDWktzB+P2VR/0DjEycTAeYpTgYFYS4bXUVEgS
+        4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1Oqgela055pn/h4
+        JsTrm19okfl49ENIovf5+BkCAZYlN+YE/d+3JNIw2vmWw3ZWl+RMWd64SwyaE5hmc/itzXjV
+        EMKwPdPv0LYbxhNSFQ91Pntk/s/ih4X1dSXHkK2eohJrZC/nyK6brZlvcPSJvxnLQ+ZXka7n
+        L62sndmr1pBjcnXJc0d/kxm+s36Vn+n1/HVL74jih9kfPd69sRKffi9Oo0Zt3+LTT5mnv9LK
+        Xqn6uvfi7YdFc0IsWTx5P0vH3fj1j/Pd7doXzse4n2h8cNha9lbos9OcVezPH7w5KZb+Z4nQ
+        GesLfnN4RRewe9Y0rj6mG35OU4p7s4kEn65/bfSsNROD3jz/yK3V8/6EB/My1adKLMUZiYZa
+        zEXFiQCvnwGk2gIAAA==
+X-CMS-MailID: 20220303121624epcas1p3781f58f2f04b0a26c35311aa0f4defcf
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220303121624epcas1p3781f58f2f04b0a26c35311aa0f4defcf
+References: <CGME20220303121624epcas1p3781f58f2f04b0a26c35311aa0f4defcf@epcas1p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Zijlstra wrote:
-> On Wed, Mar 02, 2022 at 08:32:45PM +0100, Peter Zijlstra wrote:
->> I wonder if you also want to tighten up on_func_entry? Wouldn't the
->> above suggest something like:
+Hi, sorry for the late reply.
+I guess the problem occurs depending on the eMMC model.
+Because I tested again and there was no problem.
+The eMMC model used for the test are as follows.
+(THGBMJG6C1LBAIL, KLM8G1GETF-B041)
+Anyway I guess the cause is interval time.
+I wrote a debug patch assuming that the reason was that some mmc models
+could not process CMD1 delivered at short intervals.
+I copied the polling function and adds interval minimum time parameter.
+I set the minimum time to 1ms. You can adjust it.
+Please test if there is no problem with the debug patch.
 
-Good question ;)
-I noticed this yesterday, but held off on making changes so that I can=20
-think this through.
+>Hi,
+>
+>> Am 02.03.2022 um 09:20 schrieb Jean Rene Dawin <jdawin@math.uni-bielefeld.de>:
+>> 
+>> Ulf Hansson wrote on Tue  1/03/22 14:38:
+>>> On Thu, 17 Feb 2022 at 21:12, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+>>>> 
+>>> 
+>>> From: Ulf Hansson <ulf.hansson@linaro.org>
+>>> Date: Tue, 1 Mar 2022 14:24:21 +0100
+>>> Subject: [PATCH] mmc: core: Extend timeout to 2s for MMC_SEND_OP_COND
+>>> 
+>>> It looks like the timeout for the MMC_SEND_OP_COND (CMD1) might have become
+>>> a bit too small due to recent changes. Therefore, let's extend it to 2s,
+>>> which is probably more inline with its previous value, to fix the reported
+>>> timeout problems.
+>>> 
+>>> While at it, let's add a define for the timeout value, rather than using
+>>> a hard-coded value for it.
+>>> 
+>>> Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+>>> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+>>> Cc: Huijin Park <huijin.park@samsung.com>
+>>> Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+>>> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+>>> ---
+>>> drivers/mmc/core/mmc_ops.c | 4 +++-
+>>> 1 file changed, 3 insertions(+), 1 deletion(-)
+>>> 
+>>> diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+>>> index d63d1c735335..1f57174b3cf3 100644
+>>> --- a/drivers/mmc/core/mmc_ops.c
+>>> +++ b/drivers/mmc/core/mmc_ops.c
+>>> @@ -21,6 +21,7 @@
+>>> 
+>>> #define MMC_BKOPS_TIMEOUT_MS           (120 * 1000) /* 120s */
+>>> #define MMC_SANITIZE_TIMEOUT_MS                (240 * 1000) /* 240s */
+>>> +#define MMC_OP_COND_TIMEOUT_MS         2000 /* 2s */
+>>> 
+>>> static const u8 tuning_blk_pattern_4bit[] = {
+>>>        0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
+>>> @@ -232,7 +233,8 @@ int mmc_send_op_cond(struct mmc_host *host, u32
+>>> ocr, u32 *rocr)
+>>>        cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
+>>>        cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
+>>> 
+>>> -       err = __mmc_poll_for_busy(host, 1000, &__mmc_send_op_cond_cb, &cb_data);
+>>> +       err = __mmc_poll_for_busy(host, MMC_OP_COND_TIMEOUT_MS,
+>>> +                                 &__mmc_send_op_cond_cb, &cb_data);
+>>>        if (err)
+>>>                return err;
+>>> 
+>>> -- 
+>>> 2.25.1
+>> 
+>> Hi,
+>> 
+>> thanks. But testing with this patch still gives the same errors:
+>> 
+>> [   52.259940] mmc1: Card stuck being busy! __mmc_poll_for_busy
+>> [   52.273380] mmc1: error -110 doing runtime resume
+>> 
+>> and the system gets stuck eventually.
+>
+>Same result from my tests.
+>
+>BR and thanks,
+>Nikolaus
 
->>=20
->> kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned lo=
-ng offset,
->> 					 bool *on_func_entry)
->> {
->> #ifdef PPC64_ELF_ABI_V2
->> 	unsigned long entry =3D ppc_function_entry((void *)addr) - addr;
->> 	*on_func_entry =3D !offset || offset =3D=3D entry;
->> 	if (*on_func_entry)
->> 		offset =3D entry;
->> #else
->> 	*on_func_entry =3D !offset;
->> #endif
->> 	return (void *)(addr + offset);
->> }
 
-This is more accurate and probably something we should do in the long=20
-term. The main issue I see today is userspace, specifically perf (and=20
-perhaps others too).
+From c2458cb998dd8e275fefba52dd2532beb153c82d Mon Sep 17 00:00:00 2001
+From: Huijin Park <huijin.park@samsung.com>
+Date: Thu, 3 Mar 2022 20:43:22 +0900
+Subject: [PATCH] mmc: core: extend timeout and set min time for op_cond
 
-Historically, we have worked around the issue of probes on a function's=20
-global entry point not working by having userspace adjust the offset at=20
-which probes are placed. This works well if those object files have=20
-either the symbol table, or debuginfo capturing if functions have a=20
-separate local entry point. In the absence of those, we are left=20
-guessing and we chose to just offset all probes at function entry by 8=20
-(GEP almost always has the same two instructions) so that perf "just=20
-works". This still works well for functions without a GEP since we=20
-expect to see the two ftrace instructions at function entry, so we are=20
-ok to probe after that. As an added bonus, this also allows uprobes to=20
-work, for the most part.
+This patch extends timeout to 2s and sets minimal interval time for
+checking op_cond stuck problem.
 
-On the kernel side, we only implemented logic to adjust probe address if=20
-a function name was specified without an offset. This went for a toss=20
-once perf probe moved to using _text as the base symbol for kprobes=20
-though, and we weren't handling scenarios where addr+offset was=20
-provided. With the changes in this series, we can now adjust kprobe=20
-address across all those scenarios properly.
+Signed-off-by: Huijin Park <huijin.park@samsung.com>
 
-If we update perf to not pass an offset any more, then newer perf will=20
-stop working on older kernels. If we make the logic to determine=20
-function entry strict in the kernel, then we risk breaking existing=20
-userspace.
+diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+index d63d1c735335..ccad6379d183 100644
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -21,6 +21,7 @@
+ 
+ #define MMC_BKOPS_TIMEOUT_MS		(120 * 1000) /* 120s */
+ #define MMC_SANITIZE_TIMEOUT_MS		(240 * 1000) /* 240s */
++#define MMC_OP_COND_TIMEOUT_MS		(  2 * 1000) /*   2s */
+ 
+ static const u8 tuning_blk_pattern_4bit[] = {
+ 	0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
+@@ -179,6 +180,47 @@ int mmc_go_idle(struct mmc_host *host)
+ 	return err;
+ }
+ 
++static int ____mmc_poll_for_busy(struct mmc_host *host, unsigned int udelay_min,
++				 unsigned int timeout_ms,
++				 int (*busy_cb)(void *cb_data, bool *busy),
++				 void *cb_data)
++{
++	int err;
++	unsigned long timeout;
++	unsigned int udelay = udelay_min, udelay_max = 32768;
++	bool expired = false;
++	bool busy = false;
++
++	timeout = jiffies + msecs_to_jiffies(timeout_ms) + 1;
++	do {
++		/*
++		 * Due to the possibility of being preempted while polling,
++		 * check the expiration time first.
++		 */
++		expired = time_after(jiffies, timeout);
++
++		err = (*busy_cb)(cb_data, &busy);
++		if (err)
++			return err;
++
++		/* Timeout if the device still remains busy. */
++		if (expired && busy) {
++			pr_err("%s: Card stuck being busy! %s\n",
++				mmc_hostname(host), __func__);
++			return -ETIMEDOUT;
++		}
++
++		/* Throttle the polling rate to avoid hogging the CPU. */
++		if (busy) {
++			usleep_range(udelay, udelay * 2);
++			if (udelay < udelay_max)
++				udelay *= 2;
++		}
++	} while (busy);
++
++	return 0;
++}
++
+ static int __mmc_send_op_cond_cb(void *cb_data, bool *busy)
+ {
+ 	struct mmc_op_cond_busy_data *data = cb_data;
+@@ -232,7 +274,8 @@ int mmc_send_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
+ 	cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
+ 	cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
+ 
+-	err = __mmc_poll_for_busy(host, 1000, &__mmc_send_op_cond_cb, &cb_data);
++	err = ____mmc_poll_for_busy(host, 1000, MMC_OP_COND_TIMEOUT_MS,
++				    &__mmc_send_op_cond_cb, &cb_data);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.17.1
 
-I'm not sure how best to address this.
-
->=20
-> One question though; the above seems to work for +0 or +8 (IIRC your
-> instructions are 4 bytes each and the GEP is 2 instructions).
->=20
-> But what do we want to happen for +4 ?
-
-We don't want to change the behavior of probes at the second instruction=20
-in GEP. The thinking is that it allows the rare scenario (if at all) of=20
-wanting to catch indirect function calls, and/or cross-module function=20
-calls -- especially since we now promote probes at GEP to LEP. I frankly=20
-know of no such scenarios so far, but in any case, if the user is=20
-specifying an offset, they better know what they are asking for :)
-
-For the same reason, we should allow kretprobe at +4.
-
-
-Thanks,
-Naveen
