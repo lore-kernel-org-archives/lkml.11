@@ -2,131 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1EEC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233443AbiCCSZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
+        id S234833AbiCCS1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232674AbiCCSZs (ORCPT
+        with ESMTP id S230270AbiCCS1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:25:48 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E891A39E0
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:25:02 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id gb21so5278518pjb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 10:25:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4ZWHmx7szIFAdemFtNlU8I4rxfNJcdbQ9/5ouoRecWo=;
-        b=WQ0WjqaCorFcNDc/RJ6X12JdgR0t+nWufEwGfm4dkI+CiEmkvQO71QzvoTaH4xxevS
-         y9ls4zJuMlR6qBtcE2lMqPWHJd0BRxESjEA0IzSDFRTmTMF+HBd2N+V8mdDnyN43rTRj
-         GB+3ktwF1PPetBWSl2GXImn81fdfW+5EvgIL4uA3qfxGIYVb3/xpWG9Dkj7ZwhUiwsHx
-         9pLPJ1R2L1IxIcAi7FcyPjGLrHCljPThSJZi92/aYFeceyyAa2bOw8jyLldfTATcosne
-         LrEkdixwm7VVCUxr44fMK5b5iIawvZ/ZIhAlnZB4R/QP9OIll5Y/jnVEXzIJIyMkfalE
-         CUpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4ZWHmx7szIFAdemFtNlU8I4rxfNJcdbQ9/5ouoRecWo=;
-        b=PzvkpV+HGc33MLsv28KApBTpd8mZy94syBTkW9sZ//5+d5pWCRHB+61IFXuG0Cngc6
-         w9vgvQYh/7c8U9Ud3aZClHFln8TdEOmnM8NscdiKvqs/s21M/TqStUBZ8j8QUjQ+C9AE
-         RpIIBAuxZ2rM245cFpjR9DL3Y1o9fZlzSyDorOUprW/pgww98f0Ero82k9Sa4sojXSEg
-         DvtU52WZRc3GSKYsx23xeSZXxTlTWsHwBvmFRnkZZEML+utNRi+PC4IfgblBynOdZiO1
-         2yIO/NIJccH5t2Dyp8SshvnVr2DuOIxT+jNO6OAS88nl8P8FeL/91vAj1ZPbW+4xH2R5
-         3qKw==
-X-Gm-Message-State: AOAM530Rqpjew5yMg/wFPigMm7lClzaG37OR4FTAgCrCRnHGe8EIOPpp
-        MdEorYchM5dusxz31VtpMEbZWA==
-X-Google-Smtp-Source: ABdhPJwnNrjdurM6slIPKmpmR7VuRUrAX6G36QZFx1mOQGB7tMEQh38sxM3MSj9uDd3wT/ZjLwaL2w==
-X-Received: by 2002:a17:90b:4d90:b0:1be:f6a9:c4d0 with SMTP id oj16-20020a17090b4d9000b001bef6a9c4d0mr6617469pjb.129.1646331902176;
-        Thu, 03 Mar 2022 10:25:02 -0800 (PST)
-Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
-        by smtp.gmail.com with ESMTPSA id g4-20020a625204000000b004f1063e3d6csm3076565pfb.125.2022.03.03.10.25.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 10:25:01 -0800 (PST)
-Date:   Thu, 3 Mar 2022 18:24:58 +0000
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v3 09/28] KVM: x86/mmu: Drop RCU after processing each
- root in MMU notifier hooks
-Message-ID: <YiEH+jRUe/Iqfcts@google.com>
-References: <20220226001546.360188-1-seanjc@google.com>
- <20220226001546.360188-10-seanjc@google.com>
+        Thu, 3 Mar 2022 13:27:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D472A1A41D6;
+        Thu,  3 Mar 2022 10:26:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 716E961A07;
+        Thu,  3 Mar 2022 18:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 167ABC004E1;
+        Thu,  3 Mar 2022 18:26:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646331985;
+        bh=UyDeKHI7dMAM4zVTsiTp9XCr+V7GBwf1HouH+vGDAPk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i6IJzN2V+XixOYQh9aLhWcotiw7BnCmxO+Yq/CXWgTzonU9Jo7K37jtfRXYN7W9kZ
+         cf6tulxMstjto8kNEYhLI4+V6xnpq7wKOnVSNOoqLGCphwdGvJ/6msFAUz/h0VK+nX
+         2eCLxyHoZvYHWLSrWdM8yFgc/9A2tsAGqpZC4wLac1Y5yTt5Q/MaEFyCdYjQyOnaKE
+         wf2nuoNU98I2wdLKs7Gr3/lHO5OHzKabZBwku9YjiTc/r5ulPmQHXmeNWzAg+2J2HZ
+         9KNsSzhQccn38XIXCftVMa/2ss75Jt/bMZvoZVLeh+uec61Vt077T6evs8t9khD4h9
+         02OqS7IjcFDDw==
+Date:   Thu, 3 Mar 2022 11:26:18 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     David Gow <davidgow@google.com>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-um@lists.infradead.org, linux-kbuild@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] um: clang: Strip out -mno-global-merge from USER_CFLAGS
+Message-ID: <YiEISsoS/XrbEtbm@thelio-3990X>
+References: <20220303090643.241747-1-davidgow@google.com>
+ <YiD7R2wRxoWxtVq7@dev-arch.thelio-3990X>
+ <202203030947.E2FA3D9@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220226001546.360188-10-seanjc@google.com>
+In-Reply-To: <202203030947.E2FA3D9@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022, Sean Christopherson wrote:
-> Drop RCU protection after processing each root when handling MMU notifier
-> hooks that aren't the "unmap" path, i.e. aren't zapping.  Temporarily
-> drop RCU to let RCU do its thing between roots, and to make it clear that
-> there's no special behavior that relies on holding RCU across all roots.
+On Thu, Mar 03, 2022 at 10:04:28AM -0800, Kees Cook wrote:
+> On Thu, Mar 03, 2022 at 10:30:47AM -0700, Nathan Chancellor wrote:
+> > Hi David,
+> > 
+> > On Thu, Mar 03, 2022 at 05:06:42PM +0800, David Gow wrote:
+> > > The things built with USER_CFLAGS don't seem to recognise it as a
+> > > compiler option, and print a warning:
+> > > clang: warning: argument unused during compilation: '-mno-global-merge' [-Wunused-command-line-argument]
+> > > 
+> > > Fixes: 744814d2fa ("um: Allow builds with Clang")
+> > > Signed-off-by: David Gow <davidgow@google.com>
+> > > ---
+> > > 
+> > > This warning shows up after merging:
+> > > https://lore.kernel.org/lkml/20220227184517.504931-6-keescook@chromium.org/
+> > > 
+> > > I'm not 100% sure why this is necessary, but it does seem to work. All
+> > > the attempts to get rid of -mno-global-merge entirely have been met with
+> > > skepticism, but I'm guessing that it's not a problem for just the UML
+> > > "user" files, as they shouldn't(?) interact too much with modules.
+> > 
+> > Thank you for the patch! I think it is correct, as this flag only works
+> > for AArch64 and ARM, as it is only used in Clang::AddAArch64TargetArgs()
+> > and Clang::AddARMTargetArgs() in clang/lib/Driver/ToolChains/Clang.cpp,
+> > which are obviously never called with UML. I am not sure why we do not
+> > see warning during regular kernel builds, maybe something about how UML
+> > objects are compiled exposes this?
 > 
-> Currently, the RCU protection is completely superficial, it's necessary
-> only to make rcu_dereference() of SPTE pointers happy.  A future patch
-> will rely on holding RCU as a proxy for vCPUs in the guest, e.g. to
-> ensure shadow pages aren't freed before all vCPUs do a TLB flush (or
-> rather, acknowledge the need for a flush), but in that case RCU needs to
-> be held until the flush is complete if and only if the flush is needed
-> because a shadow page may have been removed.  And except for the "unmap"
-> path, MMU notifier events cannot remove SPs (don't toggle PRESENT bit,
-> and can't change the PFN for a SP).
+> Yeah, I got really turned around when I tried to find this last week.
 > 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> Reviewed-by: Ben Gardon <bgardon@google.com>
+> > 
+> > Regardless, I would definitely like to clean up this instance of the
+> > warning because I would like to make this warning a hard error so that
+> > we do not get cryptic cc-option failures:
+> > 
+> > https://github.com/ClangBuiltLinux/linux/issues/1587
+> > 
+> > Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+> > 
+> > One small comment below.
+> > 
+> > >  arch/um/Makefile | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/arch/um/Makefile b/arch/um/Makefile
+> > > index f2fe63bfd819..320b09cd513c 100644
+> > > --- a/arch/um/Makefile
+> > > +++ b/arch/um/Makefile
+> > > @@ -75,6 +75,10 @@ USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
+> > >  		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
+> > >  		-idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
+> > >  
+> > > +ifdef CONFIG_CC_IS_CLANG
+> > 
+> > Is this ifdef needed?
+> > 
+> > > +USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
+> > > +endif
+> 
+> How does -mno-global-merge get KBUILD_CFLAGS in the first place? If it's
+> arm/arm64 only, shouldn't that get relocated to those architectures?
+> 
+> *time travel* found it:
+> 
+> 61163efae020 ("kbuild: LLVMLinux: Add Kbuild support for building kernel with Clang")
+> 
+> So I think this may have been universally true long ago, and now only
+> arm/arm64 need it?
 
-Reviewed-by: Mingwei Zhang <mizhang@google.com>
+I don't think so. -mno-global-merge was introduced in [1], which only
+added the option handling in Clang::AddARMTargetArgs(). In fact, when
+-mglobal-merge was added, there was a test added that checked that
+-mglobal-merge/-mno-global-merge had no impact with an x86_64 triple [2].
 
-> ---
->  arch/x86/kvm/mmu/tdp_mmu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-> index 634a2838e117..4f460782a848 100644
-> --- a/arch/x86/kvm/mmu/tdp_mmu.c
-> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-> @@ -1100,18 +1100,18 @@ static __always_inline bool kvm_tdp_mmu_handle_gfn(struct kvm *kvm,
->  	struct tdp_iter iter;
->  	bool ret = false;
+Perhaps at the time that 61163efae020 was written, they were testing
+against either ARCH=arm or ARCH=arm64, which would have shown the
+problem that they mentioned? There is no context in the commit message
+so *shrug*.
+
+Regardless, I think your patch is equally viable, perhaps even better,
+as I am sure this is not the only area where this warning might show up.
+
+[1]: https://github.com/llvm/llvm-project/commit/ba3df1d3ca8569ff8f6e289594c53926e71e519a
+[2]: https://github.com/llvm/llvm-project/commit/256a869d312b37ed7b5d131329050fcdadb11148
+
+Cheers,
+Nathan
+
+> diff --git a/Makefile b/Makefile
+> index 2f6fbba88a0e..fbc42c3c389e 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -852,10 +852,6 @@ ifdef CONFIG_CC_IS_CLANG
+>  KBUILD_CPPFLAGS += -Qunused-arguments
+>  # The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
+>  KBUILD_CFLAGS += -Wno-gnu
+> -# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
+> -# source of a reference will be _MergedGlobals and not on of the whitelisted names.
+> -# See modpost pattern 2
+> -KBUILD_CFLAGS += -mno-global-merge
+>  else
 >  
-> -	rcu_read_lock();
-> -
->  	/*
->  	 * Don't support rescheduling, none of the MMU notifiers that funnel
->  	 * into this helper allow blocking; it'd be dead, wasteful code.
->  	 */
->  	for_each_tdp_mmu_root(kvm, root, range->slot->as_id) {
-> +		rcu_read_lock();
+>  # gcc inanely warns about local variables called 'main'
+> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+> index a2391b8de5a5..dcab28c44c26 100644
+> --- a/arch/arm/Makefile
+> +++ b/arch/arm/Makefile
+> @@ -48,6 +48,13 @@ CHECKFLAGS	+= -D__ARMEL__
+>  KBUILD_LDFLAGS	+= -EL
+>  endif
+>  
+> +ifdef CONFIG_CC_IS_CLANG
+> +# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
+> +# source of a reference will be _MergedGlobals and not on of the whitelisted names.
+> +# See modpost pattern 2
+> +KBUILD_CFLAGS	+= -mno-global-merge
+> +endif
 > +
->  		tdp_root_for_each_leaf_pte(iter, root, range->start, range->end)
->  			ret |= handler(kvm, &iter, range);
-> -	}
+>  #
+>  # The Scalar Replacement of Aggregates (SRA) optimization pass in GCC 4.9 and
+>  # later may result in code being generated that handles signed short and signed
+> diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+> index 2f1de88651e6..2d20fb2ea664 100644
+> --- a/arch/arm64/Makefile
+> +++ b/arch/arm64/Makefile
+> @@ -36,6 +36,13 @@ ifeq ($(CONFIG_BROKEN_GAS_INST),y)
+>  $(warning Detected assembler with broken .inst; disassembly will be unreliable)
+>  endif
 >  
-> -	rcu_read_unlock();
-> +		rcu_read_unlock();
-> +	}
->  
->  	return ret;
->  }
-> -- 
-> 2.35.1.574.g5d30c73bfb-goog
+> +ifdef CONFIG_CC_IS_CLANG
+> +# CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
+> +# source of a reference will be _MergedGlobals and not on of the whitelisted names.
+> +# See modpost pattern 2
+> +KBUILD_CFLAGS	+= -mno-global-merge
+> +endif
+> +
+>  KBUILD_CFLAGS	+= -mgeneral-regs-only	\
+>  		   $(compat_vdso) $(cc_has_k_constraint)
+>  KBUILD_CFLAGS	+= $(call cc-disable-warning, psabi)
 > 
+> > > +
+> > >  #This will adjust *FLAGS accordingly to the platform.
+> > >  include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
+> > >  
+> > > -- 
+> > > 2.35.1.616.g0bdcbb4464-goog
+> > > 
+> 
+> -- 
+> Kees Cook
