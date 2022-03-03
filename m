@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D506C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0549C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231437AbiCCRZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
+        id S235330AbiCCR0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:26:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234250AbiCCRZc (ORCPT
+        with ESMTP id S231726AbiCCR0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:25:32 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C2619E039
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:24:46 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id x15so8890494wru.13
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:24:46 -0800 (PST)
+        Thu, 3 Mar 2022 12:26:48 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475F919E02C
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:26:01 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id n185so4433420qke.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:26:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=krlo5s1H1nq87wng/O6VqLU57YxMUUe2fMcieUmiq1Q=;
-        b=OD0dV5gPLfQvYYRZAc5cVAP6tZg8/nyZg70DG4K7bqyasRT/tRRkrd98KW5Vr9rHkA
-         /VbO/PDAkx+i0y9V7AbxUdsOny2BiXIUvt+I8KhXaX3eES8endopgsxHOHe8gb+sX6hd
-         wXo0f0brHlGvDcuC1vfupeL9bEd7B9hYp6yT29bFqyXqaXuvWTlE5dn5/620iPm5kcZO
-         jNTIEYhUrCnXsHwIXcCgKUM+2X2yJuUtb82Bis/LBEd8nawPmEbmkSCA+/sZEg821AeX
-         bSIOKpRVv1HHWondZjBMo5Y6DV1iTkdtykN2gLmIz+3ejiSI7pEZc2hLBMQDJ0f0QX56
-         9syA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=HpUtMT59V1Dnqp2zw86tWtEA5X/jod13ModO/+p9Deo=;
+        b=jjawInHuhXlrYKywMUQ6u85Mb3wkFgN3bCEJteCcFDNQ5uE5FGq0UjCO0L1TGWL8ab
+         V9GlBewr1A8gUJa1B1B05NANwOqSfQcI30W4w/k6lpJTCutjJWRKkinSmDR5wt1FO4yi
+         iVpikjy4C9Gwl9rif/sa+Pg8X+ItbNh2d/Pk0NS8o0natuNtomeGNQWH+DrPzSsDr5Pg
+         iZRJXppysKoSPlVicQOh4xbzWB+Ajp+xq9/Bwvq7XTAk7elO+CFXC7XTH2tVtRCn7jJE
+         P37MCW0SSa1kjzlO7mU0/alFefExPamQZxOwDxq/qd2Ulgs6Bip+x63MjdphEphkcdTS
+         vZfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=krlo5s1H1nq87wng/O6VqLU57YxMUUe2fMcieUmiq1Q=;
-        b=495y7hLS87spxO17hlYdbuLu4OhcfB+1rIw4zjmnC5XCVsJZshGqXqV7UQ4fMdrJUg
-         ZcAlg9Vgf0EyaPehvWfZz7JbpYbHx4xTU6+IN03FcLcBQsrcFmjXN8gQYFAUXDFT4WME
-         akAF52oq1XIZtQV23SGs7hW+8I/V8LtqaYarAREGi7b5Nkz/OGTkAkkQd6yLfyPKc2qH
-         gDc7aEqc1bi2vFBy7YK0rk+PqExjblFjzKG+uAXvkN4vEdJh9NRC4FA+6UCzwa4eEHe9
-         tj29RVh4s3Djt8kVlfE1AGCOUULeXccqcjkSf3Vn23HWmF4DPBzUe0Rh/XTUlIKi9Y+w
-         sKmw==
-X-Gm-Message-State: AOAM530nWtcrTSix2E7U557srl+iBAkpLr0c724sLSeOr0Ca3JZ0URrs
-        e9t+fjixwaqrFfHF4Q4kF9M=
-X-Google-Smtp-Source: ABdhPJxCSYXo9SsS/ztE96ehrjJTQOpq2jfebSApjHnWjpv/ubUMDvDXTC0ED453w5xxSfXXqFMLtg==
-X-Received: by 2002:a5d:4dce:0:b0:1ed:9fd1:53a2 with SMTP id f14-20020a5d4dce000000b001ed9fd153a2mr27031845wru.212.1646328284912;
-        Thu, 03 Mar 2022 09:24:44 -0800 (PST)
-Received: from localhost.localdomain ([94.73.33.246])
-        by smtp.gmail.com with ESMTPSA id n15-20020a05600c500f00b003814673f202sm10298928wmr.47.2022.03.03.09.24.41
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=HpUtMT59V1Dnqp2zw86tWtEA5X/jod13ModO/+p9Deo=;
+        b=s+bM1gdxjkUz4vLj6CqzMAD0gw+uqcQKmfjbVurvHKrq4dTllZX+PxZDj76IUd8O+P
+         GnZ9muoh3HeQ2oI/QJofSPwkjLYRI9XStSCs0bxd4CDViMRtD6ViQkoTt36xKxyw1tNS
+         GHIsH1rcvE528E55xtHtovy6To2Pn0K7nZGFWOHnY6BSJ9yA/dguM4DGIGYDbVYTlhX3
+         vMydzrqe3+2a4+DvvCAKygu0kT46Tsjf5Fh3KKiFBU+hSHCjy29ZbyRYlNY2AZ0t8MPJ
+         gQL0nmDO/We3HCcGL3Osv1muSDNdASjivtWstKofyRkndVnPuGQuIS21p9p8lkc54am9
+         1sdQ==
+X-Gm-Message-State: AOAM531sH4ksLt16lu7U/qCcelHHJdKFifpR4Y6Tw3qLHDJQEUZFStqE
+        TIHfIqe4jtfAsAKp0YSPvjTD9g==
+X-Google-Smtp-Source: ABdhPJzqju+8pmjZ5eHUzN8w+ZiB6sEbK9gZCNHSaTxhq8obDD2oNU51ROCDYUqOHHK+KP/bGnvf2w==
+X-Received: by 2002:a05:620a:1a08:b0:648:ac5c:37eb with SMTP id bk8-20020a05620a1a0800b00648ac5c37ebmr163288qkb.49.1646328360132;
+        Thu, 03 Mar 2022 09:26:00 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id d77-20020ae9ef50000000b00649555ce936sm1331249qkg.83.2022.03.03.09.25.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 09:24:44 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     marex@denx.de
-Cc:     stefan@agner.ch, airlied@linux.ie, daniel@ffwll.ch,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, contact@emersion.fr,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH drm-misc-next 2/2] drm: mxsfb: Drop format_mod_supported function
-Date:   Thu,  3 Mar 2022 18:24:18 +0100
-Message-Id: <20220303172418.12565-3-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220303172418.12565-1-jose.exposito89@gmail.com>
-References: <20220303172418.12565-1-jose.exposito89@gmail.com>
+        Thu, 03 Mar 2022 09:25:59 -0800 (PST)
+Date:   Thu, 3 Mar 2022 09:25:47 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Matthew Wilcox <willy@infradead.org>
+cc:     Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH mmotm] mm/munlock: mlock_vma_folio() check against
+ VM_SPECIAL
+In-Reply-To: <YiDPeJ+7DVWpsuRv@casper.infradead.org>
+Message-ID: <39f9e61b-c66c-a741-5118-997a48dd440@google.com>
+References: <9b95d366-1719-f8e2-a5a3-429f9e808288@google.com> <YiDPeJ+7DVWpsuRv@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "drm_plane_funcs.format_mod_supported" can be removed in favor of
-the default implementation.
+On Thu, 3 Mar 2022, Matthew Wilcox wrote:
+> On Wed, Mar 02, 2022 at 05:35:30PM -0800, Hugh Dickins wrote:
+> > Although mmap_region() and mlock_fixup() take care that VM_LOCKED
+> > is never left set on a VM_SPECIAL vma, there is an interval while
+> > file->f_op->mmap() is using vm_insert_page(s), when VM_LOCKED may
+> > still be set while VM_SPECIAL bits are added: so mlock_vma_folio()
+> > should ignore VM_LOCKED while any VM_SPECIAL bits are set.
+> > 
+> > This showed up as a "Bad page" still mlocked, when vfree()ing pages
+> > which had been vm_inserted by remap_vmalloc_range_partial(): while
+> > release_pages() and __page_cache_release(), and so put_page(), catch
+> > pages still mlocked when freeing (and clear_page_mlock() caught them
+> > when unmapping), the vfree() path is unprepared for them: fix it?
+> > but these pages should not have been mlocked in the first place.
+> > 
+> > I assume that an mlockall(MCL_FUTURE) had been done in the past; or
+> > maybe the user got to specify MAP_LOCKED on a vmalloc'ing driver mmap.
+> > 
+> > Signed-off-by: Hugh Dickins <hughd@google.com>
+> > ---
+> > Diffed against top of next-20220301 or mmotm 2022-02-28-14-45.
+> > This patch really belongs as a fix to the mm/munlock series in
+> > Matthew's tree, so he might like to take it in there (but the patch
+> > here is the foliated version, so easiest to place it after foliation).
+> 
+> It looks like it fixes "mm/munlock: mlock_pte_range() when mlocking or
+> munlocking", so I'll fold it into that patch?
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Reviewed-by: Simon Ser <contact@emersion.fr>
----
- drivers/gpu/drm/mxsfb/mxsfb_kms.c | 8 --------
- 1 file changed, 8 deletions(-)
+No and yes.
 
-diff --git a/drivers/gpu/drm/mxsfb/mxsfb_kms.c b/drivers/gpu/drm/mxsfb/mxsfb_kms.c
-index 0655582ae8ed..df32e1c3cc5d 100644
---- a/drivers/gpu/drm/mxsfb/mxsfb_kms.c
-+++ b/drivers/gpu/drm/mxsfb/mxsfb_kms.c
-@@ -554,13 +554,6 @@ static void mxsfb_plane_overlay_atomic_update(struct drm_plane *plane,
- 	writel(ctrl, mxsfb->base + LCDC_AS_CTRL);
- }
- 
--static bool mxsfb_format_mod_supported(struct drm_plane *plane,
--				       uint32_t format,
--				       uint64_t modifier)
--{
--	return modifier == DRM_FORMAT_MOD_LINEAR;
--}
--
- static const struct drm_plane_helper_funcs mxsfb_plane_primary_helper_funcs = {
- 	.atomic_check = mxsfb_plane_atomic_check,
- 	.atomic_update = mxsfb_plane_primary_atomic_update,
-@@ -572,7 +565,6 @@ static const struct drm_plane_helper_funcs mxsfb_plane_overlay_helper_funcs = {
- };
- 
- static const struct drm_plane_funcs mxsfb_plane_funcs = {
--	.format_mod_supported	= mxsfb_format_mod_supported,
- 	.update_plane		= drm_atomic_helper_update_plane,
- 	.disable_plane		= drm_atomic_helper_disable_plane,
- 	.destroy		= drm_plane_cleanup,
--- 
-2.25.1
+That's great if you're prepared to move it back before the foliation.
+I think that just involves editing every "folio" to "page", including
+in the title - I very nearly sent it out with mlock_vma_page() in title.
 
+But I would prefer it to remain as a separate fix at the end of the
+mm/munlock series: this case is too unusual, and only a "Bad page",
+to mess with bisection prospects; and it's addressing an entirely
+different issue from what the "mlock_pte_range()..." is dealing with.
+Each of them needs its own explanation.
+
+So I would prefer it as a separate fix about "page"s, on top of the
+mm/munlock series, and you then adjust your foliation commit accordingly.
+
+Thank you: this is what I really wanted, but was afraid to ask of you
+(and of course, other fixes may turn out to be required, too late to
+adjust across the page<->folio barrier in this way: so it's nice to
+be able to do it this way, but rather beyond the call of duty).
+
+Hugh
