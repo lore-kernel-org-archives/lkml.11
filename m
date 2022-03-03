@@ -2,114 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE24AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C96C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232233AbiCCKTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:19:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
+        id S232239AbiCCKVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbiCCKSx (ORCPT
+        with ESMTP id S231436AbiCCKVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:18:53 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B6F43EEF;
-        Thu,  3 Mar 2022 02:18:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1646302675;
-        bh=yNu5aV72kAVxWE9AEOpRwhvXEvz9REi7V2L5i8b9h3s=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=jqnKQY8QLOza54CSQbVUOmiQNlvoH/SQ3tAXO3JCVh1otqSL05CaQe7NMWApUEI2P
-         PouLUKOwI8kjcNnVO98rScBjHK1x7721Iu+pmTOX+yUMA4n9YhOE2vNPXgYDeqCDLp
-         ZzC/aUE9MkCTBwO9KVvb9oE7Q9eQYs3lwXUHPFeM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.242.61] ([80.187.120.72]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mj8mb-1o4WrG29AL-00f7DI; Thu, 03
- Mar 2022 11:17:55 +0100
-Message-ID: <3c08fd49-75e6-7016-a686-06a761cc679a@gmx.de>
-Date:   Thu, 3 Mar 2022 11:16:27 +0100
+        Thu, 3 Mar 2022 05:21:10 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501BA488A3;
+        Thu,  3 Mar 2022 02:20:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646302825; x=1677838825;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4Otr+JQyp8IM/RF61Ihr+OMf6poonNq4fmWZEgecv5k=;
+  b=LPMPaQdr1+yzrSUw4rffpZKeVM0rWNGfjdLkNBgTB3h70AUqOlogRbFJ
+   BZexuWWeOUQh7udIFu9uE3VU/DvTXklgPVi7Teogt2BC+fqnM6rXicQw4
+   /e6RQW7YO18pQiroWdpBAI2nXq5M0yK6EXpASk4zSwEjpzriBZ5rYrgs8
+   rjIImx/t1lVvzZRb1ofxYI04N296Bsgo0R+UcNhI5mWZnsNAngudz/XNg
+   dV8T2wmjEX6Pw8MrUbkLDJb2lpNsRSas3nEg6H4l1Uy4z7+aflyWgdGlz
+   etNoLCo3g+4x5h5oZ/qv6NOFqRs2PU7Tq+szGkw6ye0w3R4mxyvexzKeF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="234250005"
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="234250005"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 02:20:25 -0800
+X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
+   d="scan'208";a="551694758"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 02:20:21 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nPiYY-00Ajk2-Cp;
+        Thu, 03 Mar 2022 12:19:34 +0200
+Date:   Thu, 3 Mar 2022 12:19:33 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Michael Mueller <mimu@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>
+Subject: Re: [PATCH v1 1/1] KVM: s390: Don't cast parameter in bit operations
+Message-ID: <YiCWNdWd+AsLbDkp@smile.fi.intel.com>
+References: <20220223164420.45344-1-andriy.shevchenko@linux.intel.com>
+ <20220224123620.57fd6c8b@p-imbrenda>
+ <3640a910-60fe-0935-4dfc-55bb65a75ce5@linux.ibm.com>
+ <Yh+Qw6Pb+Cd9JDNa@smile.fi.intel.com>
+ <Yh+m65BSfQgaDFwi@yury-laptop>
+ <Yh+qDhd6FL9nlQdD@smile.fi.intel.com>
+ <Yh+66v3OJZanfBLb@yury-laptop>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] video: fbdev: sm712fb: Fix crash in smtcfb_write()
-Content-Language: en-US
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     sudipm.mukherjee@gmail.com, teddy.wang@siliconmotion.com,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220302143311.2109322-1-zheyuma97@gmail.com>
- <666d1565-0467-bb21-916b-073392129e1a@gmx.de>
- <CAMhUBj=P82_f6LdhWqEbe06SRPrMU2jxquNzgWkrttGDy6C4Kg@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAMhUBj=P82_f6LdhWqEbe06SRPrMU2jxquNzgWkrttGDy6C4Kg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:sAuAfXYVTz6VzBrsH0AZ6HYOL+QvuzH6C6VJQMmPCQOOf7g6N8V
- 8fkZrdNxVTACopONE1EiqqXi4q0t4n1GveqG93hk6YSmhwZirDXLAarWnen/abTWi9qfYI4
- zlTaMeHpviWUsI+OYubD/B5rTs/Co0x1YEwJAM4ZLzsBf5WtKMa614rthfCexDC5wVtPFFD
- vNfnoyjY+0Kl52myht5Wg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0Z+A3Af0e4Y=:BO1NxRaM9pV41v0I9lTPln
- JOPxRf0O6EL7ElB7OoTlW4bET6INglJZiTidgeVP4thMMeirpfSdHoZ26DbSVer8qq06OtfVy
- RtL5IEdtAzS0RSkne6SNYm4UJyG2eX1X0Qu2YPFQN6Btf5+qRbz1UVGqM+GQimVtajaubMA2Z
- CVKje8ENX2nbbSkBCUn1gmae2dczvB2+t+qukd2v7E692w1M1N1dAvvmevXmaOlcJ1aeImnTT
- ECP71SL2grzMFGdgmwVwNEkLHAFVDDCCGCbAulPxK3KCAdjW0uOjAfVOvZ+zXXCnEWLcVktzQ
- Q7zVQuvTSpKSatdt1ejgwKmgDYA08C9qLLujmTVssxpY86Vn063vR7BGvvYfKcQzEKPAH4bR8
- xmdGGREub7/VhIzGXKxtfmuk6+Q/gqBdnadu8vwdp0hoSYkdoaaLIr8PKtCQ/PwBh6D4yVoPu
- cwAATba8u9ftOc6hucQ5/byfC7GeEnmhsMa+7MKHVghFrPE/SrxlwkqdsKWojIhjJd5O/idty
- 7yBPegqYvQyqzDMJxe+1x63CDYjQgRekl3yZ7FBMockfZyHHgKF5MBI3iA+MfJ+6os1k2wt1T
- JVFgNS4jVTPW0DNy6t2I20xp3dNf7NDL5peHr3xRt7OX4+EwuJ+iH83EDauBemxlhPs2ol2ID
- +EIm5Z/ahVx1+6u1qCrzhIcHqnWPEbMyFJ2cyancsOz11AMUAsUWOK/kb6+4VEdrrxgrW0wwl
- f4un8VCMenf34zIIZVhmiC2pvgr+H8j6/74lC2SX5zuqXAAQN0UT56WjnUolbry8nXwovOQNZ
- cCrhP0DuK3A57wKiaXrcHcjT1ill94A8qM3ClJ9K+xBlFAEteFN1tcM3n4/KH7w2fZ5Nb5O3c
- +h+sJy/t+VUTWaKtG2YPi7/Wv173MBfBUs5KK9IH1JvDaUungVe4sKfZzxkFO9a9uqHrW8Wbb
- L/Wq4H8/oDLIx4CpGcJAoJMJgdp2uwR3Bc/maPw2Yq3Y5B98GhfDYd+72smv4q/Ssd1r+SGiZ
- 4P90OY6QTe8cQrChV5L7nRLjNoqv8OB8eFmIRFCtsMut2VWrKkbW7c2PcbieTuAHakiZxhBxZ
- P8JUPgbpvREqPY=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh+66v3OJZanfBLb@yury-laptop>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/3/22 02:34, Zheyu Ma wrote:
-> Hi,
->
-> On Thu, Mar 3, 2022 at 12:49 AM Helge Deller <deller@gmx.de> wrote:
->>
->> On 3/2/22 15:33, Zheyu Ma wrote:
->>> When the sm712fb driver writes three bytes to the framebuffer, the
->>> driver will crash:
->>>
->>>     BUG: unable to handle page fault for address: ffffc90001ffffff
->>>     RIP: 0010:smtcfb_write+0x454/0x5b0
->>>     Call Trace:
->>>      vfs_write+0x291/0xd60
->>>      ? do_sys_openat2+0x27d/0x350
->>>      ? __fget_light+0x54/0x340
->>>      ksys_write+0xce/0x190
->>>      do_syscall_64+0x43/0x90
->>>      entry_SYSCALL_64_after_hwframe+0x44/0xae
->>>
->>> Fix it by removing the open-coded endianness fixup-code.
->>>
->>> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
->>
->> Thanks... it's already in the fbdev git tree and queued up for v5.18...
->> https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/=
-commit/?h=3Dfor-next&id=3Dbd771cf5c4254511cc4abb88f3dab3bd58bdf8e8
->
-> This patch fixes the crash in smtcfb_read(), but there is a similar
-> bug in smtcfb_write(), and I mocked up your patch a wrote a new patch
-> for it.
-> So we should fix two bugs with two patches.
+On Wed, Mar 02, 2022 at 10:43:54AM -0800, Yury Norov wrote:
+> On Wed, Mar 02, 2022 at 07:31:58PM +0200, Andy Shevchenko wrote:
+> > On Wed, Mar 02, 2022 at 09:18:35AM -0800, Yury Norov wrote:
+> > > On Wed, Mar 02, 2022 at 05:44:03PM +0200, Andy Shevchenko wrote:
+> > > > On Thu, Feb 24, 2022 at 01:10:34PM +0100, Michael Mueller wrote:
+> > > > > On 24.02.22 12:36, Claudio Imbrenda wrote:
+> > > > 
+> > > > ...
+> > > > 
+> > > > > we do that at several places
+> > > > 
+> > > > Thanks for pointing out.
+> > > > 
+> > > > > arch/s390/kernel/processor.c:	for_each_set_bit_inv(bit, (long
+> > > > > *)&stfle_fac_list, MAX_FACILITY_BIT)
+> > > > 
+> > > > This one requires a separate change, not related to this patch.
+> > > > 
+> > > > > arch/s390/kvm/interrupt.c:	set_bit_inv(IPM_BIT_OFFSET + gisc, (unsigned long
+> > > > > *) gisa);
+> > > > 
+> > > > This is done in the patch. Not sure how it appears in your list.
+> > > > 
+> > > > > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
+> > > > > sca->mcn);
+> > > > > arch/s390/kvm/kvm-s390.c:		set_bit_inv(vcpu->vcpu_id, (unsigned long *)
+> > > > > &sca->mcn);
+> > > > 
+> > > > These two should be fixed in a separate change.
+> > > > 
+> > > > Also this kind of stuff:
+> > > > 
+> > > > 	bitmap_copy(kvm->arch.cpu_feat, (unsigned long *) data.feat,
+> > > > 	            KVM_S390_VM_CPU_FEAT_NR_BITS);
+> > > > 
+> > > > might require a new API like
+> > > > 
+> > > > bitmap_from_u64_array()
+> > > > bitmap_to_u64_array()
+> > > > 
+> > > > Yury?
+> > > 
+> > > If BE32 is still the case then yes.
+> > 
+> > The whole point is to get rid of the bad pattern, while it may still work
+> > in the particular case.
+> 
+> Then yes unconditionally. Is it already on table of s390 folks? If no,
+> I can do it myself.
+> 
+> We have bitmap_from_arr32 and bitmap_to_arr32, so for 64-bit versions,
+> we'd start from that.
 
-Right, I missed the read() code.
+Yep, thanks!
 
-I applied your patch now to the fbdev for-next git tree.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Thanks!
-Helge
-
-
->
-> Regards,
-> Zheyu Ma
 
