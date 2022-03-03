@@ -2,164 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234481AbiCCPoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
+        id S234696AbiCCPo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiCCPoJ (ORCPT
+        with ESMTP id S234683AbiCCPoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:44:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8300154D20
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:43:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646322202;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s27HdtG2F+kYjD9zNRAATi4qiD6z55RkiHx0Wy7hg6M=;
-        b=LuX+2qdmJpX4zgEPxnkRexB/KKxzQyvXN4nTNd5vz+sN+vUApHj+0/DmXmNlemrNYYtJAF
-        kWuIoXr95NOI4IFafLcwfrDOKgOGsmKjzLoQGPgqK1VRzeIu58OiHpsV8KxpXXmNEgxxwF
-        m/zdrm+RUMH34hpVk6fDpcn3oBtCcUo=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-665-IMF5G0QhNBay0VhYuB-VVg-1; Thu, 03 Mar 2022 10:43:21 -0500
-X-MC-Unique: IMF5G0QhNBay0VhYuB-VVg-1
-Received: by mail-qk1-f199.google.com with SMTP id l82-20020a37a255000000b0060dd39f5d87so3525913qke.4
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:43:21 -0800 (PST)
+        Thu, 3 Mar 2022 10:44:02 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918FE156780
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:43:11 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id r10so8476377wrp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:43:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ynBA5JusP+HWw0SkfuMm+jB0bBtySaXrkPMgqc+u0pk=;
+        b=nCvMdfTqmjQjVbYBG7xngfG+rtZeLlLkAduFI5k5zIsopuq2s0s7sWpsj3guMfLuur
+         IksKTTja9XKKbe0d5eYvHinAGnOFpYDoFgDCSXyMJv53kzPJGgzJM37PDFPTW0lQkGrp
+         4jv55kgciwNcr5QR7dK4Q3ct78nFHEIY2H2ckA6a1UerMh/K4A1+N5cZL5GmlfniqusQ
+         Wesd4uUTfwWelqhMPbITplBzcrWXlStB3RlBlFEJLUMhWjyyZhhU4seoV++npA/hZYOS
+         blhzphdWlh/Th1jI+3Vk83IQkInxCPbMLrOtBmEtuNBRaTlrK12C3BPrCCvXAALWJ2IA
+         Km+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=s27HdtG2F+kYjD9zNRAATi4qiD6z55RkiHx0Wy7hg6M=;
-        b=AMFXiR20kKLT4m0bYlnuUP44QjFC1qyRp9dAulP7pY5MpOQlAqifA4/r2DJScGFXec
-         5R4Bu5fRBiy6oZ7LLyN3nYV5dKZZdGpmEwqDwpHz4YxOqO98ReKnXwRP5+SLpK0PHvEk
-         7stGZet70Acytd3NXDwKgDD4+EXgG9lIo1NT9hhJtuMwhqZ9MXOl8gLYJLm9bvKIrACP
-         7HVicSZgqnCdWwvJmrJomdxUb06YhmOBl2r55CsvIfC4/FQEosev8o4M0W+O2zuPCFAM
-         NG7ESkkosNVaqaNMnkw7xO+gSEDVDrvGMXXRu4bupY4pCmBMoDi0UWENS0B1hulAMKEt
-         hfzg==
-X-Gm-Message-State: AOAM532v86Z7x4ht1aQgWx3E403g3Aym7sh1qPfCnB7PbekFxq6tSk6R
-        O/o5FPK49zxxB3DFZLIBo0KEEW7N7UXQYYEVVwHm8R9cs0P9fOaxYXGGixZYYl17pBcK4uQxK6R
-        STysq2pDPVbvvpMVqTdpJrrds
-X-Received: by 2002:a05:6214:62c:b0:435:1b3d:17e1 with SMTP id a12-20020a056214062c00b004351b3d17e1mr5989416qvx.113.1646322201107;
-        Thu, 03 Mar 2022 07:43:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyJ4x1B+q1c6ph1nzGsavaUdqL3Vw9wJh+N9VuBih6K+ZIjq2AOc2qKU9DLJmJXuyzjTtYY8g==
-X-Received: by 2002:a05:6214:62c:b0:435:1b3d:17e1 with SMTP id a12-20020a056214062c00b004351b3d17e1mr5989402qvx.113.1646322200848;
-        Thu, 03 Mar 2022 07:43:20 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id c16-20020a05622a059000b002dc93dc92d1sm1777989qtb.48.2022.03.03.07.43.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 07:43:19 -0800 (PST)
-To:     Chengming Zhou <zhouchengming@bytedance.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, qirui.001@bytedance.com
-References: <20220301140840.29345-1-zhouchengming@bytedance.com>
- <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
- <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
- <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
- <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
- KLP_UNPATCHED forced transition patch
-Message-ID: <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
-Date:   Thu, 3 Mar 2022 10:43:18 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ynBA5JusP+HWw0SkfuMm+jB0bBtySaXrkPMgqc+u0pk=;
+        b=kwRtzZ4gKOWufLrhyEv6vita67ZM4rm+t8OjKlGWpn/soKhaM2YSVb21MUw+NbD5j7
+         +g9lmQse4Tj+7yvHFgX6KEBlqoem/OiIsMnr6tSTOkQ2VZQ1JM8FSmDP2/zYCrxBwEMm
+         yQlnH7zfzUCU8vSZLzqGq8iIDxWit9UOltJ5V3PdbRHI4/xh4dTCXJOjKjLOEfIsocfB
+         vNzx8IFys/NJlCQ8Vn8coxoEDEUoIXDMFdj3EEJO+9Pu3H/H4yfLZpRY2rL6DZODTFCT
+         84Lm/swNy6wVVM8gGfeQA9DyM12NFqKF+CXo2GVKsABg2bGCc3BugYWSP2XkMSwRCrVs
+         /CZQ==
+X-Gm-Message-State: AOAM530u0DxTeumgwbzKMQc5iet29FBzodMsmHt6PemG7DsXARxDh8Rn
+        gOJLPpYIotq0Hrhb7BVR6GQZBw==
+X-Google-Smtp-Source: ABdhPJwYaHlg9OYN7AkLfYnEE/wDw6qi6wjxfZx16/4sIz4fZn+SPtVr6x63TAQ5RxdaAvDuY40IOA==
+X-Received: by 2002:adf:fb47:0:b0:1ed:9f2c:492e with SMTP id c7-20020adffb47000000b001ed9f2c492emr26983562wrs.196.1646322190051;
+        Thu, 03 Mar 2022 07:43:10 -0800 (PST)
+Received: from localhost.localdomain ([2a01:cb19:8b2c:5e00:e059:ffd7:be1c:ef2c])
+        by smtp.gmail.com with ESMTPSA id d8-20020a056000114800b001f045f3435asm3272452wrx.108.2022.03.03.07.43.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 07:43:09 -0800 (PST)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Fengping Yu <fengping.yu@mediatek.com>,
+        Yingjoe Chen <yingjoe.chen@mediatek.com>
+Cc:     Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v21 2/3] Input: mt6779-keypad - Add MediaTek keypad driver
+Date:   Thu,  3 Mar 2022 16:43:01 +0100
+Message-Id: <20220303154302.252041-3-mkorpershoek@baylibre.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220303154302.252041-1-mkorpershoek@baylibre.com>
+References: <20220303154302.252041-1-mkorpershoek@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/3/22 5:33 AM, Chengming Zhou wrote:
-> On 2022/3/3 3:51 下午, Miroslav Benes wrote:
->> On Thu, 3 Mar 2022, Chengming Zhou wrote:
->>
->>> Hi,
->>>
->>> On 2022/3/2 5:55 下午, Miroslav Benes wrote:
->>>> Hi,
->>>>
->>>> On Tue, 1 Mar 2022, Chengming Zhou wrote:
->>>>
->>>>> module_put() is currently never called for a patch with forced flag, to block
->>>>> the removal of that patch module that might still be in use after a forced
->>>>> transition.
->>>>>
->>>>> But klp_force_transition() will flag all patches on the list to be forced, since
->>>>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
->>>>> has removed stack ordering of the livepatches, it will cause all other patches can't
->>>>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
->>>>>
->>>>> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
->>>>> transition. It can still be unloaded only if it has passed through the consistency
->>>>> model in KLP_UNPATCHED transition.
->>>>>
->>>>> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
->>>>> transition livepatch.
->>>>>
->>>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->>>>> ---
->>>>>  kernel/livepatch/transition.c | 4 ++--
->>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
->>>>> index 5683ac0d2566..8b296ad9e407 100644
->>>>> --- a/kernel/livepatch/transition.c
->>>>> +++ b/kernel/livepatch/transition.c
->>>>> @@ -641,6 +641,6 @@ void klp_force_transition(void)
->>>>>  	for_each_possible_cpu(cpu)
->>>>>  		klp_update_patch_state(idle_task(cpu));
->>>>>  
->>>>> -	klp_for_each_patch(patch)
->>>>> -		patch->forced = true;
->>>>> +	if (klp_target_state == KLP_UNPATCHED)
->>>>> +		klp_transition_patch->forced = true;
->>>>
->>>> I do not think this would interact nicely with the atomic replace feature. 
->>>> If you force the transition of a patch with ->replace set to true, no 
->>>> existing patch would get ->forced set with this change, which means all 
->>>> patches will be removed at the end of klp_try_complete_transition(). And 
->>>> that is something we want to prevent.
->>>
->>> Good point, I should check if it's an atomic replace livepatch in the else
->>> branch, in which case we have to set all existing patches to forced.
->>
->> Yes, but that leads to a question if it then brings any value. Forcing a 
->> transition should be exceptional. If it is needed, there may be other 
->> issues involved which should probably be fixed. Have you come across a 
->> practical situation where the patch helped?
-> 
-> Yes, you're right, the correct way is to find and fix the issues that
-> make us to use this "force" transition interface, until we don't need
-> to use it.
-> 
-> Apart from this reason, another reason we may use "force" transition
-> is that we want to speed up the transition process of some patches
-> when load them, and we can make sure these patches are safe to do so.
-> (just like a consistency model check disable option when load a patch)
-> 
+From: "fengping.yu" <fengping.yu@mediatek.com>
 
-Interesting use case.  Can you share any example livepatches where the
-transition time was exceptionally long and that lead to requiring this
-patch?
+This patch adds matrix keypad support for Mediatek SoCs.
 
-From a kpatch developer's perspective, it would be interesting to read
-how you go about ensuring forced livepatch safety.  We don't generally
-build forced livepatches, so I'm curious how the dev/review process goes.
+Signed-off-by: fengping.yu <fengping.yu@mediatek.com>
+Reviewed-by: Marco Felsch <m.felsch@pengutronix.de>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+---
+ drivers/input/keyboard/Kconfig         |  12 ++
+ drivers/input/keyboard/Makefile        |   1 +
+ drivers/input/keyboard/mt6779-keypad.c | 215 +++++++++++++++++++++++++
+ 3 files changed, 228 insertions(+)
+ create mode 100644 drivers/input/keyboard/mt6779-keypad.c
 
-Thanks,
+diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
+index 0c607da9ee10..03a9530f620e 100644
+--- a/drivers/input/keyboard/Kconfig
++++ b/drivers/input/keyboard/Kconfig
+@@ -779,6 +779,18 @@ config KEYBOARD_BCM
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called bcm-keypad.
+ 
++config KEYBOARD_MT6779
++	tristate "MediaTek Keypad Support"
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	select REGMAP_MMIO
++	select INPUT_MATRIXKMAP
++	help
++	  Say Y here if you want to use the keypad on MediaTek SoCs.
++	  If unsure, say N.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called mt6779-keypad.
++
+ config KEYBOARD_MTK_PMIC
+ 	tristate "MediaTek PMIC keys support"
+ 	depends on MFD_MT6397
+diff --git a/drivers/input/keyboard/Makefile b/drivers/input/keyboard/Makefile
+index e3c8648f834e..721936e90290 100644
+--- a/drivers/input/keyboard/Makefile
++++ b/drivers/input/keyboard/Makefile
+@@ -44,6 +44,7 @@ obj-$(CONFIG_KEYBOARD_MATRIX)		+= matrix_keypad.o
+ obj-$(CONFIG_KEYBOARD_MAX7359)		+= max7359_keypad.o
+ obj-$(CONFIG_KEYBOARD_MCS)		+= mcs_touchkey.o
+ obj-$(CONFIG_KEYBOARD_MPR121)		+= mpr121_touchkey.o
++obj-$(CONFIG_KEYBOARD_MT6779)		+= mt6779-keypad.o
+ obj-$(CONFIG_KEYBOARD_MTK_PMIC) 	+= mtk-pmic-keys.o
+ obj-$(CONFIG_KEYBOARD_NEWTON)		+= newtonkbd.o
+ obj-$(CONFIG_KEYBOARD_NOMADIK)		+= nomadik-ske-keypad.o
+diff --git a/drivers/input/keyboard/mt6779-keypad.c b/drivers/input/keyboard/mt6779-keypad.c
+new file mode 100644
+index 000000000000..b207acdd1e2a
+--- /dev/null
++++ b/drivers/input/keyboard/mt6779-keypad.c
+@@ -0,0 +1,215 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022 MediaTek Inc.
++ * Author Fengping Yu <fengping.yu@mediatek.com>
++ */
++#include <linux/bitops.h>
++#include <linux/clk.h>
++#include <linux/input/matrix_keypad.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/property.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++
++#define MTK_KPD_NAME		"mt6779-keypad"
++#define MTK_KPD_MEM		0x0004
++#define MTK_KPD_DEBOUNCE	0x0018
++#define MTK_KPD_DEBOUNCE_MASK	GENMASK(13, 0)
++#define MTK_KPD_DEBOUNCE_MAX_MS	256
++#define MTK_KPD_NUM_MEMS	5
++#define MTK_KPD_NUM_BITS	136	/* 4*32+8 MEM5 only use 8 BITS */
++
++struct mt6779_keypad {
++	struct regmap *regmap;
++	struct input_dev *input_dev;
++	struct clk *clk;
++	void __iomem *base;
++	u32 n_rows;
++	u32 n_cols;
++	DECLARE_BITMAP(keymap_state, MTK_KPD_NUM_BITS);
++};
++
++static const struct regmap_config mt6779_keypad_regmap_cfg = {
++	.reg_bits = 32,
++	.val_bits = 32,
++	.reg_stride = sizeof(u32),
++	.max_register = 36,
++};
++
++static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
++{
++	struct mt6779_keypad *keypad = dev_id;
++	unsigned short *keycode = keypad->input_dev->keycode;
++	DECLARE_BITMAP(new_state, MTK_KPD_NUM_BITS);
++	DECLARE_BITMAP(change, MTK_KPD_NUM_BITS);
++	int bit_nr;
++	int pressed;
++	unsigned short code;
++	int row, col;
++	int row_shift = get_count_order(keypad->n_cols);
++
++	regmap_bulk_read(keypad->regmap, MTK_KPD_MEM,
++			 new_state, MTK_KPD_NUM_MEMS);
++
++	bitmap_xor(change, new_state, keypad->keymap_state, MTK_KPD_NUM_BITS);
++
++	for_each_set_bit(bit_nr, change, MTK_KPD_NUM_BITS) {
++	/* For 32bits register, only bits [15:0] use to indicate key status */
++		if (bit_nr % 32 >= 16)
++			continue;
++
++		/* 1: not pressed, 0: pressed */
++		pressed = !test_bit(bit_nr, new_state);
++		dev_dbg(&keypad->input_dev->dev, "%s",
++			pressed ? "pressed" : "released");
++
++		row = bit_nr / 32;
++		col = bit_nr % 32;
++
++		code = keycode[MATRIX_SCAN_CODE(row, col, row_shift)];
++
++		input_report_key(keypad->input_dev, code, pressed);
++		input_sync(keypad->input_dev);
++
++		dev_dbg(&keypad->input_dev->dev,
++			"report Linux keycode = %d\n", code);
++	}
++
++	bitmap_copy(keypad->keymap_state, new_state, MTK_KPD_NUM_BITS);
++
++	return IRQ_HANDLED;
++}
++
++static void mt6779_keypad_clk_disable(void *data)
++{
++	clk_disable_unprepare(data);
++}
++
++static int mt6779_keypad_pdrv_probe(struct platform_device *pdev)
++{
++	struct mt6779_keypad *keypad;
++	unsigned int irq;
++	u32 debounce;
++	bool wakeup;
++	int error;
++
++	keypad = devm_kzalloc(&pdev->dev, sizeof(*keypad), GFP_KERNEL);
++	if (!keypad)
++		return -ENOMEM;
++
++	keypad->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(keypad->base))
++		return PTR_ERR(keypad->base);
++
++	keypad->regmap = devm_regmap_init_mmio(&pdev->dev,
++					       keypad->base,
++					       &mt6779_keypad_regmap_cfg);
++	if (IS_ERR(keypad->regmap)) {
++		dev_err(&pdev->dev,
++			"regmap init failed:%pe\n", keypad->regmap);
++		return PTR_ERR(keypad->regmap);
++	}
++
++	bitmap_fill(keypad->keymap_state, MTK_KPD_NUM_BITS);
++
++	keypad->input_dev = devm_input_allocate_device(&pdev->dev);
++	if (!keypad->input_dev) {
++		dev_err(&pdev->dev, "Failed to allocate input dev\n");
++		return -ENOMEM;
++	}
++
++	keypad->input_dev->name = MTK_KPD_NAME;
++	keypad->input_dev->id.bustype = BUS_HOST;
++
++	error = matrix_keypad_parse_properties(&pdev->dev, &keypad->n_rows,
++					       &keypad->n_cols);
++	if (error) {
++		dev_err(&pdev->dev, "Failed to parse keypad params\n");
++		return error;
++	}
++
++	if (device_property_read_u32(&pdev->dev, "debounce-delay-ms",
++				     &debounce))
++		debounce = 16;
++
++	if (debounce > MTK_KPD_DEBOUNCE_MAX_MS) {
++		dev_err(&pdev->dev, "Debounce time exceeds the maximum allowed time %dms\n",
++			MTK_KPD_DEBOUNCE_MAX_MS);
++		return -EINVAL;
++	}
++
++	wakeup = device_property_read_bool(&pdev->dev, "wakeup-source");
++
++	dev_dbg(&pdev->dev, "n_row=%d n_col=%d debounce=%d\n",
++		keypad->n_rows, keypad->n_cols, debounce);
++
++	error = matrix_keypad_build_keymap(NULL, NULL,
++					   keypad->n_rows,
++					   keypad->n_cols,
++					   NULL,
++					   keypad->input_dev);
++	if (error) {
++		dev_err(&pdev->dev, "Failed to build keymap\n");
++		return error;
++	}
++
++	regmap_write(keypad->regmap, MTK_KPD_DEBOUNCE,
++		     (debounce * (1 << 5)) & MTK_KPD_DEBOUNCE_MASK);
++
++	keypad->clk = devm_clk_get(&pdev->dev, "kpd");
++	if (IS_ERR(keypad->clk))
++		return PTR_ERR(keypad->clk);
++
++	error = clk_prepare_enable(keypad->clk);
++	if (error) {
++		dev_err(&pdev->dev, "cannot prepare/enable keypad clock\n");
++		return error;
++	}
++
++	error = devm_add_action_or_reset(&pdev->dev, mt6779_keypad_clk_disable, keypad->clk);
++	if (error)
++		return error;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	error = devm_request_threaded_irq(&pdev->dev, irq, NULL, mt6779_keypad_irq_handler,
++					  IRQF_ONESHOT, MTK_KPD_NAME, keypad);
++	if (error) {
++		dev_err(&pdev->dev, "Failed to request IRQ#%d:%d\n", irq, error);
++		return error;
++	}
++
++	error = input_register_device(keypad->input_dev);
++	if (error) {
++		dev_err(&pdev->dev, "Failed to register device\n");
++		return error;
++	}
++
++	error =  device_init_wakeup(&pdev->dev, wakeup);
++	if (error)
++		dev_warn(&pdev->dev, "device_init_wakeup fail\n");
++
++	return 0;
++}
++
++static const struct of_device_id mt6779_keypad_of_match[] = {
++	{ .compatible = "mediatek,mt6779-keypad" },
++	{ .compatible = "mediatek,mt6873-keypad" },
++	{ /* sentinel */ }
++};
++
++static struct platform_driver mt6779_keypad_pdrv = {
++	.probe = mt6779_keypad_pdrv_probe,
++	.driver = {
++		   .name = MTK_KPD_NAME,
++		   .of_match_table = mt6779_keypad_of_match,
++	},
++};
++module_platform_driver(mt6779_keypad_pdrv);
++
++MODULE_AUTHOR("Mediatek Corporation");
++MODULE_DESCRIPTION("MTK Keypad (KPD) Driver");
++MODULE_LICENSE("GPL");
 -- 
-Joe
+2.32.0
 
