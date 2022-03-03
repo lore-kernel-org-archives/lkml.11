@@ -2,107 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E10F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0202EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231927AbiCCJXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S231922AbiCCJX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:23:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiCCJXR (ORCPT
+        with ESMTP id S231935AbiCCJW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:23:17 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08D9BDB;
-        Thu,  3 Mar 2022 01:22:31 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id b23so4056500qtt.6;
-        Thu, 03 Mar 2022 01:22:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/zSPK6JEvJijyCiO9MABrtOwuhrRt9yY2leCnS6HUS0=;
-        b=XgIZuW+mhwEVgZNB9ZO+iX9LiKtwmin8cXBt3P5Hewpj+JwXcqYDkDl8SYwIT47Ve1
-         6UC0aedtNtUysYMmAFMXeJE9EYxVEanwBVpZ113sU+G/ZyGvfil3dM8ic9KjfjVfvB3L
-         eQd1OzdGtgxWqxSz9ObNMeqhp8P9RguYj0Itc9gx4/PFCB9dVXofrryo8HLjBOn0XcHl
-         oleEwQ7uAr6HnW70wt883JxIk1+Kv0wn++bDg7Cz1sKCukcJ2Hn+/b34mKO0ajQVtyb5
-         7iM0jhRroUGomEBqruhafh+7uiWGChVzm4VMZij8H76cWiHfY9++kkREXPvJbEl24jF5
-         w9zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/zSPK6JEvJijyCiO9MABrtOwuhrRt9yY2leCnS6HUS0=;
-        b=yE4BqWRVTW+9y4Tlc67YCo8PdWbb9mJDJBFO5RDGeMxXNDJdqgIVZThaqW8mxrdrj4
-         ekLKJBd8Oy7NVvxGJWqF84NV1LNidmgmHK5OJ+lan2Bjkal077C++4J4BZRmfxSURGev
-         whIcfUzBSEqv/1WpD2yqMEbyVwdXCvxKeZgNdxtWO45jExZWuwGToW6Bni1dvq7norNv
-         HmvLy+2UyvNYaMnpIF586u+4GbszKbY2b1CVspsvueQi4JGI+g2wIRIrehJf19nM41+P
-         iNR7w1+qTy9tzeopJqWbYK7FZCtRXgeJoKmbyHsphAHp+O/OzAysrAskyao08E6vF6pu
-         FvPA==
-X-Gm-Message-State: AOAM5300/6LB1flmhoz2NCUBQH5pnhL4augPU8fzPz26IfsRr9Pd0mJA
-        0YCCbj4d4sxUIT4+YI7rMBxlaijW6ao=
-X-Google-Smtp-Source: ABdhPJwG5VUeWIl21NeNrWs2YKDhLgzYhhIJRERbt2tiJT5u7bdGVyUMP9LlqEQmttn4Xwpe/ngUJQ==
-X-Received: by 2002:ac8:5946:0:b0:2df:c52:86e3 with SMTP id 6-20020ac85946000000b002df0c5286e3mr21929324qtz.575.1646299350796;
-        Thu, 03 Mar 2022 01:22:30 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s7-20020a05622a018700b002dfed15c9edsm1191015qtw.74.2022.03.03.01.22.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 01:22:30 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     s.nawrocki@samsung.com
-Cc:     tomasz.figa@gmail.com, cw00.choi@samsung.com,
-        alim.akhtar@samsung.com, mturquette@baylibre.com, sboyd@kernel.org,
-        krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] clk/samsung: Use of_device_get_match_data()
-Date:   Thu,  3 Mar 2022 09:22:23 +0000
-Message-Id: <20220303092223.2060108-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 3 Mar 2022 04:22:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682F21768CD;
+        Thu,  3 Mar 2022 01:22:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0756261C3F;
+        Thu,  3 Mar 2022 09:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69242C34101;
+        Thu,  3 Mar 2022 09:22:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646299329;
+        bh=iXq0ELG0V7/AnDh81T6u19yP5MwiSYcM6qTcBJBe4OA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BLN8UtJxH2XlmmKj6rKAbVrjo3Pon/hgpSka8U3+lkFp83NAiJPVWDlenOAuu40Zu
+         JshkUbmydrKwtwN8VZjMUeRtJFeaXG0VX7bKkd27RGXG1TIIX1EGU1hvag1kRwT0dO
+         E6fyVvn4RzWjt772MSVPyl8GRYpowkXv+cDAXglgV7lXIUDniyBoKZGqNxd7Ln1MYP
+         fiOzU2YuRWuEZIdSGi/E3OfTjycqqkYll8bP7dIPybg4wEJvvf70/RD5md268T6fPC
+         yoHz3VHHbQzueVLBvJTt8aB5F8/zNasWgOh1BQhZukuND+2NmCgKw38T22Tlvt39pr
+         IZpNbHU7B909w==
+Received: by mail-yb1-f178.google.com with SMTP id f38so8956524ybi.3;
+        Thu, 03 Mar 2022 01:22:09 -0800 (PST)
+X-Gm-Message-State: AOAM5302Z5u2pfmbKE7QZzzGeYSVLEq58A+4Jk6Cb9FB37dZbPLckMKr
+        WRlKZgGTYcfug2VCEehQLMIIc+4RcVBF+wyUhgs=
+X-Google-Smtp-Source: ABdhPJzGxW9K6XK02dNQgFGymwfkQglSqb+hdrqFixJgS607dC1+UsEFXJMQe/H318w5RYW/Cg+KjYeLPNx5dYV37BA=
+X-Received: by 2002:a25:585:0:b0:628:9860:39da with SMTP id
+ 127-20020a250585000000b00628986039damr7949048ybf.383.1646299328178; Thu, 03
+ Mar 2022 01:22:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220224165625.2175020-1-brijesh.singh@amd.com>
+ <20220224165625.2175020-30-brijesh.singh@amd.com> <Yh3r1PSx/fjqoBB3@nazgul.tnic>
+ <671a6137-0d45-3a8c-433a-32448019961f@amd.com> <Yh+Jc20ed82Vyxge@nazgul.tnic>
+In-Reply-To: <Yh+Jc20ed82Vyxge@nazgul.tnic>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 3 Mar 2022 09:21:57 +0000
+X-Gmail-Original-Message-ID: <CAMj1kXH7vYQ4yjVUpB3wur9UkRxWf=1DEiX8TArk1vpm-8KPuQ@mail.gmail.com>
+Message-ID: <CAMj1kXH7vYQ4yjVUpB3wur9UkRxWf=1DEiX8TArk1vpm-8KPuQ@mail.gmail.com>
+Subject: Re: [PATCH v11 29/45] x86/boot: Add Confidential Computing type to setup_data
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, X86 ML <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, linux-coco@lists.linux.dev,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, Tony Luck <tony.luck@intel.com>,
+        marcorr@google.com, sathyanarayanan.kuppuswamy@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+On Wed, 2 Mar 2022 at 15:13, Borislav Petkov <bp@alien8.de> wrote:
+>
+> On Wed, Mar 02, 2022 at 08:25:45AM -0600, Brijesh Singh wrote:
+> > Yep, I am waiting for Linux patches to finalize and then sync OVMF with it.
+> > I will rename the field to magic in OVMF to keep both of them in sync.
+>
+> Ok, thx.
+>
+> Btw, Ard, ACK for the EFI hunk?
+>
 
-Use of_device_get_match_data() to simplify the code.
+Yep,
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- drivers/clk/samsung/clk-exynos-clkout.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
-
-diff --git a/drivers/clk/samsung/clk-exynos-clkout.c b/drivers/clk/samsung/clk-exynos-clkout.c
-index e6d6cbf8c4e6..feed1a347c09 100644
---- a/drivers/clk/samsung/clk-exynos-clkout.c
-+++ b/drivers/clk/samsung/clk-exynos-clkout.c
-@@ -81,19 +81,13 @@ MODULE_DEVICE_TABLE(of, exynos_clkout_ids);
- static int exynos_clkout_match_parent_dev(struct device *dev, u32 *mux_mask)
- {
- 	const struct exynos_clkout_variant *variant;
--	const struct of_device_id *match;
- 
- 	if (!dev->parent) {
- 		dev_err(dev, "not instantiated from MFD\n");
- 		return -EINVAL;
- 	}
- 
--	match = of_match_device(exynos_clkout_ids, dev->parent);
--	if (!match) {
--		dev_err(dev, "cannot match parent device\n");
--		return -EINVAL;
--	}
--	variant = match->data;
-+	variant = of_device_get_match_data(dev->parent);
- 
- 	*mux_mask = variant->mux_mask;
- 
--- 
-2.25.1
-
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
