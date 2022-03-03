@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 467B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA68C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbiCCDNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 22:13:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
+        id S231971AbiCCDNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 22:13:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231946AbiCCDN3 (ORCPT
+        with ESMTP id S231951AbiCCDNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 22:13:29 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CE065E2
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:12:43 -0800 (PST)
+        Wed, 2 Mar 2022 22:13:30 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4BDDF0F
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:12:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646277163; x=1677813163;
+  t=1646277164; x=1677813164;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oiBxM+Dk06pIBtxUU/wgmez2/avML2DTNdQkfjW+cYA=;
-  b=frQTFc7XqrHWiIJp0iDcbcOFuU0Duy5AgREFUXIMTd7be6hP4ZL5j3os
-   4ibGRDEhdhxAGM6noh4UduMh/Or7BaZ7Mupd9w9eMWibIXRPslS/MA/sM
-   iEaBmX8l6+iR6qPNnPkwK16qCVJ1YxLM7GK8Dw21ex1ouAwHib4LTjqXb
-   kJbhLi8mZL343ZEpt7+QkHW7RDDbufmjz+R6k/JuJntiuTmhtsTj0dCkL
-   YoHyTUtOhL9t9RfCFyJ8rwAM3uqPKm5VmnhZ9RwsJ2Y738XZtpMzD4bKx
-   +s8xF+TRot8D1xU1LCk+NfPE7BIC+Jcqz06P129pi/fHPNt7oidjQ8F4P
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="316782836"
+  bh=uQgCDRFjI4A/tO1rCthwIitwuInhh1EfWqjhiqMZd6Y=;
+  b=apHlUZcB/swUDlylbGqkZXKPrQ/XM83pdsUT48bYv8S1TnPYDOThZzzG
+   PyW6QjmzNxCihFlInw/j1Rw74C6FZCkucgH1podqhYoC8ZyjHjCxnlkai
+   yOTzu6V3D+SlWX2XIDVcApmziDm4ew2btlWJG0XrwumDjz0NuWqHt/jDE
+   Wltq6qs9QULwWlnPg2VBlNyUFllwIiDu0MCI7RyQzdMCvQKcy2hVFnPQC
+   7eNlvIaM0adJfhRwP7aPf6Vk7hx2dE2f9lEABxdK4P4VtI/QQ6vnxowA9
+   mpBPMAg6KqqlkHHXiUcnJnbp6IXbr380TDstVSgP4ShgAvUXgpmNQ2wCH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251141282"
 X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="316782836"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 19:12:43 -0800
+   d="scan'208";a="251141282"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 19:12:44 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="535641923"
+   d="scan'208";a="686343493"
 Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 02 Mar 2022 19:12:42 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 02 Mar 2022 19:12:42 -0800
 Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nPbtR-00004F-GD; Thu, 03 Mar 2022 03:12:41 +0000
-Date:   Thu, 3 Mar 2022 11:12:13 +0800
+        id 1nPbtS-00004Z-78; Thu, 03 Mar 2022 03:12:42 +0000
+Date:   Thu, 3 Mar 2022 11:12:27 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [amir73il:fsnotify-volatile 5/5]
- include/linux/compiler_types.h:346:45: error: call to
- '__compiletime_assert_271' declared with attribute error: BUILD_BUG_ON
- failed: HWEIGHT32(FANOTIFY_INIT_FLAGS) != 13
-Message-ID: <202203030951.3eFFn4A5-lkp@intel.com>
+To:     ckkim <changkon12@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dongjin Kim <tobetter@gmail.com>
+Subject: [tobetter:odroid-5.17.y 9/41]
+ drivers/power/reset/odroid-reboot.c:63:6: warning: no previous prototype for
+ 'odroid_card_reset'
+Message-ID: <202203031004.mL5plmaA-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -57,73 +57,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/amir73il/linux fsnotify-volatile
-head:   bc58808cbec71bead5572997dafe604c50f2b4af
-commit: bc58808cbec71bead5572997dafe604c50f2b4af [5/5] fanotify: FAN_MARK_VOLATILE - WIP
-config: m68k-sun3x_defconfig (https://download.01.org/0day-ci/archive/20220303/202203030951.3eFFn4A5-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
+tree:   https://github.com/tobetter/linux odroid-5.17.y
+head:   e882d3aa45fcf49791433e9606016225df72a12e
+commit: ac6c922471a98860d696598875a4293c26c21a26 [9/41] ODROID-COMMON: power:reset: Add odroid support
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220303/202203031004.mL5plmaA-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/amir73il/linux/commit/bc58808cbec71bead5572997dafe604c50f2b4af
-        git remote add amir73il https://github.com/amir73il/linux
-        git fetch --no-tags amir73il fsnotify-volatile
-        git checkout bc58808cbec71bead5572997dafe604c50f2b4af
+        # https://github.com/tobetter/linux/commit/ac6c922471a98860d696598875a4293c26c21a26
+        git remote add tobetter https://github.com/tobetter/linux
+        git fetch --no-tags tobetter odroid-5.17.y
+        git checkout ac6c922471a98860d696598875a4293c26c21a26
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/power/reset/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   In file included from <command-line>:
-   fs/notify/fanotify/fanotify_user.c: In function 'fanotify_user_setup':
->> include/linux/compiler_types.h:346:45: error: call to '__compiletime_assert_271' declared with attribute error: BUILD_BUG_ON failed: HWEIGHT32(FANOTIFY_INIT_FLAGS) != 13
-     346 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:327:25: note: in definition of macro '__compiletime_assert'
-     327 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:346:9: note: in expansion of macro '_compiletime_assert'
-     346 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   fs/notify/fanotify/fanotify_user.c:1756:9: note: in expansion of macro 'BUILD_BUG_ON'
-    1756 |         BUILD_BUG_ON(HWEIGHT32(FANOTIFY_INIT_FLAGS) != 13);
-         |         ^~~~~~~~~~~~
+>> drivers/power/reset/odroid-reboot.c:63:6: warning: no previous prototype for 'odroid_card_reset' [-Wmissing-prototypes]
+      63 | void odroid_card_reset(void)
+         |      ^~~~~~~~~~~~~~~~~
+   drivers/power/reset/odroid-reboot.c: In function 'odroid_restart_probe':
+   drivers/power/reset/odroid-reboot.c:141:17: error: 'arm_pm_restart' undeclared (first use in this function); did you mean 'alarm_restart'?
+     141 |                 arm_pm_restart = do_odroid_restart;
+         |                 ^~~~~~~~~~~~~~
+         |                 alarm_restart
+   drivers/power/reset/odroid-reboot.c:141:17: note: each undeclared identifier is reported only once for each function it appears in
 
 
-vim +/__compiletime_assert_271 +346 include/linux/compiler_types.h
+vim +/odroid_card_reset +63 drivers/power/reset/odroid-reboot.c
 
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  332  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  333  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  334  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  335  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  336  /**
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  337   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  338   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  339   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  340   *
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  341   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  342   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  343   * compiler has support to do so.
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  344   */
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  345  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21 @346  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  347  
-
-:::::: The code at line 346 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
+    62	
+  > 63	void odroid_card_reset(void)
+    64	{
+    65		int ret = 0;
+    66	
+    67		if ((sd_vqsw == 0) && (sd_vmmc == 0))
+    68			return;
+    69	
+    70		if (sd_vqen == 0) {
+    71			gpio_free(sd_vqsw);
+    72			gpio_free(sd_vmmc);
+    73			ret = gpio_request_one(sd_vqsw,
+    74					GPIOF_OUT_INIT_LOW, "REBOOT");
+    75			CHECK_RET(ret);
+    76			mdelay(10);
+    77			ret = gpio_direction_output(sd_vqsw, 1);
+    78			CHECK_RET(ret);
+    79			ret = gpio_request_one(sd_vmmc,
+    80					GPIOF_OUT_INIT_LOW, "REBOOT");
+    81			CHECK_RET(ret);
+    82			mdelay(10);
+    83			ret = gpio_direction_output(sd_vqsw, 0);
+    84			CHECK_RET(ret);
+    85			ret = gpio_direction_output(sd_vmmc, 1);
+    86			CHECK_RET(ret);
+    87			mdelay(5);
+    88			gpio_free(sd_vqsw);
+    89			gpio_free(sd_vmmc);
+    90		} else {
+    91			gpio_free(sd_vqsw);
+    92			gpio_free(sd_vqen);
+    93			gpio_free(sd_vmmc);
+    94	
+    95			ret = gpio_request_one(sd_vqsw,
+    96					GPIOF_OUT_INIT_LOW, "REBOOT");
+    97			CHECK_RET(ret);
+    98			ret = gpio_request_one(sd_vqen,
+    99					GPIOF_OUT_INIT_LOW, "REBOOT");
+   100			CHECK_RET(ret);
+   101			ret = gpio_request_one(sd_vmmc,
+   102					GPIOF_OUT_INIT_LOW, "REBOOT");
+   103			CHECK_RET(ret);
+   104			mdelay(100);
+   105			ret = gpio_direction_input(sd_vqen);
+   106			CHECK_RET(ret);
+   107			ret = gpio_direction_input(sd_vmmc);
+   108			CHECK_RET(ret);
+   109			ret = gpio_direction_input(sd_vqsw);
+   110			CHECK_RET(ret);
+   111			mdelay(5);
+   112			gpio_free(sd_vqen);
+   113			gpio_free(sd_vmmc);
+   114			gpio_free(sd_vqsw);
+   115		}
+   116	}
+   117	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
