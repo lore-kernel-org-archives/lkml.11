@@ -2,117 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC32C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89392C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232384AbiCCKdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:33:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S230452AbiCCKeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:34:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiCCKdD (ORCPT
+        with ESMTP id S230097AbiCCKeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:33:03 -0500
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D70B17AEC5
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:32:18 -0800 (PST)
-Received: by mail-qk1-x72b.google.com with SMTP id j78so3546807qke.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:32:18 -0800 (PST)
+        Thu, 3 Mar 2022 05:34:19 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89B3329BB
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:33:29 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id 9so4144994pll.6
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:33:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DYNpbzV9XCiofWlx6Ep0BAs5/BGBNmH1zZ8NMWTIAps=;
-        b=fy0N6aDWxd9z8c5sVpt36gG3Rrkj9OAzl0zu/lXoo1lw0c1syMnCgctBz3OncmfbM0
-         S+KbgdxLrOAslzi7fGCU7byhgjCMGQR7RG9XvsTYyS6S9mo3Pmn5i9NoeIow9KZMM7pD
-         +podm37QZ6PoLVvFNEHsflNn+Nima0L7TquXJIHls0EDOZAdHIYcuPCoApohbx97Q73t
-         0Mt5gbZAMFDhneLUGctdZaepeKXl8LXljTyfvWA4LdVfOM6+gRKbtNBK8pAFltxGhejI
-         /l5FNFKInqlY5w/IhuASsiplMmK9Pj6q801DmJ5kq13IteTd6ayV4ohDbuctWEph8vt8
-         BZXg==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Oja3CIqE9fA451Twve2pF1vRqS/QrpX6zmesqNzXMcA=;
+        b=N2wLZPHbeKHF/4+voaEtvGxD4D0DSWyFiqi97W2sREHJv/ENo8uK3Hw2n9e7A8qvDo
+         bRnCP8++kh/M1T6jTh2vnsUxNhP55uzjf6FwKhRll3JN6V4st8JWD8EjUYMgQH6Gu2m9
+         nIqW2sYZaRtLvnOcgLgz4RtyvzU9oNl8C4llgeoPWxSBTL9wQZv/A06uyPaoC7uoA0x6
+         hwt7zKUvioPFQ+yGUbePCCrclL+jR+ca+xK/4HQJz4Au+x4aJogZj+hQiyzSuPvauxNe
+         QTyL+t9uIlHdaKPct5K3nCbb7IwbeJsBMYPvKl+zRIHZJHAhZhoNItFaepYo/neCFKYn
+         yVDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DYNpbzV9XCiofWlx6Ep0BAs5/BGBNmH1zZ8NMWTIAps=;
-        b=fJ+G/HF650eQ/BmQ2bLxxrZ/JsdWnkHiYMvcatfgu7plqUqQ8+CY3KQRoGdj1MXPbK
-         nAfZL489H/l43SIr9rlWr5kE8dkJMUuUyMPV5Yz8w8BUyhOg+T1MGvJNg1R4Ikm7k7FK
-         T5QGm0D0b3ltJvH3BCT3jUeGI2RZAxW/0XR6R3Y/n+fWwPw6YSSk4L+Y9rabioQ7MeRu
-         m9yBu9ByYOKqDSJ0kK8TjmQOiTluxBvb+RxGjy3CrFODRAVYVUvIYhoGnjCP8AKgeCUU
-         LE0VsWAz/EDDV4ZpNQGOqjsGl+CJikRxgS36w+bp5kkhVtO0XG+VNx0rbP8gKlPdjzGR
-         sReg==
-X-Gm-Message-State: AOAM531FylglaM9Gi3HOQ1ZZbz2p0+ChIGFYxb+OJcICp3kqrNtMh3MS
-        /TYvpNBJxCOf74Swmoerhqkd3czDntWNfdBdf7yoWw==
-X-Google-Smtp-Source: ABdhPJzq7dQyX57teeUVtaORiHuUIw2463URNE+PzG8vjJ8rLlyi3cWylCaVROZ+17COu1fZbs0dYl5c19KFfc0dSTg=
-X-Received: by 2002:a05:620a:4307:b0:507:d5b1:f65e with SMTP id
- u7-20020a05620a430700b00507d5b1f65emr18375993qko.363.1646303537535; Thu, 03
- Mar 2022 02:32:17 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Oja3CIqE9fA451Twve2pF1vRqS/QrpX6zmesqNzXMcA=;
+        b=0TzD/k3foZk64bxs2HDVuJ234MzN0RfyfOVLQpZvh5a7ygaJkNDPtSEbrFFyx01y44
+         bs14wvolzH+iB5XVl7/BwxTEcYnojxGL5f/J8pSuWrjNVXwSvmre2ZjW5feZXhOnMVK7
+         0jJxHLu6Jc0PnV0pXDMkNLzxFvRuv6eJukXFxkEO/YWfOkvmzJSkZfQYLrav9xv61WCX
+         Ix8Z5lW16PtSwNmnJ81uNxCDADmGYMwu2jYFxkz/KiVkTr7eF13llKJVlulo+xu3forz
+         /Mafh7o7Sjvc9U820FoSBUF8HDjG7SIRWVQ9jBCDyG718k9W+lPH7vTy1JZDgqfBOUXa
+         sl6w==
+X-Gm-Message-State: AOAM531bjCqwgGTq7lchPymVIfCPHSt+npp45k68UJAB1zolDbBgycMP
+        LM6RLqW07vWOAMpQH5BLChdQuw==
+X-Google-Smtp-Source: ABdhPJwutRy4qdqPFYgzNqskFDJ/moT5feFg+cSc2e2YBVONBSsWgVv8iInhQ+HQBDY5RsXkZaBwQA==
+X-Received: by 2002:a17:90b:4d86:b0:1bd:223f:6cb5 with SMTP id oj6-20020a17090b4d8600b001bd223f6cb5mr4604124pjb.151.1646303609319;
+        Thu, 03 Mar 2022 02:33:29 -0800 (PST)
+Received: from [10.255.179.141] ([139.177.225.237])
+        by smtp.gmail.com with ESMTPSA id q9-20020a056a00150900b004f4735396fesm2163786pfu.191.2022.03.03.02.33.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 02:33:28 -0800 (PST)
+Message-ID: <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
+Date:   Thu, 3 Mar 2022 18:33:22 +0800
 MIME-Version: 1.0
-References: <20220303082140.240745-1-bhupesh.sharma@linaro.org> <20220303082140.240745-3-bhupesh.sharma@linaro.org>
-In-Reply-To: <20220303082140.240745-3-bhupesh.sharma@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Thu, 3 Mar 2022 13:32:06 +0300
-Message-ID: <CAA8EJpqF5ppEc7-ngvpQifUaGLuvguUS+EKofwwuYe2edOhSbQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] arm64: dts: qcom: sm8150: Add ufs power-domain entries
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
-        mturquette@baylibre.com, linux-clk@vger.kernel.org,
-        robh+dt@kernel.org, bjorn.andersson@linaro.org,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
+ KLP_UNPATCHED forced transition patch
+Content-Language: en-US
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+References: <20220301140840.29345-1-zhouchengming@bytedance.com>
+ <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
+ <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
+ <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 at 11:22, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
->
-> Add power-domain entries for UFS controller & phy nodes
-> in sm8150 dts.
->
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Rob Herring <robh@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/sm8150.dtsi | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-> index 6012322a5984..7aa879eb24d7 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-> @@ -1637,6 +1637,8 @@ ufs_mem_hc: ufshc@1d84000 {
->                         phy-names = "ufsphy";
->                         lanes-per-direction = <2>;
->                         #reset-cells = <1>;
-> +
-> +                       power-domains = <&gcc UFS_PHY_GDSC>;
->                         resets = <&gcc GCC_UFS_PHY_BCR>;
->                         reset-names = "rst";
->
-> @@ -1687,6 +1689,9 @@ ufs_mem_phy: phy@1d87000 {
->                         clocks = <&gcc GCC_UFS_MEM_CLKREF_CLK>,
->                                  <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
->
-> +                       power-domains = <&gcc UFS_CARD_GDSC>,
-> +                                       <&gcc UFS_PHY_GDSC>;
-> +                       power-domain-names = "ufs_card_gdsc", "ufs_phy_gdsc";
+On 2022/3/3 3:51 下午, Miroslav Benes wrote:
+> On Thu, 3 Mar 2022, Chengming Zhou wrote:
+> 
+>> Hi,
+>>
+>> On 2022/3/2 5:55 下午, Miroslav Benes wrote:
+>>> Hi,
+>>>
+>>> On Tue, 1 Mar 2022, Chengming Zhou wrote:
+>>>
+>>>> module_put() is currently never called for a patch with forced flag, to block
+>>>> the removal of that patch module that might still be in use after a forced
+>>>> transition.
+>>>>
+>>>> But klp_force_transition() will flag all patches on the list to be forced, since
+>>>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
+>>>> has removed stack ordering of the livepatches, it will cause all other patches can't
+>>>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+>>>>
+>>>> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
+>>>> transition. It can still be unloaded only if it has passed through the consistency
+>>>> model in KLP_UNPATCHED transition.
+>>>>
+>>>> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
+>>>> transition livepatch.
+>>>>
+>>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>>>> ---
+>>>>  kernel/livepatch/transition.c | 4 ++--
+>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+>>>> index 5683ac0d2566..8b296ad9e407 100644
+>>>> --- a/kernel/livepatch/transition.c
+>>>> +++ b/kernel/livepatch/transition.c
+>>>> @@ -641,6 +641,6 @@ void klp_force_transition(void)
+>>>>  	for_each_possible_cpu(cpu)
+>>>>  		klp_update_patch_state(idle_task(cpu));
+>>>>  
+>>>> -	klp_for_each_patch(patch)
+>>>> -		patch->forced = true;
+>>>> +	if (klp_target_state == KLP_UNPATCHED)
+>>>> +		klp_transition_patch->forced = true;
+>>>
+>>> I do not think this would interact nicely with the atomic replace feature. 
+>>> If you force the transition of a patch with ->replace set to true, no 
+>>> existing patch would get ->forced set with this change, which means all 
+>>> patches will be removed at the end of klp_try_complete_transition(). And 
+>>> that is something we want to prevent.
+>>
+>> Good point, I should check if it's an atomic replace livepatch in the else
+>> branch, in which case we have to set all existing patches to forced.
+> 
+> Yes, but that leads to a question if it then brings any value. Forcing a 
+> transition should be exceptional. If it is needed, there may be other 
+> issues involved which should probably be fixed. Have you come across a 
+> practical situation where the patch helped?
 
-This will not work, if I'm not mistaken. Platform drivers won't bind
-two power-domains by default. And the qmp driver lacks handling for
-power domains.
+Yes, you're right, the correct way is to find and fix the issues that
+make us to use this "force" transition interface, until we don't need
+to use it.
 
-Also a generic question. I see that other platforms use UFS_PHY_GDSC
-for the host controller and completely ingore the UFS_CARD_GDSC. What
-makes sm8150 so different from the rest of the platforms?
+Apart from this reason, another reason we may use "force" transition
+is that we want to speed up the transition process of some patches
+when load them, and we can make sure these patches are safe to do so.
+(just like a consistency model check disable option when load a patch)
 
->                         resets = <&ufs_mem_hc 0>;
->                         reset-names = "ufsphy";
->                         status = "disabled";
-> --
-> 2.35.1
->
+Then I find it confusing and limited that force transition in loading
+a patch will make all previous patches can't be unloaded, so can't be
+reverted and enabled again (updated or not).
 
+Anyway, I think this patch won't decrease the security performance of
+livepatch, but can increase flexibility in some user experience.
 
--- 
-With best wishes
-Dmitry
+Thanks.
+
+> 
+> Thanks
+> 
+> Miroslav
