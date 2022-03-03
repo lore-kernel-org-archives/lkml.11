@@ -2,73 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09443C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 16:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4946AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 16:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbiCCQtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 11:49:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
+        id S235162AbiCCQuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 11:50:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiCCQtg (ORCPT
+        with ESMTP id S229547AbiCCQuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 11:49:36 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08FF514A07A;
-        Thu,  3 Mar 2022 08:48:51 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nPodF-00006B-00; Thu, 03 Mar 2022 17:48:49 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 18EF9C28F6; Thu,  3 Mar 2022 17:48:42 +0100 (CET)
-Date:   Thu, 3 Mar 2022 17:48:42 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     torvalds@linux-foundation.org
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] MIPS fixes for v5.17
-Message-ID: <20220303164842.GA12460@alpha.franken.de>
+        Thu, 3 Mar 2022 11:50:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E437C151C5D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 08:49:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82C246136C
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 16:49:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97231C004E1;
+        Thu,  3 Mar 2022 16:49:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646326158;
+        bh=DHN2loWZ8dEbq2bpRF30ogIu8WNUzkahzY2QdqhHG9M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IlilN3vckIPOI5jhYxbYVLe2OJjQfn6+Psk3P8x0SGkpy9NjNrzQm1pTQt9S4y5Id
+         vy3KgYwZ6fWIlVSjzv9gWKk3+8LQno4FnscL7yo+OJBwzeiZ7PUijZm2b06EMPLpRr
+         uGdIuf8brUU1+fQO4Vr7vEYnHJ1Ig61yrViWwJmjvNoOvd/lDWLLeewXYy7ZELkkVq
+         GdT/CeJSi+XfXYDoKccV9FUeIGMA5NpFBq1Iew0Upm2QBou5UBPwR9PVYmEVY2jg6t
+         Fv4iHRwgJD9K5c0WyiuOtvXJ7JRT2vnxFl5hISq1c/SnVOFcMwLguLmb7sB/6dkzBV
+         ZONiJfsUBu32w==
+Date:   Thu, 3 Mar 2022 17:49:14 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     paulmck@kernel.org, linux-kernel@vger.kernel.org,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [PATCH] rcu/nocb: Clear rdp offloaded flags when rcuop/rcuog
+ kthreads spawn failed
+Message-ID: <20220303164914.GA87151@lothringen>
+References: <20220228093629.3746473-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220228093629.3746473-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit d9565bf40da22426d2f660cb31700b6858d1911d:
+On Mon, Feb 28, 2022 at 05:36:29PM +0800, Zqiang wrote:
+> When CONFIG_RCU_NOCB_CPU is enabled and 'rcu_nocbs' is set, the rcuop
+> and rcuog kthreads is created. however the rcuop or rcuog kthreads
+> creation may fail, if failed, clear rdp offloaded flags.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> ---
+>  kernel/rcu/tree_nocb.h | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index 46694e13398a..94b279147954 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -1246,7 +1246,7 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
+>  				"rcuog/%d", rdp_gp->cpu);
+>  		if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo GP kthread, OOM is now expected behavior\n", __func__)) {
+>  			mutex_unlock(&rdp_gp->nocb_gp_kthread_mutex);
+> -			return;
+> +			goto end;
+>  		}
+>  		WRITE_ONCE(rdp_gp->nocb_gp_kthread, t);
+>  		if (kthread_prio)
+> @@ -1258,12 +1258,22 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
+>  	t = kthread_run(rcu_nocb_cb_kthread, rdp,
+>  			"rcuo%c/%d", rcu_state.abbr, cpu);
+>  	if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo CB kthread, OOM is now expected behavior\n", __func__))
+> -		return;
+> +		goto end;
+>  
+>  	if (kthread_prio)
+>  		sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
+>  	WRITE_ONCE(rdp->nocb_cb_kthread, t);
+>  	WRITE_ONCE(rdp->nocb_gp_kthread, rdp_gp->nocb_gp_kthread);
+> +	return;
+> +end:
+> +	if (cpumask_test_cpu(cpu, rcu_nocb_mask)) {
+> +		rcu_segcblist_offload(&rdp->cblist, false);
+> +		rcu_segcblist_clear_flags(&rdp->cblist,
+> +				SEGCBLIST_KTHREAD_CB | SEGCBLIST_KTHREAD_GP);
+> +		rcu_segcblist_clear_flags(&rdp->cblist, SEGCBLIST_LOCKING);
+> +		rcu_segcblist_set_flags(&rdp->cblist, SEGCBLIST_RCU_CORE);
+> +	}
 
-  MIPS: DTS: CI20: fix how ddc power is enabled (2022-02-09 13:58:26 +0100)
+Thanks you, consequences are indeed bad otherwise because the target is considered
+offloaded but nothing actually handles the callbacks.
 
-are available in the Git repository at:
+A few issues though:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips-fixes-5.17_4
+* The rdp_gp kthread may be running concurrently. If it's iterating this rdp and
+  the SEGCBLIST_LOCKING flag is cleared in the middle, rcu_nocb_unlock() won't
+  release (among many other possible issues).
 
-for you to fetch changes up to 5d8965704fe5662e2e4a7e4424a2cbe53e182670:
+* we should clear the cpu from rcu_nocb_mask or we won't be able to later
+  re-offload it.
 
-  MIPS: ralink: mt7621: use bitwise NOT instead of logical (2022-03-01 10:08:45 +0100)
+* we should then delete the rdp from the group list:
 
-----------------------------------------------------------------
-- Fix memory detection for MT7621 devices
-- Fix setnocoherentio kernel option
-- Fix warning when CONFIG_SCHED_CORE is enabled
+     list_del_rcu(&rdp->nocb_entry_rdp);
 
-----------------------------------------------------------------
-Alexander Lobakin (1):
-      MIPS: smp: fill in sibling and core maps earlier
+So ideally we should call rcu_nocb_rdp_deoffload(). But then bear in mind:
 
-Chuanhong Guo (1):
-      MIPS: ralink: mt7621: do memory detection on KSEG1
+1) We must lock rcu_state.barrier_mutex and hotplug read lock. But since we
+   are calling rcutree_prepare_cpu(), we maybe holding hotplug write lock
+   already.
 
-Ilya Lipnitskiy (1):
-      MIPS: ralink: mt7621: use bitwise NOT instead of logical
+   Therefore we first need to invert the locking dependency order between
+   rcu_state.barrier_mutex and hotplug lock and then just lock the barrier_mutex
+   before calling rcu_nocb_rdp_deoffload() from our failure path.
+   
 
-Randy Dunlap (1):
-      mips: setup: fix setnocoherentio() boolean setting
+2) On rcu_nocb_rdp_deoffload(), handle non-existing nocb_gp and/or nocb_cb
+   kthreads. Make sure we are holding nocb_gp_kthread_mutex.
 
- arch/mips/kernel/setup.c  |  2 +-
- arch/mips/kernel/smp.c    |  6 +++---
- arch/mips/ralink/mt7621.c | 36 +++++++++++++++++++++++-------------
- 3 files changed, 27 insertions(+), 17 deletions(-)
+I'm going to take your patch and adapt it along those lines.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Thanks!
