@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE24C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236191AbiCCTkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:40:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
+        id S236158AbiCCTkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:40:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236144AbiCCTkV (ORCPT
+        with ESMTP id S236131AbiCCTkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:40:21 -0500
+        Thu, 3 Mar 2022 14:40:20 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D5061A06EC
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17B6F1965E0
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:39:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646336347;
+        s=mimecast20190719; t=1646336346;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OlAwcN87gVJNZNDCufyuVpSN290X8EgPI0zoXo6Hi6I=;
-        b=jCkPsdcqA8LptjUd6KzII38JQOpuN8t2vfmkwXrFzwfSMlNvHu+bo8Bye7S28wg9tR2azj
-        Xq8np6vxwzw0VHDChz7NvEmEeiOOVE8HFnS2SqOfsuS0T5P0zvEfReCIgwtGMiMA1KPxni
-        F8FslTUpecjMEvyDdkl8n7OW/Voh4wk=
+        bh=e7ynr0tW5o81dkIWQ7SKMZvoKZTULWAdI6SEnPgVdO8=;
+        b=gzlNc7reukssoVH4R1WTRQPSzJrYGIxD80GfCCnFMlM/OyTrjcjclfY9tQf49qaDyl34xU
+        4Pnj5Sts+OtmUVQxc3tNZgpVeUvrNfn6cPwQvX6m/3jgfMHiU5kYmjkBMkvUvyNYLHYV1a
+        sZxgRDcwU67FfhB04TRBgXO4uS/RZvg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-339-pYtdFjRqOXeBCAeFtQ62yg-1; Thu, 03 Mar 2022 14:39:04 -0500
-X-MC-Unique: pYtdFjRqOXeBCAeFtQ62yg-1
+ us-mta-131-MzctKz_MMsCTm21AyF7FQQ-1; Thu, 03 Mar 2022 14:39:02 -0500
+X-MC-Unique: MzctKz_MMsCTm21AyF7FQQ-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 104E1801AFE;
-        Thu,  3 Mar 2022 19:39:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 341671006AA5;
+        Thu,  3 Mar 2022 19:39:01 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C8C55DF2E;
-        Thu,  3 Mar 2022 19:39:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 602B05DF2E;
+        Thu,  3 Mar 2022 19:39:00 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         David Matlack <dmatlack@google.com>,
         Ben Gardon <bgardon@google.com>,
         Mingwei Zhang <mizhang@google.com>
-Subject: [PATCH v4 19/30] KVM: x86/mmu: Do remote TLB flush before dropping RCU in TDP MMU resched
-Date:   Thu,  3 Mar 2022 14:38:31 -0500
-Message-Id: <20220303193842.370645-20-pbonzini@redhat.com>
+Subject: [PATCH v4 17/30] KVM: x86/mmu: Require mmu_lock be held for write to zap TDP MMU range
+Date:   Thu,  3 Mar 2022 14:38:29 -0500
+Message-Id: <20220303193842.370645-18-pbonzini@redhat.com>
 In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
 References: <20220303193842.370645-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -63,36 +63,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-When yielding in the TDP MMU iterator, service any pending TLB flush
-before dropping RCU protections in anticipation of using the caller's RCU
-"lock" as a proxy for vCPUs in the guest.
+Now that all callers of zap_gfn_range() hold mmu_lock for write, drop
+support for zapping with mmu_lock held for read.  That all callers hold
+mmu_lock for write isn't a random coincidence; now that the paths that
+need to zap _everything_ have their own path, the only callers left are
+those that need to zap for functional correctness.  And when zapping is
+required for functional correctness, mmu_lock must be held for write,
+otherwise the caller has no guarantees about the state of the TDP MMU
+page tables after it has run, e.g. the SPTE(s) it zapped can be
+immediately replaced by a vCPU faulting in a page.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Ben Gardon <bgardon@google.com>
-Message-Id: <20220226001546.360188-19-seanjc@google.com>
+Message-Id: <20220226001546.360188-17-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 24 ++++++------------------
+ 1 file changed, 6 insertions(+), 18 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index c71debdbc732..3a866fcb5ea9 100644
+index 970376297b30..f3939ce4a115 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -716,11 +716,11 @@ static inline bool __must_check tdp_mmu_iter_cond_resched(struct kvm *kvm,
- 		return false;
+@@ -844,15 +844,9 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+  * function cannot yield, it will not release the MMU lock or reschedule and
+  * the caller must ensure it does not supply too large a GFN range, or the
+  * operation can cause a soft lockup.
+- *
+- * If shared is true, this thread holds the MMU lock in read mode and must
+- * account for the possibility that other threads are modifying the paging
+- * structures concurrently. If shared is false, this thread should hold the
+- * MMU lock in write mode.
+  */
+ static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
+-			  gfn_t start, gfn_t end, bool can_yield, bool flush,
+-			  bool shared)
++			  gfn_t start, gfn_t end, bool can_yield, bool flush)
+ {
+ 	bool zap_all = (start == 0 && end >= tdp_mmu_max_gfn_host());
+ 	struct tdp_iter iter;
+@@ -865,14 +859,13 @@ static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
  
- 	if (need_resched() || rwlock_needbreak(&kvm->mmu_lock)) {
--		rcu_read_unlock();
--
- 		if (flush)
- 			kvm_flush_remote_tlbs(kvm);
+ 	end = min(end, tdp_mmu_max_gfn_host());
  
-+		rcu_read_unlock();
-+
- 		if (shared)
- 			cond_resched_rwlock_read(&kvm->mmu_lock);
- 		else
+-	kvm_lockdep_assert_mmu_lock_held(kvm, shared);
++	lockdep_assert_held_write(&kvm->mmu_lock);
+ 
+ 	rcu_read_lock();
+ 
+ 	for_each_tdp_pte_min_level(iter, root, min_level, start, end) {
+-retry:
+ 		if (can_yield &&
+-		    tdp_mmu_iter_cond_resched(kvm, &iter, flush, shared)) {
++		    tdp_mmu_iter_cond_resched(kvm, &iter, flush, false)) {
+ 			flush = false;
+ 			continue;
+ 		}
+@@ -891,12 +884,8 @@ static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
+ 		    !is_last_spte(iter.old_spte, iter.level))
+ 			continue;
+ 
+-		if (!shared) {
+-			tdp_mmu_set_spte(kvm, &iter, 0);
+-			flush = true;
+-		} else if (tdp_mmu_zap_spte_atomic(kvm, &iter)) {
+-			goto retry;
+-		}
++		tdp_mmu_set_spte(kvm, &iter, 0);
++		flush = true;
+ 	}
+ 
+ 	rcu_read_unlock();
+@@ -915,8 +904,7 @@ bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
+ 	struct kvm_mmu_page *root;
+ 
+ 	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
+-		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush,
+-				      false);
++		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush);
+ 
+ 	return flush;
+ }
 -- 
 2.31.1
 
