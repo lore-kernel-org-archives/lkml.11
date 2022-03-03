@@ -2,98 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9950CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbiCCIJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:09:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
+        id S231186AbiCCIKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:10:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbiCCIJc (ORCPT
+        with ESMTP id S231162AbiCCIJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:09:32 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BB51704E9;
-        Thu,  3 Mar 2022 00:08:45 -0800 (PST)
+        Thu, 3 Mar 2022 03:09:47 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0223170D5F
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:08:51 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id f37so7009413lfv.8
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 00:08:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646294926; x=1677830926;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=k18H4jQjqdXwe83FlKD0McInh52fikWbkf9CksAysLs=;
-  b=bPltHlpXasyUc3rwgekRRUpGO1IqZotRGfnFlyGo8CBK0NaGbvqSxLCQ
-   kpG8q11snss6KXaCrbcf7T3/oAZfMsNsNet8o3m0n5+NmtrLo+xknYwAj
-   YVG+af/rJdBpjQbCvGSfVvTIq2McYO+stgTC6eZtyOaETvBO8yBRCtBwR
-   c=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 03 Mar 2022 00:08:46 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 03 Mar 2022 00:08:44 -0800
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 03 Mar 2022 13:38:31 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 110D34E1C; Thu,  3 Mar 2022 13:38:31 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com
-Subject: [PATCH v3 2/3] arm64/dts/qcom/sc7180: remove assigned-clock-rate property for mdp clk
-Date:   Thu,  3 Mar 2022 13:38:23 +0530
-Message-Id: <1646294904-4753-3-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646294904-4753-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1646294904-4753-1-git-send-email-quic_vpolimer@quicinc.com>
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=39vNSfl9IWg0yQTlFDMmjjhS46qgKyYB03/z5TZfFH0=;
+        b=bup0EM/iTQipcqIMdDSA0O0Pr+5iariGvomc7sT97T2WPPFFQX/eW5n3CKy4f3uMTL
+         F0VBXdkIsEDnubkOIz5DWXkqIUC0RPU6M035tF4XXCzOL8GFdapIXUnyRZAdxPLcWibb
+         Qs8THxVRSNHgIwe3zQPCpFHWnr0xtFX4TnXXG4StNAUegOacF4k7VU8pHiM8WcDrw06K
+         bcnKtE9N/x7FWUuFH5IO+0K6TWfXEIIhKZCyLKlLjlZmkewuMZmBO6ag0jPXwcFpu0SG
+         aY2/AhCyD9cDdsK+aO50LokVDbYSKlqCYgNRAwk18UP4PIL+EvO+y1sLCAmAt0dxj4ic
+         zlTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=39vNSfl9IWg0yQTlFDMmjjhS46qgKyYB03/z5TZfFH0=;
+        b=nDkMywYtRp78QoQFGlcH33IsokWPdhO+IbeSm2aLW1IbqwRjyb+zpe34Ot2rPW35iT
+         e1vGZc1f3k8dkPEM1f4grll4V+vVD5Z+d0fnq2+O68nEUAbj5DaJZU2+3JpE2vidMtlh
+         MPK61GJxe/DaWUO+h+nNOxIxJYxAsXMTeTQz7hNNqQAffrUK8FDZKbe1jiFOeB17AN+7
+         Lgs6mYQMZUaAwkU5/GQ/QYsGB8snrUvsDvIBU5NSAjhWWP0f2FZVUI67lRMEyBPIsEZP
+         58tU78bLx4kZMZKa9qVAUkjzFgG7Og6/U137Oj/E/QQ9akiiYKgpcM1tO2mLlOrXiVI5
+         PWyw==
+X-Gm-Message-State: AOAM5331y8wczDj0aaWdpZ0oOmMYocZM/1QOExvm8TRhY2A1Bapl56WA
+        s4s/WFjMHUZIOU95W89yy66U+f3xRhqlxGToM71TGg==
+X-Google-Smtp-Source: ABdhPJw1b8yDoqH+lNkBzCaPuSWFXmeztJczAYhbE8789NaSv6LBhNZmdaB5O8cGQ0KrNiRxrLU0sEcSZvmx2HCyUpc=
+X-Received: by 2002:a19:3801:0:b0:444:150b:9ef5 with SMTP id
+ f1-20020a193801000000b00444150b9ef5mr19939004lfa.523.1646294929984; Thu, 03
+ Mar 2022 00:08:49 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1646094455.git.darren@os.amperecomputing.com>
+ <84e7cb911936f032318b6b376cf88009c90d93d5.1646094455.git.darren@os.amperecomputing.com>
+ <CAKfTPtAQwJYy4UDAgF3Va_MJTDj+UpxuU3UqTWZ5gjwmcTf5wA@mail.gmail.com> <YiAlfGuRXWVnOmyF@fedora>
+In-Reply-To: <YiAlfGuRXWVnOmyF@fedora>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 3 Mar 2022 09:08:38 +0100
+Message-ID: <CAKfTPtBbu3fUMBkXLszWGtaHkf4DRU+J+9z_2MZ42iCTAtLGkw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] arm64: smp: Skip MC sched domain on SoCs with no LLC
+To:     Darren Hart <darren@os.amperecomputing.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Arm <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <Catalin.Marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Valentin Schneider <Valentin.Schneider@arm.com>,
+        "D . Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel clock driver assumes that initial rate is the
-max rate for that clock and was not allowing it to scale
-beyond the assigned clock value.
+On Thu, 3 Mar 2022 at 03:18, Darren Hart <darren@os.amperecomputing.com> wrote:
+>
+> On Wed, Mar 02, 2022 at 10:32:06AM +0100, Vincent Guittot wrote:
+> > On Tue, 1 Mar 2022 at 01:35, Darren Hart <darren@os.amperecomputing.com> wrote:
+> > >
+> > > Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
+> > > Control Unit, but have no shared CPU-side last level cache.
+> > >
+> > > cpu_coregroup_mask() will return a cpumask with weight 1, while
+> > > cpu_clustergroup_mask() will return a cpumask with weight 2.
+> > >
+> > > As a result, build_sched_domain() will BUG() once per CPU with:
+> > >
+> > > BUG: arch topology borken
+> > >      the CLS domain not a subset of the MC domain
+> > >
+> > > The MC level cpumask is then extended to that of the CLS child, and is
+> > > later removed entirely as redundant. This sched domain topology is an
+> > > improvement over previous topologies, or those built without
+> > > SCHED_CLUSTER, particularly for certain latency sensitive workloads.
+> > > With the current scheduler model and heuristics, this is a desirable
+> > > default topology for Ampere Altra and Altra Max system.
+> > >
+> > > Introduce an alternate sched domain topology for arm64 without the MC
+> > > level and test for llc_sibling weight 1 across all CPUs to enable it.
+> > >
+> > > Do this in arch/arm64/kernel/smp.c (as opposed to
+> > > arch/arm64/kernel/topology.c) as all the CPU sibling maps are now
+> > > populated and we avoid needing to extend the drivers/acpi/pptt.c API to
+> > > detect the cluster level being above the cpu llc level. This is
+> > > consistent with other architectures and provides a readily extensible
+> > > mechanism for other alternate topologies.
+> > >
+> > > The final sched domain topology for a 2 socket Ampere Altra system is
+> > > unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
+> > >
+> > > For CPU0:
+> > >
+> > > CONFIG_SCHED_CLUSTER=y
+> > > CLS  [0-1]
+> > > DIE  [0-79]
+> > > NUMA [0-159]
+> > >
+> > > CONFIG_SCHED_CLUSTER is not set
+> > > DIE  [0-79]
+> > > NUMA [0-159]
+> > >
+> > > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > > Cc: Will Deacon <will@kernel.org>
+> > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> > > Cc: Barry Song <song.bao.hua@hisilicon.com>
+> > > Cc: Valentin Schneider <valentin.schneider@arm.com>
+> > > Cc: D. Scott Phillips <scott@os.amperecomputing.com>
+> > > Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+> > > Cc: <stable@vger.kernel.org> # 5.16.x
+> > > Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+> > > ---
+> > >  arch/arm64/kernel/smp.c | 28 ++++++++++++++++++++++++++++
+> > >  1 file changed, 28 insertions(+)
+> > >
+> > > diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+> > > index 27df5c1e6baa..3597e75645e1 100644
+> > > --- a/arch/arm64/kernel/smp.c
+> > > +++ b/arch/arm64/kernel/smp.c
+> > > @@ -433,6 +433,33 @@ static void __init hyp_mode_check(void)
+> > >         }
+> > >  }
+> > >
+> > > +static struct sched_domain_topology_level arm64_no_mc_topology[] = {
+> > > +#ifdef CONFIG_SCHED_SMT
+> > > +       { cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
+> > > +#endif
+> > > +
+> > > +#ifdef CONFIG_SCHED_CLUSTER
+> > > +       { cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
+> > > +#endif
+> > > +
+> > > +       { cpu_cpu_mask, SD_INIT_NAME(DIE) },
+> > > +       { NULL, },
+> > > +};
+> > > +
+> > > +static void __init update_sched_domain_topology(void)
+> > > +{
+> > > +       int cpu;
+> > > +
+> > > +       for_each_possible_cpu(cpu) {
+> > > +               if (cpu_topology[cpu].llc_id != -1 &&
+> >
+> > Have you tested it with a non-acpi system ? AFAICT, llc_id is only set
+> > by ACPI system and  llc_id == -1 for others like DT based system
+> >
+> > > +                   cpumask_weight(&cpu_topology[cpu].llc_sibling) > 1)
+> > > +                       return;
+> > > +       }
+>
+> Hi Vincent,
+>
+> I did not have a non-acpi system to test, no. You're right of course,
+> llc_id is only set by ACPI systems on arm64. We could wrap this in a
+> CONFIG_ACPI ifdef (or IS_ENABLED), but I think this would be preferable:
+>
+> +       for_each_possible_cpu(cpu) {
+> +               if (cpu_topology[cpu].llc_id == -1 ||
+> +                   cpumask_weight(&cpu_topology[cpu].llc_sibling) > 1)
+> +                       return;
+> +       }
 
-Drop the assigned clock rate property and vote on the mdp clock as per
-calculated value during the usecase.
+This works.
+Also , do you really need to loop on all possible cpus ? Would it be
+enough to check only the 1st cpu ?
+You won't be able to support a mixed topology so all cpus have the
+same kind of topology i.e either cluster before or cluster before the
+MC level
 
-Fixes: a3db7ad1af("arm64: dts: qcom: sc7180: add display dt nodes")
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index e1c46b8..eaab746 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -2900,9 +2900,6 @@
- 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
- 			clock-names = "iface", "ahb", "core";
- 
--			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
--			assigned-clock-rates = <300000000>;
--
- 			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
-@@ -2932,12 +2929,10 @@
- 					 <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
- 				clock-names = "bus", "iface", "rot", "lut", "core",
- 					      "vsync";
--				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
--						  <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
- 						  <&dispcc DISP_CC_MDSS_ROT_CLK>,
- 						  <&dispcc DISP_CC_MDSS_AHB_CLK>;
--				assigned-clock-rates = <300000000>,
--						       <19200000>,
-+				assigned-clock-rates = <19200000>,
- 						       <19200000>,
- 						       <19200000>;
- 				operating-points-v2 = <&mdp_opp_table>;
--- 
-2.7.4
-
+>
+> Quickly tested on Altra successfully. Would appreciate anyone with non-acpi
+> arm64 systems who can test and verify this behaves as intended. I will ask
+> around tomorrow as well to see what I may have access to.
+>
+> Thanks,
+>
+> > > +
+> > > +       pr_info("No LLC siblings, using No MC sched domains topology\n");
+> > > +       set_sched_topology(arm64_no_mc_topology);
+> > > +}
+> > > +
+> > >  void __init smp_cpus_done(unsigned int max_cpus)
+> > >  {
+> > >         pr_info("SMP: Total of %d processors activated.\n", num_online_cpus());
+> > > @@ -440,6 +467,7 @@ void __init smp_cpus_done(unsigned int max_cpus)
+> > >         hyp_mode_check();
+> > >         apply_alternatives_all();
+> > >         mark_linear_text_alias_ro();
+> > > +       update_sched_domain_topology();
+> > >  }
+> > >
+> > >  void __init smp_prepare_boot_cpu(void)
+> > > --
+> > > 2.31.1
+> > >
+>
+> --
+> Darren Hart
+> Ampere Computing / OS and Kernel
