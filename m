@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6189C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ED0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231994AbiCCDNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 22:13:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
+        id S232000AbiCCDNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 22:13:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiCCDNb (ORCPT
+        with ESMTP id S231966AbiCCDNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 22:13:31 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C181285
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:12:45 -0800 (PST)
+        Wed, 2 Mar 2022 22:13:33 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6443065E2
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:12:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646277166; x=1677813166;
+  t=1646277167; x=1677813167;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=r0ensSs5ySRW5lz8loxIF6hfPqVHuqF4BZcxXQo9MfQ=;
-  b=iJZdjl77u1tNhUMAYPDJ74KgFKxK5fw4QOU6vnFgtJX/0Kul4Xk66J0n
-   jZbLo8FSuDEpPm2EYhcNu/DxZnTdELByT9DYSFAMRFgZFvTuHKkVKG2rb
-   ne+w4kR/BDzcqm3oBPr2J1wkF65sDfy93kII0PzeK9q/Yim744X09lS+7
-   o10PNbsTT0u1tjTJc3cM5N9JesO2+IjsnsfUVDB6K7JvzYlK8M2VctDTN
-   3m8K9ielv0VyML2YsR44uDmv9lPaLXrUk8Hah95qNjStcSphqBRhvPa7l
-   EEN9mIWq8ccJXmtr/cIneJ8TbBhH2pHTCSxSCgPoHiOGxURToFDPoKFwW
+  bh=UTB/HdkfDCZxhPyMMKIAODfTn3astqulmnVy6GfT9Ak=;
+  b=EdXkCfjlEuXVGhLvdkAER2NWvOVP9GMv1wpTokLTuQPVSqSZLaN7W7Ll
+   Jb7qiS7sA6qUIAfUaAZGbbWcwKDyhK9ACOVd9avzAhfUu5qQ5Q9Fzkatf
+   Cl+LoqBl1GavZgcABLvifEwAY9slzwTtFvIyjoMTfpEeVdSpqUUhtADB2
+   llkUYYM/stfUNBbluA4eaN5Kfj3qvB4zq1QqD9VlEt4eC5WVfgIc8hTm0
+   BlJKJ6rl4ZEK2yyoTTOC0lvBDo2WeYdAfNUDHW2BcyNP98kuSkt2u4GYJ
+   1kdFLCocbXWUpDHvXrja2pnSm4dTfjNSSAdrlsGtt6WZEP7RR+2njBGcB
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="314283234"
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251141283"
 X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="314283234"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 19:12:44 -0800
+   d="scan'208";a="251141283"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 19:12:44 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="594236908"
+   d="scan'208";a="686343492"
 Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2022 19:12:42 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 02 Mar 2022 19:12:42 -0800
 Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nPbtS-00004R-1m; Thu, 03 Mar 2022 03:12:42 +0000
-Date:   Thu, 3 Mar 2022 11:12:36 +0800
+        id 1nPbtS-00004T-2D; Thu, 03 Mar 2022 03:12:42 +0000
+Date:   Thu, 3 Mar 2022 11:12:09 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Alexei Starovoitov <ast@fb.com>
+To:     Paul Lawrence <paullawrence@google.com>
 Cc:     kbuild-all@lists.01.org,
         GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Connor O'Brien <connoro@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.9-q
- 3282/9999] kernel/bpf/cgroup.c:195:6: warning: variable 'old_flags' set but
- not used
-Message-ID: <202203031029.hx0D5KhJ-lkp@intel.com>
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.9-q-release
+ 8065/9999] drivers/md/dm-bow.c:98:10: warning: no previous declaration for
+ 'range_top'
+Message-ID: <202203030958.tfhUTTHH-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -58,318 +58,369 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexei,
+Hi Paul,
 
 FYI, the error/warning still remains.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.9-q
-head:   47d16afdb18e1fe9883c09a16f34d69b3e72898a
-commit: 148f111e986ba49e7e264fd798329aaa636300f3 [3282/9999] BACKPORT: bpf: multi program support for cgroup+bpf
-config: i386-randconfig-r034-20211122 (https://download.01.org/0day-ci/archive/20220303/202203031029.hx0D5KhJ-lkp@intel.com/config)
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.9-q-release
+head:   4be78b108a3a1d1ffbc2367c5a45855715451482
+commit: 9aa7b211f5a1a9d85b82527f1db87dd7be1d2bf9 [8065/9999] ANDROID: dm-bow: backport to 4.14
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220303/202203030958.tfhUTTHH-lkp@intel.com/config)
 compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
 reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/148f111e986ba49e7e264fd798329aaa636300f3
+        # https://github.com/ammarfaizi2/linux-block/commit/9aa7b211f5a1a9d85b82527f1db87dd7be1d2bf9
         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.9-q
-        git checkout 148f111e986ba49e7e264fd798329aaa636300f3
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.9-q-release
+        git checkout 9aa7b211f5a1a9d85b82527f1db87dd7be1d2bf9
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/md/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
-   In file included from include/linux/cgroup.h:11:0,
-                    from kernel/bpf/cgroup.c:13:
+   In file included from include/linux/uaccess.h:4:0,
+                    from include/linux/highmem.h:8,
+                    from include/linux/bio.h:21,
+                    from include/linux/device-mapper.h:11,
+                    from drivers/md/dm.h:14,
+                    from drivers/md/dm-bow.c:7:
    include/linux/sched.h:1201:1: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
     const struct sched_group_energy * const(*sched_domain_energy_f)(int cpu);
     ^~~~~
-   kernel/bpf/cgroup.c: In function '__cgroup_bpf_attach':
->> kernel/bpf/cgroup.c:195:6: warning: variable 'old_flags' set but not used [-Wunused-but-set-variable]
-     u32 old_flags;
-         ^~~~~~~~~
+>> drivers/md/dm-bow.c:98:10: warning: no previous declaration for 'range_top' [-Wmissing-declarations]
+    sector_t range_top(struct bow_range *br)
+             ^~~~~~~~~
+>> drivers/md/dm-bow.c:104:5: warning: no previous declaration for 'range_size' [-Wmissing-declarations]
+    u64 range_size(struct bow_range *br)
+        ^~~~~~~~~~
+>> drivers/md/dm-bow.c:149:6: warning: no previous declaration for 'add_before' [-Wmissing-declarations]
+    void add_before(struct rb_root *ranges, struct bow_range *new_br,
+         ^~~~~~~~~~
+   drivers/md/dm-bow.c: In function 'split_range':
+   drivers/md/dm-bow.c:179:10: error: 'BLK_STS_IOERR' undeclared (first use in this function); did you mean 'BLK_TA_INSERT'?
+      return BLK_STS_IOERR;
+             ^~~~~~~~~~~~~
+             BLK_TA_INSERT
+   drivers/md/dm-bow.c:179:10: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/md/dm-bow.c:187:11: error: 'BLK_STS_RESOURCE' undeclared (first use in this function); did you mean 'CAP_SYS_RESOURCE'?
+       return BLK_STS_RESOURCE;
+              ^~~~~~~~~~~~~~~~
+              CAP_SYS_RESOURCE
+   drivers/md/dm-bow.c:200:10: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_STS_IOERR'?
+      return BLK_STS_OK;
+             ^~~~~~~~~~
+             BLK_STS_IOERR
+   drivers/md/dm-bow.c: In function 'copy_data':
+   drivers/md/dm-bow.c:282:10: error: 'BLK_STS_IOERR' undeclared (first use in this function); did you mean 'BLK_TA_INSERT'?
+      return BLK_STS_IOERR;
+             ^~~~~~~~~~~~~
+             BLK_TA_INSERT
+   In file included from include/linux/printk.h:6:0,
+                    from include/linux/kernel.h:13,
+                    from include/linux/list.h:8,
+                    from include/linux/wait.h:6,
+                    from include/linux/fs.h:5,
+                    from drivers/md/dm.h:13,
+                    from drivers/md/dm-bow.c:7:
+   include/linux/kern_levels.h:4:18: warning: format '%lu' expects argument of type 'long unsigned int', but argument 2 has type 'sector_t {aka long long unsigned int}' [-Wformat=]
+    #define KERN_SOH "\001"  /* ASCII Start Of Header */
+                     ^
+   include/linux/kern_levels.h:10:18: note: in expansion of macro 'KERN_SOH'
+    #define KERN_ERR KERN_SOH "3" /* error conditions */
+                     ^~~~~~~~
+   include/linux/device-mapper.h:549:9: note: in expansion of macro 'KERN_ERR'
+     printk(KERN_ERR DM_NAME ": " DM_MSG_PREFIX ": " f "\n", ## arg)
+            ^~~~~~~~
+   drivers/md/dm-bow.c:295:4: note: in expansion of macro 'DMERR'
+       DMERR("Cannot read page %lu", page);
+       ^~~~~
+   drivers/md/dm-bow.c:295:30: note: format string is defined here
+       DMERR("Cannot read page %lu", page);
+                               ~~^
+                               %llu
+   drivers/md/dm-bow.c:319:9: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_STS_IOERR'?
+     return BLK_STS_OK;
+            ^~~~~~~~~~
+            BLK_STS_IOERR
+   drivers/md/dm-bow.c: In function 'backup_log_sector':
+   drivers/md/dm-bow.c:338:10: error: 'BLK_STS_IOERR' undeclared (first use in this function); did you mean 'BLK_TA_INSERT'?
+      return BLK_STS_IOERR;
+             ^~~~~~~~~~~~~
+             BLK_TA_INSERT
+   drivers/md/dm-bow.c:349:10: error: 'BLK_STS_NOSPC' undeclared (first use in this function); did you mean 'BLK_STS_IOERR'?
+      return BLK_STS_NOSPC;
+             ^~~~~~~~~~~~~
+             BLK_STS_IOERR
+   drivers/md/dm-bow.c:372:9: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_STS_NOSPC'?
+     return BLK_STS_OK;
+            ^~~~~~~~~~
+            BLK_STS_NOSPC
+   drivers/md/dm-bow.c: In function 'add_log_entry':
+   drivers/md/dm-bow.c:394:10: error: 'BLK_STS_NOSPC' undeclared (first use in this function); did you mean 'BLK_TC_PC'?
+      return BLK_STS_NOSPC;
+             ^~~~~~~~~~~~~
+             BLK_TC_PC
+   drivers/md/dm-bow.c:407:9: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_STS_NOSPC'?
+     return BLK_STS_OK;
+            ^~~~~~~~~~
+            BLK_STS_NOSPC
+   drivers/md/dm-bow.c: In function 'prepare_log':
+   drivers/md/dm-bow.c:421:10: error: 'BLK_STS_IOERR' undeclared (first use in this function); did you mean 'BLK_TA_INSERT'?
+      return BLK_STS_IOERR;
+             ^~~~~~~~~~~~~
+             BLK_TA_INSERT
+   drivers/md/dm-bow.c:442:10: error: 'BLK_STS_NOSPC' undeclared (first use in this function); did you mean 'BLK_STS_IOERR'?
+      return BLK_STS_NOSPC;
+             ^~~~~~~~~~~~~
+             BLK_STS_IOERR
+   drivers/md/dm-bow.c:490:9: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_STS_NOSPC'?
+     return BLK_STS_OK;
+            ^~~~~~~~~~
+            BLK_STS_NOSPC
+   drivers/md/dm-bow.c: In function 'prepare_unchanged_range':
+   drivers/md/dm-bow.c:753:10: error: 'BLK_STS_NOSPC' undeclared (first use in this function); did you mean 'BLK_TC_PC'?
+      return BLK_STS_NOSPC;
+             ^~~~~~~~~~~~~
+             BLK_TC_PC
+   drivers/md/dm-bow.c:772:10: error: 'BLK_STS_IOERR' undeclared (first use in this function); did you mean 'BLK_STS_NOSPC'?
+      return BLK_STS_IOERR;
+             ^~~~~~~~~~~~~
+             BLK_STS_NOSPC
+   drivers/md/dm-bow.c: In function 'prepare_free_range':
+   drivers/md/dm-bow.c:827:9: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_TC_PC'?
+     return BLK_STS_OK;
+            ^~~~~~~~~~
+            BLK_TC_PC
+   drivers/md/dm-bow.c: In function 'prepare_changed_range':
+   drivers/md/dm-bow.c:834:9: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_TC_PC'?
+     return BLK_STS_OK;
+            ^~~~~~~~~~
+            BLK_TC_PC
+   drivers/md/dm-bow.c: In function 'prepare_one_range':
+   drivers/md/dm-bow.c:864:10: error: 'BLK_STS_IOERR' undeclared (first use in this function); did you mean 'BLK_TA_INSERT'?
+      return BLK_STS_IOERR;
+             ^~~~~~~~~~~~~
+             BLK_TA_INSERT
+   drivers/md/dm-bow.c: In function 'bow_write':
+   drivers/md/dm-bow.c:880:12: error: 'BLK_STS_OK' undeclared (first use in this function); did you mean 'BLK_TC_PC'?
+     int ret = BLK_STS_OK;
+               ^~~~~~~~~~
+               BLK_TC_PC
+   drivers/md/dm-bow.c:896:3: error: implicit declaration of function 'bio_set_dev'; did you mean 'bioset_free'? [-Werror=implicit-function-declaration]
+      bio_set_dev(bio, bc->dev->bdev);
+      ^~~~~~~~~~~
+      bioset_free
+   drivers/md/dm-bow.c:900:8: error: 'struct bio' has no member named 'bi_status'; did you mean 'bi_flags'?
+      bio->bi_status = ret;
+           ^~~~~~~~~
+           bi_flags
+   drivers/md/dm-bow.c: In function 'handle_sector0':
+   drivers/md/dm-bow.c:932:9: error: 'struct bio' has no member named 'bi_status'; did you mean 'bi_flags'?
+       bio->bi_status = BLK_STS_RESOURCE;
+            ^~~~~~~~~
+            bi_flags
+   drivers/md/dm-bow.c:932:21: error: 'BLK_STS_RESOURCE' undeclared (first use in this function); did you mean 'CAP_SYS_RESOURCE'?
+       bio->bi_status = BLK_STS_RESOURCE;
+                        ^~~~~~~~~~~~~~~~
+                        CAP_SYS_RESOURCE
+   In file included from include/linux/printk.h:6:0,
+                    from include/linux/kernel.h:13,
+                    from include/linux/list.h:8,
+                    from include/linux/wait.h:6,
+                    from include/linux/fs.h:5,
+                    from drivers/md/dm.h:13,
+                    from drivers/md/dm-bow.c:7:
+   drivers/md/dm-bow.c: In function 'add_trim':
+   include/linux/kern_levels.h:4:18: warning: format '%lu' expects argument of type 'long unsigned int', but argument 2 has type 'sector_t {aka long long unsigned int}' [-Wformat=]
+    #define KERN_SOH "\001"  /* ASCII Start Of Header */
+                     ^
+   include/linux/kern_levels.h:14:20: note: in expansion of macro 'KERN_SOH'
+    #define KERN_DEBUG KERN_SOH "7" /* debug-level messages */
+                       ^~~~~~~~
+   include/linux/device-mapper.h:577:9: note: in expansion of macro 'KERN_DEBUG'
+     printk(KERN_DEBUG DM_NAME ": " DM_MSG_PREFIX " DEBUG: " f "\n", ## arg)
+            ^~~~~~~~~~
+   drivers/md/dm-bow.c:956:2: note: in expansion of macro 'DMDEBUG'
+     DMDEBUG("add_trim: %lu, %u",
+     ^~~~~~~
+   drivers/md/dm-bow.c:956:23: note: format string is defined here
+     DMDEBUG("add_trim: %lu, %u",
+                        ~~^
+                        %llu
+   In file included from include/linux/printk.h:6:0,
+                    from include/linux/kernel.h:13,
+                    from include/linux/list.h:8,
+                    from include/linux/wait.h:6,
+                    from include/linux/fs.h:5,
+                    from drivers/md/dm.h:13,
+                    from drivers/md/dm-bow.c:7:
+   drivers/md/dm-bow.c: In function 'remove_trim':
+   include/linux/kern_levels.h:4:18: warning: format '%lu' expects argument of type 'long unsigned int', but argument 2 has type 'sector_t {aka long long unsigned int}' [-Wformat=]
+    #define KERN_SOH "\001"  /* ASCII Start Of Header */
+                     ^
+   include/linux/kern_levels.h:14:20: note: in expansion of macro 'KERN_SOH'
+    #define KERN_DEBUG KERN_SOH "7" /* debug-level messages */
+                       ^~~~~~~~
+   include/linux/device-mapper.h:577:9: note: in expansion of macro 'KERN_DEBUG'
+     printk(KERN_DEBUG DM_NAME ": " DM_MSG_PREFIX " DEBUG: " f "\n", ## arg)
+            ^~~~~~~~~~
+   drivers/md/dm-bow.c:994:2: note: in expansion of macro 'DMDEBUG'
+     DMDEBUG("remove_trim: %lu, %u",
+     ^~~~~~~
+   drivers/md/dm-bow.c:994:26: note: format string is defined here
+     DMDEBUG("remove_trim: %lu, %u",
+                           ~~^
+                           %llu
+   drivers/md/dm-bow.c: At top level:
+>> drivers/md/dm-bow.c:1026:5: warning: no previous declaration for 'remap_unless_illegal_trim' [-Wmissing-declarations]
+    int remap_unless_illegal_trim(struct bow_context *bc, struct bio *bio)
+        ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/md/dm-bow.c: In function 'remap_unless_illegal_trim':
+   drivers/md/dm-bow.c:1029:8: error: 'struct bio' has no member named 'bi_status'; did you mean 'bi_flags'?
+      bio->bi_status = BLK_STS_NOTSUPP;
+           ^~~~~~~~~
+           bi_flags
+   drivers/md/dm-bow.c:1029:20: error: 'BLK_STS_NOTSUPP' undeclared (first use in this function); did you mean 'BLK_TC_NOTIFY'?
+      bio->bi_status = BLK_STS_NOTSUPP;
+                       ^~~~~~~~~~~~~~~
+                       BLK_TC_NOTIFY
+   drivers/md/dm-bow.c: In function 'dm_bow_map':
+   drivers/md/dm-bow.c:1062:23: warning: suggest braces around empty body in an 'else' statement [-Wempty-body]
+        /* pass-through */;
+                          ^
+   drivers/md/dm-bow.c:1069:23: warning: suggest braces around empty body in an 'else' statement [-Wempty-body]
+        /* pass-through */;
+                          ^
+   drivers/md/dm-bow.c: In function 'dm_bow_tablestatus':
+   drivers/md/dm-bow.c:1120:52: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'sector_t {aka long long unsigned int}' [-Wformat=]
+      result += scnprintf(result, end - result, "%s: %lu",
+                                                     ~~^
+                                                     %llu
+            readable_type[br->type], br->sector);
+                                     ~~~~~~~~~~         
+   drivers/md/dm-bow.c: At top level:
+>> drivers/md/dm-bow.c:1180:5: warning: no previous declaration for 'dm_bow_prepare_ioctl' [-Wmissing-declarations]
+    int dm_bow_prepare_ioctl(struct dm_target *ti, struct block_device **bdev,
+        ^~~~~~~~~~~~~~~~~~~~
+>> drivers/md/dm-bow.c:1211:12: warning: no previous declaration for 'dm_bow_init' [-Wmissing-declarations]
+    int __init dm_bow_init(void)
+               ^~~~~~~~~~~
+>> drivers/md/dm-bow.c:1220:6: warning: no previous declaration for 'dm_bow_exit' [-Wmissing-declarations]
+    void dm_bow_exit(void)
+         ^~~~~~~~~~~
+   drivers/md/dm-bow.c: In function 'split_range':
+   drivers/md/dm-bow.c:214:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'prepare_one_range':
+   drivers/md/dm-bow.c:866:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'prepare_changed_range':
+   drivers/md/dm-bow.c:835:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'prepare_free_range':
+   drivers/md/dm-bow.c:828:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'copy_data':
+   drivers/md/dm-bow.c:320:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'add_log_entry':
+   drivers/md/dm-bow.c:408:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'backup_log_sector':
+   drivers/md/dm-bow.c:373:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   drivers/md/dm-bow.c: In function 'prepare_log':
+   drivers/md/dm-bow.c:491:1: warning: control reaches end of non-void function [-Wreturn-type]
+    }
+    ^
+   cc1: some warnings being treated as errors
 
 
-vim +/old_flags +195 kernel/bpf/cgroup.c
+vim +/range_top +98 drivers/md/dm-bow.c
 
-  > 13	#include <linux/cgroup.h>
-    14	#include <linux/slab.h>
-    15	#include <linux/bpf.h>
-    16	#include <linux/bpf-cgroup.h>
-    17	#include <net/sock.h>
-    18	
-    19	DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
-    20	EXPORT_SYMBOL(cgroup_bpf_enabled_key);
-    21	
-    22	/**
-    23	 * cgroup_bpf_put() - put references of all bpf programs
-    24	 * @cgrp: the cgroup to modify
-    25	 */
-    26	void cgroup_bpf_put(struct cgroup *cgrp)
-    27	{
-    28		unsigned int type;
-    29	
-    30		for (type = 0; type < ARRAY_SIZE(cgrp->bpf.progs); type++) {
-    31			struct list_head *progs = &cgrp->bpf.progs[type];
-    32			struct bpf_prog_list *pl, *tmp;
-    33	
-    34			list_for_each_entry_safe(pl, tmp, progs, node) {
-    35				list_del(&pl->node);
-    36				bpf_prog_put(pl->prog);
-    37				kfree(pl);
-    38				static_branch_dec(&cgroup_bpf_enabled_key);
-    39			}
-    40			bpf_prog_array_free(cgrp->bpf.effective[type]);
-    41		}
-    42	}
-    43	
-    44	/* count number of elements in the list.
-    45	 * it's slow but the list cannot be long
-    46	 */
-    47	static u32 prog_list_length(struct list_head *head)
-    48	{
-    49		struct bpf_prog_list *pl;
-    50		u32 cnt = 0;
-    51	
-    52		list_for_each_entry(pl, head, node) {
-    53			if (!pl->prog)
-    54				continue;
-    55			cnt++;
-    56		}
-    57		return cnt;
-    58	}
-    59	
-    60	/* if parent has non-overridable prog attached,
-    61	 * disallow attaching new programs to the descendent cgroup.
-    62	 * if parent has overridable or multi-prog, allow attaching
-    63	 */
-    64	static bool hierarchy_allows_attach(struct cgroup *cgrp,
-    65					    enum bpf_attach_type type,
-    66					    u32 new_flags)
-    67	{
-    68		struct cgroup *p;
-    69	
-    70		p = cgroup_parent(cgrp);
-    71		if (!p)
-    72			return true;
-    73		do {
-    74			u32 flags = p->bpf.flags[type];
-    75			u32 cnt;
-    76	
-    77			if (flags & BPF_F_ALLOW_MULTI)
-    78				return true;
-    79			cnt = prog_list_length(&p->bpf.progs[type]);
-    80			WARN_ON_ONCE(cnt > 1);
-    81			if (cnt == 1)
-    82				return !!(flags & BPF_F_ALLOW_OVERRIDE);
-    83			p = cgroup_parent(p);
-    84		} while (p);
-    85		return true;
-    86	}
-    87	
-    88	/* compute a chain of effective programs for a given cgroup:
-    89	 * start from the list of programs in this cgroup and add
-    90	 * all parent programs.
-    91	 * Note that parent's F_ALLOW_OVERRIDE-type program is yielding
-    92	 * to programs in this cgroup
-    93	 */
-    94	static int compute_effective_progs(struct cgroup *cgrp,
-    95					   enum bpf_attach_type type,
-    96					   struct bpf_prog_array __rcu **array)
-    97	{
-    98		struct bpf_prog_array __rcu *progs;
-    99		struct bpf_prog_list *pl;
-   100		struct cgroup *p = cgrp;
-   101		int cnt = 0;
-   102	
-   103		/* count number of effective programs by walking parents */
-   104		do {
-   105			if (cnt == 0 || (p->bpf.flags[type] & BPF_F_ALLOW_MULTI))
-   106				cnt += prog_list_length(&p->bpf.progs[type]);
-   107			p = cgroup_parent(p);
-   108		} while (p);
-   109	
-   110		progs = bpf_prog_array_alloc(cnt, GFP_KERNEL);
-   111		if (!progs)
-   112			return -ENOMEM;
-   113	
-   114		/* populate the array with effective progs */
-   115		cnt = 0;
-   116		p = cgrp;
-   117		do {
-   118			if (cnt == 0 || (p->bpf.flags[type] & BPF_F_ALLOW_MULTI))
-   119				list_for_each_entry(pl,
-   120						    &p->bpf.progs[type], node) {
-   121					if (!pl->prog)
-   122						continue;
-   123					rcu_dereference_protected(progs, 1)->
-   124						progs[cnt++] = pl->prog;
-   125				}
-   126			p = cgroup_parent(p);
-   127		} while (p);
-   128	
-   129		*array = progs;
-   130		return 0;
-   131	}
-   132	
-   133	static void activate_effective_progs(struct cgroup *cgrp,
-   134					     enum bpf_attach_type type,
-   135					     struct bpf_prog_array __rcu *array)
-   136	{
-   137		struct bpf_prog_array __rcu *old_array;
-   138	
-   139		old_array = xchg(&cgrp->bpf.effective[type], array);
-   140		/* free prog array after grace period, since __cgroup_bpf_run_*()
-   141		 * might be still walking the array
-   142		 */
-   143		bpf_prog_array_free(old_array);
-   144	}
-   145	
-   146	/**
-   147	 * cgroup_bpf_inherit() - inherit effective programs from parent
-   148	 * @cgrp: the cgroup to modify
-   149	 */
-   150	int cgroup_bpf_inherit(struct cgroup *cgrp)
-   151	{
-   152	/* has to use marco instead of const int, since compiler thinks
-   153	 * that array below is variable length
-   154	 */
-   155	#define	NR ARRAY_SIZE(cgrp->bpf.effective)
-   156		struct bpf_prog_array __rcu *arrays[NR] = {};
-   157		int i;
-   158	
-   159		for (i = 0; i < NR; i++)
-   160			INIT_LIST_HEAD(&cgrp->bpf.progs[i]);
-   161	
-   162		for (i = 0; i < NR; i++)
-   163			if (compute_effective_progs(cgrp, i, &arrays[i]))
-   164				goto cleanup;
-   165	
-   166		for (i = 0; i < NR; i++)
-   167			activate_effective_progs(cgrp, i, arrays[i]);
-   168	
-   169		return 0;
-   170	cleanup:
-   171		for (i = 0; i < NR; i++)
-   172			bpf_prog_array_free(arrays[i]);
-   173		return -ENOMEM;
-   174	}
-   175	
-   176	#define BPF_CGROUP_MAX_PROGS 64
-   177	
-   178	/**
-   179	 * __cgroup_bpf_attach() - Attach the program to a cgroup, and
-   180	 *                         propagate the change to descendants
-   181	 * @cgrp: The cgroup which descendants to traverse
-   182	 * @prog: A program to attach
-   183	 * @type: Type of attach operation
-   184	 *
-   185	 * Must be called with cgroup_mutex held.
-   186	 */
-   187	int __cgroup_bpf_attach(struct cgroup *cgrp, struct bpf_prog *prog,
-   188				enum bpf_attach_type type, u32 flags)
-   189	{
-   190		struct list_head *progs = &cgrp->bpf.progs[type];
-   191		struct bpf_prog *old_prog = NULL;
-   192		struct cgroup_subsys_state *css;
-   193		struct bpf_prog_list *pl;
-   194		bool pl_was_allocated;
- > 195		u32 old_flags;
-   196		int err;
-   197	
-   198		if ((flags & BPF_F_ALLOW_OVERRIDE) && (flags & BPF_F_ALLOW_MULTI))
-   199			/* invalid combination */
-   200			return -EINVAL;
-   201	
-   202		if (!hierarchy_allows_attach(cgrp, type, flags))
-   203			return -EPERM;
-   204	
-   205		if (!list_empty(progs) && cgrp->bpf.flags[type] != flags)
-   206			/* Disallow attaching non-overridable on top
-   207			 * of existing overridable in this cgroup.
-   208			 * Disallow attaching multi-prog if overridable or none
-   209			 */
-   210			return -EPERM;
-   211	
-   212		if (prog_list_length(progs) >= BPF_CGROUP_MAX_PROGS)
-   213			return -E2BIG;
-   214	
-   215		if (flags & BPF_F_ALLOW_MULTI) {
-   216			list_for_each_entry(pl, progs, node)
-   217				if (pl->prog == prog)
-   218					/* disallow attaching the same prog twice */
-   219					return -EINVAL;
-   220	
-   221			pl = kmalloc(sizeof(*pl), GFP_KERNEL);
-   222			if (!pl)
-   223				return -ENOMEM;
-   224			pl_was_allocated = true;
-   225			pl->prog = prog;
-   226			list_add_tail(&pl->node, progs);
-   227		} else {
-   228			if (list_empty(progs)) {
-   229				pl = kmalloc(sizeof(*pl), GFP_KERNEL);
-   230				if (!pl)
-   231					return -ENOMEM;
-   232				pl_was_allocated = true;
-   233				list_add_tail(&pl->node, progs);
-   234			} else {
-   235				pl = list_first_entry(progs, typeof(*pl), node);
-   236				old_prog = pl->prog;
-   237				pl_was_allocated = false;
-   238			}
-   239			pl->prog = prog;
-   240		}
-   241	
-   242		old_flags = cgrp->bpf.flags[type];
-   243		cgrp->bpf.flags[type] = flags;
-   244	
-   245		/* allocate and recompute effective prog arrays */
-   246		css_for_each_descendant_pre(css, &cgrp->self) {
-   247			struct cgroup *desc = container_of(css, struct cgroup, self);
-   248	
-   249			err = compute_effective_progs(desc, type, &desc->bpf.inactive);
-   250			if (err)
-   251				goto cleanup;
-   252		}
-   253	
-   254		/* all allocations were successful. Activate all prog arrays */
-   255		css_for_each_descendant_pre(css, &cgrp->self) {
-   256			struct cgroup *desc = container_of(css, struct cgroup, self);
-   257	
-   258			activate_effective_progs(desc, type, desc->bpf.inactive);
-   259			desc->bpf.inactive = NULL;
-   260		}
-   261	
-   262		static_branch_inc(&cgroup_bpf_enabled_key);
-   263		if (old_prog) {
-   264			bpf_prog_put(old_prog);
-   265			static_branch_dec(&cgroup_bpf_enabled_key);
-   266		}
-   267		return 0;
-   268	
-   269	cleanup:
-   270		/* oom while computing effective. Free all computed effective arrays
-   271		 * since they were not activated
-   272		 */
-   273		css_for_each_descendant_pre(css, &cgrp->self) {
-   274			struct cgroup *desc = container_of(css, struct cgroup, self);
-   275	
-   276			bpf_prog_array_free(desc->bpf.inactive);
-   277			desc->bpf.inactive = NULL;
-   278		}
-   279	
-   280		/* and cleanup the prog list */
-   281		pl->prog = old_prog;
-   282		if (pl_was_allocated) {
-   283			list_del(&pl->node);
-   284			kfree(pl);
-   285		}
-   286		return err;
-   287	}
-   288	
+de12cfe6e93748 Paul Lawrence 2018-10-23   97  
+de12cfe6e93748 Paul Lawrence 2018-10-23  @98  sector_t range_top(struct bow_range *br)
+de12cfe6e93748 Paul Lawrence 2018-10-23   99  {
+de12cfe6e93748 Paul Lawrence 2018-10-23  100  	return container_of(rb_next(&br->node), struct bow_range, node)
+de12cfe6e93748 Paul Lawrence 2018-10-23  101  		->sector;
+de12cfe6e93748 Paul Lawrence 2018-10-23  102  }
+de12cfe6e93748 Paul Lawrence 2018-10-23  103  
+de12cfe6e93748 Paul Lawrence 2018-10-23 @104  u64 range_size(struct bow_range *br)
+de12cfe6e93748 Paul Lawrence 2018-10-23  105  {
+de12cfe6e93748 Paul Lawrence 2018-10-23  106  	return (range_top(br) - br->sector) * SECTOR_SIZE;
+de12cfe6e93748 Paul Lawrence 2018-10-23  107  }
+de12cfe6e93748 Paul Lawrence 2018-10-23  108  
+de12cfe6e93748 Paul Lawrence 2018-10-23  109  static sector_t bvec_top(struct bvec_iter *bi_iter)
+de12cfe6e93748 Paul Lawrence 2018-10-23  110  {
+de12cfe6e93748 Paul Lawrence 2018-10-23  111  	return bi_iter->bi_sector + bi_iter->bi_size / SECTOR_SIZE;
+de12cfe6e93748 Paul Lawrence 2018-10-23  112  }
+de12cfe6e93748 Paul Lawrence 2018-10-23  113  
+de12cfe6e93748 Paul Lawrence 2018-10-23  114  /*
+de12cfe6e93748 Paul Lawrence 2018-10-23  115   * Find the first range that overlaps with bi_iter
+de12cfe6e93748 Paul Lawrence 2018-10-23  116   * bi_iter is set to the size of the overlapping sub-range
+de12cfe6e93748 Paul Lawrence 2018-10-23  117   */
+de12cfe6e93748 Paul Lawrence 2018-10-23  118  static struct bow_range *find_first_overlapping_range(struct rb_root *ranges,
+de12cfe6e93748 Paul Lawrence 2018-10-23  119  						      struct bvec_iter *bi_iter)
+de12cfe6e93748 Paul Lawrence 2018-10-23  120  {
+de12cfe6e93748 Paul Lawrence 2018-10-23  121  	struct rb_node *node = ranges->rb_node;
+de12cfe6e93748 Paul Lawrence 2018-10-23  122  	struct bow_range *br;
+de12cfe6e93748 Paul Lawrence 2018-10-23  123  
+de12cfe6e93748 Paul Lawrence 2018-10-23  124  	while (node) {
+de12cfe6e93748 Paul Lawrence 2018-10-23  125  		br = container_of(node, struct bow_range, node);
+de12cfe6e93748 Paul Lawrence 2018-10-23  126  
+de12cfe6e93748 Paul Lawrence 2018-10-23  127  		if (br->sector <= bi_iter->bi_sector
+de12cfe6e93748 Paul Lawrence 2018-10-23  128  		    && bi_iter->bi_sector < range_top(br))
+de12cfe6e93748 Paul Lawrence 2018-10-23  129  			break;
+de12cfe6e93748 Paul Lawrence 2018-10-23  130  
+de12cfe6e93748 Paul Lawrence 2018-10-23  131  		if (bi_iter->bi_sector < br->sector)
+de12cfe6e93748 Paul Lawrence 2018-10-23  132  			node = node->rb_left;
+de12cfe6e93748 Paul Lawrence 2018-10-23  133  		else
+de12cfe6e93748 Paul Lawrence 2018-10-23  134  			node = node->rb_right;
+de12cfe6e93748 Paul Lawrence 2018-10-23  135  	}
+de12cfe6e93748 Paul Lawrence 2018-10-23  136  
+de12cfe6e93748 Paul Lawrence 2018-10-23  137  	WARN_ON(!node);
+de12cfe6e93748 Paul Lawrence 2018-10-23  138  	if (!node)
+de12cfe6e93748 Paul Lawrence 2018-10-23  139  		return NULL;
+de12cfe6e93748 Paul Lawrence 2018-10-23  140  
+de12cfe6e93748 Paul Lawrence 2018-10-23  141  	if (range_top(br) - bi_iter->bi_sector
+de12cfe6e93748 Paul Lawrence 2018-10-23  142  	    < bi_iter->bi_size >> SECTOR_SHIFT)
+de12cfe6e93748 Paul Lawrence 2018-10-23  143  		bi_iter->bi_size = (range_top(br) - bi_iter->bi_sector)
+de12cfe6e93748 Paul Lawrence 2018-10-23  144  			<< SECTOR_SHIFT;
+de12cfe6e93748 Paul Lawrence 2018-10-23  145  
+de12cfe6e93748 Paul Lawrence 2018-10-23  146  	return br;
+de12cfe6e93748 Paul Lawrence 2018-10-23  147  }
+de12cfe6e93748 Paul Lawrence 2018-10-23  148  
+de12cfe6e93748 Paul Lawrence 2018-10-23 @149  void add_before(struct rb_root *ranges, struct bow_range *new_br,
+de12cfe6e93748 Paul Lawrence 2018-10-23  150  		struct bow_range *existing)
+de12cfe6e93748 Paul Lawrence 2018-10-23  151  {
+de12cfe6e93748 Paul Lawrence 2018-10-23  152  	struct rb_node *parent = &(existing->node);
+de12cfe6e93748 Paul Lawrence 2018-10-23  153  	struct rb_node **link = &(parent->rb_left);
+de12cfe6e93748 Paul Lawrence 2018-10-23  154  
+de12cfe6e93748 Paul Lawrence 2018-10-23  155  	while (*link) {
+de12cfe6e93748 Paul Lawrence 2018-10-23  156  		parent = *link;
+de12cfe6e93748 Paul Lawrence 2018-10-23  157  		link = &((*link)->rb_right);
+de12cfe6e93748 Paul Lawrence 2018-10-23  158  	}
+de12cfe6e93748 Paul Lawrence 2018-10-23  159  
+de12cfe6e93748 Paul Lawrence 2018-10-23  160  	rb_link_node(&new_br->node, parent, link);
+de12cfe6e93748 Paul Lawrence 2018-10-23  161  	rb_insert_color(&new_br->node, ranges);
+de12cfe6e93748 Paul Lawrence 2018-10-23  162  }
+de12cfe6e93748 Paul Lawrence 2018-10-23  163  
+
+:::::: The code at line 98 was first introduced by commit
+:::::: de12cfe6e93748be27ecd3fce8f1eb8ffb9f0a3a ANDROID: dm-bow: Add dm-bow feature
+
+:::::: TO: Paul Lawrence <paullawrence@google.com>
+:::::: CC: Paul Lawrence <paullawrence@google.com>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
