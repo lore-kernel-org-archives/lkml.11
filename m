@@ -2,114 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A234FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbiCCBDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:03:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
+        id S231218AbiCCBKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:10:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbiCCBDR (ORCPT
+        with ESMTP id S231169AbiCCBKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:03:17 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FC3DEEA;
-        Wed,  2 Mar 2022 17:02:13 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id e15so1846103pfv.11;
-        Wed, 02 Mar 2022 17:02:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RAL3hdQzDPJBJDPviupEa5iJmAtcqnWIkzPTN5WWFRk=;
-        b=ANc5nsQR46yz5q8JWZ0HfBXXDXO3SYIkdLhFjQOa2LHneW7UuyTfdwgUGmnyJ+pt2+
-         z/ueEO019yu3Jt5o8Wk/U+B8r7rjRL5O4jO4l8QDRg1+qatp+5Ym/2L1q5p9IQtlVyUF
-         rx3q24xb/vqvgBrLMbldKXR6mxrOvb4AuYoHoFo50907NzqE5UJva5wr+V8mPrZK7VpM
-         pTI3PyJ7dr1cYW5e7ei/sFTJ8j3wVBr2PhjowUug3FwVj4uoRkq7l7196eRp+ykLDZar
-         ME+LZNwrd8/oLMMqPQ1gt7fhm8Ix9wOwGRIiSdUSMFtNWwOfEgwJZd6+AW1SNniV2NqL
-         SVWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RAL3hdQzDPJBJDPviupEa5iJmAtcqnWIkzPTN5WWFRk=;
-        b=iPdEmaxhs2KEFkAF3h+1LYuMCc1tQ8cEIFTo3pd7hiq6/gfZehTWhOQ6m2O5Qp8WJk
-         w9r1pkCSnlWPPBqLxXFCauAasFbB0zbvxHHQFk3BbyqV0lCx1ncc1rYXJUaf6XU232Po
-         1D/YMoCUSXt/pntL10cYHnEytUDM6VXuyIOMfR/49cNLyWVqSmYTvZIHvtThPUCKZLw6
-         Eik6QBuZzJwYSGzfrfKUEnPYkJevADcg3GA1j72E/eeuEYwGfXgs4MPDhmyviKNHy05B
-         RtrHBe+ibIhAE3JNoirAH4GViB5yVc8iVB1g4x3n+3Uj3iG9LmMbCZwlu513g/O05Pb9
-         sM+w==
-X-Gm-Message-State: AOAM530u9fDcAvhsAzf9UJcS8d0krEwASufPmhQfy7fd48n/z8hBynTp
-        /6p2dlM9T6rqZBf48jpjd0Hl04X4ZtLRrOXG
-X-Google-Smtp-Source: ABdhPJyvRYLWHHMzoAWYl2wbaSpQ7rq6ierqyUXMpHzPtpPbnx5Im4f24PfwMzPLbGZfM2MtlfJa8Q==
-X-Received: by 2002:a05:6a00:114e:b0:4c8:55f7:faad with SMTP id b14-20020a056a00114e00b004c855f7faadmr35483932pfm.86.1646269332784;
-        Wed, 02 Mar 2022 17:02:12 -0800 (PST)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id k195-20020a636fcc000000b0037c4e3bc503sm298976pgc.77.2022.03.02.17.02.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 17:02:12 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     andrii.nakryiko@gmail.com
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com,
-        ytcoode@gmail.com
-Subject: [PATCH bpf-next v2] libbpf: Add a check to ensure that page_cnt is non-zero
-Date:   Thu,  3 Mar 2022 08:59:21 +0800
-Message-Id: <20220303005921.53436-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
-References: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
+        Wed, 2 Mar 2022 20:10:07 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBA332D1F5;
+        Wed,  2 Mar 2022 17:09:22 -0800 (PST)
+Received: from [192.168.1.17] (unknown [192.182.151.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7389920B7178;
+        Wed,  2 Mar 2022 17:09:22 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7389920B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646269762;
+        bh=0A9U3/A1+sfRyujc9HpaWZgG2Yh/DJChDIAh5jtJwK8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=DizS9EAjkuOlxzJb2WrrLVIGurQ+MgGe6Hq5pB62M48Xc3JusNC/qzQfHkD5sm65U
+         355H29NJ7MUufUpRbdXJLkFG/kTdd9QT1OthG6rNaz3o0CXqK+VQMqrhSdX/rwtfos
+         JjqKGFqvZxt0RJam1K4Mu+IR49pL12o2XWiznzT8=
+Message-ID: <c848ade1-48e4-1868-b890-9c3401cff9de@linux.microsoft.com>
+Date:   Wed, 2 Mar 2022 17:09:21 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 02/30] drivers: hv: dxgkrnl: Driver initialization and
+ loading
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>, Wei Liu <wei.liu@kernel.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        spronovo@microsoft.com, spronovo@linux.microsoft.com
+References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
+ <739cf89e71ff72436d7ca3f846881dfb45d07a6a.1646163378.git.iourit@linux.microsoft.com>
+ <Yh6F9cG6/SV6Fq8Q@kroah.com>
+ <20220301222321.yradz24nuyhzh7om@liuwe-devbox-debian-v2>
+ <Yh8ia7nJNN7ISR1l@kroah.com>
+From:   Iouri Tarassov <iourit@linux.microsoft.com>
+In-Reply-To: <Yh8ia7nJNN7ISR1l@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page_cnt parameter is used to specify the number of memory pages
-allocated for each per-CPU buffer, it must be non-zero and a power of 2.
 
-Currently, the __perf_buffer__new() function attempts to validate that
-the page_cnt is a power of 2 but forgets checking for the case where
-page_cnt is zero, we can fix it by replacing 'page_cnt & (page_cnt - 1)'
-with 'page_cnt == 0 || (page_cnt & (page_cnt - 1))'.
+On 3/1/2022 11:53 PM, Greg KH wrote:
+> On Tue, Mar 01, 2022 at 10:23:21PM +0000, Wei Liu wrote:
+> > > > +struct dxgglobal *dxgglobal;
+> > > 
+> > > No, make this per-device, NEVER have a single device for your driver.
+> > > The Linux driver model makes it harder to do it this way than to do it
+> > > correctly.  Do it correctly please and have no global structures like
+> > > this.
+> > > 
+> > 
+> > This may not be as big an issue as you thought. The device discovery is
+> > still done via the normal VMBus probing routine. For all intents and
+> > purposes the dxgglobal structure can be broken down into per device
+> > fields and a global structure which contains the protocol versioning
+> > information -- my understanding is there will always be a global
+> > structure to hold information related to the backend, regardless of how
+> > many devices there are.
+>
+> Then that is wrong and needs to be fixed.  Drivers should almost never
+> have any global data, that is not how Linux drivers work.  What happens
+> when you get a second device in your system for this?  Major rework
+> would have to happen and the code will break.  Handle that all now as it
+> takes less work to make this per-device than it does to have a global
+> variable.
+>
+> > I definitely think splitting is doable, but I also understand why Iouri
+> > does not want to do it _now_ given there is no such a model for multiple
+> > devices yet, so anything we put into the per-device structure could be
+> > incomplete and it requires further changing when such a model arrives
+> > later.
+> > 
+> > Iouri, please correct me if I have the wrong mental model here.
+> > 
+> > All in all, I hope this is not going to be a deal breaker for the
+> > acceptance of this driver.
+>
+> For my reviews, yes it will be.
+>
+> Again, it should be easier to keep things in a per-device state than
+> not as the proper lifetime rules and the like are automatically handled
+> for you.  If you have global data, you have to manage that all on your
+> own and it is _MUCH_ harder to review that you got it correct.
 
-If so, we also don't need to add a check in perf_buffer__new_v0_6_0() to
-make sure that page_cnt is non-zero and the check for zero in
-perf_buffer__new_raw_v0_6_0() can also be removed.
+Hi Greg,
 
-The code will be cleaner and more readable.
+I do not really see how the driver be written without the global data. Let's review the design.
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
-v1 -> v2: remove dependency on linux/log2.h header
+Dxgkrnl acts as the aggregator of all virtual compute devices, projected by the host. It needs to do operations, which do not belong to a particular compute device. For example, cross device synchronization and resource sharing.
 
- tools/lib/bpf/libbpf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+A PCI device device is created for each virtual compute device. Therefore, there should be a global list of objects and a mutex to synchronize access to the list.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index be6480e260c4..81bf01d67671 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10951,7 +10951,7 @@ struct perf_buffer *perf_buffer__new_raw_v0_6_0(int map_fd, size_t page_cnt,
- {
- 	struct perf_buffer_params p = {};
- 
--	if (page_cnt == 0 || !attr)
-+	if (!attr)
- 		return libbpf_err_ptr(-EINVAL);
- 
- 	if (!OPTS_VALID(opts, perf_buffer_raw_opts))
-@@ -10992,7 +10992,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
- 	__u32 map_info_len;
- 	int err, i, j, n;
- 
--	if (page_cnt & (page_cnt - 1)) {
-+	if (page_cnt == 0 || (page_cnt & (page_cnt - 1))) {
- 		pr_warn("page count should be power of two, but is %zu\n",
- 			page_cnt);
- 		return ERR_PTR(-EINVAL);
--- 
-2.35.1
+A VMBus channel is offered by the host for each compute device. The list of the VMBus channels should be global.
+
+A global VMBus channel is offered by the host. The channel does not belong to any particular compute device, so it must be global.
+
+IO space is shared by all compute devices, so its parameters should be global.
+
+Dxgkrnl needs to maintain a list of processes, which opened compute device objects. Dxgkrnl maintains private state for each process and when a process opens the /dev/dxg device, Dxgkrnl needs to find if the process state is already created by walking the global process list.
+
+Now, where to keep this global state? It could be kept in the /dev/dxg private device structure. But this structure is not available when, for example, dxg_pci_probe_device() or dxg_probe_vmbus() is called.
+
+Can there be multiple /dev/dxg devices? No. Because the /dev/dxg device represents the driver itself, not a particular compute device.
+
+I am not sure what design model you have in mind when saying there should be no global data. Could you please explain keeping in mind the above requirements?
+
+Thanks
+Iouri
 
