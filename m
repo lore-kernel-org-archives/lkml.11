@@ -2,136 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 818C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C19DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234853AbiCCTtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
+        id S234683AbiCCTt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:49:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiCCTtE (ORCPT
+        with ESMTP id S230395AbiCCTt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:49:04 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C2D1A2701;
-        Thu,  3 Mar 2022 11:48:14 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 195so5572948pgc.6;
-        Thu, 03 Mar 2022 11:48:14 -0800 (PST)
+        Thu, 3 Mar 2022 14:49:57 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FFC1A2701
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:49:10 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id ay5so5714308plb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:49:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nq2rmInutTT50JNuTi3WdH4IenPn5amupYm/+5YS6nM=;
-        b=hNYgCPz2O9db5uTiclBrG7nypU306/HnWpqPmcvXxDrb3Qq/m+b/xwi33NQzhl10SB
-         2WX61/0O+nw4OEZCNRBiOTvGpCbS5Rileh/+eXGMJm17WjFu4Ba43jHRUtKdmPlJGS/O
-         Oj5/Kmr2TtBkh4rFfhazVO2R39j87lvoK3Fz/ZCcXCbQn7YCSpnir5mSohildu8tijVB
-         TcbKGpbm36L4N8UtR2WpnsQ53TuXrqDDiFt5LCo8DhIe4wylWjZawHAWY+XHLy3Uaslp
-         oOTPkoMcWmA4SW9VI+/x8b4darMCCKgD7i8QP3iVHUvm4CdL+hnSkuMOoXCxmLN+rVTZ
-         uLaA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KQ0wcOx2SQw4Qbd73iAm9amGlmLaItMj8NK3TTfF//Q=;
+        b=qBKStBez19at04+k4VefYMHHzVnCU3z3/Q/hQe6rJ7qGX9ZthBXd97aAoxK3IUKK9/
+         oj77rXjDHVz96ddFwzl6lC2b+D14B3WOhMp0o5yvGnP1bhSgEvPn7dVz7nn8MAV0fS+E
+         ShYcMp6e0G9fGRq8ZWbK6W+yFZ0I/q05DkoZt0mGF4YfzsaOBxUMkOPbYjGN7eCN8O7C
+         HoAnOKorBgPQvW8EDoyIr0ThXzdWRC2M1D78cfFfVwHaRUr6/lSrDVKtY2D9gpmNqbjY
+         IhPRvzjhQiB7tUAsP/OqbUh4rgrfp+xlZYvBYDzbLFx/naA+IaYmwx8STpK8szVFJMpc
+         TF1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nq2rmInutTT50JNuTi3WdH4IenPn5amupYm/+5YS6nM=;
-        b=7SzodGuqpRtQML+I0qbH8HecTdrbF5EmSpKh3FLroGPzoECwYAUOBUcn2FRU8zpeUu
-         oQFYPsW8yJwopVBlGiJ2LkaHHzgVEiT5iJdg4kg2qzMZwyDwFRFiMY6lXzqutKgcPfIK
-         7EljNO5vzDxfZpeqSYZfa4F5umar6+9kFJ7/czJiGS8I+LaZziUICSwjx5olquQ1bY47
-         hx2EeBki5Y3J54QunP3YKUo2yjDi4vlFsxdzRxCzLC9jlx7KAp6qb4a7jNG0QAbAaVYD
-         Cb3EL4Tkb3VYZxfvICRCR2MKRl+kyeKNz1Ni1bV+lJu679G/lE6Pq+yhjEw7I/nMLAFT
-         yKBg==
-X-Gm-Message-State: AOAM532rVgx0tWvGn63Q5nDGbPhE6MWAA+jk94F/SOtMG5lXhTufFXlf
-        v2UxTTiPr36noQl66LBip5k=
-X-Google-Smtp-Source: ABdhPJyDMcOlF9eIIMTPVlfRlQIe07UC4nsuOmCpBbDN4ntch1XnJYQS3Kf6ITfUHnzvOtc1lFCfZw==
-X-Received: by 2002:a63:b551:0:b0:378:c0a1:49d6 with SMTP id u17-20020a63b551000000b00378c0a149d6mr16343172pgo.296.1646336893725;
-        Thu, 03 Mar 2022 11:48:13 -0800 (PST)
-Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
-        by smtp.gmail.com with ESMTPSA id nk5-20020a17090b194500b001bf01e6e558sm2889647pjb.29.2022.03.03.11.48.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KQ0wcOx2SQw4Qbd73iAm9amGlmLaItMj8NK3TTfF//Q=;
+        b=wsceUedca/0wipBw9+4GRi7nDMQvCyfGV6p/JwxC67gEViF2OLxJ6clP6BfcibfFHl
+         vtV8WVcQqI4/Qdw0th9E1xJO+ZMF9BZnEv7tdF1kHWG31Qdyy9wu9VCDbyYFMChHkciA
+         AzDPPyo6p9nlHUdSEPbw5WSVoRJnm4H01GwuwMZnfRqocdkdBuq8eQf9igMl1sSm/75d
+         EPlP0JosjSQAqblFh/jZtE6PVhzMktdGXLEvvG5O/NshRPn0cOkcoVZM0ee91Z3ijX8Y
+         K3eD1H7LiaZmCrx1IdP3SRHcESdQ+hC4l/Py7480FaSpTXZbeOfCkZ46e7V/SISRAWB9
+         Srsw==
+X-Gm-Message-State: AOAM5338Kr3MI/h5b7Oo0blOZnMl0dmxTxoHr/0lBOsncsLx0zq9gs05
+        cq9jAOvbyB8S98SaBQtCJleGlQ==
+X-Google-Smtp-Source: ABdhPJz5ZRkQK/R8WKCjGF7iOXXXgBuxdefhJTebxHJgF29bDGBNIVOBhLZryFznFg9GkrtMH1Rkwg==
+X-Received: by 2002:a17:90a:b798:b0:1bd:652a:97b5 with SMTP id m24-20020a17090ab79800b001bd652a97b5mr7019460pjr.6.1646336949863;
+        Thu, 03 Mar 2022 11:49:09 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id o6-20020a17090ad20600b001b8d01566ccsm9046957pju.8.2022.03.03.11.49.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 11:48:12 -0800 (PST)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Emma Anholt <emma@anholt.net>,
-        Jonathan Marek <jonathan@marek.ca>,
-        linux-kernel@vger.kernel.org (open list),
-        Stephen Boyd <swboyd@chromium.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 0/4] drm/msm: Clear perf counters across context switch
-Date:   Thu,  3 Mar 2022 11:46:44 -0800
-Message-Id: <20220303194758.710358-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 03 Mar 2022 11:49:09 -0800 (PST)
+Date:   Thu, 3 Mar 2022 19:49:05 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org
+Subject: Re: [PATCH 4/4] KVM: x86: lapic: don't allow to set non default apic
+ id when not using x2apic api
+Message-ID: <YiEbsasKjrvKKyff@google.com>
+References: <20220301135526.136554-1-mlevitsk@redhat.com>
+ <20220301135526.136554-5-mlevitsk@redhat.com>
+ <Yh5QJ4dJm63fC42n@google.com>
+ <6f4819b4169bd4e2ca9ab710388ebd44b7918eed.camel@redhat.com>
+ <Yh5b3eBYK/rGzFfj@google.com>
+ <297c8e41f512587230a54130a71ddfd9004c9507.camel@redhat.com>
+ <eae0b69fb8f5c47457fac853cc55b41a30762994.camel@redhat.com>
+ <YiDx/uYAMSZDvobO@google.com>
+ <df1ed2b01c74310bd4918196ba632e906e4c78f1.camel@redhat.com>
+ <YiEZJ6tg0+I+MdW5@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiEZJ6tg0+I+MdW5@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+On Thu, Mar 03, 2022, Sean Christopherson wrote:
+> With your proposed change, KVM_SET_LAPIC will fail and we've broken a functional,
+> if sketchy, setup.  Is there likely to be such a real-world setup that doesn't
+> barf on the inconsistent x2APIC ID?  Probably not, but I don't see any reason to
+> find out.
 
-Some clever folks figured out a way to use performance counters as a
-side-channel[1].  But, other than the special case of using the perf
-counters for system profiling, we can reset the counters across context
-switches to protect against this.
-
-This series introduces a SYSPROF param which a sufficiently privilaged
-userspace (like Mesa's pps-producer, which already must run as root) to
-opt-out, and makes the default behavior to reset counters on context
-switches.
-
-[1] https://dl.acm.org/doi/pdf/10.1145/3503222.3507757
-
-Rob Clark (4):
-  drm/msm: Update generated headers
-  drm/msm: Add SET_PARAM ioctl
-  drm/msm: Add SYSPROF param
-  drm/msm/a6xx: Zap counters across context switch
-
- drivers/gpu/drm/msm/adreno/a2xx.xml.h         |  26 +-
- drivers/gpu/drm/msm/adreno/a2xx_gpu.c         |   1 +
- drivers/gpu/drm/msm/adreno/a3xx.xml.h         |  30 +-
- drivers/gpu/drm/msm/adreno/a3xx_gpu.c         |   1 +
- drivers/gpu/drm/msm/adreno/a4xx.xml.h         | 112 ++-
- drivers/gpu/drm/msm/adreno/a4xx_gpu.c         |   1 +
- drivers/gpu/drm/msm/adreno/a5xx.xml.h         |  63 +-
- drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |   1 +
- drivers/gpu/drm/msm/adreno/a6xx.xml.h         | 674 +++++++++++-------
- drivers/gpu/drm/msm/adreno/a6xx_gmu.xml.h     |  26 +-
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |  30 +
- .../gpu/drm/msm/adreno/adreno_common.xml.h    |  31 +-
- drivers/gpu/drm/msm/adreno/adreno_gpu.c       |  14 +
- drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   2 +
- drivers/gpu/drm/msm/adreno/adreno_pm4.xml.h   |  46 +-
- drivers/gpu/drm/msm/disp/mdp4/mdp4.xml.h      |  37 +-
- drivers/gpu/drm/msm/disp/mdp5/mdp5.xml.h      |  37 +-
- drivers/gpu/drm/msm/disp/mdp_common.xml.h     |  37 +-
- drivers/gpu/drm/msm/dsi/dsi.xml.h             |  37 +-
- drivers/gpu/drm/msm/dsi/dsi_phy_10nm.xml.h    |  37 +-
- drivers/gpu/drm/msm/dsi/dsi_phy_14nm.xml.h    |  37 +-
- drivers/gpu/drm/msm/dsi/dsi_phy_20nm.xml.h    |  37 +-
- drivers/gpu/drm/msm/dsi/dsi_phy_28nm.xml.h    |  37 +-
- .../gpu/drm/msm/dsi/dsi_phy_28nm_8960.xml.h   |  37 +-
- drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h     | 480 -------------
- drivers/gpu/drm/msm/dsi/dsi_phy_7nm.xml.h     |  43 +-
- drivers/gpu/drm/msm/dsi/mmss_cc.xml.h         |  37 +-
- drivers/gpu/drm/msm/dsi/sfpb.xml.h            |  37 +-
- drivers/gpu/drm/msm/hdmi/hdmi.xml.h           |  37 +-
- drivers/gpu/drm/msm/hdmi/qfprom.xml.h         |  37 +-
- drivers/gpu/drm/msm/msm_drv.c                 |  28 +
- drivers/gpu/drm/msm/msm_gpu.h                 |  29 +
- drivers/gpu/drm/msm/msm_submitqueue.c         |  34 +
- include/uapi/drm/msm_drm.h                    |  28 +-
- 34 files changed, 1051 insertions(+), 1130 deletions(-)
- delete mode 100644 drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h
-
--- 
-2.35.1
-
+I take back the "probably not", this isn't even all that contrived.  Prior to the
+"migration", the guest will see a consistent x2APIC ID.  It's not hard to imagine
+a guest that snapshots the ID and never re-reads the value from "hardware".
