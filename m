@@ -2,166 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 07:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbiCCHuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 02:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        id S230338AbiCCHwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 02:52:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiCCHub (ORCPT
+        with ESMTP id S229519AbiCCHwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 02:50:31 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EE0DD94B;
-        Wed,  2 Mar 2022 23:49:47 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EB6801F383;
-        Thu,  3 Mar 2022 07:49:45 +0000 (UTC)
+        Thu, 3 Mar 2022 02:52:38 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E791DDD94B;
+        Wed,  2 Mar 2022 23:51:53 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9D90A218D9;
+        Thu,  3 Mar 2022 07:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646293785; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1646293912; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CXHHa8eiFVvmtGHsT8guaAe6cSZd25ewtaiyJj7lKDY=;
-        b=A1l780980pmpbWz22urysX9J97xlrUbXHHTY7+T75LqTr0SL6NqlWVA8CFtiWmH/rHdcJW
-        /OjPG2I+et1BeE/YbsNiCcHwbrnp0zjzA1PnYI5E1DnTOZ9MzR+p4dOrrxqEV/3DlI1fqh
-        a3Sl0mr2C0MyYqFDF/OiwsxMSHiuMC4=
+        bh=lq4MwJ9oEF5X/5RUIbbzy1pe2UILNj8/E+/osWaO6ao=;
+        b=3JrUpGllgdtpsJBkxQF/TtYQhaJ8cqLGfIYu+stU87AJx/HrNlP0bdImsEPw7izWgemF3n
+        llz7W2EMq0LP6gEpJK8epmfYUUvFPaOU9Pks1IUOns4h06b/5OjRCh1IuVH2gznqAt9ZOY
+        MBbUgjsOCFIWS8bCS9dPvWeLQElZqzc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646293785;
+        s=susede2_ed25519; t=1646293912;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CXHHa8eiFVvmtGHsT8guaAe6cSZd25ewtaiyJj7lKDY=;
-        b=F4bG/y/XyeO28RAqRFqMNQtKom0hnO+8V/AeyaUcpka38+nnnPyzSBwl/8WDQeTDdfMTmT
-        VFJW09AEE3ax2cAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        bh=lq4MwJ9oEF5X/5RUIbbzy1pe2UILNj8/E+/osWaO6ao=;
+        b=WqExyDwNOzc+GxUWSMaQb2qRorfAohmYA4gt00Yr34rMp2lgajCbBMIxxXMWww1DMChLUA
+        W4f32MZkKOcm5FCw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C4018132C1;
-        Thu,  3 Mar 2022 07:49:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id bvjFLhhzIGKDPQAAMHmgww
-        (envelope-from <jslaby@suse.cz>); Thu, 03 Mar 2022 07:49:44 +0000
-Message-ID: <0ed348d2-a3dd-22a1-0773-83369c35794e@suse.cz>
-Date:   Thu, 3 Mar 2022 08:49:44 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id ED871A3B83;
+        Thu,  3 Mar 2022 07:51:47 +0000 (UTC)
+Date:   Thu, 3 Mar 2022 08:51:52 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
+ KLP_UNPATCHED forced transition patch
+In-Reply-To: <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
+Message-ID: <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
+References: <20220301140840.29345-1-zhouchengming@bytedance.com> <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz> <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Michal Simek <michal.simek@xilinx.com>
-References: <20220302072732.1916-1-jslaby@suse.cz>
- <1be133eb-bfe8-b644-6aad-00a0a606aa05@suse.cz> <YiByDgvP3epfDfhX@kroah.com>
-From:   Jiri Slaby <jslaby@suse.cz>
-In-Reply-To: <YiByDgvP3epfDfhX@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="1678380546-1492415682-1646293912=:704"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03. 03. 22, 8:45, Greg KH wrote:
-> On Thu, Mar 03, 2022 at 07:32:59AM +0100, Jiri Slaby wrote:
->> On 02. 03. 22, 8:27, Jiri Slaby wrote:
->>> Currently, uart_console_write->putchar's second parameter (the
->>> character) is of type int. It makes little sense, provided uart_console_write()
->>> accepts the input string as "const char *s" and passes its content -- the
->>> characters -- to putchar(). So switch the character's type to unsigned
->>> char.
->>>
->>> We don't use char as that is signed on some platforms. That would cause
->>> troubles for drivers which (implicitly) cast the char to u16 when
->>> writing to the device. Sign extension would happen in that case and the
->>> value written would be completely different to the provided char. DZ is
->>> an example of such a driver -- on MIPS, it uses u16 for dz_out in
->>> dz_console_putchar().
->>>
->>> Note we do the char -> uchar conversion implicitly in
->>> uart_console_write(). Provided we do not change size of the data type,
->>> sign extension does not happen there, so the problem is void.
->>>
->>> This makes the types consistent and unified with the rest of the uart
->>> layer, which uses unsigned char in most places already. One exception is
->>> xmit_buf, but that is going to be converted later.
->>
->> Kbuild seems to serve me this one by one. So this patch is still incomplete:
->>> drivers/tty/serial/sunplus-uart.c:526:7: error: incompatible function
->> pointer types passing 'void (struct uart_port *, int)' to parameter of type
->> 'void (*)(struct uart_port *, unsigned char)'
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--1678380546-1492415682-1646293912=:704
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Thu, 3 Mar 2022, Chengming Zhou wrote:
+
+> Hi,
 > 
-> Let me just add this to my -testing branch, that will give us much
-> quicker kbuild responses and handle stuff like this easier and I can fix
-> the errors up when they are reported.
+> On 2022/3/2 5:55 下午, Miroslav Benes wrote:
+> > Hi,
+> > 
+> > On Tue, 1 Mar 2022, Chengming Zhou wrote:
+> > 
+> >> module_put() is currently never called for a patch with forced flag, to block
+> >> the removal of that patch module that might still be in use after a forced
+> >> transition.
+> >>
+> >> But klp_force_transition() will flag all patches on the list to be forced, since
+> >> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
+> >> has removed stack ordering of the livepatches, it will cause all other patches can't
+> >> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+> >>
+> >> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
+> >> transition. It can still be unloaded only if it has passed through the consistency
+> >> model in KLP_UNPATCHED transition.
+> >>
+> >> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
+> >> transition livepatch.
+> >>
+> >> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> >> ---
+> >>  kernel/livepatch/transition.c | 4 ++--
+> >>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> >> index 5683ac0d2566..8b296ad9e407 100644
+> >> --- a/kernel/livepatch/transition.c
+> >> +++ b/kernel/livepatch/transition.c
+> >> @@ -641,6 +641,6 @@ void klp_force_transition(void)
+> >>  	for_each_possible_cpu(cpu)
+> >>  		klp_update_patch_state(idle_task(cpu));
+> >>  
+> >> -	klp_for_each_patch(patch)
+> >> -		patch->forced = true;
+> >> +	if (klp_target_state == KLP_UNPATCHED)
+> >> +		klp_transition_patch->forced = true;
+> > 
+> > I do not think this would interact nicely with the atomic replace feature. 
+> > If you force the transition of a patch with ->replace set to true, no 
+> > existing patch would get ->forced set with this change, which means all 
+> > patches will be removed at the end of klp_try_complete_transition(). And 
+> > that is something we want to prevent.
+> 
+> Good point, I should check if it's an atomic replace livepatch in the else
+> branch, in which case we have to set all existing patches to forced.
 
-Note this was missed as this driver was added only few days ago, so it 
-was not covered by kbuild against my tree until then. And to me, it 
-looks like kbuild is run on my tree only when it has nothing better to 
-do (which is perfectly fine, as even that catches a lot of things).
+Yes, but that leads to a question if it then brings any value. Forcing a 
+transition should be exceptional. If it is needed, there may be other 
+issues involved which should probably be fixed. Have you come across a 
+practical situation where the patch helped?
 
-Besides that, there are two places in the driver which need update.
+Thanks
 
-So should I send a v4 or wait?
-
-thanks,
--- 
-js
-suse labs
+Miroslav
+--1678380546-1492415682-1646293912=:704--
