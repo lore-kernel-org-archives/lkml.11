@@ -2,374 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE84C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B602C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232154AbiCCJth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:49:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
+        id S231246AbiCCJua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:50:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiCCJtf (ORCPT
+        with ESMTP id S229529AbiCCJu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:49:35 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D8AB1470E8
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:48:47 -0800 (PST)
-Received: from unknown (HELO lgemrelse7q.lge.com) (156.147.1.151)
-        by 156.147.23.52 with ESMTP; 3 Mar 2022 18:48:45 +0900
-X-Original-SENDERIP: 156.147.1.151
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.151 with ESMTP; 3 Mar 2022 18:48:45 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Thu, 3 Mar 2022 18:48:24 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
-        bfields@fieldses.org, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, paolo.valente@linaro.org,
-        josef@toxicpanda.com, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, jack@suse.cz, jack@suse.com,
-        jlayton@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
-        djwong@kernel.org, dri-devel@lists.freedesktop.org,
-        airlied@linux.ie, rodrigosiqueiramelo@gmail.com,
-        melissa.srw@gmail.com, hamohammed.sa@gmail.com
-Subject: Re: [PATCH v3 00/21] DEPT(Dependency Tracker)
-Message-ID: <20220303094824.GA24977@X58A-UD3R>
-References: <1646042220-28952-1-git-send-email-byungchul.park@lge.com>
- <Yh70VkRkUfwIjPWv@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <Yh74VbNZZt35wHZD@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <20220303001812.GA20752@X58A-UD3R>
- <YiB2SZFzgBEcywgg@ip-172-31-19-208.ap-northeast-1.compute.internal>
+        Thu, 3 Mar 2022 04:50:28 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8691154720;
+        Thu,  3 Mar 2022 01:49:43 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id u3so9053578ybh.5;
+        Thu, 03 Mar 2022 01:49:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fHLfYquwZiNVbsELh+EpgmoGDweD9121DgLApka/QvA=;
+        b=CdVhSGZ57z8OqjTnZw+rvpuGupHXfRGgEfCpwr+lYtmnr3TATynK9+CMwj/OeC+QMm
+         KhsO7i/LAfKFYFaEt1bdTwTZqllc5bneHrtv1Ju5H40ysXE3UgH8TwR6hL3ebyAkQd2d
+         oVv+wqr+vNgFnATv75NEI17Wl74XEWKl0sD/wtEY/SEyUNXJNeBxKHY+PydYSgdPnDNP
+         AZO6P7sRLQGI+ftGwY+wFTw16OGoR58bRArhsNw0i15V4pF9GotphROcPVC/GkWT4gnC
+         ET7sZRwFjYE1+a9Bg9P0yXc1SRXWy218czvUqapXjd6MBBcxuHSfIWWQbG2foALeieC2
+         d8Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fHLfYquwZiNVbsELh+EpgmoGDweD9121DgLApka/QvA=;
+        b=IWRgDP7RykubpXbbmaphZE0mUANdy946T8gAJibPtnZmqbM+RJMtQFMLpn/WhJhJwV
+         z0oMdiU8ZUxtugWG2o1+61BTa6AIVjCJYuXFjyw+NF/3llDBSdL0KIo1pgbEPKPS7snH
+         g6AinynKbfsU2zWsc/oBSbPrsWETTePfz7KYIaVEgdoc+RT6Q326K9riPS/4K/DiCsqe
+         STLmN2vPL4inf7me9AWQcrc6OiajEkHYx/8X9hIaZccaqmBtd9ZUAwW+86VwvpfFr0M8
+         hHywz6Zph37E573EOAcBiDJUf2INZahPb2Qtk7StWSFu/H+G+EiOcJtAVW7Nq6gaZ8/v
+         0XEA==
+X-Gm-Message-State: AOAM533PABq5C0/eUPmi/hwSXJZelgltztA1dm/bf08OTKDsxjWPA28g
+        PuOh9+RkVpeHiAUc9RLrp8xluPcpRTNHvbi8Kbm2KmF+Y4M=
+X-Google-Smtp-Source: ABdhPJza2D81tFDK8SAUMbvNiCknXBEdiKulxW8TjzuF3mLcKyLOahi/NjYHGmzw12LY7sBIdX4o6XObqVU0Oue9kNc=
+X-Received: by 2002:a25:5145:0:b0:61d:ad99:6e5a with SMTP id
+ f66-20020a255145000000b0061dad996e5amr32495636ybb.228.1646300982969; Thu, 03
+ Mar 2022 01:49:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiB2SZFzgBEcywgg@ip-172-31-19-208.ap-northeast-1.compute.internal>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <20220303015151.1711860-1-pgwipeout@gmail.com> <CAPDyKFrk+HCbSZtB7uv6u9tjTgzFDjpB9oP9FYJUqNxcCzQ9iw@mail.gmail.com>
+In-Reply-To: <CAPDyKFrk+HCbSZtB7uv6u9tjTgzFDjpB9oP9FYJUqNxcCzQ9iw@mail.gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Thu, 3 Mar 2022 04:49:30 -0500
+Message-ID: <CAMdYzYrndAwWJELRRL4kP-BCdWuF6bLVwS2PUMVx_UcJZE=nsQ@mail.gmail.com>
+Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: fix handling invalid clock rates
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Addy Ke <addy.ke@rock-chips.com>,
+        Doug Anderson <dianders@chromium.org>,
+        linux-mmc@vger.kernel.org,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 08:03:21AM +0000, Hyeonggon Yoo wrote:
-> On Thu, Mar 03, 2022 at 09:18:13AM +0900, Byungchul Park wrote:
-> > Hi Hyeonggon,
-> > 
-> > Dept also allows the following scenario when an user guarantees that
-> > each lock instance is different from another at a different depth:
+On Thu, Mar 3, 2022 at 2:53 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> On Thu, 3 Mar 2022 at 02:52, Peter Geis <pgwipeout@gmail.com> wrote:
 > >
-> >    lock A0 with depth
-> >    lock A1 with depth + 1
-> >    lock A2 with depth + 2
-> >    lock A3 with depth + 3
-> >    (and so on)
-> >    ..
-> >    unlock A3
-> >    unlock A2
-> >    unlock A1
-> >    unlock A0
-
-Look at this. Dept allows object->lock -> other_object->lock (with a
-different depth using *_lock_nested()) so won't report it.
-
-> > However, Dept does not allow the following scenario where another lock
-> > class cuts in the dependency chain:
-> > 
-> >    lock A0 with depth
-> >    lock B
-> >    lock A1 with depth + 1
-> >    lock A2 with depth + 2
-> >    lock A3 with depth + 3
-> >    (and so on)
-> >    ..
-> >    unlock A3
-> >    unlock A2
-> >    unlock A1
-> >    unlock B
-> >    unlock A0
-> > 
-> > This scenario is clearly problematic. What do you think is going to
-> > happen with another context running the following?
+> > The Rockchip ciu clock cannot be set as low as the dw-mmc hardware
+> > supports. This leads to a situation during card initialization where the
+> > ciu clock is set lower than the clock driver can support. The
+> > dw-mmc-rockchip driver spews errors when this happens.
+> > For normal operation this only happens a few times during boot, but when
+> > cd-broken is enabled (in cases such as the SoQuartz module) this fires
+> > multiple times each poll cycle.
 > >
-> 
-> First of all, I want to say I'm not expert at locking primitives.
-> I may be wrong.
+> > Fix this by testing the minimum frequency the clock driver can support
+> > that is within the mmc specification, then divide that by the internal
+> > clock divider. Set the f_min frequency to this value, or if it fails,
+> > set f_min to the downstream driver's default.
+> >
+> > Fixes: f629ba2c04c9 ("mmc: dw_mmc: add support for RK3288")
+> >
+> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> > ---
+> >  drivers/mmc/host/dw_mmc-rockchip.c | 31 ++++++++++++++++++++++++++----
+> >  1 file changed, 27 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
+> > index 95d0ec0f5f3a..c198590cd74a 100644
+> > --- a/drivers/mmc/host/dw_mmc-rockchip.c
+> > +++ b/drivers/mmc/host/dw_mmc-rockchip.c
+> > @@ -15,7 +15,9 @@
+> >  #include "dw_mmc.h"
+> >  #include "dw_mmc-pltfm.h"
+> >
+> > -#define RK3288_CLKGEN_DIV       2
+> > +#define RK3288_CLKGEN_DIV      2
+> > +#define RK3288_MIN_INIT_FREQ   375000
+> > +#define MMC_MAX_INIT_FREQ      400000
+> >
+> >  struct dw_mci_rockchip_priv_data {
+> >         struct clk              *drv_clk;
+> > @@ -27,6 +29,7 @@ struct dw_mci_rockchip_priv_data {
+> >  static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
+> >  {
+> >         struct dw_mci_rockchip_priv_data *priv = host->priv;
+> > +       struct mmc_host *mmc = mmc_from_priv(host);
+> >         int ret;
+> >         unsigned int cclkin;
+> >         u32 bus_hz;
+> > @@ -34,6 +37,10 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
+> >         if (ios->clock == 0)
+> >                 return;
+> >
+> > +       /* the clock will fail if below the f_min rate */
+> > +       if (ios->clock < mmc->f_min)
+> > +               ios->clock = mmc->f_min;
+> > +
+>
+> You shouldn't need this. The mmc core should manage this already.
 
-It's okay. Thanks anyway for your feedback.
+I thought so too, but while setting f_min did reduce the number of
+errors, it didn't stop them completely.
+Each tick I was getting three failures, it turns out mmc core tries
+anyways with 300000, 200000, and 100000.
+Clamping it here was necessary to stop these.
 
-> > >   45  *   scan_mutex [-> object->lock] -> kmemleak_lock -> other_object->lock (SINGLE_DEPTH_NESTING)
-> > >   46  *
-> > >   47  * No kmemleak_lock and object->lock nesting is allowed outside scan_mutex
-> > >   48  * regions.
-> 
-> lock order in kmemleak is described above.
-> 
-> and DEPT detects two cases as deadlock:
-> 
-> 1) object->lock -> other_object->lock
-
-It's not a deadlock *IF* two have different depth using *_lock_nested().
-Dept also allows this case. So Dept wouldn't report it.
-
-> 2) object->lock -> kmemleak_lock, kmemleak_lock -> other_object->lock
-
-But this usage is risky. I already explained it in the mail you replied
-to. I copied it. See the below.
-
-context A
-> >    lock A0 with depth
-> >    lock B
-> >    lock A1 with depth + 1
-> >    lock A2 with depth + 2
-> >    lock A3 with depth + 3
-> >    (and so on)
-> >    ..
-> >    unlock A3
-> >    unlock A2
-> >    unlock A1
-> >    unlock B
-> >    unlock A0
-
-...
-
-context B
-> >    lock A1 with depth
-> >    lock B
-> >    lock A2 with depth + 1
-> >    lock A3 with depth + 2
-> >    (and so on)
-> >    ..
-> >    unlock A3
-> >    unlock A2
-> >    unlock B
-> >    unlock A1
-
-where Ax : object->lock, B : kmemleak_lock.
-
-A deadlock might occur if the two contexts run at the same time.
-
-> And in kmemleak case, 1) and 2) is not possible because it must hold
-> scan_mutex first.
-
-This is another issue. Let's focus on whether the order is okay for now.
-
-> I think the author of kmemleak intended lockdep to treat object->lock
-> and other_object->lock as different class, using raw_spin_lock_nested().
-
-Yes. The author meant to assign a different class according to its depth
-using a Lockdep API. Strictly speaking, those are the same class anyway
-but we assign a different class to each depth to avoid Lockdep splats
-*IF* the user guarantees the nesting lock usage is safe, IOW, guarantees
-each lock instance is different at a different depth.
-
-I was fundamentally asking you... so... is the nesting lock usage safe
-for real? I hope you distinguish between the safe case and the risky
-case when *_lock_nested() is involved. Thoughts?
-
-Thanks,
-Byungchul
-
-> Am I missing something?
-> 
-> Thanks.
-> 
-> >    lock A1 with depth
-> >    lock B
-> >    lock A2 with depth + 1
-> >    lock A3 with depth + 2
-> >    (and so on)
-> >    ..
-> >    unlock A3
-> >    unlock A2
-> >    unlock B
-> >    unlock A1
-> > 
-> > It's a deadlock. That's why Dept reports this case as a problem. Or am I
-> > missing something?
-> > 
-> > Thanks,
-> > Byungchul
-> > 
-> > > ---------------------------------------------------
-> > > context A's detail
-> > > ---------------------------------------------------
-> > > context A
-> > >     [S] __raw_spin_lock_irqsave(&object->lock:0)
-> > >     [W] __raw_spin_lock_irqsave(kmemleak_lock:0)
-> > >     [E] spin_unlock(&object->lock:0)
-> > > 
-> > > [S] __raw_spin_lock_irqsave(&object->lock:0):
-> > > [<ffffffc00810302c>] scan_gray_list+0x84/0x13c
-> > > stacktrace:
-> > >       dept_ecxt_enter+0x88/0xf4
-> > >       _raw_spin_lock_irqsave+0xf0/0x1c4
-> > >       scan_gray_list+0x84/0x13c
-> > >       kmemleak_scan+0x2d8/0x54c
-> > >       kmemleak_scan_thread+0xac/0xd4
-> > >       kthread+0xd4/0xe4
-> > >       ret_from_fork+0x10/0x20
-> > > 
-> > > [W] __raw_spin_lock_irqsave(kmemleak_lock:0):
-> > > [<ffffffc008102ebc>] scan_block+0x3c/0x128
-> > > stacktrace:
-> > >       __dept_wait+0x8c/0xa4
-> > >       dept_wait+0x6c/0x88
-> > >       _raw_spin_lock_irqsave+0xb8/0x1c4
-> > >       scan_block+0x3c/0x128
-> > >       scan_gray_list+0xc4/0x13c
-> > >       kmemleak_scan+0x2d8/0x54c
-> > >       kmemleak_scan_thread+0xac/0xd4
-> > >       kthread+0xd4/0xe4
-> > >       ret_from_fork+0x10/0x20
-> > > 
-> > > [E] spin_unlock(&object->lock:0):
-> > > [<ffffffc008102ee0>] scan_block+0x60/0x128
-> > > 
-> > > ---------------------------------------------------
-> > > context B's detail
-> > > ---------------------------------------------------
-> > > context B
-> > >     [S] __raw_spin_lock_irqsave(kmemleak_lock:0)
-> > >     [W] _raw_spin_lock_nested(&object->lock:0)
-> > >     [E] spin_unlock(kmemleak_lock:0)
-> > > 
-> > > [S] __raw_spin_lock_irqsave(kmemleak_lock:0):
-> > > [<ffffffc008102ebc>] scan_block+0x3c/0x128
-> > > stacktrace:
-> > >       dept_ecxt_enter+0x88/0xf4
-> > >       _raw_spin_lock_irqsave+0xf0/0x1c4
-> > >       scan_block+0x3c/0x128
-> > >       kmemleak_scan+0x19c/0x54c
-> > >       kmemleak_scan_thread+0xac/0xd4
-> > >       kthread+0xd4/0xe4
-> > >       ret_from_fork+0x10/0x20
-> > > 
-> > > [W] _raw_spin_lock_nested(&object->lock:0):
-> > > [<ffffffc008102f34>] scan_block+0xb4/0x128
-> > > stacktrace:
-> > >       dept_wait+0x74/0x88
-> > >       _raw_spin_lock_nested+0xa8/0x1b0
-> > >       scan_block+0xb4/0x128
-> > >       kmemleak_scan+0x19c/0x54c
-> > >       kmemleak_scan_thread+0xac/0xd4
-> > >       kthread+0xd4/0xe4
-> > >       ret_from_fork+0x10/0x20
-> > > [E] spin_unlock(kmemleak_lock:0):
-> > > [<ffffffc008102ee0>] scan_block+0x60/0x128
-> > > stacktrace:
-> > >       dept_event+0x7c/0xfc
-> > >       _raw_spin_unlock_irqrestore+0x8c/0x120
-> > >       scan_block+0x60/0x128
-> > >       kmemleak_scan+0x19c/0x54c
-> > >       kmemleak_scan_thread+0xac/0xd4
-> > >       kthread+0xd4/0xe4
-> > >       ret_from_fork+0x10/0x20
-> > > ---------------------------------------------------
-> > > information that might be helpful
-> > > ---------------------------------------------------
-> > > CPU: 1 PID: 38 Comm: kmemleak Tainted: G        W         5.17.0-rc1+ #1
-> > > Hardware name: linux,dummy-virt (DT)
-> > > Call trace:
-> > >  dump_backtrace.part.0+0x9c/0xc4
-> > >  show_stack+0x14/0x28
-> > >  dump_stack_lvl+0x9c/0xcc
-> > >  dump_stack+0x14/0x2c
-> > >  print_circle+0x2d4/0x438
-> > >  cb_check_dl+0x6c/0x70
-> > >  bfs+0xc0/0x168
-> > >  add_dep+0x88/0x11c
-> > >  add_wait+0x2d0/0x2dc
-> > >  __dept_wait+0x8c/0xa4
-> > >  dept_wait+0x6c/0x88
-> > >  _raw_spin_lock_irqsave+0xb8/0x1c4
-> > >  scan_block+0x3c/0x128
-> > >  scan_gray_list+0xc4/0x13c
-> > >  kmemleak_scan+0x2d8/0x54c
-> > >  kmemleak_scan_thread+0xac/0xd4
-> > >  kthread+0xd4/0xe4
-> > >  ret_from_fork+0x10/0x20
-> > > 
-> > > > ===================================================
-> > > > DEPT: Circular dependency has been detected.
-> > > > 5.17.0-rc1+ #1 Tainted: G        W
-> > > > ---------------------------------------------------
-> > > > summary
-> > > > ---------------------------------------------------
-> > > > *** AA DEADLOCK ***
-> > > > 
-> > > > context A
-> > > >     [S] __raw_spin_lock_irqsave(&object->lock:0)
-> > > >     [W] _raw_spin_lock_nested(&object->lock:0)
-> > > >     [E] spin_unlock(&object->lock:0)
-> > > > 
-> > > > [S]: start of the event context
-> > > > [W]: the wait blocked
-> > > > [E]: the event not reachable
-> > > > ---------------------------------------------------
-> > > > context A's detail
-> > > > ---------------------------------------------------
-> > > > context A
-> > > >     [S] __raw_spin_lock_irqsave(&object->lock:0)
-> > > >     [W] _raw_spin_lock_nested(&object->lock:0)
-> > > >     [E] spin_unlock(&object->lock:0)
-> > > > 
-> > > > [S] __raw_spin_lock_irqsave(&object->lock:0):
-> > > > [<ffffffc00810302c>] scan_gray_list+0x84/0x13c
-> > > > stacktrace:
-> > > >       dept_ecxt_enter+0x88/0xf4
-> > > >       _raw_spin_lock_irqsave+0xf0/0x1c4
-> > > >       scan_gray_list+0x84/0x13c
-> > > >       kmemleak_scan+0x2d8/0x54c
-> > > >       kmemleak_scan_thread+0xac/0xd4
-> > > >       kthread+0xd4/0xe4
-> > > >       ret_from_fork+0x10/0x20
-> > > > 
-> > > > [E] spin_unlock(&object->lock:0):
-> > > > [<ffffffc008102ee0>] scan_block+0x60/0x128
-> > > > ---------------------------------------------------
-> > > > information that might be helpful
-> > > > ---------------------------------------------------
-> > > > CPU: 1 PID: 38 Comm: kmemleak Tainted: G        W         5.17.0-rc1+ #1
-> > > > Hardware name: linux,dummy-virt (DT)
-> > > > Call trace:
-> > > >  dump_backtrace.part.0+0x9c/0xc4
-> > > >  show_stack+0x14/0x28
-> > > >  dump_stack_lvl+0x9c/0xcc
-> > > >  dump_stack+0x14/0x2c
-> > > >  print_circle+0x2d4/0x438
-> > > >  cb_check_dl+0x44/0x70
-> > > >  bfs+0x60/0x168
-> > > >  add_dep+0x88/0x11c
-> > > >  add_wait+0x2d0/0x2dc
-> > > >  __dept_wait+0x8c/0xa4
-> > > >  dept_wait+0x6c/0x88
-> > > >  _raw_spin_lock_nested+0xa8/0x1b0
-> > > >  scan_block+0xb4/0x128
-> > > >  scan_gray_list+0xc4/0x13c
-> > > >  kmemleak_scan+0x2d8/0x54c
-> > > >  kmemleak_scan_thread+0xac/0xd4
-> > > >  kthread+0xd4/0xe4
-> > > >  ret_from_fork+0x10/0x20
-> > > >
-> > > [...]
-> > > 
-> > > --
-> > > Thank you, You are awesome!
-> > > Hyeonggon :-)
-> 
-> -- 
-> Thank you, You are awesome!
-> Hyeonggon :-)
+>
+> >         /*
+> >          * cclkin: source clock of mmc controller
+> >          * bus_hz: card interface clock generated by CLKGEN
+> > @@ -51,7 +58,7 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
+> >
+> >         ret = clk_set_rate(host->ciu_clk, cclkin);
+> >         if (ret)
+> > -               dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
+> > +               dev_warn(host->dev, "failed to set rate %uHz err: %d\n", cclkin, ret);
+> >
+> >         bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
+> >         if (bus_hz != host->bus_hz) {
+> > @@ -290,13 +297,29 @@ static int dw_mci_rk3288_parse_dt(struct dw_mci *host)
+> >
+> >  static int dw_mci_rockchip_init(struct dw_mci *host)
+> >  {
+> > +       struct mmc_host *mmc = mmc_from_priv(host);
+> > +       int ret;
+> > +
+> >         /* It is slot 8 on Rockchip SoCs */
+> >         host->sdio_id0 = 8;
+> >
+> > -       if (of_device_is_compatible(host->dev->of_node,
+> > -                                   "rockchip,rk3288-dw-mshc"))
+> > +       if (of_device_is_compatible(host->dev->of_node, "rockchip,rk3288-dw-mshc")) {
+> >                 host->bus_hz /= RK3288_CLKGEN_DIV;
+> >
+> > +               /* clock driver will fail if the clock is less than the lowest source clock
+> > +                * divided by the internal clock divider. Test for the lowest available
+> > +                * clock and set the f_min freq to clock / clock divider. If we fail, set
+> > +                * it to the downstream hardcoded value.
+> > +                */
+> > +               ret = clk_round_rate(host->ciu_clk, MMC_MAX_INIT_FREQ * RK3288_CLKGEN_DIV);
+> > +               if (ret < 0) {
+> > +                       dev_warn(host->dev, "mmc safe rate failed: %d\n", ret);
+> > +                       mmc->f_min = RK3288_MIN_INIT_FREQ;
+> > +               } else {
+> > +                       mmc->f_min = ret / RK3288_CLKGEN_DIV;
+> > +               }
+> > +       }
+> > +
+> >         return 0;
+> >  }
+> >
+>
+> Kind regards
+> Uffe
