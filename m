@@ -2,116 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E71A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 21:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72524C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 21:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236654AbiCCVs1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 16:48:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
+        id S236659AbiCCVte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 16:49:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236649AbiCCVsX (ORCPT
+        with ESMTP id S231607AbiCCVtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 16:48:23 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F233135D
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 13:47:36 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id 185so5067366qkh.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 13:47:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rji+h/iFnFLj8FpzIOhwbt0hO9QMBbgpXl1+qKfBYuc=;
-        b=0QaRtijCQd+4yLPVDNG6t4KItjzq5cv6Cz4j3pJ31MSFEfTZ2QL6t4iC0+IbhpcRhL
-         XA1asggnqVblhI7DD4KmNbRvLZ6qsGAiIDXPwCg08Q7PBPWoKQ6xShB8uLhuLVEd3UjC
-         G/LMYCDVM4Vz60u4gMlT5y8wyP83lrUq+YMIbDxfnjH15YWTBf0jJRqoJBAIrApsIyit
-         cKZT6zLJsu3aoQYdF1rJaEBCFFsoakDASpbwinSohf15+B8lhlbhIKq4IlGeIEYdpCGz
-         noyWtm2tApSbQVmH+55T/3KIDWuU1e4jDXza05PyYwZKFtK/gejbbS1uor/kGJ6P1CEr
-         LMRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rji+h/iFnFLj8FpzIOhwbt0hO9QMBbgpXl1+qKfBYuc=;
-        b=GudfSQWNolz/d0XuuhGYVeQqnrnWe9fH39WktgOd4YQ7f57cqSXMJBV0pHneQVBz8/
-         8ib4/AxRIKOHPJY09s3OfxvtMtqdz3bATGgEI/Gn9xqqmrdYCDiH4OBFysQQeZ5h7U6M
-         t8yc08OMZjTCUC/zrpkYXpQMWXqbXgH77ggKJKowT2GOZNnfyeOINyW2ZVAGEz2B1BQj
-         hVJJXbwMQK4ry53xigHsHlWA84PZ7VvGH/uIaxsS92NotCody6AiXPqSSuedA4m7C1xR
-         rqOudcOddH31VGRfLLVubID6zCht+c1XENqTBtVsV59cpEBlXQKgllmYglJHwtBYoCVq
-         37+w==
-X-Gm-Message-State: AOAM531tLAojygpr4DEfkXZ6b0amWMPPBvTQc+HdmIvKB46eGMPYxIcg
-        mtwPyubAIgL1nZzMGRxsZJnswsBzFZ5dBA==
-X-Google-Smtp-Source: ABdhPJzJUziCNDJnJB8R8sdQIxVfsij1G+IbtCXV/19jQT6cDwa4QUOpUlh+W4wxFA5Chnfo25XxHw==
-X-Received: by 2002:a05:620a:66c:b0:663:f4:ee5 with SMTP id a12-20020a05620a066c00b0066300f40ee5mr788391qkh.560.1646344055990;
-        Thu, 03 Mar 2022 13:47:35 -0800 (PST)
-Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id o200-20020a37a5d1000000b0064904a35862sm1561405qke.96.2022.03.03.13.47.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 13:47:35 -0800 (PST)
-Date:   Thu, 3 Mar 2022 16:47:34 -0500
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: madvise: MADV_DONTNEED_LOCKED
-Message-ID: <YiE3do4qCmJ6RsmP@cmpxchg.org>
-References: <20220303212956.229409-1-hannes@cmpxchg.org>
+        Thu, 3 Mar 2022 16:49:32 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C8AAE5B;
+        Thu,  3 Mar 2022 13:48:45 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 223LmgLV023479;
+        Thu, 3 Mar 2022 21:48:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=1pbqyUEw1bzH9TofM6xgfYFQ/n9JBpL9GVCRuT7xppI=;
+ b=FtAQJ60BYY+PMN+N3G67foUKkyYTWhnM98Jm58W4h9Q+XHQkt4ge3AgF0BHdOm4YmRCi
+ vawNOnSjR+i0VbD7WEa6UI2tnqWfNxEQkka8YOA8yysEBZz02g0JYu/1ZwTR8K+zoGN4
+ Lu3ricPGLR7Gfqknu8zbC37/0zXGC6JwJlJC2LXSuX8fHnUMTMViorRWVU77zpJi9X2r
+ HZaBZvQzTCh7Q+O3t1AuejLEBhjemddUGWri3JjnMYEaAUZTMT6pPunIYvSt29+CLzXZ
+ MF1Qure8/DhNZX6SWFM0WbLsi8l39fMPkVtZi7YKnMKwmQ0JDQvir4xXDvUSrl6CrzgF Fg== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ek5ww8014-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Mar 2022 21:48:42 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 223Lbbiu028147;
+        Thu, 3 Mar 2022 21:48:41 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02wdc.us.ibm.com with ESMTP id 3ek4kd0g5x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Mar 2022 21:48:40 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 223LmdtW14025356
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 3 Mar 2022 21:48:39 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 93FEB12405A;
+        Thu,  3 Mar 2022 21:48:39 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 93A6B124055;
+        Thu,  3 Mar 2022 21:48:38 +0000 (GMT)
+Received: from [9.211.103.39] (unknown [9.211.103.39])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu,  3 Mar 2022 21:48:38 +0000 (GMT)
+Message-ID: <b1ec9ab3-d621-fa66-0fae-f966242f3f7f@linux.ibm.com>
+Date:   Thu, 3 Mar 2022 15:48:37 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2] USB: serial: pl2303: Add IBM device IDs
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>, Joel Stanley <joel@jms.id.au>
+Cc:     linux-usb@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>
+References: <20220301224446.21236-1-eajames@linux.ibm.com>
+ <YiB7gz0GJ1Uz0mE2@hovoldconsulting.com>
+ <CACPK8XfoCXisL=udkuO-x4LZ3r-9iKA2d7oLb7KmXs3+LkQgnQ@mail.gmail.com>
+ <YiCHPuNkMuO4uARu@hovoldconsulting.com>
+ <CACPK8XfUCyVgwVYLt_99CgQWuoFTw7O9d2NiuzMzGPa1VFVUyg@mail.gmail.com>
+ <YiCN+x2XPiawaweY@hovoldconsulting.com>
+ <CACPK8Xc9MnM9_jr7NrNLtqBrN_t8D7G-scQvk51vbpOU6LWeuw@mail.gmail.com>
+ <YiCU3KI9Dh2psRnK@hovoldconsulting.com>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <YiCU3KI9Dh2psRnK@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Shm5Iy2_Dk68VoVDh6BUihLcMU3Q8uLU
+X-Proofpoint-ORIG-GUID: Shm5Iy2_Dk68VoVDh6BUihLcMU3Q8uLU
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303212956.229409-1-hannes@cmpxchg.org>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-03_09,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ priorityscore=1501 spamscore=0 mlxlogscore=999 impostorscore=0 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 phishscore=0 mlxscore=0 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203030097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 04:29:56PM -0500, Johannes Weiner wrote:
-> MADV_DONTNEED historically rejects mlocked ranges, but with
-> MLOCK_ONFAULT and MCL_ONFAULT allowing to mlock without populating,
-> there are valid use cases for depopulating locked ranges as well.
-> 
-> Users mlock memory to protect secrets. There are allocators for secure
-> buffers that want in-use memory generally mlocked, but cleared and
-> invalidated memory to give up the physical pages. This could be done
-> with explicit munlock -> mlock calls on free -> alloc of course, but
-> that adds two unnecessary syscalls, heavy mmap_sem write locks, vma
-> splits and re-merges - only to get rid of the backing pages.
-> 
-> Users also mlockall(MCL_ONFAULT) to suppress sustained paging, but are
-> okay with on-demand initial population. It seems valid to selectively
-> free some memory during the lifetime of such a process, without having
-> to mess with its overall policy.
-> 
-> Why add a separate flag? Isn't this a pretty niche usecase?
-> 
-> - MADV_DONTNEED has been bailing on locked vmas forever. It's at least
->   conceivable that someone, somewhere is relying on mlock to protect
->   data from perhaps broader invalidation calls. Changing this behavior
->   now could lead to quiet data corruption.
-> 
-> - It also clarifies expectations around MADV_FREE and maybe
->   MADV_REMOVE. It avoids the situation where one quietly behaves
->   different than the others. MADV_FREE_LOCKED can be added later.
-> 
-> - The combination of mlock() and madvise() in the first place is
->   probably niche. But where it happens, I'd say that dropping pages
->   from a locked region once they don't contain secrets or won't page
->   anymore is much saner than relying on mlock to protect memory from
->   speculative or errant invalidation calls. It's just that we can't
->   change the default behavior because of the two previous points.
-> 
-> Given that, an explicit new flag seems to make the most sense.
-> 
-> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
 
-Just for context, I found this discussion back from 2018:
+On 3/3/22 04:13, Johan Hovold wrote:
+> On Thu, Mar 03, 2022 at 09:46:05AM +0000, Joel Stanley wrote:
+>> On Thu, 3 Mar 2022 at 09:44, Johan Hovold <johan@kernel.org> wrote:
+>>> On Thu, Mar 03, 2022 at 09:24:51AM +0000, Joel Stanley wrote:
+>>>> On Thu, 3 Mar 2022 at 09:15, Johan Hovold <johan@kernel.org> wrote:
+>>>>> On Thu, Mar 03, 2022 at 08:52:29AM +0000, Joel Stanley wrote:
+>>>>>> On Thu, 3 Mar 2022 at 08:25, Johan Hovold <johan@kernel.org> wrote:
+>>>>>>> On Tue, Mar 01, 2022 at 04:44:46PM -0600, Eddie James wrote:
+>>>>>>>> IBM manufactures a PL2303 device for UPS communications. Add the vendor
+>>>>>>>> and product IDs so that the PL2303 driver binds to the device.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Joel Stanley <joel@jms.id.au>
+>>>>>>>> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+>>>>>>>> ---
+>>>>>>>> Changes since v1:
+>>>>>>>>   - Fix commit message Signed-off-by ordering.
+>>>>>>> Almost there. You're still missing a Co-developed-by tag, a From line,
+>>>>>>> or both.
+>>>>>> It's neither. This patch was applied to a tree by myself, and I asked
+>>>>>> Eddie to send it to mainline for merging.
+>>>>> Then you are missing a From line. As the patch looks like know, Eddie is
+>>>>> considered the author and not you.
+>>>> You are incorrect. Eddie is the author.
+>>> Then what is your SoB doing there in the first place? If Eddie is the
+>>> sole author as well as the submitter, and you didn't touch the patch in
+>>> between, then your SoB does not belong in the chain.
+>>>
+>>> If you applied Eddie's patch to your shared tree and Eddie generated a
+>>> patch from there, then the chain should be:
+>>>
+>>>          SoB: E
+>>>          SoB: J
+>>>          SoB: E
+>>>
+>>> but this is starting to look a bit ridiculous.
+>> I agree. I would appreciate it if you applied the patch, with or
+>> without my sob in whatever order you deem fit.
+> Ok, I'll assume what you intended was E-J-E but that perhaps
+> git-format-patch swallowed the last SoB. Thanks for clarifying.
+>
+> I was going to apply to the patch, but I see now that you didn't provide
+> any details about the product apart from it being a UPS and that's not
+> reflected in the define name.
+>
+> Do you have a pointer to device (family) in question?
 
-https://lkml.iu.edu/hypermail/linux/kernel/1806.1/00483.html
 
-It seems to me that the usecase wasn't really in question, but people
-weren't sure about the API, and then Jason found a workaround before
-the discussion really concluded. I was asked internally about this
-feature, so I'm submitting another patch in this direction, but with
-more thoughts on why I chose to go with a new flag. Hopefully we can
-work it out this time around :-)
+Hi,
 
-Thanks
+
+It's a pretty generic pl2303 device and doesn't have to be used for UPS, 
+but that is our use-case. Here is a page with some detail about the 
+device: 
+https://www.ibm.com/docs/en/power9/9009-22A?topic=power-uninterruptible-supply
+
+
+Thanks,
+
+Eddie
+
+
+>
+> Johan
