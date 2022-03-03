@@ -2,150 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BACC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3189C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiCCLe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:34:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
+        id S230211AbiCCLfD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:35:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232738AbiCCLbM (ORCPT
+        with ESMTP id S232866AbiCCLbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:12 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8126B1795D5
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=V8QY1pYX+d9tDtpObRzYPlZyD2xDu/v2HceiF0ugrr8=; b=KA/2SeNQs47JfyE0qpVc/NsHiJ
-        b6Wh2NTQFhej7KXbLa/YGgr3XmutUkyyIkh3zITHAhfNqVpVxEaBpwB16F1WugzKjj50CmKDF30gK
-        JF1ZhcP6S0U2JTXLiQf1DeVUKIxPHtGpS5huCIsclZKjfyGeMakPSxbOeW0cGe64oCzS9F8wwtqVO
-        XQDm+Stgwp2S03ZLWvlvzZa2jLzWfvk2N315NtUNQkKZW2sc1tF+C9YDvOV3+rZrzq5JCe/I+kXCN
-        hB0UsSYL00pKuuezg90n/rowIAAIpG/EA8dqYQ/VSs4cFHHI5kDGzH5yUOwJTOjHFKzcL4rihwQM0
-        RCySp1BQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeg-00BaGm-Cz; Thu, 03 Mar 2022 11:29:58 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DDD62300C24;
-        Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 2F336300198FF; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112825.374987328@infradead.org>
-User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:28 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 07/39] x86/ibt,paravirt: Use text_gen_insn() for paravirt_patch()
-References: <20220303112321.422525803@infradead.org>
+        Thu, 3 Mar 2022 06:31:44 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9F2717DBAF;
+        Thu,  3 Mar 2022 03:30:47 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 2904692009C; Thu,  3 Mar 2022 12:30:46 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 224A792009B;
+        Thu,  3 Mar 2022 11:30:46 +0000 (GMT)
+Date:   Thu, 3 Mar 2022 11:30:46 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Paul Cercueil <paul@crapouillou.net>
+cc:     Jiri Slaby <jslaby@suse.cz>,
+        David Laight <David.Laight@ACULAB.COM>,
+        =?UTF-8?Q?'Uwe_Kleine-K=C3=B6nig'?= 
+        <u.kleine-koenig@pengutronix.de>, gregkh@linuxfoundation.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Baruch Siach <baruch@tkos.co.il>, linux-kernel@vger.kernel.org,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Andy Gross <agross@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Takao Orito <orito.takao@socionext.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
+ an unsigned char
+In-Reply-To: <BIZ58R.9EXA9J3HVHS13@crapouillou.net>
+Message-ID: <alpine.DEB.2.21.2203031102570.50870@angie.orcam.me.uk>
+References: <20220302072732.1916-1-jslaby@suse.cz> <20220302175242.ejiaf36vszr4xvou@pengutronix.de> <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com> <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz> <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
+ <BIZ58R.9EXA9J3HVHS13@crapouillou.net>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Less duplication is more better.
+On Thu, 3 Mar 2022, Paul Cercueil wrote:
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/include/asm/text-patching.h |   20 ++++++++++++++------
- arch/x86/kernel/paravirt.c           |   23 +++--------------------
- 2 files changed, 17 insertions(+), 26 deletions(-)
+> >  We do have an issue, because we still have this:
+> > 
+> > void uart_console_write(struct uart_port *port, const char *s,
+> > 			unsigned int count,
+> > 			void (*putchar)(struct uart_port *, int))
+> > 
+> > and then:
+> > 
+> > 		putchar(port, *s);
+> > 
+> > there.  Consequently on targets where plain `char' type is signed the
+> > value retrieved from `*s' has to be truncated in the call to `putchar'.
+> > And indeed it happens with the MIPS target:
+> > 
+> > 803ae47c:	82050000 	lb	a1,0(s0)
+> > 803ae480:	26100001 	addiu	s0,s0,1
+> > 803ae484:	02402025 	move	a0,s2
+> > 803ae488:	0220f809 	jalr	s1
+> > 803ae48c:	30a500ff 	andi	a1,a1,0xff
+> > 
+> > vs current code:
+> > 
+> > 803ae47c:	82050000 	lb	a1,0(s0)
+> > 803ae480:	26100001 	addiu	s0,s0,1
+> > 803ae484:	0220f809 	jalr	s1
+> > 803ae488:	02402025 	move	a0,s2
+> 
+> And how is that at all a problem?
 
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -96,32 +96,40 @@ union text_poke_insn {
- };
- 
- static __always_inline
--void *text_gen_insn(u8 opcode, const void *addr, const void *dest)
-+void __text_gen_insn(void *buf, u8 opcode, const void *addr, const void *dest, int size)
- {
--	static union text_poke_insn insn; /* per instance */
--	int size = text_opcode_size(opcode);
-+	union text_poke_insn *insn = buf;
-+
-+	BUG_ON(size < text_opcode_size(opcode));
- 
- 	/*
- 	 * Hide the addresses to avoid the compiler folding in constants when
- 	 * referencing code, these can mess up annotations like
- 	 * ANNOTATE_NOENDBR.
- 	 */
-+	OPTIMIZER_HIDE_VAR(insn);
- 	OPTIMIZER_HIDE_VAR(addr);
- 	OPTIMIZER_HIDE_VAR(dest);
- 
--	insn.opcode = opcode;
-+	insn->opcode = opcode;
- 
- 	if (size > 1) {
--		insn.disp = (long)dest - (long)(addr + size);
-+		insn->disp = (long)dest - (long)(addr + size);
- 		if (size == 2) {
- 			/*
- 			 * Ensure that for JMP8 the displacement
- 			 * actually fits the signed byte.
- 			 */
--			BUG_ON((insn.disp >> 31) != (insn.disp >> 7));
-+			BUG_ON((insn->disp >> 31) != (insn->disp >> 7));
- 		}
- 	}
-+}
- 
-+static __always_inline
-+void *text_gen_insn(u8 opcode, const void *addr, const void *dest)
-+{
-+	static union text_poke_insn insn; /* per instance */
-+	__text_gen_insn(&insn, opcode, addr, dest, text_opcode_size(opcode));
- 	return &insn.text;
- }
- 
---- a/arch/x86/kernel/paravirt.c
-+++ b/arch/x86/kernel/paravirt.c
-@@ -69,29 +69,12 @@ noinstr void paravirt_BUG(void)
- 	BUG();
- }
- 
--struct branch {
--	unsigned char opcode;
--	u32 delta;
--} __attribute__((packed));
--
- static unsigned paravirt_patch_call(void *insn_buff, const void *target,
- 				    unsigned long addr, unsigned len)
- {
--	const int call_len = 5;
--	struct branch *b = insn_buff;
--	unsigned long delta = (unsigned long)target - (addr+call_len);
--
--	if (len < call_len) {
--		pr_warn("paravirt: Failed to patch indirect CALL at %ps\n", (void *)addr);
--		/* Kernel might not be viable if patching fails, bail out: */
--		BUG_ON(1);
--	}
--
--	b->opcode = 0xe8; /* call */
--	b->delta = delta;
--	BUILD_BUG_ON(sizeof(*b) != call_len);
--
--	return call_len;
-+	__text_gen_insn(insn_buff, CALL_INSN_OPCODE,
-+			(void *)addr, target, CALL_INSN_SIZE);
-+	return CALL_INSN_SIZE;
- }
- 
- #ifdef CONFIG_PARAVIRT_XXL
+ It wastes an instruction.  An instruction wasted here, an instruction 
+wasted there, and suddenly we have grown bloatware. :(
 
+> >  So I'd recommend changing `s' here to `const unsigned char *' or, as I
+> > previously suggested, maybe to `const u8 *' even.
+> 
+> Just cast the string to "const u8 *" within the function, while keeping a
+> "const char *s" argument. The compiler will then most likely generate LBUs.
 
+ It does, but, oh dear, it's a "solution" to a problem we have created in 
+the first place.  Why do we ever want to have signed characters in the TTY 
+layer, and then to vary between platforms?  It's asking for portability 
+issues.
+
+  Maciej
