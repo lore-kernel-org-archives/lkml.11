@@ -2,272 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1750DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 797D0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbiCCINr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
+        id S231143AbiCCIOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:14:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbiCCINo (ORCPT
+        with ESMTP id S229662AbiCCION (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:13:44 -0500
-X-Greylist: delayed 922 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Mar 2022 00:12:59 PST
-Received: from smtpout2.mo529.mail-out.ovh.net (smtpout2.mo529.mail-out.ovh.net [79.137.123.220])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2403F2C12A
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:12:58 -0800 (PST)
-Received: from mxplan5.mail.ovh.net (unknown [10.108.4.25])
-        by mo529.mail-out.ovh.net (Postfix) with ESMTPS id 2446DE58E32F;
-        Thu,  3 Mar 2022 08:57:30 +0100 (CET)
-Received: from kaod.org (37.59.142.107) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 3 Mar
- 2022 08:57:28 +0100
-Authentication-Results: garm.ovh; auth=pass (GARM-107S0011b51f2f7-e82d-49ee-9801-eb43e836e213,
-                    A0610A17E77809494FE20D2F959CCE2A9331EACD) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <88d86ba1-65ba-0c95-6d46-c064eaa62856@kaod.org>
-Date:   Thu, 3 Mar 2022 08:57:22 +0100
+        Thu, 3 Mar 2022 03:14:13 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E852E6A1;
+        Thu,  3 Mar 2022 00:13:24 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id k5-20020a17090a3cc500b001befa0d3102so2748946pjd.1;
+        Thu, 03 Mar 2022 00:13:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=r13f3juVAa8nntAmFcD2gMBbLHfjAWBHECad4kLeLH0=;
+        b=oJk0N1RbPWr1Sa3K6LAZdHlImz5tY5+7B9pZMypfAjHzhM+/vpyd9Ix51p4c2HisrB
+         cVHo5w0jTabLTZsbkXg7wK2+Yn8mbrcyS5/DqTyLLhzZdcuStc0Wv1aabOJmPKoDfghj
+         rd2KramqQsIJldx+V8yH27lx+dXeeIpW2ysOI/hsfz7E2V0LG3JLboEPF4LjEqqexBxo
+         D5FZPZA7b3qnqdiJjdl/q/y3gadrFH0JxCIhb3dc5c1M7As0MnvfursbYgXqjBiMGDg2
+         r9aXJPoN5XtRt58+i3drmhNNIFfYA10pEDJUlHtyAzda1h0vRIU5Kn5rHDa0SL1zkjaR
+         Bhrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r13f3juVAa8nntAmFcD2gMBbLHfjAWBHECad4kLeLH0=;
+        b=penopgxjZCCpP97e4R9Q8++KwenPxBrENd8FLxEQwN6hLjemPKbbl/mkaCgugDr4Nm
+         PJufumKeCEDvkUmh1PlA1VAK25rRDb99QfSF4Br5WnD2WldgugqKBReYHLi62OdCC29X
+         1WoVxQWx4v0TcRwm7eBYbbPJbSfvYp3BVssA/hnChAf54CpiEmGsqLoEyCr/SlyJ/APM
+         +0pmlYu668v/G1tdL7uXaP/mw9OE3SwHjNmbPwtsYDjUI8xyeQHzERrJcwTP7q0sttyK
+         AjKij0VtK++ZGDsQFjFrR7aE7Wg1tEAHQK5Swl43vxdcEOrYhfIjttx5DbcX8V92hov7
+         qFVQ==
+X-Gm-Message-State: AOAM532fcW1bfWU/OcDu6uSz7y36rwopsKbxutNrXzmuip1g3Gi9te8H
+        CAGdpB748DDexm6uyHJzi5C40XGwmuA=
+X-Google-Smtp-Source: ABdhPJxQRf0mWvp8jsW5kPF8rU5V+qZSjnqLQ6zulQzHUB+Xjxr/9TcLbvfF7q4Mi8PvWiXsMtximA==
+X-Received: by 2002:a17:902:d2ca:b0:14f:cf98:54f6 with SMTP id n10-20020a170902d2ca00b0014fcf9854f6mr33728486plc.34.1646295204421;
+        Thu, 03 Mar 2022 00:13:24 -0800 (PST)
+Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
+        by smtp.gmail.com with ESMTPSA id k13-20020a056a00134d00b004f35ee59a9dsm1657093pfu.106.2022.03.03.00.13.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 00:13:24 -0800 (PST)
+Date:   Thu, 3 Mar 2022 13:43:21 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Hao Luo <haoluo@google.com>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Joe Burton <jevburton.kernel@gmail.com>,
+        Tejun Heo <tj@kernel.org>, joshdon@google.com, sdf@google.com,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v1 8/9] bpf: Introduce cgroup iter
+Message-ID: <20220303081321.hoxhygtgjzi2q6xs@apollo.legion>
+References: <20220225234339.2386398-1-haoluo@google.com>
+ <20220225234339.2386398-9-haoluo@google.com>
+ <20220302224506.jc7jwkdaatukicik@apollo.legion>
+ <f780fc3a-dbc2-986c-d5a0-6b0ef1c4311f@fb.com>
+ <20220303030349.drd7mmwtufl45p3u@apollo.legion>
+ <ee991731-0e85-23be-2720-2d641704dcf9@fb.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 10/10] ARM: dts: aspeed: Enable Dual SPI RX transfers
-Content-Language: en-US
-To:     Joel Stanley <joel@jms.id.au>
-CC:     <linux-spi@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220302173114.927476-1-clg@kaod.org>
- <20220302173114.927476-11-clg@kaod.org>
- <CACPK8XeDBCMCEO4=w7qUQxsYiFUDKPAuBhXW5Sr6=UHM_GRsWA@mail.gmail.com>
- <CACPK8Xd6VJLuWsvSjYrQ-y=yS+yR7vjdWECfsd2W9_J7e09K-A@mail.gmail.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <CACPK8Xd6VJLuWsvSjYrQ-y=yS+yR7vjdWECfsd2W9_J7e09K-A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [37.59.142.107]
-X-ClientProxiedBy: DAG7EX2.mxp5.local (172.16.2.62) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: e05de279-3f2e-408a-be31-93ae24799af8
-X-Ovh-Tracer-Id: 8424546055071435652
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddruddthedgudduhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthekredttdefjeenucfhrhhomhepveorughrihgtpgfnvggpifhorghtvghruceotghlgheskhgrohgurdhorhhgqeenucggtffrrghtthgvrhhnpeeigedvffekgeeftedutddttdevudeihfegudffkeeitdekkeetkefhffelveelleenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddruddtjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ee991731-0e85-23be-2720-2d641704dcf9@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 23:48, Joel Stanley wrote:
-> On Wed, 2 Mar 2022 at 22:45, Joel Stanley <joel@jms.id.au> wrote:
->>
->> On Wed, 2 Mar 2022 at 17:31, Cédric Le Goater <clg@kaod.org> wrote:
->>>
->>> All these controllers support at least Dual SPI. Update the DTs.
->>>
->>> Reviewed-by: Joel Stanley <joel@jms.id.au>
->>> Signed-off-by: Cédric Le Goater <clg@kaod.org>
->>
->> Thanks. I'll apply this to the aspeed tree now.
->>
->> Did you also have a patch to add a second flash chip to the AST2400 FMC?
-> 
-> That was a reference to the discussion on the openbmc list with Tao. I
-> was mistaken; the flash chips are there, but they lack the
-> spi-max-frequency property.
+On Thu, Mar 03, 2022 at 01:03:57PM IST, Yonghong Song wrote:
+> [...]
+> >
+> > Right, I was thinking whether it should call seq_show for v == NULL case. All
+> > other iterators seem to do so, it's a bit different here since it is only
+> > iterating over a single cgroup, I guess, but it would be nice to have some
+> > consistency.
+>
+> You are correct that I think it is okay since it only iterates with one
+> cgroup. This is different from other cases so far where more than one
+> objects may be traversed. We may have future other use cases, e.g.,
+> one task. I think we can abstract out start()/next()/stop() callbacks
+> for such use cases. So it is okay it is different from other existing
+> iterators since they are indeed different.
+>
+> >
+> > > For cgroup_iter, the following is the current workflow:
+> > >     start -> not NULL -> show -> next -> NULL -> stop
+> > > or
+> > >     start -> NULL -> stop
+> > >
+> > > So for cgroup_iter_seq_stop, the input parameter 'v' will be NULL, so
+> > > the cgroup_put() is not actually called, i.e., corresponding cgroup is
+> > > not freed.
+> > >
+> > > There are two ways to fix the issue:
+> > >    . call cgroup_put() in next() before return NULL. This way,
+> > >      stop() will be a noop.
+> > >    . put cgroup_get_from_id() and cgroup_put() in
+> > >      bpf_iter_attach_cgroup() and bpf_iter_detach_cgroup().
+> > >
+> > > I prefer the second approach as it is cleaner.
+> > >
+> >
+> > I think current approach is also not safe if cgroup_id gets reused, right? I.e.
+> > it only does cgroup_get_from_id in seq_start, not at attach time, so it may not
+> > be the same cgroup when calling read(2). kernfs is using idr_alloc_cyclic, so it
+> > is less likely to occur, but since it wraps around to find a free ID it might
+> > not be theoretical.
+>
+> As Alexei mentioned, cgroup id is 64-bit, the collision should
+> be nearly impossible. Another option is to get a fd from
+> the cgroup path, and send the fd to the kernel. This probably
+> works.
+>
 
-Yes.
+I see, even on 32-bit systems the actual id is 64-bit.
+As for cgroup fd vs id, existing cgroup BPF programs seem to take fd, map iter
+also takes map fd, so it might make sense to use cgroup fd here as well.
 
-I will include a patch in v3 for the second flash chip of the AST2400 FMC.
+> [...]
 
-Thanks,
-
-C.
-
-> 
->>
->>> ---
->>>   arch/arm/boot/dts/aspeed-g4.dtsi | 6 ++++++
->>>   arch/arm/boot/dts/aspeed-g5.dtsi | 7 +++++++
->>>   arch/arm/boot/dts/aspeed-g6.dtsi | 8 ++++++++
->>>   3 files changed, 21 insertions(+)
->>>
->>> diff --git a/arch/arm/boot/dts/aspeed-g4.dtsi b/arch/arm/boot/dts/aspeed-g4.dtsi
->>> index 9ae67e83cf60..31e6569db97e 100644
->>> --- a/arch/arm/boot/dts/aspeed-g4.dtsi
->>> +++ b/arch/arm/boot/dts/aspeed-g4.dtsi
->>> @@ -64,27 +64,32 @@ fmc: spi@1e620000 {
->>>                          flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>> +                               spi-rx-bus-width = <2>;
->>>                                  spi-max-frequency = <50000000>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@2 {
->>>                                  reg = < 2 >;
->>>                                  compatible = "jedec,spi-nor";
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@3 {
->>>                                  reg = < 3 >;
->>>                                  compatible = "jedec,spi-nor";
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@4 {
->>>                                  reg = < 4 >;
->>>                                  compatible = "jedec,spi-nor";
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> @@ -100,6 +105,7 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
->>> index c3e0a8e13c8a..29bf017899b6 100644
->>> --- a/arch/arm/boot/dts/aspeed-g5.dtsi
->>> +++ b/arch/arm/boot/dts/aspeed-g5.dtsi
->>> @@ -66,18 +66,21 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@2 {
->>>                                  reg = < 2 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> @@ -93,12 +96,14 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> @@ -114,12 +119,14 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
->>> index 1ad05dde19d2..ce93c56a21a7 100644
->>> --- a/arch/arm/boot/dts/aspeed-g6.dtsi
->>> +++ b/arch/arm/boot/dts/aspeed-g6.dtsi
->>> @@ -106,18 +106,21 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@2 {
->>>                                  reg = < 2 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> @@ -133,12 +136,14 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> @@ -154,18 +159,21 @@ flash@0 {
->>>                                  reg = < 0 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@1 {
->>>                                  reg = < 1 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                          flash@2 {
->>>                                  reg = < 2 >;
->>>                                  compatible = "jedec,spi-nor";
->>>                                  spi-max-frequency = <50000000>;
->>> +                               spi-rx-bus-width = <2>;
->>>                                  status = "disabled";
->>>                          };
->>>                  };
->>> --
->>> 2.34.1
->>>
-
+--
+Kartikeya
