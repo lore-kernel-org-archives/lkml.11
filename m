@@ -2,173 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4082FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233349AbiCCMhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 07:37:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        id S233364AbiCCMib convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 07:38:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiCCMg4 (ORCPT
+        with ESMTP id S231641AbiCCMi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 07:36:56 -0500
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5543F17925E;
-        Thu,  3 Mar 2022 04:36:10 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id e22so3953488qvf.9;
-        Thu, 03 Mar 2022 04:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T4KGopGGDh3N9ZnQy5qnHV4FnEM8H/VnZKXOZ5Q7nKQ=;
-        b=cNSL1q3mZ6E7CnNPKrfdcARsqZ4Eno+LMLePOVm6FFSgofxP5NSysdysfPK94l8F0a
-         J5ZgOKyPc0pWmXy/WMaV2lzIKLniCFaUPcEVkxqjtORk0UlTIc9OnL8QTXuarTdghZbB
-         ppmXgod4sNxsmiVWiDvTTt4HWgKB6BGIGTPnTfxqlYi7Mzw10Pl5YUJPKGE9yMfdLREx
-         VNEBkQnSXuzoTHH98U4ATdoy3xf+musdGENdGSgRLkjQNgMglCUPkT71COzHUuZSVtMd
-         dt15Xg0A7wEx5cFXvrWt/KgewjnboSl5SYUDDVsyLyj8CxuurObIc+xkolRhvCZh2OuE
-         mPvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T4KGopGGDh3N9ZnQy5qnHV4FnEM8H/VnZKXOZ5Q7nKQ=;
-        b=QGa9MzGJxWkhUNMLBIUF2lwRNu3WReKEh0TBwa5DhqRO7nONnnTS0ek118QwECZXYX
-         ozzdkja4sS7RLWdcpToj2CIcO3BnHT+7ls4BYG6MgH9+dpJsGFjh1R+03YfkHRivxnUT
-         WlGf+fwbP00VqsRsP0pX0jhLCO98u2rSDCouWpq7b6sMtV3r05DZOQl/WUVmTSS1bgPK
-         xBbW1ENZaq22V+V2nzljJK4KZQdU4uMEGrp7QZ3VjIkKibXSSMy4M6iMkTQ/s8KLVEFm
-         f0dA5fchAOCuRRaDNo2JoY4RezpRSAgkaSLN0Z3t8v7uRuB5Kof29B6P1rlnhi2tNMx1
-         JpwA==
-X-Gm-Message-State: AOAM5338T/yyU/AoVrnXySRhtTKpLJrZ92t+MSRHWrVZ7MU8zdkEyCTK
-        VYBKXfgjacfMBOdRPV0hxef/yZHtzTKz0vrcrdA=
-X-Google-Smtp-Source: ABdhPJzQ0GX7pIFvv4QUE8a6vGgiHU4ubSw9lwS7j8KqUYZwl4V7qWLJ6nJgfgTZhogDE3QoxuJ/t4T9nQ7Hn/0o1Nw=
-X-Received: by 2002:ad4:5be7:0:b0:435:1aad:6a84 with SMTP id
- k7-20020ad45be7000000b004351aad6a84mr5946245qvc.124.1646310969477; Thu, 03
- Mar 2022 04:36:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20220303083141.8742-1-warp5tw@gmail.com> <20220303083141.8742-12-warp5tw@gmail.com>
- <YiCb7LNY9tmMCZx7@smile.fi.intel.com>
-In-Reply-To: <YiCb7LNY9tmMCZx7@smile.fi.intel.com>
-From:   Tali Perry <tali.perry1@gmail.com>
-Date:   Thu, 3 Mar 2022 14:35:58 +0200
-Message-ID: <CAHb3i=tWhtXK+c5GGbp6m23AHoyy=4woT_+n3a_N-6CqKUYb=g@mail.gmail.com>
-Subject: Re: [PATCH v3 11/11] i2c: npcm: Support NPCM845
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
-        Wolfram Sang <wsa@kernel.org>, jie.deng@intel.com,
-        sven@svenpeter.dev, bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
-        arnd@arndb.de, olof@lixom.net, Tali Perry <tali.perry@nuvoton.com>,
-        Avi Fishman <Avi.Fishman@nuvoton.com>,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 3 Mar 2022 07:38:28 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D71542559E;
+        Thu,  3 Mar 2022 04:37:39 -0800 (PST)
+Received: from smtpclient.apple (p5b3d2910.dip0.t-ipconnect.de [91.61.41.16])
+        by mail.holtmann.org (Postfix) with ESMTPSA id A504ECED23;
+        Thu,  3 Mar 2022 13:37:38 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH v2] bluetooth: hci_event: don't print an error on vendor
+ events
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABBYNZJPN6o-v2OpAXND0+UfwB3AQL2=r6CDQ0S8PktWZqijMw@mail.gmail.com>
+Date:   Thu, 3 Mar 2022 13:37:38 +0100
+Cc:     Caleb Connolly <caleb.connolly@linaro.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E6952D0A-FFF7-409E-8779-F82FC4DE9252@holtmann.org>
+References: <20220302183515.448334-1-caleb.connolly@linaro.org>
+ <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
+ <CABBYNZJPN6o-v2OpAXND0+UfwB3AQL2=r6CDQ0S8PktWZqijMw@mail.gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Thu, Mar 3, 2022 at 12:45 PM Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > On Thu, Mar 03, 2022 at 04:31:41PM +0800, Tyrone Ting wrote:
-> > > From: Tyrone Ting <kfting@nuvoton.com>
-> > >
-> > > Add NPCM8XX I2C support.
-> > > The NPCM8XX uses a similar i2c module as NPCM7XX.
-> > > The internal HW FIFO is larger in NPCM8XX.
-> > >
-> > > Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-> > > Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-> >
-> > Wrong SoB chain.
-> >
-> > ...
-> >
-> > > +static const struct npcm_i2c_data npxm7xx_i2c_data = {
-> > > +     .fifo_size = 16,
-> > > +     .segctl_init_val = 0x0333F000,
-> > > +     .txf_sts_tx_bytes = GENMASK(4, 0),
-> > > +     .rxf_sts_rx_bytes = GENMASK(4, 0),
-> > > +     .rxf_ctl_last_pec = BIT(5)
-> >
-> > + Comma.
-> >
-> > > +};
-> > > +
-> > > +static const struct npcm_i2c_data npxm8xx_i2c_data = {
-> > > +     .fifo_size = 32,
-> > > +     .segctl_init_val = 0x9333F000,
-> > > +     .txf_sts_tx_bytes = GENMASK(5, 0),
-> > > +     .rxf_sts_rx_bytes = GENMASK(5, 0),
-> > > +     .rxf_ctl_last_pec = BIT(7)
-> >
-> > Ditto.
-> >
-> > > +};
-> >
-> > ...
-> >
-> > > -     left_in_fifo = FIELD_GET(NPCM_I2CTXF_STS_TX_BYTES,
-> > > -                              ioread8(bus->reg + NPCM_I2CTXF_STS));
-> > > +     left_in_fifo = (bus->data->txf_sts_tx_bytes &
-> > > +                     ioread8(bus->reg + NPCM_I2CTXF_STS));
-> >
-> > Besides too many parentheses, this is an interesting change. So, in different
-> > versions of IP the field is on different bits? Perhaps it means that you need
-> > something like internal ops structure for all these, where you will have been
-> > using the statically defined masks?
-> >
+Hi Luiz,
 
-Those are two very similar modules. The first generation had a 16 bytes HW FIFO
-and the second generation has 32 bytes.
-In V1 of this patchset the masks were defined under
-CONFIG but we were asked to change the approach:
+>>> Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
+>>> some devices see warnings being printed for vendor events, e.g.
+>>> 
+>>> [   75.806141] Bluetooth: hci0: setting up wcn399x
+>>> [   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
+>>> [   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
+>>> [   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
+>>> [   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
+>>> [   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
+>>> [   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
+>>> [   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
+>>> [   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
+>>> [   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>>> [   77.198451] Bluetooth: hci0: QCA setup on UART is completed
+>>> 
+>>> Avoid printing the event length warning for vendor events, this reverts
+>>> to the previous behaviour where such warnings weren't printed.
+>>> 
+>>> Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
+>>> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+>>> ---
+>>> Changes since v1:
+>>> * Don't return early! Vendor events still get parsed despite the
+>>>  warning. I should have looked a little more closely at that...
+>>> ---
+>>> net/bluetooth/hci_event.c | 2 +-
+>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> patch has been applied to bluetooth-stable tree.
+>> 
+> I believe a proper fix has already been pushed to bluetooth-next:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=314d8cd2787418c5ac6b02035c344644f47b292b
+> 
+> HCI_EV_VENDOR shall be assumed to be variable length and that also
+> uses bt_dev_warn_ratelimited to avoid spamming the logs in case it
+> still fails.
 
-the entire discussion can be found here:
+ok, I reverted the patch and lets this go via net-next tree then. Stable can pick this up if it really becomes a larger problem.
 
-https://www.spinics.net/lists/linux-i2c/msg55566.html
+Regards
 
-Did we understand the request change right?
+Marcel
 
-
-> > ...
-> >
-> > > +     match = of_match_device(npcm_i2c_bus_of_table, dev);
-> > > +     if (!match) {
-> > > +             dev_err(dev, "OF data missing\n");
-> > > +             return -EINVAL;
-> > > +     }
-> > > +     bus->data = match->data;
-> >
-> > This is NIH of_device_get_match_data().
-> >
-> > ...
-> >
-> > > -static const struct of_device_id npcm_i2c_bus_of_table[] = {
-> > > -     { .compatible = "nuvoton,npcm750-i2c", },
-> > > -     {}
-> > > -};
-> > > -MODULE_DEVICE_TABLE(of, npcm_i2c_bus_of_table);
-> > > -
-> >
-> > Redundant change, leave this as is.
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> >
-
-Thanks for the detailed review, Andy!
-
-BR,
-Tali Perry
-Nuvoton Technologies
