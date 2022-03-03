@@ -2,88 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F07C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231728AbiCCI7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:59:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
+        id S231742AbiCCI7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:59:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiCCI7N (ORCPT
+        with ESMTP id S229609AbiCCI73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:59:13 -0500
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A281637C4
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:58:23 -0800 (PST)
-X-QQ-mid: bizesmtp88t1646297875tvknoqfu
-Received: from localhost.localdomain (unknown [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 03 Mar 2022 16:57:24 +0800 (CST)
-X-QQ-SSF: 01400000002000C0G000000A0000000
-X-QQ-FEAT: F3yR32iATbj+CDy6glGXK7CfKwYA2ck11zfxblzjk7VPDD0ZwURNsb75Ores6
-        6rmZ71mSIHAdegatBujGhJxy0iFB926mAyQ2lmoA14jrRIrn3iUD9iXdTxetPHrc9d5JD3L
-        z6ZojemhQP4AqkBacJgVKZuUQgUiST4zz1wnOyVdx9Wv0ipWFVSLSxlbh1lkp2T1abkEg3N
-        SKKJT2CKXEyUz+R3UXm4TkYEHjAZzVKOXUzRBorA8tJ4U4zTxhb193hrQR9DrbYt7hDzDOb
-        WlhGh7c+X8Uraz3hSKcLsDSDDsbwCStum9U2IJ4g1eurIUU9wmTBrtlZFcBej6C1FfAm7OS
-        vSe7mxK+HNbC0r+k9F4j6FWlMi91Lh+AstpyJHnIagKrEkkvdM=
-X-QQ-GoodBg: 1
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH] scsi: sr: Simplify ptr_min_max_vals adjustment
-Date:   Thu,  3 Mar 2022 16:57:22 +0800
-Message-Id: <20220303085722.2400-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 3 Mar 2022 03:59:29 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81B916AA6F;
+        Thu,  3 Mar 2022 00:58:43 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id u10so5044244wra.9;
+        Thu, 03 Mar 2022 00:58:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MQJEo4upM9dSdfpug7K8DnThChzSPXUmNu2eyU+dF0c=;
+        b=Gha4Rawl9ZluKz5YWzXzEN2XIGAG+bVjt3e5SJt0uA2BR89mC8aU3Iy5NQ0VfXKh9g
+         kfesiK9eGEfxcURrhDHf+jBVKvIURS1woL7ItJJqTQpi7zfbvtnuZ+UJArukyBbTTNtP
+         aIc0ztOnpbZiug1qIO2nGgYq/TJfq+qxOqt251Jlyr4OwBP6nfRoXfe0UST1t6JmBJWj
+         YpJZFNoCPP3IrxoF6BFrZ+calNPV0ruIjn8FRqHh+FyAP2YF/Rx4oq9m7q2syd6CHXEE
+         D7z9oxSI2sVBUCUEFZ0kgsYuhBmd2+RQxr4vILUwWJiNP1VRV2dUTEIDR08MTR8nabiL
+         cX/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MQJEo4upM9dSdfpug7K8DnThChzSPXUmNu2eyU+dF0c=;
+        b=UpK8YtPwqNDUcoKTZg7x6rghz1FYeyLZAlR3rG7Lb5LOrm2KRKRS15h+U2cwoB7kQG
+         lnmoyBuov7j3ZG5YJkfR2i8dMaU3FQD9zxpB+URSARofofWPEVe+TZJauryQXtU7f7AX
+         Q4MrPthruPFe+CaS1UAQeBypfdW/LxSaj+kUroRD2x2MFOZczi+p2V4IRgvffI03Dl6+
+         yd8oFjr50Olm81f3zil2i/uu5Zpa4bBh4Zrsi6u7POF/TilMXy7hBD8tO285i9zGVwi+
+         tI5xQmtZfnlmEqtkiXrkklXURNfQPXpxLAIHeOqtY0ht22B/x/xUQVjx6qA2H4AfemOE
+         9ghQ==
+X-Gm-Message-State: AOAM531tnBr0V8nwrAFLB/8RBcuozfZskXl7Yf9/TS1OZsmJQ+Y5M008
+        OjvvwM5s3YyvmwbzBJ5BTkiExi40Nsg8/A==
+X-Google-Smtp-Source: ABdhPJzb79AfvihErqIaACg4s+qnD0+s9McBGRubFqnZIJTZQBGBFrhdjoEUdNRjlwKSfBwdcpzncQ==
+X-Received: by 2002:a05:6000:1e0c:b0:1f0:95f:42e7 with SMTP id bj12-20020a0560001e0c00b001f0095f42e7mr8929437wrb.239.1646297922269;
+        Thu, 03 Mar 2022 00:58:42 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id f4-20020a5d4dc4000000b001d8e67e5214sm1418022wru.48.2022.03.03.00.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 00:58:41 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        linux-wireless@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bcma: gpio: remove redundant re-assignment of chip->owner
+Date:   Thu,  3 Mar 2022 08:58:41 +0000
+Message-Id: <20220303085841.1124766-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign6
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the med->media_event_code value is equal to 2 or 3, the
-same value is returned, so it would be better to combine the
-implementation statements when the med->media_event_code value
-is equal to 2 or 3.
+There are two identical assignments of chip->owner to the same value,
+the second assignment is redundant and can be removed.
 
-Moreover, when a variable is equal to multiple values, it is
-better to use a switch judgment statement.
+Cleans up cppcheck warning:
+drivers/bcma/driver_gpio.c:184:15: style: Variable 'chip->owner' is
+reassigned a value before the old one has been used. [redundantAssignment]
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/scsi/sr.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/bcma/driver_gpio.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index f925b1f1f9ad..610baa630067 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -222,12 +222,16 @@ static unsigned int sr_get_events(struct scsi_device *sdev)
- 	if (eh->nea || eh->notification_class != 0x4)
- 		return 0;
- 
--	if (med->media_event_code == 1)
-+	switch (med->media_event_code) {
-+	case 1:
- 		return DISK_EVENT_EJECT_REQUEST;
--	else if (med->media_event_code == 2)
--		return DISK_EVENT_MEDIA_CHANGE;
--	else if (med->media_event_code == 3)
-+	case 2:
-+	case 3:
- 		return DISK_EVENT_MEDIA_CHANGE;
-+	default:
-+		break;
-+	}
-+
- 	return 0;
- }
- 
+diff --git a/drivers/bcma/driver_gpio.c b/drivers/bcma/driver_gpio.c
+index 8a1e4705bc87..1e74ec1c7f23 100644
+--- a/drivers/bcma/driver_gpio.c
++++ b/drivers/bcma/driver_gpio.c
+@@ -181,7 +181,6 @@ int bcma_gpio_init(struct bcma_drv_cc *cc)
+ 	chip->set		= bcma_gpio_set_value;
+ 	chip->direction_input	= bcma_gpio_direction_input;
+ 	chip->direction_output	= bcma_gpio_direction_output;
+-	chip->owner		= THIS_MODULE;
+ 	chip->parent		= bus->dev;
+ #if IS_BUILTIN(CONFIG_OF)
+ 	chip->of_node		= cc->core->dev.of_node;
 -- 
-2.20.1
-
-
+2.34.1
 
