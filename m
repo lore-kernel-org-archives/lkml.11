@@ -2,151 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC86C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234223AbiCCPAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:00:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
+        id S234240AbiCCPAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:00:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234197AbiCCPAk (ORCPT
+        with ESMTP id S234225AbiCCPAp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:00:40 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA36B12B75E
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 06:59:54 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id m6so8261117wrr.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 06:59:54 -0800 (PST)
+        Thu, 3 Mar 2022 10:00:45 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05C111EF0D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 06:59:59 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id i6-20020a1c3b06000000b00386f2897400so123214wma.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 06:59:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bNxMNrhC8hxbhlWJ6ODupu1+HNUrX3voNWdFu6lxXOA=;
-        b=oVMw6jWiyYVEcfm/nYooZXG16phKkvUAL/Z5ODqDvwEfWHb2lbKABvUR5k+81VEkIe
-         LMOwSPD+nxj0ZBLjeVgKdH+XzT/OC8Gbsqkn4k5ofDgqy2qca3HSQMkGy+9tweukADAn
-         AFQrv9t/zslVKWirf5B5f2esn0L8MfMzLFGUjoe2AZpiVYTsibSx+IBcgbMcAyiSCq2I
-         ELP3WCpTjEuhHXiTr9SM3KAQDhQrGalpAkhJ6v1ZmNTFFVqYv00QJSR7rWoZm4xmxiLd
-         uZIO1MYIlGjdDnK+bqHC+SKu+7m4ZyvTJBPpAI056iPZA/XSf6Pvsqq9RCHue9QPLI01
-         vfOw==
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hyZKtms3/fooY346YEFh4aDUln7VR4f3ZkWUMV+VfiY=;
+        b=XoZI7nJBCKEM9JhyOj4+4Q/Ee/yq2th4jAnz/UhBWAKDEgTrbUkfdcxKDciB6eEhjC
+         eu1hktSPl2tRO0qnypW8sk7nLauSF373ejLjGCvkInaDqIkg8mTY8BOO0SbsT19/BQE8
+         FU24TDNc2ZrpGUMsktjKuOK6lRIqhUtV4r4tniYIIPW/fYzB+c9YvQK3ouion6eS/abr
+         dcu5rUaZ6s2dWGZ4ZbaVtabVYr1ASu4BeEA8hiVMqCVbcERpTZOxGCHrMksDLSSRL2eX
+         VzrlPgWl6ukUwfM+NF0fwROCvjlq/g3LVy9wr/qzTzkRy26qkAIUi27HY72ND5MxX4Qi
+         ir/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bNxMNrhC8hxbhlWJ6ODupu1+HNUrX3voNWdFu6lxXOA=;
-        b=qhBCgOppRb3qzfTLqhm5jeV6IoK65WiDC4MXIsTpYCGxp3DpMjloLOUyr6lxPxw9gO
-         hVNvgD7PKzrF3xCWoplrt3Nelr1o9uQjDjMJ4MyI1YiHI5kesgj4Zsq5qK2OZCXSBUAL
-         JT1KnKJ1ZIbN0v+8viLtfqBkUrsTP27URYlqOEE+LgDoa95EscvPYlwGm1Xgd/nlKEd+
-         XBbjznkpbdc8XFBC7giUJgbQ+P9T1EGl8r6MzPO9NtjgDDVhlxuGcUxSWAXYhcK8TrzB
-         sMqEmZaxbRGS/+37wdtSQl4zOleORHvFoJ7bQE/ACOvjnK6mF7I6NxhZIgaZAs19ul/9
-         QriA==
-X-Gm-Message-State: AOAM530vTd9aLvKjf+FE4SngYHDGjIV93Gor40FmVrNOLv29XlV+llsD
-        OJPgNVa7ccv75OPIoB1ztHP13g==
-X-Google-Smtp-Source: ABdhPJx05mYM4sjB0FOVEW1Pa7DDwK8ny1KwoP/DgYLnmhoVXk7sB2d/Ouenui3Gq8IoOMULZvVUHQ==
-X-Received: by 2002:adf:d1c9:0:b0:1ea:830d:f1b0 with SMTP id b9-20020adfd1c9000000b001ea830df1b0mr27232134wrd.522.1646319592535;
-        Thu, 03 Mar 2022 06:59:52 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id f8-20020a05600c4e8800b00380ee4a78fdsm3100578wmq.4.2022.03.03.06.59.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hyZKtms3/fooY346YEFh4aDUln7VR4f3ZkWUMV+VfiY=;
+        b=L0/Rc6KCrW20bVah1iojGAVGwEeHAxg+qH9fzGFq/mlI16rcnJl3O47qrr7uTUbJZU
+         ZfbMkYf7mG4IHU3WKDzHTgQzTRGRSFHg0YyBtQFp84UdhiN79Ugtw1dMvP181B6Ve3Pq
+         fpBDGyysijxNiB+au3sAlnPHEmnmVzOF4Aq9AEMiX8i8bt35qBXRRP5m1qqnJXC3SIKP
+         xd4c1DfYZu8qXSBMGiwjJHQHq6fkg/BqPX2z20PBxqXFRAs7kSVcjUoHKqUKKfeA1w89
+         bn+EOPLYACe2LA7x/PT3QZAl9hUH5p7e9UqvmmerSvzL6wvFMsmOGZMHk6ED65Eg0PPK
+         asPA==
+X-Gm-Message-State: AOAM533QFcY+/NebRfUNggoZW3nwGwqNgaqj/ybpYGAnEjULhlvMlT3Y
+        Bw7iVpeZN7YohPhRGgDpJ9WBug==
+X-Google-Smtp-Source: ABdhPJyNhPVn3ujz+yed9ZU8ZsVBArmJ+s8GAWfDmrjEO7NKWveEpuqL/2TcQKekRcVES9Tf/1cDog==
+X-Received: by 2002:a05:600c:1c25:b0:380:d306:1058 with SMTP id j37-20020a05600c1c2500b00380d3061058mr4125847wms.150.1646319598144;
+        Thu, 03 Mar 2022 06:59:58 -0800 (PST)
+Received: from localhost.localdomain ([49.206.7.17])
+        by smtp.gmail.com with ESMTPSA id i15-20020a5d522f000000b001e85b14dadcsm2224166wra.5.2022.03.03.06.59.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 06:59:51 -0800 (PST)
-Date:   Thu, 3 Mar 2022 14:59:49 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "cl@linux.com" <cl@linux.com>, "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "void@manifault.com" <void@manifault.com>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>,
-        "jason.wessel@windriver.com" <jason.wessel@windriver.com>
-Subject: Re: [PATCH v9 13/14] module: Move kdb_modules list out of core code
-Message-ID: <20220303145949.inaz2tecmfuek2hf@maple.lan>
-References: <20220228234322.2073104-1-atomlin@redhat.com>
- <20220228234322.2073104-14-atomlin@redhat.com>
- <20220302161917.gx5icfszakoye4uh@maple.lan>
- <20220302203153.3kcmwu662szf3drt@ava.usersys.com>
- <a87aac32-52b1-3d56-6331-1c241fea032f@csgroup.eu>
- <YiDEmRf3X0fxSayK@infradead.org>
+        Thu, 03 Mar 2022 06:59:57 -0800 (PST)
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Cc:     Atish Patra <atishp@rivosinc.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Abner Chang <abner.chang@hpe.com>,
+        Jessica Clarke <jrtc27@jrtc27.com>, linux-efi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Sunil V L <sunilvl@ventanamicro.com>
+Subject: [RFC PATCH V2 0/1] RISCV_EFI_BOOT_PROTOCOL support in linux
+Date:   Thu,  3 Mar 2022 20:29:43 +0530
+Message-Id: <20220303145944.307321-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiDEmRf3X0fxSayK@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 05:37:29AM -0800, Christoph Hellwig wrote:
-> On Wed, Mar 02, 2022 at 08:56:23PM +0000, Christophe Leroy wrote:
-> > Do we really want to hide the 'struct list_head modules' from external 
-> > world ?
-> > 
-> > Otherwise we could declare it in include/linux/module.h ?
-> 
-> I'd just move the trivial code that uses it from kernel/kdb/ to
-> kernel/module/ as it is tied to module internals and just uses the
-> KDB interfaces exposed to other parts of the kernel.
+This patch adds support for getting the boot hart ID using new
+RISCV_EFI_BOOT_PROTOCOL in linux efi stub. While there is an existing
+solution of passing the boot hart ID through Device Tree, it doesn't work
+for ACPI. Hence an EFI protocol protocol is recommended which works for
+both DT and ACPI based platforms.
 
-One of the best ways that we can common up code might be to dust
-off some code I wrote a while back to display seq_files from
-kdb.
+The latest draft spec of this new protocol is available at
+https://github.com/riscv-non-isa/riscv-uefi/releases/download/1.0-rc2/RISCV_UEFI_PROTOCOL-spec.pdf
 
-The basic idea worked well enough but it often needs special
-start/stop operatings to ensure the start meeds kdb's rather
-odd locking restrictions. If there is a willingness for
-something like the below to be included in the module code then we
-could replace kdb_lsmod() with something that reused the code to
- format /proc/modules.
+This linux ptach can be found in:
+riscv_boot_protocol_rfc_v2 branch at
+https://github.com/vlsunil/linux.git
 
+This is tested in qemu with u-boot 2022.04.rc3.
 
-Daniel.
+Changes since V1:
+  - Rebased to get the "Fix get_boot_hartid_from_fdt() return value"
+    patch
+  - Removed mixed_mode member
+  - Separated return value and status.
 
+Sunil V L (1):
+  riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 84a9141a5e159..ab43ee23cdba0 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -4664,7 +4664,33 @@ static int __init proc_modules_init(void)
-        return 0;
- }
- module_init(proc_modules_init);
--#endif
-+
-+#ifdef CONFIG_KGDB_KDB
-+static void *kdb_m_start(struct seq_file *m, loff_t *pos)
-+{
-+       static LIST_HEAD(empty);
-+       struct list_head *modlist = &modules;
-+
-+       if (mutex_is_locked(&module_mutex)) {
-+               pr_info("Cannot display module list because it is
-locked\n");
-+               modlist = empty;
-+       }
-+
-+       return seq_list_start(modlist, *pos);
-+}
-+
-+const struct seq_operations kdb_modules_seqops = {
-+       .start  = kdb_m_start,
-+       .next   = m_next,
-+       .show   = m_show
-+};
-+#endif /* CONFIG_KGDB_KDB */
-+
-+/*
-+ * TODO: Need to decide if it OK to disable kdb lsmod if
-+ * !CONFIG_PROC_FS... but it probably is!
-+ */
-+#endif /* CONFIG_PROC_FS */
- 
- /* Given an address, look for it in the module exception tables. */
- const struct exception_table_entry *search_module_extables(unsigned
-long addr)
+ drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
+ drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
+ include/linux/efi.h                       |  1 +
+ 3 files changed, 32 insertions(+), 5 deletions(-)
+
+-- 
+2.25.1
+
