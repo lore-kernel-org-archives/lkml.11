@@ -2,150 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CABC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0194C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235548AbiCCSA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:00:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43354 "EHLO
+        id S235556AbiCCSBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:01:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235094AbiCCSA5 (ORCPT
+        with ESMTP id S231147AbiCCSBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:00:57 -0500
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20987194A8F;
-        Thu,  3 Mar 2022 10:00:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646330388;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=S/Ajb9G7BzvTHaV25UD/SK5bUJk7mTLUkAHqeR66ezQ=;
-    b=aEgtHOoTY5bTpPc3idG57z1HEaIhVL42kWXPjObiI7C3E4s7WfRAzDGT0kAceCRp2R
-    E4SrJJaJoLyYy+Roupvo+vCYO1nSrQRSd8nuUXsZKtI4fDc/4tjal4KWHXyzBqU+XJ7o
-    n8uQazYNwx0uKDbZY3s0R7sxQRwtL2RDDdEaxg9wCBRt22o0ck6PSD0fYtBDkt/yLneU
-    OJHbA77pN49x9E1iBbXDRIuun/SAMwsLULf14HcR4uGARBVxDBSQD9cHPsq8VLQH8k1j
-    mDDoy6KMXYeCQWXQhKfSbKfrF5AnmUe4LXkzUaCn/odMmWCBf4VQS59l00O5dNu9S2pq
-    mL+g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj4Qpw9iZeHWElw47tT+k="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.40.1 DYNA|AUTH)
-    with ESMTPSA id n729cey23Hxl1Va
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Thu, 3 Mar 2022 18:59:47 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [Letux-kernel] [PATCH v16 1/4] drm/bridge: dw-hdmi: introduce
- dw_hdmi_enable_poll()
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <RUI68R.Z009SPJAAD8N1@crapouillou.net>
-Date:   Thu, 3 Mar 2022 18:59:47 +0100
-Cc:     Paul Boddie <paul@boddie.org.uk>, Daniel Vetter <daniel@ffwll.ch>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-mips <linux-mips@vger.kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>, Maxime Ripard <maxime@cerno.tech>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <F0F8F36B-3A0A-476C-8C7D-566255C629C6@goldelico.com>
-References: <cover.1645895582.git.hns@goldelico.com>
- <e54838849f80454b863f9f5634dd10f79ef7bb8f.1645895582.git.hns@goldelico.com>
- <983e9064-17ad-e646-f37d-ca9173ba0967@baylibre.com>
- <C8AE9A7A-E288-4637-ACAD-40CD33CD5F8C@goldelico.com>
- <3E620AF4-402E-45EA-9D92-92EAEA9647F5@goldelico.com>
- <SHH68R.Z3J9KSY0GQVA2@crapouillou.net>
- <ABC1BD09-383B-4499-B034-340CE88725B3@goldelico.com>
- <RUI68R.Z009SPJAAD8N1@crapouillou.net>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Neil Armstrong <narmstrong@baylibre.com>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Thu, 3 Mar 2022 13:01:47 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D50188857
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:01:01 -0800 (PST)
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DA1EF3F5FB
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 18:00:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646330457;
+        bh=IdYKuRpoQlWJKJqHmP4kdLinl0/TpAzOJ3W1H49SOHA=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=pdbZ0zOGUGlMLA8be+YMsxPg6ccEECNCFoAFxzE12nIWYJxanjq8WWO/bT5OSG+eR
+         rNkSwMqG8XvlTIglauC6QNYUAxsZ6aR8w8jvjvj8rD23kXUAE7NTVTnAuOoyFvuV60
+         Te+6615TvxyMiVYUMomhN2mpdi852k9soSLkcslJ0L9yNSEDYytTX06GgJoDpeZbP5
+         r4c1i+MQ2/aOM5ezTENsLV3isXhx840vv8dPxoe1sDszyEA3oxVngDr/BVe4lN4eoe
+         cCY6ff60ZSNSg6lKpD0ZOIMv6NBNNl1uTQ1BjV8S/gzJ/On7/+ek84aoR0tGa8264Y
+         ezB8OZlRtzBvg==
+Received: by mail-wr1-f70.google.com with SMTP id x15-20020a5d6b4f000000b001ee6c0aa287so2328324wrw.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 10:00:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IdYKuRpoQlWJKJqHmP4kdLinl0/TpAzOJ3W1H49SOHA=;
+        b=0sV6CyiXzAQBVyN5CULbsD6yvvbU8Hwqq7h7daea9nKSA1Ik8zCwlyQvhj9TjsU+AX
+         Dm0iE5jXCYA+vH2aihim6rjXEKOYHOUWeWvQwQFAeFInijcPnGdLnbLeUQ/fx6QyBpmD
+         aCDfMqywVBCfy8rmVpU2zcts14uaB/h1DVYgWE1WopBkuEiiEg4ia9i75V5BZDeEj8F6
+         ryczwIwb4XuiYBHzmUFmoXGLLo8lgEJDfsfp2GMI2Hb1vaNsyvCkKIGZ0twj58qSqezB
+         aafu2h8/CNomZio5ycVtpauvoTZ+m0BaAEEKrOy3MXRlJpUHrzhwq6yTsTVhHJ4sLcFW
+         PnBg==
+X-Gm-Message-State: AOAM530Z0CvbJn37NEtDwj1BjIecIwq5HXOUj5AQh5iGHs5dcVb9Jygk
+        GRIVs2h48DiYu0NUi5NyS0OFlvth55UreDlSaPCAhmjVw29XFlAp3sAEMATpJ6a74wY6bmbzVp2
+        lWhIF8e5o/9vtsZfAEprYU1oYeaV5AoJRE/k6dw0o3g==
+X-Received: by 2002:a05:6000:1787:b0:1e7:aeac:eb00 with SMTP id e7-20020a056000178700b001e7aeaceb00mr28314779wrg.141.1646330457455;
+        Thu, 03 Mar 2022 10:00:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwcUUp/VkxET1O/z2n1UvXKsWsZKCgRWxpJ2ac80sDA6uo4FyeX3pHAb3asJ2/klasvI3ebWA==
+X-Received: by 2002:a05:6000:1787:b0:1e7:aeac:eb00 with SMTP id e7-20020a056000178700b001e7aeaceb00mr28314754wrg.141.1646330457158;
+        Thu, 03 Mar 2022 10:00:57 -0800 (PST)
+Received: from [192.168.0.138] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id f16-20020adff590000000b001f0122f63e1sm2592891wro.85.2022.03.03.10.00.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 10:00:56 -0800 (PST)
+Message-ID: <0d7b9a17-f5fc-69e5-173f-1c897522d3f3@canonical.com>
+Date:   Thu, 3 Mar 2022 19:00:55 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: nvmem: Add apple,efuses
+Content-Language: en-US
+To:     Sven Peter <sven@svenpeter.dev>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220227115743.69059-1-sven@svenpeter.dev>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220227115743.69059-1-sven@svenpeter.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul, Neil,
+On 27/02/2022 12:57, Sven Peter wrote:
+> Apple SoCs come with eFuses used to store factory-programmed data
+> such as calibration settings for the PCIe and Type-C PHY.
+> 
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+>  .../bindings/nvmem/apple,efuses.yaml          | 50 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 51 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/nvmem/apple,efuses.yaml b/Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
+> new file mode 100644
+> index 000000000000..a735d54856ae
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
+> @@ -0,0 +1,50 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/nvmem/apple,efuses.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Apple SoC eFuse-based NVMEM
+> +
+> +description: |
+> +  Apple SoCs such as the M1 contain factory-programmed eFuses used to e.g. store
+> +  calibration data for the PCIe and the Type-C PHY or unique chip identifiers such
+> +  as the ECID.
+> +
+> +maintainers:
+> +  - Sven Peter <sven@svenpeter.dev>
+> +
+> +allOf:
+> +  - $ref: "nvmem.yaml#"
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - apple,t8103-efuses
+> +          - apple,t6000-efuses
+> +      - const: apple,efuses
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    efuse@3d2bc000 {
+> +        compatible = "apple,t8103-efuses", "apple,efuses";
+> +        reg = <0x3d2bc000 0x1000>;
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +
+> +        ecid: efuse@500 {
+> +              reg = <0x500 0x8>;
 
-> Am 03.03.2022 um 18:20 schrieb Paul Cercueil <paul@crapouillou.net>:
->=20
-> Hi Nikolaus,
->=20
-> [snip]
->=20
->>> Well he said "the Ingenic DRM core" aka ingenic-drm-drv.c. You do =
-have access to the main drm_device in the ingenic_drm_bind() function, =
-so you can add it there (with a cleanup function calling =
-drm_kms_helper_poll_fini() registered with drmm_add_action_or_reset()).
->> Well, do you really want to mix HPD detection between connector, =
-Synopsys bridge and Ingenic DRM core? These are independent...
->> Or should be accessed only through the bridge chain pointers.
->> IMHO we should keep separate functions separate.
->=20
-> The drm_kms_helper_poll_init() just says "this DRM device may have =
-connectors that need to be polled" so it very well fits inside the main =
-driver, IMHO.
+Mismatched indentation. Rest looks good.
 
-As far as I understand, it has the side-effect to always set =
-dev->mode_config.poll_enabled and
-schedule_delayed_work() for all devices.
-I am not sure if this is intended for arbitrary ingenic-drm devices. But =
-you know better than me.
-
-
-Hm. But wait, I think I now finally remember why I have proposed it the =
-way it is!
-It is always better to go back to requirements and find the least =
-invasive solution.
-
-- HPD IRQ works and calls dw_hdmi_irq() [as can be shown by adding =
-printk()]
-- it is just that the udevd is only notified if poll_enabled =3D true =
-(but no polling takes place!).
-
-An earlier version (v4) to fix this proposed to add an explicit call to =
-drm_kms_helper_hotplug_event()
-in dw_hdmi_irq() but that was rejected a while ago because =
-drm_helper_hpd_irq_event() will already call it:
-
-	https://www.spinics.net/lists/dri-devel/msg316846.html
-
-Since this did not take into account that dev->mode_config.poll_enabled =
-must be set true, I then proposed the
-enable_poll() mechanism just to set this bit for the ingenic-dw-hdmi =
-specialization.
-
-So a HPD event is delivered to the dw-hdmi driver as dw_hdmi_irq() and =
-that calls drm_helper_hpd_irq_event()
-but not drm_kms_helper_hotplug_event() and user-space is not getting =
-aware.
-
-It is all a hack because we mix the dw-hdmi driver which originally did =
-register its own connector
-with an explicit connector...
-
-In summary I now thing that the v4 patch is the simplest and least =
-invasive solution.
-
-We neither have to introduce a dw_hdmi_enable_poll() function or call =
-drm_kms_helper_poll_init() anywhere.
-
-It is just a single line to add to dw-hdmi. And neither touches =
-ingenic-dw-hdmi nor ingenic-drm-drv.
-
-So let's go back to v4 version (just modify commit message to better =
-describe why we have to call
-drm_kms_helper_hotplug_event() explicitly) and forget about =
-alternatives.
-
-BR,
-Nikolaus=
+Best regards,
+Krzysztof
