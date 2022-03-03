@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C283C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38430C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235622AbiCCSHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        id S235630AbiCCSII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:08:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232718AbiCCSHa (ORCPT
+        with ESMTP id S235663AbiCCSIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:07:30 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697E51A3609;
-        Thu,  3 Mar 2022 10:06:44 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 6420A1F45E8C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646330802;
-        bh=J76Vn4BYI49TDNde5zTexbAoFbKETp612SL58Qyj3/s=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=hEoKOkp+WUuT+ICsXUyjC2wvR4B/L/qv6AYihAU1IbQRMR5wQu7xqwfJ6E40P2BI4
-         WXyQksuijp44a1m8APtlfPTZ79Gqt3NTaFWJuo7kVi3Ymw732l4h1wjQvwPwedgyAE
-         QSIGrcZKAHknUoQgNrz1Wra6AGSmj0Q7C3Wl7OyQfJDA+TL+OFIbZKQ7Au0GUbYqAd
-         pQasVjTk20C7iUQkwHUEf8lbNVO4fr/vAkLZmoWnrJwlpZspd3CMaEi0C218YmSAti
-         n20wYhxqEEr8TCoKef+gAbYz/buPiAlfa6CzZW9AJAXwWAPDrze8Jly9CyjZvX/W8L
-         7DfVpJDDR6oew==
-Message-ID: <2ca0d1c4-ab75-6e16-26f8-e48b0389144c@collabora.com>
-Date:   Thu, 3 Mar 2022 23:06:35 +0500
+        Thu, 3 Mar 2022 13:08:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CA51A360B;
+        Thu,  3 Mar 2022 10:07:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12011B82664;
+        Thu,  3 Mar 2022 18:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A096C004E1;
+        Thu,  3 Mar 2022 18:07:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646330832;
+        bh=EgcGMOXJyQ3AcaJAUNyt4ttitEYq2EccuguRq8IK5T8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MhPrjPEqQT4bYYon471xHSJwpVB2dLoAwjgnYAszMI/yb8szklwtOZE1zxGRrHC6b
+         M66ZG4RrXlSfjssBTyPOd9GkrP6P99N1BCcyAHJ2O4z7VbK+zAj/g5HLAvcuPGi5HH
+         B2LqpP8Ru7su2swz4XV4Rp1mwkAa7rY4HmSBrTPgk7eFktUSQTaAKcoefSevTez9gD
+         jRSj3MCyXBeidqSMD3y3szFYdj6trzZE7punHUobNUdITuvZykBuB0mduF/bWGuSC0
+         9fHDHOJszRRlcI1SveaJMmPXoZc6rz33btOOv6JiGlTqjYKekSiY2DRnTSMTRmzWT+
+         MDsYztIQVLePw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nPpr5-0000q6-7G; Thu, 03 Mar 2022 19:07:11 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable@vger.kernel.org,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: [PATCH] memory: renesas-rpc-if: fix platform-device leak in error path
+Date:   Thu,  3 Mar 2022 19:06:32 +0100
+Message-Id: <20220303180632.3194-1-johan@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Cc:     usama.anjum@collabora.com, kernel@collabora.com,
-        kernelci@groups.io, linux-kselftest@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Makefile: Fix separate output directory build of
- kselftests
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        keescook@chromium.org, shuah@kernel.org
-References: <20220223191016.1658728-1-usama.anjum@collabora.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220223191016.1658728-1-usama.anjum@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Make sure to free the flash platform device in the event that
+registration fails during probe.
 
-Any thoughts about this patch?
+Fixes: ca7d8b980b67 ("memory: add Renesas RPC-IF driver")
+Cc: stable@vger.kernel.org      # 5.8
+Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/memory/renesas-rpc-if.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-On 2/24/22 12:10 AM, Muhammad Usama Anjum wrote:
-> Build of kselftests fail if kernel's top most Makefile is used for
-> running or building kselftests with separate output directory. The
-> absolute path is needed to reference other files during this kind of
-> build. Set KBUILD_ABS_SRCTREE to use absolute path during the build. It
-> fixes the following different types of errors:
-> 
-> make kselftest-all O=/linux_mainline/build
-> Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
-> 
-> make kselftest-all O=build
-> Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
-> 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
-> I've tested this patch on top of next-20220217. The latest next-20220222
-> have missing patches.
-> ---
->  Makefile | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index 86f633c2809ea..62b3eb8a102ab 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1411,10 +1411,10 @@ tools/%: FORCE
->  
->  PHONY += kselftest
->  kselftest:
-> -	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests run_tests
-> +	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests KBUILD_ABS_SRCTREE=1 run_tests
->  
->  kselftest-%: FORCE
-> -	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests $*
-> +	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests KBUILD_ABS_SRCTREE=1 $*
->  
->  PHONY += kselftest-merge
->  kselftest-merge:
-
+diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
+index e4cc64f56019..2e545f473cc6 100644
+--- a/drivers/memory/renesas-rpc-if.c
++++ b/drivers/memory/renesas-rpc-if.c
+@@ -651,6 +651,7 @@ static int rpcif_probe(struct platform_device *pdev)
+ 	struct platform_device *vdev;
+ 	struct device_node *flash;
+ 	const char *name;
++	int ret;
+ 
+ 	flash = of_get_next_child(pdev->dev.of_node, NULL);
+ 	if (!flash) {
+@@ -674,7 +675,14 @@ static int rpcif_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	vdev->dev.parent = &pdev->dev;
+ 	platform_set_drvdata(pdev, vdev);
+-	return platform_device_add(vdev);
++
++	ret = platform_device_add(vdev);
++	if (ret) {
++		platform_device_put(vdev);
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ static int rpcif_remove(struct platform_device *pdev)
 -- 
---
-Muhammad Usama Anjum
+2.34.1
+
