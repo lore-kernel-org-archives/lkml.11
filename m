@@ -2,2495 +2,3008 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236346AbiCCUkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 15:40:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
+        id S235435AbiCCUn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 15:43:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235403AbiCCUj6 (ORCPT
+        with ESMTP id S231899AbiCCUnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 15:39:58 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDFE3C4B0
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 12:39:09 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B7EA224000B;
-        Thu,  3 Mar 2022 20:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646339948;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DlWQ6Lh5u0eFgvQOYEGOMMKPL+MUKXlnV0e5I2gZYak=;
-        b=gtCuuvKN60g6gRXaaJvAmKfVixzSd70PZ682HauO+eNa7j4YDOKgjT6ygomSxDglvbE+aF
-        WRJSMyfv891Wn1JM878rVnqGJiueWwnVQowkbtR8zXospDDIze+yTIYqV4lk1Izdln8rG7
-        FQneCG3CuB1T+5dnOTSS+t9h5SbtdIT3T9e8alKvceqhdgaRG383/1tdvLGTB2YPELrj96
-        mffr0qytPbK39cqANuwwcg0peSOkGZ3ukhWM33PRi5OA/eCO7dLBtprskQTf6Kf0PX9GVL
-        Uf7YUPyORd87dd3/bm88kTMcQC9lCfk8ujp8EcndfKAaOiIVXVl5LeZVjIf4KA==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v11 1/2] drm: Add support for the LogiCVC display controller
-Date:   Thu,  3 Mar 2022 21:38:57 +0100
-Message-Id: <20220303203858.314955-2-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220303203858.314955-1-paul.kocialkowski@bootlin.com>
-References: <20220303203858.314955-1-paul.kocialkowski@bootlin.com>
+        Thu, 3 Mar 2022 15:43:25 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA07517EE;
+        Thu,  3 Mar 2022 12:42:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646340156; x=1677876156;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FpnZBwD0xsxv/uwuV/jwBbVLs0zsID4MVRlxRlVdGng=;
+  b=KYODQWmpzSmDWrglrB5q/DnAYBq5x8lqJZrKXCQmCSSRj5i6pV019xzM
+   JoW2Qv5pCWZlR23alMY/wlFjh9wyzrtd8TkviT91do6+0dRLNqb2/mPXm
+   WIcSlgqqUbWn7BRiiYyqhQ/RYqeZXbwi4bihxeNbns6AyYsNBSfDfH0IN
+   g=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 03 Mar 2022 12:42:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 12:42:34 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 3 Mar 2022 12:42:34 -0800
+Received: from [10.110.60.142] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Thu, 3 Mar 2022
+ 12:42:32 -0800
+Message-ID: <1a42ff3e-154a-b2b8-9c99-8d5fba9a38e5@quicinc.com>
+Date:   Thu, 3 Mar 2022 12:42:32 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 1/4] drm/msm: Update generated headers
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>
+CC:     <freedreno@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Stephen Boyd" <swboyd@chromium.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220303194758.710358-1-robdclark@gmail.com>
+ <20220303194758.710358-2-robdclark@gmail.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220303194758.710358-2-robdclark@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduces a driver for the LogiCVC display controller, a programmable
-logic controller optimized for use in Xilinx Zynq-7000 SoCs and other
-Xilinx FPGAs. The controller is mostly configured at logic synthesis
-time so only a subset of configuration is left for the driver to
-handle.
+Hi Rob
 
-The following features are implemented and tested:
-- LVDS 4-bit interface;
-- RGB565 pixel formats;
-- Multiple layers and hardware composition;
-- Layer-wide alpha mode;
+On 3/3/2022 11:46 AM, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> Update headers from mesa commit:
+> 
+>    commit 7e63fa2bb13cf14b765ad06d046789ee1879b5ef
+>    Author:     Rob Clark <robclark@freedesktop.org>
+>    AuthorDate: Wed Mar 2 17:11:10 2022 -0800
+> 
+>        freedreno/registers: Add a couple regs we need for kernel
+> 
+>        Signed-off-by: Rob Clark <robdclark@chromium.org>
+>        Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/15221>
+> 
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>   drivers/gpu/drm/msm/adreno/a2xx.xml.h         |  26 +-
+>   drivers/gpu/drm/msm/adreno/a3xx.xml.h         |  30 +-
+>   drivers/gpu/drm/msm/adreno/a4xx.xml.h         | 112 ++-
+>   drivers/gpu/drm/msm/adreno/a5xx.xml.h         |  63 +-
+>   drivers/gpu/drm/msm/adreno/a6xx.xml.h         | 674 +++++++++++-------
+>   drivers/gpu/drm/msm/adreno/a6xx_gmu.xml.h     |  26 +-
+>   .../gpu/drm/msm/adreno/adreno_common.xml.h    |  31 +-
+>   drivers/gpu/drm/msm/adreno/adreno_pm4.xml.h   |  46 +-
+>   drivers/gpu/drm/msm/disp/mdp4/mdp4.xml.h      |  37 +-
+>   drivers/gpu/drm/msm/disp/mdp5/mdp5.xml.h      |  37 +-
+>   drivers/gpu/drm/msm/disp/mdp_common.xml.h     |  37 +-
+>   drivers/gpu/drm/msm/dsi/dsi.xml.h             |  37 +-
+>   drivers/gpu/drm/msm/dsi/dsi_phy_10nm.xml.h    |  37 +-
+>   drivers/gpu/drm/msm/dsi/dsi_phy_14nm.xml.h    |  37 +-
+>   drivers/gpu/drm/msm/dsi/dsi_phy_20nm.xml.h    |  37 +-
+>   drivers/gpu/drm/msm/dsi/dsi_phy_28nm.xml.h    |  37 +-
+>   .../gpu/drm/msm/dsi/dsi_phy_28nm_8960.xml.h   |  37 +-
+>   drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h     | 480 -------------
+Why is the 5nm PHY removed? Am i missing something?
 
-The following features are implemented but untested:
-- Other RGB pixel formats;
-- Layer framebuffer configuration for version 4;
-- Lowest-layer used as background color;
-- Per-pixel alpha mode.
+Thanks
 
-The following features are not implemented:
-- YUV pixel formats;
-- DVI, LVDS 3-bit, ITU656 and camera link interfaces;
-- External parallel input for layer;
-- Color-keying;
-- LUT-based alpha modes.
-
-Additional implementation-specific notes:
-- Panels are only enabled after the first page flip to avoid flashing a
-  white screen.
-- Depth used in context of the LogiCVC driver only counts color components
-  to match the definition of the synthesis parameters.
-
-Support is implemented for both version 3 and 4 of the controller.
-
-With version 3, framebuffers are stored in a dedicated contiguous
-memory area, with a base address hardcoded for each layer. This requires
-using a dedicated CMA pool registered at the base address and tweaking a
-few offset-related registers to try to use any buffer allocated from
-the pool. This is done on a best-effort basis to have the hardware cope
-with the DRM framebuffer allocation model and there is no guarantee
-that each buffer allocated by GEM CMA can be used for any layer.
-In particular, buffers allocated below the base address for a layer are
-guaranteed not to be configurable for that layer. See the implementation of
-logicvc_layer_buffer_find_setup for specifics.
-
-Version 4 allows configuring each buffer address directly, which
-guarantees that any buffer can be configured.
-
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Reviewed-by: Maxime Ripard <mripard@kernel.org>
----
- MAINTAINERS                                 |   6 +
- drivers/gpu/drm/Kconfig                     |   2 +
- drivers/gpu/drm/Makefile                    |   1 +
- drivers/gpu/drm/logicvc/Kconfig             |   9 +
- drivers/gpu/drm/logicvc/Makefile            |   9 +
- drivers/gpu/drm/logicvc/logicvc_crtc.c      | 280 +++++++++
- drivers/gpu/drm/logicvc/logicvc_crtc.h      |  21 +
- drivers/gpu/drm/logicvc/logicvc_drm.c       | 497 ++++++++++++++++
- drivers/gpu/drm/logicvc/logicvc_drm.h       |  67 +++
- drivers/gpu/drm/logicvc/logicvc_interface.c | 214 +++++++
- drivers/gpu/drm/logicvc/logicvc_interface.h |  28 +
- drivers/gpu/drm/logicvc/logicvc_layer.c     | 628 ++++++++++++++++++++
- drivers/gpu/drm/logicvc/logicvc_layer.h     |  64 ++
- drivers/gpu/drm/logicvc/logicvc_mode.c      |  80 +++
- drivers/gpu/drm/logicvc/logicvc_mode.h      |  15 +
- drivers/gpu/drm/logicvc/logicvc_of.c        | 185 ++++++
- drivers/gpu/drm/logicvc/logicvc_of.h        |  46 ++
- drivers/gpu/drm/logicvc/logicvc_regs.h      |  80 +++
- 18 files changed, 2232 insertions(+)
- create mode 100644 drivers/gpu/drm/logicvc/Kconfig
- create mode 100644 drivers/gpu/drm/logicvc/Makefile
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_crtc.c
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_crtc.h
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_drm.c
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_drm.h
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_interface.c
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_interface.h
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_layer.c
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_layer.h
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_mode.c
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_mode.h
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_of.c
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_of.h
- create mode 100644 drivers/gpu/drm/logicvc/logicvc_regs.h
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0216d2ffe728..258caf27eba8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6071,6 +6071,12 @@ S:	Orphan / Obsolete
- F:	drivers/gpu/drm/i810/
- F:	include/uapi/drm/i810_drm.h
- 
-+DRM DRIVER FOR LOGICVC DISPLAY CONTROLLER
-+M:	Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+S:	Supported
-+T:	git git://anongit.freedesktop.org/drm/drm-misc
-+F:	drivers/gpu/drm/logicvc/
-+
- DRM DRIVER FOR LVDS PANELS
- M:	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- L:	dri-devel@lists.freedesktop.org
-diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-index f1422bee3dcc..f1202fd65616 100644
---- a/drivers/gpu/drm/Kconfig
-+++ b/drivers/gpu/drm/Kconfig
-@@ -374,6 +374,8 @@ source "drivers/gpu/drm/etnaviv/Kconfig"
- 
- source "drivers/gpu/drm/hisilicon/Kconfig"
- 
-+source "drivers/gpu/drm/logicvc/Kconfig"
-+
- source "drivers/gpu/drm/mediatek/Kconfig"
- 
- source "drivers/gpu/drm/mxsfb/Kconfig"
-diff --git a/drivers/gpu/drm/Makefile b/drivers/gpu/drm/Makefile
-index c2ef5f9fce54..2b46211260df 100644
---- a/drivers/gpu/drm/Makefile
-+++ b/drivers/gpu/drm/Makefile
-@@ -110,6 +110,7 @@ obj-$(CONFIG_DRM_STM) += stm/
- obj-$(CONFIG_DRM_STI) += sti/
- obj-y 			+= imx/
- obj-$(CONFIG_DRM_INGENIC) += ingenic/
-+obj-$(CONFIG_DRM_LOGICVC) += logicvc/
- obj-$(CONFIG_DRM_MEDIATEK) += mediatek/
- obj-$(CONFIG_DRM_MESON)	+= meson/
- obj-y			+= i2c/
-diff --git a/drivers/gpu/drm/logicvc/Kconfig b/drivers/gpu/drm/logicvc/Kconfig
-new file mode 100644
-index 000000000000..300b2be07385
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/Kconfig
-@@ -0,0 +1,9 @@
-+config DRM_LOGICVC
-+	tristate "LogiCVC DRM"
-+	depends on DRM
-+	depends on OF || COMPILE_TEST
-+	select DRM_KMS_HELPER
-+	select DRM_KMS_CMA_HELPER
-+	select DRM_GEM_CMA_HELPER
-+	help
-+	  DRM display driver for the logiCVC programmable logic block from Xylon
-diff --git a/drivers/gpu/drm/logicvc/Makefile b/drivers/gpu/drm/logicvc/Makefile
-new file mode 100644
-index 000000000000..6e4b01979d38
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/Makefile
-@@ -0,0 +1,9 @@
-+logicvc-drm-y += \
-+	logicvc_crtc.o \
-+	logicvc_drm.o \
-+	logicvc_interface.o \
-+	logicvc_layer.o \
-+	logicvc_mode.o \
-+	logicvc_of.o
-+
-+obj-$(CONFIG_DRM_LOGICVC) += logicvc-drm.o
-diff --git a/drivers/gpu/drm/logicvc/logicvc_crtc.c b/drivers/gpu/drm/logicvc/logicvc_crtc.c
-new file mode 100644
-index 000000000000..c94bb9bb456b
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_crtc.c
-@@ -0,0 +1,280 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#include <linux/of.h>
-+#include <linux/of_graph.h>
-+#include <linux/types.h>
-+#include <linux/workqueue.h>
-+
-+#include <drm/drm_atomic_helper.h>
-+#include <drm/drm_crtc.h>
-+#include <drm/drm_drv.h>
-+#include <drm/drm_gem_cma_helper.h>
-+#include <drm/drm_print.h>
-+#include <drm/drm_vblank.h>
-+
-+#include "logicvc_crtc.h"
-+#include "logicvc_drm.h"
-+#include "logicvc_interface.h"
-+#include "logicvc_layer.h"
-+#include "logicvc_regs.h"
-+
-+#define logicvc_crtc(c) \
-+	container_of(c, struct logicvc_crtc, drm_crtc)
-+
-+static enum drm_mode_status
-+logicvc_crtc_mode_valid(struct drm_crtc *drm_crtc,
-+			const struct drm_display_mode *mode)
-+{
-+	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static void logicvc_crtc_atomic_begin(struct drm_crtc *drm_crtc,
-+				      struct drm_atomic_state *state)
-+{
-+	struct logicvc_crtc *crtc = logicvc_crtc(drm_crtc);
-+	struct drm_crtc_state *old_state =
-+		drm_atomic_get_old_crtc_state(state, drm_crtc);
-+	struct drm_device *drm_dev = drm_crtc->dev;
-+	unsigned long flags;
-+
-+	/*
-+	 * We need to grab the pending event here if vblank was already enabled
-+	 * since we won't get a call to atomic_enable to grab it.
-+	 */
-+	if (drm_crtc->state->event && old_state->active) {
-+		spin_lock_irqsave(&drm_dev->event_lock, flags);
-+		WARN_ON(drm_crtc_vblank_get(drm_crtc) != 0);
-+
-+		crtc->event = drm_crtc->state->event;
-+		drm_crtc->state->event = NULL;
-+
-+		spin_unlock_irqrestore(&drm_dev->event_lock, flags);
-+	}
-+}
-+
-+static void logicvc_crtc_atomic_enable(struct drm_crtc *drm_crtc,
-+				       struct drm_atomic_state *state)
-+{
-+	struct logicvc_crtc *crtc = logicvc_crtc(drm_crtc);
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_crtc->dev);
-+	struct drm_crtc_state *old_state =
-+		drm_atomic_get_old_crtc_state(state, drm_crtc);
-+	struct drm_crtc_state *new_state =
-+		drm_atomic_get_new_crtc_state(state, drm_crtc);
-+	struct drm_display_mode *mode = &new_state->adjusted_mode;
-+
-+	struct drm_device *drm_dev = drm_crtc->dev;
-+	unsigned int hact, hfp, hsl, hbp;
-+	unsigned int vact, vfp, vsl, vbp;
-+	unsigned long flags;
-+	u32 ctrl;
-+
-+	/* Timings */
-+
-+	hact = mode->hdisplay;
-+	hfp = mode->hsync_start - mode->hdisplay;
-+	hsl = mode->hsync_end - mode->hsync_start;
-+	hbp = mode->htotal - mode->hsync_end;
-+
-+	vact = mode->vdisplay;
-+	vfp = mode->vsync_start - mode->vdisplay;
-+	vsl = mode->vsync_end - mode->vsync_start;
-+	vbp = mode->vtotal - mode->vsync_end;
-+
-+	regmap_write(logicvc->regmap, LOGICVC_HSYNC_FRONT_PORCH_REG, hfp - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_HSYNC_REG, hsl - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_HSYNC_BACK_PORCH_REG, hbp - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_HRES_REG, hact - 1);
-+
-+	regmap_write(logicvc->regmap, LOGICVC_VSYNC_FRONT_PORCH_REG, vfp - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_VSYNC_REG, vsl - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_VSYNC_BACK_PORCH_REG, vbp - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_VRES_REG, vact - 1);
-+
-+	/* Signals */
-+
-+	ctrl = LOGICVC_CTRL_HSYNC_ENABLE | LOGICVC_CTRL_VSYNC_ENABLE |
-+	       LOGICVC_CTRL_DE_ENABLE;
-+
-+	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
-+		ctrl |= LOGICVC_CTRL_HSYNC_INVERT;
-+
-+	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
-+		ctrl |= LOGICVC_CTRL_VSYNC_INVERT;
-+
-+	if (logicvc->interface) {
-+		struct drm_connector *connector =
-+			&logicvc->interface->drm_connector;
-+		struct drm_display_info *display_info =
-+			&connector->display_info;
-+
-+		if (display_info->bus_flags & DRM_BUS_FLAG_DE_LOW)
-+			ctrl |= LOGICVC_CTRL_DE_INVERT;
-+
-+		if (display_info->bus_flags &
-+		    DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE)
-+			ctrl |= LOGICVC_CTRL_CLOCK_INVERT;
-+	}
-+
-+	regmap_update_bits(logicvc->regmap, LOGICVC_CTRL_REG,
-+			   LOGICVC_CTRL_HSYNC_ENABLE |
-+			   LOGICVC_CTRL_HSYNC_INVERT |
-+			   LOGICVC_CTRL_VSYNC_ENABLE |
-+			   LOGICVC_CTRL_VSYNC_INVERT |
-+			   LOGICVC_CTRL_DE_ENABLE |
-+			   LOGICVC_CTRL_DE_INVERT |
-+			   LOGICVC_CTRL_PIXEL_INVERT |
-+			   LOGICVC_CTRL_CLOCK_INVERT, ctrl);
-+
-+	/* Generate internal state reset. */
-+	regmap_write(logicvc->regmap, LOGICVC_DTYPE_REG, 0);
-+
-+	drm_crtc_vblank_on(drm_crtc);
-+
-+	/* Register our event after vblank is enabled. */
-+	if (drm_crtc->state->event && !old_state->active) {
-+		spin_lock_irqsave(&drm_dev->event_lock, flags);
-+		WARN_ON(drm_crtc_vblank_get(drm_crtc) != 0);
-+
-+		crtc->event = drm_crtc->state->event;
-+		drm_crtc->state->event = NULL;
-+		spin_unlock_irqrestore(&drm_dev->event_lock, flags);
-+	}
-+}
-+
-+static void logicvc_crtc_atomic_disable(struct drm_crtc *drm_crtc,
-+					struct drm_atomic_state *state)
-+{
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_crtc->dev);
-+	struct drm_device *drm_dev = drm_crtc->dev;
-+
-+	drm_crtc_vblank_off(drm_crtc);
-+
-+	/* Disable and clear CRTC bits. */
-+	regmap_update_bits(logicvc->regmap, LOGICVC_CTRL_REG,
-+			   LOGICVC_CTRL_HSYNC_ENABLE |
-+			   LOGICVC_CTRL_HSYNC_INVERT |
-+			   LOGICVC_CTRL_VSYNC_ENABLE |
-+			   LOGICVC_CTRL_VSYNC_INVERT |
-+			   LOGICVC_CTRL_DE_ENABLE |
-+			   LOGICVC_CTRL_DE_INVERT |
-+			   LOGICVC_CTRL_PIXEL_INVERT |
-+			   LOGICVC_CTRL_CLOCK_INVERT, 0);
-+
-+	/* Generate internal state reset. */
-+	regmap_write(logicvc->regmap, LOGICVC_DTYPE_REG, 0);
-+
-+	/* Consume any leftover event since vblank is now disabled. */
-+	if (drm_crtc->state->event && !drm_crtc->state->active) {
-+		spin_lock_irq(&drm_dev->event_lock);
-+
-+		drm_crtc_send_vblank_event(drm_crtc, drm_crtc->state->event);
-+		drm_crtc->state->event = NULL;
-+		spin_unlock_irq(&drm_dev->event_lock);
-+	}
-+}
-+
-+static const struct drm_crtc_helper_funcs logicvc_crtc_helper_funcs = {
-+	.mode_valid		= logicvc_crtc_mode_valid,
-+	.atomic_begin		= logicvc_crtc_atomic_begin,
-+	.atomic_enable		= logicvc_crtc_atomic_enable,
-+	.atomic_disable		= logicvc_crtc_atomic_disable,
-+};
-+
-+static int logicvc_crtc_enable_vblank(struct drm_crtc *drm_crtc)
-+{
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_crtc->dev);
-+
-+	/* Clear any pending V_SYNC interrupt. */
-+	regmap_write_bits(logicvc->regmap, LOGICVC_INT_STAT_REG,
-+			  LOGICVC_INT_STAT_V_SYNC, LOGICVC_INT_STAT_V_SYNC);
-+
-+	/* Unmask V_SYNC interrupt. */
-+	regmap_write_bits(logicvc->regmap, LOGICVC_INT_MASK_REG,
-+			  LOGICVC_INT_MASK_V_SYNC, 0);
-+
-+	return 0;
-+}
-+
-+static void logicvc_crtc_disable_vblank(struct drm_crtc *drm_crtc)
-+{
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_crtc->dev);
-+
-+	/* Mask V_SYNC interrupt. */
-+	regmap_write_bits(logicvc->regmap, LOGICVC_INT_MASK_REG,
-+			  LOGICVC_INT_MASK_V_SYNC, LOGICVC_INT_MASK_V_SYNC);
-+}
-+
-+static const struct drm_crtc_funcs logicvc_crtc_funcs = {
-+	.reset			= drm_atomic_helper_crtc_reset,
-+	.destroy		= drm_crtc_cleanup,
-+	.set_config		= drm_atomic_helper_set_config,
-+	.page_flip		= drm_atomic_helper_page_flip,
-+	.atomic_duplicate_state	= drm_atomic_helper_crtc_duplicate_state,
-+	.atomic_destroy_state	= drm_atomic_helper_crtc_destroy_state,
-+	.enable_vblank		= logicvc_crtc_enable_vblank,
-+	.disable_vblank		= logicvc_crtc_disable_vblank,
-+};
-+
-+void logicvc_crtc_vblank_handler(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct logicvc_crtc *crtc = logicvc->crtc;
-+	unsigned long flags;
-+
-+	if (!crtc)
-+		return;
-+
-+	drm_crtc_handle_vblank(&crtc->drm_crtc);
-+
-+	if (crtc->event) {
-+		spin_lock_irqsave(&drm_dev->event_lock, flags);
-+		drm_crtc_send_vblank_event(&crtc->drm_crtc, crtc->event);
-+		drm_crtc_vblank_put(&crtc->drm_crtc);
-+		crtc->event = NULL;
-+		spin_unlock_irqrestore(&drm_dev->event_lock, flags);
-+	}
-+}
-+
-+int logicvc_crtc_init(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct device *dev = drm_dev->dev;
-+	struct device_node *of_node = dev->of_node;
-+	struct logicvc_crtc *crtc;
-+	struct logicvc_layer *layer_primary;
-+	int ret;
-+
-+	crtc = devm_kzalloc(dev, sizeof(*crtc), GFP_KERNEL);
-+	if (!crtc)
-+		return -ENOMEM;
-+
-+	layer_primary = logicvc_layer_get_primary(logicvc);
-+	if (!layer_primary) {
-+		drm_err(drm_dev, "Failed to get primary layer\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = drm_crtc_init_with_planes(drm_dev, &crtc->drm_crtc,
-+					&layer_primary->drm_plane, NULL,
-+					&logicvc_crtc_funcs, NULL);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize CRTC\n");
-+		return ret;
-+	}
-+
-+	drm_crtc_helper_add(&crtc->drm_crtc, &logicvc_crtc_helper_funcs);
-+
-+	crtc->drm_crtc.port = of_graph_get_port_by_id(of_node, 1);
-+
-+	logicvc->crtc = crtc;
-+
-+	return 0;
-+}
-diff --git a/drivers/gpu/drm/logicvc/logicvc_crtc.h b/drivers/gpu/drm/logicvc/logicvc_crtc.h
-new file mode 100644
-index 000000000000..b122901f2936
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_crtc.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#ifndef _LOGICVC_CRTC_H_
-+#define _LOGICVC_CRTC_H_
-+
-+struct drm_pending_vblank_event;
-+struct logicvc_drm;
-+
-+struct logicvc_crtc {
-+	struct drm_crtc drm_crtc;
-+	struct drm_pending_vblank_event *event;
-+};
-+
-+void logicvc_crtc_vblank_handler(struct logicvc_drm *logicvc);
-+int logicvc_crtc_init(struct logicvc_drm *logicvc);
-+
-+#endif
-diff --git a/drivers/gpu/drm/logicvc/logicvc_drm.c b/drivers/gpu/drm/logicvc/logicvc_drm.c
-new file mode 100644
-index 000000000000..df1805cf0f95
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_drm.c
-@@ -0,0 +1,497 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
-+#include <linux/of_reserved_mem.h>
-+#include <linux/regmap.h>
-+#include <linux/types.h>
-+
-+#include <drm/drm_atomic_helper.h>
-+#include <drm/drm_drv.h>
-+#include <drm/drm_fb_helper.h>
-+#include <drm/drm_gem_cma_helper.h>
-+#include <drm/drm_print.h>
-+
-+#include "logicvc_crtc.h"
-+#include "logicvc_drm.h"
-+#include "logicvc_interface.h"
-+#include "logicvc_mode.h"
-+#include "logicvc_layer.h"
-+#include "logicvc_of.h"
-+#include "logicvc_regs.h"
-+
-+DEFINE_DRM_GEM_CMA_FOPS(logicvc_drm_fops);
-+
-+static int logicvc_drm_gem_cma_dumb_create(struct drm_file *file_priv,
-+					   struct drm_device *drm_dev,
-+					   struct drm_mode_create_dumb *args)
-+{
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_dev);
-+
-+	/* Stride is always fixed to its configuration value. */
-+	args->pitch = logicvc->config.row_stride * DIV_ROUND_UP(args->bpp, 8);
-+
-+	return drm_gem_cma_dumb_create_internal(file_priv, drm_dev, args);
-+}
-+
-+static struct drm_driver logicvc_drm_driver = {
-+	.driver_features		= DRIVER_GEM | DRIVER_MODESET |
-+					  DRIVER_ATOMIC,
-+
-+	.fops				= &logicvc_drm_fops,
-+	.name				= "logicvc-drm",
-+	.desc				= "Xylon LogiCVC DRM driver",
-+	.date				= "20200403",
-+	.major				= 1,
-+	.minor				= 0,
-+
-+	DRM_GEM_CMA_DRIVER_OPS_VMAP_WITH_DUMB_CREATE(logicvc_drm_gem_cma_dumb_create),
-+};
-+
-+static struct regmap_config logicvc_drm_regmap_config = {
-+	.reg_bits	= 32,
-+	.val_bits	= 32,
-+	.reg_stride	= 4,
-+	.name		= "logicvc-drm",
-+};
-+
-+static irqreturn_t logicvc_drm_irq_handler(int irq, void *data)
-+{
-+	struct logicvc_drm *logicvc = data;
-+	irqreturn_t ret = IRQ_NONE;
-+	u32 stat = 0;
-+
-+	/* Get pending interrupt sources. */
-+	regmap_read(logicvc->regmap, LOGICVC_INT_STAT_REG, &stat);
-+
-+	/* Clear all pending interrupt sources. */
-+	regmap_write(logicvc->regmap, LOGICVC_INT_STAT_REG, stat);
-+
-+	if (stat & LOGICVC_INT_STAT_V_SYNC) {
-+		logicvc_crtc_vblank_handler(logicvc);
-+		ret = IRQ_HANDLED;
-+	}
-+
-+	return ret;
-+}
-+
-+static int logicvc_drm_config_parse(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct device *dev = drm_dev->dev;
-+	struct device_node *of_node = dev->of_node;
-+	struct logicvc_drm_config *config = &logicvc->config;
-+	struct device_node *layers_node;
-+	int ret;
-+
-+	logicvc_of_property_parse_bool(of_node, LOGICVC_OF_PROPERTY_DITHERING,
-+				       &config->dithering);
-+	logicvc_of_property_parse_bool(of_node,
-+				       LOGICVC_OF_PROPERTY_BACKGROUND_LAYER,
-+				       &config->background_layer);
-+	logicvc_of_property_parse_bool(of_node,
-+				       LOGICVC_OF_PROPERTY_LAYERS_CONFIGURABLE,
-+				       &config->layers_configurable);
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_DISPLAY_INTERFACE,
-+					    &config->display_interface);
-+	if (ret)
-+		return ret;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_DISPLAY_COLORSPACE,
-+					    &config->display_colorspace);
-+	if (ret)
-+		return ret;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_DISPLAY_DEPTH,
-+					    &config->display_depth);
-+	if (ret)
-+		return ret;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_ROW_STRIDE,
-+					    &config->row_stride);
-+	if (ret)
-+		return ret;
-+
-+	layers_node = of_get_child_by_name(of_node, "layers");
-+	if (!layers_node) {
-+		drm_err(drm_dev, "Missing non-optional layers node\n");
-+		return -EINVAL;
-+	}
-+
-+	config->layers_count = of_get_child_count(layers_node);
-+	if (!config->layers_count) {
-+		drm_err(drm_dev,
-+			"Missing a non-optional layers children node\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int logicvc_clocks_prepare(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct device *dev = drm_dev->dev;
-+
-+	struct {
-+		struct clk **clk;
-+		char *name;
-+		bool optional;
-+	} clocks_map[] = {
-+		{
-+			.clk = &logicvc->vclk,
-+			.name = "vclk",
-+			.optional = false,
-+		},
-+		{
-+			.clk = &logicvc->vclk2,
-+			.name = "vclk2",
-+			.optional = true,
-+		},
-+		{
-+			.clk = &logicvc->lvdsclk,
-+			.name = "lvdsclk",
-+			.optional = true,
-+		},
-+		{
-+			.clk = &logicvc->lvdsclkn,
-+			.name = "lvdsclkn",
-+			.optional = true,
-+		},
-+	};
-+	unsigned int i;
-+	int ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(clocks_map); i++) {
-+		struct clk *clk;
-+
-+		clk = devm_clk_get(dev, clocks_map[i].name);
-+		if (IS_ERR(clk)) {
-+			if (PTR_ERR(clk) == -ENOENT && clocks_map[i].optional)
-+				continue;
-+
-+			drm_err(drm_dev, "Missing non-optional clock %s\n",
-+				clocks_map[i].name);
-+
-+			ret = PTR_ERR(clk);
-+			goto error;
-+		}
-+
-+		ret = clk_prepare_enable(clk);
-+		if (ret) {
-+			drm_err(drm_dev,
-+				"Failed to prepare and enable clock %s\n",
-+				clocks_map[i].name);
-+			goto error;
-+		}
-+
-+		*clocks_map[i].clk = clk;
-+	}
-+
-+	return 0;
-+
-+error:
-+	for (i = 0; i < ARRAY_SIZE(clocks_map); i++) {
-+		if (!*clocks_map[i].clk)
-+			continue;
-+
-+		clk_disable_unprepare(*clocks_map[i].clk);
-+		*clocks_map[i].clk = NULL;
-+	}
-+
-+	return ret;
-+}
-+
-+static int logicvc_clocks_unprepare(struct logicvc_drm *logicvc)
-+{
-+	struct clk **clocks[] = {
-+		&logicvc->vclk,
-+		&logicvc->vclk2,
-+		&logicvc->lvdsclk,
-+		&logicvc->lvdsclkn,
-+	};
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(clocks); i++) {
-+		if (!*clocks[i])
-+			continue;
-+
-+		clk_disable_unprepare(*clocks[i]);
-+		*clocks[i] = NULL;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct logicvc_drm_caps logicvc_drm_caps[] = {
-+	{
-+		.major		= 3,
-+		.layer_address	= false,
-+	},
-+	{
-+		.major		= 4,
-+		.layer_address	= true,
-+	},
-+	{
-+		.major		= 5,
-+		.layer_address	= true,
-+	},
-+};
-+
-+static const struct logicvc_drm_caps *
-+logicvc_drm_caps_match(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	const struct logicvc_drm_caps *caps = NULL;
-+	unsigned int major, minor;
-+	char level;
-+	unsigned int i;
-+	u32 version;
-+
-+	regmap_read(logicvc->regmap, LOGICVC_IP_VERSION_REG, &version);
-+
-+	major = FIELD_GET(LOGICVC_IP_VERSION_MAJOR_MASK, version);
-+	minor = FIELD_GET(LOGICVC_IP_VERSION_MINOR_MASK, version);
-+	level = FIELD_GET(LOGICVC_IP_VERSION_LEVEL_MASK, version) + 'a';
-+
-+	for (i = 0; i < ARRAY_SIZE(logicvc_drm_caps); i++) {
-+		if (logicvc_drm_caps[i].major &&
-+		    logicvc_drm_caps[i].major != major)
-+			continue;
-+
-+		if (logicvc_drm_caps[i].minor &&
-+		    logicvc_drm_caps[i].minor != minor)
-+			continue;
-+
-+		if (logicvc_drm_caps[i].level &&
-+		    logicvc_drm_caps[i].level != level)
-+			continue;
-+
-+		caps = &logicvc_drm_caps[i];
-+	}
-+
-+	drm_info(drm_dev, "LogiCVC version %d.%02d.%c\n", major, minor, level);
-+
-+	return caps;
-+}
-+
-+static int logicvc_drm_probe(struct platform_device *pdev)
-+{
-+	struct device_node *of_node = pdev->dev.of_node;
-+	struct device_node *reserved_mem_node;
-+	struct reserved_mem *reserved_mem = NULL;
-+	const struct logicvc_drm_caps *caps;
-+	struct logicvc_drm *logicvc;
-+	struct device *dev = &pdev->dev;
-+	struct drm_device *drm_dev;
-+	struct regmap *regmap;
-+	struct resource res;
-+	void __iomem *base;
-+	int irq;
-+	int ret;
-+
-+	ret = of_reserved_mem_device_init(dev);
-+	if (ret && ret != -ENODEV) {
-+		dev_err(dev, "Failed to init memory region\n");
-+		goto error_early;
-+	}
-+
-+	reserved_mem_node = of_parse_phandle(of_node, "memory-region", 0);
-+	if (reserved_mem_node) {
-+		reserved_mem = of_reserved_mem_lookup(reserved_mem_node);
-+		of_node_put(reserved_mem_node);
-+	}
-+
-+	/* Get regmap from parent if available. */
-+	if (of_node->parent)
-+		regmap = syscon_node_to_regmap(of_node->parent);
-+
-+	/* Register our own regmap otherwise. */
-+	if (IS_ERR_OR_NULL(regmap)) {
-+		ret = of_address_to_resource(of_node, 0, &res);
-+		if (ret) {
-+			dev_err(dev, "Failed to get resource from address\n");
-+			goto error_reserved_mem;
-+		}
-+
-+		base = devm_ioremap_resource(dev, &res);
-+		if (IS_ERR(base)) {
-+			dev_err(dev, "Failed to map I/O base\n");
-+			ret = PTR_ERR(base);
-+			goto error_reserved_mem;
-+		}
-+
-+		logicvc_drm_regmap_config.max_register = resource_size(&res) -
-+							 4;
-+
-+		regmap = devm_regmap_init_mmio(dev, base,
-+					       &logicvc_drm_regmap_config);
-+		if (IS_ERR(regmap)) {
-+			dev_err(dev, "Failed to create regmap for I/O\n");
-+			ret = PTR_ERR(regmap);
-+			goto error_reserved_mem;
-+		}
-+	}
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(dev, "Failed to get IRQ\n");
-+		ret = -ENODEV;
-+		goto error_reserved_mem;
-+	}
-+
-+	logicvc = devm_drm_dev_alloc(dev, &logicvc_drm_driver,
-+				     struct logicvc_drm, drm_dev);
-+	if (IS_ERR(logicvc)) {
-+		ret = PTR_ERR(logicvc);
-+		goto error_reserved_mem;
-+	}
-+
-+	platform_set_drvdata(pdev, logicvc);
-+	drm_dev = &logicvc->drm_dev;
-+
-+	logicvc->regmap = regmap;
-+	INIT_LIST_HEAD(&logicvc->layers_list);
-+
-+	caps = logicvc_drm_caps_match(logicvc);
-+	if (!caps) {
-+		ret = -EINVAL;
-+		goto error_reserved_mem;
-+	}
-+
-+	logicvc->caps = caps;
-+
-+	if (reserved_mem)
-+		logicvc->reserved_mem_base = reserved_mem->base;
-+
-+	ret = logicvc_clocks_prepare(logicvc);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to prepare clocks\n");
-+		goto error_reserved_mem;
-+	}
-+
-+	ret = devm_request_irq(dev, irq, logicvc_drm_irq_handler, 0,
-+			       dev_name(dev), logicvc);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to request IRQ\n");
-+		goto error_clocks;
-+	}
-+
-+	ret = logicvc_drm_config_parse(logicvc);
-+	if (ret && ret != -ENODEV) {
-+		drm_err(drm_dev, "Failed to parse config\n");
-+		goto error_clocks;
-+	}
-+
-+	ret = drmm_mode_config_init(drm_dev);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to init mode config\n");
-+		goto error_clocks;
-+	}
-+
-+	ret = logicvc_layers_init(logicvc);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize layers\n");
-+		goto error_clocks;
-+	}
-+
-+	ret = logicvc_crtc_init(logicvc);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize CRTC\n");
-+		goto error_clocks;
-+	}
-+
-+	logicvc_layers_attach_crtc(logicvc);
-+
-+	ret = logicvc_interface_init(logicvc);
-+	if (ret) {
-+		if (ret != -EPROBE_DEFER)
-+			drm_err(drm_dev, "Failed to initialize interface\n");
-+
-+		goto error_clocks;
-+	}
-+
-+	logicvc_interface_attach_crtc(logicvc);
-+
-+	ret = logicvc_mode_init(logicvc);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize KMS\n");
-+		goto error_clocks;
-+	}
-+
-+	ret = drm_dev_register(drm_dev, 0);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to register DRM device\n");
-+		goto error_mode;
-+	}
-+
-+	drm_fbdev_generic_setup(drm_dev, drm_dev->mode_config.preferred_depth);
-+
-+	return 0;
-+
-+error_mode:
-+	logicvc_mode_fini(logicvc);
-+
-+error_clocks:
-+	logicvc_clocks_unprepare(logicvc);
-+
-+error_reserved_mem:
-+	of_reserved_mem_device_release(dev);
-+
-+error_early:
-+	return ret;
-+}
-+
-+static int logicvc_drm_remove(struct platform_device *pdev)
-+{
-+	struct logicvc_drm *logicvc = platform_get_drvdata(pdev);
-+	struct device *dev = &pdev->dev;
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+
-+	drm_dev_unregister(drm_dev);
-+	drm_atomic_helper_shutdown(drm_dev);
-+
-+	logicvc_mode_fini(logicvc);
-+
-+	logicvc_clocks_unprepare(logicvc);
-+
-+	of_reserved_mem_device_release(dev);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id logicvc_drm_of_table[] = {
-+	{ .compatible = "xylon,logicvc-3.02.a-display" },
-+	{ .compatible = "xylon,logicvc-4.01.a-display" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, logicvc_drm_of_table);
-+
-+static struct platform_driver logicvc_drm_platform_driver = {
-+	.probe		= logicvc_drm_probe,
-+	.remove		= logicvc_drm_remove,
-+	.driver		= {
-+		.name		= "logicvc-drm",
-+		.of_match_table	= logicvc_drm_of_table,
-+	},
-+};
-+
-+module_platform_driver(logicvc_drm_platform_driver);
-+
-+MODULE_AUTHOR("Paul Kocialkowski <paul.kocialkowski@bootlin.com>");
-+MODULE_DESCRIPTION("Xylon LogiCVC DRM driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/gpu/drm/logicvc/logicvc_drm.h b/drivers/gpu/drm/logicvc/logicvc_drm.h
-new file mode 100644
-index 000000000000..e0f4787c69f9
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_drm.h
-@@ -0,0 +1,67 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#ifndef _LOGICVC_DRM_H_
-+#define _LOGICVC_DRM_H_
-+
-+#include <linux/regmap.h>
-+#include <linux/types.h>
-+#include <drm/drm_device.h>
-+
-+#define LOGICVC_DISPLAY_INTERFACE_RGB			0
-+#define LOGICVC_DISPLAY_INTERFACE_ITU656		1
-+#define LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS		2
-+#define LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS_CAMERA	3
-+#define LOGICVC_DISPLAY_INTERFACE_LVDS_3BITS		4
-+#define LOGICVC_DISPLAY_INTERFACE_DVI			5
-+
-+#define LOGICVC_DISPLAY_COLORSPACE_RGB		0
-+#define LOGICVC_DISPLAY_COLORSPACE_YUV422	1
-+#define LOGICVC_DISPLAY_COLORSPACE_YUV444	2
-+
-+#define logicvc_drm(d) \
-+	container_of(d, struct logicvc_drm, drm_dev)
-+
-+struct logicvc_crtc;
-+struct logicvc_interface;
-+
-+struct logicvc_drm_config {
-+	u32 display_interface;
-+	u32 display_colorspace;
-+	u32 display_depth;
-+	u32 row_stride;
-+	bool dithering;
-+	bool background_layer;
-+	bool layers_configurable;
-+	u32 layers_count;
-+};
-+
-+struct logicvc_drm_caps {
-+	unsigned int major;
-+	unsigned int minor;
-+	char level;
-+	bool layer_address;
-+};
-+
-+struct logicvc_drm {
-+	const struct logicvc_drm_caps *caps;
-+	struct logicvc_drm_config config;
-+
-+	struct drm_device drm_dev;
-+	phys_addr_t reserved_mem_base;
-+	struct regmap *regmap;
-+
-+	struct clk *vclk;
-+	struct clk *vclk2;
-+	struct clk *lvdsclk;
-+	struct clk *lvdsclkn;
-+
-+	struct list_head layers_list;
-+	struct logicvc_crtc *crtc;
-+	struct logicvc_interface *interface;
-+};
-+
-+#endif
-diff --git a/drivers/gpu/drm/logicvc/logicvc_interface.c b/drivers/gpu/drm/logicvc/logicvc_interface.c
-new file mode 100644
-index 000000000000..c73592f6c406
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_interface.c
-@@ -0,0 +1,214 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#include <linux/types.h>
-+
-+#include <drm/drm_atomic_helper.h>
-+#include <drm/drm_bridge.h>
-+#include <drm/drm_connector.h>
-+#include <drm/drm_crtc_helper.h>
-+#include <drm/drm_drv.h>
-+#include <drm/drm_encoder.h>
-+#include <drm/drm_gem_cma_helper.h>
-+#include <drm/drm_modeset_helper_vtables.h>
-+#include <drm/drm_of.h>
-+#include <drm/drm_panel.h>
-+#include <drm/drm_print.h>
-+#include <drm/drm_probe_helper.h>
-+
-+#include "logicvc_crtc.h"
-+#include "logicvc_drm.h"
-+#include "logicvc_interface.h"
-+#include "logicvc_regs.h"
-+
-+#define logicvc_interface_from_drm_encoder(c) \
-+	container_of(c, struct logicvc_interface, drm_encoder)
-+#define logicvc_interface_from_drm_connector(c) \
-+	container_of(c, struct logicvc_interface, drm_connector)
-+
-+static void logicvc_encoder_enable(struct drm_encoder *drm_encoder)
-+{
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_encoder->dev);
-+	struct logicvc_interface *interface =
-+		logicvc_interface_from_drm_encoder(drm_encoder);
-+
-+	regmap_update_bits(logicvc->regmap, LOGICVC_POWER_CTRL_REG,
-+			   LOGICVC_POWER_CTRL_VIDEO_ENABLE,
-+			   LOGICVC_POWER_CTRL_VIDEO_ENABLE);
-+
-+	if (interface->drm_panel) {
-+		drm_panel_prepare(interface->drm_panel);
-+		drm_panel_enable(interface->drm_panel);
-+	}
-+}
-+
-+static void logicvc_encoder_disable(struct drm_encoder *drm_encoder)
-+{
-+	struct logicvc_interface *interface =
-+		logicvc_interface_from_drm_encoder(drm_encoder);
-+
-+	if (interface->drm_panel) {
-+		drm_panel_disable(interface->drm_panel);
-+		drm_panel_unprepare(interface->drm_panel);
-+	}
-+}
-+
-+static const struct drm_encoder_helper_funcs logicvc_encoder_helper_funcs = {
-+	.enable			= logicvc_encoder_enable,
-+	.disable		= logicvc_encoder_disable,
-+};
-+
-+static const struct drm_encoder_funcs logicvc_encoder_funcs = {
-+	.destroy		= drm_encoder_cleanup,
-+};
-+
-+static int logicvc_connector_get_modes(struct drm_connector *drm_connector)
-+{
-+	struct logicvc_interface *interface =
-+		logicvc_interface_from_drm_connector(drm_connector);
-+
-+	if (interface->drm_panel)
-+		return drm_panel_get_modes(interface->drm_panel, drm_connector);
-+
-+	WARN_ONCE(1, "Retrieving modes from a native connector is not implemented.");
-+
-+	return 0;
-+}
-+
-+static const struct drm_connector_helper_funcs logicvc_connector_helper_funcs = {
-+	.get_modes		= logicvc_connector_get_modes,
-+};
-+
-+static const struct drm_connector_funcs logicvc_connector_funcs = {
-+	.reset			= drm_atomic_helper_connector_reset,
-+	.fill_modes		= drm_helper_probe_single_connector_modes,
-+	.destroy		= drm_connector_cleanup,
-+	.atomic_duplicate_state	= drm_atomic_helper_connector_duplicate_state,
-+	.atomic_destroy_state	= drm_atomic_helper_connector_destroy_state,
-+};
-+
-+static int logicvc_interface_encoder_type(struct logicvc_drm *logicvc)
-+{
-+	switch (logicvc->config.display_interface) {
-+	case LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS:
-+	case LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS_CAMERA:
-+	case LOGICVC_DISPLAY_INTERFACE_LVDS_3BITS:
-+		return DRM_MODE_ENCODER_LVDS;
-+	case LOGICVC_DISPLAY_INTERFACE_DVI:
-+		return DRM_MODE_ENCODER_TMDS;
-+	case LOGICVC_DISPLAY_INTERFACE_RGB:
-+		return DRM_MODE_ENCODER_DPI;
-+	default:
-+		return DRM_MODE_ENCODER_NONE;
-+	}
-+}
-+
-+static int logicvc_interface_connector_type(struct logicvc_drm *logicvc)
-+{
-+	switch (logicvc->config.display_interface) {
-+	case LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS:
-+	case LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS_CAMERA:
-+	case LOGICVC_DISPLAY_INTERFACE_LVDS_3BITS:
-+		return DRM_MODE_CONNECTOR_LVDS;
-+	case LOGICVC_DISPLAY_INTERFACE_DVI:
-+		return DRM_MODE_CONNECTOR_DVID;
-+	case LOGICVC_DISPLAY_INTERFACE_RGB:
-+		return DRM_MODE_CONNECTOR_DPI;
-+	default:
-+		return DRM_MODE_CONNECTOR_Unknown;
-+	}
-+}
-+
-+static bool logicvc_interface_native_connector(struct logicvc_drm *logicvc)
-+{
-+	switch (logicvc->config.display_interface) {
-+	case LOGICVC_DISPLAY_INTERFACE_DVI:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+void logicvc_interface_attach_crtc(struct logicvc_drm *logicvc)
-+{
-+	uint32_t possible_crtcs = drm_crtc_mask(&logicvc->crtc->drm_crtc);
-+
-+	logicvc->interface->drm_encoder.possible_crtcs = possible_crtcs;
-+}
-+
-+int logicvc_interface_init(struct logicvc_drm *logicvc)
-+{
-+	struct logicvc_interface *interface;
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct device *dev = drm_dev->dev;
-+	struct device_node *of_node = dev->of_node;
-+	int encoder_type = logicvc_interface_encoder_type(logicvc);
-+	int connector_type = logicvc_interface_connector_type(logicvc);
-+	bool native_connector = logicvc_interface_native_connector(logicvc);
-+	int ret;
-+
-+	interface = devm_kzalloc(dev, sizeof(*interface), GFP_KERNEL);
-+	if (!interface) {
-+		ret = -ENOMEM;
-+		goto error_early;
-+	}
-+
-+	ret = drm_of_find_panel_or_bridge(of_node, 0, 0, &interface->drm_panel,
-+					  &interface->drm_bridge);
-+	if (ret == -EPROBE_DEFER)
-+		goto error_early;
-+
-+	ret = drm_encoder_init(drm_dev, &interface->drm_encoder,
-+			       &logicvc_encoder_funcs, encoder_type, NULL);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize encoder\n");
-+		goto error_early;
-+	}
-+
-+	drm_encoder_helper_add(&interface->drm_encoder,
-+			       &logicvc_encoder_helper_funcs);
-+
-+	if (native_connector || interface->drm_panel) {
-+		ret = drm_connector_init(drm_dev, &interface->drm_connector,
-+					 &logicvc_connector_funcs,
-+					 connector_type);
-+		if (ret) {
-+			drm_err(drm_dev, "Failed to initialize connector\n");
-+			goto error_encoder;
-+		}
-+
-+		drm_connector_helper_add(&interface->drm_connector,
-+					 &logicvc_connector_helper_funcs);
-+
-+		ret = drm_connector_attach_encoder(&interface->drm_connector,
-+						   &interface->drm_encoder);
-+		if (ret) {
-+			drm_err(drm_dev,
-+				"Failed to attach connector to encoder\n");
-+			goto error_encoder;
-+		}
-+	}
-+
-+	if (interface->drm_bridge) {
-+		ret = drm_bridge_attach(&interface->drm_encoder,
-+					interface->drm_bridge, NULL, 0);
-+		if (ret) {
-+			drm_err(drm_dev,
-+				"Failed to attach bridge to encoder\n");
-+			goto error_encoder;
-+		}
-+	}
-+
-+	logicvc->interface = interface;
-+
-+	return 0;
-+
-+error_encoder:
-+	drm_encoder_cleanup(&interface->drm_encoder);
-+
-+error_early:
-+	return ret;
-+}
-diff --git a/drivers/gpu/drm/logicvc/logicvc_interface.h b/drivers/gpu/drm/logicvc/logicvc_interface.h
-new file mode 100644
-index 000000000000..fd709fad54f9
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_interface.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#ifndef _LOGICVC_INTERFACE_H_
-+#define _LOGICVC_INTERFACE_H_
-+
-+#include <drm/drm_bridge.h>
-+#include <drm/drm_connector.h>
-+#include <drm/drm_encoder.h>
-+#include <drm/drm_panel.h>
-+
-+struct logicvc_drm;
-+
-+struct logicvc_interface {
-+	struct drm_encoder drm_encoder;
-+	struct drm_connector drm_connector;
-+
-+	struct drm_panel *drm_panel;
-+	struct drm_bridge *drm_bridge;
-+};
-+
-+void logicvc_interface_attach_crtc(struct logicvc_drm *logicvc);
-+int logicvc_interface_init(struct logicvc_drm *logicvc);
-+
-+#endif
-diff --git a/drivers/gpu/drm/logicvc/logicvc_layer.c b/drivers/gpu/drm/logicvc/logicvc_layer.c
-new file mode 100644
-index 000000000000..10dd167e57eb
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_layer.c
-@@ -0,0 +1,628 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#include <linux/of.h>
-+#include <linux/types.h>
-+
-+#include <drm/drm_atomic.h>
-+#include <drm/drm_atomic_helper.h>
-+#include <drm/drm_fb_cma_helper.h>
-+#include <drm/drm_fourcc.h>
-+#include <drm/drm_plane.h>
-+#include <drm/drm_plane_helper.h>
-+#include <drm/drm_print.h>
-+
-+#include "logicvc_crtc.h"
-+#include "logicvc_drm.h"
-+#include "logicvc_layer.h"
-+#include "logicvc_of.h"
-+#include "logicvc_regs.h"
-+
-+#define logicvc_layer(p) \
-+	container_of(p, struct logicvc_layer, drm_plane)
-+
-+static uint32_t logicvc_layer_formats_rgb16[] = {
-+	DRM_FORMAT_RGB565,
-+	DRM_FORMAT_BGR565,
-+	DRM_FORMAT_INVALID,
-+};
-+
-+static uint32_t logicvc_layer_formats_rgb24[] = {
-+	DRM_FORMAT_XRGB8888,
-+	DRM_FORMAT_XBGR8888,
-+	DRM_FORMAT_INVALID,
-+};
-+
-+/*
-+ * What we call depth in this driver only counts color components, not alpha.
-+ * This allows us to stay compatible with the LogiCVC bistream definitions.
-+ */
-+static uint32_t logicvc_layer_formats_rgb24_alpha[] = {
-+	DRM_FORMAT_ARGB8888,
-+	DRM_FORMAT_ABGR8888,
-+	DRM_FORMAT_INVALID,
-+};
-+
-+static struct logicvc_layer_formats logicvc_layer_formats[] = {
-+	{
-+		.colorspace	= LOGICVC_LAYER_COLORSPACE_RGB,
-+		.depth		= 16,
-+		.formats	= logicvc_layer_formats_rgb16,
-+	},
-+	{
-+		.colorspace	= LOGICVC_LAYER_COLORSPACE_RGB,
-+		.depth		= 24,
-+		.formats	= logicvc_layer_formats_rgb24,
-+	},
-+	{
-+		.colorspace	= LOGICVC_LAYER_COLORSPACE_RGB,
-+		.depth		= 24,
-+		.alpha		= true,
-+		.formats	= logicvc_layer_formats_rgb24_alpha,
-+	},
-+	{ }
-+};
-+
-+static bool logicvc_layer_format_inverted(uint32_t format)
-+{
-+	switch (format) {
-+	case DRM_FORMAT_BGR565:
-+	case DRM_FORMAT_BGR888:
-+	case DRM_FORMAT_XBGR8888:
-+	case DRM_FORMAT_ABGR8888:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static int logicvc_plane_atomic_check(struct drm_plane *drm_plane,
-+				      struct drm_atomic_state *state)
-+{
-+	struct drm_device *drm_dev = drm_plane->dev;
-+	struct logicvc_layer *layer = logicvc_layer(drm_plane);
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_dev);
-+	struct drm_plane_state *new_state =
-+		drm_atomic_get_new_plane_state(state, drm_plane);
-+	struct drm_crtc_state *crtc_state;
-+	int min_scale, max_scale;
-+	bool can_position;
-+	int ret;
-+
-+	if (!new_state->crtc)
-+		return 0;
-+
-+	crtc_state = drm_atomic_get_existing_crtc_state(new_state->state,
-+							new_state->crtc);
-+	if (WARN_ON(!crtc_state))
-+		return -EINVAL;
-+
-+	if (new_state->crtc_x < 0 || new_state->crtc_y < 0) {
-+		drm_err(drm_dev,
-+			"Negative on-CRTC positions are not supported.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!logicvc->caps->layer_address) {
-+		ret = logicvc_layer_buffer_find_setup(logicvc, layer, new_state,
-+						      NULL);
-+		if (ret) {
-+			drm_err(drm_dev, "No viable setup for buffer found.\n");
-+			return ret;
-+		}
-+	}
-+
-+	min_scale = DRM_PLANE_HELPER_NO_SCALING;
-+	max_scale = DRM_PLANE_HELPER_NO_SCALING;
-+
-+	can_position = (drm_plane->type == DRM_PLANE_TYPE_OVERLAY &&
-+			layer->index != (logicvc->config.layers_count - 1) &&
-+			logicvc->config.layers_configurable);
-+
-+	ret = drm_atomic_helper_check_plane_state(new_state, crtc_state,
-+						  min_scale, max_scale,
-+						  can_position, true);
-+	if (ret) {
-+		drm_err(drm_dev, "Invalid plane state\n\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void logicvc_plane_atomic_update(struct drm_plane *drm_plane,
-+					struct drm_atomic_state *state)
-+{
-+	struct logicvc_layer *layer = logicvc_layer(drm_plane);
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_plane->dev);
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct drm_plane_state *new_state =
-+		drm_atomic_get_new_plane_state(state, drm_plane);
-+	struct drm_crtc *drm_crtc = &logicvc->crtc->drm_crtc;
-+	struct drm_display_mode *mode = &drm_crtc->state->adjusted_mode;
-+	struct drm_framebuffer *fb = new_state->fb;
-+	struct logicvc_layer_buffer_setup setup = {};
-+	u32 index = layer->index;
-+	u32 reg;
-+
-+	/* Layer dimensions */
-+
-+	regmap_write(logicvc->regmap, LOGICVC_LAYER_WIDTH_REG(index),
-+		     new_state->crtc_w - 1);
-+	regmap_write(logicvc->regmap, LOGICVC_LAYER_HEIGHT_REG(index),
-+		     new_state->crtc_h - 1);
-+
-+	if (logicvc->caps->layer_address) {
-+		phys_addr_t fb_addr = drm_fb_cma_get_gem_addr(fb, new_state, 0);
-+
-+		regmap_write(logicvc->regmap, LOGICVC_LAYER_ADDRESS_REG(index),
-+			     fb_addr);
-+	} else {
-+		/* Rely on offsets to configure the address. */
-+
-+		logicvc_layer_buffer_find_setup(logicvc, layer, new_state,
-+						&setup);
-+
-+		/* Layer memory offsets */
-+
-+		regmap_write(logicvc->regmap, LOGICVC_BUFFER_SEL_REG,
-+			     LOGICVC_BUFFER_SEL_VALUE(index, setup.buffer_sel));
-+		regmap_write(logicvc->regmap, LOGICVC_LAYER_HOFFSET_REG(index),
-+			     setup.hoffset);
-+		regmap_write(logicvc->regmap, LOGICVC_LAYER_VOFFSET_REG(index),
-+			     setup.voffset);
-+	}
-+
-+	/* Layer position */
-+
-+	regmap_write(logicvc->regmap, LOGICVC_LAYER_HPOSITION_REG(index),
-+		     mode->hdisplay - 1 - new_state->crtc_x);
-+
-+	/* Vertical position must be set last to sync layer register changes. */
-+	regmap_write(logicvc->regmap, LOGICVC_LAYER_VPOSITION_REG(index),
-+		     mode->vdisplay - 1 - new_state->crtc_y);
-+
-+	/* Layer alpha */
-+
-+	if (layer->config.alpha_mode == LOGICVC_LAYER_ALPHA_LAYER) {
-+		u32 alpha_bits;
-+		u32 alpha_max;
-+		u32 alpha;
-+
-+		switch (layer->config.depth) {
-+		case 8:
-+			alpha_bits = 3;
-+			break;
-+		case 16:
-+			if (layer->config.colorspace ==
-+			    LOGICVC_LAYER_COLORSPACE_YUV)
-+				alpha_bits = 8;
-+			else
-+				alpha_bits = 6;
-+			break;
-+		default:
-+			alpha_bits = 8;
-+			break;
-+		}
-+
-+		alpha_max = BIT(alpha_bits) - 1;
-+		alpha = new_state->alpha * alpha_max / DRM_BLEND_ALPHA_OPAQUE;
-+
-+		drm_dbg_kms(drm_dev, "Setting layer %d alpha to %d/%d\n", index,
-+				 alpha, alpha_max);
-+
-+		regmap_write(logicvc->regmap, LOGICVC_LAYER_ALPHA_REG(index),
-+			     alpha);
-+	}
-+
-+	/* Layer control */
-+
-+	reg = LOGICVC_LAYER_CTRL_ENABLE;
-+
-+	if (logicvc_layer_format_inverted(fb->format->format))
-+		reg |= LOGICVC_LAYER_CTRL_PIXEL_FORMAT_INVERT;
-+
-+	reg |= LOGICVC_LAYER_CTRL_COLOR_KEY_DISABLE;
-+
-+	regmap_write(logicvc->regmap, LOGICVC_LAYER_CTRL_REG(index), reg);
-+}
-+
-+static void logicvc_plane_atomic_disable(struct drm_plane *drm_plane,
-+					 struct drm_atomic_state *state)
-+{
-+	struct logicvc_layer *layer = logicvc_layer(drm_plane);
-+	struct logicvc_drm *logicvc = logicvc_drm(drm_plane->dev);
-+	u32 index = layer->index;
-+
-+	regmap_write(logicvc->regmap, LOGICVC_LAYER_CTRL_REG(index), 0);
-+}
-+
-+static struct drm_plane_helper_funcs logicvc_plane_helper_funcs = {
-+	.atomic_check		= logicvc_plane_atomic_check,
-+	.atomic_update		= logicvc_plane_atomic_update,
-+	.atomic_disable		= logicvc_plane_atomic_disable,
-+};
-+
-+static const struct drm_plane_funcs logicvc_plane_funcs = {
-+	.update_plane		= drm_atomic_helper_update_plane,
-+	.disable_plane		= drm_atomic_helper_disable_plane,
-+	.destroy		= drm_plane_cleanup,
-+	.reset			= drm_atomic_helper_plane_reset,
-+	.atomic_duplicate_state	= drm_atomic_helper_plane_duplicate_state,
-+	.atomic_destroy_state	= drm_atomic_helper_plane_destroy_state,
-+};
-+
-+int logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,
-+				    struct logicvc_layer *layer,
-+				    struct drm_plane_state *state,
-+				    struct logicvc_layer_buffer_setup *setup)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct drm_framebuffer *fb = state->fb;
-+	/* All the supported formats have a single data plane. */
-+	u32 layer_bytespp = fb->format->cpp[0];
-+	u32 layer_stride = layer_bytespp * logicvc->config.row_stride;
-+	u32 base_offset = layer->config.base_offset * layer_stride;
-+	u32 buffer_offset = layer->config.buffer_offset * layer_stride;
-+	u8 buffer_sel = 0;
-+	u16 voffset = 0;
-+	u16 hoffset = 0;
-+	phys_addr_t fb_addr;
-+	u32 fb_offset;
-+	u32 gap;
-+
-+	if (!logicvc->reserved_mem_base) {
-+		drm_err(drm_dev, "No reserved memory base was registered!\n");
-+		return -ENOMEM;
-+	}
-+
-+	fb_addr = drm_fb_cma_get_gem_addr(fb, state, 0);
-+	if (fb_addr < logicvc->reserved_mem_base) {
-+		drm_err(drm_dev,
-+			"Framebuffer memory below reserved memory base!\n");
-+		return -EINVAL;
-+	}
-+
-+	fb_offset = (u32) (fb_addr - logicvc->reserved_mem_base);
-+
-+	if (fb_offset < base_offset) {
-+		drm_err(drm_dev,
-+			"Framebuffer offset below layer base offset!\n");
-+		return -EINVAL;
-+	}
-+
-+	gap = fb_offset - base_offset;
-+
-+	/* Use the possible video buffers selection. */
-+	if (gap && buffer_offset) {
-+		buffer_sel = gap / buffer_offset;
-+		if (buffer_sel > LOGICVC_BUFFER_SEL_MAX)
-+			buffer_sel = LOGICVC_BUFFER_SEL_MAX;
-+
-+		gap -= buffer_sel * buffer_offset;
-+	}
-+
-+	/* Use the vertical offset. */
-+	if (gap && layer_stride && logicvc->config.layers_configurable) {
-+		voffset = gap / layer_stride;
-+		if (voffset > LOGICVC_LAYER_VOFFSET_MAX)
-+			voffset = LOGICVC_LAYER_VOFFSET_MAX;
-+
-+		gap -= voffset * layer_stride;
-+	}
-+
-+	/* Use the horizontal offset. */
-+	if (gap && layer_bytespp && logicvc->config.layers_configurable) {
-+		hoffset = gap / layer_bytespp;
-+		if (hoffset > LOGICVC_DIMENSIONS_MAX)
-+			hoffset = LOGICVC_DIMENSIONS_MAX;
-+
-+		gap -= hoffset * layer_bytespp;
-+	}
-+
-+	if (gap) {
-+		drm_err(drm_dev,
-+			"Unable to find layer %d buffer setup for 0x%x byte gap\n",
-+			layer->index, fb_offset - base_offset);
-+		return -EINVAL;
-+	}
-+
-+	drm_dbg_kms(drm_dev, "Found layer %d buffer setup for 0x%x byte gap:\n",
-+			 layer->index, fb_offset - base_offset);
-+
-+	drm_dbg_kms(drm_dev, "- buffer_sel = 0x%x chunks of 0x%x bytes\n",
-+			 buffer_sel, buffer_offset);
-+	drm_dbg_kms(drm_dev, "- voffset = 0x%x chunks of 0x%x bytes\n", voffset,
-+			 layer_stride);
-+	drm_dbg_kms(drm_dev, "- hoffset = 0x%x chunks of 0x%x bytes\n", hoffset,
-+			 layer_bytespp);
-+
-+	if (setup) {
-+		setup->buffer_sel = buffer_sel;
-+		setup->voffset = voffset;
-+		setup->hoffset = hoffset;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct logicvc_layer_formats *logicvc_layer_formats_lookup(struct logicvc_layer *layer)
-+{
-+	bool alpha;
-+	unsigned int i = 0;
-+
-+	alpha = (layer->config.alpha_mode == LOGICVC_LAYER_ALPHA_PIXEL);
-+
-+	while (logicvc_layer_formats[i].formats) {
-+		if (logicvc_layer_formats[i].colorspace == layer->config.colorspace &&
-+		    logicvc_layer_formats[i].depth == layer->config.depth &&
-+		    logicvc_layer_formats[i].alpha == alpha)
-+			return &logicvc_layer_formats[i];
-+
-+		i++;
-+	}
-+
-+	return NULL;
-+}
-+
-+static unsigned int logicvc_layer_formats_count(struct logicvc_layer_formats *formats)
-+{
-+	unsigned int count = 0;
-+
-+	while (formats->formats[count] != DRM_FORMAT_INVALID)
-+		count++;
-+
-+	return count;
-+}
-+
-+static int logicvc_layer_config_parse(struct logicvc_drm *logicvc,
-+				      struct logicvc_layer *layer)
-+{
-+	struct device_node *of_node = layer->of_node;
-+	struct logicvc_layer_config *config = &layer->config;
-+	int ret;
-+
-+	logicvc_of_property_parse_bool(of_node,
-+				       LOGICVC_OF_PROPERTY_LAYER_PRIMARY,
-+				       &config->primary);
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_LAYER_COLORSPACE,
-+					    &config->colorspace);
-+	if (ret)
-+		return ret;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_LAYER_DEPTH,
-+					    &config->depth);
-+	if (ret)
-+		return ret;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_LAYER_ALPHA_MODE,
-+					    &config->alpha_mode);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Memory offset is only relevant without layer address configuration.
-+	 */
-+	if (logicvc->caps->layer_address)
-+		return 0;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_LAYER_BASE_OFFSET,
-+					    &config->base_offset);
-+	if (ret)
-+		return ret;
-+
-+	ret = logicvc_of_property_parse_u32(of_node,
-+					    LOGICVC_OF_PROPERTY_LAYER_BUFFER_OFFSET,
-+					    &config->buffer_offset);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+struct logicvc_layer *logicvc_layer_get_from_index(struct logicvc_drm *logicvc,
-+						   u32 index)
-+{
-+	struct logicvc_layer *layer;
-+
-+	list_for_each_entry(layer, &logicvc->layers_list, list)
-+		if (layer->index == index)
-+			return layer;
-+
-+	return NULL;
-+}
-+
-+struct logicvc_layer *logicvc_layer_get_from_type(struct logicvc_drm *logicvc,
-+						  enum drm_plane_type type)
-+{
-+	struct logicvc_layer *layer;
-+
-+	list_for_each_entry(layer, &logicvc->layers_list, list)
-+		if (layer->drm_plane.type == type)
-+			return layer;
-+
-+	return NULL;
-+}
-+
-+struct logicvc_layer *logicvc_layer_get_primary(struct logicvc_drm *logicvc)
-+{
-+	return logicvc_layer_get_from_type(logicvc, DRM_PLANE_TYPE_PRIMARY);
-+}
-+
-+static int logicvc_layer_init(struct logicvc_drm *logicvc,
-+			      struct device_node *of_node, u32 index)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct device *dev = drm_dev->dev;
-+	struct logicvc_layer *layer = NULL;
-+	struct logicvc_layer_formats *formats;
-+	unsigned int formats_count;
-+	enum drm_plane_type type;
-+	unsigned int zpos;
-+	int ret;
-+
-+	layer = devm_kzalloc(dev, sizeof(*layer), GFP_KERNEL);
-+	if (!layer) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
-+
-+	layer->of_node = of_node;
-+	layer->index = index;
-+
-+	ret = logicvc_layer_config_parse(logicvc, layer);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to parse config for layer #%d\n",
-+			index);
-+		goto error;
-+	}
-+
-+	formats = logicvc_layer_formats_lookup(layer);
-+	if (!formats) {
-+		drm_err(drm_dev, "Failed to lookup formats for layer #%d\n",
-+			index);
-+		goto error;
-+	}
-+
-+	formats_count = logicvc_layer_formats_count(formats);
-+
-+	/* The final layer can be configured as a background layer. */
-+	if (logicvc->config.background_layer &&
-+	    index == (logicvc->config.layers_count - 1)) {
-+		/*
-+		 * A zero value for black is only valid for RGB, not for YUV,
-+		 * so this will need to take the format in account for YUV.
-+		 */
-+		u32 background = 0;
-+
-+		drm_dbg_kms(drm_dev, "Using layer #%d as background layer\n",
-+				 index);
-+
-+		regmap_write(logicvc->regmap, LOGICVC_BACKGROUND_COLOR_REG,
-+			     background);
-+
-+		devm_kfree(dev, layer);
-+
-+		return 0;
-+	}
-+
-+	if (layer->config.primary)
-+		type = DRM_PLANE_TYPE_PRIMARY;
-+	else
-+		type = DRM_PLANE_TYPE_OVERLAY;
-+
-+	ret = drm_universal_plane_init(drm_dev, &layer->drm_plane, 0,
-+				       &logicvc_plane_funcs, formats->formats,
-+				       formats_count, NULL, type, NULL);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize layer plane\n");
-+		return ret;
-+	}
-+
-+	drm_plane_helper_add(&layer->drm_plane, &logicvc_plane_helper_funcs);
-+
-+	zpos = logicvc->config.layers_count - index - 1;
-+	drm_dbg_kms(drm_dev, "Giving layer #%d zpos %d\n", index, zpos);
-+
-+	if (layer->config.alpha_mode == LOGICVC_LAYER_ALPHA_LAYER)
-+		drm_plane_create_alpha_property(&layer->drm_plane);
-+
-+	drm_plane_create_zpos_immutable_property(&layer->drm_plane, zpos);
-+
-+	drm_dbg_kms(drm_dev, "Registering layer #%d\n", index);
-+
-+	layer->formats = formats;
-+
-+	list_add_tail(&layer->list, &logicvc->layers_list);
-+
-+	return 0;
-+
-+error:
-+	if (layer)
-+		devm_kfree(dev, layer);
-+
-+	return ret;
-+}
-+
-+static void logicvc_layer_fini(struct logicvc_drm *logicvc,
-+			       struct logicvc_layer *layer)
-+{
-+	struct device *dev = logicvc->drm_dev.dev;
-+
-+	list_del(&layer->list);
-+	devm_kfree(dev, layer);
-+}
-+
-+void logicvc_layers_attach_crtc(struct logicvc_drm *logicvc)
-+{
-+	uint32_t possible_crtcs = drm_crtc_mask(&logicvc->crtc->drm_crtc);
-+	struct logicvc_layer *layer;
-+
-+	list_for_each_entry(layer, &logicvc->layers_list, list) {
-+		if (layer->drm_plane.type != DRM_PLANE_TYPE_OVERLAY)
-+			continue;
-+
-+		layer->drm_plane.possible_crtcs = possible_crtcs;
-+	}
-+}
-+
-+int logicvc_layers_init(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct device *dev = drm_dev->dev;
-+	struct device_node *of_node = dev->of_node;
-+	struct device_node *layer_node = NULL;
-+	struct device_node *layers_node;
-+	struct logicvc_layer *layer;
-+	struct logicvc_layer *next;
-+	int ret = 0;
-+
-+	layers_node = of_get_child_by_name(of_node, "layers");
-+	if (!layers_node) {
-+		drm_err(drm_dev, "No layers node found in the description\n");
-+		ret = -ENODEV;
-+		goto error;
-+	}
-+
-+	for_each_child_of_node(layers_node, layer_node) {
-+		u32 index = 0;
-+
-+		if (!logicvc_of_node_is_layer(layer_node))
-+			continue;
-+
-+		ret = of_property_read_u32(layer_node, "reg", &index);
-+		if (ret)
-+			continue;
-+
-+		layer = logicvc_layer_get_from_index(logicvc, index);
-+		if (layer) {
-+			drm_err(drm_dev, "Duplicated entry for layer #%d\n",
-+				index);
-+			continue;
-+		}
-+
-+		ret = logicvc_layer_init(logicvc, layer_node, index);
-+		if (ret)
-+			goto error;
-+
-+		of_node_put(layer_node);
-+	}
-+
-+	of_node_put(layers_node);
-+
-+	return 0;
-+
-+error:
-+	list_for_each_entry_safe(layer, next, &logicvc->layers_list, list)
-+		logicvc_layer_fini(logicvc, layer);
-+
-+	return ret;
-+}
-diff --git a/drivers/gpu/drm/logicvc/logicvc_layer.h b/drivers/gpu/drm/logicvc/logicvc_layer.h
-new file mode 100644
-index 000000000000..4a4b02e9b819
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_layer.h
-@@ -0,0 +1,64 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#ifndef _LOGICVC_LAYER_H_
-+#define _LOGICVC_LAYER_H_
-+
-+#include <linux/of.h>
-+#include <linux/types.h>
-+#include <drm/drm_plane.h>
-+
-+#define LOGICVC_LAYER_COLORSPACE_RGB		0
-+#define LOGICVC_LAYER_COLORSPACE_YUV		1
-+
-+#define LOGICVC_LAYER_ALPHA_LAYER		0
-+#define LOGICVC_LAYER_ALPHA_PIXEL		1
-+
-+struct logicvc_layer_buffer_setup {
-+	u8 buffer_sel;
-+	u16 voffset;
-+	u16 hoffset;
-+};
-+
-+struct logicvc_layer_config {
-+	u32 colorspace;
-+	u32 depth;
-+	u32 alpha_mode;
-+	u32 base_offset;
-+	u32 buffer_offset;
-+	bool primary;
-+};
-+
-+struct logicvc_layer_formats {
-+	u32 colorspace;
-+	u32 depth;
-+	bool alpha;
-+	uint32_t *formats;
-+};
-+
-+struct logicvc_layer {
-+	struct logicvc_layer_config config;
-+	struct logicvc_layer_formats *formats;
-+	struct device_node *of_node;
-+
-+	struct drm_plane drm_plane;
-+	struct list_head list;
-+	u32 index;
-+};
-+
-+int logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,
-+				    struct logicvc_layer *layer,
-+				    struct drm_plane_state *state,
-+				    struct logicvc_layer_buffer_setup *setup);
-+struct logicvc_layer *logicvc_layer_get_from_index(struct logicvc_drm *logicvc,
-+						   u32 index);
-+struct logicvc_layer *logicvc_layer_get_from_type(struct logicvc_drm *logicvc,
-+						  enum drm_plane_type type);
-+struct logicvc_layer *logicvc_layer_get_primary(struct logicvc_drm *logicvc);
-+void logicvc_layers_attach_crtc(struct logicvc_drm *logicvc);
-+int logicvc_layers_init(struct logicvc_drm *logicvc);
-+
-+#endif
-diff --git a/drivers/gpu/drm/logicvc/logicvc_mode.c b/drivers/gpu/drm/logicvc/logicvc_mode.c
-new file mode 100644
-index 000000000000..11940704f644
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_mode.c
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#include <linux/types.h>
-+
-+#include <drm/drm_atomic.h>
-+#include <drm/drm_atomic_helper.h>
-+#include <drm/drm_crtc_helper.h>
-+#include <drm/drm_drv.h>
-+#include <drm/drm_fb_cma_helper.h>
-+#include <drm/drm_fb_helper.h>
-+#include <drm/drm_gem_cma_helper.h>
-+#include <drm/drm_gem_framebuffer_helper.h>
-+#include <drm/drm_mode_config.h>
-+#include <drm/drm_panel.h>
-+#include <drm/drm_print.h>
-+#include <drm/drm_probe_helper.h>
-+#include <drm/drm_vblank.h>
-+
-+#include "logicvc_drm.h"
-+#include "logicvc_interface.h"
-+#include "logicvc_layer.h"
-+#include "logicvc_mode.h"
-+
-+static const struct drm_mode_config_funcs logicvc_mode_config_funcs = {
-+	.fb_create		= drm_gem_fb_create,
-+	.output_poll_changed	= drm_fb_helper_output_poll_changed,
-+	.atomic_check		= drm_atomic_helper_check,
-+	.atomic_commit		= drm_atomic_helper_commit,
-+};
-+
-+int logicvc_mode_init(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+	struct drm_mode_config *mode_config = &drm_dev->mode_config;
-+	struct logicvc_layer *layer_primary;
-+	uint32_t preferred_depth;
-+	int ret;
-+
-+	ret = drm_vblank_init(drm_dev, mode_config->num_crtc);
-+	if (ret) {
-+		drm_err(drm_dev, "Failed to initialize vblank\n");
-+		return ret;
-+	}
-+
-+	layer_primary = logicvc_layer_get_primary(logicvc);
-+	if (!layer_primary) {
-+		drm_err(drm_dev, "Failed to get primary layer\n");
-+		return -EINVAL;
-+	}
-+
-+	preferred_depth = layer_primary->formats->depth;
-+
-+	/* DRM counts alpha in depth, our driver doesn't. */
-+	if (layer_primary->formats->alpha)
-+		preferred_depth += 8;
-+
-+	mode_config->min_width = 64;
-+	mode_config->max_width = 2048;
-+	mode_config->min_height = 1;
-+	mode_config->max_height = 2048;
-+	mode_config->preferred_depth = preferred_depth;
-+	mode_config->funcs = &logicvc_mode_config_funcs;
-+
-+	drm_mode_config_reset(drm_dev);
-+
-+	drm_kms_helper_poll_init(drm_dev);
-+
-+	return 0;
-+}
-+
-+void logicvc_mode_fini(struct logicvc_drm *logicvc)
-+{
-+	struct drm_device *drm_dev = &logicvc->drm_dev;
-+
-+	drm_kms_helper_poll_fini(drm_dev);
-+}
-diff --git a/drivers/gpu/drm/logicvc/logicvc_mode.h b/drivers/gpu/drm/logicvc/logicvc_mode.h
-new file mode 100644
-index 000000000000..fee538ab1b96
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_mode.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#ifndef _LOGICVC_MODE_H_
-+#define _LOGICVC_MODE_H_
-+
-+struct logicvc_drm;
-+
-+int logicvc_mode_init(struct logicvc_drm *logicvc);
-+void logicvc_mode_fini(struct logicvc_drm *logicvc);
-+
-+#endif
-diff --git a/drivers/gpu/drm/logicvc/logicvc_of.c b/drivers/gpu/drm/logicvc/logicvc_of.c
-new file mode 100644
-index 000000000000..e0687730e039
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_of.c
-@@ -0,0 +1,185 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#include <drm/drm_print.h>
-+
-+#include "logicvc_drm.h"
-+#include "logicvc_layer.h"
-+#include "logicvc_of.h"
-+
-+static struct logicvc_of_property_sv logicvc_of_display_interface_sv[] = {
-+	{ "lvds-4bits",	LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS },
-+	{ "lvds-3bits",	LOGICVC_DISPLAY_INTERFACE_LVDS_3BITS },
-+	{ },
-+};
-+
-+static struct logicvc_of_property_sv logicvc_of_display_colorspace_sv[] = {
-+	{ "rgb",	LOGICVC_DISPLAY_COLORSPACE_RGB },
-+	{ "yuv422",	LOGICVC_DISPLAY_COLORSPACE_YUV422 },
-+	{ "yuv444",	LOGICVC_DISPLAY_COLORSPACE_YUV444 },
-+	{ },
-+};
-+
-+static struct logicvc_of_property_sv logicvc_of_layer_colorspace_sv[] = {
-+	{ "rgb",	LOGICVC_LAYER_COLORSPACE_RGB },
-+	{ "yuv",	LOGICVC_LAYER_COLORSPACE_YUV },
-+	{ },
-+};
-+
-+static struct logicvc_of_property_sv logicvc_of_layer_alpha_mode_sv[] = {
-+	{ "layer",	LOGICVC_LAYER_ALPHA_LAYER },
-+	{ "pixel",	LOGICVC_LAYER_ALPHA_PIXEL },
-+	{ },
-+};
-+
-+static struct logicvc_of_property logicvc_of_properties[] = {
-+	[LOGICVC_OF_PROPERTY_DISPLAY_INTERFACE] = {
-+		.name		= "xylon,display-interface",
-+		.sv		= logicvc_of_display_interface_sv,
-+		.range		= {
-+			LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS,
-+			LOGICVC_DISPLAY_INTERFACE_LVDS_3BITS,
-+		},
-+	},
-+	[LOGICVC_OF_PROPERTY_DISPLAY_COLORSPACE] = {
-+		.name		= "xylon,display-colorspace",
-+		.sv		= logicvc_of_display_colorspace_sv,
-+		.range		= {
-+			LOGICVC_DISPLAY_COLORSPACE_RGB,
-+			LOGICVC_DISPLAY_COLORSPACE_YUV444,
-+		},
-+	},
-+	[LOGICVC_OF_PROPERTY_DISPLAY_DEPTH] = {
-+		.name		= "xylon,display-depth",
-+		.range		= { 8, 24 },
-+	},
-+	[LOGICVC_OF_PROPERTY_ROW_STRIDE] = {
-+		.name		= "xylon,row-stride",
-+	},
-+	[LOGICVC_OF_PROPERTY_DITHERING] = {
-+		.name		= "xylon,dithering",
-+		.optional	= true,
-+	},
-+	[LOGICVC_OF_PROPERTY_BACKGROUND_LAYER] = {
-+		.name		= "xylon,background-layer",
-+		.optional	= true,
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYERS_CONFIGURABLE] = {
-+		.name		= "xylon,layers-configurable",
-+		.optional	= true,
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYERS_COUNT] = {
-+		.name		= "xylon,layers-count",
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYER_DEPTH] = {
-+		.name		= "xylon,layer-depth",
-+		.range		= { 8, 24 },
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYER_COLORSPACE] = {
-+		.name		= "xylon,layer-colorspace",
-+		.sv		= logicvc_of_layer_colorspace_sv,
-+		.range		= {
-+			LOGICVC_LAYER_COLORSPACE_RGB,
-+			LOGICVC_LAYER_COLORSPACE_RGB,
-+		},
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYER_ALPHA_MODE] = {
-+		.name		= "xylon,layer-alpha-mode",
-+		.sv		= logicvc_of_layer_alpha_mode_sv,
-+		.range		= {
-+			LOGICVC_LAYER_ALPHA_LAYER,
-+			LOGICVC_LAYER_ALPHA_PIXEL,
-+		},
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYER_BASE_OFFSET] = {
-+		.name		= "xylon,layer-base-offset",
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYER_BUFFER_OFFSET] = {
-+		.name		= "xylon,layer-buffer-offset",
-+	},
-+	[LOGICVC_OF_PROPERTY_LAYER_PRIMARY] = {
-+		.name		= "xylon,layer-primary",
-+		.optional	= true,
-+	},
-+};
-+
-+static int logicvc_of_property_sv_value(struct logicvc_of_property_sv *sv,
-+					const char *string, u32 *value)
-+{
-+	unsigned int i = 0;
-+
-+	while (sv[i].string) {
-+		if (!strcmp(sv[i].string, string)) {
-+			*value = sv[i].value;
-+			return 0;
-+		}
-+
-+		i++;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+int logicvc_of_property_parse_u32(struct device_node *of_node,
-+				  unsigned int index, u32 *target)
-+{
-+	struct logicvc_of_property *property;
-+	const char *string;
-+	u32 value;
-+	int ret;
-+
-+	if (index >= LOGICVC_OF_PROPERTY_MAXIMUM)
-+		return -EINVAL;
-+
-+	property = &logicvc_of_properties[index];
-+
-+	if (!property->optional &&
-+	    !of_property_read_bool(of_node, property->name))
-+		return -ENODEV;
-+
-+	if (property->sv) {
-+		ret = of_property_read_string(of_node, property->name, &string);
-+		if (ret)
-+			return ret;
-+
-+		ret = logicvc_of_property_sv_value(property->sv, string,
-+						   &value);
-+		if (ret)
-+			return ret;
-+	} else {
-+		ret = of_property_read_u32(of_node, property->name, &value);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (property->range[0] || property->range[1])
-+		if (value < property->range[0] || value > property->range[1])
-+			return -ERANGE;
-+
-+	*target = value;
-+
-+	return 0;
-+}
-+
-+void logicvc_of_property_parse_bool(struct device_node *of_node,
-+				    unsigned int index, bool *target)
-+{
-+	struct logicvc_of_property *property;
-+
-+	if (index >= LOGICVC_OF_PROPERTY_MAXIMUM) {
-+		/* Fallback. */
-+		*target = false;
-+		return;
-+	}
-+
-+	property = &logicvc_of_properties[index];
-+	*target = of_property_read_bool(of_node, property->name);
-+}
-+
-+bool logicvc_of_node_is_layer(struct device_node *of_node)
-+{
-+	return !of_node_cmp(of_node->name, "layer");
-+}
-diff --git a/drivers/gpu/drm/logicvc/logicvc_of.h b/drivers/gpu/drm/logicvc/logicvc_of.h
-new file mode 100644
-index 000000000000..46036e461be9
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_of.h
-@@ -0,0 +1,46 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ */
-+
-+#ifndef _LOGICVC_OF_H_
-+#define _LOGICVC_OF_H_
-+
-+enum logicvc_of_property_index {
-+	LOGICVC_OF_PROPERTY_DISPLAY_INTERFACE = 0,
-+	LOGICVC_OF_PROPERTY_DISPLAY_COLORSPACE,
-+	LOGICVC_OF_PROPERTY_DISPLAY_DEPTH,
-+	LOGICVC_OF_PROPERTY_ROW_STRIDE,
-+	LOGICVC_OF_PROPERTY_DITHERING,
-+	LOGICVC_OF_PROPERTY_BACKGROUND_LAYER,
-+	LOGICVC_OF_PROPERTY_LAYERS_CONFIGURABLE,
-+	LOGICVC_OF_PROPERTY_LAYERS_COUNT,
-+	LOGICVC_OF_PROPERTY_LAYER_DEPTH,
-+	LOGICVC_OF_PROPERTY_LAYER_COLORSPACE,
-+	LOGICVC_OF_PROPERTY_LAYER_ALPHA_MODE,
-+	LOGICVC_OF_PROPERTY_LAYER_BASE_OFFSET,
-+	LOGICVC_OF_PROPERTY_LAYER_BUFFER_OFFSET,
-+	LOGICVC_OF_PROPERTY_LAYER_PRIMARY,
-+	LOGICVC_OF_PROPERTY_MAXIMUM,
-+};
-+
-+struct logicvc_of_property_sv {
-+	const char *string;
-+	u32 value;
-+};
-+
-+struct logicvc_of_property {
-+	char *name;
-+	bool optional;
-+	struct logicvc_of_property_sv *sv;
-+	u32 range[2];
-+};
-+
-+int logicvc_of_property_parse_u32(struct device_node *of_node,
-+				  unsigned int index, u32 *target);
-+void logicvc_of_property_parse_bool(struct device_node *of_node,
-+				    unsigned int index, bool *target);
-+bool logicvc_of_node_is_layer(struct device_node *of_node);
-+
-+#endif
-diff --git a/drivers/gpu/drm/logicvc/logicvc_regs.h b/drivers/gpu/drm/logicvc/logicvc_regs.h
-new file mode 100644
-index 000000000000..4aae27e9ba2b
---- /dev/null
-+++ b/drivers/gpu/drm/logicvc/logicvc_regs.h
-@@ -0,0 +1,80 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2019-2022 Bootlin
-+ * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+ *
-+ * Copyright (C) 2014 Xylon d.o.o.
-+ * Author: Davor Joja <davor.joja@logicbricks.com>
-+ */
-+
-+#ifndef _LOGICVC_REGS_H_
-+#define _LOGICVC_REGS_H_
-+
-+#define LOGICVC_DIMENSIONS_MAX		(BIT(16) - 1)
-+
-+#define LOGICVC_HSYNC_FRONT_PORCH_REG	0x00
-+#define LOGICVC_HSYNC_REG		0x08
-+#define LOGICVC_HSYNC_BACK_PORCH_REG	0x10
-+#define LOGICVC_HRES_REG		0x18
-+#define LOGICVC_VSYNC_FRONT_PORCH_REG	0x20
-+#define LOGICVC_VSYNC_REG		0x28
-+#define LOGICVC_VSYNC_BACK_PORCH_REG	0x30
-+#define LOGICVC_VRES_REG		0x38
-+
-+#define LOGICVC_CTRL_REG		0x40
-+#define LOGICVC_CTRL_CLOCK_INVERT	BIT(8)
-+#define LOGICVC_CTRL_PIXEL_INVERT	BIT(7)
-+#define LOGICVC_CTRL_DE_INVERT		BIT(5)
-+#define LOGICVC_CTRL_DE_ENABLE		BIT(4)
-+#define LOGICVC_CTRL_VSYNC_INVERT	BIT(3)
-+#define LOGICVC_CTRL_VSYNC_ENABLE	BIT(2)
-+#define LOGICVC_CTRL_HSYNC_INVERT	BIT(1)
-+#define LOGICVC_CTRL_HSYNC_ENABLE	BIT(0)
-+
-+#define LOGICVC_DTYPE_REG		0x48
-+#define LOGICVC_BACKGROUND_COLOR_REG	0x50
-+
-+#define LOGICVC_BUFFER_SEL_REG		0x58
-+#define LOGICVC_BUFFER_SEL_VALUE(i, v) \
-+	(BIT(10 + (i)) | ((v) << (2 * (i))))
-+#define LOGICVC_BUFFER_SEL_MAX		2
-+
-+#define LOGICVC_DOUBLE_CLUT_REG		0x60
-+
-+#define LOGICVC_INT_STAT_REG		0x68
-+#define LOGICVC_INT_STAT_V_SYNC		BIT(5)
-+
-+#define LOGICVC_INT_MASK_REG		0x70
-+#define LOGICVC_INT_MASK_V_SYNC		BIT(5)
-+
-+#define LOGICVC_POWER_CTRL_REG		0x78
-+#define LOGICVC_POWER_CTRL_BACKLIGHT_ENABLE	BIT(0)
-+#define LOGICVC_POWER_CTRL_VDD_ENABLE		BIT(1)
-+#define LOGICVC_POWER_CTRL_VEE_ENABLE		BIT(2)
-+#define LOGICVC_POWER_CTRL_VIDEO_ENABLE		BIT(3)
-+
-+#define LOGICVC_IP_VERSION_REG		0xf8
-+#define LOGICVC_IP_VERSION_MAJOR_MASK	GENMASK(16, 11)
-+#define LOGICVC_IP_VERSION_MINOR_MASK	GENMASK(10, 5)
-+#define LOGICVC_IP_VERSION_LEVEL_MASK	GENMASK(4, 0)
-+
-+#define LOGICVC_LAYER_ADDRESS_REG(i)	(0x100 + (i) * 0x80)
-+#define LOGICVC_LAYER_HOFFSET_REG(i)	(0x100 + (i) * 0x80)
-+
-+#define LOGICVC_LAYER_VOFFSET_REG(i)	(0x108 + (i) * 0x80)
-+#define LOGICVC_LAYER_VOFFSET_MAX	4095
-+
-+#define LOGICVC_LAYER_HPOSITION_REG(i)	(0x110 + (i) * 0x80)
-+#define LOGICVC_LAYER_VPOSITION_REG(i)	(0x118 + (i) * 0x80)
-+#define LOGICVC_LAYER_WIDTH_REG(i)	(0x120 + (i) * 0x80)
-+#define LOGICVC_LAYER_HEIGHT_REG(i)	(0x128 + (i) * 0x80)
-+#define LOGICVC_LAYER_ALPHA_REG(i)	(0x130 + (i) * 0x80)
-+
-+#define LOGICVC_LAYER_CTRL_REG(i)	(0x138 + (i) * 0x80)
-+#define LOGICVC_LAYER_CTRL_ENABLE	BIT(0)
-+#define LOGICVC_LAYER_CTRL_COLOR_KEY_DISABLE	BIT(1)
-+#define LOGICVC_LAYER_CTRL_PIXEL_FORMAT_INVERT	BIT(4)
-+
-+#define LOGICVC_LAYER_COLOR_KEY_REG(i)	(0x140 + (i) * 0x80)
-+
-+#endif
--- 
-2.35.1
-
+Abhinav
+>   drivers/gpu/drm/msm/dsi/dsi_phy_7nm.xml.h     |  43 +-
+>   drivers/gpu/drm/msm/dsi/mmss_cc.xml.h         |  37 +-
+>   drivers/gpu/drm/msm/dsi/sfpb.xml.h            |  37 +-
+>   drivers/gpu/drm/msm/hdmi/hdmi.xml.h           |  37 +-
+>   drivers/gpu/drm/msm/hdmi/qfprom.xml.h         |  37 +-
+>   23 files changed, 894 insertions(+), 1118 deletions(-)
+>   delete mode 100644 drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h
+> 
+> diff --git a/drivers/gpu/drm/msm/adreno/a2xx.xml.h b/drivers/gpu/drm/msm/adreno/a2xx.xml.h
+> index 4ff529576093..afa6023346c4 100644
+> --- a/drivers/gpu/drm/msm/adreno/a2xx.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/a2xx.xml.h
+> @@ -8,19 +8,19 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/adreno/a3xx.xml.h b/drivers/gpu/drm/msm/adreno/a3xx.xml.h
+> index e106b65abe26..520ae3f375a1 100644
+> --- a/drivers/gpu/drm/msm/adreno/a3xx.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/a3xx.xml.h
+> @@ -8,19 +8,19 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> @@ -1466,7 +1466,7 @@ static inline uint32_t A3XX_RB_COPY_DEST_INFO_ENDIAN(enum adreno_rb_surface_endi
+>   
+>   #define REG_A3XX_RB_DEPTH_CONTROL				0x00002100
+>   #define A3XX_RB_DEPTH_CONTROL_FRAG_WRITES_Z			0x00000001
+> -#define A3XX_RB_DEPTH_CONTROL_Z_ENABLE				0x00000002
+> +#define A3XX_RB_DEPTH_CONTROL_Z_TEST_ENABLE			0x00000002
+>   #define A3XX_RB_DEPTH_CONTROL_Z_WRITE_ENABLE			0x00000004
+>   #define A3XX_RB_DEPTH_CONTROL_EARLY_Z_DISABLE			0x00000008
+>   #define A3XX_RB_DEPTH_CONTROL_ZFUNC__MASK			0x00000070
+> @@ -1476,7 +1476,7 @@ static inline uint32_t A3XX_RB_DEPTH_CONTROL_ZFUNC(enum adreno_compare_func val)
+>   	return ((val) << A3XX_RB_DEPTH_CONTROL_ZFUNC__SHIFT) & A3XX_RB_DEPTH_CONTROL_ZFUNC__MASK;
+>   }
+>   #define A3XX_RB_DEPTH_CONTROL_Z_CLAMP_ENABLE			0x00000080
+> -#define A3XX_RB_DEPTH_CONTROL_Z_TEST_ENABLE			0x80000000
+> +#define A3XX_RB_DEPTH_CONTROL_Z_READ_ENABLE			0x80000000
+>   
+>   #define REG_A3XX_RB_DEPTH_CLEAR					0x00002101
+>   
+> diff --git a/drivers/gpu/drm/msm/adreno/a4xx.xml.h b/drivers/gpu/drm/msm/adreno/a4xx.xml.h
+> index b26ede96ae2a..7e5c21015d10 100644
+> --- a/drivers/gpu/drm/msm/adreno/a4xx.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/a4xx.xml.h
+> @@ -8,21 +8,21 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> -
+> -Copyright (C) 2013-2021 by the following authors:
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+> +
+> +Copyright (C) 2013-2022 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+>   - Ilia Mirkin <imirkin@alum.mit.edu> (imirkin)
+>   
+> @@ -837,6 +837,7 @@ enum a4xx_tex_type {
+>   	A4XX_TEX_2D = 1,
+>   	A4XX_TEX_CUBE = 2,
+>   	A4XX_TEX_3D = 3,
+> +	A4XX_TEX_BUFFER = 4,
+>   };
+>   
+>   #define A4XX_CGC_HLSQ_EARLY_CYC__MASK				0x00700000
+> @@ -1360,7 +1361,7 @@ static inline uint32_t A4XX_RB_FS_OUTPUT_REG_MRT(uint32_t val)
+>   
+>   #define REG_A4XX_RB_DEPTH_CONTROL				0x00002101
+>   #define A4XX_RB_DEPTH_CONTROL_FRAG_WRITES_Z			0x00000001
+> -#define A4XX_RB_DEPTH_CONTROL_Z_ENABLE				0x00000002
+> +#define A4XX_RB_DEPTH_CONTROL_Z_TEST_ENABLE			0x00000002
+>   #define A4XX_RB_DEPTH_CONTROL_Z_WRITE_ENABLE			0x00000004
+>   #define A4XX_RB_DEPTH_CONTROL_ZFUNC__MASK			0x00000070
+>   #define A4XX_RB_DEPTH_CONTROL_ZFUNC__SHIFT			4
+> @@ -1371,7 +1372,7 @@ static inline uint32_t A4XX_RB_DEPTH_CONTROL_ZFUNC(enum adreno_compare_func val)
+>   #define A4XX_RB_DEPTH_CONTROL_Z_CLAMP_ENABLE			0x00000080
+>   #define A4XX_RB_DEPTH_CONTROL_EARLY_Z_DISABLE			0x00010000
+>   #define A4XX_RB_DEPTH_CONTROL_FORCE_FRAGZ_TO_FS			0x00020000
+> -#define A4XX_RB_DEPTH_CONTROL_Z_TEST_ENABLE			0x80000000
+> +#define A4XX_RB_DEPTH_CONTROL_Z_READ_ENABLE			0x80000000
+>   
+>   #define REG_A4XX_RB_DEPTH_CLEAR					0x00002102
+>   
+> @@ -2541,6 +2542,8 @@ static inline uint32_t A4XX_SP_FS_MRT_REG_REGID(uint32_t val)
+>   	return ((val) << A4XX_SP_FS_MRT_REG_REGID__SHIFT) & A4XX_SP_FS_MRT_REG_REGID__MASK;
+>   }
+>   #define A4XX_SP_FS_MRT_REG_HALF_PRECISION			0x00000100
+> +#define A4XX_SP_FS_MRT_REG_COLOR_SINT				0x00000400
+> +#define A4XX_SP_FS_MRT_REG_COLOR_UINT				0x00000800
+>   #define A4XX_SP_FS_MRT_REG_MRTFORMAT__MASK			0x0003f000
+>   #define A4XX_SP_FS_MRT_REG_MRTFORMAT__SHIFT			12
+>   static inline uint32_t A4XX_SP_FS_MRT_REG_MRTFORMAT(enum a4xx_color_fmt val)
+> @@ -2550,6 +2553,40 @@ static inline uint32_t A4XX_SP_FS_MRT_REG_MRTFORMAT(enum a4xx_color_fmt val)
+>   #define A4XX_SP_FS_MRT_REG_COLOR_SRGB				0x00040000
+>   
+>   #define REG_A4XX_SP_CS_CTRL_REG0				0x00002300
+> +#define A4XX_SP_CS_CTRL_REG0_THREADMODE__MASK			0x00000001
+> +#define A4XX_SP_CS_CTRL_REG0_THREADMODE__SHIFT			0
+> +static inline uint32_t A4XX_SP_CS_CTRL_REG0_THREADMODE(enum a3xx_threadmode val)
+> +{
+> +	return ((val) << A4XX_SP_CS_CTRL_REG0_THREADMODE__SHIFT) & A4XX_SP_CS_CTRL_REG0_THREADMODE__MASK;
+> +}
+> +#define A4XX_SP_CS_CTRL_REG0_VARYING				0x00000002
+> +#define A4XX_SP_CS_CTRL_REG0_CACHEINVALID			0x00000004
+> +#define A4XX_SP_CS_CTRL_REG0_HALFREGFOOTPRINT__MASK		0x000003f0
+> +#define A4XX_SP_CS_CTRL_REG0_HALFREGFOOTPRINT__SHIFT		4
+> +static inline uint32_t A4XX_SP_CS_CTRL_REG0_HALFREGFOOTPRINT(uint32_t val)
+> +{
+> +	return ((val) << A4XX_SP_CS_CTRL_REG0_HALFREGFOOTPRINT__SHIFT) & A4XX_SP_CS_CTRL_REG0_HALFREGFOOTPRINT__MASK;
+> +}
+> +#define A4XX_SP_CS_CTRL_REG0_FULLREGFOOTPRINT__MASK		0x0000fc00
+> +#define A4XX_SP_CS_CTRL_REG0_FULLREGFOOTPRINT__SHIFT		10
+> +static inline uint32_t A4XX_SP_CS_CTRL_REG0_FULLREGFOOTPRINT(uint32_t val)
+> +{
+> +	return ((val) << A4XX_SP_CS_CTRL_REG0_FULLREGFOOTPRINT__SHIFT) & A4XX_SP_CS_CTRL_REG0_FULLREGFOOTPRINT__MASK;
+> +}
+> +#define A4XX_SP_CS_CTRL_REG0_INOUTREGOVERLAP__MASK		0x000c0000
+> +#define A4XX_SP_CS_CTRL_REG0_INOUTREGOVERLAP__SHIFT		18
+> +static inline uint32_t A4XX_SP_CS_CTRL_REG0_INOUTREGOVERLAP(uint32_t val)
+> +{
+> +	return ((val) << A4XX_SP_CS_CTRL_REG0_INOUTREGOVERLAP__SHIFT) & A4XX_SP_CS_CTRL_REG0_INOUTREGOVERLAP__MASK;
+> +}
+> +#define A4XX_SP_CS_CTRL_REG0_THREADSIZE__MASK			0x00100000
+> +#define A4XX_SP_CS_CTRL_REG0_THREADSIZE__SHIFT			20
+> +static inline uint32_t A4XX_SP_CS_CTRL_REG0_THREADSIZE(enum a3xx_threadsize val)
+> +{
+> +	return ((val) << A4XX_SP_CS_CTRL_REG0_THREADSIZE__SHIFT) & A4XX_SP_CS_CTRL_REG0_THREADSIZE__MASK;
+> +}
+> +#define A4XX_SP_CS_CTRL_REG0_SUPERTHREADMODE			0x00200000
+> +#define A4XX_SP_CS_CTRL_REG0_PIXLODENABLE			0x00400000
+>   
+>   #define REG_A4XX_SP_CS_OBJ_OFFSET_REG				0x00002301
+>   
+> @@ -3795,12 +3832,18 @@ static inline uint32_t A4XX_HLSQ_CL_NDRANGE_5_SIZE_Z(uint32_t val)
+>   #define REG_A4XX_HLSQ_CL_NDRANGE_6				0x000023d3
+>   
+>   #define REG_A4XX_HLSQ_CL_CONTROL_0				0x000023d4
+> -#define A4XX_HLSQ_CL_CONTROL_0_WGIDCONSTID__MASK		0x000000ff
+> +#define A4XX_HLSQ_CL_CONTROL_0_WGIDCONSTID__MASK		0x00000fff
+>   #define A4XX_HLSQ_CL_CONTROL_0_WGIDCONSTID__SHIFT		0
+>   static inline uint32_t A4XX_HLSQ_CL_CONTROL_0_WGIDCONSTID(uint32_t val)
+>   {
+>   	return ((val) << A4XX_HLSQ_CL_CONTROL_0_WGIDCONSTID__SHIFT) & A4XX_HLSQ_CL_CONTROL_0_WGIDCONSTID__MASK;
+>   }
+> +#define A4XX_HLSQ_CL_CONTROL_0_KERNELDIMCONSTID__MASK		0x00fff000
+> +#define A4XX_HLSQ_CL_CONTROL_0_KERNELDIMCONSTID__SHIFT		12
+> +static inline uint32_t A4XX_HLSQ_CL_CONTROL_0_KERNELDIMCONSTID(uint32_t val)
+> +{
+> +	return ((val) << A4XX_HLSQ_CL_CONTROL_0_KERNELDIMCONSTID__SHIFT) & A4XX_HLSQ_CL_CONTROL_0_KERNELDIMCONSTID__MASK;
+> +}
+>   #define A4XX_HLSQ_CL_CONTROL_0_LOCALIDREGID__MASK		0xff000000
+>   #define A4XX_HLSQ_CL_CONTROL_0_LOCALIDREGID__SHIFT		24
+>   static inline uint32_t A4XX_HLSQ_CL_CONTROL_0_LOCALIDREGID(uint32_t val)
+> @@ -3809,8 +3852,32 @@ static inline uint32_t A4XX_HLSQ_CL_CONTROL_0_LOCALIDREGID(uint32_t val)
+>   }
+>   
+>   #define REG_A4XX_HLSQ_CL_CONTROL_1				0x000023d5
+> +#define A4XX_HLSQ_CL_CONTROL_1_UNK0CONSTID__MASK		0x00000fff
+> +#define A4XX_HLSQ_CL_CONTROL_1_UNK0CONSTID__SHIFT		0
+> +static inline uint32_t A4XX_HLSQ_CL_CONTROL_1_UNK0CONSTID(uint32_t val)
+> +{
+> +	return ((val) << A4XX_HLSQ_CL_CONTROL_1_UNK0CONSTID__SHIFT) & A4XX_HLSQ_CL_CONTROL_1_UNK0CONSTID__MASK;
+> +}
+> +#define A4XX_HLSQ_CL_CONTROL_1_WORKGROUPSIZECONSTID__MASK	0x00fff000
+> +#define A4XX_HLSQ_CL_CONTROL_1_WORKGROUPSIZECONSTID__SHIFT	12
+> +static inline uint32_t A4XX_HLSQ_CL_CONTROL_1_WORKGROUPSIZECONSTID(uint32_t val)
+> +{
+> +	return ((val) << A4XX_HLSQ_CL_CONTROL_1_WORKGROUPSIZECONSTID__SHIFT) & A4XX_HLSQ_CL_CONTROL_1_WORKGROUPSIZECONSTID__MASK;
+> +}
+>   
+>   #define REG_A4XX_HLSQ_CL_KERNEL_CONST				0x000023d6
+> +#define A4XX_HLSQ_CL_KERNEL_CONST_UNK0CONSTID__MASK		0x00000fff
+> +#define A4XX_HLSQ_CL_KERNEL_CONST_UNK0CONSTID__SHIFT		0
+> +static inline uint32_t A4XX_HLSQ_CL_KERNEL_CONST_UNK0CONSTID(uint32_t val)
+> +{
+> +	return ((val) << A4XX_HLSQ_CL_KERNEL_CONST_UNK0CONSTID__SHIFT) & A4XX_HLSQ_CL_KERNEL_CONST_UNK0CONSTID__MASK;
+> +}
+> +#define A4XX_HLSQ_CL_KERNEL_CONST_NUMWGCONSTID__MASK		0x00fff000
+> +#define A4XX_HLSQ_CL_KERNEL_CONST_NUMWGCONSTID__SHIFT		12
+> +static inline uint32_t A4XX_HLSQ_CL_KERNEL_CONST_NUMWGCONSTID(uint32_t val)
+> +{
+> +	return ((val) << A4XX_HLSQ_CL_KERNEL_CONST_NUMWGCONSTID__SHIFT) & A4XX_HLSQ_CL_KERNEL_CONST_NUMWGCONSTID__MASK;
+> +}
+>   
+>   #define REG_A4XX_HLSQ_CL_KERNEL_GROUP_X				0x000023d7
+>   
+> @@ -3819,6 +3886,12 @@ static inline uint32_t A4XX_HLSQ_CL_CONTROL_0_LOCALIDREGID(uint32_t val)
+>   #define REG_A4XX_HLSQ_CL_KERNEL_GROUP_Z				0x000023d9
+>   
+>   #define REG_A4XX_HLSQ_CL_WG_OFFSET				0x000023da
+> +#define A4XX_HLSQ_CL_WG_OFFSET_UNK0CONSTID__MASK		0x00000fff
+> +#define A4XX_HLSQ_CL_WG_OFFSET_UNK0CONSTID__SHIFT		0
+> +static inline uint32_t A4XX_HLSQ_CL_WG_OFFSET_UNK0CONSTID(uint32_t val)
+> +{
+> +	return ((val) << A4XX_HLSQ_CL_WG_OFFSET_UNK0CONSTID__SHIFT) & A4XX_HLSQ_CL_WG_OFFSET_UNK0CONSTID__MASK;
+> +}
+>   
+>   #define REG_A4XX_HLSQ_UPDATE_CONTROL				0x000023db
+>   
+> @@ -4130,7 +4203,7 @@ static inline uint32_t A4XX_TEX_CONST_0_FMT(enum a4xx_tex_fmt val)
+>   {
+>   	return ((val) << A4XX_TEX_CONST_0_FMT__SHIFT) & A4XX_TEX_CONST_0_FMT__MASK;
+>   }
+> -#define A4XX_TEX_CONST_0_TYPE__MASK				0x60000000
+> +#define A4XX_TEX_CONST_0_TYPE__MASK				0xe0000000
+>   #define A4XX_TEX_CONST_0_TYPE__SHIFT				29
+>   static inline uint32_t A4XX_TEX_CONST_0_TYPE(enum a4xx_tex_type val)
+>   {
+> @@ -4158,6 +4231,7 @@ static inline uint32_t A4XX_TEX_CONST_2_PITCHALIGN(uint32_t val)
+>   {
+>   	return ((val) << A4XX_TEX_CONST_2_PITCHALIGN__SHIFT) & A4XX_TEX_CONST_2_PITCHALIGN__MASK;
+>   }
+> +#define A4XX_TEX_CONST_2_BUFFER					0x00000040
+>   #define A4XX_TEX_CONST_2_PITCH__MASK				0x3ffffe00
+>   #define A4XX_TEX_CONST_2_PITCH__SHIFT				9
+>   static inline uint32_t A4XX_TEX_CONST_2_PITCH(uint32_t val)
+> diff --git a/drivers/gpu/drm/msm/adreno/a5xx.xml.h b/drivers/gpu/drm/msm/adreno/a5xx.xml.h
+> index 1e575ca1f270..2505b4e43ca0 100644
+> --- a/drivers/gpu/drm/msm/adreno/a5xx.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/a5xx.xml.h
+> @@ -8,21 +8,21 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> -
+> -Copyright (C) 2013-2021 by the following authors:
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+> +
+> +Copyright (C) 2013-2022 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+>   - Ilia Mirkin <imirkin@alum.mit.edu> (imirkin)
+>   
+> @@ -872,6 +872,7 @@ enum a5xx_tex_type {
+>   	A5XX_TEX_2D = 1,
+>   	A5XX_TEX_CUBE = 2,
+>   	A5XX_TEX_3D = 3,
+> +	A5XX_TEX_BUFFER = 4,
+>   };
+>   
+>   #define A5XX_INT0_RBBM_GPU_IDLE					0x00000001
+> @@ -2830,7 +2831,9 @@ static inline uint32_t A5XX_GRAS_VS_CL_CNTL_CULL_MASK(uint32_t val)
+>   #define A5XX_GRAS_CNTL_IJ_PERSP_PIXEL				0x00000001
+>   #define A5XX_GRAS_CNTL_IJ_PERSP_CENTROID			0x00000002
+>   #define A5XX_GRAS_CNTL_IJ_PERSP_SAMPLE				0x00000004
+> -#define A5XX_GRAS_CNTL_SIZE					0x00000008
+> +#define A5XX_GRAS_CNTL_IJ_LINEAR_PIXEL				0x00000008
+> +#define A5XX_GRAS_CNTL_IJ_LINEAR_CENTROID			0x00000010
+> +#define A5XX_GRAS_CNTL_IJ_LINEAR_SAMPLE				0x00000020
+>   #define A5XX_GRAS_CNTL_COORD_MASK__MASK				0x000003c0
+>   #define A5XX_GRAS_CNTL_COORD_MASK__SHIFT			6
+>   static inline uint32_t A5XX_GRAS_CNTL_COORD_MASK(uint32_t val)
+> @@ -2911,7 +2914,12 @@ static inline uint32_t A5XX_GRAS_SU_CNTL_LINEHALFWIDTH(float val)
+>   	return ((((int32_t)(val * 4.0))) << A5XX_GRAS_SU_CNTL_LINEHALFWIDTH__SHIFT) & A5XX_GRAS_SU_CNTL_LINEHALFWIDTH__MASK;
+>   }
+>   #define A5XX_GRAS_SU_CNTL_POLY_OFFSET				0x00000800
+> -#define A5XX_GRAS_SU_CNTL_MSAA_ENABLE				0x00002000
+> +#define A5XX_GRAS_SU_CNTL_LINE_MODE__MASK			0x00002000
+> +#define A5XX_GRAS_SU_CNTL_LINE_MODE__SHIFT			13
+> +static inline uint32_t A5XX_GRAS_SU_CNTL_LINE_MODE(enum a5xx_line_mode val)
+> +{
+> +	return ((val) << A5XX_GRAS_SU_CNTL_LINE_MODE__SHIFT) & A5XX_GRAS_SU_CNTL_LINE_MODE__MASK;
+> +}
+>   
+>   #define REG_A5XX_GRAS_SU_POINT_MINMAX				0x0000e091
+>   #define A5XX_GRAS_SU_POINT_MINMAX_MIN__MASK			0x0000ffff
+> @@ -3166,7 +3174,9 @@ static inline uint32_t A5XX_RB_DEST_MSAA_CNTL_SAMPLES(enum a3xx_msaa_samples val
+>   #define A5XX_RB_RENDER_CONTROL0_IJ_PERSP_PIXEL			0x00000001
+>   #define A5XX_RB_RENDER_CONTROL0_IJ_PERSP_CENTROID		0x00000002
+>   #define A5XX_RB_RENDER_CONTROL0_IJ_PERSP_SAMPLE			0x00000004
+> -#define A5XX_RB_RENDER_CONTROL0_SIZE				0x00000008
+> +#define A5XX_RB_RENDER_CONTROL0_IJ_LINEAR_PIXEL			0x00000008
+> +#define A5XX_RB_RENDER_CONTROL0_IJ_LINEAR_CENTROID		0x00000010
+> +#define A5XX_RB_RENDER_CONTROL0_IJ_LINEAR_SAMPLE		0x00000020
+>   #define A5XX_RB_RENDER_CONTROL0_COORD_MASK__MASK		0x000003c0
+>   #define A5XX_RB_RENDER_CONTROL0_COORD_MASK__SHIFT		6
+>   static inline uint32_t A5XX_RB_RENDER_CONTROL0_COORD_MASK(uint32_t val)
+> @@ -3490,7 +3500,7 @@ static inline uint32_t A5XX_RB_BLEND_CNTL_SAMPLE_MASK(uint32_t val)
+>   #define A5XX_RB_DEPTH_PLANE_CNTL_UNK1				0x00000002
+>   
+>   #define REG_A5XX_RB_DEPTH_CNTL					0x0000e1b1
+> -#define A5XX_RB_DEPTH_CNTL_Z_ENABLE				0x00000001
+> +#define A5XX_RB_DEPTH_CNTL_Z_TEST_ENABLE			0x00000001
+>   #define A5XX_RB_DEPTH_CNTL_Z_WRITE_ENABLE			0x00000002
+>   #define A5XX_RB_DEPTH_CNTL_ZFUNC__MASK				0x0000001c
+>   #define A5XX_RB_DEPTH_CNTL_ZFUNC__SHIFT				2
+> @@ -3498,7 +3508,7 @@ static inline uint32_t A5XX_RB_DEPTH_CNTL_ZFUNC(enum adreno_compare_func val)
+>   {
+>   	return ((val) << A5XX_RB_DEPTH_CNTL_ZFUNC__SHIFT) & A5XX_RB_DEPTH_CNTL_ZFUNC__MASK;
+>   }
+> -#define A5XX_RB_DEPTH_CNTL_Z_TEST_ENABLE			0x00000040
+> +#define A5XX_RB_DEPTH_CNTL_Z_READ_ENABLE			0x00000040
+>   
+>   #define REG_A5XX_RB_DEPTH_BUFFER_INFO				0x0000e1b2
+>   #define A5XX_RB_DEPTH_BUFFER_INFO_DEPTH_FORMAT__MASK		0x00000007
+> @@ -5034,6 +5044,7 @@ static inline uint32_t A5XX_RB_2D_SRC_INFO_COLOR_SWAP(enum a3xx_color_swap val)
+>   	return ((val) << A5XX_RB_2D_SRC_INFO_COLOR_SWAP__SHIFT) & A5XX_RB_2D_SRC_INFO_COLOR_SWAP__MASK;
+>   }
+>   #define A5XX_RB_2D_SRC_INFO_FLAGS				0x00001000
+> +#define A5XX_RB_2D_SRC_INFO_SRGB				0x00002000
+>   
+>   #define REG_A5XX_RB_2D_SRC_LO					0x00002108
+>   
+> @@ -5073,6 +5084,7 @@ static inline uint32_t A5XX_RB_2D_DST_INFO_COLOR_SWAP(enum a3xx_color_swap val)
+>   	return ((val) << A5XX_RB_2D_DST_INFO_COLOR_SWAP__SHIFT) & A5XX_RB_2D_DST_INFO_COLOR_SWAP__MASK;
+>   }
+>   #define A5XX_RB_2D_DST_INFO_FLAGS				0x00001000
+> +#define A5XX_RB_2D_DST_INFO_SRGB				0x00002000
+>   
+>   #define REG_A5XX_RB_2D_DST_LO					0x00002111
+>   
+> @@ -5138,6 +5150,7 @@ static inline uint32_t A5XX_GRAS_2D_SRC_INFO_COLOR_SWAP(enum a3xx_color_swap val
+>   	return ((val) << A5XX_GRAS_2D_SRC_INFO_COLOR_SWAP__SHIFT) & A5XX_GRAS_2D_SRC_INFO_COLOR_SWAP__MASK;
+>   }
+>   #define A5XX_GRAS_2D_SRC_INFO_FLAGS				0x00001000
+> +#define A5XX_GRAS_2D_SRC_INFO_SRGB				0x00002000
+>   
+>   #define REG_A5XX_GRAS_2D_DST_INFO				0x00002182
+>   #define A5XX_GRAS_2D_DST_INFO_COLOR_FORMAT__MASK		0x000000ff
+> @@ -5159,10 +5172,7 @@ static inline uint32_t A5XX_GRAS_2D_DST_INFO_COLOR_SWAP(enum a3xx_color_swap val
+>   	return ((val) << A5XX_GRAS_2D_DST_INFO_COLOR_SWAP__SHIFT) & A5XX_GRAS_2D_DST_INFO_COLOR_SWAP__MASK;
+>   }
+>   #define A5XX_GRAS_2D_DST_INFO_FLAGS				0x00001000
+> -
+> -#define REG_A5XX_UNKNOWN_2100					0x00002100
+> -
+> -#define REG_A5XX_UNKNOWN_2180					0x00002180
+> +#define A5XX_GRAS_2D_DST_INFO_SRGB				0x00002000
+>   
+>   #define REG_A5XX_UNKNOWN_2184					0x00002184
+>   
+> @@ -5316,7 +5326,7 @@ static inline uint32_t A5XX_TEX_CONST_1_HEIGHT(uint32_t val)
+>   }
+>   
+>   #define REG_A5XX_TEX_CONST_2					0x00000002
+> -#define A5XX_TEX_CONST_2_UNK4					0x00000010
+> +#define A5XX_TEX_CONST_2_BUFFER					0x00000010
+>   #define A5XX_TEX_CONST_2_PITCHALIGN__MASK			0x0000000f
+>   #define A5XX_TEX_CONST_2_PITCHALIGN__SHIFT			0
+>   static inline uint32_t A5XX_TEX_CONST_2_PITCHALIGN(uint32_t val)
+> @@ -5329,13 +5339,12 @@ static inline uint32_t A5XX_TEX_CONST_2_PITCH(uint32_t val)
+>   {
+>   	return ((val) << A5XX_TEX_CONST_2_PITCH__SHIFT) & A5XX_TEX_CONST_2_PITCH__MASK;
+>   }
+> -#define A5XX_TEX_CONST_2_TYPE__MASK				0x60000000
+> +#define A5XX_TEX_CONST_2_TYPE__MASK				0xe0000000
+>   #define A5XX_TEX_CONST_2_TYPE__SHIFT				29
+>   static inline uint32_t A5XX_TEX_CONST_2_TYPE(enum a5xx_tex_type val)
+>   {
+>   	return ((val) << A5XX_TEX_CONST_2_TYPE__SHIFT) & A5XX_TEX_CONST_2_TYPE__MASK;
+>   }
+> -#define A5XX_TEX_CONST_2_UNK31					0x80000000
+>   
+>   #define REG_A5XX_TEX_CONST_3					0x00000003
+>   #define A5XX_TEX_CONST_3_ARRAY_PITCH__MASK			0x00003fff
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx.xml.h b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+> index a3cb3d988ba4..b03e2c413ab1 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+> @@ -8,21 +8,21 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> -
+> -Copyright (C) 2013-2021 by the following authors:
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+> +
+> +Copyright (C) 2013-2022 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+>   - Ilia Mirkin <imirkin@alum.mit.edu> (imirkin)
+>   
+> @@ -132,9 +132,21 @@ enum a6xx_format {
+>   	FMT6_G8R8B8R8_422_UNORM = 140,
+>   	FMT6_R8G8R8B8_422_UNORM = 141,
+>   	FMT6_R8_G8B8_2PLANE_420_UNORM = 142,
+> +	FMT6_NV21 = 143,
+>   	FMT6_R8_G8_B8_3PLANE_420_UNORM = 144,
+>   	FMT6_Z24_UNORM_S8_UINT_AS_R8G8B8A8 = 145,
+> -	FMT6_8_PLANE_UNORM = 148,
+> +	FMT6_NV12_Y = 148,
+> +	FMT6_NV12_UV = 149,
+> +	FMT6_NV12_VU = 150,
+> +	FMT6_NV12_4R = 151,
+> +	FMT6_NV12_4R_Y = 152,
+> +	FMT6_NV12_4R_UV = 153,
+> +	FMT6_P010 = 154,
+> +	FMT6_P010_Y = 155,
+> +	FMT6_P010_UV = 156,
+> +	FMT6_TP10 = 157,
+> +	FMT6_TP10_Y = 158,
+> +	FMT6_TP10_UV = 159,
+>   	FMT6_Z24_UNORM_S8_UINT = 160,
+>   	FMT6_ETC2_RG11_UNORM = 171,
+>   	FMT6_ETC2_RG11_SNORM = 172,
+> @@ -885,6 +897,44 @@ enum a6xx_ztest_mode {
+>   	A6XX_EARLY_LRZ_LATE_Z = 2,
+>   };
+>   
+> +enum a6xx_sequenced_thread_dist {
+> +	DIST_SCREEN_COORD = 0,
+> +	DIST_ALL_TO_RB0 = 1,
+> +};
+> +
+> +enum a6xx_single_prim_mode {
+> +	NO_FLUSH = 0,
+> +	FLUSH_PER_OVERLAP_AND_OVERWRITE = 1,
+> +	FLUSH_PER_OVERLAP = 3,
+> +};
+> +
+> +enum a6xx_raster_mode {
+> +	TYPE_TILED = 0,
+> +	TYPE_WRITER = 1,
+> +};
+> +
+> +enum a6xx_raster_direction {
+> +	LR_TB = 0,
+> +	RL_TB = 1,
+> +	LR_BT = 2,
+> +	RB_BT = 3,
+> +};
+> +
+> +enum a6xx_render_mode {
+> +	RENDERING_PASS = 0,
+> +	BINNING_PASS = 1,
+> +};
+> +
+> +enum a6xx_buffers_location {
+> +	BUFFERS_IN_GMEM = 0,
+> +	BUFFERS_IN_SYSMEM = 3,
+> +};
+> +
+> +enum a6xx_fragcoord_sample_mode {
+> +	FRAGCOORD_CENTER = 0,
+> +	FRAGCOORD_SAMPLE = 3,
+> +};
+> +
+>   enum a6xx_rotation {
+>   	ROTATE_0 = 0,
+>   	ROTATE_90 = 1,
+> @@ -912,6 +962,10 @@ enum a6xx_threadsize {
+>   	THREAD128 = 1,
+>   };
+>   
+> +enum a6xx_isam_mode {
+> +	ISAMMODE_GL = 2,
+> +};
+> +
+>   enum a6xx_tex_filter {
+>   	A6XX_TEX_NEAREST = 0,
+>   	A6XX_TEX_LINEAR = 1,
+> @@ -955,6 +1009,7 @@ enum a6xx_tex_type {
+>   	A6XX_TEX_2D = 1,
+>   	A6XX_TEX_CUBE = 2,
+>   	A6XX_TEX_3D = 3,
+> +	A6XX_TEX_BUFFER = 4,
+>   };
+>   
+>   #define A6XX_RBBM_INT_0_MASK_RBBM_GPU_IDLE			0x00000001
+> @@ -1292,6 +1347,10 @@ static inline uint32_t REG_A6XX_RBBM_PERFCTR_RBBM_SEL(uint32_t i0) { return 0x00
+>   
+>   #define REG_A6XX_RBBM_PERFCTR_GPU_BUSY_MASKED			0x0000050b
+>   
+> +#define REG_A6XX_RBBM_PERFCTR_SRAM_INIT_CMD			0x0000050e
+> +
+> +#define REG_A6XX_RBBM_PERFCTR_SRAM_INIT_STATUS			0x0000050f
+> +
+>   #define REG_A6XX_RBBM_ISDB_CNT					0x00000533
+>   
+>   #define REG_A6XX_RBBM_PRIMCTR_0_LO				0x00000540
+> @@ -1934,6 +1993,8 @@ static inline uint32_t A6XX_VBIF_TEST_BUS2_CTRL1_DATA_SEL(uint32_t val)
+>   
+>   #define REG_A6XX_GBIF_PWR_CNT_HIGH2				0x00003cd1
+>   
+> +#define REG_A6XX_VSC_DBG_ECO_CNTL				0x00000c00
+> +
+>   #define REG_A6XX_VSC_BIN_SIZE					0x00000c02
+>   #define A6XX_VSC_BIN_SIZE_WIDTH__MASK				0x000000ff
+>   #define A6XX_VSC_BIN_SIZE_WIDTH__SHIFT				0
+> @@ -2076,9 +2137,9 @@ static inline uint32_t A6XX_GRAS_GS_CL_CNTL_CULL_MASK(uint32_t val)
+>   #define A6XX_GRAS_CNTL_IJ_PERSP_PIXEL				0x00000001
+>   #define A6XX_GRAS_CNTL_IJ_PERSP_CENTROID			0x00000002
+>   #define A6XX_GRAS_CNTL_IJ_PERSP_SAMPLE				0x00000004
+> -#define A6XX_GRAS_CNTL_SIZE					0x00000008
+> -#define A6XX_GRAS_CNTL_UNK4					0x00000010
+> -#define A6XX_GRAS_CNTL_SIZE_PERSAMP				0x00000020
+> +#define A6XX_GRAS_CNTL_IJ_LINEAR_PIXEL				0x00000008
+> +#define A6XX_GRAS_CNTL_IJ_LINEAR_CENTROID			0x00000010
+> +#define A6XX_GRAS_CNTL_IJ_LINEAR_SAMPLE				0x00000020
+>   #define A6XX_GRAS_CNTL_COORD_MASK__MASK				0x000003c0
+>   #define A6XX_GRAS_CNTL_COORD_MASK__SHIFT			6
+>   static inline uint32_t A6XX_GRAS_CNTL_COORD_MASK(uint32_t val)
+> @@ -2185,7 +2246,12 @@ static inline uint32_t A6XX_GRAS_SU_CNTL_UNK12(uint32_t val)
+>   {
+>   	return ((val) << A6XX_GRAS_SU_CNTL_UNK12__SHIFT) & A6XX_GRAS_SU_CNTL_UNK12__MASK;
+>   }
+> -#define A6XX_GRAS_SU_CNTL_MSAA_ENABLE				0x00002000
+> +#define A6XX_GRAS_SU_CNTL_LINE_MODE__MASK			0x00002000
+> +#define A6XX_GRAS_SU_CNTL_LINE_MODE__SHIFT			13
+> +static inline uint32_t A6XX_GRAS_SU_CNTL_LINE_MODE(enum a5xx_line_mode val)
+> +{
+> +	return ((val) << A6XX_GRAS_SU_CNTL_LINE_MODE__SHIFT) & A6XX_GRAS_SU_CNTL_LINE_MODE__MASK;
+> +}
+>   #define A6XX_GRAS_SU_CNTL_UNK15__MASK				0x00018000
+>   #define A6XX_GRAS_SU_CNTL_UNK15__SHIFT				15
+>   static inline uint32_t A6XX_GRAS_SU_CNTL_UNK15(uint32_t val)
+> @@ -2269,9 +2335,25 @@ static inline uint32_t A6XX_GRAS_SU_DEPTH_BUFFER_INFO_UNK3(uint32_t val)
+>   	return ((val) << A6XX_GRAS_SU_DEPTH_BUFFER_INFO_UNK3__SHIFT) & A6XX_GRAS_SU_DEPTH_BUFFER_INFO_UNK3__MASK;
+>   }
+>   
+> -#define REG_A6XX_GRAS_UNKNOWN_8099				0x00008099
+> +#define REG_A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL			0x00008099
+> +#define A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_CONSERVATIVERASEN	0x00000001
+> +#define A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_SHIFTAMOUNT__MASK	0x00000006
+> +#define A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_SHIFTAMOUNT__SHIFT	1
+> +static inline uint32_t A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_SHIFTAMOUNT(uint32_t val)
+> +{
+> +	return ((val) << A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_SHIFTAMOUNT__SHIFT) & A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_SHIFTAMOUNT__MASK;
+> +}
+> +#define A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_INNERCONSERVATIVERASEN	0x00000008
+> +#define A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_UNK4__MASK		0x00000030
+> +#define A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_UNK4__SHIFT		4
+> +static inline uint32_t A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_UNK4(uint32_t val)
+> +{
+> +	return ((val) << A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_UNK4__SHIFT) & A6XX_GRAS_SU_CONSERVATIVE_RAS_CNTL_UNK4__MASK;
+> +}
+>   
+> -#define REG_A6XX_GRAS_UNKNOWN_809A				0x0000809a
+> +#define REG_A6XX_GRAS_SU_PATH_RENDERING_CNTL			0x0000809a
+> +#define A6XX_GRAS_SU_PATH_RENDERING_CNTL_UNK0			0x00000001
+> +#define A6XX_GRAS_SU_PATH_RENDERING_CNTL_LINELENGTHEN		0x00000002
+>   
+>   #define REG_A6XX_GRAS_VS_LAYER_CNTL				0x0000809b
+>   #define A6XX_GRAS_VS_LAYER_CNTL_WRITES_LAYER			0x00000001
+> @@ -2285,7 +2367,44 @@ static inline uint32_t A6XX_GRAS_SU_DEPTH_BUFFER_INFO_UNK3(uint32_t val)
+>   #define A6XX_GRAS_DS_LAYER_CNTL_WRITES_LAYER			0x00000001
+>   #define A6XX_GRAS_DS_LAYER_CNTL_WRITES_VIEW			0x00000002
+>   
+> -#define REG_A6XX_GRAS_UNKNOWN_80A0				0x000080a0
+> +#define REG_A6XX_GRAS_SC_CNTL					0x000080a0
+> +#define A6XX_GRAS_SC_CNTL_CCUSINGLECACHELINESIZE__MASK		0x00000007
+> +#define A6XX_GRAS_SC_CNTL_CCUSINGLECACHELINESIZE__SHIFT		0
+> +static inline uint32_t A6XX_GRAS_SC_CNTL_CCUSINGLECACHELINESIZE(uint32_t val)
+> +{
+> +	return ((val) << A6XX_GRAS_SC_CNTL_CCUSINGLECACHELINESIZE__SHIFT) & A6XX_GRAS_SC_CNTL_CCUSINGLECACHELINESIZE__MASK;
+> +}
+> +#define A6XX_GRAS_SC_CNTL_SINGLE_PRIM_MODE__MASK		0x00000018
+> +#define A6XX_GRAS_SC_CNTL_SINGLE_PRIM_MODE__SHIFT		3
+> +static inline uint32_t A6XX_GRAS_SC_CNTL_SINGLE_PRIM_MODE(enum a6xx_single_prim_mode val)
+> +{
+> +	return ((val) << A6XX_GRAS_SC_CNTL_SINGLE_PRIM_MODE__SHIFT) & A6XX_GRAS_SC_CNTL_SINGLE_PRIM_MODE__MASK;
+> +}
+> +#define A6XX_GRAS_SC_CNTL_RASTER_MODE__MASK			0x00000020
+> +#define A6XX_GRAS_SC_CNTL_RASTER_MODE__SHIFT			5
+> +static inline uint32_t A6XX_GRAS_SC_CNTL_RASTER_MODE(enum a6xx_raster_mode val)
+> +{
+> +	return ((val) << A6XX_GRAS_SC_CNTL_RASTER_MODE__SHIFT) & A6XX_GRAS_SC_CNTL_RASTER_MODE__MASK;
+> +}
+> +#define A6XX_GRAS_SC_CNTL_RASTER_DIRECTION__MASK		0x000000c0
+> +#define A6XX_GRAS_SC_CNTL_RASTER_DIRECTION__SHIFT		6
+> +static inline uint32_t A6XX_GRAS_SC_CNTL_RASTER_DIRECTION(enum a6xx_raster_direction val)
+> +{
+> +	return ((val) << A6XX_GRAS_SC_CNTL_RASTER_DIRECTION__SHIFT) & A6XX_GRAS_SC_CNTL_RASTER_DIRECTION__MASK;
+> +}
+> +#define A6XX_GRAS_SC_CNTL_SEQUENCED_THREAD_DISTRIBUTION__MASK	0x00000100
+> +#define A6XX_GRAS_SC_CNTL_SEQUENCED_THREAD_DISTRIBUTION__SHIFT	8
+> +static inline uint32_t A6XX_GRAS_SC_CNTL_SEQUENCED_THREAD_DISTRIBUTION(enum a6xx_sequenced_thread_dist val)
+> +{
+> +	return ((val) << A6XX_GRAS_SC_CNTL_SEQUENCED_THREAD_DISTRIBUTION__SHIFT) & A6XX_GRAS_SC_CNTL_SEQUENCED_THREAD_DISTRIBUTION__MASK;
+> +}
+> +#define A6XX_GRAS_SC_CNTL_UNK9__MASK				0x00000e00
+> +#define A6XX_GRAS_SC_CNTL_UNK9__SHIFT				9
+> +static inline uint32_t A6XX_GRAS_SC_CNTL_UNK9(uint32_t val)
+> +{
+> +	return ((val) << A6XX_GRAS_SC_CNTL_UNK9__SHIFT) & A6XX_GRAS_SC_CNTL_UNK9__MASK;
+> +}
+> +#define A6XX_GRAS_SC_CNTL_EARLYVIZOUTEN				0x00001000
+>   
+>   #define REG_A6XX_GRAS_BIN_CONTROL				0x000080a1
+>   #define A6XX_GRAS_BIN_CONTROL_BINW__MASK			0x0000003f
+> @@ -2300,25 +2419,30 @@ static inline uint32_t A6XX_GRAS_BIN_CONTROL_BINH(uint32_t val)
+>   {
+>   	return ((val >> 4) << A6XX_GRAS_BIN_CONTROL_BINH__SHIFT) & A6XX_GRAS_BIN_CONTROL_BINH__MASK;
+>   }
+> -#define A6XX_GRAS_BIN_CONTROL_BINNING_PASS			0x00040000
+> -#define A6XX_GRAS_BIN_CONTROL_UNK19__MASK			0x00080000
+> -#define A6XX_GRAS_BIN_CONTROL_UNK19__SHIFT			19
+> -static inline uint32_t A6XX_GRAS_BIN_CONTROL_UNK19(uint32_t val)
+> +#define A6XX_GRAS_BIN_CONTROL_RENDER_MODE__MASK			0x001c0000
+> +#define A6XX_GRAS_BIN_CONTROL_RENDER_MODE__SHIFT		18
+> +static inline uint32_t A6XX_GRAS_BIN_CONTROL_RENDER_MODE(enum a6xx_render_mode val)
+> +{
+> +	return ((val) << A6XX_GRAS_BIN_CONTROL_RENDER_MODE__SHIFT) & A6XX_GRAS_BIN_CONTROL_RENDER_MODE__MASK;
+> +}
+> +#define A6XX_GRAS_BIN_CONTROL_FORCE_LRZ_WRITE_DIS		0x00200000
+> +#define A6XX_GRAS_BIN_CONTROL_BUFFERS_LOCATION__MASK		0x00c00000
+> +#define A6XX_GRAS_BIN_CONTROL_BUFFERS_LOCATION__SHIFT		22
+> +static inline uint32_t A6XX_GRAS_BIN_CONTROL_BUFFERS_LOCATION(enum a6xx_buffers_location val)
+>   {
+> -	return ((val) << A6XX_GRAS_BIN_CONTROL_UNK19__SHIFT) & A6XX_GRAS_BIN_CONTROL_UNK19__MASK;
+> +	return ((val) << A6XX_GRAS_BIN_CONTROL_BUFFERS_LOCATION__SHIFT) & A6XX_GRAS_BIN_CONTROL_BUFFERS_LOCATION__MASK;
+>   }
+> -#define A6XX_GRAS_BIN_CONTROL_UNK20__MASK			0x00100000
+> -#define A6XX_GRAS_BIN_CONTROL_UNK20__SHIFT			20
+> -static inline uint32_t A6XX_GRAS_BIN_CONTROL_UNK20(uint32_t val)
+> +#define A6XX_GRAS_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__MASK	0x07000000
+> +#define A6XX_GRAS_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__SHIFT	24
+> +static inline uint32_t A6XX_GRAS_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK(uint32_t val)
+>   {
+> -	return ((val) << A6XX_GRAS_BIN_CONTROL_UNK20__SHIFT) & A6XX_GRAS_BIN_CONTROL_UNK20__MASK;
+> +	return ((val) << A6XX_GRAS_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__SHIFT) & A6XX_GRAS_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__MASK;
+>   }
+> -#define A6XX_GRAS_BIN_CONTROL_USE_VIZ				0x00200000
+> -#define A6XX_GRAS_BIN_CONTROL_UNK22__MASK			0x0fc00000
+> -#define A6XX_GRAS_BIN_CONTROL_UNK22__SHIFT			22
+> -static inline uint32_t A6XX_GRAS_BIN_CONTROL_UNK22(uint32_t val)
+> +#define A6XX_GRAS_BIN_CONTROL_UNK27__MASK			0x08000000
+> +#define A6XX_GRAS_BIN_CONTROL_UNK27__SHIFT			27
+> +static inline uint32_t A6XX_GRAS_BIN_CONTROL_UNK27(uint32_t val)
+>   {
+> -	return ((val) << A6XX_GRAS_BIN_CONTROL_UNK22__SHIFT) & A6XX_GRAS_BIN_CONTROL_UNK22__MASK;
+> +	return ((val) << A6XX_GRAS_BIN_CONTROL_UNK27__SHIFT) & A6XX_GRAS_BIN_CONTROL_UNK27__MASK;
+>   }
+>   
+>   #define REG_A6XX_GRAS_RAS_MSAA_CNTL				0x000080a2
+> @@ -2558,14 +2682,21 @@ static inline uint32_t A6XX_GRAS_LRZ_CNTL_UNK6(uint32_t val)
+>   	return ((val) << A6XX_GRAS_LRZ_CNTL_UNK6__SHIFT) & A6XX_GRAS_LRZ_CNTL_UNK6__MASK;
+>   }
+>   
+> -#define REG_A6XX_GRAS_UNKNOWN_8101				0x00008101
+> +#define REG_A6XX_GRAS_LRZ_PS_INPUT_CNTL				0x00008101
+> +#define A6XX_GRAS_LRZ_PS_INPUT_CNTL_SAMPLEID			0x00000001
+> +#define A6XX_GRAS_LRZ_PS_INPUT_CNTL_FRAGCOORDSAMPLEMODE__MASK	0x00000006
+> +#define A6XX_GRAS_LRZ_PS_INPUT_CNTL_FRAGCOORDSAMPLEMODE__SHIFT	1
+> +static inline uint32_t A6XX_GRAS_LRZ_PS_INPUT_CNTL_FRAGCOORDSAMPLEMODE(enum a6xx_fragcoord_sample_mode val)
+> +{
+> +	return ((val) << A6XX_GRAS_LRZ_PS_INPUT_CNTL_FRAGCOORDSAMPLEMODE__SHIFT) & A6XX_GRAS_LRZ_PS_INPUT_CNTL_FRAGCOORDSAMPLEMODE__MASK;
+> +}
+>   
+> -#define REG_A6XX_GRAS_2D_BLIT_INFO				0x00008102
+> -#define A6XX_GRAS_2D_BLIT_INFO_COLOR_FORMAT__MASK		0x000000ff
+> -#define A6XX_GRAS_2D_BLIT_INFO_COLOR_FORMAT__SHIFT		0
+> -static inline uint32_t A6XX_GRAS_2D_BLIT_INFO_COLOR_FORMAT(enum a6xx_format val)
+> +#define REG_A6XX_GRAS_LRZ_MRT_BUF_INFO_0			0x00008102
+> +#define A6XX_GRAS_LRZ_MRT_BUF_INFO_0_COLOR_FORMAT__MASK		0x000000ff
+> +#define A6XX_GRAS_LRZ_MRT_BUF_INFO_0_COLOR_FORMAT__SHIFT	0
+> +static inline uint32_t A6XX_GRAS_LRZ_MRT_BUF_INFO_0_COLOR_FORMAT(enum a6xx_format val)
+>   {
+> -	return ((val) << A6XX_GRAS_2D_BLIT_INFO_COLOR_FORMAT__SHIFT) & A6XX_GRAS_2D_BLIT_INFO_COLOR_FORMAT__MASK;
+> +	return ((val) << A6XX_GRAS_LRZ_MRT_BUF_INFO_0_COLOR_FORMAT__SHIFT) & A6XX_GRAS_LRZ_MRT_BUF_INFO_0_COLOR_FORMAT__MASK;
+>   }
+>   
+>   #define REG_A6XX_GRAS_LRZ_BUFFER_BASE				0x00008103
+> @@ -2630,11 +2761,12 @@ static inline uint32_t A6XX_GRAS_2D_BLIT_CNTL_ROTATE(enum a6xx_rotation val)
+>   {
+>   	return ((val) << A6XX_GRAS_2D_BLIT_CNTL_ROTATE__SHIFT) & A6XX_GRAS_2D_BLIT_CNTL_ROTATE__MASK;
+>   }
+> -#define A6XX_GRAS_2D_BLIT_CNTL_UNK3__MASK			0x00000078
+> -#define A6XX_GRAS_2D_BLIT_CNTL_UNK3__SHIFT			3
+> -static inline uint32_t A6XX_GRAS_2D_BLIT_CNTL_UNK3(uint32_t val)
+> +#define A6XX_GRAS_2D_BLIT_CNTL_OVERWRITEEN			0x00000008
+> +#define A6XX_GRAS_2D_BLIT_CNTL_UNK4__MASK			0x00000070
+> +#define A6XX_GRAS_2D_BLIT_CNTL_UNK4__SHIFT			4
+> +static inline uint32_t A6XX_GRAS_2D_BLIT_CNTL_UNK4(uint32_t val)
+>   {
+> -	return ((val) << A6XX_GRAS_2D_BLIT_CNTL_UNK3__SHIFT) & A6XX_GRAS_2D_BLIT_CNTL_UNK3__MASK;
+> +	return ((val) << A6XX_GRAS_2D_BLIT_CNTL_UNK4__SHIFT) & A6XX_GRAS_2D_BLIT_CNTL_UNK4__MASK;
+>   }
+>   #define A6XX_GRAS_2D_BLIT_CNTL_SOLID_COLOR			0x00000080
+>   #define A6XX_GRAS_2D_BLIT_CNTL_COLOR_FORMAT__MASK		0x0000ff00
+> @@ -2663,11 +2795,11 @@ static inline uint32_t A6XX_GRAS_2D_BLIT_CNTL_IFMT(enum a6xx_2d_ifmt val)
+>   {
+>   	return ((val) << A6XX_GRAS_2D_BLIT_CNTL_IFMT__SHIFT) & A6XX_GRAS_2D_BLIT_CNTL_IFMT__MASK;
+>   }
+> -#define A6XX_GRAS_2D_BLIT_CNTL_UNK29__MASK			0x20000000
+> -#define A6XX_GRAS_2D_BLIT_CNTL_UNK29__SHIFT			29
+> -static inline uint32_t A6XX_GRAS_2D_BLIT_CNTL_UNK29(uint32_t val)
+> +#define A6XX_GRAS_2D_BLIT_CNTL_RASTER_MODE__MASK		0x20000000
+> +#define A6XX_GRAS_2D_BLIT_CNTL_RASTER_MODE__SHIFT		29
+> +static inline uint32_t A6XX_GRAS_2D_BLIT_CNTL_RASTER_MODE(enum a6xx_raster_mode val)
+>   {
+> -	return ((val) << A6XX_GRAS_2D_BLIT_CNTL_UNK29__SHIFT) & A6XX_GRAS_2D_BLIT_CNTL_UNK29__MASK;
+> +	return ((val) << A6XX_GRAS_2D_BLIT_CNTL_RASTER_MODE__SHIFT) & A6XX_GRAS_2D_BLIT_CNTL_RASTER_MODE__MASK;
+>   }
+>   
+>   #define REG_A6XX_GRAS_2D_SRC_TL_X				0x00008401
+> @@ -2740,7 +2872,9 @@ static inline uint32_t A6XX_GRAS_2D_RESOLVE_CNTL_2_Y(uint32_t val)
+>   	return ((val) << A6XX_GRAS_2D_RESOLVE_CNTL_2_Y__SHIFT) & A6XX_GRAS_2D_RESOLVE_CNTL_2_Y__MASK;
+>   }
+>   
+> -#define REG_A6XX_GRAS_UNKNOWN_8600				0x00008600
+> +#define REG_A6XX_GRAS_DBG_ECO_CNTL				0x00008600
+> +#define A6XX_GRAS_DBG_ECO_CNTL_UNK7				0x00000080
+> +#define A6XX_GRAS_DBG_ECO_CNTL_LRZCACHELOCKDIS			0x00000800
+>   
+>   #define REG_A6XX_GRAS_ADDR_MODE_CNTL				0x00008601
+>   
+> @@ -2763,43 +2897,55 @@ static inline uint32_t A6XX_RB_BIN_CONTROL_BINH(uint32_t val)
+>   {
+>   	return ((val >> 4) << A6XX_RB_BIN_CONTROL_BINH__SHIFT) & A6XX_RB_BIN_CONTROL_BINH__MASK;
+>   }
+> -#define A6XX_RB_BIN_CONTROL_BINNING_PASS			0x00040000
+> -#define A6XX_RB_BIN_CONTROL_UNK19__MASK				0x00080000
+> -#define A6XX_RB_BIN_CONTROL_UNK19__SHIFT			19
+> -static inline uint32_t A6XX_RB_BIN_CONTROL_UNK19(uint32_t val)
+> +#define A6XX_RB_BIN_CONTROL_RENDER_MODE__MASK			0x001c0000
+> +#define A6XX_RB_BIN_CONTROL_RENDER_MODE__SHIFT			18
+> +static inline uint32_t A6XX_RB_BIN_CONTROL_RENDER_MODE(enum a6xx_render_mode val)
+>   {
+> -	return ((val) << A6XX_RB_BIN_CONTROL_UNK19__SHIFT) & A6XX_RB_BIN_CONTROL_UNK19__MASK;
+> +	return ((val) << A6XX_RB_BIN_CONTROL_RENDER_MODE__SHIFT) & A6XX_RB_BIN_CONTROL_RENDER_MODE__MASK;
+>   }
+> -#define A6XX_RB_BIN_CONTROL_UNK20__MASK				0x00100000
+> -#define A6XX_RB_BIN_CONTROL_UNK20__SHIFT			20
+> -static inline uint32_t A6XX_RB_BIN_CONTROL_UNK20(uint32_t val)
+> +#define A6XX_RB_BIN_CONTROL_FORCE_LRZ_WRITE_DIS			0x00200000
+> +#define A6XX_RB_BIN_CONTROL_BUFFERS_LOCATION__MASK		0x00c00000
+> +#define A6XX_RB_BIN_CONTROL_BUFFERS_LOCATION__SHIFT		22
+> +static inline uint32_t A6XX_RB_BIN_CONTROL_BUFFERS_LOCATION(enum a6xx_buffers_location val)
+>   {
+> -	return ((val) << A6XX_RB_BIN_CONTROL_UNK20__SHIFT) & A6XX_RB_BIN_CONTROL_UNK20__MASK;
+> +	return ((val) << A6XX_RB_BIN_CONTROL_BUFFERS_LOCATION__SHIFT) & A6XX_RB_BIN_CONTROL_BUFFERS_LOCATION__MASK;
+>   }
+> -#define A6XX_RB_BIN_CONTROL_USE_VIZ				0x00200000
+> -#define A6XX_RB_BIN_CONTROL_UNK22__MASK				0x07c00000
+> -#define A6XX_RB_BIN_CONTROL_UNK22__SHIFT			22
+> -static inline uint32_t A6XX_RB_BIN_CONTROL_UNK22(uint32_t val)
+> +#define A6XX_RB_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__MASK	0x07000000
+> +#define A6XX_RB_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__SHIFT	24
+> +static inline uint32_t A6XX_RB_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK(uint32_t val)
+>   {
+> -	return ((val) << A6XX_RB_BIN_CONTROL_UNK22__SHIFT) & A6XX_RB_BIN_CONTROL_UNK22__MASK;
+> +	return ((val) << A6XX_RB_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__SHIFT) & A6XX_RB_BIN_CONTROL_LRZ_FEEDBACK_ZMODE_MASK__MASK;
+>   }
+>   
+>   #define REG_A6XX_RB_RENDER_CNTL					0x00008801
+> -#define A6XX_RB_RENDER_CNTL_UNK3				0x00000008
+> -#define A6XX_RB_RENDER_CNTL_UNK4				0x00000010
+> -#define A6XX_RB_RENDER_CNTL_UNK5__MASK				0x00000060
+> -#define A6XX_RB_RENDER_CNTL_UNK5__SHIFT				5
+> -static inline uint32_t A6XX_RB_RENDER_CNTL_UNK5(uint32_t val)
+> +#define A6XX_RB_RENDER_CNTL_CCUSINGLECACHELINESIZE__MASK	0x00000038
+> +#define A6XX_RB_RENDER_CNTL_CCUSINGLECACHELINESIZE__SHIFT	3
+> +static inline uint32_t A6XX_RB_RENDER_CNTL_CCUSINGLECACHELINESIZE(uint32_t val)
+>   {
+> -	return ((val) << A6XX_RB_RENDER_CNTL_UNK5__SHIFT) & A6XX_RB_RENDER_CNTL_UNK5__MASK;
+> +	return ((val) << A6XX_RB_RENDER_CNTL_CCUSINGLECACHELINESIZE__SHIFT) & A6XX_RB_RENDER_CNTL_CCUSINGLECACHELINESIZE__MASK;
+>   }
+> +#define A6XX_RB_RENDER_CNTL_EARLYVIZOUTEN			0x00000040
+>   #define A6XX_RB_RENDER_CNTL_BINNING				0x00000080
+> -#define A6XX_RB_RENDER_CNTL_UNK8__MASK				0x00001f00
+> +#define A6XX_RB_RENDER_CNTL_UNK8__MASK				0x00000700
+>   #define A6XX_RB_RENDER_CNTL_UNK8__SHIFT				8
+>   static inline uint32_t A6XX_RB_RENDER_CNTL_UNK8(uint32_t val)
+>   {
+>   	return ((val) << A6XX_RB_RENDER_CNTL_UNK8__SHIFT) & A6XX_RB_RENDER_CNTL_UNK8__MASK;
+>   }
+> +#define A6XX_RB_RENDER_CNTL_RASTER_MODE__MASK			0x00000100
+> +#define A6XX_RB_RENDER_CNTL_RASTER_MODE__SHIFT			8
+> +static inline uint32_t A6XX_RB_RENDER_CNTL_RASTER_MODE(enum a6xx_raster_mode val)
+> +{
+> +	return ((val) << A6XX_RB_RENDER_CNTL_RASTER_MODE__SHIFT) & A6XX_RB_RENDER_CNTL_RASTER_MODE__MASK;
+> +}
+> +#define A6XX_RB_RENDER_CNTL_RASTER_DIRECTION__MASK		0x00000600
+> +#define A6XX_RB_RENDER_CNTL_RASTER_DIRECTION__SHIFT		9
+> +static inline uint32_t A6XX_RB_RENDER_CNTL_RASTER_DIRECTION(enum a6xx_raster_direction val)
+> +{
+> +	return ((val) << A6XX_RB_RENDER_CNTL_RASTER_DIRECTION__SHIFT) & A6XX_RB_RENDER_CNTL_RASTER_DIRECTION__MASK;
+> +}
+> +#define A6XX_RB_RENDER_CNTL_CONSERVATIVERASEN			0x00000800
+> +#define A6XX_RB_RENDER_CNTL_INNERCONSERVATIVERASEN		0x00001000
+>   #define A6XX_RB_RENDER_CNTL_FLAG_DEPTH				0x00004000
+>   #define A6XX_RB_RENDER_CNTL_FLAG_MRTS__MASK			0x00ff0000
+>   #define A6XX_RB_RENDER_CNTL_FLAG_MRTS__SHIFT			16
+> @@ -2945,9 +3091,9 @@ static inline uint32_t A6XX_RB_SAMPLE_LOCATION_1_SAMPLE_3_Y(float val)
+>   #define A6XX_RB_RENDER_CONTROL0_IJ_PERSP_PIXEL			0x00000001
+>   #define A6XX_RB_RENDER_CONTROL0_IJ_PERSP_CENTROID		0x00000002
+>   #define A6XX_RB_RENDER_CONTROL0_IJ_PERSP_SAMPLE			0x00000004
+> -#define A6XX_RB_RENDER_CONTROL0_SIZE				0x00000008
+> -#define A6XX_RB_RENDER_CONTROL0_UNK4				0x00000010
+> -#define A6XX_RB_RENDER_CONTROL0_SIZE_PERSAMP			0x00000020
+> +#define A6XX_RB_RENDER_CONTROL0_IJ_LINEAR_PIXEL			0x00000008
+> +#define A6XX_RB_RENDER_CONTROL0_IJ_LINEAR_CENTROID		0x00000010
+> +#define A6XX_RB_RENDER_CONTROL0_IJ_LINEAR_SAMPLE		0x00000020
+>   #define A6XX_RB_RENDER_CONTROL0_COORD_MASK__MASK		0x000003c0
+>   #define A6XX_RB_RENDER_CONTROL0_COORD_MASK__SHIFT		6
+>   static inline uint32_t A6XX_RB_RENDER_CONTROL0_COORD_MASK(uint32_t val)
+> @@ -2961,11 +3107,15 @@ static inline uint32_t A6XX_RB_RENDER_CONTROL0_COORD_MASK(uint32_t val)
+>   #define A6XX_RB_RENDER_CONTROL1_UNK1				0x00000002
+>   #define A6XX_RB_RENDER_CONTROL1_FACENESS			0x00000004
+>   #define A6XX_RB_RENDER_CONTROL1_SAMPLEID			0x00000008
+> -#define A6XX_RB_RENDER_CONTROL1_UNK4				0x00000010
+> -#define A6XX_RB_RENDER_CONTROL1_UNK5				0x00000020
+> +#define A6XX_RB_RENDER_CONTROL1_FRAGCOORDSAMPLEMODE__MASK	0x00000030
+> +#define A6XX_RB_RENDER_CONTROL1_FRAGCOORDSAMPLEMODE__SHIFT	4
+> +static inline uint32_t A6XX_RB_RENDER_CONTROL1_FRAGCOORDSAMPLEMODE(enum a6xx_fragcoord_sample_mode val)
+> +{
+> +	return ((val) << A6XX_RB_RENDER_CONTROL1_FRAGCOORDSAMPLEMODE__SHIFT) & A6XX_RB_RENDER_CONTROL1_FRAGCOORDSAMPLEMODE__MASK;
+> +}
+>   #define A6XX_RB_RENDER_CONTROL1_SIZE				0x00000040
+> -#define A6XX_RB_RENDER_CONTROL1_UNK7				0x00000080
+> -#define A6XX_RB_RENDER_CONTROL1_UNK8				0x00000100
+> +#define A6XX_RB_RENDER_CONTROL1_LINELENGTHEN			0x00000080
+> +#define A6XX_RB_RENDER_CONTROL1_FOVEATION			0x00000100
+>   
+>   #define REG_A6XX_RB_FS_OUTPUT_CNTL0				0x0000880b
+>   #define A6XX_RB_FS_OUTPUT_CNTL0_DUAL_COLOR_IN_ENABLE		0x00000001
+> @@ -3299,7 +3449,7 @@ static inline uint32_t A6XX_RB_DEPTH_PLANE_CNTL_Z_MODE(enum a6xx_ztest_mode val)
+>   }
+>   
+>   #define REG_A6XX_RB_DEPTH_CNTL					0x00008871
+> -#define A6XX_RB_DEPTH_CNTL_Z_ENABLE				0x00000001
+> +#define A6XX_RB_DEPTH_CNTL_Z_TEST_ENABLE			0x00000001
+>   #define A6XX_RB_DEPTH_CNTL_Z_WRITE_ENABLE			0x00000002
+>   #define A6XX_RB_DEPTH_CNTL_ZFUNC__MASK				0x0000001c
+>   #define A6XX_RB_DEPTH_CNTL_ZFUNC__SHIFT				2
+> @@ -3308,7 +3458,7 @@ static inline uint32_t A6XX_RB_DEPTH_CNTL_ZFUNC(enum adreno_compare_func val)
+>   	return ((val) << A6XX_RB_DEPTH_CNTL_ZFUNC__SHIFT) & A6XX_RB_DEPTH_CNTL_ZFUNC__MASK;
+>   }
+>   #define A6XX_RB_DEPTH_CNTL_Z_CLAMP_ENABLE			0x00000020
+> -#define A6XX_RB_DEPTH_CNTL_Z_TEST_ENABLE			0x00000040
+> +#define A6XX_RB_DEPTH_CNTL_Z_READ_ENABLE			0x00000040
+>   #define A6XX_RB_DEPTH_CNTL_Z_BOUNDS_ENABLE			0x00000080
+>   
+>   #define REG_A6XX_RB_DEPTH_BUFFER_INFO				0x00008872
+> @@ -3819,6 +3969,14 @@ static inline uint32_t A6XX_RB_SAMPLE_COUNT_ADDR(uint32_t val)
+>   	return ((val) << A6XX_RB_SAMPLE_COUNT_ADDR__SHIFT) & A6XX_RB_SAMPLE_COUNT_ADDR__MASK;
+>   }
+>   
+> +#define REG_A6XX_RB_UNKNOWN_8A00				0x00008a00
+> +
+> +#define REG_A6XX_RB_UNKNOWN_8A10				0x00008a10
+> +
+> +#define REG_A6XX_RB_UNKNOWN_8A20				0x00008a20
+> +
+> +#define REG_A6XX_RB_UNKNOWN_8A30				0x00008a30
+> +
+>   #define REG_A6XX_RB_2D_BLIT_CNTL				0x00008c00
+>   #define A6XX_RB_2D_BLIT_CNTL_ROTATE__MASK			0x00000007
+>   #define A6XX_RB_2D_BLIT_CNTL_ROTATE__SHIFT			0
+> @@ -3826,11 +3984,12 @@ static inline uint32_t A6XX_RB_2D_BLIT_CNTL_ROTATE(enum a6xx_rotation val)
+>   {
+>   	return ((val) << A6XX_RB_2D_BLIT_CNTL_ROTATE__SHIFT) & A6XX_RB_2D_BLIT_CNTL_ROTATE__MASK;
+>   }
+> -#define A6XX_RB_2D_BLIT_CNTL_UNK3__MASK				0x00000078
+> -#define A6XX_RB_2D_BLIT_CNTL_UNK3__SHIFT			3
+> -static inline uint32_t A6XX_RB_2D_BLIT_CNTL_UNK3(uint32_t val)
+> +#define A6XX_RB_2D_BLIT_CNTL_OVERWRITEEN			0x00000008
+> +#define A6XX_RB_2D_BLIT_CNTL_UNK4__MASK				0x00000070
+> +#define A6XX_RB_2D_BLIT_CNTL_UNK4__SHIFT			4
+> +static inline uint32_t A6XX_RB_2D_BLIT_CNTL_UNK4(uint32_t val)
+>   {
+> -	return ((val) << A6XX_RB_2D_BLIT_CNTL_UNK3__SHIFT) & A6XX_RB_2D_BLIT_CNTL_UNK3__MASK;
+> +	return ((val) << A6XX_RB_2D_BLIT_CNTL_UNK4__SHIFT) & A6XX_RB_2D_BLIT_CNTL_UNK4__MASK;
+>   }
+>   #define A6XX_RB_2D_BLIT_CNTL_SOLID_COLOR			0x00000080
+>   #define A6XX_RB_2D_BLIT_CNTL_COLOR_FORMAT__MASK			0x0000ff00
+> @@ -3859,11 +4018,11 @@ static inline uint32_t A6XX_RB_2D_BLIT_CNTL_IFMT(enum a6xx_2d_ifmt val)
+>   {
+>   	return ((val) << A6XX_RB_2D_BLIT_CNTL_IFMT__SHIFT) & A6XX_RB_2D_BLIT_CNTL_IFMT__MASK;
+>   }
+> -#define A6XX_RB_2D_BLIT_CNTL_UNK29__MASK			0x20000000
+> -#define A6XX_RB_2D_BLIT_CNTL_UNK29__SHIFT			29
+> -static inline uint32_t A6XX_RB_2D_BLIT_CNTL_UNK29(uint32_t val)
+> +#define A6XX_RB_2D_BLIT_CNTL_RASTER_MODE__MASK			0x20000000
+> +#define A6XX_RB_2D_BLIT_CNTL_RASTER_MODE__SHIFT			29
+> +static inline uint32_t A6XX_RB_2D_BLIT_CNTL_RASTER_MODE(enum a6xx_raster_mode val)
+>   {
+> -	return ((val) << A6XX_RB_2D_BLIT_CNTL_UNK29__SHIFT) & A6XX_RB_2D_BLIT_CNTL_UNK29__MASK;
+> +	return ((val) << A6XX_RB_2D_BLIT_CNTL_RASTER_MODE__SHIFT) & A6XX_RB_2D_BLIT_CNTL_RASTER_MODE__MASK;
+>   }
+>   
+>   #define REG_A6XX_RB_2D_UNKNOWN_8C01				0x00008c01
+> @@ -3997,11 +4156,17 @@ static inline uint32_t A6XX_RB_2D_DST_FLAGS_PLANE_PITCH(uint32_t val)
+>   #define REG_A6XX_RB_ADDR_MODE_CNTL				0x00008e05
+>   
+>   #define REG_A6XX_RB_CCU_CNTL					0x00008e07
+> -#define A6XX_RB_CCU_CNTL_OFFSET__MASK				0xff800000
+> -#define A6XX_RB_CCU_CNTL_OFFSET__SHIFT				23
+> -static inline uint32_t A6XX_RB_CCU_CNTL_OFFSET(uint32_t val)
+> +#define A6XX_RB_CCU_CNTL_COLOR_OFFSET__MASK			0xff800000
+> +#define A6XX_RB_CCU_CNTL_COLOR_OFFSET__SHIFT			23
+> +static inline uint32_t A6XX_RB_CCU_CNTL_COLOR_OFFSET(uint32_t val)
+>   {
+> -	return ((val >> 12) << A6XX_RB_CCU_CNTL_OFFSET__SHIFT) & A6XX_RB_CCU_CNTL_OFFSET__MASK;
+> +	return ((val >> 12) << A6XX_RB_CCU_CNTL_COLOR_OFFSET__SHIFT) & A6XX_RB_CCU_CNTL_COLOR_OFFSET__MASK;
+> +}
+> +#define A6XX_RB_CCU_CNTL_DEPTH_OFFSET__MASK			0x001ff000
+> +#define A6XX_RB_CCU_CNTL_DEPTH_OFFSET__SHIFT			12
+> +static inline uint32_t A6XX_RB_CCU_CNTL_DEPTH_OFFSET(uint32_t val)
+> +{
+> +	return ((val >> 12) << A6XX_RB_CCU_CNTL_DEPTH_OFFSET__SHIFT) & A6XX_RB_CCU_CNTL_DEPTH_OFFSET__MASK;
+>   }
+>   #define A6XX_RB_CCU_CNTL_GMEM					0x00400000
+>   #define A6XX_RB_CCU_CNTL_UNK2					0x00000004
+> @@ -4052,7 +4217,13 @@ static inline uint32_t A6XX_RB_UNKNOWN_8E51(uint32_t val)
+>   	return ((val) << A6XX_RB_UNKNOWN_8E51__SHIFT) & A6XX_RB_UNKNOWN_8E51__MASK;
+>   }
+>   
+> -#define REG_A6XX_VPC_UNKNOWN_9100				0x00009100
+> +#define REG_A6XX_VPC_GS_PARAM					0x00009100
+> +#define A6XX_VPC_GS_PARAM_LINELENGTHLOC__MASK			0x000000ff
+> +#define A6XX_VPC_GS_PARAM_LINELENGTHLOC__SHIFT			0
+> +static inline uint32_t A6XX_VPC_GS_PARAM_LINELENGTHLOC(uint32_t val)
+> +{
+> +	return ((val) << A6XX_VPC_GS_PARAM_LINELENGTHLOC__SHIFT) & A6XX_VPC_GS_PARAM_LINELENGTHLOC__MASK;
+> +}
+>   
+>   #define REG_A6XX_VPC_VS_CLIP_CNTL				0x00009101
+>   #define A6XX_VPC_VS_CLIP_CNTL_CLIP_MASK__MASK			0x000000ff
+> @@ -4448,10 +4619,16 @@ static inline uint32_t A6XX_PC_TESS_CNTL_OUTPUT(enum a6xx_tess_output val)
+>   
+>   #define REG_A6XX_PC_MODE_CNTL					0x00009804
+>   
+> -#define REG_A6XX_PC_UNKNOWN_9805				0x00009805
+> +#define REG_A6XX_PC_POWER_CNTL					0x00009805
+>   
+>   #define REG_A6XX_PC_PRIMID_PASSTHRU				0x00009806
+>   
+> +#define REG_A6XX_PC_SO_STREAM_CNTL				0x00009808
+> +#define A6XX_PC_SO_STREAM_CNTL_STREAM_ENABLE			0x00008000
+> +
+> +#define REG_A6XX_PC_DGEN_SU_CONSERVATIVE_RAS_CNTL		0x0000980a
+> +#define A6XX_PC_DGEN_SU_CONSERVATIVE_RAS_CNTL_CONSERVATIVERASEN	0x00000001
+> +
+>   #define REG_A6XX_PC_DRAW_CMD					0x00009840
+>   #define A6XX_PC_DRAW_CMD_STATE_ID__MASK				0x000000ff
+>   #define A6XX_PC_DRAW_CMD_STATE_ID__SHIFT			0
+> @@ -4543,7 +4720,23 @@ static inline uint32_t A6XX_PC_GS_OUT_CNTL_CLIP_MASK(uint32_t val)
+>   	return ((val) << A6XX_PC_GS_OUT_CNTL_CLIP_MASK__SHIFT) & A6XX_PC_GS_OUT_CNTL_CLIP_MASK__MASK;
+>   }
+>   
+> -#define REG_A6XX_PC_PRIMITIVE_CNTL_3				0x00009b03
+> +#define REG_A6XX_PC_HS_OUT_CNTL					0x00009b03
+> +#define A6XX_PC_HS_OUT_CNTL_STRIDE_IN_VPC__MASK			0x000000ff
+> +#define A6XX_PC_HS_OUT_CNTL_STRIDE_IN_VPC__SHIFT		0
+> +static inline uint32_t A6XX_PC_HS_OUT_CNTL_STRIDE_IN_VPC(uint32_t val)
+> +{
+> +	return ((val) << A6XX_PC_HS_OUT_CNTL_STRIDE_IN_VPC__SHIFT) & A6XX_PC_HS_OUT_CNTL_STRIDE_IN_VPC__MASK;
+> +}
+> +#define A6XX_PC_HS_OUT_CNTL_PSIZE				0x00000100
+> +#define A6XX_PC_HS_OUT_CNTL_LAYER				0x00000200
+> +#define A6XX_PC_HS_OUT_CNTL_VIEW				0x00000400
+> +#define A6XX_PC_HS_OUT_CNTL_PRIMITIVE_ID			0x00000800
+> +#define A6XX_PC_HS_OUT_CNTL_CLIP_MASK__MASK			0x00ff0000
+> +#define A6XX_PC_HS_OUT_CNTL_CLIP_MASK__SHIFT			16
+> +static inline uint32_t A6XX_PC_HS_OUT_CNTL_CLIP_MASK(uint32_t val)
+> +{
+> +	return ((val) << A6XX_PC_HS_OUT_CNTL_CLIP_MASK__SHIFT) & A6XX_PC_HS_OUT_CNTL_CLIP_MASK__MASK;
+> +}
+>   
+>   #define REG_A6XX_PC_DS_OUT_CNTL					0x00009b04
+>   #define A6XX_PC_DS_OUT_CNTL_STRIDE_IN_VPC__MASK			0x000000ff
+> @@ -4576,6 +4769,7 @@ static inline uint32_t A6XX_PC_PRIMITIVE_CNTL_5_GS_INVOCATIONS(uint32_t val)
+>   {
+>   	return ((val) << A6XX_PC_PRIMITIVE_CNTL_5_GS_INVOCATIONS__SHIFT) & A6XX_PC_PRIMITIVE_CNTL_5_GS_INVOCATIONS__MASK;
+>   }
+> +#define A6XX_PC_PRIMITIVE_CNTL_5_LINELENGTHEN			0x00008000
+>   #define A6XX_PC_PRIMITIVE_CNTL_5_GS_OUTPUT__MASK		0x00030000
+>   #define A6XX_PC_PRIMITIVE_CNTL_5_GS_OUTPUT__SHIFT		16
+>   static inline uint32_t A6XX_PC_PRIMITIVE_CNTL_5_GS_OUTPUT(enum a6xx_tess_output val)
+> @@ -4763,11 +4957,11 @@ static inline uint32_t A6XX_VFD_CONTROL_1_REGID4VIEWID(uint32_t val)
+>   }
+>   
+>   #define REG_A6XX_VFD_CONTROL_2					0x0000a002
+> -#define A6XX_VFD_CONTROL_2_REGID_HSPATCHID__MASK		0x000000ff
+> -#define A6XX_VFD_CONTROL_2_REGID_HSPATCHID__SHIFT		0
+> -static inline uint32_t A6XX_VFD_CONTROL_2_REGID_HSPATCHID(uint32_t val)
+> +#define A6XX_VFD_CONTROL_2_REGID_HSRELPATCHID__MASK		0x000000ff
+> +#define A6XX_VFD_CONTROL_2_REGID_HSRELPATCHID__SHIFT		0
+> +static inline uint32_t A6XX_VFD_CONTROL_2_REGID_HSRELPATCHID(uint32_t val)
+>   {
+> -	return ((val) << A6XX_VFD_CONTROL_2_REGID_HSPATCHID__SHIFT) & A6XX_VFD_CONTROL_2_REGID_HSPATCHID__MASK;
+> +	return ((val) << A6XX_VFD_CONTROL_2_REGID_HSRELPATCHID__SHIFT) & A6XX_VFD_CONTROL_2_REGID_HSRELPATCHID__MASK;
+>   }
+>   #define A6XX_VFD_CONTROL_2_REGID_INVOCATIONID__MASK		0x0000ff00
+>   #define A6XX_VFD_CONTROL_2_REGID_INVOCATIONID__SHIFT		8
+> @@ -4777,17 +4971,17 @@ static inline uint32_t A6XX_VFD_CONTROL_2_REGID_INVOCATIONID(uint32_t val)
+>   }
+>   
+>   #define REG_A6XX_VFD_CONTROL_3					0x0000a003
+> -#define A6XX_VFD_CONTROL_3_UNK0__MASK				0x000000ff
+> -#define A6XX_VFD_CONTROL_3_UNK0__SHIFT				0
+> -static inline uint32_t A6XX_VFD_CONTROL_3_UNK0(uint32_t val)
+> +#define A6XX_VFD_CONTROL_3_REGID_DSPRIMID__MASK			0x000000ff
+> +#define A6XX_VFD_CONTROL_3_REGID_DSPRIMID__SHIFT		0
+> +static inline uint32_t A6XX_VFD_CONTROL_3_REGID_DSPRIMID(uint32_t val)
+>   {
+> -	return ((val) << A6XX_VFD_CONTROL_3_UNK0__SHIFT) & A6XX_VFD_CONTROL_3_UNK0__MASK;
+> +	return ((val) << A6XX_VFD_CONTROL_3_REGID_DSPRIMID__SHIFT) & A6XX_VFD_CONTROL_3_REGID_DSPRIMID__MASK;
+>   }
+> -#define A6XX_VFD_CONTROL_3_REGID_DSPATCHID__MASK		0x0000ff00
+> -#define A6XX_VFD_CONTROL_3_REGID_DSPATCHID__SHIFT		8
+> -static inline uint32_t A6XX_VFD_CONTROL_3_REGID_DSPATCHID(uint32_t val)
+> +#define A6XX_VFD_CONTROL_3_REGID_DSRELPATCHID__MASK		0x0000ff00
+> +#define A6XX_VFD_CONTROL_3_REGID_DSRELPATCHID__SHIFT		8
+> +static inline uint32_t A6XX_VFD_CONTROL_3_REGID_DSRELPATCHID(uint32_t val)
+>   {
+> -	return ((val) << A6XX_VFD_CONTROL_3_REGID_DSPATCHID__SHIFT) & A6XX_VFD_CONTROL_3_REGID_DSPATCHID__MASK;
+> +	return ((val) << A6XX_VFD_CONTROL_3_REGID_DSRELPATCHID__SHIFT) & A6XX_VFD_CONTROL_3_REGID_DSRELPATCHID__MASK;
+>   }
+>   #define A6XX_VFD_CONTROL_3_REGID_TESSX__MASK			0x00ff0000
+>   #define A6XX_VFD_CONTROL_3_REGID_TESSX__SHIFT			16
+> @@ -4828,9 +5022,12 @@ static inline uint32_t A6XX_VFD_CONTROL_5_UNK8(uint32_t val)
+>   #define A6XX_VFD_CONTROL_6_PRIMID_PASSTHRU			0x00000001
+>   
+>   #define REG_A6XX_VFD_MODE_CNTL					0x0000a007
+> -#define A6XX_VFD_MODE_CNTL_BINNING_PASS				0x00000001
+> -#define A6XX_VFD_MODE_CNTL_UNK1					0x00000002
+> -#define A6XX_VFD_MODE_CNTL_UNK2					0x00000004
+> +#define A6XX_VFD_MODE_CNTL_RENDER_MODE__MASK			0x00000007
+> +#define A6XX_VFD_MODE_CNTL_RENDER_MODE__SHIFT			0
+> +static inline uint32_t A6XX_VFD_MODE_CNTL_RENDER_MODE(enum a6xx_render_mode val)
+> +{
+> +	return ((val) << A6XX_VFD_MODE_CNTL_RENDER_MODE__SHIFT) & A6XX_VFD_MODE_CNTL_RENDER_MODE__MASK;
+> +}
+>   
+>   #define REG_A6XX_VFD_MULTIVIEW_CNTL				0x0000a008
+>   #define A6XX_VFD_MULTIVIEW_CNTL_ENABLE				0x00000001
+> @@ -4913,7 +5110,7 @@ static inline uint32_t A6XX_VFD_DEST_CNTL_INSTR_REGID(uint32_t val)
+>   	return ((val) << A6XX_VFD_DEST_CNTL_INSTR_REGID__SHIFT) & A6XX_VFD_DEST_CNTL_INSTR_REGID__MASK;
+>   }
+>   
+> -#define REG_A6XX_SP_UNKNOWN_A0F8				0x0000a0f8
+> +#define REG_A6XX_VFD_POWER_CNTL					0x0000a0f8
+>   
+>   #define REG_A6XX_VFD_ADDR_MODE_CNTL				0x0000a601
+>   
+> @@ -5091,11 +5288,11 @@ static inline uint32_t A6XX_SP_VS_CONFIG_NIBO(uint32_t val)
+>   #define REG_A6XX_SP_VS_INSTRLEN					0x0000a824
+>   
+>   #define REG_A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET			0x0000a825
+> -#define A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET__MASK		0x0007ffff
+> -#define A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET__SHIFT		0
+> -static inline uint32_t A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET(uint32_t val)
+> +#define A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK		0x0007ffff
+> +#define A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT	0
+> +static inline uint32_t A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET_OFFSET(uint32_t val)
+>   {
+> -	return ((val >> 11) << A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET__SHIFT) & A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET__MASK;
+> +	return ((val >> 11) << A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT) & A6XX_SP_VS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK;
+>   }
+>   
+>   #define REG_A6XX_SP_HS_CTRL_REG0				0x0000a830
+> @@ -5201,11 +5398,11 @@ static inline uint32_t A6XX_SP_HS_CONFIG_NIBO(uint32_t val)
+>   #define REG_A6XX_SP_HS_INSTRLEN					0x0000a83c
+>   
+>   #define REG_A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET			0x0000a83d
+> -#define A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET__MASK		0x0007ffff
+> -#define A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET__SHIFT		0
+> -static inline uint32_t A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET(uint32_t val)
+> +#define A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK		0x0007ffff
+> +#define A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT	0
+> +static inline uint32_t A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET_OFFSET(uint32_t val)
+>   {
+> -	return ((val >> 11) << A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET__SHIFT) & A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET__MASK;
+> +	return ((val >> 11) << A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT) & A6XX_SP_HS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK;
+>   }
+>   
+>   #define REG_A6XX_SP_DS_CTRL_REG0				0x0000a840
+> @@ -5379,11 +5576,11 @@ static inline uint32_t A6XX_SP_DS_CONFIG_NIBO(uint32_t val)
+>   #define REG_A6XX_SP_DS_INSTRLEN					0x0000a864
+>   
+>   #define REG_A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET			0x0000a865
+> -#define A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET__MASK		0x0007ffff
+> -#define A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET__SHIFT		0
+> -static inline uint32_t A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET(uint32_t val)
+> +#define A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK		0x0007ffff
+> +#define A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT	0
+> +static inline uint32_t A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET_OFFSET(uint32_t val)
+>   {
+> -	return ((val >> 11) << A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET__SHIFT) & A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET__MASK;
+> +	return ((val >> 11) << A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT) & A6XX_SP_DS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK;
+>   }
+>   
+>   #define REG_A6XX_SP_GS_CTRL_REG0				0x0000a870
+> @@ -5559,11 +5756,11 @@ static inline uint32_t A6XX_SP_GS_CONFIG_NIBO(uint32_t val)
+>   #define REG_A6XX_SP_GS_INSTRLEN					0x0000a895
+>   
+>   #define REG_A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET			0x0000a896
+> -#define A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET__MASK		0x0007ffff
+> -#define A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET__SHIFT		0
+> -static inline uint32_t A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET(uint32_t val)
+> +#define A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK		0x0007ffff
+> +#define A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT	0
+> +static inline uint32_t A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET_OFFSET(uint32_t val)
+>   {
+> -	return ((val >> 11) << A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET__SHIFT) & A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET__MASK;
+> +	return ((val >> 11) << A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT) & A6XX_SP_GS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK;
+>   }
+>   
+>   #define REG_A6XX_SP_VS_TEX_SAMP					0x0000a8a0
+> @@ -5926,11 +6123,11 @@ static inline uint32_t A6XX_SP_FS_BINDLESS_PREFETCH_CMD_TEX_ID(uint32_t val)
+>   #define REG_A6XX_SP_UNKNOWN_A9A8				0x0000a9a8
+>   
+>   #define REG_A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET			0x0000a9a9
+> -#define A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET__MASK		0x0007ffff
+> -#define A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET__SHIFT		0
+> -static inline uint32_t A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET(uint32_t val)
+> +#define A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK		0x0007ffff
+> +#define A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT	0
+> +static inline uint32_t A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET_OFFSET(uint32_t val)
+>   {
+> -	return ((val >> 11) << A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET__SHIFT) & A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET__MASK;
+> +	return ((val >> 11) << A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT) & A6XX_SP_FS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK;
+>   }
+>   
+>   #define REG_A6XX_SP_CS_CTRL_REG0				0x0000a9b0
+> @@ -6053,12 +6250,54 @@ static inline uint32_t A6XX_SP_CS_CONFIG_NIBO(uint32_t val)
+>   #define REG_A6XX_SP_CS_INSTRLEN					0x0000a9bc
+>   
+>   #define REG_A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET			0x0000a9bd
+> -#define A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET__MASK		0x0007ffff
+> -#define A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET__SHIFT		0
+> -static inline uint32_t A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET(uint32_t val)
+> +#define A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK		0x0007ffff
+> +#define A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT	0
+> +static inline uint32_t A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET_OFFSET(uint32_t val)
+> +{
+> +	return ((val >> 11) << A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET_OFFSET__SHIFT) & A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET_OFFSET__MASK;
+> +}
+> +
+> +#define REG_A6XX_SP_CS_CNTL_0					0x0000a9c2
+> +#define A6XX_SP_CS_CNTL_0_WGIDCONSTID__MASK			0x000000ff
+> +#define A6XX_SP_CS_CNTL_0_WGIDCONSTID__SHIFT			0
+> +static inline uint32_t A6XX_SP_CS_CNTL_0_WGIDCONSTID(uint32_t val)
+> +{
+> +	return ((val) << A6XX_SP_CS_CNTL_0_WGIDCONSTID__SHIFT) & A6XX_SP_CS_CNTL_0_WGIDCONSTID__MASK;
+> +}
+> +#define A6XX_SP_CS_CNTL_0_WGSIZECONSTID__MASK			0x0000ff00
+> +#define A6XX_SP_CS_CNTL_0_WGSIZECONSTID__SHIFT			8
+> +static inline uint32_t A6XX_SP_CS_CNTL_0_WGSIZECONSTID(uint32_t val)
+> +{
+> +	return ((val) << A6XX_SP_CS_CNTL_0_WGSIZECONSTID__SHIFT) & A6XX_SP_CS_CNTL_0_WGSIZECONSTID__MASK;
+> +}
+> +#define A6XX_SP_CS_CNTL_0_WGOFFSETCONSTID__MASK			0x00ff0000
+> +#define A6XX_SP_CS_CNTL_0_WGOFFSETCONSTID__SHIFT		16
+> +static inline uint32_t A6XX_SP_CS_CNTL_0_WGOFFSETCONSTID(uint32_t val)
+>   {
+> -	return ((val >> 11) << A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET__SHIFT) & A6XX_SP_CS_PVT_MEM_HW_STACK_OFFSET__MASK;
+> +	return ((val) << A6XX_SP_CS_CNTL_0_WGOFFSETCONSTID__SHIFT) & A6XX_SP_CS_CNTL_0_WGOFFSETCONSTID__MASK;
+>   }
+> +#define A6XX_SP_CS_CNTL_0_LOCALIDREGID__MASK			0xff000000
+> +#define A6XX_SP_CS_CNTL_0_LOCALIDREGID__SHIFT			24
+> +static inline uint32_t A6XX_SP_CS_CNTL_0_LOCALIDREGID(uint32_t val)
+> +{
+> +	return ((val) << A6XX_SP_CS_CNTL_0_LOCALIDREGID__SHIFT) & A6XX_SP_CS_CNTL_0_LOCALIDREGID__MASK;
+> +}
+> +
+> +#define REG_A6XX_SP_CS_CNTL_1					0x0000a9c3
+> +#define A6XX_SP_CS_CNTL_1_LINEARLOCALIDREGID__MASK		0x000000ff
+> +#define A6XX_SP_CS_CNTL_1_LINEARLOCALIDREGID__SHIFT		0
+> +static inline uint32_t A6XX_SP_CS_CNTL_1_LINEARLOCALIDREGID(uint32_t val)
+> +{
+> +	return ((val) << A6XX_SP_CS_CNTL_1_LINEARLOCALIDREGID__SHIFT) & A6XX_SP_CS_CNTL_1_LINEARLOCALIDREGID__MASK;
+> +}
+> +#define A6XX_SP_CS_CNTL_1_SINGLE_SP_CORE			0x00000100
+> +#define A6XX_SP_CS_CNTL_1_THREADSIZE__MASK			0x00000200
+> +#define A6XX_SP_CS_CNTL_1_THREADSIZE__SHIFT			9
+> +static inline uint32_t A6XX_SP_CS_CNTL_1_THREADSIZE(enum a6xx_threadsize val)
+> +{
+> +	return ((val) << A6XX_SP_CS_CNTL_1_THREADSIZE__SHIFT) & A6XX_SP_CS_CNTL_1_THREADSIZE__MASK;
+> +}
+> +#define A6XX_SP_CS_CNTL_1_THREADSIZE_SCALAR			0x00000400
+>   
+>   #define REG_A6XX_SP_FS_TEX_SAMP					0x0000a9e0
+>   #define A6XX_SP_FS_TEX_SAMP__MASK				0xffffffff
+> @@ -6108,8 +6347,12 @@ static inline uint32_t A6XX_SP_CS_IBO(uint32_t val)
+>   
+>   #define REG_A6XX_SP_MODE_CONTROL				0x0000ab00
+>   #define A6XX_SP_MODE_CONTROL_CONSTANT_DEMOTION_ENABLE		0x00000001
+> -#define A6XX_SP_MODE_CONTROL_UNK1				0x00000002
+> -#define A6XX_SP_MODE_CONTROL_UNK2				0x00000004
+> +#define A6XX_SP_MODE_CONTROL_ISAMMODE__MASK			0x00000006
+> +#define A6XX_SP_MODE_CONTROL_ISAMMODE__SHIFT			1
+> +static inline uint32_t A6XX_SP_MODE_CONTROL_ISAMMODE(enum a6xx_isam_mode val)
+> +{
+> +	return ((val) << A6XX_SP_MODE_CONTROL_ISAMMODE__SHIFT) & A6XX_SP_MODE_CONTROL_ISAMMODE__MASK;
+> +}
+>   #define A6XX_SP_MODE_CONTROL_SHARED_CONSTS_ENABLE		0x00000008
+>   
+>   #define REG_A6XX_SP_FS_CONFIG					0x0000ab04
+> @@ -6177,7 +6420,7 @@ static inline uint32_t A6XX_SP_2D_DST_FORMAT_MASK(uint32_t val)
+>   
+>   #define REG_A6XX_SP_NC_MODE_CNTL				0x0000ae02
+>   
+> -#define REG_A6XX_SP_UNKNOWN_AE03				0x0000ae03
+> +#define REG_A6XX_SP_CHICKEN_BITS				0x0000ae03
+>   
+>   #define REG_A6XX_SP_FLOAT_CNTL					0x0000ae04
+>   #define A6XX_SP_FLOAT_CNTL_F16_NO_INF				0x00000008
+> @@ -6192,6 +6435,8 @@ static inline uint32_t A6XX_SP_2D_DST_FORMAT_MASK(uint32_t val)
+>   
+>   static inline uint32_t REG_A6XX_SP_PERFCTR_SP_SEL(uint32_t i0) { return 0x0000ae10 + 0x1*i0; }
+>   
+> +#define REG_A6XX_SP_CONTEXT_SWITCH_GFX_PREEMPTION_SAFE_MODE	0x0000be22
+> +
+>   #define REG_A6XX_SP_PS_TP_BORDER_COLOR_BASE_ADDR		0x0000b180
+>   #define A6XX_SP_PS_TP_BORDER_COLOR_BASE_ADDR__MASK		0xffffffff
+>   #define A6XX_SP_PS_TP_BORDER_COLOR_BASE_ADDR__SHIFT		0
+> @@ -6357,7 +6602,19 @@ static inline uint32_t A6XX_SP_TP_WINDOW_OFFSET_Y(uint32_t val)
+>   	return ((val) << A6XX_SP_TP_WINDOW_OFFSET_Y__SHIFT) & A6XX_SP_TP_WINDOW_OFFSET_Y__MASK;
+>   }
+>   
+> -#define REG_A6XX_SP_TP_UNKNOWN_B309				0x0000b309
+> +#define REG_A6XX_SP_TP_MODE_CNTL				0x0000b309
+> +#define A6XX_SP_TP_MODE_CNTL_ISAMMODE__MASK			0x00000003
+> +#define A6XX_SP_TP_MODE_CNTL_ISAMMODE__SHIFT			0
+> +static inline uint32_t A6XX_SP_TP_MODE_CNTL_ISAMMODE(enum a6xx_isam_mode val)
+> +{
+> +	return ((val) << A6XX_SP_TP_MODE_CNTL_ISAMMODE__SHIFT) & A6XX_SP_TP_MODE_CNTL_ISAMMODE__MASK;
+> +}
+> +#define A6XX_SP_TP_MODE_CNTL_UNK3__MASK				0x000000fc
+> +#define A6XX_SP_TP_MODE_CNTL_UNK3__SHIFT			2
+> +static inline uint32_t A6XX_SP_TP_MODE_CNTL_UNK3(uint32_t val)
+> +{
+> +	return ((val) << A6XX_SP_TP_MODE_CNTL_UNK3__SHIFT) & A6XX_SP_TP_MODE_CNTL_UNK3__MASK;
+> +}
+>   
+>   #define REG_A6XX_SP_PS_2D_SRC_INFO				0x0000b4c0
+>   #define A6XX_SP_PS_2D_SRC_INFO_COLOR_FORMAT__MASK		0x000000ff
+> @@ -6499,7 +6756,7 @@ static inline uint32_t A6XX_SP_WINDOW_OFFSET_Y(uint32_t val)
+>   	return ((val) << A6XX_SP_WINDOW_OFFSET_Y__SHIFT) & A6XX_SP_WINDOW_OFFSET_Y__MASK;
+>   }
+>   
+> -#define REG_A6XX_TPL1_UNKNOWN_B600				0x0000b600
+> +#define REG_A6XX_TPL1_DBG_ECO_CNTL				0x0000b600
+>   
+>   #define REG_A6XX_TPL1_ADDR_MODE_CNTL				0x0000b601
+>   
+> @@ -6687,17 +6944,17 @@ static inline uint32_t A6XX_HLSQ_CONTROL_4_REG_ZWCOORDREGID(uint32_t val)
+>   }
+>   
+>   #define REG_A6XX_HLSQ_CONTROL_5_REG				0x0000b986
+> -#define A6XX_HLSQ_CONTROL_5_REG_UNK0__MASK			0x000000ff
+> -#define A6XX_HLSQ_CONTROL_5_REG_UNK0__SHIFT			0
+> -static inline uint32_t A6XX_HLSQ_CONTROL_5_REG_UNK0(uint32_t val)
+> +#define A6XX_HLSQ_CONTROL_5_REG_LINELENGTHREGID__MASK		0x000000ff
+> +#define A6XX_HLSQ_CONTROL_5_REG_LINELENGTHREGID__SHIFT		0
+> +static inline uint32_t A6XX_HLSQ_CONTROL_5_REG_LINELENGTHREGID(uint32_t val)
+>   {
+> -	return ((val) << A6XX_HLSQ_CONTROL_5_REG_UNK0__SHIFT) & A6XX_HLSQ_CONTROL_5_REG_UNK0__MASK;
+> +	return ((val) << A6XX_HLSQ_CONTROL_5_REG_LINELENGTHREGID__SHIFT) & A6XX_HLSQ_CONTROL_5_REG_LINELENGTHREGID__MASK;
+>   }
+> -#define A6XX_HLSQ_CONTROL_5_REG_UNK8__MASK			0x0000ff00
+> -#define A6XX_HLSQ_CONTROL_5_REG_UNK8__SHIFT			8
+> -static inline uint32_t A6XX_HLSQ_CONTROL_5_REG_UNK8(uint32_t val)
+> +#define A6XX_HLSQ_CONTROL_5_REG_FOVEATIONQUALITYREGID__MASK	0x0000ff00
+> +#define A6XX_HLSQ_CONTROL_5_REG_FOVEATIONQUALITYREGID__SHIFT	8
+> +static inline uint32_t A6XX_HLSQ_CONTROL_5_REG_FOVEATIONQUALITYREGID(uint32_t val)
+>   {
+> -	return ((val) << A6XX_HLSQ_CONTROL_5_REG_UNK8__SHIFT) & A6XX_HLSQ_CONTROL_5_REG_UNK8__MASK;
+> +	return ((val) << A6XX_HLSQ_CONTROL_5_REG_FOVEATIONQUALITYREGID__SHIFT) & A6XX_HLSQ_CONTROL_5_REG_FOVEATIONQUALITYREGID__MASK;
+>   }
+>   
+>   #define REG_A6XX_HLSQ_CS_CNTL					0x0000b987
+> @@ -6847,6 +7104,16 @@ static inline uint32_t REG_A6XX_HLSQ_CS_BINDLESS_BASE(uint32_t i0) { return 0x00
+>   
+>   static inline uint32_t REG_A6XX_HLSQ_CS_BINDLESS_BASE_ADDR(uint32_t i0) { return 0x0000b9c0 + 0x2*i0; }
+>   
+> +#define REG_A6XX_HLSQ_CS_UNKNOWN_B9D0				0x0000b9d0
+> +#define A6XX_HLSQ_CS_UNKNOWN_B9D0_SHARED_SIZE__MASK		0x0000001f
+> +#define A6XX_HLSQ_CS_UNKNOWN_B9D0_SHARED_SIZE__SHIFT		0
+> +static inline uint32_t A6XX_HLSQ_CS_UNKNOWN_B9D0_SHARED_SIZE(uint32_t val)
+> +{
+> +	return ((val) << A6XX_HLSQ_CS_UNKNOWN_B9D0_SHARED_SIZE__SHIFT) & A6XX_HLSQ_CS_UNKNOWN_B9D0_SHARED_SIZE__MASK;
+> +}
+> +#define A6XX_HLSQ_CS_UNKNOWN_B9D0_UNK5				0x00000020
+> +#define A6XX_HLSQ_CS_UNKNOWN_B9D0_UNK6				0x00000040
+> +
+>   #define REG_A6XX_HLSQ_DRAW_CMD					0x0000bb00
+>   #define A6XX_HLSQ_DRAW_CMD_STATE_ID__MASK			0x000000ff
+>   #define A6XX_HLSQ_DRAW_CMD_STATE_ID__SHIFT			0
+> @@ -6943,6 +7210,8 @@ static inline uint32_t A6XX_HLSQ_2D_EVENT_CMD_EVENT(enum vgt_event_type val)
+>   
+>   static inline uint32_t REG_A6XX_HLSQ_PERFCTR_HLSQ_SEL(uint32_t i0) { return 0x0000be10 + 0x1*i0; }
+>   
+> +#define REG_A6XX_HLSQ_CONTEXT_SWITCH_GFX_PREEMPTION_SAFE_MODE	0x0000be22
+> +
+>   #define REG_A6XX_CP_EVENT_START					0x0000d600
+>   #define A6XX_CP_EVENT_START_STATE_ID__MASK			0x000000ff
+>   #define A6XX_CP_EVENT_START_STATE_ID__SHIFT			0
+> @@ -7021,7 +7290,7 @@ static inline uint32_t A6XX_TEX_SAMP_0_LOD_BIAS(float val)
+>   }
+>   
+>   #define REG_A6XX_TEX_SAMP_1					0x00000001
+> -#define A6XX_TEX_SAMP_1_UNK0					0x00000001
+> +#define A6XX_TEX_SAMP_1_CLAMPENABLE				0x00000001
+>   #define A6XX_TEX_SAMP_1_COMPARE_FUNC__MASK			0x0000000e
+>   #define A6XX_TEX_SAMP_1_COMPARE_FUNC__SHIFT			1
+>   static inline uint32_t A6XX_TEX_SAMP_1_COMPARE_FUNC(enum adreno_compare_func val)
+> @@ -7135,7 +7404,7 @@ static inline uint32_t A6XX_TEX_CONST_1_HEIGHT(uint32_t val)
+>   }
+>   
+>   #define REG_A6XX_TEX_CONST_2					0x00000002
+> -#define A6XX_TEX_CONST_2_UNK4					0x00000010
+> +#define A6XX_TEX_CONST_2_BUFFER					0x00000010
+>   #define A6XX_TEX_CONST_2_PITCHALIGN__MASK			0x0000000f
+>   #define A6XX_TEX_CONST_2_PITCHALIGN__SHIFT			0
+>   static inline uint32_t A6XX_TEX_CONST_2_PITCHALIGN(uint32_t val)
+> @@ -7148,13 +7417,12 @@ static inline uint32_t A6XX_TEX_CONST_2_PITCH(uint32_t val)
+>   {
+>   	return ((val) << A6XX_TEX_CONST_2_PITCH__SHIFT) & A6XX_TEX_CONST_2_PITCH__MASK;
+>   }
+> -#define A6XX_TEX_CONST_2_TYPE__MASK				0x60000000
+> +#define A6XX_TEX_CONST_2_TYPE__MASK				0xe0000000
+>   #define A6XX_TEX_CONST_2_TYPE__SHIFT				29
+>   static inline uint32_t A6XX_TEX_CONST_2_TYPE(enum a6xx_tex_type val)
+>   {
+>   	return ((val) << A6XX_TEX_CONST_2_TYPE__SHIFT) & A6XX_TEX_CONST_2_TYPE__MASK;
+>   }
+> -#define A6XX_TEX_CONST_2_UNK31					0x80000000
+>   
+>   #define REG_A6XX_TEX_CONST_3					0x00000003
+>   #define A6XX_TEX_CONST_3_ARRAY_PITCH__MASK			0x00003fff
+> @@ -7256,104 +7524,6 @@ static inline uint32_t A6XX_TEX_CONST_10_FLAG_BUFFER_LOGH(uint32_t val)
+>   
+>   #define REG_A6XX_TEX_CONST_15					0x0000000f
+>   
+> -#define REG_A6XX_IBO_0						0x00000000
+> -#define A6XX_IBO_0_TILE_MODE__MASK				0x00000003
+> -#define A6XX_IBO_0_TILE_MODE__SHIFT				0
+> -static inline uint32_t A6XX_IBO_0_TILE_MODE(enum a6xx_tile_mode val)
+> -{
+> -	return ((val) << A6XX_IBO_0_TILE_MODE__SHIFT) & A6XX_IBO_0_TILE_MODE__MASK;
+> -}
+> -#define A6XX_IBO_0_FMT__MASK					0x3fc00000
+> -#define A6XX_IBO_0_FMT__SHIFT					22
+> -static inline uint32_t A6XX_IBO_0_FMT(enum a6xx_format val)
+> -{
+> -	return ((val) << A6XX_IBO_0_FMT__SHIFT) & A6XX_IBO_0_FMT__MASK;
+> -}
+> -
+> -#define REG_A6XX_IBO_1						0x00000001
+> -#define A6XX_IBO_1_WIDTH__MASK					0x00007fff
+> -#define A6XX_IBO_1_WIDTH__SHIFT					0
+> -static inline uint32_t A6XX_IBO_1_WIDTH(uint32_t val)
+> -{
+> -	return ((val) << A6XX_IBO_1_WIDTH__SHIFT) & A6XX_IBO_1_WIDTH__MASK;
+> -}
+> -#define A6XX_IBO_1_HEIGHT__MASK					0x3fff8000
+> -#define A6XX_IBO_1_HEIGHT__SHIFT				15
+> -static inline uint32_t A6XX_IBO_1_HEIGHT(uint32_t val)
+> -{
+> -	return ((val) << A6XX_IBO_1_HEIGHT__SHIFT) & A6XX_IBO_1_HEIGHT__MASK;
+> -}
+> -
+> -#define REG_A6XX_IBO_2						0x00000002
+> -#define A6XX_IBO_2_UNK4						0x00000010
+> -#define A6XX_IBO_2_PITCH__MASK					0x1fffff80
+> -#define A6XX_IBO_2_PITCH__SHIFT					7
+> -static inline uint32_t A6XX_IBO_2_PITCH(uint32_t val)
+> -{
+> -	return ((val) << A6XX_IBO_2_PITCH__SHIFT) & A6XX_IBO_2_PITCH__MASK;
+> -}
+> -#define A6XX_IBO_2_TYPE__MASK					0x60000000
+> -#define A6XX_IBO_2_TYPE__SHIFT					29
+> -static inline uint32_t A6XX_IBO_2_TYPE(enum a6xx_tex_type val)
+> -{
+> -	return ((val) << A6XX_IBO_2_TYPE__SHIFT) & A6XX_IBO_2_TYPE__MASK;
+> -}
+> -#define A6XX_IBO_2_UNK31					0x80000000
+> -
+> -#define REG_A6XX_IBO_3						0x00000003
+> -#define A6XX_IBO_3_ARRAY_PITCH__MASK				0x00003fff
+> -#define A6XX_IBO_3_ARRAY_PITCH__SHIFT				0
+> -static inline uint32_t A6XX_IBO_3_ARRAY_PITCH(uint32_t val)
+> -{
+> -	return ((val >> 12) << A6XX_IBO_3_ARRAY_PITCH__SHIFT) & A6XX_IBO_3_ARRAY_PITCH__MASK;
+> -}
+> -#define A6XX_IBO_3_UNK27					0x08000000
+> -#define A6XX_IBO_3_FLAG						0x10000000
+> -
+> -#define REG_A6XX_IBO_4						0x00000004
+> -#define A6XX_IBO_4_BASE_LO__MASK				0xffffffff
+> -#define A6XX_IBO_4_BASE_LO__SHIFT				0
+> -static inline uint32_t A6XX_IBO_4_BASE_LO(uint32_t val)
+> -{
+> -	return ((val) << A6XX_IBO_4_BASE_LO__SHIFT) & A6XX_IBO_4_BASE_LO__MASK;
+> -}
+> -
+> -#define REG_A6XX_IBO_5						0x00000005
+> -#define A6XX_IBO_5_BASE_HI__MASK				0x0001ffff
+> -#define A6XX_IBO_5_BASE_HI__SHIFT				0
+> -static inline uint32_t A6XX_IBO_5_BASE_HI(uint32_t val)
+> -{
+> -	return ((val) << A6XX_IBO_5_BASE_HI__SHIFT) & A6XX_IBO_5_BASE_HI__MASK;
+> -}
+> -#define A6XX_IBO_5_DEPTH__MASK					0x3ffe0000
+> -#define A6XX_IBO_5_DEPTH__SHIFT					17
+> -static inline uint32_t A6XX_IBO_5_DEPTH(uint32_t val)
+> -{
+> -	return ((val) << A6XX_IBO_5_DEPTH__SHIFT) & A6XX_IBO_5_DEPTH__MASK;
+> -}
+> -
+> -#define REG_A6XX_IBO_6						0x00000006
+> -
+> -#define REG_A6XX_IBO_7						0x00000007
+> -
+> -#define REG_A6XX_IBO_8						0x00000008
+> -
+> -#define REG_A6XX_IBO_9						0x00000009
+> -#define A6XX_IBO_9_FLAG_BUFFER_ARRAY_PITCH__MASK		0x0001ffff
+> -#define A6XX_IBO_9_FLAG_BUFFER_ARRAY_PITCH__SHIFT		0
+> -static inline uint32_t A6XX_IBO_9_FLAG_BUFFER_ARRAY_PITCH(uint32_t val)
+> -{
+> -	return ((val >> 4) << A6XX_IBO_9_FLAG_BUFFER_ARRAY_PITCH__SHIFT) & A6XX_IBO_9_FLAG_BUFFER_ARRAY_PITCH__MASK;
+> -}
+> -
+> -#define REG_A6XX_IBO_10						0x0000000a
+> -#define A6XX_IBO_10_FLAG_BUFFER_PITCH__MASK			0x0000007f
+> -#define A6XX_IBO_10_FLAG_BUFFER_PITCH__SHIFT			0
+> -static inline uint32_t A6XX_IBO_10_FLAG_BUFFER_PITCH(uint32_t val)
+> -{
+> -	return ((val >> 6) << A6XX_IBO_10_FLAG_BUFFER_PITCH__SHIFT) & A6XX_IBO_10_FLAG_BUFFER_PITCH__MASK;
+> -}
+> -
+>   #define REG_A6XX_UBO_0						0x00000000
+>   #define A6XX_UBO_0_BASE_LO__MASK				0xffffffff
+>   #define A6XX_UBO_0_BASE_LO__SHIFT				0
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.xml.h b/drivers/gpu/drm/msm/adreno/a6xx_gmu.xml.h
+> index 811589215834..4a3230978c0e 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.xml.h
+> @@ -8,19 +8,19 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_common.xml.h b/drivers/gpu/drm/msm/adreno/adreno_common.xml.h
+> index c9389d9fb599..abb037ccc02b 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_common.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_common.xml.h
+> @@ -8,19 +8,19 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> @@ -205,6 +205,11 @@ enum a5xx_address_mode {
+>   	ADDR_64B = 1,
+>   };
+>   
+> +enum a5xx_line_mode {
+> +	BRESENHAM = 0,
+> +	RECTANGULAR = 1,
+> +};
+> +
+>   #define REG_AXXX_CP_RB_BASE					0x000001c0
+>   
+>   #define REG_AXXX_CP_RB_CNTL					0x000001c1
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_pm4.xml.h b/drivers/gpu/drm/msm/adreno/adreno_pm4.xml.h
+> index e832ae4b937a..7aecf920f9b9 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_pm4.xml.h
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_pm4.xml.h
+> @@ -8,21 +8,21 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14386 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  67699 bytes, from 2021-05-31 20:21:57)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84226 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 112551 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 150713 bytes, from 2021-06-10 22:34:02)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 180049 bytes, from 2021-06-02 21:44:19)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-05-27 20:22:36)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-05-27 20:18:13)
+> -
+> -Copyright (C) 2013-2021 by the following authors:
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno.xml                     (    594 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml        (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a2xx.xml                (  90810 bytes, from 2021-06-21 15:24:24)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_common.xml       (  14609 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pm4.xml          (  69086 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a3xx.xml                (  84231 bytes, from 2021-11-24 23:05:10)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a4xx.xml                ( 113358 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a5xx.xml                ( 149512 bytes, from 2022-01-31 23:06:21)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx.xml                ( 184954 bytes, from 2022-03-03 16:41:33)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/a6xx_gmu.xml            (  11331 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/ocmem.xml               (   1773 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_control_regs.xml (   6038 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/adreno/adreno_pipe_regs.xml    (   2924 bytes, from 2021-07-22 15:21:56)
+> +
+> +Copyright (C) 2013-2022 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+>   - Ilia Mirkin <imirkin@alum.mit.edu> (imirkin)
+>   
+> @@ -299,6 +299,8 @@ enum adreno_pm4_type3_packets {
+>   	CP_SET_BIN_DATA5_OFFSET = 46,
+>   	CP_SET_CTXSWITCH_IB = 85,
+>   	CP_REG_WRITE = 109,
+> +	CP_START_BIN = 80,
+> +	CP_END_BIN = 81,
+>   };
+>   
+>   enum adreno_state_block {
+> @@ -438,7 +440,7 @@ enum cp_blit_cmd {
+>   	BLIT_OP_SCALE = 3,
+>   };
+>   
+> -enum a6xx_render_mode {
+> +enum a6xx_marker {
+>   	RM6_BYPASS = 1,
+>   	RM6_BINNING = 2,
+>   	RM6_GMEM = 4,
+> @@ -2150,13 +2152,13 @@ static inline uint32_t A5XX_CP_EXEC_CS_INDIRECT_3_LOCALSIZEZ(uint32_t val)
+>   #define REG_A6XX_CP_SET_MARKER_0				0x00000000
+>   #define A6XX_CP_SET_MARKER_0_MODE__MASK				0x000001ff
+>   #define A6XX_CP_SET_MARKER_0_MODE__SHIFT			0
+> -static inline uint32_t A6XX_CP_SET_MARKER_0_MODE(enum a6xx_render_mode val)
+> +static inline uint32_t A6XX_CP_SET_MARKER_0_MODE(enum a6xx_marker val)
+>   {
+>   	return ((val) << A6XX_CP_SET_MARKER_0_MODE__SHIFT) & A6XX_CP_SET_MARKER_0_MODE__MASK;
+>   }
+>   #define A6XX_CP_SET_MARKER_0_MARKER__MASK			0x0000000f
+>   #define A6XX_CP_SET_MARKER_0_MARKER__SHIFT			0
+> -static inline uint32_t A6XX_CP_SET_MARKER_0_MARKER(enum a6xx_render_mode val)
+> +static inline uint32_t A6XX_CP_SET_MARKER_0_MARKER(enum a6xx_marker val)
+>   {
+>   	return ((val) << A6XX_CP_SET_MARKER_0_MARKER__SHIFT) & A6XX_CP_SET_MARKER_0_MARKER__MASK;
+>   }
+> @@ -2351,5 +2353,13 @@ static inline uint32_t CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK(uint32_t val)
+>   	return ((val) << CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK__SHIFT) & CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK__MASK;
+>   }
+>   
+> +#define REG_CP_START_BIN_BIN_COUNT				0x00000000
+> +
+> +#define REG_CP_START_BIN_PREFIX_ADDR				0x00000001
+> +
+> +#define REG_CP_START_BIN_PREFIX_DWORDS				0x00000003
+> +
+> +#define REG_CP_START_BIN_BODY_DWORDS				0x00000004
+> +
+>   
+>   #endif /* ADRENO_PM4_XML */
+> diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4.xml.h b/drivers/gpu/drm/msm/disp/mdp4/mdp4.xml.h
+> index c82d1bd09359..a2b6422948ec 100644
+> --- a/drivers/gpu/drm/msm/disp/mdp4/mdp4.xml.h
+> +++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5.xml.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5.xml.h
+> index 0e21cf3f9e2e..86fc44b518cb 100644
+> --- a/drivers/gpu/drm/msm/disp/mdp5/mdp5.xml.h
+> +++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/disp/mdp_common.xml.h b/drivers/gpu/drm/msm/disp/mdp_common.xml.h
+> index bb0066a63732..be759106b621 100644
+> --- a/drivers/gpu/drm/msm/disp/mdp_common.xml.h
+> +++ b/drivers/gpu/drm/msm/disp/mdp_common.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi.xml.h b/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> index 49b551ad1bff..4dee6f0bdda6 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_10nm.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_10nm.xml.h
+> index 8872d77027dd..8b1be69ccf89 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_10nm.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_phy_10nm.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_14nm.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_14nm.xml.h
+> index 0d9a5ccfb808..515f1fa605bf 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_14nm.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_phy_14nm.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_20nm.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_20nm.xml.h
+> index 15c7a5852c7a..81e4622eb358 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_20nm.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_phy_20nm.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_28nm.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_28nm.xml.h
+> index 5148f4d5b182..8c7db35c12c8 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_28nm.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_phy_28nm.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_28nm_8960.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_28nm_8960.xml.h
+> index 446fe9ffc9c4..44eeca31a811 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_28nm_8960.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_phy_28nm_8960.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h
+> deleted file mode 100644
+> index 404c890a29f1..000000000000
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_5nm.xml.h
+> +++ /dev/null
+> @@ -1,480 +0,0 @@
+> -#ifndef DSI_PHY_5NM_XML
+> -#define DSI_PHY_5NM_XML
+> -
+> -/* Autogenerated file, DO NOT EDIT manually!
+> -
+> -This file was generated by the rules-ng-ng headergen tool in this git repository:
+> -http://github.com/freedreno/envytools/
+> -git clone https://github.com/freedreno/envytools.git
+> -
+> -The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> -
+> -Copyright (C) 2013-2021 by the following authors:
+> -- Rob Clark <robdclark@gmail.com> (robclark)
+> -- Ilia Mirkin <imirkin@alum.mit.edu> (imirkin)
+> -
+> -Permission is hereby granted, free of charge, to any person obtaining
+> -a copy of this software and associated documentation files (the
+> -"Software"), to deal in the Software without restriction, including
+> -without limitation the rights to use, copy, modify, merge, publish,
+> -distribute, sublicense, and/or sell copies of the Software, and to
+> -permit persons to whom the Software is furnished to do so, subject to
+> -the following conditions:
+> -
+> -The above copyright notice and this permission notice (including the
+> -next paragraph) shall be included in all copies or substantial
+> -portions of the Software.
+> -
+> -THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+> -EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+> -MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+> -IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
+> -LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+> -OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+> -WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> -*/
+> -
+> -
+> -#define REG_DSI_5nm_PHY_CMN_REVISION_ID0			0x00000000
+> -
+> -#define REG_DSI_5nm_PHY_CMN_REVISION_ID1			0x00000004
+> -
+> -#define REG_DSI_5nm_PHY_CMN_REVISION_ID2			0x00000008
+> -
+> -#define REG_DSI_5nm_PHY_CMN_REVISION_ID3			0x0000000c
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CLK_CFG0				0x00000010
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CLK_CFG1				0x00000014
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_CTRL				0x00000018
+> -
+> -#define REG_DSI_5nm_PHY_CMN_RBUF_CTRL				0x0000001c
+> -
+> -#define REG_DSI_5nm_PHY_CMN_VREG_CTRL_0				0x00000020
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CTRL_0				0x00000024
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CTRL_1				0x00000028
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CTRL_2				0x0000002c
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CTRL_3				0x00000030
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CFG0				0x00000034
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CFG1				0x00000038
+> -
+> -#define REG_DSI_5nm_PHY_CMN_PLL_CNTRL				0x0000003c
+> -
+> -#define REG_DSI_5nm_PHY_CMN_DPHY_SOT				0x00000040
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CTRL0				0x000000a0
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CTRL1				0x000000a4
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CTRL2				0x000000a8
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CTRL3				0x000000ac
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_CTRL4				0x000000b0
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_0			0x000000b4
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_1			0x000000b8
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_2			0x000000bc
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_3			0x000000c0
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_4			0x000000c4
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_5			0x000000c8
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_6			0x000000cc
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_7			0x000000d0
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_8			0x000000d4
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_9			0x000000d8
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_10			0x000000dc
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_11			0x000000e0
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_12			0x000000e4
+> -
+> -#define REG_DSI_5nm_PHY_CMN_TIMING_CTRL_13			0x000000e8
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_HSTX_STR_CTRL_0		0x000000ec
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_HSTX_STR_CTRL_1		0x000000f0
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_RESCODE_OFFSET_TOP_CTRL	0x000000f4
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_RESCODE_OFFSET_BOT_CTRL	0x000000f8
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_RESCODE_OFFSET_MID_CTRL	0x000000fc
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_LPTX_STR_CTRL			0x00000100
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_PEMPH_CTRL_0			0x00000104
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_PEMPH_CTRL_1			0x00000108
+> -
+> -#define REG_DSI_5nm_PHY_CMN_GLBL_STR_SWI_CAL_SEL_CTRL		0x0000010c
+> -
+> -#define REG_DSI_5nm_PHY_CMN_VREG_CTRL_1				0x00000110
+> -
+> -#define REG_DSI_5nm_PHY_CMN_CTRL_4				0x00000114
+> -
+> -#define REG_DSI_5nm_PHY_CMN_PHY_STATUS				0x00000140
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_STATUS0			0x00000148
+> -
+> -#define REG_DSI_5nm_PHY_CMN_LANE_STATUS1			0x0000014c
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN(uint32_t i0) { return 0x00000000 + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_CFG0(uint32_t i0) { return 0x00000000 + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_CFG1(uint32_t i0) { return 0x00000004 + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_CFG2(uint32_t i0) { return 0x00000008 + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_TEST_DATAPATH(uint32_t i0) { return 0x0000000c + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_PIN_SWAP(uint32_t i0) { return 0x00000010 + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_LPRX_CTRL(uint32_t i0) { return 0x00000014 + 0x80*i0; }
+> -
+> -static inline uint32_t REG_DSI_5nm_PHY_LN_TX_DCTRL(uint32_t i0) { return 0x00000018 + 0x80*i0; }
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_ONE			0x00000000
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_TWO			0x00000004
+> -
+> -#define REG_DSI_5nm_PHY_PLL_INT_LOOP_SETTINGS			0x00000008
+> -
+> -#define REG_DSI_5nm_PHY_PLL_INT_LOOP_SETTINGS_TWO		0x0000000c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_THREE		0x00000010
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_FOUR		0x00000014
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_FIVE		0x00000018
+> -
+> -#define REG_DSI_5nm_PHY_PLL_INT_LOOP_CONTROLS			0x0000001c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DSM_DIVIDER				0x00000020
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FEEDBACK_DIVIDER			0x00000024
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SYSTEM_MUXES			0x00000028
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_UPDATE_CONTROL_OVERRIDES	0x0000002c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CMODE				0x00000030
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PSM_CTRL				0x00000034
+> -
+> -#define REG_DSI_5nm_PHY_PLL_RSM_CTRL				0x00000038
+> -
+> -#define REG_DSI_5nm_PHY_PLL_VCO_TUNE_MAP			0x0000003c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_CNTRL				0x00000040
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CALIBRATION_SETTINGS		0x00000044
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL_TIMER_LOW		0x00000048
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL_TIMER_HIGH		0x0000004c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL_SETTINGS		0x00000050
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_MIN			0x00000054
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_MAX			0x00000058
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_PFILT			0x0000005c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_IFILT			0x00000060
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL_SETTINGS_TWO		0x00000064
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL_SETTINGS_THREE		0x00000068
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL_SETTINGS_FOUR		0x0000006c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_ICODE_HIGH			0x00000070
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_ICODE_LOW			0x00000074
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_DETECT_SETTINGS_ONE		0x00000078
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_DETECT_THRESH			0x0000007c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_DET_REFCLK_HIGH		0x00000080
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_DET_REFCLK_LOW			0x00000084
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_DET_PLLCLK_HIGH		0x00000088
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_DET_PLLCLK_LOW			0x0000008c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PFILT				0x00000090
+> -
+> -#define REG_DSI_5nm_PHY_PLL_IFILT				0x00000094
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_GAIN				0x00000098
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ICODE_LOW				0x0000009c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ICODE_HIGH				0x000000a0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_LOCKDET				0x000000a4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_OUTDIV				0x000000a8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FASTLOCK_CONTROL			0x000000ac
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PASS_OUT_OVERRIDE_ONE		0x000000b0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PASS_OUT_OVERRIDE_TWO		0x000000b4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CORE_OVERRIDE			0x000000b8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CORE_INPUT_OVERRIDE			0x000000bc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_RATE_CHANGE				0x000000c0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_DIGITAL_TIMERS			0x000000c4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_DIGITAL_TIMERS_TWO		0x000000c8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DECIMAL_DIV_START			0x000000cc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_LOW			0x000000d0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_MID			0x000000d4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_HIGH			0x000000d8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DEC_FRAC_MUXES			0x000000dc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DECIMAL_DIV_START_1			0x000000e0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_LOW_1		0x000000e4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_MID_1		0x000000e8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_HIGH_1		0x000000ec
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DECIMAL_DIV_START_2			0x000000f0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_LOW_2		0x000000f4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_MID_2		0x000000f8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FRAC_DIV_START_HIGH_2		0x000000fc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_MASH_CONTROL			0x00000100
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_STEPSIZE_LOW			0x00000104
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_STEPSIZE_HIGH			0x00000108
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_DIV_PER_LOW			0x0000010c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_DIV_PER_HIGH			0x00000110
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_ADJPER_LOW			0x00000114
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_ADJPER_HIGH			0x00000118
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_MUX_CONTROL			0x0000011c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_STEPSIZE_LOW_1			0x00000120
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_STEPSIZE_HIGH_1			0x00000124
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_DIV_PER_LOW_1			0x00000128
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_DIV_PER_HIGH_1			0x0000012c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_ADJPER_LOW_1			0x00000130
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_ADJPER_HIGH_1			0x00000134
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_STEPSIZE_LOW_2			0x00000138
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_STEPSIZE_HIGH_2			0x0000013c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_DIV_PER_LOW_2			0x00000140
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_DIV_PER_HIGH_2			0x00000144
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_ADJPER_LOW_2			0x00000148
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_ADJPER_HIGH_2			0x0000014c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SSC_CONTROL				0x00000150
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_OUTDIV_RATE			0x00000154
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_LOCKDET_RATE_1			0x00000158
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_LOCKDET_RATE_2			0x0000015c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_PROP_GAIN_RATE_1		0x00000160
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_PROP_GAIN_RATE_2		0x00000164
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_BAND_SEL_RATE_1			0x00000168
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_BAND_SEL_RATE_2			0x0000016c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_INT_GAIN_IFILT_BAND_1		0x00000170
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_INT_GAIN_IFILT_BAND_2		0x00000174
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_FL_INT_GAIN_PFILT_BAND_1	0x00000178
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_FL_INT_GAIN_PFILT_BAND_2	0x0000017c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_FASTLOCK_EN_BAND		0x00000180
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_TUNE_ACCUM_INIT_MID		0x00000184
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_TUNE_ACCUM_INIT_HIGH		0x00000188
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FREQ_TUNE_ACCUM_INIT_MUX		0x0000018c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_LOCK_OVERRIDE			0x00000190
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_LOCK_DELAY			0x00000194
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_LOCK_MIN_DELAY			0x00000198
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CLOCK_INVERTERS			0x0000019c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SPARE_AND_JPC_OVERRIDES		0x000001a0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BIAS_CONTROL_1			0x000001a4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BIAS_CONTROL_2			0x000001a8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ALOG_OBSV_BUS_CTRL_1		0x000001ac
+> -
+> -#define REG_DSI_5nm_PHY_PLL_COMMON_STATUS_ONE			0x000001b0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_COMMON_STATUS_TWO			0x000001b4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_BAND_SEL_CAL			0x000001b8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ICODE_ACCUM_STATUS_LOW		0x000001bc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ICODE_ACCUM_STATUS_HIGH		0x000001c0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FD_OUT_LOW				0x000001c4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FD_OUT_HIGH				0x000001c8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ALOG_OBSV_BUS_STATUS_1		0x000001cc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_MISC_CONFIG			0x000001d0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FLL_CONFIG				0x000001d4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FLL_FREQ_ACQ_TIME			0x000001d8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FLL_CODE0				0x000001dc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FLL_CODE1				0x000001e0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FLL_GAIN0				0x000001e4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FLL_GAIN1				0x000001e8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SW_RESET				0x000001ec
+> -
+> -#define REG_DSI_5nm_PHY_PLL_FAST_PWRUP				0x000001f0
+> -
+> -#define REG_DSI_5nm_PHY_PLL_LOCKTIME0				0x000001f4
+> -
+> -#define REG_DSI_5nm_PHY_PLL_LOCKTIME1				0x000001f8
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DEBUG_BUS_SEL			0x000001fc
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DEBUG_BUS0				0x00000200
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DEBUG_BUS1				0x00000204
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DEBUG_BUS2				0x00000208
+> -
+> -#define REG_DSI_5nm_PHY_PLL_DEBUG_BUS3				0x0000020c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_FLL_CONTROL_OVERRIDES	0x00000210
+> -
+> -#define REG_DSI_5nm_PHY_PLL_VCO_CONFIG				0x00000214
+> -
+> -#define REG_DSI_5nm_PHY_PLL_VCO_CAL_CODE1_MODE0_STATUS		0x00000218
+> -
+> -#define REG_DSI_5nm_PHY_PLL_VCO_CAL_CODE1_MODE1_STATUS		0x0000021c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_RESET_SM_STATUS			0x00000220
+> -
+> -#define REG_DSI_5nm_PHY_PLL_TDC_OFFSET				0x00000224
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PS3_PWRDOWN_CONTROLS		0x00000228
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PS4_PWRDOWN_CONTROLS		0x0000022c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PLL_RST_CONTROLS			0x00000230
+> -
+> -#define REG_DSI_5nm_PHY_PLL_GEAR_BAND_SELECT_CONTROLS		0x00000234
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PSM_CLK_CONTROLS			0x00000238
+> -
+> -#define REG_DSI_5nm_PHY_PLL_SYSTEM_MUXES_2			0x0000023c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_VCO_CONFIG_1			0x00000240
+> -
+> -#define REG_DSI_5nm_PHY_PLL_VCO_CONFIG_2			0x00000244
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CLOCK_INVERTERS_1			0x00000248
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CLOCK_INVERTERS_2			0x0000024c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CMODE_1				0x00000250
+> -
+> -#define REG_DSI_5nm_PHY_PLL_CMODE_2				0x00000254
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_FIVE_1		0x00000258
+> -
+> -#define REG_DSI_5nm_PHY_PLL_ANALOG_CONTROLS_FIVE_2		0x0000025c
+> -
+> -#define REG_DSI_5nm_PHY_PLL_PERF_OPTIMIZE			0x00000260
+> -
+> -
+> -#endif /* DSI_PHY_5NM_XML */
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_phy_7nm.xml.h b/drivers/gpu/drm/msm/dsi/dsi_phy_7nm.xml.h
+> index 782f6b332baf..5bc061797003 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_phy_7nm.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_phy_7nm.xml.h
+> @@ -8,27 +8,26 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> -
+> -Copyright (C) 2013-2021 by the following authors:
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+> +
+> +Copyright (C) 2013-2022 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+>   - Ilia Mirkin <imirkin@alum.mit.edu> (imirkin)
+>   
+> @@ -156,6 +155,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+>   
+>   #define REG_DSI_7nm_PHY_CMN_LANE_STATUS1			0x0000014c
+>   
+> +#define REG_DSI_7nm_PHY_CMN_GLBL_DIGTOP_SPARE10			0x000001ac
+> +
+>   static inline uint32_t REG_DSI_7nm_PHY_LN(uint32_t i0) { return 0x00000000 + 0x80*i0; }
+>   
+>   static inline uint32_t REG_DSI_7nm_PHY_LN_CFG0(uint32_t i0) { return 0x00000000 + 0x80*i0; }
+> diff --git a/drivers/gpu/drm/msm/dsi/mmss_cc.xml.h b/drivers/gpu/drm/msm/dsi/mmss_cc.xml.h
+> index fbb6a7a6b940..03bc322d0487 100644
+> --- a/drivers/gpu/drm/msm/dsi/mmss_cc.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/mmss_cc.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/dsi/sfpb.xml.h b/drivers/gpu/drm/msm/dsi/sfpb.xml.h
+> index 1f5e9e9f9803..2ae711cbec36 100644
+> --- a/drivers/gpu/drm/msm/dsi/sfpb.xml.h
+> +++ b/drivers/gpu/drm/msm/dsi/sfpb.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.xml.h b/drivers/gpu/drm/msm/hdmi/hdmi.xml.h
+> index a1cede6cfd02..c9eb26df67c0 100644
+> --- a/drivers/gpu/drm/msm/hdmi/hdmi.xml.h
+> +++ b/drivers/gpu/drm/msm/hdmi/hdmi.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
+> diff --git a/drivers/gpu/drm/msm/hdmi/qfprom.xml.h b/drivers/gpu/drm/msm/hdmi/qfprom.xml.h
+> index 4bf34cea1c89..3edc698c4df5 100644
+> --- a/drivers/gpu/drm/msm/hdmi/qfprom.xml.h
+> +++ b/drivers/gpu/drm/msm/hdmi/qfprom.xml.h
+> @@ -8,25 +8,24 @@ This file was generated by the rules-ng-ng headergen tool in this git repository
+>   git clone https://github.com/freedreno/envytools.git
+>   
+>   The rules-ng-ng source files this header was generated from are:
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/msm.xml                   (    981 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi.xml               (  15291 bytes, from 2021-06-15 22:36:13)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-06-05 21:37:42)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  10953 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/dsi_phy_5nm.xml       (  10900 bytes, from 2021-05-21 19:18:08)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-02-18 16:45:44)
+> -- /home/robclark/src/mesa/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-02-18 16:45:44)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/msm.xml                   (    944 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/freedreno_copyright.xml   (   1572 bytes, from 2020-12-31 19:26:32)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp4.xml              (  20912 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp_common.xml        (   2849 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/mdp/mdp5.xml              (  37461 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi.xml               (  17560 bytes, from 2021-09-16 22:37:02)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_v2.xml        (   3236 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm_8960.xml (   4935 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_28nm.xml      (   7004 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_20nm.xml      (   3712 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_14nm.xml      (   5381 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_10nm.xml      (   4499 bytes, from 2021-07-22 15:21:56)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/dsi_phy_7nm.xml       (  11007 bytes, from 2022-03-03 01:18:13)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/sfpb.xml              (    602 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/dsi/mmss_cc.xml           (   1686 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/qfprom.xml           (    600 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/hdmi/hdmi.xml             (  41874 bytes, from 2021-01-30 18:25:22)
+> +- /home/robclark/tmp/mesa/src/freedreno/registers/edp/edp.xml               (  10416 bytes, from 2021-01-30 18:25:22)
+>   
+>   Copyright (C) 2013-2021 by the following authors:
+>   - Rob Clark <robdclark@gmail.com> (robclark)
