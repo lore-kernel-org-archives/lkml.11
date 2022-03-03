@@ -2,133 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E940C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA47C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbiCCIXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
+        id S231421AbiCCIXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:23:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiCCIWs (ORCPT
+        with ESMTP id S231418AbiCCIW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:22:48 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D29171EDE
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:22:04 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id f14so4943777ioz.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 00:22:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lGcsQzhyoGAuXCpkoy+gsqGBuEcPDcpsVsFI3DXumdg=;
-        b=OixVEehL9ANrT2zhtiRd4XIk7w5Q7oJMspYugHz7E/VCe/R7dWCXWTSWAQllK+kuoh
-         R4kCIRwfwF3zF4G4HAGVRErDHJ/c3vNyo60zmQhfZAlmTwwLyn5MrKGFOksP3v1/Tlrs
-         viLG+NokFA7DYRA3t5wr9M8XB+xin/5trZFMx+N1le/VVuZ1LXRm+JQ3q4qr3cBqzCHM
-         PakY/r2pax7lr7j3SmpmP/M77HT7x/0nKY86/l/aayR9+JLsTvPMwJpV5IIo894EZaOz
-         w7x2ixhnCeUxwCZIwiTFEB1UGSuK/Af4Ce08Kv7WesqXxT8fV0Fq1ku7dc3lHimu3b/z
-         QPMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lGcsQzhyoGAuXCpkoy+gsqGBuEcPDcpsVsFI3DXumdg=;
-        b=nDiebm/TwJDOnE3O0j+nGXZdoo4Q44iX53uX/s9eOnGaq7Q0yw3dyF8mTfhn38xc2o
-         ig/4RwWlB67Ymb8PVGI+jS3ICVN/YRPoY+BuWdLgRPNQPktb6y6S5I69Lt3mw8rwzBse
-         MleWJHRqwoaPT9ELkOaiM72eR7MMjRizqkQ54ZxRwGd8xPpJyJA2Rk0lMVVbmh1TAgSr
-         XI0kXi51bFduncPeXQwmdD3+VJnOf675QW7S3HdaeSmRd+KmxtGbjrO6DSXmZRXbGMu9
-         9PDRyXVIO4VYvFu5kcc8LGeqIlodjpWMSXyLDljvc323uenklXRYCOVJw24Janpg7hQ1
-         9Msg==
-X-Gm-Message-State: AOAM5309Zsj7hBtIMHtM+bknH47h36B5a64vTphNNwzTj06Y9n2j/J4/
-        Q0dhHJZLo3v98QPLNWxuFx0Alw==
-X-Google-Smtp-Source: ABdhPJw0LSc59v5YxhZFPkcaz13OBR70lMJURLf852F5z2dXlxHKXkoLJ8ISN/z1sbCaLv1R+ekJsQ==
-X-Received: by 2002:a05:6602:150a:b0:632:c10c:55ff with SMTP id g10-20020a056602150a00b00632c10c55ffmr26399404iow.16.1646295723428;
-        Thu, 03 Mar 2022 00:22:03 -0800 (PST)
-Received: from localhost.localdomain ([182.64.85.91])
-        by smtp.gmail.com with ESMTPSA id l187-20020a6b3ec4000000b0060523f4e92dsm1204569ioa.28.2022.03.03.00.21.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 00:22:03 -0800 (PST)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
-        mturquette@baylibre.com, linux-clk@vger.kernel.org,
-        robh+dt@kernel.org, bjorn.andersson@linaro.org
-Subject: [PATCH v3 1/2] clk: qcom: gcc: Add UFS_CARD and UFS_PHY GDSCs for SM8150
-Date:   Thu,  3 Mar 2022 13:51:39 +0530
-Message-Id: <20220303082140.240745-2-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220303082140.240745-1-bhupesh.sharma@linaro.org>
-References: <20220303082140.240745-1-bhupesh.sharma@linaro.org>
+        Thu, 3 Mar 2022 03:22:59 -0500
+Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DFB7171ECF
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:22:13 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowADn78OjeiBiasmpAQ--.62570S2;
+        Thu, 03 Mar 2022 16:21:56 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com
+Cc:     patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] ASoC: wm8350: Handle error for wm8350_register_irq
+Date:   Thu,  3 Mar 2022 16:21:54 +0800
+Message-Id: <20220303082154.264114-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADn78OjeiBiasmpAQ--.62570S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KF1ftr1kKF18Zry8uF45Wrg_yoW5JrW5pr
+        WIkrW3WryYg3y3uF1furykXr1DJFyxKF4Dury2yr17XryakrykWr4jvF1jqF18JFW0q3ZF
+        krW2v3yruw4rWFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
+        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the UFS_CARD and UFS_PHY GDSC defines & driver structures
-for SM8150.
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, use 'free_' in order to avoid the same code.
 
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Fixes: a6ba2b2dabb5 ("ASoC: Implement WM8350 headphone jack detection")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- drivers/clk/qcom/gcc-sm8150.c               | 20 ++++++++++++++++++++
- include/dt-bindings/clock/qcom,gcc-sm8150.h |  2 ++
- 2 files changed, 22 insertions(+)
+ sound/soc/codecs/wm8350.c | 30 +++++++++++++++++++++++++-----
+ 1 file changed, 25 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-sm8150.c b/drivers/clk/qcom/gcc-sm8150.c
-index 245794485719..ef0f26c43ec1 100644
---- a/drivers/clk/qcom/gcc-sm8150.c
-+++ b/drivers/clk/qcom/gcc-sm8150.c
-@@ -3448,6 +3448,24 @@ static struct clk_branch gcc_video_xo_clk = {
- 	},
- };
+diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
+index 15d42ce3b21d..0c70bbfbedb5 100644
+--- a/sound/soc/codecs/wm8350.c
++++ b/sound/soc/codecs/wm8350.c
+@@ -1483,7 +1483,7 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
+ 	ret = devm_regulator_bulk_get(wm8350->dev, ARRAY_SIZE(priv->supplies),
+ 				 priv->supplies);
+ 	if (ret != 0)
+-		return ret;
++		goto err;
  
-+static struct gdsc ufs_card_gdsc = {
-+	.gdscr = 0x75004,
-+	.pd = {
-+		.name = "ufs_card_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = POLL_CFG_GDSCR,
-+};
+ 	/* Put the codec into reset if it wasn't already */
+ 	wm8350_clear_bits(wm8350, WM8350_POWER_MGMT_5, WM8350_CODEC_ENA);
+@@ -1537,18 +1537,38 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
+ 	wm8350_clear_bits(wm8350, WM8350_JACK_DETECT,
+ 			  WM8350_JDL_ENA | WM8350_JDR_ENA);
+ 
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
+ 			    wm8350_hpl_jack_handler, 0, "Left jack detect",
+ 			    priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
++	if (ret != 0)
++		goto err;
 +
-+static struct gdsc ufs_phy_gdsc = {
-+	.gdscr = 0x77004,
-+	.pd = {
-+		.name = "ufs_phy_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = POLL_CFG_GDSCR,
-+};
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
+ 			    wm8350_hpr_jack_handler, 0, "Right jack detect",
+ 			    priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
++	if (ret != 0)
++		goto free_JCK_DET_L;
 +
- static struct gdsc usb30_prim_gdsc = {
- 		.gdscr = 0xf004,
- 		.pd = {
-@@ -3714,6 +3732,8 @@ static const struct qcom_reset_map gcc_sm8150_resets[] = {
- };
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
+ 			    wm8350_mic_handler, 0, "Microphone short", priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
++	if (ret != 0)
++		goto free_JCK_DET_R;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
+ 			    wm8350_mic_handler, 0, "Microphone detect", priv);
++	if (ret != 0)
++		goto free_MICSCD;
  
- static struct gdsc *gcc_sm8150_gdscs[] = {
-+	[UFS_CARD_GDSC] = &ufs_card_gdsc,
-+	[UFS_PHY_GDSC] = &ufs_phy_gdsc,
- 	[USB30_PRIM_GDSC] = &usb30_prim_gdsc,
- 	[USB30_SEC_GDSC] = &usb30_sec_gdsc,
- };
-diff --git a/include/dt-bindings/clock/qcom,gcc-sm8150.h b/include/dt-bindings/clock/qcom,gcc-sm8150.h
-index 3e1a91876610..1bd65cc581c3 100644
---- a/include/dt-bindings/clock/qcom,gcc-sm8150.h
-+++ b/include/dt-bindings/clock/qcom,gcc-sm8150.h
-@@ -241,6 +241,8 @@
- #define GCC_USB_PHY_CFG_AHB2PHY_BCR				28
+ 	return 0;
++
++free_MICSCD:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_MICSCD, priv);
++free_JCK_DET_R:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R, priv);
++free_JCK_DET_L:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L, priv);
++err:
++	return ret;
+ }
  
- /* GCC GDSCRs */
-+#define UFS_CARD_GDSC                                          2
-+#define UFS_PHY_GDSC                                           3
- #define USB30_PRIM_GDSC                     4
- #define USB30_SEC_GDSC						5
- 
+ static void wm8350_component_remove(struct snd_soc_component *component)
 -- 
-2.35.1
+2.25.1
 
