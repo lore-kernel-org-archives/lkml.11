@@ -2,107 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C419EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E40C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbiCCORC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 09:17:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38454 "EHLO
+        id S233969AbiCCORq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 09:17:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232647AbiCCORA (ORCPT
+        with ESMTP id S229717AbiCCORo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 09:17:00 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631EC18CC67;
-        Thu,  3 Mar 2022 06:16:12 -0800 (PST)
+        Thu, 3 Mar 2022 09:17:44 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAFE18CC31;
+        Thu,  3 Mar 2022 06:16:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646316974; x=1677852974;
+  t=1646317019; x=1677853019;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ynRuusHJD/05mmCsacrrHzXmY4ZK7oPmKnF+sWwUGc0=;
-  b=ad3FVEqRnM1S71RjthFR8oAZGtR1oAaiWno5wPDeEJYdH94Tk/yNFryz
-   BOIE1Ho9+E5QpXR0NiyFmA98r/06rlHo2pN6G4IEAfaw0Oy5l+WmUXexj
-   lxZ9smG5BrPxIU0rEn8v2Zot2xy6qGcJTJErrTMAAkaMvq3VFGjWahNIm
-   kpcEeQnrUKpxt7112/XOCfOh2/rpK+K3DZaVyuukzV0jtiDpjFdao2CpL
-   nSHaVcK5a8Xj2flSJ9fnEtWwFk8/coRyilDkldsHp+p8gSXbhD/ikQAI7
-   oX6j1trALy3VUlysw4M3PexiI8UDjbE1LzidPoVqSKLcvo0Avk2+nR/ky
+  bh=yN2G/1s3nnRhWNWBfpygstYHT/OoQNrY04dyYU6iFzI=;
+  b=j4aLbsPxrfe2dsafGwICVLSD/0b26+YscArYa7x9FsVamQj4WQHN0xAG
+   mTs8jdogXYBtLvyMzcVZuavrOAqItbsASlRpfYIKMp9PE2fcurX9FZven
+   asYmxHl6j1aOXbyHyYpvPU1vwvAxX5auD1uSIW6Ijo8N4tUf47vPmY6C8
+   LPk2tjM77wg+IJG4y9grKhvZEqNDKjxjjKOHK6ZPanOkoQEMTLI0bWp4T
+   kyj1C/bhjdWQRxGrsFj2L35iJBtfU11akM43sirYoCHi6EpvgziOMBvC7
+   g6/uJD9OrXL3do60fcZwDJGDbSrXcMQ5I2R6fWQpE+KABmRI+/9susWeS
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="253614680"
+X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="233648377"
 X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="253614680"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:16:12 -0800
+   d="scan'208";a="233648377"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:16:58 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="545876842"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:16:05 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nPmEg-00ApL3-8j;
-        Thu, 03 Mar 2022 16:15:18 +0200
-Date:   Thu, 3 Mar 2022 16:15:18 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tali Perry <tali.perry1@gmail.com>
-Cc:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
-        Wolfram Sang <wsa@kernel.org>, jie.deng@intel.com,
-        sven@svenpeter.dev, bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
-        arnd@arndb.de, olof@lixom.net, Tali Perry <tali.perry@nuvoton.com>,
-        Avi Fishman <Avi.Fishman@nuvoton.com>,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 08/11] i2c: npcm: Correct register access width
-Message-ID: <YiDNdlEKqorDFkZB@smile.fi.intel.com>
-References: <20220303083141.8742-1-warp5tw@gmail.com>
- <20220303083141.8742-9-warp5tw@gmail.com>
- <YiCZlhJoXPLpQ6/D@smile.fi.intel.com>
- <CAHb3i=t+Ai3w5mMhmZxxMsD7Zv0xpM4ZicMCmdDMtVn_OMbWYA@mail.gmail.com>
+   d="scan'208";a="576499289"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 03 Mar 2022 06:16:55 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPmGF-0000bs-39; Thu, 03 Mar 2022 14:16:55 +0000
+Date:   Thu, 3 Mar 2022 22:16:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Peter <sven@svenpeter.dev>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     kbuild-all@lists.01.org, Sven Peter <sven@svenpeter.dev>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] nvmem: Add Apple eFuse driver
+Message-ID: <202203032219.gDn8cX7m-lkp@intel.com>
+References: <20220227115743.69059-2-sven@svenpeter.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHb3i=t+Ai3w5mMhmZxxMsD7Zv0xpM4ZicMCmdDMtVn_OMbWYA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220227115743.69059-2-sven@svenpeter.dev>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 02:54:27PM +0200, Tali Perry wrote:
-> > On Thu, Mar 03, 2022 at 04:31:38PM +0800, Tyrone Ting wrote:
-> > > From: Tyrone Ting <kfting@nuvoton.com>
-> > >
-> > > Use ioread8 instead of ioread32 to access the SMBnCTL3 register since
-> > > the register is only 8-bit wide.
-> >
-> > > Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-> >
-> > No, this is bad commit message, since you have bitwise masks and there is
-> > nothing to fix from functional point of view. So, why is this a fix?
-> >
-> 
-> The next gen of this device is a 64 bit cpu.
-> The module is and was 8 bit.
-> 
-> The ioread32 that seemed to work smoothly on a 32 bit machine
-> was causing a panic on a 64 bit machine.
-> since the module is 8 bit we changed to ioread8.
-> This is working both for the 32 and 64 CPUs with no issue.
+Hi Sven,
 
-Then the commit message is completely wrong here.
-And provide necessary (no need to have noisy commit messages)
-bits of the oops to show what's going on
+I love your patch! Perhaps something to improve:
 
--- 
-With Best Regards,
-Andy Shevchenko
+[auto build test WARNING on soc/for-next]
+[also build test WARNING on linus/master v5.17-rc6]
+[cannot apply to robh/for-next next-20220303]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Sven-Peter/dt-bindings-nvmem-Add-apple-efuses/20220227-195847
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+config: ia64-randconfig-s031-20220302 (https://download.01.org/0day-ci/archive/20220303/202203032219.gDn8cX7m-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/e47f957c24fcbc9f99a972b1b7c802eec04ed40a
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Sven-Peter/dt-bindings-nvmem-Add-apple-efuses/20220227-195847
+        git checkout e47f957c24fcbc9f99a972b1b7c802eec04ed40a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/nvmem/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+sparse warnings: (new ones prefixed by >>)
+>> drivers/nvmem/apple-efuses.c:17:31: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void [noderef] __iomem *fuses @@     got void *context @@
+   drivers/nvmem/apple-efuses.c:17:31: sparse:     expected void [noderef] __iomem *fuses
+   drivers/nvmem/apple-efuses.c:17:31: sparse:     got void *context
+>> drivers/nvmem/apple-efuses.c:42:21: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *priv @@     got void [noderef] __iomem * @@
+   drivers/nvmem/apple-efuses.c:42:21: sparse:     expected void *priv
+   drivers/nvmem/apple-efuses.c:42:21: sparse:     got void [noderef] __iomem *
+   drivers/nvmem/apple-efuses.c: note: in included file (through arch/ia64/include/asm/io.h, include/linux/io.h):
+   include/asm-generic/io.h:267:16: sparse: sparse: cast to restricted __le32
+
+vim +17 drivers/nvmem/apple-efuses.c
+
+    13	
+    14	static int apple_efuses_read(void *context, unsigned int offset, void *val,
+    15				     size_t bytes)
+    16	{
+  > 17		void __iomem *fuses = context;
+    18		u32 *dst = val;
+    19	
+    20		while (bytes >= sizeof(u32)) {
+    21			*dst++ = readl_relaxed(fuses + offset);
+    22			bytes -= sizeof(u32);
+    23			offset += sizeof(u32);
+    24		}
+    25	
+    26		return 0;
+    27	}
+    28	
+    29	static int apple_efuses_probe(struct platform_device *pdev)
+    30	{
+    31		struct resource *res;
+    32		struct nvmem_config config = {
+    33			.dev = &pdev->dev,
+    34			.read_only = true,
+    35			.reg_read = apple_efuses_read,
+    36			.stride = sizeof(u32),
+    37			.word_size = sizeof(u32),
+    38			.name = "apple_efuses_nvmem",
+    39			.id = NVMEM_DEVID_AUTO,
+    40		};
+    41	
+  > 42		config.priv = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+    43		if (IS_ERR(config.priv))
+    44			return PTR_ERR(config.priv);
+    45	
+    46		config.size = resource_size(res);
+    47	
+    48		return PTR_ERR_OR_ZERO(devm_nvmem_register(config.dev, &config));
+    49	}
+    50	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
