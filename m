@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C63C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C56C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 02:01:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231574AbiCCCA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 21:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
+        id S231573AbiCCCCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 21:02:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231580AbiCCCA0 (ORCPT
+        with ESMTP id S231580AbiCCCCP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 21:00:26 -0500
-X-Greylist: delayed 932 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 17:59:40 PST
-Received: from baidu.com (mx24.baidu.com [111.206.215.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9884838BD5;
-        Wed,  2 Mar 2022 17:59:40 -0800 (PST)
-Received: from BC-Mail-Ex06.internal.baidu.com (unknown [172.31.51.46])
-        by Forcepoint Email with ESMTPS id AFF197E458F57ABBF49E;
-        Thu,  3 Mar 2022 09:44:01 +0800 (CST)
-Received: from BJHW-MAIL-EX25.internal.baidu.com (10.127.64.40) by
- BC-Mail-Ex06.internal.baidu.com (172.31.51.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Thu, 3 Mar 2022 09:44:01 +0800
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BJHW-MAIL-EX25.internal.baidu.com (10.127.64.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Thu, 3 Mar 2022 09:44:01 +0800
-Received: from BJHW-MAIL-EX27.internal.baidu.com ([169.254.58.247]) by
- BJHW-MAIL-EX27.internal.baidu.com ([169.254.58.247]) with mapi id
- 15.01.2308.020; Thu, 3 Mar 2022 09:44:01 +0800
-From:   "Cai,Huoqing" <caihuoqing@baidu.com>
-To:     Jianglei Nie <niejianglei2021@163.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
-Thread-Topic: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
-Thread-Index: AQHYLp5LKcUpXpLQGUa95DdJWAWshKys4eVw
-Date:   Thu, 3 Mar 2022 01:44:01 +0000
-Message-ID: <b2cfc764839a459f86eb46ae0286e9a0@baidu.com>
-References: <20220303013022.459154-1-niejianglei2021@163.com>
-In-Reply-To: <20220303013022.459154-1-niejianglei2021@163.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.18.80.46]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Wed, 2 Mar 2022 21:02:15 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61070D4F;
+        Wed,  2 Mar 2022 18:01:31 -0800 (PST)
+Received: from [192.168.1.17] (unknown [192.182.151.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id ED49A20B7178;
+        Wed,  2 Mar 2022 18:01:30 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com ED49A20B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646272891;
+        bh=HRZWLfNLDmejiTzerK5LeZIGiDIHUtm5/ESNLuqANEM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oZXOSRjP4itPe4fMkFXrDW6V1SPbBXePMXlLhljEFwarHfzUCuRLKoXKoxBnOvq/l
+         0PrbX6o+yRCMts8oLOzhoO+oNVXCQWgxFqokBXFE2bL7WVHMAmkr5v9UWD/hTGQ7xs
+         qScEaJ1z0RiKBp7isGUL86fpUPuGVYk8mvsjN6tg=
+Message-ID: <6371e5d5-1d18-49df-1c4c-9d8cb49be3e3@linux.microsoft.com>
+Date:   Wed, 2 Mar 2022 18:01:30 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 02/30] drivers: hv: dxgkrnl: Driver initialization and
+ loading
+Content-Language: en-US
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        spronovo@microsoft.com, spronovo@linux.microsoft.com,
+        gregkh@linuxfoundation.org
+References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
+ <739cf89e71ff72436d7ca3f846881dfb45d07a6a.1646163378.git.iourit@linux.microsoft.com>
+ <20220301220636.mqrzq7h3epfw3u3x@liuwe-devbox-debian-v2>
+From:   Iouri Tarassov <iourit@linux.microsoft.com>
+In-Reply-To: <20220301220636.mqrzq7h3epfw3u3x@liuwe-devbox-debian-v2>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmlhbmdsZWkg
-TmllIDxuaWVqaWFuZ2xlaTIwMjFAMTYzLmNvbT4NCj4gU2VudDogMjAyMsTqM9TCM8jVIDk6MzAN
-Cj4gVG86IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsgQ2FpLEh1b3FpbmcN
-Cj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmc7IEppYW5nbGVpIE5pZQ0KPiBTdWJqZWN0OiBbUEFUQ0hdIG5ldDogYXJjX2VtYWM6IEZpeCB1
-c2UgYWZ0ZXIgZnJlZSBpbiBhcmNfbWRpb19wcm9iZSgpDQo+IA0KPiBJZiBidXMtPnN0YXRlIGlz
-IGVxdWFsIHRvIE1ESU9CVVNfQUxMT0NBVEVELCBtZGlvYnVzX2ZyZWUoYnVzKSB3aWxsIGZyZWUN
-Cj4gdGhlICJidXMiLiBCdXQgYnVzLT5uYW1lIGlzIHN0aWxsIHVzZWQgaW4gdGhlIG5leHQgbGlu
-ZSwgd2hpY2ggd2lsbCBsZWFkDQo+IHRvIGEgdXNlIGFmdGVyIGZyZWUuDQo+IA0KPiBXZSBjYW4g
-Zml4IGl0IGJ5IGFzc2lnbmluZyBkZXZfZXJyX3Byb2JlKCkgdG8gZGV2X2VyciBiZWZvcmUgdGhl
-IGJ1cyBpcw0KPiBmcmVlZCB0byBhdm9pZCB0aGUgdWFmLg0KQWRkIGZpeCBsb2cgaGVyZTopDQpG
-aXhlczogOTViNWZjMDNjMTg5ICgibmV0OiBhcmNfZW1hYzogTWFrZSB1c2Ugb2YgdGhlIGhlbHBl
-ciBmdW5jdGlvbiBkZXZfZXJyX3Byb2JlKCkiKQ0KPiANCj4gU2lnbmVkLW9mZi1ieTogSmlhbmds
-ZWkgTmllIDxuaWVqaWFuZ2xlaTIwMjFAMTYzLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9l
-dGhlcm5ldC9hcmMvZW1hY19tZGlvLmMgfCA1ICsrKy0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMyBp
-bnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L2FyYy9lbWFjX21kaW8uYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Fy
-Yy9lbWFjX21kaW8uYw0KPiBpbmRleCA5YWNmNTg5YjExNzguLjc5NWEyNWM1ODQ4YSAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXJjL2VtYWNfbWRpby5jDQo+ICsrKyBiL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L2FyYy9lbWFjX21kaW8uYw0KPiBAQCAtMTY1LDkgKzE2NSwxMCBA
-QCBpbnQgYXJjX21kaW9fcHJvYmUoc3RydWN0IGFyY19lbWFjX3ByaXYgKnByaXYpDQo+IA0KPiAg
-CWVycm9yID0gb2ZfbWRpb2J1c19yZWdpc3RlcihidXMsIHByaXYtPmRldi0+b2Zfbm9kZSk7DQo+
-ICAJaWYgKGVycm9yKSB7DQo+IC0JCW1kaW9idXNfZnJlZShidXMpOw0KPiAtCQlyZXR1cm4gZGV2
-X2Vycl9wcm9iZShwcml2LT5kZXYsIGVycm9yLA0KPiArCQlpbnQgZGV2X2VyciA9IGRldl9lcnJf
-cHJvYmUocHJpdi0+ZGV2LCBlcnJvciwNCj4gIAkJCQkgICAgICJjYW5ub3QgcmVnaXN0ZXIgTURJ
-TyBidXMgJXNcbiIsIGJ1cy0NCj4gPm5hbWUpOw0KPiArCQltZGlvYnVzX2ZyZWUoYnVzKTsNCj4g
-KwkJcmV0dXJuIGRldl9lcnI7DQo+ICAJfQ0KPiANCj4gIAlyZXR1cm4gMDsNCj4gLS0NCj4gMi4y
-NS4xDQoNCg==
+
+On 3/1/2022 2:06 PM, Wei Liu wrote:
+> I will skip things that are pointed out by Greg.
+>
+> On Tue, Mar 01, 2022 at 11:45:49AM -0800, Iouri Tarassov wrote:
+> > - Create skeleton and add basic functionality for the
+> > hyper-v compute device driver (dxgkrnl).
+> > 
+> > - Register for PCI and VM bus driver notifications and
+> > handle initialization of VM bus channels.
+> > 
+> > - Connect the dxgkrnl module to the drivers/hv/ Makefile and Kconfig
+> > 
+> > - Create a MAINTAINERS entry
+> > 
+> > A VM bus channel is a communication interface between the hyper-v guest
+> > and the host. The are two type of VM bus channels, used in the driver:
+> >   - the global channel
+> >   - per virtual compute device channel
+> > 
+>
+> Same comment regarding the spelling of VMBus and Hyper-V. Please fix
+> other instances in code and comments.
+>
+> > A PCI device is created for each virtual compute device, projected
+> > by the host. The device vendor is PCI_VENDOR_ID_MICROSOFT and device
+> > id is PCI_DEVICE_ID_VIRTUAL_RENDER. dxg_pci_probe_device handles
+> > arrival of such devices. The PCI config space of the virtual compute
+> > device has luid of the corresponding virtual compute device VM
+> > bus channel. This is how the compute device adapter objects are
+> > linked to VM bus channels.
+> > 
+> > VM bus interface version is exchanged by reading/writing the PCI config
+> > space of the virtual compute device.
+> > 
+> > The IO space is used to handle CPU accessible compute device
+> > allocations. Hyper-v allocates IO space for the global VM bus channel.
+> > 
+> > Signed-off-by: Iouri Tarassov <iourit@linux.microsoft.com>
+> > ---
+> [...]
+> > +static inline void guid_to_luid(guid_t *guid, struct winluid *luid)
+> > +{
+> > +	*luid = *(struct winluid *)&guid->b[0];
+> > +}
+>
+> This should be moved to the header where luid is defined -- presumably
+> this is useful for other things in the future too.
+>
+> Also, please provide a comment on why this conversion is okay.
+>
+The definition of the structure is in the public header. I do not think it makes sense to move the function there. It is a detail of the internal implementation. There is no official conversion of GUID to LUID.
+
+The comment will be added.
+
+Thanks
+Iouri
+
+
