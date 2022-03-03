@@ -2,105 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F95C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E995AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234049AbiCCO2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 09:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
+        id S234048AbiCCOcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 09:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233156AbiCCO2p (ORCPT
+        with ESMTP id S231529AbiCCOb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 09:28:45 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D60511AA3E;
-        Thu,  3 Mar 2022 06:27:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646317680; x=1677853680;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Jab+XPv+RVt9cIn/M4Nqco0XXg3KqYSCJ4FwFNxeIRc=;
-  b=E5WFaJBaWtygDxrPMuoJrhhjPr5sNhPhDGry6D4ZUOY0+jNiiaS2QFCs
-   RAMNrvi2MDyF7We6HJplZhjTaS9Q92r0o0QlTTxEALi+M4hNDb4MAEzjF
-   97cF9p2w5fHWj09bLpksqBB91vDQOw4sw4f9kt7cGbpDjzvQxrnCouA1+
-   t8YU7PPHa2tt9j1HpexjKpNOpsBs19q3sYVa28aU6fbggNXSA+0OXMd6Y
-   Q215WAlZ1n4xTb/7YmagJvaBLmDq/LHJT18IV3uMGqkVTEbcGELl0UzU7
-   jnj9GYOFmUSe7B7pEUeaeFCtrmwMMzy8ZxlT/A+OCdkNVU5mFcYMKCzai
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="278369669"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="278369669"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:27:59 -0800
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="508609552"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:27:57 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nPmQA-00ApZA-MD;
-        Thu, 03 Mar 2022 16:27:10 +0200
-Date:   Thu, 3 Mar 2022 16:27:10 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 3/3] iio: temperature: ltc2983: Make use of device
- properties
-Message-ID: <YiDQPm5ggtjl1JmX@smile.fi.intel.com>
-References: <20220210135522.26562-1-andriy.shevchenko@linux.intel.com>
- <20220210135522.26562-3-andriy.shevchenko@linux.intel.com>
- <PH0PR03MB6786304A458CD4B11AF5C42699049@PH0PR03MB6786.namprd03.prod.outlook.com>
- <YiDPZbHkwABl2GBE@smile.fi.intel.com>
+        Thu, 3 Mar 2022 09:31:57 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC1E18CC47;
+        Thu,  3 Mar 2022 06:31:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646317871; x=1677853871;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=q3nQUbvoUVhuvtL8hT3x3bxzCoG1VYLBMmyxslJbAcY=;
+  b=VhEB4QRf9a8Jy6UWCdDSEpFtJxK6ARG2FRVSr+iF4oiOJ3rx7RNk7hOy
+   4/ez4Pfgjs2t2dPERhmR0PeGsOV7GRoVukuj0Ok8f9CxH6KZUEBd+2hRa
+   i+btDj8CXhYYc4X/zen4Y6Od7Gz466VS5BaAREbWMCV1PGKNy9tDn+S2v
+   0=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 03 Mar 2022 06:31:11 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:31:09 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 3 Mar 2022 06:31:09 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 3 Mar 2022 06:31:03 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
+        <yung-chuan.liao@linux.intel.com>,
+        <pierre-louis.bossart@linux.intel.com>, <sanyog.r.kale@intel.com>,
+        <vkoul@kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [RESEND v7 0/2] Add support for SoundWire1.6 audio cgcr register control
+Date:   Thu, 3 Mar 2022 20:00:49 +0530
+Message-ID: <1646317851-14414-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YiDPZbHkwABl2GBE@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 04:23:34PM +0200, Andy Shevchenko wrote:
-> On Thu, Mar 03, 2022 at 01:31:56PM +0000, Sa, Nuno wrote:
-> 
-> ...
-> 
-> > > +	ref = fwnode_find_reference(child, "adi,cold-junction-
-> > > handle", 0);
-> > > +	if (ref) {
-> > 
-> > This is nok. It needs to be 'if (IS_ERR(ref))'. We then should return
-> > ERR_CAST() in case of errors inside the if block.
-> 
-> This is a good catch!
-> 
-> > As this reference
-> > is also optional, we need to nullify ref in case we don't find the
-> > it. Otherwise fwnode_handle_put() breaks.
-> 
-> No, this is not correct. fwnode_handle_put() is ERR_PTR aware.
+This patch series is to add v1.6.0 compatible name for qcom soundwire
+driver and corresponding dt bindings.
 
-Oh, the ->put() handles that, but the fwnode_call_void_op() doesn't!
+Changes Since V6:
+    -- Update commit message
+    -- Update Example with reset control in dt bindings.
+Changes Since V5:
+    -- Constify static struct qcom_swrm_data global variables.
+    -- Remove redundant swrm_v1_6_data variable.
+Changes Since V4:
+    -- Dropped audio cgcr control patch due to dependency on clock patches.
+    -- Update dt-bindings as per new reset control properties.
+Changes Since V3:
+    -- Add v1.6.0 compatible name and soundwire data structure.
+    -- Change macro define name properly.
+    -- Update bindings for new property.
+    -- Change commit message description.
+    -- Change signedoff by sequence.
+Changes since v2:
+    -- Update error check after ioremap.
+Changes since v1:
+    -- Add const name to mask value.
+Srinivasa Rao Mandadapu (2):
+  soundwire: qcom: Add compatible name for v1.6.0
+  dt-bindings: soundwire: qcom: Add bindings for audio clock reset
+    control property
 
-This has to be fixed on fwnode level.
-
-> > We also need to use ptr error logic in the other places where
-> > fwnode_find_reference() is used. Although, in the other cases
-> > the ref is mandatory, so there's no need to care with breaking
-> > fwnode_handle_put().
-> > 
-> > After these changes (I think the changes are straight enough;
-> > but I can re-test if you or Jonathan ask for it):
-> > 
-> > Tested-by: Nuno Sá <nuno.sa@analog.com>
+ Documentation/devicetree/bindings/soundwire/qcom,sdw.txt | 14 ++++++++++++++
+ drivers/soundwire/qcom.c                                 |  1 +
+ 2 files changed, 15 insertions(+)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.7.4
 
