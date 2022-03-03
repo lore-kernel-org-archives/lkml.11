@@ -2,104 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58404C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:15:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbiCCOPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 09:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
+        id S233754AbiCCOQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 09:16:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbiCCOPn (ORCPT
+        with ESMTP id S229650AbiCCOQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 09:15:43 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACE818CC5C
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 06:14:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=qWQNOthXTquOrhHmzl9lJmVcX4KkTKg2fea12CYh7ts=; b=daTg9H0LzTWywP8J4AOyFF8HBx
-        f3yQ2gydD0pRWTogso66lz7wlkNfGX+hIr4GZQ+x1jV2I0H3fhDPG05ZLgUeKNZ7ZqikymyEs+0Ws
-        3QLhR5ztDhesX8o9sqhYfFdze331xoS20sPdUwWfdMT8+etPMjyVsEKbJWnPERtb4r0HLcIlhfWz2
-        SHghMLQ6umhJYfr7WIWAj5wnqeVAr1kpZxl65C3cSFdrL+ww3vbEBs4ojkVrat5L9a1ECFX5653nk
-        xSNjP/ktZsyH5EnZkAEj3oa996Z6sKNQ07AtRiVRHSGAZollARMXttGOcECfioTWAB3jd5RIZsVcy
-        TfwdcfQA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPmCg-00Bhis-Oe; Thu, 03 Mar 2022 14:13:14 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C83E6300230;
-        Thu,  3 Mar 2022 15:13:12 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A6EA230268E82; Thu,  3 Mar 2022 15:13:12 +0100 (CET)
-Date:   Thu, 3 Mar 2022 15:13:12 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "samitolvanen@google.com" <samitolvanen@google.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "alyssa.milburn@intel.com" <alyssa.milburn@intel.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>
-Subject: Re: [PATCH v2 33/39] objtool: Add IBT/ENDBR decoding
-Message-ID: <YiDM+P1tElLUvxtI@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151323.959862564@infradead.org>
- <alpine.LSU.2.21.2203031138040.704@pobox.suse.cz>
- <aa6076af-0f7c-ae48-4eb4-8bf2e3f0ed06@citrix.com>
- <alpine.LSU.2.21.2203031330530.704@pobox.suse.cz>
+        Thu, 3 Mar 2022 09:16:35 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD7218CC65;
+        Thu,  3 Mar 2022 06:15:48 -0800 (PST)
+Received: from mail.ispras.ru (unknown [83.149.199.84])
+        by mail.ispras.ru (Postfix) with ESMTPSA id AB11A40755C1;
+        Thu,  3 Mar 2022 14:15:46 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.LSU.2.21.2203031330530.704@pobox.suse.cz>
+Date:   Thu, 03 Mar 2022 17:15:46 +0300
+From:   baskov@ispras.ru
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Matthew Garrett <mjg59@srcf.ucam.org>,
+        Peter Jones <pjones@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC v2 0/2] Handle UEFI NX-restricted page tables
+In-Reply-To: <CAMj1kXGg=HAv3P_NKqUHCg6bRFsB0qhfa_z-TOdmi-G8EqPrZA@mail.gmail.com>
+References: <20220224154330.26564-1-baskov@ispras.ru>
+ <CAMj1kXGg=HAv3P_NKqUHCg6bRFsB0qhfa_z-TOdmi-G8EqPrZA@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.4
+Message-ID: <773b799354b50adf854837d8a6d54b8f@ispras.ru>
+X-Sender: baskov@ispras.ru
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 01:33:06PM +0100, Miroslav Benes wrote:
-> On Thu, 3 Mar 2022, Andrew Cooper wrote:
+On 2022-02-28 19:45, Ard Biesheuvel wrote:
+> (cc Matt and Peter)
 > 
-> > On 03/03/2022 10:53, Miroslav Benes wrote:
-> > > Hi,
-> > >
-> > > On Thu, 24 Feb 2022, Peter Zijlstra wrote:
-> > >
-> > >> Decode ENDBR instructions and WARN about NOTRACK prefixes.
-> > > I guess it has been already mentioned somewhere, but could you explain 
-> > > NOTRACK prefix here, please? If I understand it right, it disables IBT for 
-> > > the indirect branch instruction meaning that its target does not have to 
-> > > start with ENDBR?
-> > 
-> > CET-IBT has loads of get-out clauses.  The NOTRACK prefix is one; the
-> > legacy code bitmap (implicit NOTRACK for whole libraries) is another.
-> > 
-> > And yes - the purpose of NOTRACK is to exempt a specific indirect branch
-> > from checks.
-> > 
-> > GCC can emit NOTRACK'd calls in some cases when e.g. the programmer
-> > launders a function pointer through (void *), or when
-> > __attribute__((no_cf_check)) is used explicitly.
-> > 
-> > 
-> > Each of the get-out clauses has separate enable bits, as each of them
-> > reduces security.  In this series, Linux sets MSR_S_CET.ENDBR_EN but
-> > specifically does not set NOTRACK_EN, so NOTRACK prefixes will be
-> > ignored and suffer #CP if encountered.
 > 
-> Thanks for the explanation. I would be nice to include it somewhere so 
-> that it is not lost.
+> Thanks for exploring my suggestion to use the DXE services for this.
+> 
+> Given that this is a workaround for a very specific issue arising on
+> PI based implementations of UEFI, I consider this a quirk, and so I
+> think this approach is reasonable. I'd still like to gate it on some
+> kind of identification, though - perhaps something related to DMI like
+> the x86 core kernel does as well.
+> 
+> I've cc'ed Peter and Matt, who have much more experience dealing with
+> these kinds of things on x86 - my experience is mostly based on ARM,
+> which tends to be less quirky when it comes to UEFI support, given
+> that vendors that implement EFI actually care about being compliant
+> (instead of only about getting a windows sticker)
+> 
+> Matt, Peter, any thoughts?
+> 
+> 
+>> Baskov Evgeniy (2):
+>>        efi: declare DXE services table
+>>        libstub: ensure allocated memory to be executable
+>> 
+>>  arch/x86/include/asm/efi.h              |  5 ++
+>>  drivers/firmware/efi/libstub/efistub.h  | 53 ++++++++++++++++++++
+>>  drivers/firmware/efi/libstub/x86-stub.c | 73 
+>> ++++++++++++++++++++++++++--
+>>  include/linux/efi.h                     |  2 +
+>>  4 files changed, 128 insertions(+), 5 deletions(-)
 
-I'll add something to the Changelog. Thanks!
+We now have tested the patch on major platforms, and it works without 
+any
+issues. But in case of firmware bugs I have changed the code to only
+modify attributes if either EFI_MEMORY_RO or EFI_MEMORY_WP is set and
+the memory has type EfiGcdMemoryTypeSystemMemory.
+
+I also added option CONFIG_EFI_DXE_MEM_ATTRIBUTES (enabled by default),
+to allow this code to be disabled at compile time.
+
+These changes will be sent in version 3 of the patch.
+
+Thanks,
+Baskov Evgeniy
