@@ -2,89 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4045C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F2FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232731AbiCCLbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+        id S232760AbiCCLbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232719AbiCCLbC (ORCPT
+        with ESMTP id S232713AbiCCLbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B009F1795FE;
-        Thu,  3 Mar 2022 03:30:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FEE860F5A;
-        Thu,  3 Mar 2022 11:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 39626C34106;
-        Thu,  3 Mar 2022 11:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646307015;
-        bh=jnrle6jJxiHm+6f07oky9Uxo0yIL90UlMOyvDaWTzS8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jbkPaee8wUakiJk4dpjV1G2FkCC0xQOXRFFKk5QQL7YmBfloakCZgY4knJwGkbwoG
-         /24NyOtQU2G/8bfVcToUAalLdCXDYmOvWTxdKrKaDXt2apT3TR9Gex0FVgMMjs5b27
-         t4bBRXvOcoSghuLM29FG2GjptwF8r6oPQfXh2gLHw0nke9by06k6pfoAXuk0M4Mo0r
-         nvMoUOhGjkEwcEQvsXvTO2Gv3lIzS+iUSsUShI4OYgOCEm7k+HnBm/aazZTSvQwRC7
-         56SOHRsnizsZLbKaTJR7xkhPwkTaJe/8esxD1Ye4WT5PF3X+0LQrHU/h46LpwShkhO
-         tzcn80gAJNHHw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4612E7BB08;
-        Thu,  3 Mar 2022 11:30:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 3 Mar 2022 06:31:07 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9B87E5A9
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To;
+        bh=4Rvh+1BbqB7+uHCIxdXY7qkisfSDxtfEMR7TyEtBSkw=; b=ehbDe/WUlhsE/C0EMuTB/jT6tp
+        UcFfVPufCcN5ko2kudka8pJXN1aIrh4O84630zIikRbeLY4N1YEQLK7glOhfLfNlmsgBh7LabgDif
+        Yr2BRUAhXlQat1t4zW9kHqyaBCME8fJm4gL8OQljbfwr/FAlHI52eFqaamLS6JO2Bjk411fTl5cZg
+        BmuOzmOcVXrLpO6fsgUnjG/2QZcagZCqJpwHMblS+rL/HQLPnf5NJMi86tqlNzZGzmDKW2vRPXobm
+        GP1A51vcWRfhi2nYnyjyP1mf+xE+vkSz0dwZ1JFavIpC9VNuU75rMsKuOTaiWLjhHDYhAFAtcQtIH
+        iTTlN2og==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPjeg-00BaGq-Ej; Thu, 03 Mar 2022 11:29:59 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E79C430120E;
+        Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 46923300243F4; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112825.680530557@infradead.org>
+User-Agent: quilt/0.66
+Date:   Thu, 03 Mar 2022 12:23:33 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: [PATCH v3 12/39] x86/linkage: Add ENDBR to SYM_FUNC_START*()
+References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [RESEND PATCH v2 0/6] nfc: llcp: few cleanups/improvements
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164630701493.19662.16097017593505369271.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Mar 2022 11:30:14 +0000
-References: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Ensure the ASM functions have ENDBR on for IBT builds, this follows
+the ARM64 example. Unlike ARM64, we'll likely end up overwriting them
+with poison.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Suggested-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+---
+ arch/x86/include/asm/linkage.h |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-On Wed,  2 Mar 2022 20:25:17 +0100 you wrote:
-> Hi,
-> 
-> These are improvements, not fixing any experienced issue, just looking correct
-> to me from the code point of view.
-> 
-> Changes since v1
-> ================
-> 1. Split from the fix.
-> 
-> [...]
-
-Here is the summary with links:
-  - [RESEND,v2,1/6] nfc: llcp: nullify llcp_sock->dev on connect() error paths
-    https://git.kernel.org/netdev/net-next/c/13a3585b264b
-  - [RESEND,v2,2/6] nfc: llcp: simplify llcp_sock_connect() error paths
-    https://git.kernel.org/netdev/net-next/c/ec10fd154d93
-  - [RESEND,v2,3/6] nfc: llcp: use centralized exiting of bind on errors
-    https://git.kernel.org/netdev/net-next/c/4dbbf673f7d7
-  - [RESEND,v2,4/6] nfc: llcp: use test_bit()
-    https://git.kernel.org/netdev/net-next/c/a736491239f4
-  - [RESEND,v2,5/6] nfc: llcp: protect nfc_llcp_sock_unlink() calls
-    https://git.kernel.org/netdev/net-next/c/a06b8044169f
-  - [RESEND,v2,6/6] nfc: llcp: Revert "NFC: Keep socket alive until the DISC PDU is actually sent"
-    https://git.kernel.org/netdev/net-next/c/44cd5765495b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -3,6 +3,7 @@
+ #define _ASM_X86_LINKAGE_H
+ 
+ #include <linux/stringify.h>
++#include <asm/ibt.h>
+ 
+ #undef notrace
+ #define notrace __attribute__((no_instrument_function))
+@@ -34,5 +35,43 @@
+ 
+ #endif /* __ASSEMBLY__ */
+ 
++/*
++ * compressed and purgatory define this to disable EXPORT,
++ * hijack this same to also not emit ENDBR.
++ */
++#ifndef __DISABLE_EXPORTS
++
++/* SYM_FUNC_START -- use for global functions */
++#define SYM_FUNC_START(name)				\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
++#define SYM_FUNC_START_NOALIGN(name)			\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL -- use for local functions */
++#define SYM_FUNC_START_LOCAL(name)			\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
++#define SYM_FUNC_START_LOCAL_NOALIGN(name)		\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK -- use for weak functions */
++#define SYM_FUNC_START_WEAK(name)			\
++	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK_NOALIGN -- use for weak functions, w/o alignment */
++#define SYM_FUNC_START_WEAK_NOALIGN(name)		\
++	SYM_START(name, SYM_L_WEAK, SYM_A_NONE)		\
++	ENDBR
++
++#endif /* __DISABLE_EXPORTS */
++
+ #endif /* _ASM_X86_LINKAGE_H */
+ 
 
 
