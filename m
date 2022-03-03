@@ -2,220 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 871E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231514AbiCCId1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:33:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
+        id S231515AbiCCIdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:33:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231518AbiCCIdC (ORCPT
+        with ESMTP id S231530AbiCCIdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:33:02 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2107172E56;
-        Thu,  3 Mar 2022 00:32:12 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id c1so3883900pgk.11;
-        Thu, 03 Mar 2022 00:32:12 -0800 (PST)
+        Thu, 3 Mar 2022 03:33:33 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACB549F9D;
+        Thu,  3 Mar 2022 00:32:45 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id v22so5745083ljh.7;
+        Thu, 03 Mar 2022 00:32:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0GWB2R2tj9cQyYxYQpEaLLWh5AYJ8mREWRMwTFH1ZY8=;
-        b=FxYLMMbzHjZCUkl3rR5/1QqA3E5oRmGNjHjq8lKNFEWtkeoeiYSKqHlTAOt45cD38/
-         Aab+jquT9cH6O5GsfmZXWEK0tj4oHkou1bktYoKw+06HyL3eWSiw+oLWPMs7mn3Z0tSF
-         nqK+gVxCgNwvee4xhJiyp/dvUvYiYB2dx1CC0W8bOAzRULUkVs2fSqUbZZfLo4ZMsqfg
-         j8RFPX82yJhBeBIgf3BF8Z2d+MtgDEtJqHVZN46F7zFat9OilnoPAPRedyE3A1yu77J9
-         m02OHGSoNGALvVsunzaxX4YW4hQxotzY7fLFoWy94NA6KfUtH+l84Hkg1L6DRSvijUvW
-         YYuA==
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=DBFYMKAkX/+X4ffNw6h4ygU2WXIfLsougJ0b6s/z1mE=;
+        b=KOqgA6AAztWzmSbNCZkD/x3REvvm47jEcpi9jyZM0WjbKW2i30ZuSlf1mEVyp8lSKz
+         uQYoClbXREjv1XpMOBXcijZ1/1CbNG3FYG20o1l9VO/RDfClRs8K1B71GEp3pU/tHbcS
+         KwZf+hBLO6Oia/I1W7I+wtGm8drUmgkWLwv8K5giTXC0JqRxJL0WWHo/4/Wd4j7VRS45
+         +1EBbTrtlSn+zQo4a5eIgS2/KG78dCedkA2ZtCFnbrRoh/+slt/zB3h+XML9y7hLkPeH
+         ad1OkqRnAtnW18AjWUPre2fFSeivjXB6t03OW9DA8MUI3nksERPKIVVY1a6sMokYxrvc
+         O6eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0GWB2R2tj9cQyYxYQpEaLLWh5AYJ8mREWRMwTFH1ZY8=;
-        b=gc08AR00BB4pFTrjAzkDexIAyU/J7zQhcVZYLGDiYQb56NNWPl7jGiCOdqhZddzaX6
-         erAgNLEg33iz8tb6VxyMQVN4s5c/8nZv/FiF3BIpSP0Aa2nWQZv6h4jt9t4g+06Fv+xZ
-         9vVZrHL+qhxg9GnUAH6/PmtW9IioOpEflByOJ3+0I3sApKxiAEGou11T21UkhUCcDeBD
-         LprpzWQNjwIdkDmpbizktmAyjxqLynVD3daZiAI0Nl0hFIVijYXVmXobEdz4unMaMGKm
-         FBbMlMEjoNPoOWnImqviopETvfuzb9bw3nNzvwNimaVxTWGs8YFs6HK7ZESMHD3gSN7R
-         BCkQ==
-X-Gm-Message-State: AOAM531lOcimMEWtIlnPpo54d8w4+NVg0AvGjiTwYYM7ZjrzDNYaD/Yf
-        t7THNB9l0FEPibAgb+Y/4Np+rAKLeK4e
-X-Google-Smtp-Source: ABdhPJzFFn5ZMGXbHeUPbEODBqzFHOZcSd58iz5bXuoRLOWpK1iT8DJtw91DEDG0+vDmmU1yS56Tng==
-X-Received: by 2002:a05:6a00:134c:b0:4bc:9423:96b2 with SMTP id k12-20020a056a00134c00b004bc942396b2mr37102122pfu.45.1646296332298;
-        Thu, 03 Mar 2022 00:32:12 -0800 (PST)
-Received: from localhost ([2401:e180:8860:3b30:e4a0:392a:996e:c525])
-        by smtp.gmail.com with ESMTPSA id d3-20020a056a00244300b004bc9397d3d0sm1578143pfj.103.2022.03.03.00.32.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 03 Mar 2022 00:32:12 -0800 (PST)
-From:   Tyrone Ting <warp5tw@gmail.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com
-Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 10/11] i2c: npcm: Remove own slave addresses 2:10
-Date:   Thu,  3 Mar 2022 16:31:40 +0800
-Message-Id: <20220303083141.8742-11-warp5tw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220303083141.8742-1-warp5tw@gmail.com>
-References: <20220303083141.8742-1-warp5tw@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DBFYMKAkX/+X4ffNw6h4ygU2WXIfLsougJ0b6s/z1mE=;
+        b=rmrRcs8RH043FDznZx60oG3LnYKJKlSI4hF+7OSGjiputaz0V4fLyh0CYLV4b84IoJ
+         /c/HG/JcV3QDU/pGHFNX/j5Gk10XXUu79E2NhVcqhwsqgSjKL+bdSS1iN6TX39g6JlxV
+         +wktDXUQL4EFxNGmKLmdhlUXe3ZzGqgOVTjGiIVggAcEqVnlgj2hJrWZqD3WrbOFfzrN
+         xvbXczlS1zGT1kklyqsQ4iqE9V88n2JiZybwYJR7CvhKf3obBns214NVI+FgtYvVefab
+         SgMBAy/0tqDkUvr5c1tS5dDkhSSfJZpzbvj4Jc6ivsYcBzwBmP3oJ+71bocFDZ+jqZMV
+         M7Kg==
+X-Gm-Message-State: AOAM531j5ICfoOmzVpqKzOK3uVEntaM5+171nv7F87/tEPMKTmZBf28P
+        d7cGJFH/sZYKhTY2QktZlAk=
+X-Google-Smtp-Source: ABdhPJwxQD23hLO7eHUX3JyISNNuANHEqy+kAaWJrtsZxN6MGxGebaLJwTJhApHPECnaXU3+Kv3+mA==
+X-Received: by 2002:a2e:b5cb:0:b0:246:4e4e:45f4 with SMTP id g11-20020a2eb5cb000000b002464e4e45f4mr22877087ljn.407.1646296363738;
+        Thu, 03 Mar 2022 00:32:43 -0800 (PST)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id n8-20020a2e7208000000b00233697d2d9bsm331541ljc.12.2022.03.03.00.32.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 00:32:43 -0800 (PST)
+Message-ID: <fb18b5e2-d273-adf6-3e14-77628abc4560@gmail.com>
+Date:   Thu, 3 Mar 2022 09:32:41 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH] dt-bindings: mtd: partitions: add UBI binding
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rini <trini@konsulko.com>,
+        Ricardo Salveti <ricardo@foundries.io>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Jorge Ramirez-Ortiz <jorge@foundries.io>,
+        Sean Anderson <seanga2@gmail.com>, u-boot@lists.denx.de,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20220217102448.27586-1-zajec5@gmail.com>
+ <Yh/ovYMV104jc+CE@robh.at.kernel.org>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <Yh/ovYMV104jc+CE@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+On 2.03.2022 22:59, Rob Herring wrote:
+> On Thu, Feb 17, 2022 at 11:24:48AM +0100, Rafał Miłecki wrote:
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> UBI is often used on embedded devices to store UBI volumes with device
+>> configuration / calibration data. Such volumes may need to be documented
+>> and referenced for proper boot & setup.
+>>
+>> Some examples:
+>> 1. U-Boot environment variables
+>> 2. Device calibration data
+>> 3. Default setup (e.g. initial password)
+>>
+>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+>> ---
+>>   .../bindings/mtd/partitions/ubi.yaml          | 67 +++++++++++++++++++
+>>   1 file changed, 67 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/mtd/partitions/ubi.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/mtd/partitions/ubi.yaml b/Documentation/devicetree/bindings/mtd/partitions/ubi.yaml
+>> new file mode 100644
+>> index 000000000000..cd081f06d4cb
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/mtd/partitions/ubi.yaml
+>> @@ -0,0 +1,67 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/mtd/partitions/ubi.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: UBI (Unsorted Block Images) device
+>> +
+>> +description: |
+>> +  UBI is a layer providing logical volumes (consisting of logical blocks) on top
+>> +  of raw flash devices. It deals with low-level flash issues (bit-flips, bad
+>> +  physical eraseblocks, wearing) providing a reliable data storage.
+>> +
+>> +  UBI device is built and stored in a single flash partition.
+>> +
+>> +  Some (usually embedded) devices use UBI volumes of specific names or indexes
+>> +  to store setup / configuration data. This binding allows describing such
+>> +  volumes so they can be identified and referenced by consumers.
+>> +
+>> +maintainers:
+>> +  - Rafał Miłecki <rafal@milecki.pl>
+>> +
+>> +allOf:
+>> +  - $ref: partition.yaml#
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: ubi
+>> +
+>> +patternProperties:
+>> +  "^volume-[0-9a-f]+$":
+>> +    type: object
+>> +    description: UBI volume
+>> +    properties:
+>> +      volume-name:
+>> +        $ref: /schemas/types.yaml#/definitions/string
+>> +      volume-id:
+>> +        $ref: /schemas/types.yaml#/definitions/uint32
+>> +    anyOf:
+>> +      - required:
+>> +          - volume-name
+>> +      - required:
+>> +          - volume-id
+>> +
+>> +unevaluatedProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    partitions {
+>> +        compatible = "fixed-partitions";
+>> +        #address-cells = <1>;
+>> +        #size-cells = <1>;
+>> +
+>> +        partition@0 {
+>> +            compatible = "ubi";
+>> +            reg = <0x0000000 0x1000000>;
+>> +            label = "filesystem";
+>> +
+>> +            env: volume-0 {
+>> +                volume-name = "u-boot-env";
+> 
+> Why not do 'compatible = "u-boot,env";' to align with normal partitions?
 
-NPCM can support up to 10 own slave addresses.
-In practice, only one address is actually being used.
-In order to access addresses 2 and above, need to switch
-register banks. The switch needs spinlock.
-To avoid using spinlock for this useless feature
-removed support of SA >= 2.
+I mean to reserve "compatible" for describing UBI volume content.
 
-Also fix returned slave event enum.
+If I manage to get
+[PATCH V3] dt-bindings: nvmem: add U-Boot environment variables binding
+https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20220228131250.16943-1-zajec5@gmail.com/
+accepted, it'll allow me to later work on something like:
 
-Remove some comment since the bank selection is not
-required. The bank selection is not required since
-the supported slave addresses are reduced.
+env: volume-0 {
+     compatible = "u-boot,env";
+     volume-name = "u-boot-env";
+};
 
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
----
- drivers/i2c/busses/i2c-npcm7xx.c | 46 ++++++++++++++++----------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+(I believe) I'll need (in the final shape) two properties:
+1. One for describing UBI volume ("compatible")
+2. One for identifying UBI volume ("volume-name" / "volume-id")
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 73cef76127c9..5c0bbc134f9d 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -124,6 +124,8 @@ enum i2c_addr {
-  * use this array to get the address or each register.
-  */
- #define I2C_NUM_OWN_ADDR 10
-+#define I2C_NUM_OWN_ADDR_SUPPORTED 2
-+
- static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
- 	NPCM_I2CADDR1, NPCM_I2CADDR2, NPCM_I2CADDR3, NPCM_I2CADDR4,
- 	NPCM_I2CADDR5, NPCM_I2CADDR6, NPCM_I2CADDR7, NPCM_I2CADDR8,
-@@ -392,14 +394,10 @@ static void npcm_i2c_disable(struct npcm_i2c *bus)
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- 	int i;
- 
--	/* select bank 0 for I2C addresses */
--	npcm_i2c_select_bank(bus, I2C_BANK_0);
--
- 	/* Slave addresses removal */
--	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++)
-+	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++)
- 		iowrite8(0, bus->reg + npcm_i2caddr[i]);
- 
--	npcm_i2c_select_bank(bus, I2C_BANK_1);
- #endif
- 	/* Disable module */
- 	i2cctl2 = ioread8(bus->reg + NPCM_I2CCTL2);
-@@ -604,8 +602,7 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
- 			i2cctl1 &= ~NPCM_I2CCTL1_GCMEN;
- 		iowrite8(i2cctl1, bus->reg + NPCM_I2CCTL1);
- 		return 0;
--	}
--	if (addr_type == I2C_ARP_ADDR) {
-+	} else if (addr_type == I2C_ARP_ADDR) {
- 		i2cctl3 = ioread8(bus->reg + NPCM_I2CCTL3);
- 		if (enable)
- 			i2cctl3 |= I2CCTL3_ARPMEN;
-@@ -614,16 +611,18 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
- 		iowrite8(i2cctl3, bus->reg + NPCM_I2CCTL3);
- 		return 0;
- 	}
-+	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10) {
-+		dev_err(bus->dev,
-+			"try to enable more then 2 SA not supported\n");
-+	}
- 	if (addr_type >= I2C_ARP_ADDR)
- 		return -EFAULT;
- 	/* select bank 0 for address 3 to 10 */
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_0);
-+
- 	/* Set and enable the address */
- 	iowrite8(sa_reg, bus->reg + npcm_i2caddr[addr_type]);
- 	npcm_i2c_slave_int_enable(bus, enable);
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_1);
-+
- 	return 0;
- }
- #endif
-@@ -846,15 +845,13 @@ static u8 npcm_i2c_get_slave_addr(struct npcm_i2c *bus, enum i2c_addr addr_type)
- {
- 	u8 slave_add;
- 
--	/* select bank 0 for address 3 to 10 */
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_0);
-+	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10) {
-+		dev_err(bus->dev,
-+			"get slave: try to use more then 2 slave addresses not supported\n");
-+	}
- 
- 	slave_add = ioread8(bus->reg + npcm_i2caddr[(int)addr_type]);
- 
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_1);
--
- 	return slave_add;
- }
- 
-@@ -864,12 +861,12 @@ static int npcm_i2c_remove_slave_addr(struct npcm_i2c *bus, u8 slave_add)
- 
- 	/* Set the enable bit */
- 	slave_add |= 0x80;
--	npcm_i2c_select_bank(bus, I2C_BANK_0);
--	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++) {
-+
-+	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++) {
- 		if (ioread8(bus->reg + npcm_i2caddr[i]) == slave_add)
- 			iowrite8(0, bus->reg + npcm_i2caddr[i]);
- 	}
--	npcm_i2c_select_bank(bus, I2C_BANK_1);
-+
- 	return 0;
- }
- 
-@@ -924,11 +921,15 @@ static int npcm_i2c_slave_get_wr_buf(struct npcm_i2c *bus)
- 	for (i = 0; i < I2C_HW_FIFO_SIZE; i++) {
- 		if (bus->slv_wr_size >= I2C_HW_FIFO_SIZE)
- 			break;
--		i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
-+		if (bus->state == I2C_SLAVE_MATCH) {
-+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
-+			bus->state = I2C_OPER_STARTED;
-+		} else {
-+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
-+		}
- 		ind = (bus->slv_wr_ind + bus->slv_wr_size) % I2C_HW_FIFO_SIZE;
- 		bus->slv_wr_buf[ind] = value;
- 		bus->slv_wr_size++;
--		i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
- 	}
- 	return I2C_HW_FIFO_SIZE - ret;
- }
-@@ -976,7 +977,6 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
- 	if (nwrite == 0)
- 		return;
- 
--	bus->state = I2C_OPER_STARTED;
- 	bus->operation = I2C_WRITE_OPER;
- 
- 	/* get the next buffer */
--- 
-2.17.1
+It's similar design to the "compatible" vs. "reg" in IO hw blocks.
+
+
+> Or 'label'?
+
+I could replace "volume-name" with "label" but someone once told me that:
+ > 'label' is supposed to correspond to a sticker on a port or something
+ > human identifiable
+
+;) https://patchwork.ozlabs.org/comment/2812214/
+
+So I don't want to abuse "label" here.
+
+
+> We have enough ways to identify things, I don't think we need another.
+> 
+>> +            };
+>> +
+>> +            calibration: volume-1 {
+> 
+> Are 0 and 1 meaningful or just made up indexing?
+
+Made up indexing. I need unique nodenames but @[0-9a-f] doesn't appply here.
+
+
+>> +                volume-id = <99>;
+>> +            };
+>> +        };
+>> +    };
+>> -- 
+>> 2.34.1
 
