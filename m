@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D486CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232724AbiCCLc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48210 "EHLO
+        id S232871AbiCCLcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:32:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232746AbiCCLbM (ORCPT
+        with ESMTP id S232742AbiCCLbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Mar 2022 06:31:12 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F37E17BC70
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F59A17BC6E
         for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=M9IXA5ebBNnz+R+qZDtzMK3zVwQ/Bg0ejvU/Hzsv3aY=; b=SFUpOuVZf48nIDImEJOSD6saZe
-        Y2Uf3shVcPPhfflUpH1quk2lfBh477sSl99laf96r71VvoEZMLm+C/j+ZlQvEOXwseMce+HngUtDr
-        lX3OEWHrRTCt6aDNKvIUA1PMbt0VBDLuVwkbwrmGUrY8Cwl/PMKzf6wSnjtESPZnES4al/drM1JRE
-        m9DMi9CU0ud77wM+PgW73ytJGcIeBENaY2hOBl2XVgkfXJQM7IbPjR/gIQvsJAq89QB6knoVmZa8a
-        Ni4wQPeztjcsD6+hZeJEX7R4cidU/vqEbQIkBkrLnEtzrvys8N8cUAq1TFmIwkYRqaBpt8FnDNQim
-        VO5mdKOA==;
+        bh=h6GcArmVpCRO3FrdKqhyu7r+UQXJ+Ln2TbiItmpPfmo=; b=Y9Ws6ORDAYMbcyq+LRvY4qvaMK
+        QdPe8H2E7wf2/vD38QR2ZAo+TvZSLvmqlvolB6fVPZDO4t1LWI6uXLpJz5Jb/haPVVOaMURH2MITV
+        CdyEV7tmalYfEBvBxNCzS4D5uZn0K31OfYJ1ESS38nlm45lavO9w00BkRSn1rUpn01257MK4uwZMO
+        ezvideJjOeCvTI7SgcH9/b/uzAj9OvL8bGBd0uxyw7PSMYMAPFqJgOorpLHGFQ8bTE4HerYV+IBT0
+        J6DsyO2BkB26pmFMnDXNc5m59URlnv0gxXUHr6XHi0i8ONVfF6wTTVbbJkM0tLJ4kFHsH2mphj7HK
+        XQhlQPpw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeh-00Etpg-IJ; Thu, 03 Mar 2022 11:29:59 +0000
+        id 1nPjeg-00EtpZ-Vq; Thu, 03 Mar 2022 11:29:59 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F372A30220B;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F036A30214E;
         Thu,  3 Mar 2022 12:29:56 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 5E50330032B2D; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112826.044301664@infradead.org>
+        id 5620A3002F5F6; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112825.924414182@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:39 +0100
+Date:   Thu, 03 Mar 2022 12:23:37 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 18/39] x86/ibt,ftrace: Make function-graph play nice
+Subject: [PATCH v3 16/39] x86/ibt,ftrace: Search for __fentry__ location
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,97 +55,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Return trampoline must not use indirect branch to return; while this
-preserves the RSB, it is fundamentally incompatible with IBT. Instead
-use a retpoline like ROP gadget that defeats IBT while not unbalancing
-the RSB.
+Have ftrace_location() search the symbol for the __fentry__ location
+when it isn't at func+0 and use this for {,un}register_ftrace_direct().
 
-And since ftrace_stub is no longer a plain RET, don't use it to copy
-from. Since RET is a trivial instruction, poke it directly.
+This avoids a whole bunch of assumptions about __fentry__ being at
+func+0.
 
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kernel/ftrace.c    |    9 ++-------
- arch/x86/kernel/ftrace_64.S |   16 ++++++++++++----
- 2 files changed, 14 insertions(+), 11 deletions(-)
+ kernel/trace/ftrace.c |   34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -316,12 +316,12 @@ create_trampoline(struct ftrace_ops *ops
- 	unsigned long offset;
- 	unsigned long npages;
- 	unsigned long size;
--	unsigned long retq;
- 	unsigned long *ptr;
- 	void *trampoline;
- 	void *ip;
- 	/* 48 8b 15 <offset> is movq <offset>(%rip), %rdx */
- 	unsigned const char op_ref[] = { 0x48, 0x8b, 0x15 };
-+	unsigned const char retq[] = { RET_INSN_OPCODE, INT3_INSN_OPCODE };
- 	union ftrace_op_code_union op_ptr;
- 	int ret;
- 
-@@ -359,12 +359,7 @@ create_trampoline(struct ftrace_ops *ops
- 		goto fail;
- 
- 	ip = trampoline + size;
--
--	/* The trampoline ends with ret(q) */
--	retq = (unsigned long)ftrace_stub;
--	ret = copy_from_kernel_nofault(ip, (void *)retq, RET_SIZE);
--	if (WARN_ON(ret < 0))
--		goto fail;
-+	memcpy(ip, retq, RET_SIZE);
- 
- 	/* No need to test direct calls on created trampolines */
- 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS) {
---- a/arch/x86/kernel/ftrace_64.S
-+++ b/arch/x86/kernel/ftrace_64.S
-@@ -176,10 +176,10 @@ SYM_FUNC_END(ftrace_caller);
- SYM_FUNC_START(ftrace_epilogue)
- /*
-  * This is weak to keep gas from relaxing the jumps.
-- * It is also used to copy the RET for trampolines.
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -1578,7 +1578,25 @@ unsigned long ftrace_location_range(unsi
   */
- SYM_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)
- 	UNWIND_HINT_FUNC
-+	ENDBR
- 	RET
- SYM_FUNC_END(ftrace_epilogue)
- 
-@@ -284,6 +284,7 @@ SYM_FUNC_START(__fentry__)
- 	jnz trace
- 
- SYM_INNER_LABEL(ftrace_stub, SYM_L_GLOBAL)
-+	ENDBR
- 	RET
- 
- trace:
-@@ -307,7 +308,7 @@ EXPORT_SYMBOL(__fentry__)
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- SYM_FUNC_START(return_to_handler)
--	subq  $24, %rsp
-+	subq  $16, %rsp
- 
- 	/* Save the return values */
- 	movq %rax, (%rsp)
-@@ -319,7 +320,14 @@ SYM_FUNC_START(return_to_handler)
- 	movq %rax, %rdi
- 	movq 8(%rsp), %rdx
- 	movq (%rsp), %rax
--	addq $24, %rsp
--	JMP_NOSPEC rdi
+ unsigned long ftrace_location(unsigned long ip)
+ {
+-	return ftrace_location_range(ip, ip);
++	struct dyn_ftrace *rec;
++	unsigned long offset;
++	unsigned long size;
 +
-+	addq $16, %rsp
-+	ANNOTATE_INTRA_FUNCTION_CALL
-+	call .Ldo_rop
-+	int3
-+.Ldo_rop:
-+	mov %rdi, (%rsp)
-+	UNWIND_HINT_FUNC
-+	RET
- SYM_FUNC_END(return_to_handler)
- #endif
++	rec = lookup_rec(ip, ip);
++	if (!rec) {
++		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
++			goto out;
++
++		/* map sym+0 to __fentry__ */
++		if (!offset)
++			rec = lookup_rec(ip, ip + size - 1);
++	}
++
++	if (rec)
++		return rec->ip;
++
++out:
++	return 0;
+ }
+ 
+ /**
+@@ -4962,7 +4980,8 @@ ftrace_match_addr(struct ftrace_hash *ha
+ {
+ 	struct ftrace_func_entry *entry;
+ 
+-	if (!ftrace_location(ip))
++	ip = ftrace_location(ip);
++	if (!ip)
+ 		return -EINVAL;
+ 
+ 	if (remove) {
+@@ -5110,11 +5129,16 @@ int register_ftrace_direct(unsigned long
+ 	struct ftrace_func_entry *entry;
+ 	struct ftrace_hash *free_hash = NULL;
+ 	struct dyn_ftrace *rec;
+-	int ret = -EBUSY;
++	int ret = -ENODEV;
+ 
+ 	mutex_lock(&direct_mutex);
+ 
++	ip = ftrace_location(ip);
++	if (!ip)
++		goto out_unlock;
++
+ 	/* See if there's a direct function at @ip already */
++	ret = -EBUSY;
+ 	if (ftrace_find_rec_direct(ip))
+ 		goto out_unlock;
+ 
+@@ -5222,6 +5246,10 @@ int unregister_ftrace_direct(unsigned lo
+ 
+ 	mutex_lock(&direct_mutex);
+ 
++	ip = ftrace_location(ip);
++	if (!ip)
++		goto out_unlock;
++
+ 	entry = find_direct_entry(&ip, NULL);
+ 	if (!entry)
+ 		goto out_unlock;
 
 
