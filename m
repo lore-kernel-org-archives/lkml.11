@@ -2,121 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA47C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B96C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 08:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbiCCIXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 03:23:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S230322AbiCCI03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 03:26:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbiCCIW7 (ORCPT
+        with ESMTP id S229486AbiCCI02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 03:22:59 -0500
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DFB7171ECF
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 00:22:13 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowADn78OjeiBiasmpAQ--.62570S2;
-        Thu, 03 Mar 2022 16:21:56 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com
-Cc:     patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] ASoC: wm8350: Handle error for wm8350_register_irq
-Date:   Thu,  3 Mar 2022 16:21:54 +0800
-Message-Id: <20220303082154.264114-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 3 Mar 2022 03:26:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB8512BF75;
+        Thu,  3 Mar 2022 00:25:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F68D61AB0;
+        Thu,  3 Mar 2022 08:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 695F5C004E1;
+        Thu,  3 Mar 2022 08:25:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646295942;
+        bh=FzERdXwGq+QaSvTfcC68YudjS9FCfSbCOgzAlWuyhWk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SrABbJcVCNxEWDpgx1+0FfGc2jcnDE5t6g3fdB2u78D7+EGACULaguXdHJYpryeNL
+         YcD6z748vVBKVqwHzjdoLc+1mtryQkJIu83lgtsvFL7Mn2Ql8H6/Bb2J3kHskc1Jqf
+         0rpRHbrWGV7Ke9LQ42g+NVPDXbvQ2MbB311gD6RqMqgCr/t+jqVkY73REgAfNtpwcl
+         wjykcHWZSgLIEbHACXSUSE4ugg9kiDmBn+9rB8Xx0hS78GZnE1y1xuVNCvC8HuzZII
+         uND0pFfK+tPNiXQN7Fa6f24GqPdiIZM+uB0weEGR+yzEKrYXEk1R0XxGt+ZqU4U9xq
+         dnA4Lgr0CNWrA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nPgmJ-0001l7-M2; Thu, 03 Mar 2022 09:25:39 +0100
+Date:   Thu, 3 Mar 2022 09:25:39 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, Joel Stanley <joel@jms.id.au>
+Subject: Re: [PATCH v2] USB: serial: pl2303: Add IBM device IDs
+Message-ID: <YiB7gz0GJ1Uz0mE2@hovoldconsulting.com>
+References: <20220301224446.21236-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADn78OjeiBiasmpAQ--.62570S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7KF1ftr1kKF18Zry8uF45Wrg_yoW5JrW5pr
-        WIkrW3WryYg3y3uF1furykXr1DJFyxKF4Dury2yr17XryakrykWr4jvF1jqF18JFW0q3ZF
-        krW2v3yruw4rWFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
-        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
-        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301224446.21236-1-eajames@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the wm8350_register_irq(),
-it should be better to check it and return error if fails.
-Also, use 'free_' in order to avoid the same code.
+On Tue, Mar 01, 2022 at 04:44:46PM -0600, Eddie James wrote:
+> IBM manufactures a PL2303 device for UPS communications. Add the vendor
+> and product IDs so that the PL2303 driver binds to the device.
+> 
+> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> ---
+> Changes since v1:
+>  - Fix commit message Signed-off-by ordering.
 
-Fixes: a6ba2b2dabb5 ("ASoC: Implement WM8350 headphone jack detection")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- sound/soc/codecs/wm8350.c | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
+Almost there. You're still missing a Co-developed-by tag, a From line,
+or both.
 
-diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
-index 15d42ce3b21d..0c70bbfbedb5 100644
---- a/sound/soc/codecs/wm8350.c
-+++ b/sound/soc/codecs/wm8350.c
-@@ -1483,7 +1483,7 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
- 	ret = devm_regulator_bulk_get(wm8350->dev, ARRAY_SIZE(priv->supplies),
- 				 priv->supplies);
- 	if (ret != 0)
--		return ret;
-+		goto err;
- 
- 	/* Put the codec into reset if it wasn't already */
- 	wm8350_clear_bits(wm8350, WM8350_POWER_MGMT_5, WM8350_CODEC_ENA);
-@@ -1537,18 +1537,38 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
- 	wm8350_clear_bits(wm8350, WM8350_JACK_DETECT,
- 			  WM8350_JDL_ENA | WM8350_JDR_ENA);
- 
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
- 			    wm8350_hpl_jack_handler, 0, "Left jack detect",
- 			    priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
-+	if (ret != 0)
-+		goto err;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
- 			    wm8350_hpr_jack_handler, 0, "Right jack detect",
- 			    priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
-+	if (ret != 0)
-+		goto free_JCK_DET_L;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
- 			    wm8350_mic_handler, 0, "Microphone short", priv);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
-+	if (ret != 0)
-+		goto free_JCK_DET_R;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
- 			    wm8350_mic_handler, 0, "Microphone detect", priv);
-+	if (ret != 0)
-+		goto free_MICSCD;
- 
- 	return 0;
-+
-+free_MICSCD:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_MICSCD, priv);
-+free_JCK_DET_R:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R, priv);
-+free_JCK_DET_L:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L, priv);
-+err:
-+	return ret;
- }
- 
- static void wm8350_component_remove(struct snd_soc_component *component)
--- 
-2.25.1
+Please take another look at the documentation I pointed to.
 
+Johan
