@@ -2,67 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8835CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3F9C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235839AbiCCTB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:01:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
+        id S231650AbiCCTH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235834AbiCCTBz (ORCPT
+        with ESMTP id S229536AbiCCTH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:01:55 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2B219F45A;
-        Thu,  3 Mar 2022 11:01:10 -0800 (PST)
+        Thu, 3 Mar 2022 14:07:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5C419D751;
+        Thu,  3 Mar 2022 11:06:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7B672CE283C;
-        Thu,  3 Mar 2022 19:01:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E70AC340EF;
-        Thu,  3 Mar 2022 19:01:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D097F61A8A;
+        Thu,  3 Mar 2022 19:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F4FC340F3;
+        Thu,  3 Mar 2022 19:06:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646334066;
-        bh=6ZgQZFPjT4ERYD4AAFuJJu62nDV2iPyeqpdTkS/jbPA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LA9aPS607DbiaCU7BdQJAuw9Dv5ntB4rTI+iV7+179CS3sby2VU5KZMwRUf8SuFSp
-         56JJMxjvc5rtNAwEBqFtbkQgXvtNKe+gmqzd53BMPlSzQtS7vIyA6IujnN+tikUr+o
-         tcV9M+DgqBDLgmb7TZeaQzEXkzMAralMhGi0MwQiiSGAkFFk6mr1fhrvaTZMJjs85A
-         zJ+q62IRRqjjrSwA5aduT7qcQMmcZFijZBuIj0zQbfqX42tXi/8qRHeIgggnU1/Dxk
-         h8G0xAj811KKPGN0u1K3PGncqr0FU8IH6E9hP51FVnJSTaTQzblHuWBOqRdjoWom3S
-         Z1QATBkDUpLow==
-Date:   Thu, 3 Mar 2022 20:25:31 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     jgg@nvidia.com, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH for-next] RDMA/core: Fix ib_qp_usecnt_dec() called when
- error
-Message-ID: <YiEIG4bFVFlEDHML@unreal>
-References: <20220303024232.2847388-1-yajun.deng@linux.dev>
+        s=k20201202; t=1646334401;
+        bh=2BtpIBsXVCJxVQ/oh3K2FgXEMXiekUDLQX9xD2gdbLM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=o2c+ye5BqYrayS6wcIkhykEd9oMUM08fnMBunZ6ubqX+UPCADV0E3K1UilobnxEPQ
+         sjmgxT04DSYUChMdCZVaAVyy6CXFMzPmUDVfXCOHmMz1U7anuFgSLwFqFWWlO6vpm/
+         Ibuza1+FbskVwliS18eABoFLCDlTEAmnkV7CiQX7bG0YpjPE8COYneNTvKag0LoL5G
+         c4OqdEIfpQaaAiypnu9/cZpft0YHLK88txfnlhsoopUuEcX1UIDkDqZgGS03IL5Mn1
+         zqj05azs8MVzTuDztpZrpkyYk5qi0sb4Td1zcAw+k3CjFcSFYw7+6ijKAIPw82Etxz
+         DW+fCwyHjboxg==
+Received: by mail-ed1-f43.google.com with SMTP id q17so7878712edd.4;
+        Thu, 03 Mar 2022 11:06:41 -0800 (PST)
+X-Gm-Message-State: AOAM533+fFcS5jz4NiB3e3Sv6PMbcD1sMv/j2t9RTsYMeiOcyVRjKUSS
+        ukmku3Z0jTr2+zzBJZAWmeQc/vwG3WH+gRVCdQ==
+X-Google-Smtp-Source: ABdhPJwEoJqO4GxeRtl4C7IV0N8/KXSt+tovp2KwzQmA0QQzU7BNoyVpkRvxSAPAd3L4v7UJIYii2bTAUw20bGdm/cM=
+X-Received: by 2002:a05:6402:4384:b0:413:9e36:b56f with SMTP id
+ o4-20020a056402438400b004139e36b56fmr25115772edc.280.1646334399480; Thu, 03
+ Mar 2022 11:06:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303024232.2847388-1-yajun.deng@linux.dev>
+References: <20220215081334.788419-1-peng.fan@oss.nxp.com> <Yhj9joQkgTswMVcs@robh.at.kernel.org>
+ <DU0PR04MB94172264E2DCE759EE3B9A3688019@DU0PR04MB9417.eurprd04.prod.outlook.com>
+In-Reply-To: <DU0PR04MB94172264E2DCE759EE3B9A3688019@DU0PR04MB9417.eurprd04.prod.outlook.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 3 Mar 2022 13:06:27 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqL_02Gw6hw59NdH_rCDmwy5f+OrCsifmuNkxo2OgTYnYg@mail.gmail.com>
+Message-ID: <CAL_JsqL_02Gw6hw59NdH_rCDmwy5f+OrCsifmuNkxo2OgTYnYg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: Add imx93 compatible string
+To:     Peng Fan <peng.fan@nxp.com>
+Cc:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 10:42:32AM +0800, Yajun Deng wrote:
-> ib_destroy_qp() would called by ib_create_qp_user() if error, the former
-> contains ib_qp_usecnt_dec(), but ib_qp_usecnt_inc() was not called before.
-> 
-> So move ib_qp_usecnt_inc() into create_qp().
-> 
-> Fixes: d2b10794fc13 ("RDMA/core: Create clean QP creations interface for uverbs")
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-> ---
->  drivers/infiniband/core/uverbs_cmd.c          | 1 -
->  drivers/infiniband/core/uverbs_std_types_qp.c | 1 -
->  drivers/infiniband/core/verbs.c               | 3 +--
->  3 files changed, 1 insertion(+), 4 deletions(-)
-> 
+On Sun, Feb 27, 2022 at 6:44 PM Peng Fan <peng.fan@nxp.com> wrote:
+>
+> Hi Rob,
+>
+> > Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: Add imx93 compatible
+> > string
+> >
+> > On Tue, Feb 15, 2022 at 04:13:34PM +0800, Peng Fan (OSS) wrote:
+> > > From: Peng Fan <peng.fan@nxp.com>
+> > >
+> > > The lpuart on i.MX93 is derived from i.MX8ULP with some industrial
+> > > enhancements, it uses three compatible strings, so update the
+> >
+> > Looks like it's 2 compatible strings...
+>
+> Oh, yes. i.MX8ULP/7ULP is same uart IP.
+>
+> >
+> > > compatible string for i.MX93. But for a few instants,
+> >
+> > s/instants/instances/
+> >
+> > > DTR_B, DSR_B, DCD_B and RIN_B pins are supported, so use one
+> > > compatible string fsl,imx93-lpuart-v2
+> >
+> > If the differences are just what gets pinned out, then I think the differences
+> > should be handled with separate properties. We probably already have some.
+> >
+> > Plus, while you may have all the above signals, a board design may still only
+> > use a subset.
+>
+> It is SoC integration level with above features not support in some instances,
+> so no such signals connected to SoC pin.
+>
+> Saying LPUART IP itself support DTR/DSR/DCD/RIN, but instance A has the
+> feature disabled when doing SoC integration, instance B has the feature enabled
+> when doing SoC integration. What's your suggestion with such case?
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Unless it changes the register interface in a non-compatible way that
+the driver needs to know about, I would not do a different compatible.
+For example, register offsets change.
+
+Rob
