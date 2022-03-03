@@ -2,177 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2CAC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236299AbiCCUiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 15:38:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
+        id S236326AbiCCUj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 15:39:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbiCCUiA (ORCPT
+        with ESMTP id S235403AbiCCUj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 15:38:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434C41D32C;
-        Thu,  3 Mar 2022 12:37:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6CA5B824B3;
-        Thu,  3 Mar 2022 20:37:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FB6DC340EF;
-        Thu,  3 Mar 2022 20:37:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646339831;
-        bh=OXGr1PhWd90UciyXoThMqMTWRA8qGdjyNBBLaOztyWA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=X+KjScztBhjYUP8tJdR/XaLnR53G+5qb3QCupyPWaIdUxaHN+ARp5NZXvwhmUeXF1
-         caA0cXxRDYeCEs9kFx7eMBcZJUStWa2CkvacrvJGG1jGYCqhSxii4zPdxZnUZYdD38
-         PwDrY5sqlJNDieJtf7Oddv3DFhjIlYPEGGqyBNhwqY9ESjiqyxeGW3N0NE0xpQ/pht
-         RA9kyBDi4MJkNrQPHuNQBWwO5QxU259tlde65nIodNx6FHnKZ/1lj14a0Otn4DQonf
-         zjxhHxSU/WGYWCxBv2QYi8ZxbmmPQJbi3JMmlbSp0MJx3WM2KxzFZFr5YDIIKkHUH/
-         /t+H2u+oVsKdQ==
-Date:   Thu, 3 Mar 2022 14:45:26 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thu, 3 Mar 2022 15:39:56 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817C5E4D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 12:39:08 -0800 (PST)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 757E224000A;
+        Thu,  3 Mar 2022 20:39:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646339947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QJsqTF9rz0lgtm7akJbC4rKub2xGisCi3uye4FpApS8=;
+        b=aVZk0oW3JVqZkfqceZVkKflE4Q7HUVD1v5w2Ucqexc7Ogi4Tama4z4uRoX6a1UT9zAEprG
+        LMtRNperar/TEEOdNyAVydPAAOi8yATnD7BPAmum5Vfh2Kyk5AzZkvbo5Od7eHwAHYoVH/
+        lXAfWy1M8AOktZxRDzUWw3KXhANq2BC0Br4GXTZ0gdLgtRoL8oKrjf2Tn4+KL57hYTocYn
+        W6bGJzkr4Az+4Bo1Mb+IbE2rHZVkM1kt+cYaiLr8xPsLVCRu6i6uz9JKvN8PgLpqElGxi9
+        htSsKRS3vErdnuhuskK9UmWR1AuRXKU+JSdF3oodgJaGBUUohunYzlQ+g41alw==
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] drm/amd/display: Fix Wstringop-overflow warnings
- in dc_link_dp.c
-Message-ID: <20220303204526.GA1733280@embeddedor>
-References: <20220303172503.GA1731116@embeddedor>
- <202203030937.5BFE3EF@keescook>
- <20220303181957.GA1731711@embeddedor>
+        Daniel Vetter <daniel@ffwll.ch>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v11 0/2] drm: LogiCVC display controller support
+Date:   Thu,  3 Mar 2022 21:38:56 +0100
+Message-Id: <20220303203858.314955-1-paul.kocialkowski@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220303181957.GA1731711@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 12:19:57PM -0600, Gustavo A. R. Silva wrote:
-> On Thu, Mar 03, 2022 at 09:43:28AM -0800, Kees Cook wrote:
-> > On Thu, Mar 03, 2022 at 11:25:03AM -0600, Gustavo A. R. Silva wrote:
-> > > Fix the following Wstringop-overflow warnings when building with GCC-11:
-> > > 
-> > > drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
-> > 
-> > Can you "show your work" a little more here? I don't actually see the
-> > what is getting fixed:
-> > 
-> > enum dc_lane_count {
-> > 	...
-> >         LANE_COUNT_FOUR = 4,
-> > 	...
-> >         LANE_COUNT_DP_MAX = LANE_COUNT_FOUR
-> > };
-> > 
-> > struct link_training_settings {
-> > 	...
-> >         union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX];
-> > };
-> > 
-> > void dp_hw_to_dpcd_lane_settings(
-> > 		...
-> > 		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
-> > {
-> > 	...
-> > }
-> > 
-> > static enum link_training_result dpia_training_cr_transparent(
-> > 		...
-> >                 struct link_training_settings *lt_settings)
-> > {
-> > 	...
-> >                 dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
-> >                                 lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
-> > 	...
-> > }
-> > 
-> > Everything looks to be the correct size?
-> 
-> Yep; this fix is similar to the one for intel_pm.c in this
-> 
-> 	commit e7c6e405e171fb33990a12ecfd14e6500d9e5cf2
-> 
-> where the array size of 8 seems to be fine for all the
-> struct members related (pri_latency, spr_latency, cur_latency
-> and skl_latency):
-> 
-> drivers/gpu/drm/i915/i915_drv.h:465:struct drm_i915_private {
-> ...
-> 
-> drivers/gpu/drm/i915/i915_drv.h-739-    struct {
-> 
-> ...
-> drivers/gpu/drm/i915/i915_drv.h-745-            /* primary */
-> drivers/gpu/drm/i915/i915_drv.h-746-            u16 pri_latency[5];
-> drivers/gpu/drm/i915/i915_drv.h-747-            /* sprite */
-> drivers/gpu/drm/i915/i915_drv.h-748-            u16 spr_latency[5];
-> drivers/gpu/drm/i915/i915_drv.h-749-            /* cursor */
-> drivers/gpu/drm/i915/i915_drv.h-750-            u16 cur_latency[5];
-> drivers/gpu/drm/i915/i915_drv.h-751-            /*
-> drivers/gpu/drm/i915/i915_drv.h-752-             * Raw watermark memory latency values
-> drivers/gpu/drm/i915/i915_drv.h-753-             * for SKL for all 8 levels
-> drivers/gpu/drm/i915/i915_drv.h-754-             * in 1us units.
-> drivers/gpu/drm/i915/i915_drv.h-755-             */
-> drivers/gpu/drm/i915/i915_drv.h-756-            u16 skl_latency[8];
-> 
-> ...
-> drivers/gpu/drm/i915/i915_drv.h-773-    } wm;
-> ...
-> }
+This series introduces support for the LogiCVC display controller.
+The controller is a bit unusual since it is usually loaded as
+programmable logic on Xilinx FPGAs or Zynq-7000 SoCs.
+More details are presented on the main commit for the driver.
 
-and in this case the ilk_wm_max_level() returns the right maximum size for the
-corresponding 'struct wm' member:
+More information about the controller is available on the dedicated
+web page: https://www.logicbricks.com/Products/logiCVC-ML.aspx
 
-drivers/gpu/drm/i915/intel_pm.c:2993:int ilk_wm_max_level(const struct drm_i915_private *dev_priv)
-drivers/gpu/drm/i915/intel_pm.c-2994-{
-drivers/gpu/drm/i915/intel_pm.c-2995-   /* how many WM levels are we expecting */
-drivers/gpu/drm/i915/intel_pm.c-2996-   if (HAS_HW_SAGV_WM(dev_priv))
-drivers/gpu/drm/i915/intel_pm.c-2997-           return 5;
-drivers/gpu/drm/i915/intel_pm.c-2998-   else if (DISPLAY_VER(dev_priv) >= 9)
-drivers/gpu/drm/i915/intel_pm.c-2999-           return 7;
-drivers/gpu/drm/i915/intel_pm.c-3000-   else if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv))
-drivers/gpu/drm/i915/intel_pm.c-3001-           return 4;
-drivers/gpu/drm/i915/intel_pm.c-3002-   else if (DISPLAY_VER(dev_priv) >= 6)
-drivers/gpu/drm/i915/intel_pm.c-3003-           return 3;
-drivers/gpu/drm/i915/intel_pm.c-3004-   else
-drivers/gpu/drm/i915/intel_pm.c-3005-           return 2;
-drivers/gpu/drm/i915/intel_pm.c-3006-}
+Note that this driver has rather simple connector management, which was
+not converted to drm_panel_bridge to keep the ability to enable the panel
+at first vblank but also to support DVI.
 
-drivers/gpu/drm/i915/intel_pm.c:3009:static void intel_print_wm_latency(struct drm_i915_private *dev_priv,
-drivers/gpu/drm/i915/intel_pm.c-3010-                              const char *name,
-drivers/gpu/drm/i915/intel_pm.c-3011-                              const u16 wm[])
-drivers/gpu/drm/i915/intel_pm.c-3012-{
-drivers/gpu/drm/i915/intel_pm.c-3013-   int level, max_level = ilk_wm_max_level(dev_priv);
-drivers/gpu/drm/i915/intel_pm.c-3014-
-drivers/gpu/drm/i915/intel_pm.c-3015-   for (level = 0; level <= max_level; level++) {
-drivers/gpu/drm/i915/intel_pm.c-3016-           unsigned int latency = wm[level];
-drivers/gpu/drm/i915/intel_pm.c-3017-
-...
-}
+Changes since v10:
+- Removed common compatibles for major logicvc versions;
+- Switched caps detection to use the version registers instead of
+  the compatible;
+- Added support for major version 5 of the unit;
+- Used FIELD_GET from bitfield.h and removed local equivalents;
+- Updated copyright year;
 
-still GCC warns about this with Wstringop-overread, as it is explained
-in commit e7c6e405e171.
+Changes since v9:
+- Added common compatibles for major logicvc versions;
+- Add support for logicvc-5;
+- Rebased on latest drm-misc next.
 
---
-Gustavo
+Changes since v8:
+- Rebased on top of the latest drm-misc-next;
+- Dropped useless phandle-based syscon regmap support;
+- Switched to a single-port graph description;
+- Updated the device-tree schema to the port schema and added a
+  description for the port.
 
-> 
-> however GCC warns about accessing bytes beyond the limits, and turning the
-> argument declarations into pointers (removing the over-specified array
-> size from the argument declaration) silence the warnings.
-> 
-> --
-> Gustavo
+Change since v7:
+- Replaced DRM_INFO/DRM_ERROR/DRM_DEBUG_DRIVER with fashions using drm_device;
+- Fixed yaml binding alignment issue;
+- Renamed logicvc-display name to the generic "display" name;
+- Added patternProperties match for display in the parent mfd binding;
+- Used drm_atomic_get_new_crtc_state when needed;
+- Checked mode in mode_valid instead of atomic_check;
+- Switched to drmm_mode_config_init;
+- Removed useless logicvc_connector_destroy wrapper;
+- Removed useless drm_dev_put calls;
+- Removed atomic_commit_tail that enables the panel and streamlined the logic;
+- Reworked Makefile cosmetics;
+- Fixed checkpatch issues.
+
+Changes since v6:
+- Updated to the latest DRM internal API changes; 
+- Used an enum to index dt properties instead of the name string.
+
+Changes since v5:
+- Subclass DRM device and use devm_drm_dev_alloc for allocation;
+- Removed call to drm_mode_config_cleanup (done automatically with devm);
+- Some related code cleanups;
+- Bring back not-for-merge patch adding colorkey support.
+
+Changes since v4:
+- Updated to internal DRM API changes (rebased on drm-misc-next);
+- Added Kconfig dependency on OF;
+- Added MAINTAINERS entry;
+- Used drm_err and dev_err instead of DRM_ERROR where possible;
+- Various cosmetic changes.
+
+Changes since v3:
+- Rebased on latest drm-misc;
+- Improved event lock wrapping;
+- Added collect tag;
+- Added color-key support patch (not for merge, for reference only).
+
+Changes since v2:
+- Fixed and slightly improved dt schema.
+
+Changes since v1:
+- Switched dt bindings documentation to dt schema;
+- Described more possible dt parameters;
+- Added support for the lvds-3bit interface;
+- Added support for grabbing syscon regmap from parent node;
+- Removed layers count property and count layers child nodes instead.
+
+Paul Kocialkowski (2):
+  drm: Add support for the LogiCVC display controller
+  NOTFORMERGE: drm/logicvc: Add plane colorkey support
+
+ MAINTAINERS                                 |   6 +
+ drivers/gpu/drm/Kconfig                     |   2 +
+ drivers/gpu/drm/Makefile                    |   1 +
+ drivers/gpu/drm/logicvc/Kconfig             |   9 +
+ drivers/gpu/drm/logicvc/Makefile            |   9 +
+ drivers/gpu/drm/logicvc/logicvc_crtc.c      | 280 +++++++
+ drivers/gpu/drm/logicvc/logicvc_crtc.h      |  21 +
+ drivers/gpu/drm/logicvc/logicvc_drm.c       | 497 +++++++++++++
+ drivers/gpu/drm/logicvc/logicvc_drm.h       |  70 ++
+ drivers/gpu/drm/logicvc/logicvc_interface.c | 214 ++++++
+ drivers/gpu/drm/logicvc/logicvc_interface.h |  28 +
+ drivers/gpu/drm/logicvc/logicvc_layer.c     | 767 ++++++++++++++++++++
+ drivers/gpu/drm/logicvc/logicvc_layer.h     |  71 ++
+ drivers/gpu/drm/logicvc/logicvc_mode.c      |  80 ++
+ drivers/gpu/drm/logicvc/logicvc_mode.h      |  15 +
+ drivers/gpu/drm/logicvc/logicvc_of.c        | 185 +++++
+ drivers/gpu/drm/logicvc/logicvc_of.h        |  46 ++
+ drivers/gpu/drm/logicvc/logicvc_regs.h      |  80 ++
+ 18 files changed, 2381 insertions(+)
+ create mode 100644 drivers/gpu/drm/logicvc/Kconfig
+ create mode 100644 drivers/gpu/drm/logicvc/Makefile
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_crtc.c
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_crtc.h
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_drm.c
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_drm.h
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_interface.c
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_interface.h
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_layer.c
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_layer.h
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_mode.c
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_mode.h
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_of.c
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_of.h
+ create mode 100644 drivers/gpu/drm/logicvc/logicvc_regs.h
+
+-- 
+2.35.1
+
