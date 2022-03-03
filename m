@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05305C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:33:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E46F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232944AbiCCLee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48258 "EHLO
+        id S232106AbiCCLej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:34:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiCCLbN (ORCPT
+        with ESMTP id S232756AbiCCLbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Mar 2022 06:31:13 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F7F17C43E
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0583F17C436
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=xB4u1Jy3hvc7M0RTBy37w5M/ndZ42JCBNtJfPEBqWsQ=; b=KEf+27uqmVOCXbYPLDqOuNo1/X
-        qg5rPn0kyTMHmguWRyF6ett2gaZlJYZbDghUhNY/R5MJlYOJDV/wBKSNr949ejJ3EkJU5sSKf7Ooq
-        ppArmtbT/sr85FwIWukbKssPhK3RoA5gkeQBtAK5su0znPSTAvhlIeVNEBxpXyBCDB1hhiu17fpUO
-        fgsHluAhlHq1m+CM9n9kEfy//s+WVROnGO8aIPWC3XEigYS5JRFcH4bw3ZRSQmkEsDYcMnZtRD+te
-        bJ7CD15SNmuZQ3r6lpprMVyJBSNxYokdiJNufpCGsLWnmZ36boGRpACEtErApsix61riroaFOuBJw
-        KekwM7Ew==;
+        bh=NvO+IHOYI1CkwADY+VdCMxDi9Cy/dNNDweaguilPuG8=; b=fOiUagp1aTXuX3v0LO+Py6hS8Z
+        UJgF9+56SaQi6SRQ2BX2vgAShG6533nA07dMvQHQY37nuuY2efXz3y0Zdzub6gpA6A86imHa6vjlQ
+        kJ4xOp5pkhAGX2cD1w3CxeKrjcRXU2pBibAokrrYyX/804INM/Rhuo+MgHcOpGfOdyC48t/MSq3Ea
+        HsLvXFuXddrX/aHbPUtqrxSm50+OinEX/VnrE9Fvc+Qt+3cwnAmF5ILjpi+InzYYvdXUtZ8TYUdAN
+        A2mStX339k1kWYSndZ/SJv1y7bnQtiTm6uCAT08SA7f+jw9p/wS3JE5L237mRxd7r5PZ1I1h8hEKJ
+        cyV9SO8Q==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjeh-00BaH7-Be; Thu, 03 Mar 2022 11:29:59 +0000
+        id 1nPjef-00BaGe-Rv; Thu, 03 Mar 2022 11:29:58 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0CA96302D58;
-        Thu,  3 Mar 2022 12:29:57 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 60B913005A3;
+        Thu,  3 Mar 2022 12:29:56 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 8438130126B5C; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112826.604331683@infradead.org>
+        id 1F3B9300147CA; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112825.190662703@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:48 +0100
+Date:   Thu, 03 Mar 2022 12:23:25 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 27/39] x86/ibt,ftrace: Annotate ftrace code patching
+Subject: [PATCH v3 04/39] x86/ibt: Base IBT bits
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,70 +55,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are code patching sites, not indirect targets.
+Add Kconfig, Makefile and basic instruction support for x86 IBT.
+
+(Ab)use __DISABLE_EXPORTS to disable IBT since it's already employed
+to mark compressed and purgatory. Additionally mark realmode with it
+as well to avoid inserting ENDBR instructions there. While ENDBR is
+technically a NOP, inserting them was causing some grief due to code
+growth. There's also a problem with using __noendbr in code compiled
+without -fcf-protection=branch.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kernel/ftrace_64.S |    7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/Kconfig           |   20 ++++++++++++
+ arch/x86/Makefile          |    7 +++-
+ arch/x86/include/asm/ibt.h |   74 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 99 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kernel/ftrace_64.S
-+++ b/arch/x86/kernel/ftrace_64.S
-@@ -145,6 +145,7 @@ SYM_FUNC_START(ftrace_caller)
- 	movq %rcx, RSP(%rsp)
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1861,6 +1861,26 @@ config X86_UMIP
+ 	  specific cases in protected and virtual-8086 modes. Emulated
+ 	  results are dummy.
  
- SYM_INNER_LABEL(ftrace_caller_op_ptr, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	/* Load the ftrace_ops into the 3rd parameter */
- 	movq function_trace_op(%rip), %rdx
++config CC_HAS_IBT
++	# GCC >= 9 and binutils >= 2.29
++	# Retpoline check to work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93654
++	# Clang/LLVM >= 14
++	# fentry check to work around https://reviews.llvm.org/D111108
++	def_bool ((CC_IS_GCC && $(cc-option, -fcf-protection=branch -mindirect-branch-register)) || \
++		  (CC_IS_CLANG && $(cc-option, -fcf-protection=branch -mfentry))) && \
++		  $(as-instr,endbr64)
++
++config X86_KERNEL_IBT
++	prompt "Indirect Branch Tracking"
++	bool
++	depends on X86_64 && CC_HAS_IBT
++	help
++	  Build the kernel with support for Indirect Branch Tracking, a
++	  hardware support course-grain forward-edge Control Flow Integrity
++	  protection. It enforces that all indirect calls must land on
++	  an ENDBR instruction, as such, the compiler will instrument the
++	  code with them to make this happen.
++
+ config X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	prompt "Memory Protection Keys"
+ 	def_bool y
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -36,7 +36,7 @@ endif
  
-@@ -155,6 +156,7 @@ SYM_INNER_LABEL(ftrace_caller_op_ptr, SY
- 	movq $0, CS(%rsp)
+ # How to compile the 16-bit code.  Note we always compile for -march=i386;
+ # that way we can complain to the user if the CPU is insufficient.
+-REALMODE_CFLAGS	:= -m16 -g -Os -DDISABLE_BRANCH_PROFILING \
++REALMODE_CFLAGS	:= -m16 -g -Os -DDISABLE_BRANCH_PROFILING -D__DISABLE_EXPORTS \
+ 		   -Wall -Wstrict-prototypes -march=i386 -mregparm=3 \
+ 		   -fno-strict-aliasing -fomit-frame-pointer -fno-pic \
+ 		   -mno-mmx -mno-sse $(call cc-option,-fcf-protection=none)
+@@ -62,8 +62,11 @@ export BITS
+ #
+ KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx
  
- SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	call ftrace_stub
+-# Intel CET isn't enabled in the kernel
++ifeq ($(CONFIG_X86_KERNEL_IBT),y)
++KBUILD_CFLAGS += $(call cc-option,-fcf-protection=branch)
++else
+ KBUILD_CFLAGS += $(call cc-option,-fcf-protection=none)
++endif
  
- 	/* Handlers can change the RIP */
-@@ -169,6 +171,7 @@ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBA
- 	 * layout here.
- 	 */
- SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 
- 	jmp ftrace_epilogue
- SYM_FUNC_END(ftrace_caller);
-@@ -192,6 +195,7 @@ SYM_FUNC_START(ftrace_regs_caller)
- 	/* save_mcount_regs fills in first two parameters */
- 
- SYM_INNER_LABEL(ftrace_regs_caller_op_ptr, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	/* Load the ftrace_ops into the 3rd parameter */
- 	movq function_trace_op(%rip), %rdx
- 
-@@ -221,6 +225,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_op_pt
- 	leaq (%rsp), %rcx
- 
- SYM_INNER_LABEL(ftrace_regs_call, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	call ftrace_stub
- 
- 	/* Copy flags back to SS, to restore them */
-@@ -248,6 +253,7 @@ SYM_INNER_LABEL(ftrace_regs_call, SYM_L_
- 	 */
- 	testq	%rax, %rax
- SYM_INNER_LABEL(ftrace_regs_caller_jmp, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	jnz	1f
- 
- 	restore_mcount_regs
-@@ -261,6 +267,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_jmp,
- 	 * to the return.
- 	 */
- SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	jmp ftrace_epilogue
- 
- 	/* Swap the flags with orig_rax */
+ ifeq ($(CONFIG_X86_32),y)
+         BITS := 32
+--- /dev/null
++++ b/arch/x86/include/asm/ibt.h
+@@ -0,0 +1,74 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_IBT_H
++#define _ASM_X86_IBT_H
++
++#include <linux/types.h>
++
++#if defined(CONFIG_X86_KERNEL_IBT) && !defined(__DISABLE_EXPORTS)
++
++#define HAS_KERNEL_IBT	1
++
++#ifndef __ASSEMBLY__
++
++#ifdef CONFIG_X86_64
++#define ASM_ENDBR	"endbr64\n\t"
++#else
++#define ASM_ENDBR	"endbr32\n\t"
++#endif
++
++#define __noendbr	__attribute__((nocf_check))
++
++static inline __attribute_const__ u32 gen_endbr(void)
++{
++	u32 endbr;
++
++	/*
++	 * Generate ENDBR64 in a way that is sure to not result in
++	 * an ENDBR64 instruction as immediate.
++	 */
++	asm ( "mov $~0xfa1e0ff3, %[endbr]\n\t"
++	      "not %[endbr]\n\t"
++	       : [endbr] "=&r" (endbr) );
++
++	return endbr;
++}
++
++static inline bool is_endbr(u32 val)
++{
++	val &= ~0x01000000U; /* ENDBR32 -> ENDBR64 */
++	return val == gen_endbr();
++}
++
++#else /* __ASSEMBLY__ */
++
++#ifdef CONFIG_X86_64
++#define ENDBR	endbr64
++#else
++#define ENDBR	endbr32
++#endif
++
++#endif /* __ASSEMBLY__ */
++
++#else /* !IBT */
++
++#define HAS_KERNEL_IBT	0
++
++#ifndef __ASSEMBLY__
++
++#define ASM_ENDBR
++
++#define __noendbr
++
++static inline bool is_endbr(u32 val) { return false; }
++
++#else /* __ASSEMBLY__ */
++
++#define ENDBR
++
++#endif /* __ASSEMBLY__ */
++
++#endif /* CONFIG_X86_KERNEL_IBT */
++
++#define ENDBR_INSN_SIZE		(4*HAS_KERNEL_IBT)
++
++#endif /* _ASM_X86_IBT_H */
 
 
