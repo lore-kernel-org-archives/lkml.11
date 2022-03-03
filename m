@@ -2,219 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B35C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F90C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 12:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233442AbiCCMuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 07:50:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
+        id S233449AbiCCMv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 07:51:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231899AbiCCMuU (ORCPT
+        with ESMTP id S231584AbiCCMvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 07:50:20 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1DA184B5F;
-        Thu,  3 Mar 2022 04:49:30 -0800 (PST)
-X-UUID: b7cf26c6ff394763860ea75a05adee32-20220303
-X-UUID: b7cf26c6ff394763860ea75a05adee32-20220303
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 862839539; Thu, 03 Mar 2022 20:49:26 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 3 Mar 2022 20:49:25 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 3 Mar 2022 20:49:24 +0800
-From:   <yf.wang@mediatek.com>
-To:     <iommu@lists.linux-foundation.org>
-CC:     <Libo.Kang@mediatek.com>, <Ning.Li@mediatek.com>,
-        <Yong.Wu@mediatek.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <miles.chen@mediatek.com>, <robin.murphy@arm.com>,
-        <stable@vger.kernel.org>, <will@kernel.org>,
-        <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>,
-        "yf . wang @ mediatek . com" <yf.wang@medaitek.com>
-Subject: Re: [PATCH v2] iommu/iova: Reset max32_alloc_size after cleaning
-Date:   Thu, 3 Mar 2022 20:43:23 +0800
-Message-ID: <20220303124323.32114-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220302235238.13099-1-miles.chen@mediatek.com>
-References: <20220302235238.13099-1-miles.chen@mediatek.com>
-MIME-Version: 1.0
+        Thu, 3 Mar 2022 07:51:54 -0500
+Received: from APC01-HK2-obe.outbound.protection.outlook.com (mail-eopbgr1300132.outbound.protection.outlook.com [40.107.130.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC8B184B63;
+        Thu,  3 Mar 2022 04:51:09 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fp/gPaX9Q/si6YLIYTdhBlCRDvAS16wZ3Q8VQdJ0eYio07W3e4AfdYBF0VGRFQa1XefdX48gHKQDR6zxa2pWIXUFlnRNQUQs1EU/vx1bwTQuin/EAuudgwerjVWvOu7cMpce1AfHPIqbDXmhLU5yBnLk5NmmyFDsZzgDgbb3iOgo9HoKhDJPEK4PnNPo/GIhLjK/I+8ug8Ugo5qgE5ZmYNFTm5GetN/yLFljuT7mWWJ43ZiihNpaq2ulm4hdpZwJH0n71fdc++WUtCYnoO8LgTTTFceLkVtYH+QVLa98N8cuZzPuFiWiBqqUF3hTU1AkRJ4pp2i0TXq3W8n+I3t4IA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0L32B4Jp0XrZ5WSuC0/s7srnTsgaWQmQWyHN0Ay0au4=;
+ b=kyTIqxsuaE5wGvUjRgosfaAjykoV01XpBmuXcQsXK9ySFZr7eYr1q72ORTeHO8v05OVJOtdYBcJg9UJAUiuwvcuUjisQG7apT8w/q5HDCZj+Eh/uBm5ZquYaPdPNKIky2MZRLu+SjmFE7VMazKE0jzd9JaL8QM75y4PKjZpw4I1dwrgF/9IjNxVwwBwYRXJFFd9j6bGiVCNfMs9ZVBWzYkhbqPQ1fewpsaqpXjtnn+1Gari9hQoVPz7tYQctkt5AuWycvfV4qC9dtZnUqe4w6UoMGvxjuMAE9s+QnzE8j8sbG9JiDf8+aUp6a5aPuT4RXVikkfX2thR0vwmEclwbNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0L32B4Jp0XrZ5WSuC0/s7srnTsgaWQmQWyHN0Ay0au4=;
+ b=ECKGD1s26BKuq0GWpMjgbuKtjrICJ+l0kNWHgZW7KRfXdkArVqqTUbO01qZH1vsPRNk1PEQ7sE8bJaxyROVRTGiFFlr+pwxttymNk0gH0zuvV4MF+kNyDGXhFQOle6kxlVBPUq1fNrTpVx1nYjMtfuf8QcDk8o0CMVi+XNtbRoY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
+ by SG2PR06MB3869.apcprd06.prod.outlook.com (2603:1096:4:d9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Thu, 3 Mar
+ 2022 12:51:05 +0000
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::30ce:609e:c8e8:8a06]) by TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::30ce:609e:c8e8:8a06%4]) with mapi id 15.20.5038.014; Thu, 3 Mar 2022
+ 12:51:05 +0000
+From:   Yihao Han <hanyihao@vivo.com>
+To:     Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com, Yihao Han <hanyihao@vivo.com>
+Subject: [PATCH] spi: cadence: fix platform_get_irq.cocci warning
+Date:   Thu,  3 Mar 2022 04:50:54 -0800
+Message-Id: <20220303125054.3574-1-hanyihao@vivo.com>
+X-Mailer: git-send-email 2.17.1
 Content-Type: text/plain
+X-ClientProxiedBy: HKAPR04CA0004.apcprd04.prod.outlook.com
+ (2603:1096:203:d0::14) To TYZPR06MB4173.apcprd06.prod.outlook.com
+ (2603:1096:400:26::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 601175c5-a52f-4069-fef2-08d9fd147b18
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3869:EE_
+X-Microsoft-Antispam-PRVS: <SG2PR06MB3869C1262E3878527CA996ECA2049@SG2PR06MB3869.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 72U9XlF3Ctj7kJVG7T8KgkgSV634rnmxF7ttJndlRpRdVLM0C7SnVIpLDIlWsMgYi3krTL+garN5dFkUli9nMV2THIZB++NME5AVH8yYCwjCiiFjk5Cb7lV3L/dD54pmd1IG8MDgwdVydMTJDy+BkG6rWhZUbmUSPXlBS3gxu2wZXOtLsxYB6C7aaDhGlGlOiLW1mKZUGJwyN5CXQDNZ+ZnxnHOoSWiHuqRh0S6jymmRYl5YN+FFo08y3Z2FndxPL/88ce9EbQ+qLWN+FDDE8i2Vey4Ay+1p/ReStTYSwF1tJnbr6M9rSQtDJ7N5YbH87O1OPeDZdQGlUuK0wgTirY1/6BqELYsLf+7S8vTdcYUNgp1tZhbwJokKK3N1Xhq0NcYCuU0V/s/FRCXhGBJmA6iQyHefm8/aEH11tffmv2AqWndDd53tYqRp9nXgh5KPMSj+5BGh4+9Tx8//NIk6KQiPva2FYwpi6k6jKHq/1zZo4oERqFQfry9X4NTjXx06oNIItY6DcwRBSyWUQkA1aAUL5n8Sa6WqEZcJ1YUh/OSzeSQ+gZDB2D8B3Uu8IYHYrzblciBvHNRIYDUdQ9l963KWPnx3kcKp5Ja5fF7PMZcO14ZXxp6oKiUNituKW1JRr7DxEXWNMWJMGHTLg6cPEoigpg+sinuMvtuXIUPSBKT1X2y2gONsJtcVSNxBd+UQBNthWEs11dwF388yemVsyg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(107886003)(6512007)(5660300002)(316002)(38350700002)(1076003)(38100700002)(2616005)(83380400001)(36756003)(2906002)(6506007)(52116002)(86362001)(8936002)(6666004)(4744005)(66476007)(66556008)(8676002)(4326008)(508600001)(66946007)(26005)(186003)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Jev8V2FqS33jJVH6mpFChuEkQhUQSlMAInlP3kfHyS+FQbtS95op0jMB3RKj?=
+ =?us-ascii?Q?NH9kDrugbHD4HsF/xFxn1Ale2S6FcbzlTh3Q/hJ701nQjHKFsAUXHtMDFGtv?=
+ =?us-ascii?Q?H/jxnsq1vlvbiKXTfbv4guabK0iV6jEeAMKW1uexnr77JYNs5NHwcw/Vdjn4?=
+ =?us-ascii?Q?9X1PRzEuzs7+a4dqNoPHxzrgGTSVU7FxxyZ5ANcmPZyUL6hzFF6/L0wov8SH?=
+ =?us-ascii?Q?Klkx5S2GP0qyfFSRN/hm6aiTGs3YTJHcjj65a062K3bdJGI69rPsd0xXbe6z?=
+ =?us-ascii?Q?b+18362fe9XWREJbLdi+GFGFoj2Y+QgF4fkz1mssdHUEuYA43XXMj6o/gwNF?=
+ =?us-ascii?Q?XkU+CiP01n2R9BP5vDOhT+NcndG43cWC5wApfbJ8wE22qBBRxuyCdMaVr356?=
+ =?us-ascii?Q?Z7haxs7ENFPTiiWE1/41fcpC243qR79G+SpRfaECc0OtSE8GNTjP6OQAM0R9?=
+ =?us-ascii?Q?aEKup7GX13EiIvEEc9PX/Be/7ldG+UVCNHzZmsdDu+PINmtOYgtwU9Svilgp?=
+ =?us-ascii?Q?F8Tup9arkfLMKyBfGhGplCVjmjnBZkoOvX9SBSjyUmUJHipvZyl/smvjTKVD?=
+ =?us-ascii?Q?Zyos7ukXnYHnXFTNOKd6Lu0IdE72o4IgNndbLToI8PMCAnz+2g/m2JD8ndU1?=
+ =?us-ascii?Q?Fl83HqsIj8N0uPL9IxuHBLKY8SwQR6UMc06ueevSidc3IQg+9lxN2RF19vTP?=
+ =?us-ascii?Q?mqrUs4BWDKOXbEn7P/egyap5TQWGvjR1majkSs4KC1FmeLyFaewEylvjRHpi?=
+ =?us-ascii?Q?v0oTW9l4H7m2LfzYFdvL07uT6NeQ8lEe6ktWkaqNN7mR6ANX+XThubJ8ZfDD?=
+ =?us-ascii?Q?1Ao8N6kQgvWRxVfLfSui1Tk9v7mLUYdt/PpqWtl8hB25BoR10qP1dluz+50l?=
+ =?us-ascii?Q?Wwyd7zPQ/kkha9gJqdSMpE9DNX9WXsnkcXB7O/gbPTSATskqbZLoHC13cM0j?=
+ =?us-ascii?Q?65i8n502trhYm/rYKHkCg7O+if/ZaOtYF79DADHN9QZ7309gqLEmiwPulP6C?=
+ =?us-ascii?Q?w+uS9rctFgpDFkN771kzzVfvk3TpEanEiaVpcmZV0EKwSoCPl+Huob3USwXH?=
+ =?us-ascii?Q?l+/TZwqlg6O/t1w3yx+tosQuskHbDmHVats0PNAiZ8S+Q495mDYlxfE9ta+f?=
+ =?us-ascii?Q?p+R30Up4XBXyKtAwwf72x4je4K2NTLvjzGGZ5PRpdtcqMjeV1Ab59XG19VH5?=
+ =?us-ascii?Q?PNuaS/nPnkcqTdhYjggk9ykjqEV5yf8ss9I+el9FwqK3gQw4SxBeVOgcyrwJ?=
+ =?us-ascii?Q?uU+XOzWm7YFj9jNBsEzCaBwcH2zq1KUcg9zLxr4HD+GwetmVPPyTv9Qa5hNa?=
+ =?us-ascii?Q?/MNJX91VqkZyPvdebvQK4hli8E3jvpxsyGkJVWUUiboFJkotdTOc0YLUy3Zw?=
+ =?us-ascii?Q?KDdaK1+V7E5KYRFdPd7cvcDSgvpJsIrlamJtXysS7+YTBFp/W/4d1HBaJlop?=
+ =?us-ascii?Q?fUyZ3ZUTDmvbfDEX9+pgFUm7C1WaFwtu2TjsS8sjGcrrNs/PQRWrFKHL8Xyk?=
+ =?us-ascii?Q?3pnU+C7R0TA1+1OKkTSUdTIJIkOVDpcynjxkvjZcY28qnQpCqqyIKov24e1V?=
+ =?us-ascii?Q?M+G95RoCLFPWtfUkAYfqH3dNRk9FF+sqyK2Abtu/xSH+/rIqgphlFqCuwWP9?=
+ =?us-ascii?Q?psWIbWJIoIBmG/bV64MT410=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 601175c5-a52f-4069-fef2-08d9fd147b18
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2022 12:51:05.7607
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OsTDQ1zRaiuCL9WinVB/YLAtMISfpnCoT0MrEjIXTFxCRLaaPOvQ5XCI03hG4Le42QgWJpXWlDfB5Fbb7L2utw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3869
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: yf.wang@mediatek.com <yf.wang@medaitek.com>
+Remove dev_err() messages after platform_get_irq*() failures.
+platform_get_irq() already prints an error.
 
-On Thu, 2022-03-03 at 07:52 +0800, Miles Chen wrote:
-> Thanks for your explanation.
-> 
-> YF showed me some numbers yesterday and maybe we can have a further
-> discussion in that test case. (It looks like that some iovas are
-> freed but
-> their pfn_lo(s) are less than cached_iova->pfn_lo, so
-> max32_alloc_size is not
-> reset. So there are enought free iovas but the allocation still
-> failed)
-> 
-> __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova
-> *free)
-> {
->       struct iova *cached_iova;
-> 
->       cached_iova = to_iova(iovad->cached32_node);
->       if (free == cached_iova ||
->               (free->pfn_hi < iovad->dma_32bit_pfn &&
->                free->pfn_lo >= cached_iova->pfn_lo)) {
->               iovad->cached32_node = rb_next(&free->node);
->               iovad->max32_alloc_size = iovad->dma_32bit_pfn;
->       }
->       ...
-> }
-> 
-> Hi YF,
-> Could your share your observation of the iova allocation failure you
-> hit?
-> 
-> Thanks,
-> Miles
+Generated by: scripts/coccinelle/api/platform_get_irq.cocci
 
-Hi Miles & Robin,
+Signed-off-by: Yihao Han <hanyihao@vivo.com>
+---
+ drivers/spi/spi-cadence-xspi.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-The scenario we encountered in our actual test:
-An iova domain with a 3GB iova region (0x4000_0000~0x1_0000_0000),
-only alloc iova total size 614788KB), then alloc iova size=0x731f000
-fail, and then the retry mechanism is free 300 cache iova at first,
-and then retry still fail, the reason for fail is blocked by the
-check condition (size >= iovad->max32_alloc_size) and goto iova32_full
-directly.
+diff --git a/drivers/spi/spi-cadence-xspi.c b/drivers/spi/spi-cadence-xspi.c
+index 4bc1b93fc276..3ab19be83095 100644
+--- a/drivers/spi/spi-cadence-xspi.c
++++ b/drivers/spi/spi-cadence-xspi.c
+@@ -578,10 +578,8 @@ static int cdns_xspi_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	cdns_xspi->irq = platform_get_irq(pdev, 0);
+-	if (cdns_xspi->irq < 0) {
+-		dev_err(dev, "Failed to get IRQ\n");
++	if (cdns_xspi->irq < 0)
+ 		return -ENXIO;
+-	}
+ 
+ 	ret = devm_request_irq(dev, cdns_xspi->irq, cdns_xspi_irq_handler,
+ 			       IRQF_SHARED, pdev->name, cdns_xspi);
+-- 
+2.17.1
 
-Why is no reset max32_alloc_size in __cached_rbnode_delete_update?
-Because of the pfn_lo of the freed cache iova is smaller than the
-current cached32_node's pfn_lo (free->pfn_lo < cached_iova->pfn_lo),
-so will not execute (iovad->max32_alloc_size = iovad->dma_32bit_pfn),
-is blocked by the check condition (free->pfn_lo >= cached_iova-
->pfn_lo).
-
-The issue observed during stress testing, when alloc fail reset
-max32_alloc_size to retry can help to allocate iova to those lower
-addresses.
-
-
-The following is the actual stress test log dump: 
-('pfn_lo', 'size' and 'pfn_hi' has iova_shift in dump log)
-size:                 0x731f000
-max32_alloc_size:     0x731f000
-cached_iova:          0xffffff814751a1c0
-cached_iova->pfn_lo:  0xf3500000
-cached_iova->pfn_hi:  0xf35ff000
-
-1.__alloc_and_insert_iova_range_fail
-[name:iova&]__alloc_and_insert_iova_range_fail:
-iovad:0xffffff80d5be2808
-  {granule:0x1000, start_pfn:0x40000, dma_32bit_pfn:0x100000,
-  max32_alloc_size:0x731f},size:0x731f
-
-2.dump all iova nodes of rbtree, contain cached iova:
-[name:iova&]dump_iova_rbtree start, iovad:0xffffff80d5be2808
-  {rbroot:0xffffff814751a4c0, cached_node:0xffffff80d5be2860,
-  cached32_node:0xffffff814751a1c0, granule:0x1000, start_pfn:0x40000,
-  dma_32bit_pfn:0x100000, max32_alloc_size:0x731f}
-
-('pfn_lo', 'size' and 'pfn_hi' has iova_shift in dump log)
-[name:iova&]index    iova_object       pfn_lo     size       pfn_hi
-[name:iova&]  1 0xffffff814751ae00  0x40800000  0x4c9000     0x40cc8000
-[name:iova&]  2 0xffffff807c960880  0x40d00000  0xc4000      0x40dc3000
-  ...322 lines of log are omitted here...
-[name:iova&]325 0xffffff814751a1c0  0xf3500000  0x100000     0xf35ff000
-[name:iova&]326 0xffffff8004552080  0xf3600000  0x100000     0xf36ff000
-[name:iova&]327 0xffffff80045524c0  0xf3700000  0xbc000      0xf37bb000
-[name:iova&]328 0xffffff814751a700  0xf3800000  0x265000     0xf3a64000
-[name:iova&]329 0xffffff8004552180  0xf3c00000  0xa13000     0xf4612000
-[name:iova&]330 0xffffff80c1b3eb40  0xf4800000  0xb400000    0xffbff000
-[name:iova&]331 0xffffff80d6e0b580  0xffcff000  0x1000       0xffcff000
-[name:iova&]332 0xffffff80c8395140  0xffd00000  0x80000      0xffd7f000
-[name:iova&]333 0xffffff80c8395000  0xffde0000  0x20000      0xffdff000
-[name:iova&]334 0xffffff80c8395380  0xffe00000  0x80000      0xffe7f000
-[name:iova&]335 0xffffff80c8395880  0xffec0000  0x20000      0xffedf000
-[name:iova&]336 0xffffff80c83957c0  0xffef9000  0x1000       0xffef9000
-[name:iova&]337 0xffffff80c83956c0  0xffefa000  0x1000       0xffefa000
-[name:iova&]338 0xffffff80c8395f40  0xffefb000  0x1000       0xffefb000
-[name:iova&]339 0xffffff80c8395a80  0xffefc000  0x4000       0xffeff000
-[name:iova&]340 0xffffff80c1b3e840  0xfff00000  0x100000     0xfffff000
-[name:iova&]341 0xffffff80d5be2860  0xfffffffffffff000 0x1000
-0xfffffffffffff000
-[name:iova&]dump_iova_rbtree done, iovad:0xffffff80d5be2808,
-  count:341, total_size:625876KB
-
-3.alloc fail, flushing rcache and retry.
-[name:iova&]alloc_iova_fast, flushing rcache and retry,
-  iovad:0xffffff80d5be2808, size:0x731f, limit_pfn:0xfffff
-
-4.retry is executed into the __alloc_and_insert_iova_range function:
-[name:iova&]__alloc_and_insert_iova_range fail goto iova32_full,
-  iovad:0xffffff80d5be2808 {granule:0x1000, start_pfn:0x40000,
-  dma_32bit_pfn:0x100000, max32_alloc_size:0x731f},size:0x731f
-
-5.dump all iova nodes of rbtree, current caches is already empty:
-[name:iova&]dump_iova_rbtree start, iovad:0xffffff80d5be2808
-  {rbroot:0xffffff80fe76da80, cached_node:0xffffff80d5be2860,
-  cached32_node:0xffffff814751a1c0, granule:0x1000, start_pfn:0x40000,
-  dma_32bit_pfn:0x100000, max32_alloc_size:0x731f}
-
-('pfn_lo', 'size' and 'pfn_hi' has iova_shift in dump log)
-[name:iova&]index    iova_object       pfn_lo     size       pfn_hi
-[name:iova&]  1 0xffffff814751ae00  0x40800000  0x4c9000     0x40cc8000
-[name:iova&]  2 0xffffff807c960880  0x40d00000  0xc4000      0x40dc3000
-[name:iova&]  3 0xffffff81487ce840  0x40e00000  0x37a000     0x41179000
-[name:iova&]  4 0xffffff80fe76d600  0x41200000  0x2400000    0x435ff000
-[name:iova&]  5 0xffffff8004552000  0x46800000  0x47e2000    0x4afe1000
-[name:iova&]  6 0xffffff807c960a40  0x50200000  0x400000     0x505ff000
-[name:iova&]  7 0xffffff818cdb5780  0x50600000  0x265000     0x50864000
-[name:iova&]  8 0xffffff814751a440  0x50a00000  0x2ae000     0x50cad000
-[name:iova&]  9 0xffffff818cdb5d40  0x50e00000  0x4c9000     0x512c8000
-[name:iova&] 10 0xffffff81487cef40  0x51400000  0x1a25000    0x52e24000
-[name:iova&] 11 0xffffff818cdb5140  0x53c00000  0x400000     0x53fff000
-[name:iova&] 12 0xffffff814751a7c0  0x54000000  0x400000     0x543ff000
-[name:iova&] 13 0xffffff80fe76d2c0  0x54500000  0xbc000      0x545bb000
-[name:iova&] 14 0xffffff81487ce0c0  0x54600000  0x400000     0x549ff000
-[name:iova&] 15 0xffffff80fe76d740  0x54a00000  0xbc000      0x54abb000
-[name:iova&] 16 0xffffff8004552440  0x54b00000  0xbc000      0x54bbb000
-[name:iova&] 17 0xffffff80fe76db80  0x54c00000  0x47e2000    0x593e1000
-[name:iova&] 18 0xffffff818cdb5440  0x65000000  0x400000     0x653ff000
-[name:iova&] 19 0xffffff8004552880  0x65400000  0x47e2000    0x69be1000
-[name:iova&] 20 0xffffff814751acc0  0x6c7e0000  0x20000      0x6c7ff000
-[name:iova&] 21 0xffffff80fe76d700  0x6c800000  0x47e2000    0x70fe1000
-//0x70fe1000 - 0xebc00000 = 0x7ac1f000:This free range is large enough
-[name:iova&] 22 0xffffff80fe76da80  0xebc00000  0x400000     0xebfff000
-[name:iova&] 23 0xffffff80045523c0  0xec000000  0x400000     0xec3ff000
-[name:iova&] 24 0xffffff8004552780  0xec400000  0x400000     0xec7ff000
-[name:iova&] 25 0xffffff814751a1c0  0xf3500000  0x100000     0xf35ff000
-[name:iova&] 26 0xffffff8004552080  0xf3600000  0x100000     0xf36ff000
-[name:iova&] 27 0xffffff80045524c0  0xf3700000  0xbc000      0xf37bb000
-[name:iova&] 28 0xffffff814751a700  0xf3800000  0x265000     0xf3a64000
-[name:iova&] 29 0xffffff8004552180  0xf3c00000  0xa13000     0xf4612000
-[name:iova&] 30 0xffffff80c1b3eb40  0xf4800000  0xb400000    0xffbff000
-[name:iova&] 31 0xffffff80d6e0b580  0xffcff000  0x1000       0xffcff000
-[name:iova&] 32 0xffffff80c8395140  0xffd00000  0x80000      0xffd7f000
-[name:iova&] 33 0xffffff80c8395000  0xffde0000  0x20000      0xffdff000
-[name:iova&] 34 0xffffff80c8395380  0xffe00000  0x80000      0xffe7f000
-[name:iova&] 35 0xffffff80c8395880  0xffec0000  0x20000      0xffedf000
-[name:iova&] 36 0xffffff80c83957c0  0xffef9000  0x1000       0xffef9000
-[name:iova&] 37 0xffffff80c83956c0  0xffefa000  0x1000       0xffefa000
-[name:iova&] 38 0xffffff80c8395f40  0xffefb000  0x1000       0xffefb000
-[name:iova&] 39 0xffffff80c8395a80  0xffefc000  0x4000       0xffeff000
-[name:iova&] 40 0xffffff80c1b3e840  0xfff00000  0x100000     0xfffff000
-[name:iova&] 41 0xffffff80d5be2860  0xfffffffffffff000 0x1000
-0xfffffffffffff000
-[name:iova&]dump_iova_rbtree done, iovad:0xffffff80d5be2808,
-count:41, total_size:614788KB
-
-Thanks,
-Yunfei.
