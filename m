@@ -2,136 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B938C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235373AbiCCTiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:38:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        id S235707AbiCCTjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:39:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232927AbiCCTiW (ORCPT
+        with ESMTP id S232927AbiCCTjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:38:22 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A106F64F0
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:37:34 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id 8so4955789qvf.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:37:34 -0800 (PST)
+        Thu, 3 Mar 2022 14:39:12 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8F05044A
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:38:26 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id e2so5644310pls.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:38:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZLz6jo4x58h2g9mHNukYRMIkhrbbw9vzkVWIa2i7m3Q=;
-        b=M2wy4Eequ/VYrHh7vqbtylJTihfO5wHVfscRBSvANAAaHg6MttPacF5n578ODHmCHi
-         raE5o+IETL5qV+2giWFnOU8WvjBnPHV4oq5mmGlnOBMa79WNfGBNMbLrEthPd5htrKT0
-         Jvkuhx8rCSD9MuClXK3vxXhJUNPLM2vE0sER/Li+ms27dFJHEHi1AT2ayM7SabjAiZLX
-         JWv/Ll3w8nEXZNQAz5yfdD6lfeip7k8vaX2pUgqOu3L2YLgFoRdKz7wORrE1OuaBkCVB
-         EulaUDUwhKUFlICPIbvoQXMTe0xcwj2fZLptvqrXiAld3zWNc+yZBfbktLlFFZ3iihFG
-         Ar+Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=M9gCpDsUpLGqQcUkdGHYkjRzuoDu54KLsE+14sxkm3c=;
+        b=RvBfaAqZtgNzfep6vsHoWlPFtU7qMWhDRPJJk35YQu1rluHwIC/xz6ez3wKGG6PC0A
+         8sm9grasluAZncFRknNM7jwjd0z3mdD6BzdQccr4tgt+ZCpCdhkGZw7deQsW/RecZkjv
+         73HGm7fc9c+EO42e071G6qD6/JASyVDkWa624RsLekL+0u06uOXqDQYxefF/hv1I+4BC
+         Fs9s6suRG3RJSYTBZHHj5vrCJvSZgmWqhitnaiGmTOHRtbmL2xCIhLQSj68yNkl46pP8
+         hCsDhMIstFRh0hz6fHAS9pAtnBtajLOf/v44yepvJARYbt+wX3nlAgd6Ja0ReT0ngfmv
+         +2gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZLz6jo4x58h2g9mHNukYRMIkhrbbw9vzkVWIa2i7m3Q=;
-        b=trqTHOpTYSZr+71aVPBn074YKcaXXlfMqaVtaUhMEv+uqGn12BtbSCjdgAD7yxLSbY
-         WBAcJYlRyIy6IH9akLywolMAQNDIVbUSha/HwFhau08dOyXyEUmBaOwTcCr/e44O4Z2L
-         kqhnWFJKWFvS3cUIldDThczJNpikoauByw3XF3zhbukAuQwhfshElCrjL743YLvGSXh2
-         MNAR0kvuWF2TFN4el6Gu302nBE/0GFXSBoy4EN66o8QAqpywoDjq96uZpT/4qkwHp+XN
-         W2hFszbVu/+wqwl0TDTfbsw0KSqDk0QRimLvBVwUm/m4fWZ5Vs3rjlLa1zVAfy4p42Yk
-         f2XQ==
-X-Gm-Message-State: AOAM531x5q8Rhe8B91sNy/3wFku4MKu8nehY8JUp1e9nUeWp6q65c4KX
-        yw/NPMDAziKw9hu9cTH058Xud8sjgmgA7OKdCbxTJg==
-X-Google-Smtp-Source: ABdhPJzAKtHy6Tgp6w3t1ZoHaLPWIK8SWJOD/Nb+X0nKgGN6oeKpnBh5ekYZNlunAUUhtsWXA58X4YKjLdnh7G34qLg=
-X-Received: by 2002:a05:6214:202f:b0:432:4810:1b34 with SMTP id
- 15-20020a056214202f00b0043248101b34mr25370584qvf.35.1646336253632; Thu, 03
- Mar 2022 11:37:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=M9gCpDsUpLGqQcUkdGHYkjRzuoDu54KLsE+14sxkm3c=;
+        b=pluwIDHubvr+EUGbCmB6t5v4X4wJvfNeoMnwu7jjFVfD5420jCUs9sIR6lL4El/wDh
+         UVJyoO3sxcA9x2+kxzIpWA3GpFuFxvxVc3FaAXH4/NZysOl5uBD0jbM0ZD2Fn4YWHXcc
+         ls5BYP49+OzqBraueAxvdtG9PfIoAH3bQ9HSbVnUB1YPOfvIqYTqPtDUAy0tyb6jFfpQ
+         vw6hN2fWpwoQY2pbA5GRwziy01tVNrgF479LCn4G9bQbO7L9DndNEro1KeEBq+wjfKKx
+         hMM/cr11e/GEX1lVoyuCkE/2zER8EpmNUsX7rM0B2EImDaaaCA8k2250f4alQjqgNVPZ
+         e+tw==
+X-Gm-Message-State: AOAM532OS3CSyLU9dalbxgkYj5nITzk2adpZm2HFIeiXpKAALtai9+Sy
+        SLnZa6paKwYogiIEfDlsPuHDAw==
+X-Google-Smtp-Source: ABdhPJzYw5BOAQJxGoynOgUYpzsVApgErc8BTD7uxvGNhfW+ShvWmc6fU3tS42tm/T8H5lK/StVxCg==
+X-Received: by 2002:a17:90b:1a81:b0:1bc:ec26:40a6 with SMTP id ng1-20020a17090b1a8100b001bcec2640a6mr7024774pjb.0.1646336305747;
+        Thu, 03 Mar 2022 11:38:25 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm8750694pju.44.2022.03.03.11.38.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 11:38:25 -0800 (PST)
+Date:   Thu, 3 Mar 2022 19:38:15 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org
+Subject: Re: [PATCH 4/4] KVM: x86: lapic: don't allow to set non default apic
+ id when not using x2apic api
+Message-ID: <YiEZJ6tg0+I+MdW5@google.com>
+References: <20220301135526.136554-1-mlevitsk@redhat.com>
+ <20220301135526.136554-5-mlevitsk@redhat.com>
+ <Yh5QJ4dJm63fC42n@google.com>
+ <6f4819b4169bd4e2ca9ab710388ebd44b7918eed.camel@redhat.com>
+ <Yh5b3eBYK/rGzFfj@google.com>
+ <297c8e41f512587230a54130a71ddfd9004c9507.camel@redhat.com>
+ <eae0b69fb8f5c47457fac853cc55b41a30762994.camel@redhat.com>
+ <YiDx/uYAMSZDvobO@google.com>
+ <df1ed2b01c74310bd4918196ba632e906e4c78f1.camel@redhat.com>
 MIME-Version: 1.0
-References: <20220225234339.2386398-1-haoluo@google.com> <20220225234339.2386398-5-haoluo@google.com>
- <20220302194141.c4gvqz5v4mmmbwsv@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220302194141.c4gvqz5v4mmmbwsv@ast-mbp.dhcp.thefacebook.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 3 Mar 2022 11:37:21 -0800
-Message-ID: <CA+khW7iRP8b69usnAy_j4hrYE-U0hC4Rv65K5m4wuP5ArnWsEQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 4/9] bpf: Introduce sleepable tracepoints
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, joshdon@google.com, sdf@google.com,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <df1ed2b01c74310bd4918196ba632e906e4c78f1.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 11:41 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Feb 25, 2022 at 03:43:34PM -0800, Hao Luo wrote:
-> > diff --git a/include/linux/tracepoint-defs.h b/include/linux/tracepoint-defs.h
-> > index e7c2276be33e..c73c7ab3680e 100644
-> > --- a/include/linux/tracepoint-defs.h
-> > +++ b/include/linux/tracepoint-defs.h
-> > @@ -51,6 +51,7 @@ struct bpf_raw_event_map {
-> >       void                    *bpf_func;
-> >       u32                     num_args;
-> >       u32                     writable_size;
-> > +     u32                     sleepable;
->
-> It increases the size for all tracepoints.
-> See BPF_RAW_TP in include/asm-generic/vmlinux.lds.h
-> Please switch writeable_size and sleepable to u16.
+On Thu, Mar 03, 2022, Maxim Levitsky wrote:
+> On Thu, 2022-03-03 at 16:51 +0000, Sean Christopherson wrote:
+> > On Wed, Mar 02, 2022, Maxim Levitsky wrote:
+> > > When APIC state is loading while APIC is in *x2apic* mode it does enforce that
+> > > value in this 0x20 offset is initial apic id if KVM_CAP_X2APIC_API.
+> > >  
+> > > I think that it is fair to also enforce this when KVM_CAP_X2APIC_API is not used,
+> > > especially if we make apic id read-only.
+> > 
+> > I don't disagree in principle.  But, (a) this loophole as existing for nearly 6
+> > years, (b) closing the loophole could break userspace, (c) false positive are
+> > possible due to truncation, and (d) KVM gains nothing meaningful by closing the
+> > loophole.
+> > 
+> > (d) changes when we add a knob to make xAPIC ID read-only, but we can simply
+> > require userspace to enable KVM_CAP_X2APIC_API (or force it).  That approach
+> > avoids (c) by eliminating truncation, and avoids (b) by virtue of being opt-in.
+> > 
+> 
+> (a) - doesn't matter.
 
-No problem.
+Yes, it absolutely matters.  If KVM_CAP_X2APIC_API was added in the 5.17 cycle
+then I would not be objecting because there is zero chance of breaking userspace.
 
-> >
-> > -static const struct bpf_func_proto *
-> > -syscall_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > +/* Syscall helpers that are also allowed in sleepable tracing prog. */
-> > +const struct bpf_func_proto *
-> > +tracing_prog_syscall_func_proto(enum bpf_func_id func_id,
-> > +                             const struct bpf_prog *prog)
-> >  {
-> >       switch (func_id) {
-> >       case BPF_FUNC_sys_bpf:
-> >               return &bpf_sys_bpf_proto;
-> > -     case BPF_FUNC_btf_find_by_name_kind:
-> > -             return &bpf_btf_find_by_name_kind_proto;
-> >       case BPF_FUNC_sys_close:
-> >               return &bpf_sys_close_proto;
-> > -     case BPF_FUNC_kallsyms_lookup_name:
-> > -             return &bpf_kallsyms_lookup_name_proto;
-> >       case BPF_FUNC_mkdir:
-> >               return &bpf_mkdir_proto;
-> >       case BPF_FUNC_rmdir:
-> >               return &bpf_rmdir_proto;
-> >       case BPF_FUNC_unlink:
-> >               return &bpf_unlink_proto;
-> > +     default:
-> > +             return NULL;
-> > +     }
-> > +}
->
-> If I read this correctly the goal is to disallow find_by_name_kind
-> and lookup_name from sleepable tps. Why? What's the harm?
+> (b) - if userspace wants to have non default apic id with x2apic mode,
+>       which (*)can't even really be set from the guest - this is ridiculous.
+>  
+>       (*) Yes I know that in *theory* user can change apic id in xapic mode
+>       and then switch to x2apic mode - but I really doubt that KVM
+>       would even honor this - there are already places which assume
+>       that this is not the case. In fact it would be nice to audit KVM
+>       on what happens when userspace does this, there might be a nice
+>       CVE somewhere....
+>  
+> (c) - without KVM_CAP_X2APIC_API, literally just call to KVM_GET_LAPIC/KVM_SET_LAPIC
+> will truncate x2apic id if > 255 regardless of my patch - literally this cap
+> was added to avoid this.
+> What we should do is to avoid creating cpu with vcpu_id > 256 when this cap is not set…
 
-A couple of thoughts, please correct me if they don't make sense. I
-may think too much.
+Yes, but _rejecting_ that behavior is a change in KVM's ABI.  That's why (a) matters.
 
-1. The very first reason is, I don't know the use case of them in
-tracing. So I think I can leave them right now and add them later if
-the maintainers want them.
+> (d) - doesn't matter - again we are talking about x2apic mode in which apic id is read only.
 
-2. A related question is, do we actually want all syscall helpers to
-be in sleepable tracing? Some helpers may cause re-entering the
-tracepoints. For a hypothetical example, if we call mkdir while
-tracing some tracepoints in vfs_mkdir. Do we have protection for this?
-Another potential problem is about lookup_name in particular,
-sleepable_tracing could be triggered by any user, will lookup_name
-leak kernel addresses to users in some way? The filesystem helpers
-have some basic perm checks, I would think it's relatively safer.
+It does matter that changes that potentially break userspace provide value to KVM.
+Not theoretical, make us feel warm and fuzzy value, but actual value to KVM or
+userspace.  KVM is no worse off for this loophole.  For userspace, at best this
+will break a flawed but functional setup.
+
+Concretely, the below example of using x2APIC with an ID > 255 works because KVM
+calculates its APIC maps using what KVM thinks is the x2APIC ID. 
+
+With your proposed change, KVM_SET_LAPIC will fail and we've broken a functional,
+if sketchy, setup.  Is there likely to be such a real-world setup that doesn't
+barf on the inconsistent x2APIC ID?  Probably not, but I don't see any reason to
+find out.
+
+==== Test Assertion Failure ====
+  lib/kvm_util.c:1953: ret == 0
+  pid=837 tid=837 errno=22 - Invalid argument
+     1	0x0000000000403c0e: vcpu_ioctl at kvm_util.c:1952
+     2	0x0000000000401548: main at smm_test.c:151
+     3	0x00007ff76518ebf6: ?? ??:0
+     4	0x0000000000401829: _start at ??:?
+  vcpu ioctl 1140895375 failed, rc: -1 errno: 22 (Invalid argument)
+
+
+diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
+index a626d40fdb48..cce44d99c919 100644
+--- a/tools/testing/selftests/kvm/x86_64/smm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
+@@ -19,7 +19,7 @@
+ #include "vmx.h"
+ #include "svm_util.h"
+
+-#define VCPU_ID              1
++#define VCPU_ID              256
+
+ #define PAGE_SIZE  4096
+
+@@ -56,7 +56,7 @@ static inline void sync_with_host(uint64_t phase)
+ static void self_smi(void)
+ {
+        x2apic_write_reg(APIC_ICR,
+-                        APIC_DEST_SELF | APIC_INT_ASSERT | APIC_DM_SMI);
++                        ((uint64_t)VCPU_ID << 32) | APIC_INT_ASSERT | APIC_DM_SMI);
+ }
+
+ static void l2_guest_code(void)
+@@ -72,14 +72,10 @@ static void guest_code(void *arg)
+ {
+        #define L2_GUEST_STACK_SIZE 64
+        unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
+-       uint64_t apicbase = rdmsr(MSR_IA32_APICBASE);
+        struct svm_test_data *svm = arg;
+        struct vmx_pages *vmx_pages = arg;
+
+        sync_with_host(1);
+-
+-       wrmsr(MSR_IA32_APICBASE, apicbase | X2APIC_ENABLE);
+-
+        sync_with_host(2);
+
+        self_smi();
+@@ -139,12 +135,21 @@ int main(int argc, char *argv[])
+        struct kvm_run *run;
+        struct kvm_x86_state *state;
+        int stage, stage_reported;
++       struct kvm_lapic_state lapic;
+
+        /* Create VM */
+        vm = vm_create_default(VCPU_ID, 0, guest_code);
+
+        run = vcpu_state(vm, VCPU_ID);
+
++       vcpu_set_msr(vm, VCPU_ID, MSR_IA32_APICBASE,
++                    vcpu_get_msr(vm, VCPU_ID, MSR_IA32_APICBASE) | X2APIC_ENABLE);
++
++       vcpu_ioctl(vm, VCPU_ID, KVM_GET_LAPIC, &lapic);
++       TEST_ASSERT(*((u32 *)&lapic.regs[0x20]) == 0,
++                   "x2APIC ID == %u", *((u32 *)&lapic.regs[0x20]));
++       vcpu_ioctl(vm, VCPU_ID, KVM_SET_LAPIC, &lapic);
++
+        vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, SMRAM_GPA,
+                                    SMRAM_MEMSLOT, SMRAM_PAGES, 0);
+        TEST_ASSERT(vm_phy_pages_alloc(vm, SMRAM_PAGES, SMRAM_GPA, SMRAM_MEMSLOT)
