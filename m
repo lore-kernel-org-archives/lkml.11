@@ -2,117 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1996C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 18:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235110AbiCCS3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 13:29:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
+        id S230173AbiCCSbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 13:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232898AbiCCS3M (ORCPT
+        with ESMTP id S229483AbiCCSbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 13:29:12 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B894EB7170;
-        Thu,  3 Mar 2022 10:28:25 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 53D1D1F386;
-        Thu,  3 Mar 2022 18:28:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646332104;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aeAcL7K8crpzfQmCbSBQTf9/hIKSAhKoB1dP+78DkD0=;
-        b=L0KF70U1FkNPIc9RgtYSNOD6izyZjG1efUMBcPmBQgnUGsfDjPO5Wtw/TppWl8QR0qpO4r
-        82xUekSzfB/BXYyXgkj8DtKsWQWjZbB0ZgqF+AsGpzVarMGdD5H+kYaWK+V1B8oOeq/byi
-        H2Oc8yQrd6nS95pShptRpw3weQ/xC3o=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646332104;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aeAcL7K8crpzfQmCbSBQTf9/hIKSAhKoB1dP+78DkD0=;
-        b=ZDjUIe0MyTkr6wyYci+OIGWdnRasnSCiBjGhUiIhxbcCwraGrzdNP+TYgeVDSgxrDIdvOv
-        gL8ktkRaAhuB6GDA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 16084A3B81;
-        Thu,  3 Mar 2022 18:28:24 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 84767DA80E; Thu,  3 Mar 2022 19:24:31 +0100 (CET)
-Date:   Thu, 3 Mar 2022 19:24:31 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: don't access possibly stale fs_info data in
- device_list_add
-Message-ID: <20220303182431.GW12643@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Dongliang Mu <dzm91@hust.edu.cn>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220303144027.1981835-1-dzm91@hust.edu.cn>
+        Thu, 3 Mar 2022 13:31:42 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFE219531E
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 10:30:56 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id i8so9163584wrr.8
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 10:30:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cuvsRmPDO09MSdIx8vAMU7t/nouGoOL2ZN/qMXFh58k=;
+        b=Hbf9/wv68kwaXVkEegngQEUKQcm15yC0u8RRemH1z2Je1e/9MSAYBVn3/mq+K5WMxj
+         MzKfwbDa3OVKPhWmu+DbRf1V+riL7bCIvJ2P8FxY0vNnsAW0vCqYM0YjZDiG4O8+HzEs
+         5oFEYInfrbPvvxV8YXK6O3AJB7wPU5EseqjEAzCKaECCIz+5lS3VmZ1tCY6V89G0I5pl
+         JI7ZzF5mPZjAqfBPTwiZRl/NbXQT1LWLR3T3ZI0yQRwpRORykRFJ+imEDMlO6Mg4tRHC
+         O7Si/cLTvvYao7JIPymPX0BYhh2ksxvTqDPaunldyFYpmF/0fXPSvNtfOoMgETtBZuuA
+         vLkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cuvsRmPDO09MSdIx8vAMU7t/nouGoOL2ZN/qMXFh58k=;
+        b=V3OHMaOnZ+G8StL8L4ZIsN3OscxG/qiRkSFEr+khjQo6IBtJQe3QZ22fCpRmvfFpbw
+         Gg2oRsqLl2hL/NNQ54Q/twwLpzr6TrqX/MTUZJcQWZHK291qLCdz8E791HBANxBwymrJ
+         0HdmGgjtP3wDuYH2zhEJTqme91/81iRo3mI/Avj3/3vse5vLv8+NLfkXMGEBe7e6uVz7
+         oSFBxc5lbU4GyYP0svo94s5AOTu/RKHqkxgxWIntoDFGNcbEO8C7dPXwx/vTUV7JIGM4
+         rBii3MWVfzoMPedJB8GGWFh2A0J/emcFBHk8e9aG5FYcaFuBjjqyDtvHE2eXwYAU8bSR
+         mkiQ==
+X-Gm-Message-State: AOAM530z7/65OH86xel57Q/caVwpasyHJ07CUpXD2BSNuNfHMSWEFNyJ
+        AmlCQKwOL5vWFM6ddRal6CY=
+X-Google-Smtp-Source: ABdhPJy+wIvczzoar5JaRhmBzxewnGNYTLuTAQtAEKn24qO5eQsokznO6HaqjVW7QU2RNoDvRBlXYQ==
+X-Received: by 2002:adf:ed12:0:b0:1ef:585d:bfcd with SMTP id a18-20020adfed12000000b001ef585dbfcdmr25109218wro.570.1646332254959;
+        Thu, 03 Mar 2022 10:30:54 -0800 (PST)
+Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
+        by smtp.gmail.com with ESMTPSA id x11-20020adfdccb000000b001e57922b8b6sm2639047wrm.43.2022.03.03.10.30.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 10:30:54 -0800 (PST)
+From:   Niels Dossche <dossche.niels@gmail.com>
+To:     linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Niels Dossche <dossche.niels@gmail.com>
+Subject: [PATCH] firewire: core: extend card->lock in fw_core_handle_bus_reset
+Date:   Thu,  3 Mar 2022 19:30:38 +0100
+Message-Id: <20220303183038.54126-1-dossche.niels@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303144027.1981835-1-dzm91@hust.edu.cn>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 10:40:27PM +0800, Dongliang Mu wrote:
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> 
-> Syzbot reported a possible use-after-free in printing information
-> in device_list_add.
-> 
-> Very similar with the bug fixed by commit 0697d9a61099 ("btrfs: don't
-> access possibly stale fs_info data for printing duplicate device"),
-> but this time the use occurs in btrfs_info_in_rcu.
-> 
-> ============================================================
-> Call Trace:
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
->  btrfs_printk+0x395/0x425 fs/btrfs/super.c:244
->  device_list_add.cold+0xd7/0x2ed fs/btrfs/volumes.c:957
->  btrfs_scan_one_device+0x4c7/0x5c0 fs/btrfs/volumes.c:1387
->  btrfs_control_ioctl+0x12a/0x2d0 fs/btrfs/super.c:2409
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:874 [inline]
->  __se_sys_ioctl fs/ioctl.c:860 [inline]
->  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> ============================================================
-> 
-> Fix this by modifying device->fs_info to NULL too.
-> 
-> Reported-and-tested-by: syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> ---
->  fs/btrfs/volumes.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-> index b07d382d53a8..c1325bdae9a1 100644
-> --- a/fs/btrfs/volumes.c
-> +++ b/fs/btrfs/volumes.c
-> @@ -954,7 +954,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
->  						  task_pid_nr(current));
->  				return ERR_PTR(-EEXIST);
->  			}
-> -			btrfs_info_in_rcu(device->fs_info,
-> +			btrfs_info_in_rcu(NULL,
+card->local_node and card->bm_retries are both always accessed under
+card->lock.
+fw_core_handle_bus_reset has a check whose condition depends on
+card->local_node and whose body writes to card->bm_retries.
+Both of these accesses are not under card->lock. Move the lock acquiring
+of card->lock to before this check such that these accesses do happen
+when card->lock is held.
+fw_destroy_nodes is called inside the check.
+Since fw_destroy_nodes already acquires card->lock inside its function
+body, move this out to the callsites of fw_destroy_nodes.
+Also add a comment to indicate which locking is necessary when calling
+fw_destroy_nodes.
 
-A few lines above this is also NULL and was fixed by 0697d9a61099
-("btrfs: don't access possibly stale fs_info data for printing duplicate
-device"), so yeah we probably need the same here.
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+---
+ drivers/firewire/core-card.c     | 3 +++
+ drivers/firewire/core-topology.c | 9 +++------
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/firewire/core-card.c b/drivers/firewire/core-card.c
+index 54be88167c60..f3b3953cac83 100644
+--- a/drivers/firewire/core-card.c
++++ b/drivers/firewire/core-card.c
+@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
+ void fw_core_remove_card(struct fw_card *card)
+ {
+ 	struct fw_card_driver dummy_driver = dummy_driver_template;
++	unsigned long flags;
+ 
+ 	card->driver->update_phy_reg(card, 4,
+ 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
+@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card *card)
+ 	dummy_driver.stop_iso		= card->driver->stop_iso;
+ 	card->driver = &dummy_driver;
+ 
++	spin_lock_irqsave(&card->lock, flags);
+ 	fw_destroy_nodes(card);
++	spin_unlock_irqrestore(&card->lock, flags);
+ 
+ 	/* Wait for all users, especially device workqueue jobs, to finish. */
+ 	fw_card_put(card);
+diff --git a/drivers/firewire/core-topology.c b/drivers/firewire/core-topology.c
+index b63d55f5ebd3..f40c81534381 100644
+--- a/drivers/firewire/core-topology.c
++++ b/drivers/firewire/core-topology.c
+@@ -375,16 +375,13 @@ static void report_found_node(struct fw_card *card,
+ 	card->bm_retries = 0;
+ }
+ 
++/* Must be called with card->lock held */
+ void fw_destroy_nodes(struct fw_card *card)
+ {
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&card->lock, flags);
+ 	card->color++;
+ 	if (card->local_node != NULL)
+ 		for_each_fw_node(card, card->local_node, report_lost_node);
+ 	card->local_node = NULL;
+-	spin_unlock_irqrestore(&card->lock, flags);
+ }
+ 
+ static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
+@@ -510,6 +507,8 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
+ 	struct fw_node *local_node;
+ 	unsigned long flags;
+ 
++	spin_lock_irqsave(&card->lock, flags);
++
+ 	/*
+ 	 * If the selfID buffer is not the immediate successor of the
+ 	 * previously processed one, we cannot reliably compare the
+@@ -521,8 +520,6 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
+ 		card->bm_retries = 0;
+ 	}
+ 
+-	spin_lock_irqsave(&card->lock, flags);
+-
+ 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
+ 	card->node_id = node_id;
+ 	/*
+-- 
+2.35.1
+
