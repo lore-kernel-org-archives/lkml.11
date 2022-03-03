@@ -2,214 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2983C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2CD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235507AbiCCRz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:55:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        id S233982AbiCCR5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:57:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234816AbiCCRzY (ORCPT
+        with ESMTP id S229662AbiCCR5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:55:24 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E9515470D
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:54:36 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id i11so7604706eda.9
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:54:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=RQc1EduZOxTVRuovpIxxC4lLLOT2x5sF2/FtMnYZD/E=;
-        b=Cwet6+xm3v/FuUk7aMMFOzwkCxFlqIg+IXN/Es6pmj/8bjEUctLSG6QX85Nk7SNSHX
-         OAjh3lSun2PuLc+dQhVoaTX5dtgrMAbxuXJPHvIgU1PjmKeRdu8CsDIaOwECO63sf4v4
-         wN30/iPlbXr7RcfAtg8Igk2qVW4s+WQRc+/fgRBitdCmR1XGg1KxrH6USS1O0cc/Qmp6
-         4P3g0jz2aODU6+sgof2+vtDbZyXdVFEQQH6nj0Z3NlS68QKcLE0ukAgOr4Is3Xj1JYCR
-         lXJ113FpUGjltfa31Q1FKRIory/1DMJA0bcKB6+hOSGLZX7/IVs+cp9A7I75EF7tfH1s
-         icGA==
+        Thu, 3 Mar 2022 12:57:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 001441405C6
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:56:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646330192;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pt2NEyN77WvQVDGkaIF/Nqcc+6j6rTEVnHq5++rUv8c=;
+        b=LhSZwx9iahYcAre7GSsJuHJgirNF2cDLo31kjmjVYEnEwr2aVx6O1CXlOOkKqwY/Ylq/Nn
+        9dRsaOySgRo715xurguPPp+3TvW0ZG4tzgzNB86Ot3vMhPRQZ7cN3Ufs4dWl/0+Vz55nn/
+        en6YknoKsjTvuVVJFmzaGz9ymuN6g7c=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-621-MsJQHMtHPVumj4VNRIi2gQ-1; Thu, 03 Mar 2022 12:56:29 -0500
+X-MC-Unique: MsJQHMtHPVumj4VNRIi2gQ-1
+Received: by mail-ej1-f70.google.com with SMTP id sa7-20020a170906eda700b006d1b130d65bso3116886ejb.13
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 09:56:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RQc1EduZOxTVRuovpIxxC4lLLOT2x5sF2/FtMnYZD/E=;
-        b=FFj8KFmIz0qnG4gdfz1dqTBw6g/aiCV7zy4Gkwj4q/bo+KUYdBh7P91Iau/xzm5Rvr
-         gstepfAjjvo89Lz0s79ybA6OPLzw00wTBCcLC7V2DsnymXBySuJdoK33QYxaD2jKOhEj
-         P6IznMFJqf3hNPMhq+L+NH9VDvp9w4WR9l1t0cHhqVoQU/m4I8tTyMJeLnsPVwi+FXre
-         3I0gGDFRYNUq45krQEpCeDatEiyl/VKfut131e8vk74Ic3iIGo9s3W9V5B9ju8VQ4SrK
-         LjI2QgqIGKaZsS2n1SKGqr6rDNUDuic/ItJdpnYKu4p0ee7apUHlN7/mobPNjBQr8KTv
-         QZNg==
-X-Gm-Message-State: AOAM53397aH1mRcSMIp/k23wXFv49kLPtrPjlfMCFUp5Bhf4M2iQRgCU
-        ZYVM4FdsJfNrtvWhqxA5C9VHu6Sw7mejg25QA0FPkA==
-X-Google-Smtp-Source: ABdhPJx96NoKM7kiOq+mdIK5kt8YNcj4xxoTnWjFMDM//0/0jJNiszMwTp5lpcPnEmv1NbCtRQQwsQB91On+I/Qv5qY=
-X-Received: by 2002:aa7:c687:0:b0:415:eb43:8ff5 with SMTP id
- n7-20020aa7c687000000b00415eb438ff5mr2509400edq.74.1646330074426; Thu, 03 Mar
- 2022 09:54:34 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Pt2NEyN77WvQVDGkaIF/Nqcc+6j6rTEVnHq5++rUv8c=;
+        b=AmSXFHy3sYnBw7SErg/+IvewCJTjLL9PeUbRd1myiMMi79wPThCom/87BmlUKMfRKP
+         ViSq8kqRm/r+8HOu0b/TNf0h4KDdbtQ3p1IW/3TcTV82SEF5ir+SVSWH8raBEyL1/xzr
+         Ycgz7Mmf04wp1l4k+p67fonck5FfRZAvKCS27XrfrwFXwITfC9aa8XHM3BfpnBZh48pT
+         uBfFaoEq7RBvQasWkUY1zh/r51arbdbFG0kA/PKn2keycKsJfFuRnGs7wl/4p4Q/Q68t
+         gRmNikk5aRJ0I4dDhBy3TciHTrXGyvZMRVBiHEejLB2hCXS8/O/XaPSuwX6GilE15fkM
+         FKkw==
+X-Gm-Message-State: AOAM5321gWnMDJH80c8cIH5zyzFA8YI4Ppnapcrg+Ob0BjCof/9KPYk4
+        Vsa6r2Vju2eNMv+ZdBIIWCOH10dekPwFufNIsPyc1d+JCAUd2TTfeT9szzamH5/LSnv3qZtI6Vx
+        aMwpsvmkMAWvdJFgc7s4/cciY
+X-Received: by 2002:a05:6402:4414:b0:408:4dc0:3ee9 with SMTP id y20-20020a056402441400b004084dc03ee9mr35543559eda.203.1646330187927;
+        Thu, 03 Mar 2022 09:56:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzPRtKLOiKu9tA7Gy98mghBFK0zV7El+3s6ksl1od7pWlMdP3fg7CriUUTbr2yPPhb7rsU+gg==
+X-Received: by 2002:a05:6402:4414:b0:408:4dc0:3ee9 with SMTP id y20-20020a056402441400b004084dc03ee9mr35543539eda.203.1646330187754;
+        Thu, 03 Mar 2022 09:56:27 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id lk10-20020a170906cb0a00b006da92317793sm825104ejb.131.2022.03.03.09.56.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 09:56:27 -0800 (PST)
+Message-ID: <535336dc-8c54-7c3a-ecf6-b2920ea99297@redhat.com>
+Date:   Thu, 3 Mar 2022 18:56:26 +0100
 MIME-Version: 1.0
-References: <20220301022625.469446-1-wonchung@google.com> <Yh3ofnlEx0bT/R6E@kuha.fi.intel.com>
- <CAOvb9yi4oi=KegV1d8MvxWPhStf5jL01CbdM_pAdLqKNAocJ1Q@mail.gmail.com>
- <CAJZ5v0ipcdUqTEFn075NeioyHRDKy2j_pYZOBKgqnx_c1=q5Pw@mail.gmail.com> <Yh9TIeCIchBrZOdH@kuha.fi.intel.com>
-In-Reply-To: <Yh9TIeCIchBrZOdH@kuha.fi.intel.com>
-From:   Won Chung <wonchung@google.com>
-Date:   Thu, 3 Mar 2022 09:54:11 -0800
-Message-ID: <CAOvb9yhaV2Kx5R+BR9M_rcqw5XOo7AiLmNP1r7XX_qf5xOBCfQ@mail.gmail.com>
-Subject: Re: [PATCH v2] usb:typec: Add sysfs support for Type C connector's
- physical location
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" 
-        <linux-usb@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2] ACPI / x86: Work around broken XSDT on Advantech
+ DAC-BJ01 board
+Content-Language: en-US
+To:     Mark Cilissen <mark@yotsuba.nl>
+Cc:     linux-acpi@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, kernel test robot <lkp@intel.com>
+References: <20220302040800.10355-1-mark@yotsuba.nl>
+ <832a5b2e-d70c-f1a6-e377-7697b1eb7049@redhat.com>
+ <7BD8A71A-95C7-4A10-82FD-BEAAE0B0DDE9@yotsuba.nl>
+ <43b0c275-e728-492b-c6a7-d054fae72117@redhat.com>
+ <4BBB58DC-653C-4373-A5F5-9239C86C8AE8@yotsuba.nl>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <4BBB58DC-653C-4373-A5F5-9239C86C8AE8@yotsuba.nl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 3:21 AM Heikki Krogerus
-<heikki.krogerus@linux.intel.com> wrote:
->
-> On Tue, Mar 01, 2022 at 08:11:06PM +0100, Rafael J. Wysocki wrote:
-> > On Tue, Mar 1, 2022 at 7:57 PM Won Chung <wonchung@google.com> wrote:
-> > >
-> > > On Tue, Mar 1, 2022 at 1:33 AM Heikki Krogerus
-> > > <heikki.krogerus@linux.intel.com> wrote:
-> > > >
-> > > > Hi Won,
-> > > >
-> > > > On Tue, Mar 01, 2022 at 02:26:25AM +0000, Won Chung wrote:
-> > > > > When ACPI table includes _PLD field for a Type C connector, share=
- _PLD
-> > > > > values in its sysfs. _PLD stands for physical location of device.
-> > > > >
-> > > > > Currently without connector's location information, when there ar=
-e
-> > > > > multiple Type C ports, it is hard to distinguish which connector
-> > > > > corresponds to which physical port at which location. For example=
-, when
-> > > > > there are two Type C connectors, it is hard to find out which con=
-nector
-> > > > > corresponds to the Type C port on the left panel versus the Type =
-C port
-> > > > > on the right panel. With location information provided, we can de=
-termine
-> > > > > which specific device at which location is doing what.
-> > > > >
-> > > > > _PLD output includes much more fields, but only generic fields ar=
-e added
-> > > > > and exposed to sysfs, so that non-ACPI devices can also support i=
-t in
-> > > > > the future. The minimal generic fields needed for locating a port=
- are
-> > > > > the following.
-> > > > > - panel
-> > > > > - vertical_position
-> > > > > - horizontal_position
-> > > > > - dock
-> > > > > - lid
-> > > > >
-> > > > > Signed-off-by: Won Chung <wonchung@google.com>
-> > > > > ---
-> > > > >
-> > > > > Changes in v2:
-> > > > > - Use string for location.
-> > > > > - Clarify get_pld() with naming and return type.
-> > > > >
-> > > > >  Documentation/ABI/testing/sysfs-class-typec |  35 ++++++
-> > > > >  drivers/usb/typec/class.c                   | 113 ++++++++++++++=
-++++++
-> > > > >  drivers/usb/typec/class.h                   |   3 +
-> > > > >  3 files changed, 151 insertions(+)
-> > > > >
-> > > > > diff --git a/Documentation/ABI/testing/sysfs-class-typec b/Docume=
-ntation/ABI/testing/sysfs-class-typec
-> > > > > index 75088ecad202..4497a5aeb063 100644
-> > > > > --- a/Documentation/ABI/testing/sysfs-class-typec
-> > > > > +++ b/Documentation/ABI/testing/sysfs-class-typec
-> > > > > @@ -141,6 +141,41 @@ Description:
-> > > > >               - "reverse": CC2 orientation
-> > > > >               - "unknown": Orientation cannot be determined.
-> > > > >
-> > > > > +What:                /sys/class/typec/<port>/location/panel
-> > > > > +Date:                March 2022
-> > > > > +Contact:     Won Chung <wonchung@google.com>
-> > > > > +Description:
-> > > > > +             Describes which panel surface of the system=E2=80=
-=99s housing the
-> > > > > +             port resides on.
-> > > > > +
-> > > > > +What:                /sys/class/typec/<port>/location/vertical_p=
-osition
-> > > > > +Date:                March 2022
-> > > > > +Contact:     Won Chung <wonchung@google.com>
-> > > > > +Description:
-> > > > > +             Describes vertical position of the port on the pane=
-l surface.
-> > > > > +             Valid values: upper, center, lower
-> > > > > +
-> > > > > +What:                /sys/class/typec/<port>/location/horizontal=
-_position
-> > > > > +Date:                March 2022
-> > > > > +Contact:     Won Chung <wonchung@google.com>
-> > > > > +Description:
-> > > > > +             Describes horizontal position of the port on the pa=
-nel surface.
-> > > > > +             Valid values: left, center, right
-> > > > > +
-> > > > > +What:                /sys/class/typec/<port>/location/dock
-> > > > > +Date:                March 2022
-> > > > > +Contact:     Won Chung <wonchung@google.com>
-> > > > > +Description:
-> > > > > +             Set as "yes" if the port resides in a docking stati=
-on or a port
-> > > > > +             replicator, otherwise set as "no".
-> > > > > +
-> > > > > +What:                /sys/class/typec/<port>/location/lid
-> > > > > +Date:                March 2022
-> > > > > +Contact:     Won Chung <wonchung@google.com>
-> > > > > +Description:
-> > > > > +             Set as "yes" if the port resides on the lid of lapt=
-op system,
-> > > > > +             otherwise set as "no".
-> > > > > +
-> > > >
-> > > > I've probable lost track of the topic during my winter break, I'm
-> > > > sorry about that, but why are you proposing now that this should be
-> > > > made Type-C specific?
-> > > > This information is not Type-C specific, so it definitely does not
-> > > > belong here.
-> > > >
-> > > > Br,
-> > > >
-> > > > --
-> > > > heikki
-> > >
-> > > Hi Heikki,
-> > >
-> > > Thank you for the comment. Sorry that my description was not clear.
-> > > This is follow up from "[PATCH v6] ACPI: device_sysfs: Add sysfs
-> > > support for _PLD" in which Rafael suggested to have generic location
-> > > in Type C connector than adding PLD specifically to ACPI device.
-> >
-> > Well, this doesn't have to be /sys/class/typec/<port>/location/ though.
-> >
-> > For example, the device location information can be exposed in a more
-> > generic way is /sys/devices/.../location/ for all devices for which it
-> > is available, somewhat in analogy to /sys/devices/.../power/.
->
-> Right, that's what I meant. These can be made generic.
+Hi,
 
-> thanks,
->
-> --
-> heikki
+On 3/3/22 14:42, Mark Cilissen wrote:
+> 
+>> On 3 Mar 4 Reiwa, at 14:38, Hans de Goede <hdegoede@redhat.com> wrote:
+>>
+>> Hi Mark,
+> 
+> Hi Hans,
+> 
+>> On 3/2/22 21:20, Mark Cilissen wrote:
+>>>>
+>>
+>> I think that there are a lot more boards that will have
+>> DMI_BIOS_VENDOR == "Phoenix Technologies LTD"
+>> then that there are boards that will have
+>> DMI_PRODUCT_NAME == "Bearlake CRB Board"
+>>
+>> So if you want to make the DMI match as specific as possible then
+>> IMHO dropping the bios-vendor match is best.
+> 
+> Of course, but just to clarify -- my proposal above is to drop
+> 
+>> DMI_MATCH(DMI_SYS_VENDOR, "NEC”),
+> 
+> not
+> 
+>> DMI_MATCH(DMI_PRODUCT_NAME, "Bearlake CRB Board”),
+> 
+> . :-)
 
-Hi Heikki and Rafael,
+Ah I see, I did indeed misunderstand that. Still NEC is not that
+often seen as sys-vendor, so I still believe dropping the bios-vendor
+match is best.
 
-Thank you for clarification and guidance. I created and sent a new
-patch on driver core for /sys/devices/.../location/.
+Regards,
 
-Won
+Hans
+
