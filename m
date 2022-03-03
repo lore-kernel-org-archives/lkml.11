@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F427C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 21:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C88C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 21:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236689AbiCCVuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 16:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
+        id S236698AbiCCVuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 16:50:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236666AbiCCVuJ (ORCPT
+        with ESMTP id S236670AbiCCVuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 16:50:09 -0500
+        Thu, 3 Mar 2022 16:50:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4324443F1
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 13:49:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3386A57179
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 13:49:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D392B826EE
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FE3BB82552
         for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 21:49:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1658C340F2;
-        Thu,  3 Mar 2022 21:49:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AAC4C340FA;
+        Thu,  3 Mar 2022 21:49:20 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nPtK2-00ESEi-UY;
-        Thu, 03 Mar 2022 16:49:18 -0500
-Message-ID: <20220303214918.785408734@goodmis.org>
+        id 1nPtK3-00ESFo-A7;
+        Thu, 03 Mar 2022 16:49:19 -0500
+Message-ID: <20220303214919.152557962@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 16:48:34 -0500
+Date:   Thu, 03 Mar 2022 16:48:36 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
@@ -37,7 +37,7 @@ Cc:     Ingo Molnar <mingo@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Tom Zanussi <zanussi@kernel.org>
-Subject: [PATCH 2/4 v2] tracing: Add sample code for custom trace events
+Subject: [PATCH 4/4 v2] tracing: Add TRACE_CUSTOM_EVENT() macro
 References: <20220303214832.031378059@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,437 +47,480 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Add sample code to show how to create custom trace events in the tracefs
-directory that can be enabled and modified like any event in tracefs
-(including triggers, histograms, synthetic events and event probes).
+To make it really easy to add custom events from modules, add a
+TRACE_CUSTOM_EVENT() macro that acts just like the TRACE_EVENT() macro,
+but creates a custom event to an already existing tracepoint.
 
-The example is creating a custom sched_switch and a sched_waking to limit
-what is recorded:
+The trace_custom_sched.[ch] has been updated to use this new macro to show
+how simple it is.
 
-If the custom sched switch only records the prev_prio, next_prio and
-next_pid, it can bring the size from 64 bytes per event, down to just 16
-bytes!
-
-If sched_waking only records the prio and pid of the woken event, it will
-bring the size down from 36 bytes to 12 bytes per event.
-
-This will allow for a much smaller footprint into the ring buffer and keep
-more events from dropping.
-
-Suggested-by: Joel Fernandes <joel@joelfernandes.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- arch/x86/kernel/kprobes/core.c            |   4 +-
- kernel/trace/ftrace.c                     |  33 ++-
- samples/Kconfig                           |   8 +-
- samples/Makefile                          |   1 +
- samples/trace_events/Makefile             |   2 +
- samples/trace_events/trace_custom_sched.c | 271 ++++++++++++++++++++++
- 6 files changed, 314 insertions(+), 5 deletions(-)
- create mode 100644 samples/trace_events/trace_custom_sched.c
+ include/linux/trace_events.h              |  24 +-
+ samples/trace_events/Makefile             |   2 +-
+ samples/trace_events/trace_custom_sched.c | 259 ++--------------------
+ samples/trace_events/trace_custom_sched.h |  95 ++++++++
+ 4 files changed, 143 insertions(+), 237 deletions(-)
+ create mode 100644 samples/trace_events/trace_custom_sched.h
 
-diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
-index 6290712cb36d..2ea1ecd6f60b 100644
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -202,8 +202,10 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
- 	 * arch_check_ftrace_location(). Something went terribly wrong
- 	 * if such an address is checked here.
- 	 */
--	if (WARN_ON(faddr && faddr != addr))
-+	if (WARN_ON(faddr && faddr != addr)) {
-+		printk("faddr=%pS (%lx) addr=%pS (%lx)\n", (void*)faddr, faddr, (void*)addr, addr);
- 		return 0UL;
-+	}
- 	/*
- 	 * Use the current code if it is not modified by Kprobe
- 	 * and it cannot be modified by ftrace.
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index a4b462b6f944..cb67527e1203 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1578,7 +1578,24 @@ unsigned long ftrace_location_range(unsigned long start, unsigned long end)
+diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+index dcea51fb60e2..6c7ae3c2ba9b 100644
+--- a/include/linux/trace_events.h
++++ b/include/linux/trace_events.h
+@@ -315,6 +315,7 @@ enum {
+ 	TRACE_EVENT_FL_KPROBE_BIT,
+ 	TRACE_EVENT_FL_UPROBE_BIT,
+ 	TRACE_EVENT_FL_EPROBE_BIT,
++	TRACE_EVENT_FL_CUSTOM_BIT,
+ };
+ 
+ /*
+@@ -328,6 +329,9 @@ enum {
+  *  KPROBE        - Event is a kprobe
+  *  UPROBE        - Event is a uprobe
+  *  EPROBE        - Event is an event probe
++ *  CUSTOM        - Event is a custom event (to be attached to an exsiting tracepoint)
++ *                   This is set when the custom event has not been attached
++ *                   to a tracepoint yet, then it is cleared when it is.
   */
- unsigned long ftrace_location(unsigned long ip)
+ enum {
+ 	TRACE_EVENT_FL_FILTERED		= (1 << TRACE_EVENT_FL_FILTERED_BIT),
+@@ -339,6 +343,7 @@ enum {
+ 	TRACE_EVENT_FL_KPROBE		= (1 << TRACE_EVENT_FL_KPROBE_BIT),
+ 	TRACE_EVENT_FL_UPROBE		= (1 << TRACE_EVENT_FL_UPROBE_BIT),
+ 	TRACE_EVENT_FL_EPROBE		= (1 << TRACE_EVENT_FL_EPROBE_BIT),
++	TRACE_EVENT_FL_CUSTOM		= (1 << TRACE_EVENT_FL_CUSTOM_BIT),
+ };
+ 
+ #define TRACE_EVENT_FL_UKPROBE (TRACE_EVENT_FL_KPROBE | TRACE_EVENT_FL_UPROBE)
+@@ -440,7 +445,9 @@ static inline bool bpf_prog_array_valid(struct trace_event_call *call)
+ static inline const char *
+ trace_event_name(struct trace_event_call *call)
  {
--	return ftrace_location_range(ip, ip);
-+	struct dyn_ftrace *rec;
-+	unsigned long offset;
-+	unsigned long size;
+-	if (call->flags & TRACE_EVENT_FL_TRACEPOINT)
++	if (call->flags & TRACE_EVENT_FL_CUSTOM)
++		return call->name;
++	else if (call->flags & TRACE_EVENT_FL_TRACEPOINT)
+ 		return call->tp ? call->tp->name : NULL;
+ 	else
+ 		return call->name;
+@@ -903,3 +910,18 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
+ #endif
+ 
+ #endif /* _LINUX_TRACE_EVENT_H */
 +
-+	rec = lookup_rec(ip, ip);
-+	if (!rec) {
-+		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
-+			goto out;
++/*
++ * Note: we keep the TRACE_CUSTOM_EVENT outside the include file ifdef protection.
++ *  This is due to the way trace custom events work. If a file includes two
++ *  trace event headers under one "CREATE_CUSTOM_TRACE_EVENTS" the first include
++ *  will override the TRACE_CUSTOM_EVENT and break the second include.
++ */
 +
-+		if (!offset)
-+			rec = lookup_rec(ip - offset, (ip - offset) + size - 1);
-+	}
++#ifndef TRACE_CUSTOM_EVENT
 +
-+	if (rec)
-+		return rec->ip;
++#define DECLARE_CUSTOM_EVENT_CLASS(name, proto, args, tstruct, assign, print)
++#define DEFINE_CUSTOM_EVENT(template, name, proto, args)
++#define TRACE_CUSTOM_EVENT(name, proto, args, struct, assign, print)
 +
-+out:
++#endif /* ifdef TRACE_CUSTOM_EVENT (see note above) */
+diff --git a/samples/trace_events/Makefile b/samples/trace_events/Makefile
+index e98afc447fe1..b3808bb4cf8b 100644
+--- a/samples/trace_events/Makefile
++++ b/samples/trace_events/Makefile
+@@ -11,7 +11,7 @@
+ # Here trace-events-sample.c does the CREATE_TRACE_POINTS.
+ #
+ CFLAGS_trace-events-sample.o := -I$(src)
++CFLAGS_trace_custom_sched.o := -I$(src)
+ 
+ obj-$(CONFIG_SAMPLE_TRACE_EVENTS) += trace-events-sample.o
+-
+ obj-$(CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS) += trace_custom_sched.o
+diff --git a/samples/trace_events/trace_custom_sched.c b/samples/trace_events/trace_custom_sched.c
+index 70a12c32ff99..b99d9ab7db85 100644
+--- a/samples/trace_events/trace_custom_sched.c
++++ b/samples/trace_events/trace_custom_sched.c
+@@ -11,256 +11,45 @@
+ #include <linux/version.h>
+ #include <linux/module.h>
+ #include <linux/sched.h>
+-#include <trace/events/sched.h>
+-
+-#define THIS_SYSTEM "custom_sched"
+-
+-#define SCHED_PRINT_FMT							\
+-	C("prev_prio=%d next_pid=%d next_prio=%d", REC->prev_prio, REC->next_pid, \
+-	  REC->next_prio)
+-
+-#define SCHED_WAKING_FMT				\
+-	C("pid=%d prio=%d", REC->pid, REC->prio)
+-
+-#undef C
+-#define C(a, b...) a, b
+-
+-static struct trace_event_fields sched_switch_fields[] = {
+-	{
+-		.type = "unsigned short",
+-		.name = "prev_prio",
+-		.size = sizeof(short),
+-		.align = __alignof__(short),
+-		.is_signed = 0,
+-		.filter_type = FILTER_OTHER,
+-	},
+-	{
+-		.type = "unsigned short",
+-		.name = "next_prio",
+-		.size = sizeof(short),
+-		.align = __alignof__(short),
+-		.is_signed = 0,
+-		.filter_type = FILTER_OTHER,
+-	},
+-	{
+-		.type = "unsigned int",
+-		.name = "next_prio",
+-		.size = sizeof(int),
+-		.align = __alignof__(int),
+-		.is_signed = 0,
+-		.filter_type = FILTER_OTHER,
+-	},
+-	{}
+-};
+-
+-struct sched_event {
+-	struct trace_entry	ent;
+-	unsigned short		prev_prio;
+-	unsigned short		next_prio;
+-	unsigned int		next_pid;
+-};
+-
+-static struct trace_event_fields sched_waking_fields[] = {
+-	{
+-		.type = "unsigned int",
+-		.name = "pid",
+-		.size = sizeof(int),
+-		.align = __alignof__(int),
+-		.is_signed = 0,
+-		.filter_type = FILTER_OTHER,
+-	},
+-	{
+-		.type = "unsigned short",
+-		.name = "prio",
+-		.size = sizeof(short),
+-		.align = __alignof__(short),
+-		.is_signed = 0,
+-		.filter_type = FILTER_OTHER,
+-	},
+-	{}
+-};
+-
+-struct wake_event {
+-	struct trace_entry	ent;
+-	unsigned int		pid;
+-	unsigned short		prio;
+-};
+-
+-static void sched_switch_probe(void *data, bool preempt, struct task_struct *prev,
+-			       struct task_struct *next)
+-{
+-	struct trace_event_file *trace_file = data;
+-	struct trace_event_buffer fbuffer;
+-	struct sched_event *entry;
+-
+-	if (trace_trigger_soft_disabled(trace_file))
+-		return;
+-
+-	entry = trace_event_buffer_reserve(&fbuffer, trace_file,
+-					   sizeof(*entry));
+-
+-	if (!entry)
+-		return;
+-
+-	entry->prev_prio = prev->prio;
+-	entry->next_prio = next->prio;
+-	entry->next_pid = next->pid;
+-
+-	trace_event_buffer_commit(&fbuffer);
+-}
+-
+-static struct trace_event_class sched_switch_class = {
+-	.system			= THIS_SYSTEM,
+-	.reg			= trace_event_reg,
+-	.fields_array		= sched_switch_fields,
+-	.fields			= LIST_HEAD_INIT(sched_switch_class.fields),
+-	.probe			= sched_switch_probe,
+-};
+-
+-static void sched_waking_probe(void *data, struct task_struct *t)
+-{
+-	struct trace_event_file *trace_file = data;
+-	struct trace_event_buffer fbuffer;
+-	struct wake_event *entry;
+-
+-	if (trace_trigger_soft_disabled(trace_file))
+-		return;
+-
+-	entry = trace_event_buffer_reserve(&fbuffer, trace_file,
+-					   sizeof(*entry));
+-
+-	if (!entry)
+-		return;
+-
+-	entry->prio = t->prio;
+-	entry->pid = t->pid;
+-
+-	trace_event_buffer_commit(&fbuffer);
+-}
+-
+-static struct trace_event_class sched_waking_class = {
+-	.system			= THIS_SYSTEM,
+-	.reg			= trace_event_reg,
+-	.fields_array		= sched_waking_fields,
+-	.fields			= LIST_HEAD_INIT(sched_waking_class.fields),
+-	.probe			= sched_waking_probe,
+-};
+-
+-static enum print_line_t sched_switch_output(struct trace_iterator *iter, int flags,
+-					     struct trace_event *trace_event)
+-{
+-	struct trace_seq *s = &iter->seq;
+-	struct sched_event *REC = (struct sched_event *)iter->ent;
+-	int ret;
+-
+-	ret = trace_raw_output_prep(iter, trace_event);
+-	if (ret != TRACE_TYPE_HANDLED)
+-		return ret;
+-
+-	trace_seq_printf(s, SCHED_PRINT_FMT);
+-	trace_seq_putc(s, '\n');
+ 
+-	return trace_handle_return(s);
+-}
+-
+-static struct trace_event_functions sched_switch_funcs = {
+-	.trace			= sched_switch_output,
+-};
+-
+-static enum print_line_t sched_waking_output(struct trace_iterator *iter, int flags,
+-					     struct trace_event *trace_event)
+-{
+-	struct trace_seq *s = &iter->seq;
+-	struct wake_event *REC = (struct wake_event *)iter->ent;
+-	int ret;
+-
+-	ret = trace_raw_output_prep(iter, trace_event);
+-	if (ret != TRACE_TYPE_HANDLED)
+-		return ret;
+-
+-	trace_seq_printf(s, SCHED_WAKING_FMT);
+-	trace_seq_putc(s, '\n');
+-
+-	return trace_handle_return(s);
+-}
+-
+-static struct trace_event_functions sched_waking_funcs = {
+-	.trace			= sched_waking_output,
+-};
+-
+-#undef C
+-#define C(a, b...) #a "," __stringify(b)
++/*
++ * Must include the event header that the custom event will attach to,
++ * from the C file, and not in the custom header file.
++ */
++#include <trace/events/sched.h>
+ 
+-static struct trace_event_call sched_switch_call = {
+-	.class			= &sched_switch_class,
+-	.event			= {
+-		.funcs			= &sched_switch_funcs,
+-	},
+-	.print_fmt		= SCHED_PRINT_FMT,
+-	.module			= THIS_MODULE,
+-	.flags			= TRACE_EVENT_FL_TRACEPOINT,
+-};
++/* Declare CREATE_CUSTOM_TRACE_EVENTS before including custom header */
++#define CREATE_CUSTOM_TRACE_EVENTS
+ 
+-static struct trace_event_call sched_waking_call = {
+-	.class			= &sched_waking_class,
+-	.event			= {
+-		.funcs			= &sched_waking_funcs,
+-	},
+-	.print_fmt		= SCHED_WAKING_FMT,
+-	.module			= THIS_MODULE,
+-	.flags			= TRACE_EVENT_FL_TRACEPOINT,
+-};
++#include "trace_custom_sched.h"
+ 
++/*
++ * As the trace events are not exported to modules, the use of
++ * for_each_kernel_tracepoint() is needed to find the trace event
++ * to attach to. The fct() function below, is a callback that
++ * will be called for every event.
++ *
++ * Helper functions are created by the TRACE_CUSTOM_EVENT() macro
++ * update the event. Those are of the form:
++ *
++ *    trace_custom_event_<event>_update()
++ *
++ * Where <event> is the event to attach.
++ */
+ static void fct(struct tracepoint *tp, void *priv)
+ {
+-	if (tp->name && strcmp(tp->name, "sched_switch") == 0)
+-		sched_switch_call.tp = tp;
+-	else if (tp->name && strcmp(tp->name, "sched_waking") == 0)
+-		sched_waking_call.tp = tp;
+-}
+-
+-static int add_event(struct trace_event_call *call)
+-{
+-	int ret;
+-
+-	ret = register_trace_event(&call->event);
+-	if (WARN_ON(!ret))
+-		return -ENODEV;
+-
+-	ret = trace_add_event_call(call);
+-	if (WARN_ON(ret))
+-		unregister_trace_event(&call->event);
+-
+-	return ret;
++	trace_custom_event_sched_switch_update(tp);
++	trace_custom_event_sched_waking_update(tp);
+ }
+ 
+ static int __init trace_sched_init(void)
+ {
+-	int ret;
+-
+-	check_trace_callback_type_sched_switch(sched_switch_probe);
+-	check_trace_callback_type_sched_waking(sched_waking_probe);
+-
+ 	for_each_kernel_tracepoint(fct, NULL);
+-
+-	ret = add_event(&sched_switch_call);
+-	if (ret)
+-		return ret;
+-
+-	ret = add_event(&sched_waking_call);
+-	if (ret)
+-		trace_remove_event_call(&sched_switch_call);
+-
+-	return ret;
 +	return 0;
  }
  
- /**
-@@ -4962,7 +4979,8 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
+ static void __exit trace_sched_exit(void)
  {
- 	struct ftrace_func_entry *entry;
+-	trace_set_clr_event(THIS_SYSTEM, "sched_switch", 0);
+-	trace_set_clr_event(THIS_SYSTEM, "sched_waking", 0);
+-
+-	trace_remove_event_call(&sched_switch_call);
+-	trace_remove_event_call(&sched_waking_call);
+ }
  
--	if (!ftrace_location(ip))
-+	ip = ftrace_location(ip);
-+	if (!ip)
- 		return -EINVAL;
- 
- 	if (remove) {
-@@ -5110,11 +5128,16 @@ int register_ftrace_direct(unsigned long ip, unsigned long addr)
- 	struct ftrace_func_entry *entry;
- 	struct ftrace_hash *free_hash = NULL;
- 	struct dyn_ftrace *rec;
--	int ret = -EBUSY;
-+	int ret = -ENODEV;
- 
- 	mutex_lock(&direct_mutex);
- 
-+	ip = ftrace_location(ip);
-+	if (!ip)
-+		goto out_unlock;
-+
- 	/* See if there's a direct function at @ip already */
-+	ret = -EBUSY;
- 	if (ftrace_find_rec_direct(ip))
- 		goto out_unlock;
- 
-@@ -5222,6 +5245,10 @@ int unregister_ftrace_direct(unsigned long ip, unsigned long addr)
- 
- 	mutex_lock(&direct_mutex);
- 
-+	ip = ftrace_location(ip);
-+	if (!ip)
-+		goto out_unlock;
-+
- 	entry = find_direct_entry(&ip, NULL);
- 	if (!entry)
- 		goto out_unlock;
-diff --git a/samples/Kconfig b/samples/Kconfig
-index 22cc921ae291..10e021c72282 100644
---- a/samples/Kconfig
-+++ b/samples/Kconfig
-@@ -14,7 +14,13 @@ config SAMPLE_TRACE_EVENTS
- 	tristate "Build trace_events examples -- loadable modules only"
- 	depends on EVENT_TRACING && m
- 	help
--	  This build trace event example modules.
-+	  This builds the trace event example module.
-+
-+config SAMPLE_TRACE_CUSTOM_EVENTS
-+	tristate "Build custom trace event example -- loadable modules only"
-+	depends on EVENT_TRACING && m
-+	help
-+	  This builds the custom trace event example module.
- 
- config SAMPLE_TRACE_PRINTK
-         tristate "Build trace_printk module - tests various trace_printk formats"
-diff --git a/samples/Makefile b/samples/Makefile
-index 1ae4de99c983..448343e8faeb 100644
---- a/samples/Makefile
-+++ b/samples/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_SAMPLE_RPMSG_CLIENT)	+= rpmsg/
- subdir-$(CONFIG_SAMPLE_SECCOMP)		+= seccomp
- subdir-$(CONFIG_SAMPLE_TIMER)		+= timers
- obj-$(CONFIG_SAMPLE_TRACE_EVENTS)	+= trace_events/
-+obj-$(CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS) += trace_events/
- obj-$(CONFIG_SAMPLE_TRACE_PRINTK)	+= trace_printk/
- obj-$(CONFIG_SAMPLE_FTRACE_DIRECT)	+= ftrace/
- obj-$(CONFIG_SAMPLE_FTRACE_DIRECT_MULTI) += ftrace/
-diff --git a/samples/trace_events/Makefile b/samples/trace_events/Makefile
-index b78344e7bbed..e98afc447fe1 100644
---- a/samples/trace_events/Makefile
-+++ b/samples/trace_events/Makefile
-@@ -13,3 +13,5 @@
- CFLAGS_trace-events-sample.o := -I$(src)
- 
- obj-$(CONFIG_SAMPLE_TRACE_EVENTS) += trace-events-sample.o
-+
-+obj-$(CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS) += trace_custom_sched.o
-diff --git a/samples/trace_events/trace_custom_sched.c b/samples/trace_events/trace_custom_sched.c
+ module_init(trace_sched_init);
+diff --git a/samples/trace_events/trace_custom_sched.h b/samples/trace_events/trace_custom_sched.h
 new file mode 100644
-index 000000000000..70a12c32ff99
+index 000000000000..a3d14de6a2e5
 --- /dev/null
-+++ b/samples/trace_events/trace_custom_sched.c
-@@ -0,0 +1,271 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/samples/trace_events/trace_custom_sched.h
+@@ -0,0 +1,95 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
 +/*
-+ * event tracer
++ * Like the headers that use TRACE_EVENT(), the TRACE_CUSTOM_EVENT()
++ * needs a header that allows for multiple inclusions.
 + *
-+ * Copyright (C) 2022 Google Inc, Steven Rostedt <rostedt@goodmis.org>
++ * Test for a unique name (here we have _TRACE_CUSTOM_SCHED_H),
++ * also allowing to continue if TRACE_CUSTOM_MULTI_READ is defined.
++ */
++#if !defined(_TRACE_CUSTOM_SCHED_H) || defined(TRACE_CUSTOM_MULTI_READ)
++#define _TRACE_CUSTOM_SCHED_H
++
++/* Include linux/trace_events.h for initial defines of TRACE_CUSTOM_EVENT() */
++#include <linux/trace_events.h>
++
++/*
++ * TRACE_CUSTOM_EVENT() is just like TRACE_EVENT(). The first parameter
++ * is the event name of an existing event where the TRACE_EVENT has been included
++ * in the C file before including this file.
++ */
++TRACE_CUSTOM_EVENT(sched_switch,
++
++	/*
++	 * The TP_PROTO() and TP_ARGS must match the trace event
++	 * that the custom event is using.
++	 */
++	TP_PROTO(bool preempt,
++		 struct task_struct *prev,
++		 struct task_struct *next),
++
++	TP_ARGS(preempt, prev, next),
++
++	/*
++	 * The next fields are where the customization happens.
++	 * The TP_STRUCT__entry() defines what will be recorded
++	 * in the ring buffer when the custom event triggers.
++	 *
++	 * The rest is just like the TRACE_EVENT() macro except that
++	 * it uses the custom entry.
++	 */
++	TP_STRUCT__entry(
++		__field(	unsigned short,		prev_prio	)
++		__field(	unsigned short,		next_prio	)
++		__field(	pid_t,	next_pid			)
++	),
++
++	TP_fast_assign(
++		__entry->prev_prio	= prev->prio;
++		__entry->next_pid	= next->pid;
++		__entry->next_prio	= next->prio;
++	),
++
++	TP_printk("prev_prio=%d next_pid=%d next_prio=%d",
++		  __entry->prev_prio, __entry->next_pid, __entry->next_prio)
++)
++
++
++TRACE_CUSTOM_EVENT(sched_waking,
++
++	TP_PROTO(struct task_struct *p),
++
++	TP_ARGS(p),
++
++	TP_STRUCT__entry(
++		__field(	pid_t,			pid	)
++		__field(	unsigned short,		prio	)
++	),
++
++	TP_fast_assign(
++		__entry->pid	= p->pid;
++		__entry->prio	= p->prio;
++	),
++
++	TP_printk("pid=%d prio=%d", __entry->pid, __entry->prio)
++)
++#endif
++/*
++ * Just like the headers that create TRACE_EVENTs, the below must
++ * be outside the protection of the above #if block.
 + */
 +
-+#define pr_fmt(fmt) fmt
++/*
++ * It is required that the Makefile includes:
++ *    CFLAGS_<c_file>.o := -I$(src)
++ */
++#undef TRACE_INCLUDE_PATH
++#undef TRACE_INCLUDE_FILE
++#define TRACE_INCLUDE_PATH .
 +
-+#include <linux/trace_events.h>
-+#include <linux/version.h>
-+#include <linux/module.h>
-+#include <linux/sched.h>
-+#include <trace/events/sched.h>
-+
-+#define THIS_SYSTEM "custom_sched"
-+
-+#define SCHED_PRINT_FMT							\
-+	C("prev_prio=%d next_pid=%d next_prio=%d", REC->prev_prio, REC->next_pid, \
-+	  REC->next_prio)
-+
-+#define SCHED_WAKING_FMT				\
-+	C("pid=%d prio=%d", REC->pid, REC->prio)
-+
-+#undef C
-+#define C(a, b...) a, b
-+
-+static struct trace_event_fields sched_switch_fields[] = {
-+	{
-+		.type = "unsigned short",
-+		.name = "prev_prio",
-+		.size = sizeof(short),
-+		.align = __alignof__(short),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{
-+		.type = "unsigned short",
-+		.name = "next_prio",
-+		.size = sizeof(short),
-+		.align = __alignof__(short),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{
-+		.type = "unsigned int",
-+		.name = "next_prio",
-+		.size = sizeof(int),
-+		.align = __alignof__(int),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{}
-+};
-+
-+struct sched_event {
-+	struct trace_entry	ent;
-+	unsigned short		prev_prio;
-+	unsigned short		next_prio;
-+	unsigned int		next_pid;
-+};
-+
-+static struct trace_event_fields sched_waking_fields[] = {
-+	{
-+		.type = "unsigned int",
-+		.name = "pid",
-+		.size = sizeof(int),
-+		.align = __alignof__(int),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{
-+		.type = "unsigned short",
-+		.name = "prio",
-+		.size = sizeof(short),
-+		.align = __alignof__(short),
-+		.is_signed = 0,
-+		.filter_type = FILTER_OTHER,
-+	},
-+	{}
-+};
-+
-+struct wake_event {
-+	struct trace_entry	ent;
-+	unsigned int		pid;
-+	unsigned short		prio;
-+};
-+
-+static void sched_switch_probe(void *data, bool preempt, struct task_struct *prev,
-+			       struct task_struct *next)
-+{
-+	struct trace_event_file *trace_file = data;
-+	struct trace_event_buffer fbuffer;
-+	struct sched_event *entry;
-+
-+	if (trace_trigger_soft_disabled(trace_file))
-+		return;
-+
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file,
-+					   sizeof(*entry));
-+
-+	if (!entry)
-+		return;
-+
-+	entry->prev_prio = prev->prio;
-+	entry->next_prio = next->prio;
-+	entry->next_pid = next->pid;
-+
-+	trace_event_buffer_commit(&fbuffer);
-+}
-+
-+static struct trace_event_class sched_switch_class = {
-+	.system			= THIS_SYSTEM,
-+	.reg			= trace_event_reg,
-+	.fields_array		= sched_switch_fields,
-+	.fields			= LIST_HEAD_INIT(sched_switch_class.fields),
-+	.probe			= sched_switch_probe,
-+};
-+
-+static void sched_waking_probe(void *data, struct task_struct *t)
-+{
-+	struct trace_event_file *trace_file = data;
-+	struct trace_event_buffer fbuffer;
-+	struct wake_event *entry;
-+
-+	if (trace_trigger_soft_disabled(trace_file))
-+		return;
-+
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file,
-+					   sizeof(*entry));
-+
-+	if (!entry)
-+		return;
-+
-+	entry->prio = t->prio;
-+	entry->pid = t->pid;
-+
-+	trace_event_buffer_commit(&fbuffer);
-+}
-+
-+static struct trace_event_class sched_waking_class = {
-+	.system			= THIS_SYSTEM,
-+	.reg			= trace_event_reg,
-+	.fields_array		= sched_waking_fields,
-+	.fields			= LIST_HEAD_INIT(sched_waking_class.fields),
-+	.probe			= sched_waking_probe,
-+};
-+
-+static enum print_line_t sched_switch_output(struct trace_iterator *iter, int flags,
-+					     struct trace_event *trace_event)
-+{
-+	struct trace_seq *s = &iter->seq;
-+	struct sched_event *REC = (struct sched_event *)iter->ent;
-+	int ret;
-+
-+	ret = trace_raw_output_prep(iter, trace_event);
-+	if (ret != TRACE_TYPE_HANDLED)
-+		return ret;
-+
-+	trace_seq_printf(s, SCHED_PRINT_FMT);
-+	trace_seq_putc(s, '\n');
-+
-+	return trace_handle_return(s);
-+}
-+
-+static struct trace_event_functions sched_switch_funcs = {
-+	.trace			= sched_switch_output,
-+};
-+
-+static enum print_line_t sched_waking_output(struct trace_iterator *iter, int flags,
-+					     struct trace_event *trace_event)
-+{
-+	struct trace_seq *s = &iter->seq;
-+	struct wake_event *REC = (struct wake_event *)iter->ent;
-+	int ret;
-+
-+	ret = trace_raw_output_prep(iter, trace_event);
-+	if (ret != TRACE_TYPE_HANDLED)
-+		return ret;
-+
-+	trace_seq_printf(s, SCHED_WAKING_FMT);
-+	trace_seq_putc(s, '\n');
-+
-+	return trace_handle_return(s);
-+}
-+
-+static struct trace_event_functions sched_waking_funcs = {
-+	.trace			= sched_waking_output,
-+};
-+
-+#undef C
-+#define C(a, b...) #a "," __stringify(b)
-+
-+static struct trace_event_call sched_switch_call = {
-+	.class			= &sched_switch_class,
-+	.event			= {
-+		.funcs			= &sched_switch_funcs,
-+	},
-+	.print_fmt		= SCHED_PRINT_FMT,
-+	.module			= THIS_MODULE,
-+	.flags			= TRACE_EVENT_FL_TRACEPOINT,
-+};
-+
-+static struct trace_event_call sched_waking_call = {
-+	.class			= &sched_waking_class,
-+	.event			= {
-+		.funcs			= &sched_waking_funcs,
-+	},
-+	.print_fmt		= SCHED_WAKING_FMT,
-+	.module			= THIS_MODULE,
-+	.flags			= TRACE_EVENT_FL_TRACEPOINT,
-+};
-+
-+static void fct(struct tracepoint *tp, void *priv)
-+{
-+	if (tp->name && strcmp(tp->name, "sched_switch") == 0)
-+		sched_switch_call.tp = tp;
-+	else if (tp->name && strcmp(tp->name, "sched_waking") == 0)
-+		sched_waking_call.tp = tp;
-+}
-+
-+static int add_event(struct trace_event_call *call)
-+{
-+	int ret;
-+
-+	ret = register_trace_event(&call->event);
-+	if (WARN_ON(!ret))
-+		return -ENODEV;
-+
-+	ret = trace_add_event_call(call);
-+	if (WARN_ON(ret))
-+		unregister_trace_event(&call->event);
-+
-+	return ret;
-+}
-+
-+static int __init trace_sched_init(void)
-+{
-+	int ret;
-+
-+	check_trace_callback_type_sched_switch(sched_switch_probe);
-+	check_trace_callback_type_sched_waking(sched_waking_probe);
-+
-+	for_each_kernel_tracepoint(fct, NULL);
-+
-+	ret = add_event(&sched_switch_call);
-+	if (ret)
-+		return ret;
-+
-+	ret = add_event(&sched_waking_call);
-+	if (ret)
-+		trace_remove_event_call(&sched_switch_call);
-+
-+	return ret;
-+}
-+
-+static void __exit trace_sched_exit(void)
-+{
-+	trace_set_clr_event(THIS_SYSTEM, "sched_switch", 0);
-+	trace_set_clr_event(THIS_SYSTEM, "sched_waking", 0);
-+
-+	trace_remove_event_call(&sched_switch_call);
-+	trace_remove_event_call(&sched_waking_call);
-+}
-+
-+module_init(trace_sched_init);
-+module_exit(trace_sched_exit);
-+
-+MODULE_AUTHOR("Steven Rostedt");
-+MODULE_DESCRIPTION("Custom scheduling events");
-+MODULE_LICENSE("GPL");
++/*
++ * It is requred that the TRACE_INCLUDE_FILE be the same
++ * as this file without the ".h".
++ */
++#define TRACE_INCLUDE_FILE trace_custom_sched
++#include <trace/define_custom_trace.h>
 -- 
 2.34.1
