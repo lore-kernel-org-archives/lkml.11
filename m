@@ -2,93 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA38BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B321C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 09:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbiCCJsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
+        id S232147AbiCCJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:49:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiCCJse (ORCPT
+        with ESMTP id S229774AbiCCJtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:48:34 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACF646178
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 01:47:49 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id y5so2810466wmi.0
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 01:47:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DXo+IgL0LM2mIv0V+usm5FIq8JBJVx3EjOFti4nq+sM=;
-        b=WMuJoP2p0GU28Ey+YY/qs/GsAuKhUqb9dDwzl3NM3JoXQjlFCODDalJ23AF35oFIRa
-         7f7L6CR1L5D23IXkTRYLwMM0bFURVU+fMVg3ndYhWkVV46gYbLY4ZvlTVouQbwxipFbr
-         5RO4SwjH1fqcRoTEhJ2Fdcnl1STyfV67IvzNNiGQHzXqpPNCQrLW0TAyH3YCyOKwFIGG
-         Pr6kH6J+WvTOsVrEVQlvcBec3vybmuxnlY2A3UuIjJfJe3pB9jnq/+W3sl4VuU37gizI
-         zOAVSB+FFFW4tcS4PM6y3JwgaiSiPYD23LNspQn2W9sNLDDUcwLEHMArXAL8ouN/Gix9
-         UDQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DXo+IgL0LM2mIv0V+usm5FIq8JBJVx3EjOFti4nq+sM=;
-        b=erxZoP5XUeUoKEZdQwGPT9shB0rJeGp6oj4Yr9sqCJLLWo0ZqX4S1cJCFR6tJUManL
-         c4i/APPWrhSIOCuXlEfGQszIq98XDIswEMf2c6y5jjzfjrre0jhWVxFu79CKWy62f41B
-         6umcTGfawSUt+ByJBl1iM2GVEINE5XSnN1vT1ICuNOQKIP8Vjzp3K1oXbzOWn5H8dnGp
-         RD8bMTHcHcfJCubNIKvIV22O0Ze4mj1kAHS5btDovNf001YfGt1lbqsvI/G/7dWFViZp
-         itYdkmesKCh15U9e55Ah1B1+egoYewRmRvVwkgMkrs5MQDOPzaHd/BadcsLkbjpWNXB5
-         c2xg==
-X-Gm-Message-State: AOAM532+oJbMteTv5F6Vj3kbdGfx44Edn8mNGeESeFtmV9uYbPc8I3dS
-        UrgEpPpoP6nVuXevTgxkrPpSEQ==
-X-Google-Smtp-Source: ABdhPJzt1uMNjD5Cj3J7fsUc+/Ygz0eTbDkFYjwl+IVSKmYH0iYag6LHp0uniSYaoeQXObYIqzJcNg==
-X-Received: by 2002:a05:600c:511d:b0:380:e340:bfaf with SMTP id o29-20020a05600c511d00b00380e340bfafmr3057547wms.159.1646300868014;
-        Thu, 03 Mar 2022 01:47:48 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id f8-20020a05600c4e8800b00380ee4a78fdsm2001448wmq.4.2022.03.03.01.47.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 01:47:47 -0800 (PST)
-Date:   Thu, 3 Mar 2022 09:47:45 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] regulator/mfd: dt-bindings: maxim,max77802:
- convert to dtschema
-Message-ID: <YiCOwe4ykuvx/mRO@google.com>
-References: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
- <a401939d-ba65-4614-baa2-047914f55206@canonical.com>
+        Thu, 3 Mar 2022 04:49:14 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE6D137039;
+        Thu,  3 Mar 2022 01:48:28 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K8R4p4qz2z4xNm;
+        Thu,  3 Mar 2022 20:48:26 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646300907;
+        bh=j+b0561ydDIoxcNEvHSmXvQ9Kwr/WfIPJlHjarMlLbs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RyGXyaVCeKeKYQ0ikwLudnDxnxSOuqTn7RD7yBXRSEOfl8sd8mzN+8h7IFmnsG5LE
+         YYxANjgEYvNZahvry4WdcOwshQDEdTGFR7WPwJCKrxYmLr0POZJRfI5lHgYl+B0hVp
+         6t/kIScP8/V5T689Nz4LTQIVKUyywhb35YpTB7DjKRB6cYA8ABw3VYLu8AClzUYnp1
+         EFS8wV9EhWonD7pGHLlO0BT3jYx+aHUqsh4qWmFcW0FQxING8TiwM+AFv8AfhetU4l
+         h0H7RMWtkxDLQ1S2dAFT/tW7gHiFHOF2/XxtyLNtWkIeMZuLI6r+rJsBnxILshlxza
+         ytBfxi/chUM+Q==
+Date:   Thu, 3 Mar 2022 20:48:25 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the tip tree
+Message-ID: <20220303204825.3c795a17@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a401939d-ba65-4614-baa2-047914f55206@canonical.com>
+Content-Type: multipart/signed; boundary="Sig_/r1OVF7ThqUpRx/4wHEi2ypz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 02 Mar 2022, Krzysztof Kozlowski wrote:
+--Sig_/r1OVF7ThqUpRx/4wHEi2ypz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> On 15/02/2022 08:53, Krzysztof Kozlowski wrote:
-> > Hi,
-> > 
-> 
-> Hi Lee,
-> 
-> This set also looks like it is clear to go.
+Hi all,
 
-Yes, they're all on-the-list.
+Commit
 
-I'll probably take them all into one branch and send out a PR.
+  cedd3614e5d9 ("perf: Add irq and exception return branch types")
 
-Making 24 separate immutable branches is beyond my pay scale!
+is missing a Signed-off-by from its author.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/r1OVF7ThqUpRx/4wHEi2ypz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIgjukACgkQAVBC80lX
+0GyD9Qf9G7yntj+/XgJWbztCR7eDDbu2P3inhmIAlEN/hvNoac7bUvFOd3/sAe/e
+BHx7/DqztcJKddzpGIMChk+0+tJVfinjjMWbUv1R4vuPFrcbPri5TfJtUuPL1XgG
+OzHUHEj2+zG0jZyVBsvH03ogDuOxmB8OVr6JKuH11rfFh2n8LXLvPQFQnDX1v6wz
+OlGRN/vPE+G8VGQSLYSg7syDCJH+EdRLTx09lltxeKEz+grRoQ8LeIZtRTQK7eCW
+MMbrR/K5sLcR2Kr3LIB7ztHqiTLUHC2AaPTC4R2UE3ETdOen598olU8YzjrwPA3i
+QJ6GAhSEkIiZxKpZ+CESGM20Jl7PIQ==
+=skYm
+-----END PGP SIGNATURE-----
+
+--Sig_/r1OVF7ThqUpRx/4wHEi2ypz--
