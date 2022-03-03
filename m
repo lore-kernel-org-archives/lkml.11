@@ -2,121 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14497C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232515AbiCCKyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
+        id S232528AbiCCKyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbiCCKyc (ORCPT
+        with ESMTP id S229996AbiCCKyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Mar 2022 05:54:32 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FACD177D30
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:53:46 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 280DC1F37B;
-        Thu,  3 Mar 2022 10:53:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646304825; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1fQZTMimSCOOyhM5uu37na2oMa/18fIoZEJlOGor0Dc=;
-        b=EaKUBwIE5rN3e4I89XWfER9PCH/kgIfZQt84/C0mUoEgtv4Ym6oyWm0LheMy+QAu8x5ZcI
-        cDrL9l4vPPL9XtOt5VEQr9ltXfvTpi0ezJL0bgQdCTxd/ABdv+709AdcHPCNef4TnJT4kN
-        k5Sh47pDMYCZ72IdwnhdbkuU2vY5v2s=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646304825;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1fQZTMimSCOOyhM5uu37na2oMa/18fIoZEJlOGor0Dc=;
-        b=Vs2yjuRjKTHacQLzsw8JqSHimyds3/eAM5T/sroVknPLrIZNZoHlIA/uVL/YWrMLwvBrsN
-        dpkleBcO8r9iHPAg==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C3235A3B81;
-        Thu,  3 Mar 2022 10:53:44 +0000 (UTC)
-Date:   Thu, 3 Mar 2022 11:53:44 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Peter Zijlstra <peterz@infradead.org>
-cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com,
-        rostedt@goodmis.org, mhiramat@kernel.org,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 33/39] objtool: Add IBT/ENDBR decoding
-In-Reply-To: <20220224151323.959862564@infradead.org>
-Message-ID: <alpine.LSU.2.21.2203031138040.704@pobox.suse.cz>
-References: <20220224145138.952963315@infradead.org> <20220224151323.959862564@infradead.org>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542D4177D2F;
+        Thu,  3 Mar 2022 02:53:45 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K8SQj5KfTzbc61;
+        Thu,  3 Mar 2022 18:49:01 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 3 Mar 2022 18:53:42 +0800
+Subject: Re: [PATCH 2/8] mm: khugepaged: remove redundant check for
+ VM_NO_KHUGEPAGED
+To:     Yang Shi <shy828301@gmail.com>
+CC:     Linux MM <linux-mm@kvack.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        <linux-ext4@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Rik van Riel <riel@surriel.com>,
+        Matthew Wilcox <willy@infradead.org>, Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        <darrick.wong@oracle.com>
+References: <20220228235741.102941-1-shy828301@gmail.com>
+ <20220228235741.102941-3-shy828301@gmail.com>
+ <968ccc31-a87c-4657-7193-464f6b5b9259@huawei.com>
+ <CAHbLzkqNq_H6Cdwzd-3VazsQbEz=ZUFU60ec+Py8w3nhx7E5pw@mail.gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <62dafd1a-a1f1-8b9e-a246-6c1ea7580023@huawei.com>
+Date:   Thu, 3 Mar 2022 18:53:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAHbLzkqNq_H6Cdwzd-3VazsQbEz=ZUFU60ec+Py8w3nhx7E5pw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Thu, 24 Feb 2022, Peter Zijlstra wrote:
-
-> Decode ENDBR instructions and WARN about NOTRACK prefixes.
-
-I guess it has been already mentioned somewhere, but could you explain 
-NOTRACK prefix here, please? If I understand it right, it disables IBT for 
-the indirect branch instruction meaning that its target does not have to 
-start with ENDBR? 
-
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  tools/objtool/arch/x86/decode.c      |   34 +++++++++++++++++++++++++++++-----
->  tools/objtool/include/objtool/arch.h |    1 +
->  2 files changed, 30 insertions(+), 5 deletions(-)
+On 2022/3/3 2:43, Yang Shi wrote:
+> On Tue, Mar 1, 2022 at 1:07 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>>
+>> On 2022/3/1 7:57, Yang Shi wrote:
+>>> The hugepage_vma_check() called by khugepaged_enter_vma_merge() does
+>>> check VM_NO_KHUGEPAGED. Remove the check from caller and move the check
+>>> in hugepage_vma_check() up.
+>>>
+>>> More checks may be run for VM_NO_KHUGEPAGED vmas, but MADV_HUGEPAGE is
+>>> definitely not a hot path, so cleaner code does outweigh.
+>>>
+>>> Signed-off-by: Yang Shi <shy828301@gmail.com>
+>>> ---
+>>>  mm/khugepaged.c | 9 ++++++---
+>>>  1 file changed, 6 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+>>> index 131492fd1148..82c71c6da9ce 100644
+>>> --- a/mm/khugepaged.c
+>>> +++ b/mm/khugepaged.c
+>>> @@ -366,8 +366,7 @@ int hugepage_madvise(struct vm_area_struct *vma,
+>>>                * register it here without waiting a page fault that
+>>>                * may not happen any time soon.
+>>>                */
+>>> -             if (!(*vm_flags & VM_NO_KHUGEPAGED) &&
+>>> -                             khugepaged_enter_vma_merge(vma, *vm_flags))
+>>> +             if (khugepaged_enter_vma_merge(vma, *vm_flags))
+>>>                       return -ENOMEM;
+>>>               break;
+>>>       case MADV_NOHUGEPAGE:
+>>> @@ -446,6 +445,9 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+>>>       if (!transhuge_vma_enabled(vma, vm_flags))
+>>>               return false;
+>>>
+>>> +     if (vm_flags & VM_NO_KHUGEPAGED)
+>>> +             return false;
+>>> +
+>>
+>> This patch does improve the readability. But I have a question.
+>> It seems VM_NO_KHUGEPAGED is not checked in the below if-condition:
+>>
+>>         /* Only regular file is valid */
+>>         if (IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS) && vma->vm_file &&
+>>             (vm_flags & VM_EXEC)) {
+>>                 struct inode *inode = vma->vm_file->f_inode;
+>>
+>>                 return !inode_is_open_for_write(inode) &&
+>>                         S_ISREG(inode->i_mode);
+>>         }
+>>
+>> If we return false due to VM_NO_KHUGEPAGED here, it seems it will affect the
+>> return value of this CONFIG_READ_ONLY_THP_FOR_FS condition check.
+>> Or am I miss something?
 > 
-> --- a/tools/objtool/arch/x86/decode.c
-> +++ b/tools/objtool/arch/x86/decode.c
-> @@ -103,6 +103,18 @@ unsigned long arch_jump_destination(stru
->  #define rm_is_mem(reg)	(mod_is_mem() && !is_RIP() && rm_is(reg))
->  #define rm_is_reg(reg)	(mod_is_reg() && modrm_rm == (reg))
->  
-> +static bool has_notrack_prefix(struct insn *insn)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < insn->prefixes.nbytes; i++) {
-> +		if (insn->prefixes.bytes[i] == 0x3e)
-> +			return true;
-> +	}
-> +
-> +	return false;
-> +}
-> +
+> Yes, it will return false instead of true if that file THP check is
+> true, but wasn't that old behavior actually problematic? Khugepaged
+> definitely can't collapse VM_NO_KHUGEPAGED vmas even though it
+> satisfies all the readonly file THP checks. With the old behavior
+> khugepaged may scan an exec file hugetlb vma IIUC although it will
+> fail later due to other page sanity checks, i.e. page compound check.
 
-...
+Sounds reasonable to me. Khugepaged shouldn't collapse VM_NO_KHUGEPAGED vmas.
 
-> @@ -636,20 +656,24 @@ int arch_decode_instruction(struct objto
->  		break;
->  
->  	case 0xff:
-> -		if (modrm_reg == 2 || modrm_reg == 3)
-> +		if (modrm_reg == 2 || modrm_reg == 3) {
->  
->  			*type = INSN_CALL_DYNAMIC;
-> +			if (has_notrack_prefix(&insn))
-> +				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
->  
-> -		else if (modrm_reg == 4)
-> +		} else if (modrm_reg == 4) {
->  
->  			*type = INSN_JUMP_DYNAMIC;
-> +			if (has_notrack_prefix(&insn))
-> +				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-And we want to warn about it here so that we can have it all in the kernel 
-control?
+Thanks.
 
-Miroslav
+> 
+>>
+>> Thanks.
+>>
+>>>       if (vma->vm_file && !IS_ALIGNED((vma->vm_start >> PAGE_SHIFT) -
+>>>                               vma->vm_pgoff, HPAGE_PMD_NR))
+>>>               return false;
+>>> @@ -471,7 +473,8 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+>>>               return false;
+>>>       if (vma_is_temporary_stack(vma))
+>>>               return false;
+>>> -     return !(vm_flags & VM_NO_KHUGEPAGED);
+>>> +
+>>> +     return true;
+>>>  }
+>>>
+>>>  int __khugepaged_enter(struct mm_struct *mm)
+>>>
+>>
+>>
+> .
+> 
+
