@@ -2,186 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD201C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 15:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234344AbiCCPH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 10:07:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48554 "EHLO
+        id S232052AbiCCPJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 10:09:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234293AbiCCPHd (ORCPT
+        with ESMTP id S229741AbiCCPJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 10:07:33 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D534B1903F4
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 07:06:47 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id r65so3342629wma.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 07:06:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RaGrefX44rEm0wu9mMJuIgGrRaikvNDSwTTA6I5onmc=;
-        b=iQLNGn0tWI4UbbLemKwJopKnPXIK6nheNzTzHrT8vkbpBGYU/hUG56HnYeriqvXwBn
-         ukQV4uk2XqPg1IYY2gQ7dA7zCxVQA9VAefi89ro1B74a8yukKgHhylzRLQKi4rcVh6UF
-         NI7bvak1fBKABNQHpdM+MqV1a3R0qX/5xamzlcsDctZNb6jr+eOuwxgjOMdkwfwM+iRg
-         otvzcIZJ05YXu31osASP0SQH4UAI5x4W7rmj74EOPCvO5edl6eofBwlPdZ4J7DyWdZ7t
-         sIxsnRYXia+pZlL6teoLO4fjKrIP1P7cG+q/Qv/Zac7Tnd+79P1RnByWsBuSUnoodgW2
-         hvPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RaGrefX44rEm0wu9mMJuIgGrRaikvNDSwTTA6I5onmc=;
-        b=Wgfdjxy0/eB3BcrrmHD58hHb/u2cbKklNQD9AwgE4kV2Hx3Bff+PiqUe2RRpcwR75g
-         qWD/8YIOnayAwdH2f2KuMQ4zdX3I8IbH64DxA9JXMY/HYOUePkwLaOAA69+OsM+sRIYx
-         ujaJMPe5WMgMjqJiCWP61fE2jEgM8HFhJ3QACGJj5hGCb/3dJKS8erZ4cKutp7icLHfz
-         bfCTVYCLxv1ZFf+6fVKEaSm2GDcCOTm8GgRMiRTpAnx6FCWjWrk8J3ujzlzj1KXyvPEJ
-         3NC0VU2WVYQ+LIRCDWr+StD7nxHRurs5qoMqPMdowTPe1zDCWOhsoYoFlh4TbbVvSDZX
-         HJZQ==
-X-Gm-Message-State: AOAM530xb2GIFhN4Ts5mKYJYGDol9ISmSl8v0EUi7FJbaiNzzBJ83BfI
-        jh8Zu7dSDmWZuLzwGlxSEBeC7Q==
-X-Google-Smtp-Source: ABdhPJyeVXsvKvr0st8E02wJKuejqcviu/T7Pj+MD4OwIM0plwJp9ylK47fRvkVMZ/n3NArQdUWyfg==
-X-Received: by 2002:a05:600c:35c4:b0:381:782e:9645 with SMTP id r4-20020a05600c35c400b00381782e9645mr4130136wmq.63.1646320006414;
-        Thu, 03 Mar 2022 07:06:46 -0800 (PST)
-Received: from localhost.localdomain (hst-221-14.medicom.bg. [84.238.221.14])
-        by smtp.gmail.com with ESMTPSA id o16-20020a05600c511000b0038141b4a4edsm10757072wms.38.2022.03.03.07.06.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 07:06:45 -0800 (PST)
-From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
-To:     linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org
-Cc:     hverkuil-cisco@xs4all.nl, Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Subject: [PATCH v4 5/6] venus: Add a handling of QC10C compressed format
-Date:   Thu,  3 Mar 2022 17:06:35 +0200
-Message-Id: <20220303150636.577063-6-stanimir.varbanov@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220303150636.577063-1-stanimir.varbanov@linaro.org>
-References: <20220303150636.577063-1-stanimir.varbanov@linaro.org>
+        Thu, 3 Mar 2022 10:09:00 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3586522BE3;
+        Thu,  3 Mar 2022 07:08:13 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id E01201F417E5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646320091;
+        bh=4AnpB0bYq27BC2obrhRVr+DJd2wAvFLS3ceAZEqlmi8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YmxxYkponFYhDybTF8nddo7rMJTsASLxFCpeVD75jv0aJPhBhqX8kkXnCaPQJXvY3
+         nUzbIyxllmRywUCgmIxeDhHq8Zqbpo5WJ/rporDoCUl4h6eAMGvpfYry52LIqx0InJ
+         Qbg1cZKSA3fi0beT5Efr9M5IRzuFBhgzpb7xBWLv5SqCswmxDSYcW9tv+FJSs9cM7l
+         PJwxmT+Z3WGs+H1NCLLrBZrfOKacGUCyJF27EiNVYp2c7bqe4zBCv7J4XBzRJ/lG5/
+         dTaysJnMMzYdNSCfjYgqBwi+ZGnO09TH5IoWfFCocfLBlJZcEQ1zZ3lziCsS6x0zQF
+         9H0xcfGdtKVRg==
+Message-ID: <6bc78592-36c0-8462-f4f8-ad9e04a13da6@collabora.com>
+Date:   Thu, 3 Mar 2022 16:08:08 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [v2 09/17] ASoC: mediatek: mt8186: support tdm in platform driver
+Content-Language: en-US
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org
+Cc:     lgirdwood@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
+        matthias.bgg@gmail.com, perex@perex.cz, p.zabel@pengutronix.de,
+        geert+renesas@glider.be, trevor.wu@mediatek.com,
+        tzungbi@google.com, aaronyu@google.com, zhangqilong3@huawei.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
+ <20220217134205.15400-10-jiaxin.yu@mediatek.com>
+ <fcae42a5-6e11-e683-8f3a-453650f08d38@collabora.com>
+ <9ba63387baecf598db696d0ebbc1583406a57a62.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <9ba63387baecf598db696d0ebbc1583406a57a62.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds QC10C compressed pixel format in the Venus driver, and
-make it possible to discover from v4l2 clients.
+Il 03/03/22 15:10, Jiaxin Yu ha scritto:
+> On Fri, 2022-02-18 at 15:54 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 17/02/22 14:41, Jiaxin Yu ha scritto:
+>>> This patch adds mt8186 tdm dai driver.
+>>>
+>>> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+>>> ---
+>>>    sound/soc/mediatek/mt8186/mt8186-dai-tdm.c | 713
+>>> +++++++++++++++++++++
+>>>    1 file changed, 713 insertions(+)
+>>>    create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
+>>>
+>>> diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
+>>> b/sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
+>>> new file mode 100644
+>>> index 000000000000..28dd3661f0e0
+>>> --- /dev/null
+>>> +++ b/sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
+>>> @@ -0,0 +1,713 @@
+>>> +// SPDX-License-Identifier: GPL-2.0
+>>> +//
+>>> +// MediaTek ALSA SoC Audio DAI TDM Control
+>>> +//
+>>> +// Copyright (c) 2022 MediaTek Inc.
+>>> +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+>>> +
 
-Note: The QC10C format will be enumerable via VIDIOC_ENUM_FMT when
-the bitstream is 10-bits and the headers are parsed.
+..snip..
 
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
----
- drivers/media/platform/qcom/venus/helpers.c | 26 ++++-----------------
- drivers/media/platform/qcom/venus/vdec.c    | 19 ++++++++++++---
- 2 files changed, 20 insertions(+), 25 deletions(-)
+>>> +
+>>> +static int mtk_dai_tdm_hw_params(struct snd_pcm_substream
+>>> *substream,
+>>> +				 struct snd_pcm_hw_params *params,
+>>> +				 struct snd_soc_dai *dai)
+>>> +{
+>>> +	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
+>>> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
+>>> +	int tdm_id = dai->id;
+>>> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[tdm_id];
+>>> +	unsigned int tdm_mode = tdm_priv->tdm_mode;
+>>> +	unsigned int data_mode = tdm_priv->data_mode;
+>>> +	unsigned int rate = params_rate(params);
+>>> +	unsigned int channels = params_channels(params);
+>>> +	snd_pcm_format_t format = params_format(params);
+>>> +	unsigned int bit_width =
+>>> +		snd_pcm_format_physical_width(format);
+>>> +	unsigned int tdm_channels = (data_mode == TDM_DATA_ONE_PIN) ?
+>>> +		get_tdm_ch_per_sdata(tdm_mode, channels) : 2;
+>>> +	unsigned int lrck_width =
+>>> +		get_tdm_lrck_width(format, tdm_mode);
+>>> +	unsigned int tdm_con = 0;
+>>> +	bool slave_mode = tdm_priv->slave_mode;
+>>> +	bool lrck_inv = tdm_priv->lck_invert;
+>>> +	bool bck_inv = tdm_priv->bck_invert;
+>>> +	unsigned int ctrl_reg;
+>>> +	unsigned int ctrl_mask;
+>>> +	unsigned int tran_rate;
+>>> +	unsigned int tran_relatch_rate;
+>>> +
+>>> +	if (tdm_priv)
+>>> +		tdm_priv->rate = rate;
+>>> +	else
+>>> +		dev_info(afe->dev, "%s(), tdm_priv == NULL", __func__);
+>>> +
+>>> +	tran_rate = mt8186_rate_transform(afe->dev, rate, dai->id);
+>>> +	tran_relatch_rate = mt8186_tdm_relatch_rate_transform(afe->dev,
+>>> rate);
+>>> +
+>>> +	/* calculate mclk_rate, if not set explicitly */
+>>> +	if (!tdm_priv->mclk_rate) {
+>>> +		tdm_priv->mclk_rate = rate * tdm_priv->mclk_multiple;
+>>> +		mtk_dai_tdm_cal_mclk(afe,
+>>> +				     tdm_priv,
+>>> +				     tdm_priv->mclk_rate);
+>>> +	}
+>>> +
+>>> +	/* ETDM_IN1_CON0 */
+>>> +	tdm_con |= slave_mode << ETDM_IN1_CON0_REG_SLAVE_MODE_SFT;
+>>> +	tdm_con |= tdm_mode << ETDM_IN1_CON0_REG_FMT_SFT;
+>>> +	tdm_con |= (bit_width - 1) << ETDM_IN1_CON0_REG_BIT_LENGTH_SFT;
+>>> +	tdm_con |= (bit_width - 1) <<
+>>> ETDM_IN1_CON0_REG_WORD_LENGTH_SFT;
+>>> +	tdm_con |= (tdm_channels - 1) << ETDM_IN1_CON0_REG_CH_NUM_SFT;
+>>> +	/* default disable sync mode */
+>>> +	tdm_con |= 0 << ETDM_IN1_CON0_REG_SYNC_MODE_SFT;
+>>
+>> 0 << (anything) == 0
+>>
+>> (number |= 0) == number
+>>
+>> Is this a mistake, or are you really doing nothing here?
+>>
+> No, this is just to emphasize the need to set this bit to 0.
+> It really do nothing here, just link a reminder.
+> Can I keep this sentence?
 
-diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
-index 7144747398b6..f5a938455d7c 100644
---- a/drivers/media/platform/qcom/venus/helpers.c
-+++ b/drivers/media/platform/qcom/venus/helpers.c
-@@ -594,6 +594,8 @@ static u32 to_hfi_raw_fmt(u32 v4l2_fmt)
- 		return HFI_COLOR_FORMAT_NV21;
- 	case V4L2_PIX_FMT_QC08C:
- 		return HFI_COLOR_FORMAT_NV12_UBWC;
-+	case V4L2_PIX_FMT_QC10C:
-+		return HFI_COLOR_FORMAT_YUV420_TP10_UBWC;
- 	default:
- 		break;
- 	}
-@@ -1176,7 +1178,8 @@ int venus_helper_set_format_constraints(struct venus_inst *inst)
- 	if (!IS_V6(inst->core))
- 		return 0;
- 
--	if (inst->opb_fmt == HFI_COLOR_FORMAT_NV12_UBWC)
-+	if (inst->opb_fmt == HFI_COLOR_FORMAT_NV12_UBWC ||
-+	    inst->opb_fmt == HFI_COLOR_FORMAT_YUV420_TP10_UBWC)
- 		return 0;
- 
- 	pconstraint.buffer_type = HFI_BUFFER_OUTPUT2;
-@@ -1747,27 +1750,6 @@ int venus_helper_get_out_fmts(struct venus_inst *inst, u32 v4l2_fmt,
- 	if (!caps)
- 		return -EINVAL;
- 
--	if (inst->bit_depth == VIDC_BITDEPTH_10 &&
--	    inst->session_type == VIDC_SESSION_TYPE_DEC) {
--		found_ubwc =
--			find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT,
--					   HFI_COLOR_FORMAT_YUV420_TP10_UBWC);
--		found = find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT2,
--					   HFI_COLOR_FORMAT_NV12);
--		if (found_ubwc && found) {
--			/*
--			 * Hard-code DPB buffers to be 10bit UBWC and decoder
--			 * output buffers in 8bit NV12 until V4L2 is able to
--			 * expose compressed/tiled formats to applications.
--			 */
--			*out_fmt = HFI_COLOR_FORMAT_YUV420_TP10_UBWC;
--			*out2_fmt = HFI_COLOR_FORMAT_NV12;
--			return 0;
--		}
--
--		return -EINVAL;
--	}
--
- 	if (ubwc) {
- 		ubwc_fmt = fmt | HFI_COLOR_FORMAT_UBWC_BASE;
- 		found_ubwc = find_fmt_from_caps(caps, HFI_BUFFER_OUTPUT,
-diff --git a/drivers/media/platform/qcom/venus/vdec.c b/drivers/media/platform/qcom/venus/vdec.c
-index eb02e45a512b..c8261c6cb0fb 100644
---- a/drivers/media/platform/qcom/venus/vdec.c
-+++ b/drivers/media/platform/qcom/venus/vdec.c
-@@ -35,6 +35,10 @@ static const struct venus_format vdec_formats[] = {
- 		.num_planes = 1,
- 		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
- 	}, {
-+		.pixfmt = V4L2_PIX_FMT_QC10C,
-+		.num_planes = 1,
-+		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
-+	},{
- 		.pixfmt = V4L2_PIX_FMT_NV12,
- 		.num_planes = 1,
- 		.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
-@@ -114,6 +118,10 @@ find_format(struct venus_inst *inst, u32 pixfmt, u32 type)
- 	    !venus_helper_check_format(inst, fmt[i].pixfmt))
- 		return NULL;
- 
-+	if (V4L2_TYPE_IS_CAPTURE(type) && fmt[i].pixfmt == V4L2_PIX_FMT_QC10C &&
-+	    !(inst->bit_depth == VIDC_BITDEPTH_10))
-+		return NULL;
-+
- 	return &fmt[i];
- }
- 
-@@ -133,11 +141,16 @@ find_format_by_index(struct venus_inst *inst, unsigned int index, u32 type)
- 		if (fmt[i].type != type)
- 			continue;
- 
--		if (V4L2_TYPE_IS_OUTPUT(type))
-+		if (V4L2_TYPE_IS_OUTPUT(type)) {
- 			valid = venus_helper_check_codec(inst, fmt[i].pixfmt);
--		else if (V4L2_TYPE_IS_CAPTURE(type))
-+		} else if (V4L2_TYPE_IS_CAPTURE(type)) {
- 			valid = venus_helper_check_format(inst, fmt[i].pixfmt);
- 
-+			if (fmt[i].pixfmt == V4L2_PIX_FMT_QC10C &&
-+			    !(inst->bit_depth == VIDC_BITDEPTH_10))
-+				valid = false;
-+		}
-+
- 		if (k == index && valid)
- 			break;
- 		if (valid)
-@@ -1537,7 +1550,7 @@ static const struct hfi_inst_ops vdec_hfi_ops = {
- static void vdec_inst_init(struct venus_inst *inst)
- {
- 	inst->hfi_codec = HFI_VIDEO_CODEC_H264;
--	inst->fmt_out = &vdec_formats[7];
-+	inst->fmt_out = &vdec_formats[8];
- 	inst->fmt_cap = &vdec_formats[0];
- 	inst->width = frame_width_min(inst);
- 	inst->height = ALIGN(frame_height_min(inst), 32);
--- 
-2.25.1
+If, in your judgement, it is very important to have a reminder about that
+bit having to be unset, then add a comment in the code saying so.
+Don't simply comment out the statement as it is.
+
+A good way would be something like
+/* sync mode bit has to be unset because this that reason, otherwise X happens */
+
+>>
+>>> +	/* relatch fix to h26m */
+>>> +	tdm_con |= 0 << ETDM_IN1_CON0_REG_RELATCH_1X_EN_SEL_DOMAIN_SFT;
+>>> +
+>>> +	ctrl_reg = ETDM_IN1_CON0;
+>>> +	ctrl_mask = ETDM_IN_CON0_CTRL_MASK;
+>>> +	regmap_update_bits(afe->regmap, ctrl_reg, ctrl_mask, tdm_con);
+>>> +
+>>> +	/* ETDM_IN1_CON1 */
+>>> +	tdm_con = 0;
+>>> +	tdm_con |= 0 << ETDM_IN1_CON1_REG_LRCK_AUTO_MODE_SFT;
+>>> +	tdm_con |= 1 << ETDM_IN1_CON1_PINMUX_MCLK_CTRL_OE_SFT;
+>>> +	tdm_con |= (lrck_width - 1) <<
+>>> ETDM_IN1_CON1_REG_LRCK_WIDTH_SFT;
+>>> +
+>>> +	ctrl_reg = ETDM_IN1_CON1;
+>>> +	ctrl_mask = ETDM_IN_CON1_CTRL_MASK;
+>>> +	regmap_update_bits(afe->regmap, ctrl_reg, ctrl_mask, tdm_con);
+>>
+>> You don't need the ctrl_reg, nor ctrl_mask variables...
+> I was trying to avoid a line of more than 80 words, so I shortened the
+> number of words through variables.
+> 
+
+Yes, I know, I did understand what you were trying to do...
+...but it's fine to go past 80: in this case this would be 88 columns,
+which is still ok to have!
+
+And note, this is the case with all of similar calls present in this function,
+that's why I said that you don't need these two variables! :)
+
+Thank you,
+Angelo
+
 
