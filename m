@@ -2,89 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 269D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD65BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 00:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbiCCADe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 19:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
+        id S230024AbiCCAEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 19:04:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiCCADX (ORCPT
+        with ESMTP id S229962AbiCCAEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 19:03:23 -0500
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CDB205E0;
-        Wed,  2 Mar 2022 16:02:38 -0800 (PST)
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 2230255c029376;
-        Thu, 3 Mar 2022 09:02:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 2230255c029376
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1646265726;
-        bh=1GjC9yWawG+f9/7QP15mK3z9L/3WiA7vCZuCL3HZ/ck=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NKGLhqH/8mKIE4g16dYZk/L6M7ik/8e6QSzSPnBskQWr+t4IVxZpgOewQNsjXIUQs
-         3k9zOisBbUOsWN5JeeFBvPJnxny+kgqGydth9aNTxDjutVWV1phP/poVez4DzDV+YQ
-         Olxupv1WEVnbZsxLxcCtrvOF9gJwlNtdxtjhLzjGfdg+xD34W67yirbOBVwUWQJxT5
-         APM+OwypDnmPKXewHxcmM0z/EJoYUYxnqx7ZoaUketWqPeIiEIeOUNiVdrC1IgxyKp
-         PcXOqG80ErZdSkqNiX4fN9auVaMTnuPcFvB7Xiz+CwXlcWxggzMmmqjC3TlroHFDI/
-         7OxcpgDqUO1+w==
-X-Nifty-SrcIP: [209.85.215.176]
-Received: by mail-pg1-f176.google.com with SMTP id o8so3010598pgf.9;
-        Wed, 02 Mar 2022 16:02:05 -0800 (PST)
-X-Gm-Message-State: AOAM532nSsXtVlxZAVTgh4TdqF2PrwQthnfaGuwkvijrJq7Tk/QyDhZr
-        bOFMmQJRwFrAEUa6nEVAK/z1FYJoCfgDNKiyKac=
-X-Google-Smtp-Source: ABdhPJzczkt6XTF1gd+/tMp7E2XEb5DrYtXsH1n4BNIFbWW6DCaFDFVyXHX09r9xlLxr6aZAyW4lJSxqyBndLDNhDtw=
-X-Received: by 2002:a63:e758:0:b0:378:8511:cfe7 with SMTP id
- j24-20020a63e758000000b003788511cfe7mr17071801pgk.126.1646265725034; Wed, 02
- Mar 2022 16:02:05 -0800 (PST)
+        Wed, 2 Mar 2022 19:04:21 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498F262E6
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 16:03:31 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id gb39so7173184ejc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 16:03:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=712s7UNzasxlj0dwsyjRXVd8K8/HcJjmlNagNGk3tak=;
+        b=ED9WDqjaIvY/PNhXMFZcJHPNR7h/tTUuq7WLYZ1ylEvNffoEcxKxybLHrav42m9Cnn
+         RVEvb/IBLv+PhIPTpr690rtY8c24fbS5byCNqvx9Uwev3vYjz8sAMB11j/c+q3crVNAP
+         sIZB594RAxB9rrrDgiPoWjkncYFw0ihals3NI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=712s7UNzasxlj0dwsyjRXVd8K8/HcJjmlNagNGk3tak=;
+        b=v/JWOYNopwgTjkF7yqWFSG1XYcS3LTJuM4CuErxk+MT4ySYURN2BsoaA/nQ7aIXveW
+         MyAclEOKnatpQvQ5qUyDZAqVjQo9DGxBgTiucaD8zdpyh3wu/i+emdjfzcMB8yL5MfVz
+         zq9FZc2Qo1prVdXEKNaQwC8eO2iaZqsxyupeWiJGbi3U7lqC/q6zOGF8z5t/AeecYtY5
+         XWSZo6b/3BmewVoNlN5r3ZU2qsHmvs31MgZqSmT6rp9aUlpbz1QlggnjGfsXd2guvk3p
+         75Qta/k1izzqZqPb/E4D5jIB9S4OroygfpXeLkz5fg9sXjOm/SdeODcDMzjb5v/hU0PB
+         rIQg==
+X-Gm-Message-State: AOAM533kGe3Ju7i+Yb1qVl5Ku4aPLXAxUrGEb6yMH/b/FlwAJeDknoLo
+        BnDtig7yL24d3se1r5ADBEWpD+s6yqy9DwmW
+X-Google-Smtp-Source: ABdhPJz2kkT7/AKneWzNtebkMoc+d400diUlpD8QfEwSM9HfUsRkLoajLE2KWhNTu+ytSiRq1w376Q==
+X-Received: by 2002:a17:907:c0c:b0:6d1:8c46:6415 with SMTP id ga12-20020a1709070c0c00b006d18c466415mr25240906ejc.326.1646265809580;
+        Wed, 02 Mar 2022 16:03:29 -0800 (PST)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id cf10-20020a0564020b8a00b00412b19c1aaesm157000edb.12.2022.03.02.16.03.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 16:03:28 -0800 (PST)
+Received: by mail-wm1-f45.google.com with SMTP id k29-20020a05600c1c9d00b003817fdc0f00so2256314wms.4
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 16:03:28 -0800 (PST)
+X-Received: by 2002:a05:600c:190d:b0:381:6ea1:8cc with SMTP id
+ j13-20020a05600c190d00b003816ea108ccmr1737073wmq.118.1646265807989; Wed, 02
+ Mar 2022 16:03:27 -0800 (PST)
 MIME-Version: 1.0
-References: <20220226123755.85213-1-masahiroy@kernel.org> <boris.20220302145825@codesynthesis.com>
-In-Reply-To: <boris.20220302145825@codesynthesis.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 3 Mar 2022 09:01:22 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS8GO=XzzaVze8y7142Os6J_htBNVV+6kwiXjSxWfnPDw@mail.gmail.com>
-Message-ID: <CAK7LNAS8GO=XzzaVze8y7142Os6J_htBNVV+6kwiXjSxWfnPDw@mail.gmail.com>
-Subject: Re: [PATCH] kconfig: change .config format to use =n instead of "is
- not set"
-To:     Boris Kolpackov <boris@codesynthesis.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220218183116.2261770-1-bjorn.andersson@linaro.org> <20220218183116.2261770-2-bjorn.andersson@linaro.org>
+In-Reply-To: <20220218183116.2261770-2-bjorn.andersson@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 2 Mar 2022 16:03:15 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=UOLcu5xycimDsYTO1spwf=CMRPUSU3o0qRRC+a+zuRTQ@mail.gmail.com>
+Message-ID: <CAD=FV=UOLcu5xycimDsYTO1spwf=CMRPUSU3o0qRRC+a+zuRTQ@mail.gmail.com>
+Subject: Re: [PATCH v13 2/2] leds: Add driver for Qualcomm LPG
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-pwm <linux-pwm@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Luca Weiss <luca@z3ntu.xyz>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 10:17 PM Boris Kolpackov <boris@codesynthesis.com> wrote:
+Hi,
+
+On Fri, Feb 18, 2022 at 10:29 AM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
 >
-> Masahiro Yamada <masahiroy@kernel.org> writes:
->
-> > With this commit, Kconfig will output disable options in a more natural
-> > form, "CONFIG_FOO=n".
->
-> While I agree with the overall direction, I was wondering how this
-> relates to string and int/hex options. It appears that they either
-> have a value or are not written to the .config at all, for example,
-> if the option is disabled via the `depends on` attribute. At first
-> I thought this would be inconsistent (i.e., =n for bool and omitted
-> for string), but it appears a disabled bool option is also omitted.
-> Hopefully the fact that sometimes a false bool option is =n and
-> sometimes it's omitted won't surprise anyone.
+> +static void lpg_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+> +                             struct pwm_state *state)
+> +{
+> +       struct lpg *lpg = container_of(chip, struct lpg, pwm);
+> +       struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
+> +       unsigned int pre_div;
+> +       unsigned int refclk;
+> +       unsigned int val;
+> +       unsigned int m;
+> +       u16 pwm_value;
+> +       int ret;
+> +
+> +       ret = regmap_read(lpg->map, chan->base + LPG_SIZE_CLK_REG, &val);
+> +       if (ret)
+> +               return;
+> +
+> +       refclk = lpg_clk_rates[(val & PWM_CLK_SELECT_MASK) - 1];
+
+I don't know why I didn't notice it before (maybe I was accidentally
+not building with KASAN?), but in my recent boots I'm getting a KASAN
+error pointing at the line above.
+
+Sure enough, the above looks a bit on the unsafe side. If (val & 0x3)
+is 0 then the "-1" will not be so wonderful. I put some printouts and,
+indeed, it's not so great.
+
+[    7.201635] DOUG: val is 0x00000004
+
+Amazingly my `refclk` ends up as 0 and I guess somehow this doesn't
+cause a divide by 0.
 
 
-Options with unmet 'depends on' are all omitted in the .config
-It is consistent for all types.
-
-
-
-
-
->
-> Reviewed-by: Boris Kolpackov <boris@codesynthesis.com>
-
-
-
-
---
-Best Regards
-Masahiro Yamada
+-Doug
