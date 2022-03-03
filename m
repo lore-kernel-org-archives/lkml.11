@@ -2,199 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC32C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C32EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbiCCRjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:39:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
+        id S232901AbiCCRkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:40:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbiCCRje (ORCPT
+        with ESMTP id S230479AbiCCRkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:39:34 -0500
-Received: from mail-41103.protonmail.ch (mail-41103.protonmail.ch [185.70.41.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C313E108BE8;
-        Thu,  3 Mar 2022 09:38:46 -0800 (PST)
-Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Thu, 3 Mar 2022 12:40:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDD841A06D4
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 09:39:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646329183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nWuChtuorkbR8bi2fuEBkhXKG6YncunWUr1sjejPCEc=;
+        b=G3dGv6UhN8Ny0YLGI7RVrLcjc8CnJhYFtTmJ53OWYou7mYJW9iVBiVQOIVuvzaSyaj0ulx
+        dOAW3Zkkxk0UzpAysiRrMGcm+e1TTSxDp6XzTlRfMVFLq0vQl9vrOHnALpWo4QAcWhpxLP
+        SkgdOXT7BOcC0FS0TtLUtWQ2xgBUoCI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-313-tkaHtBEGMXOsRfyuDc2Iiw-1; Thu, 03 Mar 2022 12:39:40 -0500
+X-MC-Unique: tkaHtBEGMXOsRfyuDc2Iiw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail-41103.protonmail.ch (Postfix) with ESMTPS id 4K8dWT14blz4xLFv;
-        Thu,  3 Mar 2022 17:38:45 +0000 (UTC)
-Authentication-Results: mail-41103.protonmail.ch;
-        dkim=pass (1024-bit key) header.d=connolly.tech header.i=@connolly.tech header.b="WCL25u9O"
-Date:   Thu, 03 Mar 2022 17:38:34 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
-        s=protonmail; t=1646329118;
-        bh=HrxBmH3YwEP0q1bvU2BH7PU9i4V1wS4AlJ9ZNN4rP2A=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=WCL25u9OGiRYNyxzc0Kq+syOvA6uqkZX4H7hWkbmd9/HOiZhyDjidei+/QSpi+vro
-         zDwgTsFc/AnMEYyN/hq8rAGSDuNpuZEQ/Atx5i0PzHX33CWO8ButXm87DS4qf1hvaW
-         p/v6nxa2aJSxRkH9Rv6mQxoNhVXQE0BgkYc8TG1I=
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-From:   Caleb Connolly <caleb@connolly.tech>
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Reply-To: Caleb Connolly <caleb@connolly.tech>
-Subject: Re: [PATCH 3/3] clk: qcom: smd: Add missing MSM8998 RPM clocks
-Message-ID: <f06677f3-57ab-42eb-d707-a2d59fcdc3f2@connolly.tech>
-In-Reply-To: <20220226214126.21209-3-konrad.dybcio@somainline.org>
-References: <20220226214126.21209-1-konrad.dybcio@somainline.org> <20220226214126.21209-3-konrad.dybcio@somainline.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 001181006AA6;
+        Thu,  3 Mar 2022 17:39:39 +0000 (UTC)
+Received: from cmirabil.remote.csb (unknown [10.22.9.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DB329804F7;
+        Thu,  3 Mar 2022 17:39:14 +0000 (UTC)
+From:   Charles Mirabile <cmirabil@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Charles Mirabile <cmirabil@redhat.com>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
+        Daniel Bauman <dbauman@redhat.com>,
+        Mwesigwa Guma <mguma@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>
+Subject: [PATCH v7 0/6] Raspberry Pi Sense HAT driver
+Date:   Thu,  3 Mar 2022 12:39:29 -0500
+Message-Id: <20220303173935.100622-1-cmirabil@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[tested on Pixel 2 XL]
-Tested-by: Caleb Connolly <caleb@connolly.tech>
+This patch series adds a set of drivers for operating the Sense HAT
+peripheral device. This board is an add on for the Raspberry Pi that is
+designed to connect using the GPIO connector and communicates via I2C.
 
-On 26/02/2022 21:41, Konrad Dybcio wrote:
-> Add missing RPM-provided clocks on msm8998 and reorder the definitions
-> where needed.
->
-> JAMI: fixed for a0384ecfe2aa ("clk: qcom: smd-rpm: De-duplicate identical=
- entries")
-> JAMI: fixed for 36354c32bd76 ("clk: qcom: smd-rpm: Add .recalc_rate hook =
-for clk_smd_rpm_branch_ops")
-> Tested-by: Jami Kettunen <jami.kettunen@somainline.org>
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->   drivers/clk/qcom/clk-smd-rpm.c | 40 +++++++++++++++++++++++-----------
->   1 file changed, 27 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/clk/qcom/clk-smd-rpm.c b/drivers/clk/qcom/clk-smd-rp=
-m.c
-> index 418f017e933f..afc6dc930011 100644
-> --- a/drivers/clk/qcom/clk-smd-rpm.c
-> +++ b/drivers/clk/qcom/clk-smd-rpm.c
-> @@ -816,15 +816,18 @@ static const struct rpm_smd_clk_desc rpm_clk_qcs404=
- =3D {
->   =09.num_clks =3D ARRAY_SIZE(qcs404_clks),
->   };
->
-> -DEFINE_CLK_SMD_RPM_XO_BUFFER_PINCTRL(msm8998, ln_bb_clk3_pin, ln_bb_clk3=
-_a_pin,
-> -=09=09=09=09     3, 19200000);
-> +DEFINE_CLK_SMD_RPM_XO_BUFFER(msm8998, ln_bb_clk3, ln_bb_clk3_a, 3, 19200=
-000);
-> +DEFINE_CLK_SMD_RPM_XO_BUFFER_PINCTRL(msm8998, ln_bb_clk3_pin, ln_bb_clk3=
-_a_pin, 3, 19200000);
->   DEFINE_CLK_SMD_RPM(msm8998, aggre1_noc_clk, aggre1_noc_a_clk,
->   =09=09   QCOM_SMD_RPM_AGGR_CLK, 1);
->   DEFINE_CLK_SMD_RPM(msm8998, aggre2_noc_clk, aggre2_noc_a_clk,
->   =09=09   QCOM_SMD_RPM_AGGR_CLK, 2);
->   DEFINE_CLK_SMD_RPM_XO_BUFFER(msm8998, rf_clk3, rf_clk3_a, 6, 19200000);
->   DEFINE_CLK_SMD_RPM_XO_BUFFER_PINCTRL(msm8998, rf_clk3_pin, rf_clk3_a_pi=
-n, 6, 19200000);
-> +
->   static struct clk_smd_rpm *msm8998_clks[] =3D {
-> +=09[RPM_SMD_XO_CLK_SRC] =3D &sdm660_bi_tcxo,
-> +=09[RPM_SMD_XO_A_CLK_SRC] =3D &sdm660_bi_tcxo_a,
->   =09[RPM_SMD_BIMC_CLK] =3D &msm8916_bimc_clk,
->   =09[RPM_SMD_BIMC_A_CLK] =3D &msm8916_bimc_a_clk,
->   =09[RPM_SMD_PCNOC_CLK] =3D &msm8916_pcnoc_clk,
-> @@ -837,12 +840,22 @@ static struct clk_smd_rpm *msm8998_clks[] =3D {
->   =09[RPM_SMD_CE1_A_CLK] =3D &msm8992_ce1_a_clk,
->   =09[RPM_SMD_DIV_CLK1] =3D &msm8974_div_clk1,
->   =09[RPM_SMD_DIV_A_CLK1] =3D &msm8974_div_a_clk1,
-> +=09[RPM_SMD_DIV_CLK2] =3D &msm8974_div_clk2,
-> +=09[RPM_SMD_DIV_A_CLK2] =3D &msm8974_div_a_clk2,
-> +=09[RPM_SMD_DIV_CLK3] =3D &msm8992_div_clk3,
-> +=09[RPM_SMD_DIV_A_CLK3] =3D &msm8992_div_clk3_a,
->   =09[RPM_SMD_IPA_CLK] =3D &msm8976_ipa_clk,
->   =09[RPM_SMD_IPA_A_CLK] =3D &msm8976_ipa_a_clk,
->   =09[RPM_SMD_LN_BB_CLK1] =3D &msm8916_bb_clk1,
->   =09[RPM_SMD_LN_BB_CLK1_A] =3D &msm8916_bb_clk1_a,
->   =09[RPM_SMD_LN_BB_CLK2] =3D &msm8916_bb_clk2,
->   =09[RPM_SMD_LN_BB_CLK2_A] =3D &msm8916_bb_clk2_a,
-> +=09[RPM_SMD_LN_BB_CLK3] =3D &msm8998_ln_bb_clk3,
-> +=09[RPM_SMD_LN_BB_CLK3_A] =3D &msm8998_ln_bb_clk3_a,
-> +=09[RPM_SMD_LN_BB_CLK1_PIN] =3D &msm8916_bb_clk1_pin,
-> +=09[RPM_SMD_LN_BB_CLK1_A_PIN] =3D &msm8916_bb_clk1_a_pin,
-> +=09[RPM_SMD_LN_BB_CLK2_PIN] =3D &msm8916_bb_clk2_pin,
-> +=09[RPM_SMD_LN_BB_CLK2_A_PIN] =3D &msm8916_bb_clk2_a_pin,
->   =09[RPM_SMD_LN_BB_CLK3_PIN] =3D &msm8998_ln_bb_clk3_pin,
->   =09[RPM_SMD_LN_BB_CLK3_A_PIN] =3D &msm8998_ln_bb_clk3_a_pin,
->   =09[RPM_SMD_MMAXI_CLK] =3D &msm8996_mmssnoc_axi_rpm_clk,
-> @@ -855,10 +868,14 @@ static struct clk_smd_rpm *msm8998_clks[] =3D {
->   =09[RPM_SMD_QDSS_A_CLK] =3D &msm8916_qdss_a_clk,
->   =09[RPM_SMD_RF_CLK1] =3D &msm8916_rf_clk1,
->   =09[RPM_SMD_RF_CLK1_A] =3D &msm8916_rf_clk1_a,
-> -=09[RPM_SMD_RF_CLK2_PIN] =3D &msm8916_rf_clk2_pin,
-> -=09[RPM_SMD_RF_CLK2_A_PIN] =3D &msm8916_rf_clk2_a_pin,
-> +=09[RPM_SMD_RF_CLK2] =3D &msm8916_rf_clk2,
-> +=09[RPM_SMD_RF_CLK2_A] =3D &msm8916_rf_clk2_a,
->   =09[RPM_SMD_RF_CLK3] =3D &msm8998_rf_clk3,
->   =09[RPM_SMD_RF_CLK3_A] =3D &msm8998_rf_clk3_a,
-> +=09[RPM_SMD_RF_CLK1_PIN] =3D &msm8916_rf_clk1_pin,
-> +=09[RPM_SMD_RF_CLK1_A_PIN] =3D &msm8916_rf_clk1_a_pin,
-> +=09[RPM_SMD_RF_CLK2_PIN] =3D &msm8916_rf_clk2_pin,
-> +=09[RPM_SMD_RF_CLK2_A_PIN] =3D &msm8916_rf_clk2_a_pin,
->   =09[RPM_SMD_RF_CLK3_PIN] =3D &msm8998_rf_clk3_pin,
->   =09[RPM_SMD_RF_CLK3_A_PIN] =3D &msm8998_rf_clk3_a_pin,
->   };
-> @@ -868,9 +885,6 @@ static const struct rpm_smd_clk_desc rpm_clk_msm8998 =
-=3D {
->   =09.num_clks =3D ARRAY_SIZE(msm8998_clks),
->   };
->
-> -DEFINE_CLK_SMD_RPM_XO_BUFFER(sdm660, ln_bb_clk3, ln_bb_clk3_a, 3, 192000=
-00);
-> -DEFINE_CLK_SMD_RPM_XO_BUFFER_PINCTRL(sdm660, ln_bb_clk3_pin, ln_bb_clk3_=
-pin_a, 3, 19200000);
-> -
->   static struct clk_smd_rpm *sdm660_clks[] =3D {
->   =09[RPM_SMD_XO_CLK_SRC] =3D &sdm660_bi_tcxo,
->   =09[RPM_SMD_XO_A_CLK_SRC] =3D &sdm660_bi_tcxo_a,
-> @@ -900,16 +914,16 @@ static struct clk_smd_rpm *sdm660_clks[] =3D {
->   =09[RPM_SMD_LN_BB_A_CLK] =3D &msm8916_bb_clk1_a,
->   =09[RPM_SMD_LN_BB_CLK2] =3D &msm8916_bb_clk2,
->   =09[RPM_SMD_LN_BB_CLK2_A] =3D &msm8916_bb_clk2_a,
-> -=09[RPM_SMD_LN_BB_CLK3] =3D &sdm660_ln_bb_clk3,
-> -=09[RPM_SMD_LN_BB_CLK3_A] =3D &sdm660_ln_bb_clk3_a,
-> +=09[RPM_SMD_LN_BB_CLK3] =3D &msm8998_ln_bb_clk3,
-> +=09[RPM_SMD_LN_BB_CLK3_A] =3D &msm8998_ln_bb_clk3_a,
->   =09[RPM_SMD_RF_CLK1_PIN] =3D &msm8916_rf_clk1_pin,
->   =09[RPM_SMD_RF_CLK1_A_PIN] =3D &msm8916_rf_clk1_a_pin,
->   =09[RPM_SMD_LN_BB_CLK1_PIN] =3D &msm8916_bb_clk1_pin,
->   =09[RPM_SMD_LN_BB_CLK1_A_PIN] =3D &msm8916_bb_clk1_a_pin,
->   =09[RPM_SMD_LN_BB_CLK2_PIN] =3D &msm8916_bb_clk2_pin,
->   =09[RPM_SMD_LN_BB_CLK2_A_PIN] =3D &msm8916_bb_clk2_a_pin,
-> -=09[RPM_SMD_LN_BB_CLK3_PIN] =3D &sdm660_ln_bb_clk3_pin,
-> -=09[RPM_SMD_LN_BB_CLK3_A_PIN] =3D &sdm660_ln_bb_clk3_pin_a,
-> +=09[RPM_SMD_LN_BB_CLK3_PIN] =3D &msm8998_ln_bb_clk3_pin,
-> +=09[RPM_SMD_LN_BB_CLK3_A_PIN] =3D &msm8998_ln_bb_clk3_a_pin,
->   };
->
->   static const struct rpm_smd_clk_desc rpm_clk_sdm660 =3D {
-> @@ -1011,8 +1025,8 @@ static struct clk_smd_rpm *sm6125_clks[] =3D {
->   =09[RPM_SMD_LN_BB_CLK1_A] =3D &msm8916_bb_clk1_a,
->   =09[RPM_SMD_LN_BB_CLK2] =3D &msm8916_bb_clk2,
->   =09[RPM_SMD_LN_BB_CLK2_A] =3D &msm8916_bb_clk2_a,
-> -=09[RPM_SMD_LN_BB_CLK3] =3D &sdm660_ln_bb_clk3,
-> -=09[RPM_SMD_LN_BB_CLK3_A] =3D &sdm660_ln_bb_clk3_a,
-> +=09[RPM_SMD_LN_BB_CLK3] =3D &msm8998_ln_bb_clk3,
-> +=09[RPM_SMD_LN_BB_CLK3_A] =3D &msm8998_ln_bb_clk3_a,
->   =09[RPM_SMD_QUP_CLK] =3D &sm6125_qup_clk,
->   =09[RPM_SMD_QUP_A_CLK] =3D &sm6125_qup_a_clk,
->   =09[RPM_SMD_MMRT_CLK] =3D &sm6125_mmrt_clk,
-> --
-> 2.35.1
->
+It features:
+	- a joystick
+	- an 8x8 RGB LED matrix display
+	- a whole bunch of environmental sensors with their own drivers
+	  (those are already in upstream Linux)
 
---
-Kind Regards,
-Caleb
+This is a refactor of the work of Serge Schneider, the author of a
+version of this driver that is currently in the Raspberry Pi downstream
+kernel. We modified his code to make it suitable for upstream Linux.
+
+A couple of tests are available for the driver in the test folder in
+this repo: https://github.com/underground-software/sensehat.git
+	- sensehat_joystick_test logs the input events from the
+	  joystick to the console
+	- sensehat_display_test displays various solid colors on
+	  the LED panel.
+	- full_sensehat_test displays a single lit cell that can be
+	  moved with the joystick. Pressing the joystick ends the
+	  program.
+
+For more information about the Sense HAT, visit:
+https://www.raspberrypi.org/products/sense-hat/
+
+Changes since v6:
+	- we store the regmap for the sensehat inside the child structs
+	  so that we don't need to look it up every time in the functions
+	  that want to use it. Thanks to Nicolás Sáenz for the suggestion.
+	- Changed userspace layout of the display driver to rgb565 triples
+	  and removed the gamma table lookup and the associated ioctl. If
+	  the user wants to recreate linear brightness scaling, they can
+	  use a lookup table on their end. Doing this also removes a lot
+	  of error checking and general code complexity, so I think removing
+	  this feature is actually for the better.
+	- Replaced if statement with call to `min_t` function in display
+	  read and write functions.
+	- Replaced the custom llseek implementation with a call to
+	  `fixed_size_llseek`. Thanks to Miguel Ojeda for all of these
+	  great suggestions.
+	- Fixed issues with the yaml device tree bindings we missed last
+	  time due to not having yamllint installed. Thanks for Rob Herring
+	  (well his bot on his behalf :^)) for this suggestion.
+
+Co-developed-by: Daniel Bauman <dbauman@redhat.com>
+Signed-off-by: Daniel Bauman <dbauman@redhat.com>
+Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
+Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
+Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+
+Charles Mirabile (6):
+  drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
+  drivers/input/joystick: sensehat: Raspberry Pi Sense HAT joystick
+    driver
+  drivers/auxdisplay: sensehat: Raspberry Pi Sense HAT display driver
+  dt-bindings: mfd: sensehat: Add Raspberry Pi Sense HAT schema
+  MAINTAINERS: Add sensehat driver authors to MAINTAINERS
+  DO NOT MERGE: full sensehat device tree overlay for raspberry pi 4
+
+ .../raspberrypi,sensehat-display.yaml         |  27 +++
+ .../input/raspberrypi,sensehat-joystick.yaml  |  33 +++
+ .../bindings/mfd/raspberrypi,sensehat.yaml    |  69 +++++++
+ MAINTAINERS                                   |  11 +
+ drivers/auxdisplay/Kconfig                    |   8 +
+ drivers/auxdisplay/Makefile                   |   1 +
+ drivers/auxdisplay/sensehat-display.c         | 188 ++++++++++++++++++
+ drivers/input/joystick/Kconfig                |  11 +
+ drivers/input/joystick/Makefile               |   1 +
+ drivers/input/joystick/sensehat-joystick.c    | 128 ++++++++++++
+ drivers/mfd/simple-mfd-i2c.c                  |   1 +
+ sensehat.dtbs                                 |  54 +++++
+ 12 files changed, 532 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+ create mode 100644 Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
+ create mode 100644 drivers/auxdisplay/sensehat-display.c
+ create mode 100644 drivers/input/joystick/sensehat-joystick.c
+ create mode 100644 sensehat.dtbs
+
+-- 
+2.31.1
 
