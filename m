@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D378DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D0FC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbiCCLcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:32:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
+        id S233036AbiCCLc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:32:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232741AbiCCLbM (ORCPT
+        with ESMTP id S232773AbiCCLbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:12 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9683C17BC6F
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:22 -0800 (PST)
+        Thu, 3 Mar 2022 06:31:17 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D0F17CC62
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:30:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=0GRAegTdgi3auRe/t63t5h8YTp9nrb+yNH0x1eayzck=; b=UtezQ/nvefmRflenx/sb6adANO
-        aOOSp2p1LkEYJAb26JuVjc9wDe25bgDYzhkvtdWj1oKq3W8HAf8ew6o/6GSRyAI1uPVbMxSTRc2eY
-        iQH1J3kSHFu2VRe3nBgBQbhDFd9KSZMcs8hkwSwr7kl4NKfHJPSWkN+aQa4n7uizUSPkMupmc0yEE
-        03/mu6ZzRsnKXt1IvwNqT/0DqIisBRR1QhRRitHa19ma0krPcvZ2DqlqdlYU4wdIyU4zO+iwSYz/0
-        i9xRg6h8kGGxyptkaqKVNXwmXJd+9vF8a9XcyLafzTULSSyvV5w275xX0EPUQG46XBIGZ6ZloGt+G
-        6+v+qcXw==;
+        bh=1StuCFD7IMuaC46LcT3bBt2dSUahkx7GWhFzvO6cAkU=; b=bjhcprJeFjP842lQt5mODXp3AT
+        KizwdxtxAv96vnS+6WJuSurFkh2iDXiGDez8rXimlXw5nibR8q+q0hLes5acGwBxHybqHv2uWl1ZC
+        SsrZKUSkvijMDbU5tSCEQLExBEi+bHJQPS/zhqhL/mJE4NRMyOiN+LGx8anCrz7aL28B4RLa683+3
+        7JMC6q7y6MLENAHn5xBT7uC3uLj1hyIKvrQK/yfohpXiazcQgf5q7Y4KzOqal+i0eHCY73Jt1k9rN
+        V30uSB/glx/B/CnA2ScOg2iiWTBFVBW6AL8JB3qsqXs7G6IY4qGnXBfNqI2cEkNvS4sUsk+FFewMn
+        s5SUdlMQ==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPjef-00EtpN-Eg; Thu, 03 Mar 2022 11:29:57 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nPjeh-00BaH2-Fx; Thu, 03 Mar 2022 11:30:00 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 62E633005BA;
-        Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0211E30288B;
+        Thu,  3 Mar 2022 12:29:57 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 16A39300116F4; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
-Message-ID: <20220303112825.008114028@infradead.org>
+        id 6A17A3011D051; Thu,  3 Mar 2022 12:29:56 +0100 (CET)
+Message-ID: <20220303112826.226594761@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 03 Mar 2022 12:23:22 +0100
+Date:   Thu, 03 Mar 2022 12:23:42 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v3 01/39] static_call: Avoid building empty .static_call_sites
+Subject: [PATCH v3 21/39] x86/ibt,ftrace: Add ENDBR to samples/ftrace
 References: <20220303112321.422525803@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,33 +55,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Without CONFIG_HAVE_STATIC_CALL_INLINE there's no point in creating
-the .static_call_sites section and it's related symbols.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- include/asm-generic/vmlinux.lds.h |    4 ++++
- 1 file changed, 4 insertions(+)
+ samples/ftrace/ftrace-direct-modify.c       |    5 +++++
+ samples/ftrace/ftrace-direct-multi-modify.c |   10 +++++++---
+ samples/ftrace/ftrace-direct-multi.c        |    5 ++++-
+ samples/ftrace/ftrace-direct-too.c          |    3 +++
+ samples/ftrace/ftrace-direct.c              |    3 +++
+ 5 files changed, 22 insertions(+), 4 deletions(-)
 
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -398,6 +398,7 @@
- 	KEEP(*(__jump_table))						\
- 	__stop___jump_table = .;
+--- a/samples/ftrace/ftrace-direct-modify.c
++++ b/samples/ftrace/ftrace-direct-modify.c
+@@ -24,20 +24,25 @@ static unsigned long my_ip = (unsigned l
  
-+#ifdef CONFIG_HAVE_STATIC_CALL_INLINE
- #define STATIC_CALL_DATA						\
- 	. = ALIGN(8);							\
- 	__start_static_call_sites = .;					\
-@@ -406,6 +407,9 @@
- 	__start_static_call_tramp_key = .;				\
- 	KEEP(*(.static_call_tramp_key))					\
- 	__stop_static_call_tramp_key = .;
-+#else
-+#define STATIC_CALL_DATA
-+#endif
+ #ifdef CONFIG_X86_64
  
- /*
-  * Allow architectures to handle ro_after_init data on their
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp1, @function\n"
+ "	.globl		my_tramp1\n"
+ "   my_tramp1:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	call my_direct_func1\n"
+ "	leave\n"
+ "	.size		my_tramp1, .-my_tramp1\n"
+ 	ASM_RET
++
+ "	.type		my_tramp2, @function\n"
+ "	.globl		my_tramp2\n"
+ "   my_tramp2:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	call my_direct_func2\n"
+--- a/samples/ftrace/ftrace-direct-multi-modify.c
++++ b/samples/ftrace/ftrace-direct-multi-modify.c
+@@ -22,11 +22,14 @@ extern void my_tramp2(void *);
+ 
+ #ifdef CONFIG_X86_64
+ 
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp1, @function\n"
+ "	.globl		my_tramp1\n"
+ "   my_tramp1:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+@@ -34,12 +37,13 @@ asm (
+ "	call my_direct_func1\n"
+ "	popq %rdi\n"
+ "	leave\n"
+-"	ret\n"
++	ASM_RET
+ "	.size		my_tramp1, .-my_tramp1\n"
++
+ "	.type		my_tramp2, @function\n"
+-"\n"
+ "	.globl		my_tramp2\n"
+ "   my_tramp2:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+@@ -47,7 +51,7 @@ asm (
+ "	call my_direct_func2\n"
+ "	popq %rdi\n"
+ "	leave\n"
+-"	ret\n"
++	ASM_RET
+ "	.size		my_tramp2, .-my_tramp2\n"
+ "	.popsection\n"
+ );
+--- a/samples/ftrace/ftrace-direct-multi.c
++++ b/samples/ftrace/ftrace-direct-multi.c
+@@ -17,11 +17,14 @@ extern void my_tramp(void *);
+ 
+ #ifdef CONFIG_X86_64
+ 
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp, @function\n"
+ "	.globl		my_tramp\n"
+ "   my_tramp:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+@@ -29,7 +32,7 @@ asm (
+ "	call my_direct_func\n"
+ "	popq %rdi\n"
+ "	leave\n"
+-"	ret\n"
++	ASM_RET
+ "	.size		my_tramp, .-my_tramp\n"
+ "	.popsection\n"
+ );
+--- a/samples/ftrace/ftrace-direct-too.c
++++ b/samples/ftrace/ftrace-direct-too.c
+@@ -19,11 +19,14 @@ extern void my_tramp(void *);
+ 
+ #ifdef CONFIG_X86_64
+ 
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp, @function\n"
+ "	.globl		my_tramp\n"
+ "   my_tramp:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+--- a/samples/ftrace/ftrace-direct.c
++++ b/samples/ftrace/ftrace-direct.c
+@@ -16,11 +16,14 @@ extern void my_tramp(void *);
+ 
+ #ifdef CONFIG_X86_64
+ 
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp, @function\n"
+ "	.globl		my_tramp\n"
+ "   my_tramp:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
 
 
