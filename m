@@ -2,101 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231443AbiCCBoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48738 "EHLO
+        id S231449AbiCCBpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:45:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiCCBoV (ORCPT
+        with ESMTP id S231420AbiCCBo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:44:21 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A48A4B1CA
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:43:37 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id bt3so3450691qtb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 17:43:37 -0800 (PST)
+        Wed, 2 Mar 2022 20:44:59 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21311B65C6
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 17:44:15 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id v3so3382056qta.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 17:44:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version;
-        bh=iPfHEmOKdhMIfmj5DivY/bN1HDyWSYEFJHhO7/nuhns=;
-        b=V7iwAeTLsXaQIKV2Op9OyY2XBqa01szKvdFcutupQlrJPMLJYdZuO3pNb7e/bI2d04
-         gsBg/TrRAZ2Jqd2WnvNmkBEUPLYA56rvBPyQVY0O3zKpvk9U43ZsXZvAbb2Qqw/Jm0SR
-         nJSViRcjwsvY1DOTB/RoteIWi4uYK5YItQn6F1Fn9lhxP+5uKaMbh4kqxT0BktjjWkDD
-         edMVE9gnNJMfgmRFuQUDBb3bHq7Xa0fSMT8pN/aKfzd1ZGJcRvkE8kFdJhLE6hjIu+7X
-         Ns44trhbwsOWUmeuekK67Kc8jHfeXoNH5YQgBeJY1GVhIzwJmYy2zKYCRs9GRxgF0S4t
-         1H1Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TEJaO0Vi4Kwfv0Wb4WQ2+Q+z6zunlr1TGnFG+5J/o0Y=;
+        b=O6yWcrDHwFQRhE4PxZR/mpmttlr1A73V9h8HAbSE18gjKpEOxOGOMDG5nRHWozR3uz
+         r5yBzWz88Em4bNspoQZKRA3tyiOO7tWB/cs9THxzZMxikI5vBT8mQhAxaW53oIDItQn/
+         UzAV2Ca11pywRutZrQTj85YDlx5pm0XHgwEw0onY2aKOijiEXYfxkAp/NYyBcIrKo6RR
+         45HkDkbLqHCv63Ol+HzagOrNbeZKLJI+lRYTGb28QAl5lCzcNu5mRs3Fk1zUv8ztVh4Y
+         p3LZdlIV1Qa6P7QEtWtQtD+FanQFb65EbMtPSauzYCsm8KeQCuDw40FRyQwAaCi+e4S7
+         TZqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
-        bh=iPfHEmOKdhMIfmj5DivY/bN1HDyWSYEFJHhO7/nuhns=;
-        b=nV5pbB3cRdJiPtH10S0q6m3/7fe0q1V7TikJ4aIy6mWyPkXTtLjDPwdH4rdNzPfAgG
-         1uJzKYIlinR7L3l05iX66G5I9ahw1rcaH/GBc9dpHib1OIUfgq2EloaSjmtHHbS7dprT
-         G121Ne567qpfWaKO15qwE1NrP8Smd2MR3fAxK2P+7J1KpShpe1FgLWiNxSkMk9VhzcXx
-         WQbKi8cK+nUEotjlmNVOAUrkWv65v4Xdv2sY9xVRYmNbnwLPLBuoxCs0VkNpatlpA+hU
-         la0T9PUXGeGmyqOKQzMGHo/+y4h/yYuFegikUDDzOGKCkM5deOsqaFebFTGXQylG9Ga6
-         IodQ==
-X-Gm-Message-State: AOAM530En7KkkttjnRgKqKl9PC5xYPcz5jHK5fJmJad0wLHeAuRVn0DV
-        xSExov5Uv10B58pWhAJ9vz7WpQbbk6nlXA==
-X-Google-Smtp-Source: ABdhPJzFHfUq3MiN2IigtOEeO0VwfWCXHQ2A9X5459o4XXiiE/KChwr0tPIPow5WzYUzTPUiz5qX1A==
-X-Received: by 2002:a05:622a:1055:b0:2de:3ea:f2ad with SMTP id f21-20020a05622a105500b002de03eaf2admr26149270qte.327.1646271816542;
-        Wed, 02 Mar 2022 17:43:36 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id x12-20020a05620a14ac00b0060deaee7a21sm403207qkj.51.2022.03.02.17.43.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TEJaO0Vi4Kwfv0Wb4WQ2+Q+z6zunlr1TGnFG+5J/o0Y=;
+        b=sk9UhDeQgUUmpSrA+yPIn92wDI5M9ksMm6ceb+DaWlgA85Jxb0MseMgkVnHR/87Efz
+         034cgDWOb0W0cHlr13m+zN+4MfZh4jrn6HC17YAEBsyX8e7h3gXLtwbCDqAvBh1L5iH1
+         E0ukofoYpQsujRf5YO6ce/ARzxZrFJIVKEAnLWXdLwE4pohVvk47bbcxgwOWF9gPLi07
+         wammpUIYJF7p20T8ieZ0Oby7/AiDfhb0ZDhtUiXZv03gg7F0ft+3SULHKWrlz3zpIx+S
+         7ylh5xPoHMItPfwrE3pXOG9w3k5p9RBWjmz+M2hSTNES9xLaHdu39tkJzAINYEW4VS7v
+         8wUw==
+X-Gm-Message-State: AOAM532p8cCLg9TOoRDxEigA1q259Ah40Z0Cm58q+y0+QD+gbsiY6UrA
+        ZEG1jbwAm5DJcQpmf+jgLoo=
+X-Google-Smtp-Source: ABdhPJyFwaId4iQ/+ux2jZP4uLbwMNoJjMfyEd5/rGbhuWf7T6m6Bku7ZaVtuiJ1awSuOKjGHH98fg==
+X-Received: by 2002:ac8:5a05:0:b0:2de:15ef:8bd5 with SMTP id n5-20020ac85a05000000b002de15ef8bd5mr25783831qta.71.1646271854779;
+        Wed, 02 Mar 2022 17:44:14 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id d13-20020a05622a05cd00b002dffcc45ba5sm563131qtb.4.2022.03.02.17.44.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 17:43:35 -0800 (PST)
-Date:   Wed, 2 Mar 2022 17:43:34 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Andrew Morton <akpm@linux-foundation.org>
-cc:     Ralph Campbell <rcampbell@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH mmotm] mm/thp: refix __split_huge_pmd_locked() for migration
- PMD
-Message-ID: <84792468-f512-e48f-378c-e34c3641e97@google.com>
+        Wed, 02 Mar 2022 17:44:14 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     kishon@ti.com
+Cc:     vkoul@kernel.org, heiko@sntech.de, linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] phy/rockchip: Use of_device_get_match_data()
+Date:   Thu,  3 Mar 2022 01:44:06 +0000
+Message-Id: <20220303014406.2059140-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Migration entries do not contribute to a page's reference count: move
-__split_huge_pmd_locked()'s page_ref_add() into pmd_migration's else
-block (along with the page_count() check - a page is quite likely to
-to have reference count frozen to 0 when a migration entry is found).
+From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 
-This will fix a very rare anonymous memory leak, after a split_huge_pmd()
-raced with an anon split_huge_page() or an anon THP migrate_pages(): since
-the wrongly raised refcount stopped the page (perhaps small, perhaps huge,
-depending on when the race hit) from ever being freed.  At first I thought
-there were worse risks, from prematurely unfreezing a frozen page: but now
-think that would only affect page cache pages, which do not come this way
-(except for anonymous pages in swap cache, perhaps).
+Use of_device_get_match_data() to simplify the code.
 
-Fixes: ec0abae6dcdf ("mm/thp: fix __split_huge_pmd_locked() for migration PMD")
-Signed-off-by: Hugh Dickins <hughd@google.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 ---
-That's an unfair "Fixes": it did not introduce the problem, but it
-missed this aspect of the problem; and will be a good guide to where this
-refix should go if stable backports are asked for.
+ drivers/phy/rockchip/phy-rockchip-dphy-rx0.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
- mm/huge_memory.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2039,9 +2039,9 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		young = pmd_young(old_pmd);
- 		soft_dirty = pmd_soft_dirty(old_pmd);
- 		uffd_wp = pmd_uffd_wp(old_pmd);
-+		VM_BUG_ON_PAGE(!page_count(page), page);
-+		page_ref_add(page, HPAGE_PMD_NR - 1);
+diff --git a/drivers/phy/rockchip/phy-rockchip-dphy-rx0.c b/drivers/phy/rockchip/phy-rockchip-dphy-rx0.c
+index 4df9476ef2a9..639452f47869 100644
+--- a/drivers/phy/rockchip/phy-rockchip-dphy-rx0.c
++++ b/drivers/phy/rockchip/phy-rockchip-dphy-rx0.c
+@@ -327,7 +327,6 @@ static int rk_dphy_probe(struct platform_device *pdev)
+ 	struct device_node *np = dev->of_node;
+ 	const struct rk_dphy_drv_data *drv_data;
+ 	struct phy_provider *phy_provider;
+-	const struct of_device_id *of_id;
+ 	struct rk_dphy *priv;
+ 	struct phy *phy;
+ 	unsigned int i;
+@@ -347,11 +346,7 @@ static int rk_dphy_probe(struct platform_device *pdev)
+ 		return -ENODEV;
  	}
--	VM_BUG_ON_PAGE(!page_count(page), page);
--	page_ref_add(page, HPAGE_PMD_NR - 1);
  
- 	/*
- 	 * Withdraw the table only after we mark the pmd entry invalid.
+-	of_id = of_match_device(rk_dphy_dt_ids, dev);
+-	if (!of_id)
+-		return -EINVAL;
+-
+-	drv_data = of_id->data;
++	drv_data = of_device_get_match_data(dev);
+ 	priv->drv_data = drv_data;
+ 	priv->clks = devm_kcalloc(&pdev->dev, drv_data->num_clks,
+ 				  sizeof(*priv->clks), GFP_KERNEL);
+-- 
+2.25.1
+
