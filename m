@@ -2,67 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BC1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B4EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236361AbiCCUn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 15:43:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
+        id S233392AbiCCUr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 15:47:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236334AbiCCUnx (ORCPT
+        with ESMTP id S229483AbiCCUr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 15:43:53 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC59EDF496
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 12:43:07 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id y6-20020a929506000000b002beffccab3bso4217519ilh.22
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 12:43:07 -0800 (PST)
+        Thu, 3 Mar 2022 15:47:58 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6018FDEA3F
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 12:47:12 -0800 (PST)
+Received: by mail-oo1-xc2f.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so7145581oos.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 12:47:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=+Puf4aNWGnBjbMoB3Susur6crhlYcLtx4j9Ip8HC7kA=;
+        b=k6W8e10+Uf4sakf0fAoRyizRgUlCGT2fKfRGf7YwCJrtx8hpizrlDmaFiq8woyaLIu
+         W+2+qR2dv4+7DFP95rd8s2jg2ZvOv5SouJRZ7Afuui/tPsw9eOVrD0vpNwJnfae5s/1O
+         p4+Jh9D3nwk0keSiFtAGFSLDSlgSabeDgSqRk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=lCbnp0c+ARU7aCR1dzzMJYL5adEdTpl2eSYsjAMtki8=;
-        b=qSUhWTxG5RHmzZAMyVwJnD+HoSx97E+QMKXedPvIgtraZz4o1qVRC86tFocPpOdwVb
-         eMND93ZS13KjO8/dNhHdJry4s+pk+pfUcWkC425Gq/C2x/CvXvGebsXGAbQFvuMd6kKy
-         ZgFqoFfrhblkNW9LeeuPItgFCcpo62ukaMrXXCHq267aCLui1vVcpKd3SuyTHRSqaAYk
-         50Nl8F07EXj8Hag7r/hrR339HBv8+1p94HBbYnlodH8A4WQw9a0UMusjVdDJpNMeRmxt
-         TYsvLTRTc79LwUWJRsIJOpi9iee9Tlyv6PA8pX55NCpMoZ9PR/jHOTWYmdDHsk5Vq1wX
-         aLZQ==
-X-Gm-Message-State: AOAM533xajYS48a7Yo6s5mkv87F/+5rFkUvaoco9JkMn4SuSlXZiErDE
-        yXIEEWOXKn9dMOo98G7TDZMEslq+43A57pTjBN+pRXAyBRn5
-X-Google-Smtp-Source: ABdhPJy0TdlkldIFbiSBr/Tp2J55fnwCTVN6aaQG/cQB9mSzw3hRWui/L5X6P7Xev64bFa/YddO8iqEITqPegxNLMKuO4T7RI0yX
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=+Puf4aNWGnBjbMoB3Susur6crhlYcLtx4j9Ip8HC7kA=;
+        b=nPbu+PPloU2i/3IpWSwNc346AFCjO2xx5XjZv3afBcFCHrTktEGoAyodvBkDEDEgzN
+         ws+9h7Vw/AV/K2H1F4cYkRiE6UArdSG74W/+AQ5HbJYacZizsQqXlRRxbE7U9zySF42l
+         I0ZG5K5IYNrUbiKJ/xonKPN1CVFw5djL1wz4V6a/f4/z1pAXkcBtg0I/1TVIh9MVjA1Y
+         CavedSujx4SF+8gkKb4fhYfW+DJfVWxZqDrsi0jFAS0fPTpJPhEjMnPZbffi7pDIXy49
+         Xjx47RnoKER3sBz8jQYbYXCWFwvbxN2JS833R4KRU728aC+TFyw+GBrvPa7tYRtjuKxp
+         +tAw==
+X-Gm-Message-State: AOAM531ADWg2+H7ugwJZr6Mrv15BhPJ/kumZ+M/HSPZ73od7kh7g95YQ
+        tUI4T3H5HIfoL+/xtCzldHJ4N6D1FahvKtb5GJOKnw==
+X-Google-Smtp-Source: ABdhPJzs1MvRVnkrIzc9Yf/1HC1AcAjxcK4UHZbLjJ8EUNjw5BY9npnsX81bicw0V269DxxbFy1/oRBcFej16mWlsGQ=
+X-Received: by 2002:a4a:a9cf:0:b0:2e9:5c75:e242 with SMTP id
+ h15-20020a4aa9cf000000b002e95c75e242mr19586044oon.25.1646340431451; Thu, 03
+ Mar 2022 12:47:11 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 3 Mar 2022 12:47:10 -0800
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:154d:b0:2bc:84c0:b255 with SMTP id
- j13-20020a056e02154d00b002bc84c0b255mr33769254ilu.87.1646340186916; Thu, 03
- Mar 2022 12:43:06 -0800 (PST)
-Date:   Thu, 03 Mar 2022 12:43:06 -0800
-In-Reply-To: <YiElaWLdXT+m/RJM@rowland.harvard.edu>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000054cc905d95672fa@google.com>
-Subject: Re: [syzbot] WARNING in usbtmc_ioctl/usb_submit_urb
-From:   syzbot <syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, johan@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com
+In-Reply-To: <20220303194758.710358-4-robdclark@gmail.com>
+References: <20220303194758.710358-1-robdclark@gmail.com> <20220303194758.710358-4-robdclark@gmail.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 3 Mar 2022 12:47:10 -0800
+Message-ID: <CAE-0n532ZX=qXTBKSFyRYAmkqFN7oqKyPvJHBuVMmr2eHY+O4A@mail.gmail.com>
+Subject: Re: [PATCH 3/4] drm/msm: Add SYSPROF param
+To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Emma Anholt <emma@anholt.net>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Quoting Rob Clark (2022-03-03 11:46:47)
+> diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+> index fde9a29f884e..0ba1dbd4e50f 100644
+> --- a/drivers/gpu/drm/msm/msm_gpu.h
+> +++ b/drivers/gpu/drm/msm/msm_gpu.h
+> @@ -330,6 +337,24 @@ struct msm_file_private {
+>         struct kref ref;
+>         int seqno;
+>
+> +       /**
+> +        * sysprof:
+> +        *
+> +        * The value of MSM_PARAM_SYSPROF set by userspace.  This is
+> +        * intended to be used by system profiling tools like Mesa's
+> +        * pps-producer (perfetto), and restricted to CAP_SYS_ADMIN.
+> +        *
+> +        * Setting a value of 1 will preserve performance counters across
+> +        * context switches.  Setting a value of 2 will in addition
+> +        * suppress suspend.  (Performance counters loose  state across
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+s/loose  /lose/
 
-Reported-and-tested-by: syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
+> +        * power collapse, which is undesirable for profiling in some
+> +        * cases.)
+> +        *
+> +        * The value automatically reverts to zero when the drm device
+> +        * file is closed.
+> +        */
+> +       int sysprof;
+> +
+>         /**
+>          * elapsed:
+>          *
+> diff --git a/drivers/gpu/drm/msm/msm_submitqueue.c b/drivers/gpu/drm/msm/msm_submitqueue.c
+> index 7cb158bcbcf6..4179db54ac93 100644
+> --- a/drivers/gpu/drm/msm/msm_submitqueue.c
+> +++ b/drivers/gpu/drm/msm/msm_submitqueue.c
+> @@ -7,6 +7,40 @@
+>
+>  #include "msm_gpu.h"
+>
+> +int msm_file_private_set_sysprof(struct msm_file_private *ctx,
+> +                                struct msm_gpu *gpu, int sysprof)
+> +{
+> +       /* unwind old value first: */
+> +       switch (ctx->sysprof) {
+> +       case 2:
+> +               pm_runtime_put_autosuspend(&gpu->pdev->dev);
+> +               fallthrough;
+> +       case 1:
+> +               refcount_dec(&gpu->sysprof_active);
+> +               fallthrough;
+> +       case 0:
+> +               break;
+> +       }
+> +
+> +       /* then apply new value: */
 
-Tested on:
+It would be safer to swap this. Otherwise a set when the values are at
+"1" would drop to "zero" here and potentially trigger some glitch,
+whereas incrementing one more time and then dropping the previous state
+would avoid that short blip.
 
-commit:         754e0b0e Linux 5.17-rc4
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ v5.17-rc4
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f4cd52967afc7901
-dashboard link: https://syzkaller.appspot.com/bug?extid=a48e3d1a875240cab5de
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=140dcc16700000
+> +       switch (sysprof) {
+> +       default:
+> +               return -EINVAL;
 
-Note: testing is done by a robot and is best-effort only.
+This will become more complicated though.
+
+> +       case 2:
+> +               pm_runtime_get_sync(&gpu->pdev->dev);
+> +               fallthrough;
+> +       case 1:
+> +               refcount_inc(&gpu->sysprof_active);
+> +               fallthrough;
+> +       case 0:
+> +               break;
+> +       }
+> +
+> +       ctx->sysprof = sysprof;
+> +
+> +       return 0;
+> +}
