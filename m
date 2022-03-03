@@ -2,111 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF09DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5DFC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 19:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiCCTjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:39:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
+        id S235974AbiCCTji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 14:39:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235742AbiCCTjQ (ORCPT
+        with ESMTP id S235757AbiCCTjh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:39:16 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EEA5D670
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:38:30 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id ay10so9422707wrb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 11:38:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=K/Uvx4MIMduNNDUv4nDfaCXMVJaGsHQl+DgmzbLveXQ=;
-        b=e2UXZ2yMHjPpoZgPSa1aRHFYjLtrivnIS2MfokW9t+URqQaA2lz0Jk892K6CpV4Can
-         fI2Dn7TVWCTVCMo/IbIhYVani9D/KsdjabsR13UQNjbxDvfYT8FQqnms61kik5HvSXLT
-         8SNiyCOcpYUsDJd96EhjKTrn3qFsYHWOaiFvG0v+Og2ywiklUW45/qieIvuFe1kRN2Wq
-         ABfxlSHYHSh1PvX3ydZW9WZP4x+sro+5PnYnjrbSJ035qgD5eiQXMsShISpMlpJsBfwc
-         YCl4eCNMO1TVH1gA4Q/kAgG5fFFQ+sSGPMS9WqK3+W5lARa245KVDXUOXwNKDeEdoEMx
-         XvAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=K/Uvx4MIMduNNDUv4nDfaCXMVJaGsHQl+DgmzbLveXQ=;
-        b=XSq7L4YU6Si/x8W+mLpyru4eeoWbyP8wpdgYtl9JsXcgH6z4YVrkEgqiozuQRp8JAS
-         z7sPUPq3PSNduUvXS7dATJ45HkdvCnnN2mlnG+5RbuuKMjMrP09Npplj7WITVYaKl0Dc
-         XbovRbxbYQgxl9dYIyWD+6oxuMU2MYqsZG+xT8pBBvq3t2KIq2IRmm/NZ0mUNv5c0EYj
-         2l90opFLyBp+X/02L0i46NDmrMmDvJens/JN5lQMxj7kCEhyxJ5q7wji5eLzyacZwC4r
-         YJ3MOqBAXJ/6OxXGEBOLy/OGWrjVSAS3bKVh2lNVD/Hj8diz/e1TbfN0sto9XJ7s+9u3
-         /yzQ==
-X-Gm-Message-State: AOAM531Xu5FMV+BDaVIcSa33kg+TQye7OOS6nNsKRKtSgPG1v4Ms2UMM
-        4silAK788J23nVgQwmzViDya0g==
-X-Google-Smtp-Source: ABdhPJxF1hwyx/TulXuxizSn127hf9j+oayH5mwMGUSVqCtOFlbiXVw7t2v5rHwBQTtwhb5/KdQc7A==
-X-Received: by 2002:a5d:43c2:0:b0:1ed:c331:9a96 with SMTP id v2-20020a5d43c2000000b001edc3319a96mr29299741wrr.389.1646336308813;
-        Thu, 03 Mar 2022 11:38:28 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id bi21-20020a05600c3d9500b003814de297fcsm9093215wmb.16.2022.03.03.11.38.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 11:38:28 -0800 (PST)
-Date:   Thu, 3 Mar 2022 19:38:24 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] vhost: Provide a kernel warning if mutex is held
- whilst clean-up in progress
-Message-ID: <YiEZMHJ6urZTffsq@google.com>
-References: <20220303151929.2505822-1-lee.jones@linaro.org>
- <YiETnIcfZCLb63oB@unreal>
+        Thu, 3 Mar 2022 14:39:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF92366200
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 11:38:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646336330;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2Vioz7xZsrNBUJ+Yejc/iDCBIufa8oqaSWrDx4bnstg=;
+        b=e/KNzCtFKMD785hn6WZvOQ9Le/wllQwQUTmK86KsW7gbR1lKbKi5dgCmelJ4+j2hHWwpBR
+        IcoSe7+jsuqNkU+clflOw0bHWP2vM3fCfbD2c8gXLd6+uKNqLVJXQXxpxGVxo3I+rIugES
+        vvNe44nXkceEHVG/rxCkHGIwD6uagMs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-gzaG4x_AOqOIA3A5PsxYqg-1; Thu, 03 Mar 2022 14:38:47 -0500
+X-MC-Unique: gzaG4x_AOqOIA3A5PsxYqg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53BEC1883520;
+        Thu,  3 Mar 2022 19:38:45 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7227E5DF3A;
+        Thu,  3 Mar 2022 19:38:44 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>, stable@vger.kernel.org
+Subject: [PATCH v4 01/30] KVM: x86/mmu: Check for present SPTE when clearing dirty bit in TDP MMU
+Date:   Thu,  3 Mar 2022 14:38:13 -0500
+Message-Id: <20220303193842.370645-2-pbonzini@redhat.com>
+In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
+References: <20220303193842.370645-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YiETnIcfZCLb63oB@unreal>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 03 Mar 2022, Leon Romanovsky wrote:
+From: Sean Christopherson <seanjc@google.com>
 
-> On Thu, Mar 03, 2022 at 03:19:29PM +0000, Lee Jones wrote:
-> > All workers/users should be halted before any clean-up should take place.
-> > 
-> > Suggested-by:  Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  drivers/vhost/vhost.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > index bbaff6a5e21b8..d935d2506963f 100644
-> > --- a/drivers/vhost/vhost.c
-> > +++ b/drivers/vhost/vhost.c
-> > @@ -693,6 +693,9 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> >  	int i;
-> >  
-> >  	for (i = 0; i < dev->nvqs; ++i) {
-> > +		/* Ideally all workers should be stopped prior to clean-up */
-> > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > +
-> >  		mutex_lock(&dev->vqs[i]->mutex);
-> 
-> I know nothing about vhost, but this construction and patch looks
-> strange to me.
-> 
-> If all workers were stopped, you won't need mutex_lock(). The mutex_lock
-> here suggests to me that workers can still run here.
+Explicitly check for present SPTEs when clearing dirty bits in the TDP
+MMU.  This isn't strictly required for correctness, as setting the dirty
+bit in a defunct SPTE will not change the SPTE from !PRESENT to PRESENT.
+However, the guarded MMU_WARN_ON() in spte_ad_need_write_protect() would
+complain if anyone actually turned on KVM's MMU debugging.
 
-The suggestion for this patch came from the maintainer.
+Fixes: a6a0b05da9f3 ("kvm: x86/mmu: Support dirty logging for the TDP MMU")
+Cc: Ben Gardon <bgardon@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Message-Id: <20220226001546.360188-3-seanjc@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/mmu/tdp_mmu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Please see the conversation here:
-
-https://lore.kernel.org/all/20220302082021-mutt-send-email-mst@kernel.org/
-
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index debf08212f12..4cf0cc04b2a0 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1468,6 +1468,9 @@ static bool clear_dirty_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
+ 		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
+ 			continue;
+ 
++		if (!is_shadow_present_pte(iter.old_spte))
++			continue;
++
+ 		if (spte_ad_need_write_protect(iter.old_spte)) {
+ 			if (is_writable_pte(iter.old_spte))
+ 				new_spte = iter.old_spte & ~PT_WRITABLE_MASK;
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.31.1
+
+
