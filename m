@@ -2,118 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 151B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 01:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbiCCB5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 20:57:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
+        id S231591AbiCCB7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 20:59:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231553AbiCCB5D (ORCPT
+        with ESMTP id S231569AbiCCB70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 20:57:03 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BCE33E13;
-        Wed,  2 Mar 2022 17:56:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646272578; x=1677808578;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3bzSRY1al0oYlmM52NOwKtS+br8ieRk+tPabImmuEUM=;
-  b=IUllmM4Q7zHnq/KDRBRxxnlRhUBz/KKesZNU8NjsBLJbto3qbJBAAwcw
-   rF7cFm/fhx8XDHFyCkNr3azs4EYeImGZYGbHohHo8BHhJ21XNKj9X4UH/
-   0XO/ZeF5b+IwgU8tcQ/d0I7625cCr30l4+zfAm5KIC9Cgc2YHlnkVAkZ5
-   w=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 02 Mar 2022 17:56:18 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 17:56:17 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 2 Mar 2022 17:56:16 -0800
-Received: from [10.216.42.174] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Wed, 2 Mar 2022
- 17:56:09 -0800
-Message-ID: <7e9fceed-6b29-d6a6-2035-fdf3fc70a773@quicinc.com>
-Date:   Thu, 3 Mar 2022 07:26:06 +0530
+        Wed, 2 Mar 2022 20:59:26 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B01C1D0E4;
+        Wed,  2 Mar 2022 17:58:40 -0800 (PST)
+Received: from localhost.localdomain (unknown [138.197.159.143])
+        by gnuweeb.org (Postfix) with ESMTPSA id 263627E216;
+        Thu,  3 Mar 2022 01:58:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1646272719;
+        bh=4+k143TpGDWGZE7ivmqrV4mMaZsznJilER3TE6gUYVs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YZWdRa4iQq4fHPJE7c41QlUkjyxU/XUN/ZfMoYB976vroshgWVWfckORy71AeIEiX
+         FWOQCqf031hwcaJwy970w2mS/pMkYVnR38L/WzZMeLwb8cn3gF/+bhHCYs89t6EKLD
+         ghIq2Vgyz9QnW1JKAUJcRpy0duYZTC2V6nQfJXB0dfcR3Mif79HCf4EiqecMHsvS+P
+         5IOZ6JBM/DjP+WcJ1v+Ct3rCDEAaII3PW5Bmz1LxCPQxEsYrTHSe0OjezrUMJPeL3w
+         jzm+5XTXE3TENc47b1TxgXyvfZaRqUkLwio1EK6eF1BHvbncqIAyXb0uWRz/HoS+QT
+         KMr1VyYTWmSCw==
+From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Yazen Ghannam <yazen.ghannam@amd.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org,
+        x86@kernel.org, stable@vger.kernel.org,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        Jiri Hladky <hladky.jiri@googlemail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 2/2] x86/mce/amd: Fix memory leak when `threshold_create_bank()` fails
+Date:   Thu,  3 Mar 2022 01:58:26 +0000
+Message-Id: <20220303015826.4176416-1-alviro.iskandar@gnuweeb.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <109a10da-d1d1-c47a-2f04-31796457f6ff@gnuweeb.org>
+References: <20220301094608.118879-1-ammarfaizi2@gnuweeb.org> <20220301094608.118879-3-ammarfaizi2@gnuweeb.org> <Yh+oyD/5M3TW5ZMM@yaz-ubuntu> <4371a592-6686-c535-4daf-993dedb43cd4@gnuweeb.org> <109a10da-d1d1-c47a-2f04-31796457f6ff@gnuweeb.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 3/3] dt-bindings: soundwire: qcom: Add bindings for
- audio CSR reset control property
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <yung-chuan.liao@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>, <sanyog.r.kale@intel.com>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1646224982-3361-1-git-send-email-quic_srivasam@quicinc.com>
- <1646224982-3361-4-git-send-email-quic_srivasam@quicinc.com>
- <Yh+RwQS1Cyeuq4Jf@matsya>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <Yh+RwQS1Cyeuq4Jf@matsya>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 3 Mar 2022 06:27:33 +0700, Ammar Faizi wrote:
+> +static void _mce_threshold_remove_device(struct threshold_bank **bp)
+> +{
+> +	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
+> +
+> +	for (bank = 0; bank < numbanks; bank++) {
+> +		if (bp[bank]) {
+> +			threshold_remove_bank(bp[bank]);
+> +			bp[bank] = NULL;
+> +		}
+> +	}
+> +	kfree(bp);
+> +}
 
-On 3/2/2022 9:18 PM, Vinod Koul wrote:
-Thanks for your time Vinod!!!
-> On 02-03-22, 18:13, Srinivasa Rao Mandadapu wrote:
->> Update description for audio CSR reset control property, which is
->> required for latest chipsets to allow software enabling in CGCR HCLK register.
-> too many acronyms pls explain!
-Okay. Will expand and re post the patch.
->
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   Documentation/devicetree/bindings/soundwire/qcom,sdw.txt | 12 ++++++++++++
->>   1 file changed, 12 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt b/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
->> index b93a2b3..84c8f54 100644
->> --- a/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
->> +++ b/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
->> @@ -150,6 +150,18 @@ board specific bus parameters.
->>   		    or applicable for the respective data port.
->>   		    More info in MIPI Alliance SoundWire 1.0 Specifications.
->>   
->> +- reset:
->> +	Usage: optional
->> +	Value type: <prop-encoded-array>
->> +	Definition: Should specify the SoundWire audio CSR reset controller interface,
->> +		    which is required for SoundWire version 1.6.0 and above.
->> +
->> +- reset-names:
->> +	Usage: optional
->> +	Value type: <stringlist>
->> +	Definition: should be "swr_audio_cgcr" for SoundWire audio CSR reset
->> +		    controller interface.
->> +
-> We should add these in example as well...
-Okay. Will add in Example.
->
->>   Note:
->>   	More Information on detail of encoding of these fields can be
->>   found in MIPI Alliance SoundWire 1.0 Specifications.
->> -- 
->> 2.7.4
+hi sir, i think this can be improved again, we can avoid calling
+this_cpu_read(mce_num_banks) twice if we pass the numbanks as an
+argument, plz review the changes below
+
+diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
+index 9f4b508886dd..e492efab68a2 100644
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -1293,10 +1293,23 @@ static void threshold_remove_bank(struct threshold_bank *bank)
+ 	kfree(bank);
+ }
+ 
++static void _mce_threshold_remove_device(struct threshold_bank **bp,
++					 unsigned int numbanks)
++{
++	unsigned int bank;
++
++	for (bank = 0; bank < numbanks; bank++) {
++		if (bp[bank]) {
++			threshold_remove_bank(bp[bank]);
++			bp[bank] = NULL;
++		}
++	}
++	kfree(bp);
++}
++
+ int mce_threshold_remove_device(unsigned int cpu)
+ {
+ 	struct threshold_bank **bp = this_cpu_read(threshold_banks);
+-	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
+ 
+ 	if (!bp)
+ 		return 0;
+@@ -1307,13 +1320,7 @@ int mce_threshold_remove_device(unsigned int cpu)
+ 	 */
+ 	this_cpu_write(threshold_banks, NULL);
+ 
+-	for (bank = 0; bank < numbanks; bank++) {
+-		if (bp[bank]) {
+-			threshold_remove_bank(bp[bank]);
+-			bp[bank] = NULL;
+-		}
+-	}
+-	kfree(bp);
++	_mce_threshold_remove_device(bp, this_cpu_read(mce_num_banks));
+ 	return 0;
+ }
+ 
+@@ -1350,15 +1357,14 @@ int mce_threshold_create_device(unsigned int cpu)
+ 		if (!(this_cpu_read(bank_map) & (1 << bank)))
+ 			continue;
+ 		err = threshold_create_bank(bp, cpu, bank);
+-		if (err)
+-			goto out_err;
++		if (err) {
++			_mce_threshold_remove_device(bp, numbanks);
++			return err;
++		}
+ 	}
+ 	this_cpu_write(threshold_banks, bp);
+ 
+ 	if (thresholding_irq_en)
+ 		mce_threshold_vector = amd_threshold_interrupt;
+ 	return 0;
+-out_err:
+-	mce_threshold_remove_device(cpu);
+-	return err;
+ }
+
+-- Viro
