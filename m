@@ -2,121 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D97DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 14:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbiCCOMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 09:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52388 "EHLO
+        id S233952AbiCCONM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 09:13:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229914AbiCCOMU (ORCPT
+        with ESMTP id S229914AbiCCONK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 09:12:20 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D9418CC0E;
-        Thu,  3 Mar 2022 06:11:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646316694; x=1677852694;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8UFSNQlM9WPEp6bci8a0Zs4QbDnKrGrES/unqzgEs3s=;
-  b=n/zbmLUPPPtJlk4MARAEK26qvJEK+1svz2xrMZkY4Bmie5DnDsddizvF
-   ArSTBAoUgGa8kVyclCEpAKLNk4XvloDP6RmGgB/zXh1Eszg8JGNPM7eM8
-   T++iJLofwEOzYAaE8xYJF2lIPq7PgGWf7Mb8XBNGiOrLKAvRPtW1YyBAv
-   /wrGSSZLrvdnAHwe87onlqunDZEAigvkxYIE+i5B8aWoqtV5hjJx5theY
-   LVl3zhT7bmI6bUx8Y2Jtjs5ALEUng5pIrmFUvF9clbQmG0HohkXpmEIuQ
-   bw4cZxwmnHSCYiqRETpcPWPMorc+ljYj3F1ZULfQYJNveEnlQUywgqITh
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="252509204"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="252509204"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:11:34 -0800
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="576497839"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 06:11:27 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nPmAC-00ApFi-B4;
-        Thu, 03 Mar 2022 16:10:40 +0200
-Date:   Thu, 3 Mar 2022 16:10:39 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tali Perry <tali.perry1@gmail.com>
-Cc:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
-        Wolfram Sang <wsa@kernel.org>, jie.deng@intel.com,
-        sven@svenpeter.dev, bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
-        arnd@arndb.de, olof@lixom.net, Tali Perry <tali.perry@nuvoton.com>,
-        Avi Fishman <Avi.Fishman@nuvoton.com>,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 11/11] i2c: npcm: Support NPCM845
-Message-ID: <YiDMX7pUqs/rLJUU@smile.fi.intel.com>
-References: <20220303083141.8742-1-warp5tw@gmail.com>
- <20220303083141.8742-12-warp5tw@gmail.com>
- <YiCb7LNY9tmMCZx7@smile.fi.intel.com>
- <CAHb3i=tWhtXK+c5GGbp6m23AHoyy=4woT_+n3a_N-6CqKUYb=g@mail.gmail.com>
+        Thu, 3 Mar 2022 09:13:10 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA71A18CC0E;
+        Thu,  3 Mar 2022 06:12:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646316745; x=1677852745;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OmW3wFitWOZ9d4nCwITn7KMkbSxKvXR3UNgpfKrtjjc=;
+  b=aTwDrlzxpfkpMTYgCZ0fE5V6N7yUUAFrc5DQVyIpmY1AWDBr8EOWB7/X
+   K/48BORewPNTp2n9Et5yZp2YVX4/UToz57nBTV+e3aOfa1nvY2vGPeZeF
+   5ZK/QxfVWceO8kM9vzXDAL5n2LllkkAErPVRNFCIruF5vJNfu6pgLOEE2
+   8ndO3dxWW4o2xat+elbD3lEaZ6eIUKNoCx/Ku7+UFlR1CKXwApm0+LXRT
+   puou0US0e/GWf8ncCqxR/sGskRH93hLXA9A/uJkFypqrP3KB7QL8tsQbG
+   EuHOZJBTLxxm+raPhRveJY2CrF1pEhAG0BlTwZePPQvUYhmYIpWr5MIYS
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,151,1643698800"; 
+   d="scan'208";a="147960138"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Mar 2022 07:12:24 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 3 Mar 2022 07:12:23 -0700
+Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 3 Mar 2022 07:12:18 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
+        <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
+CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH v2 0/5] dt-bindings: rtc: convert at91sam9 bindings to
+Date:   Thu, 3 Mar 2022 16:06:21 +0200
+Message-ID: <20220303140626.38129-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHb3i=tWhtXK+c5GGbp6m23AHoyy=4woT_+n3a_N-6CqKUYb=g@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 02:35:58PM +0200, Tali Perry wrote:
-> > On Thu, Mar 3, 2022 at 12:45 PM Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Thu, Mar 03, 2022 at 04:31:41PM +0800, Tyrone Ting wrote:
+This patch series addresses the conversion of the RTC binding for
+Atmel/Microchip SoCs to Device Tree Schema format. It also changes
+the node names from some of the "dtsi" files from "rtt" to the more
+generic "rtc", while moving some of the specific properties from the
+"dts" files to the "dtsi" files as well as adding this required property to
+the "dtsi" files that were missing it.
 
-...
+Changes since v1:
+- Add the "start-year" property as suggested by Alexandre Belloni
+- Fix the errors generated from not using the more generic "rtc" node
+name for the example of the binding, as suggested by Krzysztof Kozlowski
+- Replace the "uint32-array" type of the "atmel,rtt-rtc-time-reg"
+  property with "syscon", as suggested by Krzysztof Kozlowski
+- Move the "atmel,rtt-rtc-time-reg" property from some of the
+Atmel/Microchip board files to the SoC files
+- Add the "atmel,rtt-rtc-time-reg" required property to the
+Atmel/Microchip SoC files that were missing it
+- Use the more generic "rtc" node name inside the Atmel/Microchip SoC
+files that were using "rtt" instead
+- Add SAMA7G5 compatible strings list to the DT binding
 
-> > > > -     left_in_fifo = FIELD_GET(NPCM_I2CTXF_STS_TX_BYTES,
-> > > > -                              ioread8(bus->reg + NPCM_I2CTXF_STS));
-> > > > +     left_in_fifo = (bus->data->txf_sts_tx_bytes &
-> > > > +                     ioread8(bus->reg + NPCM_I2CTXF_STS));
-> > >
-> > > Besides too many parentheses, this is an interesting change. So, in different
-> > > versions of IP the field is on different bits? Perhaps it means that you need
-> > > something like internal ops structure for all these, where you will have been
-> > > using the statically defined masks?
-> > >
-> 
-> Those are two very similar modules. The first generation had a 16 bytes HW FIFO
-> and the second generation has 32 bytes.
-> In V1 of this patchset the masks were defined under
-> CONFIG but we were asked to change the approach:
-> 
-> the entire discussion can be found here:
-> 
-> https://www.spinics.net/lists/linux-i2c/msg55566.html
-> 
-> Did we understand the request change right?
 
-Not really. If you have not simply "one (MSB) bit more" for FIFO size, then
-I proposed to create a specific operations structure and use callbacks (see
-drivers/dma/dw/ case for iDMA 32-bit vs. DesignWare).
+Sergiu Moga (5):
+  ARM: dts: at91: Move rtt node properties from "dts" file to "dtsi"
+    file
+  ARM: dts: at91: Add the required `atmel,rtt-rtc-time-reg` property
+  ARM: dts: at91: Use the generic "rtc" node name for the rtt IPs
+  dt-bindings: rtc: convert at91sam9 bindings to json-schema
+  dt-bindings: rtc: at91: Add SAMA7G5 compatible strings list
 
-But hold on and read set of questions below.
-
-Previously it was a fixed field with the NPCM_I2CTXF_STS_TX_BYTES mask applied,
-right? From above I have got that FIFO is growing twice. Is it correct?
-Does the LSB stay at the same offset? What is the meaning of the MSB in 32 byte
-case? If it's reserved then why not to always use 32 byte approach?
+ .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 -------
+ .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 65 +++++++++++++++++++
+ arch/arm/boot/dts/at91-sam9x60ek.dts          |  5 --
+ arch/arm/boot/dts/at91-sama7g5ek.dts          |  4 --
+ arch/arm/boot/dts/at91sam9260.dtsi            |  1 +
+ arch/arm/boot/dts/at91sam9260ek.dts           |  1 -
+ arch/arm/boot/dts/at91sam9261.dtsi            |  1 +
+ arch/arm/boot/dts/at91sam9263.dtsi            |  2 +
+ arch/arm/boot/dts/at91sam9g45.dtsi            |  1 +
+ arch/arm/boot/dts/at91sam9m10g45ek.dts        |  1 -
+ arch/arm/boot/dts/at91sam9rl.dtsi             |  1 +
+ arch/arm/boot/dts/sam9x60.dtsi                |  3 +-
+ arch/arm/boot/dts/sama7g5.dtsi                |  3 +-
+ 13 files changed, 75 insertions(+), 38 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
+ create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
