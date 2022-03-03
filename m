@@ -2,128 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE931C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D507C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 17:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235253AbiCCRME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 12:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
+        id S235270AbiCCRRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 12:17:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbiCCRMB (ORCPT
+        with ESMTP id S233552AbiCCRRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 12:12:01 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E997188A35;
-        Thu,  3 Mar 2022 09:11:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646327475; x=1677863475;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=vaOGjw7VdBKeP6eHbl1iLmTW0NFWNNn5qWcGsk5ZbQE=;
-  b=IBsdkHHXV4wbifK/fQcmch4j2dCl+OIeR+9I3TJLZJbc+X/7oOpfuHrQ
-   hdqWWgZKCK/GlUACOQgFuuVbD0kKsFRoFPX0tZLLV0DZKF5Lief0biL/g
-   uJSJbwueN8QPoCzBPrzyqVHRWB26Lyd+6hL+oQ1UmpJAtO/Y9OtgKdJuP
-   fSkQOcrY2PA1x2FHWQULaGWNOneVdNkWhFJ+ViFama+IcUdAjTLHxJC+1
-   u4vGQ5U4RrxBvO/rfHAEqcp1ymommJHwYMuC3273UixpEI8nyE/ortQ+7
-   Utv5idK+y1GauVyHG025EgKtJwZraG+BGZQUwgdoDFfr2W9pbSunDNdCV
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="253928899"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="253928899"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 09:09:44 -0800
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="642184867"
-Received: from eabada-mobl2.amr.corp.intel.com (HELO [10.209.6.252]) ([10.209.6.252])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 09:09:43 -0800
-Message-ID: <5ca2583b-a873-fc5d-ece6-d4bdbd133a89@intel.com>
-Date:   Thu, 3 Mar 2022 09:09:37 -0800
+        Thu, 3 Mar 2022 12:17:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0A0F47ED;
+        Thu,  3 Mar 2022 09:16:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE88EB824C8;
+        Thu,  3 Mar 2022 17:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72976C004E1;
+        Thu,  3 Mar 2022 17:16:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646327808;
+        bh=sdUx4pmy1wPJZfj6t7Mf+fkJVick/R8Ggpu5sR4Dt+Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=NwmIXYrrvH7iS9aCfeSxw0PbeX4QcPjSaApJqB1fJ3O9q1sfze3jXHZKmO74LRbKI
+         Xg7d3NyzLFwg8NhGr2Xvt7XHe7x4FyWCAX3AJQZL49HW4+ADRsQzeivFqsZQ7M7GCj
+         6CkPQaC/MIEh2T4NMU2Yf1s/JfFpSO9dDC1FuHpTRiaOnpF0JrP95xdKY/isOQj2WO
+         EjcjiiHjKV8ecFFd6lMkH5r7IVEY+6vQOoHliejS8mrNDXtpnw++kBkNMxQEOGTdWs
+         GwWsgCJDLn0v9B9vOGDFOqN9JyHWuxPwLQUtXhT4g9cnKjIqrgbbNNRdX/CiLOi7Fq
+         Mz8VMs5IbQc/A==
+Date:   Thu, 3 Mar 2022 11:25:03 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] drm/amd/display: Fix Wstringop-overflow warnings in
+ dc_link_dp.c
+Message-ID: <20220303172503.GA1731116@embeddedor>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-References: <20220224165625.2175020-1-brijesh.singh@amd.com>
- <20220224165625.2175020-23-brijesh.singh@amd.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH v11 22/45] x86/sev: Use SEV-SNP AP creation to start
- secondary CPUs
-In-Reply-To: <20220224165625.2175020-23-brijesh.singh@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/24/22 08:56, Brijesh Singh wrote:
-> +	/*
-> +	 * Allocate VMSA page to work around the SNP erratum where the CPU will
-> +	 * incorrectly signal an RMP violation #PF if a large page (2MB or 1GB)
-> +	 * collides with the RMP entry of VMSA page. The recommended workaround
-> +	 * is to not use a large page.
-> +	 *
-> +	 * Allocate one extra page, use a page which is not 2MB-aligned
-> +	 * and free the other.
-> +	 */
-> +	p = alloc_pages(GFP_KERNEL_ACCOUNT | __GFP_ZERO, 1);
-> +	if (!p)
-> +		return NULL;
-> +
-> +	split_page(p, 1);
-> +
-> +	pfn = page_to_pfn(p);
-> +	if (IS_ALIGNED(__pfn_to_phys(pfn), PMD_SIZE)) {
-> +		pfn++;
-> +		__free_page(p);
-> +	} else {
-> +		__free_page(pfn_to_page(pfn + 1));
-> +	}
-> +
-> +	return page_address(pfn_to_page(pfn));
-> +}
+Fix the following Wstringop-overflow warnings when building with GCC-11:
 
-This can be simplified.  There's no need for all the sill pfn_to_page()
-conversions or even an alignment check.  The second page (page[1]) of an
-order-1 page is never 2M/1G aligned.  Just use that:
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:388:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:388:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:388:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:1491:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:2613:25: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:2613:25: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
 
-	// Alloc an 8k page which is also 8k-aligned:
-	p = alloc_pages(GFP_KERNEL_ACCOUNT | __GFP_ZERO, 1);
-	if (!p)
-		return NULL;
+by removing the over-specified array size from the argument declarations.
 
-	split_page(p, 1);
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
 
-	// Free the first 4k.  This page _may_
-	// be 2M/1G aligned and can not be used:
-	__free_page(p);
-	
-	// Return the unaligned page:
-	return page_address(p+1);
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 4 ++--
+ drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h  | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+index f11a8d97fb60..81952e07acf6 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -823,7 +823,7 @@ bool dp_is_interlane_aligned(union lane_align_status_updated align_status)
+ void dp_hw_to_dpcd_lane_settings(
+ 		const struct link_training_settings *lt_settings,
+ 		const struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
+-		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
++		union dpcd_training_lane dpcd_lane_settings[])
+ {
+ 	uint8_t lane = 0;
+ 
+@@ -853,7 +853,7 @@ void dp_decide_lane_settings(
+ 		const struct link_training_settings *lt_settings,
+ 		const union lane_adjust ln_adjust[LANE_COUNT_DP_MAX],
+ 		struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
+-		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
++		union dpcd_training_lane dpcd_lane_settings[])
+ {
+ 	uint32_t lane;
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h b/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h
+index ab9939db8cea..0d00da1640a7 100644
+--- a/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h
++++ b/drivers/gpu/drm/amd/display/dc/inc/dc_link_dp.h
+@@ -147,12 +147,12 @@ bool dp_is_max_vs_reached(
+ void dp_hw_to_dpcd_lane_settings(
+ 	const struct link_training_settings *lt_settings,
+ 	const struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
+-	union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX]);
++	union dpcd_training_lane dpcd_lane_settings[]);
+ void dp_decide_lane_settings(
+ 	const struct link_training_settings *lt_settings,
+ 	const union lane_adjust ln_adjust[LANE_COUNT_DP_MAX],
+ 	struct dc_lane_settings hw_lane_settings[LANE_COUNT_DP_MAX],
+-	union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX]);
++	union dpcd_training_lane dpcd_lane_settings[]);
+ 
+ uint32_t dp_translate_training_aux_read_interval(uint32_t dpcd_aux_read_interval);
+ 
+-- 
+2.27.0
+
