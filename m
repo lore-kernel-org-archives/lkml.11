@@ -2,78 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 11:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbiCCLEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:04:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
+        id S232609AbiCCLHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232596AbiCCLE3 (ORCPT
+        with ESMTP id S231575AbiCCLH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:04:29 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EF5154D1A
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 03:03:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646305424; x=1677841424;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/RW/N6B+ssSGVQ6wcwnQS4QdW4gHzRTOnYqgyJWbHN4=;
-  b=YGtjEfcSifb2yzl6vkUefmZVJAt4VpEWu6XgjHRiJxgwYvyp+hqFhUv9
-   2hK81t5fDm5owH+Gkq+BwOb6ZgSrt4pi0OjliD6liJl76HWFqrkkGJeN+
-   x5ZvQVY6NOdEQdrysQkVmCmX+MHL1UrHNm7ApHBX+13XicaUKGPmXmxG4
-   kZ0x3+vmijSUqeZu4iZGdSqW7KGldw8V2QvdfGD1/nSrsU1C2WSmHbwMF
-   65GvnOJjcjqksrxo2Z3VdG4DOKB08JOODRs/3n/s/97Rar6yUalapLbjT
-   Z0sVcmWfRYEkSQbJR5rxAlWJhFveN/FzTFAWeIFxlU0lonL75rT97VCg7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="241064128"
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="241064128"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 03:03:42 -0800
-X-IronPort-AV: E=Sophos;i="5.90,151,1643702400"; 
-   d="scan'208";a="493903034"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 03:03:41 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nPjEU-00AkcN-L8;
-        Thu, 03 Mar 2022 13:02:54 +0200
-Date:   Thu, 3 Mar 2022 13:02:54 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Lars Poeschel <poeschel@lemonage.de>
-Subject: Re: [PATCH v1 1/3] auxdisplay: lcd2s: Fix lcd2s_redefine_char()
- feature
-Message-ID: <YiCgXgsWlqGHEAp5@smile.fi.intel.com>
-References: <20220223154718.83500-1-andriy.shevchenko@linux.intel.com>
- <CANiq72kNXwo7hpc0+XX_UsyT_3D9o=o0eVjqN-QtDd46kjdd6g@mail.gmail.com>
- <CANiq72mT3cWkhAjbXu+-SSq9823BT0P0zFgLWEr2hB3TrdeTGA@mail.gmail.com>
+        Thu, 3 Mar 2022 06:07:28 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B8E17C41E;
+        Thu,  3 Mar 2022 03:06:43 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id B1FAF1F45670
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646305602;
+        bh=04+GErvRLlfhBjoyh0q1PNEzVX2LD6M2KAvb8xvne10=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nmZuTxkJ0YO9axs+PIMgA7q1yD5MiFSzwbOVNWi2UAngUsbTM9Rwj0SbZ129WrTuc
+         CLs9+0kOKc5C6ZZ+pTp1bzeqpfNGanYeKeGZ3z8OiysCyy8NWOaaHlphnMS/sZMna7
+         wh6bUcHFQtXmtD97VHGFl4R1vbycqhyQTUznNa4TFocxigJpFVw66xtHkGAgrYmx+O
+         NC0Pe4Zvf8VBwwvFYlMfZF0vSD2CGejdRpNss9vVXrrjTjt1EKXLlQkHPngB+bBdUs
+         re2/OtE6ID6xAJIpvoLl+O+ALOw8FTf6zWTXJSyA4IVGfHt3skC+jLaIGzVA7G2kWP
+         qCSAzEq5maxRw==
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+To:     Shuah Khan <shuah@kernel.org>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        kernel@collabora.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] selftests/interpreter: fix separate directory build
+Date:   Thu,  3 Mar 2022 16:06:28 +0500
+Message-Id: <20220303110629.2072927-1-usama.anjum@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANiq72mT3cWkhAjbXu+-SSq9823BT0P0zFgLWEr2hB3TrdeTGA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 11:46:32AM +0100, Miguel Ojeda wrote:
-> On Thu, Mar 3, 2022 at 2:18 AM Miguel Ojeda
-> <miguel.ojeda.sandonis@gmail.com> wrote:
-> >
-> > Thanks Andy, queued.
-> 
-> By the way, I fixed a typo in the commit message.
+Separate directory build fails of this test as headers include path isn't
+set correctly in that case. Fix it by including KHDR_INCLUDES.
 
-Thank you, Miguel!
+make -C tools/testing/selftests O=build1
+gcc -Wall -O2 -I../../../../usr/include    trust_policy_test.c -lcap -o /linux_mainline/build1/kselftest/interpreter/trust_policy_test
+trust_policy_test.c:14:10: fatal error: linux/trusted-for.h: No such file or directory
+   14 | #include <linux/trusted-for.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
 
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+---
+ tools/testing/selftests/interpreter/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/interpreter/Makefile b/tools/testing/selftests/interpreter/Makefile
+index 7402fdb6533f..51dde8e01e32 100644
+--- a/tools/testing/selftests/interpreter/Makefile
++++ b/tools/testing/selftests/interpreter/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-CFLAGS += -Wall -O2 -I$(khdr_dir)
++CFLAGS += -Wall -O2 -I$(khdr_dir) $(KHDR_INCLUDES)
+ LDLIBS += -lcap
+ 
+ src_test := $(wildcard *_test.c)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
