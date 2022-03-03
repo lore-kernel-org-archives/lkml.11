@@ -2,214 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE35DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB602C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbiCCDdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 22:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
+        id S229477AbiCCDfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 22:35:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiCCDda (ORCPT
+        with ESMTP id S229436AbiCCDfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 22:33:30 -0500
-Received: from 189.cn (ptr.189.cn [183.61.185.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D8DC626C;
-        Wed,  2 Mar 2022 19:32:44 -0800 (PST)
-HMM_SOURCE_IP: 10.64.8.43:59860.1825392078
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-39.156.73.14 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id 116D7100199;
-        Thu,  3 Mar 2022 11:32:17 +0800 (CST)
-Received: from  ([172.27.8.53])
-        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 1a7c2422cd53475e97fb8c11bba2953d for u.kleine-koenig@pengutronix.de;
-        Thu, 03 Mar 2022 11:32:43 CST
-X-Transaction-ID: 1a7c2422cd53475e97fb8c11bba2953d
-X-Real-From: chensong_2000@189.cn
-X-Receive-IP: 172.27.8.53
-X-MEDUSA-Status: 0
-Sender: chensong_2000@189.cn
-Message-ID: <bf44b184-265f-6931-20e2-42eab82f6177@189.cn>
-Date:   Thu, 3 Mar 2022 11:31:26 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3] staging: greybus: introduce pwm_ops::apply
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
-        thierry.reding@gmail.com, lee.jones@linaro.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        elder@ieee.org
-References: <1645780561-18481-1-git-send-email-chensong_2000@189.cn>
- <20220301215659.kj2wwrijkdmkmces@pengutronix.de>
-From:   Song Chen <chensong_2000@189.cn>
-In-Reply-To: <20220301215659.kj2wwrijkdmkmces@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Wed, 2 Mar 2022 22:35:47 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC4511E3F3;
+        Wed,  2 Mar 2022 19:35:03 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id u1so5702411wrg.11;
+        Wed, 02 Mar 2022 19:35:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=ZkicDJZTVuvTu65ovn3Nc78Li/+ieXuplJO/yWIopgk=;
+        b=OSNzxa0cMdfWQn2xDmwaEvhQKMg23H4Q31dAe0cu2erG6xebB70wt4l9x2XBp7S6Eb
+         TtJFUxsHZ5VBtLzF7pwmyrZ7CO+kEVl+cMERteWV5+Fw1lPwtzSjYYB4Mm4cEvdAu6xk
+         TOiwoxSCr5RWIcPfWaColq+K7nm8705AK82H6hOWB9iMlYq4pAPI3dWwQAmuDV9oSdJF
+         dA4y+HkWnvahZ7LvcsEYqG54pg/mY4Q1X7uQxrSFLkWlJzLhHZufJkTmlp890k2O6HAN
+         r8k+IqReL0E5po1F2PKK56ciTWJuy+PXq+TfbaiLgs7uWQ3IMr8Iv5Qdkev2bZzbFPNv
+         ywYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ZkicDJZTVuvTu65ovn3Nc78Li/+ieXuplJO/yWIopgk=;
+        b=ai2MuJgPQLFPufisRt3gg/yEaV0dPk8EpR0N1B2MSZbg2K78TmLrqs2HODweoRVbvp
+         dD9QiIARTaYL8pqifRJnM5UtV9ukcxnfJjK3/6dqDAtlLOeTFXp0n6D5f105DrksP+UQ
+         xQkwaH+drn5152lVzY/bkJZNchQ8HaT6dYoJARE9Dy28+vL5DLFOlNMhye6ES/CCQ8/w
+         sH5JJWw3sa+rxmyHR5YE4nBoUBnO9smWqWKgc4Bhc7NS97FLrj1QfpwGAv6NVvGSzwp3
+         5f9+wb/64zER0AkpfpXLCQvkvEW3Tri6sJBNVm5RiSsm3zUUVC2ZAscBrTLaWxOFvuH4
+         4poA==
+X-Gm-Message-State: AOAM5329bv0Nt6Ekx63t0USz21N/HW5AnGx7OI5Fs/+V/vWtC8ikixBU
+        LV4J+juB1iabvTPbkXRF5sE=
+X-Google-Smtp-Source: ABdhPJxnZ2vYKdh9A6MxQ9xDZEw5cuXZWYhUTaA04Xx6JG3w7IXW0JiEFo7nCMUYZbJMmcev7NVDIw==
+X-Received: by 2002:adf:f5c5:0:b0:1ed:bc44:63e4 with SMTP id k5-20020adff5c5000000b001edbc4463e4mr25300125wrp.236.1646278501902;
+        Wed, 02 Mar 2022 19:35:01 -0800 (PST)
+Received: from localhost.localdomain ([64.64.123.48])
+        by smtp.gmail.com with ESMTPSA id n65-20020a1c2744000000b003862bfb509bsm2202706wmn.46.2022.03.02.19.34.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 19:35:01 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+Date:   Wed,  2 Mar 2022 19:34:50 -0800
+Message-Id: <20220303033450.2108-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The function dma_alloc_coherent() in qed_vf_hw_prepare() can fail, so
+its return value should be checked.
 
-Hello,
+Fixes: 1408cc1fa48c ("qed: Introduce VFs")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_vf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-在 2022/3/2 05:56, Uwe Kleine-König 写道:
-> Hello,
-> 
-> On Fri, Feb 25, 2022 at 05:16:01PM +0800, Song Chen wrote:
->> Introduce apply in pwm_ops to replace legacy operations,
->> like enable, disable, config and set_polarity.
->>
->> Signed-off-by: Song Chen <chensong_2000@189.cn>
->>
->> ---
->> v2:
->> 1, define duty_cycle and period as u64 in gb_pwm_config_operation.
->> 2, define duty and period as u64 in gb_pwm_config_request.
->> 3, disable before configuring duty and period if the eventual goal
->>     is a disabled state.
->>
->> v3:
->> Regarding duty_cycle and period, I read more discussion in this thread,
->> min, warn or -EINVAL, seems no perfect way acceptable for everyone.
->> How about we limit their value to INT_MAX and throw a warning at the
->> same time when they are wrong?
-> 
-> My position is that the driver should implement the biggest possible
-> period not bigger than the requested period. That's how all new drivers
-> behave since I care for reviewing PWM stuff. So capping to U32_MAX as is
-> (nearly) done below is good in my book.
-> 
->> ---
->>   drivers/staging/greybus/pwm.c | 66 +++++++++++++++++++++--------------
->>   1 file changed, 40 insertions(+), 26 deletions(-)
->>
->> diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
->> index 891a6a672378..3ec5bc54d616 100644
->> --- a/drivers/staging/greybus/pwm.c
->> +++ b/drivers/staging/greybus/pwm.c
->> @@ -204,43 +204,57 @@ static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
->>   	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
->>   }
->>   
->> -static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->> -			 int duty_ns, int period_ns)
->> +static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			const struct pwm_state *state)
->>   {
->> +	int err;
->> +	bool enabled = pwm->state.enabled;
->> +	u64 period = state->period;
->> +	u64 duty_cycle = state->duty_cycle;
->>   	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->>   
->> -	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_ns);
->> -};
->> -
->> -static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->> -			       enum pwm_polarity polarity)
->> -{
->> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->> -
->> -	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
->> -};
->> +	/* set polarity */
->> +	if (state->polarity != pwm->state.polarity) {
->> +		if (enabled) {
->> +			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-> 
-> So polarity can only be switched with the PWM off?
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+index 597cd9cd57b5..5786d7ab6310 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+@@ -513,6 +513,9 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
+ 						    p_iov->bulletin.size,
+ 						    &p_iov->bulletin.phys,
+ 						    GFP_KERNEL);
++	if (!p_iov->bulletin.p_virt)
++		goto free_vf2pf_request;
++
+ 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
+ 		   "VF's bulletin Board [%p virt 0x%llx phys 0x%08x bytes]\n",
+ 		   p_iov->bulletin.p_virt,
+-- 
+2.17.1
 
-I have no devices in my hand to get it tested, but i think it's 
-reasonable to turn off PWM before switching off its polarity.
-
-What's more, it follows the implementation of pwm_apply_legacy, which is 
-the way how it works now.
-
-> 
->> +			enabled = false;
->> +		}
->> +		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
->> +		if (err)
->> +			return err;
->> +	}
->>   
->> -static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->> -{
->> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->> +	if (!state->enabled) {
->> +		if (enabled)
->> +			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
->> +		return 0;
->> +	}
->>   
->> -	return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
->> -};
->> +	/* set period and duty cycle*/
->> +	if (period > INT_MAX) {
-> 
-> Given that in gb_pwm_config_operation the parameters are u32, I suggest
-> to use U32_MAX here instead of INT_MAX.
-> 
-
-will do.
-
->> +		period = INT_MAX;
->> +		dev_warn(chip->dev, "period is %llu ns, out of range\n", state->period);
-> 
-> Please drop this warning. That's a bad one because it can be triggered
-> from userspace.
-
-will do
-
-> 
->> +	}
->> +	if (duty_cycle > INT_MAX) {
->> +		duty_cycle = INT_MAX;
->> +		dev_warn(chip->dev,
->> +			 "duty cycle is %llu ns, out of range\n", state->duty_cycle);
->> +	}
->> +	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, period);
-> 
-> Is it clear how gb_pwm_config_operation rounds? If yes, please document
-> this. I also wonder if you could implement (in a separate change)
-> .get_state().
-
-Not clear about gb_pwm_config_operation rounds.
-For get_state, i will look into it.
-
-> 
->> +	if (err)
->> +		return err;
->>   
->> -static void gb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->> -{
->> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->> +	/* enable/disable */
->> +	if (!enabled)
->> +		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
->>   
->> -	gb_pwm_disable_operation(pwmc, pwm->hwpwm);
->> -};
->> +	return 0;
->> +}
->>   
->>   static const struct pwm_ops gb_pwm_ops = {
->>   	.request = gb_pwm_request,
->>   	.free = gb_pwm_free,
->> -	.config = gb_pwm_config,
->> -	.set_polarity = gb_pwm_set_polarity,
->> -	.enable = gb_pwm_enable,
->> -	.disable = gb_pwm_disable,
->> +	.apply = gb_pwm_apply,
->>   	.owner = THIS_MODULE,
-> 
-> Best regards
-> Uwe
-> 
-
-Best regards
-
-Song
