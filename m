@@ -2,216 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7A6C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:41:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB12CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 10:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232450AbiCCKmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:42:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        id S232456AbiCCKpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:45:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232452AbiCCKmU (ORCPT
+        with ESMTP id S232428AbiCCKo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:42:20 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A7D17B0FA
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:41:33 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id j15so2252126lfg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:41:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p/He5PBfzR9b46Np3sBPyvvvufWEvrJyXSblzv0l4h0=;
-        b=IfDTZ8mnsY+X/hCoFAZGPnck06QKboadm/ipoHjQMtZ0eJpqXXd/HWh7hgdK0K6qp7
-         w8Zg5X+eS58yqGYkplFo7h2FfwKcCmnZj2glx/KsuYh0U93v6JjpZPWch3GIW0ccZYod
-         ow2PYGroE6B75BwiPgbiIj4lYCiGZXZytYEfsvgp8QmULFohUizZY4XyAA/fmY5jbu99
-         XUP5WzWej4ITjnbLZwupR9BBVUhMsb54BGLVV2dr19xZ0JeeedfJwZxz5yztjRDDRCxz
-         1gbNNQtKF9aHbZhEdy6RTDuElWrcr1uDNurfk0GaVyghTEzxy/wog9wVlQMvqmA1uKwK
-         B1kw==
+        Thu, 3 Mar 2022 05:44:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC4544707D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 02:44:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646304250;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JprPZetbIa3gZelRValOQCvT2YcVAHIjq5tXKGeAvvg=;
+        b=BHwJGfG44PmOkTa2V20R9sVGXfVTr3Q2X7yHKK9stdIFh2vbO2x785W2fk+Z7NeRcZIbkc
+        82AHQhWyeo7cWSky633VF9KsuUX9H6Up6x/iKP6spTipCi5z5xeGhcJ8zB/JYSF8W4ILYN
+        4vKCDlfDlKw+3sWAClFc+kYJfJqP+Bs=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-262-W0Sa21xDNUWyLL5u4iXOlQ-1; Thu, 03 Mar 2022 05:44:08 -0500
+X-MC-Unique: W0Sa21xDNUWyLL5u4iXOlQ-1
+Received: by mail-wm1-f69.google.com with SMTP id bg33-20020a05600c3ca100b00380dee8a62cso1223475wmb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 02:44:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p/He5PBfzR9b46Np3sBPyvvvufWEvrJyXSblzv0l4h0=;
-        b=eSCZSnYDNPYrFjskumHJApcmd3ZzT+yyqxaD+/7BtFMLIuKNLjxGtiLY/FsCn1+kfD
-         +6JxY4oR26QQZ7Va67RQoU+UITNrU0bSCaKurIIQIsBBoZVyOZSV52jbnXpBpa9rjOHe
-         MCQ1VNRQeVUTOvVdDbiLG3jFgbWxZnoGdX+fgra+MXzsmBzC5ZQNhk5DeNEfVhf+fA7U
-         DbnUggGQz+0Hhcbg9DXcxoSKvR/Ob4G+ys54jCDhosvkrN4jHLJl8f1PQxf84WdCX/q/
-         QSpYKyrDTs9OZffVMQvCdIPUnZiVgqkCKNcmQpoPaddkDxQ2fFB6ZGUvZriMI++skYtN
-         MAyg==
-X-Gm-Message-State: AOAM533uimueORpKgRJ1T1wGtnCusjAss9I1IcLzg3Y/gBgfAI/pkKal
-        FbygwPNc/NIPUkVlbIZMNd0j7ItvkQTQ+8gXOaOAnQ==
-X-Google-Smtp-Source: ABdhPJyj3Rk8sSBj5VBB1o9Ac4exoe3sztkfuVm5kHNefHJL6csmr+I21vP4c/Fc2zfkpfoBhdIJbTtTJ34rKaZIbig=
-X-Received: by 2002:a05:6512:260b:b0:445:c54c:4157 with SMTP id
- bt11-20020a056512260b00b00445c54c4157mr1540165lfb.254.1646304091630; Thu, 03
- Mar 2022 02:41:31 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JprPZetbIa3gZelRValOQCvT2YcVAHIjq5tXKGeAvvg=;
+        b=hgQNAwt8J3LjyVtZx5TSSFd33e/uzayvPHfuMTI3+9Vz17qUf5BoL3waON3GMIp17K
+         lujd6wKkshJ+KhVzQAI8KME20mOGpncucvC+odzNMm+cEcBkkFUMhdt7fISXWJ5j4sxt
+         SA/dDyU7jrlyEzmyuRp8VemSKDva8xyHe3rOMjOA6ASG8NkyGDjyCTBaO4W4TYm2128c
+         /J329Sfx4fwwjEPQ/FiQ8tplIcci8K1diC2l7yrSZUslHyQXaSixEbMsUN0pXZFvCcym
+         O+afmNazJMDfrah39gsNZ3QeE+takryDqn/4G4kRY9VhiD9i7fqhJDfutV/L/ALaziWb
+         xFOQ==
+X-Gm-Message-State: AOAM533p+ha/hhBSYRwz19dNfEwUq+s7cn0hKchedf9IYZA1qroFDGOm
+        E4wfhlsA8QuWBx9bki44jdkmlr60ZBOBAfUxZ2yp1FyH5VjEjXz7V8hmNF5Pa25MWcdJl+5SgJQ
+        trQzueIVgd7MvUoiUsiuZfXM=
+X-Received: by 2002:adf:f947:0:b0:1ef:9b55:7cba with SMTP id q7-20020adff947000000b001ef9b557cbamr15964001wrr.142.1646304246605;
+        Thu, 03 Mar 2022 02:44:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxh9WCQeSpc3JiAKR09PprZtkHgEaKEjwnm3cnkYiHYbMin5c3oly+30gtLp/GKtHOUsxMucg==
+X-Received: by 2002:adf:f947:0:b0:1ef:9b55:7cba with SMTP id q7-20020adff947000000b001ef9b557cbamr15963983wrr.142.1646304246425;
+        Thu, 03 Mar 2022 02:44:06 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id l10-20020a056000022a00b001f017dfb5cdsm2135555wrz.90.2022.03.03.02.44.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 02:44:05 -0800 (PST)
+Date:   Thu, 3 Mar 2022 10:44:04 +0000
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "cl@linux.com" <cl@linux.com>, "mbenes@suse.cz" <mbenes@suse.cz>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "void@manifault.com" <void@manifault.com>,
+        "atomlin@atomlin.com" <atomlin@atomlin.com>,
+        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "msuchanek@suse.de" <msuchanek@suse.de>,
+        "oleksandr@natalenko.name" <oleksandr@natalenko.name>,
+        "jason.wessel@windriver.com" <jason.wessel@windriver.com>
+Subject: Re: [PATCH v9 13/14] module: Move kdb_modules list out of core code
+Message-ID: <20220303104404.crqt7oz4kydq36fo@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220228234322.2073104-1-atomlin@redhat.com>
+ <20220228234322.2073104-14-atomlin@redhat.com>
+ <20220302161917.gx5icfszakoye4uh@maple.lan>
+ <20220302203153.3kcmwu662szf3drt@ava.usersys.com>
+ <a87aac32-52b1-3d56-6331-1c241fea032f@csgroup.eu>
+ <Yh/zy7FCcDmIdAn8@bombadil.infradead.org>
 MIME-Version: 1.0
-References: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
- <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
- <20220302082034.GA5723@math.uni-bielefeld.de> <6715A5BE-CA64-4A3D-8EE5-5BEEB63F268A@goldelico.com>
-In-Reply-To: <6715A5BE-CA64-4A3D-8EE5-5BEEB63F268A@goldelico.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 3 Mar 2022 11:40:55 +0100
-Message-ID: <CAPDyKFqMs6FsJHVOoVmZxzBPgUdLoqa-xeLfvkQi1pn=8k1h6Q@mail.gmail.com>
-Subject: Re: [BUG] mmc: core: adjust polling interval for CMD1
-To:     Jean Rene Dawin <jdawin@math.uni-bielefeld.de>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Huijin Park <huijin.park@samsung.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, Tony Lindgren <tony@atomide.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yh/zy7FCcDmIdAn8@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 at 10:40, H. Nikolaus Schaller <hns@goldelico.com> wrote:
->
-> Hi,
->
-> > Am 02.03.2022 um 09:20 schrieb Jean Rene Dawin <jdawin@math.uni-bielefeld.de>:
-> >
-> > Ulf Hansson wrote on Tue  1/03/22 14:38:
-> >> On Thu, 17 Feb 2022 at 21:12, H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> >>>
-> >>
-> >> From: Ulf Hansson <ulf.hansson@linaro.org>
-> >> Date: Tue, 1 Mar 2022 14:24:21 +0100
-> >> Subject: [PATCH] mmc: core: Extend timeout to 2s for MMC_SEND_OP_COND
-> >>
-> >> It looks like the timeout for the MMC_SEND_OP_COND (CMD1) might have become
-> >> a bit too small due to recent changes. Therefore, let's extend it to 2s,
-> >> which is probably more inline with its previous value, to fix the reported
-> >> timeout problems.
-> >>
-> >> While at it, let's add a define for the timeout value, rather than using
-> >> a hard-coded value for it.
-> >>
-> >> Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-> >> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-> >> Cc: Huijin Park <huijin.park@samsung.com>
-> >> Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-> >> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> >> ---
-> >> drivers/mmc/core/mmc_ops.c | 4 +++-
-> >> 1 file changed, 3 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-> >> index d63d1c735335..1f57174b3cf3 100644
-> >> --- a/drivers/mmc/core/mmc_ops.c
-> >> +++ b/drivers/mmc/core/mmc_ops.c
-> >> @@ -21,6 +21,7 @@
-> >>
-> >> #define MMC_BKOPS_TIMEOUT_MS           (120 * 1000) /* 120s */
-> >> #define MMC_SANITIZE_TIMEOUT_MS                (240 * 1000) /* 240s */
-> >> +#define MMC_OP_COND_TIMEOUT_MS         2000 /* 2s */
-> >>
-> >> static const u8 tuning_blk_pattern_4bit[] = {
-> >>        0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
-> >> @@ -232,7 +233,8 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-> >> ocr, u32 *rocr)
-> >>        cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
-> >>        cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
-> >>
-> >> -       err = __mmc_poll_for_busy(host, 1000, &__mmc_send_op_cond_cb, &cb_data);
-> >> +       err = __mmc_poll_for_busy(host, MMC_OP_COND_TIMEOUT_MS,
-> >> +                                 &__mmc_send_op_cond_cb, &cb_data);
-> >>        if (err)
-> >>                return err;
-> >>
-> >> --
-> >> 2.25.1
-> >
-> > Hi,
-> >
-> > thanks. But testing with this patch still gives the same errors:
-> >
-> > [   52.259940] mmc1: Card stuck being busy! __mmc_poll_for_busy
-> > [   52.273380] mmc1: error -110 doing runtime resume
-> >
-> > and the system gets stuck eventually.
->
-> Same result from my tests.
->
-> BR and thanks,
-> Nikolaus
+On Wed 2022-03-02 14:46 -0800, Luis Chamberlain wrote:
+> Since we are doing this to help with the cleaning this crap up
+> the natural thing to do is have the code be a helper which only
+> built-in code can use, so writing a helper starting with
+> list_for_each_entry() which prints the modules out. I'm
+> surprised we have no other users of this. There is nothing
+> kdb specific about the functionality in that code. So it should
+> just be moved.
 
-Alright, it starts to sound like we might need a revert (or at least a
-way to restore the previous behaviour) - even if that would just paper
-over the real problem. The real problem is more likely related to how
-the host driver manages restoring of the power to the card, which
-happens when runtime resuming it.
+Hi Luis,
 
-In any case, just to make sure the loop timeout itself isn't the
-problem, can you run the below debug patch please? The intent is to
-figure out how long the worst case timeout is, when it's working with
-CMD1. As soon as the timeout exceeds the worst case, there is a
-message printed to the log.
+Good point, albeit is it really worth it since the only external
+user is kernel/debug/kdb/ code?
 
-The below patch is based upon that the offending commit has been reverted.
 
-Kind regards
-Uffe
+Kind regards,
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Thu, 3 Mar 2022 11:00:04 +0100
-Subject: [PATCH] mmc: core: DEBUG - Measure and log worst case CMD1 loop
-
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
----
- drivers/mmc/core/mmc_ops.c | 11 +++++++++++
- include/linux/mmc/host.h   |  1 +
- 2 files changed, 12 insertions(+)
-
-diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-index 9946733a34c6..3f03d9e8a3a4 100644
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -177,11 +177,15 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-ocr, u32 *rocr)
- {
-        struct mmc_command cmd = {};
-        int i, err = 0;
-+       s64 cmd1_ms;
-+       ktime_t time_start;
-
-        cmd.opcode = MMC_SEND_OP_COND;
-        cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
-        cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
-
-+       time_start = ktime_get();
-+
-        for (i = 100; i; i--) {
-                err = mmc_wait_for_cmd(host, &cmd, 0);
-                if (err)
-@@ -211,6 +215,13 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-ocr, u32 *rocr)
-                        cmd.arg = cmd.resp[0] | BIT(30);
-        }
-
-+       cmd1_ms = ktime_to_ms(ktime_sub(ktime_get(), time_start));
-+       if (!err && cmd1_ms > host->cmd1_ms) {
-+               pr_warn("%s: CMD1 timeout increased to %lld ms, loop=%d\n",
-+                       mmc_hostname(host), cmd1_ms, i);
-+               host->cmd1_ms = cmd1_ms;
-+       }
-+
-        if (rocr && !mmc_host_is_spi(host))
-                *rocr = cmd.resp[0];
-
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index 7afb57cab00b..c2ca3bb05620 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -301,6 +301,7 @@ struct mmc_host {
-        unsigned int            f_min;
-        unsigned int            f_max;
-        unsigned int            f_init;
-+       s64                     cmd1_ms;
-        u32                     ocr_avail;
-        u32                     ocr_avail_sdio; /* SDIO-specific OCR */
-        u32                     ocr_avail_sd;   /* SD-specific OCR */
 -- 
-2.25.1
+Aaron Tomlin
+
