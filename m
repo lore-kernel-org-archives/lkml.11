@@ -2,150 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7661EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2244CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 03:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229509AbiCCDsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Mar 2022 22:48:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42118 "EHLO
+        id S229530AbiCCDwZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Mar 2022 22:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiCCDso (ORCPT
+        with ESMTP id S229512AbiCCDwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Mar 2022 22:48:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83AB1136EED
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Mar 2022 19:47:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646279277;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pYfgs3N+rvRxYqeQvpIVkVHYmOj1DCx1FHLabmoSbPc=;
-        b=KvJpShr88ONMsBnjnrPVjC9Q1KDptCaYzL7oiDLrZ9mGdNS+f0CN4idyJf/QT0hBolyTSM
-        9QW64+T16BzHGOMwx1NpMrZ/blfMl5EBBEDHUQNBl83b85DXgbonBTJQEHnbATlpln0M9v
-        twY6zCE8HLAYHunnvpWHxkxk+BBVpQQ=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-635-XfWXYbRqNeGq6dcO32w9FA-1; Wed, 02 Mar 2022 22:47:56 -0500
-X-MC-Unique: XfWXYbRqNeGq6dcO32w9FA-1
-Received: by mail-ot1-f71.google.com with SMTP id d3-20020a05683018e300b005ad2cb4db18so2655300otf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Mar 2022 19:47:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=pYfgs3N+rvRxYqeQvpIVkVHYmOj1DCx1FHLabmoSbPc=;
-        b=trPE4DfiqtF9+1jh8crZ/WMAUCXm864qydEcKTnDdsnv/y/Twsawm5JqAWF/TYPNQn
-         dRgq7JkSbNUZTnQxEAOXaG67qDemn7JtToAK/P5z4A38ogLxxMxJmwFnyhzA5TxOxXKJ
-         qSxGCPNSyD4XFJ1zBHCzCq4TVD5Qs8dutlBf6cMuKCsNcXbTOnfBe7RLV52Q4wvazWij
-         vkTmCcBUMipSb9KNTD/Ir8H5EuHyJaDT69AKaZOguwEG/T6J3xHiCZ0Gk4Y0AOIHSas0
-         9oEawtcIUWQNQwkgIJ0dWB8IBCa3FBRcO6uXbnczCj6gha1J11IjscyS94ZYaUEiI/pl
-         m7kg==
-X-Gm-Message-State: AOAM53189VUUs5XTsH9e/PKUVSyresws5AYVVYGlYWHuTCZ0O72ytR60
-        0rqLoVd7JP4Dhp/wWN5aEvZkOmp5bkLmVBjfOWpjWE9z/hZOVyponr5xKX+USFWNdd1Ls5AF9gP
-        pyJvse/pOtE34HI7+0sUxbTEL
-X-Received: by 2002:a05:6870:c987:b0:d7:3d45:6692 with SMTP id hi7-20020a056870c98700b000d73d456692mr2568149oab.34.1646279275356;
-        Wed, 02 Mar 2022 19:47:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxqAqFU9eF4TGFq+ynpN8QYYtYZBW2wrihjy9F9oNP48aBIzOrqLfKZTtd7KLpmq/YSUxV4OA==
-X-Received: by 2002:a05:6870:c987:b0:d7:3d45:6692 with SMTP id hi7-20020a056870c98700b000d73d456692mr2568136oab.34.1646279275125;
-        Wed, 02 Mar 2022 19:47:55 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id x3-20020a056808144300b002d4dedfc1ebsm451545oiv.20.2022.03.02.19.47.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 19:47:54 -0800 (PST)
-Date:   Wed, 2 Mar 2022 20:47:52 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
-        cohuck@redhat.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
-        linuxarm@huawei.com, liulongfang@huawei.com,
-        prime.zeng@hisilicon.com, jonathan.cameron@huawei.com,
-        wangzhou1@hisilicon.com
-Subject: Re: [PATCH v7 07/10] vfio: Extend the device migration protocol
- with PRE_COPY
-Message-ID: <20220302204752.71ea8b32.alex.williamson@redhat.com>
-In-Reply-To: <20220303000528.GW219866@nvidia.com>
-References: <20220302172903.1995-1-shameerali.kolothum.thodi@huawei.com>
-        <20220302172903.1995-8-shameerali.kolothum.thodi@huawei.com>
-        <20220302133159.3c803f56.alex.williamson@redhat.com>
-        <20220303000528.GW219866@nvidia.com>
-Organization: Red Hat
+        Wed, 2 Mar 2022 22:52:24 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F44C1405C5;
+        Wed,  2 Mar 2022 19:51:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c5jJouINcKbMoc5MSo7zdp+VK2x+VZKfCVMSNf2ZzbtX6pBdiwza1YDCaETot5aBRBA+1jEx6duRsUkCntDIhc2G+PfUavqA3GqMMjB0HKHr59HbhMD6HNe7PS8ZA/CR24jObE/9b40+N7r3VJ3Y/oKCL4Dad/qv8hb2XcOJR/C7OCLFmUxzWCIqEnASiEKhEHmO8cu6fzP67kxHaXDPpnRYmDFvb5i+pZI22p5uVqE1OLtj6n7NP50cvUH39FP5+YiH44fuDxJQrHtkIVHjtz4G74mZfE9Tjsjwm/54B4BUMq4OCsU/OtFMQLogAg/mcV/hSGnnsLWVvmH5Eaa80g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sIctQZav3YSIb8sBPetf94C0BXcYO6Sqq6BRdIjJokc=;
+ b=NsQ6QxsqSSENaDLf3fIDHS8WwQsmkAaQBP5xCideIGAXzUZUEbdLBMuiCJBvtkAXV59aTcmoHycsqcMQWfeVOf5kEqnagRDxfEAd9/t/x2gngsxbgYsVTVq+fpVrJxzh86ui12k1Sn0OSCiZQqjCFghnyfZn4oPUPKTzBKy+jS6yHs7T/j+c4cCPGKYpUmrIp/6uh9AhDaJ4Tgpg6NJ8vF6Djn6PXm1J73eLOZdL0/6wPDauuq4SIBDAJ0l0XQRRPs3l+iZ2St7/3uLc8dc6aP8NL5L16Z3oIc2IfNCGWxf+S0Bn+gMrMHk9IlxWZthlHIwhxOmtHCqnTTUStXN6mA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=opensource.wdc.com smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sIctQZav3YSIb8sBPetf94C0BXcYO6Sqq6BRdIjJokc=;
+ b=tUg09tg1H760PXwVZcmU5DAT/mFFZ0pt5hIuPvGvh5qwcWfP8SVK7AdOeopvDwkZrC0J/w4dXYPNrkZQAnLqamJNuuJMXOAgkjg2aDE/FlSzKgx18MFaHQktjeai84526Pu8rtQ/qPvxXxOs8IN09o4EtktOKhU+ppjs78vBRAk=
+Received: from CO2PR04CA0070.namprd04.prod.outlook.com (2603:10b6:102:1::38)
+ by SN1PR12MB2574.namprd12.prod.outlook.com (2603:10b6:802:26::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.13; Thu, 3 Mar
+ 2022 03:51:34 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:102:1:cafe::31) by CO2PR04CA0070.outlook.office365.com
+ (2603:10b6:102:1::38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
+ Transport; Thu, 3 Mar 2022 03:51:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5038.14 via Frontend Transport; Thu, 3 Mar 2022 03:51:33 +0000
+Received: from localhost.localdomain (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 2 Mar
+ 2022 21:51:31 -0600
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
+CC:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        <hdegoede@redhat.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH v2 2/2] ata: ahci: Protect users from setting policies their drives don't support
+Date:   Wed, 2 Mar 2022 21:49:12 -0600
+Message-ID: <20220303034912.3615390-2-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220303034912.3615390-1-mario.limonciello@amd.com>
+References: <20220303034912.3615390-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 30d4301b-cdcd-476c-8f53-08d9fcc91bfe
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2574:EE_
+X-Microsoft-Antispam-PRVS: <SN1PR12MB2574D7091CBF68DBD9DBD220E2049@SN1PR12MB2574.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JEEBXjGcWZe3ewBu5uhxhsus21JMFwWJUZutoCejHq14yF/mphIF1ypoDR5LIQHNVkFxTh5KC7od17D9fs3+RWC2Nt0Anq7MEDzNkZr3VXo8Cy4XwXOXoHU6xQnpnB10OOx6JLKbPZJPaJyHKU8hE12OW5syOs+wTvA5Lb54Txsbitoo9Ewh+Ua8nsLKyHj+1qOxIj9VMnHeyKlI+0CBsVbD8mwvKqTUdZBO13WHZfKoyoJdLSlKfBLWYy5V7WgEJRobJT78u93LYx6Jg2at85U7oj4smx1SpTMR6ZOADZcxovcObTiJgvVz3vKiBK8ONCwINIb69JiExi+a970pKiFkuVaGek4hSo8vAQYOb5hFiyvfqLlDczor9XuV9d4DqU3miiQsX/uZcbu+2jp3PFE9UkkAkwVgqnyA7rq0OpHbv0Ny5LIT2AvHGEvS0LO71pFVQrI4az7vkMMyXx2hgdUPaoe/DkhrgiowmHCegqbfo+CwVy7VmPsxzIPWLfCYTXNUmans7i8XEt6jzebYQDyWFhO4dsfUUou1WG93xJW9kN3XBuB3mqdNC1Dvp/Lch+tMhfkx+nNefqIhVxFAbVqe/gCigKYQkWGrBByYy0yD9L5VK1xzk7qnIIdaXnhJ09GgtXKIxyNpfrGQcpeZiYmExE/vdPbqBzCjoeXs6qNr3Q0EnvjudS4454yFggsbOoI8CDdtB9+sgAewbS7Esg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(4326008)(5660300002)(40460700003)(70206006)(70586007)(47076005)(44832011)(8676002)(336012)(426003)(16526019)(356005)(36756003)(2616005)(81166007)(1076003)(508600001)(8936002)(186003)(26005)(82310400004)(6666004)(2906002)(54906003)(6916009)(86362001)(36860700001)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2022 03:51:33.6054
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30d4301b-cdcd-476c-8f53-08d9fcc91bfe
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2574
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 20:05:28 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+As the default low power policy applies to more chipsets and drives, it's
+important to make sure that drives actually support the policy that a user
+selected in their kernel configuration.
 
-> On Wed, Mar 02, 2022 at 01:31:59PM -0700, Alex Williamson wrote:
-> > > + * initial_bytes reflects the estimated remaining size of any initial mandatory
-> > > + * precopy data transfer. When initial_bytes returns as zero then the initial
-> > > + * phase of the precopy data is completed. Generally initial_bytes should start
-> > > + * out as approximately the entire device state.  
-> > 
-> > What is "mandatory" intended to mean here?  The user isn't required to
-> > collect any data from the device in the PRE_COPY states.  
-> 
-> If the data is split into initial,dirty,trailer then mandatory means
-> that first chunk.
+If the drive doesn't support slumber, don't let the default policies
+dependent upon slumber (`min_power` or `min_power_with_partial`) affect the
+disk.
 
-But there's no requirement to read anything in PRE_COPY, so initial
-becomes indistinguishable from trailer and dirty doesn't exist.
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+Changes from v1->v2:
+* Move deeper into codepaths
+* Reset to MED_POWER rather than ignore
+ drivers/ata/libata-sata.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-> > "The vfio_precopy_info data structure returned by this ioctl provides
-> >  estimates of data available from the device during the PRE_COPY states.
-> >  This estimate is split into two categories, initial_bytes and
-> >  dirty_bytes.
-> > 
-> >  The initial_bytes field indicates the amount of static data available
-> >  from the device.  This field should have a non-zero initial value and
-> >  decrease as migration data is read from the device.  
-> 
-> static isn't great either, how about just say 'minimum data available'
-
-'initial precopy data-set'?
-
-> >  Userspace may use the combination of these fields to estimate the
-> >  potential data size available during the PRE_COPY phases, as well as
-> >  trends relative to the rate the device is dirtying it's internal
-> >  state, but these fields are not required to have any bearing relative
-> >  to the data size available during the STOP_COPY phase."  
-> 
-> That last is too strong. I would just drop starting at but.
-> 
-> The message to communicate is the device should allow dirty_bytes to
-> reach 0 during the PRE_COPY phases if everything is is idle. Which
-> tells alot about how to calculate it.
-> 
-> It is all better otherwise
-> 
-> > > + * Drivers should attempt to return estimates so that initial_bytes +
-> > > + * dirty_bytes matches the amount of data an immediate transition to STOP_COPY
-> > > + * will require to be streamed.  
-> >
-> > I think previous discussions have proven this false, we expect trailing
-> > data that is only available in STOP_COPY, we cannot bound the size of
-> > that data, and dirty_bytes is not intended to expose data that cannot
-> > be retrieved during the PRE_COPY phases.  Thanks,  
-> 
-> It was written assuming the stop_copy trailer is small.
-
-We have no basis to make that assertion.  We've agreed that precopy can
-be used for nothing more than a compatibility test, so we could have a
-vGPU with a massive framebuffer and no ability to provide dirty
-tracking implement precopy only to include the entire framebuffer in
-the trailing STOP_COPY data set.  Per my understanding and the fact
-that we cannot enforce any heuristics regarding the size of the tailer
-relative to the pre-copy data set, I think the above strongly phrased
-sentence is necessary to understand the limitations of what this ioctl
-is meant to convey.  Thanks,
-
-Alex
+diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+index 071158c0c44c..0dc03888c62b 100644
+--- a/drivers/ata/libata-sata.c
++++ b/drivers/ata/libata-sata.c
+@@ -13,6 +13,7 @@
+ #include <scsi/scsi_device.h>
+ #include <linux/libata.h>
+ 
++#include "ahci.h"
+ #include "libata.h"
+ #include "libata-transport.h"
+ 
+@@ -368,10 +369,20 @@ int sata_link_scr_lpm(struct ata_link *link, enum ata_lpm_policy policy,
+ 		      bool spm_wakeup)
+ {
+ 	struct ata_eh_context *ehc = &link->eh_context;
++	struct ata_port *ap = link->ap;
++	struct ahci_host_priv *hpriv;
+ 	bool woken_up = false;
+ 	u32 scontrol;
+ 	int rc;
+ 
++	hpriv = ap->host->private_data;
++	if (policy >= ATA_LPM_MIN_POWER_WITH_PARTIAL &&
++	  !(hpriv->cap & HOST_CAP_SSC)) {
++		dev_warn(ap->host->dev,
++			"This drive doesn't support slumber; restting policy to MED_POWER\n");
++		policy = ATA_LPM_MED_POWER;
++	}
++
+ 	rc = sata_scr_read(link, SCR_CONTROL, &scontrol);
+ 	if (rc)
+ 		return rc;
+-- 
+2.34.1
 
