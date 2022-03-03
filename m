@@ -2,85 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2CAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Mar 2022 20:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236324AbiCCUfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 15:35:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        id S236299AbiCCUiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 15:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236299AbiCCUfe (ORCPT
+        with ESMTP id S230186AbiCCUiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 15:35:34 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E66EEA65;
-        Thu,  3 Mar 2022 12:34:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646339688; x=1677875688;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=F1/s1mP5Lcx/uFwwtY6gQcRqc063q6v7LM6wZ1JFe00=;
-  b=rIzeijlbh2MkY4P6UAJsoLuORvlDlEaC4mOULaESBdN5AKVQ7qbnq991
-   uhAqzrBOXVNpul39YpXzviHyn285Io8EcLden9cpkB9k0RmF0DP9ViBCD
-   X6LJqXij+29X1eQ3K5Vc+Ydju7hse8vUtbJ7RMBaZphM/jKxhGkSscbaR
-   69lTa/mLyjKD/HjDM9nl218MoSCzxDcCJdyLKXmbFTncznQsPR/w4vSZj
-   vwSCu+YIX9a73sgYkb1xYise8z1AZln3VfSIst5gAPqhIlQIBYRMQqNAi
-   3FsPjX9WEXDeOAoiliBEy571u7gP2QxlaR70zrKgbuQETdKwSRSqLxeK1
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,153,1643698800"; 
-   d="scan'208";a="155638920"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Mar 2022 13:34:47 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 3 Mar 2022 13:34:47 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 3 Mar 2022 13:34:46 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <linus.walleij@linaro.org>, <colin.foster@in-advantage.com>,
-        <andriy.shevchenko@linux.intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH 2/2] pinctrl: ocelot: Fix interrupt parsing
-Date:   Thu, 3 Mar 2022 21:37:16 +0100
-Message-ID: <20220303203716.3012703-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220303203716.3012703-1-horatiu.vultur@microchip.com>
-References: <20220303203716.3012703-1-horatiu.vultur@microchip.com>
+        Thu, 3 Mar 2022 15:38:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434C41D32C;
+        Thu,  3 Mar 2022 12:37:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6CA5B824B3;
+        Thu,  3 Mar 2022 20:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FB6DC340EF;
+        Thu,  3 Mar 2022 20:37:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646339831;
+        bh=OXGr1PhWd90UciyXoThMqMTWRA8qGdjyNBBLaOztyWA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X+KjScztBhjYUP8tJdR/XaLnR53G+5qb3QCupyPWaIdUxaHN+ARp5NZXvwhmUeXF1
+         caA0cXxRDYeCEs9kFx7eMBcZJUStWa2CkvacrvJGG1jGYCqhSxii4zPdxZnUZYdD38
+         PwDrY5sqlJNDieJtf7Oddv3DFhjIlYPEGGqyBNhwqY9ESjiqyxeGW3N0NE0xpQ/pht
+         RA9kyBDi4MJkNrQPHuNQBWwO5QxU259tlde65nIodNx6FHnKZ/1lj14a0Otn4DQonf
+         zjxhHxSU/WGYWCxBv2QYi8ZxbmmPQJbi3JMmlbSp0MJx3WM2KxzFZFr5YDIIKkHUH/
+         /t+H2u+oVsKdQ==
+Date:   Thu, 3 Mar 2022 14:45:26 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] drm/amd/display: Fix Wstringop-overflow warnings
+ in dc_link_dp.c
+Message-ID: <20220303204526.GA1733280@embeddedor>
+References: <20220303172503.GA1731116@embeddedor>
+ <202203030937.5BFE3EF@keescook>
+ <20220303181957.GA1731711@embeddedor>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <20220303181957.GA1731711@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the blamed commit, it removes the duplicate of_node assignment in the
-driver. But the driver uses this before calling into of_gpio_dev_init to
-determine if it needs to assign an IRQ chip to the GPIO. The fixes
-consists in using of_node from dev.
+On Thu, Mar 03, 2022 at 12:19:57PM -0600, Gustavo A. R. Silva wrote:
+> On Thu, Mar 03, 2022 at 09:43:28AM -0800, Kees Cook wrote:
+> > On Thu, Mar 03, 2022 at 11:25:03AM -0600, Gustavo A. R. Silva wrote:
+> > > Fix the following Wstringop-overflow warnings when building with GCC-11:
+> > > 
+> > > drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dpia.c:493:17: warning: ‘dp_decide_lane_settings’ accessing 4 bytes in a region of size 1 [-Wstringop-overflow=]
+> > 
+> > Can you "show your work" a little more here? I don't actually see the
+> > what is getting fixed:
+> > 
+> > enum dc_lane_count {
+> > 	...
+> >         LANE_COUNT_FOUR = 4,
+> > 	...
+> >         LANE_COUNT_DP_MAX = LANE_COUNT_FOUR
+> > };
+> > 
+> > struct link_training_settings {
+> > 	...
+> >         union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX];
+> > };
+> > 
+> > void dp_hw_to_dpcd_lane_settings(
+> > 		...
+> > 		union dpcd_training_lane dpcd_lane_settings[LANE_COUNT_DP_MAX])
+> > {
+> > 	...
+> > }
+> > 
+> > static enum link_training_result dpia_training_cr_transparent(
+> > 		...
+> >                 struct link_training_settings *lt_settings)
+> > {
+> > 	...
+> >                 dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
+> >                                 lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
+> > 	...
+> > }
+> > 
+> > Everything looks to be the correct size?
+> 
+> Yep; this fix is similar to the one for intel_pm.c in this
+> 
+> 	commit e7c6e405e171fb33990a12ecfd14e6500d9e5cf2
+> 
+> where the array size of 8 seems to be fine for all the
+> struct members related (pri_latency, spr_latency, cur_latency
+> and skl_latency):
+> 
+> drivers/gpu/drm/i915/i915_drv.h:465:struct drm_i915_private {
+> ...
+> 
+> drivers/gpu/drm/i915/i915_drv.h-739-    struct {
+> 
+> ...
+> drivers/gpu/drm/i915/i915_drv.h-745-            /* primary */
+> drivers/gpu/drm/i915/i915_drv.h-746-            u16 pri_latency[5];
+> drivers/gpu/drm/i915/i915_drv.h-747-            /* sprite */
+> drivers/gpu/drm/i915/i915_drv.h-748-            u16 spr_latency[5];
+> drivers/gpu/drm/i915/i915_drv.h-749-            /* cursor */
+> drivers/gpu/drm/i915/i915_drv.h-750-            u16 cur_latency[5];
+> drivers/gpu/drm/i915/i915_drv.h-751-            /*
+> drivers/gpu/drm/i915/i915_drv.h-752-             * Raw watermark memory latency values
+> drivers/gpu/drm/i915/i915_drv.h-753-             * for SKL for all 8 levels
+> drivers/gpu/drm/i915/i915_drv.h-754-             * in 1us units.
+> drivers/gpu/drm/i915/i915_drv.h-755-             */
+> drivers/gpu/drm/i915/i915_drv.h-756-            u16 skl_latency[8];
+> 
+> ...
+> drivers/gpu/drm/i915/i915_drv.h-773-    } wm;
+> ...
+> }
 
-Fixes: 8a8d6bbe1d3bc7 ("pinctrl: Get rid of duplicate of_node assignment in the drivers")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/pinctrl/pinctrl-ocelot.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+and in this case the ilk_wm_max_level() returns the right maximum size for the
+corresponding 'struct wm' member:
 
-diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-index a859fbcb09af..a0f00380e700 100644
---- a/drivers/pinctrl/pinctrl-ocelot.c
-+++ b/drivers/pinctrl/pinctrl-ocelot.c
-@@ -1851,7 +1851,7 @@ static int ocelot_gpiochip_register(struct platform_device *pdev,
- 	gc->base = -1;
- 	gc->label = "ocelot-gpio";
- 
--	irq = irq_of_parse_and_map(gc->of_node, 0);
-+	irq = irq_of_parse_and_map(info->dev->of_node, 0);
- 	if (irq) {
- 		girq = &gc->irq;
- 		girq->chip = &ocelot_irqchip;
--- 
-2.33.0
+drivers/gpu/drm/i915/intel_pm.c:2993:int ilk_wm_max_level(const struct drm_i915_private *dev_priv)
+drivers/gpu/drm/i915/intel_pm.c-2994-{
+drivers/gpu/drm/i915/intel_pm.c-2995-   /* how many WM levels are we expecting */
+drivers/gpu/drm/i915/intel_pm.c-2996-   if (HAS_HW_SAGV_WM(dev_priv))
+drivers/gpu/drm/i915/intel_pm.c-2997-           return 5;
+drivers/gpu/drm/i915/intel_pm.c-2998-   else if (DISPLAY_VER(dev_priv) >= 9)
+drivers/gpu/drm/i915/intel_pm.c-2999-           return 7;
+drivers/gpu/drm/i915/intel_pm.c-3000-   else if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv))
+drivers/gpu/drm/i915/intel_pm.c-3001-           return 4;
+drivers/gpu/drm/i915/intel_pm.c-3002-   else if (DISPLAY_VER(dev_priv) >= 6)
+drivers/gpu/drm/i915/intel_pm.c-3003-           return 3;
+drivers/gpu/drm/i915/intel_pm.c-3004-   else
+drivers/gpu/drm/i915/intel_pm.c-3005-           return 2;
+drivers/gpu/drm/i915/intel_pm.c-3006-}
 
+drivers/gpu/drm/i915/intel_pm.c:3009:static void intel_print_wm_latency(struct drm_i915_private *dev_priv,
+drivers/gpu/drm/i915/intel_pm.c-3010-                              const char *name,
+drivers/gpu/drm/i915/intel_pm.c-3011-                              const u16 wm[])
+drivers/gpu/drm/i915/intel_pm.c-3012-{
+drivers/gpu/drm/i915/intel_pm.c-3013-   int level, max_level = ilk_wm_max_level(dev_priv);
+drivers/gpu/drm/i915/intel_pm.c-3014-
+drivers/gpu/drm/i915/intel_pm.c-3015-   for (level = 0; level <= max_level; level++) {
+drivers/gpu/drm/i915/intel_pm.c-3016-           unsigned int latency = wm[level];
+drivers/gpu/drm/i915/intel_pm.c-3017-
+...
+}
+
+still GCC warns about this with Wstringop-overread, as it is explained
+in commit e7c6e405e171.
+
+--
+Gustavo
+
+> 
+> however GCC warns about accessing bytes beyond the limits, and turning the
+> argument declarations into pointers (removing the over-specified array
+> size from the argument declaration) silence the warnings.
+> 
+> --
+> Gustavo
