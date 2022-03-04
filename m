@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC68C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbiCDUe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:34:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
+        id S230150AbiCDUed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiCDUcU (ORCPT
+        with ESMTP id S229952AbiCDUcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 15:32:20 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4920B1EE260;
-        Fri,  4 Mar 2022 12:31:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCDB1E6973;
+        Fri,  4 Mar 2022 12:31:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646425888; x=1677961888;
+  t=1646425889; x=1677961889;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=JN/QmgwHHgOhVkALs0KxzUApbbVjylIiYKcWhfxJUeE=;
-  b=IwfV0R+uo368ekZvHfTpv6rOKRgjOY0BJp3JaZqEwL7tv/UXGRN329zr
-   GrspQpGFDWz7DeGcVMPKJ5aTKLoOQfnDYfQVJqyWsle7Z7ihEnpfEOaAh
-   eLzEO2bFnYecpZM1CD5kMP/mTIMvEqobuV7YmGIzS6pmOu6h+OhpMjbGR
-   w6538oi6IFWv0psnNn9n9LEPYkKJ15JNUR6eb8cATebUdHDAko4eogV65
-   JTFX3U/BxkmRRZrNEslZiePjvcBUbVP8AItvtl2VhJ/BHZEykfnWcO9Gi
-   6o9RLN3RRpmrhd5L/cBSSBd+NlyIb4etH+cHUmkA8C/ECDJdmEjj9xPdx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251624224"
+  bh=5EvB3Qsy41TV5MUlOD9BImze2W58q8VkU72+5iJ26d8=;
+  b=WgJZnfh85gas4G2hbFxozpeWHM+sDKgZPafvRqKs8eywCoy2QoSLOARE
+   d968+9ZE1+tWGAVRGdi/0kGOZZ0G639nS1p2jbbQx+CwXz51f9ka2wWy/
+   gXl8L07Eyy/QTkjE9mid6vSV8bMgQL0nUUWyMGDF5qJz7cG0drudd22mj
+   MpieFxA5SGaYrCqZgDb6mg03G4sOSNTTyX/5BfJw8wcIjwq97FEBFoUrE
+   zDKY5vN6vIY8M5IBt2gnAcc09lAaTRc56BcFoeRrDcnpopwnQh1zvvnft
+   X4CML3TX7of6qHjWxnW7vc8calLxArJaMYB7e7f5iWLmhEY4kvPmjBUMj
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251624230"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="251624224"
+   d="scan'208";a="251624230"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:27 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:29 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344403"
+   d="scan'208";a="552344417"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:27 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:29 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 055/104] KVM: x86/tdp_mmu: prevent private/shared map based on PRIVATE_PROHIBIT
-Date:   Fri,  4 Mar 2022 11:49:11 -0800
-Message-Id: <273543bac1c40c869a68d3f72eb2abc03106e8d9.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 058/104] KVM: x86/mmu: Focibly use TDP MMU for TDX
+Date:   Fri,  4 Mar 2022 11:49:14 -0800
+Message-Id: <047e05425ffed2b5de321dba6679cb4d1c388f4e.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,62 +58,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Use the bit SPTE_PRIVATE_PROHIBIT in shared and private EPT to determine
-which mapping, shared or private, is allowed.  If requested mapping isn't
-allowed, return RET_PF_RETRY to wait for other vcpu to change it.
+At this point, TDX supports TDP MMU and doesn't support legacy MMU.
+Forcibly use TDP MMU for TDX irrelevant of kernel parameter to disable
+TDP MMU.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/spte.h    |  2 +-
- arch/x86/kvm/mmu/tdp_mmu.c | 22 +++++++++++++++++++---
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 25dffdb488d1..9c37381a6762 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -223,7 +223,7 @@ extern u64 __read_mostly shadow_init_value;
- 
- static inline bool is_removed_spte(u64 spte)
- {
--	return spte == SHADOW_REMOVED_SPTE;
-+	return (spte & ~SPTE_PRIVATE_PROHIBIT) == SHADOW_REMOVED_SPTE;
- }
- 
- static inline bool is_private_prohibit_spte(u64 spte)
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 6d750563824d..f6bd35831e32 100644
+index b33ace3d4456..9df6aa4da202 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1038,9 +1038,25 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
+@@ -16,7 +16,12 @@ module_param_named(tdp_mmu, tdp_mmu_enabled, bool, 0644);
+ /* Initializes the TDP MMU for the VM, if enabled. */
+ bool kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+ {
+-	if (!tdp_enabled || !READ_ONCE(tdp_mmu_enabled))
++	/*
++	 *  Because TDX supports only TDP MMU, forcibly use TDP MMU in the case
++	 *  of TDX.
++	 */
++	if (kvm->arch.vm_type != KVM_X86_TDX_VM &&
++		(!tdp_enabled || !READ_ONCE(tdp_mmu_enabled)))
+ 		return false;
  
- 	WARN_ON(sp->role.level != fault->goal_level);
- 
--	/* TDX shared GPAs are no executable, enforce this for the SDV. */
--	if (!kvm_is_private_gfn(vcpu->kvm, iter->gfn))
--		pte_access &= ~ACC_EXEC_MASK;
-+	if (kvm_gfn_stolen_mask(vcpu->kvm)) {
-+		if (is_private_spte(iter->sptep)) {
-+			/*
-+			 * This GPA is not allowed to map as private.  Let
-+			 * vcpu loop in page fault until other vcpu change it
-+			 * by MapGPA hypercall.
-+			 */
-+			if (fault->slot &&
-+				is_private_prohibit_spte(iter->old_spte))
-+				return RET_PF_RETRY;
-+		} else {
-+			/* This GPA is not allowed to map as shared. */
-+			if (fault->slot &&
-+				!is_private_prohibit_spte(iter->old_spte))
-+				return RET_PF_RETRY;
-+			/* TDX shared GPAs are no executable, enforce this. */
-+			pte_access &= ~ACC_EXEC_MASK;
-+		}
-+	}
- 
- 	if (unlikely(!fault->slot))
- 		new_spte = make_mmio_spte(vcpu,
+ 	/* This should not be changed for the lifetime of the VM. */
 -- 
 2.25.1
 
