@@ -2,109 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC643C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 033C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234815AbiCDNOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:14:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
+        id S231596AbiCDNRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 08:17:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbiCDNOX (ORCPT
+        with ESMTP id S230038AbiCDNRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:14:23 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE570106B3E;
-        Fri,  4 Mar 2022 05:13:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=pB32wDUZL436jRAa3plkNzIxf0EDPP1psVM4KdlXbSo=; b=35Rj16SwC/t855RzQ+l3mNRNge
-        M79/mtVA9+V688ERcQpmxRX6RDBL1naaxDHjf1L+dgIpPwy9nPeMSGrqVH2nJc44sAzxB/CY7YJRB
-        GE016xHJNCwSInhA9tUca+h5xvCmxsMYewAgRDujyr5tG8ZUIXGSv+6UaertoQwymo9M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nQ7kT-009EPO-Jh; Fri, 04 Mar 2022 14:13:33 +0100
-Date:   Fri, 4 Mar 2022 14:13:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 6/6] net: phy: added ethtool master-slave
- configuration support
-Message-ID: <YiIQfcKccbjtfPJo@lunn.ch>
-References: <20220304094401.31375-1-arun.ramadoss@microchip.com>
- <20220304094401.31375-7-arun.ramadoss@microchip.com>
+        Fri, 4 Mar 2022 08:17:32 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE871B50E8
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 05:16:45 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id j8-20020a056830014800b005ad00ef6d5dso7448210otp.0
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 05:16:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c9/jSKEYWvjLYNnnhLPXkny4KyJtY1E3bTqXKWbpe38=;
+        b=Jtoc93twUP7xt3r79Uyv6rhXGAGErLwtgbpDV0TdhEQLZukQFNjpRDFDC/bJ3XS64t
+         Qya/0WpS5ZGuoPxfr6xXDfYrQK4PkM6ukAxxg/9Hb0JnTX+wmPVE+D/XqOTL2GrmI6qe
+         LO4Qgwe3oa4I9Wr5CYJ7nf+FNizvb0WCsCQOLQ2pnOOpe57bQ/ck3w8uTo6LlxdAAMrf
+         9cDNTJb7heD08la654ZqIdA3m4wqVwkE2TfSzZk0hdWrqIGtsB3Qm5AvHAHSh9xUX+5y
+         48zipgUTasJF4JXa9uW/2YjQgag6duDl3fn4LeEN8AOrirH0Peq/Nq+1t6ltkdRAlJYM
+         nV+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c9/jSKEYWvjLYNnnhLPXkny4KyJtY1E3bTqXKWbpe38=;
+        b=QjMmxn+33mq1Mq3nxG2tpBtEIfzoFCHDqftlEfapbf7l33VHLkfMfhR8EjbwfE+UoL
+         QAfSTGTqLSrcl4auiTpEEdFVzNp263kgB702VIfnvLmcwHgTOCBiRiHq1stxmFjtiGOP
+         ecf8WpoPk0/Q/X5h1V+6/7LYMzAkiFt1CjcyrgCdGSSzCsxTNVDrkhr6deMPbznoWShk
+         ZIPIYSPdnFNWHGb5e956mIUT4BgyPq9TpHXAqalTuQsaloRK+3MQP9IFoOxx1B+I4GQG
+         Bz5isFWNXXOEirYTc67gSm5AMu/4RpQxhTj9KObfKSx5YsAf7+yby3thY+ggJymyesTE
+         svtw==
+X-Gm-Message-State: AOAM530iJSXESccLgaiswGU//pqiCvhUA4S4q1NHXdsun/aFGe7lXzgT
+        Ta/zBWUrRX4K9VkDVEc7UwCue32mt4I/AGvvW/jrTA==
+X-Google-Smtp-Source: ABdhPJyEyS19l/rBk/OtEhxkYjWkowMwfjtY+zPzabBZVyeCZ2VNTvSFAtUJyFOigXbcTktkrJa6rpE3ZN3Azh4mQq8=
+X-Received: by 2002:a9d:6e09:0:b0:5ad:1fcd:bfd0 with SMTP id
+ e9-20020a9d6e09000000b005ad1fcdbfd0mr22496944otr.312.1646399804477; Fri, 04
+ Mar 2022 05:16:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304094401.31375-7-arun.ramadoss@microchip.com>
+References: <20220222120054.400208-4-andrew@daynix.com> <202202230342.HPYe6dHA-lkp@intel.com>
+ <20220304030742-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220304030742-mutt-send-email-mst@kernel.org>
+From:   Andrew Melnichenko <andrew@daynix.com>
+Date:   Fri, 4 Mar 2022 15:09:02 +0200
+Message-ID: <CABcq3pF9566uzh2oQF1u8EF_LgFQ0azhzD+2xX4CfqB=MhKCOQ@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] drivers/net/virtio_net: Added RSS hash report.
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, kbuild-all@lists.01.org,
+        Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int lan87xx_read_master_slave(struct phy_device *phydev)
-> +{
-> +	int rc = 0;
-> +
-> +	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
-> +	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
-> +
-> +	rc = phy_read(phydev, MII_CTRL1000);
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	if (rc & CTL1000_AS_MASTER)
-> +		phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
-> +	else
-> +		phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
-> +
-> +	rc = phy_read(phydev, MII_STAT1000);
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	if (rc & LPA_1000MSRES)
-> +		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
-> +	else
-> +		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
-> +
-> +	return rc;
-> +}
+Hi all,
+Yes, I'll prepare a new commit later.
 
-It looks like you can just call genphy_read_master_slave()? Or am i
-missing some subtle difference?
-
-> +static int lan87xx_config_aneg(struct phy_device *phydev)
-> +{
-> +	u16 ctl = 0;
-> +	int rc;
-> +
-> +	switch (phydev->master_slave_set) {
-> +	case MASTER_SLAVE_CFG_MASTER_FORCE:
-> +		ctl |= CTL1000_AS_MASTER;
-> +		break;
-> +	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-> +		break;
-> +	case MASTER_SLAVE_CFG_UNKNOWN:
-> +	case MASTER_SLAVE_CFG_UNSUPPORTED:
-> +		return 0;
-> +	default:
-> +		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	rc = phy_modify_changed(phydev, MII_CTRL1000, CTL1000_AS_MASTER, ctl);
-> +	if (rc == 1)
-> +		rc = genphy_soft_reset(phydev);
-> +
-> +	return rc;
-> +}
-
-Please use genphy_setup_master_slave()
-
-       Andrew
+On Fri, Mar 4, 2022 at 10:08 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Wed, Feb 23, 2022 at 03:15:28AM +0800, kernel test robot wrote:
+> > Hi Andrew,
+> >
+> > Thank you for the patch! Perhaps something to improve:
+> >
+> > [auto build test WARNING on mst-vhost/linux-next]
+> > [also build test WARNING on net/master horms-ipvs/master net-next/master linus/master v5.17-rc5 next-20220217]
+> > [If your patch is applied to the wrong git tree, kindly drop us a note.
+> > And when submitting patch, we suggest to use '--base' as documented in
+> > https://git-scm.com/docs/git-format-patch]
+>
+>
+> Andrew,
+> do you plan to fix this?
+>
+> > url:    https://github.com/0day-ci/linux/commits/Andrew-Melnychenko/RSS-support-for-VirtioNet/20220222-200334
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+> > config: i386-randconfig-s002-20220221 (https://download.01.org/0day-ci/archive/20220223/202202230342.HPYe6dHA-lkp@intel.com/config)
+> > compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> > reproduce:
+> >         # apt-get install sparse
+> >         # sparse version: v0.6.4-dirty
+> >         # https://github.com/0day-ci/linux/commit/4fda71c17afd24d8afb675baa0bb14dbbc6cd23c
+> >         git remote add linux-review https://github.com/0day-ci/linux
+> >         git fetch --no-tags linux-review Andrew-Melnychenko/RSS-support-for-VirtioNet/20220222-200334
+> >         git checkout 4fda71c17afd24d8afb675baa0bb14dbbc6cd23c
+> >         # save the config file to linux build tree
+> >         mkdir build_dir
+> >         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
+> >
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> >
+> >
+> > sparse warnings: (new ones prefixed by >>)
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> >    drivers/net/virtio_net.c:1160:25: sparse: sparse: restricted __le16 degrades to integer
+> > >> drivers/net/virtio_net.c:1178:35: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] hash @@     got restricted __le32 const [usertype] hash_value @@
+> >    drivers/net/virtio_net.c:1178:35: sparse:     expected unsigned int [usertype] hash
+> >    drivers/net/virtio_net.c:1178:35: sparse:     got restricted __le32 const [usertype] hash_value
+> >
+> > vim +1178 drivers/net/virtio_net.c
+> >
+> >   1151
+> >   1152        static void virtio_skb_set_hash(const struct virtio_net_hdr_v1_hash *hdr_hash,
+> >   1153                                        struct sk_buff *skb)
+> >   1154        {
+> >   1155                enum pkt_hash_types rss_hash_type;
+> >   1156
+> >   1157                if (!hdr_hash || !skb)
+> >   1158                        return;
+> >   1159
+> >   1160                switch (hdr_hash->hash_report) {
+> >   1161                case VIRTIO_NET_HASH_REPORT_TCPv4:
+> >   1162                case VIRTIO_NET_HASH_REPORT_UDPv4:
+> >   1163                case VIRTIO_NET_HASH_REPORT_TCPv6:
+> >   1164                case VIRTIO_NET_HASH_REPORT_UDPv6:
+> >   1165                case VIRTIO_NET_HASH_REPORT_TCPv6_EX:
+> >   1166                case VIRTIO_NET_HASH_REPORT_UDPv6_EX:
+> >   1167                        rss_hash_type = PKT_HASH_TYPE_L4;
+> >   1168                        break;
+> >   1169                case VIRTIO_NET_HASH_REPORT_IPv4:
+> >   1170                case VIRTIO_NET_HASH_REPORT_IPv6:
+> >   1171                case VIRTIO_NET_HASH_REPORT_IPv6_EX:
+> >   1172                        rss_hash_type = PKT_HASH_TYPE_L3;
+> >   1173                        break;
+> >   1174                case VIRTIO_NET_HASH_REPORT_NONE:
+> >   1175                default:
+> >   1176                        rss_hash_type = PKT_HASH_TYPE_NONE;
+> >   1177                }
+> > > 1178                skb_set_hash(skb, hdr_hash->hash_value, rss_hash_type);
+> >   1179        }
+> >   1180
+> >
+> > ---
+> > 0-DAY CI Kernel Test Service, Intel Corporation
+> > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
