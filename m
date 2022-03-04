@@ -2,91 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC55C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241597AbiCDSQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:16:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
+        id S241576AbiCDSST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241583AbiCDSQm (ORCPT
+        with ESMTP id S234264AbiCDSSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:16:42 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AA31D17AF
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 10:15:54 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id ay5so8484321plb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 10:15:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jvAXwlb5bVb2T9TLfFlU2BSWSxn7Gy6/q8ot7YQoIq8=;
-        b=cI5sCguGUpRRz8wGQ44HrMkYObqyDauy/dJlFEciw1zR4Nvl0qCrNVXs3BpZ6NekuC
-         Mdsn/aVh3A6VmZ+GcJq70BT5skeqQDYT4NAqYVGrdK9o4xE+M8Bc15DjfOIJLp33KRLD
-         qnh5XjRZ68YufFeHKJhQwVVWL1pozRcm/NIMw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jvAXwlb5bVb2T9TLfFlU2BSWSxn7Gy6/q8ot7YQoIq8=;
-        b=7MxHikPlA5+sOguozj5Z8grLbxv0RB3UXYymkEBxn4wmN9vCJJB2a/Jq022ZWgCvrA
-         QLZvTlSCHpeUV+kSJVYvWbopkJRfNLgpE/X7nmPMIxg0udPFirITaayYAisPyJuCQSwk
-         OmTkuCRjELpg0Hl89M7NsPq9xreL2LCKm74nj2edXYTXzGYHnMcFBSv5Uqa5ENkL5VOA
-         UW+UayGjd3APRA1Sole/wqUxiSAEoTD67e8zPMmc1LpmhRoSqQeG64iQK8mNejegf1pW
-         E74k6EnA7t6EOWtxRGD8dkvr921MWHRyLNtwkMBUnzizKoD7cq7lJRbJgSEJ08+OMteo
-         EPLQ==
-X-Gm-Message-State: AOAM531gE6Cy3kyJhdcVoNim4xNIfyjHJ+syylO3rTRH+5J/NKlZL442
-        fHOWhi0e951UfewDH2UI1nwBpA==
-X-Google-Smtp-Source: ABdhPJyfzH8FANRr4IGU/Oo0oYfv59kkOOWMAekGz4QKwlnTOEpaw1y2+9xExkx96GciJmV4IcrI5g==
-X-Received: by 2002:a17:902:d705:b0:14e:e5a2:1b34 with SMTP id w5-20020a170902d70500b0014ee5a21b34mr41732722ply.88.1646417753537;
-        Fri, 04 Mar 2022 10:15:53 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h13-20020a056a00230d00b004f427ffd485sm6908547pfh.143.2022.03.04.10.15.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 10:15:53 -0800 (PST)
-Date:   Fri, 4 Mar 2022 10:15:52 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Thorsten Leemhuis <linux@leemhuis.info>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefano Zacchiroli <zack@upsilon.cc>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Wenwen Wang <wenwen@cs.uga.edu>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] Documentation/process: Add Researcher Guidelines
-Message-ID: <202203041014.12E6F25@keescook>
-References: <20220224001403.1307377-1-keescook@chromium.org>
- <974cf8f2-06f3-99a5-9a77-6d7b7cc8271a@leemhuis.info>
- <202202251044.F509C7F3@keescook>
- <871qzhhc39.fsf@meer.lwn.net>
+        Fri, 4 Mar 2022 13:18:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC8A6344;
+        Fri,  4 Mar 2022 10:17:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25003B827FA;
+        Fri,  4 Mar 2022 18:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE5FC340E9;
+        Fri,  4 Mar 2022 18:17:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646417846;
+        bh=8p/bTfZgdl3Yp2AL0wxkCRMjW2/exF31PYWxmfLOaRA=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ro+FIe3EQJuIYZRUgqHYO8s9E5H30mPdXPnDV84mJP58T/+GlO9DLvWkzZoYKnzJS
+         pI1/mMb5zXTlMwTdfilL9ay3ngeLyDqYXvvpwrrmHou+i2wAw6SnNN00Ob8KqWXlDX
+         bXsezySAQuKEq/ryjVnP+qRccL2xDKYwh27P7VLIulzsCoSP0QNHKCX7iaPACudeWO
+         xPrNYBTAuUtmoO9uEkc6KrpqQSSWaO8x1XqhMvxIxY4jV0I/8A3aUG3b/RVej5jS64
+         Wk14JU1ln1HIUOwDLIuE/94HnSDPib6Nlw/8p/bY5jOFpk10aKneitTHhAoyMDybty
+         bg/H5UNZldlhQ==
+Message-ID: <fbf5211f69b5cda372c90d78c6aeee00524fcfbf.camel@kernel.org>
+Subject: Re: [PATCH 1/3] ceph: fix error path in ceph_readdir()
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
+        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 04 Mar 2022 13:17:24 -0500
+In-Reply-To: <20220304161403.19295-2-lhenriques@suse.de>
+References: <20220304161403.19295-1-lhenriques@suse.de>
+         <20220304161403.19295-2-lhenriques@suse.de>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871qzhhc39.fsf@meer.lwn.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 10:16:58AM -0700, Jonathan Corbet wrote:
-> Sorry, been a bit distracted...when we were working on this I was more
-> focused on the text than the location.  My own feeling is that
-> Documentation/process is a better place for this - that's where we tell
-> the world how to work with the kernel community, after all.  I'm not
-> going to dig in my heels and fight about it, but that's my sense.
+On Fri, 2022-03-04 at 16:14 +0000, Luís Henriques wrote:
+> This was introduced by commit
+> 
+>   "ceph: add support to readdir for encrypted filenames"
+> 
+> It will eventually leak the fscrypt_str names in this error path.
+> 
+> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> ---
+>  fs/ceph/dir.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+> index 44395aae7259..0bcb677d2199 100644
+> --- a/fs/ceph/dir.c
+> +++ b/fs/ceph/dir.c
+> @@ -500,7 +500,6 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+>  					       next_offset);
+>  			if (err) {
+>  				ceph_mdsc_put_request(dfi->last_readdir);
+> -				return err;
+>  				goto out;
+>  			}
+>  		} else if (req->r_reply_info.dir_end) {
 
-I had no strong preference. I've moved it to /process now.
-
-> Otherwise, it kind of seems like this is ready to go in. I'd like to
-> apply it before the merge window; lemme know where you want it in the
-> end and we can get it done.
-
-Agreed. v2 had v1's feedback addressed, and v2 was not further commented
-on. v3 now here:
-
-  https://lore.kernel.org/lkml/20220304181418.1692016-1-keescook@chromium.org
+This doesn't seem to apply to the current wip-fscrypt tree. Are you
+working against an older branch, perhaps?
 
 -- 
-Kees Cook
+Jeff Layton <jlayton@kernel.org>
