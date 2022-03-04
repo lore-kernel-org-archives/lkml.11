@@ -2,94 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B67C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233456AbiCDMvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 07:51:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
+        id S233959AbiCDMy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 07:54:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiCDMvn (ORCPT
+        with ESMTP id S231825AbiCDMyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 07:51:43 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25A51B1DE4;
-        Fri,  4 Mar 2022 04:50:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=3zSYmUfILo42NmKSIeBACpJ1qTOzQlDChMK4Lpf3/Lo=; b=BAXE8OUEXSqnQ+UMkLbA9OD6K+
-        lWA7nqaB6ANdF0z0U3qkln/ZC3Ya9OgavSDUoDhW5khEhAeLm/ULSHaCTXPKOXK03kL7SfJVWcn38
-        L+flw+wgdz5xnEps2SkfuUJjiObsU9LSSwFiz9FALOh9XxiLiEmt5Fxu7mC24iPM8O2Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nQ7OR-009EGH-DJ; Fri, 04 Mar 2022 13:50:47 +0100
-Date:   Fri, 4 Mar 2022 13:50:47 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Divya Koppera <Divya.Koppera@microchip.com>
-Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        richardcochran@gmail.com, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, madhuri.sripada@microchip.com,
-        manohar.puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <YiILJ3tXs9Sba42B@lunn.ch>
-References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
- <20220304093418.31645-3-Divya.Koppera@microchip.com>
+        Fri, 4 Mar 2022 07:54:24 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9739BAD6
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 04:53:35 -0800 (PST)
+Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K977g4RdZz67KmH;
+        Fri,  4 Mar 2022 20:53:19 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 4 Mar 2022 13:53:33 +0100
+Received: from [10.47.95.117] (10.47.95.117) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 4 Mar
+ 2022 12:53:32 +0000
+Message-ID: <1cbe7daa-8003-562b-06fa-5a50f7ee6ed2@huawei.com>
+Date:   Fri, 4 Mar 2022 12:53:31 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304093418.31645-3-Divya.Koppera@microchip.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: PCI MSI issue for maxcpus=1
+From:   John Garry <john.garry@huawei.com>
+To:     Marc Zyngier <maz@kernel.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        chenxiang <chenxiang66@hisilicon.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "liuqi (BA)" <liuqi115@huawei.com>, <wangxiongfeng2@huawei.com>
+References: <78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com>
+ <87a6g8vp8k.wl-maz@kernel.org>
+ <19d55cdf-9ef7-e4a3-5ae5-0970f0d7751b@huawei.com>
+ <87v8yjyjc0.wl-maz@kernel.org> <87k0ey9122.wl-maz@kernel.org>
+ <5f529b4e-1f6c-5a7d-236c-09ebe3a7db29@huawei.com>
+In-Reply-To: <5f529b4e-1f6c-5a7d-236c-09ebe3a7db29@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.47.95.117]
+X-ClientProxiedBy: lhreml734-chm.china.huawei.com (10.201.108.85) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 03:04:17PM +0530, Divya Koppera wrote:
-> Supports configuring latency values and also adds
-> check for phy timestamping feature.
+> ...
+
 > 
-> Signed-off-by: Divya Koppera<Divya.Koppera@microchip.com>
-> ---
->  .../devicetree/bindings/net/micrel.txt          | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+> [ 7.961007]  valid_col+0x14/0x24
+> [ 7.964223]  its_send_single_command+0x4c/0x150
+> [ 7.968741]  its_irq_domain_activate+0xc8/0x104
+> [ 7.973259]  __irq_domain_activate_irq+0x5c/0xac
+> [ 7.977865]  __irq_domain_activate_irq+0x38/0xac
+> [ 7.982471]  irq_domain_activate_irq+0x3c/0x64
+> [ 7.986902]  __msi_domain_alloc_irqs+0x1a8/0x2f4
+> [ 7.991507]  msi_domain_alloc_irqs+0x20/0x2c
+> [ 7.995764]  __pci_enable_msi_range+0x2ec/0x590
+> [ 8.000284]  pci_alloc_irq_vectors_affinity+0xe0/0x140
+> [ 8.005410]  hisi_sas_v3_probe+0x300/0xbe0
+> [ 8.009494]  local_pci_probe+0x44/0xb0
+> [ 8.013232]  work_for_cpu_fn+0x20/0x34
+> [ 8.016969]  process_one_work+0x1d0/0x354
+> [ 8.020966]  worker_thread+0x2c0/0x470
+> [ 8.024703]  kthread+0x17c/0x190
+> [ 8.027920]  ret_from_fork+0x10/0x20
+> [ 8.031485] ---[ end trace bb67cfc7eded7361 ]---
 > 
-> diff --git a/Documentation/devicetree/bindings/net/micrel.txt b/Documentation/devicetree/bindings/net/micrel.txt
-> index 8d157f0295a5..c5ab62c39133 100644
-> --- a/Documentation/devicetree/bindings/net/micrel.txt
-> +++ b/Documentation/devicetree/bindings/net/micrel.txt
-> @@ -45,3 +45,20 @@ Optional properties:
->  
->  	In fiber mode, auto-negotiation is disabled and the PHY can only work in
->  	100base-fx (full and half duplex) modes.
-> +
-> + - lan8814,ignore-ts: If present the PHY will not support timestamping.
-> +
-> +	This option acts as check whether Timestamping is supported by
-> +	hardware or not. LAN8814 phy support hardware tmestamping.
 
-Does this mean the hardware itself cannot tell you it is missing the
-needed hardware? What happens when you forget to add this flag? Does
-the driver timeout waiting for hardware which does not exists?
+...
 
-> + - lan8814,latency_rx_10: Configures Latency value of phy in ingress at 10 Mbps.
-> +
-> + - lan8814,latency_tx_10: Configures Latency value of phy in egress at 10 Mbps.
-> +
-> + - lan8814,latency_rx_100: Configures Latency value of phy in ingress at 100 Mbps.
-> +
-> + - lan8814,latency_tx_100: Configures Latency value of phy in egress at 100 Mbps.
-> +
-> + - lan8814,latency_rx_1000: Configures Latency value of phy in ingress at 1000 Mbps.
-> +
-> + - lan8814,latency_tx_1000: Configures Latency value of phy in egress at 1000 Mbps.
+> Ah, of course. the CPU hasn't booted yet, so its collection isn't
+> mapped. I was hoping that the core code would keep the interrupt in
+> shutdown state, but it doesn't seem to be the case...
+> 
+>  > Apart from this, I assume that if another cpu comes online later in
+>  > the affinity mask I would figure that we want to target the irq to
+>  > that cpu (which I think we would not do here).
+> 
+> That's probably also something that should come from core code, as
+> we're not really in a position to decide this in the ITS driver.
+> .
 
-Why does this need to be configured, rather than hard coded? Why would
-the latency for a given speed change? I would of thought though you
-would take the average length of a PTP packet and divide is by the
-link speed.
 
-     Andrew
+Hi Marc,
+
+Have you had a chance to consider this issue further?
+
+So I think that x86 avoids this issue as it uses matrix.c, which handles 
+CPUs being offline when selecting target CPUs for managed interrupts.
+
+So is your idea still that core code should keep the interrupt in 
+shutdown state (for no CPUs online in affinity mask)?
+
+Thanks,
+John
+
+
+
