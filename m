@@ -2,202 +2,396 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F06BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9888C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235400AbiCDJAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:00:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
+        id S235454AbiCDJBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:01:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235377AbiCDJAO (ORCPT
+        with ESMTP id S231526AbiCDJA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:00:14 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534E2B23AC
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:59:25 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2246aBMA019468;
-        Fri, 4 Mar 2022 08:59:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=xwu1WX+KF6nQc8/HKgH9Mbn5jUawW+gEcIqqiAus67M=;
- b=1BnPtwns+r7zYRIZdV/6Z8MkKFV5+Ligh1F/tZ+MxbKedSA0rw2RZ8epiK3c7HbwiZ/T
- xudttGcoiVyAClb1aZDXj57x+iTEMuq4kvS6HM3cGueeFs/AAd8TelmIzWE4/22ZaYmS
- +vk6p45DzLCdZUMup6MyXJlIU5WoRu0Ap8SnXxSD2A/7qTHpkq3HreQtAg4I63MatKaM
- g3JmXVLhW3unpcnPPweBFGftlPuj5CDIM9YVMhZO2QedniLDsD+p1DGSuutOYB/EydLF
- ZnwotyyuOrytodFsXrCHiu06jhhhCiBbE6L6h+Zm7fC4aDnn6MdYrSXtbH8vAok432/o fw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ek4hrs78s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 04 Mar 2022 08:59:16 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2248sgKR072043;
-        Fri, 4 Mar 2022 08:59:15 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2106.outbound.protection.outlook.com [104.47.55.106])
-        by aserp3030.oracle.com with ESMTP id 3ek4jgmx98-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 04 Mar 2022 08:59:15 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q5LdfpEviluwCvBhG5Z0Sn0W1sr1lSsCS8LcIHEFyZTRX1vBF46ImBQdsmIABb9cyI8NRKV3HyfrAVAjyXk7AW/4NZKwzaKivyGA8CyIzRtkvHbepSPX+XHU47ZxgizR5AkLnxqrXHNrDuTaiMZ5ZmG2KYI5uZsYIBtFQCzvo6Brtpoac0yMvXHwEenWSWMrXMgd4geTfRefN9+dWQ4aWiS8T0bVif42q5551xO+w254vKoTO6RfQvsHgxpaiuQC+F22ALydMxRxwGyZbvMusSjtHotomPh9IXJO+STMJFRxqPRQ6MclVeYL3oMvFFLUmtpazppRVCkoyideYnCgmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xwu1WX+KF6nQc8/HKgH9Mbn5jUawW+gEcIqqiAus67M=;
- b=D/HTIL3HPxFE4F3TxR6Fm2cPkzi51t2tNBiebTGzLkLTdTwdyHKAHO7T7lfU+ZuIRlZOeBQztQNsp4bos6evVGt9DvNOERZ5Yeu0wsOpfGbXYaaEdXFsVSONcMB5O632z7qKSabfYTu+F64gK7W6UerEK/BNLiBMESgBl8U9LCiAzW4Od+ePuBcU7vxCx5IEdMVfeVG8KN1zEbFDCt7dBvuo0o72mBZjfhIgVZ/lBDNzHEA6mIXVLn+RSOmDSn+dkV6WSk55ue1rcT8udKYaXEs7qP9DBdDWvSh5sa7jgElMjfOOVY30z+a4qU5vnVPIUzIIKopFYrL3Zn4rx2OilQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xwu1WX+KF6nQc8/HKgH9Mbn5jUawW+gEcIqqiAus67M=;
- b=LsbCiYK/wLUDCRkoVIZZiZcIMVKXBus0A6m164BJH+NAKwf9FK5hNgjrFSJv5tBmSUn96xZqsdPmBEF1LOIzv3tFW/EeVs+YVZnTgptPXLW7v1Khq41R8o0LDyGwbO0y+uhPyl2QHaeGYXQ/jR+5Gghwdd3HSHRU7l15z7F6Ddk=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MW4PR10MB5882.namprd10.prod.outlook.com
- (2603:10b6:303:18f::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 4 Mar
- 2022 08:59:13 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.5017.027; Fri, 4 Mar 2022
- 08:59:13 +0000
-Date:   Fri, 4 Mar 2022 11:58:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
+        Fri, 4 Mar 2022 04:00:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF70E123433;
+        Fri,  4 Mar 2022 01:00:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CAAEB827B3;
+        Fri,  4 Mar 2022 09:00:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C785FC340E9;
+        Fri,  4 Mar 2022 09:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646384407;
+        bh=MTRRZycgyX27cftet2AcMZPMA/KWOX/3CGZ18ZCkcpA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q78AWocaanHuKbB8814KYZs3VFrtxn/0QsjKxU8QIE8QSD+RjFKk7WxY37KTgR8vh
+         Y+F1xdTSrCMpNNi0CYpKHH/IQ+5KlQfDe+kQCT/V5E6UbVm1YtWr2Fs3Abvgrh9iBY
+         7i1dbsPTpThfd2a27W5SU6qyBe5xmSCs9roTz3ao5SgjNnKUTnAwhFrfE6YftnvZiP
+         uCwY77/pu+IKMgQ3Cac56ccJ2fB3BmpV0/N/bg8ICUHq8tAS8V25qw7wr+uwVDzS61
+         ZcYH+FmY2qlErtY0GiDkf8i7sdMPxGuUl9Iu5ricacMaGio/3Jf0YzoXbSueSwIa5q
+         Z6VRKg05giQbw==
+Date:   Fri, 4 Mar 2022 10:59:26 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Subject: [tnguy-next-queue:100GbE 179/215] net/dsa/dsa.c:486
- dsa_port_walk_fdbs() error: uninitialized symbol 'err'.
-Message-ID: <202203041527.OdG5EuV4-lkp@intel.com>
+Subject: Re: [PATCH V2 15/32] x86/sgx: Support relaxing of enclave page
+ permissions
+Message-ID: <YiHU7kHM6IqUJl8n@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <f0029cda125be9eb4eb2e051ab41d500081c6e2c.1644274683.git.reinette.chatre@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR1P264CA0026.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:2f::13) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 554851f7-4fa9-4791-cc64-08d9fdbd4067
-X-MS-TrafficTypeDiagnostic: MW4PR10MB5882:EE_
-X-Microsoft-Antispam-PRVS: <MW4PR10MB5882D7BF0CE16AFED1D664678E059@MW4PR10MB5882.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wcG+BWLwylR7vi2gY4bL9+SMzoPkk0rGsKQgIH1xqtmZB09m7ddrtzL1A7hRXs8AEtYCQl3l03Ef4kBSIEp8p2MhIqT4PKcQERPFg9tEIJg9niI/I0NcPWsapS93EFCWuVTKDTSogGVSPnl8ZcKFShloIZIfaQuU9L5t2Q+7xp3z0LY9M8VgzZEg/l83fVTgVRAmTG4peihfhq6nSFB7BKBVjB81P0+HCo13+bZ+cNd3GR1dUUHx84KePgxA1xkw/BCHVt/kdeXDgRQVzHhgwuFRhBLpSoF33YBZ3DWzeeC5SbRVlWQHZQvZk/vQ/eCLUXjwENJ8ULeJ0jgAqR2M0Hugu+Xuthj5OfFfNdoJ02dAHxOc//hea+JYHLy5789ZaFb4TlWkxtrmfKaBqtlB15lp8iENXxcaQYXlmK+BnYa6qld2RCYGXyGB/MpFHKxo2a2bZMTIptl7erZv+r+CLRFy/r1QseNupiBRlxXXvHPaXqK6Me5yKb/6w/qvdqC9k2L7EBxGeDpzOBw1F7JY4evcOHsaDENaL9fjgDXAXAJOFN1WAfW+/EANnUI0soWggk7lNdpCSC7dbf1YLRR3IiKH0jMF5CIN1xGskuHnLBfzNt+Jgy8ZJ04JX4gHwm3Gz2O7NmsrPnSx6ekHdHQWfhqq5cXmZlCAUbEZFDoBIfchbfo0Blgls2bDhIDyJwlHTrJY5FY4pJZzo9qYcIq1BwvhvkXmj2Eu6eyAtjFHvFxPh84Q6Ams5b1fAJztscB998If+oXzky9qX6Nisi6Q3fwwx5QmpLy1chDpAfiOP3JbkaEbXsVcaDL79P3KnI+qzYVp28d3dUpMUEvC4AGgQQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(86362001)(316002)(6916009)(6506007)(6486002)(966005)(83380400001)(6512007)(9686003)(508600001)(44832011)(52116002)(8936002)(5660300002)(2906002)(26005)(66946007)(66476007)(66556008)(186003)(38350700002)(36756003)(38100700002)(4326008)(8676002)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VmkH0kKbedP1dr4Lsz35fn4r29+r5qXTiS4YmMVZ1YLwD4bl2NtmHiNfqzFh?=
- =?us-ascii?Q?QbJb0S84v5p3IUpKMh4Rq1Jd0B8LizySDvqj3mQ7huVKST9dUqBaymeGXFi1?=
- =?us-ascii?Q?Iao1nIRFyDHC66wgLgqBEf1LZpdHPWDxmnJtEt9HQkCSAB8HXpUvBLYle9qc?=
- =?us-ascii?Q?1TTd3vrVNzY8p9EY5OUKaB5VMevS2EAiH/x6xBHX7MZ+DtdcXlIkVUAQyARW?=
- =?us-ascii?Q?gwp83EWQCdVYBCW8riYUDvatzn7aPSZaSmfXVLU0ojlyamU9U4Kfd1Bhl+oT?=
- =?us-ascii?Q?TzJSBvs8n2odQez/Zkxu9WSCzPsOMpDzAu8Q83UGkGNvcacDvFM+s6oO0D3t?=
- =?us-ascii?Q?g0kVQ3aQ+zlJO3lzrAQf/YuUF45nQesUWuwav1gv5GmpQYWm+cg9i5tgWmYn?=
- =?us-ascii?Q?GkGxE2i3ysRJGUDyiAkYW2Xkuw0XeslNiw4QRcFmDzhC6g60uYH1sYQvPx7Z?=
- =?us-ascii?Q?uBAyOwsUxTbSXmyLmUr1raShHvqMWUAPrKbnm5MFXF6L8Jfws7DQcYJ9ZSVe?=
- =?us-ascii?Q?pcqY9mvIFO5sJlz72D8orCAj5GbgKZJRRNf2ZWVhMpP6MMF72JZXYfGFzW7p?=
- =?us-ascii?Q?ZmONe2wN1AJVIg17EI4ZnFQ0MSg88SsAo1FaXFVvpXj261xaKzdQxSVcqtAH?=
- =?us-ascii?Q?ri+SeZQIic++T0jCoT3mWoQDEu0vaIJXqg9gdDkFsqe3urvgDO5wmPE8Ry2S?=
- =?us-ascii?Q?hpQvwa3zxHIB+Ugy2ymz0tTxV51oi/kohi50gnvWImqi0P7Zq3vYkpelid0Y?=
- =?us-ascii?Q?pus1W+XU2pEYq200qsQRYGpiyOmDdishYNUR3PbI9TKEG6UvLraIvf2Ajiil?=
- =?us-ascii?Q?QIS3vuEYkO7pzx32wqQPcjOTA1mmSAyqxiDz2oYcRRp9H9Y+h0ZtNcLiuyQQ?=
- =?us-ascii?Q?5lj1r1fGOfMWhXGGBAI8jGHM7gZTH1j859E714HxKnmw/Ee8yz+AxpiDe0z5?=
- =?us-ascii?Q?7krDEVrSDbDvnMLUSg2q4ZQhjRWNwpcro62h3kfLVCcbpePT2yV2hhpBme5p?=
- =?us-ascii?Q?4f6jgYrBmcwUufWF8pyreg04/lu0HIftM8qBjA5aHg1qAEC576nbBMnw+2HA?=
- =?us-ascii?Q?NDU5Hu6NX+eG548c/6NduT/3mhXRzmVTtFQo5Qanl7yYK8pBS8tTpiwBzAe4?=
- =?us-ascii?Q?QVQt8vF2niwf4xA2ZZrMaXKiGDGLfa7jxhFj5zDuciQET8HcFSGDo15iJlI8?=
- =?us-ascii?Q?hVnSxDJLBgohEdW5G87VvV0yOrkzBJooTVo/vqB+xsEkU8NqLAFnegBDi0Ui?=
- =?us-ascii?Q?E8jPr+K+/+vuHcRHCeTDSD53szbiuqcBBMqYn4vv8K6sXfKRHjORwexQ6qrG?=
- =?us-ascii?Q?B91Kc4vsL4hC2UfF+3FiLFTgcZHz/IWM5GJqjz98U0Ia6hqzD8ORjJB50tnC?=
- =?us-ascii?Q?n68evHQ7VmFSUG4oyo9E9ifqZ1s+ijxzYr7qcYAsNCZ9XgaUSdpo9jBSBEyS?=
- =?us-ascii?Q?uVKVztyHk9CQHzSVQ+N0cRFJMqeTr8egvELPcd16UwAvlk12tRkgF+M4oBZR?=
- =?us-ascii?Q?M/AYHEmDcAZRdoVLirE28hLlWxOp13cmg42Hjms4cBhVal1XDufHnGiWvPAU?=
- =?us-ascii?Q?+70qzYpyPXReOh4y/egL63GmJfcBJgd9EpeXg+algc749d5WdJJn5sTYJXsU?=
- =?us-ascii?Q?E0G0FMgh/AewLpux5D1wnjvg/oUcA/jkzYSKXIZn3WnfhTA60aL9DHv3I2g/?=
- =?us-ascii?Q?4mmnBQ=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 554851f7-4fa9-4791-cc64-08d9fdbd4067
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 08:59:12.4732
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IollHBkYBKeFgOmD2y6tMzt2EKK3d1bJYNWFo01RNS6neeyxkbBmuwp/ms+Ab+Pu+eBIuRtZOlmQFIqwVaUiuSnZsfL/W51NLULkOF8s14k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB5882
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10275 signatures=686983
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 adultscore=0 mlxscore=0
- malwarescore=0 bulkscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203040046
-X-Proofpoint-GUID: QGMxMixOgdcN9TES8WveBB6KDb6H7aEY
-X-Proofpoint-ORIG-GUID: QGMxMixOgdcN9TES8WveBB6KDb6H7aEY
+In-Reply-To: <f0029cda125be9eb4eb2e051ab41d500081c6e2c.1644274683.git.reinette.chatre@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue.git 100GbE
-head:   3d5985a185e6abfc0b38ed187819016a79eca864
-commit: f9cef64fa23f6c1ff177be5082113c5a94e34e5d [179/215] net: dsa: felix: migrate host FDB and MDB entries when changing tag proto
-config: m68k-randconfig-m031-20220304 (https://download.01.org/0day-ci/archive/20220304/202203041527.OdG5EuV4-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
+On Mon, Feb 07, 2022 at 04:45:37PM -0800, Reinette Chatre wrote:
+> In the initial (SGX1) version of SGX, pages in an enclave need to be
+> created with permissions that support all usages of the pages, from
+> the time the enclave is initialized until it is unloaded. For example,
+> pages used by a JIT compiler or when code needs to otherwise be
+> relocated need to always have RWX permissions.
+> 
+> With the SGX2 function ENCLU[EMODPE] an enclave is able to relax
+> the EPCM permissions of its pages after the enclave is initialized.
+> Relaxing EPCM permissions is not possible from outside the enclave,
+> including from the kernel. The kernel does control the PTEs though
+> and the enclave still depends on the kernel to install PTEs with the
+> new relaxed permissions before it (the enclave) can access the pages
+> using the new permissions.
+> 
+> Introduce ioctl() SGX_IOC_ENCLAVE_RELAX_PERMISSIONS to support
+> relaxing of EPCM permissions done from within the enclave. With
+> this ioctl() the user specifies a page range and the permissions to
+> be applied to all pages in the provided range. After checking
+> the new permissions (more detail below) the PTEs are reset and
+> it is ensured that any new PTEs will contain the new, relaxed,
+> permissions.
+> 
+> The permission change request could fail on any page within the
+> provided range. To support partial success the ioctl() returns
+> an error code based on failures encountered by the kernel and
+> the number of pages that were successfully changed.
+> 
+> Checking user provided new permissions
+> ======================================
+> 
+> Enclave page permission changes need to be approached with care and
+> for this reason permission changes are only allowed if
+> the new permissions are the same or more restrictive that the
+> vetted permissions. Thus, even though an enclave is able to relax
+> the EPCM permissions of its pages beyond what was originally vetted,
+> the kernel will not. The kernel will only install PTEs that respect
+> the vetted enclave page permissions.
+> 
+> For example, enclave pages with vetted EPCM permissions in brackets
+> below are allowed to have PTE permissions as follows:
+> * (RWX) R => RW => RX => RWX
+> * (RW) R => RW
+> * (RX) R => RX
+> 
+> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+> ---
+> Changes since V1:
+> - Change terminology to use "relax" instead of "extend" to refer to
+>   the case when enclave page permissions are added (Dave).
+> - Use ioctl() in commit message (Dave).
+> - Add examples on what permissions would be allowed (Dave).
+> - Split enclave page permission changes into two ioctl()s, one for
+>   permission restricting (SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS)
+>   and one for permission relaxing (SGX_IOC_ENCLAVE_RELAX_PERMISSIONS)
+>   (Jarkko).
+> - In support of the ioctl() name change the following names have been
+>   changed:
+>   struct sgx_page_modp -> struct sgx_enclave_relax_perm
+>   sgx_ioc_page_modp() -> sgx_ioc_enclave_relax_perm()
+>   sgx_page_modp() -> sgx_enclave_relax_perm()
+> - ioctl() takes entire secinfo as input instead of
+>   page permissions only (Jarkko).
+> - Fix kernel-doc to include () in function name.
+> - Introduce small helper to check for SGX2 readiness instead of
+>   duplicating the same two checks in every SGX2 supporting ioctl().
+> - Fixups in comments
+> - Move kernel-doc to function that provides documentation for
+>   Documentation/x86/sgx.rst.
+> - Remove redundant comment.
+> - Make explicit which member of struct sgx_enclave_relax_perm is
+>   for output (Dave).
+> 
+>  arch/x86/include/uapi/asm/sgx.h |  19 +++
+>  arch/x86/kernel/cpu/sgx/ioctl.c | 199 ++++++++++++++++++++++++++++++++
+>  2 files changed, 218 insertions(+)
+> 
+> diff --git a/arch/x86/include/uapi/asm/sgx.h b/arch/x86/include/uapi/asm/sgx.h
+> index f4b81587e90b..5c678b27bb72 100644
+> --- a/arch/x86/include/uapi/asm/sgx.h
+> +++ b/arch/x86/include/uapi/asm/sgx.h
+> @@ -29,6 +29,8 @@ enum sgx_page_flags {
+>  	_IOW(SGX_MAGIC, 0x03, struct sgx_enclave_provision)
+>  #define SGX_IOC_VEPC_REMOVE_ALL \
+>  	_IO(SGX_MAGIC, 0x04)
+> +#define SGX_IOC_ENCLAVE_RELAX_PERMISSIONS \
+> +	_IOWR(SGX_MAGIC, 0x05, struct sgx_enclave_relax_perm)
+>  
+>  /**
+>   * struct sgx_enclave_create - parameter structure for the
+> @@ -76,6 +78,23 @@ struct sgx_enclave_provision {
+>  	__u64 fd;
+>  };
+>  
+> +/**
+> + * struct sgx_enclave_relax_perm - parameters for ioctl
+> + *                                 %SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
+> + * @offset:	starting page offset (page aligned relative to enclave base
+> + *		address defined in SECS)
+> + * @length:	length of memory (multiple of the page size)
+> + * @secinfo:	address for the SECINFO data containing the new permission bits
+> + *		for pages in range described by @offset and @length
+> + * @count:	(output) bytes successfully changed (multiple of page size)
+> + */
+> +struct sgx_enclave_relax_perm {
+> +	__u64 offset;
+> +	__u64 length;
+> +	__u64 secinfo;
+> +	__u64 count;
+> +};
+> +
+>  struct sgx_enclave_run;
+>  
+>  /**
+> diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
+> index b8336d5d9029..9cc6af404bf6 100644
+> --- a/arch/x86/kernel/cpu/sgx/ioctl.c
+> +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+> @@ -698,6 +698,202 @@ static long sgx_ioc_enclave_provision(struct sgx_encl *encl, void __user *arg)
+>  	return sgx_set_attribute(&encl->attributes_mask, params.fd);
+>  }
+>  
+> +static unsigned long vm_prot_from_secinfo(u64 secinfo_perm)
+> +{
+> +	unsigned long vm_prot;
+> +
+> +	vm_prot = _calc_vm_trans(secinfo_perm, SGX_SECINFO_R, PROT_READ)  |
+> +		  _calc_vm_trans(secinfo_perm, SGX_SECINFO_W, PROT_WRITE) |
+> +		  _calc_vm_trans(secinfo_perm, SGX_SECINFO_X, PROT_EXEC);
+> +	vm_prot = calc_vm_prot_bits(vm_prot, 0);
+> +
+> +	return vm_prot;
+> +}
+> +
+> +/**
+> + * sgx_enclave_relax_perm() - Update OS after permissions relaxed by enclave
+> + * @encl:	Enclave to which the pages belong.
+> + * @modp:	Checked parameters from user on which pages need modifying.
+> + * @secinfo_perm: New validated permission bits.
+> + *
+> + * Return:
+> + * - 0:		Success.
+> + * - -errno:	Otherwise.
+> + */
+> +static long sgx_enclave_relax_perm(struct sgx_encl *encl,
+> +				   struct sgx_enclave_relax_perm *modp,
+> +				   u64 secinfo_perm)
+> +{
+> +	struct sgx_encl_page *entry;
+> +	unsigned long vm_prot;
+> +	unsigned long addr;
+> +	unsigned long c;
+> +	int ret;
+> +
+> +	vm_prot = vm_prot_from_secinfo(secinfo_perm);
+> +
+> +	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
+> +		addr = encl->base + modp->offset + c;
+> +
+> +		mutex_lock(&encl->lock);
+> +
+> +		entry = xa_load(&encl->page_array, PFN_DOWN(addr));
+> +		if (!entry) {
+> +			ret = -EFAULT;
+> +			goto out_unlock;
+> +		}
+> +
+> +		/*
+> +		 * Changing EPCM permissions is only supported on regular
+> +		 * SGX pages.
+> +		 */
+> +		if (entry->type != SGX_PAGE_TYPE_REG) {
+> +			ret = -EINVAL;
+> +			goto out_unlock;
+> +		}
+> +
+> +		/*
+> +		 * Do not accept permissions that are more relaxed
+> +		 * than vetted permissions.
+> +		 * If this check fails then EPCM permissions may be more
+> +		 * relaxed that what would be allowed by the kernel via
+> +		 * PTEs.
+> +		 */
+> +		if ((entry->vm_max_prot_bits & vm_prot) != vm_prot) {
+> +			ret = -EPERM;
+> +			goto out_unlock;
+> +		}
+> +
+> +		/*
+> +		 * Change runtime protection before zapping PTEs to ensure
+> +		 * any new #PF uses new permissions.
+> +		 */
+> +		entry->vm_run_prot_bits = vm_prot;
+> +
+> +		mutex_unlock(&encl->lock);
+> +		/*
+> +		 * Do not keep encl->lock because of dependency on
+> +		 * mmap_lock acquired in sgx_zap_enclave_ptes().
+> +		 */
+> +		sgx_zap_enclave_ptes(encl, addr);
+> +	}
+> +
+> +	ret = 0;
+> +	goto out;
+> +
+> +out_unlock:
+> +	mutex_unlock(&encl->lock);
+> +out:
+> +	modp->count = c;
+> +
+> +	return ret;
+> +}
+> +
+> +/*
+> + * Ensure enclave is ready for SGX2 functions. Readiness is checked
+> + * by ensuring the hardware supports SGX2 and the enclave is initialized
+> + * and thus able to handle requests to modify pages within it.
+> + */
+> +static int sgx_ioc_sgx2_ready(struct sgx_encl *encl)
+> +{
+> +	if (!(cpu_feature_enabled(X86_FEATURE_SGX2)))
+> +		return -ENODEV;
+> +
+> +	if (!test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +/*
+> + * Return valid permission fields from a secinfo structure provided by
+> + * user space. The secinfo structure is required to only have bits in
+> + * the permission fields set.
+> + */
+> +static int sgx_perm_from_user_secinfo(void __user *_secinfo, u64 *secinfo_perm)
+> +{
+> +	struct sgx_secinfo secinfo;
+> +	u64 perm;
+> +
+> +	if (copy_from_user(&secinfo, (void __user *)_secinfo,
+> +			   sizeof(secinfo)))
+> +		return -EFAULT;
+> +
+> +	if (secinfo.flags & ~SGX_SECINFO_PERMISSION_MASK)
+> +		return -EINVAL;
+> +
+> +	if (memchr_inv(secinfo.reserved, 0, sizeof(secinfo.reserved)))
+> +		return -EINVAL;
+> +
+> +	perm = secinfo.flags & SGX_SECINFO_PERMISSION_MASK;
+> +
+> +	if ((perm & SGX_SECINFO_W) && !(perm & SGX_SECINFO_R))
+> +		return -EINVAL;
+> +
+> +	*secinfo_perm = perm;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * sgx_ioc_enclave_relax_perm() - handler for
+> + *                                %SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
+> + * @encl:	an enclave pointer
+> + * @arg:	userspace pointer to a &struct sgx_enclave_relax_perm instance
+> + *
+> + * SGX2 distinguishes between relaxing and restricting the enclave page
+> + * permissions maintained by the hardware (EPCM permissions) of pages
+> + * belonging to an initialized enclave (after %SGX_IOC_ENCLAVE_INIT).
+> + *
+> + * EPCM permissions can be relaxed anytime directly from within the enclave
+> + * with no visibility from the kernel. This is accomplished with
+> + * ENCLU[EMODPE] run from within the enclave. Accessing pages with
+> + * the new, relaxed permissions requires the kernel to update the PTE
+> + * to handle the subsequent #PF correctly.
+> + *
+> + * Enclave page permissions are not allowed to exceed the
+> + * maximum vetted permissions maintained in
+> + * &struct sgx_encl_page->vm_max_prot_bits. If the enclave
+> + * exceeds these permissions by running ENCLU[EMODPE] from within the enclave
+> + * the kernel will prevent access to the pages via PTE and
+> + * VMA permissions.
+> + *
+> + * Return:
+> + * - 0:		Success
+> + * - -errno:	Otherwise
+> + */
+> +static long sgx_ioc_enclave_relax_perm(struct sgx_encl *encl, void __user *arg)
+> +{
+> +	struct sgx_enclave_relax_perm params;
+> +	u64 secinfo_perm;
+> +	long ret;
+> +
+> +	ret = sgx_ioc_sgx2_ready(encl);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (copy_from_user(&params, arg, sizeof(params)))
+> +		return -EFAULT;
+> +
+> +	if (sgx_validate_offset_length(encl, params.offset, params.length))
+> +		return -EINVAL;
+> +
+> +	ret = sgx_perm_from_user_secinfo((void __user *)params.secinfo,
+> +					 &secinfo_perm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (params.count)
+> +		return -EINVAL;
+> +
+> +	ret = sgx_enclave_relax_perm(encl, &params, secinfo_perm);
+> +
+> +	if (copy_to_user(arg, &params, sizeof(params)))
+> +		return -EFAULT;
+> +
+> +	return ret;
+> +}
+> +
+>  long sgx_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+>  {
+>  	struct sgx_encl *encl = filep->private_data;
+> @@ -719,6 +915,9 @@ long sgx_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+>  	case SGX_IOC_ENCLAVE_PROVISION:
+>  		ret = sgx_ioc_enclave_provision(encl, (void __user *)arg);
+>  		break;
+> +	case SGX_IOC_ENCLAVE_RELAX_PERMISSIONS:
+> +		ret = sgx_ioc_enclave_relax_perm(encl, (void __user *)arg);
+> +		break;
+>  	default:
+>  		ret = -ENOIOCTLCMD;
+>  		break;
+> -- 
+> 2.25.1
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Definitive NAK.
 
-smatch warnings:
-net/dsa/dsa.c:486 dsa_port_walk_fdbs() error: uninitialized symbol 'err'.
-net/dsa/dsa.c:506 dsa_port_walk_mdbs() error: uninitialized symbol 'err'.
+Should be dropped from the next patch set version. We *do not* want to
+artificially construct an extra round-trip to EMODPE flow.
 
-vim +/err +486 net/dsa/dsa.c
-
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  470  int dsa_port_walk_fdbs(struct dsa_switch *ds, int port, dsa_fdb_walk_cb_t cb)
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  471  {
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  472  	struct dsa_port *dp = dsa_to_port(ds, port);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  473  	struct dsa_mac_addr *a;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  474  	int err;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  475  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  476  	mutex_lock(&dp->addr_lists_lock);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  477  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  478  	list_for_each_entry(a, &dp->fdbs, list) {
-
-Can the list be empty?  Smatch might be able to figure this out with
-cross function analysis but it's not feasible for the kbuild-bot.
-
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  479  		err = cb(ds, port, a->addr, a->vid, a->db);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  480  		if (err)
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  481  			break;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  482  	}
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  483  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  484  	mutex_unlock(&dp->addr_lists_lock);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  485  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02 @486  	return err;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  487  }
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  488  EXPORT_SYMBOL_GPL(dsa_port_walk_fdbs);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  489  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  490  int dsa_port_walk_mdbs(struct dsa_switch *ds, int port, dsa_fdb_walk_cb_t cb)
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  491  {
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  492  	struct dsa_port *dp = dsa_to_port(ds, port);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  493  	struct dsa_mac_addr *a;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  494  	int err;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  495  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  496  	mutex_lock(&dp->addr_lists_lock);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  497  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  498  	list_for_each_entry(a, &dp->mdbs, list) {
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  499  		err = cb(ds, port, a->addr, a->vid, a->db);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  500  		if (err)
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  501  			break;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  502  	}
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  503  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  504  	mutex_unlock(&dp->addr_lists_lock);
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  505  
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02 @506  	return err;
-f9cef64fa23f6c1 Vladimir Oltean 2022-03-02  507  }
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
+BR, Jarkko
