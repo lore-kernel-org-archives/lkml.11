@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD273C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79769C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240628AbiCDQOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 11:14:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
+        id S240657AbiCDQOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 11:14:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233175AbiCDQOB (ORCPT
+        with ESMTP id S230235AbiCDQOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 11:14:01 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76B406E4C8;
-        Fri,  4 Mar 2022 08:13:13 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 42659143D;
-        Fri,  4 Mar 2022 08:13:13 -0800 (PST)
-Received: from e113632-lin (e113632-lin.cambridge.arm.com [10.1.196.57])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 40CDC3F73D;
-        Fri,  4 Mar 2022 08:13:12 -0800 (PST)
-From:   Valentin Schneider <valentin.schneider@arm.com>
-To:     tip-bot2 for Valentin Schneider <tip-bot2@linutronix.de>,
-        linux-tip-commits@vger.kernel.org
-Cc:     Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
-        "Steven Rostedt \(Google\)" <rostedt@goodmis.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [tip: sched/core] sched/tracing: Don't re-read p->state when emitting sched_switch event
-In-Reply-To: <164614827941.16921.4995078681021904041.tip-bot2@tip-bot2>
-References: <20220120162520.570782-2-valentin.schneider@arm.com> <164614827941.16921.4995078681021904041.tip-bot2@tip-bot2>
-Date:   Fri, 04 Mar 2022 16:13:04 +0000
-Message-ID: <87fsnx4rxr.mognet@arm.com>
+        Fri, 4 Mar 2022 11:14:38 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0C6157216;
+        Fri,  4 Mar 2022 08:13:50 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7D9D81F385;
+        Fri,  4 Mar 2022 16:13:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646410429; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=k//hednYVEXD6LxAe4AW1qGWx3sbmOd1vX1eHIwIpr8=;
+        b=IzXUkpy3WtznZCKTJL7u60nkG2OAD90PajjHgaIUDBtYq8MIvK8r53T8L3f2lcZiAAED3n
+        2qF0So6w6cVBJUb4rhzYSaCIWJBShrZOSbMrY/E6Vwh2iI4cO1ftVuFsDaput4cbfc2uDY
+        AsGDNmN8JzA0clo2jF/0bPFP47cKEoM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646410429;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=k//hednYVEXD6LxAe4AW1qGWx3sbmOd1vX1eHIwIpr8=;
+        b=8H86Nb3It4SjlAYlaDNrQJDPjGgQwvSigCcKtpChoHGaWgnOjD0GEkDgMfhfgWxXZ1zRUP
+        qGwQwS0aQxhCRsDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1655B13B64;
+        Fri,  4 Mar 2022 16:13:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OcB6Ar06ImKeRAAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Fri, 04 Mar 2022 16:13:49 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id b55044ab;
+        Fri, 4 Mar 2022 16:14:04 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [PATCH 0/3] ceph: minor fixes and encrypted snapshot names
+Date:   Fri,  4 Mar 2022 16:14:00 +0000
+Message-Id: <20220304161403.19295-1-lhenriques@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/03/22 15:24, tip-bot2 for Valentin Schneider wrote:
-> The following commit has been merged into the sched/core branch of tip:
->
-> Commit-ID:     fa2c3254d7cfff5f7a916ab928a562d1165f17bb
-> Gitweb:        https://git.kernel.org/tip/fa2c3254d7cfff5f7a916ab928a562d1165f17bb
-> Author:        Valentin Schneider <valentin.schneider@arm.com>
-> AuthorDate:    Thu, 20 Jan 2022 16:25:19
-> Committer:     Peter Zijlstra <peterz@infradead.org>
-> CommitterDate: Tue, 01 Mar 2022 16:18:39 +01:00
->
-> sched/tracing: Don't re-read p->state when emitting sched_switch event
->
-> As of commit
->
->   c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
->
-> the following sequence becomes possible:
->
->                     p->__state = TASK_INTERRUPTIBLE;
->                     __schedule()
->                       deactivate_task(p);
->   ttwu()
->     READ !p->on_rq
->     p->__state=TASK_WAKING
->                       trace_sched_switch()
->                         __trace_sched_switch_state()
->                           task_state_index()
->                             return 0;
->
-> TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
-> the trace event.
->
-> Prevent this by pushing the value read from __schedule() down the trace
-> event.
->
-> Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-> Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
+Hi!
 
-So I wasn't sure if that would be considered a "bug", but folks are asking
-for this to be backported; do we want to slap
+I'm sending another iteration of the encrypted snapshot names patch.  This
+patch assumes PR#45224 [1] to be merged as it adds support for the
+alternate names.
 
-Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+Two notes:
 
-to it?
+1. Patch 0001 is just a small fix from another fscrypt patch.  It's
+   probably better to simply squash it.
+
+2. I'm not sure how easy it is to hit the UAF fixed by patch 0002.  I can
+   reproduce it easily by commenting the code that adds the
+   DCACHE_NOKEY_NAME flag in patch 0003.
+
+Any comments are welcome (including for the PR mentioned above, of course).
+
+[1] https://github.com/ceph/ceph/pull/45224
+
+Luís Henriques (3):
+  ceph: fix error path in ceph_readdir()
+  ceph: fix use-after-free in ceph_readdir
+  ceph: add support for encrypted snapshot names
+
+ fs/ceph/dir.c   | 11 ++++++++++-
+ fs/ceph/inode.c | 13 +++++++++++++
+ 2 files changed, 23 insertions(+), 1 deletion(-)
+
