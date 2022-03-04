@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 066B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC69AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbiCDUd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:33:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
+        id S231139AbiCDUeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:34:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiCDUcV (ORCPT
+        with ESMTP id S229897AbiCDUcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:32:21 -0500
+        Fri, 4 Mar 2022 15:32:20 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3921E697A;
-        Fri,  4 Mar 2022 12:31:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A1A1EE9C3;
+        Fri,  4 Mar 2022 12:31:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646425889; x=1677961889;
+  t=1646425891; x=1677961891;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=YgEX9FvrfUmli5IQxtw/KnFhFmG+0VmCmSNx4iJ+NSQ=;
-  b=ZNXCqU3nGObMeHGWLsjEU5OeLcSSyCzIePO+PijyLEq25np3l3GUxH7b
-   9yrvDZA4HSZuB2T8SrgRjNqaKEUZec1M3nxiSGjpJCJYJ714gsoKzKUQg
-   BSMa4DMeMo545d9FYqylXcEsRlCRywp0Qsa2Z9Ot63KN4F0TTz8eQMRSu
-   OBcDl3UO/Bv1pcICpMgu5d3MJDQzye0eFE8Dw2F3lhCjWIlwS5TDEiWh0
-   rFVMppG3+9hrcQfY7q0gC+wX45VARdajvYqjacWG8EnKJosMzI0Psgjhk
-   pFviuF++0CVJUvWUqQsMXD1GF+dQvtlhA+ESd/G31iuLpOXetmcwojN3d
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251624243"
+  bh=b2RfUB5kBZejFPlHKQFlwDXq9RRGn2GdmL23fM0GzEg=;
+  b=RsawoB1qqzaoToP98SX1Wj7kLc4QuwMTjBmcg5tO1fZELDqv7VwySNka
+   PWBHX5XMf2Ek4Jw47jlOsMI3p5L8iqGrDiMak6NTVZTRUBHyr0D4x0EVo
+   PR65LYLqTxccHt82iLYda+PBty+j+syWfJJZpecG2kZhZ+tZuj1Ly06eG
+   M0iLM8PP6deFt6Sdbxp1JGVw+xOphR0lsNFbVBJ7HgTcsYRhwg99EVHgx
+   rgZ30iL8g011MYJU5OutIaSL5ttkthT9HH4DJbNy6bVXz1Tn7SYwRQ+06
+   XeQCbrePK4hNOekii/dxrc59fqzR74DtaDfCvpc+DowHPJ6IXJHXjH0LD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251624263"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="251624243"
+   d="scan'208";a="251624263"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:30 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:33 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344430"
+   d="scan'208";a="552344458"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:30 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:32 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 061/104] KVM: TDX: Finalize VM initialization
-Date:   Fri,  4 Mar 2022 11:49:17 -0800
-Message-Id: <83768bf0f786d24f49d9b698a45ba65441ef5ef0.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 066/104] KVM: TDX: restore host xsave state when exit from the guest TD
+Date:   Fri,  4 Mar 2022 11:49:22 -0800
+Message-Id: <9bdf380cfa2c8a6fa064f1ece65ed95bad784c67.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,85 +58,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-To protect the initial contents of the guest TD, the TDX module measures
-the guest TD during the build process as SHA-384 measurement.  The
-measurement of the guest TD contents needs to be completed to make the
-guest TD ready to run.
-
-Add a new subcommand, KVM_TDX_FINALIZE_VM, for VM-scoped
-KVM_MEMORY_ENCRYPT_OP to finalize the measurement and mark the TDX VM ready
-to run.
+On exiting from the guest TD, xsave state is clobbered.  Restore xsave
+state on TD exit.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/uapi/asm/kvm.h       |  1 +
- arch/x86/kvm/vmx/tdx.c                | 21 +++++++++++++++++++++
- tools/arch/x86/include/uapi/asm/kvm.h |  1 +
- 3 files changed, 23 insertions(+)
+ arch/x86/kvm/vmx/tdx.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 77f46260d868..943219a08fcd 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -534,6 +534,7 @@ enum kvm_tdx_cmd_id {
- 	KVM_TDX_INIT_VM,
- 	KVM_TDX_INIT_VCPU,
- 	KVM_TDX_INIT_MEM_REGION,
-+	KVM_TDX_FINALIZE_VM,
- 
- 	KVM_TDX_CMD_NR_MAX,
- };
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index cd726c41d362..85d5f961d97e 100644
+index 7a288aae03ba..54be5be1a06c 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1103,6 +1103,24 @@ static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
- 	return ret;
+@@ -2,6 +2,7 @@
+ #include <linux/cpu.h>
+ #include <linux/mmu_context.h>
+ 
++#include <asm/fpu/xcr.h>
+ #include <asm/tdx.h>
+ 
+ #include "capabilities.h"
+@@ -549,6 +550,22 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	vcpu->kvm->vm_bugged = true;
  }
  
-+static int tdx_td_finalizemr(struct kvm *kvm)
++static void tdx_restore_host_xsave_state(struct kvm_vcpu *vcpu)
 +{
-+	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-+	u64 err;
++	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
 +
-+	if (!is_td_initialized(kvm) || is_td_finalized(kvm_tdx))
-+		return -EINVAL;
-+
-+	err = tdh_mr_finalize(kvm_tdx->tdr.pa);
-+	if (WARN_ON_ONCE(err)) {
-+		pr_tdx_error(TDH_MR_FINALIZE, err, NULL);
-+		return -EIO;
-+	}
-+
-+	kvm_tdx->finalized = true;
-+	return 0;
++	if (static_cpu_has(X86_FEATURE_XSAVE) &&
++	    host_xcr0 != (kvm_tdx->xfam & supported_xcr0))
++		xsetbv(XCR_XFEATURE_ENABLED_MASK, host_xcr0);
++	if (static_cpu_has(X86_FEATURE_XSAVES) &&
++	    /* PT can be exposed to TD guest regardless of KVM's XSS support */
++	    host_xss != (kvm_tdx->xfam & (supported_xss | XFEATURE_MASK_PT)))
++		wrmsrl(MSR_IA32_XSS, host_xss);
++	if (static_cpu_has(X86_FEATURE_PKU) &&
++	    (kvm_tdx->xfam & XFEATURE_MASK_PKRU))
++		write_pkru(vcpu->arch.host_pkru);
 +}
 +
- int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
- {
- 	struct kvm_tdx_cmd tdx_cmd;
-@@ -1123,6 +1141,9 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
- 	case KVM_TDX_INIT_MEM_REGION:
- 		r = tdx_init_mem_region(kvm, &tdx_cmd);
- 		break;
-+	case KVM_TDX_FINALIZE_VM:
-+		r = tdx_td_finalizemr(kvm);
-+		break;
- 	default:
- 		r = -EINVAL;
- 		goto out;
-diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
-index 77f46260d868..943219a08fcd 100644
---- a/tools/arch/x86/include/uapi/asm/kvm.h
-+++ b/tools/arch/x86/include/uapi/asm/kvm.h
-@@ -534,6 +534,7 @@ enum kvm_tdx_cmd_id {
- 	KVM_TDX_INIT_VM,
- 	KVM_TDX_INIT_VCPU,
- 	KVM_TDX_INIT_MEM_REGION,
-+	KVM_TDX_FINALIZE_VM,
+ u64 __tdx_vcpu_run(hpa_t tdvpr, void *regs, u32 regs_mask);
  
- 	KVM_TDX_CMD_NR_MAX,
- };
+ static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+@@ -572,6 +589,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
+ 
+ 	tdx_vcpu_enter_exit(vcpu, tdx);
+ 
++	tdx_restore_host_xsave_state(vcpu);
+ 	tdx->host_state_need_restore = true;
+ 
+ 	vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
 -- 
 2.25.1
 
