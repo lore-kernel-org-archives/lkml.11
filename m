@@ -2,145 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18867C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240921AbiCDRFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:05:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55234 "EHLO
+        id S240923AbiCDRGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:06:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240892AbiCDRFb (ORCPT
+        with ESMTP id S238754AbiCDRGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:05:31 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7433C1CD7EA;
-        Fri,  4 Mar 2022 09:04:40 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9C1DC5C0294;
-        Fri,  4 Mar 2022 12:04:37 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 04 Mar 2022 12:04:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwcx.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; bh=19N+V6o+FQXpDoOacL5Tst7trUS8I31eJl+exI
-        QkyAA=; b=QzRfuJqGM6ZdcwMgmuN7etzIjqBRwQOL+z8zzpPWeHR8ZahsL0tzr4
-        1yA6vZtEUn1Qp2tQYvdliAeErt6mnRd2RWyGLDLyw0kSJhzCyTN6quZwk75fhSC1
-        z7OAjr7jpFi74YVR7vV6YmDowGdI5Of+uCoYaUHutAAArscXY677moChObN3sTbo
-        9rcIu008b2p5bd+W2099U1UZg8lenDt+1yxzYfVKDkt466x+33Gk8PDKhMWxtueL
-        WWwki6cR5DJrSCElIdV2HyxV0YkgVTnFV92kDU/o81uEsf9jwtVhGGNoP31G2gFe
-        U1B2A5QLYi3VqRvkOFVkg8LktMCXHohg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=19N+V6o+FQXpDoOac
-        L5Tst7trUS8I31eJl+exIQkyAA=; b=NfZxkzs/z2dP53kDlRr48k+zoDztkBRGq
-        ZgqZL9c6HE4z4+mRUKWXQweWivvRrlv11Dm0txBu0bM8Euc3GVs1yWe33+uqRf4B
-        owHF4ZW3BmeskJ3nSthhZw8hCJ2Mrzp3wk6hBJfPl42J+3cOmEEosZi+hLf9XqNC
-        Klnufg8It1Cs2vuL7UFuL6YqTGoi41e0ZHjROV6gH4AwLFRBwZzjfQ5DTeQM5/RW
-        ApAXys/aWi7Futu0IMYYZkWKBof+ic/P+cDvCEWKnOhs1pinmvsi6/RNKrVGlO7F
-        SaNtDfrid0HDIOFEkpqyQiByTR8P4aoeHSKQ3NGDygk0NKmm9hWBg==
-X-ME-Sender: <xms:pEYiYtoZoC9_jwKUEfNj3lS82mA2L8P3d3FWXtJDsOOBj2PXBQgZGQ>
-    <xme:pEYiYvr5UkcLcN0vfPzjJXRCHX51Imdy1fKZpr20uDQpnGZ8ykT6zmRW-gJ85lnnQ
-    hJ2ZTe5Yw15qORshXM>
-X-ME-Received: <xmr:pEYiYqNjwyDHY-pos8tNeBIQSpbtvRmmQ5NsyDxQ8PKywmE115wkEav_Z1PXWuRHh5WtDTUzrgfJpo0oC4DQxWPSyHAvOye5wzE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgleeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdlvdefmdenucfjughrpeffhffvuffkfhggtggujgesghdtreertddt
-    vdenucfhrhhomheprfgrthhrihgtkhcuhghilhhlihgrmhhsuceophgrthhrihgtkhessh
-    htfigtgidrgiihiieqnecuggftrfgrthhtvghrnhepvdffgefgfeetiefgtefhieevuedu
-    gedvgffgjeefheduteejfeffteektdelhefhnecuffhomhgrihhnpehkvghrnhgvlhdroh
-    hrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehp
-    rghtrhhitghksehsthiftgigrdighiii
-X-ME-Proxy: <xmx:pEYiYo5K3ffizSWnxKWJBo2BXFJ6wh2iIu0CLfeoSnQxT3U1cNRKeA>
-    <xmx:pEYiYs4WYHVgVd6WoizmJFwvO-YGsAxac6B0O5Ry894RVMf7k8VZNg>
-    <xmx:pEYiYghmNXkU0lAOJNDcVZLWDAFIDevssYBPo022ckIRgg0cJsm8OQ>
-    <xmx:pUYiYpupD3roEySVQ7uILmXG96OkExFVYj_uXhFtmmvQfc8IU8GoDw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 4 Mar 2022 12:04:36 -0500 (EST)
-Date:   Fri, 4 Mar 2022 11:04:35 -0600
-From:   Patrick Williams <patrick@stwcx.xyz>
-To:     Potin Lai <potin.lai@quantatw.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] ARM: dts: aspeed: bletchley: add sample averaging
- for ADM1278
-Message-ID: <YiJGo7Tor3IKEToq@heinlein>
-References: <20220304003506.4243-1-potin.lai@quantatw.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="VYm2G0+QLn/4yGoL"
-Content-Disposition: inline
-In-Reply-To: <20220304003506.4243-1-potin.lai@quantatw.com>
+        Fri, 4 Mar 2022 12:06:15 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C7419D759;
+        Fri,  4 Mar 2022 09:05:27 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 032901F38A;
+        Fri,  4 Mar 2022 17:05:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646413526; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RJJQkXEtIZssPACfh5YufyI5icApc9EN826U5KQ4k8I=;
+        b=nptw50rM0VdvC9u79m/n4x6+NNExCelgY72Il6bnoAyPzJ9JytdRX3jDexAeYzvQWJSBEr
+        6UvOeWXWeCCK92sKZNUdK49zzK5e5PGpCQk8hDbUXgVvW8cYB2NBGNIDS3GRVs+z48xg/e
+        XhF/VHO3wBLnWSAZIruvaxtYIXVDCHE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646413526;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RJJQkXEtIZssPACfh5YufyI5icApc9EN826U5KQ4k8I=;
+        b=wJxIZo8wxjPX5NVD/TrbS09rZdD/C7Qq2ck3W9lpbIsm3rNWSGJciMzss6th6E/tFgVuB6
+        AGVpZVGzwWkXBvAQ==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id E5437A3B8A;
+        Fri,  4 Mar 2022 17:05:25 +0000 (UTC)
+Date:   Fri, 04 Mar 2022 18:05:25 +0100
+Message-ID: <s5htucdr6lm.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Lucas Tanure <tanureal@opensource.cirrus.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 00/20] Support external boost at CS35l41 ASoC driver
+In-Reply-To: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
+References: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 04 Mar 2022 16:07:01 +0100,
+Lucas Tanure wrote:
+> 
+> Move the support for CS35L41 external boost to its shared library
+> for ASoC use.
+> This move resulted in cs35l41_hda_reg_sequence being removed,
+> and its steps were broken down into regmap writes or functions
+> from the library. And hardware configuration struct was unified
+> for its use in the shared lib.
+> While at it, some minor bugs were found and fixed it.
+> 
+> v2 changelog:
+>  - Instead of removing the log, playback actions will log the last regmap access.
+>  - Documentation patch with the correct subject line and fixed bug reported by Rob Herring on the
+>  provided example.
+> 
+> Previous versions:
+>  v1: https://lkml.org/lkml/2022/3/3/759
+> 
+> David Rhodes (2):
+>   ASoC: cs35l41: Fix GPIO2 configuration
+>   ASoC: cs35l41: Document CS35l41 External Boost
+> 
+> Lucas Tanure (18):
+>   ASoC: cs35l41: Fix max number of TX channels
+>   ASoC: cs35l41: Fix DSP mbox start command and global enable order
+>   ASoC: cs35l41: Remove unnecessary param
+>   sound: cs35l41: Unify hardware configuration
+>   sound: cs35l41: Check hw_config before using it
+>   sound: cs35l41: Move cs35l41_gpio_config to shared lib
+>   hda: cs35l41: Fix I2S params comments
+>   hda: cs35l41: Always configure the DAI
+>   hda: cs35l41: Add Boost type flag
+>   hda: cs35l41: Put the device into safe mode for external boost
+>   hda: cs35l41: Mute the device before shutdown
+>   sound: cs35l41: Enable Internal Boost in shared lib
+>   hda: cs35l41: Move boost config to initialization code
+>   hda: cs35l41: Remove cs35l41_hda_reg_sequence struct
+>   hda: cs35l41: Reorganize log for playback actions
+>   hda: cs35l41: Handle all external boost setups the same way
+>   hda: cs35l41: Move external boost handling to lib for ASoC use
+>   ASoC: cs35l41: Support external boost
 
---VYm2G0+QLn/4yGoL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Through a quick glance, the code changes look OK in general.
+But please correct the subject prefix.  For non-ASoC patches (that
+begin with either "hda" or "sound" in this patch set) should be with
+"ALSA: hda: xxx" or such.
 
-On Fri, Mar 04, 2022 at 08:35:06AM +0800, Potin Lai wrote:
-> set number of sample averaging to 128 for both PWR_AVG and VI_AVG
->=20
-> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
-> ---
->  arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts b/arch/a=
-rm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-> index eaf1bc261ee3..be76cd955129 100644
-> --- a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-> +++ b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-> @@ -732,6 +732,8 @@
->  		compatible =3D "adi,adm1278";
->  		reg =3D <0x11>;
->  		shunt-resistor-micro-ohms =3D <300>;
-> +		adi,volt-curr-sample-average =3D <128>;
-> +		adi,power-sample-average =3D <128>;
->  	};
-> =20
->  	tmp421@4c {
-> --=20
-> 2.17.1
->=20
+Also, although I respect the spirit of Haiku, the patch logs could be
+a bit more verbose and descriptive, and the texts can be folded at the
+right column.  Some patch descriptions are too short, e.g. patch 15
+doesn't mention about the new usleep_range() addition in the code.
 
-Reviewed-by: Patrick Williams <patrick@stwcx.xyz>
 
-Note that this code depends on ADM1275 support pulled into groeck/linux-sta=
-ging
-already.
+thanks,
 
-https://lore.kernel.org/all/20220222223610.23098-1-linux@roeck-us.net/
-
---=20
-Patrick Williams
-
---VYm2G0+QLn/4yGoL
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEBGD9ii4LE9cNbqJBqwNHzC0AwRkFAmIiRqMACgkQqwNHzC0A
-wRnPgQ/8CvQ5AKgdzdynopTHa+Iz0ECeeFQi98vSMKhKUOdz9sHmItqjiEf9BtPa
-lTYj0lPOrkAW+tkzN6hfLdhmWFg5z7z1vpWPqKRYhoVtORtjO/EATja3iEua4p2a
-6JhUvRQXryduEwKvulEZ7CGbL8VgCaZTZHUrawdwEtfyQkmOxaLjfOtA/tksWmxU
-aa5/OG06Dk3wV7HejScWSJXyLYt0Mv4+R0PQUOPuVIfHYx18hd7hPzsyuga2UuWw
-yY11KcvA5Deyp5U195pUNDar9J2VrSe+fAAmuBqR214P7wC8qBK19dwx4j7qXfQt
-kfWnbJs481DQas7uLBH4WxytuoWVslB1fTUQu6XWgCQj7jjcODKVdmuQZLRLXiz7
-kiIPk/pqJWwZr5No300pbc0EfAsKKfdCuTjJe2chz3TmCkbky4opehVKTOafSB2o
-UBMB1Nz2LL1l1Kwe2XDvViS0rbQlLw3sn82SO7ez+gXjjKh9OivelUgOhcPeRGTv
-s48za2Nq3MUuaSbSBJaAB2NZaZ19zi8BnM9m5aohnYa3yzElW+yrHzHmx/rJdanZ
-JqA9RoCmtB4krTFDeOAV+kAHUSSHK0HL3O0ecJViSKt70fM4jAHKJzoag2Fn5FMB
-GrCRNd+OCs+H+y4Y0e6bBTEMbcycb5XWK8Z4XeyiWrcIkpkWsyQ=
-=Uw+x
------END PGP SIGNATURE-----
-
---VYm2G0+QLn/4yGoL--
+Takashi
