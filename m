@@ -2,66 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5304AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C75FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240150AbiCDPPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:15:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S240158AbiCDPPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:15:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240122AbiCDPO5 (ORCPT
+        with ESMTP id S240154AbiCDPPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:14:57 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C2361B124C;
-        Fri,  4 Mar 2022 07:14:06 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nQ9d5-0008Id-00; Fri, 04 Mar 2022 16:14:03 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 373FEC0F3F; Fri,  4 Mar 2022 16:10:52 +0100 (CET)
-Date:   Fri, 4 Mar 2022 16:10:52 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Mike Rapoport <rppt@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] MIPS: Refactor early_parse_mem() to fix mem=
- parameter
-Message-ID: <20220304151052.GA27642@alpha.franken.de>
-References: <1646108941-27919-1-git-send-email-yangtiezhu@loongson.cn>
- <1646108941-27919-2-git-send-email-yangtiezhu@loongson.cn>
+        Fri, 4 Mar 2022 10:15:15 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7B71C3D0E
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:14:26 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id o23so7736464pgk.13
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 07:14:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xhFNSR/yOd/Vz2Wc1wvXRDHBYyMuBGWniHzjkl431mo=;
+        b=hZqCZVGG2Aw1yowZxJka1HJssTZXGRCsk53g2yvR0SODyOvwf/Elxr1eAcI0NP8w/P
+         BRDWVY2OXYvTkI05nb6CaZLDi8M4tfwFREo8tfWo3RcBYvU+nRJwzoMrogAapw+XAFqt
+         ucRdR6ma6mQtKOLch8k2c7d6q7eppyhx/GjM/pMapljT1kyYVlvGRVUEbw/Y/J2GAIAQ
+         H/W8p3rXzvOKbhlwBWE6s2bCCkFbZSO+ltnQ/DM81ItTC/ICR85g0BdzMn5vGbPGb1Tm
+         Llm+qe/OCV86hyLcMmc4t6rH03ovFSYNvLF56nIuv2jRARRe5rozks826lfRrlnriH3X
+         OzOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xhFNSR/yOd/Vz2Wc1wvXRDHBYyMuBGWniHzjkl431mo=;
+        b=LfC6IzNZlhAAAR3ejmtPimbmHDWjfqafVA8Pfj+IZN+ldZxt1JPiqGmcSUiGwmKR8K
+         ewcFHJcE8lywnhcJT/KP5a7ZhhM14adsXjrMylDZzeIrZfhMComFc69oShtIZasHlXQQ
+         pn2r5NdGNRCL5JvrIio0Y64oSL2zENwD/9vlfNvwo5bk/Ojs5HWjkS6F6kCFzxk41Bdf
+         GYMPngFcvzvAt2VlOHfK23wiByU0wgTh2iBuNn5Zlb4+cFdd2uuGVge1fAAGQ0v3AbId
+         CYsdrfjopO/6S4whX2KSZimCoZsp8PrTXP52pShv/VhpuxzJiBxNjxtbr6yVSGKAvcNN
+         WSvQ==
+X-Gm-Message-State: AOAM5301mHa9ebS7XHZ/IFgpEsHJTOsIWW9e00tLgnPmirElA8I+Lo+q
+        l9Mfoux8/Pg47cqcJw1KYN+rVQ==
+X-Google-Smtp-Source: ABdhPJzb5cC534BnnexfsDG8sjS4Ey8TsFio0KuvhUEFwq3AjNNBbWTwq1gSZOU15bdx3t7INixUwA==
+X-Received: by 2002:a05:6a00:1593:b0:4f6:6c38:f75d with SMTP id u19-20020a056a00159300b004f66c38f75dmr9260095pfk.81.1646406865430;
+        Fri, 04 Mar 2022 07:14:25 -0800 (PST)
+Received: from ?IPV6:2409:8a28:e6d:cc00:d089:89fd:5c33:f12? ([2409:8a28:e6d:cc00:d089:89fd:5c33:f12])
+        by smtp.gmail.com with ESMTPSA id on18-20020a17090b1d1200b001b9cfbfbf00sm4958261pjb.40.2022.03.04.07.14.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 07:14:25 -0800 (PST)
+Message-ID: <306a5d51-25e5-b7ce-cbdd-ca7e2f3a3ad5@bytedance.com>
+Date:   Fri, 4 Mar 2022 23:14:15 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646108941-27919-2-git-send-email-yangtiezhu@loongson.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
+ KLP_UNPATCHED forced transition patch
+Content-Language: en-US
+To:     Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        songmuchun@bytedance.com, qirui.001@bytedance.com
+References: <20220301140840.29345-1-zhouchengming@bytedance.com>
+ <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
+ <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
+ <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
+ <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
+ <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 12:28:58PM +0800, Tiezhu Yang wrote:
-> According to Documentation/admin-guide/kernel-parameters.txt,
-> the kernel command-line parameter mem= means "Force usage of
-> a specific amount of memory", but when add "mem=3G" to the
-> command-line, kernel boot hangs in sparse_init().
+On 2022/3/3 11:43 下午, Joe Lawrence wrote:
+> On 3/3/22 5:33 AM, Chengming Zhou wrote:
+>> On 2022/3/3 3:51 下午, Miroslav Benes wrote:
+>>> On Thu, 3 Mar 2022, Chengming Zhou wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> On 2022/3/2 5:55 下午, Miroslav Benes wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On Tue, 1 Mar 2022, Chengming Zhou wrote:
+>>>>>
+>>>>>> module_put() is currently never called for a patch with forced flag, to block
+>>>>>> the removal of that patch module that might still be in use after a forced
+>>>>>> transition.
+>>>>>>
+>>>>>> But klp_force_transition() will flag all patches on the list to be forced, since
+>>>>>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
+>>>>>> has removed stack ordering of the livepatches, it will cause all other patches can't
+>>>>>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+>>>>>>
+>>>>>> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
+>>>>>> transition. It can still be unloaded only if it has passed through the consistency
+>>>>>> model in KLP_UNPATCHED transition.
+>>>>>>
+>>>>>> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
+>>>>>> transition livepatch.
+>>>>>>
+>>>>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>>>>>> ---
+>>>>>>  kernel/livepatch/transition.c | 4 ++--
+>>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+>>>>>> index 5683ac0d2566..8b296ad9e407 100644
+>>>>>> --- a/kernel/livepatch/transition.c
+>>>>>> +++ b/kernel/livepatch/transition.c
+>>>>>> @@ -641,6 +641,6 @@ void klp_force_transition(void)
+>>>>>>  	for_each_possible_cpu(cpu)
+>>>>>>  		klp_update_patch_state(idle_task(cpu));
+>>>>>>  
+>>>>>> -	klp_for_each_patch(patch)
+>>>>>> -		patch->forced = true;
+>>>>>> +	if (klp_target_state == KLP_UNPATCHED)
+>>>>>> +		klp_transition_patch->forced = true;
+>>>>>
+>>>>> I do not think this would interact nicely with the atomic replace feature. 
+>>>>> If you force the transition of a patch with ->replace set to true, no 
+>>>>> existing patch would get ->forced set with this change, which means all 
+>>>>> patches will be removed at the end of klp_try_complete_transition(). And 
+>>>>> that is something we want to prevent.
+>>>>
+>>>> Good point, I should check if it's an atomic replace livepatch in the else
+>>>> branch, in which case we have to set all existing patches to forced.
+>>>
+>>> Yes, but that leads to a question if it then brings any value. Forcing a 
+>>> transition should be exceptional. If it is needed, there may be other 
+>>> issues involved which should probably be fixed. Have you come across a 
+>>> practical situation where the patch helped?
+>>
+>> Yes, you're right, the correct way is to find and fix the issues that
+>> make us to use this "force" transition interface, until we don't need
+>> to use it.
+>>
+>> Apart from this reason, another reason we may use "force" transition
+>> is that we want to speed up the transition process of some patches
+>> when load them, and we can make sure these patches are safe to do so.
+>> (just like a consistency model check disable option when load a patch)
+>>
 > 
-> This commit is similar with the implementation of the other
-> archs such as arm64, powerpc and riscv, refactor the function
-> early_parse_mem() and then use memblock_enforce_memory_limit()
-> to limit the memory size.
+> Interesting use case.  Can you share any example livepatches where the
+> transition time was exceptionally long and that lead to requiring this
+> patch?
+
+Sorry, I haven't easy reproducible testcase on hand, maybe I could try to
+make one to simulate the production environment later.
+
 > 
-> With this patch, when add "mem=3G" to the command-line, the
-> kernel boots successfully, we can see the following messages:
+> From a kpatch developer's perspective, it would be interesting to read
+> how you go about ensuring forced livepatch safety.  We don't generally
+> build forced livepatches, so I'm curious how the dev/review process goes.
 
-unfortunately this patch would break platforms without memory detection,
-which simply use mem=32M for memory configuration. Not sure how many
-rely on this mechanism. If we can make sure nobody uses it, I'm fine
-with your patch.
+We also use kpatch-build for some patches too, but for some other patches,
+which need to add new members to some struct type, or fix some kernel function
+bugs, we may need to rewrite the source patch to make a livepatch module.
 
-Thomas.
+There are some types that don't need per-task consistency or even can replace
+the old functions when tasks stack in the old functions. We may want to use
+"force" transition in case load process timeout.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Thanks.
+
+> 
+> Thanks,
