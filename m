@@ -2,147 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB32C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:11:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B16EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbiCDULz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:11:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
+        id S231357AbiCDUOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:14:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbiCDUKa (ORCPT
+        with ESMTP id S231810AbiCDUNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:10:30 -0500
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D121BFDD6
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:05:53 -0800 (PST)
-Received: by mail-oo1-xc36.google.com with SMTP id i6-20020a4ac506000000b0031c5ac6c078so10640566ooq.6
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 12:05:53 -0800 (PST)
+        Fri, 4 Mar 2022 15:13:22 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02032399C3
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:07:47 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id t7so15498511ybi.8
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 12:07:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=T7SqPemMgzqeX0eBPPz3FX/ZWDE+/Yzg/d3Nfke4UpM=;
-        b=nUAICK4lB2FzB60FGNvELrGPzsWLAjTyIY1hxQMeB4g3nlxzTPnpn4Pt/zlACk5wc1
-         cy3Zs1aBJ7wPqAQoDO/H17ddd3w7XoM6a9OuUGQNbSiVRpqLPRbMLQQ5fe1gc4FUICkB
-         KI0EdhJ1jrQFyF3o9fgl6S7gLIFzcnYyPaxWHUpA8oQO6YlH5p0PqfEPdFPRjXVLQk9G
-         8q6I5jVnzAH0tvKyoB3+meUU7xM2HA1GGpPmYxFK/WinealJPKydUbH/2Jmid4lNcFxj
-         WZmBXF4mO7SW2Xac6u7RWjuWeeDA9ljSuoo1jmLZBDjaCPqRe8SSVZIbJY0zE4WNa0/l
-         lF+A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Y5wxxRemu0yerGXHelC0GgimMvnnSAL2fxL75mZiEww=;
+        b=OPPApgLQsNqLqSJCNzr71vmsdlSjeZvh8KxGH3zlvpwcwDReQJ++Cynpcb4RCG7QIl
+         GGr2MMCaC/TJ7+Ga2yK7QFgtWc5ZbrtI+ZBxDWzXlvDg4CPsbSr9HbILWsk21M9El/lY
+         8YcLSm9rTgrRMXPmrr+SCjzFarkS5f12d0A7ANZGy+vNczxhPj15m6TiwvH60pkPsQDc
+         J+gNoUcffcSSjlCumDvRIBZBfXhMdOYt6ytvc6rVTfMNfTi+D4YCPXOiw7jcYAIeu0i0
+         LHUDamH+pNUF9mDWME6NjY5XHasZXOis+VRsfaFNJXHcazvqCdkeglRlcR0QvHZt4llb
+         biqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=T7SqPemMgzqeX0eBPPz3FX/ZWDE+/Yzg/d3Nfke4UpM=;
-        b=qSNk/YyQOyamNtEG7wy7dbXrxURHqAZ2b9e2PVxRvGSF6QFfTX34ygCgkk3YmMFfhA
-         ljoxqkcUsASsHT7BJ5nhjm25wGhJvmroofeQizUvtBH9RwRWDSsxza2xV5uM0OR3Nbq+
-         oWw6wVbedFGgYZVoq4FdcOjOOWg0e+2UaZ8sSnWBqQJFfdvl3s7VGNvFKrAV0x2GBBgs
-         q7pzl/6YiNRl/VhDvvnU3i530uQdpq1PVCXxWY4pvz5IXhl/SHQz2Nu0iVsCe/jZbwQM
-         hZkvufKVXD7bE0/y4nSvb5hyv6hlwoVUetSkn8rdecAk3LqTP5l6RgGBKwHCquyl330r
-         VGmw==
-X-Gm-Message-State: AOAM530D/go64tgJk3qtJyANuxuKAcpQDBP4VuxgSIAVduEwmm6jn5Zv
-        yt0i1+2SZIP2v/wS6LFvJBHRAcYH0ug=
-X-Google-Smtp-Source: ABdhPJyN779d3j8xQjEPoJqb5A/WWySFaaoReEhphvW0mluDY66q8fKLlSno3yM2LfcRvhW6GeoNMQ==
-X-Received: by 2002:a05:6870:3510:b0:d7:179e:7e90 with SMTP id k16-20020a056870351000b000d7179e7e90mr8887695oah.168.1646422228486;
-        Fri, 04 Mar 2022 11:30:28 -0800 (PST)
-Received: from debian-BULLSEYE-live-builder-AMD64 ([181.22.168.223])
-        by smtp.gmail.com with ESMTPSA id b43-20020a4a98ee000000b0031bf8505320sm2595215ooj.25.2022.03.04.11.30.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 11:30:27 -0800 (PST)
-Date:   Fri, 4 Mar 2022 16:30:15 -0300
-From:   Gaston Gonzalez <gascoar@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     linux-staging@lists.linux.dev, gregkh@linuxfoundation.org,
-        nsaenz@kernel.org, stefan.wahren@i2se.com, ojaswin98@gmail.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, gascoar@gmail.com
-Subject: Re: [PATCH 2/2] staging: vchiq_arm: add prototype of function
- vchiq_platform_init()
-Message-ID: <20220304193015.wgofp34efl2loplj@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1646255044.git.gascoar@gmail.com>
- <b74ac90e869f71a98a04b834c4f3b5ab37bb38ea.1646255044.git.gascoar@gmail.com>
- <20220303122546.GH2794@kadam>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Y5wxxRemu0yerGXHelC0GgimMvnnSAL2fxL75mZiEww=;
+        b=JNz+AWRypwyvxskYS8xUxLTc9inYMENESJXkvApjIpVsCefPyKVM+x0uZ5CB56W8La
+         AgpDfOoLzpxHZOEgJ37h5uFd3D5l1ghGuxvU0fgN4uSyHprjry4at5LBOe3tS2m2GnWX
+         OQoweffH+x3qnnkKQd/p56T5aDRzDFsedAmtNwJJcqwdb9pBF+D4aS5po3ohPQ+7/Slp
+         C94DhLs9kATsq2bThGjcbBlgCpDDaoN+gw9xRPnkekqOebBL/vfPDWMpfHYB47AqA+lM
+         X2OO2A2DijB3KCi3Wc3vNR/dlm0P0mDYACiKWYJBsyzjh8z04UB/9jXV3YhXeE7b6rl6
+         Lw/Q==
+X-Gm-Message-State: AOAM5301PTIGvEyESbxQxQfBTK0N4cbRiuYaG3l6KXkDuTw/st7K9+VO
+        kerFNNmgl8OIl4GlGNjcJYChlKwn0K6Wt3sMS938Lg==
+X-Google-Smtp-Source: ABdhPJycg1+niiU14/sSOYE+8uBQeVbCwQkT8R4Um2dbCPLisZaTM6lzBzH8gQaUxtYXTlIqzCfCvKfY/DDVMfa2c5o=
+X-Received: by 2002:a25:b991:0:b0:610:bf4e:1b33 with SMTP id
+ r17-20020a25b991000000b00610bf4e1b33mr151686ybg.352.1646424448111; Fri, 04
+ Mar 2022 12:07:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220303122546.GH2794@kadam>
+References: <13c6c9a2-6db5-c3bf-349b-4c127ad3496a@axentia.se>
+ <CAGETcx_yDtX0m4gVKahABvKamUtGg2adL1+6=gwb4U=KEhwm7w@mail.gmail.com>
+ <69bb004f-0bb4-ec56-479c-5deab0ece00f@axentia.se> <CAGETcx8Bppn1y3Hffp2N_DPcJA6YyMEv1EFDTa1e1zOrkxbxzw@mail.gmail.com>
+ <f91c6f22-67a4-076d-d86d-6be1d14bc18a@axentia.se> <7edb467a-c8b4-fe29-9947-f71c655caa9f@axentia.se>
+In-Reply-To: <7edb467a-c8b4-fe29-9947-f71c655caa9f@axentia.se>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Fri, 4 Mar 2022 12:06:52 -0800
+Message-ID: <CAGETcx_Mod=ZEn_C12knStvfW5KSnA6=LU+YbG=QV-tFHE+onw@mail.gmail.com>
+Subject: Re: Regression: memory corruption on Atmel SAMA5D31
+To:     Peter Rosin <peda@axentia.se>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Nicolas Ferre <Nicolas.Ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <Ludovic.Desroches@microchip.com>,
+        Daniels Umanovskis <du@axentia.se>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 03:25:47PM +0300, Dan Carpenter wrote:
-> On Wed, Mar 02, 2022 at 06:36:38PM -0300, Gaston Gonzalez wrote:
-> > Fix "no previous prototype" W=1 warning by adding the prototype of the
-> > function vchiq_platform_init().
-> > 
-> > Note: vchiq_platform_init() is only called once in vchiq_probe(), so
-> > presumably should be static function. However, making the function
-> > static breaks the build.
-> > 
-> 
-> That's weird.  I don't have an ARM cross compile set up.  How does the
-> build break?
-> 
-> regards,
-> dan carpenter
+On Fri, Mar 4, 2022 at 2:57 AM Peter Rosin <peda@axentia.se> wrote:
 >
+> On 2022-03-04 07:57, Peter Rosin wrote:
+> > On 2022-03-04 04:55, Saravana Kannan wrote:
+> >> On Thu, Mar 3, 2022 at 1:17 AM Peter Rosin <peda@axentia.se> wrote:
+> >>>
+> >>> On 2022-03-03 04:02, Saravana Kannan wrote:
+> >>>> On Wed, Mar 2, 2022 at 4:29 PM Peter Rosin <peda@axentia.se> wrote:
+> >>>>>
+> >>>>> Hi!
+> >>>>>
+> >>>>> I'm seeing a weird problem, and I'd like some help with further
+> >>>>> things to try in order to track down what's going on. I have
+> >>>>> bisected the issue to
+> >>>>>
+> >>>>> f9aa460672c9 ("driver core: Refactor fw_devlink feature")
+> >>>>
+> >>>> I skimmed through your email and I'll read it more closely tomorrow,
+> >>>> but it wasn't clear if you see this on Linus's tip of the tree too.
+> >>>> Asking because of:
+> >>>> https://lore.kernel.org/lkml/20210930085714.2057460-1-yangyingliang@=
+huawei.com/
+> >>>>
+> >>>> Also, a couple of other data points that _might_ help. Try kernel
+> >>>> command line option fw_devlink=3Dpermissive vs fw_devlink=3Don (I fo=
+rget
+> >>>> if this was the default by 5.10) vs fw_devlink=3Doff.
+> >>>>
+> >>>> I'm expecting "off" to fix the issue for you. But if permissive vs o=
+n
+> >>>> shows a difference driver issues would start becoming a real
+> >>>> possibility.
+> >>>>
+> >>>> -Saravana
+> >>>
+> >>> Thanks for the quick reply! I don't think I tested the very tip of
+> >>> Linus tree before, only latest rc or something like that, but now I
+> >>> have. I.e.
+> >>>
+> >>> 5859a2b19911 ("Merge branch 'ucount-rlimit-fixes-for-v5.17' of git://=
+git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace")
+> >>>
+> >>> It would have been typical if an issue that existed for a couple of
+> >>> years had been fixed the last few weeks, but alas, no.
+> >>>
+> >>> On that kernel, and with whatever the default fw_devlink value is, th=
+e
+> >>
+> >> It's fw_devlink=3Don by default from at least 5.12-rc4 or so.
+> >>
+> >>> issue is there. It's a bit hard to tell if the incident probability
+> >>> is the same when trying fw_devlink arguments, but roughly so, and I
+> >>> do not have to wait for long to get a bad hash with the first
+> >>> reproducer
+> >>>
+> >>>    while :; do cat testfile | sha256sum; done
+> >>>
+> >>> The output is typical:
+> >>> 78464c59faa203413aceb5f75de85bbf4cde64f21b2d0449a2d72cd2aadac2a3  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> e03c5524ac6d16622b6c43f917aae730bc0793643f461253c4646b860c1a7215  -
+> >>> 1b8db6218f481cb8e4316c26118918359e764cc2c29393fd9ef4f2730274bb00  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 7d60bf848911d3b919d26941be33c928c666e9e5666f392d905af2d62d400570  -
+> >>> 212e1fe02c24134857ffb098f1834a2d87c655e0e5b9e08d4929f49a070be97c  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 7e33e751eb99a0f63b4f7d64b0a24f3306ffaf7c4bc4b27b82e5886c8ea31bc3  -
+> >>> d7a1f08aa9d0374d46d828fc3582f5927e076ff229b38c28089007cd0599c645  -
+> >>> 4fc963b7c7b14df9d669500f7c062bf378ff2751f705bb91eecd20d2f896f6fe  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>> 9360d886046c12d983b8bc73dd22302c57b0aafe58215700604fa977b4715fbe  -
+> >>> 4f9173f63cb2e13d1470e59e1b5c657f3b0f4f2e9a55ab6facffbb03f34ce04d  -
+> >>>
+> >>> Setting fw_devlink=3Doff makes no difference, AFAICT.
+> >>
+> >> By this, I'm assuming you set fw_devlink=3Doff in the kernel command
+> >> line and you still saw the corruption.
+> >
+> > Yes. On a bad kernel it's the same with all of the following kernel
+> > command lines.
+> >
+> > console=3DttyS0,115200 rw oops=3Dpanic panic=3D30 fw_devlink=3Don ip=3D=
+none root=3Dubi0:rootfs ubi.mtd=3D6 rootfstype=3Dubifs noinitrd mtdparts=3D=
+atmel_nand:256k(at91bootstrap),384k(barebox),256k@768k(bareboxenv),256k(bar=
+eboxenv2),128k@1536k(oftree),5M@2M(kernel),248M@8M(rootfs),-@256M(ovlfs)
+> >
+> > console=3DttyS0,115200 rw oops=3Dpanic panic=3D30 fw_devlink=3Doff ip=
+=3Dnone root=3Dubi0:rootfs ubi.mtd=3D6 rootfstype=3Dubifs noinitrd mtdparts=
+=3Datmel_nand:256k(at91bootstrap),384k(barebox),256k@768k(bareboxenv),256k(=
+bareboxenv2),128k@1536k(oftree),5M@2M(kernel),248M@8M(rootfs),-@256M(ovlfs)
+> >
+> > console=3DttyS0,115200 rw oops=3Dpanic panic=3D30 fw_devlink=3Dpermissi=
+ve ip=3Dnone root=3Dubi0:rootfs ubi.mtd=3D6 rootfstype=3Dubifs noinitrd mtd=
+parts=3Datmel_nand:256k(at91bootstrap),384k(barebox),256k@768k(bareboxenv),=
+256k(bareboxenv2),128k@1536k(oftree),5M@2M(kernel),248M@8M(rootfs),-@256M(o=
+vlfs)
+> >
+> >> If that's the case, I can't see how this could possibly have anything
+> >> to do with:
+> >> f9aa460672c9 ("driver core: Refactor fw_devlink feature")
+> >>
+> >> If you look at fw_devlink_link_device(), you'll see that the function
+> >> is NOP if fw_devlink=3Doff (the !fw_devlink_flags check). And from
+> >> there, the rest of the code in the series doesn't run because more
+> >> fields wouldn't get set, etc. That pretty much disables ALL the code
+> >> in the entire series. The only remaining diff would be header file
+> >> changes where I add/remove fields. But that's unlikely to cause any
+> >> issues here because I'm either deleting fields that aren't used or
+> >> adding fields that won't be used (with fw_devlink=3Doff). I think the
+> >> patch was just causing enough timing changes that it's masking the
+> >> real issue.
+> >
+> > When I compare fw_devlink_link_device() from before and after
+> > f9aa460672c9 ("driver core: Refactor fw_devlink feature")
+> > I notice that you also removed an unconditional call to
+> > device_link_add_missing_supplier_links() that was live before,
+> > regardless of any fw_devlink parameter.
+> >
+> > I don't know if that's relevant. Is it?
+> >
+> > Not knowing this code at all, and without any serious attempt
+> > at reading it, from here the comment of that removed function
+> > sure looks like it might cause a different ordering before and
+> > after the patch that is not restored with any fw_devlink
+> > argument.
+>
+> It appears that the device_link_add_missing_supplier_links() difference
+> is not relevant after all. What actually happened in the header file in
+> the "bad" commit was that two fields were removed (none added). Like so:
+>
+>  struct dev_links_info {
+>         struct list_head suppliers;
+>         struct list_head consumers;
+> -       struct list_head needs_suppliers;
+>         struct list_head defer_sync;
+> -       bool need_for_probe;
+>         enum dl_dev_state status;
+>  };
+>
+> If I restore those fields on a bad kernel, the issue is no longer
+> visible. That is true for the first bad kernel, i.e.
 
-Hi Dan,
+Ha... I thought this might be a possibility but I wasn't sure. Which
+is why I kinda left it at:
+"The only remaining diff would be header file
+changes where I add/remove fields. But that's unlikely to cause any
+issues here because I'm either deleting fields that aren't used or
+adding fields that won't be used (with fw_devlink=3Doff)."
 
-Test building the driver in x86 I get the error pasted below.
+Ok, at this point I'm going to ignore this thread. Call me out
+explicitly if you want me to pay attention :)
 
-However, now that you mention it, I made an ARM (64 bit) cross
-compilation: making the function static builds OK without the warning.
-I'll to do the same for a 32 bit setup.
-
-So I suppose that making the function static is the right approach ?
-
-FWIW, branch and cross-compiler:
-
-- Remote: https://github.com/raspberrypi/linux.git
-- Branch: rpi-5.17.y
-- gcc: aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110
-
-
--> x86 build error:
-
-CC [M]  drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.o
-In function ‘free_pagelist’,
-    inlined from ‘vchiq_complete_bulk’ at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:650:3:
-drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:434:4: error: argument 2 null where non-null expected [-Werror=nonnull]
-  434 |    memcpy((char *)kmap(pages[0]) +
-      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  435 |     pagelist->offset,
-      |     ~~~~~~~~~~~~~~~~~
-  436 |     fragments,
-      |     ~~~~~~~~~~
-  437 |     head_bytes);
-      |     ~~~~~~~~~~~
-In file included from ./arch/x86/include/asm/string.h:5,
-                 from ./include/linux/string.h:20,
-                 from ./include/linux/bitmap.h:11,
-                 from ./include/linux/cpumask.h:12,
-                 from ./arch/x86/include/asm/cpumask.h:5,
-                 from ./arch/x86/include/asm/msr.h:11,
-                 from ./arch/x86/include/asm/processor.h:22,
-                 from ./arch/x86/include/asm/timex.h:5,
-                 from ./include/linux/timex.h:65,
-                 from ./include/linux/time32.h:13,
-                 from ./include/linux/time.h:60,
-                 from ./include/linux/stat.h:19,
-                 from ./include/linux/module.h:13,
-                 from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:8:
-drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c: In function ‘vchiq_complete_bulk’:
-./arch/x86/include/asm/string_64.h:14:14: note: in a call to function ‘memcpy’ declared here
-   14 | extern void *memcpy(void *to, const void *from, size_t len);
-      |              ^~~~~~
-cc1: all warnings being treated as errors
-make[1]: *** [scripts/Makefile.build:288: drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.o] Error 1
-make: *** [Makefile:1831: drivers/staging/vc04_services] Error 2
-
-regards,
-
-Gaston
+-Saravana
