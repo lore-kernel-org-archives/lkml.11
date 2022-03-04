@@ -2,401 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64955C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B37FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240289AbiCDPKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:10:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S236241AbiCDPLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:11:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240213AbiCDPJj (ORCPT
+        with ESMTP id S230207AbiCDPLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:09:39 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8A7A41B7;
-        Fri,  4 Mar 2022 07:08:29 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2248TInM019088;
-        Fri, 4 Mar 2022 09:07:47 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=DvLujPcBLTJP8Oe9RdSiwgbwwIJ5bMu683tSdsdfNww=;
- b=bhGxlMQOzvD9uYe+US57OLNCdz1nyTeukydVrxQ0MarOLqss7kISreGhJdJ6jFd9XpsX
- lWTYCDT/8LiU/BCLtCh7YlZz2uHLCC74ML5UdhtYx8noTk+izxp3tXCY6QvKUHvkum7N
- Pb9T4IKT8I4M8K/ZAp/FlDCaNpWCwxswNCFDKXGrQqlmzSsRJvg8a3vcBbgRU9FNY4Tb
- cpoOsp8cEYyRjfgBnJIXEP0DoPgOcYLjLaUXPjYVIxybhkrOEmSxD6qqjKPGIsCzaGho
- Kx1RuYTDUHyy/lGVcy4Gx3xnNYuiXgmFz96PrkIGE8D3hl1CjnrgAAuXFmxT427e1Fye zA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h413-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 04 Mar 2022 09:07:44 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Mar
- 2022 15:07:30 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 4 Mar 2022 15:07:30 +0000
-Received: from aryzen.ad.cirrus.com (unknown [198.61.65.198])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id ED64DB06;
-        Fri,  4 Mar 2022 15:07:29 +0000 (UTC)
-From:   Lucas Tanure <tanureal@opensource.cirrus.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v2 18/20] hda: cs35l41: Move external boost handling to lib for ASoC use
-Date:   Fri, 4 Mar 2022 15:07:19 +0000
-Message-ID: <20220304150721.3802-19-tanureal@opensource.cirrus.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
-References: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
+        Fri, 4 Mar 2022 10:11:42 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF621C2332;
+        Fri,  4 Mar 2022 07:10:54 -0800 (PST)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 224DB0Yc014910;
+        Fri, 4 Mar 2022 15:10:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=ciIHhFJaJb75Cjc8NGM6MB6m0nC4s4N+phinFfx7gNs=;
+ b=Y4GJXTOEJbiMndgkGKppBHTJsKK6kNydc/YWhoePimLI64mHX01DQe62DUDOgOR3HNwm
+ q+UTro61PJ+jzpgPJ7VXYFVlmoWsY9rrf8fvdJZOtc4YYyAdix8BUijQ1OYjxUBPrPyU
+ 3gLCsRtCzJouLWyftqwFVHtiW+4nya2ZvZiljvNp69HpdAIRC5D71uAaardgLtM3UdLc
+ 3WTkAWVoh+HBOxwF5JP7MM6NRQYSoIDl14O2b+ermDKaRwCxEaD5lTBwDjxDls0Pisqz
+ HEzVmvefs2bVd5Sf/vY6nxQXX3g5E0N8coBUGgZPdgOhpj/H68z5ZvpTTZ1yq7TJ2BuK 0A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ekdcq9cxv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Mar 2022 15:10:22 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 224EIUkY013229;
+        Fri, 4 Mar 2022 15:10:21 GMT
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ekdcq9cxj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Mar 2022 15:10:21 +0000
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 224F3L9e022567;
+        Fri, 4 Mar 2022 15:10:21 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma05wdc.us.ibm.com with ESMTP id 3ek4k9ngwa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Mar 2022 15:10:21 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 224FAIHo12911226
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 4 Mar 2022 15:10:18 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 67BD8112061;
+        Fri,  4 Mar 2022 15:10:18 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 43B19112065;
+        Fri,  4 Mar 2022 15:10:18 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri,  4 Mar 2022 15:10:18 +0000 (GMT)
+Message-ID: <b6e9eb1e-846c-c98e-ad16-c651b5e1dad7@linux.ibm.com>
+Date:   Fri, 4 Mar 2022 10:10:17 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/4] X.509: Parse Basic Constraints for CA
+Content-Language: en-US
+To:     Eric Snowberg <eric.snowberg@oracle.com>, zohar@linux.ibm.com,
+        jarkko@kernel.org, dhowells@redhat.com, dwmw2@infradead.org
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        jmorris@namei.org, serge@hallyn.com, nayna@linux.ibm.com,
+        mic@linux.microsoft.com, konrad.wilk@oracle.com,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-security-module@vger.kernel.org
+References: <20220301173651.3435350-1-eric.snowberg@oracle.com>
+ <20220301173651.3435350-3-eric.snowberg@oracle.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220301173651.3435350-3-eric.snowberg@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: ADJnuMWnYmLkw1cAwtGLb4dgsmZQiyKQ
-X-Proofpoint-ORIG-GUID: ADJnuMWnYmLkw1cAwtGLb4dgsmZQiyKQ
-X-Proofpoint-Spam-Reason: safe
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: -IV59bcrT_bnon1M2ufEuXGdsyL4J80o
+X-Proofpoint-GUID: jIXztiokg71__8i1rfcjmST00a2jpD05
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-04_06,2022-03-04_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ impostorscore=0 bulkscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
+ priorityscore=1501 suspectscore=0 malwarescore=0 phishscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203040081
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To add support for external boost for ASoC move the HDA external
-boost implementation to the shared lib.
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
----
- include/sound/cs35l41.h        |   4 +
- sound/pci/hda/cs35l41_hda.c    | 119 ++----------------------------
- sound/soc/codecs/cs35l41-lib.c | 129 ++++++++++++++++++++++++++++++++-
- 3 files changed, 137 insertions(+), 115 deletions(-)
+On 3/1/22 12:36, Eric Snowberg wrote:
+> Parse the X.509 Basic Constraints.  The basic constraints extension
+> identifies whether the subject of the certificate is a CA.
+>
+> BasicConstraints ::= SEQUENCE {
+>          cA                      BOOLEAN DEFAULT FALSE,
+>          pathLenConstraint       INTEGER (0..MAX) OPTIONAL }
+>
+> If the CA is true, store it in a new public_key field call key_is_ca.
+> This will be used in a follow on patch that requires knowing if the
+> public key is a CA.
+>
+> Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
+> ---
+>   crypto/asymmetric_keys/x509_cert_parser.c | 9 +++++++++
+>   include/crypto/public_key.h               | 1 +
+>   2 files changed, 10 insertions(+)
+>
+> diff --git a/crypto/asymmetric_keys/x509_cert_parser.c b/crypto/asymmetric_keys/x509_cert_parser.c
+> index 2899ed80bb18..38c907f4ce27 100644
+> --- a/crypto/asymmetric_keys/x509_cert_parser.c
+> +++ b/crypto/asymmetric_keys/x509_cert_parser.c
+> @@ -583,6 +583,15 @@ int x509_process_extension(void *context, size_t hdrlen,
+>   		return 0;
+>   	}
+>   
+> +	if (ctx->last_oid == OID_basicConstraints) {
 
-diff --git a/include/sound/cs35l41.h b/include/sound/cs35l41.h
-index a8537bccedcf..2b2d1d17e552 100644
---- a/include/sound/cs35l41.h
-+++ b/include/sound/cs35l41.h
-@@ -799,5 +799,9 @@ int cs35l41_set_channels(struct device *dev, struct regmap *reg,
- int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int boost_ind, int boost_cap,
- 			 int boost_ipk);
- int cs35l41_gpio_config(struct regmap *regmap, struct cs35l41_hw_cfg *hw_cfg);
-+int cs35l41_init_boost(struct device *dev, struct regmap *regmap,
-+		       struct cs35l41_hw_cfg *hw_cfg);
-+bool cs35l41_safe_reset(struct regmap *regmap, enum cs35l41_boost_type b_type);
-+int cs35l41_global_enable(struct regmap *regmap, enum cs35l41_boost_type b_type, int enable);
- 
- #endif /* __CS35L41_H */
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 2ae074c8613e..190002cdd429 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -32,94 +32,6 @@ static const struct reg_sequence cs35l41_hda_mute[] = {
- 	{ CS35L41_AMP_DIG_VOL_CTRL,	0x0000A678 }, // AMP_VOL_PCM Mute
- };
- 
--static const struct reg_sequence cs35l41_safe_to_reset[] = {
--	{ 0x00000040,			0x00000055 },
--	{ 0x00000040,			0x000000AA },
--	{ 0x0000393C,			0x000000C0, 6000},
--	{ 0x0000393C,			0x00000000 },
--	{ 0x00007414,			0x00C82222 },
--	{ 0x0000742C,			0x00000000 },
--	{ 0x00000040,			0x000000CC },
--	{ 0x00000040,			0x00000033 },
--};
--
--static const struct reg_sequence cs35l41_safe_to_active[] = {
--	{ 0x00000040,			0x00000055 },
--	{ 0x00000040,			0x000000AA },
--	{ 0x0000742C,			0x0000000F },
--	{ 0x0000742C,			0x00000079 },
--	{ 0x00007438,			0x00585941 },
--	{ CS35L41_PWR_CTRL1,		0x00000001, 3000 }, // GLOBAL_EN = 1
--	{ 0x0000742C,			0x000000F9 },
--	{ 0x00007438,			0x00580941 },
--	{ 0x00000040,			0x000000CC },
--	{ 0x00000040,			0x00000033 },
--};
--
--static const struct reg_sequence cs35l41_active_to_safe[] = {
--	{ 0x00000040,			0x00000055 },
--	{ 0x00000040,			0x000000AA },
--	{ 0x00007438,			0x00585941 },
--	{ CS35L41_PWR_CTRL1,		0x00000000 },
--	{ 0x0000742C,			0x00000009, 3000 },
--	{ 0x00007438,			0x00580941 },
--	{ 0x00000040,			0x000000CC },
--	{ 0x00000040,			0x00000033 },
--};
--
--static const struct reg_sequence cs35l41_reset_to_safe[] = {
--	{ 0x00000040,			0x00000055 },
--	{ 0x00000040,			0x000000AA },
--	{ 0x00007438,			0x00585941 },
--	{ 0x00007414,			0x08C82222 },
--	{ 0x0000742C,			0x00000009 },
--	{ 0x00000040,			0x000000CC },
--	{ 0x00000040,			0x00000033 },
--};
--
--static bool cs35l41_hda_safe_reset(struct cs35l41_hda *cs35l41)
--{
--	switch (cs35l41->hw_cfg.bst_type) {
--	case CS35L41_EXT_BOOST:
--		regmap_write(cs35l41->regmap, CS35L41_GPIO1_CTRL1, 0x00000001);
--		regmap_multi_reg_write(cs35l41->regmap, cs35l41_safe_to_reset,
--				       ARRAY_SIZE(cs35l41_safe_to_reset));
--		return true;
--	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
--		return false;
--	default:
--		return true;
--	}
--};
--
--static int cs35l41_hda_global_enable(struct cs35l41_hda *cs35l41, int enable)
--{
--	int ret;
--
--	switch (cs35l41->hw_cfg.bst_type) {
--	case CS35L41_INT_BOOST:
--		ret = regmap_update_bits(cs35l41->regmap, CS35L41_PWR_CTRL1,
--					 CS35L41_GLOBAL_EN_MASK,
--					 enable << CS35L41_GLOBAL_EN_SHIFT);
--		usleep_range(3000, 3100);
--		break;
--	case CS35L41_EXT_BOOST:
--	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
--		if (enable)
--			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_safe_to_active,
--						     ARRAY_SIZE(cs35l41_safe_to_active));
--		else
--			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_active_to_safe,
--						     ARRAY_SIZE(cs35l41_active_to_safe));
--		break;
--	default:
--		ret = -EINVAL;
--		break;
--	}
--
--	return ret;
--};
--
- static void cs35l41_hda_playback_hook(struct device *dev, int action)
- {
- 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-@@ -135,11 +47,11 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 			regmap_write(reg, CS35L41_GPIO1_CTRL1, 0x00008001);
- 		break;
- 	case HDA_GEN_PCM_ACT_PREPARE:
--		ret = cs35l41_hda_global_enable(cs35l41, 1);
-+		ret = cs35l41_global_enable(reg, cs35l41->hw_cfg.bst_type, 1);
- 		break;
- 	case HDA_GEN_PCM_ACT_CLEANUP:
- 		regmap_multi_reg_write(reg, cs35l41_hda_mute, ARRAY_SIZE(cs35l41_hda_mute));
--		ret = cs35l41_hda_global_enable(cs35l41, 0);
-+		ret = cs35l41_global_enable(reg, cs35l41->hw_cfg.bst_type, 0);
- 		break;
- 	case HDA_GEN_PCM_ACT_CLOSE:
- 		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
-@@ -207,26 +119,9 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
- 	if (!cs35l41->hw_cfg.valid)
- 		return -EINVAL;
- 
--	switch (hw_cfg->bst_type) {
--	case CS35L41_INT_BOOST:
--		ret = cs35l41_boost_config(cs35l41->dev, cs35l41->regmap,
--					   hw_cfg->bst_ind, hw_cfg->bst_cap, hw_cfg->bst_ipk);
--		if (ret)
--			return ret;
--		break;
--	case CS35L41_EXT_BOOST:
--	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
--		regmap_multi_reg_write(cs35l41->regmap, cs35l41_reset_to_safe,
--				       ARRAY_SIZE(cs35l41_reset_to_safe));
--		ret = regmap_update_bits(cs35l41->regmap, CS35L41_PWR_CTRL2, CS35L41_BST_EN_MASK,
--					  CS35L41_BST_DIS_FET_OFF << CS35L41_BST_EN_SHIFT);
--		if (ret)
--			return ret;
--		break;
--	default:
--		dev_err(cs35l41->dev, "Boost type %d not supported\n", hw_cfg->bst_type);
--		return -EINVAL;
--	}
-+	ret = cs35l41_init_boost(cs35l41->dev, cs35l41->regmap, hw_cfg);
-+	if (ret)
-+		return ret;
- 
- 	if (hw_cfg->gpio1.valid) {
- 		switch (hw_cfg->gpio1.func) {
-@@ -505,7 +400,7 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 	return 0;
- 
- err:
--	if (cs35l41_hda_safe_reset(cs35l41))
-+	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
- 
-@@ -519,7 +414,7 @@ void cs35l41_hda_remove(struct device *dev)
- 
- 	component_del(cs35l41->dev, &cs35l41_hda_comp_ops);
- 
--	if (cs35l41_hda_safe_reset(cs35l41))
-+	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
- }
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index 34ba163874a6..91270047bf35 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -954,9 +954,8 @@ static const unsigned char cs35l41_bst_slope_table[4] = {
- 	0x75, 0x6B, 0x3B, 0x28
- };
- 
--
--int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int boost_ind, int boost_cap,
--			 int boost_ipk)
-+int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int boost_ind,
-+			 int boost_cap, int boost_ipk)
- {
- 	unsigned char bst_lbst_val, bst_cbst_range, bst_ipk_scaled;
- 	int ret;
-@@ -1043,6 +1042,130 @@ int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int boost_in
- }
- EXPORT_SYMBOL_GPL(cs35l41_boost_config);
- 
-+static const struct reg_sequence cs35l41_safe_to_reset[] = {
-+	{ 0x00000040,			0x00000055 },
-+	{ 0x00000040,			0x000000AA },
-+	{ 0x0000393C,			0x000000C0, 6000},
-+	{ 0x0000393C,			0x00000000 },
-+	{ 0x00007414,			0x00C82222 },
-+	{ 0x0000742C,			0x00000000 },
-+	{ 0x00000040,			0x000000CC },
-+	{ 0x00000040,			0x00000033 },
-+};
-+
-+static const struct reg_sequence cs35l41_active_to_safe[] = {
-+	{ 0x00000040,			0x00000055 },
-+	{ 0x00000040,			0x000000AA },
-+	{ 0x00007438,			0x00585941 },
-+	{ CS35L41_PWR_CTRL1,		0x00000000 },
-+	{ 0x0000742C,			0x00000009, 3000 },
-+	{ 0x00007438,			0x00580941 },
-+	{ 0x00000040,			0x000000CC },
-+	{ 0x00000040,			0x00000033 },
-+};
-+
-+static const struct reg_sequence cs35l41_safe_to_active[] = {
-+	{ 0x00000040,			0x00000055 },
-+	{ 0x00000040,			0x000000AA },
-+	{ 0x0000742C,			0x0000000F },
-+	{ 0x0000742C,			0x00000079 },
-+	{ 0x00007438,			0x00585941 },
-+	{ CS35L41_PWR_CTRL1,		0x00000001, 3000 }, // GLOBAL_EN = 1
-+	{ 0x0000742C,			0x000000F9 },
-+	{ 0x00007438,			0x00580941 },
-+	{ 0x00000040,			0x000000CC },
-+	{ 0x00000040,			0x00000033 },
-+};
-+
-+static const struct reg_sequence cs35l41_reset_to_safe[] = {
-+	{ 0x00000040,			0x00000055 },
-+	{ 0x00000040,			0x000000AA },
-+	{ 0x00007438,			0x00585941 },
-+	{ 0x00007414,			0x08C82222 },
-+	{ 0x0000742C,			0x00000009 },
-+	{ 0x00000040,			0x000000CC },
-+	{ 0x00000040,			0x00000033 },
-+};
-+
-+int cs35l41_init_boost(struct device *dev, struct regmap *regmap,
-+		       struct cs35l41_hw_cfg *hw_cfg)
-+{
-+	int ret;
-+
-+	switch (hw_cfg->bst_type) {
-+	case CS35L41_INT_BOOST:
-+		ret = cs35l41_boost_config(dev, regmap, hw_cfg->bst_ind,
-+					   hw_cfg->bst_cap, hw_cfg->bst_ipk);
-+		if (ret)
-+			dev_err(dev, "Error in Boost DT config: %d\n", ret);
-+		break;
-+	case CS35L41_EXT_BOOST:
-+	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
-+		/* Only CLSA0100 doesn't use GPIO as VSPK switch, but even on that laptop we can
-+		 * toggle GPIO1 as is not connected to anything.
-+		 * There will be no other device without VSPK switch.
-+		 */
-+		regmap_write(regmap, CS35L41_GPIO1_CTRL1, 0x00000001);
-+		regmap_multi_reg_write(regmap, cs35l41_reset_to_safe,
-+				       ARRAY_SIZE(cs35l41_reset_to_safe));
-+		ret = regmap_update_bits(regmap, CS35L41_PWR_CTRL2, CS35L41_BST_EN_MASK,
-+					 CS35L41_BST_DIS_FET_OFF << CS35L41_BST_EN_SHIFT);
-+		break;
-+	default:
-+		dev_err(dev, "Boost type %d not supported\n", hw_cfg->bst_type);
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(cs35l41_init_boost);
-+
-+bool cs35l41_safe_reset(struct regmap *regmap, enum cs35l41_boost_type b_type)
-+{
-+	switch (b_type) {
-+	/* There is only one laptop that doesn't have VSPK switch. */
-+	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
-+		return false;
-+	case CS35L41_EXT_BOOST:
-+		regmap_write(regmap, CS35L41_GPIO1_CTRL1, 0x00000001);
-+		regmap_multi_reg_write(regmap, cs35l41_safe_to_reset,
-+				       ARRAY_SIZE(cs35l41_safe_to_reset));
-+		return true;
-+	default:
-+		return true;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(cs35l41_safe_reset);
-+
-+int cs35l41_global_enable(struct regmap *regmap, enum cs35l41_boost_type b_type, int enable)
-+{
-+	int ret;
-+
-+	switch (b_type) {
-+	case CS35L41_INT_BOOST:
-+		ret = regmap_update_bits(regmap, CS35L41_PWR_CTRL1, CS35L41_GLOBAL_EN_MASK,
-+					 enable << CS35L41_GLOBAL_EN_SHIFT);
-+		usleep_range(3000, 3100);
-+		break;
-+	case CS35L41_EXT_BOOST:
-+	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
-+		if (enable)
-+			ret = regmap_multi_reg_write(regmap, cs35l41_safe_to_active,
-+						     ARRAY_SIZE(cs35l41_safe_to_active));
-+		else
-+			ret = regmap_multi_reg_write(regmap, cs35l41_active_to_safe,
-+						     ARRAY_SIZE(cs35l41_active_to_safe));
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(cs35l41_global_enable);
-+
- int cs35l41_gpio_config(struct regmap *regmap, struct cs35l41_hw_cfg *hw_cfg)
- {
- 	struct cs35l41_gpio_cfg *gpio1 = &hw_cfg->gpio1;
--- 
-2.35.1
+Don't you have to check whether you can access v[0] and v[1]?
 
+if (vlen < 3)
+
+     return -EBADMSG;
+
+or should it even be
+
+if (vlen != 3)
+
+      return -EBADMSG;
+
+
+> +		if (v[0] != (ASN1_CONS_BIT | ASN1_SEQ))
+> +			return -EBADMSG;
+> +		if (v[1] != vlen - 2)
+> +			return -EBADMSG;
+> +		if (v[1] != 0 && v[2] == ASN1_BOOL && v[3] == 1)
+> +			ctx->cert->pub->key_is_ca = true;
+> +	}
+> +
+>   	return 0;
+>   }
+>   
+> diff --git a/include/crypto/public_key.h b/include/crypto/public_key.h
+> index 6d61695e1cde..0521241764b7 100644
+> --- a/include/crypto/public_key.h
+> +++ b/include/crypto/public_key.h
+> @@ -26,6 +26,7 @@ struct public_key {
+>   	void *params;
+>   	u32 paramlen;
+>   	bool key_is_private;
+> +	bool key_is_ca;
+>   	const char *id_type;
+>   	const char *pkey_algo;
+>   };
