@@ -2,86 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA120C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7355FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241112AbiCDRVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:21:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
+        id S239756AbiCDRVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:21:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241138AbiCDRUz (ORCPT
+        with ESMTP id S238271AbiCDRVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:20:55 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 785B51CE981
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:19:59 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37C951478;
-        Fri,  4 Mar 2022 09:19:59 -0800 (PST)
-Received: from e121896.arm.com (unknown [10.57.42.166])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 943CF3F73D;
-        Fri,  4 Mar 2022 09:19:57 -0800 (PST)
-From:   James Clark <james.clark@arm.com>
-To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mike.leach@linaro.org, anshuman.khandual@arm.com
-Cc:     mathieu.poirier@linaro.org, leo.yan@linaro.com,
-        James Clark <james.clark@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 14/15] coresight: etm4x: Cleanup TRCBBCTLR register accesses
-Date:   Fri,  4 Mar 2022 17:19:11 +0000
-Message-Id: <20220304171913.2292458-15-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20220304171913.2292458-1-james.clark@arm.com>
-References: <20220304171913.2292458-1-james.clark@arm.com>
+        Fri, 4 Mar 2022 12:21:32 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334DD1520EF;
+        Fri,  4 Mar 2022 09:20:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=CH7QcMqwraV+tePSOfKGoron6GD0xdpdLgX8+rteWow=; b=uv1Al54t6vIc14pePuc5ns6yRx
+        Vs2ijGWG39+uXUMxC9X9KBHhWH85RNQltC7n6XL1uykxj9BvmZlLACCHVxEQ1ssN34uXih0/PqDlw
+        sFlJ7X0mwHCFfEba1SOYaWvKH2QPaHnuCVeU4mArJ93IC5h8hyIplYTcUAzZBD2w9sq5fZ9SlvC2e
+        34hc6qo5IHbfWXFRVxD1Gqp1BzPo28/1mxleZiE3SleSmoP19ZbNtyDRY/9DFJ/aR1AAKSa1VGjgj
+        YrP/qkD0ieEUoGHBy/Y/XX1yf4yNqNiynlcegnL+s5Z2KKL5vEJfq3M7jnVG9gfeV2jW2uD0nVwdn
+        PlSz6CLg==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nQBbF-00CoyB-HS; Fri, 04 Mar 2022 17:20:17 +0000
+Message-ID: <0e7a145e-d95e-a5ec-eb5b-729b48061200@infradead.org>
+Date:   Fri, 4 Mar 2022 09:20:12 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] Documentation/process: Add Researcher Guidelines
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Thorsten Leemhuis <linux@leemhuis.info>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stefano Zacchiroli <zack@upsilon.cc>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Laura Abbott <labbott@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Wenwen Wang <wenwen@cs.uga.edu>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220224001403.1307377-1-keescook@chromium.org>
+ <974cf8f2-06f3-99a5-9a77-6d7b7cc8271a@leemhuis.info>
+ <202202251044.F509C7F3@keescook> <871qzhhc39.fsf@meer.lwn.net>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <871qzhhc39.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a no-op change for style and consistency and has no effect on
-the binary output by the compiler. In sysreg.h fields are defined as
-the register name followed by the field name and then _MASK. This
-allows for grepping for fields by name rather than using magic numbers.
 
-Signed-off-by: James Clark <james.clark@arm.com>
----
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 4 ++--
- drivers/hwtracing/coresight/coresight-etm4x.h       | 3 +++
- 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-index 25f76a656308..3ae6f4432646 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -707,10 +707,10 @@ static ssize_t bb_ctrl_store(struct device *dev,
- 	 * individual range comparators. If include then at least 1
- 	 * range must be selected.
- 	 */
--	if ((val & BIT(8)) && (BMVAL(val, 0, 7) == 0))
-+	if ((val & TRCBBCTLR_MODE) && (FIELD_GET(TRCBBCTLR_RANGE_MASK, val) == 0))
- 		return -EINVAL;
- 
--	config->bb_ctrl = val & GENMASK(8, 0);
-+	config->bb_ctrl = val & (TRCBBCTLR_MODE | TRCBBCTLR_RANGE_MASK);
- 	return size;
- }
- static DEVICE_ATTR_RW(bb_ctrl);
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-index 3b81c104a44b..15704982357f 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x.h
-+++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-@@ -220,6 +220,9 @@
- 
- #define TRCSSPCICRn_PC_MASK			GENMASK(7, 0)
- 
-+#define TRCBBCTLR_MODE				BIT(8)
-+#define TRCBBCTLR_RANGE_MASK			GENMASK(7, 0)
-+
- /*
-  * System instructions to access ETM registers.
-  * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+On 3/4/22 09:16, Jonathan Corbet wrote:
+> Kees Cook <keescook@chromium.org> writes:
+> 
+>> On Thu, Feb 24, 2022 at 09:19:24AM +0100, Thorsten Leemhuis wrote:
+>>> Hmm, the intro for "Documentation/admin-guide/" states that "The
+>>> following manuals are written for users of the kernel", but the added
+>>> text afaics providing nothing regular users care about. So wouldn't it
+>>> be better if this lived below Documentation/process/ ? It might not a
+>>> really good fit either, but I'd say it's the better place.
+>>>
+>>> But well, the best person to know is Jonathan, who is listed as a
+>>> Co-developer above, so maybe I'm wrong my suggestion is a bad one.
+>>
+>> I started in process/ and eventually settled on admin-guide/ since that's
+>> basically the "front page". But I agree, there isn't an obviously correct
+>> place for it.
+> 
+> Sorry, been a bit distracted...when we were working on this I was more
+> focused on the text than the location.  My own feeling is that
+> Documentation/process is a better place for this - that's where we tell
+> the world how to work with the kernel community, after all.  I'm not
+> going to dig in my heels and fight about it, but that's my sense.
+> 
+> Otherwise, it kind of seems like this is ready to go in. I'd like to
+> apply it before the merge window; lemme know where you want it in the
+> end and we can get it done.
+
+There is a v2 of this patch, but yes, it should be in process/ IMO also.
+
 -- 
-2.28.0
-
+~Randy
