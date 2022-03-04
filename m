@@ -2,129 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 073A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239436AbiCDJ4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:56:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
+        id S236371AbiCDJ6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239421AbiCDJ4C (ORCPT
+        with ESMTP id S231157AbiCDJ6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:56:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 379ADBDE7B
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:55:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646387712;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=m/28R4qLiomcMPqm8kqlF7h66zN6UfIf8KZF8W80+TY=;
-        b=ECYJTjII5tkGSnTyyKdn/t1kZFO/JiMzrBSNPEM/k4zyvME1bNYTNgSextzzNZ2B/cfiGn
-        goamefYS5KUGaLKddN5TkW01iRc1xFyqiSvsUkL1+aalfxOQLJzTd6PM3uMsPpIxBIGTp7
-        NxH7nGQR90kztw0biGduivednArKBSI=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-Rj538yniM_a147m0Uuszgg-1; Fri, 04 Mar 2022 04:55:11 -0500
-X-MC-Unique: Rj538yniM_a147m0Uuszgg-1
-Received: by mail-lf1-f70.google.com with SMTP id m13-20020a19520d000000b00443423ff116so2523169lfb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 01:55:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m/28R4qLiomcMPqm8kqlF7h66zN6UfIf8KZF8W80+TY=;
-        b=TAYkD6WmJTgp/S6OCfEAOTBG6it8n8AgHlJlTNOnvevX3OqFu7Z9a9lckafIIy0IYK
-         fbwqFWym17z4fgHi0ygqIydH4bjTS6xs0h/qlk+fzAIKmKeDYfWBogs1NZUqavOkqBLB
-         2tK94gRya/soD7YILzPERmX5XP2xZXasW4DUMdq57eB+GbnivvdvIvrE7eQWPbq9gtFe
-         IHvO35G1Vc3LmS3zNO0OQgKabhsLBo04CH2DMEKI2BNlLySrKBszfyt3EfNKszqAcgHx
-         2CCfVEbAzCMUU+QeNR7/1a2wJo7Kl5hPnLOA7yJUK4yKU8KaCGHWAuFpl+arw2b07Vv/
-         obqQ==
-X-Gm-Message-State: AOAM5315Xn6eVQz0iT7FJe82yf0iRSS0YXWUNWCb8b9exbM/MK8QnuJw
-        11N6KQbWsyY9erEHo9CcsBcLi75+K2Z/YAdXQRS3vw8fL9UtXgAdImtDVt6lWjJUq5XP2Ue9mY2
-        HnSPZHx/RfnQ1zvWiLUjZvOpGpDdZb/2oxayF39YD
-X-Received: by 2002:a2e:9dcf:0:b0:246:3ff1:d770 with SMTP id x15-20020a2e9dcf000000b002463ff1d770mr25533594ljj.330.1646387709937;
-        Fri, 04 Mar 2022 01:55:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzIVUvPTZQTrJF/DAKSScLnIn2uD7l2XJ7Qf89pRTkwDeCrip5XsA/bOwodD7WRlPRyWFKePlZrlUJRKdMeuwk=
-X-Received: by 2002:a2e:9dcf:0:b0:246:3ff1:d770 with SMTP id
- x15-20020a2e9dcf000000b002463ff1d770mr25533577ljj.330.1646387709718; Fri, 04
- Mar 2022 01:55:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20201216064818.48239-1-jasowang@redhat.com> <20220224212314.1326-1-gdawar@xilinx.com>
- <20220224212314.1326-8-gdawar@xilinx.com>
-In-Reply-To: <20220224212314.1326-8-gdawar@xilinx.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 4 Mar 2022 10:54:33 +0100
-Message-ID: <CAJaqyWcAT05-MtOZkyiyNezSzEEmyyDdps0aWm7PMuyS4jqNdA@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 07/19] vdpa: introduce config operations for
- associating ASID to a virtqueue group
-To:     Gautam Dawar <gautam.dawar@xilinx.com>
-Cc:     Gautam Dawar <gdawar@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>, tanujk@xilinx.com,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Longpeng <longpeng2@huawei.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        netdev@vger.kernel.org
+        Fri, 4 Mar 2022 04:58:22 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF3D7660;
+        Fri,  4 Mar 2022 01:57:28 -0800 (PST)
+X-UUID: da42b50672434f5c9d725777bdbb6227-20220304
+X-UUID: da42b50672434f5c9d725777bdbb6227-20220304
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 300480696; Fri, 04 Mar 2022 17:57:22 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 4 Mar 2022 17:57:21 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 4 Mar 2022 17:57:20 +0800
+Message-ID: <123cb154ca0e87504c2b663ebdca2ccad967776f.camel@mediatek.com>
+Subject: Re: [PATCH v5 00/34] MT8195 IOMMU SUPPORT
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Will Deacon" <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <youlin.pei@mediatek.com>,
+        <anan.sun@mediatek.com>, <xueqi.zhang@mediatek.com>,
+        <yen-chang.chen@mediatek.com>, <mingyuan.ma@mediatek.com>,
+        <yf.wang@mediatek.com>, <libo.kang@mediatek.com>,
+        <chengci.xu@mediatek.com>
+Date:   Fri, 4 Mar 2022 17:57:19 +0800
+In-Reply-To: <YiHZ4lq2QClkdyxS@8bytes.org>
+References: <20220217113453.13658-1-yong.wu@mediatek.com>
+         <YhzBSsn/zUlGg5JE@8bytes.org>
+         <7ba0ee87-c193-9834-d0b4-ff3e06ced82b@collabora.com>
+         <5ed9278fa0b72b993512cff2316218ab88cafe50.camel@mediatek.com>
+         <YiHZ4lq2QClkdyxS@8bytes.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:25 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
->
-> This patch introduces a new bus operation to allow the vDPA bus driver
-> to associate an ASID to a virtqueue group.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
-> ---
->  include/linux/vdpa.h | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index de22ca1a8ef3..7386860c3995 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -239,6 +239,12 @@ struct vdpa_map_file {
->   *                             @vdev: vdpa device
->   *                             Returns the iova range supported by
->   *                             the device.
-> + * @set_group_asid:            Set address space identifier for a
-> + *                             virtqueue group
-> + *                             @vdev: vdpa device
-> + *                             @group: virtqueue group
-> + *                             @asid: address space id for this group
-> + *                             Returns integer: success (0) or error (< 0)
->   * @set_map:                   Set device memory mapping (optional)
->   *                             Needed for device that using device
->   *                             specific DMA translation (on-chip IOMMU)
-> @@ -321,6 +327,10 @@ struct vdpa_config_ops {
->                        u64 iova, u64 size, u64 pa, u32 perm, void *opaque);
->         int (*dma_unmap)(struct vdpa_device *vdev, unsigned int asid,
->                          u64 iova, u64 size);
-> +       int (*set_group_asid)(struct vdpa_device *vdev, unsigned int group,
-> +                             unsigned int asid);
-> +
-> +
+On Fri, 2022-03-04 at 10:20 +0100, Joerg Roedel wrote:
+> On Tue, Mar 01, 2022 at 03:49:18PM +0800, Yong Wu wrote:
+> > 
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=592275
+> 
+> Okay, thanks for the clarification. So I can't include linux-next in
+> my
+> tree, so I think the best option is to wait until v5.18-rc1 (or
+> rather
+> -rc3, which is where I start merging new stuff) is out and merge it
+> then.
+> Another option would be if there is a branch which only contains the
+> dependencies of this patch-set, which I could pull into my tree, but
+> it
+> is already pretty late in the cycle.
+> So please re-send when the next -rc1 is out and I will pick it up
+> then.
 
-Nit again, and Jason's patch already contained these, but I think
-these two blank lines are introduced unintentionally.
+Thanks for this info. I will re-send this patchset after the next -rc1.
 
->
->         /* Free device resources */
->         void (*free)(struct vdpa_device *vdev);
-> --
-> 2.25.0
->
+Could you help apply Dafna's patchset at this time? This patchset
+depends on it and it won't conflict with the others.
+
+Thanks.
+
+> 
+> Regards,
+> 
+> 	Joerg
 
