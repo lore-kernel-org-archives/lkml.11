@@ -2,67 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 684C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92836C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238250AbiCDMJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 07:09:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53342 "EHLO
+        id S239683AbiCDMKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 07:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiCDMJz (ORCPT
+        with ESMTP id S231488AbiCDMKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 07:09:55 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586262980B
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 04:09:08 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id v10-20020a92c80a000000b002c281af4ddfso5350788iln.21
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 04:09:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=ZLQ+l6U3cC3xcyZ26dmva83Rjla9btl+5WyQj7ZwMUQ=;
-        b=x07u51M28BHhafBIckCN+044KbfXYi5yxetJeuVmLj0jI1Ifc0dh/vZksn73ygjJdx
-         UzLhiO+HIl0eAWb2VptH8I4wLB0TKRV39PCy8FCknz/tJRgkFs7eS9HOGBrJyoRXir2h
-         R2Y3ZsXqfJp5M8WtTAA2sTAup8t0BTzZMd01QZBWyLc3RN6hTs+3w2Act027P6SYgsSr
-         kXkI6bKnL3KZcRNWQupgjD74s5fpFJgm8vJ2iJimPmbecEXh324XjfGwAE8hkHjfVSpk
-         WL4Qg5oD5/EWsxWWLXlRCUZYhCsD/3EDnFR0Lmwb+AJAeu0VZwtOnvOHpsffbz73+WXH
-         oYCg==
-X-Gm-Message-State: AOAM532HihUEpJek1dUdcffwxYcs11aMcVYU9VsAwtmyUKThQluoC0YZ
-        ckUOexNn2cPXh9VNC+DCJjbnaWEFIeAKEHcIhGB192v+Bmyp
-X-Google-Smtp-Source: ABdhPJzTtUgWNdrJB42fkiOFuPQZ9wPjXcRLvuJiYwlAZuwlxR2NYIaEMoOGsQAnk3FD4ovrLTnL00mlm28BFC5D8h0pBTHV1nNt
+        Fri, 4 Mar 2022 07:10:38 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770C11A6F83;
+        Fri,  4 Mar 2022 04:09:50 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id DA4DF51C;
+        Fri,  4 Mar 2022 13:09:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1646395789;
+        bh=V3tPVMEO+Jq2klZv9qatnhwYwoLpYgaa6zzWUUOn5XE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JPF+PX5xMyBl+3ZOhN5TT74AfjoyDD68PReLFygt7fsddbZoCvL3QVsR2BtLo3wYV
+         Lr3GQhO0VCxU0UPqqJrQiRB3GlAr3MF5FiJv1FJPTNq5DjN/piozKnoV0gt4gsZk4L
+         NE+J29i+BvoKsXE3AN8Rsf66oCCo7uubKf7C8E2o=
+Date:   Fri, 4 Mar 2022 14:09:36 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     xkernel.wang@foxmail.com
+Cc:     sakari.ailus@iki.fi, mchehab@kernel.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: omap3isp: check the return of __ccp2_get_format()
+Message-ID: <YiIBgDA7PQHYS59h@pendragon.ideasonboard.com>
+References: <tencent_E6A97F6B1009E6F65C230E070A9770612507@qq.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1487:b0:2c2:e41d:f72b with SMTP id
- n7-20020a056e02148700b002c2e41df72bmr23414746ilk.61.1646395747743; Fri, 04
- Mar 2022 04:09:07 -0800 (PST)
-Date:   Fri, 04 Mar 2022 04:09:07 -0800
-In-Reply-To: <20220304114907.2733-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b43dde05d96361a0@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in btrfs_scan_one_device (2)
-From:   syzbot <syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com>
-To:     anand.jain@oracle.com, dsterba@suse.com, hdanton@sina.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <tencent_E6A97F6B1009E6F65C230E070A9770612507@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hello Xiaoke,
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Thank you for the patch.
 
-Reported-and-tested-by: syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com
+On Fri, Mar 04, 2022 at 07:48:18PM +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> __ccp2_get_format() returns format structure or NULL on error.
+> So it is better to check the return value of it to prevent potential
+> wrong memory access.
 
-Tested on:
+The function can actually never return NULL if it's called with a valid
+pad number, which should always be the case as far as I can tell (since
+commit a8fa55078a778). This patch is thus not needed.
 
-commit:         2293be58 Merge tag 'trace-v5.17-rc4' of git://git.kern..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5f28851401b410e5
-dashboard link: https://syzkaller.appspot.com/bug?extid=82650a4e0ed38f218363
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1723b521700000
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+>  drivers/media/platform/omap3isp/ispccp2.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/media/platform/omap3isp/ispccp2.c b/drivers/media/platform/omap3isp/ispccp2.c
+> index acb58b6..81881b1 100644
+> --- a/drivers/media/platform/omap3isp/ispccp2.c
+> +++ b/drivers/media/platform/omap3isp/ispccp2.c
+> @@ -675,8 +675,10 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
+>  		 */
+>  		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SINK,
+>  					   which);
+> -		memcpy(fmt, format, sizeof(*fmt));
+> -		fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
+> +		if (format != NULL) {
+> +			memcpy(fmt, format, sizeof(*fmt));
+> +			fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
+> +		}
+>  		break;
+>  	}
+>  
+> @@ -709,6 +711,9 @@ static int ccp2_enum_mbus_code(struct v4l2_subdev *sd,
+>  
+>  		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SINK,
+>  					   code->which);
+> +		if (format == NULL)
+> +			return -EINVAL;
+> +
+>  		code->code = format->code;
+>  	}
+>  
+> @@ -792,6 +797,9 @@ static int ccp2_set_format(struct v4l2_subdev *sd,
+>  	if (fmt->pad == CCP2_PAD_SINK) {
+>  		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SOURCE,
+>  					   fmt->which);
+> +		if (format == NULL)
+> +			return -EINVAL;
+> +
+>  		*format = fmt->format;
+>  		ccp2_try_format(ccp2, sd_state, CCP2_PAD_SOURCE, format,
+>  				fmt->which);
 
-Note: testing is done by a robot and is best-effort only.
+-- 
+Regards,
+
+Laurent Pinchart
