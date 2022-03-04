@@ -2,189 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85AF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236823AbiCDJMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:12:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49004 "EHLO
+        id S237208AbiCDJNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:13:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233583AbiCDJMO (ORCPT
+        with ESMTP id S237540AbiCDJNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:12:14 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2899E1A39EE;
-        Fri,  4 Mar 2022 01:11:27 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DFCE41424;
-        Fri,  4 Mar 2022 01:11:26 -0800 (PST)
-Received: from [10.57.42.166] (unknown [10.57.42.166])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 789483F73D;
-        Fri,  4 Mar 2022 01:11:25 -0800 (PST)
-Message-ID: <bfe873a2-4dbb-8ad0-5089-61ccf6a10eeb@arm.com>
-Date:   Fri, 4 Mar 2022 09:11:23 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/1] perf: Set build-id using build-id header on new mmap
- records
-Content-Language: en-US
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     acme@kernel.org, linux-perf-users@vger.kernel.org,
-        coresight@lists.linaro.org, Denis Nikitin <denik@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
+        Fri, 4 Mar 2022 04:13:23 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92AB38790
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:12:35 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 77377212C5;
+        Fri,  4 Mar 2022 09:12:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646385154; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VqMdHxq3Tr9wFinwTE0WAXhnv9tEGYziFkIAVbbyOnQ=;
+        b=AkRsaKEn6BkQPgOaWVvK+fXQY1+K/rVYo7Ck9TjWhm7pX6kkJptc+hon/dZMW/TzohL2lh
+        nPfP6WzaHDN/4tGiPUz2vFwgkPKPKBrRSNrstsA/DXm6XV0eaZ4+a9fYQdPUGxC4CV+Wc6
+        MSF6h2BaLxV6mE7tiW/OlzH/mp+82V8=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 62190A3B84;
+        Fri,  4 Mar 2022 09:12:34 +0000 (UTC)
+Date:   Fri, 4 Mar 2022 10:12:33 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-References: <20220224171955.862983-1-james.clark@arm.com>
- <20220224171955.862983-2-james.clark@arm.com> <YhwAPrOP/ky4HLfC@krava>
- <3dc14ad9-8ce1-a2e3-3bab-953b79af82be@arm.com> <YiCoSbYHDF8jesxp@krava>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <YiCoSbYHDF8jesxp@krava>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] mm: madvise: MADV_DONTNEED_LOCKED
+Message-ID: <YiHYAbEq9Sl4Rbjo@dhcp22.suse.cz>
+References: <20220303212956.229409-1-hannes@cmpxchg.org>
+ <YiE3do4qCmJ6RsmP@cmpxchg.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiE3do4qCmJ6RsmP@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+[please CC linux-api if you are going to repost with the fix suggested
+ by Nadav]
 
+On Thu 03-03-22 16:47:34, Johannes Weiner wrote:
+> On Thu, Mar 03, 2022 at 04:29:56PM -0500, Johannes Weiner wrote:
+> > MADV_DONTNEED historically rejects mlocked ranges, but with
+> > MLOCK_ONFAULT and MCL_ONFAULT allowing to mlock without populating,
+> > there are valid use cases for depopulating locked ranges as well.
+> > 
+> > Users mlock memory to protect secrets. There are allocators for secure
+> > buffers that want in-use memory generally mlocked, but cleared and
+> > invalidated memory to give up the physical pages. This could be done
+> > with explicit munlock -> mlock calls on free -> alloc of course, but
+> > that adds two unnecessary syscalls, heavy mmap_sem write locks, vma
+> > splits and re-merges - only to get rid of the backing pages.
+> > 
+> > Users also mlockall(MCL_ONFAULT) to suppress sustained paging, but are
+> > okay with on-demand initial population. It seems valid to selectively
+> > free some memory during the lifetime of such a process, without having
+> > to mess with its overall policy.
+> > 
+> > Why add a separate flag? Isn't this a pretty niche usecase?
+> > 
+> > - MADV_DONTNEED has been bailing on locked vmas forever. It's at least
+> >   conceivable that someone, somewhere is relying on mlock to protect
+> >   data from perhaps broader invalidation calls. Changing this behavior
+> >   now could lead to quiet data corruption.
+> > 
+> > - It also clarifies expectations around MADV_FREE and maybe
+> >   MADV_REMOVE. It avoids the situation where one quietly behaves
+> >   different than the others. MADV_FREE_LOCKED can be added later.
+> > 
+> > - The combination of mlock() and madvise() in the first place is
+> >   probably niche. But where it happens, I'd say that dropping pages
+> >   from a locked region once they don't contain secrets or won't page
+> >   anymore is much saner than relying on mlock to protect memory from
+> >   speculative or errant invalidation calls. It's just that we can't
+> >   change the default behavior because of the two previous points.
+> > 
+> > Given that, an explicit new flag seems to make the most sense.
+> > 
+> > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> 
+> Just for context, I found this discussion back from 2018:
+> 
+> https://lkml.iu.edu/hypermail/linux/kernel/1806.1/00483.html
+> 
+> It seems to me that the usecase wasn't really in question, but people
+> weren't sure about the API, and then Jason found a workaround before
+> the discussion really concluded. I was asked internally about this
+> feature, so I'm submitting another patch in this direction, but with
+> more thoughts on why I chose to go with a new flag. Hopefully we can
+> work it out this time around :-)
 
-On 03/03/2022 11:36, Jiri Olsa wrote:
-> On Wed, Mar 02, 2022 at 04:20:00PM +0000, James Clark wrote:
->>
->>
->> On 27/02/2022 22:50, Jiri Olsa wrote:
->>> On Thu, Feb 24, 2022 at 05:19:55PM +0000, James Clark wrote:
->>>> MMAP records that occur after the build-id header is parsed do not have
->>>> their build-id set even if the filename matches an entry from the
->>>> header. Set the build-id on these dsos as long as the MMAP record
->>>> doesn't have its own build-id set.
->>>>
->>>> This fixes an issue with off target analysis where the local version of
->>>> a dso is loaded rather than one from ~/.debug via a build-id.
->>>
->>> nice catch :)
->>>
->>>>
->>>> Reported-by: Denis Nikitin <denik@chromium.org>
->>>> Signed-off-by: James Clark <james.clark@arm.com>
->>>> ---
->>>>  tools/perf/util/dso.h    |  1 +
->>>>  tools/perf/util/header.c |  1 +
->>>>  tools/perf/util/map.c    | 16 ++++++++++++++--
->>>>  3 files changed, 16 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/tools/perf/util/dso.h b/tools/perf/util/dso.h
->>>> index 011da3924fc1..3a9fd4d389b5 100644
->>>> --- a/tools/perf/util/dso.h
->>>> +++ b/tools/perf/util/dso.h
->>>> @@ -167,6 +167,7 @@ struct dso {
->>>>  	enum dso_load_errno	load_errno;
->>>>  	u8		 adjust_symbols:1;
->>>>  	u8		 has_build_id:1;
->>>> +	u8		 header_build_id:1;
->>>>  	u8		 has_srcline:1;
->>>>  	u8		 hit:1;
->>>>  	u8		 annotate_warned:1;
->>>> diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
->>>> index 6da12e522edc..571d73d4f976 100644
->>>> --- a/tools/perf/util/header.c
->>>> +++ b/tools/perf/util/header.c
->>>> @@ -2200,6 +2200,7 @@ static int __event_process_build_id(struct perf_record_header_build_id *bev,
->>>>  
->>>>  		build_id__init(&bid, bev->data, size);
->>>>  		dso__set_build_id(dso, &bid);
->>>> +		dso->header_build_id = 1;
->>>>  
->>>>  		if (dso_space != DSO_SPACE__USER) {
->>>>  			struct kmod_path m = { .name = NULL, };
->>>> diff --git a/tools/perf/util/map.c b/tools/perf/util/map.c
->>>> index 1803d3887afe..4ae91e491e23 100644
->>>> --- a/tools/perf/util/map.c
->>>> +++ b/tools/perf/util/map.c
->>>> @@ -127,7 +127,7 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
->>>>  
->>>>  	if (map != NULL) {
->>>>  		char newfilename[PATH_MAX];
->>>> -		struct dso *dso;
->>>> +		struct dso *dso, *header_bid_dso;
->>>>  		int anon, no_dso, vdso, android;
->>>>  
->>>>  		android = is_android_lib(filename);
->>>> @@ -185,7 +185,19 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
->>>>  
->>>>  		if (build_id__is_defined(bid))
->>>>  			dso__set_build_id(dso, bid);
->>>> -
->>>> +		else {
->>>
->>> nit please add { } to the if clause as well
->>>
->>>> +			/*
->>>> +			 * If the mmap event had no build ID, search for an existing dso from the
->>>> +			 * build ID header by name. Otherwise only the dso loaded at the time of
->>>> +			 * reading the header will have the build ID set and all future mmaps will
->>>> +			 * have it missing.
->>>> +			 */
->>>> +			header_bid_dso = __dsos__find(&machine->dsos, filename, false);
->>>
->>> is this 'perf top' safe? I think dso should be added in the
->>> same thread, but please check and add comment why we don't
->>> need locking in here
->>
->> Seems like there are multiple synthesize_threads_workers using the same machine->dsos object so
->> I think locking is needed.
->>
->> At first I thought of doing this:
->>
->>   diff --git a/tools/perf/util/map.c b/tools/perf/util/map.c
->>   index 4ae91e491e23..b87b81e3d41c 100644
->>   --- a/tools/perf/util/map.c
->>   +++ b/tools/perf/util/map.c
->>   @@ -192,7 +192,9 @@ struct map *map__new(struct machine *machine, u64 start, u64 len,
->>                            * reading the header will have the build ID set and all future mmaps will
->>                            * have it missing.
->>                            */
->>   +                       down_read(&machine->dsos.lock);
->>                           header_bid_dso = __dsos__find(&machine->dsos, filename, false);
->>   +                       up_read(&machine->dsos.lock);
->>                           if (header_bid_dso && header_bid_dso->header_build_id) {
->>                                   dso__set_build_id(dso, &header_bid_dso->bid);
->>                                   dso->header_build_id = 1;
->>
->> But then I was wondering why it doesn't need a write lock all the way from machine__findnew_dso_id() to
->> dso__put()? At the moment there are writes to the dso like dso__set_loaded(), dso->nsinfo = nsi and
->> dso__set_build_id(), so another thread could find the dso in a partially constructed state.
-> 
-> I think that's fine, machine__findnew_dso_id takes the dso ref so
-> the real 'release' is when the machine object goes down at dsos__purge
-> 
->>
->> Not sure if this is an issue currently without my patch, but at least with it they would have to be found
->> with header_build_id already set to 1 otherwise it will mess things up.
-> 
-> as for the partial changes I think it's also fine, because it happens
-> at separate places.. we'd need to investigate specific example to see
-> if there's a problem
-> 
->>
->> Extending the write lock outside of machine__findnew_dso_id() is difficult because it already
->> releases it before it returns. Does it need to be changed so that machine__findnew_dso_id() takes all the
->> arguments needed to construct it inside the lock?
-> 
-> the change above should do it.. as for top threads I don't think
-> it actually matters because there's events processing and hists
-> processing, and I did not find them clashing in this.. but there's
-> some setup session code that touches this, so it's better to be safe
+Thanks for the link. The topic sounded familiar but I couldn't really
+remember any details anymore. Now I do remember that I wasn't happy
+about special casing MLOCK_ONFAULT. A dedicated madvise operation
+is definitely safer and I am OK with that. Presented usecases make sense
+to me as well.
 
-Ok yes I think I agree. The header flag isn't important for perf top so having it all
-constructed in place isn't necessary.
+Btw. I have a recollection that Mike is working on MADV_DONTNEED support
+for hugetlb pages. I do not know the current state of that work. Not
+that it would make nay impact on your new flag but some minor changes
+might be needed.
 
-I've submitted v2 with this change.
+Anyway, after the madvise_need_mmap_write is addressed, feel free to add
+Acked-by: Michal Hocko <mhocko@suse.com>
 
-Thanks for the review.
-
-> 
-> thanks,
-> jirka
+Thanks!
+-- 
+Michal Hocko
+SUSE Labs
