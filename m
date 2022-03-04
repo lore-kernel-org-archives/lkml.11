@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F13C2C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F1FC43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbiCDUcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:32:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        id S231273AbiCDUcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiCDUcV (ORCPT
+        with ESMTP id S229920AbiCDUcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:32:21 -0500
+        Fri, 4 Mar 2022 15:32:22 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1571E6EA9;
-        Fri,  4 Mar 2022 12:31:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED42B1E7466;
+        Fri,  4 Mar 2022 12:31:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646425891; x=1677961891;
+  t=1646425890; x=1677961890;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZjxKYa04oRaSCWshHf18f3TOhG+oryrLgSOPKMBRnso=;
-  b=TEiN4RMMd/VsbA6WTsYbexi6IrKL03LTQoODAuqiqBDZbkXUEymmX0kq
-   BQujUAx5p3rVCuEfXg2c8NX1o8crnSTwgwsHFDcbvLzg2u6N9qrIWaBq9
-   cQzwFHy+CsxDRa9NCMJEtZeVOtfM/5cAOfgcs2vEtKwVM3CbrIpdZRfbf
-   auCx7I4ZU2msOzhcmlQZOfZBhZj8BrirqZGAd4nysjFCvAMBbJhmQYFSv
-   eKhUnRCeZb50ab6lv3W4oOuo5UuIbv2HQCdDiAHyhcM2EZ2angZ4FlKi+
-   wb4MuORuP+4S3yXrg8i2HHSWF3wMAL1DohGqLT3kDznY+SLPGIhT0jK9T
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251624269"
+  bh=aRlMnTatxiY4Yvd1LJFLgmWjfDIoGkf0Pm9QR1zg3Os=;
+  b=keGXuNfaNMMoYMpWggTnJ9ASDPbIsXwS0ObRGKhzfoleQr4SwC9m/nTg
+   43VW22ehMNzuyt2NDFzSz7eFhtTe7/q9n+r6sfkgrXOE1/cgvSts5ZvrH
+   VMxPFJZQJMw1yub4vrmvIbU9qR5jv9gXVvRQcqAv5RMiLY9Zcjg78RYtn
+   SwymE35pr+DZb1wjaAIMCS+39w3akJsXlXZZTNA+E3Jw1NBO4OuUooui6
+   QO73g/dAb3xrsmIXbQL1AK5LV1etlOGUv+cWJ1uCtJ2r6TijS7KAnIjcT
+   34YZ3ZsdZZClIU6hmcKJpvfSVR/43gi0iKVlx0rnSNWPs4sjDGCNMLoDA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251624252"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="251624269"
+   d="scan'208";a="251624252"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:34 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:31 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344473"
+   d="scan'208";a="552344442"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:34 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:31 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 070/104] KVM: TDX: complete interrupts after tdexit
-Date:   Fri,  4 Mar 2022 11:49:26 -0800
-Message-Id: <45507ecee0a0d23229e9e7f8bb74077034a40bcd.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 063/104] KVM: TDX: Add helper assembly function to TDX vcpu
+Date:   Fri,  4 Mar 2022 11:49:19 -0800
+Message-Id: <3bdac7ec2e6531a1dc1933930bd32570941d7dea.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,42 +58,183 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This corresponds to VMX __vmx_complete_interrupts().  Because TDX
-virtualize vAPIC, KVM only needs to care NMI injection.
+TDX defines an API to run TDX vcpu with its own ABI.  Define an assembly
+helper function to run TDX vcpu to hide the special ABI so that C code can
+call it with function call ABI.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/x86/kvm/vmx/vmenter.S | 146 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 146 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index c1366aac7d96..3cb2fbd1c12c 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -550,6 +550,14 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 	vcpu->kvm->vm_bugged = true;
- }
+diff --git a/arch/x86/kvm/vmx/vmenter.S b/arch/x86/kvm/vmx/vmenter.S
+index 435c187927c4..33dc5aa2f0db 100644
+--- a/arch/x86/kvm/vmx/vmenter.S
++++ b/arch/x86/kvm/vmx/vmenter.S
+@@ -2,6 +2,7 @@
+ #include <linux/linkage.h>
+ #include <asm/asm.h>
+ #include <asm/bitsperlong.h>
++#include <asm/errno.h>
+ #include <asm/kvm_vcpu_regs.h>
+ #include <asm/nospec-branch.h>
+ #include <asm/segment.h>
+@@ -28,6 +29,13 @@
+ #define VCPU_R15	__VCPU_REGS_R15 * WORD_SIZE
+ #endif
  
-+static void tdx_complete_interrupts(struct kvm_vcpu *vcpu)
-+{
-+	/* Avoid costly SEAMCALL if no nmi was injected */
-+	if (vcpu->arch.nmi_injected)
-+		vcpu->arch.nmi_injected = td_management_read8(to_tdx(vcpu),
-+							      TD_VCPU_PEND_NMI);
-+}
++#ifdef CONFIG_INTEL_TDX_HOST
++#define TDENTER 		0
++#define EXIT_REASON_TDCALL	77
++#define TDENTER_ERROR_BIT	63
++#include "seamcall.h"
++#endif
 +
- struct tdx_uret_msr {
- 	u32 msr;
- 	unsigned int slot;
-@@ -618,6 +626,8 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
- 	vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
- 	trace_kvm_exit(vcpu, KVM_ISA_VMX);
+ .section .noinstr.text, "ax"
  
-+	tdx_complete_interrupts(vcpu);
+ /**
+@@ -328,3 +336,141 @@ SYM_FUNC_START(vmx_do_interrupt_nmi_irqoff)
+ 	pop %_ASM_BP
+ 	RET
+ SYM_FUNC_END(vmx_do_interrupt_nmi_irqoff)
 +
- 	if (tdx->exit_reason.error || tdx->exit_reason.non_recoverable)
- 		return EXIT_FASTPATH_NONE;
- 	return EXIT_FASTPATH_NONE;
++#ifdef CONFIG_INTEL_TDX_HOST
++
++.pushsection .noinstr.text, "ax"
++
++/**
++ * __tdx_vcpu_run - Call SEAMCALL(TDENTER) to run a TD vcpu
++ * @tdvpr:	physical address of TDVPR
++ * @regs:	void * (to registers of TDVCPU)
++ * @gpr_mask:	non-zero if guest registers need to be loaded prior to TDENTER
++ *
++ * Returns:
++ *	TD-Exit Reason
++ *
++ * Note: KVM doesn't support using XMM in its hypercalls, it's the HyperV
++ *	 code's responsibility to save/restore XMM registers on TDVMCALL.
++ */
++SYM_FUNC_START(__tdx_vcpu_run)
++	push %rbp
++	mov  %rsp, %rbp
++
++	push %r15
++	push %r14
++	push %r13
++	push %r12
++	push %rbx
++
++	/* Save @regs, which is needed after TDENTER to capture output. */
++	push %rsi
++
++	/* Load @tdvpr to RCX */
++	mov %rdi, %rcx
++
++	/* No need to load guest GPRs if the last exit wasn't a TDVMCALL. */
++	test %dx, %dx
++	je 1f
++
++	/* Load @regs to RAX, which will be clobbered with $TDENTER anyways. */
++	mov %rsi, %rax
++
++	mov VCPU_RBX(%rax), %rbx
++	mov VCPU_RDX(%rax), %rdx
++	mov VCPU_RBP(%rax), %rbp
++	mov VCPU_RSI(%rax), %rsi
++	mov VCPU_RDI(%rax), %rdi
++
++	mov VCPU_R8 (%rax),  %r8
++	mov VCPU_R9 (%rax),  %r9
++	mov VCPU_R10(%rax), %r10
++	mov VCPU_R11(%rax), %r11
++	mov VCPU_R12(%rax), %r12
++	mov VCPU_R13(%rax), %r13
++	mov VCPU_R14(%rax), %r14
++	mov VCPU_R15(%rax), %r15
++
++	/*  Load TDENTER to RAX.  This kills the @regs pointer! */
++1:	mov $TDENTER, %rax
++
++2:	seamcall
++
++	/* Skip to the exit path if TDENTER failed. */
++	bt $TDENTER_ERROR_BIT, %rax
++	jc 4f
++
++	/* Temporarily save the TD-Exit reason. */
++	push %rax
++
++	/* check if TD-exit due to TDVMCALL */
++	cmp $EXIT_REASON_TDCALL, %ax
++
++	/* Reload @regs to RAX. */
++	mov 8(%rsp), %rax
++
++	/* Jump on non-TDVMCALL */
++	jne 3f
++
++	/* Save all output from SEAMCALL(TDENTER) */
++	mov %rbx, VCPU_RBX(%rax)
++	mov %rbp, VCPU_RBP(%rax)
++	mov %rsi, VCPU_RSI(%rax)
++	mov %rdi, VCPU_RDI(%rax)
++	mov %r10, VCPU_R10(%rax)
++	mov %r11, VCPU_R11(%rax)
++	mov %r12, VCPU_R12(%rax)
++	mov %r13, VCPU_R13(%rax)
++	mov %r14, VCPU_R14(%rax)
++	mov %r15, VCPU_R15(%rax)
++
++3:	mov %rcx, VCPU_RCX(%rax)
++	mov %rdx, VCPU_RDX(%rax)
++	mov %r8,  VCPU_R8 (%rax)
++	mov %r9,  VCPU_R9 (%rax)
++
++	/*
++	 * Clear all general purpose registers except RSP and RAX to prevent
++	 * speculative use of the guest's values.
++	 */
++	xor %rbx, %rbx
++	xor %rcx, %rcx
++	xor %rdx, %rdx
++	xor %rsi, %rsi
++	xor %rdi, %rdi
++	xor %rbp, %rbp
++	xor %r8,  %r8
++	xor %r9,  %r9
++	xor %r10, %r10
++	xor %r11, %r11
++	xor %r12, %r12
++	xor %r13, %r13
++	xor %r14, %r14
++	xor %r15, %r15
++
++	/* Restore the TD-Exit reason to RAX for return. */
++	pop %rax
++
++	/* "POP" @regs. */
++4:	add $8, %rsp
++	pop %rbx
++	pop %r12
++	pop %r13
++	pop %r14
++	pop %r15
++
++	pop %rbp
++	ret
++
++5:	cmpb $0, kvm_rebooting
++	je 6f
++	mov $-EFAULT, %rax
++	jmp 4b
++6:	ud2
++	_ASM_EXTABLE(2b, 5b)
++
++SYM_FUNC_END(__tdx_vcpu_run)
++
++.popsection
++
++#endif
 -- 
 2.25.1
 
