@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D170C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34838C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiCDRgf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:36:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
+        id S241339AbiCDRgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:36:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241251AbiCDRgR (ORCPT
+        with ESMTP id S241278AbiCDRgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:36:17 -0500
+        Fri, 4 Mar 2022 12:36:23 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0CD21D0D7A
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:34:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DFEF1D3D91
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:34:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646415275;
+        s=mimecast20190719; t=1646415285;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6D49UDKOrGqHPDx4/UWVPGxY1Jg6fRi4v4NPaaelVcs=;
-        b=REs4LvZQVmXvZ4E5QTyuszPIGSWDWZJYO9c/RMVmiIYpsOCcVtsCrqlEHB7iIe1UWXwF3s
-        eD4MKYaI/DlrPjqQjzILv8+8EkybTxjHwU5+3GrD7CtFxtOMagnXAutswlIHmnAQaRx6Lm
-        jP2lyw42GT1tteFREkGMomKslBRrFI4=
+        bh=G/shJm1MeQ7S0DudVE/fEwfDM0MCEACLr6XHTMqvVM4=;
+        b=HKLTtfhExuc1Ta9rp6ah7oCBmQf0jxCN+81DyCGwmAZXHrqOrnDbCYNn6JPfTh0/6e6pKR
+        JIpfdg2PDofwFygEuTq92zeUURQIDLuFfSjbrhv4AXdcZ/4JV0roVxXKc/udrRj487Qvu0
+        vurVxASNu6R6HkAf2oASP4eaB5oH0hA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-635-4zNjMA1AP86pw5KyP-IlSg-1; Fri, 04 Mar 2022 12:34:32 -0500
-X-MC-Unique: 4zNjMA1AP86pw5KyP-IlSg-1
+ us-mta-451-GhrcENtyOjS9MMXFgSLOeQ-1; Fri, 04 Mar 2022 12:34:41 -0500
+X-MC-Unique: GhrcENtyOjS9MMXFgSLOeQ-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5AC7C5EF;
-        Fri,  4 Mar 2022 17:34:30 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E877E824FA8;
+        Fri,  4 Mar 2022 17:34:38 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 50EE986595;
-        Fri,  4 Mar 2022 17:34:26 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA81886595;
+        Fri,  4 Mar 2022 17:34:34 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v2 23/28] HID: bpf: compute only the required buffer size for the device
-Date:   Fri,  4 Mar 2022 18:28:47 +0100
-Message-Id: <20220304172852.274126-24-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v2 25/28] bpf/hid: Add a flag to add the program at the beginning of the list
+Date:   Fri,  4 Mar 2022 18:28:49 +0100
+Message-Id: <20220304172852.274126-26-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -67,8 +67,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no point in using 16 kB of memory if the device needs less
-for all of its reports (uwhich is usually the case).
+When tracing the incoming events, if a bpf program is already loaded,
+the next bpf program will see the potentially changed data.
+
+Add a flag to BPF_LINK_CREATE that allows to chose the position of the
+inserted program: at the beginning or at the end.
+
+This way, we can have a tracing program that compare the raw event from
+the device and the transformed stream from all the other bpf programs.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
@@ -76,39 +82,74 @@ Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 new in v2
 ---
- drivers/hid/hid-bpf.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ include/uapi/linux/bpf.h | 10 ++++++++++
+ kernel/bpf/hid.c         | 11 +++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
-index b8c0060f3180..d56fbad990ed 100644
---- a/drivers/hid/hid-bpf.c
-+++ b/drivers/hid/hid-bpf.c
-@@ -61,11 +61,24 @@ static int hid_reconnect(struct hid_device *hdev)
- static int hid_bpf_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
- {
- 	int err = 0;
-+	unsigned int i, j, max_report_len = 0;
-+
-+	/* compute the maximum report length for this device */
-+	for (i = 0; i < HID_REPORT_TYPES; i++) {
-+		struct hid_report_enum *report_enum = hdev->report_enum + i;
-+
-+		for (j = 0; j < HID_MAX_IDS; j++) {
-+			struct hid_report *report = report_enum->report_id_hash[j];
-+
-+			if (report)
-+				max_report_len = max(max_report_len, hid_report_len(report));
-+		}
-+	}
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 417cf1c31579..23ebe5e96d69 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1123,6 +1123,16 @@ enum bpf_link_type {
+  */
+ #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
  
- 	switch (type) {
- 	case BPF_HID_ATTACH_DEVICE_EVENT:
- 		if (!hdev->bpf.ctx) {
--			hdev->bpf.ctx = bpf_hid_allocate_ctx(hdev, HID_BPF_MAX_BUFFER_SIZE);
-+			hdev->bpf.ctx = bpf_hid_allocate_ctx(hdev, max_report_len);
- 			if (IS_ERR(hdev->bpf.ctx)) {
- 				err = PTR_ERR(hdev->bpf.ctx);
- 				hdev->bpf.ctx = NULL;
++/* HID flag used in BPF_LINK_CREATE command
++ *
++ * NONE(default): The bpf program will be added at the tail of the list
++ * of existing bpf program for this type.
++ *
++ * BPF_F_INSERT_HEAD: The bpf program will be added at the beginning
++ * of the list of existing bpf program for this type..
++ */
++#define BPF_F_INSERT_HEAD	(1U << 0)
++
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
+diff --git a/kernel/bpf/hid.c b/kernel/bpf/hid.c
+index b3dc1cd37a3e..141eb4169079 100644
+--- a/kernel/bpf/hid.c
++++ b/kernel/bpf/hid.c
+@@ -416,7 +416,7 @@ static int bpf_hid_max_progs(enum bpf_hid_attach_type type)
+ }
+ 
+ static int bpf_hid_link_attach(struct hid_device *hdev, struct bpf_link *link,
+-			       enum bpf_hid_attach_type type)
++			       enum bpf_hid_attach_type type, u32 flags)
+ {
+ 	struct bpf_hid_link *hid_link =
+ 		container_of(link, struct bpf_hid_link, link);
+@@ -443,7 +443,10 @@ static int bpf_hid_link_attach(struct hid_device *hdev, struct bpf_link *link,
+ 		goto out_unlock;
+ 	}
+ 
+-	list_add_tail(&hid_link->node, &hdev->bpf.links[type]);
++	if (flags & BPF_F_INSERT_HEAD)
++		list_add(&hid_link->node, &hdev->bpf.links[type]);
++	else
++		list_add_tail(&hid_link->node, &hdev->bpf.links[type]);
+ 
+ 	fill_prog_array(hdev, type, run_array);
+ 	run_array = rcu_replace_pointer(hdev->bpf.run_array[type], run_array,
+@@ -467,7 +470,7 @@ int bpf_hid_link_create(const union bpf_attr *attr, struct bpf_prog *prog)
+ 	struct hid_device *hdev;
+ 	int err;
+ 
+-	if (attr->link_create.flags || !hid_hooks.hdev_from_fd)
++	if ((attr->link_create.flags & ~BPF_F_INSERT_HEAD) || !hid_hooks.hdev_from_fd)
+ 		return -EINVAL;
+ 
+ 	type = attr->link_create.attach_type;
+@@ -495,7 +498,7 @@ int bpf_hid_link_create(const union bpf_attr *attr, struct bpf_prog *prog)
+ 		return err;
+ 	}
+ 
+-	err = bpf_hid_link_attach(hdev, &hid_link->link, hid_type);
++	err = bpf_hid_link_attach(hdev, &hid_link->link, hid_type, attr->link_create.flags);
+ 	if (err) {
+ 		bpf_link_cleanup(&link_primer);
+ 		return err;
 -- 
 2.35.1
 
