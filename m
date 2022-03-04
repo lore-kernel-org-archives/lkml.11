@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2AA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240274AbiCDPXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:23:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
+        id S240317AbiCDPXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240225AbiCDPXR (ORCPT
+        with ESMTP id S240257AbiCDPXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:23:17 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FADB113A;
-        Fri,  4 Mar 2022 07:22:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=i3uMN0XPCwzCCdJutSxOT0wu27OyMGNYJIeJECgEmYE=; b=aYtGzYmw8n0hqlGzMB/GVKRc1k
-        0EUx7uJQPV8vHY0UYk/h/Dl3Dg+B1v2+sZ/pD2d9O5516+8E88oq/iLMFb+HA7CRpXaUouUq0vHzr
-        lCXCMP+xWspJSRaqVgpXv/YURR0YI998jQ+0JI6PyuyGv9QwRX1TTUuxvPE9P8Dj3M9Lr7ZVTxZ76
-        Ei0UbSwKFAg27eutVG9tJQzaC5sGBTsSPk69dV9hLRs2CwpC1VIumN1B6XvOD0wWnd5REvwq+xLIa
-        +SJATIAiRyN0v43H2L4gnpulrBoV8x3E8vmSYVFeEqAB53tCVu1kCEeP7Eq/T/jrM5Uw3AFs51g04
-        hMCL9xcw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nQ9l4-00FEIm-Sp; Fri, 04 Mar 2022 15:22:19 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 819D530041D;
-        Fri,  4 Mar 2022 16:22:17 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 6B7102012A030; Fri,  4 Mar 2022 16:22:17 +0100 (CET)
-Message-ID: <20220304152135.914397165@infradead.org>
-User-Agent: quilt/0.66
-Date:   Fri, 04 Mar 2022 16:19:54 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, mathias.nyman@linux.intel.com,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        rdunlap@infradead.org, linux-usb@vger.kernel.org
-Subject: [PATCH 1/3] x86/tsc: Be consistent about use_tsc_delay()
-References: <20220304151953.830111479@infradead.org>
+        Fri, 4 Mar 2022 10:23:24 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4FC3FBEB
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:22:36 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id q20so2883441wmq.1
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 07:22:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=4W8I3tuoGx81FDxurpr4MQTsgqMFmG2Aaynw/Q1B6WQ=;
+        b=k+JiVAPhTAqF+YhhbFY6K4lLY0h6PsOG37nRSTtxjgjMYEjnkXYdM8ue2neMxbOUMd
+         glwEwfVtimdk+5VC7t8ggYeOnY3vFNqk37zudCmGNA4+TNvkYjDYVQfjCV/CAIs4sI1J
+         /RItdEOsUsK896yZv7ixVficdL48rnKo0v23B8y3bqasDUYTfBDPjodUEJZo6Kl1HVaW
+         oca1BIl3h2lxf5XDiEo0TxQNabbqWAne5cV6MTt5iEUN98Z4cS/ySDOn2UOyIMNL8ya6
+         vMWMoiSWViYt5GdRRB1HTkWWjm+3YfM+dp8FkzuUCx/WVBqB1GR5Uk7s0Qbv2E2XVoS8
+         Z+Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4W8I3tuoGx81FDxurpr4MQTsgqMFmG2Aaynw/Q1B6WQ=;
+        b=YYntYs8M/Ys7+agCcUJPQ9L7EGSeU/hSQ8MjHxcpx4sTaDQ/KGTnOCU2hpWn4jlZP2
+         lfbnCkV1DvJf4pXXti9aWOIYFJjbedk8YwHhTZmZxHWiI44ujpgw7occNa1Xy+zU92Ct
+         yFRbdKn1vNmvknoOn8cz8zgEI/bETsXBR4UEmmojR8uE8D+sDABCFgEwaeyyuu5F6qp7
+         G2zzcvRRP9ii+faA5Bq9FeR9U8G1SAA5x8c5Y68/vGgfCmCILNJCfrjuFEST/58DZ/9I
+         UtGo4aTxrxqDfufhYId1N0qf124XMPdv4ziDgBT289jKRWjFVXa8Zmtc6lqsld1g9Y9c
+         jfew==
+X-Gm-Message-State: AOAM531FAU60pawmBhQ7MkTxaeXKZMoCAhyEu4M9vMfie6NcECFAUuPl
+        pL2AxwRXZFLEtzTehkf0udhaNw==
+X-Google-Smtp-Source: ABdhPJxyPmGIr1XY/Q8xeCKdKIUg6uvyxv3uFluaInb3jO0pRYMOkp8CabliJMJWznAUeyx6sVvC7g==
+X-Received: by 2002:a7b:c4c7:0:b0:381:874e:30a9 with SMTP id g7-20020a7bc4c7000000b00381874e30a9mr7932742wmk.53.1646407354614;
+        Fri, 04 Mar 2022 07:22:34 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm4809507wrw.49.2022.03.04.07.22.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 07:22:34 -0800 (PST)
+Date:   Fri, 4 Mar 2022 15:22:32 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <YiIuuHwY194VlLPx@google.com>
+References: <20220302075421.2131221-1-lee.jones@linaro.org>
+ <20220303235937-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220303235937-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently loops_per_jiffy is set in tsc_early_init(), but then don't
-switch to delay_tsc, with the result that delay_loop is used with
-loops_per_jiffy set for delay_tsc.
+On Fri, 04 Mar 2022, Michael S. Tsirkin wrote:
 
-Then in (late) tsc_init() lpj_fine is set (which is mostly unused) and
-after which use_tsc_delay() is finally called.
+> On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
+> > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > to vhost_get_vq_desc().  All we have to do is take the same lock
+> > during virtqueue clean-up and we mitigate the reported issues.
+> > 
+> > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > 
+> > Cc: <stable@vger.kernel.org>
+> > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> 
+> So combine with the warning patch and update description with
+> the comment I posted, explaining it's more a just in case thing.
 
-Move both loops_per_jiffy and use_tsc_delay() into
-tsc_enable_sched_clock() which is called the moment tsc_khz is
-determined, be it early or late. Keeping the lot consistent.
+Will do.  Plan is to submit this on Monday.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/kernel/tsc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1487,6 +1487,9 @@ static unsigned long __init get_loops_pe
- 
- static void __init tsc_enable_sched_clock(void)
- {
-+	loops_per_jiffy = get_loops_per_jiffy();
-+	use_tsc_delay();
-+
- 	/* Sanitize TSC ADJUST before cyc2ns gets initialized */
- 	tsc_store_and_check_tsc_adjust(true);
- 	cyc2ns_init_boot_cpu();
-@@ -1502,8 +1505,6 @@ void __init tsc_early_init(void)
- 		return;
- 	if (!determine_cpu_tsc_frequencies(true))
- 		return;
--	loops_per_jiffy = get_loops_per_jiffy();
--
- 	tsc_enable_sched_clock();
- }
- 
-@@ -1537,7 +1538,6 @@ void __init tsc_init(void)
- 		enable_sched_clock_irqtime();
- 
- 	lpj_fine = get_loops_per_jiffy();
--	use_tsc_delay();
- 
- 	check_system_tsc_reliable();
- 
-
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
