@@ -2,80 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14837C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8290C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232540AbiCDPZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
+        id S240281AbiCDPZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbiCDPZA (ORCPT
+        with ESMTP id S229864AbiCDPZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:25:00 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4CB13CEC8;
-        Fri,  4 Mar 2022 07:24:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646407266;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=iydpsxlqKvojZxVmQ+MKhSxoSNJSi4/DgREzlOtxnDw=;
-    b=kPuasbmu2U9a6yMquE2iIjluL4PJuVX7Je3Y+inB7TkcN/OwrU9aGMv0y5OHwUvQ5X
-    N1ZMoowNU27ZWZZCPTPVioa/ZsLHS+hC/0KE46lWsERaLbbqV8zLf5+Inv1ct9vyUn7E
-    Vr8pPj/f/BgjIru+NLCIALZdSWXKmCj/CJ7u3Sm4yqdmsF+/vc8WYwj+sWq7wHIZXV4+
-    /moilriNtV7tdN0bhGYYmwHdSc4vw3QzEbIyTOf0sAgBsZHMJ7zrDP/FKyFbZav+SnKp
-    +kwQC1gq48hf294QzuIQAsdx8EUWt+3ryLBxFGStI610o/GLhXJIAbuZOD//mHDwvNi+
-    7Nkw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8QUWw=="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.40.1 DYNA|AUTH)
-    with ESMTPSA id n729cey24FL66sy
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Fri, 4 Mar 2022 16:21:06 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [BUG]: musb broken since v5.17-rc1 on gta04 (omap3 / dm3730) -
- cf081d009c44 ("usb: musb: Set the DT node on the child device")
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <Yg9XNBlOtwBamDm/@atomide.com>
-Date:   Fri, 4 Mar 2022 16:21:05 +0100
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <129B01FB-DF3E-47E6-9B50-020CC347C00A@goldelico.com>
-References: <F24D461D-8103-456E-AD28-1AA9D5C2AA3D@goldelico.com>
- <D26EF7C8-5264-456F-88FC-1B55AB83AAED@goldelico.com>
- <Yg9XNBlOtwBamDm/@atomide.com>
-To:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Fri, 4 Mar 2022 10:25:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983DF1C4B1E;
+        Fri,  4 Mar 2022 07:24:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 318B8B829FA;
+        Fri,  4 Mar 2022 15:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB397C340E9;
+        Fri,  4 Mar 2022 15:24:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646407485;
+        bh=Ugh1vrX5vQzasJmQI5hX7hdAPEuwOmRL+sYJJ6nVIrg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pp8TLvH/baKbl4BMBfu0G+pCaCAbcC5v1jqEuXOk9fwwlWOwP7GE2mIIBdFGZBqyy
+         as7i/yXY0WxscdIpvlhztFxmcjmkxPBCLLqHVWO/7LQ0Nwpnsqa/eLm3TUeEXHtGr1
+         FdF2HEpZD9Cd1NGtWG3w0kma1NGAhWRV5RHdXUBYW6e7J60T8OZSPHMuu5+Ponclop
+         KQUjQIlGRjZ/V/ISzCzVTz8iRoyB6XNVCXsfQP8Ylxm1EbuTgbqhxtafwBNOcVe0gi
+         NpLAXgWHkPdF2U+SyrGiwnue9+UzYPklmXLMFE72lAqdx/eUDimB6LMcnfxq30bRZo
+         xAVIpmMZTcvCg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nQ9nP-00CFyk-EZ; Fri, 04 Mar 2022 15:24:43 +0000
+Date:   Fri, 04 Mar 2022 15:24:43 +0000
+Message-ID: <87lexp211g.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/2] irqchip: Add Qualcomm MPM controller driver
+In-Reply-To: <20220304082342.GO269879@dragon>
+References: <20220301062414.2987591-1-shawn.guo@linaro.org>
+        <20220301062414.2987591-3-shawn.guo@linaro.org>
+        <87ee3m2aed.wl-maz@kernel.org>
+        <20220302084028.GL269879@dragon>
+        <877d9c3b2u.wl-maz@kernel.org>
+        <20220302133441.GM269879@dragon>
+        <875yow31a0.wl-maz@kernel.org>
+        <20220303040229.GN269879@dragon>
+        <87fsnytagc.wl-maz@kernel.org>
+        <20220304082342.GO269879@dragon>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: shawn.guo@linaro.org, tglx@linutronix.de, quic_mkshah@quicinc.com, bjorn.andersson@linaro.org, sudeep.holla@arm.com, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rub,
-any news on this bug?
+On Fri, 04 Mar 2022 08:23:42 +0000,
+Shawn Guo <shawn.guo@linaro.org> wrote:
+> 
+> On Fri, Mar 04, 2022 at 07:59:15AM +0000, Marc Zyngier wrote:
+> > On Thu, 03 Mar 2022 04:02:29 +0000,
+> > Shawn Guo <shawn.guo@linaro.org> wrote:
+> > > 
+> > > On Wed, Mar 02, 2022 at 01:57:27PM +0000, Marc Zyngier wrote:
+> > > > This code actually makes me ask more questions. Why is it programming
+> > > > 2 'pins' for each IRQ?
+> > > 
+> > > The mapping between MPM pin and GIC IRQ is not strictly 1-1.  There are
+> > > some rare case that up to 2 MPM pins map to a single GIC IRQ, for
+> > > example the last two in QC2290 'qcom,mpm-pin-map' below.
+> > > 
+> > > 	qcom,mpm-pin-map = <2 275>,     /* tsens0_tsens_upper_lower_int */
+> > > 			   <5 296>,     /* lpass_irq_out_sdc */
+> > > 			   <12 422>,    /* b3_lfps_rxterm_irq */
+> > > 			   <24 79>,     /* bi_px_lpi_1_aoss_mx */
+> > > 			   <86 183>,    /* mpm_wake,spmi_m */
+> > > 			   <90 260>,    /* eud_p0_dpse_int_mx */
+> > > 			   <91 260>;    /* eud_p0_dmse_int_mx */
+> > > 
+> > > 
+> > > The downstream uses a DT bindings that specifies GIC hwirq number in
+> > > client device nodes.  In that case, d->hwirq in the driver is GIC IRQ
+> > > number, and the driver will need to query mapping table, find out the
+> > > possible 2 MPM pins, and set them up.
+> > > 
+> > > The patches I'm posting here use a different bindings that specifies MPM
+> > > pin instead in client device nodes.  Thus the driver can simply get the
+> > > MPM pin from d->hwirq, so that the whole look-up procedure can be saved.
+> > 
+> > It still remains that there is no 1:1 mapping between input and
+> > output, which is the rule #1 to be able to use a hierarchical setup.
+> 
+> For direction of MPM pin -> GIC interrupt, it's a 1:1 mapping, i.e. for
+> given MPM pin, there is only one GIC interrupt.  And that's the
+> mapping MPM driver relies on.  For GIC interrupt -> MPM pin, it's not
+> a strict 1:1 mapping.
 
-> Am 18.02.2022 um 09:22 schrieb Tony Lindgren <tony@atomide.com>:
->=20
-> * H. Nikolaus Schaller <hns@goldelico.com> [220215 06:40]:
->> Hi Rob or Tony,
->> any insights or fixes?
->>=20
->> At the moment we have simply reverted cf081d009c44 in the Letux =
-distro kernels.
->=20
-> Yeah this probably should be reverted unless Rob has better solution
-> available.
+Then this isn't a 1:1 mapping *AT ALL*. The hierarchical setup
+mandates that the mapping is a bijective function, and that's exactly
+what 1:1 means. There is no such thing a 1:1 in a single
+direction. When you take an interrupt, all you see is the GIC
+interrupt. How do you know which of the *two* pins interrupted you? Oh
+wait, you *can't* know. You end-up never servicing one of the two
+interrupts (and I suspect this results in memory corruption if you
+tear a hierarchy down).
 
-BR and thanks,
-Nikolaus
+This HW deals with 2:1 mappings, i.e. it is a mux. So all the time
+spent on this driver is totally lost, because you have the wrong
+abstraction. And the QC driver is just as bad.
 
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
