@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 325E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbiCDUBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:01:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S230020AbiCDUBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:01:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiCDT7K (ORCPT
+        with ESMTP id S229450AbiCDT7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 14:59:10 -0500
+        Fri, 4 Mar 2022 14:59:08 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4517B269A7A;
-        Fri,  4 Mar 2022 11:50:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A64F269A72;
+        Fri,  4 Mar 2022 11:50:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646423442; x=1677959442;
+  t=1646423437; x=1677959437;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=S3ZaWwG9mI/BP5v7AFpzS7zNPq+WbUDAeYMpo8QxfoA=;
-  b=VbMjlUU8yDXnoC8oUD1talMPLvGCjXkAGchwW+T9kOxMRk3fZZ8hwMtc
-   x/9QhQPxgkyo2Cqo6Yl6/sdxf6mqj6xSW/BwCskpKg6jS2z2vc7ISMNNV
-   WgZPfFYwUzrj7DAWtQ0OxYqNElEFdDG4iEwzuhPXLOFE7b6b/eJfJfvnK
-   lZ+WBmnD3wcLnkCPlQB1frdF72BL957eCAAR8reXZNs3w8ajFlJap2BTi
-   der4OaiFs0nf1v0X3egfgtPcWGhUswnpWqt7PNbh43Nma2sNaMx2XCc/W
-   eBXCCAVd3v8E/7OU1ySJ2yEKa/UJit8bYknaIyKNAwbieWDc+huIXdlXq
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779639"
+  bh=0gCGaKq7Xe8qe6mLTW21EYOpmLPqpJ1qEQNcNiEwsMM=;
+  b=TOL6nC7+/bPAmGKg47V6/Yv+2USdan6vtUN6LyQXtbuJGxCNaHLYM9td
+   Y7rxq6yO4mWvhacKw1lUYRPIWrcXf5AlBjbIt7bS2XyvG5qmEEikTZkea
+   TgEjIsoNNsQxElw1p2wvngtUuePxk1F3+3m5jDnzpAMY/ueTtNRz1rg18
+   kl8/5BzezzzhjRPZnu7pS5Wuj7yFT3pRq27x2RpWsqYLC9JcG+P6IFd5z
+   HuyAB7Yd9ycacK5wOSXtQa8glAzzp9jGSsH/Uyku8i+OZ0D2t83IOCPzD
+   TFWnUc4VMWnIc4Zr2Jx6YkzcctAg07tfplGG2SzHUGFLXQz1Z6N/Pq/nB
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779625"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253779639"
+   d="scan'208";a="253779625"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:40 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:36 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344524"
+   d="scan'208";a="552344488"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:40 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:36 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 084/104] KVM: TDX: Add a place holder to handle TDX VM exit
-Date:   Fri,  4 Mar 2022 11:49:40 -0800
-Message-Id: <4028626d69d461a70838f060d6a1566089d630c3.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 074/104] KVM: x86: Add a switch_db_regs flag to handle TDX's auto-switched behavior
+Date:   Fri,  4 Mar 2022 11:49:30 -0800
+Message-Id: <76c87a1d33bb3ec4a68fe3db2a840b6ddc951929.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,234 +58,79 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Wire up handle_exit and handle_exit_irqoff methods and add a place holder
-to handle VM exit.  Add helper functions to get exit info, exit
-qualification, etc.
+Add a flag, KVM_DEBUGREG_AUTO_SWITCHED_GUEST, to skip saving/restoring DRs
+irrespective of any other flags.  TDX-SEAM unconditionally saves and
+restores guest DRs and reset to architectural INIT state on TD exit.
+So, KVM needs to save host DRs before TD enter without restoring guest DRs
+and restore host DRs after TD exit.
 
+Opportunistically convert the KVM_DEBUGREG_* definitions to use BIT().
+
+Reported-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Co-developed-by: Chao Gao <chao.gao@intel.com>
+Signed-off-by: Chao Gao <chao.gao@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/main.c    | 35 +++++++++++++++--
- arch/x86/kvm/vmx/tdx.c     | 79 ++++++++++++++++++++++++++++++++++++++
- arch/x86/kvm/vmx/x86_ops.h | 11 ++++++
- 3 files changed, 122 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 10 ++++++++--
+ arch/x86/kvm/vmx/tdx.c          |  1 +
+ arch/x86/kvm/x86.c              |  3 ++-
+ 3 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index aa84c13f8ee1..1e65406e3882 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -148,6 +148,23 @@ static void vt_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 	return vmx_vcpu_load(vcpu, cpu);
- }
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index b6396d11139e..489374a57b66 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -535,8 +535,14 @@ struct kvm_pmu {
+ struct kvm_pmu_ops;
  
-+static int vt_handle_exit(struct kvm_vcpu *vcpu,
-+			     enum exit_fastpath_completion fastpath)
-+{
-+	if (is_td_vcpu(vcpu))
-+		return tdx_handle_exit(vcpu, fastpath);
-+
-+	return vmx_handle_exit(vcpu, fastpath);
-+}
-+
-+static void vt_handle_exit_irqoff(struct kvm_vcpu *vcpu)
-+{
-+	if (is_td_vcpu(vcpu))
-+		return tdx_handle_exit_irqoff(vcpu);
-+
-+	vmx_handle_exit_irqoff(vcpu);
-+}
-+
- static void vt_apicv_post_state_restore(struct kvm_vcpu *vcpu)
- {
- 	if (is_td_vcpu(vcpu))
-@@ -340,6 +357,18 @@ static void vt_request_immediate_exit(struct kvm_vcpu *vcpu)
- 	vmx_request_immediate_exit(vcpu);
- }
+ enum {
+-	KVM_DEBUGREG_BP_ENABLED = 1,
+-	KVM_DEBUGREG_WONT_EXIT = 2,
++	KVM_DEBUGREG_BP_ENABLED		= BIT(0),
++	KVM_DEBUGREG_WONT_EXIT		= BIT(1),
++	KVM_DEBUGREG_RELOAD		= BIT(2),
++	/*
++	 * Guest debug registers are saved/restored by hardware on exit from
++	 * or enter guest. KVM needn't switch them.
++	 */
++	KVM_DEBUGREG_AUTO_SWITCH	= BIT(3),
+ };
  
-+static void vt_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
-+			u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code)
-+{
-+	if (is_td_vcpu(vcpu)) {
-+		tdx_get_exit_info(vcpu, reason, info1, info2, intr_info,
-+				error_code);
-+		return;
-+	}
-+
-+	vmx_get_exit_info(vcpu, reason, info1, info2, intr_info, error_code);
-+}
-+
- static int vt_mem_enc_op(struct kvm *kvm, void __user *argp)
- {
- 	if (!is_td(kvm))
-@@ -411,7 +440,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 
- 	.vcpu_pre_run = vmx_vcpu_pre_run,
- 	.run = vt_vcpu_run,
--	.handle_exit = vmx_handle_exit,
-+	.handle_exit = vt_handle_exit,
- 	.skip_emulated_instruction = vmx_skip_emulated_instruction,
- 	.update_emulated_instruction = vmx_update_emulated_instruction,
- 	.set_interrupt_shadow = vt_set_interrupt_shadow,
-@@ -446,7 +475,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.set_identity_map_addr = vmx_set_identity_map_addr,
- 	.get_mt_mask = vmx_get_mt_mask,
- 
--	.get_exit_info = vmx_get_exit_info,
-+	.get_exit_info = vt_get_exit_info,
- 
- 	.vcpu_after_set_cpuid = vmx_vcpu_after_set_cpuid,
- 
-@@ -460,7 +489,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.load_mmu_pgd = vt_load_mmu_pgd,
- 
- 	.check_intercept = vmx_check_intercept,
--	.handle_exit_irqoff = vmx_handle_exit_irqoff,
-+	.handle_exit_irqoff = vt_handle_exit_irqoff,
- 
- 	.request_immediate_exit = vt_request_immediate_exit,
- 
+ struct kvm_mtrr_range {
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 273898de9f7a..155208a8d768 100644
+index 690298fb99c7..3a0e826fbe0c 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -68,6 +68,26 @@ static __always_inline hpa_t set_hkid_to_hpa(hpa_t pa, u16 hkid)
- 	return pa;
- }
+@@ -485,6 +485,7 @@ int tdx_vcpu_create(struct kvm_vcpu *vcpu)
  
-+static __always_inline unsigned long tdexit_exit_qual(struct kvm_vcpu *vcpu)
-+{
-+	return kvm_rcx_read(vcpu);
-+}
-+
-+static __always_inline unsigned long tdexit_ext_exit_qual(struct kvm_vcpu *vcpu)
-+{
-+	return kvm_rdx_read(vcpu);
-+}
-+
-+static __always_inline unsigned long tdexit_gpa(struct kvm_vcpu *vcpu)
-+{
-+	return kvm_r8_read(vcpu);
-+}
-+
-+static __always_inline unsigned long tdexit_intr_info(struct kvm_vcpu *vcpu)
-+{
-+	return kvm_r9_read(vcpu);
-+}
-+
- static inline bool is_td_vcpu_created(struct vcpu_tdx *tdx)
- {
- 	return tdx->tdvpr.added;
-@@ -768,6 +788,25 @@ void tdx_inject_nmi(struct kvm_vcpu *vcpu)
- 	td_management_write8(to_tdx(vcpu), TD_VCPU_PEND_NMI, 1);
- }
+ 	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
  
-+void tdx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
-+{
-+	struct vcpu_tdx *tdx = to_tdx(vcpu);
-+	u16 exit_reason = tdx->exit_reason.basic;
-+
-+	if (exit_reason == EXIT_REASON_EXCEPTION_NMI)
-+		vmx_handle_exception_nmi_irqoff(vcpu, tdexit_intr_info(vcpu));
-+	else if (exit_reason == EXIT_REASON_EXTERNAL_INTERRUPT)
-+		vmx_handle_external_interrupt_irqoff(vcpu,
-+						     tdexit_intr_info(vcpu));
-+}
-+
-+static int tdx_handle_triple_fault(struct kvm_vcpu *vcpu)
-+{
-+	vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
-+	vcpu->mmio_needed = 0;
-+	return 0;
-+}
-+
- void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
- {
- 	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
-@@ -1042,6 +1081,46 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
- 	__vmx_deliver_posted_interrupt(vcpu, &tdx->pi_desc, vector);
- }
++	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
+ 	vcpu->arch.cr0_guest_owned_bits = -1ul;
+ 	vcpu->arch.cr4_guest_owned_bits = -1ul;
  
-+int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
-+{
-+	union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
-+
-+	if (unlikely(exit_reason.non_recoverable || exit_reason.error)) {
-+		if (exit_reason.basic == EXIT_REASON_TRIPLE_FAULT)
-+			return tdx_handle_triple_fault(vcpu);
-+
-+		kvm_pr_unimpl("TD exit 0x%llx, %d\n",
-+			exit_reason.full, exit_reason.basic);
-+		goto unhandled_exit;
-+	}
-+
-+	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
-+
-+	switch (exit_reason.basic) {
-+	default:
-+		break;
-+	}
-+
-+unhandled_exit:
-+	vcpu->run->exit_reason = KVM_EXIT_UNKNOWN;
-+	vcpu->run->hw.hardware_exit_reason = exit_reason.full;
-+	return 0;
-+}
-+
-+void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
-+		u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code)
-+{
-+	struct vcpu_tdx *tdx = to_tdx(vcpu);
-+
-+	*reason = tdx->exit_reason.full;
-+
-+	*info1 = tdexit_exit_qual(vcpu);
-+	*info2 = tdexit_ext_exit_qual(vcpu);
-+
-+	*intr_info = tdexit_intr_info(vcpu);
-+	*error_code = 0;
-+}
-+
- static int tdx_capabilities(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
- {
- 	struct kvm_tdx_capabilities __user *user_caps;
-diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 31be5e8a1d5c..c0a34186bc37 100644
---- a/arch/x86/kvm/vmx/x86_ops.h
-+++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -146,11 +146,16 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu);
- void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu);
- void tdx_vcpu_put(struct kvm_vcpu *vcpu);
- void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu);
-+void tdx_handle_exit_irqoff(struct kvm_vcpu *vcpu);
-+int tdx_handle_exit(struct kvm_vcpu *vcpu,
-+		enum exit_fastpath_completion fastpath);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 45e8a02e99bf..89d04cd64cd0 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10084,7 +10084,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	if (vcpu->arch.guest_fpu.xfd_err)
+ 		wrmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
  
- void tdx_apicv_post_state_restore(struct kvm_vcpu *vcpu);
- void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
- 			   int trig_mode, int vector);
- void tdx_inject_nmi(struct kvm_vcpu *vcpu);
-+void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
-+		u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code);
- 
- int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
- int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
-@@ -177,11 +182,17 @@ static inline fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu) { return EXIT_FASTP
- static inline void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu) {}
- static inline void tdx_vcpu_put(struct kvm_vcpu *vcpu) {}
- static inline void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu) {}
-+static inline void tdx_handle_exit_irqoff(struct kvm_vcpu *vcpu) {}
-+static inline int tdx_handle_exit(struct kvm_vcpu *vcpu,
-+		enum exit_fastpath_completion fastpath) { return 0; }
- 
- static inline void tdx_apicv_post_state_restore(struct kvm_vcpu *vcpu) {}
- static inline void tdx_deliver_interrupt(
- 	struct kvm_lapic *apic, int delivery_mode, int trig_mode, int vector) {}
- static inline void tdx_inject_nmi(struct kvm_vcpu *vcpu) {}
-+static inline void tdx_get_exit_info(
-+	struct kvm_vcpu *vcpu, u32 *reason, u64 *info1, u64 *info2,
-+	u32 *intr_info, u32 *error_code) {}
- 
- static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
- static inline int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp) { return -EOPNOTSUPP; }
+-	if (unlikely(vcpu->arch.switch_db_regs)) {
++	if (unlikely(vcpu->arch.switch_db_regs & ~KVM_DEBUGREG_AUTO_SWITCH)) {
+ 		set_debugreg(0, 7);
+ 		set_debugreg(vcpu->arch.eff_db[0], 0);
+ 		set_debugreg(vcpu->arch.eff_db[1], 1);
+@@ -10126,6 +10126,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	 */
+ 	if (unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)) {
+ 		WARN_ON(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP);
++		WARN_ON(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH);
+ 		static_call(kvm_x86_sync_dirty_debug_regs)(vcpu);
+ 		kvm_update_dr0123(vcpu);
+ 		kvm_update_dr7(vcpu);
 -- 
 2.25.1
 
