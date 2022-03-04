@@ -2,166 +2,333 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91EF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238011AbiCDFRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 00:17:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
+        id S238016AbiCDFS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 00:18:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231487AbiCDFRq (ORCPT
+        with ESMTP id S238021AbiCDFSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 00:17:46 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60087.outbound.protection.outlook.com [40.107.6.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA18182BE9;
-        Thu,  3 Mar 2022 21:16:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ElpzeDtggr/VkLUq7q0k4p6IlKZcm4e3jpsq/nwKCeOzCOe/a815Q6eBGTIBneKv38g/0uWbqSi6wAq1oYp8ZDgS0rEhl0X/zT9X6n9inz/QOs/a5IpGqgyJ68YhOjs+KZFLpfevW/co3e62F9sPmtDbQDZyZVCMYKGXAdvR7IDc1gG16vnrDDbQU1gxWdO/WJfO380rncDOxMvnDkyNn4jeasjW213EYCXJzHBlGTtzkXu1ZG+RWP8nkxmCTRdbNQynamnCjkl/0I7+uqOk/tNyMwlaB47KT0HlJgovOYHfKoNkqiiB89+CzM3x25DpRA+cP9ybhxCioStMgTn5Ug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fb5JuGmX+BXFaAHAJfVcUy0e326/mH+Ze2qCcaVqbnM=;
- b=gX4ZkeUS+qIVwjRH4+U4396VLVSy9Xy1+gBDXFd5CW/5A+LfXcVQPZohDK+NbM4VNq/qh/qzhz3LFr7tgZhi49D/5ypAOqDv878YSgNe3RBgj3fQA+tXoTsnuWa32ly3B5YDLDwo7Fhth0Ue5aai3uJ9ZMgcx0Ssdckt8nFpf3xXe/Hmn5ZxJhCZPWvb5j7yeZCN7qJQe9QZX6a6wEnQacVVIqj8dMnFCDTrhi13eS5hj38Dr4DjG7x4k0vF4o42a7JNp0u1qZ166CisFKnEbgPfIUaEtx5HH6sa4y5IJgmo80OW1QPJLn14c/SiOYuhfnQGI2IxXMyySw57E1/CpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fb5JuGmX+BXFaAHAJfVcUy0e326/mH+Ze2qCcaVqbnM=;
- b=K5Pl2XI3TioGVWq0rXFHzAfxHdLF/gLD4d1kFl2nErmEey2/uuDIiFGXbky8EegilPBpPOgcJTjf9WpDCB0MMgx7RUSvnUChpA77z9mCM3ZHk8cKXlsI3jNXfY8jXxeMNZjCHxsodIN0IKr0Ruh6mz6ERCS5EF4NPY46Hu94I9Y=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by PA4PR04MB7837.eurprd04.prod.outlook.com (2603:10a6:102:ca::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 4 Mar
- 2022 05:16:57 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5038.016; Fri, 4 Mar 2022
- 05:16:57 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        "jassisinghbrar@gmail.com" <jassisinghbrar@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>
-CC:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH V2 0/6] mailbox: imx: misc fix and SECO MU support
-Thread-Topic: [PATCH V2 0/6] mailbox: imx: misc fix and SECO MU support
-Thread-Index: AQHYG8V+6zyXtHlnqUG2v4cVSruU8qyu1pXg
-Date:   Fri, 4 Mar 2022 05:16:57 +0000
-Message-ID: <DU0PR04MB941714DB00452D87D941E60688059@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220207015211.394297-1-peng.fan@oss.nxp.com>
-In-Reply-To: <20220207015211.394297-1-peng.fan@oss.nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e9eef08d-f3a5-49dd-e6a3-08d9fd9e345d
-x-ms-traffictypediagnostic: PA4PR04MB7837:EE_
-x-microsoft-antispam-prvs: <PA4PR04MB7837F99A73878623374B9C8C88059@PA4PR04MB7837.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rcPd4l43+x5JVMIbcFSMAUIfI1J8P1bwbGaPw0PIV4TRE+A2x+M3mDjTdQra8T9OQFrpya7GApJPpIbUPp2LzNg8hBc1EWIxw5uwYnuhTLCLf5DwKDlUYHleFS9bTthnvBL9kVHC56guDz8yomtz3xmEEgdrxi4973+xrC4PNT5YkMHPtu2cTcvIj3hPtR1+J7qcGuhbaSK0uYsIkXi6tvSt0fSTjyYI3Z/Yid/8TJOV7Z3NHg+cRtglWhjrmVflD8GoceyO/yNEDYmqDVDxURYQxaZiROqHT3RNaWaEoNJLaqJAQudg88Z+ftK+IejmMsKQi3Q7wMOVhDvbCcv1ExU8LP8kQk06xCJJPr3tv4BOA8pmstWGZWQ4lcAdHhFZL9Bjc1s1kS760j6J7f28zrf4sz+AX7A43NVUsaWsKUHskL4VZOZ2XJgwHpiqDcNnU6v4rnZaV3WhtwhESSh+aDb2OnkYXoNr6eXa+EONFPpCmxRPvg6GBQYE4DAGuRN8VKUBZ2msfa0ErrO9qLQ0bkF0tvMQiOgkjjhLCTz+P/igLJX2WINjtq6bVUrQL7m6Bnvl2prnH3GhmPDihgCy42P+WOIsmoZ+oXEMXkbum0WPGPsttRKaLnuuMuxtquHdoC/70VSoKxbOW12SVpQ2Ue/gE8VGJ08OCDzeF3dWvMiYj525hqOowjyCPvj8005Pc0kSeny2Ff7oaBJDSseibh7X0bFTKYMixyJLG7pZaNGN4wr2IzSjPOb8i+6/DGUIeoX3TSlPy1NqQys/IrXQYWzh8AiIz7YDSMvieA78we4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(186003)(83380400001)(2906002)(33656002)(15650500001)(44832011)(38100700002)(52536014)(8936002)(5660300002)(9686003)(6506007)(7696005)(8676002)(110136005)(76116006)(54906003)(86362001)(64756008)(66446008)(66476007)(66556008)(66946007)(55016003)(38070700005)(498600001)(4326008)(71200400001)(122000001)(966005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lrc09f8LQtK1D1s5H+/TdvIk4bBRRyiQe2cn40s/RYWt6mZWyWusOsildBAu?=
- =?us-ascii?Q?P1/cGedmhvS6p9vPKyz7aFEjZJipWWDb9xiHkyv0smjOT56VQRTbgcFc8Ktm?=
- =?us-ascii?Q?++9e9olN82nS2/W4AeWcZ6yHviq/jHxgoeGBI/RRxALFr4LeehC1ggn+oach?=
- =?us-ascii?Q?DZUWYofQZ41CUOvHF3SyGO/9AtiMjnJWAhIMqH8VWK5PXBQOy1s0l/Jbi57P?=
- =?us-ascii?Q?VxC0su1vHXngdNtQccsbAza6i+pZCpCT7VDZCW//u6v1zZaEKaArLTUjR14l?=
- =?us-ascii?Q?t83KBmBcYdSWVmmrSEkbGcdavmoOaaXpOoxqqCAvCnlrAXrP+oVLBUwnd/fq?=
- =?us-ascii?Q?YEK1/d/njPsVSkB/5s4MaYBSfkUx8/eUXcpuitTTlJl+pj1ULnt3U83/R1Xy?=
- =?us-ascii?Q?b+n8tV4XlobBMW5O6MIb2zkAbnZW6KRdebt3s5BdY/TaXtmhRcsKG0U5c4Bq?=
- =?us-ascii?Q?d411/v+LIRkvTmrHM2RKmCiROu5O64P+fYEQ6+BW6ZS5GMPo4Ewewzh/OOXG?=
- =?us-ascii?Q?QsiS2Utyl36nIMerv3UzxFIX2VhwN59pPywr1sTsZegEUSkaF9i2mU24wQCQ?=
- =?us-ascii?Q?Hw2/fyVM8igkGppQyg/xoNXzvEmr3xgKaLPU21szY2WdqWwCyI3YDbgCAcMF?=
- =?us-ascii?Q?5I6ABcITXugIcjHs7FfCVLaySWxK8mKumzvzSGwW4xlIMdeMU2e4CzKcR4Di?=
- =?us-ascii?Q?4eG4/GnVcQaK/E4efqF9xuQ3mXD4Btdnmqvrzi+15cC5x5FR94F4pzEX/kkL?=
- =?us-ascii?Q?ANHqlciZVej8mdmUH3tg9p/QP+sM9OqgOTXrZlV9iW+WBmnsw62TAsOam3wg?=
- =?us-ascii?Q?iB6gDHff3q9+hqKddH28rzfs/My+bU31eoJX3FwnBPE3WoQi99wTN11bP4P0?=
- =?us-ascii?Q?ay8k5EO2kbdWdi0qIQ6K9NY+ZWgqnRxWbz1MyL0q2Y3m6JsDv5MirJ3kZnqM?=
- =?us-ascii?Q?FNax3dnPuLDAMeaHuGuWaXIA72L481bq4MfACoMRItfSeDS4c0vgoD97bxkW?=
- =?us-ascii?Q?qcTpnF4mHC9GNyYqkVs5N0Kb+F4Es606044KEkGwbdUEZKIpoROdlDkj7WE6?=
- =?us-ascii?Q?C5bxOlHO8l06fhLcdl+l9orfuCdoKq30muktx6G989rhjdcmRXpjh0m5zC3O?=
- =?us-ascii?Q?whSIB3yfHmGUT4ELUeBObGYazd1MyZHo5ARrg8P2Q3O7fFWuI9lesfR+Do52?=
- =?us-ascii?Q?MWJeH03nCidzhm6F99QMp2UKi9AI7FlD4NUsrIJySoywalvLqupin8kQZ0Ld?=
- =?us-ascii?Q?GZN88fslMlz8Yqvu+SmtzaU3+U1y80fskudIb0TyJXKY6v3EQsC/JwGn9oBG?=
- =?us-ascii?Q?w2BSGbtyVa6xj85yzPYx0hFAk1sSiUWQVnlt9MsDL4OJ1IbqzvY8rNHwz+pL?=
- =?us-ascii?Q?aDN4QbMQGx/+64HGEvDzUCwGR7YoiHRRJviMO6FdlxSEJvuyJNP/wJKUm0Vh?=
- =?us-ascii?Q?95dQFbPpaJTtuwYsPR58RhXxyIb36MIi+HgC6ABZ4uMHdnGf1OTes4g0VNAO?=
- =?us-ascii?Q?VDrk+7hEfyS57ayLz2Y6F1Cy/+T5QY4k9QZ6FtAoY3/9li/dbq99TJnKQ+pc?=
- =?us-ascii?Q?anzMay89MX/swrKlbkXk07x8sXrJM57eQUd1PQ4v6ak5uhK9gwNS4XnK6NKy?=
- =?us-ascii?Q?0Q=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 4 Mar 2022 00:18:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65DB81262D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 21:17:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646371047;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=e0HRpvWMBQ8SLXvfPiOEp5b+QRkrUs7xMrgcNzBhT4w=;
+        b=L8mkktRCUOCM0EIFl8LPlzoYgyTTq+haz7o3RKZzpp465CzY/1QEnsVS0uu/NgTEAiinGk
+        9P0zD2FpV5RE3kuzsGcq6PKEt2NRfULmHV8h0IV6xxw1coKkwpOsyyMOMw0amFAgvLIKea
+        jNHwPHRFo88iDoYSgm/sU6O7Mk697/Q=
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
+ [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-517-Ghd2KU7LMi6L_flfhNkOgw-1; Fri, 04 Mar 2022 00:17:24 -0500
+X-MC-Unique: Ghd2KU7LMi6L_flfhNkOgw-1
+Received: by mail-pj1-f70.google.com with SMTP id mj19-20020a17090b369300b001bedc197c50so6439148pjb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 21:17:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e0HRpvWMBQ8SLXvfPiOEp5b+QRkrUs7xMrgcNzBhT4w=;
+        b=pewsA6dTfbLEbl/XBmHmLVvV2rB5J2bj4oQ8IMJL/I8h6unukroKUFgv4FZgY/SZGo
+         3jkpmpgPXO3BL5yNQJPCcJdLzyKKpyJCVzOcGb+g5w6YGEJdO1rxG/buW6tePisXVC/q
+         O4JGQ7Ake4gR9PUOdy+X6AuQ3YUARMXj/NcHSIQghwvcxEh1uhh6+6DOljfGXzBnUmR1
+         tz1hg2LEaAR3oWsmEK7YuMidUQwNSAxrpxIYJ+faOuWo4KkKScssg5zUjChzjl8EYtL7
+         gRW2nScoV9OvvszldMGwnsDAyfDWoIDW5pAAGHqjELBtHKCy/OEnKJt5txn56o+ltSnh
+         e8vg==
+X-Gm-Message-State: AOAM530uDn0TD0HsDhmfWjfXB/HyXd5SoNmfNnOFZF60H7OEmXUBb/Zc
+        a6loq56USb693lqg+TJH9eGu6OZWKyuPGztfE8yeVDWpGEO5c0GcL1tD46skr14ntuiKrc3BTvY
+        dziC5gOpT95zKsg2zPO/GjYcz
+X-Received: by 2002:a17:902:be0c:b0:14f:d9b3:92a9 with SMTP id r12-20020a170902be0c00b0014fd9b392a9mr39274937pls.53.1646371043079;
+        Thu, 03 Mar 2022 21:17:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzxSCA3qOeKysFG5xoACVzdh0Kg3/Srw376djx9Rs6fEWpfjBjo+w/2U4uStqvssmYX9OXKFA==
+X-Received: by 2002:a17:902:be0c:b0:14f:d9b3:92a9 with SMTP id r12-20020a170902be0c00b0014fd9b392a9mr39274911pls.53.1646371042604;
+        Thu, 03 Mar 2022 21:17:22 -0800 (PST)
+Received: from localhost.localdomain ([94.177.118.59])
+        by smtp.gmail.com with ESMTPSA id p16-20020a056a000b5000b004f669806cd9sm4323865pfo.87.2022.03.03.21.17.14
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Thu, 03 Mar 2022 21:17:22 -0800 (PST)
+From:   Peter Xu <peterx@redhat.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     peterx@redhat.com, Nadav Amit <nadav.amit@gmail.com>,
+        Hugh Dickins <hughd@google.com>,
+        David Hildenbrand <david@redhat.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: [PATCH v7 00/23] userfaultfd-wp: Support shmem and hugetlbfs
+Date:   Fri,  4 Mar 2022 13:16:45 +0800
+Message-Id: <20220304051708.86193-1-peterx@redhat.com>
+X-Mailer: git-send-email 2.32.0
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9eef08d-f3a5-49dd-e6a3-08d9fd9e345d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2022 05:16:57.3927
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Fwdv9o+J4qAlPd/MiPoC8ikE3I5n0Y7Y2xMuRYuq5+kbYyRCzVfH9ZYKcD4+HZxNtqWekFvlJeZuhKMDjsoO3g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7837
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jassi,
+This is v7 of the series to add shmem+hugetlbfs support for userfaultfd
+write protection.  It is based on linux-next tag next-20220301.
 
-> Subject: [PATCH V2 0/6] mailbox: imx: misc fix and SECO MU support
+The whole tree can be found here for testing:
 
-Any chance to get this in your tree for linux-next?
+  https://github.com/xzpeter/linux/tree/uffd-wp-shmem-hugetlbfs
 
-Also do you have time to give a look at
-https://lore.kernel.org/lkml/20220302022522.1789588-1-peng.fan@oss.nxp.com/=
- ?
+One tweak needed is to replace Nadav's v2 patch "userfaultfd: provide
+unmasked address on page-fault" with v3 to unbreak hugetlb in general.
 
-Thanks,
-Peng.
+There aren't a lot of changes comparing to v6, majorly rebase and retest to
+make sure nothing breaks.  Meanwhile should have addressed comments from
+Alistair.
 
->=20
-> From: Peng Fan <peng.fan@nxp.com>
->=20
-> V2:
->  Drop "mailbox: imx: Add support for identifying SCU wakeup source from
-> sysfs" from v1  Add A-b from Rob
->=20
-> This patchset includes a few fixes for low power and i.MX8 SECO MU suppor=
-t
->=20
-> Franck LENORMAND (1):
->   mailbox: imx: add i.MX8 SECO MU support
->=20
-> Peng Fan (2):
->   dt-bindings: mailbox: imx-mu: add i.MX8 SECO MU support
->   mailbox: imx: introduce rxdb callback
->=20
-> Ranjani Vaidyanathan (1):
->   mailbox: imx: enlarge timeout while reading/writing messages to SCFW
->=20
-> Robin Gong (2):
->   mailbox: imx: fix wakeup failure from freeze mode
->   mailbox: imx: fix crash in resume on i.mx8ulp
->=20
->  .../devicetree/bindings/mailbox/fsl,mu.yaml   |   1 +
->  drivers/mailbox/imx-mailbox.c                 | 249
-> +++++++++++++++++-
->  2 files changed, 243 insertions(+), 7 deletions(-)
->=20
-> --
-> 2.25.1
+v7 changelog:
+- Rebased to next-20220301
+- Renamed s/is_pte_marker_uffd_wp/pte_marker_uffd_wp/, add another helper
+  pte_marker_entry_uffd_wp as suggested to operate on swp_entry_t [Alistair]
+- Drop pte_unmap_same() in pte_marker_handle_uffd_wp() [Alistair]
+- In finish_fault(), init vmf->orig_pte with pte_clear(), because some
+  pte_none() ptes are not really all zeros, e.g. xtensa and s390 [Alistair]
+
+Previous versions:
+
+  RFC: https://lore.kernel.org/lkml/20210115170907.24498-1-peterx@redhat.com/
+  v1:  https://lore.kernel.org/lkml/20210323004912.35132-1-peterx@redhat.com/
+  v2:  https://lore.kernel.org/lkml/20210427161317.50682-1-peterx@redhat.com/
+  v3:  https://lore.kernel.org/lkml/20210527201927.29586-1-peterx@redhat.com/
+  v4:  https://lore.kernel.org/lkml/20210714222117.47648-1-peterx@redhat.com/
+  v5:  https://lore.kernel.org/lkml/20210715201422.211004-1-peterx@redhat.com/
+  v6:  https://lore.kernel.org/lkml/20211115075522.73795-1-peterx@redhat.com/
+
+Overview
+========
+
+Userfaultfd-wp anonymous support was merged two years ago.  There're quite
+a few applications that started to leverage this capability either to take
+snapshots for user-app memory, or use it for full user controled swapping.
+
+This series tries to complete the feature for uffd-wp so as to cover all
+the RAM-based memory types.  So far uffd-wp is the only missing piece of
+the rest features (uffd-missing & uffd-minor mode).
+
+One major reason to do so is that anonymous pages are sometimes not
+satisfying the need of applications, and there're growing users of either
+shmem and hugetlbfs for either sharing purpose (e.g., sharing guest mem
+between hypervisor process and device emulation process, shmem local live
+migration for upgrades), or for performance on tlb hits.
+
+All these mean that if a uffd-wp app wants to switch to any of the memory
+types, it'll stop working.  I think it's worthwhile to have the kernel to
+cover all these aspects.
+
+This series chose to protect pages in pte level not page level.
+
+One major reason is safety.  I have no idea how we could make it safe if
+any of the uffd-privileged app can wr-protect a page that any other
+application can use.  It means this app can block any process potentially
+for any time it wants.
+
+The other reason is that it aligns very well with not only the anonymous
+uffd-wp solution, but also uffd as a whole.  For example, userfaultfd is
+implemented fundamentally based on VMAs.  We set flags to VMAs showing the
+status of uffd tracking.  For another per-page based protection solution,
+it'll be crossing the fundation line on VMA-based, and it could simply be
+too far away already from what's called userfaultfd.
+
+PTE markers
+===========
+
+The patchset is based on the idea called PTE markers.  It was discussed in
+one of the mm alignment sessions, proposed starting from v6, and this is
+the 2nd version of it using PTE marker idea.
+
+PTE marker is a new type of swap entry that is ony applicable to file
+backed memories like shmem and hugetlbfs.  It's used to persist some
+pte-level information even if the original present ptes in pgtable are
+zapped.
+
+Logically pte markers can store more than uffd-wp information, but so far
+only one bit is used for uffd-wp purpose.  When the pte marker is installed
+with uffd-wp bit set, it means this pte is wr-protected by uffd.
+
+It solves the problem on e.g. file-backed memory mapped ptes got zapped due
+to any reason (e.g. thp split, or swapped out), we can still keep the
+wr-protect information in the ptes.  Then when the page fault triggers
+again, we'll know this pte is wr-protected so we can treat the pte the same
+as a normal uffd wr-protected pte.
+
+The extra information is encoded into the swap entry, or swp_offset to be
+explicit, with the swp_type being PTE_MARKER.  So far uffd-wp only uses one
+bit out of the swap entry, the rest bits of swp_offset are still reserved
+for other purposes.
+
+There're two configs to enable/disable PTE markers:
+
+  CONFIG_PTE_MARKER
+  CONFIG_PTE_MARKER_UFFD_WP
+
+We can set !PTE_MARKER to completely disable all the PTE markers, along with
+uffd-wp support.  I made two config so we can also enable PTE marker but
+disable uffd-wp file-backed for other purposes.  At the end of current series,
+I'll enable CONFIG_PTE_MARKER by default, but that patch is standalone and if
+anyone worries about having it by default, we can also consider turn it off by
+dropping that oneliner patch.  So far I don't see a huge risk of doing so, so I
+kept that patch.
+
+In most cases, PTE markers should be treated as none ptes.  It is because that
+unlike most of the other swap entry types, there's no PFN or block offset
+information encoded into PTE markers but some extra well-defined bits showing
+the status of the pte.  These bits should only be used as extra data when
+servicing an upcoming page fault, and then we behave as if it's a none pte.
+
+I did spend a lot of time observing all the pte_none() users this time. It is
+indeed a challenge because there're a lot, and I hope I didn't miss a single of
+them when we should take care of pte markers.  Luckily, I don't think it'll
+need to be considered in many cases, for example: boot code, arch code
+(especially non-x86), kernel-only page handlings (e.g. CPA), or device driver
+codes when we're tackling with pure PFN mappings.
+
+I introduced pte_none_mostly() in this series when we need to handle pte
+markers the same as none pte, the "mostly" is the other way to write "either
+none pte or a pte marker".
+
+I didn't replace pte_none() to cover pte markers for below reasons:
+
+  - Very rare case of pte_none() callers will handle pte markers.  E.g., all
+    the kernel pages do not require knowledge of pte markers.  So we don't
+    pollute the major use cases.
+
+  - Unconditionally change pte_none() semantics could confuse people, because
+    pte_none() existed for so long a time.
+
+  - Unconditionally change pte_none() semantics could make pte_none() slower
+    even if in many cases pte markers do not exist.
+
+  - There're cases where we'd like to handle pte markers differntly from
+    pte_none(), so a full replace is also impossible.  E.g. khugepaged should
+    still treat pte markers as normal swap ptes rather than none ptes, because
+    pte markers will always need a fault-in to merge the marker with a valid
+    pte.  Or the smap code will need to parse PTE markers not none ptes.
+
+Patch Layout
+============
+
+Introducing PTE marker and uffd-wp bit in PTE marker:
+
+  mm: Introduce PTE_MARKER swap entry
+  mm: Teach core mm about pte markers
+  mm: Check against orig_pte for finish_fault()
+  mm/uffd: PTE_MARKER_UFFD_WP
+
+Adding support for shmem uffd-wp:
+
+  mm/shmem: Take care of UFFDIO_COPY_MODE_WP
+  mm/shmem: Handle uffd-wp special pte in page fault handler
+  mm/shmem: Persist uffd-wp bit across zapping for file-backed
+  mm/shmem: Allow uffd wr-protect none pte for file-backed mem
+  mm/shmem: Allows file-back mem to be uffd wr-protected on thps
+  mm/shmem: Handle uffd-wp during fork()
+
+Adding support for hugetlbfs uffd-wp:
+
+  mm/hugetlb: Introduce huge pte version of uffd-wp helpers
+  mm/hugetlb: Hook page faults for uffd write protection
+  mm/hugetlb: Take care of UFFDIO_COPY_MODE_WP
+  mm/hugetlb: Handle UFFDIO_WRITEPROTECT
+  mm/hugetlb: Handle pte markers in page faults
+  mm/hugetlb: Allow uffd wr-protect none ptes
+  mm/hugetlb: Only drop uffd-wp special pte if required
+  mm/hugetlb: Handle uffd-wp during fork()
+
+Misc handling on the rest mm for uffd-wp file-backed:
+
+  mm/khugepaged: Don't recycle vma pgtable if uffd-wp registered
+  mm/pagemap: Recognize uffd-wp bit for shmem/hugetlbfs
+
+Enabling of uffd-wp on file-backed memory:
+
+  mm/uffd: Enable write protection for shmem & hugetlbfs
+  mm: Enable PTE markers by default
+  selftests/uffd: Enable uffd-wp for shmem/hugetlbfs
+
+Tests
+=====
+
+- Compile test on x86_64 and aarch64 on different configs
+- Kernel selftests
+- uffd-test [0]
+- Umapsort [1,2] test for shmem/hugetlb, with swap on/off
+
+Please review, thanks.
+
+[0] https://github.com/xzpeter/clibs/tree/master/uffd-test
+[1] https://github.com/xzpeter/umap-apps/tree/peter
+[2] https://github.com/xzpeter/umap/tree/peter-shmem-hugetlbfs
+
+Peter Xu (23):
+  mm: Introduce PTE_MARKER swap entry
+  mm: Teach core mm about pte markers
+  mm: Check against orig_pte for finish_fault()
+  mm/uffd: PTE_MARKER_UFFD_WP
+  mm/shmem: Take care of UFFDIO_COPY_MODE_WP
+  mm/shmem: Handle uffd-wp special pte in page fault handler
+  mm/shmem: Persist uffd-wp bit across zapping for file-backed
+  mm/shmem: Allow uffd wr-protect none pte for file-backed mem
+  mm/shmem: Allows file-back mem to be uffd wr-protected on thps
+  mm/shmem: Handle uffd-wp during fork()
+  mm/hugetlb: Introduce huge pte version of uffd-wp helpers
+  mm/hugetlb: Hook page faults for uffd write protection
+  mm/hugetlb: Take care of UFFDIO_COPY_MODE_WP
+  mm/hugetlb: Handle UFFDIO_WRITEPROTECT
+  mm/hugetlb: Handle pte markers in page faults
+  mm/hugetlb: Allow uffd wr-protect none ptes
+  mm/hugetlb: Only drop uffd-wp special pte if required
+  mm/hugetlb: Handle uffd-wp during fork()
+  mm/khugepaged: Don't recycle vma pgtable if uffd-wp registered
+  mm/pagemap: Recognize uffd-wp bit for shmem/hugetlbfs
+  mm/uffd: Enable write protection for shmem & hugetlbfs
+  mm: Enable PTE markers by default
+  selftests/uffd: Enable uffd-wp for shmem/hugetlbfs
+
+ arch/s390/include/asm/hugetlb.h          |  15 ++
+ fs/hugetlbfs/inode.c                     |  15 +-
+ fs/proc/task_mmu.c                       |   7 +
+ fs/userfaultfd.c                         |  31 +---
+ include/asm-generic/hugetlb.h            |  24 +++
+ include/linux/hugetlb.h                  |  27 ++--
+ include/linux/mm.h                       |  10 ++
+ include/linux/mm_inline.h                |  43 +++++
+ include/linux/shmem_fs.h                 |   4 +-
+ include/linux/swap.h                     |  15 +-
+ include/linux/swapops.h                  |  79 +++++++++
+ include/linux/userfaultfd_k.h            |  71 ++++++++
+ include/uapi/linux/userfaultfd.h         |  10 +-
+ mm/Kconfig                               |  16 ++
+ mm/filemap.c                             |   5 +
+ mm/hmm.c                                 |   2 +-
+ mm/hugetlb.c                             | 182 ++++++++++++++++-----
+ mm/khugepaged.c                          |  14 +-
+ mm/memcontrol.c                          |   8 +-
+ mm/memory.c                              | 196 ++++++++++++++++++++---
+ mm/mincore.c                             |   3 +-
+ mm/mprotect.c                            |  75 ++++++++-
+ mm/rmap.c                                |   8 +
+ mm/shmem.c                               |   4 +-
+ mm/userfaultfd.c                         |  54 +++++--
+ tools/testing/selftests/vm/userfaultfd.c |   4 +-
+ 26 files changed, 795 insertions(+), 127 deletions(-)
+
+-- 
+2.32.0
 
