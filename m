@@ -2,71 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB64FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbiCDIO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
+        id S232138AbiCDIOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232138AbiCDIOQ (ORCPT
+        with ESMTP id S231514AbiCDIOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:14:16 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EBF54BEC
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:13:27 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        Fri, 4 Mar 2022 03:14:18 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E4665D2A
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:13:31 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1B7FB3F5F2
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:13:26 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 45EA33F614
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:13:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646381606;
-        bh=KY3j6GzmOt8fX0p2jIG9irP/hzl+hjlDmh8fW9j6n1U=;
+        s=20210705; t=1646381609;
+        bh=PN+MwFyyD7KNKhN3V9sTc9ozhjbNqMNAeFcwOrkH/Mc=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version:Content-Type;
-        b=KY8QWKrF82+SkvP3oo2TOfv3JYT+CA3y3N+miIK9+t4DejY9z7WYFcofiwtPrm9Ht
-         irPjfd9QQuZCHTnsv7ILMsiiksvdFftbeMzhXJiY9js9GPaQwyTsxLmIcc36CXv3tv
-         EXNlH0+x0tNJ3Dx09P1tFl/f6dqmEXjPR3PLOml14XpXVad+tFD/mJfJ/uvdD2XxUX
-         uIniV9nK/xRFxOTOWyj6GIq/HiY72ULitevODQn6gvXlkpFzZD5ArVq503F1vcXvB0
-         dwMyPaORts/1RDzsGMqRB/XzgjY/Rv/6oEn544ILjHF6IMq1SXI5JM2I2nIyKkO4J6
-         aEcXonZiRcS5g==
-Received: by mail-ed1-f69.google.com with SMTP id x22-20020a05640226d600b0041380e16645so4244688edd.8
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:13:26 -0800 (PST)
+        b=jQLZrH58hWlRQirutLmFiWPu4+xkDTRoSVsohYkU5Qbg2tOzNcCOilU/ZgG1pyA7z
+         KZ+1Y4rrxdEBoDbBune7YWUpbGGLe0W8MFlGdRhX9p7Vh6SiR0qhqxCZIfF1kwApOf
+         OYDhZr80irR0CmKpITNYJ6vboRR3cx3rE8kpAVrvozRnQA3pLL1kAa46a9UH6GBMu/
+         22Vffzlml/Wgmj35JV4Xuk65B9+AlDgvFsM3qeNVxM757ukWfEHVX4IuBBCmoXoPRd
+         l55QKz/SSVks4pmZfLZYQnYAz9lZP8RSl5YiaZg5kRhmk0F8SsLG1dmwOx4Wx+JZ3/
+         bcl+Plt2EmB9A==
+Received: by mail-ej1-f69.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso4030793eje.20
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:13:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KY3j6GzmOt8fX0p2jIG9irP/hzl+hjlDmh8fW9j6n1U=;
-        b=HsPEdx3B9dV6y9ESdeDhcROEWImIUtTnOmZ7XuoyClcYVAq5XaQ57MocNB/9TphIQ0
-         f/9tQQoXYwA7N2qs0zLFlPjvv/LJwmsvLsvfNMB5y6/ukfDpjqktLTA4tLRZ2SK7g+li
-         yHo/3/iK2d5NfcchV7Z60q2x8whBUK8G5YtFjmTL0ved9jV1yJFEZz+kYS/bpSCQW6QB
-         s6BAMlbEqa0JZUIEU0Cm2xLoOm384cv+26KASlCSWSwsY3F7Ogd9vlvecmOAhIznO1C/
-         jvy9DI87FkNF5gPxx3GN/p4SJMgVUAgMK2INFIOrFy0e/wivyO1KWI0dg6UxckJwUobH
-         FcjQ==
-X-Gm-Message-State: AOAM530MO8u4SiKe8FlDPLYP0qrojVcqqJ+dlVzNg4EZuYtADIwqa/P4
-        LEUwvTUjnFlzi8eEwf5+xtGyTrO1pgjOefjqFXMAGinbTgBwjO1dbbrfrOmHkyD/n2TYdrN/qo6
-        AB4z8PVH3LLqZmfrTlhxl5MX5Yv5P/DUIyJjpGMy2eg==
-X-Received: by 2002:a50:ee90:0:b0:40f:349f:7368 with SMTP id f16-20020a50ee90000000b0040f349f7368mr37957151edr.236.1646381605747;
-        Fri, 04 Mar 2022 00:13:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzuwab0krTL7gBqonB1LVsc2xM1c9M6xF1CmSuTXRpa2iDTLUYP7/dzn+sKB0U1ka+8rSwHJQ==
-X-Received: by 2002:a50:ee90:0:b0:40f:349f:7368 with SMTP id f16-20020a50ee90000000b0040f349f7368mr37957141edr.236.1646381605601;
-        Fri, 04 Mar 2022 00:13:25 -0800 (PST)
+        bh=PN+MwFyyD7KNKhN3V9sTc9ozhjbNqMNAeFcwOrkH/Mc=;
+        b=PbydmeORW9k7x1dtYwVd8Ezonaf3w6OQUHk8M+eQauv8Fi3qou0v1uKb0wfQJgeKLi
+         grYmRT9I4SCaUT5r2YYHaBvcILC64xOb2YDWyKJ9mPI5ZPt/RwzIOE8U5VotKv6MvDOh
+         lAawUPDKQxAPg4JSKcBdKNZI+rsAoUS68eEeGAo8rcgmLsHPYKnoNFOasGDMTG+yKUg4
+         Uqxq4JsL96XASpbeS+q4AaNFb70XlmaJALHX/LOTp+bsUJJiTD9LG9gg5Ad6MwWdn8mn
+         AXV4+DWBQStXOYjKwYnOBlNwixhiv8uV9Ka11Cb9+J5kKzNgqGonyWwVKDTgQQHVquVD
+         +5eA==
+X-Gm-Message-State: AOAM5312IIglMhMCPOyR14DARktBIaWuEf1KDgjECuHAe62V5Mw4KU8z
+        bObKMHGc7pCtSvqbZBE1Z9gwnghdLbEgS/Q9MkGtqBEtjpTwkNq7Y1HOK/uzbg32ExREfIbaEG2
+        MdUowP5R6dxinSj4wU3CdaOBVnmKiehuWh6KA9wOZ5A==
+X-Received: by 2002:a17:907:d0f:b0:6da:63d6:b84f with SMTP id gn15-20020a1709070d0f00b006da63d6b84fmr9408978ejc.302.1646381608976;
+        Fri, 04 Mar 2022 00:13:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxtmf4M0vAgtkkJF2MjO14bSsPEfmcjiMMhZeu+y4rewMDiaaGtcHGsndvzz05ZBZ+o9hJiUg==
+X-Received: by 2002:a17:907:d0f:b0:6da:63d6:b84f with SMTP id gn15-20020a1709070d0f00b006da63d6b84fmr9408960ejc.302.1646381608738;
+        Fri, 04 Mar 2022 00:13:28 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id z2-20020a05640235c200b00415cec386a5sm1889584edc.16.2022.03.04.00.13.24
+        by smtp.gmail.com with ESMTPSA id z2-20020a05640235c200b00415cec386a5sm1889584edc.16.2022.03.04.00.13.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 00:13:24 -0800 (PST)
+        Fri, 04 Mar 2022 00:13:28 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, ssantosh@kernel.org
+To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] memory: emif: check the pointer temp in get_device_details()
-Date:   Fri,  4 Mar 2022 09:13:21 +0100
-Message-Id: <164638154584.220122.2312358895225740646.b4-ty@canonical.com>
+Subject: Re: [PATCH v2] dt-bindings: memory: renesas,rpc-if: Document RZ/V2L SoC
+Date:   Fri,  4 Mar 2022 09:13:23 +0100
+Message-Id: <164638154584.220122.4689452706717484391.b4-ty@canonical.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220225132552.27894-1-baijiaju1990@gmail.com>
-References: <20220225132552.27894-1-baijiaju1990@gmail.com>
+In-Reply-To: <20220301123527.15950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220301123527.15950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -74,16 +80,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Feb 2022 05:25:52 -0800, Jia-Ju Bai wrote:
-> The pointer temp is allocated by devm_kzalloc(), so it should be
-> checked for error handling.
+On Tue, 1 Mar 2022 12:35:26 +0000, Lad Prabhakar wrote:
+> Document RZ/V2L RPC-IF bindings. RZ/V2L RPC-IF is identical to one found
+> on the RZ/G2L SoC. No driver changes are required as generic compatible
+> string "renesas,rzg2l-rpc-if" will be used as a fallback.
 > 
+> While at it, drop the comment "# RZ/G2L family" for "renesas,rzg2l-rpc-if"
+> compatible string as this will avoid changing the line for every new SoC
+> addition.
 > 
+> [...]
+
+It's late in the cycle so I might not be able to push it out to SoC folks. If
+that happens, I will keep it for the next cycle.
 
 Applied, thanks!
 
-[1/1] memory: emif: check the pointer temp in get_device_details()
-      commit: 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87
+[1/1] dt-bindings: memory: renesas,rpc-if: Document RZ/V2L SoC
+      commit: 69d6941949ea8a113ffc89410b0cb79bc7b35a0b
 
 Best regards,
 -- 
