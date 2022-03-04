@@ -2,475 +2,416 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66072C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:12:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239558AbiCDKNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:13:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S232778AbiCDKQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:16:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232988AbiCDKNe (ORCPT
+        with ESMTP id S229962AbiCDKQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 05:13:34 -0500
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F1437AA0;
-        Fri,  4 Mar 2022 02:12:45 -0800 (PST)
-Received: by mail-ua1-x92c.google.com with SMTP id z10so3367624uaa.3;
-        Fri, 04 Mar 2022 02:12:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uS2B76amqrUivQxdB2w6x2mADYcqGePMbA5ahPvBBes=;
-        b=RCIpE6wEAaYuKuKX/hp+Oe12HxIgX6sWPqSWPRACWxshXS2i/LzlMn1UK2IrafkheI
-         +H/8ANRbrXNuKaRdulMMDyEg52ZccMsk16uhuNpBrxjmD8k6EuqAqpF9xyp4lKj/cHQz
-         bJwohnjIZPiA7VYh9zA+iUGRkcgR1j5PJo2OQw5USXJzekubVXJfJcXSPrEzAfL/rPej
-         6nZFOuUfUq0j8ziGZrptkFHXxm76dMm2rAE6EKhq7FLtmYSn83O97+IJ4qrwTQ5LrYAv
-         SsRGDFNDIfSYHOX0L1omVnqjcbsqWKD74IOGmsGfMjlTQKFWHsiS/HaxnXw0ZJxKDyTd
-         zlow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uS2B76amqrUivQxdB2w6x2mADYcqGePMbA5ahPvBBes=;
-        b=RzzMHGGSZVVr9HRMoF6039jqW596Wzx46oCfE6shRfhHmBh+QNd74G2ZcI98GVBdXX
-         rNg3oE+5ebklC6ZPcxjt/dVLrG+GZpz4GkVgmT1flO08TMxRXiXqdjuPr4FZbRbsOk+d
-         MpteKcpbVgKXzaDDEJ/xz21OLFYY0MTWCgYQKxYkHEBJvwOFisgcM7jCCQ4paIidyYkY
-         O73t47fHtQc9f80rb9h9DBXkEivIMMAr03gz6n36d3pqK+scwEjD0p07+/+3PoOoWahC
-         lf/5x9x4qVC/n6WLwVO1hcC9F67+TyS22YqyU/iuAzH+zAvtJgTtyFjLg3rhMRBG3ZLw
-         UH1w==
-X-Gm-Message-State: AOAM530Np18W6Nhq9tiu10bHmScK9Hr3VmiFPMFrVJ5n/3UDklaL450q
-        nMNHtWwpP3K67kVUq53x3CmwKJ+xOjiZdk3lTts=
-X-Google-Smtp-Source: ABdhPJw00lQPrCec3/TTZ20tO8Lzug4ENjMEKPnCnZxXCFM/b1zV8TSFgelW8P7mCLV2akEObVBWiXZdgWA1+5zZwqE=
-X-Received: by 2002:ab0:2809:0:b0:341:f4aa:829d with SMTP id
- w9-20020ab02809000000b00341f4aa829dmr16117477uap.42.1646388764333; Fri, 04
- Mar 2022 02:12:44 -0800 (PST)
+        Fri, 4 Mar 2022 05:16:56 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A4119F474;
+        Fri,  4 Mar 2022 02:16:07 -0800 (PST)
+Received: from nazgul.tnic (dynamic-002-247-254-208.2.247.pool.telefonica.de [2.247.254.208])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A55101EC01CE;
+        Fri,  4 Mar 2022 11:16:01 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1646388962;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=bFaJ+pgjAxFW1LzTGdEz+z955VNt8YjBwsq1/jL6288=;
+        b=Ji5NmR69d3nEw00/ommsOZz1LzfeiY62ytQlOKgpXfBltHGFX6TEyYC8wDqDGS/4rqbal5
+        TB6fRGJfGrBCLgkl+4X4X+nxtBISzKu9PgjsJxOdBRasXJDTplOdjTCeyuySfRvsRn/vfu
+        ILEheq2gWk2CZhFPyhAZqCyFXzBbv78=
+Date:   Fri, 4 Mar 2022 11:16:05 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Shuai Xue <xueshuai@linux.alibaba.com>
+Cc:     rric@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, ardb@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+Subject: Re: [PATCH v6 2/2] EDAC/ghes: use cper functions to avoid code
+ duplication
+Message-ID: <YiHm1WHwO6HigCZx@nazgul.tnic>
+References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+ <20220303122626.99740-3-xueshuai@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220226110338.77547-1-chenhuacai@loongson.cn>
- <20220226110338.77547-13-chenhuacai@loongson.cn> <YiDp1VmAv4aMfX3B@kernel.org>
-In-Reply-To: <YiDp1VmAv4aMfX3B@kernel.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Fri, 4 Mar 2022 18:12:31 +0800
-Message-ID: <CAAhV-H77MeSNOjh_cr=BuN_ns6Zfq3csN-iVS_nQLDRF+SyQJQ@mail.gmail.com>
-Subject: Re: [PATCH V6 12/22] LoongArch: Add memory management
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220303122626.99740-3-xueshuai@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Mike,
+On Thu, Mar 03, 2022 at 08:26:26PM +0800, Shuai Xue wrote:
+> To Borislav: Sorry, I only delete the format change summary in this commit
+> log in this version. If I missed any comments, could you please point out
+> clearly? Thank you very much.
 
-On Fri, Mar 4, 2022 at 12:16 AM Mike Rapoport <rppt@kernel.org> wrote:
->
-> On Sat, Feb 26, 2022 at 07:03:28PM +0800, Huacai Chen wrote:
-> > This patch adds memory management support for LoongArch, including:
-> > cache and tlb management, page fault handling and ioremap/mmap support.
-> >
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> > ---
->
-> ...
->
-> > diff --git a/arch/loongarch/include/asm/fixmap.h b/arch/loongarch/include/asm/fixmap.h
-> > new file mode 100644
-> > index 000000000000..04ac3c871294
-> > --- /dev/null
-> > +++ b/arch/loongarch/include/asm/fixmap.h
-> > @@ -0,0 +1,15 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * fixmap.h: compile-time virtual memory allocation
-> > + *
-> > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-> > + */
-> > +
-> > +#ifndef _ASM_FIXMAP_H
-> > +#define _ASM_FIXMAP_H
-> > +
-> > +#include <asm/page.h>
->
-> Why this include is needed here?
-OK, let's remove it.
+I can't be more clear than the below - I simply took your patch and
+heavily massaged it because it is a lot quicker this way.
 
->
-> > +
-> > +#define NR_FIX_BTMAPS 64
-> > +
-> > +#endif
-> > diff --git a/arch/loongarch/include/asm/page.h b/arch/loongarch/include/asm/page.h
-> > new file mode 100644
-> > index 000000000000..8619ef2823ad
-> > --- /dev/null
-> > +++ b/arch/loongarch/include/asm/page.h
-> > @@ -0,0 +1,127 @@
->
-> ...
->
-> > +/*
-> > + * __pa()/__va() should be used only during mem init.
-> > + */
-> > +#define __pa(x)              PHYSADDR(x)
-> > +#define __va(x)              ((void *)((unsigned long)(x) + PAGE_OFFSET - PHYS_OFFSET))
-> > +
-> > +#ifndef __pa_symbol
-> > +#define __pa_symbol(x)       __pa(RELOC_HIDE((unsigned long)(x), 0))
-> > +#endif
->
-> This is the same definition as in include/linux/mm.h.
-> Is it required here?
-OK, let's remove it.
+You can compare it with your version and see what needed to be changed.
+And you can of course ask questios why, if it is not clear. But it
+should be - a shortlog of what I did is also in the commit message.
 
->
-> ...
->
-> > diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-> > new file mode 100644
-> > index 000000000000..61993cd4c3d7
-> > --- /dev/null
-> > +++ b/arch/loongarch/include/asm/pgtable.h
->
-> ...
->
-> > +#define PGD_ORDER            0
-> > +#define PUD_ORDER            0
-> > +#define PMD_ORDER            0
-> > +#define PTE_ORDER            0
->
-> Is it possible for these to change?
-> If not, please remove them.
->
-> ...
->
-> > diff --git a/arch/loongarch/mm/fault.c b/arch/loongarch/mm/fault.c
-> > new file mode 100644
-> > index 000000000000..d0170e4d5fe0
-> > --- /dev/null
-> > +++ b/arch/loongarch/mm/fault.c
-> > @@ -0,0 +1,257 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-> > + *
-> > + * Derived from MIPS:
-> > + * Copyright (C) 1995 - 2000 by Ralf Baechle
-> > + */
-> > +#include <linux/context_tracking.h>
-> > +#include <linux/signal.h>
-> > +#include <linux/sched.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/entry-common.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/string.h>
-> > +#include <linux/types.h>
-> > +#include <linux/ptrace.h>
-> > +#include <linux/ratelimit.h>
-> > +#include <linux/mman.h>
-> > +#include <linux/mm.h>
-> > +#include <linux/smp.h>
-> > +#include <linux/kdebug.h>
-> > +#include <linux/kprobes.h>
-> > +#include <linux/perf_event.h>
-> > +#include <linux/uaccess.h>
-> > +
-> > +#include <asm/branch.h>
-> > +#include <asm/mmu_context.h>
-> > +#include <asm/ptrace.h>
-> > +
-> > +int show_unhandled_signals = 1;
-> > +
-> > +/*
-> > + * This routine handles page faults.  It determines the address,
-> > + * and the problem, and then passes it off to one of the appropriate
-> > + * routines.
-> > + */
-> > +static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
-> > +     unsigned long address)
-> > +{
-> > +     int si_code;
-> > +     const int field = sizeof(unsigned long) * 2;
-> > +     unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
-> > +     struct task_struct *tsk = current;
-> > +     struct mm_struct *mm = tsk->mm;
-> > +     struct vm_area_struct *vma = NULL;
-> > +     vm_fault_t fault;
-> > +
-> > +     static DEFINE_RATELIMIT_STATE(ratelimit_state, 5 * HZ, 10);
-> > +
-> > +     si_code = SEGV_MAPERR;
-> > +
-> > +     if (user_mode(regs) && (address & __UA_LIMIT))
-> > +             goto bad_area_nosemaphore;
-> > +
-> > +     /*
-> > +      * We fault-in kernel-space virtual memory on-demand. The
-> > +      * 'reference' page table is init_mm.pgd.
-> > +      *
-> > +      * NOTE! We MUST NOT take any locks for this case. We may
-> > +      * be in an interrupt or a critical region, and should
-> > +      * only copy the information from the master page table,
-> > +      * nothing more.
-> > +      */
-> > +     if (unlikely(address >= MODULES_VADDR && address <= MODULES_END))
-> > +             goto no_context;
-> > +
-> > +     if (unlikely(address >= VMALLOC_START && address <= VMALLOC_END))
-> > +             goto no_context;
-> > +
-> > +     /*
-> > +      * If we're in an interrupt or have no user
-> > +      * context, we must not take the fault..
-> > +      */
-> > +     if (faulthandler_disabled() || !mm)
-> > +             goto bad_area_nosemaphore;
-> > +
-> > +     if (user_mode(regs))
-> > +             flags |= FAULT_FLAG_USER;
-> > +retry:
-> > +     mmap_read_lock(mm);
-> > +     vma = find_vma(mm, address);
-> > +     if (!vma)
-> > +             goto bad_area;
-> > +     if (vma->vm_start <= address)
-> > +             goto good_area;
-> > +     if (!(vma->vm_flags & VM_GROWSDOWN))
-> > +             goto bad_area;
-> > +     if (expand_stack(vma, address))
-> > +             goto bad_area;
-> > +/*
-> > + * Ok, we have a good vm_area for this memory access, so
-> > + * we can handle it..
-> > + */
-> > +good_area:
-> > +     si_code = SEGV_ACCERR;
-> > +
-> > +     if (write) {
-> > +             if (!(vma->vm_flags & VM_WRITE))
-> > +                     goto bad_area;
-> > +             flags |= FAULT_FLAG_WRITE;
-> > +     } else {
-> > +             if (address == regs->csr_era && !(vma->vm_flags & VM_EXEC))
-> > +                     goto bad_area;
-> > +             if (!(vma->vm_flags & VM_READ) && exception_era(regs) != address)
-> > +                     goto bad_area;
-> > +     }
-> > +
-> > +     /*
-> > +      * If for any reason at all we couldn't handle the fault,
-> > +      * make sure we exit gracefully rather than endlessly redo
-> > +      * the fault.
-> > +      */
-> > +     fault = handle_mm_fault(vma, address, flags, regs);
-> > +
-> > +     if (fault_signal_pending(fault, regs)) {
-> > +             if (!user_mode(regs))
-> > +                     goto no_context;
-> > +             return;
-> > +     }
-> > +
-> > +     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
-> > +     if (unlikely(fault & VM_FAULT_ERROR)) {
-> > +             if (fault & VM_FAULT_OOM)
-> > +                     goto out_of_memory;
-> > +             else if (fault & VM_FAULT_SIGSEGV)
-> > +                     goto bad_area;
-> > +             else if (fault & (VM_FAULT_SIGBUS|VM_FAULT_HWPOISON|VM_FAULT_HWPOISON_LARGE))
-> > +                     goto do_sigbus;
-> > +             BUG();
-> > +     }
-> > +     if (flags & FAULT_FLAG_ALLOW_RETRY) {
-> > +             if (fault & VM_FAULT_MAJOR) {
-> > +                     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MAJ, 1,
-> > +                                               regs, address);
-> > +                     tsk->maj_flt++;
-> > +             } else {
-> > +                     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MIN, 1,
-> > +                                               regs, address);
-> > +                     tsk->min_flt++;
-> > +             }
-> > +             if (fault & VM_FAULT_RETRY) {
-> > +                     flags &= ~FAULT_FLAG_ALLOW_RETRY;
-> > +                     flags |= FAULT_FLAG_TRIED;
-> > +
-> > +                     /*
-> > +                      * No need to mmap_read_unlock(mm) as we would
-> > +                      * have already released it in __lock_page_or_retry
-> > +                      * in mm/filemap.c.
-> > +                      */
-> > +
-> > +                     goto retry;
-> > +             }
-> > +     }
-> > +
-> > +     mmap_read_unlock(mm);
-> > +     return;
-> > +
-> > +/*
-> > + * Something tried to access memory that isn't in our memory map..
-> > + * Fix it, but check if it's kernel or user first..
-> > + */
-> > +bad_area:
-> > +     mmap_read_unlock(mm);
-> > +
-> > +bad_area_nosemaphore:
-> > +     /* User mode accesses just cause a SIGSEGV */
-> > +     if (user_mode(regs)) {
-> > +             tsk->thread.csr_badvaddr = address;
-> > +             if (!write)
-> > +                     tsk->thread.error_code = 1;
-> > +             else
-> > +                     tsk->thread.error_code = 2;
-> > +
-> > +             if (show_unhandled_signals &&
-> > +                 unhandled_signal(tsk, SIGSEGV) &&
-> > +                 __ratelimit(&ratelimit_state)) {
-> > +                     pr_info("do_page_fault(): sending SIGSEGV to %s for invalid %s %0*lx\n",
-> > +                             tsk->comm,
-> > +                             write ? "write access to" : "read access from",
-> > +                             field, address);
-> > +                     pr_info("era = %0*lx in", field,
-> > +                             (unsigned long) regs->csr_era);
-> > +                     print_vma_addr(KERN_CONT " ", regs->csr_era);
-> > +                     pr_cont("\n");
-> > +                     pr_info("ra  = %0*lx in", field,
-> > +                             (unsigned long) regs->regs[1]);
-> > +                     print_vma_addr(KERN_CONT " ", regs->regs[1]);
-> > +                     pr_cont("\n");
-> > +             }
-> > +             current->thread.trap_nr = read_csr_excode();
-> > +             force_sig_fault(SIGSEGV, si_code, (void __user *)address);
-> > +             return;
-> > +     }
-> > +
-> > +no_context:
-> > +     /* Are we prepared to handle this kernel fault?  */
-> > +     if (fixup_exception(regs))
-> > +             return;
-> > +
-> > +     /*
-> > +      * Oops. The kernel tried to access some bad page. We'll have to
-> > +      * terminate things with extreme prejudice.
-> > +      */
-> > +     bust_spinlocks(1);
-> > +
-> > +     pr_alert("CPU %d Unable to handle kernel paging request at "
-> > +            "virtual address %0*lx, era == %0*lx, ra == %0*lx\n",
-> > +            raw_smp_processor_id(), field, address, field, regs->csr_era,
-> > +            field,  regs->regs[1]);
-> > +     die("Oops", regs);
-> > +
-> > +out_of_memory:
-> > +     /*
-> > +      * We ran out of memory, call the OOM killer, and return the userspace
-> > +      * (which will retry the fault, or kill us if we got oom-killed).
-> > +      */
-> > +     mmap_read_unlock(mm);
-> > +     if (!user_mode(regs))
-> > +             goto no_context;
-> > +     pagefault_out_of_memory();
-> > +
-> > +     return;
-> > +
-> > +do_sigbus:
-> > +     mmap_read_unlock(mm);
-> > +
-> > +     /* Kernel mode? Handle exceptions or die */
-> > +     if (!user_mode(regs))
-> > +             goto no_context;
-> > +
-> > +     /*
-> > +      * Send a sigbus, regardless of whether we were in kernel
-> > +      * or user mode.
-> > +      */
-> > +     current->thread.trap_nr = read_csr_excode();
-> > +     tsk->thread.csr_badvaddr = address;
-> > +     force_sig_fault(SIGBUS, BUS_ADRERR, (void __user *)address);
-> > +
->
-> The page fault handler is really long.
-> Consider splitting it to several functions.
-OK, it's difficult but let me try.
+Now, when you look at the resulting patch you can see what the change
+does. Yours did more than one logical thing - which a patch should never
+do.
 
->
-> > +     return;
-> > +}
-> > +
-> > +asmlinkage void __kprobes do_page_fault(struct pt_regs *regs,
-> > +     unsigned long write, unsigned long address)
-> > +{
-> > +     irqentry_state_t state = irqentry_enter(regs);
-> > +
-> > +     /* Enable interrupt if enabled in parent context */
-> > +     if (likely(regs->csr_prmd & CSR_PRMD_PIE))
-> > +             local_irq_enable();
-> > +
-> > +     __do_page_fault(regs, write, address);
-> > +
-> > +     local_irq_disable();
-> > +
-> > +     irqentry_exit(regs, state);
-> > +}
->
-> ...
->
-> > diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
-> > new file mode 100644
-> > index 000000000000..b8aa96903056
-> > --- /dev/null
-> > +++ b/arch/loongarch/mm/init.c
-> > @@ -0,0 +1,196 @@
->
-> ...
->
-> > +void free_init_pages(const char *what, unsigned long begin, unsigned long end)
-> > +{
->
-> This function seems unused
-OK, let's remove it.
+Also, I'd really really urge you to read
 
->
-> > +     unsigned long pfn;
-> > +
-> > +     for (pfn = PFN_UP(begin); pfn < PFN_DOWN(end); pfn++) {
-> > +             struct page *page = pfn_to_page(pfn);
-> > +             void *addr = phys_to_virt(PFN_PHYS(pfn));
-> > +
-> > +             memset(addr, POISON_FREE_INITMEM, PAGE_SIZE);
-> > +             free_reserved_page(page);
-> > +     }
-> > +     pr_info("Freeing %s: %ldk freed\n", what, (end - begin) >> 10);
-> > +}
-> > +
-> > +#ifdef CONFIG_BLK_DEV_INITRD
-> > +void free_initrd_mem(unsigned long start, unsigned long end)
-> > +{
->
-> There is a generic free_initrd_mem(), no need to override it.
-OK, let's remove it.
+Documentation/process/submitting-patches.rst
 
-Huacai
->
-> > +     free_reserved_area((void *)start, (void *)end, POISON_FREE_INITMEM,
-> > +                        "initrd");
-> > +}
-> > +#endif
->
-> --
-> Sincerely yours,
-> Mike.
+carefully before sending other patches. I won't do this heavy editing
+in the future so you're going to have to read review comments and
+*incorporate* them into your patches before submitting them again.
+
+You can test the below on your machine now to make sure it still
+performs as expected.
+
+Thx.
+
+---
+From: Shuai Xue <xueshuai@linux.alibaba.com>
+Date: Thu, 3 Mar 2022 20:26:26 +0800
+Subject: [PATCH] EDAC/ghes: Unify CPER memory error location reporting
+
+Switch the GHES EDAC memory error reporting functions to use the common
+CPER ones and get rid of code duplication.
+
+  [ bp:
+      - rewrite commit message, remove useless text
+      - rip out useless reformatting
+      - align function params on the opening brace
+      - rename function to a more descriptive name
+      - drop useless function exports
+      - handle buffer lengths properly when printing other detail
+      - remove useless casting
+  ]
+
+Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220303122626.99740-3-xueshuai@linux.alibaba.com
+---
+ drivers/edac/Kconfig        |   1 +
+ drivers/edac/ghes_edac.c    | 200 +++++++-----------------------------
+ drivers/firmware/efi/cper.c |   4 +-
+ include/linux/cper.h        |   2 +
+ 4 files changed, 42 insertions(+), 165 deletions(-)
+
+diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+index 58ab63642e72..23f11554f400 100644
+--- a/drivers/edac/Kconfig
++++ b/drivers/edac/Kconfig
+@@ -55,6 +55,7 @@ config EDAC_DECODE_MCE
+ config EDAC_GHES
+ 	bool "Output ACPI APEI/GHES BIOS detected errors via EDAC"
+ 	depends on ACPI_APEI_GHES && (EDAC=y)
++	select UEFI_CPER
+ 	help
+ 	  Not all machines support hardware-driven error report. Some of those
+ 	  provide a BIOS-driven error report mechanism via ACPI, using the
+diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
+index 6d1ddecbf0da..2805d5610300 100644
+--- a/drivers/edac/ghes_edac.c
++++ b/drivers/edac/ghes_edac.c
+@@ -15,11 +15,13 @@
+ #include "edac_module.h"
+ #include <ras/ras_event.h>
+ 
++#define OTHER_DETAIL_LEN	400
++
+ struct ghes_pvt {
+ 	struct mem_ctl_info *mci;
+ 
+ 	/* Buffers for the error handling routine */
+-	char other_detail[400];
++	char other_detail[OTHER_DETAIL_LEN];
+ 	char msg[80];
+ };
+ 
+@@ -235,8 +237,34 @@ static void ghes_scan_system(void)
+ 	system_scanned = true;
+ }
+ 
++static int print_mem_error_other_detail(const struct cper_sec_mem_err *mem, char *msg,
++					const char *location, unsigned int len)
++{
++	u32 n;
++
++	if (!msg)
++		return 0;
++
++	n = 0;
++	len -= 1;
++
++	n += scnprintf(msg + n, len - n, "APEI location: %s ", location);
++
++	if (!(mem->validation_bits & CPER_MEM_VALID_ERROR_STATUS))
++		goto out;
++
++	n += scnprintf(msg + n, len - n, "status(0x%016llx): ", mem->error_status);
++	n += scnprintf(msg + n, len - n, "%s ", cper_mem_err_status_str(mem->error_status));
++
++out:
++	msg[n] = '\0';
++
++	return n;
++}
++
+ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+ {
++	struct cper_mem_err_compact cmem;
+ 	struct edac_raw_error_desc *e;
+ 	struct mem_ctl_info *mci;
+ 	struct ghes_pvt *pvt;
+@@ -292,60 +320,10 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+ 
+ 	/* Error type, mapped on e->msg */
+ 	if (mem_err->validation_bits & CPER_MEM_VALID_ERROR_TYPE) {
++		u8 etype = mem_err->error_type;
++
+ 		p = pvt->msg;
+-		switch (mem_err->error_type) {
+-		case 0:
+-			p += sprintf(p, "Unknown");
+-			break;
+-		case 1:
+-			p += sprintf(p, "No error");
+-			break;
+-		case 2:
+-			p += sprintf(p, "Single-bit ECC");
+-			break;
+-		case 3:
+-			p += sprintf(p, "Multi-bit ECC");
+-			break;
+-		case 4:
+-			p += sprintf(p, "Single-symbol ChipKill ECC");
+-			break;
+-		case 5:
+-			p += sprintf(p, "Multi-symbol ChipKill ECC");
+-			break;
+-		case 6:
+-			p += sprintf(p, "Master abort");
+-			break;
+-		case 7:
+-			p += sprintf(p, "Target abort");
+-			break;
+-		case 8:
+-			p += sprintf(p, "Parity Error");
+-			break;
+-		case 9:
+-			p += sprintf(p, "Watchdog timeout");
+-			break;
+-		case 10:
+-			p += sprintf(p, "Invalid address");
+-			break;
+-		case 11:
+-			p += sprintf(p, "Mirror Broken");
+-			break;
+-		case 12:
+-			p += sprintf(p, "Memory Sparing");
+-			break;
+-		case 13:
+-			p += sprintf(p, "Scrub corrected error");
+-			break;
+-		case 14:
+-			p += sprintf(p, "Scrub uncorrected error");
+-			break;
+-		case 15:
+-			p += sprintf(p, "Physical Memory Map-out event");
+-			break;
+-		default:
+-			p += sprintf(p, "reserved error (%d)",
+-				     mem_err->error_type);
+-		}
++		p += snprintf(p, sizeof(pvt->msg), "%s", cper_mem_err_type_str(etype));
+ 	} else {
+ 		strcpy(pvt->msg, "unknown error");
+ 	}
+@@ -362,52 +340,19 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+ 
+ 	/* Memory error location, mapped on e->location */
+ 	p = e->location;
+-	if (mem_err->validation_bits & CPER_MEM_VALID_NODE)
+-		p += sprintf(p, "node:%d ", mem_err->node);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_CARD)
+-		p += sprintf(p, "card:%d ", mem_err->card);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_MODULE)
+-		p += sprintf(p, "module:%d ", mem_err->module);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_RANK_NUMBER)
+-		p += sprintf(p, "rank:%d ", mem_err->rank);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_BANK)
+-		p += sprintf(p, "bank:%d ", mem_err->bank);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_BANK_GROUP)
+-		p += sprintf(p, "bank_group:%d ",
+-			     mem_err->bank >> CPER_MEM_BANK_GROUP_SHIFT);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_BANK_ADDRESS)
+-		p += sprintf(p, "bank_address:%d ",
+-			     mem_err->bank & CPER_MEM_BANK_ADDRESS_MASK);
+-	if (mem_err->validation_bits & (CPER_MEM_VALID_ROW | CPER_MEM_VALID_ROW_EXT)) {
+-		u32 row = mem_err->row;
+-
+-		row |= cper_get_mem_extension(mem_err->validation_bits, mem_err->extended);
+-		p += sprintf(p, "row:%d ", row);
+-	}
+-	if (mem_err->validation_bits & CPER_MEM_VALID_COLUMN)
+-		p += sprintf(p, "col:%d ", mem_err->column);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_BIT_POSITION)
+-		p += sprintf(p, "bit_pos:%d ", mem_err->bit_pos);
++	cper_mem_err_pack(mem_err, &cmem);
++	p += cper_mem_err_location(&cmem, p);
++
+ 	if (mem_err->validation_bits & CPER_MEM_VALID_MODULE_HANDLE) {
+-		const char *bank = NULL, *device = NULL;
+ 		struct dimm_info *dimm;
+ 
+-		dmi_memdev_name(mem_err->mem_dev_handle, &bank, &device);
+-		if (bank != NULL && device != NULL)
+-			p += sprintf(p, "DIMM location:%s %s ", bank, device);
+-		else
+-			p += sprintf(p, "DIMM DMI handle: 0x%.4x ",
+-				     mem_err->mem_dev_handle);
+-
++		p += cper_dimm_err_location(&cmem, p);
+ 		dimm = find_dimm_by_handle(mci, mem_err->mem_dev_handle);
+ 		if (dimm) {
+ 			e->top_layer = dimm->idx;
+ 			strcpy(e->label, dimm->label);
+ 		}
+ 	}
+-	if (mem_err->validation_bits & CPER_MEM_VALID_CHIP_ID)
+-		p += sprintf(p, "chipID: %d ",
+-			     mem_err->extended >> CPER_MEM_CHIP_ID_SHIFT);
+ 	if (p > e->location)
+ 		*(p - 1) = '\0';
+ 
+@@ -416,78 +361,7 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+ 
+ 	/* All other fields are mapped on e->other_detail */
+ 	p = pvt->other_detail;
+-	p += snprintf(p, sizeof(pvt->other_detail),
+-		"APEI location: %s ", e->location);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_ERROR_STATUS) {
+-		u64 status = mem_err->error_status;
+-
+-		p += sprintf(p, "status(0x%016llx): ", (long long)status);
+-		switch ((status >> 8) & 0xff) {
+-		case 1:
+-			p += sprintf(p, "Error detected internal to the component ");
+-			break;
+-		case 16:
+-			p += sprintf(p, "Error detected in the bus ");
+-			break;
+-		case 4:
+-			p += sprintf(p, "Storage error in DRAM memory ");
+-			break;
+-		case 5:
+-			p += sprintf(p, "Storage error in TLB ");
+-			break;
+-		case 6:
+-			p += sprintf(p, "Storage error in cache ");
+-			break;
+-		case 7:
+-			p += sprintf(p, "Error in one or more functional units ");
+-			break;
+-		case 8:
+-			p += sprintf(p, "component failed self test ");
+-			break;
+-		case 9:
+-			p += sprintf(p, "Overflow or undervalue of internal queue ");
+-			break;
+-		case 17:
+-			p += sprintf(p, "Virtual address not found on IO-TLB or IO-PDIR ");
+-			break;
+-		case 18:
+-			p += sprintf(p, "Improper access error ");
+-			break;
+-		case 19:
+-			p += sprintf(p, "Access to a memory address which is not mapped to any component ");
+-			break;
+-		case 20:
+-			p += sprintf(p, "Loss of Lockstep ");
+-			break;
+-		case 21:
+-			p += sprintf(p, "Response not associated with a request ");
+-			break;
+-		case 22:
+-			p += sprintf(p, "Bus parity error - must also set the A, C, or D Bits ");
+-			break;
+-		case 23:
+-			p += sprintf(p, "Detection of a PATH_ERROR ");
+-			break;
+-		case 25:
+-			p += sprintf(p, "Bus operation timeout ");
+-			break;
+-		case 26:
+-			p += sprintf(p, "A read was issued to data that has been poisoned ");
+-			break;
+-		default:
+-			p += sprintf(p, "reserved ");
+-			break;
+-		}
+-	}
+-	if (mem_err->validation_bits & CPER_MEM_VALID_REQUESTOR_ID)
+-		p += sprintf(p, "requestorID: 0x%016llx ",
+-			     (long long)mem_err->requestor_id);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_RESPONDER_ID)
+-		p += sprintf(p, "responderID: 0x%016llx ",
+-			     (long long)mem_err->responder_id);
+-	if (mem_err->validation_bits & CPER_MEM_VALID_TARGET_ID)
+-		p += sprintf(p, "targetID: 0x%016llx ",
+-			     (long long)mem_err->responder_id);
++	p += print_mem_error_other_detail(mem_err, p, e->location, OTHER_DETAIL_LEN);
+ 	if (p > pvt->other_detail)
+ 		*(p - 1) = '\0';
+ 
+diff --git a/drivers/firmware/efi/cper.c b/drivers/firmware/efi/cper.c
+index 34eeaa59f04a..215c778fb33c 100644
+--- a/drivers/firmware/efi/cper.c
++++ b/drivers/firmware/efi/cper.c
+@@ -237,7 +237,7 @@ const char *cper_mem_err_status_str(u64 status)
+ }
+ EXPORT_SYMBOL_GPL(cper_mem_err_status_str);
+ 
+-static int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg)
++int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg)
+ {
+ 	u32 len, n;
+ 
+@@ -291,7 +291,7 @@ static int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg)
+ 	return n;
+ }
+ 
+-static int cper_dimm_err_location(struct cper_mem_err_compact *mem, char *msg)
++int cper_dimm_err_location(struct cper_mem_err_compact *mem, char *msg)
+ {
+ 	u32 len, n;
+ 	const char *bank = NULL, *device = NULL;
+diff --git a/include/linux/cper.h b/include/linux/cper.h
+index 5b1dd27b317d..eacb7dd7b3af 100644
+--- a/include/linux/cper.h
++++ b/include/linux/cper.h
+@@ -569,5 +569,7 @@ void cper_print_proc_arm(const char *pfx,
+ 			 const struct cper_sec_proc_arm *proc);
+ void cper_print_proc_ia(const char *pfx,
+ 			const struct cper_sec_proc_ia *proc);
++int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg);
++int cper_dimm_err_location(struct cper_mem_err_compact *mem, char *msg);
+ 
+ #endif
+-- 
+2.23.0
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
