@@ -2,119 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8FD6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240577AbiCDQNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 11:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S240619AbiCDQNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 11:13:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240756AbiCDQNH (ORCPT
+        with ESMTP id S240623AbiCDQNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 11:13:07 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8721C9441;
-        Fri,  4 Mar 2022 08:12:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646410339; x=1677946339;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=npqRMShON8GS89evuY+tYR/KdBqmSoerlGzVS1IANk8=;
-  b=wekyoeT9JUFqni+zL2g3BT+MJtN9ELNU090RsUzNUcLhA/tTcrZ1y2xA
-   Hv9Ygyx/EZFDn1urNd1wxFEbKhZbufhdH3p4lGY7ZR9z5BxDdhKKyhzQN
-   ogayC9WRHn4tLkZF67a1oG/n2yTWRv8zz028fzS+aBGcOaqY+XPGh16aT
-   CmyJou1Au9dTRzx5QvI+XAmIyGkU+KHWGO/q3BnoiA3+cB22+a1F3hx4G
-   aECJ3iTVal/4sD0GDd1Ja01mkLhN22yVEaZhGn/7WXVrWuYgB/4D5Paek
-   jErIYtZ2mvY2FSFNgNl3GwMG4YbcGLaVzyHU09O2zZZn+GsI3q+ji1YG9
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
-   d="scan'208";a="155743487"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 09:12:18 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 09:12:18 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 09:12:14 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
-CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH v4 1/4] ARM: dts: at91: Add the required `atmel,rtt-rtc-time-reg` property
-Date:   Fri, 4 Mar 2022 18:11:56 +0200
-Message-ID: <20220304161159.147784-2-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220304161159.147784-1-sergiu.moga@microchip.com>
-References: <20220304161159.147784-1-sergiu.moga@microchip.com>
+        Fri, 4 Mar 2022 11:13:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2105D1CA5E7
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:12:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F07061D06
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 16:12:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC1A5C340EF;
+        Fri,  4 Mar 2022 16:12:27 +0000 (UTC)
+Date:   Fri, 4 Mar 2022 11:12:26 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: Re: [PATCH 2/4 v3] tracing: Add sample code for custom trace events
+Message-ID: <20220304111226.264c7ae2@gandalf.local.home>
+In-Reply-To: <20220305010930.ff114dbd48cc267d242a74ed@kernel.org>
+References: <20220303220530.058538533@goodmis.org>
+        <20220303220625.369226746@goodmis.org>
+        <20220305010930.ff114dbd48cc267d242a74ed@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the required `atmel,rtt-rtc-time-reg` property to the `rtt` nodes
-of the board files that were missing it.
+On Sat, 5 Mar 2022 01:09:30 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
- arch/arm/boot/dts/at91sam9261ek.dts | 4 ++++
- arch/arm/boot/dts/at91sam9263ek.dts | 4 ++++
- arch/arm/boot/dts/at91sam9rlek.dts  | 4 ++++
- 3 files changed, 12 insertions(+)
+> > --- a/arch/x86/kernel/kprobes/core.c
+> > +++ b/arch/x86/kernel/kprobes/core.c
+> > @@ -202,8 +202,10 @@ __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
+> >  	 * arch_check_ftrace_location(). Something went terribly wrong
+> >  	 * if such an address is checked here.
+> >  	 */
+> > -	if (WARN_ON(faddr && faddr != addr))
+> > +	if (WARN_ON(faddr && faddr != addr)) {
+> > +		printk("faddr=%pS (%lx) addr=%pS (%lx)\n", (void*)faddr, faddr, (void*)addr, addr);
+> >  		return 0UL;
+> > +	}  
+> 
+> This part seems not related to this patch.
+> Can you drop this?
 
-diff --git a/arch/arm/boot/dts/at91sam9261ek.dts b/arch/arm/boot/dts/at91sam9261ek.dts
-index beed819609e8..3c1f40b4a13e 100644
---- a/arch/arm/boot/dts/at91sam9261ek.dts
-+++ b/arch/arm/boot/dts/at91sam9261ek.dts
-@@ -178,6 +178,10 @@ dbgu: serial@fffff200 {
- 				status = "okay";
- 			};
- 
-+			rtc@fffffd20 {
-+				atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
-+			};
-+
- 			watchdog@fffffd40 {
- 				status = "okay";
- 			};
-diff --git a/arch/arm/boot/dts/at91sam9263ek.dts b/arch/arm/boot/dts/at91sam9263ek.dts
-index 71f60576761a..4d922c10c26c 100644
---- a/arch/arm/boot/dts/at91sam9263ek.dts
-+++ b/arch/arm/boot/dts/at91sam9263ek.dts
-@@ -102,6 +102,10 @@ mtd_dataflash@0 {
- 				};
- 			};
- 
-+			rtc@fffffd20 {
-+				atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
-+			};
-+
- 			watchdog@fffffd40 {
- 				status = "okay";
- 			};
-diff --git a/arch/arm/boot/dts/at91sam9rlek.dts b/arch/arm/boot/dts/at91sam9rlek.dts
-index 62981b39c815..a26f9f70b6b2 100644
---- a/arch/arm/boot/dts/at91sam9rlek.dts
-+++ b/arch/arm/boot/dts/at91sam9rlek.dts
-@@ -212,6 +212,10 @@ watchdog@fffffd40 {
- 				status = "okay";
- 			};
- 
-+			rtc@fffffd20 {
-+				atmel,rtt-rtc-time-reg = <&gpbr 0x0>;
-+			};
-+
- 			rtc@fffffe00 {
- 				status = "okay";
- 			};
--- 
-2.25.1
+Ug, yeah. Thanks for spotting this. This was used to help debug the IBT
+code from Peter Z. I didn't even notice it.
 
+-- Steve
