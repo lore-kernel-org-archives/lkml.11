@@ -2,71 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 103D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 23:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 23:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229934AbiCDXNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 18:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S229542AbiCDXNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 18:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiCDXMl (ORCPT
+        with ESMTP id S229618AbiCDXNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 18:12:41 -0500
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B54C27C53E;
-        Fri,  4 Mar 2022 15:11:45 -0800 (PST)
-Received: by mail-oo1-f48.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so11167464ooi.2;
-        Fri, 04 Mar 2022 15:11:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VcvmzI8lPWcfjXO4cdTkfNwbnHj0syLj1nxodzWufVQ=;
-        b=gGa2GwcL/biPXPaGpA6pp2RsXYWspBGUc/Lj4UUWYuSQUj9J/FZpBsdHiw8LZ2oS2R
-         pOVi7IQwUEWVAYnpr6QaFnLB/+VjPHK0j8eJyxFBGtAtyySVkZ7tq/U+s9NNWkSYjVqQ
-         dFDRpj0IO70T5nguiP9FmZ4ovKbKXd0gN+EQWmCIBvXgAPliP1et1f/9z+PkzhG7ADO1
-         XEnb4rVXkx4bxIXjuV78GvXQZdtjjXAxJyZZT7vceSi8PU2iMWpbBXPvNioFy7xRHZTD
-         XgpGzvDttaJzmnttNd6ev5awoDk19edkXzeeCkTrYRaNK7Hp9ZCSWWcOUGzE53tAc82t
-         FXpA==
-X-Gm-Message-State: AOAM532irfAX2GEb3bQwtiPX9SoJxXEq53OCsfkVH8d1m2CfDUxAq6yy
-        Z64OiYWWr3clcGU7edvaNR11j9gkPw==
-X-Google-Smtp-Source: ABdhPJxLKrurxY8nEivu7pB1E6b8CGAWAAjBgVkRTK4WXlxKtPNkUcmhr8ot2uYN10lImi/+22N42g==
-X-Received: by 2002:a4a:4112:0:b0:319:3eb2:11b with SMTP id x18-20020a4a4112000000b003193eb2011bmr306154ooa.40.1646435504347;
-        Fri, 04 Mar 2022 15:11:44 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id k14-20020a4aa5ce000000b003203602ca63sm2818539oom.47.2022.03.04.15.11.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 15:11:43 -0800 (PST)
-Received: (nullmailer pid 636835 invoked by uid 1000);
-        Fri, 04 Mar 2022 23:11:42 -0000
-Date:   Fri, 4 Mar 2022 17:11:42 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        phone-devel@vger.kernel.org, Stephen Boyd <sboyd@codeaurora.org>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: arm: qcom: Document asus,sparrow device
-Message-ID: <YiKcrra910ZmdaGP@robh.at.kernel.org>
-References: <20220226101939.1011551-1-luca@z3ntu.xyz>
+        Fri, 4 Mar 2022 18:13:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5677A27B8FC
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 15:12:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E78FA61EB1
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 23:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E02C340E9;
+        Fri,  4 Mar 2022 23:12:20 +0000 (UTC)
+Message-ID: <a7b93783-d81b-f34b-a7c0-5e8f4880d7ee@linux-m68k.org>
+Date:   Sat, 5 Mar 2022 09:12:17 +1000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220226101939.1011551-1-luca@z3ntu.xyz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] m68k: tweak coldfire/device.c for COMPILE_TEST
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     patches@lists.linux.dev, kernel test robot <lkp@intel.com>,
+        Angelo Dureghello <angelo@sysam.it>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org
+References: <20220304033531.28667-1-rdunlap@infradead.org>
+ <cbdbb347-b510-131f-e961-09f1545fb891@linux-m68k.org>
+ <bc6899cb-21c2-17d0-b886-c5d7ae33d2de@infradead.org>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <bc6899cb-21c2-17d0-b886-c5d7ae33d2de@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 26 Feb 2022 11:19:38 +0100, Luca Weiss wrote:
-> Document the ASUS ZenWatch 2 ("sparrow") which is a smartwatch based on
-> Snapdragon 400 SoC.
-> 
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> ---
->  Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
 
-Acked-by: Rob Herring <robh@kernel.org>
+
+On 5/3/22 02:20, Randy Dunlap wrote:
+> On 3/4/22 06:45, Greg Ungerer wrote:
+>> Hi Randy,
+>>
+>> On 4/3/22 13:35, Randy Dunlap wrote:
+>>> When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
+>>> CONFIG_M5441x), coldfire/device.c has compile errors due to
+>>> missing MCFEDMA_* symbols. In the .config file that was provided,
+>>> CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
+>>> included in coldfire/device.c.
+>>>
+>>> Only build the MCF_EDMA code in coldfire/device.c if both MCF_EDMA
+>>> and M5441x are enabled.
+>>>
+>>> Fixes these build errors:
+>>>
+>>> ../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
+>>>     512 |                 .start          = MCFEDMA_BASE,
+>>> ../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
+>>>     513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
+>>> ../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
+>>>     517 |                 .start          = MCFEDMA_IRQ_INTR0,
+>>> ../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
+>>>     523 |                 .start          = MCFEDMA_IRQ_INTR16,
+>>> ../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
+>>>     529 |                 .start          = MCFEDMA_IRQ_INTR56,
+>>> ../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
+>>>     535 |                 .start          = MCFEDMA_IRQ_ERR,
+>>>
+>>> Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
+>>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
+>>> Cc: Angelo Dureghello <angelo@sysam.it>
+>>> Cc: Greg Ungerer <gerg@kernel.org>
+>>> Cc: Greg Ungerer <gerg@linux-m68k.org>
+>>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+>>> Cc: linux-m68k@lists.linux-m68k.org
+>>> Cc: uclinux-dev@uclinux.org
+>>> ---
+>>>    arch/m68k/coldfire/device.c |    6 +++---
+>>>    1 file changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> --- linux-next-20220303.orig/arch/m68k/coldfire/device.c
+>>> +++ linux-next-20220303/arch/m68k/coldfire/device.c
+>>> @@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 =
+>>>    #endif /* MCFI2C_BASE5 */
+>>>    #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
+>>>    -#if IS_ENABLED(CONFIG_MCF_EDMA)
+>>> +#if IS_ENABLED(CONFIG_MCF_EDMA) && IS_ENABLED(CONFIG_M5441x)
+>>
+>> I really try to avoid making these ColdFire SoC specific. Freescale has
+>> a habit of using the same hardware blocks across a number of parts.
+>> The model so far has been to let the Kconfig select these out as required
+>> (and so not having to conditionally duplicate that here).
+>>
+>> I would prefer it to be conditional on !COMPILE_TEST if that is what
+>> is ultimately causing the problem.
+> 
+> What is ultimately causing the problem is drivers/dma/Kconfig:
+> 
+> config MCF_EDMA
+> 	tristate "Freescale eDMA engine support, ColdFire mcf5441x SoCs"
+> 	depends on M5441x || COMPILE_TEST
+> 
+> 
+> Would you prefer to just remove that COMPILE_TEST?
+> 
+> Or do like Geert suggested -- see your previous patch:
+> commit 322c512f476f07e9 ("m68knommu: include SDHC support only when hardware has it")
+
+No need to remove COMPILE_TEST, so lets leave that in place.
+
+I should have thought about what I had done here in the past before I replied :-)
+As Geert pointed out the strategy we used before is to just make it conditional
+on the address definitions. So lets do that. The presence of an address definition
+is the real indicator that we have this hardware block.
+
+Regards
+Greg
+
+
