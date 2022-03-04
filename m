@@ -2,92 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F399C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD273C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiCDQNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 11:13:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
+        id S240628AbiCDQOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 11:14:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240704AbiCDQM7 (ORCPT
+        with ESMTP id S233175AbiCDQOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 11:12:59 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24261C944C;
-        Fri,  4 Mar 2022 08:12:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646410332; x=1677946332;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ov1LE0FbKUUWwG2ayc5X90cLOPMgm/y4g1mec+lzQCU=;
-  b=dmhzkt4b59d8e9GrG2tsXJxKirNM48hxj9joU7AK5ekMnNNqSSUBQ93o
-   jH45dc4S9RK9Pja+ZWCZvQv28fvVt6RMWNQRKrYHULIEcyd2CR0oRXT2s
-   48NTabX3W/0pBi0H4FKyxebSLC09RgE1VfkJVScWLSCk87utn6V2Pp/I5
-   nyNEALsCUc1qhUlOwMimm/QktG6d505s1ONRjebaZD9eqaNXppzv+SEvG
-   9sJNLfqEZeEan2OmUG8jjf4jED+oYzeFa7AX6nK/VbVok+rjwoJZ8MCxZ
-   PNOSz5PlcasgutLwaqyA1zjVqf4iouk9vNCflCW7wQ4GeGLekUs5SXbIa
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
-   d="scan'208";a="87851530"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 09:12:10 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 09:12:09 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 09:12:05 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
-CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH v4 0/4] dt-bindings: rtc: convert at91sam9 bindings to
-Date:   Fri, 4 Mar 2022 18:11:55 +0200
-Message-ID: <20220304161159.147784-1-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 4 Mar 2022 11:14:01 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76B406E4C8;
+        Fri,  4 Mar 2022 08:13:13 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 42659143D;
+        Fri,  4 Mar 2022 08:13:13 -0800 (PST)
+Received: from e113632-lin (e113632-lin.cambridge.arm.com [10.1.196.57])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 40CDC3F73D;
+        Fri,  4 Mar 2022 08:13:12 -0800 (PST)
+From:   Valentin Schneider <valentin.schneider@arm.com>
+To:     tip-bot2 for Valentin Schneider <tip-bot2@linutronix.de>,
+        linux-tip-commits@vger.kernel.org
+Cc:     Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+        "Steven Rostedt \(Google\)" <rostedt@goodmis.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [tip: sched/core] sched/tracing: Don't re-read p->state when emitting sched_switch event
+In-Reply-To: <164614827941.16921.4995078681021904041.tip-bot2@tip-bot2>
+References: <20220120162520.570782-2-valentin.schneider@arm.com> <164614827941.16921.4995078681021904041.tip-bot2@tip-bot2>
+Date:   Fri, 04 Mar 2022 16:13:04 +0000
+Message-ID: <87fsnx4rxr.mognet@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series addresses the conversion of the RTC binding for
-Atmel/Microchip SoCs to Device Tree Schema format. It also changes
-the node names from some of the "dtsi" files from "rtt" to the more
-generic "rtc", while adding the `atmel,rtt-rtc-time-reg` required
-property to the board files that were missing it.
+On 01/03/22 15:24, tip-bot2 for Valentin Schneider wrote:
+> The following commit has been merged into the sched/core branch of tip:
+>
+> Commit-ID:     fa2c3254d7cfff5f7a916ab928a562d1165f17bb
+> Gitweb:        https://git.kernel.org/tip/fa2c3254d7cfff5f7a916ab928a562d1165f17bb
+> Author:        Valentin Schneider <valentin.schneider@arm.com>
+> AuthorDate:    Thu, 20 Jan 2022 16:25:19
+> Committer:     Peter Zijlstra <peterz@infradead.org>
+> CommitterDate: Tue, 01 Mar 2022 16:18:39 +01:00
+>
+> sched/tracing: Don't re-read p->state when emitting sched_switch event
+>
+> As of commit
+>
+>   c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+>
+> the following sequence becomes possible:
+>
+>                     p->__state = TASK_INTERRUPTIBLE;
+>                     __schedule()
+>                       deactivate_task(p);
+>   ttwu()
+>     READ !p->on_rq
+>     p->__state=TASK_WAKING
+>                       trace_sched_switch()
+>                         __trace_sched_switch_state()
+>                           task_state_index()
+>                             return 0;
+>
+> TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
+> the trace event.
+>
+> Prevent this by pushing the value read from __schedule() down the trace
+> event.
+>
+> Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
+> Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
 
-Changes since v3:
-- Removed unnecessary additional `rtc` node from
-  `arch/arm/boot/dts/at91sam9263ek.dts`.
-- Squashed commit related to the conversion of the binding to
-  json-schema with the commit related to the usage of macros
-  for the IRQ type of the binding's example.
+So I wasn't sure if that would be considered a "bug", but folks are asking
+for this to be backported; do we want to slap
 
-Sergiu Moga (4):
-  ARM: dts: at91: Add the required `atmel,rtt-rtc-time-reg` property
-  ARM: dts: at91: Use the generic "rtc" node name for the rtt IPs
-  dt-bindings: rtc: convert at91sam9 bindings to json-schema
-  dt-bindings: rtc: at91: Add SAMA7G5 compatible strings list
+Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
 
- .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 -------
- .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 69 +++++++++++++++++++
- arch/arm/boot/dts/at91sam9261ek.dts           |  4 ++
- arch/arm/boot/dts/at91sam9263ek.dts           |  4 ++
- arch/arm/boot/dts/at91sam9rlek.dts            |  4 ++
- arch/arm/boot/dts/sam9x60.dtsi                |  2 +-
- arch/arm/boot/dts/sama7g5.dtsi                |  2 +-
- 7 files changed, 83 insertions(+), 27 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
- create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-
--- 
-2.25.1
-
+to it?
