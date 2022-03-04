@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6984C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82244C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240198AbiCDPJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:09:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
+        id S240076AbiCDPJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:09:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240078AbiCDPIb (ORCPT
+        with ESMTP id S240128AbiCDPJH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:08:31 -0500
+        Fri, 4 Mar 2022 10:09:07 -0500
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98C54839A;
-        Fri,  4 Mar 2022 07:07:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF09BE0AD6;
+        Fri,  4 Mar 2022 07:08:08 -0800 (PST)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2244w2hG013723;
-        Fri, 4 Mar 2022 09:07:27 -0600
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2248TInB019088;
+        Fri, 4 Mar 2022 09:07:25 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=34C6kjTu8fIQ8hyCcYnZI1IqI0VSAE1mssJrdWJKQKE=;
- b=CVQ0NzWlLdNDXm6eF0nlL497j4SEydnyQS5dt64bA/tOdf5SpcXlq90tk3jAjlA3gnop
- t3GBv9z/Nnl78cP8xBUvtFrz8emdge/XQAoU2+vnY3zadv09NevNNgvxKa06O3l6J8yt
- 2PRkh3kipuYO6fLVv3xzQ20uUVM+PfEWtkNxmnGHAv/T0WnUMxYSaCYLdu0Ws3XElHOh
- k+rOEw5CHmhebjZa615NsLP4rwQseJDHvq9rL23DXRJ+TfEmGxVfI7UxYDPutbWC3oBS
- D/35Wm8NpazL98i+aF/jqTyrssj7heP3cdE8FG882b0dGRPwdo9FsHsh0glBvZhEqgkK TA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h414-2
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=o/svsH3mKdQh2w7l93HqT3MWcfDGsdP0tpIyvmUqC4M=;
+ b=nthAdfW/pHfh/griJOYc4x7Zctg2Xl04KxrLrkfbMFeuQCkMKwxp8Plpu3rkXnPjvYOo
+ 9jSlhZUf9i2XNVF1Ya26Zup0qXM0y+gEIaFQcJeSWEBF2KoWGI+OvaTTgmSWIAEbAWcb
+ sON3CPUbHcVj1CNlgs+Re+h1aKICOkxn6znnNuHIninxScyna7rH4L7sUO3Vh75JI1Gc
+ iKhKPFmymlJ+Euh82t63J69T8kI6ql0OgLtFVNa7h4MxLCCSj7chNvtwJYNKKCUBnjUr
+ ZcyWUmtQJ5vKb31J5YplxwnUMad1eU+xxpEL4iU6JBUfPrkGduxgxvVeWvpsCjl73li2 rg== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h413-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 04 Mar 2022 09:07:27 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 04 Mar 2022 09:07:25 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Mar
- 2022 15:07:24 +0000
+ 2022 15:07:23 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 4 Mar 2022 15:07:24 +0000
+ Transport; Fri, 4 Mar 2022 15:07:23 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.65.198])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 16AA6B1A;
-        Fri,  4 Mar 2022 15:07:24 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 52417B06;
+        Fri,  4 Mar 2022 15:07:23 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -48,46 +48,72 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
         Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Subject: [PATCH v2 02/20] ASoC: cs35l41: Fix max number of TX channels
-Date:   Fri, 4 Mar 2022 15:07:03 +0000
-Message-ID: <20220304150721.3802-3-tanureal@opensource.cirrus.com>
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: [PATCH v2 00/20] Support external boost at CS35l41 ASoC driver
+Date:   Fri, 4 Mar 2022 15:07:01 +0000
+Message-ID: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
-References: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: ySL-x5sdYQwrF9WiWIv-mbrd7nJGrX1Q
-X-Proofpoint-ORIG-GUID: ySL-x5sdYQwrF9WiWIv-mbrd7nJGrX1Q
+X-Proofpoint-GUID: ehVGpwv1bl5E8i1YZkXmXSNJ6dLE_oD6
+X-Proofpoint-ORIG-GUID: ehVGpwv1bl5E8i1YZkXmXSNJ6dLE_oD6
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This device only has 4 TX channels.
+Move the support for CS35L41 external boost to its shared library
+for ASoC use.
+This move resulted in cs35l41_hda_reg_sequence being removed,
+and its steps were broken down into regmap writes or functions
+from the library. And hardware configuration struct was unified
+for its use in the shared lib.
+While at it, some minor bugs were found and fixed it.
 
-Fixes: fe1024d50477b ("ASoC: cs35l41: Combine adjacent register writes")
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- sound/soc/codecs/cs35l41.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2 changelog:
+ - Instead of removing the log, playback actions will log the last regmap access.
+ - Documentation patch with the correct subject line and fixed bug reported by Rob Herring on the
+ provided example.
 
-diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-index 90c91b00288b..f3787d77f892 100644
---- a/sound/soc/codecs/cs35l41.c
-+++ b/sound/soc/codecs/cs35l41.c
-@@ -1091,7 +1091,7 @@ static struct snd_soc_dai_driver cs35l41_dai[] = {
- 		.capture = {
- 			.stream_name = "AMP Capture",
- 			.channels_min = 1,
--			.channels_max = 8,
-+			.channels_max = 4,
- 			.rates = SNDRV_PCM_RATE_KNOT,
- 			.formats = CS35L41_TX_FORMATS,
- 		},
+Previous versions:
+ v1: https://lkml.org/lkml/2022/3/3/759
+
+David Rhodes (2):
+  ASoC: cs35l41: Fix GPIO2 configuration
+  ASoC: cs35l41: Document CS35l41 External Boost
+
+Lucas Tanure (18):
+  ASoC: cs35l41: Fix max number of TX channels
+  ASoC: cs35l41: Fix DSP mbox start command and global enable order
+  ASoC: cs35l41: Remove unnecessary param
+  sound: cs35l41: Unify hardware configuration
+  sound: cs35l41: Check hw_config before using it
+  sound: cs35l41: Move cs35l41_gpio_config to shared lib
+  hda: cs35l41: Fix I2S params comments
+  hda: cs35l41: Always configure the DAI
+  hda: cs35l41: Add Boost type flag
+  hda: cs35l41: Put the device into safe mode for external boost
+  hda: cs35l41: Mute the device before shutdown
+  sound: cs35l41: Enable Internal Boost in shared lib
+  hda: cs35l41: Move boost config to initialization code
+  hda: cs35l41: Remove cs35l41_hda_reg_sequence struct
+  hda: cs35l41: Reorganize log for playback actions
+  hda: cs35l41: Handle all external boost setups the same way
+  hda: cs35l41: Move external boost handling to lib for ASoC use
+  ASoC: cs35l41: Support external boost
+
+ .../bindings/sound/cirrus,cs35l41.yaml        |  44 ++-
+ include/sound/cs35l41.h                       |  53 +++-
+ sound/pci/hda/cs35l41_hda.c                   | 295 ++++++------------
+ sound/pci/hda/cs35l41_hda.h                   |  27 +-
+ sound/soc/codecs/cs35l41-i2c.c                |   4 +-
+ sound/soc/codecs/cs35l41-lib.c                | 190 ++++++++++-
+ sound/soc/codecs/cs35l41-spi.c                |   4 +-
+ sound/soc/codecs/cs35l41.c                    | 174 +++++------
+ sound/soc/codecs/cs35l41.h                    |   5 +-
+ 9 files changed, 440 insertions(+), 356 deletions(-)
+
 -- 
 2.35.1
 
