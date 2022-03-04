@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiCDVCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 16:02:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
+        id S229768AbiCDVDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 16:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiCDVB5 (ORCPT
+        with ESMTP id S229520AbiCDVDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 16:01:57 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA9A9FD9;
-        Fri,  4 Mar 2022 13:01:06 -0800 (PST)
+        Fri, 4 Mar 2022 16:03:47 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4D46D4C3
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 13:02:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646427666; x=1677963666;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=VjE5SQTXxcv9yH10VlgYyxJXzMzTnv0lxqg2YttM5ew=;
-  b=W7zK2rYiW1tXaUw6tdNLagtCRnu0b+g8MogjJzEGFtUyetu8TFP8W/zy
-   eRKHWw2jJFf+StRBl9XmAu7hSZ2SeluOzxiWCuFnjjhFN8/SF3uqFLTab
-   iFv6sRF7bHpnXfnrPyg6wT/ar8mi1NRnOoS8cWfL64Zit8Jxr1RFcuNns
-   nI8lC/8COrNH38Ef9lGK5Ll5lNTqL14RigdQQzhpbDrCR4jsw3h78sLL5
-   E5bV1e44xum+bCLRv31LLWDtODJio51uN+5XB2pRb4J688RqaW9qrTaGo
-   GZ5A2z9naxKsWFsc9z1Rjo4bTVntzyEZStYNDf4l1ZWCIiiTcxCur6TxF
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="234020443"
+  t=1646427778; x=1677963778;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=84rzB7EGCaXOZL1cBO3nEdZINVTxlpedFJz4fEGxUic=;
+  b=HGW00jORUgLSWp8CiOzpAhHiHcKA/4a2HCXJzSuz/PwN8wlBt9eK9pfW
+   IlzhKomc5SoQJQLlhRHgBg5anqx33N/p9CIalN/Os72ds+NWHxvkk1wnH
+   XbIOov/kd7O2yDw/rwwKhklPFOIuTX5hJjElcjbNL1B9tSvDQZ9NZAzN3
+   GqMYuxBK+YqyDuDSKYLyezgkD5lgHSHeclnENu3DqmLVAeT7r2cN9YXq/
+   c8bSxdR294uzmcZaQkEB/C/H5NBYAK54vq3U2LPMIJOP6NDd11Qo9TZ2C
+   aIcbyvxZslk5ldjksDVmWBDCbV6F2aT0Ke0q4rb3NHBHEBekQng0ccxHl
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="340493361"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="234020443"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 13:01:06 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="340493361"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 13:02:58 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="610056761"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga004.fm.intel.com with ESMTP; 04 Mar 2022 13:01:06 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Mar 2022 13:01:05 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Mar 2022 13:01:04 -0800
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.021;
- Fri, 4 Mar 2022 13:01:04 -0800
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     "Joseph, Jithu" <jithu.joseph@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "hdegoede@redhat.com" <hdegoede@redhat.com>,
-        "markgross@kernel.org" <markgross@kernel.org>
-CC:     "corbet@lwn.net" <corbet@lwn.net>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>, "bp@alien8.de" <bp@alien8.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: RE: [RFC 08/10] platform/x86/intel/ifs: Add IFS sysfs interface
-Thread-Topic: [RFC 08/10] platform/x86/intel/ifs: Add IFS sysfs interface
-Thread-Index: AQHYLaZd5d+yEBuhdEqmhIRDOkET6qyu6T6AgAFSX4D//33N4A==
-Date:   Fri, 4 Mar 2022 21:01:03 +0000
-Message-ID: <52a16a3eb3f54ec88f7a841baa7000fd@intel.com>
-References: <20220301195457.21152-1-jithu.joseph@intel.com>
- <20220301195457.21152-9-jithu.joseph@intel.com>
- <188492dc80c017375da76d444347b1d00c2031f6.camel@intel.com>
- <7b9c788e-21dc-eedc-a1b4-9c6877fa48fe@intel.com>
-In-Reply-To: <7b9c788e-21dc-eedc-a1b4-9c6877fa48fe@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="810883039"
+Received: from fushengl-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.64.239])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 13:02:58 -0800
+From:   ira.weiny@intel.com
+To:     Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] x86/pkeys: Remove __arch_set_user_pkey_access() declaration
+Date:   Fri,  4 Mar 2022 13:02:48 -0800
+Message-Id: <20220304210248.3490549-1-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pj4gWW91IGNvdWxkIGp1c3QgY3V0IHRvIHRoZSBjaGFzZSBhbmQgZG86IHN5c2ZzX2VxKGJ1Ziwg
-IjEiKQ0KPg0KPiBUaGFua3Mgd2lsbCB1c2UgdGhpcw0KDQokIGdpdCBncmVwIHN5c2ZzX2VxDQok
-DQoNCkkgZG9uJ3Qgc2VlIHRoaXMgZGVmaW5lZCAob3IgdXNlZCkgYW55d2hlcmUgaW4gdGhlIGtl
-cm5lbC4gSXMNCml0IHNwZWxsZWQgZGlmZmVyZW50bHkgZnJvbSBob3cgdHlwZWQgaGVyZT8NCg0K
-LVRvbnkNCg0K
+From: Ira Weiny <ira.weiny@intel.com>
+
+In the x86 code __arch_set_user_pkey_access() is not used and is not
+defined.
+
+Remove the dead declaration.
+
+To: Dave Hansen <dave.hansen@intel.com>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+---
+ arch/x86/include/asm/pkeys.h | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/pkeys.h b/arch/x86/include/asm/pkeys.h
+index 1d5f14aff5f6..5292e6dfe2a7 100644
+--- a/arch/x86/include/asm/pkeys.h
++++ b/arch/x86/include/asm/pkeys.h
+@@ -41,9 +41,6 @@ static inline int arch_override_mprotect_pkey(struct vm_area_struct *vma,
+ 	return __arch_override_mprotect_pkey(vma, prot, pkey);
+ }
+ 
+-extern int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+-		unsigned long init_val);
+-
+ #define ARCH_VM_PKEY_FLAGS (VM_PKEY_BIT0 | VM_PKEY_BIT1 | VM_PKEY_BIT2 | VM_PKEY_BIT3)
+ 
+ #define mm_pkey_allocation_map(mm)	(mm->context.pkey_allocation_map)
+@@ -120,8 +117,6 @@ int mm_pkey_free(struct mm_struct *mm, int pkey)
+ 
+ extern int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+ 		unsigned long init_val);
+-extern int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+-		unsigned long init_val);
+ 
+ static inline int vma_pkey(struct vm_area_struct *vma)
+ {
+-- 
+2.35.1
+
