@@ -2,201 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237257AbiCDJlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:41:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54604 "EHLO
+        id S233847AbiCDJmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239482AbiCDJiP (ORCPT
+        with ESMTP id S239306AbiCDJmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:38:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F511188866;
-        Fri,  4 Mar 2022 01:37:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36DF361631;
-        Fri,  4 Mar 2022 09:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF8AC340E9;
-        Fri,  4 Mar 2022 09:37:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646386646;
-        bh=aIzJHGwj+yln2PhjXzljUtzwNIdyaPfY7nITk1Afxqs=;
+        Fri, 4 Mar 2022 04:42:00 -0500
+Received: from smtp.tom.com (smtprz14.163.net [106.3.154.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54F2187BAD
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:40:38 -0800 (PST)
+Received: from my-app02.tom.com (my-app02.tom.com [127.0.0.1])
+        by freemail02.tom.com (Postfix) with ESMTP id D482BB00D6A
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 17:29:07 +0800 (CST)
+Received: from my-app02.tom.com (HELO smtp.tom.com) ([127.0.0.1])
+          by my-app02 (TOM SMTP Server) with SMTP ID -338669765
+          for <linux-kernel@vger.kernel.org>;
+          Fri, 04 Mar 2022 17:29:07 +0800 (CST)
+Received: from antispam1.tom.com (unknown [172.25.16.55])
+        by freemail02.tom.com (Postfix) with ESMTP id C2259B00D4B
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 17:29:07 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=201807;
+        t=1646386147; bh=Bc9KMhlTFc+L9nse97ukML/8OVbdVvQqv3GytP/pNFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JQh3v4tUjpAxef8z5y1WxmygZooW4sjfZeL8qfNB6v5IH4bmNcLFov0uwBsEKy8Rz
-         7VBMirY6dBExhGIKE0BEaGVmB5NOT8BPhpocwxpr3ROwMyuAPRJs8dv7nbznkfsrOG
-         qD1tzan3gvZkv0C7P8yS7wlG8SseHiEGX3XTrrBIYx/rYGixwnWBvzx8OSkZpA2Sw9
-         gc+wBOyExARsFj29t20VBFYi5eFMy0VgSYnBGAhHLL2BzvNrdZMlLkn8PMtkVm6Pcc
-         YldnfnZtuPVsXE+CP6Mt+c2MLlL3br+6Q9uDvPSYSey853eXD4DTuysEFa/dsEoLWT
-         0p3plXLREBRpw==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-sgx@vger.kernel.org
-Cc:     Nathaniel McCallum <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC PATCH v2.1 26/30] selftests/sgx: Test faulty enclave behavior
-Date:   Fri,  4 Mar 2022 11:35:20 +0200
-Message-Id: <20220304093524.397485-26-jarkko@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304093524.397485-1-jarkko@kernel.org>
-References: <20220304093524.397485-1-jarkko@kernel.org>
+        b=Q6wrtlGGgrEDhBoSDzQoakAlagmOq/v5pTKFPh5tHw7xZRPBxrllwZJ8QW5i4wl0T
+         wNe9zIv3Uv1i0ndI0Mw1bMurF0xcLR7tYheO6LHdSwDavcMhJ2yYQU5m/JFOi4N0GE
+         gQGJQ2hejHm6lm+1YZIxS+iXNGs0QsJEM5Xdj8gs=
+Received: from antispam1.tom.com (antispam1.tom.com [127.0.0.1])
+        by antispam1.tom.com (Postfix) with ESMTP id ABE65D41598
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 17:29:07 +0800 (CST)
+X-Virus-Scanned: Debian amavisd-new at antispam1.tom.com
+Received: from antispam1.tom.com ([127.0.0.1])
+        by antispam1.tom.com (antispam1.tom.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id iWZZYryIMrFX for <linux-kernel@vger.kernel.org>;
+        Fri,  4 Mar 2022 17:29:05 +0800 (CST)
+Received: from localhost.localdomain (unknown [39.144.44.23])
+        by antispam1.tom.com (Postfix) with ESMTPA id 1D5B9D41530;
+        Fri,  4 Mar 2022 17:29:04 +0800 (CST)
+From:   Mingbao Sun <sunmingbao@tom.com>
+To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     sunmingbao@tom.com, tyler.sun@dell.com, ping.gan@dell.com,
+        yanxiu.cai@dell.com, libin.zhang@dell.com, ao.sun@dell.com
+Subject: [PATCH 1/2] nvmet-tcp: support specifying the congestion-control
+Date:   Fri,  4 Mar 2022 17:27:53 +0800
+Message-Id: <20220304092754.2721-2-sunmingbao@tom.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220304092754.2721-1-sunmingbao@tom.com>
+References: <20220304092754.2721-1-sunmingbao@tom.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reinette Chatre <reinette.chatre@intel.com>
+From: Mingbao Sun <tyler.sun@dell.com>
 
-Removing a page from an initialized enclave involves three steps:
-first the user requests changing the page type to SGX_PAGE_TYPE_TRIM
-via an ioctl(), on success the ENCLU[EACCEPT] instruction needs to be
-run from within the enclave to accept the page removal, finally the
-user requests page removal to be completed via an ioctl(). Only after
-acceptance (ENCLU[EACCEPT]) from within the enclave can the kernel
-remove the page from a running enclave.
+congestion-control could have a noticeable impaction on the
+performance of TCP-based communications. This is of course true
+to NVMe_over_TCP.
 
-Test the behavior when the user's request to change the page type
-succeeds, but the ENCLU[EACCEPT] instruction is not run before the
-ioctl() requesting page removal is run. This should not be permitted.
+Different congestion-controls (e.g., cubic, dctcp) are suitable for
+different scenarios. Proper adoption of congestion control would benefit
+the performance. On the contrary, the performance could be destroyed.
 
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Though we can specify the congestion-control of NVMe_over_TCP via
+writing '/proc/sys/net/ipv4/tcp_congestion_control', but this also
+changes the congestion-control of all the future TCP sockets that
+have not been explicitly assigned the congestion-control, thus bringing
+potential impaction on their performance.
+
+So it makes sense to make NVMe_over_TCP support specifying the
+congestion-control. And this commit addresses the target side.
+
+Implementation approach:
+the following new file entry was created for user to specify the
+congestion-control of each nvmet port.
+'/sys/kernel/config/nvmet/ports/X/tcp_congestion'
+Then later in nvmet_tcp_add_port, the specified congestion-control
+would be applied to the listening socket of the nvmet port.
+
+Signed-off-by: Mingbao Sun <tyler.sun@dell.com>
 ---
- tools/testing/selftests/sgx/main.c | 116 +++++++++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
+ drivers/nvme/target/configfs.c | 52 ++++++++++++++++++++++++++++++++++
+ drivers/nvme/target/nvmet.h    |  1 +
+ drivers/nvme/target/tcp.c      | 27 ++++++++++++++++++
+ 3 files changed, 80 insertions(+)
 
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index f9872c6746a3..82902dab96bc 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -1453,4 +1453,120 @@ TEST_F(enclave, tcs_create)
- 	munmap(addr, 3 * PAGE_SIZE);
- }
+diff --git a/drivers/nvme/target/configfs.c b/drivers/nvme/target/configfs.c
+index 091a0ca16361..fcf01f2b8045 100644
+--- a/drivers/nvme/target/configfs.c
++++ b/drivers/nvme/target/configfs.c
+@@ -11,6 +11,7 @@
+ #include <linux/ctype.h>
+ #include <linux/pci.h>
+ #include <linux/pci-p2pdma.h>
++#include <net/tcp.h>
  
-+/*
-+ * Ensure sane behavior if user requests page removal, does not run
-+ * EACCEPT from within enclave but still attempts to finalize page removal
-+ * with the SGX_IOC_ENCLAVE_REMOVE_PAGES ioctl(). The latter should fail
-+ * because the removal was not EACCEPTed from within the enclave.
-+ */
-+TEST_F(enclave, remove_added_page_no_eaccept)
+ #include "nvmet.h"
+ 
+@@ -222,6 +223,55 @@ static ssize_t nvmet_addr_trsvcid_store(struct config_item *item,
+ 
+ CONFIGFS_ATTR(nvmet_, addr_trsvcid);
+ 
++static ssize_t nvmet_tcp_congestion_show(struct config_item *item,
++		char *page)
 +{
-+	struct sgx_enclave_remove_pages remove_ioc;
-+	struct encl_op_get_from_addr get_addr_op;
-+	struct encl_op_put_to_addr put_addr_op;
-+	struct sgx_enclave_modt modt_ioc;
-+	struct sgx_secinfo secinfo;
-+	unsigned long data_start;
-+	int ret, errno_save;
++	struct nvmet_port *port = to_nvmet_port(item);
 +
-+	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
-+
-+	memset(&self->run, 0, sizeof(self->run));
-+	self->run.tcs = self->encl.encl_base;
-+
-+	/*
-+	 * Hardware (SGX2) and kernel support is needed for this test. Start
-+	 * with check that test has a chance of succeeding.
-+	 */
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+
-+	if (ret == -1) {
-+		if (errno == ENOTTY)
-+			SKIP(return, "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()");
-+		else if (errno == ENODEV)
-+			SKIP(return, "System does not support SGX2");
-+	}
-+
-+	/*
-+	 * Invalid parameters were provided during sanity check,
-+	 * expect command to fail.
-+	 */
-+	EXPECT_EQ(ret, -1);
-+
-+	/*
-+	 * Page that will be removed is the second data page in the .data
-+	 * segment. This forms part of the local encl_buffer within the
-+	 * enclave.
-+	 */
-+	data_start = self->encl.encl_base +
-+		     encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+
-+	/*
-+	 * Sanity check that page at @data_start is writable before
-+	 * removing it.
-+	 *
-+	 * Start by writing MAGIC to test page.
-+	 */
-+	put_addr_op.value = MAGIC;
-+	put_addr_op.addr = data_start;
-+	put_addr_op.header.type = ENCL_OP_PUT_TO_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&put_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/*
-+	 * Read memory that was just written to, confirming that data
-+	 * previously written (MAGIC) is present.
-+	 */
-+	get_addr_op.value = 0;
-+	get_addr_op.addr = data_start;
-+	get_addr_op.header.type = ENCL_OP_GET_FROM_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&get_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EQ(get_addr_op.value, MAGIC);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/* Start page removal by requesting change of page type to PT_TRIM */
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	memset(&secinfo, 0, sizeof(secinfo));
-+
-+	secinfo.flags = SGX_PAGE_TYPE_TRIM << 8;
-+	modt_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	modt_ioc.length = PAGE_SIZE;
-+	modt_ioc.secinfo = (unsigned long)&secinfo;
-+
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(modt_ioc.result, 0);
-+	EXPECT_EQ(modt_ioc.count, 4096);
-+
-+	/* Skip EACCEPT */
-+
-+	/* Send final ioctl() to complete page removal */
-+	memset(&remove_ioc, 0, sizeof(remove_ioc));
-+
-+	remove_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	remove_ioc.length = PAGE_SIZE;
-+
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	/* Operation not permitted since EACCEPT was omitted. */
-+	EXPECT_EQ(ret, -1);
-+	EXPECT_EQ(errno_save, EPERM);
-+	EXPECT_EQ(remove_ioc.count, 0);
++	return snprintf(page, PAGE_SIZE, "%s\n",
++			port->tcp_congestion ? port->tcp_congestion : "");
 +}
 +
- TEST_HARNESS_MAIN
++static ssize_t nvmet_tcp_congestion_store(struct config_item *item,
++		const char *page, size_t count)
++{
++	struct nvmet_port *port = to_nvmet_port(item);
++	int len;
++	bool ecn_ca;
++	u32 key;
++
++	len = strcspn(page, "\n");
++	if (!len)
++		return -EINVAL;
++
++	if (len >= TCP_CA_NAME_MAX) {
++		pr_err("name of TCP congestion control can not exceed %d bytes.\n",
++		       TCP_CA_NAME_MAX);
++		return -EINVAL;
++	}
++
++	if (nvmet_is_port_enabled(port, __func__))
++		return -EACCES;
++
++	kfree(port->tcp_congestion);
++	port->tcp_congestion = kmemdup_nul(page, len, GFP_KERNEL);
++	if (!port->tcp_congestion)
++		return -ENOMEM;
++
++	key = tcp_ca_get_key_by_name(NULL, port->tcp_congestion, &ecn_ca);
++	if (key == TCP_CA_UNSPEC) {
++		pr_err("congestion control %s not found.\n",
++		       port->tcp_congestion);
++		kfree(port->tcp_congestion);
++		port->tcp_congestion = NULL;
++		return -EINVAL;
++	}
++
++	return count;
++}
++
++CONFIGFS_ATTR(nvmet_, tcp_congestion);
++
+ static ssize_t nvmet_param_inline_data_size_show(struct config_item *item,
+ 		char *page)
+ {
+@@ -1597,6 +1647,7 @@ static void nvmet_port_release(struct config_item *item)
+ 	list_del(&port->global_entry);
+ 
+ 	kfree(port->ana_state);
++	kfree(port->tcp_congestion);
+ 	kfree(port);
+ }
+ 
+@@ -1605,6 +1656,7 @@ static struct configfs_attribute *nvmet_port_attrs[] = {
+ 	&nvmet_attr_addr_treq,
+ 	&nvmet_attr_addr_traddr,
+ 	&nvmet_attr_addr_trsvcid,
++	&nvmet_attr_tcp_congestion,
+ 	&nvmet_attr_addr_trtype,
+ 	&nvmet_attr_param_inline_data_size,
+ #ifdef CONFIG_BLK_DEV_INTEGRITY
+diff --git a/drivers/nvme/target/nvmet.h b/drivers/nvme/target/nvmet.h
+index 69637bf8f8e1..76a57c4c3456 100644
+--- a/drivers/nvme/target/nvmet.h
++++ b/drivers/nvme/target/nvmet.h
+@@ -145,6 +145,7 @@ struct nvmet_port {
+ 	struct config_group		ana_groups_group;
+ 	struct nvmet_ana_group		ana_default_group;
+ 	enum nvme_ana_state		*ana_state;
++	const char			*tcp_congestion;
+ 	void				*priv;
+ 	bool				enabled;
+ 	int				inline_data_size;
+diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
+index 83ca577f72be..3b72e782c901 100644
+--- a/drivers/nvme/target/tcp.c
++++ b/drivers/nvme/target/tcp.c
+@@ -1657,8 +1657,10 @@ static void nvmet_tcp_accept_work(struct work_struct *w)
+ 	struct nvmet_tcp_port *port =
+ 		container_of(w, struct nvmet_tcp_port, accept_work);
+ 	struct socket *newsock;
++	struct inet_connection_sock *icsk, *icsk_new;
+ 	int ret;
+ 
++	icsk = inet_csk(port->sock->sk);
+ 	while (true) {
+ 		ret = kernel_accept(port->sock, &newsock, O_NONBLOCK);
+ 		if (ret < 0) {
+@@ -1666,6 +1668,16 @@ static void nvmet_tcp_accept_work(struct work_struct *w)
+ 				pr_warn("failed to accept err=%d\n", ret);
+ 			return;
+ 		}
++
++		if (port->nport->tcp_congestion) {
++			icsk_new = inet_csk(newsock->sk);
++			if (icsk_new->icsk_ca_ops != icsk->icsk_ca_ops) {
++				pr_warn("congestion abnormal: expected %s, actual %s.\n",
++					icsk->icsk_ca_ops->name,
++					icsk_new->icsk_ca_ops->name);
++			}
++		}
++
+ 		ret = nvmet_tcp_alloc_queue(port, newsock);
+ 		if (ret) {
+ 			pr_err("failed to allocate queue\n");
+@@ -1693,6 +1705,8 @@ static int nvmet_tcp_add_port(struct nvmet_port *nport)
+ {
+ 	struct nvmet_tcp_port *port;
+ 	__kernel_sa_family_t af;
++	char ca_name[TCP_CA_NAME_MAX];
++	sockptr_t optval;
+ 	int ret;
+ 
+ 	port = kzalloc(sizeof(*port), GFP_KERNEL);
+@@ -1741,6 +1755,19 @@ static int nvmet_tcp_add_port(struct nvmet_port *nport)
+ 	if (so_priority > 0)
+ 		sock_set_priority(port->sock->sk, so_priority);
+ 
++	if (nport->tcp_congestion) {
++		strncpy(ca_name, nport->tcp_congestion, TCP_CA_NAME_MAX-1);
++		optval = KERNEL_SOCKPTR(ca_name);
++		ret = sock_common_setsockopt(port->sock, IPPROTO_TCP,
++					     TCP_CONGESTION, optval,
++					     strlen(ca_name));
++		if (ret) {
++			pr_err("failed to set port socket's congestion to %s: %d\n",
++			       ca_name, ret);
++			goto err_sock;
++		}
++	}
++
+ 	ret = kernel_bind(port->sock, (struct sockaddr *)&port->addr,
+ 			sizeof(port->addr));
+ 	if (ret) {
 -- 
-2.35.1
+2.26.2
 
