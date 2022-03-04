@@ -2,99 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAD5C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2AE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240816AbiCDShW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
+        id S241767AbiCDSiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:38:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiCDShU (ORCPT
+        with ESMTP id S241811AbiCDSiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:37:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F70A1D5290;
-        Fri,  4 Mar 2022 10:36:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D1D6B827E6;
-        Fri,  4 Mar 2022 18:36:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A3CC340E9;
-        Fri,  4 Mar 2022 18:36:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646418990;
-        bh=jStB8DXDHaCuBXHiFAKklIssYKXzmP1NPQypXlcYYag=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KJ2Ke1ERSEbuahQSyoTWY4H6FXAaYBsljkD7RC+yQ91GHDNM73J1A2E6Iy74Din43
-         Nr4OBLxIj2Fty5DQzxZwPuLBSXdS5TZ7IAA+ohR1qshi1ejg+Km59/bID3R4Wkdag8
-         CEjwvkCxFIPLWiiXowZrEOek8GzviwndzJdeHXls=
-Date:   Fri, 4 Mar 2022 19:36:18 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 11/28] samples/bpf: add a report descriptor
- fixup
-Message-ID: <YiJcIso43MWFUcMp@kroah.com>
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-12-benjamin.tissoires@redhat.com>
+        Fri, 4 Mar 2022 13:38:11 -0500
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com [209.85.219.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6171D63BA;
+        Fri,  4 Mar 2022 10:37:23 -0800 (PST)
+Received: by mail-yb1-f176.google.com with SMTP id z30so5747034ybi.2;
+        Fri, 04 Mar 2022 10:37:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=kH85gqnn6HKN2yIx6qKbPhDt5W+hZrK5z7A40e9h+C8=;
+        b=H/u4Sb47ZTquQp5iolWgYh+OxyBIhSEsVJExjBbeHAQyv8PWLL9dLhRuTCdCoIo+wR
+         daRDdPJO93I9SMlA39wo2NdaYNaneKqKmHAE+isg/6aZbhdYGlSzheRRcNSNhC8Tu5nt
+         SZNAKDsWSrGJ7mDrW5owaXp9iKRxdx6FbCbng83OaoaW21EhjNlWdbUTP5j9DQ6rM54z
+         AsB2JWvwcAaM8RZOxX9kWe5cPy63ll+YIEvPMg+ok1Y1Q+w+zi+O8NlDEuY/WJ3nlsEz
+         A/2k0CdUSL1Gum3Qp6ZWCjUV5bq2zexI7nVUQbBtR/4WNsH4r0nRLcjdsoSJTKxAZ0Gt
+         GzwQ==
+X-Gm-Message-State: AOAM5329SasLSlCwijnYCvyHt0x9On/yP2F0POlkOnjkJ+PV9DljfaC7
+        g1grCMuExh2MWpO36jGoyyD5dR+eDh+UYY4/ajgtSHMx/nw=
+X-Google-Smtp-Source: ABdhPJxQInzwSF0JiR9eI8sJfFgNTuPaKTJPH5khW1t4YcbsVKYHyjZUWxi3jdzBM85ycntIsYdfCTcnr5bQXCqrL4c=
+X-Received: by 2002:a25:d7c2:0:b0:628:9d06:457b with SMTP id
+ o185-20020a25d7c2000000b006289d06457bmr14103994ybg.137.1646419042000; Fri, 04
+ Mar 2022 10:37:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304172852.274126-12-benjamin.tissoires@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 4 Mar 2022 19:37:11 +0100
+Message-ID: <CAJZ5v0i=5YYvBQcMDb7-gRpC0f_R6KMegyQonN6=ca1ndYauxw@mail.gmail.com>
+Subject: [GIT PULL] Thermal control fix for v5.17-rc7
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 06:28:35PM +0100, Benjamin Tissoires wrote:
-> the program inverts the definition of X and Y at a given place in the
-> report descriptor of my mouse.
-> 
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> 
-> ---
-> 
-> changes in v2:
-> - split the series by bpf/libbpf/hid/selftests and samples
-> ---
->  samples/bpf/hid_mouse_kern.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/samples/bpf/hid_mouse_kern.c b/samples/bpf/hid_mouse_kern.c
-> index c24a12e06b40..958820caaf5d 100644
-> --- a/samples/bpf/hid_mouse_kern.c
-> +++ b/samples/bpf/hid_mouse_kern.c
-> @@ -62,5 +62,30 @@ int hid_x_event(struct hid_bpf_ctx *ctx)
->  	return 0;
->  }
->  
-> +SEC("hid/rdesc_fixup")
-> +int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
+Hi Linus,
 
-No comment here to show the same as you put in the changelog saying what
-this function is doing?
+Please pull from the tag
 
-Otherwise it's hard for a non-HID developer to know that:
+ git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+ thermal-5.17-rc7
 
-> +
-> +	ctx->data[39] = 0x31;
-> +	ctx->data[41] = 0x30;
+with top-most commit 5838a14832d447990827d85e90afe17e6fb9c175
 
-Is flipping things.
+ thermal: core: Fix TZ_GET_TRIP NULL pointer dereference
 
-thanks,
+on top of commit 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
 
-greg k-h
+ Linux 5.17-rc6
+
+to receive a thermal control fix for 5.17-rc7.
+
+This fixes a NULL pointer dereference in the thermal netlink
+interface (Nicolas Cavallari).
+
+Thanks!
+
+
+---------------
+
+Nicolas Cavallari (1):
+      thermal: core: Fix TZ_GET_TRIP NULL pointer dereference
+
+---------------
+
+ drivers/thermal/thermal_netlink.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
