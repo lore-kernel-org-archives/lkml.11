@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2115C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236960AbiCDHJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 02:09:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
+        id S233416AbiCDHJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 02:09:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238770AbiCDHIv (ORCPT
+        with ESMTP id S238672AbiCDHIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 02:08:51 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52135192C94
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:07:13 -0800 (PST)
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DD6A19142D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:07:12 -0800 (PST)
 Received: from unknown (HELO lgemrelse6q.lge.com) (156.147.1.121)
-        by 156.147.23.51 with ESMTP; 4 Mar 2022 16:07:06 +0900
+        by 156.147.23.52 with ESMTP; 4 Mar 2022 16:07:09 +0900
 X-Original-SENDERIP: 156.147.1.121
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.121 with ESMTP; 4 Mar 2022 16:07:06 +0900
+        by 156.147.1.121 with ESMTP; 4 Mar 2022 16:07:09 +0900
 X-Original-SENDERIP: 10.177.244.38
 X-Original-MAILFROM: byungchul.park@lge.com
 From:   Byungchul Park <byungchul.park@lge.com>
@@ -47,9 +47,9 @@ Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com
-Subject: [PATCH v4 03/24] dept: Embed Dept data in Lockdep
-Date:   Fri,  4 Mar 2022 16:06:22 +0900
-Message-Id: <1646377603-19730-4-git-send-email-byungchul.park@lge.com>
+Subject: [PATCH v4 20/24] dept: Add nocheck version of init_completion()
+Date:   Fri,  4 Mar 2022 16:06:39 +0900
+Message-Id: <1646377603-19730-21-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
 References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
@@ -57,220 +57,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dept should work independently from Lockdep. However, there's no choise
-but to rely on Lockdep code and its instances for now.
+For completions who don't want to get tracked by Dept, added
+init_completion_nocheck() to disable Dept on it.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- include/linux/lockdep.h       | 71 ++++++++++++++++++++++++++++++++++++++++---
- include/linux/lockdep_types.h |  3 ++
- kernel/locking/lockdep.c      | 12 ++++----
- 3 files changed, 76 insertions(+), 10 deletions(-)
+ include/linux/completion.h | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 467b942..c56f6b6 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -20,6 +20,33 @@
- extern int prove_locking;
- extern int lock_stat;
- 
-+#ifdef CONFIG_DEPT
-+static inline void dept_after_copy_map(struct dept_map *to,
-+				       struct dept_map *from)
-+{
-+	int i;
-+
-+	if (from->keys == &from->keys_local)
-+		to->keys = &to->keys_local;
-+
-+	if (!to->keys)
-+		return;
-+
-+	/*
-+	 * Since the class cache can be modified concurrently we could observe
-+	 * half pointers (64bit arch using 32bit copy insns). Therefore clear
-+	 * the caches and take the performance hit.
-+	 *
-+	 * XXX it doesn't work well with lockdep_set_class_and_subclass(), since
-+	 *     that relies on cache abuse.
-+	 */
-+	for (i = 0; i < DEPT_MAX_SUBCLASSES_CACHE; i++)
-+		to->keys->classes[i] = NULL;
-+}
-+#else
-+#define dept_after_copy_map(t, f)	do { } while (0)
-+#endif
-+
- #ifdef CONFIG_LOCKDEP
- 
- #include <linux/linkage.h>
-@@ -43,6 +70,8 @@ static inline void lockdep_copy_map(struct lockdep_map *to,
- 	 */
- 	for (i = 0; i < NR_LOCKDEP_CACHING_CLASSES; i++)
- 		to->class_cache[i] = NULL;
-+
-+	dept_after_copy_map(&to->dmap, &from->dmap);
- }
- 
- /*
-@@ -176,8 +205,19 @@ struct held_lock {
- 	current->lockdep_recursion -= LOCKDEP_OFF;	\
- } while (0)
- 
--extern void lockdep_register_key(struct lock_class_key *key);
--extern void lockdep_unregister_key(struct lock_class_key *key);
-+extern void __lockdep_register_key(struct lock_class_key *key);
-+extern void __lockdep_unregister_key(struct lock_class_key *key);
-+
-+#define lockdep_register_key(k)				\
-+do {							\
-+	__lockdep_register_key(k);			\
-+	dept_key_init(&(k)->dkey);			\
-+} while (0)
-+#define lockdep_unregister_key(k)			\
-+do {							\
-+	__lockdep_unregister_key(k);			\
-+	dept_key_destroy(&(k)->dkey);			\
-+} while (0)
- 
- /*
-  * These methods are used by specific locking variants (spinlocks,
-@@ -185,9 +225,18 @@ struct held_lock {
-  * to lockdep:
-  */
- 
--extern void lockdep_init_map_type(struct lockdep_map *lock, const char *name,
-+extern void __lockdep_init_map_type(struct lockdep_map *lock, const char *name,
- 	struct lock_class_key *key, int subclass, u8 inner, u8 outer, u8 lock_type);
- 
-+#define lockdep_init_map_type(l, n, k, s, i, o, t)		\
-+do {								\
-+	__lockdep_init_map_type(l, n, k, s, i, o, t);		\
-+	if ((k) == &__lockdep_no_validate__)			\
-+		dept_map_nocheck(&(l)->dmap);			\
-+	else							\
-+		dept_map_init(&(l)->dmap, &(k)->dkey, s, n);	\
-+} while (0)
-+
- static inline void
- lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
- 		       struct lock_class_key *key, int subclass, u8 inner, u8 outer)
-@@ -431,13 +480,27 @@ enum xhlock_context_t {
- 	XHLOCK_CTX_NR,
+diff --git a/include/linux/completion.h b/include/linux/completion.h
+index a1ad5a8..9bd3bc9 100644
+--- a/include/linux/completion.h
++++ b/include/linux/completion.h
+@@ -30,6 +30,7 @@ struct completion {
  };
  
-+#ifdef CONFIG_DEPT
-+/*
-+ * TODO: I found the case to use an address of other than a real key as
-+ * _key, for instance, in workqueue. So for now, we cannot use the
-+ * assignment like '.dmap.keys = &(_key)->dkey' unless it's fixed.
-+ */
-+#define STATIC_DEPT_MAP_INIT(_name, _key) .dmap = {		\
-+	.name = (_name),					\
-+	.keys = NULL },
-+#else
-+#define STATIC_DEPT_MAP_INIT(_name, _key)
-+#endif
-+
- #define lockdep_init_map_crosslock(m, n, k, s) do {} while (0)
- /*
-  * To initialize a lockdep_map statically use this macro.
-  * Note that _name must not be NULL.
-  */
- #define STATIC_LOCKDEP_MAP_INIT(_name, _key) \
--	{ .name = (_name), .key = (void *)(_key), }
-+	{ .name = (_name), .key = (void *)(_key), \
-+	STATIC_DEPT_MAP_INIT(_name, _key) }
- 
- static inline void lockdep_invariant_state(bool force) {}
- static inline void lockdep_free_task(struct task_struct *task) {}
-diff --git a/include/linux/lockdep_types.h b/include/linux/lockdep_types.h
-index d224308..50c8879 100644
---- a/include/linux/lockdep_types.h
-+++ b/include/linux/lockdep_types.h
-@@ -11,6 +11,7 @@
- #define __LINUX_LOCKDEP_TYPES_H
- 
- #include <linux/types.h>
-+#include <linux/dept.h>
- 
- #define MAX_LOCKDEP_SUBCLASSES		8UL
- 
-@@ -76,6 +77,7 @@ struct lock_class_key {
- 		struct hlist_node		hash_entry;
- 		struct lockdep_subclass_key	subkeys[MAX_LOCKDEP_SUBCLASSES];
- 	};
-+	struct dept_key				dkey;
- };
- 
- extern struct lock_class_key __lockdep_no_validate__;
-@@ -185,6 +187,7 @@ struct lockdep_map {
- 	int				cpu;
- 	unsigned long			ip;
+ #ifdef CONFIG_DEPT
++#define dept_wfc_nocheck(m)			dept_map_nocheck(m)
+ #define dept_wfc_init(m, k, s, n)		dept_map_init(m, k, s, n)
+ #define dept_wfc_reinit(m)			dept_map_reinit(m)
+ #define dept_wfc_wait(m, ip)						\
+@@ -41,6 +42,7 @@ struct completion {
+ #define dept_wfc_enter(m, ip)			dept_ecxt_enter(m, 1UL, ip, "completion_context_enter", "complete", 0)
+ #define dept_wfc_exit(m, ip)			dept_ecxt_exit(m, ip)
+ #else
++#define dept_wfc_nocheck(m)			do { } while (0)
+ #define dept_wfc_init(m, k, s, n)		do { (void)(n); (void)(k); } while (0)
+ #define dept_wfc_reinit(m)			do { } while (0)
+ #define dept_wfc_wait(m, ip)			do { } while (0)
+@@ -55,10 +57,11 @@ struct completion {
+ #define WFC_DEPT_MAP_INIT(work)
  #endif
-+	struct dept_map			dmap;
- };
  
- struct pin_cookie { unsigned int val; };
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 4a882f8..a85468d 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -1184,7 +1184,7 @@ static inline struct hlist_head *keyhashentry(const struct lock_class_key *key)
- }
++#define init_completion_nocheck(x) __init_completion(x, NULL, #x, false)
+ #define init_completion(x)					\
+ 	do {							\
+ 		static struct dept_key __dkey;			\
+-		__init_completion(x, &__dkey, #x);		\
++		__init_completion(x, &__dkey, #x, true);	\
+ 	} while (0)
  
- /* Register a dynamically allocated key. */
--void lockdep_register_key(struct lock_class_key *key)
-+void __lockdep_register_key(struct lock_class_key *key)
- {
- 	struct hlist_head *hash_head;
- 	struct lock_class_key *k;
-@@ -1207,7 +1207,7 @@ void lockdep_register_key(struct lock_class_key *key)
- restore_irqs:
- 	raw_local_irq_restore(flags);
- }
--EXPORT_SYMBOL_GPL(lockdep_register_key);
-+EXPORT_SYMBOL_GPL(__lockdep_register_key);
- 
- /* Check whether a key has been registered as a dynamic key. */
- static bool is_dynamic_key(const struct lock_class_key *key)
-@@ -4771,7 +4771,7 @@ static inline int check_wait_context(struct task_struct *curr,
- /*
-  * Initialize a lock instance's lock-class mapping info:
+ #define init_completion_map(x, m) init_completion(x)
+@@ -117,10 +120,15 @@ static inline void complete_release(struct completion *x) {}
   */
--void lockdep_init_map_type(struct lockdep_map *lock, const char *name,
-+void __lockdep_init_map_type(struct lockdep_map *lock, const char *name,
- 			    struct lock_class_key *key, int subclass,
- 			    u8 inner, u8 outer, u8 lock_type)
+ static inline void __init_completion(struct completion *x,
+ 				     struct dept_key *dkey,
+-				     const char *name)
++				     const char *name, bool check)
  {
-@@ -4831,7 +4831,7 @@ void lockdep_init_map_type(struct lockdep_map *lock, const char *name,
- 		raw_local_irq_restore(flags);
- 	}
+ 	x->done = 0;
+-	dept_wfc_init(&x->dmap, dkey, 0, name);
++
++	if (check)
++		dept_wfc_init(&x->dmap, dkey, 0, name);
++	else
++		dept_wfc_nocheck(&x->dmap);
++
+ 	init_swait_queue_head(&x->wait);
  }
--EXPORT_SYMBOL_GPL(lockdep_init_map_type);
-+EXPORT_SYMBOL_GPL(__lockdep_init_map_type);
  
- struct lock_class_key __lockdep_no_validate__;
- EXPORT_SYMBOL_GPL(__lockdep_no_validate__);
-@@ -6291,7 +6291,7 @@ void lockdep_reset_lock(struct lockdep_map *lock)
- }
- 
- /* Unregister a dynamically allocated key. */
--void lockdep_unregister_key(struct lock_class_key *key)
-+void __lockdep_unregister_key(struct lock_class_key *key)
- {
- 	struct hlist_head *hash_head = keyhashentry(key);
- 	struct lock_class_key *k;
-@@ -6326,7 +6326,7 @@ void lockdep_unregister_key(struct lock_class_key *key)
- 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
- 	synchronize_rcu();
- }
--EXPORT_SYMBOL_GPL(lockdep_unregister_key);
-+EXPORT_SYMBOL_GPL(__lockdep_unregister_key);
- 
- void __init lockdep_init(void)
- {
 -- 
 1.9.1
 
