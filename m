@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D037C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77665C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbiCDUHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58132 "EHLO
+        id S230292AbiCDUHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:07:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiCDUGg (ORCPT
+        with ESMTP id S230311AbiCDUGj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:06:36 -0500
+        Fri, 4 Mar 2022 15:06:39 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE0B23D18F;
-        Fri,  4 Mar 2022 12:01:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332B3A76E0;
+        Fri,  4 Mar 2022 12:01:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424081; x=1677960081;
+  t=1646424088; x=1677960088;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5BZUTlHKmzsMfusRelz30l9Tcv0uhy3GghA6B//HIv8=;
-  b=Fhg48MRRnZShbzn6W8kBXCVRPuG/XBmCf6dN7oUaRmNHBD52BMnvea4q
-   iJNIbS2YU5VkwIizuTQPzU5OaJw74Sxj3iGz09DUKBjl/HxKNlet0a4nR
-   CUR/FbzIRf1gk/vKqtLefCALYUiIft6DCRdew93K+9/2LUyxj5bwEZP1F
-   GGjAD/JJHhecUqWmtcSCo1lWgCYS4NP8i9nBFD4poaZjWYViu0iOR6ldh
-   5CryvVs7owb9Dgw3C/obdjnFUUcfXPRILJXiMqj0bo0/YaLUrO2myadr5
-   cHEWC46gOiijQ9jJVBFgyZfaT3R7Rtf7x7d3tVpEKWZbn4ZORoZ48WyvW
+  bh=F5m7BcH2I4LIYbZyCe8ZIRQ7zDSIomuzez9uQa0XnI8=;
+  b=FXIyfLN4kTGEleox2RMG2tRBqkwmwNsySiSOXNsr6MKOCrYbYB2+9tFF
+   Su09PBIJit3EM/Z7kkdd/RFEDaHJ8nB0acSqwvge72EFcPZvO8SlKm9Q4
+   EjSQJTg2wWILC4+kDtIqhELeGKahfbWUJjEYE0oqJzGHKNnEUqYtxhh+O
+   2PRDWKREgIcqD9Mu0tPMAu54JiaYT4/Lfss2vQtuX1ZdfcWnx3WpzHnUW
+   4ajtCgSaGcfd5WAzVAs36VCpfK9MRgGXXb/jMn82G92u3mC4RGTd8nA/q
+   +bfn+qWn+XjNrAIK1qLu4F29nlyMqF1GZtRzeSYZ3Ph1iceQIArl0tIFC
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983344"
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983352"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983344"
+   d="scan'208";a="253983352"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:09 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:10 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344153"
+   d="scan'208";a="552344167"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:09 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:10 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 014/104] KVM: TDX: Add a function for KVM to invoke SEAMCALL
-Date:   Fri,  4 Mar 2022 11:48:30 -0800
-Message-Id: <355f08931d2b1917fd7230393de6f1052bf6f0c9.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 016/104] KVM: TDX: Add C wrapper functions for SEAMCALLs to the TDX module
+Date:   Fri,  4 Mar 2022 11:48:32 -0800
+Message-Id: <8b2eecc642ee34815312baf97db3a8a05f7738af.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -56,141 +56,185 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-Add an assembly function for KVM to call the TDX module because __seamcall
-defined in arch/x86/virt/vmx/seamcall.S doesn't fit for the KVM use case.
+TDX SEAMCALL interface is defined in the TDX module specification.  Define
+C wrapper functions for SEAMCALLs for readability.
 
-TDX module API returns extended error information in registers, rcx, rdx,
-r8, r9, r10, and r11 in addition to success case.  KVM uses those extended
-error information in addition to the status code returned in RAX.  Update
-the assembly code to optionally return those outputs even in the error case
-and define the specific version for KVM to call the TDX module.
-
-SEAMCALL to the SEAM module (P-SEAMLDR or TDX module) can result in the
-error of VmFailInvalid indicated by CF=1 when VMX isn't enabled by VMXON
-instruction.  Because KVM guarantees that VMX is enabled, VmFailInvalid
-error won't happen.  Don't check the error for KVM.
-
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/Makefile       |  2 +-
- arch/x86/kvm/vmx/seamcall.S | 55 +++++++++++++++++++++++++++++++++++++
- arch/x86/virt/tdxcall.S     |  8 ++++--
- 3 files changed, 62 insertions(+), 3 deletions(-)
- create mode 100644 arch/x86/kvm/vmx/seamcall.S
+ arch/x86/kvm/vmx/tdx_ops.h | 161 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 161 insertions(+)
+ create mode 100644 arch/x86/kvm/vmx/tdx_ops.h
 
-diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
-index e2c05195cb95..e8f83a7d0dc3 100644
---- a/arch/x86/kvm/Makefile
-+++ b/arch/x86/kvm/Makefile
-@@ -24,7 +24,7 @@ kvm-$(CONFIG_KVM_XEN)	+= xen.o
- kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
- 			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o vmx/main.o
- kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
--kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o
-+kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/seamcall.o
- 
- kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
- 
-diff --git a/arch/x86/kvm/vmx/seamcall.S b/arch/x86/kvm/vmx/seamcall.S
+diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
 new file mode 100644
-index 000000000000..4a15017fc7dd
+index 000000000000..0bed43879b82
 --- /dev/null
-+++ b/arch/x86/kvm/vmx/seamcall.S
-@@ -0,0 +1,55 @@
++++ b/arch/x86/kvm/vmx/tdx_ops.h
+@@ -0,0 +1,161 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+#include <linux/linkage.h>
-+#include <asm/export.h>
-+#include <asm/frame.h>
++/* constants/data definitions for TDX SEAMCALLs */
 +
-+#include "../../virt/tdxcall.S"
++#ifndef __KVM_X86_TDX_OPS_H
++#define __KVM_X86_TDX_OPS_H
 +
-+/*
-+ * kvm_seamcall()  - Host-side interface functions to SEAM software (TDX module)
-+ *
-+ * Transform function call register arguments into the SEAMCALL register
-+ * ABI.  Return the completion status of the SEAMCALL.  Additional output
-+ * operands are saved in @out (if it is provided by the user).
-+ * It doesn't check TDX_SEAMCALL_VMFAILINVALID unlike __semcall() because KVM
-+ * guarantees that VMX is enabled so that TDX_SEAMCALL_VMFAILINVALID doesn't
-+ * happen.  In the case of error completion status code, extended error code may
-+ * be stored in leaf specific output registers.
-+ *
-+ *-------------------------------------------------------------------------
-+ * SEAMCALL ABI:
-+ *-------------------------------------------------------------------------
-+ * Input Registers:
-+ *
-+ * RAX                 - SEAMCALL Leaf number.
-+ * RCX,RDX,R8-R9       - SEAMCALL Leaf specific input registers.
-+ *
-+ * Output Registers:
-+ *
-+ * RAX                 - SEAMCALL completion status code.
-+ * RCX,RDX,R8-R11      - SEAMCALL Leaf specific output registers.
-+ *
-+ *-------------------------------------------------------------------------
-+ *
-+ * kvm_seamcall() function ABI:
-+ *
-+ * @fn  (RDI)          - SEAMCALL Leaf number, moved to RAX
-+ * @rcx (RSI)          - Input parameter 1, moved to RCX
-+ * @rdx (RDX)          - Input parameter 2, moved to RDX
-+ * @r8  (RCX)          - Input parameter 3, moved to R8
-+ * @r9  (R8)           - Input parameter 4, moved to R9
-+ *
-+ * @out (R9)           - struct tdx_module_output pointer
-+ *                       stored temporarily in R12 (not
-+ *                       shared with the TDX module). It
-+ *                       can be NULL.
-+ *
-+ * Return (via RAX) the completion status of the SEAMCALL
-+ */
-+SYM_FUNC_START(kvm_seamcall)
-+        FRAME_BEGIN
-+        TDX_MODULE_CALL host=1 error_check=0
-+        FRAME_END
-+        ret
-+SYM_FUNC_END(kvm_seamcall)
-+EXPORT_SYMBOL_GPL(kvm_seamcall)
-diff --git a/arch/x86/virt/tdxcall.S b/arch/x86/virt/tdxcall.S
-index 90569faedacc..2e614b6b5f1e 100644
---- a/arch/x86/virt/tdxcall.S
-+++ b/arch/x86/virt/tdxcall.S
-@@ -13,7 +13,7 @@
- #define tdcall		.byte 0x66,0x0f,0x01,0xcc
- #define seamcall	.byte 0x66,0x0f,0x01,0xcf
- 
--.macro TDX_MODULE_CALL host:req
-+.macro TDX_MODULE_CALL host:req error_check=1
- 	/*
- 	 * R12 will be used as temporary storage for struct tdx_module_output
- 	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
-@@ -51,9 +51,11 @@
- 	 *
- 	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
- 	 * This value will never be used as actual SEAMCALL error code.
--	 */
-+	*/
-+	.if \error_check
- 	jnc .Lno_vmfailinvalid
- 	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
-+	.endif
- .Lno_vmfailinvalid:
- 	.else
- 	tdcall
-@@ -66,8 +68,10 @@
- 	pop %r12
- 
- 	/* Check for success: 0 - Successful, otherwise failed */
-+	.if \error_check
- 	test %rax, %rax
- 	jnz .Lno_output_struct
-+	.endif
- 
- 	/*
- 	 * Since this function can be initiated without an output pointer,
++#include <linux/compiler.h>
++
++#include <asm/asm.h>
++#include <asm/kvm_host.h>
++
++#include "tdx_errno.h"
++#include "tdx_arch.h"
++#include "seamcall.h"
++
++#ifdef CONFIG_INTEL_TDX_HOST
++
++static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
++{
++	return kvm_seamcall(TDH_MNG_ADDCX, addr, tdr, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mem_page_add(hpa_t tdr, gpa_t gpa, hpa_t hpa, hpa_t source,
++				struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MEM_PAGE_ADD, gpa, tdr, hpa, source, 0, out);
++}
++
++static inline u64 tdh_mem_sept_add(hpa_t tdr, gpa_t gpa, int level, hpa_t page,
++				struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MEM_SEPT_ADD, gpa | level, tdr, page, 0, 0, out);
++}
++
++static inline u64 tdh_vp_addcx(hpa_t tdvpr, hpa_t addr)
++{
++	return kvm_seamcall(TDH_VP_ADDCX, addr, tdvpr, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mem_page_aug(hpa_t tdr, gpa_t gpa, hpa_t hpa,
++				struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MEM_PAGE_AUG, gpa, tdr, hpa, 0, 0, out);
++}
++
++static inline u64 tdh_mem_range_block(hpa_t tdr, gpa_t gpa, int level,
++				struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MEM_RANGE_BLOCK, gpa | level, tdr, 0, 0, 0, out);
++}
++
++static inline u64 tdh_mng_key_config(hpa_t tdr)
++{
++	return kvm_seamcall(TDH_MNG_KEY_CONFIG, tdr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mng_create(hpa_t tdr, int hkid)
++{
++	return kvm_seamcall(TDH_MNG_CREATE, tdr, hkid, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_vp_create(hpa_t tdr, hpa_t tdvpr)
++{
++	return kvm_seamcall(TDH_VP_CREATE, tdvpr, tdr, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mng_rd(hpa_t tdr, u64 field, struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MNG_RD, tdr, field, 0, 0, 0, out);
++}
++
++static inline u64 tdh_mr_extend(hpa_t tdr, gpa_t gpa, struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MR_EXTEND, gpa, tdr, 0, 0, 0, out);
++}
++
++static inline u64 tdh_mr_finalize(hpa_t tdr)
++{
++	return kvm_seamcall(TDH_MR_FINALIZE, tdr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_vp_flush(hpa_t tdvpr)
++{
++	return kvm_seamcall(TDH_VP_FLUSH, tdvpr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mng_vpflushdone(hpa_t tdr)
++{
++	return kvm_seamcall(TDH_MNG_VPFLUSHDONE, tdr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mng_key_freeid(hpa_t tdr)
++{
++	return kvm_seamcall(TDH_MNG_KEY_FREEID, tdr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mng_init(hpa_t tdr, hpa_t td_params, struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MNG_INIT, tdr, td_params, 0, 0, 0, out);
++}
++
++static inline u64 tdh_vp_init(hpa_t tdvpr, u64 rcx)
++{
++	return kvm_seamcall(TDH_VP_INIT, tdvpr, rcx, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_vp_rd(hpa_t tdvpr, u64 field, struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_VP_RD, tdvpr, field, 0, 0, 0, out);
++}
++
++static inline u64 tdh_mng_key_reclaimid(hpa_t tdr)
++{
++	return kvm_seamcall(TDH_MNG_KEY_RECLAIMID, tdr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_phymem_page_reclaim(hpa_t page, struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_PHYMEM_PAGE_RECLAIM, page, 0, 0, 0, 0, out);
++}
++
++static inline u64 tdh_mem_page_remove(hpa_t tdr, gpa_t gpa, int level,
++				struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MEM_PAGE_REMOVE, gpa | level, tdr, 0, 0, 0, out);
++}
++
++static inline u64 tdh_sys_lp_shutdown(void)
++{
++	return kvm_seamcall(TDH_SYS_LP_SHUTDOWN, 0, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mem_track(hpa_t tdr)
++{
++	return kvm_seamcall(TDH_MEM_TRACK, tdr, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_mem_range_unblock(hpa_t tdr, gpa_t gpa, int level,
++					struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_MEM_RANGE_UNBLOCK, gpa | level, tdr, 0, 0, 0, out);
++}
++
++static inline u64 tdh_phymem_cache_wb(bool resume)
++{
++	return kvm_seamcall(TDH_PHYMEM_CACHE_WB, resume ? 1 : 0, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_phymem_page_wbinvd(hpa_t page)
++{
++	return kvm_seamcall(TDH_PHYMEM_PAGE_WBINVD, page, 0, 0, 0, 0, NULL);
++}
++
++static inline u64 tdh_vp_wr(hpa_t tdvpr, u64 field, u64 val, u64 mask,
++			struct tdx_module_output *out)
++{
++	return kvm_seamcall(TDH_VP_WR, tdvpr, field, val, mask, 0, out);
++}
++#endif /* CONFIG_INTEL_TDX_HOST */
++
++#endif /* __KVM_X86_TDX_OPS_H */
 -- 
 2.25.1
 
