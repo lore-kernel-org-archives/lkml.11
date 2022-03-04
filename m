@@ -2,81 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75C1C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241576AbiCDSST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:18:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
+        id S241598AbiCDSTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:19:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234264AbiCDSSS (ORCPT
+        with ESMTP id S233331AbiCDSTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:18:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC8A6344;
-        Fri,  4 Mar 2022 10:17:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25003B827FA;
-        Fri,  4 Mar 2022 18:17:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE5FC340E9;
-        Fri,  4 Mar 2022 18:17:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646417846;
-        bh=8p/bTfZgdl3Yp2AL0wxkCRMjW2/exF31PYWxmfLOaRA=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ro+FIe3EQJuIYZRUgqHYO8s9E5H30mPdXPnDV84mJP58T/+GlO9DLvWkzZoYKnzJS
-         pI1/mMb5zXTlMwTdfilL9ay3ngeLyDqYXvvpwrrmHou+i2wAw6SnNN00Ob8KqWXlDX
-         bXsezySAQuKEq/ryjVnP+qRccL2xDKYwh27P7VLIulzsCoSP0QNHKCX7iaPACudeWO
-         xPrNYBTAuUtmoO9uEkc6KrpqQSSWaO8x1XqhMvxIxY4jV0I/8A3aUG3b/RVej5jS64
-         Wk14JU1ln1HIUOwDLIuE/94HnSDPib6Nlw/8p/bY5jOFpk10aKneitTHhAoyMDybty
-         bg/H5UNZldlhQ==
-Message-ID: <fbf5211f69b5cda372c90d78c6aeee00524fcfbf.camel@kernel.org>
-Subject: Re: [PATCH 1/3] ceph: fix error path in ceph_readdir()
-From:   Jeff Layton <jlayton@kernel.org>
-To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
-        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 04 Mar 2022 13:17:24 -0500
-In-Reply-To: <20220304161403.19295-2-lhenriques@suse.de>
-References: <20220304161403.19295-1-lhenriques@suse.de>
-         <20220304161403.19295-2-lhenriques@suse.de>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Fri, 4 Mar 2022 13:19:06 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6D77EA21;
+        Fri,  4 Mar 2022 10:18:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646417897; x=1677953897;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3K/f0lywjBs7m0IsU3YQYGlkUI2bCsgf5Tt3pD3ngwk=;
+  b=aPyiuJzudKLxOp4bLi1t9zzQ4yKk/XJypB1O3sz7cQ0UK8LGd2TIvg41
+   u9H1D9E8dfd+zZueoIqH1pU0zaXhs3VRe2G6K5+CtrctTUCRFq+O0YQP0
+   uznaV3gPis+P0Mr0Y9ktMcanAfcfmemHPEeC8htxO1xEg8+PzHma7jydZ
+   j6PbVRe9A0NMZqXk9KntJcgZNDNwZth1nI7j2q+lUIsS97VKnDr/WQEI4
+   AlDGC+YB8eR+ZJ5utZjb1g4ikNdLBXg+0OJTzVZ20+/Nr+kvGTThT7ksq
+   3jYZ+8aUyQcXKlDz1dqZ/+Ca/EYdW2mERpX8UXLghSLtHInY7klxf8y5I
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="150898114"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 11:18:16 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 11:18:16 -0700
+Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 11:18:13 -0700
+From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+To:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <lars@metafoo.de>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <robh+dt@kernel.org>,
+        <nicolas.ferre@microchip.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
+Subject: [PATCH 0/6] Add driver for SAMA7G5's PDMC
+Date:   Fri, 4 Mar 2022 20:17:50 +0200
+Message-ID: <20220304181756.1894561-1-codrin.ciubotariu@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-03-04 at 16:14 +0000, Luís Henriques wrote:
-> This was introduced by commit
-> 
->   "ceph: add support to readdir for encrypted filenames"
-> 
-> It will eventually leak the fscrypt_str names in this error path.
-> 
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
-> ---
->  fs/ceph/dir.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
-> index 44395aae7259..0bcb677d2199 100644
-> --- a/fs/ceph/dir.c
-> +++ b/fs/ceph/dir.c
-> @@ -500,7 +500,6 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
->  					       next_offset);
->  			if (err) {
->  				ceph_mdsc_put_request(dfi->last_readdir);
-> -				return err;
->  				goto out;
->  			}
->  		} else if (req->r_reply_info.dir_end) {
+This patch series adds support for Pulse Density Microphone Controller
+(PDMC), present on Microchip's SAMA7G5.
+The PDMC interfaces up to 4 digital microphones having Pulse Density
+Modulated (PDM) outputs. It generates a single clock line and samples 1 or
+2 data lines. The signal path includes an audio grade programmable
+decimation filter and outputs 24-bit audio words.
+The source of each channel can be independently defined as PDMC_DS0 or
+PDMC_DS1, sampled at the rising or falling edge of PDMC_CLK.
 
-This doesn't seem to apply to the current wip-fscrypt tree. Are you
-working against an older branch, perhaps?
+The patch series starts with a fix on the ASoC DMA engine support. Then
+continues with the bindings and the driver of PDMC. It is followed by the
+DT nodes for SAMA7G5 and SAMA7G5-EK. In the end, the drivers for PDMC
+and PDM microphones are enabled in sama7_defconfig.
+
+Codrin Ciubotariu (6):
+  ASoC: dmaengine: do not use a NULL prepare_slave_config() callback
+  ASoC: add DT bindings for Microchip PDMC
+  ASoC: atmel: mchp-pdmc: add PDMC driver
+  ARM: dts: at91: sama7g5: add nodes for PDMC
+  ARM: dts: at91: sama7g5ek: add node for PDMC0
+  ARM: configs: at91: sama7_defconfig: add MCHP PDMC and DMIC drivers
+
+ .../devicetree/bindings/sound/mchp,pdmc.yaml  |   99 ++
+ arch/arm/boot/dts/at91-sama7g5ek.dts          |   21 +-
+ arch/arm/boot/dts/sama7g5.dtsi                |   24 +
+ arch/arm/configs/sama7_defconfig              |    2 +
+ include/dt-bindings/sound/mchp,pdmc.h         |   13 +
+ sound/soc/atmel/Kconfig                       |   16 +
+ sound/soc/atmel/Makefile                      |    2 +
+ sound/soc/atmel/mchp-pdmc.c                   | 1084 +++++++++++++++++
+ sound/soc/soc-generic-dmaengine-pcm.c         |    6 +-
+ 9 files changed, 1263 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/sound/mchp,pdmc.yaml
+ create mode 100644 include/dt-bindings/sound/mchp,pdmc.h
+ create mode 100644 sound/soc/atmel/mchp-pdmc.c
 
 -- 
-Jeff Layton <jlayton@kernel.org>
+2.32.0
+
