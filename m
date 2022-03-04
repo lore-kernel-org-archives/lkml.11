@@ -2,260 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4397DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240055AbiCDPNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:13:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        id S240121AbiCDPOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:14:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240245AbiCDPM4 (ORCPT
+        with ESMTP id S240075AbiCDPOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:12:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D03321C2F6D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:12:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646406728;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pLZIQetNYZ2DwkDP8GPK5UW2NBMBrUIB6oP9QWy0kt0=;
-        b=FHHmP3xwVWCeVteHvgdRYElaksFjBiEX4YPfBC2jt+FIHXMrLWIEdV29kPNcQLHqDNiJ02
-        cFW8JptoKT7CU88rFAySNJUSCb9MJUQw5TzMsF8klZFWzBjSp6hk3BgH76HOMGn1/esgDU
-        mv8YfSis9OCh5oZ6+YKN3BM1JUSCP+o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-434-kipfy5HzNDyLEQ08Owwsgw-1; Fri, 04 Mar 2022 10:12:02 -0500
-X-MC-Unique: kipfy5HzNDyLEQ08Owwsgw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 672B81091DA1;
-        Fri,  4 Mar 2022 15:12:01 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-4.gru2.redhat.com [10.97.112.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F5177DE5B;
-        Fri,  4 Mar 2022 15:11:56 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id A19DF416D862; Fri,  4 Mar 2022 12:08:46 -0300 (-03)
-Date:   Fri, 4 Mar 2022 12:08:46 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [patch v3] mm: lru_cache_disable: replace work queue
- synchronization with synchronize_rcu
-Message-ID: <YiIrfgak8GKu19/7@fuller.cnet>
-References: <YhUI1wUtV8yguijO@fuller.cnet>
- <YhUKRzEKxMvlGQ5n@fuller.cnet>
- <20220303170323.82d8424d214fcb3a32155952@linux-foundation.org>
- <20220304014930.GJ4285@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 4 Mar 2022 10:14:41 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E409F1B124C;
+        Fri,  4 Mar 2022 07:13:51 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98267143D;
+        Fri,  4 Mar 2022 07:13:51 -0800 (PST)
+Received: from lpieralisi (unknown [10.57.37.112])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 96D4F3F73D;
+        Fri,  4 Mar 2022 07:13:49 -0800 (PST)
+Date:   Fri, 4 Mar 2022 15:13:44 +0000
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Ilkka Koskinen <ilkka@os.amperecomputing.com>
+Cc:     guohanjun@huawei.com, sudeep.holla@arm.com, rafael@kernel.org,
+        linux@armlinux.org.uk, lenb@kernel.org, robert.moore@intel.com,
+        james.morse@arm.com, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        patches@amperecomputing.com, scott@os.amperecomputing.com,
+        darren@os.amperecomputing.com
+Subject: Re: [PATCH v5 RESEND 0/2] ACPI: Arm Generic Diagnostic Dump and
+ Reset device
+Message-ID: <YiIsYzGeeYWPQKsp@lpieralisi>
+References: <20220304054003.152319-1-ilkka@os.amperecomputing.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304014930.GJ4285@paulmck-ThinkPad-P17-Gen-1>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20220304054003.152319-1-ilkka@os.amperecomputing.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 05:49:30PM -0800, Paul E. McKenney wrote:
-> On Thu, Mar 03, 2022 at 05:03:23PM -0800, Andrew Morton wrote:
-> > (Question for paulmck below, please)
-> > 
-> > On Tue, 22 Feb 2022 13:07:35 -0300 Marcelo Tosatti <mtosatti@redhat.com> wrote:
-> > 
-> > > 
-> > > On systems that run FIFO:1 applications that busy loop 
-> > > on isolated CPUs, executing tasks on such CPUs under
-> > > lower priority is undesired (since that will either
-> > > hang the system, or cause longer interruption to the
-> > > FIFO task due to execution of lower priority task 
-> > > with very small sched slices).
-> > > 
-> > > Commit d479960e44f27e0e52ba31b21740b703c538027c ("mm: disable LRU 
-> > > pagevec during the migration temporarily") relies on 
-> > > queueing work items on all online CPUs to ensure visibility
-> > > of lru_disable_count.
-> > > 
-> > > However, its possible to use synchronize_rcu which will provide the same
-> > > guarantees (see comment this patch modifies on lru_cache_disable).
-> > > 
-> > > Fixes:
-> > > 
-> > > [ 1873.243925] INFO: task kworker/u160:0:9 blocked for more than 622 seconds.
-> > > [ 1873.243927]       Tainted: G          I      --------- ---  5.14.0-31.rt21.31.el9.x86_64 #1
-> > > [ 1873.243929] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> > > [ 1873.243929] task:kworker/u160:0  state:D stack:    0 pid:    9 ppid:     2 flags:0x00004000
-> > > [ 1873.243932] Workqueue: cpuset_migrate_mm cpuset_migrate_mm_workfn
-> > > [ 1873.243936] Call Trace:
-> > > [ 1873.243938]  __schedule+0x21b/0x5b0
-> > > [ 1873.243941]  schedule+0x43/0xe0
-> > > [ 1873.243943]  schedule_timeout+0x14d/0x190
-> > > [ 1873.243946]  ? resched_curr+0x20/0xe0
-> > > [ 1873.243953]  ? __prepare_to_swait+0x4b/0x70
-> > > [ 1873.243958]  wait_for_completion+0x84/0xe0
-> > > [ 1873.243962]  __flush_work.isra.0+0x146/0x200
-> > > [ 1873.243966]  ? flush_workqueue_prep_pwqs+0x130/0x130
-> > > [ 1873.243971]  __lru_add_drain_all+0x158/0x1f0
-> > > [ 1873.243978]  do_migrate_pages+0x3d/0x2d0
-> > > [ 1873.243985]  ? pick_next_task_fair+0x39/0x3b0
-> > > [ 1873.243989]  ? put_prev_task_fair+0x1e/0x30
-> > > [ 1873.243992]  ? pick_next_task+0xb30/0xbd0
-> > > [ 1873.243995]  ? __tick_nohz_task_switch+0x1e/0x70
-> > > [ 1873.244000]  ? raw_spin_rq_unlock+0x18/0x60
-> > > [ 1873.244002]  ? finish_task_switch.isra.0+0xc1/0x2d0
-> > > [ 1873.244005]  ? __switch_to+0x12f/0x510
-> > > [ 1873.244013]  cpuset_migrate_mm_workfn+0x22/0x40
-> > > [ 1873.244016]  process_one_work+0x1e0/0x410
-> > > [ 1873.244019]  worker_thread+0x50/0x3b0
-> > > [ 1873.244022]  ? process_one_work+0x410/0x410
-> > > [ 1873.244024]  kthread+0x173/0x190
-> > > [ 1873.244027]  ? set_kthread_struct+0x40/0x40
-> > > [ 1873.244031]  ret_from_fork+0x1f/0x30
-> > > 
-> > > ...
-> > >
-> > > --- a/mm/swap.c
-> > > +++ b/mm/swap.c
-> > > @@ -831,8 +831,7 @@ inline void __lru_add_drain_all(bool force_all_cpus)
-> > >  	for_each_online_cpu(cpu) {
-> > >  		struct work_struct *work = &per_cpu(lru_add_drain_work, cpu);
-> > >  
-> > > -		if (force_all_cpus ||
-> > > -		    pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
-> > > +		if (pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
-> > >  		    data_race(pagevec_count(&per_cpu(lru_rotate.pvec, cpu))) ||
-> > >  		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate_file, cpu)) ||
-> > >  		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate, cpu)) ||
-> > 
-> > This change appears to be "don't queue work on CPUs which don't have
-> > any work to do".  Correct?  This isn't changelogged?
-
-Its replaced by synchronize_rcu, and its mentioned in the changelog:
-
-"However, its possible to use synchronize_rcu which will provide the same
- guarantees (see comment this patch modifies on lru_cache_disable)."
-
-Will resend -v4 with a more verbose changelog.
-
-
-> > > @@ -876,14 +875,19 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
-> > >  void lru_cache_disable(void)
-> > >  {
-> > >  	atomic_inc(&lru_disable_count);
-> > > +	synchronize_rcu();
-> > >  #ifdef CONFIG_SMP
-> > >  	/*
-> > > -	 * lru_add_drain_all in the force mode will schedule draining on
-> > > -	 * all online CPUs so any calls of lru_cache_disabled wrapped by
-> > > -	 * local_lock or preemption disabled would be ordered by that.
-> > > -	 * The atomic operation doesn't need to have stronger ordering
-> > > -	 * requirements because that is enforced by the scheduling
-> > > -	 * guarantees.
-> > > +	 * synchronize_rcu() waits for preemption disabled
-> > > +	 * and RCU read side critical sections.
-> > > +	 * For the users of lru_disable_count:
-> > > +	 *
-> > > +	 * preempt_disable, local_irq_disable  [bh_lru_lock()]
-> > > +	 * rcu_read_lock		       [rt_spin_lock CONFIG_PREEMPT_RT]
-> > > +	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
-> > > +	 *
-> > > +	 * so any calls of lru_cache_disabled wrapped by local_lock or
-> > > +	 * preemption disabled would be ordered by that.
-> > >  	 */
-> > >  	__lru_add_drain_all(true);
-> > >  #else
-> > 
-> > Does this also work with CONFIG_TINY_RCU?
-> > 
-> > This seems abusive of synchronize_rcu().  None of this code uses RCU,
-> > but it so happens that synchronize_rcu() happily provides the desired
-> > effects.  Changes in RCU's happy side-effects might break this. 
-> > Perhaps a formal API function which does whatever-you-want-it-to-do
-> > would be better.
+On Thu, Mar 03, 2022 at 09:40:01PM -0800, Ilkka Koskinen wrote:
+> Hi Lorenzo,
 > 
-> I don't claim to understand the full lru_cache_disable() use case, but
-> since v5.1 synchronize_rcu() is guaranteed to wait on preempt_disable()
-> regions of code.  In contrast, back in the old days, you had to use
-> synchronize_sched() to wait on preempt_disable() regions, even in
-> CONFIG_PREEMPT=y kernels.  So if the comment is accurate, it is OK.
+> Would you prefer this version, which doesn't have platform
+> device/driver any more?
 
-OK, will add an additional comment regarding v5.1.
+I thought about that and in order to keep consistency it is better to
+keep the platform device model, so please resend the latest version
+platform device based and I will ACK it (hopefully it is not too late
+for v5.18).
 
-> Just be careful what you backport past v5.1...
+Please note before resending it that sdei_event_unregister() requires a
+retry loop since it can return -EINPROGRESS (see sdei_unregister_ghes()).
+
+Thanks,
+Lorenzo
+
 > 
-> > And...  I really don't understand the fix.  What is it about
-> > synchronize_rcu() which guarantees that a work function which is queued
-> > on CPU N will now get executed even if CPU N is spinning in SCHED_FIFO
-> > userspace?
+> --Ilkka
 > 
-> I don't understand this part, either.
-
-
-All CPUs should see lru_disable_count (and therefore not add pages
-to per-CPU LRU pvecs, otherwise the page migration bug fixed
-by d479960e44f27e0e52ba31b21740b703c538027c can occur.
-
-To do this, the commit above ("mm: disable LRU 
-pagevec during the migration temporarily") relies on 
-queueing work items on all online CPUs to ensure visibility
-of lru_disable_count:
-
- */
-+void lru_cache_disable(void)
-+{
-+       atomic_inc(&lru_disable_count);
-+#ifdef CONFIG_SMP
-+       /*
-+        * lru_add_drain_all in the force mode will schedule draining on
-+        * all online CPUs so any calls of lru_cache_disabled wrapped by
-+        * local_lock or preemption disabled would be ordered by that.
-+        * The atomic operation doesn't need to have stronger ordering
-+        * requirements because that is enforeced by the scheduling
-+        * guarantees.
-+        */
-+       __lru_add_drain_all(true);
-+#else
-
-
-CPU-0					CPU-1
-
-					
-					local_lock(&lru_pvecs.lock);
-                			pvec = this_cpu_ptr(&lru_pvecs.lru_deactivate_file);
-					add page to per-CPU LRU pvec
-					if atomic_read(lru_disable_count) != 0
-						flush per-CPU LRU pvec
-atomic_inc(lru_disable_count)
-
-					local_unlock(&lru_pvec.lock)
-lru_add_drain_all(force_all_cpus=true)
-
-However queueing the work items disturbs isolated CPUs. To avoid it, its
-possible to use synchronize_rcu instead:
-
-CPU-0                                   CPU-1
-
-
-                                        local_lock(&lru_pvecs.lock);
-                                        pvec = this_cpu_ptr(&lru_pvecs.lru_deactivate_file);
-                                        add page to per-CPU LRU pvec
-                                        if atomic_read(lru_disable_count) != 0
-                                                flush per-CPU LRU pvec
-atomic_inc(lru_disable_count)
-
-                                        local_unlock(&lru_pvec.lock)
-synchronize_rcu()
-
-Which will wait for all preemption (or IRQ disabled) sections to
-complete, therefore ensuring visibilily of lru_disable_count.
-
+> 
+> ----
+> 
+> Arm Generic Diagnostic Dump and Reset device enables a maintainer to
+> request OS to perform a diagnostic dump and reset a system via SDEI
+> event or an interrupt. This patchset adds support for the SDEI path.
+> 
+> I do have a patch to enable the interrupt path as well but I'm holding
+> it back since AGDI table is missing interrupt configuration fields
+> (trigger type etc.).
+> 
+> The recently published specification is available at
+> https://developer.arm.com/documentation/den0093/latest
+> 
+> The patchset was tested on Ampere Altra/Mt. Jade.
+> 
+> The patchset applies on top of
+>   git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm bleeding-edge (9db71e8e3027)
+> 
+> I also tested it works on top of Shuai Xue's new patches in bleeding-edge branch (c6f4ba2d2b9a)
+> 
+> From v1:
+>      * Moved pdata to the stack and dropped unnecessary kzalloc() in agdi_init()
+>      * Changed the ACPICA patch upstreaming order comment in the paragraph above
+> 
+> From v2:
+>      * The first patch was split. The most of it was merged to ACPICA project
+>        at first and later ported to linux-acpi
+>        (fd919e37cb15914c6fe13e13d530a4f732407c6d). The rest are in the first
+>        patch.
+> 
+> From v3:
+>      Fixed:
+> 	* Moved header files in alphabetical order and removed unnecessary ones
+> 
+> From v4:
+> 	* Platform device/driver stuff removed
+> 	* acpi_agdi_init() call moved from device_initcall to acpi_init() 
+> 	* Slightly modified Kconfig text to keep checkpatch happy
+> 
+> Ilkka Koskinen (2):
+>   ACPI: tables: Add AGDI to the list of known table signatures
+>   ACPI: AGDI: Add support for Arm Generic Diagnostic Dump and Reset
+>     device
+> 
+>  drivers/acpi/arm64/Kconfig  | 10 +++++++
+>  drivers/acpi/arm64/Makefile |  1 +
+>  drivers/acpi/arm64/agdi.c   | 52 +++++++++++++++++++++++++++++++++++++
+>  drivers/acpi/bus.c          |  2 ++
+>  drivers/acpi/tables.c       |  2 +-
+>  include/linux/acpi_agdi.h   | 13 ++++++++++
+>  6 files changed, 79 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/acpi/arm64/agdi.c
+>  create mode 100644 include/linux/acpi_agdi.h
+> 
+> -- 
+> 2.17.1
+> 
