@@ -2,99 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45842C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06644C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232258AbiCDITK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
+        id S232660AbiCDITM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbiCDITI (ORCPT
+        with ESMTP id S232172AbiCDITI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 03:19:08 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD432198ED4
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:18:19 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id ay10so11475969wrb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:18:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KHvgGTih2dVoUEaH61oQ42JGeTYk4JGgudGnLS9971U=;
-        b=u0n+IPWNbY4HzO5MAQdFq+nogfDQDq2mUjKhkhY8vQHB+CBjNtWqxy6h7vKvbG5E++
-         JQ0a4Ui+PjFo7PnbPcYc1P9/V5VZwEw7AKHSanNI1+jUrTOlmlngAZSd7yzIwmND0ofm
-         Noztmv14PL7HWthkf1ftO7dlbvVFtKY5qHrKL/8SKReN+rrmDzWXIbRTYPuX8FIu/q/j
-         YycuDnwcrNqBm8ixbGoOYKHycgtIz3d4q1wTKEufEyDAylvgNsC4vxhy0JN7hIB0VqlW
-         FoqX4oYvGSbXXW7Oa2jyowRdUMrYdyupwp8GwWiHBx8+4n351Ik2arpvC9iXI/ESO7jA
-         N1jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KHvgGTih2dVoUEaH61oQ42JGeTYk4JGgudGnLS9971U=;
-        b=cy2yG5OhhSzDp4OEZEQ5seB+oJPYbdEL0epVGb+qlQtz/8OplRlepee1WnBI4qA/7e
-         QzcMR5x/wOV+cOoPydcuDI8DkNAsxIFv1GngP8ZscRLp8TUNWZ2fTSpbLGd8ehmtJOYU
-         WkHMAbrNSJbPFK/cSSZ3ZBCZXuqIxyqoD2bzAxzxUIZr1u/t7WZXbasmcSeYQRlDvVUD
-         2Sl+b72lG4uJJcC4bvt2gg7dIQQgYAZKpRMa38rXcUwjZInjFGcKaJjzhuopPdKVHZhx
-         vqvCWWXBpR9tV9XBw8KKrXaa5XJ0Bs928OsC6MPCUsd2w9cBr7kdEJab9qcp5RsvG4gR
-         Cmeg==
-X-Gm-Message-State: AOAM5336lQxraMfpL2fnfup0KfvMubu10SaiqQrIzAVoDYz1JeYqb5L9
-        cjaaXtqDPkEGnfuaj5Q4a1AKxNLmYXMuiQ==
-X-Google-Smtp-Source: ABdhPJzxdM8deXKouzdgjNPY43ykpYWNxmiMKuoUK0JBgLG1mk7sq7VRJQGPUSX50J0Z9N1xzC1ufA==
-X-Received: by 2002:adf:fa8c:0:b0:1f0:47ef:a04 with SMTP id h12-20020adffa8c000000b001f047ef0a04mr6664397wrr.398.1646381897794;
-        Fri, 04 Mar 2022 00:18:17 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:551f:d79e:5d4c:9b99? ([2a01:e34:ed2f:f020:551f:d79e:5d4c:9b99])
-        by smtp.googlemail.com with ESMTPSA id n5-20020a05600c3b8500b00380fc02ff76sm4783611wms.15.2022.03.04.00.18.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 00:18:17 -0800 (PST)
-Message-ID: <5ca8ba3b-e5e0-805d-bc48-7a00d424722f@linaro.org>
-Date:   Fri, 4 Mar 2022 09:18:15 +0100
+Received: from out203-205-221-233.mail.qq.com (out203-205-221-233.mail.qq.com [203.205.221.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BE7195330
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:18:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1646381894;
+        bh=SflRFPXtxQ3Pmt1KAgrpB/jeO17kuUf3fZk7Z71M+LI=;
+        h=From:To:Cc:Subject:Date;
+        b=qwU/2L9mtNdKJ13RVM39hLHms151Z7e1Kjn6aO+GrTYThWor+GF/GKFtPOzo2qLXj
+         LM3GO2/iLkAvUyTn4D3ol3tNnQDD4pYQrkr/mkDa0K7DMtPQeRVGRNyGs9nLbuZ85T
+         fswcLNpCpr1y54V/04LA5LsF/S5vWFoqHTB2lIoM=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id 48A25A60; Fri, 04 Mar 2022 16:18:10 +0800
+X-QQ-mid: xmsmtpt1646381890trs7be3wl
+Message-ID: <tencent_410AFB702E25A27F689010E6A1DC308E7807@qq.com>
+X-QQ-XMAILINFO: NrI1OKqG5KOqYtBiK5U/ckeV9MUoGKaby4GqN3lWsSuBEkaa0eRPazt2b3O2H/
+         fBQlRwzB/Ri3MxZ4C9pKVwp9ZBD/UcsVUzSUK6p8EpjzKyAdSoF+psk88JHAObIGXBbpSK6MKGby
+         ODFbZ8iDJojgkgsBIoEZJRuVwQUhOnrYxDiNwM2k+ueC1dVfrWmE88AlWX4nx9QeyidIWLF73oNj
+         lJaiF+YUW2Ub/gyui03lnAOZEBiRwgCEycAg/72QHzNZzE1S2TtAKzlH5JmlCekNMmp79cpoyP2F
+         clYyw0NLPVy5Z/kNEv+iqapayhBK3rOGF5W3YF7O+5ZocBsoAbIoil8CmDGMSCcOJVBKS/yaITds
+         dP/qi34GsBSGNxNqpeZ1uTFW/9bbiLatbtl57mEJoHUFdfIV0+n8A4NWqvPCrhlE1o+5Ywkorh9j
+         Pn7YpVhc9FNvVJMdEzovVcZ75gFFpZIuA5F1o9vgIYpQFWca+MGoBkUi9ylzeBKdtmInTAlIoLju
+         1U6KxNCvYn11k6RjT6WHnMHMURiVWAPK8KxdyMwmxIlXgjw1OvCHyGTv5npfRLgZhFuNZ7qktayy
+         ezHfA4Cs4nUbXNdvVdyJ7qPgHZU0yFzwIsamTrorcZPoegHQSdEDCsW9dVnnLQpFz94xTEIfqqEE
+         Ewory+ATlrBW/MwuCdrpmEuQF/sz/Ivv/q+Bps3JETM7lntV53UkmDeKEIxz6Aq06SbJ1rVZD4cH
+         tPzW9hDVhJZT8A4wvGgSr5sxjdut7EqfVJHDyy+B8E7M89kmPSo7JC6+ylAORmrhDEL60GDdFTUI
+         E3ZMJasXtkZtkTg3IpPMnLfiTu/Rs3oCYPLwYbjOzmglpp/AYy+yYf/zFo4nKwrnVXObol3h6OH4
+         I5B3bS03HjK8c4Zdrxtk+IdaX57iDtCdABG2nI0p0OmBeY0Imvh6zG5tHEWT1/Dg==
+From:   xkernel.wang@foxmail.com
+To:     nsaenz@kernel.org, gregkh@linuxfoundation.org
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] staging: mmal-vchiq: add a check for the return of vmalloc()
+Date:   Fri,  4 Mar 2022 16:17:41 +0800
+X-OQ-MSGID: <20220304081741.4728-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next] clocksource/drivers/imx-tpm: Move
- tpm_read_sched_clock() under CONFIG_ARM
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, patches@lists.linux.dev
-References: <20220303184212.2356245-1-nathan@kernel.org>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220303184212.2356245-1-nathan@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/03/2022 19:42, Nathan Chancellor wrote:
-> When building this driver for an architecture other than ARCH=arm:
-> 
->    drivers/clocksource/timer-imx-tpm.c:78:20: error: unused function 'tpm_read_sched_clock' [-Werror,-Wunused-function]
->    static u64 notrace tpm_read_sched_clock(void)
->                       ^
->    1 error generated.
-> 
-> Move the function definition under the existing CONFIG_ARM section so
-> there is no more warning.
-> 
-> Fixes: 10720e120e2b ("clocksource/drivers/imx-tpm: Exclude sched clock for ARM64")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Applied, thx
+vmalloc() is a memory allocation API which can return NULL when some
+internal memory errors happen. So it is better to check the return
+value of it to catch the error in time.
 
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+index 76d3f03..1bbd301 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+@@ -1909,6 +1909,11 @@ int vchiq_mmal_init(struct vchiq_mmal_instance **out_instance)
+ 	mutex_init(&instance->vchiq_mutex);
+ 
+ 	instance->bulk_scratch = vmalloc(PAGE_SIZE);
++	if (!instance->bulk_scratch) {
++		err = -ENOMEM;
++		kfree(instance);
++		goto err_shutdown_vchiq;
++	}
+ 	instance->vchiq_instance = vchiq_instance;
+ 
+ 	mutex_init(&instance->context_map_lock);
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
