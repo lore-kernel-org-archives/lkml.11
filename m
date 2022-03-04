@@ -2,69 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D99C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 19:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C8BC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 19:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiCDT7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 14:59:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36684 "EHLO
+        id S229586AbiCDT7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 14:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiCDT7G (ORCPT
+        with ESMTP id S229486AbiCDT7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 14:59:06 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECAF269A43
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 11:50:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=no0VEInXnl23SVS24m7UlFq4G8qUDmTk6Ccbs3zl4O0=; b=m9q/ektnWd85Jw/Qd6H4P70IG4
-        CJf+sOmXwSGuEqphk+S4yoarL//k1hmWAubjEcXmQI1IrVfxaM/Hm0JjOUr+aztLad+dOno1N79R1
-        /vwPkKlasJz1ZAhouQ05wHfJWkQ3tuIJhqSYWCktaU5aOQZXevWk7E1J0yNsdmwR6dxWTIEY8Skwg
-        RbxobHgOmLnyWLNN7meCUboCnv/Nh7k+7jQ0AEoN25d+48/9ensMwRzq/3h+TzQ2j5VE/IUXOO9Nk
-        sRjzPLiPSsO4IN7gThomloitB3WQqcShb8V1zcSRk9ufai1o8sYVjULJfPwxZKxhHNXSLlshjkQe0
-        CbEbpPXw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nQDv5-00FIPA-Fj; Fri, 04 Mar 2022 19:48:55 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6241398624E; Fri,  4 Mar 2022 20:48:53 +0100 (CET)
-Date:   Fri, 4 Mar 2022 20:48:53 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v3 18/39] x86/ibt,ftrace: Make function-graph play nice
-Message-ID: <20220304194853.GN11184@worktop.programming.kicks-ass.net>
-References: <20220303112321.422525803@infradead.org>
- <20220303112826.044301664@infradead.org>
- <20220304175154.l2otvmqd4r7ozsuy@treble>
+        Fri, 4 Mar 2022 14:59:09 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36227269A76;
+        Fri,  4 Mar 2022 11:50:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646423438; x=1677959438;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yZvt824DDrlOBsR8+5xXANYwUJhPov5Rl143h3UTjL0=;
+  b=YhtE9mphf7afCqU2LFBHaQrZCKS1aR7rljNBXfa+x8iX0k2bnFlTJNgm
+   /kSO8k2gs/oQDw6pk/uCfK5KRh0dWokI/lPFLKcEgSz758QSi98D1uNPf
+   TpSMpydyE1XKfL5Bn2lLMqmcbVznrEvQG71assGwiZ2eU+OLow/AV4fWP
+   +7fARovdCmmB5VmzGEcZ+751mpHNj9tVNQts4xjGlxsPTpXIIesVjAotm
+   tME4N7LfJhryy0SQKiblbpIDkBVRsGMqv+ElUFwjhM888NCd4P1Mdszpb
+   9RpEcu729dEk7ikWE9WQHX7SVuJ0oMIodVKzceeLAUf0EgAYVB40sO4QU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779626"
+X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
+   d="scan'208";a="253779626"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:36 -0800
+X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
+   d="scan'208";a="552344492"
+Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:36 -0800
+From:   isaku.yamahata@intel.com
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: [RFC PATCH v5 075/104] KVM: x86: Check for pending APICv interrupt in kvm_vcpu_has_events()
+Date:   Fri,  4 Mar 2022 11:49:31 -0800
+Message-Id: <d28f3b27c281e0c6a8f93c01bb4da78980d654c8.1646422845.git.isaku.yamahata@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304175154.l2otvmqd4r7ozsuy@treble>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 09:51:54AM -0800, Josh Poimboeuf wrote:
-> On Thu, Mar 03, 2022 at 12:23:39PM +0100, Peter Zijlstra wrote:
-> > +
-> > +	addq $16, %rsp
-> > +	ANNOTATE_INTRA_FUNCTION_CALL
-> > +	call .Ldo_rop
-> > +	int3
-> > +.Ldo_rop:
-> > +	mov %rdi, (%rsp)
-> > +	UNWIND_HINT_FUNC
-> > +	RET
-> 
-> Why the int3?
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-Speculation trap :-) Either I'm too paranoid or not paranoid enough; but
-without it it's just too close to a retpoline and it doesn't feel right.
+Return true for kvm_vcpu_has_events() if the vCPU has a pending APICv
+interrupt to support TDX's usage of APICv.  Unlike VMX, TDX doesn't have
+access to vmcs.GUEST_INTR_STATUS and so can't emulate posted interrupts,
+i.e. needs to generate a posted interrupt and more importantly can't
+manually move requested interrupts into the vIRR (which it also doesn't
+have access to).
+
+Because pi_has_pending_interrupt() is heavy operation which uses two atomic
+test bit operations and one atomic 256 bit bitmap check, introduce new
+callback for this check instead of reusing dy_apicv_has_pending_interrupt()
+callback to avoid affecting the exiting code.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+---
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/vmx/main.c         | 9 +++++++++
+ arch/x86/kvm/x86.c              | 5 ++++-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 489374a57b66..8dab9f16f559 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1491,6 +1491,7 @@ struct kvm_x86_ops {
+ 	void (*start_assignment)(struct kvm *kvm);
+ 	void (*apicv_post_state_restore)(struct kvm_vcpu *vcpu);
+ 	bool (*dy_apicv_has_pending_interrupt)(struct kvm_vcpu *vcpu);
++	bool (*apicv_has_pending_interrupt)(struct kvm_vcpu *vcpu);
+ 
+ 	int (*set_hv_timer)(struct kvm_vcpu *vcpu, u64 guest_deadline_tsc,
+ 			    bool *expired);
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index 882358ac270b..d75caf0d6861 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -148,6 +148,14 @@ static void vt_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 	return vmx_vcpu_load(vcpu, cpu);
+ }
+ 
++static bool vt_apicv_has_pending_interrupt(struct kvm_vcpu *vcpu)
++{
++	if (is_td_vcpu(vcpu))
++		return pi_has_pending_interrupt(vcpu);
++
++	return false;
++}
++
+ static void vt_flush_tlb_all(struct kvm_vcpu *vcpu)
+ {
+ 	if (is_td_vcpu(vcpu))
+@@ -297,6 +305,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.sync_pir_to_irr = vmx_sync_pir_to_irr,
+ 	.deliver_interrupt = vmx_deliver_interrupt,
+ 	.dy_apicv_has_pending_interrupt = pi_has_pending_interrupt,
++	.apicv_has_pending_interrupt = vt_apicv_has_pending_interrupt,
+ 
+ 	.set_tss_addr = vmx_set_tss_addr,
+ 	.set_identity_map_addr = vmx_set_identity_map_addr,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 89d04cd64cd0..314ae43e07bf 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -12111,7 +12111,10 @@ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
+ 
+ 	if (kvm_arch_interrupt_allowed(vcpu) &&
+ 	    (kvm_cpu_has_interrupt(vcpu) ||
+-	    kvm_guest_apic_has_interrupt(vcpu)))
++	     kvm_guest_apic_has_interrupt(vcpu) ||
++	     (vcpu->arch.apicv_active &&
++	      kvm_x86_ops.apicv_has_pending_interrupt &&
++	      kvm_x86_ops.apicv_has_pending_interrupt(vcpu))))
+ 		return true;
+ 
+ 	if (kvm_hv_has_stimer_pending(vcpu))
+-- 
+2.25.1
+
