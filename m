@@ -2,171 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C75FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B444C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240158AbiCDPPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:15:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        id S237374AbiCDPR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:17:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240154AbiCDPPP (ORCPT
+        with ESMTP id S240255AbiCDPRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:15:15 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7B71C3D0E
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:14:26 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id o23so7736464pgk.13
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 07:14:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xhFNSR/yOd/Vz2Wc1wvXRDHBYyMuBGWniHzjkl431mo=;
-        b=hZqCZVGG2Aw1yowZxJka1HJssTZXGRCsk53g2yvR0SODyOvwf/Elxr1eAcI0NP8w/P
-         BRDWVY2OXYvTkI05nb6CaZLDi8M4tfwFREo8tfWo3RcBYvU+nRJwzoMrogAapw+XAFqt
-         ucRdR6ma6mQtKOLch8k2c7d6q7eppyhx/GjM/pMapljT1kyYVlvGRVUEbw/Y/J2GAIAQ
-         H/W8p3rXzvOKbhlwBWE6s2bCCkFbZSO+ltnQ/DM81ItTC/ICR85g0BdzMn5vGbPGb1Tm
-         Llm+qe/OCV86hyLcMmc4t6rH03ovFSYNvLF56nIuv2jRARRe5rozks826lfRrlnriH3X
-         OzOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xhFNSR/yOd/Vz2Wc1wvXRDHBYyMuBGWniHzjkl431mo=;
-        b=LfC6IzNZlhAAAR3ejmtPimbmHDWjfqafVA8Pfj+IZN+ldZxt1JPiqGmcSUiGwmKR8K
-         ewcFHJcE8lywnhcJT/KP5a7ZhhM14adsXjrMylDZzeIrZfhMComFc69oShtIZasHlXQQ
-         pn2r5NdGNRCL5JvrIio0Y64oSL2zENwD/9vlfNvwo5bk/Ojs5HWjkS6F6kCFzxk41Bdf
-         GYMPngFcvzvAt2VlOHfK23wiByU0wgTh2iBuNn5Zlb4+cFdd2uuGVge1fAAGQ0v3AbId
-         CYsdrfjopO/6S4whX2KSZimCoZsp8PrTXP52pShv/VhpuxzJiBxNjxtbr6yVSGKAvcNN
-         WSvQ==
-X-Gm-Message-State: AOAM5301mHa9ebS7XHZ/IFgpEsHJTOsIWW9e00tLgnPmirElA8I+Lo+q
-        l9Mfoux8/Pg47cqcJw1KYN+rVQ==
-X-Google-Smtp-Source: ABdhPJzb5cC534BnnexfsDG8sjS4Ey8TsFio0KuvhUEFwq3AjNNBbWTwq1gSZOU15bdx3t7INixUwA==
-X-Received: by 2002:a05:6a00:1593:b0:4f6:6c38:f75d with SMTP id u19-20020a056a00159300b004f66c38f75dmr9260095pfk.81.1646406865430;
-        Fri, 04 Mar 2022 07:14:25 -0800 (PST)
-Received: from ?IPV6:2409:8a28:e6d:cc00:d089:89fd:5c33:f12? ([2409:8a28:e6d:cc00:d089:89fd:5c33:f12])
-        by smtp.gmail.com with ESMTPSA id on18-20020a17090b1d1200b001b9cfbfbf00sm4958261pjb.40.2022.03.04.07.14.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 07:14:25 -0800 (PST)
-Message-ID: <306a5d51-25e5-b7ce-cbdd-ca7e2f3a3ad5@bytedance.com>
-Date:   Fri, 4 Mar 2022 23:14:15 +0800
+        Fri, 4 Mar 2022 10:17:52 -0500
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2050.outbound.protection.outlook.com [40.107.102.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7B91C3D14
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:17:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xp7ke7tj4J/wMNF5XzHJQ1X8Wwvrjp+NaqLKsSRMkjRenO/pNIlQ785WGLM0fHLfu+HeiRLjbuqqLWkjVmUHhP9bHQI8vA/WoXeHntKmteGdWKEkEScxrQhLKCOM+K1hD0gc4HY/huhgoFzktfa1QSgQenWBbJ+SpdA3VDvz73Ezbj0ufJXWL0oUo+e1NxUwFm/ZjF3P9m9QkCL0XzSu8vPLaJKugiU/gBOStWZZOpKr9t+5VyOuvTL4d/Li7zsDy1fVV2WoZRBZ+GFIPUc5BrGN5MqpzZDS7S9CMMCYvZVltbLAeXMgMoxqBHG0YLbgNywsaOqHdSWbPisJZJM0gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7iYTX4P8m9VihLwKdir+RT9xEcMrYcoOcBbk6GNJgkw=;
+ b=UyI80Cm1QnxTvJdHfrLnQolOhRozzQpDHqvfkYU9v4CMJHGd2hPx5Wosh87ooznSOVFHRvX/fKfpKtgtPKH2o+27ApopG5prfPzgRxE0T/thumrpA2HAcWkGWDPMLNizPXjFmBnGFvDKqWMZAj/BBJqDfl9t3h2DPYEPeJ1hlmd0C+A37D4hrbuR/PvwmqQ5ROCkbVBk7ZkJnAbqS0YFUbP66aJSOwtiuEjh9ur0xmBfvaq83HuSISwOYLm7bxHL6M7/6eE3caFJXiDpNBjDkv43pwMK+gDpKKJ5pueMAWZyzJDW7NIiQhimqJoYqYkbeH7kAvqtK+4pkhGwY5Vw+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7iYTX4P8m9VihLwKdir+RT9xEcMrYcoOcBbk6GNJgkw=;
+ b=G9NM6wPbdiUMbwTw92YxSn6IuWDQ3dMV7Wbt1p7pBUNKh9FQQDlVXa09PIHREHeb9Ka2888VhNNykNNYiuAdd5A2Wt46xUmO5J94jzx4Hdy9g6PtyF4PdJ9OpgrxOvVwIvmJQ7WHlEvEk5vUjueTKMHactTLwgegcmPSpiI3wk0l+mCzyaywLdkzNmfhBYELY//20UvlIQabwW0JKTNWTBcOCjxL8eSGFlUgUltBSCcByZoWdDf5r0Ih5ZWkOFeSJOT2djeU8a3m/tMhABNKjOumrYM5HgitXR1VFZVVYtJ3HWKzL3MH+/FuiRUaCKx/Fhx2pWySdZjI/qfpJzoz/w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
+ by MN2PR12MB4783.namprd12.prod.outlook.com (2603:10b6:208:3e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Fri, 4 Mar
+ 2022 15:17:00 +0000
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::40a6:6e1d:b057:a036]) by MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::40a6:6e1d:b057:a036%6]) with mapi id 15.20.5038.017; Fri, 4 Mar 2022
+ 15:17:00 +0000
+From:   Zi Yan <ziy@nvidia.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        shy828301@gmail.com, willy@infradead.org, ying.huang@intel.com,
+        minchan@kernel.org, apopple@nvidia.com, ave.hansen@linux.intel.com,
+        o451686892@gmail.com, almasrymina@google.com, jhubbard@nvidia.com,
+        rcampbell@nvidia.com, peterx@redhat.com, naoya.horiguchi@nec.com,
+        mhocko@suse.com, riel@redhat.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/16] mm/migration: remove some duplicated codes in migrate_pages
+Date:   Fri, 04 Mar 2022 10:16:56 -0500
+X-Mailer: MailMate (1.14r5870)
+Message-ID: <7590C584-7348-4474-BFBC-C130F5BE2F58@nvidia.com>
+In-Reply-To: <20220304093409.25829-10-linmiaohe@huawei.com>
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+ <20220304093409.25829-10-linmiaohe@huawei.com>
+Content-Type: multipart/signed;
+ boundary="=_MailMate_D94D30E7-40C9-4331-80D8-8072581C7100_=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+X-ClientProxiedBy: MN2PR20CA0053.namprd20.prod.outlook.com
+ (2603:10b6:208:235::22) To MN2PR12MB3823.namprd12.prod.outlook.com
+ (2603:10b6:208:168::26)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
- KLP_UNPATCHED forced transition patch
-Content-Language: en-US
-To:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, qirui.001@bytedance.com
-References: <20220301140840.29345-1-zhouchengming@bytedance.com>
- <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
- <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
- <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
- <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
- <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 621b610f-a90a-48a7-32c3-08d9fdf20726
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4783:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB47836DE4A0F72319D1CB0063C2059@MN2PR12MB4783.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FQlSm10d+mgWdYdOV/UyiUK7coTjRiJJXdFflDQqCFvZFpC6YW82arR+UkCxaEF32DpQZ7dJjXeSCA7c+gi+fE9ZvScQl0ZF3LsHtCQAx05DVtgMnq3HGvC8MiELha/u8dk6f5PbKbyMjrR0/gEYd9udKYGMLPu07sazr6VpMllFicFYEI2XsU59+RuE83f+6lrfT6h05chqaNPOxXTSg5pPtzTrmW3Rh/spyOrX55CGI5chaPj5idyFc1WOEKFbNXXSCLjbysbg79cucP16op7w2yBHojXIphM1cm6wq0byxmbVzKLbq2F2xgHzjhgxkQPqCZ6OAcDrwgNrEb8UBR1+b2nnjVrO4PYTm/IO1vbD9FbUXpsXqlqfd8xmLeYHttGwnpNG0jmTbzxV9FaHohbouDPsIrN2HFqRZIzkHH1GbU2GSNwrjElzDr14BaqQ6uzzXWfOUbEmg+ZSwJMYKbZ1p6it6/jS/ViPEl9qZZPLfhS61ahgS7vJlPzI9QnILWK7Qk1bvBv7ZrJs4F2S2J9CvbonccnN87Rru/KZGfIx//UjV3pAG3RI32Fn7Jtyj63DAhaILVJof/FhEfwrlpHGl6c/djvwi9TvPbsna0zWt9bOL3qAhmGZRwB0aSZVAvLZQRBV9ujUyuHilEJ6e8Tf70SlSW44sRAQS5UsU5ZJlcm6iO/apUtiTrWXAteoffrQrl2ULi0/LJPz1XtCT/ueQpLUPDdaoo1lbu1UIZE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(26005)(83380400001)(2616005)(2906002)(316002)(508600001)(6486002)(21480400003)(66556008)(66946007)(8676002)(53546011)(36756003)(86362001)(4326008)(66476007)(38100700002)(186003)(6666004)(6506007)(235185007)(5660300002)(8936002)(7416002)(6512007)(33656002)(45980500001)(72826004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NB5YKvVsBhtPcr3chIN9A3HoFd8xNax/D/Lcgce+6K+vMD9CseGjqH9hTaqa?=
+ =?us-ascii?Q?fjFMKTAVagJy8VCMebcVB4h1mwrXtPa/uuCMriuDWHhuTUeGutwu+UnDcVdi?=
+ =?us-ascii?Q?p/c5mB+s0OTvSSR5t0Wl+wWx+7LVKBs5pzhQ5iExBKeIOLKtHsKyVz4pmOyI?=
+ =?us-ascii?Q?QvjwrW4mYS7+GPumqdZOP515SKvehKjqLLg5l6K0ybQRtu/dXWsxPTkdGI43?=
+ =?us-ascii?Q?aLi26Xpri4psd+7RiQ9WjhuF2oBuqxY3Ohr8MENpJNbIydhw9ASzVISnvUvq?=
+ =?us-ascii?Q?qj/ygVn0gycnyNOHJt8V4NXb3MEBpg6Ki2khRAfMI8h9PfeLbjyHFOzFhBBq?=
+ =?us-ascii?Q?+Fy2jBr0ZhoT+Zg2HPmE+O4pjUtRFhzVBvy+DWnr9IqrRjGvJQV9KdB21P+S?=
+ =?us-ascii?Q?Y5raM8s3yd6efobwTJJ3Mw86zvwtCgJytTHpPHe/GBdlXjtwN1wNxq9GgoD+?=
+ =?us-ascii?Q?Z6mM9eRVBIBKUyVkaK6hy5wwSJoP1Sgp8OT/XAVyz6+8pslccsyyXZFwU3VY?=
+ =?us-ascii?Q?HMMgZY14EB0NN8cx2hhQsPFsNB7wGBe05RBp4Gi8q7NbSM02vAOiuBrtu0z0?=
+ =?us-ascii?Q?Hin4etYdydDT2MD3eoOV6HKltS7hP310BeSwQ8wAYWFLEHmJ9PbABo7WVmpl?=
+ =?us-ascii?Q?Xr4TQKo9qDuMnfMNupR9VXA1wJKKNkux2/7CTFOaZ0AI4OyEuzOFn3zMCVsO?=
+ =?us-ascii?Q?fIVPmNSMclZWFo6EDxUjl72inPc+MmIW+j6XkvPetsnXbj4tNg9O0oq+kFyM?=
+ =?us-ascii?Q?bqKajwrIpBqy5jEZeyDidAtcvRW6PzkKgHcNeKq54J8K5psbAdMt3GVcjo5V?=
+ =?us-ascii?Q?8TMpLnQLZj+CvPGlSOokOL2JVQf2oZm/Kjt3WqVE9AOdlna6HS6nRe3Z6Voi?=
+ =?us-ascii?Q?QunDrTy6y9/9f/cDbj21F/SxKNaxZD3VYAVIsYerL54/pfuWcaBfb8VTv7Wf?=
+ =?us-ascii?Q?z+Lir9emTRF3JEomFctbpa/MJQl/wfnQ8dVCnvAd979Scd5Xz3lS/b1RsJdv?=
+ =?us-ascii?Q?NwYHcdGl3REZoJ9Lzj+UISPXTOLdC8mjh4hdUVmM/jbnPgcDepBm3xGhd43D?=
+ =?us-ascii?Q?kdnh6bZJeftBr93ZfPHAumtbKtJX/dNohj8S9Kl+Ly+ZzGdP8nYcN69HqFD/?=
+ =?us-ascii?Q?4YhKCThy3MQ9g1W+GTn5WuN8wKOFZ0PSU5tF5Tnf/O9hfgVjeEx3PJj89UBU?=
+ =?us-ascii?Q?C7r6nkp3/3FMmdrZ4nyZL3MgpzOxmv1QVlR//LCqqJiH4ZpdrbXUQKJ2LMgH?=
+ =?us-ascii?Q?5r4x5azF5p1Ywdmi837Zjr4ABdIopNUNsMVuvhQjGZIg+tR0ZvMGkD7wrQhA?=
+ =?us-ascii?Q?ie9QjGpa2tzuZI+XCp4aMfHgh6M254TbGROFfDwtB/MqvbzL/N1SOpSLJKWC?=
+ =?us-ascii?Q?cbWZ8iVpCR4K9xjVM6NlyaV88s4JV+9ij+1TNypVoJZmaFiqpaHsYuaW5Jr2?=
+ =?us-ascii?Q?NzOEbRtsSFag6bojVqQYN/8V7LpHIcySYcy0SfaHJOcAscuIJVKBwbTsy2xq?=
+ =?us-ascii?Q?N4U2I7NpXaltk3QIu88roNyPLcd9Gj82f1Fkp2Ph2UB4HV1qjLkm7IFvzHBJ?=
+ =?us-ascii?Q?XpUbkAl3CbwMCVooj9k=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 621b610f-a90a-48a7-32c3-08d9fdf20726
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 15:17:00.1148
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Pi1cFmAhJWD/LuiKHlvadOhOKtwvkzsh5Exf8P9oboDu1ZYGPhPZbYOh6kvNddts
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4783
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/3 11:43 下午, Joe Lawrence wrote:
-> On 3/3/22 5:33 AM, Chengming Zhou wrote:
->> On 2022/3/3 3:51 下午, Miroslav Benes wrote:
->>> On Thu, 3 Mar 2022, Chengming Zhou wrote:
->>>
->>>> Hi,
->>>>
->>>> On 2022/3/2 5:55 下午, Miroslav Benes wrote:
->>>>> Hi,
->>>>>
->>>>> On Tue, 1 Mar 2022, Chengming Zhou wrote:
->>>>>
->>>>>> module_put() is currently never called for a patch with forced flag, to block
->>>>>> the removal of that patch module that might still be in use after a forced
->>>>>> transition.
->>>>>>
->>>>>> But klp_force_transition() will flag all patches on the list to be forced, since
->>>>>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
->>>>>> has removed stack ordering of the livepatches, it will cause all other patches can't
->>>>>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
->>>>>>
->>>>>> In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
->>>>>> transition. It can still be unloaded only if it has passed through the consistency
->>>>>> model in KLP_UNPATCHED transition.
->>>>>>
->>>>>> So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
->>>>>> transition livepatch.
->>>>>>
->>>>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->>>>>> ---
->>>>>>  kernel/livepatch/transition.c | 4 ++--
->>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>
->>>>>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
->>>>>> index 5683ac0d2566..8b296ad9e407 100644
->>>>>> --- a/kernel/livepatch/transition.c
->>>>>> +++ b/kernel/livepatch/transition.c
->>>>>> @@ -641,6 +641,6 @@ void klp_force_transition(void)
->>>>>>  	for_each_possible_cpu(cpu)
->>>>>>  		klp_update_patch_state(idle_task(cpu));
->>>>>>  
->>>>>> -	klp_for_each_patch(patch)
->>>>>> -		patch->forced = true;
->>>>>> +	if (klp_target_state == KLP_UNPATCHED)
->>>>>> +		klp_transition_patch->forced = true;
->>>>>
->>>>> I do not think this would interact nicely with the atomic replace feature. 
->>>>> If you force the transition of a patch with ->replace set to true, no 
->>>>> existing patch would get ->forced set with this change, which means all 
->>>>> patches will be removed at the end of klp_try_complete_transition(). And 
->>>>> that is something we want to prevent.
->>>>
->>>> Good point, I should check if it's an atomic replace livepatch in the else
->>>> branch, in which case we have to set all existing patches to forced.
->>>
->>> Yes, but that leads to a question if it then brings any value. Forcing a 
->>> transition should be exceptional. If it is needed, there may be other 
->>> issues involved which should probably be fixed. Have you come across a 
->>> practical situation where the patch helped?
->>
->> Yes, you're right, the correct way is to find and fix the issues that
->> make us to use this "force" transition interface, until we don't need
->> to use it.
->>
->> Apart from this reason, another reason we may use "force" transition
->> is that we want to speed up the transition process of some patches
->> when load them, and we can make sure these patches are safe to do so.
->> (just like a consistency model check disable option when load a patch)
->>
-> 
-> Interesting use case.  Can you share any example livepatches where the
-> transition time was exceptionally long and that lead to requiring this
-> patch?
+--=_MailMate_D94D30E7-40C9-4331-80D8-8072581C7100_=
+Content-Type: text/plain
 
-Sorry, I haven't easy reproducible testcase on hand, maybe I could try to
-make one to simulate the production environment later.
+On 4 Mar 2022, at 4:34, Miaohe Lin wrote:
 
-> 
-> From a kpatch developer's perspective, it would be interesting to read
-> how you go about ensuring forced livepatch safety.  We don't generally
-> build forced livepatches, so I'm curious how the dev/review process goes.
+> Remove the duplicated codes in migrate_pages to simplify the code. Minor
+> readability improvement. No functional change intended.
+>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/migrate.c | 36 ++++++++++++------------------------
+>  1 file changed, 12 insertions(+), 24 deletions(-)
+>
+LGTM. Thanks. Reviewed-by: Zi Yan <ziy@nvidia.com>
 
-We also use kpatch-build for some patches too, but for some other patches,
-which need to add new members to some struct type, or fix some kernel function
-bugs, we may need to rewrite the source patch to make a livepatch module.
+--
+Best Regards,
+Yan, Zi
 
-There are some types that don't need per-task consistency or even can replace
-the old functions when tasks stack in the old functions. We may want to use
-"force" transition in case load process timeout.
+--=_MailMate_D94D30E7-40C9-4331-80D8-8072581C7100_=
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks.
+-----BEGIN PGP SIGNATURE-----
 
-> 
-> Thanks,
+iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAmIiLWgPHHppeUBudmlk
+aWEuY29tAAoJEJ2yUfNrYfqKuaIQAJ/RGf6CIWZwJZ/eo8nImRwXwH7xbh5t1vx/
+e0WYSJr7/gTN/2gyIHi8p9Xov1uRywvCXks0ohNi4a0J5nC+AM9hgjFzjfwlDQ2C
+6gNLPi17ibcLGw1o5bAlMBOWAoejwIq8oGNxNYDxvfStsWOGDMUpmZTMG8gHMVA9
+cPbYBsqZ+CDEUmR0D7x0Vzb7wIL0sFtdwfOzhxyCNgHloLZoMX+rJIQUFtFidgYz
+HmY8zLrPunIh8VFUy43yRyb+yOTd76UMFYsydblTV/DdLxQ+eza2IzhjwTuiqBY5
+K6fEFPGuFLzqCDv4OpT/Dy1KhvrmfHnGsFxBlnmgJpeZIMS5PscEXBJZYPmc6OiI
+DD+5c0hxrUOOVSTwUiwlzTmKtUO1HciQw+Sgc6KoNAd7c6S5CsEPm70QBUHai0rS
+96C6P62pHGzmznKrcjMirJNu7fXRp5Zik1dmdozqV0rq5jFJR3nqqPM0yz7U8wNG
+73qBdtaDJ6j/sP4rbAGb9D5itiW24lu+xPh1E0QKOI1Spjkc3kJgnG+jvF4crVVd
+uJThhvuc2jPbAWmDp4/IQiM1c4JTHk6x9WV8OiFPey2Zz9TLkdiKXydEMi0NV0fI
+/Bm5wNJ1vGPwUCtS7vEperhp5Kwcowm2ZYrnvEz/nwYLQmHDLmExLTQSyu+Ihtsl
+vmZee5+B
+=ylv6
+-----END PGP SIGNATURE-----
+
+--=_MailMate_D94D30E7-40C9-4331-80D8-8072581C7100_=--
