@@ -2,94 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C04C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04254C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239834AbiCDOjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:39:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
+        id S236723AbiCDOlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232933AbiCDOjr (ORCPT
+        with ESMTP id S231585AbiCDOlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:39:47 -0500
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC0F17FD0F;
-        Fri,  4 Mar 2022 06:38:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646404726;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=5Qc8A3HzHhhVNwswhRRj+dDn3SjBwurLJjNxoV7R1h4=;
-    b=ZWw51Qyh1H8Owiia7uxcWPNiBl3gL10SUU9XRamoz15QEdxsxoeJRv5aSZTH4fuNuC
-    QwGkfOIEgNhztWx+I9k4b+7u+sZkiQrgpr/SoNSDN5u8DEq7sSncY6hDRAqE6/43zUQb
-    a7a5F+qZ2HZP9+0jSLHVE5qpzamOQtdMG39hdsewq6T/1ij05XpW4+gn6cY4Kn3s4CgR
-    zazAMdRWPZlHztPwJTMaLzMoWmjXql2WbLgYu30NlkSJJdEKImPoMuWWud4HXOyCvQLF
-    fp9IKN4W/lnAKc4ax3nzs9SdJL+n72Glh6I40Gw0osSd9JPTsXI/jHqodD/IgpEPSnwr
-    pXXA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8QUWw=="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.40.1 DYNA|AUTH)
-    with ESMTPSA id n729cey24Eck6dY
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Fri, 4 Mar 2022 15:38:46 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH] mmc: core: Restore (almost) the busy polling for
- MMC_SEND_OP_COND
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20220304105656.149281-1-ulf.hansson@linaro.org>
-Date:   Fri, 4 Mar 2022 15:38:45 +0100
-Cc:     linux-mmc@vger.kernel.org,
-        Jean Rene Dawin <jdawin@math.uni-bielefeld.de>,
-        Huijin Park <huijin.park@samsung.com>,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <EE1CAC2A-C06C-4E1F-A391-A063972A34A2@goldelico.com>
-References: <20220304105656.149281-1-ulf.hansson@linaro.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Fri, 4 Mar 2022 09:41:14 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC96B1986E1
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:40:26 -0800 (PST)
+Date:   Fri, 04 Mar 2022 14:40:23 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646404824;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6LD96CHPrg+BDaWPvvqggTZ3L8vFJ3IVjPlhiiXozQ4=;
+        b=E05fLLvcSl0l9yG9f8wo9NUS22QdMZnsymrsevFiC+Tks7NyaUtEHmMqtbgQBQQ7BeCuie
+        lMw4Q0ZBSd8Fkejs+9iZHuIp+RzDdbaVpbBY8NDNACnR2gCeyztxm0DgErYnx3nVR6+w2q
+        ctTB3Oua1KyhI+3EjqSDNYxikpBMuwX7Mn0tn3sBq/uA5QHOYLBy0hFmnJLq8rt4v9xmPP
+        CXW+GX55XZCEDCAi5GFxa+nnUbp96iGOfzI6dHRu+xZYSyIULEoRI466DLVms47idCdAGW
+        qeuLe6/ojzh5hZ4rH4OmV53mzeb/TBLlCDLC8CSA5P/9A4DlIt7zLMux2p888A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646404824;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6LD96CHPrg+BDaWPvvqggTZ3L8vFJ3IVjPlhiiXozQ4=;
+        b=xo3Wo90MT4nJ4u5oMx99FWo65Mgowo3Lryv7POMv1WUtTZYmdL2xIarEINDm1aTYIBDtPB
+        0TIGMh+NPuqAGFCQ==
+From:   "irqchip-bot for Michal Simek" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] irqchip/xilinx: Switch to
+ GENERIC_IRQ_MULTI_HANDLER
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Stefan Asserhall <stefan.asserhall@xilinx.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: =?utf-8?q?=3Ce6c6595a81f662bf839cee3109d0fa58a596ea47=2E16463?=
+ =?utf-8?q?80284=2Egit=2Emichal=2Esimek=40xilinx=2Ecom=3E?=
+References: =?utf-8?q?=3Ce6c6595a81f662bf839cee3109d0fa58a596ea47=2E164638?=
+ =?utf-8?q?0284=2Egit=2Emichal=2Esimek=40xilinx=2Ecom=3E?=
+MIME-Version: 1.0
+Message-ID: <164640482346.16921.5343760008736288350.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ulf,
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-> Am 04.03.2022 um 11:56 schrieb Ulf Hansson <ulf.hansson@linaro.org>:
->=20
-> Commit 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1"),
-> significantly decreased the polling period from ~10-12ms into just a =
-couple
-> of us. The purpose was to decrease the total time spent in the busy =
-polling
-> loop, but unfortunate it has lead to problems, that causes eMMC cards =
-to
-> never gets out busy and thus fails to be initialized.
->=20
-> To fix the problem, but also to try to keep some of the new improved
-> behaviour, let's start by using a polling period of 1-2ms, which then
-> increases for each loop, according to common polling loop in
-> __mmc_poll_for_busy().
->=20
-> Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-> Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-> Cc: Huijin Park <huijin.park@samsung.com>
-> Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> ---
->=20
-> Jean Rene and H. Nikolaus, if this doesn't work, please try extending =
-the
-> the MMC_OP_COND_PERIOD_US a bit, to so see if we can find a value that =
-always
-> works.
+Commit-ID:     1e364921b0085780153b1d03640ca41e1be83e8b
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/1e364921b0085780153b1d03640ca41e1be83e8b
+Author:        Michal Simek <michal.simek@xilinx.com>
+AuthorDate:    Fri, 04 Mar 2022 08:51:29 +01:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Fri, 04 Mar 2022 14:32:57 
 
-Works for me.
+irqchip/xilinx: Switch to GENERIC_IRQ_MULTI_HANDLER
 
-BR and thanks,
-Nikolaus
+Register the Xilinx driver as the root interrupt controller using
+the GENERIC_IRQ_MULTI_HANDLER API, instead of the arch-specific hack.
 
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Reviewed-by: Stefan Asserhall <stefan.asserhall@xilinx.com>
+[maz: repainted commit message]
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/e6c6595a81f662bf839cee3109d0fa58a596ea47.1646380284.git.michal.simek@xilinx.com
+---
+ arch/microblaze/Kconfig           |  2 ++-
+ arch/microblaze/include/asm/irq.h |  3 +---
+ arch/microblaze/kernel/irq.c      | 16 +---------------
+ drivers/irqchip/irq-xilinx-intc.c | 30 ++++++++++++++++--------------
+ 4 files changed, 19 insertions(+), 32 deletions(-)
+
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 59798e4..da568e9 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -45,6 +45,8 @@ config MICROBLAZE
+ 	select SET_FS
+ 	select ZONE_DMA
+ 	select TRACE_IRQFLAGS_SUPPORT
++	select GENERIC_IRQ_MULTI_HANDLER
++	select HANDLE_DOMAIN_IRQ
+ 
+ # Endianness selection
+ choice
+diff --git a/arch/microblaze/include/asm/irq.h b/arch/microblaze/include/asm/irq.h
+index 0a28e80..cb6ab55 100644
+--- a/arch/microblaze/include/asm/irq.h
++++ b/arch/microblaze/include/asm/irq.h
+@@ -11,7 +11,4 @@
+ struct pt_regs;
+ extern void do_IRQ(struct pt_regs *regs);
+ 
+-/* should be defined in each interrupt controller driver */
+-extern unsigned int xintc_get_irq(void);
+-
+ #endif /* _ASM_MICROBLAZE_IRQ_H */
+diff --git a/arch/microblaze/kernel/irq.c b/arch/microblaze/kernel/irq.c
+index 903dad8..1f8cb4c 100644
+--- a/arch/microblaze/kernel/irq.c
++++ b/arch/microblaze/kernel/irq.c
+@@ -20,27 +20,13 @@
+ #include <linux/irqchip.h>
+ #include <linux/of_irq.h>
+ 
+-static u32 concurrent_irq;
+-
+ void __irq_entry do_IRQ(struct pt_regs *regs)
+ {
+-	unsigned int irq;
+ 	struct pt_regs *old_regs = set_irq_regs(regs);
+ 	trace_hardirqs_off();
+ 
+ 	irq_enter();
+-	irq = xintc_get_irq();
+-next_irq:
+-	BUG_ON(!irq);
+-	generic_handle_irq(irq);
+-
+-	irq = xintc_get_irq();
+-	if (irq != -1U) {
+-		pr_debug("next irq: %d\n", irq);
+-		++concurrent_irq;
+-		goto next_irq;
+-	}
+-
++	handle_arch_irq(regs);
+ 	irq_exit();
+ 	set_irq_regs(old_regs);
+ 	trace_hardirqs_on();
+diff --git a/drivers/irqchip/irq-xilinx-intc.c b/drivers/irqchip/irq-xilinx-intc.c
+index 356a597..238d3d3 100644
+--- a/drivers/irqchip/irq-xilinx-intc.c
++++ b/drivers/irqchip/irq-xilinx-intc.c
+@@ -32,6 +32,8 @@
+ #define MER_ME (1<<0)
+ #define MER_HIE (1<<1)
+ 
++#define SPURIOUS_IRQ	(-1U)
++
+ static DEFINE_STATIC_KEY_FALSE(xintc_is_be);
+ 
+ struct xintc_irq_chip {
+@@ -110,20 +112,6 @@ static struct irq_chip intc_dev = {
+ 	.irq_mask_ack = intc_mask_ack,
+ };
+ 
+-unsigned int xintc_get_irq(void)
+-{
+-	unsigned int irq = -1;
+-	u32 hwirq;
+-
+-	hwirq = xintc_read(primary_intc, IVR);
+-	if (hwirq != -1U)
+-		irq = irq_find_mapping(primary_intc->root_domain, hwirq);
+-
+-	pr_debug("irq-xilinx: hwirq=%d, irq=%d\n", hwirq, irq);
+-
+-	return irq;
+-}
+-
+ static int xintc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
+ {
+ 	struct xintc_irq_chip *irqc = d->host_data;
+@@ -164,6 +152,19 @@ static void xil_intc_irq_handler(struct irq_desc *desc)
+ 	chained_irq_exit(chip, desc);
+ }
+ 
++static void xil_intc_handle_irq(struct pt_regs *regs)
++{
++	u32 hwirq;
++
++	do {
++		hwirq = xintc_read(primary_intc, IVR);
++		if (unlikely(hwirq == SPURIOUS_IRQ))
++			break;
++
++		generic_handle_domain_irq(primary_intc->root_domain, hwirq);
++	} while (true);
++}
++
+ static int __init xilinx_intc_of_init(struct device_node *intc,
+ 					     struct device_node *parent)
+ {
+@@ -233,6 +234,7 @@ static int __init xilinx_intc_of_init(struct device_node *intc,
+ 	} else {
+ 		primary_intc = irqc;
+ 		irq_set_default_host(primary_intc->root_domain);
++		set_handle_irq(xil_intc_handle_irq);
+ 	}
+ 
+ 	return 0;
