@@ -2,161 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 11:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D272C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 11:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238940AbiCDLNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 06:13:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        id S239051AbiCDLOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 06:14:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238057AbiCDLNf (ORCPT
+        with ESMTP id S238057AbiCDLN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 06:13:35 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0493512B;
-        Fri,  4 Mar 2022 03:12:46 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A0AD1478;
-        Fri,  4 Mar 2022 03:12:46 -0800 (PST)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9BB63F7D8;
-        Fri,  4 Mar 2022 03:12:44 -0800 (PST)
-Date:   Fri, 4 Mar 2022 11:12:42 +0000
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Stefano Stabellini <sstabellini@kernel.org>
-Cc:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Souvik Chakravarty <Souvik.Chakravarty@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 0/1] dt-bindings: arm: Add scmi_devid paramter for
-Message-ID: <YiH0KrL9LjFZnwBe@bogus>
-References: <cover.1645460043.git.oleksii_moisieiev@epam.com>
- <20220222110003.GC21915@e120937-lin>
- <20220222160637.yn6pru4nfgwih23j@bogus>
- <20220222171549.GA2194063@EPUAKYIW015D>
- <20220224115443.fwhczfvm3cfwoim7@bogus>
- <alpine.DEB.2.22.394.2202241424110.239973@ubuntu-linux-20-04-desktop>
- <alpine.DEB.2.22.394.2202241531111.239973@ubuntu-linux-20-04-desktop>
+        Fri, 4 Mar 2022 06:13:58 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61AC71B0BD5;
+        Fri,  4 Mar 2022 03:13:07 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id 9so6248938ily.11;
+        Fri, 04 Mar 2022 03:13:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc:content-transfer-encoding;
+        bh=pix5KDHACk5xuaWSUAnT0P8xCzYZyA+b1xfvdOjbWuQ=;
+        b=iPZ/H1n3eyVmsRIMvk6KjphmQVML8dWniJcFydrYkBZnD8D/yr//2bAXTdLz+Ahs7D
+         PsVdZZS93PmFF8tea3XV/GmTiWf/pd/ReZ75FFbq11Xx3Y9cB+MXaz+vjBFzFWMj9K3S
+         IphB5/FbyBUL9+vvQkaYYZ8Jwh6bp4WF+vTlGmXNbfFxV7j12HwN9zsyRxRIZvqR6pgx
+         kjNvwPU4Sa91Qie372VTsa36PwkWzfsSEibQAXZhaWwCK6ErJW+smWPIEEI2KQK1SMLa
+         dtUIm2wIttSzC864Rc5cRjjJzRaJanrqLR7uy3GYsV50PuGMloSWavptw8SEIGp5k5/9
+         TBHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc:content-transfer-encoding;
+        bh=pix5KDHACk5xuaWSUAnT0P8xCzYZyA+b1xfvdOjbWuQ=;
+        b=7rHWQv6D3oHGLEUKyKSfONydki0701wqyV+2DtZoFs9XABPGOjWG/2CbewiNDs0k9I
+         QcNUpnS8WhD+anYZC8GHwhxv/ZlrsA57RAIIXsT2zkWMfj3ZjV45/zxtv8Yj4iMrz92g
+         Fblj8v8Se60J5X7hSltiJHmXVj85YluiuMcoCIRmsrR8V+teFhuvNFoiC2iP7BsFNKyF
+         YX4+t7HG2NpqMgNnawPBxThacYm166w0MYAnrX5h6AFYq2R3WlYxyWL7iqFDQvbwJZ3k
+         +E5V5fE4MaPtA1ltZDgMaUo1JQ8+kES3r0VXZGpmupjMJ6dtn0p3vBiYFq3U389Uinbp
+         IDsA==
+X-Gm-Message-State: AOAM532Safx8WPRD/clHhHnKazb494L4VvoRdLn5C4afwGnIGVtiWZsX
+        vVsUh+aM1lfXzaXPLfZrLJJjCAdUvzVs0ouJHGs=
+X-Google-Smtp-Source: ABdhPJxVn0I1gYNcDyZWKfKxwXFubpSLDqDezcfdt+oRTcpIclWTeQb4GwhGqPoNLCc+9sUT94M0RiZ/tnc/M8p/P1o=
+X-Received: by 2002:a05:6e02:1c04:b0:2be:4c61:20f4 with SMTP id
+ l4-20020a056e021c0400b002be4c6120f4mr35937854ilh.245.1646392386116; Fri, 04
+ Mar 2022 03:13:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2202241531111.239973@ubuntu-linux-20-04-desktop>
+References: <20220301145233.3689119-1-arnd@kernel.org> <20220301145233.3689119-3-arnd@kernel.org>
+ <CA+icZUWCTuVeohWvePhxYY3WC9xAYSy9nP1xQQf=tFH_mWDCNQ@mail.gmail.com>
+ <CAKwvOdn04aoWO_384k5HQodwA1-DCFwU50iRXQXh_BQk5pyz7w@mail.gmail.com>
+ <CA+icZUWD_O1WTKNDTj7f+EUxx5Pf=zC53mfOBNgtj1JQwjZVAQ@mail.gmail.com>
+ <YiD86pay2ENCebkR@dev-arch.thelio-3990X> <CA+icZUXDBe5MF6G_2v4XoV0SFVkTZ96M5i-VGSvHsP1pFJ+nAg@mail.gmail.com>
+ <CA+icZUXNtq3+cW6OBiO1TPhHT2xwXFe_D-Ja8HAO0XH2y6h=GA@mail.gmail.com>
+In-Reply-To: <CA+icZUXNtq3+cW6OBiO1TPhHT2xwXFe_D-Ja8HAO0XH2y6h=GA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Fri, 4 Mar 2022 12:12:30 +0100
+Message-ID: <CA+icZUVKJdtCWhhwcY5UkWwFA4TQAn+MF2w1DeZistYmG_ZEuQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(sorry for the delay, had to move my email setup and some mails were
-stuck in outbox and I missed to notice)
-
-On Thu, Feb 24, 2022 at 03:34:01PM -0800, Stefano Stabellini wrote:
-> On Thu, 24 Feb 2022, Stefano Stabellini wrote:
-> > On Thu, 24 Feb 2022, Sudeep Holla wrote:
-> > > On Tue, Feb 22, 2022 at 05:15:49PM +0000, Oleksii Moisieiev wrote:
-> > > > Hi Sudeep,
-> > > > 
-> > > > On Tue, Feb 22, 2022 at 04:06:37PM +0000, Sudeep Holla wrote:
-> > > > > Hi Oleksii,
-> > > > > 
-> > > > > My initial feedback on this. And thanks Cristian for making it so easy as
-> > > > > you have covered most of the things in depth(which I might have not done
-> > > > > myself that well)
-> > > > > 
-> > > > > On Tue, Feb 22, 2022 at 11:00:03AM +0000, Cristian Marussi wrote:
-> > > > > > On Mon, Feb 21, 2022 at 05:26:46PM +0000, Oleksii Moisieiev wrote:
-> > > > > > > Introducing new parameter called scmi_devid to the device-tree bindings.
-> > > > > > > This parameter should be set for the device nodes, which has
-> > > > > > > clocks/power-domains/resets working through SCMI.
-> > > > > 
-> > > > > I prefer you had given more details on your usage model here instead of
-> > > > > pointing to the other Xen thread as it helps for someone without much
-> > > > > background on Xen or your use-case to review this.
-> > > > > 
-> > > > Let me describe the process in few words:
-> > > > We implemented a new feature, called SCI-mediator in Xen.
-> > > > The proposed implementation allows Guests to communicate with the Firmware using SCMI
-> > > > protocol with SMC as a transport. Other implementation are also
-> > > > possible, such as SCMI-Mailbox, SCPI-mailbox etc.
-> > > > 
-> > > > In this feature Xen is the Trusted Agent, which receives the following
-> > > > information in Xen device-tree:
-> > > > 1) All channels should be described, each channel defined as
-> > > > arm,scmi-shmem node;
-> > > > 2) Scmi node arm,scmi-smc with protocols description;
-> > > 
-> > > Sounds good so far.
-> > > 
-> > > > 3) scmi-devid should be set in nodes, which works through SCMI.
+On Fri, Mar 4, 2022 at 8:18 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>
+> On Fri, Mar 4, 2022 at 7:47 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > On Thu, Mar 3, 2022 at 6:37 PM Nathan Chancellor <nathan@kernel.org> wr=
+ote:
+> > >
+> > > Hi Sedat,
+> > >
+> > > On Thu, Mar 03, 2022 at 07:26:05AM +0100, Sedat Dilek wrote:
+> > > > Hey Nick!
 > > > >
-> > > 
-> > > Why is this needed for Guest OS, you need not populate this if Guest OS
-> > > is not required to use it, right ? If it is needed just by Xen hypervisor,
-> > > lets talk about that and why it is bad idea to mix that with general
-> > > SCMI bindings.
-> > 
-> > I'll try to help Oleksii by answering here, I hope I am not off the mark
-> > :-)
-> > 
-> > I think Sudeep is right, scmi-devid is not needed by the guest OS.
-> > 
-> > The host device tree is a more interesting discussion. As the host
-> > device tree is meant to be generic and not tied to a specific version of
-> > Linux, it should fully describe the SCMI interface available. If the
-> > device tree is provided to a Trusted Agent, then it should also have the
-> > scmi-devid information, right?
-> > 
-> > 
-> > > > On start Xen inits itself as trusted agent and requests agent
-> > > > configuration by using BASE_DISCOVER_AGENT message. This message is sent
-> > > > to each configured channel to get agent_id
-> > > > 
-> > > > On Domain creation stage Xen will do the following steps:
-> > > > 1) Assign channel to the Guest and map channel address to the Domain
-> > > > address. For the Domain this address should be the same;
-> > > > 2) Generate arm,scmi-shmem and arm,scmi-smc nodes if needed for Guest
-> > > > device-tree (the device-tree which should be passed to the Guest);
-> > > > 3) Process devices, which are passed through to this Guest and set
-> > > > BASE_SET_DEVICE_PERMISSIONS for the scmi-devid, received from the
-> > > > device-node;
+> > > > This only applies 1/3.
 > > > >
-> > > 
-> > > I am confused here. So the Xen knows which devices are assigned to each
-> > > Guest OS but doesn't know device ID for them, but relies on the device
-> > > tree node ?
-> > 
-> > Which devices go to which guest OS is a user-provided configuration. For
-> > instance, a user can say: "assing /amba/ethernet@ff0e0000 to dom1". This
-> > is normal and not related to SCMI: when a user configures a static
-> > partitioning system, they decide which resources belong to which domain.
-> > 
-> > So Xen is told that /amba/ethernet@ff0e0000 is supposed to go to dom1.
-> > Xen proceeds to map memory and interrupts corresponding to
-> > /amba/ethernet@ff0e0000 to dom1. So far so good. What about SCMI?
-> > 
-> > In Oleksii's design, Xen is going to assign one of the available SCMI
-> > channels to dom1 and restrict its permission to only
-> > /amba/ethernet@ff0e0000. To do that, Xen needs to know the scmi-devid of
-> > /amba/ethernet@ff0e0000. As far as I can tell there is nothing
-> > Xen-specific in this activitity, that's why I asked Oleksii to reach out
-> > to the upstream device tree community to improve the generic bindings
-> > for everyone's benefits.
-> 
-> Let's leave Linux and Xen aside for the moment. What are other possible
-> Trusted Agents? (Maybe TF-A?) How do they get the scmi-devid? It looks
-> like it was supposed to come from device tree but nobody got around to
-> adding it to the binding because it is not used by Linux?
+> > > > $ b4 --version
+> > > > 0.8.0
+> > > >
+> > > > $ b4 am https://lore.kernel.org/lkml/20220301145233.3689119-1-arnd@=
+kernel.org/
+> > > > -o - | git am -3
+> > > > Analyzing 14 messages in the thread
+> > > > Will use the latest revision: v3
+> > > > You can pick other revisions using the -vN flag
+> > > > Checking attestation on all messages, may take a moment...
+> > > > ---
+> > > >  =E2=9C=93 [PATCH v3 1/3] Kbuild: move to -std=3Dgnu11
+> > > >    =E2=9C=93 Signed: DKIM/kernel.org
+> > > >    + Reviewed-by: Nathan Chancellor <nathan@kernel.org> (=E2=9C=93 =
+DKIM/kernel.org)
+> > > >  ERROR: missing [2/3]!
+> > > >  ERROR: missing [3/3]!
+> > > >  ---
+> > > >  NOTE: install patatt for end-to-end signature verification
+> > > > ---
+> > > > Total patches: 1
+> > > > ---
+> > > > WARNING: Thread incomplete!
+> > > > Link: https://lore.kernel.org/r/20220301145233.3689119-1-arnd@kerne=
+l.org
+> > > > Base: not specified
+> > > > Wende an: Kbuild: move to -std=3Dgnu11
+> > >
+> > > It looks like the threading somehow got broken, likely due to the [v3=
+]
+> > > on the first patch and not the second or third:
+> > >
+> > > This worked for me on v5.17-rc6:
+> > >
+> > > $ for i in $(seq 1 3); do b4 shazam -P _ 20220301145233.3689119-"$i"-=
+arnd@kernel.org; done
+> > >
+> > > "b4 shazam" is the equivalent of "b4 am -o - ... | git am" and the
+> > > "-P _" tells b4 to only fetch that exact message ID, not the whole
+> > > thread.
+> > >
+> >
+> > Hmm, the universe is not good to me...
+> >
+> > $ for i in $(seq 1 3); do b4 shazam -P _
+> > 20220301145233.3689119-"$i"-arnd@kernel.org; done
+> > usage: b4 [-h] [--version] [-d] [-q] {mbox,am,attest,pr,ty,diff,kr} ...
+> > b4: error: argument subcmd: invalid choice: 'shazam' (choose from
+> > 'mbox', 'am', 'attest', 'pr', 'ty', 'diff', 'kr')
+> > usage: b4 [-h] [--version] [-d] [-q] {mbox,am,attest,pr,ty,diff,kr} ...
+> > b4: error: argument subcmd: invalid choice: 'shazam' (choose from
+> > 'mbox', 'am', 'attest', 'pr', 'ty', 'diff', 'kr')
+> > usage: b4 [-h] [--version] [-d] [-q] {mbox,am,attest,pr,ty,diff,kr} ...
+> > b4: error: argument subcmd: invalid choice: 'shazam' (choose from
+> > 'mbox', 'am', 'attest', 'pr', 'ty', 'diff', 'kr')
+> >
+> > Do I need a higher version of b4 (here: v0.8.0)?
+> >
+> > Check myself... b4.git:
+> >
+> > commit 7c1d044ff1d5235e598d4c777c4abfe60e0a09a8
+> > ("shazam: change default behaviour to be "apply-here"")
+> >
+> > ...is post-v0.8.0.
+> >
+>
+> I brutally applied the post-v0.8.0 patches stolen from b4.git over my
+> local distro b4 files.
+>
+> And was able to apply the triple:
+>
+> $ git log --oneline --no-merges
+> 5.17.0-rc6-1-amd64-clang13-lto..5.17.0-rc6-2-amd64-clang13-lto
+> 96a4222bdd4c (for-5.17/kbuild-std_gnu11-arndb-20220301) Kbuild: use
+> -std=3Dgnu11 for KBUILD_USERCFLAGS
+> c4e8cef401a8 treewide: use -Wdeclaration-after-statement
+> 6a7cc105b238 Kbuild: move to -std=3Dgnu11
+>
 
-I do agree we need this info and probably device tree is the way. But what
-I disagree here is that it needs to part of existing SCMI bindings which are
-for the SCMI users only and not for one that may provide the interface(SCMI
-platform/server/arbitrator/passthrough/..whatever). You can have bindings for
-them as part of system device tree initiative and can be merged back to Linux
-if that happens. Or we may even take the whole devicetree bindings out of
-the Linux one day (when all the stars are aligned :) )
+I was able to build and boot on bare metal.
 
---
-Regards,
-Sudeep
+No new warnings in my build-log here after switching to -std=3Dgnu11.
+
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM/Clang v13.0.0 x86-64
+
+- sed@ -
