@@ -2,103 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB64FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A7BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbiCDIOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:14:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
+        id S231514AbiCDIS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:18:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231514AbiCDIOS (ORCPT
+        with ESMTP id S231388AbiCDISw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:14:18 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E4665D2A
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:13:31 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 45EA33F614
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:13:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646381609;
-        bh=PN+MwFyyD7KNKhN3V9sTc9ozhjbNqMNAeFcwOrkH/Mc=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version:Content-Type;
-        b=jQLZrH58hWlRQirutLmFiWPu4+xkDTRoSVsohYkU5Qbg2tOzNcCOilU/ZgG1pyA7z
-         KZ+1Y4rrxdEBoDbBune7YWUpbGGLe0W8MFlGdRhX9p7Vh6SiR0qhqxCZIfF1kwApOf
-         OYDhZr80irR0CmKpITNYJ6vboRR3cx3rE8kpAVrvozRnQA3pLL1kAa46a9UH6GBMu/
-         22Vffzlml/Wgmj35JV4Xuk65B9+AlDgvFsM3qeNVxM757ukWfEHVX4IuBBCmoXoPRd
-         l55QKz/SSVks4pmZfLZYQnYAz9lZP8RSl5YiaZg5kRhmk0F8SsLG1dmwOx4Wx+JZ3/
-         bcl+Plt2EmB9A==
-Received: by mail-ej1-f69.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso4030793eje.20
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:13:29 -0800 (PST)
+        Fri, 4 Mar 2022 03:18:52 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE77819532D
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:18:04 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id u10so9824908wra.9
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:18:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=I+flpTKg5dHml1L8DmfaE4buKIPkOp2S1a3s/eAOkBk=;
+        b=xJ7niO+GGxG9Panzv0vbxkO0rbOM0lt7COu6CAevUE9r3iWHD9/lR69sbvzWPrV28A
+         sJ3GW41aTv/zCYJuWgvzMPPMQYlf/p24Q1oiCTnCEWcq4eA9f84VaJNT/CRkS9/9Z/MV
+         Uix40rQpgdGfnoESPGEDF4HbkU296Z9rcGHxBTHSwLfWJoyokG1FnmJFONci6fo6IrWe
+         WEEMKT77qGva/fyjxc56GFRlHsNqq3X1G11nXOWbVJxMaaYpcia4cbtfuL55YVzuCc9M
+         XQF2WFToa/hQfnE1VClwCLrDoktrANxh5wj2MVNUkTo6qP7PEbYVb2oGxiglhmd8eCS/
+         dFCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PN+MwFyyD7KNKhN3V9sTc9ozhjbNqMNAeFcwOrkH/Mc=;
-        b=PbydmeORW9k7x1dtYwVd8Ezonaf3w6OQUHk8M+eQauv8Fi3qou0v1uKb0wfQJgeKLi
-         grYmRT9I4SCaUT5r2YYHaBvcILC64xOb2YDWyKJ9mPI5ZPt/RwzIOE8U5VotKv6MvDOh
-         lAawUPDKQxAPg4JSKcBdKNZI+rsAoUS68eEeGAo8rcgmLsHPYKnoNFOasGDMTG+yKUg4
-         Uqxq4JsL96XASpbeS+q4AaNFb70XlmaJALHX/LOTp+bsUJJiTD9LG9gg5Ad6MwWdn8mn
-         AXV4+DWBQStXOYjKwYnOBlNwixhiv8uV9Ka11Cb9+J5kKzNgqGonyWwVKDTgQQHVquVD
-         +5eA==
-X-Gm-Message-State: AOAM5312IIglMhMCPOyR14DARktBIaWuEf1KDgjECuHAe62V5Mw4KU8z
-        bObKMHGc7pCtSvqbZBE1Z9gwnghdLbEgS/Q9MkGtqBEtjpTwkNq7Y1HOK/uzbg32ExREfIbaEG2
-        MdUowP5R6dxinSj4wU3CdaOBVnmKiehuWh6KA9wOZ5A==
-X-Received: by 2002:a17:907:d0f:b0:6da:63d6:b84f with SMTP id gn15-20020a1709070d0f00b006da63d6b84fmr9408978ejc.302.1646381608976;
-        Fri, 04 Mar 2022 00:13:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxtmf4M0vAgtkkJF2MjO14bSsPEfmcjiMMhZeu+y4rewMDiaaGtcHGsndvzz05ZBZ+o9hJiUg==
-X-Received: by 2002:a17:907:d0f:b0:6da:63d6:b84f with SMTP id gn15-20020a1709070d0f00b006da63d6b84fmr9408960ejc.302.1646381608738;
-        Fri, 04 Mar 2022 00:13:28 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id z2-20020a05640235c200b00415cec386a5sm1889584edc.16.2022.03.04.00.13.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 00:13:28 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: memory: renesas,rpc-if: Document RZ/V2L SoC
-Date:   Fri,  4 Mar 2022 09:13:23 +0100
-Message-Id: <164638154584.220122.4689452706717484391.b4-ty@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220301123527.15950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220301123527.15950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=I+flpTKg5dHml1L8DmfaE4buKIPkOp2S1a3s/eAOkBk=;
+        b=qb5gPus3aNPfE/Hlllm2ZakeWoT4QlrtaS1zlP4FgYO4/RrXvHMiLhPDgXOI3nEg4g
+         9SwX+67T+2BrNNjXEP51rJpI/bO1f0/BETr7TAlFBcgvDDsua+UPH0XXGmw43dYNSj/+
+         YsQYU0c6zRdYisikDExCUQGFVjRwYB8RrWYvT/3Sj68/mQOnfRoPxI2Lt2tD9Fzi9AyZ
+         MwS8dJSJSziSu+eg2jORD9PPV0EwXKX673RQ7RY3b/6gH6yjjOnT6Mkk4P6q0kzyh57H
+         /ud+Nj0MLoMECVFKRxaELBcoMLf3jKSrQ7KKILYM3UjqfoxpkL8lVx5+sUCA3CN7wUUq
+         WcaQ==
+X-Gm-Message-State: AOAM533uAgki7ntIITZ71jNuW53v3SUzg3c2iG7bSJvCKkO+6/bKeBmv
+        02iDzyj/NCFlBTK6dETBU71Krf1Vf8rJEg==
+X-Google-Smtp-Source: ABdhPJwwa5VRS/zs4BjK6Sm7CwmQqQ2MQTaT9LIqxStSjhE7VL9P2O1NzIKlbjmvWb3BsHU4fS5Qdg==
+X-Received: by 2002:adf:a39e:0:b0:1ef:b97f:ae91 with SMTP id l30-20020adfa39e000000b001efb97fae91mr17478011wrb.591.1646381883394;
+        Fri, 04 Mar 2022 00:18:03 -0800 (PST)
+Received: from ?IPV6:2a01:e34:ed2f:f020:551f:d79e:5d4c:9b99? ([2a01:e34:ed2f:f020:551f:d79e:5d4c:9b99])
+        by smtp.googlemail.com with ESMTPSA id m5-20020a05600c3b0500b00380da3ac789sm5088894wms.1.2022.03.04.00.18.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 00:18:02 -0800 (PST)
+Message-ID: <1ed3e1b6-0a75-03e1-8698-8aa1f96fe86b@linaro.org>
+Date:   Fri, 4 Mar 2022 09:18:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] dt-bindings: timer: Tegra: Convert text bindings to
+ yaml
+Content-Language: en-US
+To:     David Heidelberg <david@ixit.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Stephen Warren <swarren@nvidia.com>
+Cc:     ~okias/devicetree@lists.sr.ht, Rob Herring <robh@kernel.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <20220303233307.61753-1-david@ixit.cz>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220303233307.61753-1-david@ixit.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 1 Mar 2022 12:35:26 +0000, Lad Prabhakar wrote:
-> Document RZ/V2L RPC-IF bindings. RZ/V2L RPC-IF is identical to one found
-> on the RZ/G2L SoC. No driver changes are required as generic compatible
-> string "renesas,rzg2l-rpc-if" will be used as a fallback.
+On 04/03/2022 00:33, David Heidelberg wrote:
+> Convert Tegra timer binding into yaml format.
 > 
-> While at it, drop the comment "# RZ/G2L family" for "renesas,rzg2l-rpc-if"
-> compatible string as this will avoid changing the line for every new SoC
-> addition.
+> This commit also merge 3 text bindings with almost
+> identical content (differens in number of registers).
 > 
-> [...]
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: David Heidelberg <david@ixit.cz>
 
-It's late in the cycle so I might not be able to push it out to SoC folks. If
-that happens, I will keep it for the next cycle.
+Applied, thx
 
-Applied, thanks!
-
-[1/1] dt-bindings: memory: renesas,rpc-if: Document RZ/V2L SoC
-      commit: 69d6941949ea8a113ffc89410b0cb79bc7b35a0b
-
-Best regards,
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
