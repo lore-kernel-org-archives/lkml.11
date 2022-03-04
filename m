@@ -2,83 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D34C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6387C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbiCDQTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 11:19:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
+        id S240541AbiCDQVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 11:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231777AbiCDQTM (ORCPT
+        with ESMTP id S232609AbiCDQVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 11:19:12 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2AFEE1B60;
-        Fri,  4 Mar 2022 08:18:24 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 224DOfXD012568;
-        Fri, 4 Mar 2022 10:17:37 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=zjqR9q9GiOBUPRKXEJb75rxzZ1gRxVDQCkHM71cLsyk=;
- b=JJWb49rdZfvOAhrJcW+9e/tL8LBdjImXnsSU0P5u6QUJObwMU5kH8D4sTI9sNSDE6giB
- eTZ1AtONUD2u4pe1WqF3EEBjWUqYvDEPicuIOqiljkGfXldbETusqRUuDJ4WXwlpuhR/
- mbN8PfFVd7lZy3SY1w10s5aLCRNqS/ogsqdd1dTZWUIish1MCkiz31vRySgxi2/u2xHl
- BUqG3X/4f8Wuw/h1YSXSSds2XtNBwsGpiZln15nYvRLl1c/LBSiz4KmCAUo90SaIqBtc
- kOxM1gS6U9dLQ376BA9JhVosDhieaTyPxgkyOoHwjVUCo0YFHILSQrFK+qq67aiqsLBS Og== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h6we-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 04 Mar 2022 10:17:36 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Mar
- 2022 16:17:34 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 4 Mar 2022 16:17:34 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 34C13B06;
-        Fri,  4 Mar 2022 16:17:34 +0000 (UTC)
-Date:   Fri, 4 Mar 2022 16:17:34 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Lucas Tanure <tanureal@opensource.cirrus.com>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 13/20] sound: cs35l41: Enable Internal Boost in shared
- lib
-Message-ID: <20220304161734.GF38351@ediswmail.ad.cirrus.com>
-References: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
- <20220304150721.3802-14-tanureal@opensource.cirrus.com>
+        Fri, 4 Mar 2022 11:21:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EF6160409;
+        Fri,  4 Mar 2022 08:20:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDDD061D7E;
+        Fri,  4 Mar 2022 16:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 53219C340F2;
+        Fri,  4 Mar 2022 16:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646410811;
+        bh=0CgI4EyPQ3DSrNgA4EAA+Bcj2udpKg57T6VI4Q17lW8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mbCIYPc9uC+t+PrLOKazYEkrO67jPoHNt8uIe9SJ5t5xmbTYOl9JIT7dkGYecJ+w+
+         lC5+upOS31pP12Zu9AszERqNrpDA1zIQDgifRtxQ5IKIj+Zm50xhXF0V02c6VrJ6Ct
+         UmtFzDXAsBPw75JerRvgfl6Yb4/YXCmGemlNvGfn9OJxPJF6Ej2t3B20voFGJfai+d
+         qE6i+HOcrKerdZkb99K3L/AB9Sh083CHcGc3BH5tRg0wGkYVh85N0umf8971Rt22UN
+         I7CWHLKpY0Dfg59l9wQiNQekRjjNFgZUSRbPmw/sq21ocKKrAAv+v/Dind4xL95n2h
+         G+M1nk0OvpoCw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 37F9CEAC081;
+        Fri,  4 Mar 2022 16:20:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220304150721.3802-14-tanureal@opensource.cirrus.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: za1i0AhO99R2P4JBpiRAN2mzmymFBZOf
-X-Proofpoint-ORIG-GUID: za1i0AhO99R2P4JBpiRAN2mzmymFBZOf
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next V2 0/4] Add support for locked bridge ports (for
+ 802.1X)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164641081122.17358.2982887378090859629.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Mar 2022 16:20:11 +0000
+References: <20220228133650.31358-1-schultz.hans+netdev@gmail.com>
+In-Reply-To: <20220228133650.31358-1-schultz.hans+netdev@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        schultz.hans+netdev@gmail.com, stephen@networkplumber.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 03:07:14PM +0000, Lucas Tanure wrote:
-> Boost enable is the default option from reset,
-> but with external boost support, internal boost
-> must be disabled.
-> Add the enable of boost in cs35l41_boost_config
-> to centralize the internal boost configuration.
+Hello:
+
+This series was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
+
+On Mon, 28 Feb 2022 14:36:46 +0100 you wrote:
+> This patch set is to complement the kernel locked port patches, such
+> that iproute2 can be used to lock/unlock a port and check if a port
+> is locked or not. To lock or unlock a port use the command:
 > 
-> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-> ---
+> bridge link set dev DEV locked {on | off}
+> 
+> 
+> [...]
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Here is the summary with links:
+  - [iproute2-next,V2,1/4] bridge: link: add command to set port in locked mode
+    (no matching commit)
+  - [iproute2-next,V2,2/4] ip: iplink_bridge_slave: add locked port flag support
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=092af16b7eed
+  - [iproute2-next,V2,3/4] man8/bridge.8: add locked port feature description and cmd syntax
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=d4fe36736dfb
+  - [iproute2-next,V2,4/4] man8/ip-link.8: add locked port feature description and cmd syntax
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=0a685b987c06
 
-Thanks,
-Charles
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
