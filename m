@@ -2,143 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE36C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238119AbiCDFU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 00:20:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
+        id S238141AbiCDFVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 00:21:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238143AbiCDFUt (ORCPT
+        with ESMTP id S238130AbiCDFUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 00:20:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 86C9118621A
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 21:19:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646371197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PRicOcRvWzoxpLs51SSJ+aFkDsMZLS/bjPquNOlSlQc=;
-        b=Yca8+iVM3eE0dnGc4A+nYlYi/0dJC4srfLiwgqVURRSjZNFUyIGTq+TIpedDa5UOGf0TN0
-        UjQANFq1ATI+ZAsOAK7UrqG7IYW9DT30nw8O34aR0daTjOKA6h2vezX3cjhQWvtZBMy6ic
-        gudt5oLeziktB5AFc80UWwxIRgkV88Q=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-484-r29z7rh0N1uL0nfaiV1c2Q-1; Fri, 04 Mar 2022 00:19:56 -0500
-X-MC-Unique: r29z7rh0N1uL0nfaiV1c2Q-1
-Received: by mail-pg1-f200.google.com with SMTP id g31-20020a63521f000000b003783582a261so3923368pgb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 21:19:56 -0800 (PST)
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6F0186427;
+        Thu,  3 Mar 2022 21:20:02 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id qa43so15080505ejc.12;
+        Thu, 03 Mar 2022 21:20:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gxLan5R4EeIuizeHi+1H0RoYbghobbkKvF7qVa/71h4=;
+        b=AcsRumGmEs9knFasfsszEbJV3Z2uZwXWlFKcER9c6Y8JV4OvzAfWJYKxT+LY5zITKe
+         kPdykaSpKdEoQZICNme1BzMrk7hx3h43v21obv/YFF4qsAh3S0e6Ge4mw3JpMaVtEomJ
+         5sxtoCJmHOZW8ABLlX51iZtl1tZbVPlRVoKTb5Q/lD34AQbSP+sPzEi2KhZM4Z1ZBECo
+         iXE6Sj0TyRnmg85NCBUdhp3O1JgZ4N04tyEtzKm+fiumZ6dFnezWeu7rt5coerPSFZnG
+         OUM4Vt7PuttWidKXOSNF4tRm48tJkHGJWGkz6N4MQ25mm1WpoX2G6aWY6ruvVTyC3+uH
+         xjTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PRicOcRvWzoxpLs51SSJ+aFkDsMZLS/bjPquNOlSlQc=;
-        b=swfysf/hzH6y2mgdTPasDfG1YlUJGbnvjIT/apnye9iCg3pvhS/xLw9sTFG3JERKCg
-         RV6TFTxWSmVQKDS835PxvGQf7cF9omcsqLXlM1Apw6Vosnrch0B3xVvm+eChGJJS8KdM
-         x7TPzcj7rkWTGMDo6BdtoylRR6VnToRHuIpyzHve4fiVYZaP45XRFmhueNQKap3soH4D
-         SVzrtMrNkLjnBdxo8EY/OgbmJzUjMYnZMIVjYRm4MufJAzAA2sZTZXp7yuBN2kZ7+m3Q
-         wVQZJk1tkV9ws5b7+jHFzDBb2l7qi6vp47P3zXVYEVxyEKHR1/gSJ0ZJuqHEYOODWxfc
-         qrhw==
-X-Gm-Message-State: AOAM533EGRnsQUV+U++w2M6FmY+SUJfSkaG6rb4VGn616XAIwdm2QIiT
-        gWHjYJN/PFrnoI0v6BTHg2pRbdyz2Zj8JmgIQI3+ddNTVVzcmKMk0QuddZuYKKzEr6zFHO8WakI
-        bGWSZW1cLy1Hd5pchtzSUZO5T
-X-Received: by 2002:a63:8bca:0:b0:37c:9049:103 with SMTP id j193-20020a638bca000000b0037c90490103mr2179463pge.387.1646371195375;
-        Thu, 03 Mar 2022 21:19:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzMQjw3TZyj+/ynwRaeUsP3tPV3EyAhD/DLSy/Gjrm4jimUydTxbOQNlZECErcoEoI+7O+Amw==
-X-Received: by 2002:a63:8bca:0:b0:37c:9049:103 with SMTP id j193-20020a638bca000000b0037c90490103mr2179446pge.387.1646371195056;
-        Thu, 03 Mar 2022 21:19:55 -0800 (PST)
-Received: from localhost.localdomain ([94.177.118.59])
-        by smtp.gmail.com with ESMTPSA id p16-20020a056a000b5000b004f669806cd9sm4323865pfo.87.2022.03.03.21.19.47
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 03 Mar 2022 21:19:54 -0800 (PST)
-From:   Peter Xu <peterx@redhat.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     peterx@redhat.com, Nadav Amit <nadav.amit@gmail.com>,
-        Hugh Dickins <hughd@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>
-Subject: [PATCH v7 19/23] mm/khugepaged: Don't recycle vma pgtable if uffd-wp registered
-Date:   Fri,  4 Mar 2022 13:17:04 +0800
-Message-Id: <20220304051708.86193-20-peterx@redhat.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220304051708.86193-1-peterx@redhat.com>
-References: <20220304051708.86193-1-peterx@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gxLan5R4EeIuizeHi+1H0RoYbghobbkKvF7qVa/71h4=;
+        b=4Gqb7tXMn11ean3qgf76uAsSq6zc/nMI4XqL8180bP+HX+19SEgvUk6JKWSO6aFjMp
+         5SR5OUvg5FcqS8eSj2bdNyViNl0/wVqNjvw8Do4PiHwZ/LYra3XdCs1zkWVww/ksk+So
+         fbjCv+qLDJpCeSpp1UOqTCwmTv/cFqetzkwbwL8tNm9WJqh2q68yjVKmhudxQBaKBft/
+         O21EdFi5dA+V1cPVE0w+iF/jolb0zr4mSzLkCkGG4AUhAoCk45bYdhyfpfi1GSrKmVKV
+         6rYa+h1HHEJVOfPXa3j28hEAw4f+d0bFVnvSdOXONZLOtplhN6+FHqF9YSUKf8orH9TF
+         Vq2A==
+X-Gm-Message-State: AOAM533q2ij1CYXbslbavIJlCgivwltktdzvnNgKqxL0mALh3UxFHlK/
+        +RO5ZvlGYnmtzRBL7gVxKDWUUjvAaDGAL+9onJw=
+X-Google-Smtp-Source: ABdhPJxwn+g2mzmBbi1rvOP1Ykx9QZ70Rxyli+YI+RvQZAI9Yzvi736QIIxR/jXUpPV1FLHYnQ2W2obcNqytltaPyOE=
+X-Received: by 2002:a17:907:3f9b:b0:6da:6f2b:4b1c with SMTP id
+ hr27-20020a1709073f9b00b006da6f2b4b1cmr8189108ejc.765.1646371200763; Thu, 03
+ Mar 2022 21:20:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220303174707.40431-1-imagedong@tencent.com> <20220303174707.40431-2-imagedong@tencent.com>
+ <20220303202539.17ac1dd5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CADxym3ZC1kXYF2_YnY3xKYnRGzPimHnahR5eoAr4fkawkm5aSA@mail.gmail.com> <20220303210544.5036cf7c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220303210544.5036cf7c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Fri, 4 Mar 2022 13:19:49 +0800
+Message-ID: <CADxym3Z48jkRViH2_8mCeymURHoRyV62XmwKBbdKVeaKUBcgJA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/7] net: dev: use kfree_skb_reason() for sch_handle_egress()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Lobakin <alobakin@pm.me>, flyingpeng@tencent.com,
+        Mengen Sun <mengensun@tencent.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we're trying to collapse a 2M huge shmem page, don't retract pgtable pmd
-page if it's registered with uffd-wp, because that pgtable could have pte
-markers installed.  Recycling of that pgtable means we'll lose the pte markers.
-That could cause data loss for an uffd-wp enabled application on shmem.
+On Fri, Mar 4, 2022 at 1:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 4 Mar 2022 12:56:40 +0800 Menglong Dong wrote:
+> > You are right, I think I misunderstanded the concept of qdisc and tc before.
+> > and seems all 'QDISC' here should be 'TC'? which means:
+> >
+> > QDISC_EGRESS -> TC_EGRESS
+> > QDISC_DROP -> TC_DROP
+>
+> For this one QDISC is good, I think, it will mostly catch packets
+> which went thru qdisc_drop(), right?
+>
 
-Instead of disabling khugepaged on these files, simply skip retracting these
-special VMAs, then the page cache can still be merged into a huge thp, and
-other mm/vma can still map the range of file with a huge thp when proper.
+Yeah, you are right.
 
-Note that checking VM_UFFD_WP needs to be done with mmap_sem held for write,
-that avoids race like:
-
-         khugepaged                             user thread
-         ==========                             ===========
-     check VM_UFFD_WP, not set
-                                       UFFDIO_REGISTER with uffd-wp on shmem
-                                       wr-protect some pages (install markers)
-     take mmap_sem write lock
-     erase pmd and free pmd page
-      --> pte markers are dropped unnoticed!
-
-Signed-off-by: Peter Xu <peterx@redhat.com>
----
- mm/khugepaged.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index a4e5eaf3eb01..87d88d6725af 100644
---- a/mm/khugepaged.c
-+++ b/mm/khugepaged.c
-@@ -1456,6 +1456,10 @@ void collapse_pte_mapped_thp(struct mm_struct *mm, unsigned long addr)
- 	if (!hugepage_vma_check(vma, vma->vm_flags | VM_HUGEPAGE))
- 		return;
- 
-+	/* Keep pmd pgtable for uffd-wp; see comment in retract_page_tables() */
-+	if (userfaultfd_wp(vma))
-+		return;
-+
- 	hpage = find_lock_page(vma->vm_file->f_mapping,
- 			       linear_page_index(vma, haddr));
- 	if (!hpage)
-@@ -1591,7 +1595,15 @@ static void retract_page_tables(struct address_space *mapping, pgoff_t pgoff)
- 		 * reverse order. Trylock is a way to avoid deadlock.
- 		 */
- 		if (mmap_write_trylock(mm)) {
--			if (!khugepaged_test_exit(mm))
-+			/*
-+			 * When a vma is registered with uffd-wp, we can't
-+			 * recycle the pmd pgtable because there can be pte
-+			 * markers installed.  Skip it only, so the rest mm/vma
-+			 * can still have the same file mapped hugely, however
-+			 * it'll always mapped in small page size for uffd-wp
-+			 * registered ranges.
-+			 */
-+			if (!khugepaged_test_exit(mm) && !userfaultfd_wp(vma))
- 				collapse_and_free_pmd(mm, vma, addr, pmd);
- 			mmap_write_unlock(mm);
- 		} else {
--- 
-2.32.0
-
+> > QDISC_INGRESS -> TC_INGRESS
