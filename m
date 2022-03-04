@@ -2,132 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238564AbiCDNyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:54:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
+        id S238443AbiCDNze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 08:55:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiCDNyN (ORCPT
+        with ESMTP id S231634AbiCDNzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:54:13 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16884532E5;
-        Fri,  4 Mar 2022 05:53:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646402006; x=1677938006;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EBV+8A/WSH+HEZn2WXFADUJhrDTrMNNGavJydqTbqEE=;
-  b=TpyPI486IwuLTlbBIKbByPctIkCTcqCopfetMFCemqeHECpunCMyY3h4
-   KkOYqRzkM71RIs73pv5+iG0+KxderaHJsVtZTNFrpED3Wg4h25/vIJeob
-   8rFm8/M0TTWls1s98+p/98Ghb5hQjucAroOFCXjc19Go0LNo1dR6WPuTk
-   GzxTzS++P0frb/I62QGZ4gDaogRjo9QvYd84k+XqUI2DPqXDAi1Cq3t9s
-   aNKcb+U2KStjMxUu9X2CdxJA1zb/xt8rjrABNU+3AqYbLbPGIbDaGKwGc
-   3GNlStBW/5pRxvCFVLtBH39aKxZeRCLZWXTEXm70Ok3rbxhSoktbDCkZH
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="254170019"
-X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="254170019"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 05:53:25 -0800
-X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="642513908"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 05:53:22 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nQ8MG-00BF56-8O;
-        Fri, 04 Mar 2022 15:52:36 +0200
-Date:   Fri, 4 Mar 2022 15:52:35 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v3 1/6] device property: Helper to match multiple
- connections
-Message-ID: <YiIZoyfsJDcwR4gr@smile.fi.intel.com>
-References: <20220303223351.141238-1-bjorn.andersson@linaro.org>
- <YiIL/ejgxhfRhTDP@smile.fi.intel.com>
- <YiIXDZnquRZj8dU5@paasikivi.fi.intel.com>
+        Fri, 4 Mar 2022 08:55:31 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3990515B99D;
+        Fri,  4 Mar 2022 05:54:44 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id DFB801F386;
+        Fri,  4 Mar 2022 13:54:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646402082;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gnx66aWeykrzI2XBQv7Kx5jZUN33fVmg1ARGMWpelfY=;
+        b=iTrWdsmDK1S4NboUAhMqnFvdWBSELXhlHkF3jJwhTAwb5Fs/fv1AOCRgy8sRX9xcNht9no
+        grpDBosjamSuehPsL8JiGi0KP4z0CDSIKozde2a54j1NGPiSb7vRc7XhfYwDaKLgwF/vGv
+        VtEaZMz7iBHpawYosGBDw1/azw99eNQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646402082;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gnx66aWeykrzI2XBQv7Kx5jZUN33fVmg1ARGMWpelfY=;
+        b=FtJtQkec5uCj7/Iheh2GsT6By6GvhuKne8SEjp38JlclBPYOOEDtaCrJ1fwodYNWsSM5Pi
+        /kjQxcQJ2yO1B2DA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 93DEDA3B8F;
+        Fri,  4 Mar 2022 13:54:42 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id A3123DA80E; Fri,  4 Mar 2022 14:50:49 +0100 (CET)
+Date:   Fri, 4 Mar 2022 14:50:49 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Anand Jain <anand.jain@oracle.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Mason <clm@fb.com>,
+        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
+        Josef Bacik <josef@toxicpanda.com>, dsterba@suse.cz,
+        David Sterba <dsterba@suse.com>
+Subject: Re: [PATCH] btrfs: don't access possibly stale fs_info data in
+ device_list_add
+Message-ID: <20220304135049.GY12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Anand Jain <anand.jain@oracle.com>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Mason <clm@fb.com>,
+        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
+        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>
+References: <20220303144027.1981835-1-dzm91@hust.edu.cn>
+ <20220303182431.GW12643@suse.cz>
+ <e3f0ab62-3d1f-a316-2d7b-a0b791120f87@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YiIXDZnquRZj8dU5@paasikivi.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <e3f0ab62-3d1f-a316-2d7b-a0b791120f87@oracle.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 03:41:33PM +0200, Sakari Ailus wrote:
-> On Fri, Mar 04, 2022 at 02:54:21PM +0200, Andy Shevchenko wrote:
-> > On Thu, Mar 03, 2022 at 02:33:46PM -0800, Bjorn Andersson wrote:
-
-...
-
-> > > +		if (count >= matches_len && matches) {
-> > > +			fwnode_handle_put(ep);
-> > > +			return count;
-> > > +		}
+On Fri, Mar 04, 2022 at 07:53:27AM +0800, Anand Jain wrote:
+> On 04/03/2022 02:24, David Sterba wrote:
+> > On Thu, Mar 03, 2022 at 10:40:27PM +0800, Dongliang Mu wrote:
+> >>
+> >> Fix this by modifying device->fs_info to NULL too.
+> >>
+> >> Reported-and-tested-by: syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com
+> >> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> >> ---
+> >>   fs/btrfs/volumes.c | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+> >> index b07d382d53a8..c1325bdae9a1 100644
+> >> --- a/fs/btrfs/volumes.c
+> >> +++ b/fs/btrfs/volumes.c
+> >> @@ -954,7 +954,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
+> >>   						  task_pid_nr(current));
+> >>   				return ERR_PTR(-EEXIST);
+> >>   			}
+> >> -			btrfs_info_in_rcu(device->fs_info,
+> >> +			btrfs_info_in_rcu(NULL,
 > > 
-> > Wouldn't be the same as
-> > 
-> > 		if (count >= matches_len) {
-> > 			fwnode_handle_put(ep);
-> > 			break;
-> > 		}
+> > A few lines above this is also NULL and was fixed by 0697d9a61099
+> > ("btrfs: don't access possibly stale fs_info data for printing duplicate
+> > device"), so yeah we probably need the same here.
 > 
-> Don't you need to check for non-NULL matches here?
+> So it appears that device->fs_info was garbage instead of NULL OR
+> fs_info->sb was NULL?
 
-Right, this should be kept as in original patch.
+I think it's a warning that something could happen, in this case
+potential garbage value of fs_info.
 
-> I find return above easier to read.
+> Because we always had a check if fs_info is null in btrfs_printk()
+> further the commit a0f6d924cada ("btrfs: remove stub device info from
+> messages when we have no fs_info") made it better.
 
-Okay, original code may work, so I have no strong opinion about return vs
-break, although I find slightly better to have a single point of return in
-such case.
-
-> > ?
-
-...
-
-> > > +	count_graph = fwnode_graph_devcon_matches(fwnode, con_id, data, match,
-> > > +						  matches, matches_len);
-> > 
-> > > +	matches += count_graph;
-> > > +	matches_len -= count_graph;
-> > 
-> > No, won't work when matches == NULL.
-> > 
-> > Also, matches_len is expected to be 0 in that case (or at least being ignored,
-> > check with vsnprintf() behaviour in similar case).
-> > 
-> > So, something like this, perhaps
-> > 
-> > 	if (matches && matches_len) {
-> > 		matches += count_graph;
-> > 		matches_len -= count_graph;
-> > 	}
-> 
-> Good find!
-
-I have checked vsnprintf() and indeed, it expects to have the size is 0 when
-the resulting buffer pointer is NULL, and it doesn't do any additional checks.
-
-> > > +	count_ref = fwnode_devcon_matches(fwnode, con_id, data, match,
-> > > +					  matches, matches_len);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Yeah, that's removing a potential crash but still the NULL value could
+come from a freed memory. Seems taht we can't rely on fs_info in
+device_list_add at all and passing NULL is the only safe way.
