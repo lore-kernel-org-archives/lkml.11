@@ -2,176 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2783C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46976C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237022AbiCDJHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:07:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
+        id S236010AbiCDJIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236800AbiCDJGe (ORCPT
+        with ESMTP id S239235AbiCDJIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:06:34 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA6E1A3636;
-        Fri,  4 Mar 2022 01:05:37 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id d17so7151865pfl.0;
-        Fri, 04 Mar 2022 01:05:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+OTmcaqceN1v+Oh4qkfoovMiZHBs7YKc5pNVuTTFvLU=;
-        b=JaqT8eLwxXQtrA/e6teUBX6c4sMkgfD9NV25PN2QRAFZD8rSQi6CTDt21EF0siYJIH
-         AI9tXA3JYcx6uDTjIQD9Ux4KZo/9tVQ6EOZnPKiqlYx/SNDiKJYPRNhJi2JkseBi9aIY
-         xzbkD6ya97VhqC+njv0R9nnoGLPuTmsfYfmrVwUAgIW5/vS6aUFuQGOL2Py+JHULs6M/
-         nHZqAkBwh53qBdyb5GQ7ZiZdwfZnSU8S2ofgHQJhYablph/LOrqXMQIpdL010Gz2suxi
-         nvLaz1rBNEE6CazBcBdUNay2LEqvYCYC8bK13IUKUyVsh2Ke2KSrE5k2Qr/lLJbbaV6z
-         OaAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+OTmcaqceN1v+Oh4qkfoovMiZHBs7YKc5pNVuTTFvLU=;
-        b=bq6HrTauu5AOtETgtM5a1l0BJi3Rw6+Bn707YyEn+dilVx5vgAeIFJCJfypgV0zV2O
-         Jy+gsDcA7SpyJLycl9RVoZlaXEgBKaJtwNa+PAMRVbA9NzHUDVF/tgld7uX9zIAVWCp6
-         BQCj7+XlCOCeBSkaFf+xMLruMovSpGDoKduXqnI4qQYyXuVRQjE1S0foB1wLlLOpzo8b
-         bzygwkzSQQWdvM/EAMElYLYc81lqjqMx0QKdSsK4hvVSWriYtGnhKxaNwUOU1vLGpnh+
-         0cz/XASaJKxnVOw3yKxZoEBE6iwUfWz93HaU0Eh/Moaq69p3wxLku4pPU9inTpe+tM5v
-         ls/A==
-X-Gm-Message-State: AOAM532FITcAAQIQA9AF4MtqucbjAwpHDOoPIvjinEtE7pLAszclHckY
-        +SFlDwhE/JYF7OjSXYeuhr0=
-X-Google-Smtp-Source: ABdhPJxQdUdRW57yF2sPo7pyDmfavFgrMQJyQTEISUdcsraHAf+W5NWIFQY9dyGBBR5KjIzVBCM+BA==
-X-Received: by 2002:a63:57:0:b0:37c:5bd8:e708 with SMTP id 84-20020a630057000000b0037c5bd8e708mr4956251pga.407.1646384737182;
-        Fri, 04 Mar 2022 01:05:37 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id j2-20020a655582000000b00372b2b5467asm4192968pgs.10.2022.03.04.01.05.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 01:05:36 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v12 17/17] KVM: x86/pmu: Expose CPUIDs feature bits PDCM, DS, DTES64
-Date:   Fri,  4 Mar 2022 17:04:27 +0800
-Message-Id: <20220304090427.90888-18-likexu@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304090427.90888-1-likexu@tencent.com>
-References: <20220304090427.90888-1-likexu@tencent.com>
+        Fri, 4 Mar 2022 04:08:17 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0404F1A7DA3;
+        Fri,  4 Mar 2022 01:07:18 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 26EE01F4637B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646384837;
+        bh=y71jZr0BRLat9aUsDt8207drN0hQ3NtgJeEhAs5zIio=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=BGl4nIN4JMJ9bhW/+QP0U8oI6uxINNZWxEjwiHyjSN5OryySVZOzx1avvy9n3eVBS
+         KxWGSM9Zo60NlpyrINsd5pvxFAxub6ldRbik8OfRN1c6FhQaRd9e3sH4opUNYevDKm
+         llU/z6Ifzr4iE7MuX+G6xjuSAVMu1aNjBmVhAfVyNPF8V6saPCZ0yngdUxPhTlF3jo
+         0zPjZvdkYH85L0tZtmXxpLmN62AssaSZGsRwEmtXKVATeR9d5qiLSn4oJG/LMEIf8z
+         LJOsB6zh7hHY2r5i1Yw+3bPQ39ZOf6MFrgzByPTPBw0GTxK+/3n/btxUGkjgpMSUN0
+         ss+g2aNjn8VJg==
+Message-ID: <d92c6083-9d87-8eca-c760-f5a6f05f13b2@collabora.com>
+Date:   Fri, 4 Mar 2022 10:07:13 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2, 04/10] media: mtk-vcodec: Enable venc dual core usage
+Content-Language: en-US
+To:     Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>, Yong Wu <yong.wu@mediatek.com>
+Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220117120615.21687-1-irui.wang@mediatek.com>
+ <20220117120615.21687-5-irui.wang@mediatek.com>
+ <3eaa4c05-f8f2-9e18-e6d9-a627fe5e1e40@collabora.com>
+ <0b7f30b6eabb54fa894dcffea5827023ffdd58ee.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <0b7f30b6eabb54fa894dcffea5827023ffdd58ee.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+Il 04/03/22 03:12, Irui Wang ha scritto:
+> Hello, Angelo,
+> 
+> Many thanks for your review.
+> 
+> On Thu, 2022-03-03 at 15:27 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 17/01/22 13:06, Irui Wang ha scritto:
+>>> Adds new venc core mode to indicate different venc hardware mode:
+>>> VENC_SINGLE_CORE_MODE means only one core, the device has its own
+>>> power/clk/irq, init_clk/request_irq helper can be used.
+>>>
+>>> VENC_DUAL_CORE_MODE means more than one core inside, the core
+>>> device
+>>> can use the init_clk/request_irq helper to initialize their own
+>>> power/clk/irq. And the main device doesn't need use these helper
+>>> anymore.
+>>>
+>>> MT8195 has two H264 venc cores, enable dual_core_mode for it.
+>>>
+>>> Signed-off-by: Irui Wang <irui.wang@mediatek.com>
+>>> ---
+>>>    drivers/media/platform/mtk-vcodec/Makefile    |   4 +-
+>>>    .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  22 +++
+>>>    .../platform/mtk-vcodec/mtk_vcodec_enc_core.c | 153
+>>> ++++++++++++++++++
+>>>    .../platform/mtk-vcodec/mtk_vcodec_enc_core.h |  36 +++++
+>>>    .../platform/mtk-vcodec/mtk_vcodec_enc_drv.c  |  88 +++++-----
+>>>    5 files changed, 266 insertions(+), 37 deletions(-)
+>>>    create mode 100644 drivers/media/platform/mtk-
+>>> vcodec/mtk_vcodec_enc_core.c
+>>>    create mode 100644 drivers/media/platform/mtk-
+>>> vcodec/mtk_vcodec_enc_core.h
+>>>
+>>> diff --git a/drivers/media/platform/mtk-vcodec/Makefile
+>>> b/drivers/media/platform/mtk-vcodec/Makefile
+>>> index 93e7a343b5b0..c472b221bd6b 100644
+>>> --- a/drivers/media/platform/mtk-vcodec/Makefile
+>>> +++ b/drivers/media/platform/mtk-vcodec/Makefile
+>>> @@ -3,7 +3,8 @@
+>>>    obj-$(CONFIG_VIDEO_MEDIATEK_VCODEC) += mtk-vcodec-dec.o \
+>>>    				       mtk-vcodec-enc.o \
+>>>    				       mtk-vcodec-common.o \
+>>> -				       mtk-vcodec-dec-hw.o
+>>> +				       mtk-vcodec-dec-hw.o \
+>>> +				       mtk-vcodec-enc-core.o
+>>>    
+>>>    mtk-vcodec-dec-y := vdec/vdec_h264_if.o \
+>>>    		vdec/vdec_vp8_if.o \
+>>> @@ -32,6 +33,7 @@ mtk-vcodec-enc-y := venc/venc_vp8_if.o \
+>>>    		venc_drv_if.o \
+>>>    		venc_vpu_if.o \
+>>>    
+>>> +mtk-vcodec-enc-core-y := mtk_vcodec_enc_core.o
+>>>    
+>>>    mtk-vcodec-common-y := mtk_vcodec_intr.o \
+>>>    		mtk_vcodec_util.o \
+>>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
+>>> b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
+>>> index f78463ff4551..9e4e4290a69a 100644
+>>> --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
+>>> +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
+>>> @@ -117,6 +117,23 @@ enum mtk_vdec_hw_count {
+>>>    	MTK_VDEC_MAX_HW_COUNT,
+>>>    };
+>>>    
+>>> +/*
+>>> + * enum mtk_venc_core_id -- encoder core id
+>>> + */
+>>> +enum mtk_venc_core_id {
+>>> +	MTK_VENC_CORE0 = 0,
+>>> +	MTK_VENC_CORE1 = 1,
+>>
+>> You don't have to say "= 1" for core1, just...
+>>
+>> 	MTK_VENC_CORE0 = 0,
+>> 	MTK_VENC_CORE1,
+>>
+>> ...is fine, and better.
+> 
+> I will fix it.
+> 
+>>
+>>> +	MTK_VENC_CORE_MAX,
+>>> +};
+>>> +
+>>> +/**
+>>> + * enmu mtk_venc_core_mode - Used to indicate different encode
+>>> mode
+>>> + */
+>>> +enum mtk_venc_core_mode {
+>>> +	VENC_SINGLE_CORE_MODE = 0,
+>>> +	VENC_DUAL_CORE_MODE = 1,
+>>> +};
+>>> +
+>>>    /*
+>>>     * struct mtk_video_fmt - Structure used to store information
+>>> about pixelformats
+>>>     */
+>>> @@ -420,6 +437,7 @@ struct mtk_vcodec_dec_pdata {
+>>>     * @output_formats: array of supported output formats
+>>>     * @num_output_formats: number of entries in output_formats
+>>>     * @core_type: stand for h264 or vp8 encode
+>>> + * @core_mode: indicate encode core mode
+>>>     */
+>>>    struct mtk_vcodec_enc_pdata {
+>>>    	bool uses_ext;
+>>> @@ -430,6 +448,7 @@ struct mtk_vcodec_enc_pdata {
+>>>    	const struct mtk_video_fmt *output_formats;
+>>>    	size_t num_output_formats;
+>>>    	int core_type;
+>>> +	enum mtk_venc_core_mode core_mode;
+>>>    };
+>>>    
+>>>    #define MTK_ENC_CTX_IS_EXT(ctx) ((ctx)->dev->venc_pdata-
+>>>> uses_ext)
+>>> @@ -479,6 +498,7 @@ struct mtk_vcodec_enc_pdata {
+>>>     * @subdev_dev: subdev hardware device
+>>>     * @subdev_prob_done: check whether all used hw device is prob
+>>> done
+>>>     * @subdev_bitmap: used to record hardware is ready or not
+>>> + * @enc_core_dev: used to store venc core device
+>>>     */
+>>>    struct mtk_vcodec_dev {
+>>>    	struct v4l2_device v4l2_dev;
+>>> @@ -524,6 +544,8 @@ struct mtk_vcodec_dev {
+>>>    	void *subdev_dev[MTK_VDEC_HW_MAX];
+>>>    	int (*subdev_prob_done)(struct mtk_vcodec_dev *vdec_dev);
+>>>    	DECLARE_BITMAP(subdev_bitmap, MTK_VDEC_HW_MAX);
+>>> +
+>>> +	void *enc_core_dev[MTK_VENC_CORE_MAX];
+>>>    };
+>>>    
+>>>    static inline struct mtk_vcodec_ctx *fh_to_ctx(struct v4l2_fh
+>>> *fh)
+>>> diff --git a/drivers/media/platform/mtk-
+>>> vcodec/mtk_vcodec_enc_core.c b/drivers/media/platform/mtk-
+>>> vcodec/mtk_vcodec_enc_core.c
+>>> new file mode 100644
+>>> index 000000000000..d84914f615a5
+>>> --- /dev/null
+>>> +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_core.c
+>>> @@ -0,0 +1,153 @@
+>>> +// SPDX-License-Identifier: GPL-2.0
+>>> +/*
+>>> + * Copyright (c) 2021 MediaTek Inc.
+>>> + */
+>>> +
+>>> +#include <linux/interrupt.h>
+>>> +#include <linux/irq.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/of_platform.h>
+>>> +#include <linux/pm_runtime.h>
+>>> +#include <linux/slab.h>
+>>> +
+>>> +#include "mtk_vcodec_drv.h"
+>>> +#include "mtk_vcodec_enc.h"
+>>> +#include "mtk_vcodec_enc_core.h"
+>>> +
+>>> +static const struct of_device_id mtk_venc_core_ids[] = {
+>>> +	{
+>>> +		.compatible = "mediatek,mtk-venc-core0",
+>>> +		.data = (void *)MTK_VENC_CORE0,
+>>> +	},
+>>> +	{
+>>> +		.compatible = "mediatek,mtk-venc-core1",
+>>> +		.data = (void *)MTK_VENC_CORE1,
+>>> +	},
+>>> +	{},
+>>> +};
+>>
+>> Hello Irui,
+>>
+>> You don't need a different compatible for the different cores, as in
+>> the
+>> declaration, there's nothing special that differentiates them that
+>> much.
+>>
+>> I understand that there may be a need to differentiate the core
+>> number, as
+>> in, CORE0 always has to be the leader, while CORE1 would be the
+>> follower,
+>> but this is not a good reason to give them a different compatible
+>> string.
+>>
+>> I want to make you aware that Kyrie Wu did the same thing as you did
+>> here
+>> and in my review on his patch I was able to give an extensive example
+>> of
+>> how this should look; the exactly same logic would apply to this
+>> patch.
+>>
+>> Please have a look here:
+>> https://patchwork.kernel.org/comment/24726607/
+>>
+>> P.S.: In short, you should have only one "mediatek,mtk-venc-hw"
+>> compatible
+>>         used for probing both cores.
+> 
+> thanks for your suggestions, with your example, venc can be rewritten
+> like this:
+> venc {
+>      compatible = "mediatek,mt8195-vcodec-enc";
+>      ..... other properties .....
+> 
+>      venc_core0 {
+>          compatible = "mediatek,mtk-venc-hw";
+>          mediatek,hw-leader;//mediatek,venc-core0;
+>          ..... other properties .....
+>      };
+> 
+>      venc_core1 {
+>          compatible = "mediatek,mtk-venc-hw";
+>          //mediatek,venc-core1;
+>          ..... other properties .....
+>      };
+> };
+> I will rewrite this code if it matches your suggestions.
 
-The CPUID features PDCM, DS and DTES64 are required for PEBS feature.
-KVM would expose CPUID feature PDCM, DS and DTES64 to guest when PEBS
-is supported in the KVM on the Ice Lake server platforms.
+Yes, exactly. Just one nit, please don't use underscores.
 
-Originally-by: Andi Kleen <ak@linux.intel.com>
-Co-developed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Co-developed-by: Luwei Kang <luwei.kang@intel.com>
-Signed-off-by: Luwei Kang <luwei.kang@intel.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/kvm/vmx/capabilities.h | 28 +++++++++++++++++-----------
- arch/x86/kvm/vmx/vmx.c          | 15 +++++++++++++++
- 2 files changed, 32 insertions(+), 11 deletions(-)
+venc_core0: venc-hw@(addr)
+this is fine ^
 
-diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
-index 3f430e218375..0e3929ddf9c8 100644
---- a/arch/x86/kvm/vmx/capabilities.h
-+++ b/arch/x86/kvm/vmx/capabilities.h
-@@ -6,6 +6,7 @@
- 
- #include "lapic.h"
- #include "x86.h"
-+#include "pmu.h"
- 
- extern bool __read_mostly enable_vpid;
- extern bool __read_mostly flexpriority_enabled;
-@@ -385,23 +386,28 @@ static inline bool vmx_pt_mode_is_host_guest(void)
- 	return pt_mode == PT_MODE_HOST_GUEST;
- }
- 
-+static inline bool vmx_pebs_supported(void)
-+{
-+	return boot_cpu_has(X86_FEATURE_PEBS) && kvm_pmu_cap.pebs_ept;
-+}
-+
- static inline u64 vmx_get_perf_capabilities(void)
- {
--	u64 perf_cap = 0;
--
--	if (!enable_pmu)
--		return perf_cap;
-+	u64 perf_cap = PMU_CAP_FW_WRITES;
-+	u64 host_perf_cap = 0;
- 
- 	if (boot_cpu_has(X86_FEATURE_PDCM))
--		rdmsrl(MSR_IA32_PERF_CAPABILITIES, perf_cap);
-+		rdmsrl(MSR_IA32_PERF_CAPABILITIES, host_perf_cap);
- 
--	perf_cap &= PMU_CAP_LBR_FMT;
-+	perf_cap |= host_perf_cap & PMU_CAP_LBR_FMT;
- 
--	/*
--	 * Since counters are virtualized, KVM would support full
--	 * width counting unconditionally, even if the host lacks it.
--	 */
--	return PMU_CAP_FW_WRITES | perf_cap;
-+	if (vmx_pebs_supported()) {
-+		perf_cap |= host_perf_cap & PERF_CAP_PEBS_MASK;
-+		if ((perf_cap & PERF_CAP_PEBS_FORMAT) < 4)
-+			perf_cap &= ~PERF_CAP_PEBS_BASELINE;
-+	}
-+
-+	return perf_cap;
- }
- 
- static inline u64 vmx_supported_debugctl(void)
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 7ae0a82a2a78..89899d1a865d 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2247,6 +2247,17 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			if (!cpuid_model_is_consistent(vcpu))
- 				return 1;
- 		}
-+		if (data & PERF_CAP_PEBS_FORMAT) {
-+			if ((data & PERF_CAP_PEBS_MASK) !=
-+			    (vmx_get_perf_capabilities() & PERF_CAP_PEBS_MASK))
-+				return 1;
-+			if (!guest_cpuid_has(vcpu, X86_FEATURE_DS))
-+				return 1;
-+			if (!guest_cpuid_has(vcpu, X86_FEATURE_DTES64))
-+				return 1;
-+			if (!cpuid_model_is_consistent(vcpu))
-+				return 1;
-+		}
- 		ret = kvm_set_msr_common(vcpu, msr_info);
- 		break;
- 
-@@ -7416,6 +7427,10 @@ static __init void vmx_set_cpu_caps(void)
- 		kvm_cpu_cap_clear(X86_FEATURE_INVPCID);
- 	if (vmx_pt_mode_is_host_guest())
- 		kvm_cpu_cap_check_and_set(X86_FEATURE_INTEL_PT);
-+	if (vmx_pebs_supported()) {
-+		kvm_cpu_cap_check_and_set(X86_FEATURE_DS);
-+		kvm_cpu_cap_check_and_set(X86_FEATURE_DTES64);
-+	}
- 
- 	if (!enable_sgx) {
- 		kvm_cpu_cap_clear(X86_FEATURE_SGX);
--- 
-2.35.1
+venc_core0: venc_hw@(addr)
+this is NOT ok ^^
+
+By the way, one (or more than one) of the commits in this series
+is not working correctly, giving a kernel panic on dma mem alloc.
+
+Looking forward to see the new version!
+
+Regards,
+Angelo
+
 
