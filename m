@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A634EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiCDIk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:40:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
+        id S234464AbiCDIkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:40:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234780AbiCDIjv (ORCPT
+        with ESMTP id S234434AbiCDIjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 03:39:51 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078E01A1C43;
-        Fri,  4 Mar 2022 00:38:33 -0800 (PST)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1038119F47D;
+        Fri,  4 Mar 2022 00:38:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646383113; x=1677919113;
+  t=1646383110; x=1677919110;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=2JwYCUkWRBQO1GrsiLTxp1cOwxh2KJnv2QZle05c0d0=;
-  b=F57CBDbZKrkwjlRu94FLsnlHbqM0qsbA/nHwiTFiiASg3rijXUErfv0B
-   duERhcbE/jBiYd+abk4D6EbLfDV3Px3UoqbSr7D0RG4JXN6lMYzaEH0VV
-   nVWAwgkJpXIGN/bi+HwFZAILHFI1sV87GFXKkEc2qPsmDQXXamjaJj71H
-   qvnxR7t0WjcYXf6drh5nqPTn+q7fN+MFIU7QLaLqZancq+ywa48F3VZ0y
-   2383FA0n/pi96Fm80UvDnHHuY2WAhqJjrU/I/32Em9AIU+bDcG/OAH0c3
-   BjuzDkhA5zq+LxdSCfWOQSkuEA1cxJbKDDnSLee90b2RicGY562tDlcQ4
+  bh=cHbsgcMFLgf5FBpyxCgfO30bNR0p2jztzb1eYSzo9QM=;
+  b=VynikB2iGN5Xy7sAwhFVkAzbg79Xq7ePniLtQZu6ue2h1UwdhfcRWHxh
+   4xDahyFAe+KsbKEghF774B2CfWPAmT2fn6i86qENbyO75A/xjgZNlPPbH
+   aedO8twDDd02x9+mUePPN/3or+qMDNmtjrqCb2Go1NUQcie7zPhv74mdZ
+   eGe+pZHv1H7xfogcmQ+pHP/jx2U9tStpyD/jdCXeEZW6k7Ak8XyJC/2+a
+   hql+7GNSV4O/Naer0v5KUjEyGsBecuMy6AZtGAxY8AKR8zYr5xLw1lQ/A
+   aFamNpBp3VgtHADnbatHkUHKUCmVcdIAGiBqs63+FFpLXeFl/7N5J3cm/
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="317156381"
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="253860938"
 X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="317156381"
+   d="scan'208";a="253860938"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:11 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:28 -0800
 X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="552141430"
+   d="scan'208";a="552141471"
 Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:06 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:23 -0800
 From:   Zeng Guang <guang.zeng@intel.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>,
@@ -58,9 +58,9 @@ Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
         Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
         Zeng Guang <guang.zeng@intel.com>,
         Robert Hoo <robert.hu@linux.intel.com>
-Subject: [PATCH v7 1/8] x86/cpu: Add new VMX feature, Tertiary VM-Execution control
-Date:   Fri,  4 Mar 2022 16:07:18 +0800
-Message-Id: <20220304080725.18135-2-guang.zeng@intel.com>
+Subject: [PATCH v7 4/8] KVM: VMX: dump_vmcs() reports tertiary_exec_control field as well
+Date:   Fri,  4 Mar 2022 16:07:21 +0800
+Message-Id: <20220304080725.18135-5-guang.zeng@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220304080725.18135-1-guang.zeng@intel.com>
 References: <20220304080725.18135-1-guang.zeng@intel.com>
@@ -70,101 +70,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Robert Hoo <robert.hu@linux.intel.com>
 
-A new 64-bit control field "tertiary processor-based VM-execution
-controls", is defined [1]. It's controlled by bit 17 of the primary
-processor-based VM-execution controls.
+Add tertiary_exec_control field report in dump_vmcs()
 
-Different from its brother VM-execution fields, this tertiary VM-
-execution controls field is 64 bit. So it occupies 2 vmx_feature_leafs,
-TERTIARY_CTLS_LOW and TERTIARY_CTLS_HIGH.
-
-Its companion VMX capability reporting MSR,MSR_IA32_VMX_PROCBASED_CTLS3
-(0x492), is also semantically different from its brothers, whose 64 bits
-consist of all allow-1, rather than 32-bit allow-0 and 32-bit allow-1 [1][2].
-Therefore, its init_vmx_capabilities() is a little different from others.
-
-[1] ISE 6.2 "VMCS Changes"
-https://www.intel.com/content/www/us/en/develop/download/intel-architecture-instruction-set-extensions-programming-reference.html
-
-[2] SDM Vol3. Appendix A.3
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Robert Hoo <robert.hu@linux.intel.com>
 Signed-off-by: Zeng Guang <guang.zeng@intel.com>
 ---
- arch/x86/include/asm/msr-index.h   | 1 +
- arch/x86/include/asm/vmxfeatures.h | 3 ++-
- arch/x86/kernel/cpu/feat_ctl.c     | 9 ++++++++-
- 3 files changed, 11 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 3faf0f97edb1..1d180f883c32 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -938,6 +938,7 @@
- #define MSR_IA32_VMX_TRUE_EXIT_CTLS      0x0000048f
- #define MSR_IA32_VMX_TRUE_ENTRY_CTLS     0x00000490
- #define MSR_IA32_VMX_VMFUNC             0x00000491
-+#define MSR_IA32_VMX_PROCBASED_CTLS3	0x00000492
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 8a5713d49635..7beba7a9f247 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -5891,6 +5891,7 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 	u32 vmentry_ctl, vmexit_ctl;
+ 	u32 cpu_based_exec_ctrl, pin_based_exec_ctrl, secondary_exec_control;
++	u64 tertiary_exec_control;
+ 	unsigned long cr4;
+ 	int efer_slot;
  
- /* VMX_BASIC bits and bitmasks */
- #define VMX_BASIC_VMCS_SIZE_SHIFT	32
-diff --git a/arch/x86/include/asm/vmxfeatures.h b/arch/x86/include/asm/vmxfeatures.h
-index d9a74681a77d..ff20776dc83b 100644
---- a/arch/x86/include/asm/vmxfeatures.h
-+++ b/arch/x86/include/asm/vmxfeatures.h
-@@ -5,7 +5,7 @@
- /*
-  * Defines VMX CPU feature bits
-  */
--#define NVMXINTS			3 /* N 32-bit words worth of info */
-+#define NVMXINTS			5 /* N 32-bit words worth of info */
- 
- /*
-  * Note: If the comment begins with a quoted string, that string is used
-@@ -43,6 +43,7 @@
- #define VMX_FEATURE_RDTSC_EXITING	( 1*32+ 12) /* "" VM-Exit on RDTSC */
- #define VMX_FEATURE_CR3_LOAD_EXITING	( 1*32+ 15) /* "" VM-Exit on writes to CR3 */
- #define VMX_FEATURE_CR3_STORE_EXITING	( 1*32+ 16) /* "" VM-Exit on reads from CR3 */
-+#define VMX_FEATURE_TERTIARY_CONTROLS	( 1*32+ 17) /* "" Enable Tertiary VM-Execution Controls */
- #define VMX_FEATURE_CR8_LOAD_EXITING	( 1*32+ 19) /* "" VM-Exit on writes to CR8 */
- #define VMX_FEATURE_CR8_STORE_EXITING	( 1*32+ 20) /* "" VM-Exit on reads from CR8 */
- #define VMX_FEATURE_VIRTUAL_TPR		( 1*32+ 21) /* "vtpr" TPR virtualization, a.k.a. TPR shadow */
-diff --git a/arch/x86/kernel/cpu/feat_ctl.c b/arch/x86/kernel/cpu/feat_ctl.c
-index da696eb4821a..993697e71854 100644
---- a/arch/x86/kernel/cpu/feat_ctl.c
-+++ b/arch/x86/kernel/cpu/feat_ctl.c
-@@ -15,6 +15,8 @@ enum vmx_feature_leafs {
- 	MISC_FEATURES = 0,
- 	PRIMARY_CTLS,
- 	SECONDARY_CTLS,
-+	TERTIARY_CTLS_LOW,
-+	TERTIARY_CTLS_HIGH,
- 	NR_VMX_FEATURE_WORDS,
- };
- 
-@@ -22,7 +24,7 @@ enum vmx_feature_leafs {
- 
- static void init_vmx_capabilities(struct cpuinfo_x86 *c)
- {
--	u32 supported, funcs, ept, vpid, ign;
-+	u32 supported, funcs, ept, vpid, ign, low, high;
- 
- 	BUILD_BUG_ON(NVMXINTS != NR_VMX_FEATURE_WORDS);
- 
-@@ -42,6 +44,11 @@ static void init_vmx_capabilities(struct cpuinfo_x86 *c)
- 	rdmsr_safe(MSR_IA32_VMX_PROCBASED_CTLS2, &ign, &supported);
- 	c->vmx_capability[SECONDARY_CTLS] = supported;
- 
-+	/* All 64 bits of tertiary controls MSR are allowed-1 settings. */
-+	rdmsr_safe(MSR_IA32_VMX_PROCBASED_CTLS3, &low, &high);
-+	c->vmx_capability[TERTIARY_CTLS_LOW] = low;
-+	c->vmx_capability[TERTIARY_CTLS_HIGH] = high;
+@@ -5904,9 +5905,16 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
+ 	cpu_based_exec_ctrl = vmcs_read32(CPU_BASED_VM_EXEC_CONTROL);
+ 	pin_based_exec_ctrl = vmcs_read32(PIN_BASED_VM_EXEC_CONTROL);
+ 	cr4 = vmcs_readl(GUEST_CR4);
+-	secondary_exec_control = 0;
 +
- 	rdmsr(MSR_IA32_VMX_PINBASED_CTLS, ign, supported);
- 	rdmsr_safe(MSR_IA32_VMX_VMFUNC, &ign, &funcs);
+ 	if (cpu_has_secondary_exec_ctrls())
+ 		secondary_exec_control = vmcs_read32(SECONDARY_VM_EXEC_CONTROL);
++	else
++		secondary_exec_control = 0;
++
++	if (cpu_has_tertiary_exec_ctrls())
++		tertiary_exec_control = vmcs_read64(TERTIARY_VM_EXEC_CONTROL);
++	else
++		tertiary_exec_control = 0;
  
+ 	pr_err("VMCS %p, last attempted VM-entry on CPU %d\n",
+ 	       vmx->loaded_vmcs->vmcs, vcpu->arch.last_vmentry_cpu);
+@@ -6006,9 +6014,10 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
+ 		vmx_dump_msrs("host autoload", &vmx->msr_autoload.host);
+ 
+ 	pr_err("*** Control State ***\n");
+-	pr_err("PinBased=%08x CPUBased=%08x SecondaryExec=%08x\n",
+-	       pin_based_exec_ctrl, cpu_based_exec_ctrl, secondary_exec_control);
+-	pr_err("EntryControls=%08x ExitControls=%08x\n", vmentry_ctl, vmexit_ctl);
++	pr_err("CPUBased=0x%08x SecondaryExec=0x%08x TertiaryExec=0x%016llx\n",
++	       cpu_based_exec_ctrl, secondary_exec_control, tertiary_exec_control);
++	pr_err("PinBased=0x%08x EntryControls=%08x ExitControls=%08x\n",
++	       pin_based_exec_ctrl, vmentry_ctl, vmexit_ctl);
+ 	pr_err("ExceptionBitmap=%08x PFECmask=%08x PFECmatch=%08x\n",
+ 	       vmcs_read32(EXCEPTION_BITMAP),
+ 	       vmcs_read32(PAGE_FAULT_ERROR_CODE_MASK),
 -- 
 2.27.0
 
