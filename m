@@ -2,100 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21325C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CBBC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236595AbiCDJ0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:26:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
+        id S236834AbiCDJ3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:29:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236515AbiCDJ0c (ORCPT
+        with ESMTP id S236000AbiCDJ3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:26:32 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D3BEACA0
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:25:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646385945; x=1677921945;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=rf20lH8dvSrKzCQZ7qSNwerDjNaEqtoBaCfeHoZI2t8=;
-  b=QzhgmT0v4XTMkUHJ06iyk+Lx4MswsxkHUcP8XAUy2q4ENzXCaMTxjjwz
-   ++9cp8f+mVkDiSLjZ1arUOss/mxLw5hfwaDTgF4VZy/g9WcIX9XhVVhgH
-   SJmb3R5Xdu3OjQhZK/frt2WsA7TKpdFMaEHmdeK8SuiDLWs1UaInqcbP+
-   jwuMr2F5q84+dwSsA8zw9/bflw4gpEgbInLH7tHt7AZT1Qj+Cqre6+Mcq
-   vmkOLvzXIbRrPj3WQThR0uc995UXeOV/HbR0LxIcfy+uq4skn9UwS/GPz
-   ECu0LE9lzECT5PtW/7uPuiYcDVaI4c5wMmtATMtSqsNr0KGYxxCquRm0V
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="241359425"
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="241359425"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 01:25:45 -0800
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="552156638"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 01:25:43 -0800
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] rcu: Only boost rcu reader tasks with lower priority than boost kthreads
-Date:   Fri,  4 Mar 2022 17:26:31 +0800
-Message-Id: <20220304092631.4123188-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 4 Mar 2022 04:29:05 -0500
+Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5112A154D24;
+        Fri,  4 Mar 2022 01:28:16 -0800 (PST)
+Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 81F6760179;
+        Fri,  4 Mar 2022 10:28:12 +0100 (CET)
+Date:   Fri, 4 Mar 2022 10:28:11 +0100
+From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Huijin Park <huijin.park@samsung.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+Subject: Re: [BUG] mmc: core: adjust polling interval for CMD1
+Message-ID: <20220304092811.GA20284@math.uni-bielefeld.de>
+References: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
+ <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
+ <20220302082034.GA5723@math.uni-bielefeld.de>
+ <6715A5BE-CA64-4A3D-8EE5-5BEEB63F268A@goldelico.com>
+ <CAPDyKFqMs6FsJHVOoVmZxzBPgUdLoqa-xeLfvkQi1pn=8k1h6Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFqMs6FsJHVOoVmZxzBPgUdLoqa-xeLfvkQi1pn=8k1h6Q@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When RCU_BOOST is enabled, the boost kthreads will boosting readers
-who are blocking a given grace period, if the current reader tasks
-have a higher priority than boost kthreads(the boost kthreads priority
-not always 1, if the kthread_prio is set), boosting is useless, skip
-current task and select next task to boosting, reduce the time for a
-given grace period.
+Ulf Hansson wrote on Thu  3/03/22 11:40:
+> On Wed, 2 Mar 2022 at 10:40, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+> 
+> Alright, it starts to sound like we might need a revert (or at least a
+> way to restore the previous behaviour) - even if that would just paper
+> over the real problem. The real problem is more likely related to how
+> the host driver manages restoring of the power to the card, which
+> happens when runtime resuming it.
+> 
+> In any case, just to make sure the loop timeout itself isn't the
+> problem, can you run the below debug patch please? The intent is to
+> figure out how long the worst case timeout is, when it's working with
+> CMD1. As soon as the timeout exceeds the worst case, there is a
+> message printed to the log.
+> 
+> The below patch is based upon that the offending commit has been reverted.
+> 
+> Kind regards
+> Uffe
+> 
+> From: Ulf Hansson <ulf.hansson@linaro.org>
+> Date: Thu, 3 Mar 2022 11:00:04 +0100
+> Subject: [PATCH] mmc: core: DEBUG - Measure and log worst case CMD1 loop
+> 
+> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> ---
+>  drivers/mmc/core/mmc_ops.c | 11 +++++++++++
+>  include/linux/mmc/host.h   |  1 +
+>  2 files changed, 12 insertions(+)
+> 
+> diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+> index 9946733a34c6..3f03d9e8a3a4 100644
+> --- a/drivers/mmc/core/mmc_ops.c
+> +++ b/drivers/mmc/core/mmc_ops.c
+> @@ -177,11 +177,15 @@ int mmc_send_op_cond(struct mmc_host *host, u32
+> ocr, u32 *rocr)
+>  {
+>         struct mmc_command cmd = {};
+>         int i, err = 0;
+> +       s64 cmd1_ms;
+> +       ktime_t time_start;
+> 
+>         cmd.opcode = MMC_SEND_OP_COND;
+>         cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
+>         cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
+> 
+> +       time_start = ktime_get();
+> +
+>         for (i = 100; i; i--) {
+>                 err = mmc_wait_for_cmd(host, &cmd, 0);
+>                 if (err)
+> @@ -211,6 +215,13 @@ int mmc_send_op_cond(struct mmc_host *host, u32
+> ocr, u32 *rocr)
+>                         cmd.arg = cmd.resp[0] | BIT(30);
+>         }
+> 
+> +       cmd1_ms = ktime_to_ms(ktime_sub(ktime_get(), time_start));
+> +       if (!err && cmd1_ms > host->cmd1_ms) {
+> +               pr_warn("%s: CMD1 timeout increased to %lld ms, loop=%d\n",
+> +                       mmc_hostname(host), cmd1_ms, i);
+> +               host->cmd1_ms = cmd1_ms;
+> +       }
+> +
+>         if (rocr && !mmc_host_is_spi(host))
+>                 *rocr = cmd.resp[0];
+> 
+> diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+> index 7afb57cab00b..c2ca3bb05620 100644
+> --- a/include/linux/mmc/host.h
+> +++ b/include/linux/mmc/host.h
+> @@ -301,6 +301,7 @@ struct mmc_host {
+>         unsigned int            f_min;
+>         unsigned int            f_max;
+>         unsigned int            f_init;
+> +       s64                     cmd1_ms;
+>         u32                     ocr_avail;
+>         u32                     ocr_avail_sdio; /* SDIO-specific OCR */
+>         u32                     ocr_avail_sd;   /* SD-specific OCR */
+> -- 
+> 2.25.1
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- kernel/rcu/tree_plugin.h | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Hi,
 
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index c3d212bc5338..d35b6da66bbd 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -12,6 +12,7 @@
-  */
- 
- #include "../locking/rtmutex_common.h"
-+#include <linux/sched/deadline.h>
- 
- static bool rcu_rdp_is_offloaded(struct rcu_data *rdp)
- {
-@@ -1065,13 +1066,20 @@ static int rcu_boost(struct rcu_node *rnp)
- 	 * section.
- 	 */
- 	t = container_of(tb, struct task_struct, rcu_node_entry);
-+	if (!rnp->exp_tasks && (dl_task(t) || t->prio <= current->prio)) {
-+		tb = rcu_next_node_entry(t, rnp);
-+		WRITE_ONCE(rnp->boost_tasks, tb);
-+		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
-+		goto end;
-+	}
-+
- 	rt_mutex_init_proxy_locked(&rnp->boost_mtx.rtmutex, t);
- 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
- 	/* Lock only for side effect: boosts task t's priority. */
- 	rt_mutex_lock(&rnp->boost_mtx);
- 	rt_mutex_unlock(&rnp->boost_mtx);  /* Then keep lockdep happy. */
- 	rnp->n_boosts++;
--
-+end:
- 	return READ_ONCE(rnp->exp_tasks) != NULL ||
- 	       READ_ONCE(rnp->boost_tasks) != NULL;
- }
--- 
-2.25.1
+thanks. With this patch applied with reverted 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722
+I don't get the "stuck" errors in __mmc_poll_for_busy and only one message of
+
+[    1.095194] mmc1: CMD1 timeout increased to 64 ms, loop=98
+
+Regards,
+Jean Rene Dawin
+
 
