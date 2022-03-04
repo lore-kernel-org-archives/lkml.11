@@ -2,155 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4C6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A68BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241676AbiCDS3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:29:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        id S241686AbiCDSaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239963AbiCDS3c (ORCPT
+        with ESMTP id S241685AbiCDS37 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:29:32 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCF64C79B;
-        Fri,  4 Mar 2022 10:28:44 -0800 (PST)
+        Fri, 4 Mar 2022 13:29:59 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6D3A41B7;
+        Fri,  4 Mar 2022 10:29:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646418524; x=1677954524;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=GiSHayaTp3plS/8dF4tiE4fhYopJ+xm/lVEP2Z67CGk=;
-  b=EiDoe8kLGaOx5oA41UB+Nx9CHOqFoJm3GqEW2zqpNFMKTXyyfBZithAG
-   rV9X8pH+hkntnhMYR3jC6f1OVx1l9LRMlNzDk1MYqiJOVWZZlv1oi2u4z
-   urZZtD9mMb9P+We4dR0+BLBoC2ABYbql1uEM3Aj/2m7hYTNYiGO0igXeH
-   ql3bgNfT12BuUx7gXbiRSu0mGoFjGdos3ATbGAU+wb4IiK0O7jrSCGHk0
-   3opOcnALZXGaGaFaG3KjVw7c2e6FhvFxLPupW/2g/Ah8RmN4NrSuRNV3+
-   hdbIijUfgG5sewN/2gbGfB1UCWbZZEVy01ym1pUFQabu0ClhuiypeiRnR
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="278726905"
+  t=1646418551; x=1677954551;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=T1cJyOMT/4MKGohYN7debDUVB+ANZyP5BQoa2vWx+2Y=;
+  b=WmMjbRwWZnnL8eX0KxSotT3fKM09kVEuFkZlCRNeLdYCdvPKrddNNznb
+   WTs8Cg96aOB3/mKl2yil9RCDgjWboeVRGpD4veO3Xumtf5bnFLcKXpf4V
+   fLUmKAiiAzTA9nTQFDgjtU2m9QrgeE4QzXMeWRjDfVYC0H/wASaevWxyl
+   gaylwgnPo+PUm0VWwm23tS2wQ99+nHXnLDj4rniI4fdplVtcv0hyW1mGR
+   9yo3KWjHLUjE6l6zRGsUINeWWBzuVLoHenGOmzYcSA/nnxzfEivWL3q17
+   CDuYsYENUHQHzGWb4lQS5NgBLZjRiecHwOwxfQ0hqHzRkn6jT0A3T9JMn
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="314751355"
 X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="278726905"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:28:44 -0800
+   d="scan'208";a="314751355"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:29:10 -0800
 X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="552318052"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.40])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:28:43 -0800
-Date:   Fri, 4 Mar 2022 10:30:47 -0800 (PST)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Russ Weight <russell.h.weight@intel.com>
-cc:     Tom Rix <trix@redhat.com>, hao.wu@intel.com, yilun.xu@intel.com,
-        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org, corbet@lwn.net,
-        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dan.j.williams@intel.com,
-        ashok.raj@intel.com, tianfei.zhang@intel.com
-Subject: Re: [PATCH v2 1/2] Documentation: fpga: dfl: add PCI Identification
- documentation
-In-Reply-To: <bc41bc12-0d88-771f-7e78-4e29361fcfd8@intel.com>
-Message-ID: <alpine.DEB.2.22.394.2203041021240.3408681@rhweight-WRK1>
-References: <20220303003534.3307971-1-matthew.gerlach@linux.intel.com> <20220303003534.3307971-2-matthew.gerlach@linux.intel.com> <6448f21f-7ce1-d9ce-1048-29aca14f9d3d@redhat.com> <bc41bc12-0d88-771f-7e78-4e29361fcfd8@intel.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+   d="scan'208";a="710419091"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:29:09 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nQCf8-00BKb2-UB;
+        Fri, 04 Mar 2022 20:28:22 +0200
+Date:   Fri, 4 Mar 2022 20:28:22 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v4 3/3] iio: temperature: ltc2983: Make use of device
+ properties
+Message-ID: <YiJaRoIVSU8fIly3@smile.fi.intel.com>
+References: <20220304180257.80298-1-andriy.shevchenko@linux.intel.com>
+ <20220304180257.80298-3-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-2071792777-1646418653=:3408681"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220304180257.80298-3-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, Mar 04, 2022 at 08:02:57PM +0200, Andy Shevchenko wrote:
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
+> 
+> The conversion slightly changes the logic behind property reading for
+> the configuration values. Original code allocates just as much memory
+> as needed. Then for each separate 32- or 64-bit value it reads it from
+> the property and converts to a raw one which will be fed to the sensor.
+> In the new code we allocate the amount of memory needed to retrieve all
+> values at once from the property and then convert them as required.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Tested-by: Nuno S� <nuno.sa@analog.com>
+> ---
+> v4: added checks for error pointer (Nuno), added Tb tag (Nuno)
+> v3: no changes
 
---8323328-2071792777-1646418653=:3408681
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8BIT
+Forgot to add, that this patch should work without fwnode fix.
+To test fwnode fix, the part of the NULLifying ref should be
+(temporary) dropped.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-On Fri, 4 Mar 2022, Russ Weight wrote:
-
->
->
-> On 3/3/22 14:04, Tom Rix wrote:
->>
->> On 3/2/22 4:35 PM, matthew.gerlach@linux.intel.com wrote:
->>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>>
->>> Add documentation on identifying FPGA based PCI cards prompted
->>> by discussion on the linux-fpga@vger.kernel.org mailing list.
->>>
->>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>> ---
->>> v2: Introduced in v2.
->>> ---
->>>   Documentation/fpga/dfl.rst | 20 ++++++++++++++++++++
->>>   1 file changed, 20 insertions(+)
->>>
->>> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
->>> index ef9eec71f6f3..5fb2ca8e76d7 100644
->>> --- a/Documentation/fpga/dfl.rst
->>> +++ b/Documentation/fpga/dfl.rst
->>> @@ -502,6 +502,26 @@ Developer only needs to provide a sub feature driver with matched feature id.
->>>   FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme-pr.c)
->>>   could be a reference.
->>>   +PCI Device Identification
->>> +================================
->>> +Since FPGA based PCI cards can be reconfigured to a perform a completely
->>> +new function at runtime, properly identifying such cards and binding the
->>> +correct driver can be challenging. In many use cases, deployed FPGA based
->>> +PCI cards are essentially static and the PCI Product ID and Vendor ID pair
->>> +is sufficient to identify the card.  The DFL framework helps with the
->>> +dynamic case of deployed FPGA cards changing at run time by providing
->>> +more detailed information about card discoverable at runtime.
->>> +
->>> +At one level, the DFL on a PCI card describes the function of the card.
->>> +However, the same DFL could be instantiated on different physical cards.
->>> +Conversely, different DFLs could be instantiated on the same physical card.
->>> +Practical management of a cloud containing a heterogeneous set of such cards
->>> +requires a PCI level of card identification. While the PCI Product ID and
->>> +Vendor ID may be sufficient to bind the dfl-pci driver, it is expected
->>> +that FPGA PCI cards would advertise suitable Subsystem ID and Subsystem
->>> +Vendor ID values. PCI Vital Product Data (VPD) can also be used for
->>> +more granular information about the board.
->>
->> This describes a bit more of the problem, it should describe it wrt ofs dev id. The introduction of the ofs dev should be explicitly called out as a generic pci id.
-
-The problem I'm describing exists for all FPGA based PCI cards; so I am 
-purposely trying to be abstract as much as possible.
-
->>
->> Why couldn't one of the old pci id's be reused ?
-
-Yes, old pci id's could be reused, and people have done just that.  We 
-thought a new PCI ID would minimize confusion with cards that have already 
-been deployed.
-
->>
->> How will the subvendor/subid be enforced ?
-
-Subvendor and Subid are managed just like any other PCI card with or 
-without a FPGA.
-
->>
->> Is the current security manager patchset smart enough to save the board from being bricked when a user doesn't look beyond the pci id ?
->
-> Yes - the security manager is invoked based of DFL feature ID and revision, and the functionality is differentiated based on the same information.
->
->>
->> What happens if a board uses this device id but doesn't have a max10 to do the update ?
-
-If a board doesn't have a max10, then there will be no DFH for a max10 in 
-the board's DFLs.  Presumeably, the board would need some update process, 
-and an approprate DFH would be in that board's DFL.
-
->>
->> Tom
->>
->>> +
->>>   Location of DFLs on a PCI Device
->>>   ================================
->>>   The original method for finding a DFL on a PCI device assumed the start of the
->>
->
->
---8323328-2071792777-1646418653=:3408681--
