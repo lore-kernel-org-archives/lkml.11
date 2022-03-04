@@ -2,110 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61725C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B435C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbiCDULR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:11:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53234 "EHLO
+        id S231328AbiCDUL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:11:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232277AbiCDUJE (ORCPT
+        with ESMTP id S230502AbiCDUHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:09:04 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B8620C2DA;
-        Fri,  4 Mar 2022 12:03:31 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id f37so15972832lfv.8;
-        Fri, 04 Mar 2022 12:03:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2feTJ8tP3DC/YFFoVPPzvKdizBU6tg9lhj95h2BK0Uk=;
-        b=M6uJy3jiqnYZQ0PUmcG9NFo1HLo/wJenMcAEDj8OcYlR9/RQqdhxHfSkm6Iz8Hh9j+
-         S2tVbOzWmTyNQWI7IehtdN0/doGOGBH+9z4AYvxiIUBQtm/oGDsIMDl/58jnglUsqcs6
-         4PG/NyJteifuVuoi41+Wbf2iHgHbzRXtxdFTI3sszlV8I+N/veBbFrR16u6uKEZzWuWT
-         YB8aIEu9GUS8lTNfvcjZ9yuYi6h33a3rVUp5BRkgiLUbna+Tq5TxZEFS5VJG9e5t2vUC
-         BsUnwJ8dXcPJk8VIQXlJjC6sYe8z8GsVkL68X9QTAQjrlf6qV+IkO1ovVHYW7UYuq3cp
-         wDjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2feTJ8tP3DC/YFFoVPPzvKdizBU6tg9lhj95h2BK0Uk=;
-        b=VkEohwuwCex97HTqNctxF6HRD2n31mM7U+S/HaDSMkguxXuIkBtfdWcGNjDFsA5mks
-         RtjjlGwA7UJQvRySBZ3vaZd0/M3T0/h/kMkLj5+kNOftnWCL/LPWVR04+HIro96Rro2o
-         CRMnKdT3erR9/HBsHTMitQmQue/7un8mmxFYWBzdsADgIMUDwCd3d3Gy3QuI4I/CnyCv
-         NmbMJlV9zjFyb5VK2yjxL8R56IRoe3qMjBHH5aeucRbl3Vc64gTO61UtbEFWVJMIybtL
-         StA9wzoizf2z7H/k8r5KJdVhzc+1WmXRlW7P4l3/EcfpWO1s7pGNi3Jbv1r43tE4QMzD
-         Dndg==
-X-Gm-Message-State: AOAM533EzWywU5wnqzyeIdTyCbzGPvotA7UytGmepImdx8cZ1/livitZ
-        lk4wVatPmJh+8dyAytt00tQ3X6bBXrPQ7w==
-X-Google-Smtp-Source: ABdhPJxDMYpnJkvbS4DeRXy/SlQQziXOQnVycA9teF/oaohkBhHHeN4VqtYX3TuB4i8JAUwVxLhqXg==
-X-Received: by 2002:a17:907:334c:b0:6cd:76b7:3948 with SMTP id yr12-20020a170907334c00b006cd76b73948mr262340ejb.55.1646422143286;
-        Fri, 04 Mar 2022 11:29:03 -0800 (PST)
-Received: from [192.168.1.103] ([178.176.72.82])
-        by smtp.gmail.com with ESMTPSA id s15-20020a056402520f00b00415e50f8ce1sm2242179edd.54.2022.03.04.11.28.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 11:29:02 -0800 (PST)
-Subject: Re: [PATCH v4 16/24] locking/lockdep, cpu/hotplus: Use a weaker
- annotation in AP thread
-To:     Byungchul Park <byungchul.park@lge.com>,
-        torvalds@linux-foundation.org
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
- <1646377603-19730-17-git-send-email-byungchul.park@lge.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <aac81d30-ccc6-b351-729a-7265e8b6ec2c@gmail.com>
-Date:   Fri, 4 Mar 2022 22:28:57 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Fri, 4 Mar 2022 15:07:49 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8672D14F3;
+        Fri,  4 Mar 2022 12:02:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646424132; x=1677960132;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=5XV4sEZhs5zaefdhwp0/a2DcOExXryV64uN38LbyoBo=;
+  b=BhNO1M+NKDHFajl/dY1VReGqr/hijUz6sQzbeH7Rcevv6X/3ZverXKCD
+   0ib73bgfjPehposWsBRWly5oP71zgKp6aD7roxol1fYyhfoFfuZlA2WkZ
+   QkGWjV8wr1nJ2/IlJmQIK48FYqB2/0DUbJzBQ3A1Iwa8TLF6kYDgOtXga
+   a+pZW95Tim5eJc1aJg1YzUcTKbsKP4cFVCvTJiEQXKbOppH6LhrRDZYpM
+   5RNhEO2M6iEXEQLaxM+J05BGqqHIMBF8CnODOvFN4RQH24GhXOhNinMsw
+   3QDnWnOxCXYfJopJQHsLc7kSAMx9/tscrEb5cj1xfG0f9EFQn9UbSmDGI
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983462"
+X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
+   d="scan'208";a="253983462"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:20 -0800
+X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
+   d="scan'208";a="552344311"
+Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:19 -0800
+From:   isaku.yamahata@intel.com
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value for shadow PTE
+Date:   Fri,  4 Mar 2022 11:48:53 -0800
+Message-Id: <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1646377603-19730-17-git-send-email-byungchul.park@lge.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 10:06 AM, Byungchul Park wrote:
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-> cb92173d1f0 (locking/lockdep, cpu/hotplug: Annotate AP thread) was
+TDX will run with EPT violation #VEs enabled for shared EPT, which means
+KVM needs to set the "suppress #VE" bit in unused PTEs to avoid
+unintentionally reflecting not-present EPT violations into the guest.
 
-   You need to enclose the commit summary in (""), not just (). :-)
+Because guest memory is protected with TDX, VMM can't parse instructions
+in the guest memory.  Instead, MMIO hypercall is used to pass necessary
+information to VMM.
 
-> introduced to make lockdep_assert_cpus_held() work in AP thread.
-> 
-> However, the annotation is too strong for that purpose. We don't have to
-> use more than try lock annotation for that.
-> 
-> Furthermore, now that Dept was introduced, false positive alarms was
-> reported by that. Replaced it with try lock annotation.
-> 
-> Signed-off-by: Byungchul Park <byungchul.park@lge.com>
-[...]
+To make unmodified device driver work, guest TD expects #VE on accessing
+shared GPA.  The #VE handler converts MMIO access into MMIO hypercall with
+the EPT entry of enabled "#VE" by clearing "suppress #VE" bit.  Before VMM
+enabling #VE, it needs to figure out the given GPA is for MMIO by EPT
+violation.  So the execution flow looks like
 
-MBR, Sergey
+- allocate unused shared EPT entry with suppress #VE bit set.
+- EPT violation on that GPA.
+- VMM figures out the faulted GPA is for MMIO.
+- VMM clears the suppress #VE bit.
+- Guest TD gets #VE, and converts MMIO access into MMIO hypercall.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+---
+ arch/x86/kvm/mmu.h      |  1 +
+ arch/x86/kvm/mmu/mmu.c  | 50 +++++++++++++++++++++++++++++++++++------
+ arch/x86/kvm/mmu/spte.c | 10 +++++++++
+ arch/x86/kvm/mmu/spte.h |  2 ++
+ 4 files changed, 56 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index 3fb530359f81..0ae91b8b25df 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -66,6 +66,7 @@ static __always_inline u64 rsvd_bits(int s, int e)
+ 
+ void kvm_mmu_set_mmio_spte_mask(u64 mmio_value, u64 mmio_mask, u64 access_mask);
+ void kvm_mmu_set_ept_masks(bool has_ad_bits, bool has_exec_only);
++void kvm_mmu_set_spte_init_value(u64 init_value);
+ 
+ void kvm_init_mmu(struct kvm_vcpu *vcpu);
+ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 9907cb759fd1..a474f2e76d78 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -617,9 +617,9 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
+ 	int level = sptep_to_sp(sptep)->role.level;
+ 
+ 	if (!spte_has_volatile_bits(old_spte))
+-		__update_clear_spte_fast(sptep, 0ull);
++		__update_clear_spte_fast(sptep, shadow_init_value);
+ 	else
+-		old_spte = __update_clear_spte_slow(sptep, 0ull);
++		old_spte = __update_clear_spte_slow(sptep, shadow_init_value);
+ 
+ 	if (!is_shadow_present_pte(old_spte))
+ 		return old_spte;
+@@ -651,7 +651,7 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
+  */
+ static void mmu_spte_clear_no_track(u64 *sptep)
+ {
+-	__update_clear_spte_fast(sptep, 0ull);
++	__update_clear_spte_fast(sptep, shadow_init_value);
+ }
+ 
+ static u64 mmu_spte_get_lockless(u64 *sptep)
+@@ -737,6 +737,42 @@ static void walk_shadow_page_lockless_end(struct kvm_vcpu *vcpu)
+ 	}
+ }
+ 
++static inline void kvm_init_shadow_page(void *page)
++{
++#ifdef CONFIG_X86_64
++	int ign;
++
++	asm volatile (
++		"rep stosq\n\t"
++		: "=c"(ign), "=D"(page)
++		: "a"(shadow_init_value), "c"(4096/8), "D"(page)
++		: "memory"
++	);
++#else
++	BUG();
++#endif
++}
++
++static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
++{
++	struct kvm_mmu_memory_cache *mc = &vcpu->arch.mmu_shadow_page_cache;
++	int start, end, i, r;
++
++	if (shadow_init_value)
++		start = kvm_mmu_memory_cache_nr_free_objects(mc);
++
++	r = kvm_mmu_topup_memory_cache(mc, PT64_ROOT_MAX_LEVEL);
++	if (r)
++		return r;
++
++	if (shadow_init_value) {
++		end = kvm_mmu_memory_cache_nr_free_objects(mc);
++		for (i = start; i < end; i++)
++			kvm_init_shadow_page(mc->objects[i]);
++	}
++	return 0;
++}
++
+ static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
+ {
+ 	int r;
+@@ -746,8 +782,7 @@ static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
+ 				       1 + PT64_ROOT_MAX_LEVEL + PTE_PREFETCH_NUM);
+ 	if (r)
+ 		return r;
+-	r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_shadow_page_cache,
+-				       PT64_ROOT_MAX_LEVEL);
++	r = mmu_topup_shadow_page_cache(vcpu);
+ 	if (r)
+ 		return r;
+ 	if (maybe_indirect) {
+@@ -3146,7 +3181,7 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ {
+ 	struct kvm_mmu_page *sp;
+ 	int ret = RET_PF_INVALID;
+-	u64 spte = 0ull;
++	u64 spte = shadow_init_value;
+ 	u64 *sptep = NULL;
+ 	uint retry_count = 0;
+ 
+@@ -5598,7 +5633,8 @@ int kvm_mmu_create(struct kvm_vcpu *vcpu)
+ 	vcpu->arch.mmu_page_header_cache.kmem_cache = mmu_page_header_cache;
+ 	vcpu->arch.mmu_page_header_cache.gfp_zero = __GFP_ZERO;
+ 
+-	vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
++	if (!shadow_init_value)
++		vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
+ 
+ 	vcpu->arch.mmu = &vcpu->arch.root_mmu;
+ 	vcpu->arch.walk_mmu = &vcpu->arch.root_mmu;
+diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+index 73cfe62fdad1..5071e8332db2 100644
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -35,6 +35,7 @@ u64 __read_mostly shadow_mmio_access_mask;
+ u64 __read_mostly shadow_present_mask;
+ u64 __read_mostly shadow_me_mask;
+ u64 __read_mostly shadow_acc_track_mask;
++u64 __read_mostly shadow_init_value;
+ 
+ u64 __read_mostly shadow_nonpresent_or_rsvd_mask;
+ u64 __read_mostly shadow_nonpresent_or_rsvd_lower_gfn_mask;
+@@ -223,6 +224,14 @@ u64 kvm_mmu_changed_pte_notifier_make_spte(u64 old_spte, kvm_pfn_t new_pfn)
+ 	return new_spte;
+ }
+ 
++void kvm_mmu_set_spte_init_value(u64 init_value)
++{
++	if (WARN_ON(!IS_ENABLED(CONFIG_X86_64) && init_value))
++		init_value = 0;
++	shadow_init_value = init_value;
++}
++EXPORT_SYMBOL_GPL(kvm_mmu_set_spte_init_value);
++
+ static u8 kvm_get_shadow_phys_bits(void)
+ {
+ 	/*
+@@ -367,6 +376,7 @@ void kvm_mmu_reset_all_pte_masks(void)
+ 	shadow_present_mask	= PT_PRESENT_MASK;
+ 	shadow_acc_track_mask	= 0;
+ 	shadow_me_mask		= sme_me_mask;
++	shadow_init_value	= 0;
+ 
+ 	shadow_host_writable_mask = DEFAULT_SPTE_HOST_WRITEABLE;
+ 	shadow_mmu_writable_mask  = DEFAULT_SPTE_MMU_WRITEABLE;
+diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+index be6a007a4af3..8e13a35ab8c9 100644
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -171,6 +171,8 @@ extern u64 __read_mostly shadow_mmio_access_mask;
+ extern u64 __read_mostly shadow_present_mask;
+ extern u64 __read_mostly shadow_me_mask;
+ 
++extern u64 __read_mostly shadow_init_value;
++
+ /*
+  * SPTEs in MMUs without A/D bits are marked with SPTE_TDP_AD_DISABLED_MASK;
+  * shadow_acc_track_mask is the set of bits to be cleared in non-accessed
+-- 
+2.25.1
+
