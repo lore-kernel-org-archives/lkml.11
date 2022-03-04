@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 989D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A54C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239748AbiCDN7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:59:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
+        id S239747AbiCDODb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:03:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239679AbiCDN7P (ORCPT
+        with ESMTP id S239189AbiCDOD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:59:15 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E4F54BCD
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 05:58:22 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id e186so16997096ybc.7
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 05:58:22 -0800 (PST)
+        Fri, 4 Mar 2022 09:03:28 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A9911A0F;
+        Fri,  4 Mar 2022 06:02:38 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id q4so6634144ilt.0;
+        Fri, 04 Mar 2022 06:02:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8OAmWvG3KlYliyUdPO8+7WtwcRcsO7IgmHEGERM18j4=;
-        b=LtlQCrh+7W8CujhTYtC7bpijhmuzbaa1k1zjs0SgpFyqUGRz8WOt0uJU1tofv37emS
-         j0Tc03GuHP6RyJzJBhbyuLl2jiVuDpbNkZwj7M4r6ZvCYcmRc4qGQi8N6bWBNeUR2CuW
-         D/cqfnLJo6m+iElu3pweUWbvFYMY14FIK/OuTQYG+yyE9AYAUR5lDV2IZy1m5bMTd9X2
-         dYi9lSH59nmlllOJcAsdLEE8a1d+vXu3tAI8SbJYzjyhRHNl4hrZT65Bu/GWWl1go34g
-         3q137hVTNkjyTxNZtSwqVN/uroD1Cmur54Dc2LMUGuLPPKJSCikk1kRG2ooomhSppknI
-         QKvw==
+        bh=ZzBK5WA3QVrcuQnQd4ntSERHlUAQ+GXLljw8Z7OoM1w=;
+        b=gql0/NZ9ElEaLpJcoudiGif5RN5qPMlJiaKX7m517j2VwmaKvsNpJNz6gM45g/JcS9
+         rsA5xoUm06axa8boCk+7Xp850UdRUPuMKH5xG6Lkut3tfvpxqOLjyEUEhItI9Cx/ADrs
+         Wa6gHbviGEDvLPDtQ5jcEv+3U4ZB0hLc9bgvVIv6h5jbsZCec8FFoNLo5KjnbOvdvqIc
+         meJk1l1uqgbFn3BjJoiTQhsNYBAAhUH7VyPFDg1S1U7FsKsO+Di1Wgc9Ka21lL0oStys
+         Hi3CztQlo27qYQ4BSVxZhEp8tOJwTETLgG2xBJGMOnjtUmXbWCHca00E0YAZ7GnulxTp
+         aI4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8OAmWvG3KlYliyUdPO8+7WtwcRcsO7IgmHEGERM18j4=;
-        b=noVmBKA8ZVRNPJxcTxSQL3zyb/tOSAVn+TGraVDGV9AQVFGAlxnvNLzslyazGrMk01
-         dxDsq3iwkh+W2GDzr21D/l/Rxn/uRft0rzOJ/ltDcF+Owvx85knt47jnoN4Jfe3D/sEP
-         K+Rlj7A8EOBGl7FUTd3nBBG86oYDF3i5wbY8xduMu8d6Pkn0by7TctFSRvjaHP05p9k7
-         Ir/HCiUcrMu9vWJV0dwBUpN2Agy6bBYOSAA6sN36ufgIbfeGmQfMf+kuelTicqPmegp3
-         e/VwqT3G3gAavcSw141gMvQO2lNS05eM+dPxSNgz2RX0cw2RZizFviRWwceP33YICgro
-         alOg==
-X-Gm-Message-State: AOAM530/5gWMYeVwIuULY80ikGejoWE3WoDvNDXJNH7V6vWeApQ0busm
-        Nu9MgiE4lL7SwY7Avpj/zF4Bhk25XUYCg3DRC/gy9w==
-X-Google-Smtp-Source: ABdhPJylq45Riicfu2OMlNkEtOyToXUDF13nXxVXclNZnwOWrHQo3TxTofddVY8hVSj1+0Vyn3qlczgB0QxFxRe3bOc=
-X-Received: by 2002:a25:951:0:b0:628:db03:1132 with SMTP id
- u17-20020a250951000000b00628db031132mr4723852ybm.132.1646402301511; Fri, 04
- Mar 2022 05:58:21 -0800 (PST)
+        bh=ZzBK5WA3QVrcuQnQd4ntSERHlUAQ+GXLljw8Z7OoM1w=;
+        b=N2K50vgB1OAaIIsWQw2bUBOfdjwDWnn8ylvqSNwfAnwJG0OLn13nwLel54Gu0eoGw4
+         SKOeV8Gr/2AAYeBL44M2uCDg5LuRFFraun7ZzKF4UeAx59qt7D8O3nZDSNztXnRAdiH/
+         HD1XqGDrhMlLYAKgT1r0hLpwtyJR8bvsTbKm8aPsOZBfsTyOO+GhciUy83MexIsA7Vus
+         /sT/zWsW7NTYGsUSwlf99ZMimAyZatzMXaK+5F9Yctoy4mMqaNnX/B0GPOo1PhHNGKs2
+         Mi6DBqnZaPiKrcmf5FX9Kt/e4jhNwY5R9bT7bSLsU2B3rZLSF66iMDTBccGDgy0vH/xF
+         dcJw==
+X-Gm-Message-State: AOAM533jcAQ6dV2/lfgnhRk3pIntioKyAkw+vM6WhXpQNkSSaAD0KjQg
+        3S0vN7+mi6SyqHanEr3VWZbBmeEuAOo7IkEZUgw=
+X-Google-Smtp-Source: ABdhPJwN3WEErb2vH6B5dP6UVI1dEFWdcimvNqhP0CYrCi0JEKnjM0RGkRw2NrXmb/cu+Z/9c+O/3Qw3B9+ytktZl+E=
+X-Received: by 2002:a05:6e02:198b:b0:2c2:c454:ea7 with SMTP id
+ g11-20020a056e02198b00b002c2c4540ea7mr27132602ilf.151.1646402557663; Fri, 04
+ Mar 2022 06:02:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20220304093409.25829-1-linmiaohe@huawei.com> <20220304093409.25829-9-linmiaohe@huawei.com>
-In-Reply-To: <20220304093409.25829-9-linmiaohe@huawei.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Fri, 4 Mar 2022 21:57:34 +0800
-Message-ID: <CAMZfGtX6ee6KvYsPHLHTP8ehY=Lu-6HRk4pB52R0t6HxiaoO4g@mail.gmail.com>
-Subject: Re: [PATCH 08/16] mm/migration: avoid unneeded nodemask_t initialization
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Huang Ying <ying.huang@intel.com>, Zi Yan <ziy@nvidia.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        ave.hansen@linux.intel.com, o451686892@gmail.com,
-        Mina Almasry <almasrymina@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Peter Xu <peterx@redhat.com>,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>, Michal Hocko <mhocko@suse.com>,
-        riel@redhat.com, Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220127151945.1244439-1-trix@redhat.com> <d26d4bd8-b5e1-f4d5-b563-9bc4dd384ff8@acm.org>
+ <0adde369-3fd7-3608-594c-d199cce3c936@redhat.com> <e3ae392a16491b9ddeb1f0b2b74fdf05628b1996.camel@perches.com>
+ <46441b86-1d19-5eb4-0013-db1c63a9b0a5@redhat.com> <8dd05afd-0bb9-c91b-6393-aff69f1363e1@redhat.com>
+ <233660d0-1dee-7d80-1581-2e6845bf7689@linux-m68k.org> <CABRYuGk+1AGpvfkR7=LTCm+bN4kt55fwQnQXCjidSXWxuMWsiQ@mail.gmail.com>
+ <95f5be1d-f5f3-478-5ccb-76556a41de78@linux-m68k.org> <CANiq72kOJh_rGg6cT+S833HYqwHnZJzZss8v+kQDcgz_cZUfBQ@mail.gmail.com>
+ <7368bc3ea6dece01004c3e0c194abb0d26d4932b.camel@perches.com> <9dc86e74-7741-bb8e-bbad-ae96cebaaebc@redhat.com>
+In-Reply-To: <9dc86e74-7741-bb8e-bbad-ae96cebaaebc@redhat.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Fri, 4 Mar 2022 15:02:26 +0100
+Message-ID: <CANiq72nsKijH4zgLoEpiiq4462r1zYmaiDs13SEHDYR3aQziUw@mail.gmail.com>
+Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
+To:     Tom Rix <trix@redhat.com>
+Cc:     Joe Perches <joe@perches.com>, Finn Thain <fthain@linux-m68k.org>,
+        Konrad Wilhelm Kleine <kkleine@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
+        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        megaraidlinux.pdl@broadcom.com, scsi <linux-scsi@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 5:35 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+On Fri, Mar 4, 2022 at 2:46 PM Tom Rix <trix@redhat.com> wrote:
 >
-> Avoid unneeded next_pass and this_pass initialization as they're always
-> set before using to save possible cpu cycles when there are plenty of
-> nodes in the system.
+> The churn level will be very high.
+
+Nobody is planning to reformat the entire kernel, at least not until
+the tool is close enough to the kernel style, which will take a while.
+
+> Until clang-format has an opt-in mechanism, I do not think clang-format
+> should be used.
 >
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> .clang-format should be moved to staging/ to reflect its not being ready
+> status.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+What is not ready about it?
 
-Thanks.
+It is a fairly useful tool that some people is already using, either
+for full file formatting or for sections within their editor.
+
+Cheers,
+Miguel
