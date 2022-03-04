@@ -2,85 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22743C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239877AbiCDOl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:41:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        id S239891AbiCDOnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:43:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237280AbiCDOly (ORCPT
+        with ESMTP id S233476AbiCDOnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:41:54 -0500
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9464C1BD043
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:41:07 -0800 (PST)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 00C9BA472D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:41:07 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id Q95Gnu2ub22u3Q95GnmMIj; Fri, 04 Mar 2022 08:39:06 -0600
-X-Authority-Reason: nr=8
-Received: from host-82-63-1-3.business.telecomitalia.it ([82.63.1.3]:40134 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nQ95G-004JWf-54; Fri, 04 Mar 2022 08:39:06 -0600
-Message-ID: <9befaa4d-b032-0b26-761e-9e2e06b1a64b@kernel.org>
-Date:   Fri, 4 Mar 2022 15:39:01 +0100
+        Fri, 4 Mar 2022 09:43:09 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60651BD043;
+        Fri,  4 Mar 2022 06:42:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646404941; x=1677940941;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qHEsIP7QjkyHZxZrAhKQ/Mqa3BKqYR3R5+C9b+jpTZs=;
+  b=T5FCxBCDwtYo0DEdjjZ+UuMItDyR723+koqCvbsGFqam8h4nj1xr71OC
+   EPhvSj01/gjcy5iJrOHKzFu2tSPvXD5ESWHmPoSzMDA1KiCeL9o+zwKB1
+   N8GsWlVpLpjdIb6BDzuXUOv06MLgvZQ6PbBp/jrW/n0rg8RSZVoFKUMYI
+   znalxvbSC8wiqZLaA81m/MWV/DL0awB0EMQYCvcbrHyGEzmJBpp2+Z6o0
+   vcgp0pbcVKUGU90FqLG4zGyxzQLkTYS7Sb7DfKzQuzcJlNBYIRfAzIGrU
+   xRpiRIOBv9Xu+gt355WXOjnj/i12LLyMDRQf+wzZg0Jd7AafgjkR/d9DO
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="164547280"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 07:42:21 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 07:42:20 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 07:42:18 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <linus.walleij@linaro.org>, <colin.foster@in-advantage.com>,
+        <andriy.shevchenko@linux.intel.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH v2 0/2] pinctrl: ocelot: Add fixes for ocelot driver
+Date:   Fri, 4 Mar 2022 15:44:30 +0100
+Message-ID: <20220304144432.3397621-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org,
-        mtosatti@redhat.com, paulmck@kernel.org, rostedt@goodmis.org
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
- <78d798aa-388c-70bc-4227-985ba76c1d7e@kernel.org>
- <b5e1f0d14a48c0815863af623cedbdc8c1bc255f.camel@redhat.com>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <b5e1f0d14a48c0815863af623cedbdc8c1bc255f.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 82.63.1.3
-X-Source-L: No
-X-Exim-ID: 1nQ95G-004JWf-54
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-82-63-1-3.business.telecomitalia.it ([10.0.0.45]) [82.63.1.3]:40134
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 10
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 15:36, Nicolas Saenz Julienne wrote:
->> Hey Nicolas,
->>
->> While testing this patch with rtla osnoise on the 5.17.0-rc6-rt10+, when I hit
->> ^c on osnoise top, the system freezes :-/.
->>
->> Could you try that on your system?
-> Yes of course, I'll get a build going.
-> 
-> Were you using nohz_full?
+This contains two fixes for the ocelot pinctrl:
+- first fixes the memory resource index for pincfg
+- second fixes the interrupt parsing
 
-Yep!
+v1->v2:
+- add Reviewed-by tag for patch 1
+- use platform_get_irq_optional instead of irq_of_parse_and_map
 
-mce=off tsc=nowatchdog nohz=on intel_pstate=disable nosoftlockup isolcpus=11-23
-nohz_full=11-23 rcu_nocbs=11-23
+Horatiu Vultur (2):
+  pinctrl: ocelot: Fix the pincfg resource.
+  pinctrl: ocelot: Fix interrupt parsing
 
-(I know what people thing about isolcpus, I am just lazy).
+ drivers/pinctrl/pinctrl-ocelot.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
--- Daniel
+-- 
+2.33.0
+
