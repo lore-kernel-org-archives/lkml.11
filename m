@@ -2,177 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1992CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 03:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 03:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237812AbiCDDN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 22:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
+        id S237828AbiCDDVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 22:21:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232147AbiCDDN4 (ORCPT
+        with ESMTP id S232140AbiCDDVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 22:13:56 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAF2B2E16
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 19:13:08 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id yy13so5854004ejb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 19:13:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X2tjHudClzP6uv3cMrI69fVLZFBQkgyyeXuaq1ZBH24=;
-        b=ltbve/s2pob2R9jiZUzt0ic2ZBkBaxCjviP8mgn55L3q2tB/qv0r4RJ5MJA5vbCNY+
-         mtqQTzfBDVmJM/+lQOzOSMDcP6RTtfR1dzvWWNf5NN4PO4urUlsqKjfUc8wZPjcImYKc
-         0H8tB507WyYi9qoaaP6RfUda4jVogmrmH8vDWTsJlAANnSI2qP1sqdYtbYBu6605qRbB
-         R63v+0ksDuP48x8xvfHQ5oDUXfg+iRrqCcVn+4UDFDldbHfDtHPb2AQ/XO/sVXvQ/Pc3
-         U4xRQICfbK7IpQzQRRraoPRJkltkaNfMJHCcB9HE3EcAW5tdX9R54vq2s2tZyMnoSrAD
-         pYgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X2tjHudClzP6uv3cMrI69fVLZFBQkgyyeXuaq1ZBH24=;
-        b=qmQjDCyCu0y+sbeSLI+3ll50grbvzAqqD5T7nIbJcWkB3SF37CyGnVgZjwixJ4cV3F
-         FVhiyPQZMO4T8eJ7P3FJeim6/3ovTtFASXg7A3rzQxJYiOd6I/+xa1BXqb6cePGPXn07
-         Eh0NcF0bS1tH/Fb6nZirGxzUJNnr8YhjeIk4QVcMC8/jn4ZG6ACyBCMzEzumCyi38E/e
-         1IqmXGxoouEI8fmHsbDj4mYTTpW1KS3NK5T9x35gw7Fj+qHgi90oSZbMyTz/bCiuujM7
-         G32MrtCD5xGRBBKiVwRpw8do7wkqP3obzGjazLRoae+kmReOeqFsRDKG9BkSQtFOtwkT
-         EJEw==
-X-Gm-Message-State: AOAM5301I6qCWaXr0jfjWH7DuMDPu8zUXR0FJwkDpHmoRCKlr3yQXTEv
-        7QI4Fizzv4Nk3mMiLW0LZvt5NT4RQVFDfAVXHcY=
-X-Google-Smtp-Source: ABdhPJxSp4jfTsn56gIeof17rCmCcIuhSCOpE1s1ouTFdd2E1JDvbsOxDwaan29+TVCjqG9xeP322TckuYusKO7s7ak=
-X-Received: by 2002:a17:906:3a4f:b0:6cf:86e0:586c with SMTP id
- a15-20020a1709063a4f00b006cf86e0586cmr29541511ejf.626.1646363587256; Thu, 03
- Mar 2022 19:13:07 -0800 (PST)
+        Thu, 3 Mar 2022 22:21:15 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82D6417ED99
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 19:20:27 -0800 (PST)
+Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
+        by 156.147.23.53 with ESMTP; 4 Mar 2022 12:20:25 +0900
+X-Original-SENDERIP: 156.147.1.125
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
+        by 156.147.1.125 with ESMTP; 4 Mar 2022 12:20:24 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+Date:   Fri, 4 Mar 2022 12:20:02 +0900
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        torvalds@linux-foundation.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
+        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
+        chris@chris-wilson.co.uk, duyuyang@gmail.com,
+        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
+        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
+        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+Subject: Re: Report 2 in ext4 and journal based on v5.17-rc1
+Message-ID: <20220304032002.GD6112@X58A-UD3R>
+References: <YiAow5gi21zwUT54@mit.edu>
+ <1646285013-3934-1-git-send-email-byungchul.park@lge.com>
+ <YiDSabde88HJ/aTt@mit.edu>
 MIME-Version: 1.0
-References: <20220303222014.517033-1-shy828301@gmail.com> <78dab4e0-1d68-c54b-2463-c0a5420b07d9@huawei.com>
-In-Reply-To: <78dab4e0-1d68-c54b-2463-c0a5420b07d9@huawei.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Thu, 3 Mar 2022 19:12:55 -0800
-Message-ID: <CAHbLzkpbnQyHRckoRtbZoaLvANu92MY4kEsbKudaQ8MDUA3nVg@mail.gmail.com>
-Subject: Re: [PATCH] mm: thp: don't have to lock page anymore when splitting PMD
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiDSabde88HJ/aTt@mit.edu>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 6:25 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> On 2022/3/4 6:20, Yang Shi wrote:
-> > The commit c444eb564fb1 ("mm: thp: make the THP mapcount atomic against
-> > __split_huge_pmd_locked()") locked the page for PMD split to make
-> > mapcount stable for reuse_swap_page(), then commit 1c2f67308af4 ("mm:
-> > thp: fix MADV_REMOVE deadlock on shmem THP") reduce the scope to
-> > anonymous page only.
-> >
-> > However COW has not used mapcount to determine if the page is shared or
-> > not anymore due to the COW fixes [1] from David Hildenbrand and the
-> > reuse_swap_page() was removed as well.  So PMD split doesn't have to
-> > lock the page anymore.  This patch basically reverted the above two
-> > commits.
-> >
->
-> Sounds reasonable. Since mapcount is not used to determine if we need to COW
-> the page, PMD split doesn't have to lock the page anymore.
->
-> > [1] https://lore.kernel.org/linux-mm/20220131162940.210846-1-david@redhat.com/
-> >
-> > Cc: David Hildenbrand <david@redhat.com>
-> > Cc: Andrea Arcangeli <aarcange@redhat.com>
-> > Cc: Hugh Dickins <hughd@google.com>
-> > Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-> > Signed-off-by: Yang Shi <shy828301@gmail.com>
-> > ---
-> >  mm/huge_memory.c | 44 +++++---------------------------------------
-> >  1 file changed, 5 insertions(+), 39 deletions(-)
-> >
-> > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> > index b49e1a11df2e..daaa698bd273 100644
-> > --- a/mm/huge_memory.c
-> > +++ b/mm/huge_memory.c
-> > @@ -2134,8 +2134,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
-> >  {
-> >       spinlock_t *ptl;
-> >       struct mmu_notifier_range range;
-> > -     bool do_unlock_folio = false;
-> > -     pmd_t _pmd;
-> >
-> >       mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
-> >                               address & HPAGE_PMD_MASK,
-> > @@ -2148,48 +2146,16 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
-> >        * pmd against. Otherwise we can end up replacing wrong folio.
-> >        */
-> >       VM_BUG_ON(freeze && !folio);
-> > -     if (folio) {
-> > -             VM_WARN_ON_ONCE(!folio_test_locked(folio));
-> > -             if (folio != page_folio(pmd_page(*pmd)))
-> > -                     goto out;
-> > -     }
-> > +     if (folio && folio != page_folio(pmd_page(*pmd)))
-> > +             goto out;
-> >
-> > -repeat:
-> > -     if (pmd_trans_huge(*pmd)) {
-> > -             if (!folio) {
-> > -                     folio = page_folio(pmd_page(*pmd));
-> > -                     /*
-> > -                      * An anonymous page must be locked, to ensure that a
-> > -                      * concurrent reuse_swap_page() sees stable mapcount;
-> > -                      * but reuse_swap_page() is not used on shmem or file,
-> > -                      * and page lock must not be taken when zap_pmd_range()
-> > -                      * calls __split_huge_pmd() while i_mmap_lock is held.
-> > -                      */
-> > -                     if (folio_test_anon(folio)) {
-> > -                             if (unlikely(!folio_trylock(folio))) {
-> > -                                     folio_get(folio);
-> > -                                     _pmd = *pmd;
-> > -                                     spin_unlock(ptl);
-> > -                                     folio_lock(folio);
-> > -                                     spin_lock(ptl);
-> > -                                     if (unlikely(!pmd_same(*pmd, _pmd))) {
-> > -                                             folio_unlock(folio);
-> > -                                             folio_put(folio);
-> > -                                             folio = NULL;
-> > -                                             goto repeat;
-> > -                                     }
-> > -                                     folio_put(folio);
-> > -                             }
-> > -                             do_unlock_folio = true;
-> > -                     }
-> > -             }
-> > -     } else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
-> > +     if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
-> >               goto out;
-> > +
-> >       __split_huge_pmd_locked(vma, pmd, range.start, freeze);
->
-> IUUC, here should be something like below:
-> if (pmd_trans_huge(*pmd) || pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd))
->         __split_huge_pmd_locked(vma, pmd, range.start, freeze);
->
-> i.e. the pmd_trans_huge case is missing in the above change. Or am I miss something ?
+On Thu, Mar 03, 2022 at 09:36:25AM -0500, Theodore Ts'o wrote:
+> On Thu, Mar 03, 2022 at 02:23:33PM +0900, Byungchul Park wrote:
+> > I totally agree with you. *They aren't really locks but it's just waits
+> > and wakeups.* That's exactly why I decided to develop Dept. Dept is not
+> > interested in locks unlike Lockdep, but fouces on waits and wakeup
+> > sources itself. I think you get Dept wrong a lot. Please ask me more if
+> > you have things you doubt about Dept.
+> 
+> So the question is this --- do you now understand why, even though
+> there is a circular dependency, nothing gets stalled in the
+> interactions between the two wait channels?
 
-Yes, you are definitely right. Must have pmd_trans_huge(*pmd).
+I found a point that the two wait channels don't lead a deadlock in
+some cases thanks to Jan Kara. I will fix it so that Dept won't
+complain it.
 
->
-> Thanks for the patch. This really simplify the code and avoid the unneeded overhead.
->
-> >  out:
-> >       spin_unlock(ptl);
-> > -     if (do_unlock_folio)
-> > -             folio_unlock(folio);
-> > +
-> >       /*
-> >        * No need to double call mmu_notifier->invalidate_range() callback.
-> >        * They are 3 cases to consider inside __split_huge_pmd_locked():
-> >
->
+Thanks,
+Byungchul
+
+> 
+> 						- Ted
