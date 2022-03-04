@@ -2,117 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1486C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241375AbiCDSFZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:05:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
+        id S241514AbiCDSFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:05:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234099AbiCDSFW (ORCPT
+        with ESMTP id S241495AbiCDSF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:05:22 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CE0B1A;
-        Fri,  4 Mar 2022 10:04:33 -0800 (PST)
-Date:   Fri, 04 Mar 2022 18:04:20 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [Letux-kernel] [PATCH v16 1/4] drm/bridge: dw-hdmi: introduce
- dw_hdmi_enable_poll()
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        Robert Foss <robert.foss@linaro.org>,
-        linux-mips <linux-mips@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Message-Id: <8JF88R.9V5YQ3Q6E8QO2@crapouillou.net>
-In-Reply-To: <929BF693-D54F-40F0-BB61-520301D1C31F@goldelico.com>
-References: <cover.1645895582.git.hns@goldelico.com>
-        <e54838849f80454b863f9f5634dd10f79ef7bb8f.1645895582.git.hns@goldelico.com>
-        <983e9064-17ad-e646-f37d-ca9173ba0967@baylibre.com>
-        <C8AE9A7A-E288-4637-ACAD-40CD33CD5F8C@goldelico.com>
-        <3E620AF4-402E-45EA-9D92-92EAEA9647F5@goldelico.com>
-        <SHH68R.Z3J9KSY0GQVA2@crapouillou.net>
-        <ABC1BD09-383B-4499-B034-340CE88725B3@goldelico.com>
-        <RUI68R.Z009SPJAAD8N1@crapouillou.net>
-        <F0F8F36B-3A0A-476C-8C7D-566255C629C6@goldelico.com>
-        <a52702bd-c929-8170-8896-d34ba82aba3c@baylibre.com>
-        <VYB88R.ATGIVGZ13PFM1@crapouillou.net>
-        <929BF693-D54F-40F0-BB61-520301D1C31F@goldelico.com>
+        Fri, 4 Mar 2022 13:05:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3B13B002;
+        Fri,  4 Mar 2022 10:04:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACC1C60C77;
+        Fri,  4 Mar 2022 18:04:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 033D5C340EF;
+        Fri,  4 Mar 2022 18:04:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646417077;
+        bh=425WNeNRrB56ZehLPxE5ZW7E9I6KVwqgV1Gf1LwYGgU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VfNnOKYkOxwckoxihS5Rta454esEJDsTkWgg9wJWLJVLhOVDynvrbtVzlU0YBZov/
+         zGz8K9qJr4ix5z++KXTQPeRFY/+AK03Ks++ginvyjzH+j2IenDsU7WcTnMqE3s3MSw
+         CMbhtzkgi+YrcJ2X28HyeMO0/HIQuTPSpRu8f/hjsFvHA5TkNtoNpR6lSSznJEShXo
+         /WfW3wFIoBXrpAGRZFYuNm7T9lKowvITbuWjBH56Porp703MrASmRKLxx65wUOrdRl
+         aDEV7eNzX3SZGv41egNvXofXb/gMQ9pQuLyPSp01QXmalMUlbiMO+Xc/7dzjfgrzhx
+         jXsOtehfpCZjg==
+Date:   Fri, 4 Mar 2022 10:04:35 -0800
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Dave Chinner <david@fromorbit.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] vfs: do not try to evict inode when super is frozen
+Message-ID: <YiJUsxjoHNiqEaFG@google.com>
+References: <20220304022104.2525009-1-jaegeuk@kernel.org>
+ <20220304024843.GK3927073@dread.disaster.area>
+ <YiGgSmEOZUvgmSto@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiGgSmEOZUvgmSto@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 03/03, Jaegeuk Kim wrote:
+> On 03/04, Dave Chinner wrote:
+> > On Thu, Mar 03, 2022 at 06:21:04PM -0800, Jaegeuk Kim wrote:
+> > > Otherwise, we will get a deadlock.
+> > 
+> > NACK.
+> > 
+> > We have to be able to evict clean inodes from memory on frozen
+> > inodes because we can still instantiate inodes while the filesytem
+> > is frozen. e.g. there's a find running when the filesystem is
+> > frozen. What happens if we can't evict clean cached inodes from
+> > memory when we run out of memory trying to instantiate new inodes?
+> 
+> Ok, that makes sense.
+> 
+> > 
+> > > 
+> > > [freeze test]                         shrinkder
+> > > freeze_super
+> > >  - pwercpu_down_write(SB_FREEZE_FS)
+> > >                                        - super_cache_scan
+> > >                                          - down_read(&sb->s_umount)
+> > >                                            - prune_icache_sb
+> > >                                             - dispose_list
+> > >                                              - evict
+> > >                                               - f2fs_evict_inode
+> > > thaw_super
+> > >  - down_write(&sb->s_umount);
+> > >                                               - __percpu_down_read(SB_FREEZE_FS)
+> > 
+> > That seems like a f2fs bug, not a generic problem.
+> > 
+> > Filesystems already have to handle stuff like this if an unlinked
+> > file is closed while the fs is frozen - we have to handle inode
+> > eviction needing to modify the file, and different filesystems
+> > handle this differently. Most filesystems simply block in
+> > ->evict_inode in this case, but this never occurs from the shrinker
+> > context.
+> > 
+> > IOWs, the shrinker should never be evicting inodes that require the
+> > filesystem to immediately block on frozen filesystems. If you have
+> > such inodes in cache at the time the filesystem is frozen, then they
+> > should be purged from the cache as part of the freeze process so the
+> > shrinker won't ever find inodes that it could deadlock on.
+> 
+> If so, is this a bug in drop_caches_sysctl_handler? Or, I shouldn't have
+> used "echo 3 > sysfs/drop_caches" with freezefs in xfstests?
 
-
-Le ven., mars 4 2022 at 18:51:14 +0100, H. Nikolaus Schaller 
-<hns@goldelico.com> a écrit :
-> Hi Paul, Neil,
-> 
->>  Am 04.03.2022 um 17:47 schrieb Paul Cercueil <paul@crapouillou.net>:
->> 
->>  From what I understood in Nikolaus' last message, HDMI hotplug is 
->> actually correctly detected, so there's no need for polling. What is 
->> missing is the call to drm_kms_helper_hotplug_event *somewhere*, so 
->> that the information is correctly relayed to userspace.
-> 
-> Exactly.
-> 
-> As Maxime pointed out it should already be called by 
-> drm_helper_hpd_irq_event() in dw_hdmi_irq() but isn't
-> because mode_config.poll_enabled isn't enabled.
-> 
-> So we can either
-> a) enable mode_config.poll_enabled so that it is called by 
-> drm_helper_hpd_irq_event() or
-> 
-> b) make drm_kms_helper_hotplug_event() being called explicitly in 
-> dw_hdmi_irq().
->    We could guard that by mode_config.poll_enabled to avoid 
-> drm_kms_helper_hotplug_event()
->    being called twice (but I think the "changed" mechanism will take 
-> care of).
-> 
->>  I think this issue can be fixed by calling 
->> drm_bridge_connector_enable_hpd() on the connector in 
->> ingenic-drm-drv.c.
-> 
-> I don't see yet how this would solve it, but it may work.
-
-dw_hdmi_irq() calls drm_bridge_hpd_notify(), which would call 
-bridge->hpd_cb() if it was non-NULL.
-
-Calling drm_bridge_connector_enable_hpd() will set the bridge->hpd_cb() 
-callback to point to drm_bridge_connector_hpd_cb(), which itself will 
-call drm_kms_helper_hotplug_event(). Therefore, all that is missing is 
-one call to drm_bridge_connector_enable_hpd().
-
-Cheers,
--Paul
+My bad. I totally misunderstood. I'm testing a patch to call evict_inodes()
+in f2fs_freeze(). Thank you for the comment. :)
 
 > 
-> Anyways, this all is a missing feature (sometimes called "bug") of 
-> the *dw-hdmi driver* and IMHO
-> neither of the connector nor the ingenic-drm-drv.
-> 
-> So I think it should not be solved outside dw-hdmi.
-> 
-> BR and thanks,
-> Nikolaus
-> 
-
-
+> > 
+> > Cheers,
+> > 
+> > Dave.
+> > -- 
+> > Dave Chinner
+> > david@fromorbit.com
