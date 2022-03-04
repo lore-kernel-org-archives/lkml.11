@@ -2,101 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16225C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC34C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239341AbiCDOMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:12:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
+        id S239811AbiCDOMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:12:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbiCDOMd (ORCPT
+        with ESMTP id S239493AbiCDOMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:12:33 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D6D1BA917;
-        Fri,  4 Mar 2022 06:11:46 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 171F521118;
-        Fri,  4 Mar 2022 14:11:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646403105;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5ojJkgZ/ddB58OQgN/NYh5ruO/krR/mrHhfqpKf+jmU=;
-        b=EET0Oi3mZDuTG3j+s40BhVBQZ+bEF+SIeHgIW2YrY0bmvNDijaTpgCHAnFa0SUQ1dTc0YX
-        jT3HpEOMKOugKDsL4mpsgcIjOkQyoz1yzX7hYMws5iAvsyiDYfoZh/Ct1Co+Xa1/WGYEfi
-        8uJCnB5kNIT9V0rpAgl+IIn3gDMKYgg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646403105;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5ojJkgZ/ddB58OQgN/NYh5ruO/krR/mrHhfqpKf+jmU=;
-        b=N19f4fz5Uaxf41D2zPH8itQq+SRuUA1DAa/1Eo1lwFlkd1uy3Y3Xev7GuMDwv9M0lnxVkw
-        jXRAyXkMsRE3tLDA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 10117A3B81;
-        Fri,  4 Mar 2022 14:11:45 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 20D08DA80E; Fri,  4 Mar 2022 15:07:51 +0100 (CET)
-Date:   Fri, 4 Mar 2022 15:07:51 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: don't access possibly stale fs_info data in
- device_list_add
-Message-ID: <20220304140751.GZ12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Dongliang Mu <dzm91@hust.edu.cn>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220303144027.1981835-1-dzm91@hust.edu.cn>
+        Fri, 4 Mar 2022 09:12:39 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE661BA93D;
+        Fri,  4 Mar 2022 06:11:52 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 224DnaGE031070;
+        Fri, 4 Mar 2022 14:11:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=LeeW8mmOAOKB4reeE5OJx+eR5eDYk2REbvrR7EQFt70=;
+ b=Wmqjxrmt515C8HdWYW7WCKNGAmRU/seA4c3unqLusxdu6JuLmG/gwyQim00PNpm5b2gA
+ s4oQHM4MVwZumPjvQ1XhoHEyE2F29hzMHc8fPjSCzinHB4JJuIrWUyEZ4YvsUCdLjiQK
+ ENVaz4jvJ8asUo0tNAbIUgQATo2pDA+GpQp6llsfIculTj/p6DvzG186lPfegvFjErnT
+ VjaVyB1RD+R9Os140nJBTGKE/QbA/d1ci37HFqQZYNcrDSFwN6EpgkGYKyhVegyk9o8j
+ +xEy4AeYpIBD17awetXP6McaAp17mBd6sjoy04Q2/45hcdrZwS+8ZNYB9SLaVen+OEGW 3Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ekgwgv6xm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Mar 2022 14:11:50 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 224Dd7XR011099;
+        Fri, 4 Mar 2022 14:11:50 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ekgwgv6wr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Mar 2022 14:11:50 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 224E7f2C029608;
+        Fri, 4 Mar 2022 14:11:47 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma05fra.de.ibm.com with ESMTP id 3ek4ka9n8h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Mar 2022 14:11:47 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 224EBiXI20119904
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 4 Mar 2022 14:11:44 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 63D694203F;
+        Fri,  4 Mar 2022 14:11:44 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D4F5142049;
+        Fri,  4 Mar 2022 14:11:41 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.114.12.92])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  4 Mar 2022 14:11:41 +0000 (GMT)
+From:   Steffen Eiden <seiden@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Shuah Khan <shuah@kernel.org>, Nico Boehr <nrb@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH v3 0/4] s390: Ultravisor device
+Date:   Fri,  4 Mar 2022 09:11:37 -0500
+Message-Id: <20220304141141.32767-1-seiden@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303144027.1981835-1-dzm91@hust.edu.cn>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Q3VOevPhPlguO061mKAn7xX1GjNgOpwJ
+X-Proofpoint-ORIG-GUID: aVZCzT9JxECYqJsllcEcJ0_fvSO5feZ3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-04_06,2022-03-04_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ mlxscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0 adultscore=0
+ mlxlogscore=999 bulkscore=0 spamscore=0 priorityscore=1501 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203040077
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 10:40:27PM +0800, Dongliang Mu wrote:
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> 
-> Syzbot reported a possible use-after-free in printing information
-> in device_list_add.
-> 
-> Very similar with the bug fixed by commit 0697d9a61099 ("btrfs: don't
-> access possibly stale fs_info data for printing duplicate device"),
-> but this time the use occurs in btrfs_info_in_rcu.
-> 
-> ============================================================
-> Call Trace:
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
->  btrfs_printk+0x395/0x425 fs/btrfs/super.c:244
->  device_list_add.cold+0xd7/0x2ed fs/btrfs/volumes.c:957
->  btrfs_scan_one_device+0x4c7/0x5c0 fs/btrfs/volumes.c:1387
->  btrfs_control_ioctl+0x12a/0x2d0 fs/btrfs/super.c:2409
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:874 [inline]
->  __se_sys_ioctl fs/ioctl.c:860 [inline]
->  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> ============================================================
-> 
-> Fix this by modifying device->fs_info to NULL too.
-> 
-> Reported-and-tested-by: syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+This series adds an Ultravisor(UV) device letting the userspace send some
+Ultravisor calls to the UV. Currently two calls are supported.
+Query Ultravisor Information (QUI) and
+Receive Attestation Measurement (Attest[ation]).
 
-Added to misc-next, thanks.
+The UV device is implemented as a miscdevice accepting only IOCTLs.
+The IOCTL cmd specifies the UV call and the IOCTL arg the request
+and response data depending on the UV call.
+The device driver writes the UV response in the ioctl argument data.
+
+The 'uvdevice' does no checks on the request beside faulty userspace
+addresses, if sizes are in a sane range before allocating in kernel space,
+and other tests that prevent the system from corruption.
+Especially, no checks are made, that will be performed by the UV anyway
+(E.g. 'invalid command' in case of attestation on unsupported hardware).
+These errors are reported back to Userspace using the UV return code
+field.
+
+The first two patches introduce the new device as a module configured to be
+compiled directly into the kernel (y) similar to the s390 SCLP and CHSH
+miscdevice modules. Patch 3&4 introduce Kselftests which verify error
+paths of the ioctl.
+
+v2->v3:
+   The main change is that QUI is now introduced after Attestation as we
+   might not want pick it. Also the Kselftest patch is splitted into
+   Attestation and QUI so that they can be picked without requiring
+   QUI support of the uvdevice.
+
+  * dropped the Kconfig dependency
+  * reorganized the series:
+    - Patch 1 now covers the introduction of the uvdevice and Attestation
+    - Patch 2 adds QUI to uvdevice
+    - Patch 3/4 add Kselftests for Attestation and QUI
+  * fixed some nits
+  * added some comments
+
+v1->v2:
+  * ioctl returns -ENOIOCTLCMD in case of a invalid ioctl command
+  * streamlined reserved field test
+  * default Kconfig is y instead of m
+  * improved selftest documentation
+
+Steffen Eiden (4):
+  drivers/s390/char: Add Ultravisor io device
+  drivers/s390/char: Add Query Ultravisor Information to uvdevice
+  selftests: drivers/s390x: Add uvdevice tests
+  selftests: drivers/s390x: Add uvdevice  QUI tests
+
+ MAINTAINERS                                   |   3 +
+ arch/s390/include/asm/uv.h                    |  23 +-
+ arch/s390/include/uapi/asm/uvdevice.h         |  53 +++
+ drivers/s390/char/Kconfig                     |  10 +
+ drivers/s390/char/Makefile                    |   1 +
+ drivers/s390/char/uvdevice.c                  | 320 ++++++++++++++++++
+ tools/testing/selftests/Makefile              |   1 +
+ tools/testing/selftests/drivers/.gitignore    |   1 +
+ .../selftests/drivers/s390x/uvdevice/Makefile |  22 ++
+ .../selftests/drivers/s390x/uvdevice/config   |   1 +
+ .../drivers/s390x/uvdevice/test_uvdevice.c    | 281 +++++++++++++++
+ 11 files changed, 715 insertions(+), 1 deletion(-)
+ create mode 100644 arch/s390/include/uapi/asm/uvdevice.h
+ create mode 100644 drivers/s390/char/uvdevice.c
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/Makefile
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/config
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/test_uvdevice.c
+
+-- 
+2.25.1
+
