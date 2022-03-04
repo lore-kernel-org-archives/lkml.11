@@ -2,131 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41AD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3105CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiCDIN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:13:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
+        id S231193AbiCDINq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:13:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbiCDINY (ORCPT
+        with ESMTP id S231148AbiCDINn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:13:24 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DED639D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:12:34 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id i8so11431125wrr.8
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:12:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PTdhZ6zTG/wMEQhhzfPXGyXVYLVkCG56MpdGyRnOBVI=;
-        b=Pmf2t9u+18kQH7IAPgSpCA8+P+Pr1LWI/Tnym4Tf38VqtV68KuJxIBW4bz4aPRJb7s
-         FotOKu54Ei94IvCyVqRrl3FPSfRUncnyiIlnU/gYuZnoq7Lp93cs41oeygcIV6cQWiQL
-         3MqAnA5QDBaQ76T9FM4jXL35WVoP0kdTjBo02o5U7BmCPeIfVlgf1fuVY/ZVIo6k/Bvm
-         /8rQrxARhXJyy5IhFazUmOWGxxwpnwpYZApUBX1LMBi+4TpzForlhGfpPZ1v06IHBqCo
-         vNZme2896fgkl8UDxpGKdaTOhqhgzNRhyfLG+ckucf1XBRWoKrlE9DureanSDGxQXV4j
-         0p2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PTdhZ6zTG/wMEQhhzfPXGyXVYLVkCG56MpdGyRnOBVI=;
-        b=4WeRC6Kt+EB73emcLjx39zKMJrv1HH7vzlfb1GGcUdQjIj9Xu3kU8o5ZEsyyC0JzSB
-         QlZK+Akv3fhHie107r8pkMFk+cUv4llGRWq7cRbS9TYB0zhfs0UOwjSOMaW1PXmIuaAZ
-         o9zBrlcWJWoblEHlIoEACADOMWHa+H1U4ipAjQPENJvI6HogRdhyvaAaXVe9L4fQ2Bnp
-         m8z5tnMWmBCwLyZf97ghJtlwKVnuo3/EUs2kkj82lIo1amraRPmz+cKIOghGqpKsFAp2
-         GNSicw9zQDaMWUi4KFCj8e77Acba+3kT3RJRIDcWZCD4KAzWQRpTqSSVhI81u5trcP//
-         pHZw==
-X-Gm-Message-State: AOAM531PEQILzvjg3Xk68xh7MUoIRX6SlsVzbqhgNBX1kD5+dNdp36Gh
-        8KWyd4sSr6exEm+Joj5OrfD+1MvI5YWTx1ym
-X-Google-Smtp-Source: ABdhPJzVw968hxMEIY0q2+bwjpWc6NSOwZs/15JsNkWcbOqqbxojEzQRti0Lz26wnPm3h5o1K7KOTg==
-X-Received: by 2002:a05:6000:184e:b0:1f0:3569:ccac with SMTP id c14-20020a056000184e00b001f03569ccacmr8266477wri.680.1646381552773;
-        Fri, 04 Mar 2022 00:12:32 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id t9-20020a05600c198900b0037c0342cb62sm13850215wmq.4.2022.03.04.00.12.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 00:12:32 -0800 (PST)
-Date:   Fri, 4 Mar 2022 08:12:30 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] vhost: Provide a kernel warning if mutex is held
- whilst clean-up in progress
-Message-ID: <YiHJ7qFgkcC7igwq@google.com>
-References: <20220303151929.2505822-1-lee.jones@linaro.org>
- <YiETnIcfZCLb63oB@unreal>
- <20220303155645-mutt-send-email-mst@kernel.org>
- <20220304075039.rewrf3gnbbh3sdfl@sgarzare-redhat>
+        Fri, 4 Mar 2022 03:13:43 -0500
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF4BC13E1D
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:12:42 -0800 (PST)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(26037:0:AUTH_RELAY)
+        (envelope-from <xt.hu@cqplus1.com>); Fri, 04 Mar 2022 16:11:51 +0800 (CST)
+From:   Xiantao Hu <xt.hu@cqplus1.com>
+To:     wim@linux-watchdog.org, p.zabel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux@roeck-us.net, robh+dt@kernel.org, devicetree@vger.kernel.org
+Cc:     wells.lu@sunplus.com, qinjian@cqplus1.com,
+        Xiantao Hu <xt.hu@cqplus1.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 1/2] dt-bindings: watchdog: Add watchdog yaml file for Sunplus SP7021
+Date:   Fri,  4 Mar 2022 16:12:08 +0800
+Message-Id: <20220304081209.672-2-xt.hu@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220304081209.672-1-xt.hu@cqplus1.com>
+References: <20220304081209.672-1-xt.hu@cqplus1.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220304075039.rewrf3gnbbh3sdfl@sgarzare-redhat>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 04 Mar 2022, Stefano Garzarella wrote:
+This adds the documentation for the devicetree bindings of the Sunplus
+SP7021 watchdog driver, found from SP7021 SoCs and newer.
 
-> On Thu, Mar 03, 2022 at 04:01:06PM -0500, Michael S. Tsirkin wrote:
-> > On Thu, Mar 03, 2022 at 09:14:36PM +0200, Leon Romanovsky wrote:
-> > > On Thu, Mar 03, 2022 at 03:19:29PM +0000, Lee Jones wrote:
-> > > > All workers/users should be halted before any clean-up should take place.
-> > > >
-> > > > Suggested-by:  Michael S. Tsirkin <mst@redhat.com>
-> > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > ---
-> > > >  drivers/vhost/vhost.c | 3 +++
-> > > >  1 file changed, 3 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > > index bbaff6a5e21b8..d935d2506963f 100644
-> > > > --- a/drivers/vhost/vhost.c
-> > > > +++ b/drivers/vhost/vhost.c
-> > > > @@ -693,6 +693,9 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > > >  	int i;
-> > > >
-> > > >  	for (i = 0; i < dev->nvqs; ++i) {
-> > > > +		/* Ideally all workers should be stopped prior to clean-up */
-> > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > > > +
-> > > >  		mutex_lock(&dev->vqs[i]->mutex);
-> > > 
-> > > I know nothing about vhost, but this construction and patch looks
-> > > strange to me.
-> > > 
-> > > If all workers were stopped, you won't need mutex_lock(). The mutex_lock
-> > > here suggests to me that workers can still run here.
-> > > 
-> > > Thanks
-> > 
-> > 
-> > "Ideally" here is misleading, we need a bigger detailed comment
-> > along the lines of:
-> > 
-> > /*
-> > * By design, no workers can run here. But if there's a bug and the
-> > * driver did not flush all work properly then they might, and we
-> > * encountered such bugs in the past.  With no proper flush guest won't
-> > * work correctly but avoiding host memory corruption in this case
-> > * sounds like a good idea.
-> > */
-> 
-> Can we use vhost_vq_get_backend() to check this situation?
-> 
-> IIUC all the vhost devices clear the backend to stop the workers.
-> This is not racy (if we do after the mutex_lock) and should cover all cases.
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Xiantao Hu <xt.hu@cqplus1.com>
+---
+ .../bindings/watchdog/sunplus,sp7021-wdt.yaml | 47 +++++++++++++++++++
+ MAINTAINERS                                   |  6 +++
+ 2 files changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
 
-I can look into this too if you like.
-
+diff --git a/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
+new file mode 100644
+index 000000000..9a9bfe150
+--- /dev/null
++++ b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/watchdog/sunplus,sp7021-wdt.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SoCs Watchdog Device Tree Bindings
++
++maintainers:
++  - XianTao Hu <xt.hu@cqplus1.com>
++
++allOf:
++  - $ref: watchdog.yaml#
++
++properties:
++  compatible:
++    const: sunplus,sp7021-wdt
++
++  reg:
++    items:
++      - description: watchdog registers regions
++      - description: miscellaneous control registers regions
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    watchdog: watchdog@9c000630 {
++        compatible = "sunplus,sp7021-wdt";
++        reg = <0x9c000630 0x08>, <0x9C000274 0x04>;
++        clocks = <&clkc 0x24>;
++        resets = <&rstc 0x14>;
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fb18ce716..fe6cc971c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18242,6 +18242,12 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/dlink/sundance.c
+ 
++SUNPLUS WATCHDOG DRIVER
++M:	Xiantao Hu <xt.hu@cqplus1.com>
++L:	linux-watchdog@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
++
+ SUPERH
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+ M:	Rich Felker <dalias@libc.org>
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.33.1
+
