@@ -2,176 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E2EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237975AbiCDFHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 00:07:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S237972AbiCDFJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 00:09:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiCDFHg (ORCPT
+        with ESMTP id S230244AbiCDFJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 00:07:36 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB28217DBAC;
-        Thu,  3 Mar 2022 21:06:47 -0800 (PST)
-X-UUID: cb14e59974f441dcaacf47b8544318de-20220304
-X-UUID: cb14e59974f441dcaacf47b8544318de-20220304
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1056646400; Fri, 04 Mar 2022 13:06:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 4 Mar 2022 13:06:40 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 4 Mar 2022 13:06:39 +0800
-From:   <yf.wang@mediatek.com>
-To:     <iommu@lists.linux-foundation.org>
-CC:     <Libo.Kang@mediatek.com>, <Ning.Li@mediatek.com>,
-        <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <stable@vger.kernel.org>, <will@kernel.org>,
-        <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>
-Subject: Re: [PATCH] iommu/iova: Free all CPU rcache for retry when iova alloc failure
-Date:   Fri, 4 Mar 2022 13:00:40 +0800
-Message-ID: <20220304050040.4599-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220304044635.4273-1-yf.wang@mediatek.com>
-References: <20220304044635.4273-1-yf.wang@mediatek.com>
+        Fri, 4 Mar 2022 00:09:24 -0500
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE4117E36F
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 21:08:34 -0800 (PST)
+Received: from HP-EliteBook-840-G7.. (36-229-235-123.dynamic-ip.hinet.net [36.229.235.123])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 64BD03F615;
+        Fri,  4 Mar 2022 05:08:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646370507;
+        bh=sGlok+QxXUJMqxle/m0fwKdw/UVUhMjtd+mUVGGBQug=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=C0fM7Z9SylA6Gc1x6MFjBXU5FpPTseKi1N3wNeavs+9hsXsa91vvqz/anhZsFCn8v
+         re3VYGz5p/td6kprV+MfW/VfQSUH71pajbGIEYJuxSqKhlE8Ks39QRkXC96TurYkcG
+         tET3QuFDBjl13+MalZeaZGKtULAtPkCNNRTDM9wkbkSPjO455Wl4wn1t4El5Ei3FJ4
+         OxIaWKHPFb6rtJjQoEPcNLWfptnZzkU6YiNnBXZK4yb0nO83H7vso8ZnCYKXiyxLzz
+         i3Hbv/RrDgCMnU6DOzs2pVACaCMfg/x/wL61wWMnTriqKXtR0HTahdJx4OMQGC94Ey
+         fxifyRuHp7dvQ==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: atlantic: Avoid out-of-bounds indexing
+Date:   Fri,  4 Mar 2022 13:08:12 +0800
+Message-Id: <20220304050812.7472-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-03-04 at 12:46 +0800, yf.wang@mediatek.com wrote:
-> From: Yunfei Wang <yf.wang@mediatek.com>
-> 
-> In alloc_iova_fast function, if an iova alloc request fail,
-> it will free the iova ranges present in the percpu iova
-> rcaches and free global iova rcache and then retry, but
-> flushing CPU iova rcaches only for each online CPU, which
-> will cause incomplete rcache cleaning, and iova rcaches of
-> not online CPU cannot be flushed, because iova rcaches may
-> also lead to fragmentation of iova space, so the next retry
-> action may still be fail.
-> 
-> Based on the above, so need to flushing all iova rcaches
-> for each possible CPU, use for_each_possible_cpu instead of
-> for_each_online_cpu like in free_iova_rcaches function,
-> so that all rcaches can be completely released to try
-> replenishing IOVAs.
-> 
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> Cc: <stable@vger.kernel.org> # 5.4.*
-> ---
->  drivers/iommu/iova.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index b28c9435b898..5a0637cd7bc2 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -460,7 +460,7 @@ alloc_iova_fast(struct iova_domain *iovad,
-> unsigned long size,
->  
->  		/* Try replenishing IOVAs by flushing rcache. */
->  		flush_rcache = false;
-> -		for_each_online_cpu(cpu)
-> +		for_each_possible_cpu(cpu)
->  			free_cpu_cached_iovas(cpu, iovad);
->  		free_global_cached_iovas(iovad);
->  		goto retry;
+UBSAN warnings are observed on atlantic driver:
+[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
+[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
 
-The following is the actual stress test log dump: 
-1. __alloc_and_insert_iova_range_fail
-[name:iova&]__alloc_and_insert_iova_range_fail:  iovad:0xffffff80dc9e6008 {granule:0x1000, start_pfn:0x40000, dma_32bit_pfn:0x100000, max32_alloc_size:0x731f},size:0x731f
+The index is assigned right before breaking out the loop, so there's no actual
+deferencing happening.
 
-2. dump all iova nodes of rbtree, contain cached iova:
-[name:iova&]dump_iova_rbtree start:
-[name:iova&]index    iova            pfn_lo      size      pfn_hi
-[name:iova&]   1 0xffffff80680f8f80  0x47000000  0x4c9000  0x474c8000
-[name:iova&]   2 0xffffff813e69c140  0x47500000  0x100000  0x475ff000
-  ...317 lines of log are omitted here...
-[name:iova&] 319 0xffffff80c8cea540  0xffefc000  0x4000    0xffeff000
-[name:iova&] 320 0xffffff80de3a14c0  0xfff00000  0x100000  0xfffff000
-[name:iova&] 321 0xffffff80dc9e6060  0xfffffffffffff000 0x1000 0xfffffffffffff000
-[name:iova&]dump_iova_rbtree done, iovad:0xffffff80dc9e6008, count:321, total_size:606964KB
+So only use the index inside the loop to fix the issue.
 
-3. for_each_possible_cpu dump all cached iovas by iova_magazine pfns:
-cpu:*-1: online cpu, cpu:*-0: not online cpu
-[name:iova&]dump_iova_list, for_each_possible_cpu iovad:0xffffff80dc9e6008
+BugLink: https://bugs.launchpad.net/bugs/1958770
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-3.1 online cpu cached iovas:
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:0-1, cache:0, iova_size:0x1000
-[name:iova&]mag    iova              pfn_lo      size    pfn_h
-[name:iova&]0/2  0xffffff8089c93c40  0xb8aff000  0x1000  0xb8aff000
-[name:iova&]1/2  0xffffff8072046c40  0x716cf000  0x1000  0x716cf000
-... omit other online cpu cached iovas ...
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+index f4774cf051c97..6ab1f3212d246 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
+ 	if (!self) {
+ 		err = -EINVAL;
+ 	} else {
+-		for (i = 0U, ring = self->ring[0];
+-			self->tx_rings > i; ++i, ring = self->ring[i]) {
++		for (i = 0U; self->tx_rings > i; ++i) {
++			ring = self->ring[i];
+ 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
+ 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
+ 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
+@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
+ 	self->aq_hw_ops = aq_hw_ops;
+ 	self->aq_hw = aq_hw;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
+ 		if (err < 0)
+ 			goto err_exit;
+@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
+ 	unsigned int i = 0U;
+ 	int err = 0;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
+ 							&ring[AQ_VEC_TX_ID]);
+ 		if (err < 0)
+@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
+ 	struct aq_ring_s *ring = NULL;
+ 	unsigned int i = 0U;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
+ 						 &ring[AQ_VEC_TX_ID]);
+ 
+@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
+ 	if (!self)
+ 		goto err_exit;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
+ 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
+ 	}
+@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
+ 	if (!self)
+ 		goto err_exit;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
+ 		if (i < self->rx_rings)
+ 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
+-- 
+2.34.1
 
-3.2 not online cpu cached iovas
-... omit other not online cpu cached iovas ...
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:7-0, cache:5, iova_size:0x20000
-[name:iova&]mag    iova               pfn_lo      size    pfn_hi
-[name:iova&]0/10  0xffffff82b728ea40  0xdfbe0000  0x20000  0xdfbff000
-[name:iova&]1/10  0xffffff82b728e480  0xee1e0000  0x20000  0xee1ff000
-[name:iova&]2/10  0xffffff81a9fc5440  0xf27c0000  0x20000  0xf27df000
-[name:iova&]3/10  0xffffff816f213800  0xd7fe0000  0x20000  0xd7fff000
-[name:iova&]4/10  0xffffff80aa3fbf00  0xdb0e0000  0x20000  0xdb0ff000
-[name:iova&]5/10  0xffffff8109217b00  0x4a7e0000  0x20000  0x4a7ff000
-[name:iova&]6/10  0xffffff8109217540  0xb55a0000  0x20000  0xb55bf000
-[name:iova&]7/10  0xffffff82b728e580  0xf33c0000  0x20000  0xf33df000
-[name:iova&]8/10  0xffffff8109217500  0x7b5e0000  0x20000  0x7b5ff000
-[name:iova&]9/10  0xffffff81a9fc5a80  0xf2da0000  0x20000  0xf2dbf000
-[name:iova&]dump_iova_list, done iovad:0xffffff80dc9e6008, cpu_mask:0xff(11111111), online_cpu_mask:(00111111)
-
-4. alloc fail, flushing rcache and retry:
-[name:iova&]alloc_iova_fast, flushing rcache and retry, iovad:0xffffff80dc9e6008, size:0x731f, limit_pfn:0xfffff
-
-5. retry and alloc fail again.
-[name:iova&]__alloc_and_insert_iova_range_fail, iovad:0xffffff80dc9e6008 {granule:0x1000, start_pfn:0x40000, dma_32bit_pfn:0x100000, max32_alloc_size:0x731f},size:0x731f
-
-6. dump all iova nodes of rbtree, contain cached iova:
-[name:iova&]dump_iova_rbtree start:
-[name:iova&]index    iova                pfn_lo      size    pfn_hi
-[name:iova&]   1 0xffffff80680f8f80 0x47000000 0x4c9000  0x474c8000    
-[name:iova&]   2 0xffffff813e69c140 0x47500000 0x100000  0x475ff000    
-... 215 lines of log are omitted here ...
-[name:iova&] 217 0xffffff80c8cea540 0xffefc000 0x4000    0xffeff000    
-[name:iova&] 218 0xffffff80de3a14c0 0xfff00000 0x100000  0xfffff000    
-[name:iova&] 219 0xffffff80dc9e6060 0xfffffffffffff000 0x1000 0xfffffffffffff000
-[name:iova&]dump_iova_rbtree done, iovad:0xffffff80dc9e6008, count:219, total_size:603640KB
-
-7. for_each_possible_cpu dump all cached iovas by iova_magazine pfns:
-cpu:*-1: online cpu, cpu:*-0: not online cpu
-[name:iova&]dump_iova_list, for_each_possible_cpu iovad:0xffffff80dc9e6008
-
-7.1 online cpu cached iovas empty
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:0-1, cache:0, iova_size:0x1000 empty
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:0-1, cache:1, iova_size:0x2000 empty
-... omit other online cpus ...
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:5-1, cache:4, iova_size:0x10000 empty
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:5-1, cache:5, iova_size:0x20000 empty
-
-7.1 not online cpu cached iovas still have cached iovas:
-... omit other not online cpu cached iovas ...
-[name:iova&]dump_cpu_cached_iovas, iovad:0xffffff80dc9e6008, cpu:7-0, cache:5, iova_size:0x20000
-[name:iova&]mag    iova               pfn_lo      size    pfn_hi
-[name:iova&]0/10  0xffffff82b728ea40  0xdfbe0000  0x20000  0xdfbff000
-[name:iova&]1/10  0xffffff82b728e480  0xee1e0000  0x20000  0xee1ff000
-[name:iova&]2/10  0xffffff81a9fc5440  0xf27c0000  0x20000  0xf27df000
-[name:iova&]3/10  0xffffff816f213800  0xd7fe0000  0x20000  0xd7fff000
-[name:iova&]4/10  0xffffff80aa3fbf00  0xdb0e0000  0x20000  0xdb0ff000
-[name:iova&]5/10  0xffffff8109217b00  0x4a7e0000  0x20000  0x4a7ff000
-[name:iova&]6/10  0xffffff8109217540  0xb55a0000  0x20000  0xb55bf000
-[name:iova&]7/10  0xffffff82b728e580  0xf33c0000  0x20000  0xf33df000
-[name:iova&]8/10  0xffffff8109217500  0x7b5e0000  0x20000  0x7b5ff000
-[name:iova&]9/10  0xffffff81a9fc5a80  0xf2da0000  0x20000  0xf2dbf000
-[name:iova&]dump_iova_list, done iovad:0xffffff80dc9e6008, cpu_mask:0xff(11111111), online_cpu_mask:0x3f(00111111)
-
-Thanks,
-Yunfei.
