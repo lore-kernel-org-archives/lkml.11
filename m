@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B435C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA13C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231328AbiCDUL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:11:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        id S231331AbiCDULb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:11:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbiCDUHt (ORCPT
+        with ESMTP id S231168AbiCDUHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:07:49 -0500
+        Fri, 4 Mar 2022 15:07:53 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8672D14F3;
-        Fri,  4 Mar 2022 12:02:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04070203BDF;
+        Fri,  4 Mar 2022 12:02:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424132; x=1677960132;
+  t=1646424140; x=1677960140;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5XV4sEZhs5zaefdhwp0/a2DcOExXryV64uN38LbyoBo=;
-  b=BhNO1M+NKDHFajl/dY1VReGqr/hijUz6sQzbeH7Rcevv6X/3ZverXKCD
-   0ib73bgfjPehposWsBRWly5oP71zgKp6aD7roxol1fYyhfoFfuZlA2WkZ
-   QkGWjV8wr1nJ2/IlJmQIK48FYqB2/0DUbJzBQ3A1Iwa8TLF6kYDgOtXga
-   a+pZW95Tim5eJc1aJg1YzUcTKbsKP4cFVCvTJiEQXKbOppH6LhrRDZYpM
-   5RNhEO2M6iEXEQLaxM+J05BGqqHIMBF8CnODOvFN4RQH24GhXOhNinMsw
-   3QDnWnOxCXYfJopJQHsLc7kSAMx9/tscrEb5cj1xfG0f9EFQn9UbSmDGI
+  bh=/Kjg7eN11qXztz9Q9dAGb45TcAjtsiSJ6FDH8gG0Omg=;
+  b=X6IpaKk9R3Zsmuf79AGFtb6qPYQOIqLQ+HDwunqDqDaXo8fq/rYSY/YY
+   A9L41bCnFy5K9a49k7lmh5C1h69cdcGcgSnIVjiF6i2loZhyKCyOtlHMW
+   rhYjU6FYwGlPmqsW49FYJzKeV/TJQtbPz/kedkE6SbxdOzxliQGikqS5s
+   fa93m45vteL/6y2oj1582ryB4FxcJIXhPreg9/rh6jAMJ4eJoYwFrYgfe
+   wqcY/pKXLtv0LKGlePEe/1UcgJVe86LV4t8lNa3a7brAp2vLYyvV1pvHa
+   kTomJ5G2o180TaP5U8GtXtNInfcbcsQzAt/b1E3T43wzMuh4T9sBVs6uB
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983462"
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983489"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983462"
+   d="scan'208";a="253983489"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:20 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:22 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344311"
+   d="scan'208";a="552344340"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:19 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:22 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value for shadow PTE
-Date:   Fri,  4 Mar 2022 11:48:53 -0800
-Message-Id: <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 043/104] KVM: TDX: Add load_mmu_pgd method for TDX
+Date:   Fri,  4 Mar 2022 11:48:59 -0800
+Message-Id: <cb0b1e9a097ef229a09d2763448362c916633566.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,192 +58,103 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-TDX will run with EPT violation #VEs enabled for shared EPT, which means
-KVM needs to set the "suppress #VE" bit in unused PTEs to avoid
-unintentionally reflecting not-present EPT violations into the guest.
+For virtual IO, the guest TD shares guest pages with VMM without
+encryption.  Shared EPT is used to map guest pages in unprotected way.
 
-Because guest memory is protected with TDX, VMM can't parse instructions
-in the guest memory.  Instead, MMIO hypercall is used to pass necessary
-information to VMM.
+Add the VMCS field encoding for the shared EPTP, which will be used by
+TDX to have separate EPT walks for private GPAs (existing EPTP) versus
+shared GPAs (new shared EPTP).
 
-To make unmodified device driver work, guest TD expects #VE on accessing
-shared GPA.  The #VE handler converts MMIO access into MMIO hypercall with
-the EPT entry of enabled "#VE" by clearing "suppress #VE" bit.  Before VMM
-enabling #VE, it needs to figure out the given GPA is for MMIO by EPT
-violation.  So the execution flow looks like
-
-- allocate unused shared EPT entry with suppress #VE bit set.
-- EPT violation on that GPA.
-- VMM figures out the faulted GPA is for MMIO.
-- VMM clears the suppress #VE bit.
-- Guest TD gets #VE, and converts MMIO access into MMIO hypercall.
+Set shared EPT pointer value for the TDX guest to initialize TDX MMU.
 
 Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu.h      |  1 +
- arch/x86/kvm/mmu/mmu.c  | 50 +++++++++++++++++++++++++++++++++++------
- arch/x86/kvm/mmu/spte.c | 10 +++++++++
- arch/x86/kvm/mmu/spte.h |  2 ++
- 4 files changed, 56 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/vmx.h |  1 +
+ arch/x86/kvm/vmx/main.c    | 11 ++++++++++-
+ arch/x86/kvm/vmx/tdx.c     |  5 +++++
+ arch/x86/kvm/vmx/x86_ops.h |  4 ++++
+ 4 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 3fb530359f81..0ae91b8b25df 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -66,6 +66,7 @@ static __always_inline u64 rsvd_bits(int s, int e)
- 
- void kvm_mmu_set_mmio_spte_mask(u64 mmio_value, u64 mmio_mask, u64 access_mask);
- void kvm_mmu_set_ept_masks(bool has_ad_bits, bool has_exec_only);
-+void kvm_mmu_set_spte_init_value(u64 init_value);
- 
- void kvm_init_mmu(struct kvm_vcpu *vcpu);
- void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 9907cb759fd1..a474f2e76d78 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -617,9 +617,9 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
- 	int level = sptep_to_sp(sptep)->role.level;
- 
- 	if (!spte_has_volatile_bits(old_spte))
--		__update_clear_spte_fast(sptep, 0ull);
-+		__update_clear_spte_fast(sptep, shadow_init_value);
- 	else
--		old_spte = __update_clear_spte_slow(sptep, 0ull);
-+		old_spte = __update_clear_spte_slow(sptep, shadow_init_value);
- 
- 	if (!is_shadow_present_pte(old_spte))
- 		return old_spte;
-@@ -651,7 +651,7 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
-  */
- static void mmu_spte_clear_no_track(u64 *sptep)
- {
--	__update_clear_spte_fast(sptep, 0ull);
-+	__update_clear_spte_fast(sptep, shadow_init_value);
+diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
+index 88d9b8cc7dde..a2402d1bde04 100644
+--- a/arch/x86/include/asm/vmx.h
++++ b/arch/x86/include/asm/vmx.h
+@@ -221,6 +221,7 @@ enum vmcs_field {
+ 	ENCLS_EXITING_BITMAP_HIGH	= 0x0000202F,
+ 	TSC_MULTIPLIER                  = 0x00002032,
+ 	TSC_MULTIPLIER_HIGH             = 0x00002033,
++	SHARED_EPT_POINTER		= 0x0000203C,
+ 	GUEST_PHYSICAL_ADDRESS          = 0x00002400,
+ 	GUEST_PHYSICAL_ADDRESS_HIGH     = 0x00002401,
+ 	VMCS_LINK_POINTER               = 0x00002800,
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index b242a9dc9e29..6969e3557bd4 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -89,6 +89,15 @@ static void vt_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	return vmx_vcpu_reset(vcpu, init_event);
  }
  
- static u64 mmu_spte_get_lockless(u64 *sptep)
-@@ -737,6 +737,42 @@ static void walk_shadow_page_lockless_end(struct kvm_vcpu *vcpu)
- 	}
++static void vt_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa,
++			int pgd_level)
++{
++	if (is_td_vcpu(vcpu))
++		return tdx_load_mmu_pgd(vcpu, root_hpa, pgd_level);
++
++	vmx_load_mmu_pgd(vcpu, root_hpa, pgd_level);
++}
++
+ static int vt_mem_enc_op(struct kvm *kvm, void __user *argp)
+ {
+ 	if (!is_td(kvm))
+@@ -205,7 +214,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.write_tsc_offset = vmx_write_tsc_offset,
+ 	.write_tsc_multiplier = vmx_write_tsc_multiplier,
+ 
+-	.load_mmu_pgd = vmx_load_mmu_pgd,
++	.load_mmu_pgd = vt_load_mmu_pgd,
+ 
+ 	.check_intercept = vmx_check_intercept,
+ 	.handle_exit_irqoff = vmx_handle_exit_irqoff,
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index c3434b33c452..51098e10b6a0 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -496,6 +496,11 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	vcpu->kvm->vm_bugged = true;
  }
  
-+static inline void kvm_init_shadow_page(void *page)
++void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
 +{
-+#ifdef CONFIG_X86_64
-+	int ign;
-+
-+	asm volatile (
-+		"rep stosq\n\t"
-+		: "=c"(ign), "=D"(page)
-+		: "a"(shadow_init_value), "c"(4096/8), "D"(page)
-+		: "memory"
-+	);
-+#else
-+	BUG();
-+#endif
++	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
 +}
 +
-+static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_mmu_memory_cache *mc = &vcpu->arch.mmu_shadow_page_cache;
-+	int start, end, i, r;
-+
-+	if (shadow_init_value)
-+		start = kvm_mmu_memory_cache_nr_free_objects(mc);
-+
-+	r = kvm_mmu_topup_memory_cache(mc, PT64_ROOT_MAX_LEVEL);
-+	if (r)
-+		return r;
-+
-+	if (shadow_init_value) {
-+		end = kvm_mmu_memory_cache_nr_free_objects(mc);
-+		for (i = start; i < end; i++)
-+			kvm_init_shadow_page(mc->objects[i]);
-+	}
-+	return 0;
-+}
-+
- static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
+ static int tdx_capabilities(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
  {
- 	int r;
-@@ -746,8 +782,7 @@ static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
- 				       1 + PT64_ROOT_MAX_LEVEL + PTE_PREFETCH_NUM);
- 	if (r)
- 		return r;
--	r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_shadow_page_cache,
--				       PT64_ROOT_MAX_LEVEL);
-+	r = mmu_topup_shadow_page_cache(vcpu);
- 	if (r)
- 		return r;
- 	if (maybe_indirect) {
-@@ -3146,7 +3181,7 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- {
- 	struct kvm_mmu_page *sp;
- 	int ret = RET_PF_INVALID;
--	u64 spte = 0ull;
-+	u64 spte = shadow_init_value;
- 	u64 *sptep = NULL;
- 	uint retry_count = 0;
+ 	struct kvm_tdx_capabilities __user *user_caps;
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 81f246493ec7..ad9b1c883761 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -143,6 +143,8 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event);
  
-@@ -5598,7 +5633,8 @@ int kvm_mmu_create(struct kvm_vcpu *vcpu)
- 	vcpu->arch.mmu_page_header_cache.kmem_cache = mmu_page_header_cache;
- 	vcpu->arch.mmu_page_header_cache.gfp_zero = __GFP_ZERO;
- 
--	vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
-+	if (!shadow_init_value)
-+		vcpu->arch.mmu_shadow_page_cache.gfp_zero = __GFP_ZERO;
- 
- 	vcpu->arch.mmu = &vcpu->arch.root_mmu;
- 	vcpu->arch.walk_mmu = &vcpu->arch.root_mmu;
-diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
-index 73cfe62fdad1..5071e8332db2 100644
---- a/arch/x86/kvm/mmu/spte.c
-+++ b/arch/x86/kvm/mmu/spte.c
-@@ -35,6 +35,7 @@ u64 __read_mostly shadow_mmio_access_mask;
- u64 __read_mostly shadow_present_mask;
- u64 __read_mostly shadow_me_mask;
- u64 __read_mostly shadow_acc_track_mask;
-+u64 __read_mostly shadow_init_value;
- 
- u64 __read_mostly shadow_nonpresent_or_rsvd_mask;
- u64 __read_mostly shadow_nonpresent_or_rsvd_lower_gfn_mask;
-@@ -223,6 +224,14 @@ u64 kvm_mmu_changed_pte_notifier_make_spte(u64 old_spte, kvm_pfn_t new_pfn)
- 	return new_spte;
- }
- 
-+void kvm_mmu_set_spte_init_value(u64 init_value)
-+{
-+	if (WARN_ON(!IS_ENABLED(CONFIG_X86_64) && init_value))
-+		init_value = 0;
-+	shadow_init_value = init_value;
-+}
-+EXPORT_SYMBOL_GPL(kvm_mmu_set_spte_init_value);
+ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+ int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
 +
- static u8 kvm_get_shadow_phys_bits(void)
- {
- 	/*
-@@ -367,6 +376,7 @@ void kvm_mmu_reset_all_pte_masks(void)
- 	shadow_present_mask	= PT_PRESENT_MASK;
- 	shadow_acc_track_mask	= 0;
- 	shadow_me_mask		= sme_me_mask;
-+	shadow_init_value	= 0;
++void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int root_level);
+ #else
+ static inline void tdx_pre_kvm_init(
+ 	unsigned int *vcpu_size, unsigned int *vcpu_align, unsigned int *vm_size) {}
+@@ -160,6 +162,8 @@ static inline void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event) {}
  
- 	shadow_host_writable_mask = DEFAULT_SPTE_HOST_WRITEABLE;
- 	shadow_mmu_writable_mask  = DEFAULT_SPTE_MMU_WRITEABLE;
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index be6a007a4af3..8e13a35ab8c9 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -171,6 +171,8 @@ extern u64 __read_mostly shadow_mmio_access_mask;
- extern u64 __read_mostly shadow_present_mask;
- extern u64 __read_mostly shadow_me_mask;
- 
-+extern u64 __read_mostly shadow_init_value;
+ static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
+ static inline int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp) { return -EOPNOTSUPP; }
 +
- /*
-  * SPTEs in MMUs without A/D bits are marked with SPTE_TDP_AD_DISABLED_MASK;
-  * shadow_acc_track_mask is the set of bits to be cleared in non-accessed
++static inline void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int root_level) {}
+ #endif
+ 
+ #endif /* __KVM_X86_VMX_X86_OPS_H */
 -- 
 2.25.1
 
