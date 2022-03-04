@@ -2,529 +2,475 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A57C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66072C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239539AbiCDKME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57980 "EHLO
+        id S239558AbiCDKNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:13:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239535AbiCDKMB (ORCPT
+        with ESMTP id S232988AbiCDKNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 05:12:01 -0500
-X-Greylist: delayed 154933 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 02:11:12 PST
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D861A948E;
-        Fri,  4 Mar 2022 02:11:11 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 932DC10000C;
-        Fri,  4 Mar 2022 10:11:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646388670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=zazTGCXD/PNF6tuZhygJU94AHX76TqrdKjnbqUzhRVc=;
-        b=bklI1Sw89WzQcnuxP3jyQJLJin8WRdBBMo4/BZwHLMBVWkSIEYWrGQv7vMJK5PpYxkA4BD
-        3MuvKcapKRwVp+R0Rn/maDRd6riCHZZnDIRFGO/Hi8jI5yuGQ1T92OO4gZQv7jwaQC7sWi
-        r3c1owpil9tJNzNxeOBuA8nJ9DyfnE8yJH5bFcp2iUbiD7OZz0v9E2FiifpbnYjjDDRZgd
-        1akUHTY+S5dlEP3DAiFqQnpl9Uf/Vs0NInEi40uMAIposdQt8PLgkTa4PK5gbFMBEUXu6O
-        Gf/0bWGUWHTiaUTThkxObGyRwMwH1HYIKAjBDceTBJiAEPzUURsbZpMICihy6g==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org,
-        linux-rtc@vger.kernel.org,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Etienne Carriere <etienne.carriere@linaro.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH v2] rtc: optee: add RTC driver for OP-TEE RTC PTA
-Date:   Fri,  4 Mar 2022 11:09:33 +0100
-Message-Id: <20220304100933.72175-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 4 Mar 2022 05:13:34 -0500
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F1437AA0;
+        Fri,  4 Mar 2022 02:12:45 -0800 (PST)
+Received: by mail-ua1-x92c.google.com with SMTP id z10so3367624uaa.3;
+        Fri, 04 Mar 2022 02:12:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uS2B76amqrUivQxdB2w6x2mADYcqGePMbA5ahPvBBes=;
+        b=RCIpE6wEAaYuKuKX/hp+Oe12HxIgX6sWPqSWPRACWxshXS2i/LzlMn1UK2IrafkheI
+         +H/8ANRbrXNuKaRdulMMDyEg52ZccMsk16uhuNpBrxjmD8k6EuqAqpF9xyp4lKj/cHQz
+         bJwohnjIZPiA7VYh9zA+iUGRkcgR1j5PJo2OQw5USXJzekubVXJfJcXSPrEzAfL/rPej
+         6nZFOuUfUq0j8ziGZrptkFHXxm76dMm2rAE6EKhq7FLtmYSn83O97+IJ4qrwTQ5LrYAv
+         SsRGDFNDIfSYHOX0L1omVnqjcbsqWKD74IOGmsGfMjlTQKFWHsiS/HaxnXw0ZJxKDyTd
+         zlow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uS2B76amqrUivQxdB2w6x2mADYcqGePMbA5ahPvBBes=;
+        b=RzzMHGGSZVVr9HRMoF6039jqW596Wzx46oCfE6shRfhHmBh+QNd74G2ZcI98GVBdXX
+         rNg3oE+5ebklC6ZPcxjt/dVLrG+GZpz4GkVgmT1flO08TMxRXiXqdjuPr4FZbRbsOk+d
+         MpteKcpbVgKXzaDDEJ/xz21OLFYY0MTWCgYQKxYkHEBJvwOFisgcM7jCCQ4paIidyYkY
+         O73t47fHtQc9f80rb9h9DBXkEivIMMAr03gz6n36d3pqK+scwEjD0p07+/+3PoOoWahC
+         lf/5x9x4qVC/n6WLwVO1hcC9F67+TyS22YqyU/iuAzH+zAvtJgTtyFjLg3rhMRBG3ZLw
+         UH1w==
+X-Gm-Message-State: AOAM530Np18W6Nhq9tiu10bHmScK9Hr3VmiFPMFrVJ5n/3UDklaL450q
+        nMNHtWwpP3K67kVUq53x3CmwKJ+xOjiZdk3lTts=
+X-Google-Smtp-Source: ABdhPJw00lQPrCec3/TTZ20tO8Lzug4ENjMEKPnCnZxXCFM/b1zV8TSFgelW8P7mCLV2akEObVBWiXZdgWA1+5zZwqE=
+X-Received: by 2002:ab0:2809:0:b0:341:f4aa:829d with SMTP id
+ w9-20020ab02809000000b00341f4aa829dmr16117477uap.42.1646388764333; Fri, 04
+ Mar 2022 02:12:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220226110338.77547-1-chenhuacai@loongson.cn>
+ <20220226110338.77547-13-chenhuacai@loongson.cn> <YiDp1VmAv4aMfX3B@kernel.org>
+In-Reply-To: <YiDp1VmAv4aMfX3B@kernel.org>
+From:   Huacai Chen <chenhuacai@gmail.com>
+Date:   Fri, 4 Mar 2022 18:12:31 +0800
+Message-ID: <CAAhV-H77MeSNOjh_cr=BuN_ns6Zfq3csN-iVS_nQLDRF+SyQJQ@mail.gmail.com>
+Subject: Re: [PATCH V6 12/22] LoongArch: Add memory management
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This drivers allows to communicate with a RTC PTA handled by OP-TEE [1].
-This PTA allows to query RTC information, set/get time and set/get
-offset depending on the supported features.
+Hi, Mike,
 
-[1] https://github.com/OP-TEE/optee_os/pull/5179
+On Fri, Mar 4, 2022 at 12:16 AM Mike Rapoport <rppt@kernel.org> wrote:
+>
+> On Sat, Feb 26, 2022 at 07:03:28PM +0800, Huacai Chen wrote:
+> > This patch adds memory management support for LoongArch, including:
+> > cache and tlb management, page fault handling and ioremap/mmap support.
+> >
+> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+> > ---
+>
+> ...
+>
+> > diff --git a/arch/loongarch/include/asm/fixmap.h b/arch/loongarch/include/asm/fixmap.h
+> > new file mode 100644
+> > index 000000000000..04ac3c871294
+> > --- /dev/null
+> > +++ b/arch/loongarch/include/asm/fixmap.h
+> > @@ -0,0 +1,15 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * fixmap.h: compile-time virtual memory allocation
+> > + *
+> > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> > + */
+> > +
+> > +#ifndef _ASM_FIXMAP_H
+> > +#define _ASM_FIXMAP_H
+> > +
+> > +#include <asm/page.h>
+>
+> Why this include is needed here?
+OK, let's remove it.
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
+>
+> > +
+> > +#define NR_FIX_BTMAPS 64
+> > +
+> > +#endif
+> > diff --git a/arch/loongarch/include/asm/page.h b/arch/loongarch/include/asm/page.h
+> > new file mode 100644
+> > index 000000000000..8619ef2823ad
+> > --- /dev/null
+> > +++ b/arch/loongarch/include/asm/page.h
+> > @@ -0,0 +1,127 @@
+>
+> ...
+>
+> > +/*
+> > + * __pa()/__va() should be used only during mem init.
+> > + */
+> > +#define __pa(x)              PHYSADDR(x)
+> > +#define __va(x)              ((void *)((unsigned long)(x) + PAGE_OFFSET - PHYS_OFFSET))
+> > +
+> > +#ifndef __pa_symbol
+> > +#define __pa_symbol(x)       __pa(RELOC_HIDE((unsigned long)(x), 0))
+> > +#endif
+>
+> This is the same definition as in include/linux/mm.h.
+> Is it required here?
+OK, let's remove it.
 
-Changes in v2:
-- Rebased over tee-shm-for-v5.18
-- Switch to tee_shm_alloc_kernel_buf()
-- Use export_uuid() to copy uuid
-- Fix warnings reported by checkpatch
-- Free SHM in error exit path
+>
+> ...
+>
+> > diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
+> > new file mode 100644
+> > index 000000000000..61993cd4c3d7
+> > --- /dev/null
+> > +++ b/arch/loongarch/include/asm/pgtable.h
+>
+> ...
+>
+> > +#define PGD_ORDER            0
+> > +#define PUD_ORDER            0
+> > +#define PMD_ORDER            0
+> > +#define PTE_ORDER            0
+>
+> Is it possible for these to change?
+> If not, please remove them.
+>
+> ...
+>
+> > diff --git a/arch/loongarch/mm/fault.c b/arch/loongarch/mm/fault.c
+> > new file mode 100644
+> > index 000000000000..d0170e4d5fe0
+> > --- /dev/null
+> > +++ b/arch/loongarch/mm/fault.c
+> > @@ -0,0 +1,257 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> > + *
+> > + * Derived from MIPS:
+> > + * Copyright (C) 1995 - 2000 by Ralf Baechle
+> > + */
+> > +#include <linux/context_tracking.h>
+> > +#include <linux/signal.h>
+> > +#include <linux/sched.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/entry-common.h>
+> > +#include <linux/errno.h>
+> > +#include <linux/string.h>
+> > +#include <linux/types.h>
+> > +#include <linux/ptrace.h>
+> > +#include <linux/ratelimit.h>
+> > +#include <linux/mman.h>
+> > +#include <linux/mm.h>
+> > +#include <linux/smp.h>
+> > +#include <linux/kdebug.h>
+> > +#include <linux/kprobes.h>
+> > +#include <linux/perf_event.h>
+> > +#include <linux/uaccess.h>
+> > +
+> > +#include <asm/branch.h>
+> > +#include <asm/mmu_context.h>
+> > +#include <asm/ptrace.h>
+> > +
+> > +int show_unhandled_signals = 1;
+> > +
+> > +/*
+> > + * This routine handles page faults.  It determines the address,
+> > + * and the problem, and then passes it off to one of the appropriate
+> > + * routines.
+> > + */
+> > +static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
+> > +     unsigned long address)
+> > +{
+> > +     int si_code;
+> > +     const int field = sizeof(unsigned long) * 2;
+> > +     unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+> > +     struct task_struct *tsk = current;
+> > +     struct mm_struct *mm = tsk->mm;
+> > +     struct vm_area_struct *vma = NULL;
+> > +     vm_fault_t fault;
+> > +
+> > +     static DEFINE_RATELIMIT_STATE(ratelimit_state, 5 * HZ, 10);
+> > +
+> > +     si_code = SEGV_MAPERR;
+> > +
+> > +     if (user_mode(regs) && (address & __UA_LIMIT))
+> > +             goto bad_area_nosemaphore;
+> > +
+> > +     /*
+> > +      * We fault-in kernel-space virtual memory on-demand. The
+> > +      * 'reference' page table is init_mm.pgd.
+> > +      *
+> > +      * NOTE! We MUST NOT take any locks for this case. We may
+> > +      * be in an interrupt or a critical region, and should
+> > +      * only copy the information from the master page table,
+> > +      * nothing more.
+> > +      */
+> > +     if (unlikely(address >= MODULES_VADDR && address <= MODULES_END))
+> > +             goto no_context;
+> > +
+> > +     if (unlikely(address >= VMALLOC_START && address <= VMALLOC_END))
+> > +             goto no_context;
+> > +
+> > +     /*
+> > +      * If we're in an interrupt or have no user
+> > +      * context, we must not take the fault..
+> > +      */
+> > +     if (faulthandler_disabled() || !mm)
+> > +             goto bad_area_nosemaphore;
+> > +
+> > +     if (user_mode(regs))
+> > +             flags |= FAULT_FLAG_USER;
+> > +retry:
+> > +     mmap_read_lock(mm);
+> > +     vma = find_vma(mm, address);
+> > +     if (!vma)
+> > +             goto bad_area;
+> > +     if (vma->vm_start <= address)
+> > +             goto good_area;
+> > +     if (!(vma->vm_flags & VM_GROWSDOWN))
+> > +             goto bad_area;
+> > +     if (expand_stack(vma, address))
+> > +             goto bad_area;
+> > +/*
+> > + * Ok, we have a good vm_area for this memory access, so
+> > + * we can handle it..
+> > + */
+> > +good_area:
+> > +     si_code = SEGV_ACCERR;
+> > +
+> > +     if (write) {
+> > +             if (!(vma->vm_flags & VM_WRITE))
+> > +                     goto bad_area;
+> > +             flags |= FAULT_FLAG_WRITE;
+> > +     } else {
+> > +             if (address == regs->csr_era && !(vma->vm_flags & VM_EXEC))
+> > +                     goto bad_area;
+> > +             if (!(vma->vm_flags & VM_READ) && exception_era(regs) != address)
+> > +                     goto bad_area;
+> > +     }
+> > +
+> > +     /*
+> > +      * If for any reason at all we couldn't handle the fault,
+> > +      * make sure we exit gracefully rather than endlessly redo
+> > +      * the fault.
+> > +      */
+> > +     fault = handle_mm_fault(vma, address, flags, regs);
+> > +
+> > +     if (fault_signal_pending(fault, regs)) {
+> > +             if (!user_mode(regs))
+> > +                     goto no_context;
+> > +             return;
+> > +     }
+> > +
+> > +     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+> > +     if (unlikely(fault & VM_FAULT_ERROR)) {
+> > +             if (fault & VM_FAULT_OOM)
+> > +                     goto out_of_memory;
+> > +             else if (fault & VM_FAULT_SIGSEGV)
+> > +                     goto bad_area;
+> > +             else if (fault & (VM_FAULT_SIGBUS|VM_FAULT_HWPOISON|VM_FAULT_HWPOISON_LARGE))
+> > +                     goto do_sigbus;
+> > +             BUG();
+> > +     }
+> > +     if (flags & FAULT_FLAG_ALLOW_RETRY) {
+> > +             if (fault & VM_FAULT_MAJOR) {
+> > +                     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MAJ, 1,
+> > +                                               regs, address);
+> > +                     tsk->maj_flt++;
+> > +             } else {
+> > +                     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MIN, 1,
+> > +                                               regs, address);
+> > +                     tsk->min_flt++;
+> > +             }
+> > +             if (fault & VM_FAULT_RETRY) {
+> > +                     flags &= ~FAULT_FLAG_ALLOW_RETRY;
+> > +                     flags |= FAULT_FLAG_TRIED;
+> > +
+> > +                     /*
+> > +                      * No need to mmap_read_unlock(mm) as we would
+> > +                      * have already released it in __lock_page_or_retry
+> > +                      * in mm/filemap.c.
+> > +                      */
+> > +
+> > +                     goto retry;
+> > +             }
+> > +     }
+> > +
+> > +     mmap_read_unlock(mm);
+> > +     return;
+> > +
+> > +/*
+> > + * Something tried to access memory that isn't in our memory map..
+> > + * Fix it, but check if it's kernel or user first..
+> > + */
+> > +bad_area:
+> > +     mmap_read_unlock(mm);
+> > +
+> > +bad_area_nosemaphore:
+> > +     /* User mode accesses just cause a SIGSEGV */
+> > +     if (user_mode(regs)) {
+> > +             tsk->thread.csr_badvaddr = address;
+> > +             if (!write)
+> > +                     tsk->thread.error_code = 1;
+> > +             else
+> > +                     tsk->thread.error_code = 2;
+> > +
+> > +             if (show_unhandled_signals &&
+> > +                 unhandled_signal(tsk, SIGSEGV) &&
+> > +                 __ratelimit(&ratelimit_state)) {
+> > +                     pr_info("do_page_fault(): sending SIGSEGV to %s for invalid %s %0*lx\n",
+> > +                             tsk->comm,
+> > +                             write ? "write access to" : "read access from",
+> > +                             field, address);
+> > +                     pr_info("era = %0*lx in", field,
+> > +                             (unsigned long) regs->csr_era);
+> > +                     print_vma_addr(KERN_CONT " ", regs->csr_era);
+> > +                     pr_cont("\n");
+> > +                     pr_info("ra  = %0*lx in", field,
+> > +                             (unsigned long) regs->regs[1]);
+> > +                     print_vma_addr(KERN_CONT " ", regs->regs[1]);
+> > +                     pr_cont("\n");
+> > +             }
+> > +             current->thread.trap_nr = read_csr_excode();
+> > +             force_sig_fault(SIGSEGV, si_code, (void __user *)address);
+> > +             return;
+> > +     }
+> > +
+> > +no_context:
+> > +     /* Are we prepared to handle this kernel fault?  */
+> > +     if (fixup_exception(regs))
+> > +             return;
+> > +
+> > +     /*
+> > +      * Oops. The kernel tried to access some bad page. We'll have to
+> > +      * terminate things with extreme prejudice.
+> > +      */
+> > +     bust_spinlocks(1);
+> > +
+> > +     pr_alert("CPU %d Unable to handle kernel paging request at "
+> > +            "virtual address %0*lx, era == %0*lx, ra == %0*lx\n",
+> > +            raw_smp_processor_id(), field, address, field, regs->csr_era,
+> > +            field,  regs->regs[1]);
+> > +     die("Oops", regs);
+> > +
+> > +out_of_memory:
+> > +     /*
+> > +      * We ran out of memory, call the OOM killer, and return the userspace
+> > +      * (which will retry the fault, or kill us if we got oom-killed).
+> > +      */
+> > +     mmap_read_unlock(mm);
+> > +     if (!user_mode(regs))
+> > +             goto no_context;
+> > +     pagefault_out_of_memory();
+> > +
+> > +     return;
+> > +
+> > +do_sigbus:
+> > +     mmap_read_unlock(mm);
+> > +
+> > +     /* Kernel mode? Handle exceptions or die */
+> > +     if (!user_mode(regs))
+> > +             goto no_context;
+> > +
+> > +     /*
+> > +      * Send a sigbus, regardless of whether we were in kernel
+> > +      * or user mode.
+> > +      */
+> > +     current->thread.trap_nr = read_csr_excode();
+> > +     tsk->thread.csr_badvaddr = address;
+> > +     force_sig_fault(SIGBUS, BUS_ADRERR, (void __user *)address);
+> > +
+>
+> The page fault handler is really long.
+> Consider splitting it to several functions.
+OK, it's difficult but let me try.
 
- MAINTAINERS             |   6 +
- drivers/rtc/Kconfig     |  10 +
- drivers/rtc/Makefile    |   1 +
- drivers/rtc/rtc-optee.c | 396 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 413 insertions(+)
- create mode 100644 drivers/rtc/rtc-optee.c
+>
+> > +     return;
+> > +}
+> > +
+> > +asmlinkage void __kprobes do_page_fault(struct pt_regs *regs,
+> > +     unsigned long write, unsigned long address)
+> > +{
+> > +     irqentry_state_t state = irqentry_enter(regs);
+> > +
+> > +     /* Enable interrupt if enabled in parent context */
+> > +     if (likely(regs->csr_prmd & CSR_PRMD_PIE))
+> > +             local_irq_enable();
+> > +
+> > +     __do_page_fault(regs, write, address);
+> > +
+> > +     local_irq_disable();
+> > +
+> > +     irqentry_exit(regs, state);
+> > +}
+>
+> ...
+>
+> > diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+> > new file mode 100644
+> > index 000000000000..b8aa96903056
+> > --- /dev/null
+> > +++ b/arch/loongarch/mm/init.c
+> > @@ -0,0 +1,196 @@
+>
+> ...
+>
+> > +void free_init_pages(const char *what, unsigned long begin, unsigned long end)
+> > +{
+>
+> This function seems unused
+OK, let's remove it.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f41088418aae..b21375ad73d2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14361,6 +14361,12 @@ L:	op-tee@lists.trustedfirmware.org
- S:	Maintained
- F:	drivers/char/hw_random/optee-rng.c
- 
-+OP-TEE RTC DRIVER
-+M:	Clément Léger <clement.leger@bootlin.com>
-+L:	linux-rtc@vger.kernel.org
-+S:	Maintained
-+F:	drivers/rtc/rtc-optee.c
-+
- OPA-VNIC DRIVER
- M:	Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
- M:	Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-index d85a3c31347c..b10d88db8e9c 100644
---- a/drivers/rtc/Kconfig
-+++ b/drivers/rtc/Kconfig
-@@ -1293,6 +1293,16 @@ config RTC_DRV_OPAL
- 	  This driver can also be built as a module. If so, the module
- 	  will be called rtc-opal.
- 
-+config RTC_DRV_OPTEE
-+	tristate "OP-TEE based RTC driver"
-+	depends on OPTEE
-+	help
-+	  Select this to get support for OP-TEE based RTC control on ARM SoCs
-+	  where RTC are not accessible to the normal world (Linux).
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called rtc-optee.
-+
- config RTC_DRV_ZYNQMP
- 	tristate "Xilinx Zynq Ultrascale+ MPSoC RTC"
- 	depends on OF && HAS_IOMEM
-diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
-index e92f3e943245..2d827d8261d5 100644
---- a/drivers/rtc/Makefile
-+++ b/drivers/rtc/Makefile
-@@ -115,6 +115,7 @@ obj-$(CONFIG_RTC_DRV_GAMECUBE)	+= rtc-gamecube.o
- obj-$(CONFIG_RTC_DRV_NTXEC)	+= rtc-ntxec.o
- obj-$(CONFIG_RTC_DRV_OMAP)	+= rtc-omap.o
- obj-$(CONFIG_RTC_DRV_OPAL)	+= rtc-opal.o
-+obj-$(CONFIG_RTC_DRV_OPTEE)	+= rtc-optee.o
- obj-$(CONFIG_RTC_DRV_PALMAS)	+= rtc-palmas.o
- obj-$(CONFIG_RTC_DRV_PCAP)	+= rtc-pcap.o
- obj-$(CONFIG_RTC_DRV_PCF2123)	+= rtc-pcf2123.o
-diff --git a/drivers/rtc/rtc-optee.c b/drivers/rtc/rtc-optee.c
-new file mode 100644
-index 000000000000..7177c9d4675a
---- /dev/null
-+++ b/drivers/rtc/rtc-optee.c
-@@ -0,0 +1,396 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Microchip.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/rtc.h>
-+#include <linux/tee_drv.h>
-+
-+#define RTC_INFO_VERSION	0x1
-+
-+#define TA_CMD_RTC_GET_INFO		0x0
-+#define TA_CMD_RTC_GET_TIME		0x1
-+#define TA_CMD_RTC_SET_TIME		0x2
-+#define TA_CMD_RTC_GET_OFFSET		0x3
-+#define TA_CMD_RTC_SET_OFFSET		0x4
-+
-+#define TA_RTC_FEATURE_CORRECTION	BIT(0)
-+
-+struct optee_rtc_time {
-+	u32 tm_sec;
-+	u32 tm_min;
-+	u32 tm_hour;
-+	u32 tm_mday;
-+	u32 tm_mon;
-+	u32 tm_year;
-+	u32 tm_wday;
-+};
-+
-+struct optee_rtc_info {
-+	u64 version;
-+	u64 features;
-+	struct optee_rtc_time range_min;
-+	struct optee_rtc_time range_max;
-+};
-+
-+/**
-+ * struct optee_rtc - OP-TEE RTC private data
-+ * @dev:		OP-TEE based RTC device.
-+ * @ctx:		OP-TEE context handler.
-+ * @session_id:		RTC TA session identifier.
-+ * @shm:		Memory pool shared with RTC device.
-+ * @features:		Bitfield of RTC features
-+ */
-+struct optee_rtc {
-+	struct device *dev;
-+	struct tee_context *ctx;
-+	u32 session_id;
-+	struct tee_shm *shm;
-+	u64 features;
-+};
-+
-+static int optee_rtc_readtime(struct device *dev, struct rtc_time *tm)
-+{
-+	struct optee_rtc *priv = dev_get_drvdata(dev);
-+	struct tee_ioctl_invoke_arg inv_arg = {0};
-+	struct optee_rtc_time *optee_tm;
-+	struct tee_param param[4] = {0};
-+	int ret;
-+
-+	inv_arg.func = TA_CMD_RTC_GET_TIME;
-+	inv_arg.session = priv->session_id;
-+	inv_arg.num_params = 4;
-+
-+	/* Fill invoke cmd params */
-+	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
-+	param[0].u.memref.shm = priv->shm;
-+	param[0].u.memref.size = sizeof(struct optee_rtc_time);
-+	param[0].u.memref.shm_offs = 0;
-+
-+	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
-+	if (ret < 0 || inv_arg.ret != 0) {
-+		dev_err(dev, "TA_CMD_RTC_GET_TIME invoke err: %x\n",
-+			inv_arg.ret);
-+		return ret;
-+	}
-+
-+	optee_tm = tee_shm_get_va(priv->shm, 0);
-+	if (IS_ERR(optee_tm)) {
-+		dev_err(dev, "tee_shm_get_va failed\n");
-+		return PTR_ERR(optee_tm);
-+	}
-+
-+	if (param[0].u.memref.size != sizeof(*optee_tm)) {
-+		dev_err(dev, "Invalid read size from OPTEE\n");
-+		return -EINVAL;
-+	}
-+
-+	tm->tm_sec = optee_tm->tm_sec;
-+	tm->tm_min = optee_tm->tm_min;
-+	tm->tm_hour = optee_tm->tm_hour;
-+	tm->tm_mday = optee_tm->tm_mday;
-+	tm->tm_mon = optee_tm->tm_mon;
-+	tm->tm_year = optee_tm->tm_year - 1900;
-+	tm->tm_wday = optee_tm->tm_wday;
-+	tm->tm_yday = rtc_year_days(tm->tm_mday, tm->tm_mon, tm->tm_year);
-+
-+	return 0;
-+}
-+
-+static int optee_rtc_settime(struct device *dev, struct rtc_time *tm)
-+{
-+	struct optee_rtc *priv = dev_get_drvdata(dev);
-+	struct tee_ioctl_invoke_arg inv_arg = {0};
-+	struct tee_param param[4] = {0};
-+	struct optee_rtc_time optee_tm;
-+	void *rtc_data;
-+	int ret;
-+
-+	optee_tm.tm_sec = tm->tm_sec;
-+	optee_tm.tm_min = tm->tm_min;
-+	optee_tm.tm_hour = tm->tm_hour;
-+	optee_tm.tm_mday = tm->tm_mday;
-+	optee_tm.tm_mon = tm->tm_mon;
-+	optee_tm.tm_year = tm->tm_year + 1900;
-+	optee_tm.tm_wday = tm->tm_wday;
-+
-+	inv_arg.func = TA_CMD_RTC_SET_TIME;
-+	inv_arg.session = priv->session_id;
-+	inv_arg.num_params = 4;
-+
-+	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INPUT;
-+	param[0].u.memref.shm = priv->shm;
-+	param[0].u.memref.size = sizeof(struct optee_rtc_time);
-+	param[0].u.memref.shm_offs = 0;
-+
-+	rtc_data = tee_shm_get_va(priv->shm, 0);
-+	if (IS_ERR(rtc_data)) {
-+		dev_err(dev, "tee_shm_get_va failed\n");
-+		return PTR_ERR(rtc_data);
-+	}
-+
-+	memcpy(rtc_data, &optee_tm, sizeof(struct optee_rtc_time));
-+
-+	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
-+	if (ret < 0 || inv_arg.ret != 0) {
-+		dev_err(dev, "TA_CMD_RTC_GET_TIME invoke err: %x\n",
-+			inv_arg.ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int optee_rtc_readoffset(struct device *dev, long *offset)
-+{
-+	struct optee_rtc *priv = dev_get_drvdata(dev);
-+	struct tee_ioctl_invoke_arg inv_arg = {0};
-+	struct tee_param param[4] = {0};
-+	int ret;
-+
-+	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
-+		return -EOPNOTSUPP;
-+
-+	inv_arg.func = TA_CMD_RTC_GET_OFFSET;
-+	inv_arg.session = priv->session_id;
-+	inv_arg.num_params = 4;
-+
-+	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_OUTPUT;
-+
-+	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
-+	if (ret < 0 || inv_arg.ret != 0) {
-+		dev_err(dev, "TA_CMD_RTC_GET_RNG_INFO invoke err: %x\n",
-+			inv_arg.ret);
-+		return -EINVAL;
-+	}
-+
-+	*offset = param[0].u.value.a;
-+
-+	return 0;
-+}
-+
-+static int optee_rtc_setoffset(struct device *dev, long offset)
-+{
-+	struct optee_rtc *priv = dev_get_drvdata(dev);
-+	struct tee_ioctl_invoke_arg inv_arg = {0};
-+	struct tee_param param[4] = {0};
-+	int ret;
-+
-+	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
-+		return -EOPNOTSUPP;
-+
-+	inv_arg.func = TA_CMD_RTC_SET_OFFSET;
-+	inv_arg.session = priv->session_id;
-+	inv_arg.num_params = 4;
-+
-+	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT;
-+	param[0].u.value.a = offset;
-+
-+	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
-+	if (ret < 0 || inv_arg.ret != 0) {
-+		dev_err(dev, "TA_CMD_RTC_GET_RNG_INFO invoke err: %x\n",
-+			inv_arg.ret);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct rtc_class_ops optee_rtc_ops = {
-+	.read_time	= optee_rtc_readtime,
-+	.set_time	= optee_rtc_settime,
-+	.set_offset	= optee_rtc_setoffset,
-+	.read_offset	= optee_rtc_readoffset,
-+};
-+
-+static int optee_rtc_read_info(struct device *dev, struct rtc_device *rtc,
-+			       u64 *features)
-+{
-+	struct optee_rtc *priv = dev_get_drvdata(dev);
-+	struct tee_ioctl_invoke_arg inv_arg = {0};
-+	struct tee_param param[4] = {0};
-+	struct optee_rtc_info *info;
-+	struct optee_rtc_time *tm;
-+	int ret;
-+
-+	inv_arg.func = TA_CMD_RTC_GET_INFO;
-+	inv_arg.session = priv->session_id;
-+	inv_arg.num_params = 4;
-+
-+	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
-+	param[0].u.memref.shm = priv->shm;
-+	param[0].u.memref.size = sizeof(*info);
-+	param[0].u.memref.shm_offs = 0;
-+
-+	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
-+	if (ret < 0 || inv_arg.ret != 0) {
-+		dev_err(dev, "TA_CMD_RTC_GET_RNG_INFO invoke err: %x\n",
-+			inv_arg.ret);
-+		return -EINVAL;
-+	}
-+
-+	info = tee_shm_get_va(priv->shm, 0);
-+	if (IS_ERR(info)) {
-+		dev_err(dev, "tee_shm_get_va failed\n");
-+		return PTR_ERR(info);
-+	}
-+
-+	if (param[0].u.memref.size != sizeof(*info)) {
-+		dev_err(dev, "Invalid read size from OPTEE\n");
-+		return -EINVAL;
-+	}
-+
-+	if (info->version != RTC_INFO_VERSION) {
-+		dev_err(dev, "Unsupported information version %llu\n",
-+			info->version);
-+		return -EINVAL;
-+	}
-+
-+	*features = info->features;
-+
-+	tm = &info->range_min;
-+	rtc->range_min = mktime64(tm->tm_year, tm->tm_mon, tm->tm_mday,
-+				  tm->tm_hour, tm->tm_min, tm->tm_sec);
-+	tm = &info->range_max;
-+	rtc->range_max = mktime64(tm->tm_year, tm->tm_mon, tm->tm_mday,
-+				  tm->tm_hour, tm->tm_min, tm->tm_sec);
-+
-+	return 0;
-+}
-+
-+static int optee_ctx_match(struct tee_ioctl_version_data *ver, const void *data)
-+{
-+	if (ver->impl_id == TEE_IMPL_ID_OPTEE)
-+		return 1;
-+	else
-+		return 0;
-+}
-+
-+static int optee_rtc_probe(struct device *dev)
-+{
-+	struct tee_client_device *rtc_device = to_tee_client_device(dev);
-+	struct tee_ioctl_open_session_arg sess_arg;
-+	struct optee_rtc *priv;
-+	struct rtc_device *rtc;
-+	struct tee_shm *shm;
-+	int ret, err;
-+
-+	memset(&sess_arg, 0, sizeof(sess_arg));
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	rtc = devm_rtc_allocate_device(dev);
-+	if (IS_ERR(rtc))
-+		return PTR_ERR(rtc);
-+
-+	/* Open context with TEE driver */
-+	priv->ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
-+	if (IS_ERR(priv->ctx))
-+		return -ENODEV;
-+
-+	/* Open session with rtc Trusted App */
-+	export_uuid(sess_arg.uuid, &rtc_device->id.uuid);
-+	sess_arg.clnt_login = TEE_IOCTL_LOGIN_REE_KERNEL;
-+	sess_arg.num_params = 0;
-+
-+	ret = tee_client_open_session(priv->ctx, &sess_arg, NULL);
-+	if (ret < 0 || sess_arg.ret != 0) {
-+		dev_err(dev, "tee_client_open_session failed, err: %x\n",
-+			sess_arg.ret);
-+		err = -EINVAL;
-+		goto out_ctx;
-+	}
-+	priv->session_id = sess_arg.session;
-+
-+	shm = tee_shm_alloc_kernel_buf(priv->ctx,
-+				       sizeof(struct optee_rtc_info));
-+	if (IS_ERR(shm)) {
-+		dev_err(priv->dev, "tee_shm_alloc failed\n");
-+		err = PTR_ERR(shm);
-+		goto out_sess;
-+	}
-+
-+	priv->shm = shm;
-+	priv->dev = dev;
-+	dev_set_drvdata(dev, priv);
-+
-+	rtc->ops = &optee_rtc_ops;
-+
-+	err = optee_rtc_read_info(dev, rtc, &priv->features);
-+	if (err) {
-+		dev_err(dev, "Failed to get RTC features from OP-TEE\n");
-+		goto out_shm;
-+	}
-+
-+	err = devm_rtc_register_device(rtc);
-+	if (err)
-+		goto out_shm;
-+
-+	/*
-+	 * We must clear this bit after registering because rtc_register_device
-+	 * will set it if it sees that .set_offset is provided.
-+	 */
-+	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
-+		clear_bit(RTC_FEATURE_CORRECTION, rtc->features);
-+
-+	return 0;
-+
-+out_shm:
-+	tee_shm_free(priv->shm);
-+out_sess:
-+	tee_client_close_session(priv->ctx, priv->session_id);
-+out_ctx:
-+	tee_client_close_context(priv->ctx);
-+
-+	return err;
-+}
-+
-+static int optee_rtc_remove(struct device *dev)
-+{
-+	struct optee_rtc *priv = dev_get_drvdata(dev);
-+
-+	tee_client_close_session(priv->ctx, priv->session_id);
-+	tee_client_close_context(priv->ctx);
-+
-+	return 0;
-+}
-+
-+static const struct tee_client_device_id optee_rtc_id_table[] = {
-+	{UUID_INIT(0xf389f8c8, 0x845f, 0x496c,
-+		   0x8b, 0xbe, 0xd6, 0x4b, 0xd2, 0x4c, 0x92, 0xfd)},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(tee, optee_rtc_id_table);
-+
-+static struct tee_client_driver optee_rtc_driver = {
-+	.id_table	= optee_rtc_id_table,
-+	.driver		= {
-+		.name		= "optee_rtc",
-+		.bus		= &tee_bus_type,
-+		.probe		= optee_rtc_probe,
-+		.remove		= optee_rtc_remove,
-+	},
-+};
-+
-+static int __init optee_rtc_mod_init(void)
-+{
-+	return driver_register(&optee_rtc_driver.driver);
-+}
-+
-+static void __exit optee_rtc_mod_exit(void)
-+{
-+	driver_unregister(&optee_rtc_driver.driver);
-+}
-+
-+module_init(optee_rtc_mod_init);
-+module_exit(optee_rtc_mod_exit);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Clément Léger <clement.leger@bootlin.com>");
-+MODULE_DESCRIPTION("OP-TEE based RTC driver");
--- 
-2.34.1
+>
+> > +     unsigned long pfn;
+> > +
+> > +     for (pfn = PFN_UP(begin); pfn < PFN_DOWN(end); pfn++) {
+> > +             struct page *page = pfn_to_page(pfn);
+> > +             void *addr = phys_to_virt(PFN_PHYS(pfn));
+> > +
+> > +             memset(addr, POISON_FREE_INITMEM, PAGE_SIZE);
+> > +             free_reserved_page(page);
+> > +     }
+> > +     pr_info("Freeing %s: %ldk freed\n", what, (end - begin) >> 10);
+> > +}
+> > +
+> > +#ifdef CONFIG_BLK_DEV_INITRD
+> > +void free_initrd_mem(unsigned long start, unsigned long end)
+> > +{
+>
+> There is a generic free_initrd_mem(), no need to override it.
+OK, let's remove it.
 
+Huacai
+>
+> > +     free_reserved_area((void *)start, (void *)end, POISON_FREE_INITMEM,
+> > +                        "initrd");
+> > +}
+> > +#endif
+>
+> --
+> Sincerely yours,
+> Mike.
