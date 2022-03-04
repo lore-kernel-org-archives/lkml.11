@@ -2,125 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE81C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CE4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbiCDUTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:19:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
+        id S229547AbiCDUWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:22:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232192AbiCDUSg (ORCPT
+        with ESMTP id S229448AbiCDUV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:18:36 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4058134DF1;
-        Fri,  4 Mar 2022 12:16:24 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id E22DE92009C; Fri,  4 Mar 2022 21:16:23 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id DCD4C92009B;
-        Fri,  4 Mar 2022 20:16:23 +0000 (GMT)
-Date:   Fri, 4 Mar 2022 20:16:23 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-cc:     Jan-Benedict Glaw <jbglaw@lug-owl.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH] DEC: Limit PMAX memory probing to R3k systems
-Message-ID: <alpine.DEB.2.21.2203041838380.47558@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Fri, 4 Mar 2022 15:21:59 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7F1177743;
+        Fri,  4 Mar 2022 12:21:09 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id gj15-20020a17090b108f00b001bef86c67c1so8811651pjb.3;
+        Fri, 04 Mar 2022 12:21:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C/syT7Y2eY46OVXh3uLQ0pEOp4t9Olrz81IvOtIGubc=;
+        b=pBy/DWvZZiL+PVlFab76MNRYthBkf+JTWT0dnBB/J3HJUFg4iD/+Yn5TktceeTcFIa
+         rUlXjyCodpdMxp/d9oixBNacs/pdnoxKNEjh6wBDPRAmT19PSBevFgAp3INjyiookgfh
+         MbpvsZW2XIzbwQLswzB2S973dM5KNgFodXbEwzDrWFasTU4PzgD8pK9G5Z698OtsiDVJ
+         ymhTaqmCBEFrplXlUYM/3WhinFrbzz3JsH/nEamX+L8+Qcc5IGaxh9MnEtYxGwEyKmf3
+         Axr6ltVJD8yozzNVIRtTbF1qohzE1uf0Jdi017er2CCS0uBVjYh1Z5YmyzTt4PU12YXg
+         qifQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C/syT7Y2eY46OVXh3uLQ0pEOp4t9Olrz81IvOtIGubc=;
+        b=j23ov2vC8sdfqcd1Zf4nUHxb7oAxSp45neKNKaCb2mHPpr1JeazakqgEEcDTPyVook
+         mF1fhf5bJRTrS9Ivjeh4pUV8/OPAEj5tku/xKZUHbIpuQem3OJneGgPLWMBvPy01Rt4E
+         KM+uA1FpYa5X4mizg+hmLjnvx8H5uSbQd58MKTf01+IdCkYrd1n6pEoXtHsj1VsQkN4O
+         Cwg6ChWB1gUjJ85p6zKalFL0r3TO0AUjoqph6rkl4X4Gn/EKkMvMkZsFSovXROYZeoCD
+         X0yAEik/H18PCVmEdX9kUMfdklTYPOpL/kcbdOhcRE1LDFYImC55nnNpt6aI7CUT2xTn
+         IofQ==
+X-Gm-Message-State: AOAM5317SXJ8JQU+3GpzsrC1yI56kru/dzA9wn2e9CpEbIaExccDO5/8
+        4ojh+vW/mCDg7nDQBvq17LU=
+X-Google-Smtp-Source: ABdhPJw0l7sG4pT7XOonU9d1+7+hi2g1s/G+O0WZFo9stDIm1EKxnhjv4E/nEpUN6639n1X7lB0o5Q==
+X-Received: by 2002:a17:903:1c3:b0:151:a54b:95f4 with SMTP id e3-20020a17090301c300b00151a54b95f4mr110414plh.10.1646425268705;
+        Fri, 04 Mar 2022 12:21:08 -0800 (PST)
+Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
+        by smtp.gmail.com with ESMTPSA id q15-20020a63504f000000b0037425262293sm5051165pgl.43.2022.03.04.12.21.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 12:21:07 -0800 (PST)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: Fix dirtyfb refcounting
+Date:   Fri,  4 Mar 2022 12:21:45 -0800
+Message-Id: <20220304202146.845566-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recent tightening of the opcode table in binutils so as to consistently 
-disallow the assembly or disassembly of CP0 instructions not supported 
-by the processor architecture chosen has caused a regression like below:
+From: Rob Clark <robdclark@chromium.org>
 
-arch/mips/dec/prom/locore.S: Assembler messages:
-arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
+refcount_t complains about 0->1 transitions, which isn't *quite* what we
+wanted.  So use dirtyfb==1 to mean that the fb is not connected to any
+output that requires dirtyfb flushing, so that we can keep the underflow
+and overflow checking.
 
-in a piece of code used to probe for memory with PMAX DECstation models, 
-which have non-REX firmware.  Those computers always have an R2000 CPU 
-and consequently the exception handler used in memory probing uses the 
-RFE instruction, which those processors use.
-
-While adding 64-bit support this code was correctly excluded for 64-bit 
-configurations, however it should have also been excluded for irrelevant 
-32-bit configurations.  Do this now then, and only enable PMAX memory 
-probing for R3k systems.
-
-Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org # v2.6.12+
+Fixes: 9e4dde28e9cd ("drm/msm: Avoid dirtyfb stalls on video mode displays (v2)")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
-Hi,
+ drivers/gpu/drm/msm/msm_fb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- I'm assuming this won't go back beyond commit 2a11c8ea20bf ("kconfig: 
-Introduce IS_ENABLED(), IS_BUILTIN() and IS_MODULE()") or any backport 
-will have to be rewritten to avoid IS_ENABLED.
-
- The original actual change named to fix ought to be commit dd82ef87e4c9 
-("PROM interface rework to support a 64-bit kernel.") from the LMO repo: 
-<https://git.kernel.org/pub/scm/linux/kernel/git/ralf/linux.git/commit/?id=dd82ef87e4c9>, 
-which introduced the `prom_is_rex' macro, which guards this code.  Said 
-commit predates the history of our main repository though.
-
- This change has actually been verified at runtime with a PMIN system 
-(effectively a PMAX, but with a slower R2000 CPU) and a 4MAX+ system (an 
-R4400SC-based machine), and naturally throughout the three possible build 
-configurations: R3k, R4k/32-bit, R4k/64-bit.
-
- It took longer than expected, but oh well...  Sorry for the inconvenience 
-caused.
-
- Please apply,
-
-  Maciej
----
- arch/mips/dec/prom/Makefile      |    2 +-
- arch/mips/include/asm/dec/prom.h |   15 +++++----------
- 2 files changed, 6 insertions(+), 11 deletions(-)
-
-linux-dec-locore-r3000.diff
-Index: linux-macro/arch/mips/dec/prom/Makefile
-===================================================================
---- linux-macro.orig/arch/mips/dec/prom/Makefile
-+++ linux-macro/arch/mips/dec/prom/Makefile
-@@ -6,4 +6,4 @@
+diff --git a/drivers/gpu/drm/msm/msm_fb.c b/drivers/gpu/drm/msm/msm_fb.c
+index 96b379a08327..7137492fe78e 100644
+--- a/drivers/gpu/drm/msm/msm_fb.c
++++ b/drivers/gpu/drm/msm/msm_fb.c
+@@ -37,7 +37,7 @@ static int msm_framebuffer_dirtyfb(struct drm_framebuffer *fb,
+ 	/* If this fb is not used on any display requiring pixel data to be
+ 	 * flushed, then skip dirtyfb
+ 	 */
+-	if (refcount_read(&msm_fb->dirtyfb) == 0)
++	if (refcount_read(&msm_fb->dirtyfb) == 1)
+ 		return 0;
  
- lib-y			+= init.o memory.o cmdline.o identify.o console.o
+ 	return drm_atomic_helper_dirtyfb(fb, file_priv, flags, color,
+@@ -221,6 +221,8 @@ static struct drm_framebuffer *msm_framebuffer_init(struct drm_device *dev,
+ 		goto fail;
+ 	}
  
--lib-$(CONFIG_32BIT)	+= locore.o
-+lib-$(CONFIG_CPU_R3000)	+= locore.o
-Index: linux-macro/arch/mips/include/asm/dec/prom.h
-===================================================================
---- linux-macro.orig/arch/mips/include/asm/dec/prom.h
-+++ linux-macro/arch/mips/include/asm/dec/prom.h
-@@ -43,16 +43,11 @@
-  */
- #define REX_PROM_MAGIC		0x30464354
++	refcount_set(&msm_fb->dirtyfb, 1);
++
+ 	drm_dbg_state(dev, "create: FB ID: %d (%p)", fb->base.id, fb);
  
--#ifdef CONFIG_64BIT
--
--#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
--
--#else /* !CONFIG_64BIT */
--
--#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
--
--#endif /* !CONFIG_64BIT */
--
-+/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
-+static inline bool prom_is_rex(u32 magic)
-+{
-+	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
-+}
- 
- /*
-  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
+ 	return fb;
+-- 
+2.35.1
+
