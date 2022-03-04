@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A864C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5EBC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbiCDUBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:01:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        id S230082AbiCDUBz convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:01:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbiCDUBR (ORCPT
+        with ESMTP id S230035AbiCDUBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:01:17 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9157223D02C
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 11:52:50 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc44b6dc9dso47594327b3.23
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 11:52:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=n2NqcUHbJsWardOwH6kbWHzl6hZnl0/7q7/h4tOTkqg=;
-        b=brNL5BLowTA5Lbs7SQfkYniaerH4AtPVOQyQtLOhaKCY+l1sZObrIKaasUtJdUshpz
-         l5GtEpc7cEqUNN4fTLs2aVsDy7MSdip6q1Y6KrqiLZrbhcKQWz2hiNcluZVqTmwNN+t3
-         Sx60dpGknsXUv9EI3xsoZC7cR2ExQu6dml82GFAgLfs94MIVQ8w32ld6wyYnVT3YlrEs
-         EuQFRD3g526TZxoRI/QZM2xr3pSmQ8xVE44t4hpsc5YGwdFq7V4owU5iBw3Nkgz95u7u
-         ArbzhhNSNMKFB+uv0mfVwgePqhyxBXGGWLzKUdyxKgXGZoS5Rn7JmKSMZh4e8sdg/wDG
-         T1yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=n2NqcUHbJsWardOwH6kbWHzl6hZnl0/7q7/h4tOTkqg=;
-        b=Lssohv0atmNAEmjELWsAmuYBjr4b9/3sJoEiy8MG4s/DFmUWoyANB41IPg4nCm6vdt
-         H7NFExbQlgVrBtNdDce3Z89mlZQQuHQNLYKc+MIO4C1+uP8Y9kct0hsGdiUeu2ujzy85
-         SB/48E4hjbh99Z89sBlPRZPpj0fKxR60KuuxOV2bfDWOwuJ+ytA8lUmcJ9DNT5oKGr5d
-         PVSMa9UXMyFW8tAGEFAke81P181JPc+kBhOCdyL1CSny2u4DSj7Yaf16p4sYac9J6fcZ
-         kor9PVVGCnO7Aj5BEdqAKGylCxpWA3NOy/lKcyRgoKS7xFngpEXr7/XP4NXlcgvz9F9m
-         mYzA==
-X-Gm-Message-State: AOAM5303hxO0+RaENj8aKIAtgJsMExH/7HRBbTtHMhTY1yxTUX8TaxT8
-        kEdiXXeogv6IuUGkeZegStgf4mK+4g==
-X-Google-Smtp-Source: ABdhPJyc9COjNjk++hBy8X04xgiuTrsxUwxw4yNtOBmi2JhrnOMaTg5HtQuo6HkG1pLfJbiDlQcPlToz2Q==
-X-Received: from decot.svl.corp.google.com ([2620:15c:2c5:11:5d36:3405:ac8a:5148])
- (user=decot job=sendgmr) by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id
- t6-20020a5b07c6000000b0060ba0ce019bmr42008ybq.407.1646423569785; Fri, 04 Mar
- 2022 11:52:49 -0800 (PST)
-Date:   Fri,  4 Mar 2022 11:52:38 -0800
-Message-Id: <20220304195238.1141725-1-decot+git@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [PATCH v1 1/1] irqchip/gic-v3-its: fixup IRQ affinities to account
- for online CPUs
-From:   David Decotigny <decot+git@google.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     David Decotigny <ddecotig@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 4 Mar 2022 15:01:48 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9F5972F2
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 11:56:02 -0800 (PST)
+Date:   Fri, 04 Mar 2022 19:38:29 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH] drm/bridge_connector: enable HPD by default if supported
+To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Message-Id: <5WJ88R.LXNASHJRBDGL1@crapouillou.net>
+In-Reply-To: <20211225063151.2110878-1-nikita.yoush@cogentembedded.com>
+References: <20211225063151.2110878-1-nikita.yoush@cogentembedded.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Decotigny <ddecotig@google.com>
+Hi Nikita,
 
-In some cases (eg. when booting with maxcpus=X), it is possible that
-the preset IRQ affinity masks don't intersect with the set of online
-CPUs. This patch extends the fallback strategy implemented when
-IRQD_AFFINITY_MANAGED is not set to all cases. This is logged the
-first time that happens.
+Le sam., déc. 25 2021 at 09:31:51 +0300, Nikita Yushchenko 
+<nikita.yoush@cogentembedded.com> a écrit :
+> Hotplug events reported by bridge drivers over drm_bridge_hpd_notify()
+> get ignored unless somebody calls drm_bridge_hpd_enable(). When the
+> connector for the bridge is bridge_connector, such a call is done from
+> drm_bridge_connector_enable_hpd().
+> 
+> However drm_bridge_connector_enable_hpd() is never called on init 
+> paths,
+> documentation suggests that it is intended for suspend/resume paths.
+> 
+> In result, once encoders are switched to bridge_connector,
+> bridge-detected HPD stops working.
+> 
+> This patch adds a call to that API on init path.
+> 
+> This fixes HDMI HPD with rcar-du + adv7513 case when adv7513 reports 
+> HPD
+> events via interrupts.
+> 
+> Fixes: c24110a8fd09 ("drm: rcar-du: Use drm_bridge_connector_init() 
+> helper")
+> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 
-Fixes: c5d6082d35e0 ("irqchip/gic-v3-its: Balance initial LPI affinity across CPUs")
+Merged to drm-misc-next.
 
----
- drivers/irqchip/irq-gic-v3-its.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+Thanks!
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index cd772973114a..de862fd9ad73 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -1618,11 +1618,6 @@ static int its_select_cpu(struct irq_data *d,
- 		/* Try the intersection of the affinity and online masks */
- 		cpumask_and(tmpmask, aff_mask, cpu_online_mask);
- 
--		/* If that doesn't fly, the online mask is the last resort */
--		if (cpumask_empty(tmpmask))
--			cpumask_copy(tmpmask, cpu_online_mask);
--
--		cpu = cpumask_pick_least_loaded(d, tmpmask);
- 	} else {
- 		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
- 
-@@ -1630,9 +1625,13 @@ static int its_select_cpu(struct irq_data *d,
- 		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
- 		    node != NUMA_NO_NODE)
- 			cpumask_and(tmpmask, tmpmask, cpumask_of_node(node));
--
--		cpu = cpumask_pick_least_loaded(d, tmpmask);
- 	}
-+
-+	/* If that doesn't fly, the online mask is the last resort */
-+	if (WARN_ON_ONCE(cpumask_empty(tmpmask)))
-+		cpumask_copy(tmpmask, cpu_online_mask);
-+
-+	cpu = cpumask_pick_least_loaded(d, tmpmask);
- out:
- 	free_cpumask_var(tmpmask);
- 
--- 
-2.35.1.616.g0bdcbb4464-goog
+Cheers,
+-Paul
+
+> ---
+>  drivers/gpu/drm/drm_bridge_connector.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_bridge_connector.c 
+> b/drivers/gpu/drm/drm_bridge_connector.c
+> index 791379816837..4f20137ef21d 100644
+> --- a/drivers/gpu/drm/drm_bridge_connector.c
+> +++ b/drivers/gpu/drm/drm_bridge_connector.c
+> @@ -369,8 +369,10 @@ struct drm_connector 
+> *drm_bridge_connector_init(struct drm_device *drm,
+>  				    connector_type, ddc);
+>  	drm_connector_helper_add(connector, 
+> &drm_bridge_connector_helper_funcs);
+> 
+> -	if (bridge_connector->bridge_hpd)
+> +	if (bridge_connector->bridge_hpd) {
+>  		connector->polled = DRM_CONNECTOR_POLL_HPD;
+> +		drm_bridge_connector_enable_hpd(connector);
+> +	}
+>  	else if (bridge_connector->bridge_detect)
+>  		connector->polled = DRM_CONNECTOR_POLL_CONNECT
+>  				  | DRM_CONNECTOR_POLL_DISCONNECT;
+> --
+> 2.30.2
+
 
