@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 19:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1475C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 19:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiCDT76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 14:59:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S229883AbiCDUAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:00:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiCDT7L (ORCPT
+        with ESMTP id S229535AbiCDT7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 14:59:11 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6192325F3;
-        Fri,  4 Mar 2022 11:50:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8512325E3;
+        Fri,  4 Mar 2022 11:50:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646423443; x=1677959443;
+  t=1646423445; x=1677959445;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lBNgey1dNY1UFmNmMzmdiOJCYlx7auBIKRKZTs2fnBM=;
-  b=Bhs4kg6j+yT142fS5y71Xz1yF5E7iu78Iai3ViDjDEuQqp8rGf/D6zaZ
-   B2mjEBEMyVsFv9xDNaDkJh+ki8coKfcxVaqERuHYtAkPFlXU2niH3fQKf
-   F7nnGFZgGpq60Ryerf2mXU2q5NBo/0yRNaibj/lGvQ/ROHPx1M1qqid3E
-   4r9hMFOumUOtpnKRva+9KQTeemMrpS+uF7fZYZmYxzcX77Ut+lG8FvhV0
-   E7oCHiz9OWBTA6VIMdwsHLJyu3zEBl/XeOZ4jKPZ/tnXxrAeAST3/KlqX
-   nnoj5eRuQoMTMjR8SG9pGoJUyksMnYlp4iTDbfos+7x/XChelOqqmYV8Y
+  bh=ekR0I15xgmA0Cz5BhJ6W6Iq8JErAl1vPeK4d4L8pkK4=;
+  b=Zum0t4QKwRbK7k5qoCulkV4TxE0upTpOgOamH0VLhStrQ6f1sl+E/yPZ
+   mO0wrapP4K69WGrNPg5JmfKPySPn+BLIaM5IpFipPSrDOb+Es3gTO9bCD
+   7tBsB9LXWBP3oY5ig9dH3uOaeqrEJCrJAYdX9ug3HQ9o2sWMqMqkJ1bBn
+   103luav3T71ndaqagXiPs/PK7mWuLdP/sGg/RHCO21ye9pyBwK3NBM/gq
+   0FsitxDWVCQkRdXskm4R8Yt4vqYV+p7AP1y4P7S39VmMICbm+sQ7yHQiq
+   8xBgF1fcpqUxH1uAoNAbDn4sbfUbyQMAkRg3a12hB256OQaZpKrSK1XNZ
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779641"
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779657"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253779641"
+   d="scan'208";a="253779657"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:41 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:44 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344528"
+   d="scan'208";a="552344565"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:40 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:44 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 085/104] KVM: TDX: handle EXIT_REASON_OTHER_SMI
-Date:   Fri,  4 Mar 2022 11:49:41 -0800
-Message-Id: <ea42891d7b9b378242bc027976415d8d81e21310.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 093/104] KVM: TDX: Handle TDX PV port io hypercall
+Date:   Fri,  4 Mar 2022 11:49:49 -0800
+Message-Id: <a3c8c71d6d02896754632cf741c38efb60978215.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,43 +58,83 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-If the control reaches EXIT_REASON_OTHER_SMI, #SMI is delivered and
-handled right after returning from the TDX module to KVM nothing needs to
-be done in KVM.  Continue TDX vcpu execution.
+Wire up TDX PV port IO hypercall to the KVM backend function.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/uapi/asm/vmx.h | 1 +
- arch/x86/kvm/vmx/tdx.c          | 7 +++++++
- 2 files changed, 8 insertions(+)
+ arch/x86/kvm/vmx/tdx.c | 55 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
-diff --git a/arch/x86/include/uapi/asm/vmx.h b/arch/x86/include/uapi/asm/vmx.h
-index 946d761adbd3..3d9b4598e166 100644
---- a/arch/x86/include/uapi/asm/vmx.h
-+++ b/arch/x86/include/uapi/asm/vmx.h
-@@ -34,6 +34,7 @@
- #define EXIT_REASON_TRIPLE_FAULT        2
- #define EXIT_REASON_INIT_SIGNAL			3
- #define EXIT_REASON_SIPI_SIGNAL         4
-+#define EXIT_REASON_OTHER_SMI           6
- 
- #define EXIT_REASON_INTERRUPT_WINDOW    7
- #define EXIT_REASON_NMI_WINDOW          8
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 155208a8d768..6fbe89bcfe1e 100644
+index b0dcc2421649..c900347d0bc7 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1097,6 +1097,13 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
- 	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
+@@ -959,6 +959,59 @@ static int tdx_emulate_hlt(struct kvm_vcpu *vcpu)
+ 	return kvm_emulate_halt_noskip(vcpu);
+ }
  
- 	switch (exit_reason.basic) {
-+	case EXIT_REASON_OTHER_SMI:
-+		/*
-+		 * If reach here, it's not a MSMI.
-+		 * #SMI is delivered and handled right after SEAMRET, nothing
-+		 * needs to be done in KVM.
-+		 */
++static int tdx_complete_pio_in(struct kvm_vcpu *vcpu)
++{
++	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
++	unsigned long val = 0;
++	int ret;
++
++	WARN_ON(vcpu->arch.pio.count != 1);
++
++	ret = ctxt->ops->pio_in_emulated(ctxt, vcpu->arch.pio.size,
++					 vcpu->arch.pio.port, &val, 1);
++	WARN_ON(!ret);
++
++	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
++	tdvmcall_set_return_val(vcpu, val);
++
++	return 1;
++}
++
++static int tdx_emulate_io(struct kvm_vcpu *vcpu)
++{
++	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
++	unsigned long val = 0;
++	unsigned int port;
++	int size, ret;
++
++	++vcpu->stat.io_exits;
++
++	size = tdvmcall_p1_read(vcpu);
++	port = tdvmcall_p3_read(vcpu);
++
++	if (size != 1 && size != 2 && size != 4) {
++		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
 +		return 1;
++	}
++
++	if (!tdvmcall_p2_read(vcpu)) {
++		ret = ctxt->ops->pio_in_emulated(ctxt, size, port, &val, 1);
++		if (!ret)
++			vcpu->arch.complete_userspace_io = tdx_complete_pio_in;
++		else
++			tdvmcall_set_return_val(vcpu, val);
++	} else {
++		val = tdvmcall_p4_read(vcpu);
++		ret = ctxt->ops->pio_out_emulated(ctxt, size, port, &val, 1);
++
++		/* No need for a complete_userspace_io callback. */
++		vcpu->arch.pio.count = 0;
++	}
++	if (ret)
++		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
++	return ret;
++}
++
+ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_tdx *tdx = to_tdx(vcpu);
+@@ -974,6 +1027,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+ 		return tdx_emulate_cpuid(vcpu);
+ 	case EXIT_REASON_HLT:
+ 		return tdx_emulate_hlt(vcpu);
++	case EXIT_REASON_IO_INSTRUCTION:
++		return tdx_emulate_io(vcpu);
  	default:
  		break;
  	}
