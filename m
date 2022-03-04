@@ -2,154 +2,376 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBCDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F08C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiCDU1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:27:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S229882AbiCDU36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:29:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiCDU1W (ORCPT
+        with ESMTP id S229630AbiCDU34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:27:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394F23CA6A;
-        Fri,  4 Mar 2022 12:26:32 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 7CA1B21129;
-        Fri,  4 Mar 2022 20:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1646424022; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2SG4NM4EVrSS3exMfsZrC7gWoyjIGrnlFGBQMDfIamY=;
-        b=Jd9EyHzq5QAYWn3c4QnQ5glYw7TicrR1pYGl0FNMyYjwHRK61JGK96cZTE6sgEluHUOXp4
-        v8CzYJk/YLqYFFEArxqT4MBAJKcj+N+Kmm2Pe/N9X9uXR7M5UOXGr5a+gMljQDXt+hq1go
-        lmbk1zPBxMov5fgHjWhyq/cTxFCFSBo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1646424022;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2SG4NM4EVrSS3exMfsZrC7gWoyjIGrnlFGBQMDfIamY=;
-        b=Ilf7bd059vX8aWwcu1Y0LM1FCnaQg35LPVANN5CcFkQNtEipjG35plXZ88U2a3DEHiJEYs
-        Jh1WqziBgNXz8TCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1785C13B74;
-        Fri,  4 Mar 2022 20:00:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id /zu3BNZvImJAIwAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Fri, 04 Mar 2022 20:00:22 +0000
-Message-ID: <81f87874-4aa8-265d-a0ed-c8a67708a92a@suse.de>
-Date:   Fri, 4 Mar 2022 21:00:21 +0100
+        Fri, 4 Mar 2022 15:29:56 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F42182DBA;
+        Fri,  4 Mar 2022 12:29:04 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id d10so19721472eje.10;
+        Fri, 04 Mar 2022 12:29:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b1yxYJD2jlML/s6JMjdOm8/8zx8SCc+lgepaI47PbwU=;
+        b=Cj7CV4gevMZ10N7LYXPsD6dYLuXHMbW2miRb6LjTKTA/h9DfFRkCq33CFOObpzXp7D
+         xq5sGJ8GrlOMlpyBbbTy732Qd+KwdxMMa4K+zhSKgqKcwdMZbY6ds/JQBh/GGlKA7saK
+         wfCp257zO1T8DURE92YS5Nko7spOA7Ob0ghCT5MntPeCErUDvezBzPbajMnpy9sLM6fV
+         J9tHn/WNLasHJv8hxzymfboCSZIxdi4VVHg4V/XxIfRCekn8cvlTJgqZTbEy+4dfq3PM
+         uHvolOhh3AVQ7nRaTlxkOuPs57pGOvzYUiLE6Ii+D8wPpCUTv3qegsBkjHEWJOa2eybe
+         TPbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b1yxYJD2jlML/s6JMjdOm8/8zx8SCc+lgepaI47PbwU=;
+        b=P0rxy4+HWCQA0BBv+MlXso5Kd2WZm/e/9EPs7a0v+0QBaWM0ZdoLRjhVDL9ItOKqPH
+         7RaCy5AFsTtBPknOKP3tCQQlILcaUFRmdYG7Y+a6VUZxW5eEfoSARHDO/Im2vQ8ubc8H
+         RuUe4KpW8IWRSardfsYkWvDUldJawclPJhNtSO09cz1nMur9/qkHGMOcyRxFP3cGVdFE
+         l3/T5/fJQXwwHkEbTycvvt5/IcZc0ppKJQCFzTPKlxcvatLI8fPkZncDIrwDnHzquxRq
+         kTpb0vCjQxqz10+XtAM+EyNPnEssfDof3ro/hWbeUq9HvCt8wCZ1zrQ+g53RoN6w9L7l
+         3mSg==
+X-Gm-Message-State: AOAM532Y0UGFS/xi50teqZcgUpi7UTcafDBw+clL2U0B1pEJQ0UuJphx
+        ec45FjtFiUV50za9M+y3+ovY7xT+8Fuuaq4UAE4WUgVbLlo=
+X-Google-Smtp-Source: ABdhPJzdECpf2pY/BYXQF2WVhMe/fo0g/USLyELTlIXspzJBJEOgHTuEkUQg+Wdw69LKXc2J6+RLJgFbpFH5vwEm8hE=
+X-Received: by 2002:a17:906:58b:b0:6cf:65f5:de28 with SMTP id
+ 11-20020a170906058b00b006cf65f5de28mr414020ejn.614.1646425743405; Fri, 04 Mar
+ 2022 12:29:03 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>
-Cc:     linux-fbdev@vger.kernel.org, x86@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, David Airlie <airlied@linux.ie>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helge Deller <deller@gmx.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-video@atrey.karlin.mff.cuni.cz,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Maxime Ripard <maxime@cerno.tech>,
-        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Mack <daniel@zonque.org>
-References: <20220218093334.24830-1-msuchanek@suse.de>
- <354f3cfd-bfa0-3ebe-3d67-705423d9294e@suse.de>
- <20220302193846.GT3113@kunlun.suse.cz>
- <2ba8497f-ba6d-558b-d782-bb3ee67d23ec@redhat.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <2ba8497f-ba6d-558b-d782-bb3ee67d23ec@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------9YQkqF7dRSWVmMuP7AhZgAw4"
+References: <CA+G9fYs+Qc3rAONJBmyQXFnYmrzFBJ8GMpwWXBMpj3Nx6wQ0Hg@mail.gmail.com>
+ <CAABZP2xHynkBmsk8mcvPujSL65fsj=hpM9acuMvmDOUYbWk0KQ@mail.gmail.com> <20220304194408.GP4285@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220304194408.GP4285@paulmck-ThinkPad-P17-Gen-1>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Sat, 5 Mar 2022 04:28:51 +0800
+Message-ID: <CAABZP2x-1k_+nHzSvuD3EKD1cMSPiOFFnehJPQ7_QnaeDLpkGw@mail.gmail.com>
+Subject: Re: [next] WARNING: suspicious RCU usage : include/linux/cgroup.h:494
+ suspicious rcu_dereference_check() usage
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        zhouchengming@bytedance.com,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, rcu <rcu@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------9YQkqF7dRSWVmMuP7AhZgAw4
-Content-Type: multipart/mixed; boundary="------------isOeU2gFLokjvcP9fJJxe08j";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Javier Martinez Canillas <javierm@redhat.com>,
- =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>
-Cc: linux-fbdev@vger.kernel.org, x86@kernel.org, Arnd Bergmann
- <arnd@arndb.de>, David Airlie <airlied@linux.ie>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Helge Deller
- <deller@gmx.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- linux-video@atrey.karlin.mff.cuni.cz, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Maxime Ripard <maxime@cerno.tech>,
- "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
- Thomas Gleixner <tglx@linutronix.de>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Sam Ravnborg <sam@ravnborg.org>, Daniel Mack <daniel@zonque.org>
-Message-ID: <81f87874-4aa8-265d-a0ed-c8a67708a92a@suse.de>
-Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
-References: <20220218093334.24830-1-msuchanek@suse.de>
- <354f3cfd-bfa0-3ebe-3d67-705423d9294e@suse.de>
- <20220302193846.GT3113@kunlun.suse.cz>
- <2ba8497f-ba6d-558b-d782-bb3ee67d23ec@redhat.com>
-In-Reply-To: <2ba8497f-ba6d-558b-d782-bb3ee67d23ec@redhat.com>
+Hi Paul
 
---------------isOeU2gFLokjvcP9fJJxe08j
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Yes, your suggestion works!
+Thank you for your guidance, this is the first time I ever did a
+bisection, I gained greatly during this process!
 
-SGksDQoNCkkndmUgbWVyZ2VkIHRoZSBwYXRjaGVzIGludG8gZHJtLW1pc2MtZml4ZXMuIFRo
-YW5rcyBhIGxvdCB0byBib3RoIG9mIHlvdS4NCg0KQmVzdCByZWdhcmRzDQpUaG9tYXMNCg0K
-QW0gMDIuMDMuMjIgdW0gMjA6NDcgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2FuaWxsYXM6
-DQo+IEhlbGxvLA0KPiANCj4gT24gMy8yLzIyIDIwOjM4LCBNaWNoYWwgU3VjaMOhbmVrIHdy
-b3RlOg0KPj4gSGVsbG8sDQo+Pg0KPj4gT24gV2VkLCBNYXIgMDIsIDIwMjIgYXQgMDg6MzE6
-MjVQTSArMDEwMCwgVGhvbWFzIFppbW1lcm1hbm4gd3JvdGU6DQo+Pj4gSGksDQo+Pj4NCj4+
-PiBpcyB0aGlzIHJlYWR5IHRvIGJlIG1lcmdlZD8NCj4+DQo+PiBUaGUgb2JqZWN0aW9ucyBy
-YWlzZWQgc28gZmFyIGhhdmUgYmVlbiBhZGRyZXNzZWQgaW4gdjQuDQo+Pg0KPj4gSSB0aGlu
-ayB0aGlzIGlzIGdvb2QgdG8gbWVyZ2UuDQo+Pg0KPiANCj4gVGhlIHY0IHBhdGNoZXMgbG9v
-a3MgZ29vZCB0byBtZSBhbmQgaGF2ZSBwcm92aWRlZCBteSBSZXZpZXdlZC1ieSB0byBhbGwg
-b2YgdGhlbS4NCj4gICANCj4+IFRoYW5rcw0KPj4NCj4+IE1pY2hhbA0KPj4NCj4+Pg0KDQot
-LSANClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNF
-IFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5
-IE7DvHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jD
-pGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
+On Sat, Mar 5, 2022 at 3:44 AM Paul E. McKenney <paulmck@kernel.org> wrote:
+>
+> On Sat, Mar 05, 2022 at 03:38:33AM +0800, Zhouyi Zhou wrote:
+> > Hi,
+> > I can reproduce these warnings on my X86 VM.
+> > Following the my backtrace:
+> >
+> > (gdb) bt
+> > #0  lockdep_rcu_suspicious (file=file@entry=0xffffffff825ea8ff
+> > "include/linux/cgroup.h", line=line@entry=494,
+> >     s=s@entry=0xffffffff825c5c50 "suspicious rcu_dereference_check()
+> > usage") at ./arch/x86/include/asm/current.h:15
+> > #1  0xffffffff81183103 in task_css (subsys_id=2,
+> > task=0xffff888100804080) at ./include/linux/cgroup.h:494
+> > #2  task_ca (tsk=0xffff888100804080) at kernel/sched/cpuacct.c:40
+> > #3  cpuacct_charge (tsk=tsk@entry=0xffff888100804080,
+> > cputime=cputime@entry=3344803) at kernel/sched/cpuacct.c:342
+> > #4  0xffffffff81162655 in cgroup_account_cputime (delta_exec=3344803,
+> > task=0xffff888100804080) at ./include/linux/cgroup.h:792
+> > #5  update_curr (cfs_rq=cfs_rq@entry=0xffff88813b63f500) at
+> > kernel/sched/fair.c:907
+> > #6  0xffffffff81164797 in dequeue_entity (flags=10,
+> > se=0xffff888100804100, cfs_rq=0xffff88813b63f500) at
+> > kernel/sched/fair.c:5771
+> > #7  dequeue_task_fair (rq=0xffff88813b63f440, p=0xffff888100804080,
+> > flags=10) at kernel/sched/fair.c:5771
+> > #8  0xffffffff8115412a in dequeue_task (flags=10,
+> > p=0xffff888100804080, rq=0xffff88813b63f440) at
+> > kernel/sched/core.c:2019
+> > #9  __do_set_cpus_allowed (p=0xffff888100804080,
+> > new_mask=0xffffffff831b4d40 <housekeeping+512>, flags=0) at
+> > kernel/sched/core.c:2508
+> > #10 0xffffffff811564ca in __set_cpus_allowed_ptr_locked
+> > (p=p@entry=0xffff888100804080,
+> > new_mask=new_mask@entry=0xffffffff831b4d40 <housekeeping+512>,
+> >     flags=flags@entry=0, rq=0xffff88813b63f440,
+> > rf=rf@entry=0xffffc9000012bee8) at kernel/sched/core.c:2841
+> > #11 0xffffffff81156573 in __set_cpus_allowed_ptr
+> > (p=p@entry=0xffff888100804080, new_mask=0xffffffff831b4d40
+> > <housekeeping+512>, flags=flags@entry=0)
+> >     at kernel/sched/core.c:2874
+> > #12 0xffffffff8115664c in set_cpus_allowed_ptr
+> > (p=p@entry=0xffff888100804080, new_mask=<optimized out>) at
+> > kernel/sched/core.c:2879
+> > #13 0xffffffff81144676 in kthreadd (unused=<optimized out>) at
+> > kernel/kthread.c:724
+> > #14 0xffffffff810019df in ret_from_fork () at arch/x86/entry/entry_64.S:295
+> > #15 0x0000000000000000 in ?? ()
+> >
+> > Do the warnings have something to do with commit
+> > dc6e0818bc9a0336d9accf3ea35d146d72aa7a18 (sched/cpuacct: Optimize away
+> > RCU read lock) ?
+>
+> If you have not already done so, could you please try running on this
+> commit and then on the commit immediately preceding it?  Just as a
+> authoritative way to answer your question.  ;-)
+>
+>                                                         Thanx, Paul
+>
+git reset --hard dc6e0818bc9a0336d9accf3ea35d146d72aa7a18
+make -j 16 bindeb-pkg
+there are RCU WARNINGs:
+http://154.223.142.244/logs/20220305/log.dc6e0818bc9a0336d9accf3ea35d146d72aa7a18.txt
 
---------------isOeU2gFLokjvcP9fJJxe08j--
+then I running on the commit immediately preceding it
+git reset --hard 248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd
+make -j 16 bindeb-pkg
+the WARNINGs are gone with the wind ;-)
+http://154.223.142.244/logs/20220305/log.248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd.txt
 
---------------9YQkqF7dRSWVmMuP7AhZgAw4
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIib9UFAwAAAAAACgkQlh/E3EQov+Bz
-cxAAuToEBb/XS3yHnuR6bd6s5rHKDeUZujJnQKLo1eN+UuJoEgw9rvfVzEhDHyqUHw63wZx8jU71
-754UtF5AXu5N71HoeJ9dqFV/hoM5F+g2KJyHhosT97+LhFTQaCauzouK0iGJFIric1/T0O9h1/MM
-odHcor3nfcrf5fhNmqauqNNkpj9QEdj6IJ8B5Ki3Bc/LzipgoErN6MhDYQIiSGH8jTjmk3vW3b7J
-ur1jTCOaVAMTMmuoPqsPwZMqKGwWKqW1aVb2Sr+w6ikUmsjEyTJw/wxX5M0tDJ2z/5h39cXQs7Pv
-bs2do3S3mVIpt5vO+ZLso1l/Yo9NaJt8louon1uwC09I1Wm/cQdnuEyoICpaDiYMcvHtytkwtpbN
-c64GcwNbbp1bK6+kmXMCeBiFYo+YtDaOE1XwgO+gc6v2t+p8WOQGt/gaUBNGwOOxy+hhVLhdf4FW
-YQ67IQnerCUk/432vjiKwVPdrw9mgApeEK34HjHy2IWl1TKx+oigOvSIbLsBeXqMC65nDuqIrgse
-gmZRKM/2L9joWrZu7bOD9omMTHGWdC5VATbQmqSTEHwSEeCYkFTznNrNubrh6gaWOmIRWaKng+2f
-9W6TtfetZ2+Gw12/Prjp4PWoTyYK8Xt8VOrSnOVmv/Gc37YAIONDVIH3ESXV/ho0y84yyhjhw0Iw
-nNw=
-=qzB5
------END PGP SIGNATURE-----
-
---------------9YQkqF7dRSWVmMuP7AhZgAw4--
+Many thanks
+Zhouyi
+> > Many thanks
+> > Zhouyi
+> >
+> > On Fri, Mar 4, 2022 at 10:43 PM Naresh Kamboju
+> > <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > While booting x86_64 with linux next-20220304 kernel the following kernel
+> > > warning reported [1].
+> > >
+> > > metadata:
+> > >   git_ref: master
+> > >   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+> > >   git_sha: 6d284ba80c0c485bcaa7bdf67f232d572640edc4
+> > >   git_describe: next-20220304
+> > >   kernel-config: https://builds.tuxbuild.com/25uuYdm2vTO275aZ3IewZY5sKbU/config
+> > >
+> > >
+> > > warning log:
+> > > ---------
+> > > [    1.482171] MDS: Mitigation: Clear CPU buffers
+> > > [    1.485680] Freeing SMP alternatives memory: 52K
+> > > [    1.487341]
+> > > [    1.488169] =============================
+> > > [    1.488169] WARNING: suspicious RCU usage
+> > > [    1.488169] 5.17.0-rc6-next-20220304 #1 Not tainted
+> > > [    1.488169] -----------------------------
+> > > [    1.488169] include/linux/cgroup.h:494 suspicious
+> > > rcu_dereference_check() usage!
+> > > [    1.488169]
+> > > [    1.488169] other info that might help us debug this:
+> > > [    1.488169]
+> > > [    1.488169]
+> > > [    1.488169] rcu_scheduler_active = 1, debug_locks = 1
+> > > [    1.488169] 2 locks held by kthreadd/2:
+> > > [    1.488169]  #0: ffff9ba440352330 (&p->pi_lock){....}-{2:2}, at:
+> > > task_rq_lock+0x2e/0x130
+> > > [    1.488169]  #1: ffff9ba7a7a2d058 (&rq->__lock){-...}-{2:2}, at:
+> > > task_rq_lock+0x5d/0x130
+> > > [    1.488169]
+> > > [    1.488169] stack backtrace:
+> > > [    1.488169] CPU: 0 PID: 2 Comm: kthreadd Not tainted
+> > > 5.17.0-rc6-next-20220304 #1
+> > > [    1.488169] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> > > 2.5 11/26/2020
+> > > [    1.488169] Call Trace:
+> > > [    1.488169]  <TASK>
+> > > [    1.488169]  dump_stack_lvl+0x49/0x5e
+> > > [    1.488169]  dump_stack+0x10/0x12
+> > > [    1.488169]  lockdep_rcu_suspicious+0xed/0xf8
+> > > [    1.488169]  cpuacct_charge+0x10c/0x120
+> > > [    1.488169]  update_curr+0x165/0x340
+> > > [    1.488169]  dequeue_entity+0x23/0x430
+> > > [    1.488169]  dequeue_task_fair+0xba/0x3b0
+> > > [    1.488169]  __do_set_cpus_allowed+0xca/0x2c0
+> > > [    1.488169]  __set_cpus_allowed_ptr_locked+0x128/0x1b0
+> > > [    1.488169]  set_cpus_allowed_ptr+0x43/0x70
+> > > [    1.488169]  kthreadd+0x49/0x230
+> > > [    1.488169]  ? kthread_is_per_cpu+0x30/0x30
+> > > [    1.488169]  ret_from_fork+0x22/0x30
+> > > [    1.488169]  </TASK>
+> > > [    1.488169]
+> > > [    1.488169] =============================
+> > > [    1.488169] WARNING: suspicious RCU usage
+> > > [    1.488169] 5.17.0-rc6-next-20220304 #1 Not tainted
+> > > [    1.488169] -----------------------------
+> > > [    1.488169] include/linux/cgroup.h:481 suspicious
+> > > rcu_dereference_check() usage!
+> > > [    1.488169]
+> > > [    1.488169] other info that might help us debug this:
+> > > [    1.488169]
+> > > [    1.488169]
+> > > [    1.488169] rcu_scheduler_active = 1, debug_locks = 1
+> > > [    1.488169] 2 locks held by kthreadd/2:
+> > > [    1.488169]  #0: ffff9ba440352330 (&p->pi_lock){....}-{2:2}, at:
+> > > task_rq_lock+0x2e/0x130
+> > > [    1.488169]  #1: ffff9ba7a7a2d058 (&rq->__lock){-...}-{2:2}, at:
+> > > task_rq_lock+0x5d/0x130
+> > > [    1.488169]
+> > > [    1.488169] stack backtrace:
+> > > [    1.488169] CPU: 0 PID: 2 Comm: kthreadd Not tainted
+> > > 5.17.0-rc6-next-20220304 #1
+> > > [    1.488169] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> > > 2.5 11/26/2020
+> > > [    1.488169] Call Trace:
+> > > [    1.488169]  <TASK>
+> > > [    1.488169]  dump_stack_lvl+0x49/0x5e
+> > > [    1.488169]  dump_stack+0x10/0x12
+> > > [    1.488169]  lockdep_rcu_suspicious+0xed/0xf8
+> > > [    1.488169]  update_curr+0x2b7/0x340
+> > > [    1.488169]  dequeue_entity+0x23/0x430
+> > > [    1.488169]  dequeue_task_fair+0xba/0x3b0
+> > > [    1.488169]  __do_set_cpus_allowed+0xca/0x2c0
+> > > [    1.488169]  __set_cpus_allowed_ptr_locked+0x128/0x1b0
+> > > [    1.488169]  set_cpus_allowed_ptr+0x43/0x70
+> > > [    1.488169]  kthreadd+0x49/0x230
+> > > [    1.488169]  ? kthread_is_per_cpu+0x30/0x30
+> > > [    1.488169]  ret_from_fork+0x22/0x30
+> > > [    1.488169]  </TASK>
+> > > [    1.488169]
+> > > [    1.488169] =============================
+> > > [    1.488169] WARNING: suspicious RCU usage
+> > > [    1.488169] 5.17.0-rc6-next-20220304 #1 Not tainted
+> > > [    1.488169] -----------------------------
+> > > [    1.488169] include/linux/cgroup.h:481 suspicious
+> > > rcu_dereference_check() usage!
+> > > [    1.488169]
+> > > [    1.488169] other info that might help us debug this:
+> > > [    1.488169]
+> > > [    1.488169]
+> > > [    1.488169] rcu_scheduler_active = 1, debug_locks = 1
+> > > [    1.488169] no locks held by kthreadd/2.
+> > > [    1.488169]
+> > > [    1.488169] stack backtrace:
+> > > [    1.488169] CPU: 0 PID: 2 Comm: kthreadd Not tainted
+> > > 5.17.0-rc6-next-20220304 #1
+> > > [    1.488169] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> > > 2.5 11/26/2020
+> > > [    1.488169] Call Trace:
+> > > [    1.488169]  <IRQ>
+> > > [    1.488169]  dump_stack_lvl+0x49/0x5e
+> > > [    1.488169]  dump_stack+0x10/0x12
+> > > [    1.488169]  lockdep_rcu_suspicious+0xed/0xf8
+> > > [    1.488169]  account_system_index_time+0x127/0x130
+> > > [    1.488169]  account_system_time+0x50/0x60
+> > > [    1.488169]  account_process_tick+0x59/0x80
+> > > [    1.488169]  update_process_times+0x58/0xe0
+> > > [    1.488169]  tick_periodic+0x37/0xf0
+> > > [    1.488169]  tick_handle_periodic+0x24/0x70
+> > > [    1.488169]  timer_interrupt+0x18/0x20
+> > > [    1.488169]  __handle_irq_event_percpu+0x95/0x2f0
+> > > [    1.488169]  handle_irq_event+0x39/0x80
+> > > [    1.488169]  handle_edge_irq+0xa4/0x240
+> > > [    1.488169]  __common_interrupt+0x8d/0x170
+> > > [    1.488169]  common_interrupt+0xbd/0xe0
+> > > [    1.488169]  </IRQ>
+> > > [    1.488169]  <TASK>
+> > > [    1.488169]  asm_common_interrupt+0x1e/0x40
+> > > [    1.488169] RIP: 0010:_raw_spin_unlock_irqrestore+0x37/0x60
+> > > [    1.488169] Code: fc 48 83 c7 18 53 48 89 f3 48 8b 75 08 e8 21 83
+> > > ed fe 4c 89 e7 e8 19 b0 ed fe 80 e7 02 74 06 e8 6f 77 fa fe fb bf 01
+> > > 00 00 00 <e8> 24 6b e9 fe 65 8b 05 bd e1 28 66 85 c0 74 05 5b 41 5c 5d
+> > > c3 0f
+> > > [    1.488169] RSP: 0000:ffffb75b0002fd50 EFLAGS: 00000202
+> > > [    1.488169] RAX: 0000000000000007 RBX: 0000000000000246 RCX: 0000000000000000
+> > > [    1.488169] RDX: 0000000000000000 RSI: ffffffff9a800a7c RDI: 0000000000000001
+> > > [    1.488169] RBP: ffffb75b0002fd60 R08: 0000000000000001 R09: 0000000000000001
+> > > [    1.488169] R10: 0000000000000002 R11: 0000000000000001 R12: ffff9ba440352318
+> > > [    1.488169] R13: 0000000000000000 R14: 0000000000000000 R15: ffff9ba7a7a2d040
+> > > [    1.488169]  affine_move_task+0x2d4/0x5d0
+> > > [    1.488169]  ? __this_cpu_preempt_check+0x13/0x20
+> > > [    1.488169]  ? lock_is_held_type+0xdd/0x130
+> > > [    1.488169]  ? enqueue_entity+0x1b8/0x520
+> > > [    1.488169]  __set_cpus_allowed_ptr_locked+0x15c/0x1b0
+> > > [    1.488169]  set_cpus_allowed_ptr+0x43/0x70
+> > > [    1.488169]  kthreadd+0x49/0x230
+> > > [    1.488169]  ? kthread_is_per_cpu+0x30/0x30
+> > > [    1.488169]  ret_from_fork+0x22/0x30
+> > > [    1.488169]  </TASK>
+> > > [    1.489211] smpboot: Estimated ratio of average max frequency by
+> > > base frequency (times 1024): 1126
+> > > [    1.490189] smpboot: CPU0: Intel(R) Xeon(R) CPU E3-1220 v6 @
+> > > 3.00GHz (family: 0x6, model: 0x9e, stepping: 0x9)
+> > > [    1.491635] cblist_init_generic: Setting adjustable number of
+> > > callback queues.
+> > > [    1.492171] cblist_init_generic: Setting shift to 2 and lim to 1.
+> > > [    1.493226] cblist_init_generic: Setting shift to 2 and lim to 1.
+> > > [    1.494226] cblist_init_generic: Setting shift to 2 and lim to 1.
+> > > [    1.495219] Running RCU-tasks wait API self tests
+> > > [    1.598317] Performance Events: PEBS fmt3+, Skylake events, 32-deep
+> > > LBR, full-width counters, Intel PMU driver.
+> > > [    1.599176] ... version:                4
+> > > [    1.600171] ... bit width:              48
+> > > [    1.601171] ... generic registers:      8
+> > > [    1.602171] ... value mask:             0000ffffffffffff
+> > > [    1.603171] ... max period:             00007fffffffffff
+> > > [    1.604176] ... fixed-purpose events:   3
+> > > [    1.605171] ... event mask:             00000007000000ff
+> > > [    1.606188] Callback from call_rcu_tasks_trace() invoked.
+> > > [    1.607450] rcu: Hierarchical SRCU implementation.
+> > > [    1.608310]
+> > > [    1.609169] =============================
+> > > [    1.609169] WARNING: suspicious RCU usage
+> > > [    1.609169] 5.17.0-rc6-next-20220304 #1 Not tainted
+> > > [    1.609169] -----------------------------
+> > > [    1.609169] include/linux/cgroup.h:481 suspicious
+> > > rcu_dereference_check() usage!
+> > > [    1.609169]
+> > > [    1.609169] other info that might help us debug this:
+> > > [    1.609169]
+> > > [    1.609169]
+> > > [    1.609169] rcu_scheduler_active = 1, debug_locks = 1
+> > > [    1.609169] 1 lock held by migration/0/17:
+> > > [    1.609169]  #0: ffff9ba7a7a2d058 (&rq->__lock){-.-.}-{2:2}, at:
+> > > __schedule+0x12d/0xcb0
+> > > [    1.609169]
+> > > [    1.609169] stack backtrace:
+> > > [    1.609169] CPU: 0 PID: 17 Comm: migration/0 Not tainted
+> > > 5.17.0-rc6-next-20220304 #1
+> > > [    1.609169] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> > > 2.5 11/26/2020
+> > > [    1.609169] Stopper: 0x0 <- 0x0
+> > > [    1.609169] Call Trace:
+> > > [    1.609169]  <TASK>
+> > > [    1.609169]  dump_stack_lvl+0x49/0x5e
+> > > [    1.609169]  dump_stack+0x10/0x12
+> > > [    1.609169]  lockdep_rcu_suspicious+0xed/0xf8
+> > > [    1.609169]  put_prev_task_stop+0x1dc/0x240
+> > > [    1.609169]  __schedule+0x751/0xcb0
+> > > [    1.609169]  ? trace_preempt_off+0x29/0xc0
+> > > [    1.609169]  ? smpboot_thread_fn+0x33/0x290
+> > > [    1.609169]  schedule+0x58/0xc0
+> > > [    1.609169]  smpboot_thread_fn+0xec/0x290
+> > > [    1.609169]  ? sort_range+0x30/0x30
+> > > [    1.609169]  kthread+0x107/0x130
+> > > [    1.609169]  ? kthread_complete_and_exit+0x20/0x20
+> > > [    1.609169]  ret_from_fork+0x22/0x30
+> > > [    1.609169]  </TASK>
+> > > [    1.610276] smp: Bringing up secondary CPUs ...
+> > > [    1.611596] x86: Booting SMP configuration:
+> > > [    1.612179] .... node  #0, CPUs:      #1 #2 #3
+> > > [    1.614396] smp: Brought up 1 node, 4 CPUs
+> > >
+> > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> > >
+> > > --
+> > > Linaro LKFT
+> > > https://lkft.linaro.org
+> > >
+> > > [1] https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20220304/testrun/8235955/suite/linux-log-parser/test/check-kernel-warning-4655400/log
