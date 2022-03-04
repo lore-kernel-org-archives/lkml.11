@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3105CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1371C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiCDINq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
+        id S231538AbiCDIN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:13:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbiCDINn (ORCPT
+        with ESMTP id S230515AbiCDINo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:13:43 -0500
+        Fri, 4 Mar 2022 03:13:44 -0500
 Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF4BC13E1D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BE171A81D
         for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:12:42 -0800 (PST)
 X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
         LIVER,40,3)
@@ -25,100 +25,40 @@ To:     wim@linux-watchdog.org, p.zabel@pengutronix.de,
         linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
         linux@roeck-us.net, robh+dt@kernel.org, devicetree@vger.kernel.org
 Cc:     wells.lu@sunplus.com, qinjian@cqplus1.com,
-        Xiantao Hu <xt.hu@cqplus1.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v7 1/2] dt-bindings: watchdog: Add watchdog yaml file for Sunplus SP7021
-Date:   Fri,  4 Mar 2022 16:12:08 +0800
-Message-Id: <20220304081209.672-2-xt.hu@cqplus1.com>
+        Xiantao Hu <xt.hu@cqplus1.com>
+Subject: [PATCH v7 0/2] Add watchdog driver for Sunplus SP7021 SoC
+Date:   Fri,  4 Mar 2022 16:12:07 +0800
+Message-Id: <20220304081209.672-1-xt.hu@cqplus1.com>
 X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220304081209.672-1-xt.hu@cqplus1.com>
-References: <20220304081209.672-1-xt.hu@cqplus1.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds the documentation for the devicetree bindings of the Sunplus
-SP7021 watchdog driver, found from SP7021 SoCs and newer.
+This is a patch series for watchdog driver for Sunplus SP7021 SoC.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Xiantao Hu <xt.hu@cqplus1.com>
----
- .../bindings/watchdog/sunplus,sp7021-wdt.yaml | 47 +++++++++++++++++++
- MAINTAINERS                                   |  6 +++
- 2 files changed, 53 insertions(+)
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
+
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
+
+Xiantao Hu (2):
+  dt-bindings: watchdog: Add watchdog yaml file for Sunplus SP7021
+  watchdog: Add watchdog driver for Sunplus SP7021
+
+ .../bindings/watchdog/sunplus,sp7021-wdt.yaml |  47 ++++
+ MAINTAINERS                                   |   7 +
+ drivers/watchdog/Kconfig                      |  11 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/sunplus_wdt.c                | 220 ++++++++++++++++++
+ 5 files changed, 286 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
+ create mode 100644 drivers/watchdog/sunplus_wdt.c
 
-diff --git a/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-new file mode 100644
-index 000000000..9a9bfe150
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/sunplus,sp7021-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus SoCs Watchdog Device Tree Bindings
-+
-+maintainers:
-+  - XianTao Hu <xt.hu@cqplus1.com>
-+
-+allOf:
-+  - $ref: watchdog.yaml#
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-wdt
-+
-+  reg:
-+    items:
-+      - description: watchdog registers regions
-+      - description: miscellaneous control registers regions
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - resets
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    watchdog: watchdog@9c000630 {
-+        compatible = "sunplus,sp7021-wdt";
-+        reg = <0x9c000630 0x08>, <0x9C000274 0x04>;
-+        clocks = <&clkc 0x24>;
-+        resets = <&rstc 0x14>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fb18ce716..fe6cc971c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18242,6 +18242,12 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
- 
-+SUNPLUS WATCHDOG DRIVER
-+M:	Xiantao Hu <xt.hu@cqplus1.com>
-+L:	linux-watchdog@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-+
- SUPERH
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
- M:	Rich Felker <dalias@libc.org>
 -- 
 2.33.1
 
