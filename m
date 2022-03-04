@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CBBC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA12C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236834AbiCDJ3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:29:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
+        id S236000AbiCDJ3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236000AbiCDJ3F (ORCPT
+        with ESMTP id S234288AbiCDJ3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:29:05 -0500
-Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5112A154D24;
-        Fri,  4 Mar 2022 01:28:16 -0800 (PST)
-Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 81F6760179;
-        Fri,  4 Mar 2022 10:28:12 +0100 (CET)
-Date:   Fri, 4 Mar 2022 10:28:11 +0100
-From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Huijin Park <huijin.park@samsung.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, Tony Lindgren <tony@atomide.com>
-Subject: Re: [BUG] mmc: core: adjust polling interval for CMD1
-Message-ID: <20220304092811.GA20284@math.uni-bielefeld.de>
-References: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
- <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
- <20220302082034.GA5723@math.uni-bielefeld.de>
- <6715A5BE-CA64-4A3D-8EE5-5BEEB63F268A@goldelico.com>
- <CAPDyKFqMs6FsJHVOoVmZxzBPgUdLoqa-xeLfvkQi1pn=8k1h6Q@mail.gmail.com>
+        Fri, 4 Mar 2022 04:29:34 -0500
+Received: from out162-62-57-210.mail.qq.com (out162-62-57-210.mail.qq.com [162.62.57.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604E215678D
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:28:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1646386119;
+        bh=9nv3X+PI2qu6S4FIO3dCfbr9ddZT2wf9ArBKScnME/0=;
+        h=From:To:Cc:Subject:Date;
+        b=VBlSSm+K4N84PyldKA051om/DtFDMIdKNXpSapGz69ke3yj8jaLQQFkoy/kZGNb/q
+         n99NdkVBVHvXigTJij7//6QK5TT8HNuTFhSl4gHCy4WIX3G4R9eYP8F2pw1dnsV+/Y
+         dyYlCQiD6W9kxKWfYHXglm0lterVQKNvtQRKucy0=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id 72409668; Fri, 04 Mar 2022 17:28:36 +0800
+X-QQ-mid: xmsmtpt1646386116tbkzo2c36
+Message-ID: <tencent_DE1C3D1422E1DD4A35FFDE2048CC48B94E08@qq.com>
+X-QQ-XMAILINFO: MB5+LsFw85NozOAi+JJCABEY3i1EXbuvNRsh15xf91h5rO8srnqJ7a4cQkxZyU
+         yMtZYX08rGRz2HoXf9OkTZWzJ2Nf2SiuTB6L5a1wAKykuso4yqT4U3P+ttqVgliTJFHk6cHQ3unL
+         E9m8+1LkSdU8d0zaD1wq6Wnx4BzJkyLW/2ZATSR62kbv5vr1RqBvfp9x9cjc4JYdu0VFTYO6gm/6
+         gdcU7SDadfg8KCHMyulAoZT9MF1syTbLfs2rsCNR9uGLrv085QiHH7qYfCmiYJAFvm99JA0L+vU1
+         wkO/yTRBPtX+PF9HDRF85y7bx+bV67exLS9I1cchNZXHj4vjZDKIf4VRkk9vzKMiyKdocAEqSj0d
+         lBcHa6nhzqOu4vZOl+UHrbVnlsVqfoPsLXmsz8cnN24ITeSUhENF0Cx/AAj6Qnte4eVYL9h7PDIp
+         6pKkI6Z0sjYMSj/fnvC4XjjlLBaWaLOxWoNOjPSo9vwE4Bl9MVzWVSYVcnAnxu7dysR3P0NW3W3l
+         ABpwOHXoBnEmRqolSfRrdICmEBm+iyjYpSAELX/7Z0gwi20jdNOa/b+592zvuPrevEk7QRtZyJZb
+         G5o3w9NafwRxefHs/8u1Is+nLVjESNSa9CshQ1UHRGpmdvvrO5g9HKwYdlKGMkqXnleakR/UG5ka
+         Vnz3dUVvzABZ+IUNtNHbCqjFUsJRk3yvXA0konaER1l6S7Hhary8dztgfr99HkjKuomz85D5qvbj
+         KnfvrDpwr0cLsU9sua1ljXUQSTB7MTiZNcT5IZW7RMCxaVpBb9GViHE/WRnkoVKjiywloRAby81q
+         Ud2pWoLV9XwkTueT0sA9NRvMIGBlvVrMeJUvoUpyASl3AMyV3KOxD0oE/7K9KGTA8+JMSQ8YcjzV
+         e5odC5TfMSC/txIpI+8Jlatl1inYx4/2b2rBy41K7WhFIZnl+mBMAKAP0R06FPrdBoPbhOxVgr
+From:   xkernel.wang@foxmail.com
+To:     linux@dominikbrodowski.net, akpm@linux-foundation.org,
+        pombredanne@nexb.com, gregkh@linuxfoundation.org, arnd@arndb.de,
+        luc.vanoostenryck@gmail.com
+Cc:     linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] init/initramfs.c: check the return value of kstrdup()
+Date:   Fri,  4 Mar 2022 17:27:34 +0800
+X-OQ-MSGID: <20220304092734.5096-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFqMs6FsJHVOoVmZxzBPgUdLoqa-xeLfvkQi1pn=8k1h6Q@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ulf Hansson wrote on Thu  3/03/22 11:40:
-> On Wed, 2 Mar 2022 at 10:40, H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> 
-> Alright, it starts to sound like we might need a revert (or at least a
-> way to restore the previous behaviour) - even if that would just paper
-> over the real problem. The real problem is more likely related to how
-> the host driver manages restoring of the power to the card, which
-> happens when runtime resuming it.
-> 
-> In any case, just to make sure the loop timeout itself isn't the
-> problem, can you run the below debug patch please? The intent is to
-> figure out how long the worst case timeout is, when it's working with
-> CMD1. As soon as the timeout exceeds the worst case, there is a
-> message printed to the log.
-> 
-> The below patch is based upon that the offending commit has been reverted.
-> 
-> Kind regards
-> Uffe
-> 
-> From: Ulf Hansson <ulf.hansson@linaro.org>
-> Date: Thu, 3 Mar 2022 11:00:04 +0100
-> Subject: [PATCH] mmc: core: DEBUG - Measure and log worst case CMD1 loop
-> 
-> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> ---
->  drivers/mmc/core/mmc_ops.c | 11 +++++++++++
->  include/linux/mmc/host.h   |  1 +
->  2 files changed, 12 insertions(+)
-> 
-> diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-> index 9946733a34c6..3f03d9e8a3a4 100644
-> --- a/drivers/mmc/core/mmc_ops.c
-> +++ b/drivers/mmc/core/mmc_ops.c
-> @@ -177,11 +177,15 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-> ocr, u32 *rocr)
->  {
->         struct mmc_command cmd = {};
->         int i, err = 0;
-> +       s64 cmd1_ms;
-> +       ktime_t time_start;
-> 
->         cmd.opcode = MMC_SEND_OP_COND;
->         cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
->         cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
-> 
-> +       time_start = ktime_get();
-> +
->         for (i = 100; i; i--) {
->                 err = mmc_wait_for_cmd(host, &cmd, 0);
->                 if (err)
-> @@ -211,6 +215,13 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-> ocr, u32 *rocr)
->                         cmd.arg = cmd.resp[0] | BIT(30);
->         }
-> 
-> +       cmd1_ms = ktime_to_ms(ktime_sub(ktime_get(), time_start));
-> +       if (!err && cmd1_ms > host->cmd1_ms) {
-> +               pr_warn("%s: CMD1 timeout increased to %lld ms, loop=%d\n",
-> +                       mmc_hostname(host), cmd1_ms, i);
-> +               host->cmd1_ms = cmd1_ms;
-> +       }
-> +
->         if (rocr && !mmc_host_is_spi(host))
->                 *rocr = cmd.resp[0];
-> 
-> diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-> index 7afb57cab00b..c2ca3bb05620 100644
-> --- a/include/linux/mmc/host.h
-> +++ b/include/linux/mmc/host.h
-> @@ -301,6 +301,7 @@ struct mmc_host {
->         unsigned int            f_min;
->         unsigned int            f_max;
->         unsigned int            f_init;
-> +       s64                     cmd1_ms;
->         u32                     ocr_avail;
->         u32                     ocr_avail_sdio; /* SDIO-specific OCR */
->         u32                     ocr_avail_sd;   /* SD-specific OCR */
-> -- 
-> 2.25.1
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Hi,
+kstrdup() is also a memory allocation function which is similar
+with kmalloc() in some way. Once some internal memory errors
+happen, it will return NULL. It is better to check the return
+value of it so to catch the memory error in time.
 
-thanks. With this patch applied with reverted 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722
-I don't get the "stuck" errors in __mmc_poll_for_busy and only one message of
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ init/initramfs.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-[    1.095194] mmc1: CMD1 timeout increased to 64 ms, loop=98
-
-Regards,
-Jean Rene Dawin
-
-
+diff --git a/init/initramfs.c b/init/initramfs.c
+index a842c05..49deffb 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -139,8 +139,12 @@ static void __init dir_add(const char *name, time64_t mtime)
+ 	struct dir_entry *de = kmalloc(sizeof(struct dir_entry), GFP_KERNEL);
+ 	if (!de)
+ 		panic_show_mem("can't allocate dir_entry buffer");
+-	INIT_LIST_HEAD(&de->list);
+ 	de->name = kstrdup(name, GFP_KERNEL);
++	if (!de->name) {
++		kfree(de);
++		panic_show_mem("can't duplicate dir name");
++	}
++	INIT_LIST_HEAD(&de->list);
+ 	de->mtime = mtime;
+ 	list_add(&de->list, &dir_list);
+ }
+-- 
