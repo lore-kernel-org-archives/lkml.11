@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA477C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239021AbiCDJid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:38:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
+        id S239095AbiCDJik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239250AbiCDJh6 (ORCPT
+        with ESMTP id S239290AbiCDJiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:37:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F361AA4A3;
-        Fri,  4 Mar 2022 01:36:32 -0800 (PST)
+        Fri, 4 Mar 2022 04:38:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FED1AAA5E;
+        Fri,  4 Mar 2022 01:36:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D1AE61983;
-        Fri,  4 Mar 2022 09:36:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F29CCC340E9;
-        Fri,  4 Mar 2022 09:36:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB54EB827BD;
+        Fri,  4 Mar 2022 09:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B9D4C340F1;
+        Fri,  4 Mar 2022 09:36:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646386591;
-        bh=kKcR9AvfZlN19CESCMgiF89yZBxT/ZOKGdAISIaDRy8=;
+        s=k20201202; t=1646386597;
+        bh=yRyCeWv+M3IKj32rt53/t5L1zqgAFTq44e0cYPNfNgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FL3tOIUmfhfHK63Ab5MP7aTRkotd0px38yI7drnuBRi7UH6dLWheNUIg14jXgupDx
-         TASHw0sH95vnY/fytDdwVM/WaX1UF8F8cjVzbjaRO1W1jrmHafzb4k9FcOcFaQ8JlD
-         /pAubU4WBi8dIJq3NrA1Qja79vX2tzL1Y6iOEQmkmiPAUxrc5tqVL/oKrFfh6mZxkL
-         46JzhiNHI0N3/v/nHqsldedvy/s4mKFbJeHEvYcZrrtCZvP3iXg2ieKX+AkvziJYdK
-         zYwJJjIzBP5uNlmx0pnC3aj4+omAcM3/8hpjcqxmvt8Xb+jRBLTwApx9AjW0HDWaCt
-         HUt7N6+YhIkbA==
+        b=AWevxKTjTpkL7dMammx1Ok1LoLGurgaDBfaGZ6isThp3tdPDUgBnuHVpvfqtLA9gG
+         AM06mWej8mQZZ5sk0dW+sbeeTVh3/w2PihHqR3i2WngLxxqA73EdJD886yrBAhkES5
+         vZaHpkWHpvXjBiKdB075ULa910DSONqqIUV9a+W7IR/n1xep7FCEHz29u5wbehLR4q
+         GgwR+VS4u12d01TQ8lxGgB2/h7QYzDskAw/d7VqCPdaTD/AAe4wsq7FCAM1VjGHknw
+         JJ85qAqa7QYuFoN+gVpHJ2M4BGMlC72ucxI52SbFgnT5WI0LjoQ834ZHUFnCYSqAhA
+         bLXr60qqeX/xg==
 From:   Jarkko Sakkinen <jarkko@kernel.org>
 To:     linux-sgx@vger.kernel.org
 Cc:     Nathaniel McCallum <nathaniel@profian.com>,
@@ -44,9 +44,9 @@ Cc:     Nathaniel McCallum <nathaniel@profian.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
         linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND
         64-BIT))
-Subject: [RFC PATCH v2.1 07/30] x86/sgx: Add pfn_mkwrite() handler for present PTEs
-Date:   Fri,  4 Mar 2022 11:35:01 +0200
-Message-Id: <20220304093524.397485-7-jarkko@kernel.org>
+Subject: [RFC PATCH v2.1 09/30] x86/sgx: Rename sgx_encl_ewb_cpumask() as sgx_encl_cpumask()
+Date:   Fri,  4 Mar 2022 11:35:03 +0200
+Message-Id: <20220304093524.397485-9-jarkko@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220304093524.397485-1-jarkko@kernel.org>
 References: <20220304093524.397485-1-jarkko@kernel.org>
@@ -58,159 +58,84 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Reinette Chatre <reinette.chatre@intel.com>
 
-By default a write page fault on a present PTE inherits the
-permissions of the VMA.
+sgx_encl_ewb_cpumask() is no longer unique to the reclaimer where it
+is used during the EWB ENCLS leaf function when EPC pages are written
+out to main memory and sgx_encl_ewb_cpumask() is used to learn which
+CPUs might have executed the enclave to ensure that TLBs are cleared.
 
-When using SGX2, enclave page permissions maintained in the
-hardware's Enclave Page Cache Map (EPCM) may change after a VMA
-accessing the page is created. A VMA's permissions may thus be
-more relaxed than the EPCM permissions even though the VMA was
-originally created not to have more relaxed permissions. Following
-the default behavior during a page fault on a present PTE while
-the VMA permissions are more relaxed than the EPCM permissions would
-result in the PTE for an enclave page to be writable even
-though the page is not writable according to the EPCM permissions.
+Upcoming SGX2 enabling will use sgx_encl_ewb_cpumask() during the
+EMODPR and EMODT ENCLS leaf functions that make changes to enclave
+pages. The function is needed for the same reason it is used now: to
+learn which CPUs might have executed the enclave to ensure that TLBs
+no longer point to the changed pages.
 
-The kernel should not allow writing to a page if that page is not
-writable: the PTE should accurately reflect the EPCM permissions
-while not being more relaxed than the VMA permissions.
-
-Do not blindly accept VMA permissions on a page fault due to a
-write attempt to a present PTE. Install a pfn_mkwrite() handler
-that ensures that the VMA permissions agree with the EPCM
-permissions in this regard.
-
-Before and after page fault flow scenarios
-==========================================
-
-Consider the following scenario that will be possible when using SGX2:
-* An enclave page exists with RW EPCM permissions.
-* A RW VMA maps the range spanning the enclave page.
-* The enclave page's EPCM permissions are changed to read-only.
-* There is no PTE for the enclave page.
-
-Considering that the PTE is not present in the scenario,
-user space will observe the following when attempting to write to the
-enclave page from within the enclave:
- 1) Instruction writing to enclave page is run from within the enclave.
- 2) A page fault with second and third bits set (0x6) is encountered
-    and handled by the SGX handler sgx_vma_fault() that installs a
-    read-only page table entry following previous patch that installs
-    a PTE with permissions that VMA and enclave agree on
-    (read-only in this case).
- 3) Instruction writing to enclave page is re-attempted.
- 4) A page fault with first three bits set (0x7) is encountered and
-    transparently (from SGX driver and user space perspective) handled
-    by the kernel with the PTE made writable because the VMA is
-    writable.
- 5) Instruction writing to enclave page is re-attempted.
- 6) Since the EPCM permissions prevents writing to the page a new page
-    fault is encountered, this time with the SGX flag set in the error
-    code (0x8007). No action is taken by the kernel for this page fault
-    and execution returns to user space.
- 7) Typically such a fault will be passed on to an application with a
-    signal but if the enclave is entered with the vDSO function provided
-    by the kernel then user space does not receive a signal but instead
-    the vDSO function returns successfully with exception information
-    (vector=14, error code=0x8007, and address) within the exception
-    fields within the vDSO function's struct sgx_enclave_run.
-
-As can be observed it is not possible for user space to write to an
-enclave page if that page's EPCM permissions do not allow so,
-no matter what the VMA or PTE allows.
-
-Even so, the kernel should not allow writing to a page if that page is
-not writable. The PTE should accurately reflect the EPCM permissions.
-
-With a pfn_mkwrite() handler that ensures that the VMA permissions
-agree with the EPCM permissions user space observes the following
-when attempting to write to the enclave page from within the enclave:
- 1) Instruction writing to enclave page is run from within the enclave.
- 2) A page fault with second and third bits set (0x6) is encountered
-    and handled by the SGX handler sgx_vma_fault() that installs a
-    read-only page table entry following previous patch that installs
-    a PTE with permissions that VMA and enclave agree on
-    (read-only in this case).
- 3) Instruction writing to enclave page is re-attempted.
- 4) A page fault with first three bits set (0x7) is encountered and
-    passed to the pfn_mkwrite() handler for consideration. The handler
-    determines that the page should not be writable and returns SIGBUS.
- 5) Typically such a fault will be passed on to an application with a
-    signal but if the enclave is entered with the vDSO function provided
-    by the kernel then user space does not receive a signal but instead
-    the vDSO function returns successfully with exception information
-    (vector=14, error code=0x7, and address) within the exception fields
-    within the vDSO function's struct sgx_enclave_run.
-
-The accurate exception information supports the SGX runtime, which is
-virtually always implemented inside a shared library, by providing
-accurate information in support of its management of the SGX enclave.
+Rename sgx_encl_ewb_cpumask() to sgx_encl_cpumask() to reflect the
+broader usage.
 
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- arch/x86/kernel/cpu/sgx/encl.c | 42 ++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ arch/x86/kernel/cpu/sgx/encl.c | 6 +++---
+ arch/x86/kernel/cpu/sgx/encl.h | 2 +-
+ arch/x86/kernel/cpu/sgx/main.c | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 20e97d3abdce..6d25f7ed1294 100644
+index 353866e1b16f..54716886e804 100644
 --- a/arch/x86/kernel/cpu/sgx/encl.c
 +++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -184,6 +184,47 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
- 	return VM_FAULT_NOPAGE;
+@@ -596,7 +596,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
  }
  
-+/*
-+ * A fault occurred while writing to a present enclave PTE. Since PTE is
-+ * present this will not be handled by sgx_vma_fault(). VMA may allow
-+ * writing to the page while enclave (as based on EPCM permissions) does
-+ * not. Do not follow the default of inheriting VMA permissions in this
-+ * regard, ensure enclave also allows writing to the page.
-+ */
-+static vm_fault_t sgx_vma_pfn_mkwrite(struct vm_fault *vmf)
-+{
-+	unsigned long addr = (unsigned long)vmf->address;
-+	struct vm_area_struct *vma = vmf->vma;
-+	struct sgx_encl_page *entry;
-+	struct sgx_encl *encl;
-+	vm_fault_t ret = 0;
-+
-+	encl = vma->vm_private_data;
-+
-+	/*
-+	 * It's very unlikely but possible that allocating memory for the
-+	 * mm_list entry of a forked process failed in sgx_vma_open(). When
-+	 * this happens, vm_private_data is set to NULL.
-+	 */
-+	if (unlikely(!encl))
-+		return VM_FAULT_SIGBUS;
-+
-+	mutex_lock(&encl->lock);
-+
-+	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
-+	if (!entry) {
-+		ret = VM_FAULT_SIGBUS;
-+		goto out;
-+	}
-+
-+	if (!(entry->vm_max_prot_bits & VM_WRITE))
-+		ret = VM_FAULT_SIGBUS;
-+
-+out:
-+	mutex_unlock(&encl->lock);
-+	return ret;
-+}
-+
- static void sgx_vma_open(struct vm_area_struct *vma)
- {
- 	struct sgx_encl *encl = vma->vm_private_data;
-@@ -381,6 +422,7 @@ const struct vm_operations_struct sgx_vm_ops = {
- 	.mprotect = sgx_vma_mprotect,
- 	.open = sgx_vma_open,
- 	.access = sgx_vma_access,
-+	.pfn_mkwrite = sgx_vma_pfn_mkwrite,
- };
- 
  /**
+- * sgx_encl_ewb_cpumask() - Query which CPUs might be accessing the enclave
++ * sgx_encl_cpumask() - Query which CPUs might be accessing the enclave
+  * @encl: the enclave
+  *
+  * Some SGX functions require that no cached linear-to-physical address
+@@ -621,7 +621,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
+  * The following flow is used to support SGX functions that require that
+  * no cached linear-to-physical address mappings are present:
+  * 1) Execute ENCLS[ETRACK] to initiate hardware tracking.
+- * 2) Use this function (sgx_encl_ewb_cpumask()) to query which CPUs might be
++ * 2) Use this function (sgx_encl_cpumask()) to query which CPUs might be
+  *    accessing the enclave.
+  * 3) Send IPI to identified CPUs, kicking them out of the enclave and
+  *    thus flushing all locally cached linear-to-physical address mappings.
+@@ -638,7 +638,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
+  *
+  * Return: cpumask of CPUs that might be accessing @encl
+  */
+-const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl)
++const cpumask_t *sgx_encl_cpumask(struct sgx_encl *encl)
+ {
+ 	cpumask_t *cpumask = &encl->cpumask;
+ 	struct sgx_encl_mm *encl_mm;
+diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
+index 2b15615be8c6..817edefa884a 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -105,7 +105,7 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+ 
+ void sgx_encl_release(struct kref *ref);
+ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
+-const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl);
++const cpumask_t *sgx_encl_cpumask(struct sgx_encl *encl);
+ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing);
+ void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
+diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+index d481e8b0e7bc..60b166bff7b4 100644
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -249,7 +249,7 @@ static void sgx_encl_ewb(struct sgx_epc_page *epc_page,
+ 			 * miss cpus that entered the enclave between
+ 			 * generating the mask and incrementing epoch.
+ 			 */
+-			on_each_cpu_mask(sgx_encl_ewb_cpumask(encl),
++			on_each_cpu_mask(sgx_encl_cpumask(encl),
+ 					 sgx_ipi_cb, NULL, 1);
+ 			ret = __sgx_encl_ewb(epc_page, va_slot, backing);
+ 		}
 -- 
 2.35.1
 
