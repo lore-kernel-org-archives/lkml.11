@@ -2,130 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B251EC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbiCDUON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:14:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
+        id S231455AbiCDUPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:15:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiCDUNX (ORCPT
+        with ESMTP id S231259AbiCDUPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:13:23 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2976F47C5;
-        Fri,  4 Mar 2022 12:07:40 -0800 (PST)
+        Fri, 4 Mar 2022 15:15:31 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3244D56C34
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:11:18 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id bc10so8377210qtb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 12:11:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646424461; x=1677960461;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UBESVlzmGH+/Gac4srZ64vERJW8ASdnCOUV8oAcRbY0=;
-  b=vSKwuBTvHXdeFFmjYFqGZF8aRwFEl2pvrY6EotnX896WPDLV9MuMSlj8
-   +QCPFhVxx+rsCg5x516eS6SJ89PZw6xbBt9rDXQYYyzy7hbWK+0OWD65r
-   +yABhrvEkHT9sV98Z1w/pith17bBmoAfcDkmyUrhd33OdFokI0aNuNVug
-   g=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 04 Mar 2022 11:22:38 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:22:38 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 4 Mar 2022 11:22:37 -0800
-Received: from [10.216.41.112] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Fri, 4 Mar 2022
- 11:22:29 -0800
-Message-ID: <b1740f38-81f2-32d3-e900-30f6e2ad970b@quicinc.com>
-Date:   Sat, 5 Mar 2022 00:52:25 +0530
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c3hwhrGILXdhz/XeWc3KW5uuxAFbMTxchWciY7LftwM=;
+        b=gWSOzgXN0en0k+yoq+gp40hIQ0jSbo3zMvH3uDi3oO6KZwtgAzpOILlFXgVqme9ZQe
+         QL3YG2VE/6OjVosmCdiTn+JwxyrijZr0T7iam6gOGSXhvyljatoF9/m4/mCf0/oW5EY8
+         BgDtLZTQYDyLXoBJzGDoEBc47P5Qytf0LNtobMd+TVur6an2OoC899T5IGQYae6dupq5
+         hlGs3iz76pUFYOrI5x2MLuKu1g7fe1bc7sZrJckIiAV4QeBEYYhiMirYgU00wffDYnKV
+         0UbdZaOomJYY6WQ7i7RdG6OraQxQ8soBBvKsgseUzObhZdsLPcG0e6DWNPh2AAxdB6qm
+         VsWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c3hwhrGILXdhz/XeWc3KW5uuxAFbMTxchWciY7LftwM=;
+        b=74Q8H/bgvoleVm3lxz4veu9wuGzCxyAR2XRaCpMmsnnC1guVGmbNfGGEo7zeiyDq7P
+         PfqHuDV9GIATHzn2LF16lMzbJq2vAc1BLzsAVYw5TkfA1ivxmElmzs78Z66QLQUwQdUf
+         7iMyWdh05CIXeoaWOCObpbG/RSibau809yume00zNqUyCh5H274PX3h8YP8blLRujmvO
+         z2TRd2PGn5kRcc51Bt699LvaCFN0QNHpRJbC+MX0TDp59l85LHcJNPu557tsWy3FSS4/
+         Z2zRUHaTz/IaOVqgDnlZfQcutZ2JP4zZmnA9iKAYlIkh44J6RWGj5SutsnD5WPLRoBhV
+         aFaw==
+X-Gm-Message-State: AOAM531lrszqJg9f3WBBtQB751VNAoHDM0Vmm4qYeogDZY7uYQibdCLK
+        2YO2ju3ai9RSBjPmTTywj/cJ4ZtS/jUDLA==
+X-Google-Smtp-Source: ABdhPJy7TOhFoNFD4vGDLADKFrKXnucp+teoiBHQIPQ3w172uA42MtTQNHkgRMmFcWN/TpxO2Qz/Qg==
+X-Received: by 2002:a05:622a:548:b0:2e0:4a6f:7c7e with SMTP id m8-20020a05622a054800b002e04a6f7c7emr375590qtx.303.1646424637904;
+        Fri, 04 Mar 2022 12:10:37 -0800 (PST)
+Received: from rivos-atish.. (adsl-70-228-75-190.dsl.akrnoh.ameritech.net. [70.228.75.190])
+        by smtp.gmail.com with ESMTPSA id 20-20020ac84e94000000b002de8f564305sm4605481qtp.1.2022.03.04.12.10.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 12:10:37 -0800 (PST)
+From:   Atish Patra <atishp@rivosinc.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Atish Patra <atishp@rivosinc.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: [RFC PATCH v2 0/7] Add Sstc extension support 
+Date:   Fri,  4 Mar 2022 12:10:13 -0800
+Message-Id: <20220304201020.810380-1-atishp@rivosinc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v1 07/10] drm/msm/adreno: Retry on gpu resume failure
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>
-CC:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Sean Paul <sean@poorly.run>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        <linux-kernel@vger.kernel.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>
-References: <1646242056-2456-1-git-send-email-quic_akhilpo@quicinc.com>
- <20220302225551.v1.7.I55e39e28375b64455d1605f67453d5e91b0c2710@changeid>
- <373491a2-0fa5-0326-29cd-1650f86202d4@collabora.com>
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <373491a2-0fa5-0326-29cd-1650f86202d4@collabora.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/3/2022 2:51 PM, AngeloGioacchino Del Regno wrote:
-> Il 02/03/22 18:27, Akhil P Oommen ha scritto:
->> Retry infinitely on resume failure because there is nothing much we can
->> do if GPU is not ON. Also, this helps us to avoid checking for the
->> return value of pm_runtime_get() to see if GPU is ON.
->>
->> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
->> ---
->>
->>   drivers/gpu/drm/msm/adreno/adreno_device.c | 10 +++++++++-
->>   1 file changed, 9 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c 
->> b/drivers/gpu/drm/msm/adreno/adreno_device.c
->> index 89cfd84..abcc553 100644
->> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
->> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
->> @@ -603,8 +603,16 @@ static const struct of_device_id dt_match[] = {
->>   static int adreno_resume(struct device *dev)
->>   {
->>       struct msm_gpu *gpu = dev_to_gpu(dev);
->> +    int ret;
->> +
->> +    /* What hope do we have for the future if we can't turn ON gpu */
->
-> Hello Akhil,
->
-> the hope for the future would be to at least not lock up everything with
-> an infinite loop, so, please change this to have a limited amount of 
-> retries.
->
-> My guess would be that a maximum of 10 is already a lot of retries, but
-> feel free to choose an appropriate number.
+This series implements Sstc extension support which was ratified recently.
+Before the Sstc extension, an SBI call is necessary to generate timer
+interrupts as only M-mode have access to the timecompare registers. Thus,
+there is significant latency to generate timer interrupts at kernel.
+For virtualized enviornments, its even worse as the KVM handles the SBI call
+and uses a software timer to emulate the timecomapre register. 
 
-Thanks for the feedback, Angelo. I will revisit this.
+Sstc extension solves both these problems by defining a stimecmp/vstimecmp
+at supervisor (host/guest) level. It allows kernel to program a timer and
+recieve interrupt without supervisor execution enviornment (M-mode/HS mode)
+intervention.
 
--Akhil.
->
-> Regards,
-> Angelo
->
->> +    while (true) {
->> +        ret = gpu->funcs->pm_resume(gpu);
->> +        if (!ret)
->> +            break;
->> +    }
->>   -    return gpu->funcs->pm_resume(gpu);
->> +    return 0;
->>   }
->>     static int active_submits(struct msm_gpu *gpu)
->
->
+To maintain backward compatibility, KVM directly updates the vstimecmp
+if older kernel without sstc support is running in guest. Similary, the
+M-mode firmware(OpenSBI) uses stimecmp for older kernel without sstc support. 
+
+The PATCH 1 & 2 enables the basic infrastructure around Sstc extension while
+PATCH 3 lets kernel use the Sstc extension if it is available in hardware.
+PATCH 4 & 5 adds the infrastructure for KVM to use sstc while PATCH 6 actually
+uses the Sstc extension if available. 
+
+This series has been tested on Qemu(RV32 & RV64) with additional patches in
+OpenSBI[2] and Qemu[3]. This series can also be found at [4].
+
+Changes from v1->v2:
+1. Separate the static key from kvm usage
+2. Makde the sstc specific static key local to the driver/clocksource
+3. Moved the vstimecmp update code to the vcpu_timer
+4. Used function pointers instead of static key to invoke vstimecmp vs
+   hrtimer at the run time. This will help in future for migration of vms
+   from/to sstc enabled hardware to non-sstc enabled hardware.
+5. Unified the vstimer & timer to 1 timer as only one of them will be used
+   at runtime.
+
+[1] https://drive.google.com/file/d/1m84Re2yK8m_vbW7TspvevCDR82MOBaSX/view
+[2] https://github.com/atishp04/opensbi/tree/sstc_v1
+[3] https://github.com/atishp04/qemu/tree/sstc_v1
+[3] https://github.com/atishp04/linux/tree/sstc_v2
+
+Atish Patra (7):
+RISC-V: Add SSTC extension CSR details
+RISC-V: Enable sstc extension parsing from DT
+RISC-V: Prefer sstc extension if available
+RISC-V: KVM: Remove 's' & 'u' as valid ISA extension
+RISC-V: KVM: Restrict the extensions that can be disabled
+RISC-V: KVM: Introduce ISA extension register
+RISC-V: KVM: Support sstc extension
+
+arch/riscv/include/asm/csr.h            |  11 ++
+arch/riscv/include/asm/hwcap.h          |   1 +
+arch/riscv/include/asm/kvm_host.h       |   1 +
+arch/riscv/include/asm/kvm_vcpu_timer.h |   8 +-
+arch/riscv/include/uapi/asm/kvm.h       |  21 ++++
+arch/riscv/kernel/cpu.c                 |   1 +
+arch/riscv/kernel/cpufeature.c          |   4 +-
+arch/riscv/kvm/main.c                   |  12 ++-
+arch/riscv/kvm/vcpu.c                   | 128 ++++++++++++++++++++--
+arch/riscv/kvm/vcpu_timer.c             | 138 +++++++++++++++++++++++-
+drivers/clocksource/timer-riscv.c       |  21 +++-
+11 files changed, 328 insertions(+), 18 deletions(-)
+
+--
+2.30.2
 
