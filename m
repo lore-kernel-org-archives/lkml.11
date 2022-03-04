@@ -2,119 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CDEC43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236961AbiCDKlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:41:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
+        id S237117AbiCDKla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:41:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234714AbiCDKlP (ORCPT
+        with ESMTP id S234714AbiCDKl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 05:41:15 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F771AA4A3;
-        Fri,  4 Mar 2022 02:40:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646390427; x=1677926427;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MWHad0oWvKdIlSW1yZteYqB1ECrM7vqKBkt0Z55LL/M=;
-  b=RY8fCTR1tDhQ8CEixF2j2uHnXoR/7HDyPAj79zaCuFGEclP0lWfy6VZw
-   dgIPAlfMRB4jwMjF2+X8ISzMxPW7n33gmPAW45pmOdENPcTt8bEQ4kXLZ
-   Zp8P3iCLBonBw2ikpJpvREaEidsG4lAV4Ambz6jLJddHhm3uLl1oGMFek
-   xcbybYM9XFKxghprzb+dR/cqbmiywWQhZcAs5AcAR6VYinZ9Ci5V0UNgI
-   rZjfQSSQ/66katabP8QM3fOifpP8Zgor92wBmc+2CKDlH3oM4AWd+U4uI
-   puRZoa3rsrt/rl5FEj/V/eJQQG3/PvelLnAev9VCpEe/ifs0cmi+phmxu
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,154,1643698800"; 
-   d="scan'208";a="148086332"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 03:40:26 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 03:40:26 -0700
-Received: from [10.12.72.98] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 4 Mar 2022 03:40:23 -0700
-Message-ID: <03c0ed9e-73b6-5325-3034-ae9930ffd063@microchip.com>
-Date:   Fri, 4 Mar 2022 11:40:22 +0100
+        Fri, 4 Mar 2022 05:41:29 -0500
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 02:40:42 PST
+Received: from esa8.hc1455-7.c3s2.iphmx.com (esa8.hc1455-7.c3s2.iphmx.com [139.138.61.253])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C0A1AAA6C;
+        Fri,  4 Mar 2022 02:40:41 -0800 (PST)
+IronPort-SDR: /XpGn0MPJ/xl47bOdczlEV42ipOTrZWl4DxUG6oOg59wiRhvwgfnJ3WVG+vs4jGP5REFLTYEuk
+ dIY4XnzXl+mAObTysOdCF9vYHrJcy7MomWb/8Xv94V0xS/oO8uEhl99wxrHkiyxm3ujb4HG86p
+ Pju1mPxJfxDJ4EbneE2dGfCxq2LEXMSdfutDJdmRTQP9wNHz/cyS6URRy1RtL2uiKyKAGZQa2y
+ U+rGAMT8wX+xFxGYUazNRk59ShRcskQJI7DtZynhu095fbsRDpBqwlXG7+YbFxlRgk68uxiJcV
+ cF/e0VjjO/euZu8711M7hyDl
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="53044691"
+X-IronPort-AV: E=Sophos;i="5.90,154,1643641200"; 
+   d="scan'208";a="53044691"
+Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
+  by esa8.hc1455-7.c3s2.iphmx.com with ESMTP; 04 Mar 2022 19:39:34 +0900
+Received: from oym-m3.gw.nic.fujitsu.com (oym-nat-oym-m3.gw.nic.fujitsu.com [192.168.87.60])
+        by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id DDBD1E07E0;
+        Fri,  4 Mar 2022 19:39:33 +0900 (JST)
+Received: from oym-om4.fujitsu.com (oym-om4.o.css.fujitsu.com [10.85.58.164])
+        by oym-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 26634D95E9;
+        Fri,  4 Mar 2022 19:39:33 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by oym-om4.fujitsu.com (Postfix) with ESMTP id 06B3140451C6F;
+        Fri,  4 Mar 2022 19:39:33 +0900 (JST)
+From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        tan.shaopeng@jp.fujitsu.com, Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH v4 3/6] selftests/resctrl: Fix resctrl_tests' return code to work with selftest framework
+Date:   Fri,  4 Mar 2022 19:38:31 +0900
+Message-Id: <20220304103834.486892-4-tan.shaopeng@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220304103834.486892-1-tan.shaopeng@jp.fujitsu.com>
+References: <20220304103834.486892-1-tan.shaopeng@jp.fujitsu.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ARM: dts: at91: sama7g5: Remove unused properties in i2c
- nodes
-Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <robh+dt@kernel.org>, <eugen.hristev@microchip.com>,
-        <codrin.ciubotariu@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sergiu.moga@microchip.com>, <stable@vger.kernel.org>
-References: <20220302161854.32177-1-tudor.ambarus@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220302161854.32177-1-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/03/2022 at 17:18, Tudor Ambarus wrote:
-> The "atmel,use-dma-rx", "atmel,use-dma-rx" dt properties are not used by
-> the i2c-at91 driver, nor they are defined in the bindings file, thus remove
-> them.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+In kselftest framework, if a sub test can not run by some reasons,
+the test result should be marked as SKIP rather than FAIL.
+Return KSFT_SKIP(4) instead of KSFT_FAIL(1) if resctrl_tests is not run
+as root or it is run on a test environment which does not support resctrl.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+ - ksft_exit_fail_msg(): returns KSFT_FAIL(1)
+ - ksft_exit_skip(): returns KSFT_SKIP(4)
 
-Added in at91-dt for 5.18 as a 2nd batch of DT patches.
-Thanks, best regards,
-   Nicolas
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+---
+ tools/testing/selftests/resctrl/resctrl_tests.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> ---
->   arch/arm/boot/dts/sama7g5.dtsi | 6 ------
->   1 file changed, 6 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-> index 1dc0631e9fd4..e626f6bd920a 100644
-> --- a/arch/arm/boot/dts/sama7g5.dtsi
-> +++ b/arch/arm/boot/dts/sama7g5.dtsi
-> @@ -591,8 +591,6 @@ i2c1: i2c@600 {
->   				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
->   					<&dma0 AT91_XDMAC_DT_PERID(8)>;
->   				dma-names = "rx", "tx";
-> -				atmel,use-dma-rx;
-> -				atmel,use-dma-tx;
->   				status = "disabled";
->   			};
->   		};
-> @@ -778,8 +776,6 @@ i2c8: i2c@600 {
->   				dmas = <&dma0 AT91_XDMAC_DT_PERID(21)>,
->   					<&dma0 AT91_XDMAC_DT_PERID(22)>;
->   				dma-names = "rx", "tx";
-> -				atmel,use-dma-rx;
-> -				atmel,use-dma-tx;
->   				status = "disabled";
->   			};
->   		};
-> @@ -804,8 +800,6 @@ i2c9: i2c@600 {
->   				dmas = <&dma0 AT91_XDMAC_DT_PERID(23)>,
->   					<&dma0 AT91_XDMAC_DT_PERID(24)>;
->   				dma-names = "rx", "tx";
-> -				atmel,use-dma-rx;
-> -				atmel,use-dma-tx;
->   				status = "disabled";
->   			};
->   		};
-
-
+diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
+index 973f09a66e1e..a44afb05b848 100644
+--- a/tools/testing/selftests/resctrl/resctrl_tests.c
++++ b/tools/testing/selftests/resctrl/resctrl_tests.c
+@@ -205,7 +205,7 @@ int main(int argc, char **argv)
+ 	 * 2. We execute perf commands
+ 	 */
+ 	if (geteuid() != 0)
+-		return ksft_exit_fail_msg("Not running as root, abort testing.\n");
++		return ksft_exit_skip("Not running as root. Skipping...\n");
+ 
+ 	/* Detect AMD vendor */
+ 	detect_amd();
+@@ -235,7 +235,7 @@ int main(int argc, char **argv)
+ 	sprintf(bm_type, "fill_buf");
+ 
+ 	if (!check_resctrlfs_support())
+-		return ksft_exit_fail_msg("resctrl FS does not exist\n");
++		return ksft_exit_skip("resctrl FS does not exist. Enable X86_CPU_RESCTRL and PROC_CPU_RESCTRL config options.\n");
+ 
+ 	filter_dmesg();
+ 
 -- 
-Nicolas Ferre
+2.27.0
+
