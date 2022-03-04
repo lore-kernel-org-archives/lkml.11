@@ -2,750 +2,406 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 06:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A79C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 06:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238403AbiCDGbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 01:31:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
+        id S238411AbiCDGb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 01:31:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238388AbiCDGa6 (ORCPT
+        with ESMTP id S234973AbiCDGbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 01:30:58 -0500
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DEC187E1F
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 22:30:09 -0800 (PST)
-Received: from epcas3p3.samsung.com (unknown [182.195.41.21])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220304063004epoutp02add107a08911ffdc82e1b7555d95fa20~ZGbU0gsac0867208672epoutp02u
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:30:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220304063004epoutp02add107a08911ffdc82e1b7555d95fa20~ZGbU0gsac0867208672epoutp02u
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646375404;
-        bh=FtgxtF2Pn7rjuUdAv8gKYI+l31wN+W4WxwzY4sxV+Es=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=djG29lZ72bKtol5K8ZOxzkB2MYuC+o3svOB/FOtJxdtS0fmWN1zdjrXZ6sBg9Moe1
-         CPT5hBj8hvVXv00dW0VkR3IB6UWEW8FbK/dvyLmBs5yAqRQC+LnXgOGO+4Blx8RmNu
-         0cMSOoTHlGvobtcG08wAjg9Jr1l+Js7OMhjCrz7g=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas3p2.samsung.com (KnoxPortal) with ESMTP id
-        20220304063004epcas3p26ed35388af53e2336bfece2743a8e21f~ZGbUUCmS80340703407epcas3p2G;
-        Fri,  4 Mar 2022 06:30:04 +0000 (GMT)
-Received: from epcpadp3 (unknown [182.195.40.17]) by epsnrtp2.localdomain
-        (Postfix) with ESMTP id 4K8ydS1n5sz4x9QM; Fri,  4 Mar 2022 06:30:04 +0000
-        (GMT)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220304062617epcas2p4199727918ee662ce09335decba5ad754~ZGYBOW8er2274522745epcas2p4E;
-        Fri,  4 Mar 2022 06:26:17 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220304062617epsmtrp12581cbd0c534a81264a4b0101a680b42~ZGYBNPK3Q1457314573epsmtrp1B;
-        Fri,  4 Mar 2022 06:26:17 +0000 (GMT)
-X-AuditID: b6c32a29-409ff700000074af-44-6221b1090d9a
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        AD.B3.29871.901B1226; Fri,  4 Mar 2022 15:26:17 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220304062617epsmtip28f1a5c143f8f5cfcd7c2ce9f4b782e97~ZGYA_MptA1491514915epsmtip2i;
-        Fri,  4 Mar 2022 06:26:17 +0000 (GMT)
-From:   Daehwan Jung <dh10.jung@samsung.com>
-To:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org (open list:USB XHCI DRIVER),
-        linux-kernel@vger.kernel.org (open list),
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>,
-        Daehwan Jung <dh10.jung@samsung.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-Subject: [PATCH v1 2/4] usb: host: add xhci hooks for USB offload
-Date:   Fri,  4 Mar 2022 15:23:56 +0900
-Message-Id: <891095110.61646375404257.JavaMail.epsvc@epcpadp3>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLLMWRmVeSWpSXmKPExsWy7bCSvC7nRsUkg47PchYrDs9jtHh5SNNi
-        88MrbBZ3FkxjsnhyZBG7RfPi9WwW1/+8Z7Rof36BzeLyrjlsFouWtTJbNG+awmoxc62yRdfd
-        G4wOvB6X+3qZPBZsKvVYvOclk8f+uWvYPVpO7mfx6NuyitHj8ya5APYoLpuU1JzMstQifbsE
-        roz2mZvYCk6uZ6x48HIBUwPj94mMXYwcHBICJhKnt8l1MXJxCAnsZpTYtWoyWxcjJ1BcUmLp
-        3BvsELawxP2WI6wQRd8YJW7N/sAO0swmoCXxfSEjSI2IQJzEist7WEBqmAX6mSU2NN9iBUkI
-        CzhKTPh5kxnEZhFQldjx7yZYA6+Aq0TvpwdMEAvkJG6e6wSr4RRwk9hy/wjYEUJANQ9aHzFO
-        YORbwMiwilEytaA4Nz232LDAMC+1XK84Mbe4NC9dLzk/dxMjOIS1NHcwbl/1Qe8QIxMH4yFG
-        CQ5mJRFeS02FJCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeWpGanphakFsFkmTg4
-        pRqYZNJuJTIFstjZ/AgM8UhP5b9SozFX5efDK61+oQynjnb28UosCV1gvVfNJ22ue9gvMd72
-        3hWZp7um/MgqEP/832e7ytNsN6FUBrb937JTFNfoHXM0u+kSzqnakrRCe0/jLYmTEy/J6URo
-        eCmFTlc8/8NIvsht64Jp5lKLL9U8XNy+6shJF7GlesvWz1r++KT6Mb8AjxnbT9y/ohF6Oz/I
-        Y83hjqqPNvMtS5gEhZ8e7vkiMvtGY/eheddPpC8N3GlpNXn1w86ZC/h35HQZ52ncNT5mIrRb
-        Y9q/TUZlF7XZ/bXOsM1PKtt1N18rXmPNR9nZGZrOZxv3npybFJWlrZ+a07Jt5yuVjS1rRPqX
-        5jQpsRRnJBpqMRcVJwIAkJqPQ9ACAAA=
-X-CMS-MailID: 20220304062617epcas2p4199727918ee662ce09335decba5ad754
-X-Msg-Generator: CA
+        Fri, 4 Mar 2022 01:31:24 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2084.outbound.protection.outlook.com [40.107.220.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15C7187E3E;
+        Thu,  3 Mar 2022 22:30:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LMaR27fBcYgOIbYynZcjBjLG8mS4g4LPayHDIBzU3IuFBiWcWVmrl01y1A9dWuC4W6OxteCzhfYWWelhzLiNFeddxljB5KxrND+L85z1n0ler9VjCT/JIhK1nl+6tgeAxja3kEHhtvvh2UGzjp6oVZVVOa6olHu/UtZY+2azgDHQTxgh1UtF5ixEQUndDX/kb8VxwomW+Lgm6wj7+TXTyjBpVoV0eMgOIX0zmlPYcS0Be0EGQ11yiCdFZ1BB7MmXaLcZwEygfxZ0pYWlh0McA0WMDgpKNlF8wJIqfBV0TUM0vyj6AX0MqtRx0X5legqRF4LZy9Fr18wHQVGWKiOeIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mYmqFyF65OPIdy7BQqtltOYZuQzyhLBu/IrClXizNyQ=;
+ b=LG8piY4jW4+H0vUaoIdEDI09wiVPiBE6eh1RCcYQUh3IC/cTYblUi2u1mjDbwrOtrAPypDMj/D5379B3AQJLmKfkDLY3TdV4nmnAAoDNooqiQeniPcdeIHKLmv6O8M7ICIVRE6WfO0cnIwAGf58YOU5mnJMIi9R8TNfcOdEQ6jto4buGAe9mkaD+9WlgI6++r1sNJxhbSpuSaNrHpVuY7c21l+b5hdM3Ica93/ZJHszJS8/+RARwlm1gkn2VvHA1Qxd3Bv+LLTzIeHvgU1686RFEjX9JtkQqzuVvRAgedUFfUyVd00JL0jmpldmpR4LXiZ1FyqzxbxzA0we9KE8EbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mYmqFyF65OPIdy7BQqtltOYZuQzyhLBu/IrClXizNyQ=;
+ b=sg1QRMUp14fTHHwuvRQpT9lMO8j5oQl0pQ7rt/OeZgmoRgfqY/YUtyGRU06YR77MrrwIoD021HCIENHqRwibw5KvUwJF+3iOWgT/WRps0BdB+gMaf5AMazv/w8RO2lNSN3QK3rU1m8O3Z3J64msX9f7Jw3XLjKU49r/izo6ddZo=
+Received: from BY5PR02MB6980.namprd02.prod.outlook.com (2603:10b6:a03:235::19)
+ by SN6PR02MB4958.namprd02.prod.outlook.com (2603:10b6:805:99::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 4 Mar
+ 2022 06:30:32 +0000
+Received: from BY5PR02MB6980.namprd02.prod.outlook.com
+ ([fe80::ed57:1b66:1f0e:54bc]) by BY5PR02MB6980.namprd02.prod.outlook.com
+ ([fe80::ed57:1b66:1f0e:54bc%7]) with mapi id 15.20.5038.017; Fri, 4 Mar 2022
+ 06:30:01 +0000
+From:   Gautam Dawar <gdawar@xilinx.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+CC:     Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Tanuj Murlidhar Kamde <tanujk@xilinx.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [RFC PATCH v2 06/19] vdpa: multiple address spaces support
+Thread-Topic: [RFC PATCH v2 06/19] vdpa: multiple address spaces support
+Thread-Index: AQHYKcUO3vEvBNP4r0WTw3ilSdp+oayuGU4AgAC1e/A=
+Date:   Fri, 4 Mar 2022 06:30:01 +0000
+Message-ID: <BY5PR02MB6980F3F2D3709EA6051572A7B1059@BY5PR02MB6980.namprd02.prod.outlook.com>
+References: <20201216064818.48239-1-jasowang@redhat.com>
+ <20220224212314.1326-1-gdawar@xilinx.com>
+ <20220224212314.1326-7-gdawar@xilinx.com>
+ <CAJaqyWeeJeFzmov0XPOBMoKS=xH0zA_XXXunMsWOds+53aKxYw@mail.gmail.com>
+In-Reply-To: <CAJaqyWeeJeFzmov0XPOBMoKS=xH0zA_XXXunMsWOds+53aKxYw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=xilinx.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7dafa498-a8a4-4b8d-f00a-08d9fda869a5
+x-ms-traffictypediagnostic: SN6PR02MB4958:EE_
+x-microsoft-antispam-prvs: <SN6PR02MB4958EFDDCD5C010FFFE83345B1059@SN6PR02MB4958.namprd02.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: J3SXXIqoykKX8YRjF9UYoU1VkTBwsURHtCWzV4SgKVwN/1tFtEDtx4v3D1sLNGjnVLmdpvKVGx61Z0drLn+DNDAeCShFzQFRTiOAXAqry0mGVIhXjKNL8hHMn+YWpizg/bJVlSVWmpvzrIpaFdGlQIBnnJzPmS9PgAKZN/imWsjgesOfVkXRHUYrKbbyHqT4TTsYw/9i+d9cb95FYFauYa3/gEyrMltcT/E0LPstbr1j3ssd5mbYqPOAsKzWL5/3z7PMY6L+Rwnj/xMotYS+IvewUBish32hFkYTyeRCQ6yZyLwkltI9TFKfh3WqcmcFh/QjHcGunWlkJODjlQ34aSB9iks5klNs+XBChckuqHEzgzW6WVu5aNkTYhbRQkFvfYKf9W7KX58jaX2Esgp7MXphQOT/v65miT4i3etHbr27+JGjnvlSwt12e5D4p3lODgfOt67BHzsx5m8iiB0+kEKTGB6YguHvncPjz74ZR71nNyLH9RyuAoGfSynw2A15ZT0MFNm9Raj6JM/jnADwlzOvb9gLWDVT52ZzFLhmFFLje7VNpifyHxz2VUoGBBI2KTKyC764TMOLk91CJ5cVc3oG79VfucwsEW3gp0Bvmm8z1cYQMzpVDVPy5KJdyj1B3DBxXUXY3qgJB40EdxgDrcAoRjHGYq0YAP6gcRsftcn6fTyuVIci6g2klfYJa7fZTEvr/SOWte+ADvlKwIlfeg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR02MB6980.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(86362001)(71200400001)(33656002)(508600001)(7416002)(52536014)(66946007)(55016003)(6916009)(30864003)(83380400001)(54906003)(26005)(38100700002)(9686003)(38070700005)(186003)(316002)(66476007)(64756008)(66446008)(4326008)(53546011)(8676002)(7696005)(6506007)(66556008)(122000001)(76116006)(2906002)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YzdDdmNGbFpqaGpPSmJ2NUFaZk5QdjlLUWp6aU94S01aeDJJUFpGd2tGWjFm?=
+ =?utf-8?B?RHBxSTVtNWRsNStVWksycUJJNFB0aU9HNW1mYkp1SW9SblZQVXpZZ0J6TVRN?=
+ =?utf-8?B?cmJNaVRXLzh2ZnRNQzU3NlAxbW9kVzlVdDZ6V2ROb2lzOGt2QitBVlduU0d3?=
+ =?utf-8?B?RlBPZWJZS3pib2VVdVFuWE9RY09NYmpBOHR0eXRpRENjdnRNN0NsOTRYZVdl?=
+ =?utf-8?B?T3BZemlxOUJ5QllWMGZsVVEzejdyTUxCNCticnM4alF2MnRKb3JtdURETVVs?=
+ =?utf-8?B?eW55T2lLd2tack8rTFkwcmVRaTIraldaR3VsaFd6N2NwSTJBZzduRkpLQkNT?=
+ =?utf-8?B?TC9oTi90aXNEaUJFVGgvQjB0RW44MnBaVE84TEMvaGxaaWNYYUdTZEUvNTdX?=
+ =?utf-8?B?Vm4rdDNVMk9rZFpUb2NBb3c5aUJhTFczQklnQThJblE4Y3ErTWsraDJCOWp5?=
+ =?utf-8?B?dnZMc3dPUHY4QWlDeWtyNk0zaEh1azdpRG1ibmcvNEZQMmJpSHVvOWtSUTRU?=
+ =?utf-8?B?Q0xxaVJYYjhtbkNXZzBQcVpER3QwT01TaEs0WGJnYXAzbU1VTUxDV3BXVGNr?=
+ =?utf-8?B?VmdMczlJMFJPYU1jTzM5dWVzQXVFMWh0dytZaTJ3WGhoZzhadkZTUlUzSXBv?=
+ =?utf-8?B?eEhDMXJLRUVnS216bys4TEI2WVpwVG5WTG1lZVRhSHlNUlZQZXgrN3BDbnBs?=
+ =?utf-8?B?TEV2QkhlRkZuS2liZU1QT0FtSStkaVBuc3Q5ZFVBK0ZmQ0cxSXppL0xYYjJ3?=
+ =?utf-8?B?Ty9nc0dRdit6ZFdZaTR3Q2hoMW52dUNGd1B2cE41NG9IMUtZNkNpU285QS9Q?=
+ =?utf-8?B?VHRESVBGWEg4S3VxcW51cVFrZVJ0OGNiZlg0ek0yc0J4OVphMGNKeURMazQz?=
+ =?utf-8?B?Tm5BeGc3ZHcyT01QWUtVTzlwcUtydDhZUXI3ajc5bmxSVlZ4UW9STmcrTHFY?=
+ =?utf-8?B?QUpNcjQ4enB2ME9jRE5EbnNza2hzZG1GSW9wdVVGTkZaei9zV2hMRXk5bXlP?=
+ =?utf-8?B?ZzdnblJqaC9mSWNqcXYvd28yR25ZeVIzZTJkM0dmUDVuVDMwcFFBTG8vTFFs?=
+ =?utf-8?B?NHRmTFMrZ1phYjZPYlhaZzhqYTVDRXdoQXNDSWx4cW4rMUxuTENKS3loVXlV?=
+ =?utf-8?B?YWtUMmZibTJPRHAxcThzQTNUbE9waHBQVldJdXhFWnFmYTRIL2lPeFlWUFhI?=
+ =?utf-8?B?YllGQVliUkZ3Q1FzeFBsdU1QeXk3RzJHcFdnckM1cHlBM0R2d0UwQzdiRVBX?=
+ =?utf-8?B?UjZVaW50c2Jkc0dGZUNRSGt5b0RKdGVJeGYwT0x1clNDTWVDY2R3eWpVMTRq?=
+ =?utf-8?B?NjZTU1FMcG9iNzlybXIxVWNoZ3RZT2VEMFp2YjZnRXpZMWJoelVMcHozdDRV?=
+ =?utf-8?B?N25MWkEvREZnNFBtZEZqUHBnZlJ1TXF1NEJxSm4wby9TanJQaVhGcWFaSWJO?=
+ =?utf-8?B?REhKS1NWRVpFd2lSZmZtRGoyY1MrQ29wZlZoTWlhZVdKNjZNQzdmc1RsN2Iw?=
+ =?utf-8?B?UVozQWxLeWtUYlJLRUpaaVNiSlhMdjc5RVNCOXEzUXFHTC9xU0lQeDhtVDhr?=
+ =?utf-8?B?TWdkdU1JbTF1M05YdEgvMUp5RmtaU2hSdm5OVUllbHRCSW9qRmFyd0trdk9l?=
+ =?utf-8?B?YWtFTi9QVjVrb21sZGJ3eml4bWNBcnlXaWY4T2E5TVVsUnlwcGJHVnU3Q0dE?=
+ =?utf-8?B?c2gzOEEwNEhBM1ZSbzNTTXhyN29JWTZxS0tZY2NwMy92dm9MWk5sR2E2Nks0?=
+ =?utf-8?B?bjhrOCs3a1hXVHRFNnN3em94eENqS0tGbVBqejlVa21lTldjSnFZbzhLejRL?=
+ =?utf-8?B?M2gwUFN2aFlMM3kzaG4xOVljRlpUazdsMEtkc3h1QlZiQzkybFpBa2cweXA3?=
+ =?utf-8?B?d09UMUVkSm5DRmxwdVdxNVZBc2VscVh1elpmb2czbXRvVUpiejN6OVE2TlNL?=
+ =?utf-8?B?M0x1VE1XK3psSGd0SzdhSnl2d0hrTlQ3R3NEZ0Ivay9yaVBUbkRucmFkcWtO?=
+ =?utf-8?B?SzcvbzQvOElER1N6Vk9VODA0RjVSZlZoZ0N5ZWZsZ3d6UzZ4Y0VveWdudlp3?=
+ =?utf-8?B?a3QwWTQxSTJLWERxVFRXRXpUbXc2L2FwdXZlcnVvbWtwZHMxbG1qN1VuVkFF?=
+ =?utf-8?B?ZHkyU3pjRDJzeUFVdWdsRHRzeFNSVjl6YVlQV2s0U1A3anhBdVp0Rit2Mkpz?=
+ =?utf-8?B?NVE9PQ==?=
 Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-Hop-Count: 3
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-CMS-RootMailID: 20220304062617epcas2p4199727918ee662ce09335decba5ad754
-References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220304062617epcas2p4199727918ee662ce09335decba5ad754@epcas2p4.samsung.com>
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB6980.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dafa498-a8a4-4b8d-f00a-08d9fda869a5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2022 06:30:01.7045
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SmSObz34BQURPxrb5jWIZS7WhehG1igxrIFOrzZhNQ8hAoYtFT5x1KyP9pXzjF1WUK1gXVgyzuSnZaQadSzB7Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB4958
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To enable supporting for USB offload, define "offload" in usb controller
-node of device tree. "offload" value can be used to determine which type
-of offload was been enabled in the SoC.
-
-For example:
-
-&usbdrd_dwc3 {
-	...
-	/* support usb offloading, 0: disabled, 1: audio */
-	offload = <1>;
-	...
-};
-
-There are several vendor_ops introduced by this patch:
-
-struct xhci_vendor_ops - function callbacks for vendor specific operations
-{
-	@vendor_init:
-		- called for vendor init process during xhci-plat-hcd
-		  probe.
-	@vendor_cleanup:
-		- called for vendor cleanup process during xhci-plat-hcd
-		  remove.
-	@is_usb_offload_enabled:
-		- called to check if usb offload enabled.
-	@queue_irq_work:
-		- called to queue vendor specific irq work.
-	@alloc_dcbaa:
-		- called when allocating vendor specific dcbaa during
-		  memory initializtion.
-	@free_dcbaa:
-		- called to free vendor specific dcbaa when cleanup the
-		  memory.
-	@alloc_transfer_ring:
-		- called when vendor specific transfer ring allocation is required
-	@free_transfer_ring:
-		- called to free vendor specific transfer ring
-	@sync_dev_ctx:
-		- called when synchronization for device context is required
-}
-
-The xhci hooks with prefix "xhci_vendor_" on the ops in xhci_vendor_ops.
-For example, vendor_init ops will be invoked by xhci_vendor_init() hook,
-is_usb_offload_enabled ops will be invoked by
-xhci_vendor_is_usb_offload_enabled(), and so on.
-
-Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
----
- drivers/usb/host/xhci-hub.c  |   5 ++
- drivers/usb/host/xhci-mem.c  | 131 +++++++++++++++++++++++++++++++----
- drivers/usb/host/xhci-plat.c |  43 +++++++++++-
- drivers/usb/host/xhci-plat.h |   8 +++
- drivers/usb/host/xhci-ring.c |  13 ++++
- drivers/usb/host/xhci.c      |  94 ++++++++++++++++++++++++-
- drivers/usb/host/xhci.h      |  48 +++++++++++++
- 7 files changed, 325 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/usb/host/xhci-hub.c b/drivers/usb/host/xhci-hub.c
-index 6c1b8d748d0f..f7ed19cba8ad 100644
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -535,8 +535,13 @@ static int xhci_stop_device(struct xhci_hcd *xhci, int slot_id, int suspend)
- 	    cmd->status == COMP_COMMAND_RING_STOPPED) {
- 		xhci_warn(xhci, "Timeout while waiting for stop endpoint command\n");
- 		ret = -ETIME;
-+		goto cmd_cleanup;
- 	}
- 
-+	ret = xhci_vendor_sync_dev_ctx(xhci, slot_id);
-+	if (ret)
-+		xhci_warn(xhci, "Sync device context failed, ret=%d\n", ret);
-+
- cmd_cleanup:
- 	xhci_free_command(xhci, cmd);
- 	return ret;
-diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
-index e6d56ef91ddb..5defbaf427ed 100644
---- a/drivers/usb/host/xhci-mem.c
-+++ b/drivers/usb/host/xhci-mem.c
-@@ -367,6 +367,54 @@ static int xhci_alloc_segments_for_ring(struct xhci_hcd *xhci,
- 	return 0;
- }
- 
-+static void xhci_vendor_free_container_ctx(struct xhci_hcd *xhci, struct xhci_container_ctx *ctx)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->free_container_ctx)
-+		ops->free_container_ctx(xhci, ctx);
-+}
-+
-+static void xhci_vendor_alloc_container_ctx(struct xhci_hcd *xhci, struct xhci_container_ctx *ctx,
-+					    int type, gfp_t flags)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->alloc_container_ctx)
-+		ops->alloc_container_ctx(xhci, ctx, type, flags);
-+}
-+
-+static struct xhci_ring *xhci_vendor_alloc_transfer_ring(struct xhci_hcd *xhci,
-+		u32 endpoint_type, enum xhci_ring_type ring_type,
-+		unsigned int max_packet, gfp_t mem_flags)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->alloc_transfer_ring)
-+		return ops->alloc_transfer_ring(xhci, endpoint_type, ring_type,
-+				max_packet, mem_flags);
-+	return 0;
-+}
-+
-+void xhci_vendor_free_transfer_ring(struct xhci_hcd *xhci,
-+		struct xhci_ring *ring, unsigned int ep_index)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->free_transfer_ring)
-+		ops->free_transfer_ring(xhci, ring, ep_index);
-+}
-+
-+bool xhci_vendor_is_usb_offload_enabled(struct xhci_hcd *xhci,
-+		struct xhci_virt_device *virt_dev, unsigned int ep_index)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->is_usb_offload_enabled)
-+		return ops->is_usb_offload_enabled(xhci, virt_dev, ep_index);
-+	return false;
-+}
-+
- /*
-  * Create a new ring with zero or more segments.
-  *
-@@ -419,7 +467,11 @@ void xhci_free_endpoint_ring(struct xhci_hcd *xhci,
- 		struct xhci_virt_device *virt_dev,
- 		unsigned int ep_index)
- {
--	xhci_ring_free(xhci, virt_dev->eps[ep_index].ring);
-+	if (xhci_vendor_is_usb_offload_enabled(xhci, virt_dev, ep_index))
-+		xhci_vendor_free_transfer_ring(xhci, virt_dev->eps[ep_index].ring, ep_index);
-+	else
-+		xhci_ring_free(xhci, virt_dev->eps[ep_index].ring);
-+
- 	virt_dev->eps[ep_index].ring = NULL;
- }
- 
-@@ -478,6 +530,7 @@ struct xhci_container_ctx *xhci_alloc_container_ctx(struct xhci_hcd *xhci,
- {
- 	struct xhci_container_ctx *ctx;
- 	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
- 
- 	if ((type != XHCI_CTX_TYPE_DEVICE) && (type != XHCI_CTX_TYPE_INPUT))
- 		return NULL;
-@@ -491,7 +544,12 @@ struct xhci_container_ctx *xhci_alloc_container_ctx(struct xhci_hcd *xhci,
- 	if (type == XHCI_CTX_TYPE_INPUT)
- 		ctx->size += CTX_SIZE(xhci->hcc_params);
- 
--	ctx->bytes = dma_pool_zalloc(xhci->device_pool, flags, &ctx->dma);
-+	if (xhci_vendor_is_usb_offload_enabled(xhci, NULL, 0) &&
-+	    (ops && ops->alloc_container_ctx))
-+		xhci_vendor_alloc_container_ctx(xhci, ctx, type, flags);
-+	else
-+		ctx->bytes = dma_pool_zalloc(xhci->device_pool, flags, &ctx->dma);
-+
- 	if (!ctx->bytes) {
- 		kfree(ctx);
- 		return NULL;
-@@ -502,9 +560,16 @@ struct xhci_container_ctx *xhci_alloc_container_ctx(struct xhci_hcd *xhci,
- void xhci_free_container_ctx(struct xhci_hcd *xhci,
- 			     struct xhci_container_ctx *ctx)
- {
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
- 	if (!ctx)
- 		return;
--	dma_pool_free(xhci->device_pool, ctx->bytes, ctx->dma);
-+	if (xhci_vendor_is_usb_offload_enabled(xhci, NULL, 0) &&
-+	    (ops && ops->free_container_ctx))
-+		xhci_vendor_free_container_ctx(xhci, ctx);
-+	else
-+		dma_pool_free(xhci->device_pool, ctx->bytes, ctx->dma);
-+
- 	kfree(ctx);
- }
- 
-@@ -897,7 +962,7 @@ void xhci_free_virt_device(struct xhci_hcd *xhci, int slot_id)
- 
- 	for (i = 0; i < 31; i++) {
- 		if (dev->eps[i].ring)
--			xhci_ring_free(xhci, dev->eps[i].ring);
-+			xhci_free_endpoint_ring(xhci, dev, i);
- 		if (dev->eps[i].stream_info)
- 			xhci_free_stream_info(xhci,
- 					dev->eps[i].stream_info);
-@@ -1495,8 +1560,16 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
- 		mult = 0;
- 
- 	/* Set up the endpoint ring */
--	virt_dev->eps[ep_index].new_ring =
--		xhci_ring_alloc(xhci, 2, 1, ring_type, max_packet, mem_flags);
-+	if (xhci_vendor_is_usb_offload_enabled(xhci, virt_dev, ep_index) &&
-+	    usb_endpoint_xfer_isoc(&ep->desc)) {
-+		virt_dev->eps[ep_index].new_ring =
-+			xhci_vendor_alloc_transfer_ring(xhci, endpoint_type, ring_type,
-+							max_packet, mem_flags);
-+	} else {
-+		virt_dev->eps[ep_index].new_ring =
-+			xhci_ring_alloc(xhci, 2, 1, ring_type, max_packet, mem_flags);
-+	}
-+
- 	if (!virt_dev->eps[ep_index].new_ring)
- 		return -ENOMEM;
- 
-@@ -1844,6 +1917,24 @@ void xhci_free_erst(struct xhci_hcd *xhci, struct xhci_erst *erst)
- }
- EXPORT_SYMBOL_GPL(xhci_free_erst);
- 
-+static struct xhci_device_context_array *xhci_vendor_alloc_dcbaa(
-+		struct xhci_hcd *xhci, gfp_t flags)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->alloc_dcbaa)
-+		return ops->alloc_dcbaa(xhci, flags);
-+	return 0;
-+}
-+
-+static void xhci_vendor_free_dcbaa(struct xhci_hcd *xhci)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->free_dcbaa)
-+		ops->free_dcbaa(xhci);
-+}
-+
- void xhci_mem_cleanup(struct xhci_hcd *xhci)
- {
- 	struct device	*dev = xhci_to_hcd(xhci)->self.sysdev;
-@@ -1898,9 +1989,13 @@ void xhci_mem_cleanup(struct xhci_hcd *xhci)
- 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
- 			"Freed medium stream array pool");
- 
--	if (xhci->dcbaa)
--		dma_free_coherent(dev, sizeof(*xhci->dcbaa),
--				xhci->dcbaa, xhci->dcbaa->dma);
-+	if (xhci_vendor_is_usb_offload_enabled(xhci, NULL, 0)) {
-+		xhci_vendor_free_dcbaa(xhci);
-+	} else {
-+		if (xhci->dcbaa)
-+			dma_free_coherent(dev, sizeof(*xhci->dcbaa),
-+					xhci->dcbaa, xhci->dcbaa->dma);
-+	}
- 	xhci->dcbaa = NULL;
- 
- 	scratchpad_free(xhci);
-@@ -2441,15 +2536,21 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
- 	 * xHCI section 5.4.6 - doorbell array must be
- 	 * "physically contiguous and 64-byte (cache line) aligned".
- 	 */
--	xhci->dcbaa = dma_alloc_coherent(dev, sizeof(*xhci->dcbaa), &dma,
--			flags);
--	if (!xhci->dcbaa)
--		goto fail;
--	xhci->dcbaa->dma = dma;
-+	if (xhci_vendor_is_usb_offload_enabled(xhci, NULL, 0)) {
-+		xhci->dcbaa = xhci_vendor_alloc_dcbaa(xhci, flags);
-+		if (!xhci->dcbaa)
-+			goto fail;
-+	} else {
-+		xhci->dcbaa = dma_alloc_coherent(dev, sizeof(*xhci->dcbaa), &dma,
-+				flags);
-+		if (!xhci->dcbaa)
-+			goto fail;
-+		xhci->dcbaa->dma = dma;
-+	}
- 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
- 			"// Device context base array address = 0x%llx (DMA), %p (virt)",
- 			(unsigned long long)xhci->dcbaa->dma, xhci->dcbaa);
--	xhci_write_64(xhci, dma, &xhci->op_regs->dcbaa_ptr);
-+	xhci_write_64(xhci, xhci->dcbaa->dma, &xhci->op_regs->dcbaa_ptr);
- 
- 	/*
- 	 * Initialize the ring segment pool.  The ring must be a contiguous
-diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
-index c1edcc9b13ce..21280a6d589e 100644
---- a/drivers/usb/host/xhci-plat.c
-+++ b/drivers/usb/host/xhci-plat.c
-@@ -184,6 +184,41 @@ static const struct of_device_id usb_xhci_of_match[] = {
- MODULE_DEVICE_TABLE(of, usb_xhci_of_match);
- #endif
- 
-+static struct xhci_plat_priv_overwrite xhci_plat_vendor_overwrite;
-+
-+int xhci_plat_register_vendor_ops(struct xhci_vendor_ops *vendor_ops)
-+{
-+	if (vendor_ops == NULL)
-+		return -EINVAL;
-+
-+	xhci_plat_vendor_overwrite.vendor_ops = vendor_ops;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(xhci_plat_register_vendor_ops);
-+
-+static int xhci_vendor_init(struct xhci_hcd *xhci)
-+{
-+	struct xhci_vendor_ops *ops = NULL;
-+
-+	if (xhci_plat_vendor_overwrite.vendor_ops)
-+		ops = xhci->vendor_ops = xhci_plat_vendor_overwrite.vendor_ops;
-+
-+	if (ops && ops->vendor_init)
-+		return ops->vendor_init(xhci);
-+	return 0;
-+}
-+
-+static void xhci_vendor_cleanup(struct xhci_hcd *xhci)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->vendor_cleanup)
-+		ops->vendor_cleanup(xhci);
-+
-+	xhci->vendor_ops = NULL;
-+}
-+
- static int xhci_plat_probe(struct platform_device *pdev)
- {
- 	const struct xhci_plat_priv *priv_match;
-@@ -339,6 +374,10 @@ static int xhci_plat_probe(struct platform_device *pdev)
- 			goto put_usb3_hcd;
- 	}
- 
-+	ret = xhci_vendor_init(xhci);
-+	if (ret)
-+		goto disable_usb_phy;
-+
- 	hcd->tpl_support = of_usb_host_tpl_support(sysdev->of_node);
- 	xhci->shared_hcd->tpl_support = hcd->tpl_support;
- 
-@@ -418,8 +457,10 @@ static int xhci_plat_remove(struct platform_device *dev)
- 	usb_phy_shutdown(hcd->usb_phy);
- 
- 	usb_remove_hcd(hcd);
--	usb_put_hcd(shared_hcd);
- 
-+	xhci_vendor_cleanup(xhci);
-+
-+	usb_put_hcd(shared_hcd);
- 	clk_disable_unprepare(clk);
- 	clk_disable_unprepare(reg_clk);
- 	usb_put_hcd(hcd);
-diff --git a/drivers/usb/host/xhci-plat.h b/drivers/usb/host/xhci-plat.h
-index 561d0b7bce09..e726a572321d 100644
---- a/drivers/usb/host/xhci-plat.h
-+++ b/drivers/usb/host/xhci-plat.h
-@@ -13,6 +13,7 @@
- struct xhci_plat_priv {
- 	const char *firmware_name;
- 	unsigned long long quirks;
-+	struct xhci_vendor_data *vendor_data;
- 	int (*plat_setup)(struct usb_hcd *);
- 	void (*plat_start)(struct usb_hcd *);
- 	int (*init_quirk)(struct usb_hcd *);
-@@ -22,4 +23,11 @@ struct xhci_plat_priv {
- 
- #define hcd_to_xhci_priv(h) ((struct xhci_plat_priv *)hcd_to_xhci(h)->priv)
- #define xhci_to_priv(x) ((struct xhci_plat_priv *)(x)->priv)
-+
-+struct xhci_plat_priv_overwrite {
-+	struct xhci_vendor_ops *vendor_ops;
-+};
-+
-+int xhci_plat_register_vendor_ops(struct xhci_vendor_ops *vendor_ops);
-+
- #endif	/* _XHCI_PLAT_H */
-diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-index 2e99393560e5..e611f8d7d587 100644
---- a/drivers/usb/host/xhci-ring.c
-+++ b/drivers/usb/host/xhci-ring.c
-@@ -3075,6 +3075,15 @@ void xhci_update_erst_dequeue(struct xhci_hcd *xhci,
- }
- EXPORT_SYMBOL_GPL(xhci_update_erst_dequeue);
- 
-+static irqreturn_t xhci_vendor_queue_irq_work(struct xhci_hcd *xhci)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->queue_irq_work)
-+		return ops->queue_irq_work(xhci);
-+	return IRQ_NONE;
-+}
-+
- /*
-  * xHCI spec says we can get an interrupt, and if the HC has an error condition,
-  * we might get bad data out of the event ring.  Section 4.10.2.7 has a list of
-@@ -3108,6 +3117,10 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
- 		goto out;
- 	}
- 
-+	ret = xhci_vendor_queue_irq_work(xhci);
-+	if (ret == IRQ_HANDLED)
-+		goto out;
-+
- 	/*
- 	 * Clear the op reg interrupt status first,
- 	 * so we can receive interrupts from other MSI-X interrupters.
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index 041a65a6f175..10d5e20b710d 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1621,6 +1621,11 @@ static int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flag
- 		return -ENODEV;
- 	}
- 
-+	if (xhci_vendor_usb_offload_skip_urb(xhci, urb)) {
-+		xhci_dbg(xhci, "skip urb for usb offload\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (usb_endpoint_xfer_isoc(&urb->ep->desc))
- 		num_tds = urb->number_of_packets;
- 	else if (usb_endpoint_is_bulk_out(&urb->ep->desc) &&
-@@ -2964,6 +2969,14 @@ static int xhci_configure_endpoint(struct xhci_hcd *xhci,
- 			xhci_finish_resource_reservation(xhci, ctrl_ctx);
- 		spin_unlock_irqrestore(&xhci->lock, flags);
- 	}
-+	if (ret)
-+		goto failed;
-+
-+	ret = xhci_vendor_sync_dev_ctx(xhci, udev->slot_id);
-+	if (ret)
-+		xhci_warn(xhci, "sync device context failed, ret=%d", ret);
-+
-+failed:
- 	return ret;
- }
- 
-@@ -3107,7 +3120,11 @@ void xhci_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
- 	for (i = 0; i < 31; i++) {
- 		if (virt_dev->eps[i].new_ring) {
- 			xhci_debugfs_remove_endpoint(xhci, virt_dev, i);
--			xhci_ring_free(xhci, virt_dev->eps[i].new_ring);
-+			if (xhci_vendor_is_usb_offload_enabled(xhci, virt_dev, i))
-+				xhci_vendor_free_transfer_ring(xhci, virt_dev->eps[i].new_ring, i);
-+			else
-+				xhci_ring_free(xhci, virt_dev->eps[i].new_ring);
-+
- 			virt_dev->eps[i].new_ring = NULL;
- 		}
- 	}
-@@ -3272,6 +3289,13 @@ static void xhci_endpoint_reset(struct usb_hcd *hcd,
- 
- 	wait_for_completion(stop_cmd->completion);
- 
-+	err = xhci_vendor_sync_dev_ctx(xhci, udev->slot_id);
-+	if (err) {
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, err);
-+		goto cleanup;
-+	}
-+
- 	spin_lock_irqsave(&xhci->lock, flags);
- 
- 	/* config ep command clears toggle if add and drop ep flags are set */
-@@ -3303,6 +3327,11 @@ static void xhci_endpoint_reset(struct usb_hcd *hcd,
- 
- 	wait_for_completion(cfg_cmd->completion);
- 
-+	err = xhci_vendor_sync_dev_ctx(xhci, udev->slot_id);
-+	if (err)
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, err);
-+
- 	xhci_free_command(xhci, cfg_cmd);
- cleanup:
- 	xhci_free_command(xhci, stop_cmd);
-@@ -3848,6 +3877,13 @@ static int xhci_discover_or_reset_device(struct usb_hcd *hcd,
- 	/* Wait for the Reset Device command to finish */
- 	wait_for_completion(reset_device_cmd->completion);
- 
-+	ret = xhci_vendor_sync_dev_ctx(xhci, slot_id);
-+	if (ret) {
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, ret);
-+		goto command_cleanup;
-+	}
-+
- 	/* The Reset Device command can't fail, according to the 0.95/0.96 spec,
- 	 * unless we tried to reset a slot ID that wasn't enabled,
- 	 * or the device wasn't in the addressed or configured state.
-@@ -4093,6 +4129,14 @@ int xhci_alloc_dev(struct usb_hcd *hcd, struct usb_device *udev)
- 		xhci_warn(xhci, "Could not allocate xHCI USB device data structures\n");
- 		goto disable_slot;
- 	}
-+
-+	ret = xhci_vendor_sync_dev_ctx(xhci, slot_id);
-+	if (ret) {
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, ret);
-+		goto disable_slot;
-+	}
-+
- 	vdev = xhci->devs[slot_id];
- 	slot_ctx = xhci_get_slot_ctx(xhci, vdev->out_ctx);
- 	trace_xhci_alloc_dev(slot_ctx);
-@@ -4223,6 +4267,13 @@ static int xhci_setup_device(struct usb_hcd *hcd, struct usb_device *udev,
- 	/* ctrl tx can take up to 5 sec; XXX: need more time for xHC? */
- 	wait_for_completion(command->completion);
- 
-+	ret = xhci_vendor_sync_dev_ctx(xhci, udev->slot_id);
-+	if (ret) {
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, ret);
-+		goto out;
-+	}
-+
- 	/* FIXME: From section 4.3.4: "Software shall be responsible for timing
- 	 * the SetAddress() "recovery interval" required by USB and aborting the
- 	 * command on a timeout.
-@@ -4371,6 +4422,14 @@ static int __maybe_unused xhci_change_max_exit_latency(struct xhci_hcd *xhci,
- 		return -ENOMEM;
- 	}
- 
-+	ret = xhci_vendor_sync_dev_ctx(xhci, udev->slot_id);
-+	if (ret) {
-+		spin_unlock_irqrestore(&xhci->lock, flags);
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, ret);
-+		return ret;
-+	}
-+
- 	xhci_slot_copy(xhci, command->in_ctx, virt_dev->out_ctx);
- 	spin_unlock_irqrestore(&xhci->lock, flags);
- 
-@@ -4395,6 +4454,30 @@ static int __maybe_unused xhci_change_max_exit_latency(struct xhci_hcd *xhci,
- 	return ret;
- }
- 
-+struct xhci_vendor_ops *xhci_vendor_get_ops(struct xhci_hcd *xhci)
-+{
-+	return xhci->vendor_ops;
-+}
-+EXPORT_SYMBOL_GPL(xhci_vendor_get_ops);
-+
-+int xhci_vendor_sync_dev_ctx(struct xhci_hcd *xhci, unsigned int slot_id)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->sync_dev_ctx)
-+		return ops->sync_dev_ctx(xhci, slot_id);
-+	return 0;
-+}
-+
-+bool xhci_vendor_usb_offload_skip_urb(struct xhci_hcd *xhci, struct urb *urb)
-+{
-+	struct xhci_vendor_ops *ops = xhci_vendor_get_ops(xhci);
-+
-+	if (ops && ops->usb_offload_skip_urb)
-+		return ops->usb_offload_skip_urb(xhci, urb);
-+	return false;
-+}
-+
- #ifdef CONFIG_PM
- 
- /* BESL to HIRD Encoding array for USB2 LPM */
-@@ -5131,6 +5214,15 @@ static int xhci_update_hub_device(struct usb_hcd *hcd, struct usb_device *hdev,
- 		return -ENOMEM;
- 	}
- 
-+	ret = xhci_vendor_sync_dev_ctx(xhci, hdev->slot_id);
-+	if (ret) {
-+		xhci_warn(xhci, "%s: Failed to sync device context failed, err=%d",
-+			  __func__, ret);
-+		xhci_free_command(xhci, config_cmd);
-+		spin_unlock_irqrestore(&xhci->lock, flags);
-+		return ret;
-+	}
-+
- 	xhci_slot_copy(xhci, config_cmd->in_ctx, vdev->out_ctx);
- 	ctrl_ctx->add_flags |= cpu_to_le32(SLOT_FLAG);
- 	slot_ctx = xhci_get_slot_ctx(xhci, config_cmd->in_ctx);
-diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
-index 5a75fe563123..2efe8ddaab5f 100644
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -1928,6 +1928,7 @@ struct xhci_hcd {
- 	struct list_head	regset_list;
- 
- 	void			*dbc;
-+
- 	/* platform-specific data -- must come last */
- 	unsigned long		priv[] __aligned(sizeof(s64));
- };
-@@ -2206,6 +2207,53 @@ static inline struct xhci_ring *xhci_urb_to_transfer_ring(struct xhci_hcd *xhci,
- 					urb->stream_id);
- }
- 
-+/**
-+ * struct xhci_vendor_ops - function callbacks for vendor specific operations
-+ * @vendor_init: called for vendor init process
-+ * @vendor_cleanup: called for vendor cleanup process
-+ * @is_usb_offload_enabled: called to check if usb offload enabled
-+ * @queue_irq_work: called to queue vendor specific irq work
-+ * @alloc_dcbaa: called when allocating vendor specific dcbaa
-+ * @free_dcbaa: called to free vendor specific dcbaa
-+ * @alloc_transfer_ring: called when remote transfer ring allocation is required
-+ * @free_transfer_ring: called to free vendor specific transfer ring
-+ * @sync_dev_ctx: called when synchronization for device context is required
-+ * @alloc_container_ctx: called when allocating vendor specific container context
-+ * @free_container_ctx: called to free vendor specific container context
-+ */
-+struct xhci_vendor_ops {
-+	int (*vendor_init)(struct xhci_hcd *xhci);
-+	void (*vendor_cleanup)(struct xhci_hcd *xhci);
-+	bool (*is_usb_offload_enabled)(struct xhci_hcd *xhci,
-+				       struct xhci_virt_device *vdev,
-+				       unsigned int ep_index);
-+	irqreturn_t (*queue_irq_work)(struct xhci_hcd *xhci);
-+
-+	struct xhci_device_context_array *(*alloc_dcbaa)(struct xhci_hcd *xhci,
-+							 gfp_t flags);
-+	void (*free_dcbaa)(struct xhci_hcd *xhci);
-+
-+	struct xhci_ring *(*alloc_transfer_ring)(struct xhci_hcd *xhci,
-+			u32 endpoint_type, enum xhci_ring_type ring_type,
-+			unsigned int max_packet, gfp_t mem_flags);
-+	void (*free_transfer_ring)(struct xhci_hcd *xhci,
-+			struct xhci_ring *ring, unsigned int ep_index);
-+	int (*sync_dev_ctx)(struct xhci_hcd *xhci, unsigned int slot_id);
-+	bool (*usb_offload_skip_urb)(struct xhci_hcd *xhci, struct urb *urb);
-+	void (*alloc_container_ctx)(struct xhci_hcd *xhci, struct xhci_container_ctx *ctx,
-+				    int type, gfp_t flags);
-+	void (*free_container_ctx)(struct xhci_hcd *xhci, struct xhci_container_ctx *ctx);
-+};
-+
-+struct xhci_vendor_ops *xhci_vendor_get_ops(struct xhci_hcd *xhci);
-+
-+int xhci_vendor_sync_dev_ctx(struct xhci_hcd *xhci, unsigned int slot_id);
-+bool xhci_vendor_usb_offload_skip_urb(struct xhci_hcd *xhci, struct urb *urb);
-+void xhci_vendor_free_transfer_ring(struct xhci_hcd *xhci,
-+		struct xhci_ring *ring, unsigned int ep_index);
-+bool xhci_vendor_is_usb_offload_enabled(struct xhci_hcd *xhci,
-+		struct xhci_virt_device *virt_dev, unsigned int ep_index);
-+
- /*
-  * TODO: As per spec Isochronous IDT transmissions are supported. We bypass
-  * them anyways as we where unable to find a device that matches the
--- 
-2.31.1
-
-
+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEV1Z2VuaW8gUGVyZXogTWFydGluIDxl
+cGVyZXptYUByZWRoYXQuY29tPiANClNlbnQ6IEZyaWRheSwgTWFyY2ggNCwgMjAyMiAxOjEwIEFN
+DQpUbzogR2F1dGFtIERhd2FyIDxnZGF3YXJAeGlsaW54LmNvbT4NCkNjOiBHYXV0YW0gRGF3YXIg
+PGdkYXdhckB4aWxpbnguY29tPjsgTWFydGluIFBldHJ1cyBIdWJlcnR1cyBIYWJldHMgPG1hcnRp
+bmhAeGlsaW54LmNvbT47IEhhcnByZWV0IFNpbmdoIEFuYW5kIDxoYW5hbmRAeGlsaW54LmNvbT47
+IFRhbnVqIE11cmxpZGhhciBLYW1kZSA8dGFudWprQHhpbGlueC5jb20+OyBKYXNvbiBXYW5nIDxq
+YXNvd2FuZ0ByZWRoYXQuY29tPjsgTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT47
+IFpodSBMaW5nc2hhbiA8bGluZ3NoYW4uemh1QGludGVsLmNvbT47IFN0ZWZhbm8gR2FyemFyZWxs
+YSA8c2dhcnphcmVAcmVkaGF0LmNvbT47IFhpZSBZb25namkgPHhpZXlvbmdqaUBieXRlZGFuY2Uu
+Y29tPjsgRWxpIENvaGVuIDxlbGljQG52aWRpYS5jb20+OyBTaS1XZWkgTGl1IDxzaS13ZWkubGl1
+QG9yYWNsZS5jb20+OyBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+OyBMb25ncGVuZyA8
+bG9uZ3BlbmcyQGh1YXdlaS5jb20+OyB2aXJ0dWFsaXphdGlvbiA8dmlydHVhbGl6YXRpb25AbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmc+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBr
+dm0gbGlzdCA8a3ZtQHZnZXIua2VybmVsLm9yZz47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNClN1
+YmplY3Q6IFJlOiBbUkZDIFBBVENIIHYyIDA2LzE5XSB2ZHBhOiBtdWx0aXBsZSBhZGRyZXNzIHNw
+YWNlcyBzdXBwb3J0DQoNCk9uIFRodSwgRmViIDI0LCAyMDIyIGF0IDEwOjI1IFBNIEdhdXRhbSBE
+YXdhciA8Z2F1dGFtLmRhd2FyQHhpbGlueC5jb20+IHdyb3RlOg0KPg0KPiBUaGlzIHBhdGNoZXMg
+aW50cm9kdWNlcyB0aGUgbXVsdGlwbGUgYWRkcmVzcyBzcGFjZXMgc3VwcG9ydCBmb3IgdkRQQSAN
+Cj4gZGV2aWNlLiBUaGlzIGlkZWEgaXMgdG8gaWRlbnRpZnkgYSBzcGVjaWZpYyBhZGRyZXNzIHNw
+YWNlIHZpYSBhbiANCj4gZGVkaWNhdGVkIGlkZW50aWZpZXIgLSBBU0lELg0KPg0KPiBEdXJpbmcg
+dkRQQSBkZXZpY2UgYWxsb2NhdGlvbiwgdkRQQSBkZXZpY2UgZHJpdmVyIG5lZWRzIHRvIHJlcG9y
+dCB0aGUgDQo+IG51bWJlciBvZiBhZGRyZXNzIHNwYWNlcyBzdXBwb3J0ZWQgYnkgdGhlIGRldmlj
+ZSB0aGVuIHRoZSBETUEgbWFwcGluZyANCj4gb3BzIG9mIHRoZSB2RFBBIGRldmljZSBuZWVkcyB0
+byBiZSBleHRlbmRlZCB0byBzdXBwb3J0IEFTSUQuDQo+DQo+IFRoaXMgaGVscHMgdG8gaXNvbGF0
+ZSB0aGUgZW52aXJvbm1lbnRzIGZvciB0aGUgdmlydHF1ZXVlIHRoYXQgd2lsbCBub3QgDQo+IGJl
+IGFzc2lnbmVkIGRpcmVjdGx5LiBFLmcgaW4gdGhlIGNhc2Ugb2YgdmlydGlvLW5ldCwgdGhlIGNv
+bnRyb2wgDQo+IHZpcnRxdWV1ZSB3aWxsIG5vdCBiZSBhc3NpZ25lZCBkaXJlY3RseSB0byBndWVz
+dC4NCj4NCj4gQXMgYSBzdGFydCwgc2ltcGx5IGNsYWltIDEgdmlydHF1ZXVlIGdyb3VwcyBhbmQg
+MSBhZGRyZXNzIHNwYWNlcyBmb3IgDQo+IGFsbCB2RFBBIGRldmljZXMuIEFuZCB2aG9zdC12RFBB
+IHdpbGwgc2ltcGx5IHJlamVjdCB0aGUgZGV2aWNlIHdpdGggDQo+IG1vcmUgdGhhbiAxIHZpcnRx
+dWV1ZSBncm91cHMgb3IgYWRkcmVzcyBzcGFjZXMuDQo+DQo+IFNpZ25lZC1vZmYtYnk6IEphc29u
+IFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEdhdXRhbSBEYXdh
+ciA8Z2Rhd2FyQHhpbGlueC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy92ZHBhL2lmY3ZmL2lmY3Zm
+X21haW4uYyAgIHwgIDIgKy0NCj4gIGRyaXZlcnMvdmRwYS9tbHg1L25ldC9tbHg1X3ZuZXQuYyB8
+ICA1ICsrKy0tDQo+ICBkcml2ZXJzL3ZkcGEvdmRwYS5jICAgICAgICAgICAgICAgfCAgNCArKyst
+DQo+ICBkcml2ZXJzL3ZkcGEvdmRwYV9zaW0vdmRwYV9zaW0uYyAgfCAxMCArKysrKystLS0tDQo+
+ICBkcml2ZXJzL3Zob3N0L3ZkcGEuYyAgICAgICAgICAgICAgfCAxNCArKysrKysrKystLS0tLQ0K
+PiAgaW5jbHVkZS9saW51eC92ZHBhLmggICAgICAgICAgICAgIHwgMjggKysrKysrKysrKysrKysr
+KysrKy0tLS0tLS0tLQ0KPiAgNiBmaWxlcyBjaGFuZ2VkLCA0MSBpbnNlcnRpb25zKCspLCAyMiBk
+ZWxldGlvbnMoLSkNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9t
+YWluLmMgDQo+IGIvZHJpdmVycy92ZHBhL2lmY3ZmL2lmY3ZmX21haW4uYyBpbmRleCBjODE1YTJl
+NjI0NDAuLmE0ODE1YzU2MTJmOSANCj4gMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvdmRwYS9pZmN2
+Zi9pZmN2Zl9tYWluLmMNCj4gKysrIGIvZHJpdmVycy92ZHBhL2lmY3ZmL2lmY3ZmX21haW4uYw0K
+PiBAQCAtNTEzLDcgKzUxMyw3IEBAIHN0YXRpYyBpbnQgaWZjdmZfdmRwYV9kZXZfYWRkKHN0cnVj
+dCB2ZHBhX21nbXRfZGV2ICptZGV2LCBjb25zdCBjaGFyICpuYW1lLA0KPiAgICAgICAgIHBkZXYg
+PSBpZmN2Zl9tZ210X2Rldi0+cGRldjsNCj4gICAgICAgICBkZXYgPSAmcGRldi0+ZGV2Ow0KPiAg
+ICAgICAgIGFkYXB0ZXIgPSB2ZHBhX2FsbG9jX2RldmljZShzdHJ1Y3QgaWZjdmZfYWRhcHRlciwg
+dmRwYSwNCj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGV2LCAmaWZjX3Zk
+cGFfb3BzLCAxLCBuYW1lLCBmYWxzZSk7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIGRldiwgJmlmY192ZHBhX29wcywgMSwgMSwgbmFtZSwgDQo+ICsgZmFsc2UpOw0KPiAg
+ICAgICAgIGlmIChJU19FUlIoYWRhcHRlcikpIHsNCj4gICAgICAgICAgICAgICAgIElGQ1ZGX0VS
+UihwZGV2LCAiRmFpbGVkIHRvIGFsbG9jYXRlIHZEUEEgc3RydWN0dXJlIik7DQo+ICAgICAgICAg
+ICAgICAgICByZXR1cm4gUFRSX0VSUihhZGFwdGVyKTsgZGlmZiAtLWdpdCANCj4gYS9kcml2ZXJz
+L3ZkcGEvbWx4NS9uZXQvbWx4NV92bmV0LmMgDQo+IGIvZHJpdmVycy92ZHBhL21seDUvbmV0L21s
+eDVfdm5ldC5jDQo+IGluZGV4IGZjZmMyODQ2MGI3Mi4uYTc2NDE3ODkyZWYzIDEwMDY0NA0KPiAt
+LS0gYS9kcml2ZXJzL3ZkcGEvbWx4NS9uZXQvbWx4NV92bmV0LmMNCj4gKysrIGIvZHJpdmVycy92
+ZHBhL21seDUvbmV0L21seDVfdm5ldC5jDQo+IEBAIC0yMjgyLDcgKzIyODIsOCBAQCBzdGF0aWMg
+dTMyIG1seDVfdmRwYV9nZXRfZ2VuZXJhdGlvbihzdHJ1Y3QgdmRwYV9kZXZpY2UgKnZkZXYpDQo+
+ICAgICAgICAgcmV0dXJuIG12ZGV2LT5nZW5lcmF0aW9uOw0KPiAgfQ0KPg0KPiAtc3RhdGljIGlu
+dCBtbHg1X3ZkcGFfc2V0X21hcChzdHJ1Y3QgdmRwYV9kZXZpY2UgKnZkZXYsIHN0cnVjdCANCj4g
+dmhvc3RfaW90bGIgKmlvdGxiKQ0KPiArc3RhdGljIGludCBtbHg1X3ZkcGFfc2V0X21hcChzdHJ1
+Y3QgdmRwYV9kZXZpY2UgKnZkZXYsIHVuc2lnbmVkIGludCBhc2lkLA0KPiArICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIHN0cnVjdCB2aG9zdF9pb3RsYiAqaW90bGIpDQo+ICB7DQo+ICAgICAg
+ICAgc3RydWN0IG1seDVfdmRwYV9kZXYgKm12ZGV2ID0gdG9fbXZkZXYodmRldik7DQo+ICAgICAg
+ICAgYm9vbCBjaGFuZ2VfbWFwOw0KPiBAQCAtMjU4MSw3ICsyNTgyLDcgQEAgc3RhdGljIGludCBt
+bHg1X3ZkcGFfZGV2X2FkZChzdHJ1Y3QgdmRwYV9tZ210X2RldiAqdl9tZGV2LCBjb25zdCBjaGFy
+ICpuYW1lLA0KPiAgICAgICAgIH0NCj4NCj4gICAgICAgICBuZGV2ID0gdmRwYV9hbGxvY19kZXZp
+Y2Uoc3RydWN0IG1seDVfdmRwYV9uZXQsIG12ZGV2LnZkZXYsIG1kZXYtPmRldmljZSwgJm1seDVf
+dmRwYV9vcHMsDQo+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDEsIG5hbWUsIGZh
+bHNlKTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMSwgMSwgbmFtZSwgZmFs
+c2UpOw0KPiAgICAgICAgIGlmIChJU19FUlIobmRldikpDQo+ICAgICAgICAgICAgICAgICByZXR1
+cm4gUFRSX0VSUihuZGV2KTsNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmRwYS92ZHBhLmMg
+Yi9kcml2ZXJzL3ZkcGEvdmRwYS5jIGluZGV4IA0KPiBhMDdiZjAxMzA1NTkuLjE3OTNkYzEyYjIw
+OCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy92ZHBhL3ZkcGEuYw0KPiArKysgYi9kcml2ZXJzL3Zk
+cGEvdmRwYS5jDQo+IEBAIC0xNjAsNiArMTYwLDcgQEAgc3RhdGljIHZvaWQgdmRwYV9yZWxlYXNl
+X2RldihzdHJ1Y3QgZGV2aWNlICpkKQ0KPiAgICogQHBhcmVudDogdGhlIHBhcmVudCBkZXZpY2UN
+Cj4gICAqIEBjb25maWc6IHRoZSBidXMgb3BlcmF0aW9ucyB0aGF0IGlzIHN1cHBvcnRlZCBieSB0
+aGlzIGRldmljZQ0KPiAgICogQG5ncm91cHM6IG51bWJlciBvZiBncm91cHMgc3VwcG9ydGVkIGJ5
+IHRoaXMgZGV2aWNlDQo+ICsgKiBAbmFzOiBudW1iZXIgb2YgYWRkcmVzcyBzcGFjZXMgc3VwcG9y
+dGVkIGJ5IHRoaXMgZGV2aWNlDQo+ICAgKiBAc2l6ZTogc2l6ZSBvZiB0aGUgcGFyZW50IHN0cnVj
+dHVyZSB0aGF0IGNvbnRhaW5zIHByaXZhdGUgZGF0YQ0KPiAgICogQG5hbWU6IG5hbWUgb2YgdGhl
+IHZkcGEgZGV2aWNlOyBvcHRpb25hbC4NCj4gICAqIEB1c2VfdmE6IGluZGljYXRlIHdoZXRoZXIg
+dmlydHVhbCBhZGRyZXNzIG11c3QgYmUgdXNlZCBieSB0aGlzIA0KPiBkZXZpY2UgQEAgLTE3Miw3
+ICsxNzMsNyBAQCBzdGF0aWMgdm9pZCB2ZHBhX3JlbGVhc2VfZGV2KHN0cnVjdCBkZXZpY2UgKmQp
+DQo+ICAgKi8NCj4gIHN0cnVjdCB2ZHBhX2RldmljZSAqX192ZHBhX2FsbG9jX2RldmljZShzdHJ1
+Y3QgZGV2aWNlICpwYXJlbnQsDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBjb25zdCBzdHJ1Y3QgdmRwYV9jb25maWdfb3BzICpjb25maWcsDQo+IC0gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBpbnQgbmdyb3VwcywNCj4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGludCBuZ3JvdXBz
+LCB1bnNpZ25lZCANCj4gKyBpbnQgbmFzLA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgc2l6ZV90IHNpemUsIGNvbnN0IGNoYXIgKm5hbWUsDQo+ICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBib29sIHVzZV92YSkgIHsgQEAgLTIwNiw2IA0K
+PiArMjA3LDcgQEAgc3RydWN0IHZkcGFfZGV2aWNlICpfX3ZkcGFfYWxsb2NfZGV2aWNlKHN0cnVj
+dCBkZXZpY2UgKnBhcmVudCwNCj4gICAgICAgICB2ZGV2LT5mZWF0dXJlc192YWxpZCA9IGZhbHNl
+Ow0KPiAgICAgICAgIHZkZXYtPnVzZV92YSA9IHVzZV92YTsNCj4gICAgICAgICB2ZGV2LT5uZ3Jv
+dXBzID0gbmdyb3VwczsNCj4gKyAgICAgICB2ZGV2LT5uYXMgPSBuYXM7DQo+DQo+ICAgICAgICAg
+aWYgKG5hbWUpDQo+ICAgICAgICAgICAgICAgICBlcnIgPSBkZXZfc2V0X25hbWUoJnZkZXYtPmRl
+diwgIiVzIiwgbmFtZSk7IGRpZmYgLS1naXQgDQo+IGEvZHJpdmVycy92ZHBhL3ZkcGFfc2ltL3Zk
+cGFfc2ltLmMgYi9kcml2ZXJzL3ZkcGEvdmRwYV9zaW0vdmRwYV9zaW0uYw0KPiBpbmRleCBjOThj
+YjFmODY5ZmEuLjY1OWUyZTJlNGIwYyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy92ZHBhL3ZkcGFf
+c2ltL3ZkcGFfc2ltLmMNCj4gKysrIGIvZHJpdmVycy92ZHBhL3ZkcGFfc2ltL3ZkcGFfc2ltLmMN
+Cj4gQEAgLTI1MSw3ICsyNTEsNyBAQCBzdHJ1Y3QgdmRwYXNpbSAqdmRwYXNpbV9jcmVhdGUoc3Ry
+dWN0IHZkcGFzaW1fZGV2X2F0dHIgKmRldl9hdHRyKQ0KPiAgICAgICAgICAgICAgICAgb3BzID0g
+JnZkcGFzaW1fY29uZmlnX29wczsNCj4NCj4gICAgICAgICB2ZHBhc2ltID0gdmRwYV9hbGxvY19k
+ZXZpY2Uoc3RydWN0IHZkcGFzaW0sIHZkcGEsIE5VTEwsIG9wcywgMSwNCj4gLSAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgZGV2X2F0dHItPm5hbWUsIGZhbHNlKTsNCj4gKyAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMSwgZGV2X2F0dHItPm5hbWUsIGZhbHNlKTsN
+Cj4gICAgICAgICBpZiAoSVNfRVJSKHZkcGFzaW0pKSB7DQo+ICAgICAgICAgICAgICAgICByZXQg
+PSBQVFJfRVJSKHZkcGFzaW0pOw0KPiAgICAgICAgICAgICAgICAgZ290byBlcnJfYWxsb2M7DQo+
+IEBAIC01MzksNyArNTM5LDcgQEAgc3RhdGljIHN0cnVjdCB2ZHBhX2lvdmFfcmFuZ2UgdmRwYXNp
+bV9nZXRfaW92YV9yYW5nZShzdHJ1Y3QgdmRwYV9kZXZpY2UgKnZkcGEpDQo+ICAgICAgICAgcmV0
+dXJuIHJhbmdlOw0KPiAgfQ0KPg0KPiAtc3RhdGljIGludCB2ZHBhc2ltX3NldF9tYXAoc3RydWN0
+IHZkcGFfZGV2aWNlICp2ZHBhLA0KPiArc3RhdGljIGludCB2ZHBhc2ltX3NldF9tYXAoc3RydWN0
+IHZkcGFfZGV2aWNlICp2ZHBhLCB1bnNpZ25lZCBpbnQgDQo+ICthc2lkLA0KPiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBzdHJ1Y3Qgdmhvc3RfaW90bGIgKmlvdGxiKSAgew0KPiAgICAgICAg
+IHN0cnVjdCB2ZHBhc2ltICp2ZHBhc2ltID0gdmRwYV90b19zaW0odmRwYSk7IEBAIC01NjYsNyAr
+NTY2LDggDQo+IEBAIHN0YXRpYyBpbnQgdmRwYXNpbV9zZXRfbWFwKHN0cnVjdCB2ZHBhX2Rldmlj
+ZSAqdmRwYSwNCj4gICAgICAgICByZXR1cm4gcmV0Ow0KPiAgfQ0KPg0KPiAtc3RhdGljIGludCB2
+ZHBhc2ltX2RtYV9tYXAoc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhLCB1NjQgaW92YSwgdTY0IA0K
+PiBzaXplLA0KPiArc3RhdGljIGludCB2ZHBhc2ltX2RtYV9tYXAoc3RydWN0IHZkcGFfZGV2aWNl
+ICp2ZHBhLCB1bnNpZ25lZCBpbnQgYXNpZCwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+dTY0IGlvdmEsIHU2NCBzaXplLA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICB1NjQgcGEs
+IHUzMiBwZXJtLCB2b2lkICpvcGFxdWUpICB7DQo+ICAgICAgICAgc3RydWN0IHZkcGFzaW0gKnZk
+cGFzaW0gPSB2ZHBhX3RvX3NpbSh2ZHBhKTsgQEAgLTU4MCw3ICs1ODEsOCANCj4gQEAgc3RhdGlj
+IGludCB2ZHBhc2ltX2RtYV9tYXAoc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhLCB1NjQgaW92YSwg
+dTY0IHNpemUsDQo+ICAgICAgICAgcmV0dXJuIHJldDsNCj4gIH0NCj4NCj4gLXN0YXRpYyBpbnQg
+dmRwYXNpbV9kbWFfdW5tYXAoc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhLCB1NjQgaW92YSwgdTY0
+IA0KPiBzaXplKQ0KPiArc3RhdGljIGludCB2ZHBhc2ltX2RtYV91bm1hcChzdHJ1Y3QgdmRwYV9k
+ZXZpY2UgKnZkcGEsIHVuc2lnbmVkIGludCBhc2lkLA0KPiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHU2NCBpb3ZhLCB1NjQgc2l6ZSkNCj4gIHsNCj4gICAgICAgICBzdHJ1Y3QgdmRwYXNp
+bSAqdmRwYXNpbSA9IHZkcGFfdG9fc2ltKHZkcGEpOw0KPg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy92aG9zdC92ZHBhLmMgYi9kcml2ZXJzL3Zob3N0L3ZkcGEuYyBpbmRleCANCj4gNjU1ZmY3MDI5
+NDAxLi42YmY3NTVmODRkMjYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvdmhvc3QvdmRwYS5jDQo+
+ICsrKyBiL2RyaXZlcnMvdmhvc3QvdmRwYS5jDQo+IEBAIC01OTksMTAgKzU5OSwxMCBAQCBzdGF0
+aWMgaW50IHZob3N0X3ZkcGFfbWFwKHN0cnVjdCB2aG9zdF92ZHBhICp2LCBzdHJ1Y3Qgdmhvc3Rf
+aW90bGIgKmlvdGxiLA0KPiAgICAgICAgICAgICAgICAgcmV0dXJuIHI7DQo+DQo+ICAgICAgICAg
+aWYgKG9wcy0+ZG1hX21hcCkgew0KPiAtICAgICAgICAgICAgICAgciA9IG9wcy0+ZG1hX21hcCh2
+ZHBhLCBpb3ZhLCBzaXplLCBwYSwgcGVybSwgb3BhcXVlKTsNCj4gKyAgICAgICAgICAgICAgIHIg
+PSBvcHMtPmRtYV9tYXAodmRwYSwgMCwgaW92YSwgc2l6ZSwgcGEsIHBlcm0sIA0KPiArIG9wYXF1
+ZSk7DQo+ICAgICAgICAgfSBlbHNlIGlmIChvcHMtPnNldF9tYXApIHsNCj4gICAgICAgICAgICAg
+ICAgIGlmICghdi0+aW5fYmF0Y2gpDQo+IC0gICAgICAgICAgICAgICAgICAgICAgIHIgPSBvcHMt
+PnNldF9tYXAodmRwYSwgaW90bGIpOw0KPiArICAgICAgICAgICAgICAgICAgICAgICByID0gb3Bz
+LT5zZXRfbWFwKHZkcGEsIDAsIGlvdGxiKTsNCj4gICAgICAgICB9IGVsc2Ugew0KPiAgICAgICAg
+ICAgICAgICAgciA9IGlvbW11X21hcCh2LT5kb21haW4sIGlvdmEsIHBhLCBzaXplLA0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBwZXJtX3RvX2lvbW11X2ZsYWdzKHBlcm0pKTsgQEAg
+LTYyOCwxMCANCj4gKzYyOCwxMCBAQCBzdGF0aWMgdm9pZCB2aG9zdF92ZHBhX3VubWFwKHN0cnVj
+dCB2aG9zdF92ZHBhICp2LA0KPiAgICAgICAgIHZob3N0X3ZkcGFfaW90bGJfdW5tYXAodiwgaW90
+bGIsIGlvdmEsIGlvdmEgKyBzaXplIC0gMSk7DQo+DQo+ICAgICAgICAgaWYgKG9wcy0+ZG1hX21h
+cCkgew0KPiAtICAgICAgICAgICAgICAgb3BzLT5kbWFfdW5tYXAodmRwYSwgaW92YSwgc2l6ZSk7
+DQo+ICsgICAgICAgICAgICAgICBvcHMtPmRtYV91bm1hcCh2ZHBhLCAwLCBpb3ZhLCBzaXplKTsN
+Cj4gICAgICAgICB9IGVsc2UgaWYgKG9wcy0+c2V0X21hcCkgew0KPiAgICAgICAgICAgICAgICAg
+aWYgKCF2LT5pbl9iYXRjaCkNCj4gLSAgICAgICAgICAgICAgICAgICAgICAgb3BzLT5zZXRfbWFw
+KHZkcGEsIGlvdGxiKTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgb3BzLT5zZXRfbWFwKHZk
+cGEsIDAsIGlvdGxiKTsNCj4gICAgICAgICB9IGVsc2Ugew0KPiAgICAgICAgICAgICAgICAgaW9t
+bXVfdW5tYXAodi0+ZG9tYWluLCBpb3ZhLCBzaXplKTsNCj4gICAgICAgICB9DQo+IEBAIC04NjMs
+NyArODYzLDcgQEAgc3RhdGljIGludCB2aG9zdF92ZHBhX3Byb2Nlc3NfaW90bGJfbXNnKHN0cnVj
+dCB2aG9zdF9kZXYgKmRldiwNCj4gICAgICAgICAgICAgICAgIGJyZWFrOw0KPiAgICAgICAgIGNh
+c2UgVkhPU1RfSU9UTEJfQkFUQ0hfRU5EOg0KPiAgICAgICAgICAgICAgICAgaWYgKHYtPmluX2Jh
+dGNoICYmIG9wcy0+c2V0X21hcCkNCj4gLSAgICAgICAgICAgICAgICAgICAgICAgb3BzLT5zZXRf
+bWFwKHZkcGEsIGlvdGxiKTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgb3BzLT5zZXRfbWFw
+KHZkcGEsIDAsIGlvdGxiKTsNCj4gICAgICAgICAgICAgICAgIHYtPmluX2JhdGNoID0gZmFsc2U7
+DQo+ICAgICAgICAgICAgICAgICBicmVhazsNCj4gICAgICAgICBkZWZhdWx0Og0KPiBAQCAtMTEy
+OCw2ICsxMTI4LDEwIEBAIHN0YXRpYyBpbnQgdmhvc3RfdmRwYV9wcm9iZShzdHJ1Y3QgdmRwYV9k
+ZXZpY2UgKnZkcGEpDQo+ICAgICAgICAgaW50IG1pbm9yOw0KPiAgICAgICAgIGludCByOw0KPg0K
+PiArICAgICAgIC8qIE9ubHkgc3VwcG9ydCAxIGFkZHJlc3Mgc3BhY2UgYW5kIDEgZ3JvdXBzICov
+DQo+ICsgICAgICAgaWYgKHZkcGEtPm5ncm91cHMgIT0gMSB8fCB2ZHBhLT5uYXMgIT0gMSkNCj4g
+KyAgICAgICAgICAgICAgIHJldHVybiAtRU9QTk9UU1VQUDsNCj4gKw0KPiAgICAgICAgIHYgPSBr
+emFsbG9jKHNpemVvZigqdiksIEdGUF9LRVJORUwgfCBfX0dGUF9SRVRSWV9NQVlGQUlMKTsNCj4g
+ICAgICAgICBpZiAoIXYpDQo+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVOT01FTTsNCj4gZGlm
+ZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmRwYS5oIGIvaW5jbHVkZS9saW51eC92ZHBhLmggaW5k
+ZXggDQo+IDAyNmI3YWQ3MmVkNy4uZGUyMmNhMWE4ZWYzIDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRl
+L2xpbnV4L3ZkcGEuaA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L3ZkcGEuaA0KPiBAQCAtNjksNiAr
+NjksOCBAQCBzdHJ1Y3QgdmRwYV9tZ210X2RldjsNCj4gICAqIEBjZl9tdXRleDogUHJvdGVjdHMg
+Z2V0IGFuZCBzZXQgYWNjZXNzIHRvIGNvbmZpZ3VyYXRpb24gbGF5b3V0Lg0KPiAgICogQGluZGV4
+OiBkZXZpY2UgaW5kZXgNCj4gICAqIEBmZWF0dXJlc192YWxpZDogd2VyZSBmZWF0dXJlcyBpbml0
+aWFsaXplZD8gZm9yIGxlZ2FjeSBndWVzdHMNCj4gKyAqIEBuZ3JvdXBzOiB0aGUgbnVtYmVyIG9m
+IHZpcnRxdWV1ZSBncm91cHMNCj4gKyAqIEBuYXM6IHRoZSBudW1iZXIgb2YgYWRkcmVzcyBzcGFj
+ZXMNCj4gICAqIEB1c2VfdmE6IGluZGljYXRlIHdoZXRoZXIgdmlydHVhbCBhZGRyZXNzIG11c3Qg
+YmUgdXNlZCBieSB0aGlzIGRldmljZQ0KPiAgICogQG52cXM6IG1heGltdW0gbnVtYmVyIG9mIHN1
+cHBvcnRlZCB2aXJ0cXVldWVzDQo+ICAgKiBAbWRldjogbWFuYWdlbWVudCBkZXZpY2UgcG9pbnRl
+cjsgY2FsbGVyIG11c3Qgc2V0dXAgd2hlbiANCj4gcmVnaXN0ZXJpbmcgZGV2aWNlIGFzIHBhcnQg
+QEAgLTg2LDYgKzg4LDcgQEAgc3RydWN0IHZkcGFfZGV2aWNlIHsNCj4gICAgICAgICBpbnQgbnZx
+czsNCj4gICAgICAgICBzdHJ1Y3QgdmRwYV9tZ210X2RldiAqbWRldjsNCj4gICAgICAgICB1bnNp
+Z25lZCBpbnQgbmdyb3VwczsNCj4gKyAgICAgICB1bnNpZ25lZCBpbnQgbmFzOw0KPiAgfTsNCj4N
+Cj4gIC8qKg0KPiBAQCAtMjQwLDYgKzI0Myw3IEBAIHN0cnVjdCB2ZHBhX21hcF9maWxlIHsNCj4g
+ICAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICBOZWVkZWQgZm9yIGRldmljZSB0aGF0IHVz
+aW5nIGRldmljZQ0KPiAgICogICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNwZWNpZmljIERN
+QSB0cmFuc2xhdGlvbiAob24tY2hpcCBJT01NVSkNCj4gICAqICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBAdmRldjogdmRwYSBkZXZpY2UNCj4gKyAqICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBAYXNpZDogYWRkcmVzcyBzcGFjZSBpZGVudGlmaWVyDQo+ICAgKiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgQGlvdGxiOiB2aG9zdCBtZW1vcnkgbWFwcGluZyB0byBiZQ0KPiAgICog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVzZWQgYnkgdGhlIHZEUEENCj4gICAqICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBSZXR1cm5zIGludGVnZXI6IHN1Y2Nlc3MgKDApIG9yIGVy
+cm9yICg8IDApDQo+IEBAIC0yNDgsNiArMjUyLDcgQEAgc3RydWN0IHZkcGFfbWFwX2ZpbGUgew0K
+PiAgICogICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNwZWNpZmljIERNQSB0cmFuc2xhdGlv
+biAob24tY2hpcCBJT01NVSkNCj4gICAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhbmQg
+cHJlZmVycmluZyBpbmNyZW1lbnRhbCBtYXAuDQo+ICAgKiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgQHZkZXY6IHZkcGEgZGV2aWNlDQo+ICsgKiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgQGFzaWQ6IGFkZHJlc3Mgc3BhY2UgaWRlbnRpZmllcg0KPiAgICogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIEBpb3ZhOiBpb3ZhIHRvIGJlIG1hcHBlZA0KPiAgICogICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIEBzaXplOiBzaXplIG9mIHRoZSBhcmVhDQo+ICAgKiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgQHBhOiBwaHlzaWNhbCBhZGRyZXNzIGZvciB0aGUgbWFwDQo+IEBA
+IC0yNTksNiArMjY0LDcgQEAgc3RydWN0IHZkcGFfbWFwX2ZpbGUgew0KPiAgICogICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIHNwZWNpZmljIERNQSB0cmFuc2xhdGlvbiAob24tY2hpcCBJT01N
+VSkNCj4gICAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhbmQgcHJlZmVycmluZyBpbmNy
+ZW1lbnRhbCB1bm1hcC4NCj4gICAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICBAdmRldjog
+dmRwYSBkZXZpY2UNCj4gKyAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICBAYXNpZDogYWRk
+cmVzcyBzcGFjZSBpZGVudGlmaWVyDQo+ICAgKiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+QGlvdmE6IGlvdmEgdG8gYmUgdW5tYXBwZWQNCj4gICAqICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBAc2l6ZTogc2l6ZSBvZiB0aGUgYXJlYQ0KPiAgICogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIFJldHVybnMgaW50ZWdlcjogc3VjY2VzcyAoMCkgb3IgZXJyb3IgKDwgMCkNCj4gQEAg
+LTMwOSwxMCArMzE1LDEyIEBAIHN0cnVjdCB2ZHBhX2NvbmZpZ19vcHMgew0KPiAgICAgICAgIHN0
+cnVjdCB2ZHBhX2lvdmFfcmFuZ2UgKCpnZXRfaW92YV9yYW5nZSkoc3RydWN0IHZkcGFfZGV2aWNl
+IA0KPiAqdmRldik7DQo+DQo+ICAgICAgICAgLyogRE1BIG9wcyAqLw0KPiAtICAgICAgIGludCAo
+KnNldF9tYXApKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRldiwgc3RydWN0IHZob3N0X2lvdGxiICpp
+b3RsYik7DQo+IC0gICAgICAgaW50ICgqZG1hX21hcCkoc3RydWN0IHZkcGFfZGV2aWNlICp2ZGV2
+LCB1NjQgaW92YSwgdTY0IHNpemUsDQo+IC0gICAgICAgICAgICAgICAgICAgICAgdTY0IHBhLCB1
+MzIgcGVybSwgdm9pZCAqb3BhcXVlKTsNCj4gLSAgICAgICBpbnQgKCpkbWFfdW5tYXApKHN0cnVj
+dCB2ZHBhX2RldmljZSAqdmRldiwgdTY0IGlvdmEsIHU2NCBzaXplKTsNCj4gKyAgICAgICBpbnQg
+KCpzZXRfbWFwKShzdHJ1Y3QgdmRwYV9kZXZpY2UgKnZkZXYsIHVuc2lnbmVkIGludCBhc2lkLA0K
+PiArICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCB2aG9zdF9pb3RsYiAqaW90bGIpOw0KPiAr
+ICAgICAgIGludCAoKmRtYV9tYXApKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRldiwgdW5zaWduZWQg
+aW50IGFzaWQsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgdTY0IGlvdmEsIHU2NCBzaXplLCB1
+NjQgcGEsIHUzMiBwZXJtLCB2b2lkICpvcGFxdWUpOw0KPiArICAgICAgIGludCAoKmRtYV91bm1h
+cCkoc3RydWN0IHZkcGFfZGV2aWNlICp2ZGV2LCB1bnNpZ25lZCBpbnQgYXNpZCwNCj4gKyAgICAg
+ICAgICAgICAgICAgICAgICAgIHU2NCBpb3ZhLCB1NjQgc2l6ZSk7DQo+DQo+ICAgICAgICAgLyog
+RnJlZSBkZXZpY2UgcmVzb3VyY2VzICovDQo+ICAgICAgICAgdm9pZCAoKmZyZWUpKHN0cnVjdCB2
+ZHBhX2RldmljZSAqdmRldik7IEBAIC0zMjAsNyArMzI4LDcgQEAgDQo+IHN0cnVjdCB2ZHBhX2Nv
+bmZpZ19vcHMgew0KPg0KPiAgc3RydWN0IHZkcGFfZGV2aWNlICpfX3ZkcGFfYWxsb2NfZGV2aWNl
+KHN0cnVjdCBkZXZpY2UgKnBhcmVudCwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIGNvbnN0IHN0cnVjdCB2ZHBhX2NvbmZpZ19vcHMgKmNvbmZpZywNCj4gLSAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGludCBuZ3JvdXBzLA0K
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IG5n
+cm91cHMsIHVuc2lnbmVkIA0KPiArIGludCBuYXMsDQo+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBzaXplX3Qgc2l6ZSwgY29uc3QgY2hhciAqbmFtZSwNCj4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGJvb2wgdXNlX3ZhKTsNCj4NCj4gQEAg
+LTMzMiwxNyArMzQwLDE5IEBAIHN0cnVjdCB2ZHBhX2RldmljZSAqX192ZHBhX2FsbG9jX2Rldmlj
+ZShzdHJ1Y3QgZGV2aWNlICpwYXJlbnQsDQo+ICAgKiBAcGFyZW50OiB0aGUgcGFyZW50IGRldmlj
+ZQ0KPiAgICogQGNvbmZpZzogdGhlIGJ1cyBvcGVyYXRpb25zIHRoYXQgaXMgc3VwcG9ydGVkIGJ5
+IHRoaXMgZGV2aWNlDQo+ICAgKiBAbmdyb3VwczogdGhlIG51bWJlciBvZiB2aXJ0cXVldWUgZ3Jv
+dXBzIHN1cHBvcnRlZCBieSB0aGlzIGRldmljZQ0KPiArICogQG5hczogdGhlIG51bWJlciBvZiBh
+ZGRyZXNzIHNwYWNlcw0KPiAgICogQG5hbWU6IG5hbWUgb2YgdGhlIHZkcGEgZGV2aWNlDQo+ICAg
+KiBAdXNlX3ZhOiBpbmRpY2F0ZSB3aGV0aGVyIHZpcnR1YWwgYWRkcmVzcyBtdXN0IGJlIHVzZWQg
+YnkgdGhpcyBkZXZpY2UNCj4gICAqDQo+ICAgKiBSZXR1cm4gYWxsb2NhdGVkIGRhdGEgc3RydWN0
+dXJlIG9yIEVSUl9QVFIgdXBvbiBlcnJvcg0KPiAgICovDQo+IC0jZGVmaW5lIHZkcGFfYWxsb2Nf
+ZGV2aWNlKGRldl9zdHJ1Y3QsIG1lbWJlciwgcGFyZW50LCBjb25maWcsIG5ncm91cHMsIG5hbWUs
+IHVzZV92YSkgICBcDQo+ICsjZGVmaW5lIHZkcGFfYWxsb2NfZGV2aWNlKGRldl9zdHJ1Y3QsIG1l
+bWJlciwgcGFyZW50LCBjb25maWcsIG5ncm91cHMsIG5hcywgXA0KPiArICAgICAgICAgICAgICAg
+ICAgICAgICAgIG5hbWUsIHVzZV92YSkgXA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgIGNv
+bnRhaW5lcl9vZigoX192ZHBhX2FsbG9jX2RldmljZSggXA0KPiAtICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBwYXJlbnQsIGNvbmZpZywgbmdyb3VwcywgXA0KPiAtICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplb2YoZGV2X3N0cnVjdCkgKyBcDQo+
+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhcmVudCwgY29uZmlnLCBu
+Z3JvdXBzLCBuYXMsIFwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+KHNpemVvZihkZXZfc3RydWN0KSArIFwNCg0KTWF5YmUgdG9vIG5pdHBpY2sgb3IgSSdtIG1pc3Np
+bmcgc29tZXRoaW5nLCBidXQgZG8gd2UgbmVlZCB0byBhZGQgdGhlIHBhcmVudGhlc2VzIGFyb3Vu
+ZCAoc2l6ZW9mKGRldl9zdHJ1Y3QpICsgQlVJTERfQlVHX09OX1pFUk8oLi4uKSkgPw0KW0dEPj5d
+IFllcywgdGhhdCdzIHJlcXVpcmVkIGFzIHdpdGhvdXQgaXQgY2hlY2twYXRjaCByZXBvcnRzICJF
+UlJPUjogTWFjcm9zIHdpdGggY29tcGxleCB2YWx1ZXMgc2hvdWxkIGJlIGVuY2xvc2VkIGluIHBh
+cmVudGhlc2VzIg0KDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEJV
+SUxEX0JVR19PTl9aRVJPKG9mZnNldG9mKCBcDQo+IC0gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIGRldl9zdHJ1Y3QsIG1lbWJlcikpLCBuYW1lLCB1c2VfdmEpKSwgXA0KPiAr
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkZXZfc3RydWN0LCBtZW1iZXIp
+KSksIG5hbWUsIA0KPiArIHVzZV92YSkpLCBcDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIGRldl9zdHJ1Y3QsIG1lbWJlcikNCj4NCj4gIGludCB2ZHBhX3JlZ2lzdGVy
+X2RldmljZShzdHJ1Y3QgdmRwYV9kZXZpY2UgKnZkZXYsIGludCBudnFzKTsNCj4gLS0NCj4gMi4y
+NS4wDQo+DQoNCg==
