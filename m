@@ -2,123 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20096C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AF5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239360AbiCDJrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:47:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
+        id S239376AbiCDJs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiCDJrJ (ORCPT
+        with ESMTP id S239390AbiCDJrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:47:09 -0500
-Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [45.157.188.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16D31A41E9
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:46:18 -0800 (PST)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K92zr0nkKzMr6ZF;
-        Fri,  4 Mar 2022 10:46:16 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4K92zq2Pb6zljTg6;
-        Fri,  4 Mar 2022 10:46:15 +0100 (CET)
-Message-ID: <605d7e16-d5ee-9d6e-36c4-02bf1d071e99@digikod.net>
-Date:   Fri, 4 Mar 2022 10:46:21 +0100
+        Fri, 4 Mar 2022 04:47:55 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8861A6366;
+        Fri,  4 Mar 2022 01:47:07 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso6825769pjb.0;
+        Fri, 04 Mar 2022 01:47:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=JCaur61bPmGU642Xi+wX8g5Kkw4epev4yyqUyqMyUgo=;
+        b=iIP5DQIxcFkCC40dzVlvMR+bQcoEFoIZZEKMDIpPtw9DzueFwDpNqHq7nx5uOU2RKD
+         Kmbu9BWhhW6d/xlPbGgK27PsK9DEjorJymeRj9cVIhvtMbUPCKr7qOLcFJpuh6Z2IvlW
+         nTvlVsltppXhGf68h4Ge3KgnhytfPBErhgjmLBgcgtHllPglJipNR9I4EDz262I57ZOi
+         u2576Hb8VwwXX6FcmDjWqUqrCgcyIsOXcYVXoJXq4sn+yi0NFcAGxyBm+1mmpWd9vXT0
+         SiRTAyKWdxkO4as13PBq+ozS1S8VxLK2a5GTkC4fl/3L83BcAJBgA93TatetX8wfLAo5
+         ptCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=JCaur61bPmGU642Xi+wX8g5Kkw4epev4yyqUyqMyUgo=;
+        b=5QK7QSOT6XqYStGR4VIcYzTKsU6iMo8gnVcfAGTv0+4Va1gOEUcqo4nslczKQs0Vag
+         ExM/8S7Ulr0zmo3d6IiPdSNBQ9hsFeEEDmURDZeYdodAfFW8VcC6pQYPf7RZTm9nrab0
+         FpAoEznE/v6KAxlvwsImQzAV5Wlh+C7bFhhy+cgu2SH0KH99kwPbRT6ghGQ8lR6F9SWG
+         yvVkQlU3iRcqvWFUh6xjVHm1mkf1QJSQPsy2b6cxad261NUUGlYYc10G6CEt54/CpI2p
+         sczXzNcOv8MU5WgHUSUG4NokmbLs5TCuUk7cA2kekAGq+xGObqPoxdPZBmm//pfDZU9/
+         gd+w==
+X-Gm-Message-State: AOAM533a6ngqVgzOxFDh+pp07aIenVhrejU+jgDXH1J6X9Ydr/bZTU1+
+        q+RrrtKJo08UEm6Z/BlWXgk=
+X-Google-Smtp-Source: ABdhPJyEw3XfasQbL/436tU6ks+U/nx8BEU7zmbXuhjGMA8iklsqeWN2LmpLXi2CimNSdbfLtlPyZA==
+X-Received: by 2002:a17:902:b697:b0:151:4c2e:48be with SMTP id c23-20020a170902b69700b001514c2e48bemr30634893pls.70.1646387227488;
+        Fri, 04 Mar 2022 01:47:07 -0800 (PST)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5249920pfm.200.2022.03.04.01.47.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 01:47:07 -0800 (PST)
+Message-ID: <273a7631-188b-a7a9-a551-4e577dcdd8d1@gmail.com>
+Date:   Fri, 4 Mar 2022 17:46:58 +0800
 MIME-Version: 1.0
-User-Agent: 
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v2 12/12] KVM: x86/pmu: Clear reserved bit PERF_CTL2[43]
+ for AMD erratum 1292
 Content-Language: en-US
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     kernel@collabora.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220303110629.2072927-1-usama.anjum@collabora.com>
- <b97fe611-0a2d-6907-b924-a9132e2d427f@linuxfoundation.org>
- <660ad768-2437-92bb-d5ef-0ca8561499d4@collabora.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH] selftests/interpreter: fix separate directory build
-In-Reply-To: <660ad768-2437-92bb-d5ef-0ca8561499d4@collabora.com>
+To:     Jim Mattson <jmattson@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
+References: <20220302111334.12689-1-likexu@tencent.com>
+ <20220302111334.12689-13-likexu@tencent.com>
+ <CALMp9eT1N_HeipXjpyqrXs_WmBEip2vchy4d1GffpwrEd+444w@mail.gmail.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+Organization: Tencent
+In-Reply-To: <CALMp9eT1N_HeipXjpyqrXs_WmBEip2vchy4d1GffpwrEd+444w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 04/03/2022 08:34, Muhammad Usama Anjum wrote:
-> On 3/4/22 2:39 AM, Shuah Khan wrote:
->> On 3/3/22 4:06 AM, Muhammad Usama Anjum wrote:
->>> Separate directory build fails of this test as headers include path isn't
->>> set correctly in that case. Fix it by including KHDR_INCLUDES.
->>>
->>> make -C tools/testing/selftests O=build1
->>> gcc -Wall -O2 -I../../../../usr/include    trust_policy_test.c -lcap
->>> -o /linux_mainline/build1/kselftest/interpreter/trust_policy_test
->>> trust_policy_test.c:14:10: fatal error: linux/trusted-for.h: No such
->>> file or directory
->>>      14 | #include <linux/trusted-for.h>
->>>         |          ^~~~~~~~~~~~~~~~~~~~~
->>> compilation terminated.
->>>
->>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-
->>> ---
->>>    tools/testing/selftests/interpreter/Makefile | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/tools/testing/selftests/interpreter/Makefile
->>> b/tools/testing/selftests/interpreter/Makefile
->>> index 7402fdb6533f..51dde8e01e32 100644
->>> --- a/tools/testing/selftests/interpreter/Makefile
->>> +++ b/tools/testing/selftests/interpreter/Makefile
->>> @@ -1,6 +1,6 @@
->>>    # SPDX-License-Identifier: GPL-2.0
->>>    -CFLAGS += -Wall -O2 -I$(khdr_dir)
->>> +CFLAGS += -Wall -O2 -I$(khdr_dir) $(KHDR_INCLUDES)
->>>    LDLIBS += -lcap
->>>    
+On 3/3/2022 1:52 am, Jim Mattson wrote:
+> On Wed, Mar 2, 2022 at 3:14 AM Like Xu <like.xu.linux@gmail.com> wrote:
 >>
->> Change looks fine to me.
+>> From: Like Xu <likexu@tencent.com>
 >>
->>>    src_test := $(wildcard *_test.c)
->>>
+>> The AMD Family 19h Models 00h-0Fh Processors may experience sampling
+>> inaccuracies that cause the following performance counters to overcount
+>> retire-based events. To count the non-FP affected PMC events correctly,
+>> a patched guest with a target vCPU model would:
 >>
->> I am not seeing this test in linux-kselftest next for sure. Which tree is
->> this patch based on? Please  add the repo info to the patch subject line
->> in the future.
+>>      - Use Core::X86::Msr::PERF_CTL2 to count the events, and
+>>      - Program Core::X86::Msr::PERF_CTL2[43] to 1b, and
+>>      - Program Core::X86::Msr::PERF_CTL2[20] to 0b.
 >>
-> This patch is in linux-next and its build is failing from quite some time:
-> https://storage.staging.kernelci.org/kernelci/staging-next/staging-next-20220301.0/x86_64/x86_64_defconfig+x86-chromebook+kselftest/gcc-10/logs/kselftest.log
+>> To support this use of AMD guests, KVM should not reserve bit 43
+>> only for counter #2. Treatment of other cases remains unchanged.
+>>
+>> AMD hardware team clarified that the conditions under which the
+>> overcounting can happen, is quite rare. This change may make those
+>> PMU driver developers who have read errata #1292 less disappointed.
+>>
+>> Reported-by: Jim Mattson <jmattson@google.com>
+>> Signed-off-by: Like Xu <likexu@tencent.com>
 > 
-> I'm not sure in which tree selftests/interpreter is present. It was sent
-> here:
-> https://lore.kernel.org/lkml/20220104155024.48023-5-mic@digikod.net/
-> 
-> How can I find the tree from which this patch is coming?
+> This seems unnecessarily convoluted. As I've said previously, KVM
+> should not ever synthesize a #GP for any value written to a
+> PerfEvtSeln MSR when emulating an AMD CPU.
 
-As explained in the cover letter, it is now in my tree. To get the list 
-of people to contact (and Cc) you should use ./script/get_maintainer.pl
-The KHDR_INCLUDES series [1] was merged after the selftests/interpreter 
-commits, hence the confusion with these two forks. Because make doesn't 
-care about unknown variables, and to get a consistent series, I'll apply 
-this patch just after the selftests/interpreter one. Thanks!
+IMO, we should "never synthesize a #GP" for all AMD MSRs,
+not just for AMD PMU msrs, or keep the status quo.
 
-[1] 
-https://lore.kernel.org/all/20220119101531.2850400-1-usama.anjum@collabora.com/
+I agree with you on this AMD #GP transition, but we need at least one
+kernel cycle to make a more radical change and we don't know Paolo's
+attitude and more, we haven't received a tidal wave of user complaints.
 
-
-> 
->> Either way I don't have the patch that added in liunx-kselftest repo:
->>
->> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
->>
->> thanks,
->> -- Shuah
-> 
-> I forgot to add the tag:
-> Reported-by: "kernelci.org bot" <bot@kernelci.org>
-> 
-> --
-> Muhammad Usama Anjum
