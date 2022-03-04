@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B572C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237558AbiCDJga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:36:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S237697AbiCDJge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235351AbiCDJfw (ORCPT
+        with ESMTP id S237428AbiCDJfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:35:52 -0500
+        Fri, 4 Mar 2022 04:35:55 -0500
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09F175603
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:35:05 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K92hm6g18zBrt1;
-        Fri,  4 Mar 2022 17:33:12 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A06188865
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:35:07 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K92jR0dhfzdg7F;
+        Fri,  4 Mar 2022 17:33:47 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 4 Mar
- 2022 17:35:03 +0800
+ 2022 17:35:05 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <mike.kravetz@oracle.com>, <shy828301@gmail.com>,
@@ -33,9 +33,9 @@ CC:     <mike.kravetz@oracle.com>, <shy828301@gmail.com>,
         <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH 07/16] mm/migration: use helper macro min_t in do_pages_stat
-Date:   Fri, 4 Mar 2022 17:34:00 +0800
-Message-ID: <20220304093409.25829-8-linmiaohe@huawei.com>
+Subject: [PATCH 09/16] mm/migration: remove some duplicated codes in migrate_pages
+Date:   Fri, 4 Mar 2022 17:34:02 +0800
+Message-ID: <20220304093409.25829-10-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220304093409.25829-1-linmiaohe@huawei.com>
 References: <20220304093409.25829-1-linmiaohe@huawei.com>
@@ -50,29 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We could use helper macro min_t to help set the chunk_nr to simplify
-the code.
+Remove the duplicated codes in migrate_pages to simplify the code. Minor
+readability improvement. No functional change intended.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/migrate.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ mm/migrate.c | 36 ++++++++++++------------------------
+ 1 file changed, 12 insertions(+), 24 deletions(-)
 
 diff --git a/mm/migrate.c b/mm/migrate.c
-index bc79d7338780..c84eec19072a 100644
+index abb0c6715e1f..cb970d201147 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
-@@ -1858,9 +1858,7 @@ static int do_pages_stat(struct mm_struct *mm, unsigned long nr_pages,
- 	while (nr_pages) {
- 		unsigned long chunk_nr;
+@@ -1414,14 +1414,11 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 						nr_thp_split++;
+ 						goto retry;
+ 					}
+-
+-					nr_failed_pages += nr_subpages;
+-					break;
+-				}
+-
+ 				/* Hugetlb migration is unsupported */
+-				if (!no_subpage_counting)
++				} else if (!no_subpage_counting) {
+ 					nr_failed++;
++				}
++
+ 				nr_failed_pages += nr_subpages;
+ 				break;
+ 			case -ENOMEM:
+@@ -1436,28 +1433,22 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 						nr_thp_split++;
+ 						goto retry;
+ 					}
+-
+-					nr_failed_pages += nr_subpages;
+-					goto out;
++				} else if (!no_subpage_counting) {
++					nr_failed++;
+ 				}
  
--		chunk_nr = nr_pages;
--		if (chunk_nr > DO_PAGES_STAT_CHUNK_NR)
--			chunk_nr = DO_PAGES_STAT_CHUNK_NR;
-+		chunk_nr = min_t(unsigned long, nr_pages, DO_PAGES_STAT_CHUNK_NR);
- 
- 		if (in_compat_syscall()) {
- 			if (get_compat_pages_array(chunk_pages, pages,
+-				if (!no_subpage_counting)
+-					nr_failed++;
+ 				nr_failed_pages += nr_subpages;
+ 				goto out;
+ 			case -EAGAIN:
+-				if (is_thp) {
++				if (is_thp)
+ 					thp_retry++;
+-					break;
+-				}
+-				retry++;
++				else
++					retry++;
+ 				break;
+ 			case MIGRATEPAGE_SUCCESS:
+ 				nr_succeeded += nr_subpages;
+-				if (is_thp) {
++				if (is_thp)
+ 					nr_thp_succeeded++;
+-					break;
+-				}
+ 				break;
+ 			default:
+ 				/*
+@@ -1466,14 +1457,11 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 				 * removed from migration page list and not
+ 				 * retried in the next outer loop.
+ 				 */
+-				if (is_thp) {
++				if (is_thp)
+ 					nr_thp_failed++;
+-					nr_failed_pages += nr_subpages;
+-					break;
+-				}
+-
+-				if (!no_subpage_counting)
++				else if (!no_subpage_counting)
+ 					nr_failed++;
++
+ 				nr_failed_pages += nr_subpages;
+ 				break;
+ 			}
 -- 
 2.23.0
 
