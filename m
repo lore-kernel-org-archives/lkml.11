@@ -2,69 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B44C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbiCDUXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
+        id S229670AbiCDUXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:23:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbiCDUWu (ORCPT
+        with ESMTP id S230212AbiCDUWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:22:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1CC15168E;
-        Fri,  4 Mar 2022 12:22:01 -0800 (PST)
+        Fri, 4 Mar 2022 15:22:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB08151695
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:22:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8787161CD8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01DABB82B8C
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 20:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A1558C340F7;
         Fri,  4 Mar 2022 20:22:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EFFB7C340F1;
-        Fri,  4 Mar 2022 20:22:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646425321;
-        bh=XBKiEUJm1uOHuu7CfMVAd8S4iZPKDI6uXW1a41y7xiE=;
+        bh=H423vNR5/GHC3sZBG5YTvZoSdAAdPzHDpUFsfHOwgok=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=gh3qXoLuTmBDJV4M5V4uEx0gMcsiJ2npoKziBQ1t1GsAZtpQ2hmuepEbdDN4C5cxl
-         29x8CQG0gw1dXnlzUXSV3hAlKAuIK9WTY3q09NUrhsnA2TBwX2VPUWJSL2KOfmK3Z8
-         GmwMZRnCtDBQHGUvdOviRHyaM3S+N812uLNtnegy6Xvi9msydeQQBEL01lt7bVj6K/
-         fi/WaFnrRz+HxaW/dl+HiQo8NSzAH9vfQlKaUyw8n3cj+BilRcxueD+9RQRve6UwPq
-         /rYS9b/ay6f8EMy9Uvi849tXIKN+tdaEg4SrLB+VMxCt4ImWAHkTYAXc0GuItn0pso
-         3Ij3PwFW+jl2Q==
+        b=jL9fKtgNT8RUuTmyLKe7OtTOkr/n78NaDX2BqRILI89Zx5rEqQeh85Bf9+12pR+Fa
+         r5r83WeRQquK7yxKg89WaJwnHr/ZAzAZq7A0kb6BUG0exPSkzZ42QATSPqw9HqvYEY
+         4IZg2N8Y8K6Pkj6mPPLJ5L/SmQD3EtUrU35xwwmFX+hBCFtFaDdEEAxSUVFO8tnsxM
+         tC1cYoe20nSJi9c9Ud/RcAvHmW40GIlvU8FiyYVfy7ew0Sk5+37nUuSE6LsCEL/VJB
+         uDpINQR6+5SSUAp9/IYxKhosdeBFFRzSKEJdwhriXKtqGjBFJDuLQjC+2tGeM0a9oO
+         vpixXhdKPoaqg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D9D36E6D4BB;
-        Fri,  4 Mar 2022 20:22:00 +0000 (UTC)
-Subject: Re: [GIT PULL] late pin control fixes for v5.17
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F135E6D4BB;
+        Fri,  4 Mar 2022 20:22:01 +0000 (UTC)
+Subject: Re: [GIT PULL] RISC-V Fixes for 5.17-rc7
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CACRpkda0eFMzvfCjtXYiRoe=Wa5XqacL1Lhy4mBBOo6pu_Wi5w@mail.gmail.com>
-References: <CACRpkda0eFMzvfCjtXYiRoe=Wa5XqacL1Lhy4mBBOo6pu_Wi5w@mail.gmail.com>
+In-Reply-To: <mhng-35bc28f8-875e-45d8-8c8d-869bb9efce61@palmer-mbp2014>
+References: <mhng-35bc28f8-875e-45d8-8c8d-869bb9efce61@palmer-mbp2014>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CACRpkda0eFMzvfCjtXYiRoe=Wa5XqacL1Lhy4mBBOo6pu_Wi5w@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.17-3
-X-PR-Tracked-Commit-Id: bac129dbc6560dfeb634c03f0c08b78024e71915
+X-PR-Tracked-Message-Id: <mhng-35bc28f8-875e-45d8-8c8d-869bb9efce61@palmer-mbp2014>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc7
+X-PR-Tracked-Commit-Id: 74583f1b92cb3bbba1a3741cea237545c56f506c
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0b7344a658e66a6835ad96dbc5dd35f1e876078a
-Message-Id: <164642532088.24805.2325334987312852345.pr-tracker-bot@kernel.org>
-Date:   Fri, 04 Mar 2022 20:22:00 +0000
-To:     Linus Walleij <linus.walleij@linaro.org>
+X-PR-Merge-Commit-Id: 07ebd38a0da24d2534da57b4841346379db9f354
+Message-Id: <164642532157.24805.457490534031372221.pr-tracker-bot@kernel.org>
+Date:   Fri, 04 Mar 2022 20:22:01 +0000
+To:     Palmer Dabbelt <palmer@rivosinc.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Samuel Holland <samuel@sholland.org>
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 4 Mar 2022 00:41:10 +0100:
+The pull request you sent on Fri, 04 Mar 2022 08:54:13 -0800 (PST):
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.17-3
+> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc7
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0b7344a658e66a6835ad96dbc5dd35f1e876078a
+https://git.kernel.org/torvalds/c/07ebd38a0da24d2534da57b4841346379db9f354
 
 Thank you!
 
