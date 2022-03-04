@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C252CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D55C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239248AbiCDNJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
+        id S238638AbiCDNJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 08:09:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiCDNJN (ORCPT
+        with ESMTP id S236517AbiCDNJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:09:13 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A9D6D1BB;
-        Fri,  4 Mar 2022 05:08:25 -0800 (PST)
-X-UUID: 51db633fc7474f3283e31b5eb2a1ce97-20220304
-X-UUID: 51db633fc7474f3283e31b5eb2a1ce97-20220304
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        Fri, 4 Mar 2022 08:09:14 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32ED6D1BB;
+        Fri,  4 Mar 2022 05:08:26 -0800 (PST)
+X-UUID: 38f25f9eb7da49e786c2d61828881552-20220304
+X-UUID: 38f25f9eb7da49e786c2d61828881552-20220304
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1520759150; Fri, 04 Mar 2022 21:08:19 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1753258537; Fri, 04 Mar 2022 21:08:23 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 4 Mar 2022 21:08:17 +0800
+ 15.0.1497.2; Fri, 4 Mar 2022 21:08:22 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 4 Mar 2022 21:08:17 +0800
+ Transport; Fri, 4 Mar 2022 21:08:22 +0800
 From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -40,9 +40,9 @@ CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Ryder Lee <ryder.lee@kernel.org>,
         Hui Liu <hui.liu@mediatek.com>,
         Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v3 06/21] arm64: dts: mt8192: Add xhci node
-Date:   Fri, 4 Mar 2022 21:07:54 +0800
-Message-ID: <20220304130809.12924-7-allen-kh.cheng@mediatek.com>
+Subject: [PATCH v3 11/21] arm64: dts: mt8192: Add efuse node
+Date:   Fri, 4 Mar 2022 21:07:59 +0800
+Message-ID: <20220304130809.12924-12-allen-kh.cheng@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220304130809.12924-1-allen-kh.cheng@mediatek.com>
 References: <20220304130809.12924-1-allen-kh.cheng@mediatek.com>
@@ -53,56 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add xhci node for mt8192 SoC.
+Add efuse node for mt8192 SoC
 
 Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 28b93b76fe17..6bc36a4076f4 100644
+index 75c21edccf85..6220d6962f58 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -10,6 +10,7 @@
- #include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
-+#include <dt-bindings/phy/phy.h>
- #include <dt-bindings/power/mt8192-power.h>
- 
- / {
-@@ -718,6 +719,29 @@
+@@ -937,6 +937,21 @@
  			status = "disabled";
  		};
  
-+		xhci: usb@11200000 {
-+			compatible = "mediatek,mt8192-xhci",
-+				     "mediatek,mtk-xhci";
-+			reg = <0 0x11200000 0 0x1000>,
-+			      <0 0x11203e00 0 0x0100>;
-+			reg-names = "mac", "ippc";
-+			interrupts-extended = <&gic GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH 0>;
-+			interrupt-names = "host";
-+			phys = <&u2port0 PHY_TYPE_USB2>,
-+			       <&u3port0 PHY_TYPE_USB3>;
-+			assigned-clocks = <&topckgen CLK_TOP_USB_TOP_SEL>,
-+					  <&topckgen CLK_TOP_SSUSB_XHCI_SEL>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5_D4>,
-+						 <&topckgen CLK_TOP_UNIVPLL_D5_D4>;
-+			clocks = <&infracfg CLK_INFRA_SSUSB>,
-+				 <&infracfg CLK_INFRA_SSUSB_XHCI>,
-+				 <&apmixedsys CLK_APMIXED_USBPLL>;
-+			clock-names = "sys_ck", "xhci_ck", "ref_ck";
-+			wakeup-source;
-+			mediatek,syscon-wakeup = <&pericfg 0x420 102>;
-+			status = "disabled";
++		efuse: efuse@11c10000 {
++			compatible = "mediatek,efuse";
++			reg = <0 0x11c10000 0 0x1000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			lvts_e_data1: data1@1c0 {
++				reg = <0x1c0 0x58>;
++			};
++
++			svs_calibration: calib@580 {
++				reg = <0x580 0x68>;
++			};
 +		};
 +
- 		nor_flash: spi@11234000 {
- 			compatible = "mediatek,mt8192-nor";
- 			reg = <0 0x11234000 0 0xe0>;
+ 		i2c3: i2c@11cb0000 {
+ 			compatible = "mediatek,mt8192-i2c";
+ 			reg = <0 0x11cb0000 0 0x1000>,
 -- 
 2.18.0
 
