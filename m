@@ -2,105 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C75B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 03:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 03:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237863AbiCDD0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 22:26:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
+        id S237286AbiCDD3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 22:29:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237857AbiCDD0I (ORCPT
+        with ESMTP id S232208AbiCDD33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 22:26:08 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F349517F692
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 19:25:21 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id q8so8180701iod.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 19:25:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=riAePIdOHWyX+kWI5kEIlQkDYdGowAInsgUw4gn0/e4=;
-        b=BlrpAc0LSalr08lxLvWHUF9xqsdrYeT/1mov5HdmySdHvY7zpjGGpvRBzSVE7uyStd
-         RFfWon9VgWK3xggfoUkXejf4U8sLAeW88vzXIDjUl4CZZ63tpT4qE6fUpp5hRy5ZbDrt
-         nV+6kcnrv5q7GtjDy8B4cuC/te60S6o70rBXya6sDNs0UKra6WerMmeR5cPU5qB4Yn7K
-         Zr+hE8G4Zd67A2sks8WC/4yo6JcqOJvYva1NS8pJKDTSj4Ln2MgUpNcvSXvHCgd6yfHw
-         dBnvBaKOXYA3nV5h24Uy8mbxbdXBqVBFiOe45hX4Q/scfBbfLF16+Gi4pk+w2DDsMGpJ
-         T5Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=riAePIdOHWyX+kWI5kEIlQkDYdGowAInsgUw4gn0/e4=;
-        b=sxKzrNOL4bm9/0b0BpWujVDZKMZqNUCOH3QvWP1EaATG/tmy8/UKF9BI3sDMhkcgPd
-         oghIIqha0CaNMKinz/ehkBt27a+fsxgTy7ky2stziuwpQDlmcFvOvfAyu93rr7/1sRSM
-         56DfywEeSOmCD+BpnvsS3Z+/r2QwPnlTfifiAFpS3OZ34kVBB212HMfA8MGfkTDFaqmC
-         2+jAj0B7nxZ/T1diS7oU7OKu6zu85wFN0I7g25rGWWydHajnh3vatymXM45pfkwQnJjb
-         YFtzKql3lYjcwVsuBDThmSZoAJesgBE/LX+soukVeBXQN4xu5Y35IOTxKk+3rG7ikqRH
-         fgvw==
-X-Gm-Message-State: AOAM532WBy6/WY9gdBgyQemoLowwvg5RpoqH2TBT+LXl8kX+29uBRiXb
-        PfcMsd2VUq5jy0xNBWFlI0Q=
-X-Google-Smtp-Source: ABdhPJz78E3vx6SBHXiEi1GHfCNZ5vzWX8+ufbWBvKEaxufsqAfodAKhOc+yxeeg/AGwmU7KQpmD/Q==
-X-Received: by 2002:a02:ccea:0:b0:314:8504:cdd8 with SMTP id l10-20020a02ccea000000b003148504cdd8mr32604002jaq.117.1646364321340;
-        Thu, 03 Mar 2022 19:25:21 -0800 (PST)
-Received: from localhost.localdomain (118-208-215-36.tpgi.com.au. [118.208.215.36])
-        by smtp.gmail.com with ESMTPSA id a13-20020a056e02180d00b002c25b51d5ecsm4114751ilv.55.2022.03.03.19.25.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 19:25:21 -0800 (PST)
-From:   Sam Zeter <samuelzeter@gmail.com>
-To:     mhiramat@kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Samuel Zeter <samuelzeter@gmail.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH v2 2/2] arch/x86/tools/objdump_reformat.awk: Allow for spaces
-Date:   Fri,  4 Mar 2022 14:16:11 +1100
-Message-Id: <20220304031611.5763-3-samuelzeter@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304031611.5763-1-samuelzeter@gmail.com>
-References: <YdeGWyzvsXxntcAT@archlinux-ax161>
- <20220304031611.5763-1-samuelzeter@gmail.com>
+        Thu, 3 Mar 2022 22:29:29 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A667485F
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 19:28:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646364522; x=1677900522;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qhqM0wTLtPPZL2LBIfN1EQS8DLyl5brGVgQ13YNGIIA=;
+  b=Ukm9Wn5kVgtviI8dm9eJTjTT50fz9zScetCDpARBLbLl3r3/QrH75UbZ
+   v+X+zIkmdCrECxutwyfW3zo3eBImTwhW5uAF4U2v42F2ItwgjlxiS/CE9
+   +jDRdYR4K3rQmf5xra/7xoj1p5u2593ewwCVskid/sr1hW4TT59F4gpk9
+   v2jobxqWJ5UZk+Flsv7qrZ0Oayz3hc8orFgVzdEXT0xkVHhtDUJvejQrv
+   8JCE9r9+byz/fM7SAImbAj/gHGV6Q9EwfjC+GLuay0ofEy5Fz4zHtWZNC
+   I8fT1W9j2hxN6oFlEr2GnB8h18NxCTKWN1JU6paDuni37g9elw5Oz7oe6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="317108689"
+X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
+   d="scan'208";a="317108689"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 19:28:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
+   d="scan'208";a="508847819"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 03 Mar 2022 19:28:39 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPycR-0001EM-2W; Fri, 04 Mar 2022 03:28:39 +0000
+Date:   Fri, 4 Mar 2022 11:28:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/deprecated/android-4.14-p-release
+ 137/6167] security/commoncap.c:75:5: sparse: sparse: symbol '__cap_capable'
+ was not declared. Should it be static?
+Message-ID: <202203041153.II8SFndk-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Zeter <samuelzeter@gmail.com>
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/deprecated/android-4.14-p-release
+head:   0ca5d5ac9152d01b3494fb2efb5390319eb9904a
+commit: 2b02b4ab89b9cba5aec936046d8538962c5142fc [137/6167] ANDROID: net: paranoid: commoncap: Begin to warn users of implicit PARANOID_NETWORK capability grants
+config: i386-randconfig-s001-20211101 (https://download.01.org/0day-ci/archive/20220304/202203041153.II8SFndk-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/2b02b4ab89b9cba5aec936046d8538962c5142fc
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/deprecated/android-4.14-p-release
+        git checkout 2b02b4ab89b9cba5aec936046d8538962c5142fc
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
 
-objdump and llvm-objdump have differing output formats. Specifically,
-objump will format its output as: address:<tab>hex, whereas
-llvm-objdump displays its output as address:<space>hex.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-objdump_reformat.awk incorrectly handles this discrepancy due to
-the unexpected space and as a result insn_decoder_test fails, as
-its input is garbled.
 
-The instruction line being tokenized now handles a space and colon,
-or tab delimiter.
+sparse warnings: (new ones prefixed by >>)
+>> security/commoncap.c:75:5: sparse: sparse: symbol '__cap_capable' was not declared. Should it be static?
+   security/commoncap.c:474:31: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le32 [usertype] magic @@     got int @@
+   security/commoncap.c:474:31: sparse:     expected restricted __le32 [usertype] magic
+   security/commoncap.c:474:31: sparse:     got int
+   security/commoncap.c:475:33: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le32 [usertype] nsmagic @@     got unsigned int [usertype] @@
+   security/commoncap.c:475:33: sparse:     expected restricted __le32 [usertype] nsmagic
+   security/commoncap.c:475:33: sparse:     got unsigned int [usertype]
+   security/commoncap.c:476:29: sparse: sparse: restricted __le32 degrades to integer
+   security/commoncap.c:477:39: sparse: sparse: invalid assignment: |=
+   security/commoncap.c:477:39: sparse:    left side has type restricted __le32
+   security/commoncap.c:477:39: sparse:    right side has type int
+   security/commoncap.c:479:42: sparse: sparse: cast from restricted __le32
+   security/commoncap.c:1226:41: sparse: sparse: dubious: !x | y
+   security/commoncap.c:1307:27: sparse: sparse: symbol 'capability_hooks' was not declared. Should it be static?
+   security/commoncap.c:75:5: warning: no previous declaration for '__cap_capable' [-Wmissing-declarations]
+    int __cap_capable(const struct cred *cred, struct user_namespace *targ_ns,
+        ^~~~~~~~~~~~~
+   In file included from include/linux/capability.h:16:0,
+                    from security/commoncap.c:10:
+   security/commoncap.c: In function 'cap_prctl_drop':
+   include/uapi/linux/capability.h:372:27: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
+                              ^
+   security/commoncap.c:1112:7: note: in expansion of macro 'cap_valid'
+     if (!cap_valid(cap))
+          ^~~~~~~~~
+   security/commoncap.c: In function 'cap_task_prctl':
+   include/uapi/linux/capability.h:372:27: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
+                              ^
+   security/commoncap.c:1142:8: note: in expansion of macro 'cap_valid'
+      if (!cap_valid(arg2))
+           ^~~~~~~~~
+   include/uapi/linux/capability.h:372:27: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
+                              ^
+   security/commoncap.c:1226:10: note: in expansion of macro 'cap_valid'
+      if (((!cap_valid(arg3)) | arg4 | arg5))
+             ^~~~~~~~~
 
-Signed-off-by: Samuel Zeter <samuelzeter@gmail.com>
+vim +/__cap_capable +75 security/commoncap.c
+
+    59	
+    60	/**
+    61	 * __cap_capable - Determine whether a task has a particular effective capability
+    62	 * @cred: The credentials to use
+    63	 * @ns:  The user namespace in which we need the capability
+    64	 * @cap: The capability to check for
+    65	 * @audit: Whether to write an audit message or not
+    66	 *
+    67	 * Determine whether the nominated task has the specified capability amongst
+    68	 * its effective set, returning 0 if it does, -ve if it does not.
+    69	 *
+    70	 * NOTE WELL: cap_has_capability() cannot be used like the kernel's capable()
+    71	 * and has_capability() functions.  That is, it has the reverse semantics:
+    72	 * cap_has_capability() returns 0 when a task has a capability, but the
+    73	 * kernel's capable() and has_capability() returns 1 for this case.
+    74	 */
+  > 75	int __cap_capable(const struct cred *cred, struct user_namespace *targ_ns,
+    76			int cap, int audit)
+    77	{
+    78		struct user_namespace *ns = targ_ns;
+    79	
+    80		/* See if cred has the capability in the target user namespace
+    81		 * by examining the target user namespace and all of the target
+    82		 * user namespace's parents.
+    83		 */
+    84		for (;;) {
+    85			/* Do we have the necessary capabilities? */
+    86			if (ns == cred->user_ns)
+    87				return cap_raised(cred->cap_effective, cap) ? 0 : -EPERM;
+    88	
+    89			/*
+    90			 * If we're already at a lower level than we're looking for,
+    91			 * we're done searching.
+    92			 */
+    93			if (ns->level <= cred->user_ns->level)
+    94				return -EPERM;
+    95	
+    96			/* 
+    97			 * The owner of the user namespace in the parent of the
+    98			 * user namespace has all caps.
+    99			 */
+   100			if ((ns->parent == cred->user_ns) && uid_eq(ns->owner, cred->euid))
+   101				return 0;
+   102	
+   103			/*
+   104			 * If you have a capability in a parent user ns, then you have
+   105			 * it over all children user namespaces as well.
+   106			 */
+   107			ns = ns->parent;
+   108		}
+   109	
+   110		/* We never get here */
+   111	}
+   112	
+
 ---
- arch/x86/tools/objdump_reformat.awk | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/tools/objdump_reformat.awk b/arch/x86/tools/objdump_reformat.awk
-index 276e572a6..a4120d907 100644
---- a/arch/x86/tools/objdump_reformat.awk
-+++ b/arch/x86/tools/objdump_reformat.awk
-@@ -22,7 +22,7 @@ BEGIN {
- }
- 
- /^ *[0-9a-f]+:/ {
--	if (split($0, field, "\t") < 3) {
-+	if (split($0, field, /: |\t/) < 3) {
- 		# This is a continuation of the same insn.
- 		prev_hex = prev_hex field[2]
- 	} else {
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
