@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58300C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241096AbiCDRVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
+        id S241110AbiCDRVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241122AbiCDRUu (ORCPT
+        with ESMTP id S241081AbiCDRU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:20:50 -0500
+        Fri, 4 Mar 2022 12:20:58 -0500
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B660D1C885D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:19:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 187071520C2
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:20:02 -0800 (PST)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 853081509;
-        Fri,  4 Mar 2022 09:19:56 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D97C51424;
+        Fri,  4 Mar 2022 09:20:01 -0800 (PST)
 Received: from e121896.arm.com (unknown [10.57.42.166])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E19543F73D;
-        Fri,  4 Mar 2022 09:19:54 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 425303F73D;
+        Fri,  4 Mar 2022 09:20:00 -0800 (PST)
 From:   James Clark <james.clark@arm.com>
 To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
         mike.leach@linaro.org, anshuman.khandual@arm.com
@@ -28,9 +28,9 @@ Cc:     mathieu.poirier@linaro.org, leo.yan@linaro.com,
         James Clark <james.clark@arm.com>,
         Leo Yan <leo.yan@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 13/15] coresight: etm4x: Cleanup TRCSSPCICRn register accesses
-Date:   Fri,  4 Mar 2022 17:19:10 +0000
-Message-Id: <20220304171913.2292458-14-james.clark@arm.com>
+Subject: [PATCH v3 15/15] coresight: etm4x: Cleanup TRCRSCTLRn register accesses
+Date:   Fri,  4 Mar 2022 17:19:12 +0000
+Message-Id: <20220304171913.2292458-16-james.clark@arm.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20220304171913.2292458-1-james.clark@arm.com>
 References: <20220304171913.2292458-1-james.clark@arm.com>
@@ -47,32 +47,42 @@ allows for grepping for fields by name rather than using magic numbers.
 
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 2 +-
- drivers/hwtracing/coresight/coresight-etm4x.h       | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 7 +++++--
+ drivers/hwtracing/coresight/coresight-etm4x.h       | 7 +++++++
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-index 7dd7636fc2a7..25f76a656308 100644
+index 3ae6f4432646..6ea8181816fc 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -1842,7 +1842,7 @@ static ssize_t sshot_pe_ctrl_store(struct device *dev,
- 
- 	spin_lock(&drvdata->spinlock);
- 	idx = config->ss_idx;
--	config->ss_pe_cmp[idx] = val & GENMASK(7, 0);
-+	config->ss_pe_cmp[idx] = FIELD_PREP(TRCSSPCICRn_PC_MASK, val);
- 	/* must clear bit 31 in related status register on programming */
- 	config->ss_status[idx] &= ~TRCSSCSRn_STATUS;
+@@ -1726,8 +1726,11 @@ static ssize_t res_ctrl_store(struct device *dev,
+ 	/* For odd idx pair inversal bit is RES0 */
+ 	if (idx % 2 != 0)
+ 		/* PAIRINV, bit[21] */
+-		val &= ~BIT(21);
+-	config->res_ctrl[idx] = val & GENMASK(21, 0);
++		val &= ~TRCRSCTLRn_PAIRINV;
++	config->res_ctrl[idx] = val & (TRCRSCTLRn_PAIRINV |
++				       TRCRSCTLRn_INV |
++				       TRCRSCTLRn_GROUP_MASK |
++				       TRCRSCTLRn_SELECT_MASK);
  	spin_unlock(&drvdata->spinlock);
+ 	return size;
+ }
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-index b4217eaab450..3b81c104a44b 100644
+index 15704982357f..2c412841b126 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x.h
 +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-@@ -218,6 +218,8 @@
- #define TRCSSCSRn_STATUS			BIT(31)
- #define TRCSSCCRn_SAC_ARC_RST_MASK		GENMASK(24, 0)
+@@ -223,6 +223,13 @@
+ #define TRCBBCTLR_MODE				BIT(8)
+ #define TRCBBCTLR_RANGE_MASK			GENMASK(7, 0)
  
-+#define TRCSSPCICRn_PC_MASK			GENMASK(7, 0)
++#define TRCRSCTLRn_PAIRINV			BIT(21)
++#define TRCRSCTLRn_INV				BIT(20)
++#define TRCRSCTLRn_GROUP_MASK			GENMASK(19, 16)
++#define TRCRSCTLRn_SELECT_MASK			GENMASK(15, 0)
++
++
 +
  /*
   * System instructions to access ETM registers.
