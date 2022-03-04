@@ -2,134 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE44C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 16:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240797AbiCDQqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 11:46:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
+        id S240809AbiCDQro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 11:47:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231743AbiCDQqa (ORCPT
+        with ESMTP id S240800AbiCDQrk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 11:46:30 -0500
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9541C4B12
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:45:42 -0800 (PST)
-Received: by mail-vs1-xe35.google.com with SMTP id 189so3206564vsi.7
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 08:45:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GA0SoMn+kIK7VXpyWPIIcjTCHNEkwSgfzR0APlNlrJg=;
-        b=pSeR3hef1XnxR4/nQFW+MFhfBtxvVFp57i9Us/VREs4VLuFusv1k4tzGc2MaHU2Mfl
-         Bllgnmtnqu8UpbbnFCnunqddYu2K73j1s0TZAAxfmGirAE2DZnpmVl2q4V4zfdJv7Th5
-         57eG/TvYKIQwBaAUYHriLKGxCEgM9kgeFhl4P08BcDWh/Qe7SjYVpaS+X73Y7kfowo3x
-         m98tRTA9aRRBj9wnENGhz72MRBsZ5rZQwVDCoh3l3ZidlnJ+xBw5p+KjOvNWWsQnpzmD
-         iNBt82ep8JZcXXhqfte7CY640ZR7O2LHWbFN/PFNSJ60cGov6bhIJ1UNpqz4HH02xLBZ
-         A/dA==
+        Fri, 4 Mar 2022 11:47:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB7841C4B28
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:46:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646412411;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=22jch4CQh+pTPL1FoGU31HpsJfvYTb0PvwQSeG+1PCc=;
+        b=Dl+xbleIsyq9NZ0edgh3u0AeG69bMuvgTNPGxd2V+3SxnN7+MRHFpE6PEOSqoIykTIlRMw
+        +Hec5c8Bvl6vDchWXw7Xa/R2hzhJrPa0+1T/SeQLtyQSIJWuXI1cIk73nKO148Fc61UGOv
+        HXk8RRZ9sFVbRaXHoc5fMRHYohSvTA8=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-112-mAjSGA2lM6ykBa8urMOEXQ-1; Fri, 04 Mar 2022 11:46:48 -0500
+X-MC-Unique: mAjSGA2lM6ykBa8urMOEXQ-1
+Received: by mail-wm1-f69.google.com with SMTP id o207-20020a1ca5d8000000b0038977354e75so932471wme.1
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 08:46:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GA0SoMn+kIK7VXpyWPIIcjTCHNEkwSgfzR0APlNlrJg=;
-        b=n1hvs9OCATtttw+Ffjc/MwBP4x/alPiVesx1gwmIqJdndNTgEXzZIafnBdexKketB+
-         EBmUPiESPqN4JdqZeESeFIX0M+qMxqtj8RXbQc9RxW60Azg6Dbb1ioZGrrL8Gv4Fsmqq
-         TMW3Tu3ZvK7yqSwCMPCAETdIGJxlQzrZZ+nz+5zR6KBaaQCzAX/ijQRFtQ6psq/6zxAy
-         xLyhuBazeqN+4AKjLKmueL8f9Oyj6qRW4jBqRvyaS7ivMHIeyWZYrDA2XsSebpRzo8Df
-         bhBc6NdhXGJOnbpeVfpycdhDIIHrUGoSSaZboq1hfU7iSXnU1ZoPOLzVy+RgWeLh7oUd
-         N+XA==
-X-Gm-Message-State: AOAM533kPe0R3ZiB8hNHJk7SKHnpDlg5Uuc5L/KewSk7dHrxASfTAY6y
-        lNlXLyrhGVQ21hJtpPZUKN16cP/4yX2/GSParF5UeQ==
-X-Google-Smtp-Source: ABdhPJyYpNlo2UIy0FwUyKX/4wcjFBLUOGvJrApitzy2ngjrFoIOsaKqWnVb6EliqTa8tklvYFF99QmZXD7MOGAgIBU=
-X-Received: by 2002:a05:6102:303a:b0:31b:f6a6:237f with SMTP id
- v26-20020a056102303a00b0031bf6a6237fmr16448932vsa.4.1646412341333; Fri, 04
- Mar 2022 08:45:41 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=22jch4CQh+pTPL1FoGU31HpsJfvYTb0PvwQSeG+1PCc=;
+        b=yNpLdRCn8FyWpksPOtS1XO8v1Ok33ddAjWJwHuXbRIMtd98f7emQ65DyBi+Ak5EjyI
+         4W7xy2/AM4NUid7gynWasmkRCohRUxlInBcSXByS0u014tgUilUw1G8ck2o1GVPH0HNj
+         k9b0V2LKl/mLZTPaNLyYs730pv3Sp7rPcWSmQhkVKpOzQi7QgrGgv7hoFb/7tkHtLSiO
+         ECw1L7FXTca648hcjrtCkL//TNvTfAFrsEjIhWdgXXd6okwsKbOSjOxMRbCgREjtf/9X
+         CfBdP2vJpSeLk7r1iA/rCy/Zx7yxG1ktSfLnmmXsEXrLk4XPHvaCr4QumrWOuPmVrhAw
+         ONtw==
+X-Gm-Message-State: AOAM533LztZAhMUI5dMjTVIhBueCfx1P8+0pA2p2TWDYRnY5/enH1H3V
+        vuCzlWth7Bg39/copidaok4gG3M5a8I+U/DdeTuQsKUMztZAwrkQKbjSCALsSuMxtulNjTBt4cq
+        gKwcZfZojGHw7kZT98KGUCH0U
+X-Received: by 2002:a1c:2544:0:b0:381:18a:a46d with SMTP id l65-20020a1c2544000000b00381018aa46dmr8406746wml.26.1646412407388;
+        Fri, 04 Mar 2022 08:46:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzFF5fKg+gUWYVS+WLhpkqM4ArBwfkdD8eN2+pKg3LaCYfmdFOoWkfdheE2gdrSD+91b0K/VA==
+X-Received: by 2002:a1c:2544:0:b0:381:18a:a46d with SMTP id l65-20020a1c2544000000b00381018aa46dmr8406732wml.26.1646412407138;
+        Fri, 04 Mar 2022 08:46:47 -0800 (PST)
+Received: from redhat.com ([2.52.16.157])
+        by smtp.gmail.com with ESMTPSA id l26-20020a05600c1d1a00b00380def7d3desm5711411wms.17.2022.03.04.08.46.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 08:46:46 -0800 (PST)
+Date:   Fri, 4 Mar 2022 11:46:42 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220304114606-mutt-send-email-mst@kernel.org>
+References: <20220302075421.2131221-1-lee.jones@linaro.org>
+ <20220302093446.pjq3djoqi434ehz4@sgarzare-redhat>
+ <20220302083413-mutt-send-email-mst@kernel.org>
+ <20220302141121.sohhkhtiiaydlv47@sgarzare-redhat>
+ <20220302094946-mutt-send-email-mst@kernel.org>
+ <20220302153643.glkmvnn2czrgpoyl@sgarzare-redhat>
 MIME-Version: 1.0
-References: <20220304063427.372145-1-42.hyeyoo@gmail.com> <CANpmjNNv8+frHPdvT=0ZNuz5phUy1WRanJ6DkiiNvDTBtFraAQ@mail.gmail.com>
- <YiH/6MeYNaEehXmj@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <CANpmjNNYt9AG8RrGF0pq2dPbFc=vw2kaOnL2k5+8kfJeEMGuwg@mail.gmail.com> <b9adf3a8-a260-c3ae-58a3-feefab40a651@suse.cz>
-In-Reply-To: <b9adf3a8-a260-c3ae-58a3-feefab40a651@suse.cz>
-From:   Marco Elver <elver@google.com>
-Date:   Fri, 4 Mar 2022 17:45:05 +0100
-Message-ID: <CANpmjNP3EJWpt3qHEMGmi3uVBMYthp66j9jvYggdbr1kTfpKBA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/5] slab cleanups
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew WilCox <willy@infradead.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302153643.glkmvnn2czrgpoyl@sgarzare-redhat>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 at 17:42, Vlastimil Babka <vbabka@suse.cz> wrote:
->
-> On 3/4/22 14:11, Marco Elver wrote:
-> > On Fri, 4 Mar 2022 at 13:02, Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
-> >>
-> >> On Fri, Mar 04, 2022 at 12:50:21PM +0100, Marco Elver wrote:
-> >> > On Fri, 4 Mar 2022 at 07:34, Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
-> >> > >
-> >> > > Changes from v1:
-> >> > >         Now SLAB passes requests larger than order-1 page
-> >> > >         to page allocator.
-> >> > >
-> >> > >         Adjusted comments from Matthew, Vlastimil, Rientjes.
-> >> > >         Thank you for feedback!
-> >> > >
-> >> > >         BTW, I have no idea what __ksize() should return when an object that
-> >> > >         is not allocated from slab is passed. both 0 and folio_size()
-> >> > >         seems wrong to me.
-> >> >
-> >> > Didn't we say 0 would be the safer of the two options?
-> >> > https://lkml.kernel.org/r/0e02416f-ef43-dc8a-9e8e-50ff63dd3c61@suse.cz
-> >> >
-> >>
-> >> Oh sorry, I didn't understand why 0 was safer when I was reading it.
-> >>
-> >> Reading again, 0 is safer because kasan does not unpoison for
-> >> wrongly passed object, right?
-> >
-> > Not quite. KASAN can tell if something is wrong, i.e. invalid object.
-> > Similarly, if you are able to tell if the passed pointer is not a
-> > valid object some other way, you can do something better - namely,
-> > return 0.
->
-> Hmm, but how paranoid do we have to be? Patch 1 converts SLAB to use
-> kmalloc_large(). So it's now legitimate to have objects allocated by SLAB's
-> kmalloc() that don't have a slab folio flag set, and their size is
-> folio_size(). It would be more common than getting a bogus pointer, so
-> should we return 0 just because a bogus pointer is possible?
+On Wed, Mar 02, 2022 at 04:36:43PM +0100, Stefano Garzarella wrote:
+> On Wed, Mar 02, 2022 at 09:50:38AM -0500, Michael S. Tsirkin wrote:
+> > On Wed, Mar 02, 2022 at 03:11:21PM +0100, Stefano Garzarella wrote:
+> > > On Wed, Mar 02, 2022 at 08:35:08AM -0500, Michael S. Tsirkin wrote:
+> > > > On Wed, Mar 02, 2022 at 10:34:46AM +0100, Stefano Garzarella wrote:
+> > > > > On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
+> > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > > > > > to vhost_get_vq_desc().  All we have to do is take the same lock
+> > > > > > during virtqueue clean-up and we mitigate the reported issues.
+> > > > > >
+> > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > > > >
+> > > > > This issue is similar to [1] that should be already fixed upstream by [2].
+> > > > >
+> > > > > However I think this patch would have prevented some issues, because
+> > > > > vhost_vq_reset() sets vq->private to NULL, preventing the worker from
+> > > > > running.
+> > > > >
+> > > > > Anyway I think that when we enter in vhost_dev_cleanup() the worker should
+> > > > > be already stopped, so it shouldn't be necessary to take the mutex. But in
+> > > > > order to prevent future issues maybe it's better to take them, so:
+> > > > >
+> > > > > Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > > >
+> > > > > [1]
+> > > > > https://syzkaller.appspot.com/bug?id=993d8b5e64393ed9e6a70f9ae4de0119c605a822
+> > > > > [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a58da53ffd70294ebea8ecd0eb45fd0d74add9f9
+> > > >
+> > > >
+> > > > Right. I want to queue this but I would like to get a warning
+> > > > so we can detect issues like [2] before they cause more issues.
+> > > 
+> > > I agree, what about moving the warning that we already have higher up, right
+> > > at the beginning of the function?
+> > > 
+> > > I mean something like this:
+> > > 
+> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > index 59edb5a1ffe2..1721ff3f18c0 100644
+> > > --- a/drivers/vhost/vhost.c
+> > > +++ b/drivers/vhost/vhost.c
+> > > @@ -692,6 +692,8 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > >  {
+> > >         int i;
+> > > +       WARN_ON(!llist_empty(&dev->work_list));
+> > > +
+> > >         for (i = 0; i < dev->nvqs; ++i) {
+> > >                 if (dev->vqs[i]->error_ctx)
+> > >                         eventfd_ctx_put(dev->vqs[i]->error_ctx);
+> > > @@ -712,7 +714,6 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > >         dev->iotlb = NULL;
+> > >         vhost_clear_msg(dev);
+> > >         wake_up_interruptible_poll(&dev->wait, EPOLLIN | EPOLLRDNORM);
+> > > -       WARN_ON(!llist_empty(&dev->work_list));
+> > >         if (dev->worker) {
+> > >                 kthread_stop(dev->worker);
+> > >                 dev->worker = NULL;
+> > > 
+> > 
+> > Hmm I'm not sure why it matters.
+> 
+> Because after this new patch, putting locks in the while loop, when we
+> finish the loop the workers should be stopped, because vhost_vq_reset() sets
+> vq->private to NULL.
+> 
+> But the best thing IMHO is to check that there is no backend set for each
+> vq, so the workers have been stopped correctly at this point.
+> 
+> Thanks,
+> Stefano
 
-No of course not, which is why I asked in the earlier email if it's a
-"definitive failure case".
+It's the list of workers waiting to run though. That is not affected by
+vq lock at all.
 
-> If we do that,
-> then KASAN will fail to unpoison legitimate kmalloc_large() objects, no?
-> What I suggested earlier is we could make the checks more precise - if
-> folio_size() is smaller or equal order-1 page, then it's bogus because we
-> only do kmalloc_large() for >order-1. If the object pointer is not to the
-> beginning of the folio, then it's bogus, because kmalloc_large() returns the
-> beginning of the folio. Then in these case we return 0, but otherwise we
-> should return folio_size()?
->
-> > The intuition here is that the caller has a pointer to an
-> > invalid object, and wants to use ksize() to determine its size, and
-> > most likely access all those bytes. Arguably, at that point the kernel
-> > is already in a degrading state. But we can try to not let things get
-> > worse by having ksize() return 0, in the hopes that it will stop
-> > corrupting more memory. It won't work in all cases, but should avoid
-> > things like "s = ksize(obj); touch_all_bytes(obj, s)" where the size
-> > bounds the memory accessed corrupting random memory.
-> >
-> > The other reason is that a caller could actually check the size, and
-> > if 0, do something else. Few callers will do so, because nobody
-> > expects that their code has a bug. :-)
->
+-- 
+MST
+
