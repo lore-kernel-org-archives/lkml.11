@@ -2,159 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B37FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43461C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236241AbiCDPLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:11:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37336 "EHLO
+        id S238740AbiCDPMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiCDPLm (ORCPT
+        with ESMTP id S229517AbiCDPMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:11:42 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF621C2332;
-        Fri,  4 Mar 2022 07:10:54 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 224DB0Yc014910;
-        Fri, 4 Mar 2022 15:10:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ciIHhFJaJb75Cjc8NGM6MB6m0nC4s4N+phinFfx7gNs=;
- b=Y4GJXTOEJbiMndgkGKppBHTJsKK6kNydc/YWhoePimLI64mHX01DQe62DUDOgOR3HNwm
- q+UTro61PJ+jzpgPJ7VXYFVlmoWsY9rrf8fvdJZOtc4YYyAdix8BUijQ1OYjxUBPrPyU
- 3gLCsRtCzJouLWyftqwFVHtiW+4nya2ZvZiljvNp69HpdAIRC5D71uAaardgLtM3UdLc
- 3WTkAWVoh+HBOxwF5JP7MM6NRQYSoIDl14O2b+ermDKaRwCxEaD5lTBwDjxDls0Pisqz
- HEzVmvefs2bVd5Sf/vY6nxQXX3g5E0N8coBUGgZPdgOhpj/H68z5ZvpTTZ1yq7TJ2BuK 0A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ekdcq9cxv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 15:10:22 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 224EIUkY013229;
-        Fri, 4 Mar 2022 15:10:21 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ekdcq9cxj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 15:10:21 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 224F3L9e022567;
-        Fri, 4 Mar 2022 15:10:21 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma05wdc.us.ibm.com with ESMTP id 3ek4k9ngwa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 15:10:21 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 224FAIHo12911226
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 4 Mar 2022 15:10:18 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 67BD8112061;
-        Fri,  4 Mar 2022 15:10:18 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 43B19112065;
-        Fri,  4 Mar 2022 15:10:18 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri,  4 Mar 2022 15:10:18 +0000 (GMT)
-Message-ID: <b6e9eb1e-846c-c98e-ad16-c651b5e1dad7@linux.ibm.com>
-Date:   Fri, 4 Mar 2022 10:10:17 -0500
+        Fri, 4 Mar 2022 10:12:35 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3643C1C2F69;
+        Fri,  4 Mar 2022 07:11:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646406707; x=1677942707;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fHlxRZZcpjsjTvmpnhwoxhUu7CXawq+gIe2yYQ7VRi8=;
+  b=2LDYNPQ2WO1RdLm5d6d/+7gdf8tSe2vqVH6o7ejCosiba4Q6BB7CrNnd
+   /rgCJsrYeJOFhTxLGpKVA1nyMmNdZenRRrV2R98oxhwDPOZ2BYPgLDLV4
+   5YMeRDK/V2f4RecaAmBkIpYI5+HD4AvSwVV3VXvmzBoQYoN9/nL2Bmybn
+   XsDTGblt6Mstn4e1QzhDqGLCrSPOoHrzV8fqCH6pG3UXXTsQuCuy4NZin
+   DaEG96nuwq8Dcg9f3aUYZGChaI9cnRjCQDuUbdax50+Bkd6KJotAYn2Bt
+   Mt2SsgNz63nvo6GdvuFhNnyoDZkVUbdsboWnZasPdmGdKPk0t2qhPjTLq
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="155279457"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 08:11:25 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 08:11:25 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 4 Mar 2022 08:11:25 -0700
+Date:   Fri, 4 Mar 2022 16:14:15 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <UNGLinuxDriver@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Colin Foster <colin.foster@in-advantage.com>
+Subject: Re: [PATCH v1 5/5] pinctrl: microchip-sgpio: wait until output is
+ actually set
+Message-ID: <20220304151415.ypqye2hg7j26wy6z@soft-dev3-1.localhost>
+References: <20220224161021.2197263-1-michael@walle.cc>
+ <20220224161021.2197263-6-michael@walle.cc>
+ <20220225092427.jjilv3qo52crsmuw@soft-dev3-1.localhost>
+ <2f8a215c67269d639290515931d10b78@walle.cc>
+ <20220304120911.i5rngplg5l6gnnyy@soft-dev3-1.localhost>
+ <40ccf0647d7ec0487f71f662eec80528@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/4] X.509: Parse Basic Constraints for CA
-Content-Language: en-US
-To:     Eric Snowberg <eric.snowberg@oracle.com>, zohar@linux.ibm.com,
-        jarkko@kernel.org, dhowells@redhat.com, dwmw2@infradead.org
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        jmorris@namei.org, serge@hallyn.com, nayna@linux.ibm.com,
-        mic@linux.microsoft.com, konrad.wilk@oracle.com,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-security-module@vger.kernel.org
-References: <20220301173651.3435350-1-eric.snowberg@oracle.com>
- <20220301173651.3435350-3-eric.snowberg@oracle.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220301173651.3435350-3-eric.snowberg@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: -IV59bcrT_bnon1M2ufEuXGdsyL4J80o
-X-Proofpoint-GUID: jIXztiokg71__8i1rfcjmST00a2jpD05
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-04_06,2022-03-04_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- impostorscore=0 bulkscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
- priorityscore=1501 suspectscore=0 malwarescore=0 phishscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203040081
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <40ccf0647d7ec0487f71f662eec80528@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The 03/04/2022 13:46, Michael Walle wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> Hi Horatiu,
+> 
+> Am 2022-03-04 13:09, schrieb Horatiu Vultur:
+> > The 02/25/2022 12:29, Michael Walle wrote:
+> > > EXTERNAL EMAIL: Do not click links or open attachments unless you know
+> > > the content is safe
+> > > 
+> > > Hi Horatiu,
+> > > 
+> > > Am 2022-02-25 10:24, schrieb Horatiu Vultur:
+> > > > The 02/24/2022 17:10, Michael Walle wrote:
+> > > > > Right now, when a gpio value is set, the actual hardware pin gets set
+> > > > > asynchronously. When linux write the output register, it takes some
+> > > > > time
+> > > > > until it is actually propagated to the output shift registers. If that
+> > > > > output port is connected to an I2C mux for example, the linux driver
+> > > > > assumes the I2C bus is already switched although it is not.
+> > > > >
+> > > > > Fortunately, there is a single shot mode with a feedback: you can
+> > > > > trigger the single shot and the hardware will clear that bit once it
+> > > > > has
+> > > > > finished the clocking and strobed the load signal of the shift
+> > > > > registers. This can take a considerable amount of time though.
+> > > > > Measuremens have shown that it takes up to a whole burst cycle gap
+> > > > > which
+> > > > > is about 50ms on the largest setting. Therefore, we have to mark the
+> > > > > output bank as sleepable. To avoid unnecessary waiting, just trigger
+> > > > > the
+> > > > > single shot if the value was actually changed.
+> > > >
+> > > > I have tested this patch series on our lan9668 board and it worked
+> > > > fine. Thanks!
+> > > 
+> > > Thanks for testing!
+> > > 
+> > > > I just have few questions:
+> > > > 1. What about other boards/chips that have this sgpio, do they have
+> > > > also
+> > > >    the same issue? Because from what I recall on sparx5 they don't have
+> > > >    this issue. I have seen it only on lan9668.
+> > > 
+> > > Unfortunatly, I don't have any knowledge what IP core is used in
+> > > which SoC. I assumed the lan9668 used the same as the sparx5. If
+> > > that is not the case, we need a new compatible. Do you know if it
+> > > the same?
+> > 
+> > From what I see, it is the same IP.
+> 
+> Good to know.
+> 
+> > > On the sparx5 are there any peripheral who you would actually
+> > > notice that the timing is off?
+> > 
+> > There are some SFP connected, similar to lan966x. So I don't understand
+> > why that issue is not seen there.
+> 
+> Is there an I2C mux, too? 
 
-On 3/1/22 12:36, Eric Snowberg wrote:
-> Parse the X.509 Basic Constraints.  The basic constraints extension
-> identifies whether the subject of the certificate is a CA.
->
-> BasicConstraints ::= SEQUENCE {
->          cA                      BOOLEAN DEFAULT FALSE,
->          pathLenConstraint       INTEGER (0..MAX) OPTIONAL }
->
-> If the CA is true, store it in a new public_key field call key_is_ca.
-> This will be used in a follow on patch that requires knowing if the
-> public key is a CA.
->
-> Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
-> ---
->   crypto/asymmetric_keys/x509_cert_parser.c | 9 +++++++++
->   include/crypto/public_key.h               | 1 +
->   2 files changed, 10 insertions(+)
->
-> diff --git a/crypto/asymmetric_keys/x509_cert_parser.c b/crypto/asymmetric_keys/x509_cert_parser.c
-> index 2899ed80bb18..38c907f4ce27 100644
-> --- a/crypto/asymmetric_keys/x509_cert_parser.c
-> +++ b/crypto/asymmetric_keys/x509_cert_parser.c
-> @@ -583,6 +583,15 @@ int x509_process_extension(void *context, size_t hdrlen,
->   		return 0;
->   	}
->   
-> +	if (ctx->last_oid == OID_basicConstraints) {
+It looks like also on sparx5 is an i2c mux[1]. The only difference is
+that is controlled by pinctrl and not by SGPIO.
 
-Don't you have to check whether you can access v[0] and v[1]?
+> Or just the SFP signals connected to
+> the SGPIO? What I was seeing is that during probing of the SFPs
+> the SFPs EEPROM is read and when the I2C mux is controlled by the
+> SGPIO it will switch too late - or even worse, in the middle of
+> a transaction. I would speculate the timing isn't that critical
+> with signals just connected directly to the SFP.
+> 
+> In any case, I think it is pretty clear that it cannot work the
+> way it is right now, no? See the very next paragraph...
 
-if (vlen < 3)
+Yes, I agree, this needs to be fixed.
 
-     return -EBADMSG;
+> 
+> > > That being said, I'd assume all the serial gpio controller has
+> > > this "flaw". Simply because a register write won't block until the
+> > > value is shifted out to the shift register and actualy loaded by
+> > > strobing the load signal. It just depends on your burst setting
+> > > (even with bursts off, and clocking all the time) on how large
+> > > the delay is. So you might or might not notice it on a board.
+> 
+> .. here
+> 
+> -michael
 
-or should it even be
+[1] https://elixir.bootlin.com/linux/v5.17-rc6/source/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi#L404
 
-if (vlen != 3)
-
-      return -EBADMSG;
-
-
-> +		if (v[0] != (ASN1_CONS_BIT | ASN1_SEQ))
-> +			return -EBADMSG;
-> +		if (v[1] != vlen - 2)
-> +			return -EBADMSG;
-> +		if (v[1] != 0 && v[2] == ASN1_BOOL && v[3] == 1)
-> +			ctx->cert->pub->key_is_ca = true;
-> +	}
-> +
->   	return 0;
->   }
->   
-> diff --git a/include/crypto/public_key.h b/include/crypto/public_key.h
-> index 6d61695e1cde..0521241764b7 100644
-> --- a/include/crypto/public_key.h
-> +++ b/include/crypto/public_key.h
-> @@ -26,6 +26,7 @@ struct public_key {
->   	void *params;
->   	u32 paramlen;
->   	bool key_is_private;
-> +	bool key_is_ca;
->   	const char *id_type;
->   	const char *pkey_algo;
->   };
+-- 
+/Horatiu
