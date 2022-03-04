@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 697FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbiCDHJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 02:09:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
+        id S237297AbiCDHKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 02:10:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238672AbiCDHIv (ORCPT
+        with ESMTP id S238738AbiCDHIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 02:08:51 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DD6A19142D
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:07:12 -0800 (PST)
+        Fri, 4 Mar 2022 02:08:50 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADC49190C27
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:07:09 -0800 (PST)
 Received: from unknown (HELO lgemrelse6q.lge.com) (156.147.1.121)
-        by 156.147.23.52 with ESMTP; 4 Mar 2022 16:07:09 +0900
+        by 156.147.23.51 with ESMTP; 4 Mar 2022 16:07:08 +0900
 X-Original-SENDERIP: 156.147.1.121
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.121 with ESMTP; 4 Mar 2022 16:07:09 +0900
+        by 156.147.1.121 with ESMTP; 4 Mar 2022 16:07:08 +0900
 X-Original-SENDERIP: 10.177.244.38
 X-Original-MAILFROM: byungchul.park@lge.com
 From:   Byungchul Park <byungchul.park@lge.com>
@@ -47,9 +47,9 @@ Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com
-Subject: [PATCH v4 20/24] dept: Add nocheck version of init_completion()
-Date:   Fri,  4 Mar 2022 16:06:39 +0900
-Message-Id: <1646377603-19730-21-git-send-email-byungchul.park@lge.com>
+Subject: [PATCH v4 16/24] locking/lockdep, cpu/hotplus: Use a weaker annotation in AP thread
+Date:   Fri,  4 Mar 2022 16:06:35 +0900
+Message-Id: <1646377603-19730-17-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
 References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
@@ -57,65 +57,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For completions who don't want to get tracked by Dept, added
-init_completion_nocheck() to disable Dept on it.
+cb92173d1f0 (locking/lockdep, cpu/hotplug: Annotate AP thread) was
+introduced to make lockdep_assert_cpus_held() work in AP thread.
+
+However, the annotation is too strong for that purpose. We don't have to
+use more than try lock annotation for that.
+
+Furthermore, now that Dept was introduced, false positive alarms was
+reported by that. Replaced it with try lock annotation.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- include/linux/completion.h | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ kernel/cpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/completion.h b/include/linux/completion.h
-index a1ad5a8..9bd3bc9 100644
---- a/include/linux/completion.h
-+++ b/include/linux/completion.h
-@@ -30,6 +30,7 @@ struct completion {
- };
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index 407a256..1f92a42 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -355,7 +355,7 @@ int lockdep_is_cpus_held(void)
  
- #ifdef CONFIG_DEPT
-+#define dept_wfc_nocheck(m)			dept_map_nocheck(m)
- #define dept_wfc_init(m, k, s, n)		dept_map_init(m, k, s, n)
- #define dept_wfc_reinit(m)			dept_map_reinit(m)
- #define dept_wfc_wait(m, ip)						\
-@@ -41,6 +42,7 @@ struct completion {
- #define dept_wfc_enter(m, ip)			dept_ecxt_enter(m, 1UL, ip, "completion_context_enter", "complete", 0)
- #define dept_wfc_exit(m, ip)			dept_ecxt_exit(m, ip)
- #else
-+#define dept_wfc_nocheck(m)			do { } while (0)
- #define dept_wfc_init(m, k, s, n)		do { (void)(n); (void)(k); } while (0)
- #define dept_wfc_reinit(m)			do { } while (0)
- #define dept_wfc_wait(m, ip)			do { } while (0)
-@@ -55,10 +57,11 @@ struct completion {
- #define WFC_DEPT_MAP_INIT(work)
- #endif
- 
-+#define init_completion_nocheck(x) __init_completion(x, NULL, #x, false)
- #define init_completion(x)					\
- 	do {							\
- 		static struct dept_key __dkey;			\
--		__init_completion(x, &__dkey, #x);		\
-+		__init_completion(x, &__dkey, #x, true);	\
- 	} while (0)
- 
- #define init_completion_map(x, m) init_completion(x)
-@@ -117,10 +120,15 @@ static inline void complete_release(struct completion *x) {}
-  */
- static inline void __init_completion(struct completion *x,
- 				     struct dept_key *dkey,
--				     const char *name)
-+				     const char *name, bool check)
+ static void lockdep_acquire_cpus_lock(void)
  {
- 	x->done = 0;
--	dept_wfc_init(&x->dmap, dkey, 0, name);
-+
-+	if (check)
-+		dept_wfc_init(&x->dmap, dkey, 0, name);
-+	else
-+		dept_wfc_nocheck(&x->dmap);
-+
- 	init_swait_queue_head(&x->wait);
+-	rwsem_acquire(&cpu_hotplug_lock.dep_map, 0, 0, _THIS_IP_);
++	rwsem_acquire(&cpu_hotplug_lock.dep_map, 0, 1, _THIS_IP_);
  }
  
+ static void lockdep_release_cpus_lock(void)
 -- 
 1.9.1
 
