@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76184C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D03C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiCDUJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:09:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        id S231199AbiCDUKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbiCDUHP (ORCPT
+        with ESMTP id S230380AbiCDUHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 15:07:15 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C92A2E29;
-        Fri,  4 Mar 2022 12:01:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F89233E74;
+        Fri,  4 Mar 2022 12:01:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424102; x=1677960102;
+  t=1646424101; x=1677960101;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LWUmzn6AWC5WMpBWBQ3lJbhgFkdCMEMw7dpXlimA02I=;
-  b=feB/TNBtT0+o39AsjsPxGbWDYFeGBBw+nMkCi5bAGf54D+/7VAPFqAgJ
-   zo9xYZLz73aahf/JribaMuoNDeyiKzK5Ei2TgM38O63pT5CDiKQa1n2fX
-   evT6GY91FshXtpZYtsFgkRjOeCucgkybDciXsRTnwWa9QuOrHtgdGghED
-   /qwaJDM7Ap0GMPe81x9oMdaxRzU56cRTWZl5gSMD0qCz/Uj/uovA69hOE
-   aUeAi6OpNN8Bs/U0RoIFEOD7LWTwYGJ4iS8k+f92Sl9OlDemkTN6RtSA9
-   4S4IMY6a9ChZu6/aVEJkztP1crr1L2rNjUQSgVYPiKwGtQlDaJU43bhEU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983404"
+  bh=z6mau14vjkrTQpVseJHnXxQjEtgENXNOQ45qyYOOZEo=;
+  b=chqc2CyyC+l/aMNm5d+XdoSWPLRFuICwIvuxTn48Wo9KH+4zSBIPcUOw
+   m9GpwLnVeffyLGOjbZcJGjE+QDyuZfXfcmftT+nSu8q2Tc2ji5D9Qt2hz
+   0Bk6D334z4YUBCkLqx7j/7efl+ojjjVE89KzoiIT5SAg1y1Uh8vQCdcvA
+   Xta6XwHhS8PsUSN00T43iLR8yxZyVJMVA/uDd0R3/WL3UyxENdtpAWGDe
+   Mej0B/XnW0wQWeu6wTqJHh/kCK8213TJfzEL+sQip9sIMb/uvCXDwUjT+
+   oGruOqEXtBfU9dvWYi4vqsxkrxpPgao0BQK2Tkk0/ThhBzVlMZLITEuKq
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983388"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983404"
+   d="scan'208";a="253983388"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:15 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:13 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344262"
+   d="scan'208";a="552344245"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:14 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:13 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 025/104] KVM: TDX: Add place holder for TDX VM specific mem_enc_op ioctl
-Date:   Fri,  4 Mar 2022 11:48:41 -0800
-Message-Id: <156ab9c6979c4b70e3d0d76e55e3aba370f58cea.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 022/104] KVM: Add max_vcpus field in common 'struct kvm'
+Date:   Fri,  4 Mar 2022 11:48:38 -0800
+Message-Id: <e53234cdee6a92357d06c80c03d77c19cdefb804.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -56,158 +56,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-Add a place holder function for TDX specific VM-scoped ioctl as mem_enc_op.
-TDX specific sub-commands will be added to retrieve/pass TDX specific
-parameters.
+For TDX guests, the maximum number of vcpus needs to be specified when the
+TDX guest VM is initialized (creating the TDX data corresponding to TDX
+guest) before creating vcpu.  It needs to record the maximum number of
+vcpus on VM creation (KVM_CREATE_VM) and return error if the number of
+vcpus exceeds it
 
-KVM_MEMORY_ENCRYPT_OP was introduced for VM-scoped operations specific for
-guest state-protected VM.  It defined subcommands for technology-specific
-operations under KVM_MEMORY_ENCRYPT_OP.  Despite its name, the subcommands
-are not limited to memory encryption, but various technology-specific
-operations are defined.  It's natural to repurpose KVM_MEMORY_ENCRYPT_OP
-for TDX specific operations and define subcommands.
+Because there is already max_vcpu member in arm64 struct kvm_arch, move it
+to common struct kvm and initialize it to KVM_MAX_VCPUS before
+kvm_arch_init_vm() instead of adding it to x86 struct kvm_arch.
 
-TDX requires VM-scoped, and VCPU-scoped TDX-specific operations for device
-model, for example, qemu.  Getting system-wide parameters, TDX-specific VM
-initialization, and TDX-specific vCPU initialization.  Which requires KVM
-vCPU-scoped operations in addition to the existing VM-scoped operations.
-
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/uapi/asm/kvm.h       | 11 +++++++++++
- arch/x86/kvm/vmx/main.c               | 10 ++++++++++
- arch/x86/kvm/vmx/tdx.c                | 24 ++++++++++++++++++++++++
- arch/x86/kvm/vmx/x86_ops.h            |  4 ++++
- tools/arch/x86/include/uapi/asm/kvm.h | 11 +++++++++++
- 5 files changed, 60 insertions(+)
+ arch/arm64/include/asm/kvm_host.h | 3 ---
+ arch/arm64/kvm/arm.c              | 6 +++---
+ arch/arm64/kvm/vgic/vgic-init.c   | 6 +++---
+ include/linux/kvm_host.h          | 1 +
+ virt/kvm/kvm_main.c               | 3 ++-
+ 5 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 71a5851475e7..2ad61caf4e0b 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -528,4 +528,15 @@ struct kvm_pmu_event_filter {
- #define KVM_X86_DEFAULT_VM	0
- #define KVM_X86_TDX_VM		1
+diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+index 5bc01e62c08a..27249d634605 100644
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -107,9 +107,6 @@ struct kvm_arch {
+ 	/* VTCR_EL2 value for this VM */
+ 	u64    vtcr;
  
-+/* Trust Domain eXtension sub-ioctl() commands. */
-+enum kvm_tdx_cmd_id {
-+	KVM_TDX_CMD_NR_MAX,
-+};
-+
-+struct kvm_tdx_cmd {
-+	__u32 id;
-+	__u32 metadata;
-+	__u64 data;
-+};
-+
- #endif /* _ASM_X86_KVM_H */
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 5c3a904a30e8..fc497f50e0e1 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -57,6 +57,14 @@ static void vt_vm_free(struct kvm *kvm)
- 		return tdx_vm_free(kvm);
- }
+-	/* The maximum number of vCPUs depends on the used GIC model */
+-	int max_vcpus;
+-
+ 	/* Interrupt controller */
+ 	struct vgic_dist	vgic;
  
-+static int vt_mem_enc_op(struct kvm *kvm, void __user *argp)
-+{
-+	if (!is_td(kvm))
-+		return -ENOTTY;
-+
-+	return tdx_vm_ioctl(kvm, argp);
-+}
-+
- struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.name = "kvm_intel",
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index ecc5958e27fe..defec2cd94bd 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -153,7 +153,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+ 	kvm_vgic_early_init(kvm);
  
-@@ -195,6 +203,8 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.complete_emulated_msr = kvm_complete_insn_gp,
+ 	/* The maximum number of VCPUs is limited by the host's GIC model */
+-	kvm->arch.max_vcpus = kvm_arm_default_max_vcpus();
++	kvm->max_vcpus = kvm_arm_default_max_vcpus();
  
- 	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
-+
-+	.mem_enc_op = vt_mem_enc_op,
- };
+ 	set_default_spectre(kvm);
  
- struct kvm_x86_init_ops vt_init_ops __initdata = {
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 702953fd365f..8c67444d052a 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -349,6 +349,30 @@ int tdx_vm_init(struct kvm *kvm)
- 	return ret;
- }
+@@ -229,7 +229,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	case KVM_CAP_MAX_VCPUS:
+ 	case KVM_CAP_MAX_VCPU_ID:
+ 		if (kvm)
+-			r = kvm->arch.max_vcpus;
++			r = kvm->max_vcpus;
+ 		else
+ 			r = kvm_arm_default_max_vcpus();
+ 		break;
+@@ -305,7 +305,7 @@ int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
+ 	if (irqchip_in_kernel(kvm) && vgic_initialized(kvm))
+ 		return -EBUSY;
  
-+int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
-+{
-+	struct kvm_tdx_cmd tdx_cmd;
-+	int r;
-+
-+	if (copy_from_user(&tdx_cmd, argp, sizeof(struct kvm_tdx_cmd)))
-+		return -EFAULT;
-+
-+	mutex_lock(&kvm->lock);
-+
-+	switch (tdx_cmd.id) {
-+	default:
-+		r = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (copy_to_user(argp, &tdx_cmd, sizeof(struct kvm_tdx_cmd)))
-+		r = -EFAULT;
-+
-+out:
-+	mutex_unlock(&kvm->lock);
-+	return r;
-+}
-+
- static int __tdx_module_setup(void)
- {
- 	const struct tdsysinfo_struct *tdsysinfo;
-diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 2b2738c768d6..9d88ba9b093b 100644
---- a/arch/x86/kvm/vmx/x86_ops.h
-+++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -136,6 +136,8 @@ void tdx_hardware_unsetup(void);
- int tdx_vm_init(struct kvm *kvm);
- void tdx_mmu_prezap(struct kvm *kvm);
- void tdx_vm_free(struct kvm *kvm);
-+
-+int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
- #else
- static inline void tdx_pre_kvm_init(
- 	unsigned int *vcpu_size, unsigned int *vcpu_align, unsigned int *vm_size) {}
-@@ -146,6 +148,8 @@ static inline void tdx_hardware_unsetup(void) {}
- static inline int tdx_vm_init(struct kvm *kvm) { return -EOPNOTSUPP; }
- static inline void tdx_mmu_prezap(struct kvm *kvm) {}
- static inline void tdx_vm_free(struct kvm *kvm) {}
-+
-+static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
- #endif
+-	if (id >= kvm->arch.max_vcpus)
++	if (id >= kvm->max_vcpus)
+ 		return -EINVAL;
  
- #endif /* __KVM_X86_VMX_X86_OPS_H */
-diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
-index 71a5851475e7..2ad61caf4e0b 100644
---- a/tools/arch/x86/include/uapi/asm/kvm.h
-+++ b/tools/arch/x86/include/uapi/asm/kvm.h
-@@ -528,4 +528,15 @@ struct kvm_pmu_event_filter {
- #define KVM_X86_DEFAULT_VM	0
- #define KVM_X86_TDX_VM		1
+ 	return 0;
+diff --git a/arch/arm64/kvm/vgic/vgic-init.c b/arch/arm64/kvm/vgic/vgic-init.c
+index fc00304fe7d8..77feafd5c0e3 100644
+--- a/arch/arm64/kvm/vgic/vgic-init.c
++++ b/arch/arm64/kvm/vgic/vgic-init.c
+@@ -98,11 +98,11 @@ int kvm_vgic_create(struct kvm *kvm, u32 type)
+ 	ret = 0;
  
-+/* Trust Domain eXtension sub-ioctl() commands. */
-+enum kvm_tdx_cmd_id {
-+	KVM_TDX_CMD_NR_MAX,
-+};
-+
-+struct kvm_tdx_cmd {
-+	__u32 id;
-+	__u32 metadata;
-+	__u64 data;
-+};
-+
- #endif /* _ASM_X86_KVM_H */
+ 	if (type == KVM_DEV_TYPE_ARM_VGIC_V2)
+-		kvm->arch.max_vcpus = VGIC_V2_MAX_CPUS;
++		kvm->max_vcpus = VGIC_V2_MAX_CPUS;
+ 	else
+-		kvm->arch.max_vcpus = VGIC_V3_MAX_CPUS;
++		kvm->max_vcpus = VGIC_V3_MAX_CPUS;
+ 
+-	if (atomic_read(&kvm->online_vcpus) > kvm->arch.max_vcpus) {
++	if (atomic_read(&kvm->online_vcpus) > kvm->max_vcpus) {
+ 		ret = -E2BIG;
+ 		goto out_unlock;
+ 	}
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index f11039944c08..a56044a31bc6 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -715,6 +715,7 @@ struct kvm {
+ 	 * and is accessed atomically.
+ 	 */
+ 	atomic_t online_vcpus;
++	int max_vcpus;
+ 	int created_vcpus;
+ 	int last_boosted_vcpu;
+ 	struct list_head vm_list;
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 52f72a366beb..3adee9c6b370 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1075,6 +1075,7 @@ static struct kvm *kvm_create_vm(unsigned long type)
+ 	spin_lock_init(&kvm->gpc_lock);
+ 
+ 	INIT_LIST_HEAD(&kvm->devices);
++	kvm->max_vcpus = KVM_MAX_VCPUS;
+ 
+ 	BUILD_BUG_ON(KVM_MEM_SLOTS_NUM > SHRT_MAX);
+ 
+@@ -3718,7 +3719,7 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&kvm->lock);
+-	if (kvm->created_vcpus == KVM_MAX_VCPUS) {
++	if (kvm->created_vcpus >= kvm->max_vcpus) {
+ 		mutex_unlock(&kvm->lock);
+ 		return -EINVAL;
+ 	}
 -- 
 2.25.1
 
