@@ -2,147 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F737C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38339C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238306AbiCDRZT convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:25:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        id S234738AbiCDR0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:26:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234034AbiCDRZQ (ORCPT
+        with ESMTP id S229781AbiCDR0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:25:16 -0500
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BB5715A21F;
-        Fri,  4 Mar 2022 09:24:27 -0800 (PST)
-Received: from smtpclient.apple (p5b3d2910.dip0.t-ipconnect.de [91.61.41.16])
-        by mail.holtmann.org (Postfix) with ESMTPSA id D5A44CECCF;
-        Fri,  4 Mar 2022 18:24:26 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [PATCH] Bluetooth: btrtl: Fix incorrect bin loading by
- MODULE_FIRMWARE
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20220228085316.26856-1-tangmeng@uniontech.com>
-Date:   Fri, 4 Mar 2022 18:24:26 +0100
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <0CF67627-7F23-43B8-A815-B6158D6F9B8F@holtmann.org>
-References: <20220228085316.26856-1-tangmeng@uniontech.com>
-To:     Meng Tang <tangmeng@uniontech.com>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
+        Fri, 4 Mar 2022 12:26:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97B821A906C
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:25:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646414753;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZPOyywODPUcB/Gl9wy52x834Jjxc19V6YX/YVgiSHj0=;
+        b=h5q6Nu+k9ztz1CEjXGNghy01Y5R6kIV6sv+RLX+vYOrptLEjcaPG1/wr8BrVa+1y4gjMzE
+        olDdTKSmN7SCibciLMYNufmdyQ3vrJnXTZZeqRFZNmdtEbIQO6j87c/jzh8wrRwCwhr1wW
+        NA5vu6v68EzTo9bh0jY8Skdt/yT6vDc=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-g9vjadT5PAKP9-_qbOVIKA-1; Fri, 04 Mar 2022 12:25:52 -0500
+X-MC-Unique: g9vjadT5PAKP9-_qbOVIKA-1
+Received: by mail-wr1-f71.google.com with SMTP id q12-20020adfbb8c000000b001ea938f79e9so3548988wrg.23
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 09:25:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=ZPOyywODPUcB/Gl9wy52x834Jjxc19V6YX/YVgiSHj0=;
+        b=YHeFSp6UylV5XjAQnY8iPPEq8LhvXC/+TDOA7bK6eJE/GtC6UF4Svbh51w77rDRfKE
+         0+F1CpMShNOiElKtEnxyXEfgYnIKR2rZUl5AJe/0gNpqAnFXuOHHHrcoppHkCAP3BUhs
+         NYgIwmbZrUpd8QbMMOo8WGo3GiUh98waPocGVFvdfdWCbRuNdgrjVosQb86A8RZo9uDo
+         0Sokz4YoBYK65/aVDbJVlCU/yx5EOlT9RdG7k4T0LI5GInqfiCj/7881DmUqZ5gdP5lm
+         qZhaulz4JVI7a4hKFXQkcld5fyx+Q6Vrpf4t5qiBcIVzAr8DvNp4X4l2nTAiSe3takGO
+         5j7Q==
+X-Gm-Message-State: AOAM530GQbhEHVIV0hLFG+VzNKEaXulyOt9ut30nFXDoBqmaSBsDwWNg
+        NjSqCuaebfpB3XoIArmVBaWHl5vXx8339NwWCNDNPDz8YuXXSLMpkCylsoKfw0w3L5auE3qPRWX
+        LizNQQFW81oGsoVGBUU1zfNAz
+X-Received: by 2002:a05:6000:1a88:b0:1f1:d8df:89d3 with SMTP id f8-20020a0560001a8800b001f1d8df89d3mr616950wry.321.1646414751381;
+        Fri, 04 Mar 2022 09:25:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxGy5kZMQf6JCuBlEj/Ql0LQkTBALE9clC0CFLC5pel+5apqkghxKJLoJBkpnmtZWrdAqE4Ew==
+X-Received: by 2002:a05:6000:1a88:b0:1f1:d8df:89d3 with SMTP id f8-20020a0560001a8800b001f1d8df89d3mr616938wry.321.1646414751101;
+        Fri, 04 Mar 2022 09:25:51 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:4600:7355:df2c:f6ff:94d? (p200300cbc70946007355df2cf6ff094d.dip0.t-ipconnect.de. [2003:cb:c709:4600:7355:df2c:f6ff:94d])
+        by smtp.gmail.com with ESMTPSA id o204-20020a1ca5d5000000b0038331f2f951sm15188818wme.0.2022.03.04.09.25.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 09:25:50 -0800 (PST)
+Message-ID: <90aafe84-fe7d-c70e-8e15-c222869f30fc@redhat.com>
+Date:   Fri, 4 Mar 2022 18:25:49 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Yu Zhao <yuzhao@google.com>, Yang Shi <shy828301@gmail.com>,
+        Michal Hocko <mhocko@suse.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+References: <351df0af-78f2-c20-2a6d-e5f978e5ca1@google.com>
+ <a2f6aa01-8003-6791-718d-3898f77ef643@redhat.com>
+ <9dda55d5-eafa-3177-2a4c-32ccb7e146e3@google.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH mmotm] mm: delete __ClearPageWaiters()
+In-Reply-To: <9dda55d5-eafa-3177-2a4c-32ccb7e146e3@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Meng,
+On 03.03.22 23:28, Hugh Dickins wrote:
+> On Thu, 3 Mar 2022, David Hildenbrand wrote:
+>> On 03.03.22 02:56, Hugh Dickins wrote:
+>>> The PG_waiters bit is not included in PAGE_FLAGS_CHECK_AT_FREE, and
+>>> vmscan.c's free_unref_page_list() callers rely on that not to generate
+>>> bad_page() alerts.  So __page_cache_release() and release_pages() (and
+>>> the presumably copy-and-pasted put_zone_device_private_or_public_page())
+> 
+> Hah, I'm showing my age there, or the patch's age: it's been rebranded
+> frequently since then, with linux-next calling it free_zone_device_page(),
+> as you kindly point out.  How long before it's free_zone_device_folio()?
 
-> In brctl, there are some problems which are as follows:
-> 1. The bin name of MODULE_FIRMWARE is incorrect or the bin does not
-> exist.
-> 2. The bin used in ic_id_table have not added MODULE_FIRMWARE
-> declarations.
-> 3. Sorting confusion.
-> 
-> Thus, modify incorrect bin names and delete some non-existing bin
-> names, add MODULE_FIRMWARE for bins that used in ic_id_table and
-> sort by MODULE_FIRMWARE(ctl_bt/*.bin).
-> 
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-> ---
-> drivers/bluetooth/btrtl.c | 37 +++++++++++++++++++------------------
-> 1 file changed, 19 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
-> index c2030f7e25b4..e34b0a29f230 100644
-> --- a/drivers/bluetooth/btrtl.c
-> +++ b/drivers/bluetooth/btrtl.c
-> @@ -88,14 +88,14 @@ static const struct id_table ic_id_table[] = {
-> 	  .config_needed = true,
-> 	  .has_rom_version = true,
-> 	  .fw_name  = "rtl_bt/rtl8723bs_fw.bin",
-> -	  .cfg_name = "rtl_bt/rtl8723bs_config" },
-> +	  .cfg_name = "rtl_bt/rtl8723bs_config-OBDA8723" },
-> 
-> 	/* 8723B */
-> 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xb, 0x6, HCI_USB),
-> 	  .config_needed = false,
-> 	  .has_rom_version = true,
-> 	  .fw_name  = "rtl_bt/rtl8723b_fw.bin",
-> -	  .cfg_name = "rtl_bt/rtl8723b_config" },
-> +	  .cfg_name = NULL },
-> 
-> 	/* 8723D */
-> 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xd, 0x8, HCI_USB),
-> @@ -104,19 +104,12 @@ static const struct id_table ic_id_table[] = {
-> 	  .fw_name  = "rtl_bt/rtl8723d_fw.bin",
-> 	  .cfg_name = "rtl_bt/rtl8723d_config" },
-> 
-> -	/* 8723DS */
-> -	{ IC_INFO(RTL_ROM_LMP_8723B, 0xd, 0x8, HCI_UART),
-> -	  .config_needed = true,
-> -	  .has_rom_version = true,
-> -	  .fw_name  = "rtl_bt/rtl8723ds_fw.bin",
-> -	  .cfg_name = "rtl_bt/rtl8723ds_config" },
-> -
-> 	/* 8821A */
-> 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xa, 0x6, HCI_USB),
-> 	  .config_needed = false,
-> 	  .has_rom_version = true,
-> 	  .fw_name  = "rtl_bt/rtl8821a_fw.bin",
-> -	  .cfg_name = "rtl_bt/rtl8821a_config" },
-> +	  .cfg_name = NULL },
-> 
-> 	/* 8821C */
-> 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xc, 0x8, HCI_USB),
-> @@ -131,7 +124,7 @@ static const struct id_table ic_id_table[] = {
-> 	  .config_needed = false,
-> 	  .has_rom_version = true,
-> 	  .fw_name  = "rtl_bt/rtl8761a_fw.bin",
-> -	  .cfg_name = "rtl_bt/rtl8761a_config" },
-> +	  .cfg_name = NULL },
-> 
-> 	/* 8761B */
-> 	{ IC_INFO(RTL_ROM_LMP_8761A, 0xb, 0xa, HCI_UART),
-> @@ -922,15 +915,23 @@ MODULE_LICENSE("GPL");
-> MODULE_FIRMWARE("rtl_bt/rtl8723a_fw.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8723b_fw.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8723b_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8723bs_config-OBDA8723.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8723bs_fw.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8723bs_config.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8723ds_fw.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8723ds_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8723d_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8723d_fw.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8761a_fw.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8761a_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8761b_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8761b_fw.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8761bu_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8761bu_fw.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8821a_fw.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8821a_config.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8822b_fw.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8821c_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8821c_fw.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8822b_config.bin");
-> -MODULE_FIRMWARE("rtl_bt/rtl8852au_fw.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8822b_fw.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8822cs_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8822cs_fw.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8822cu_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8822cu_fw.bin");
-> MODULE_FIRMWARE("rtl_bt/rtl8852au_config.bin");
-> +MODULE_FIRMWARE("rtl_bt/rtl8852au_fw.bin");
+:)
 
-simply put no. I have no idea what you are doing. The commit message description is indecipherable to me. This looks like 4 independent things mashed together.
+> 
+>>> are redundant and misleading to make a special point of clearing it (as
+>>> the "__" implies, it could only safely be used on the freeing path).
+>>>
+>>> Delete __ClearPageWaiters().  Remark on this in one of the "possible"
+>>> comments in wake_up_page_bit(), and delete the superfluous comments.
+>>>
+>>> Signed-off-by: Hugh Dickins <hughd@google.com>
+>>> ---
+>>> We've used this since 2018, and I see Yu Zhao posted similar in 2020:
+>>> https://lore.kernel.org/linux-mm/20200818184704.3625199-3-yuzhao@google.com/
+>>> I couldn't join in at that time, but think its reception was over-cautious.
+>>>
+>>>  include/linux/page-flags.h |  2 +-
+>>>  mm/filemap.c               | 22 +++++++---------------
+>>>  mm/memremap.c              |  2 --
+>>>  mm/swap.c                  |  4 ----
+>>>  4 files changed, 8 insertions(+), 22 deletions(-)
+>>>
+>>> --- a/mm/filemap.c
+>>> +++ b/mm/filemap.c
+>>> @@ -1179,24 +1179,16 @@ static void folio_wake_bit(struct folio *folio, int bit_nr)
+>>>  	}
+>>>  
+>>>  	/*
+>>> -	 * It is possible for other pages to have collided on the waitqueue
+>>> -	 * hash, so in that case check for a page match. That prevents a long-
+>>> -	 * term waiter
+>>> +	 * It's possible to miss clearing waiters here, when we woke our page
+>>> +	 * waiters, but the hashed waitqueue has waiters for other pages on it.
+>>>  	 *
+>>> -	 * It is still possible to miss a case here, when we woke page waiters
+>>> -	 * and removed them from the waitqueue, but there are still other
+>>> -	 * page waiters.
+>>> +	 * That's okay, it's a rare case. The next waker will clear it. Or,
+>>> +	 * it might be left set until the page is freed: when it's masked off
+>>> +	 * with others in PAGE_FLAGS_CHECK_AT_PREP, by free_pages_prepare().
+>>>  	 */
+>>
+>> Does that also apply to ZONE_DEVICE pages via free_zone_device_page()?
+> 
+> I'm sure you could tell me a lot more about ZONE_DEVICE pages than I
+> could ever tell you.  But, if they don't ever reach the main page freer,
+> then they're in the same category as other pages not freed until reboot:
+> any clearing of left-behind PG_waiters will be done by the next waker,
+> not by reaching free_pages_prepare().  Does that really require special
+> mention of ZONE_DEVICE pages here?  Would I do better just to remove
+> the comment on PAGE_FLAGS_CHECK_AT_PREP being one of the clearers?
 
-Regards
+In this context we can consider ZONE_DEVICE pages just like any other
+pages that, although getting freed, are not returned to the buddy, but
+instead are returned to another pool. So PAGE_FLAGS_CHECK_AT_PREP won't
+apply and free_pages_prepare() won't apply.
 
-Marcel
+Another example would be hugetlb pages, that are returned to the hugetlb
+pool, but not back to the buddy unless the huge page pool is shrunk.
+
+
+So I feel like the underlying principle here is: we don't *care* if
+PG_waiter is cleared when a page gets freed, because it will simply get
+cleared by the next waker if it sticks around.
+
+Then, I agree, we can just drop the comment regarding
+PAGE_FLAGS_CHECK_AT_PREP and instead have something like
+
+
+"
+That's okay, it's a rare case and the next waker will just clear it.
+Note that, depending on the page pool (buddy, ZONE_DEVICE, hugetlb), we
+might clear the flag while freeing the page, however, this is not
+required for correctness.
+"
+
+
+-- 
+Thanks,
+
+David / dhildenb
 
