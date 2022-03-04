@@ -2,135 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98ACDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiCDHcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 02:32:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34992 "EHLO
+        id S238716AbiCDHfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 02:35:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238690AbiCDHcU (ORCPT
+        with ESMTP id S232024AbiCDHe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 02:32:20 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38914192C82
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:31:33 -0800 (PST)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F19CF3F5F9
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:31:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646379091;
-        bh=znesbVorVsm63iCSSQmBPsZdwQn81pwm1UwoEW27Z4s=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=XWILBgk1RZT4tjCIfg0GQKUxdUG9diADsp3bIWb8HDkbIf174VXs+VMFbtoxaeLjf
-         bkMQiIC0+XZcxA4DdDioZX3VZ+iA5cElczxhhvp7RWRK4tkX4EVxTqpd8Ql6QBFFBk
-         vfACzqApbdbIeAdMSul6mok4skfKtNiTpjqKud/fzpAoAU30YGB+LhyTWCg3lA4VK+
-         oxHwGifgJNEdQkxqR63+2PujmeKgZObCgwa7aYsr1+3ogILlUbPueVOT3tsHNbj5MM
-         6EgdTXroc30RcYeBnso74kAsGxXKebTDpRu+0Rb90ZLStbTJVb+aWT2RFjZo0nHo7S
-         xxoWu5PRZwMoA==
-Received: by mail-ej1-f72.google.com with SMTP id la22-20020a170907781600b006a7884de505so4011588ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 23:31:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=znesbVorVsm63iCSSQmBPsZdwQn81pwm1UwoEW27Z4s=;
-        b=TqK0g5JC13eV1f4mHjgPyQsnDI7blI6SsIRb7iXGTEFvpc9uQfjLq4ZDm+tLLVULUB
-         49HSo3IuT2Rm3z6UhHqgxzZAIdfVzASluZlTtzZX+YsVi7ynrP9r/DOwl/3Nc4+bhx8o
-         /5E5ZGa2adB13kse8rKCvUSw7xSH3VIZgh4MCTe4gdOxU8k1w+UzMZYUQPlLia98AUZL
-         cqYbJczxZ89/rvR6n2/kdmYVf4+JweCPBZvanxHwDhvTqzVHEqNEuz2+V60KeS12/RLE
-         UsPqQwOL1kwBXx0/qgApTvdnmTbyhtf8c9Vv3UhcbSfZFO88+CBsVe/Imf9U7IZ0Bidb
-         NBmg==
-X-Gm-Message-State: AOAM5305XcQN9xvf620bthGhfU4tlKYpOuDCsLgAzar6O/IpbgdxQ6VO
-        4pUKYMm/9ztti+/UuiDJrlHZi1a/gqUP4BSGDJ79CB60n2530pmEDhYpi3ymtEsCQ0VyXQOyB7b
-        Yr2XU+5lP0yRuWY2XbUSJNOknj5Sy57+RHpIumPevQQ==
-X-Received: by 2002:a17:907:c0c:b0:6d1:8c46:6415 with SMTP id ga12-20020a1709070c0c00b006d18c466415mr30485461ejc.326.1646379090608;
-        Thu, 03 Mar 2022 23:31:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxGxs7X16ZzeLCZ/AHvyM0eIiEfVTT/3+RbXNFeYwjEzaLA6uLgNdT/DxKdJK+w4/ntCeI8hg==
-X-Received: by 2002:a17:907:c0c:b0:6d1:8c46:6415 with SMTP id ga12-20020a1709070c0c00b006d18c466415mr30485439ejc.326.1646379090348;
-        Thu, 03 Mar 2022 23:31:30 -0800 (PST)
-Received: from [192.168.0.138] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id t7-20020a1709063e4700b006da6357b1c0sm1445738eji.196.2022.03.03.23.31.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 23:31:29 -0800 (PST)
-Message-ID: <53fbfcde-0f5e-8ea2-4bca-c7a414f96c57@canonical.com>
-Date:   Fri, 4 Mar 2022 08:31:28 +0100
+        Fri, 4 Mar 2022 02:34:57 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5F392D3D;
+        Thu,  3 Mar 2022 23:34:09 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id 489941F462F7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646379247;
+        bh=Np/FlMv0LvagWUomxrVN4lRvmbAry2baTlXCyY/V+0c=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=HcyOm/SsCuCpUsUrYY68ePamUb0QyNBDl9yFhEX7nZ8KCmGvFHygh400Kh8aPKhZX
+         P8Zpga8/MFWVKwf3Jlp68FfPM+xYHN76sYxNaY68PkkkUgBHdLNsmMse5/L0MH1uNA
+         GBkyAAR/xhdLNTK+G8H5fY3h4XWf8KQJ1XEivnq0YMlbFljKyxkY54dyuxTQleKEVt
+         v/qzu+uaI9HuvtdBQWsLXG2R529jx1/kDdj7xRxtViDQ18QyXUhbgvA434b7bY0cEg
+         msR49/PABocTbJMKgVJxnyv0dRGFKrnkQSlv6MCw3cVYAipHRA9fMiKQhTgjneQX1U
+         3bj2HILMQp2+Q==
+Message-ID: <660ad768-2437-92bb-d5ef-0ca8561499d4@collabora.com>
+Date:   Fri, 4 Mar 2022 12:34:00 +0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3] dt-bindings: mfd: Fix pinctrl node name warnings
+ Thunderbird/91.6.1
+Cc:     usama.anjum@collabora.com, kernel@collabora.com,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mic@digikod.net, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] selftests/interpreter: fix separate directory build
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>, Lee Jones <lee.jones@linaro.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        - <patches@opensource.cirrus.com>
-Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-gpio@vger.kernel.org
-References: <20220303232350.2591143-1-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220303232350.2591143-1-robh@kernel.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Shuah Khan <shuah@kernel.org>
+References: <20220303110629.2072927-1-usama.anjum@collabora.com>
+ <b97fe611-0a2d-6907-b924-a9132e2d427f@linuxfoundation.org>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <b97fe611-0a2d-6907-b924-a9132e2d427f@linuxfoundation.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/03/2022 00:23, Rob Herring wrote:
-> The recent addition pinctrl.yaml in commit c09acbc499e8 ("dt-bindings:
-> pinctrl: use pinctrl.yaml") resulted in some node name warnings:
+On 3/4/22 2:39 AM, Shuah Khan wrote:
+> On 3/3/22 4:06 AM, Muhammad Usama Anjum wrote:
+>> Separate directory build fails of this test as headers include path isn't
+>> set correctly in that case. Fix it by including KHDR_INCLUDES.
+>>
+>> make -C tools/testing/selftests O=build1
+>> gcc -Wall -O2 -I../../../../usr/include    trust_policy_test.c -lcap
+>> -o /linux_mainline/build1/kselftest/interpreter/trust_policy_test
+>> trust_policy_test.c:14:10: fatal error: linux/trusted-for.h: No such
+>> file or directory
+>>     14 | #include <linux/trusted-for.h>
+>>        |          ^~~~~~~~~~~~~~~~~~~~~
+>> compilation terminated.
+>>
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>>   tools/testing/selftests/interpreter/Makefile | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/tools/testing/selftests/interpreter/Makefile
+>> b/tools/testing/selftests/interpreter/Makefile
+>> index 7402fdb6533f..51dde8e01e32 100644
+>> --- a/tools/testing/selftests/interpreter/Makefile
+>> +++ b/tools/testing/selftests/interpreter/Makefile
+>> @@ -1,6 +1,6 @@
+>>   # SPDX-License-Identifier: GPL-2.0
+>>   -CFLAGS += -Wall -O2 -I$(khdr_dir)
+>> +CFLAGS += -Wall -O2 -I$(khdr_dir) $(KHDR_INCLUDES)
+>>   LDLIBS += -lcap
+>>   
 > 
-> Documentation/devicetree/bindings/mfd/cirrus,lochnagar.example.dt.yaml: \
->  lochnagar-pinctrl: $nodename:0: 'lochnagar-pinctrl' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
-> Documentation/devicetree/bindings/mfd/cirrus,madera.example.dt.yaml: \
->  codec@1a: $nodename:0: 'codec@1a' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
-> Documentation/devicetree/bindings/mfd/brcm,cru.example.dt.yaml: \
->  pin-controller@1c0: $nodename:0: 'pin-controller@1c0' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
+> Change looks fine to me.
 > 
-> Fix the node names to the preferred 'pinctrl'. For cirrus,madera,
-> nothing from pinctrl.yaml schema is used, so just drop the reference.
+>>   src_test := $(wildcard *_test.c)
+>>
 > 
-> Fixes: c09acbc499e8 ("dt-bindings: pinctrl: use pinctrl.yaml")
-> Cc: Rafał Miłecki <rafal@milecki.pl>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> v2:
->  - Fix lochnagar-pinctrl nodename in example
-> v3:
->  - And fix lochnagar-pinctrl nodename in 'required'. Sigh...
-> ---
->  Documentation/devicetree/bindings/mfd/brcm,cru.yaml         | 4 ++--
->  Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml | 6 +++---
->  .../devicetree/bindings/pinctrl/cirrus,madera.yaml          | 3 ---
->  3 files changed, 5 insertions(+), 8 deletions(-)
+> I am not seeing this test in linux-kselftest next for sure. Which tree is
+> this patch based on? Please  add the repo info to the patch subject line
+> in the future.
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/brcm,cru.yaml b/Documentation/devicetree/bindings/mfd/brcm,cru.yaml
-> index be4a2df71c25..b85819fbb07c 100644
-> --- a/Documentation/devicetree/bindings/mfd/brcm,cru.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/brcm,cru.yaml
-> @@ -39,7 +39,7 @@ patternProperties:
->    '^phy@[a-f0-9]+$':
->      $ref: ../phy/bcm-ns-usb2-phy.yaml
->  
-> -  '^pin-controller@[a-f0-9]+$':
-> +  '^pinctrl@[a-f0-9]+$':
->      $ref: ../pinctrl/brcm,ns-pinmux.yaml
->  
->    '^syscon@[a-f0-9]+$':
-> @@ -94,7 +94,7 @@ examples:
->              reg = <0x180 0x4>;
->          };
->  
-> -        pin-controller@1c0 {
-> +        pinctrl@1c0 {
+This patch is in linux-next and its build is failing from quite some time:
+https://storage.staging.kernelci.org/kernelci/staging-next/staging-next-20220301.0/x86_64/x86_64_defconfig+x86-chromebook+kselftest/gcc-10/logs/kselftest.log
 
-DTS also need such change.
+I'm not sure in which tree selftests/interpreter is present. It was sent
+here:
+https://lore.kernel.org/lkml/20220104155024.48023-5-mic@digikod.net/
 
-Best regards,
-Krzysztof
+How can I find the tree from which this patch is coming?
+
+> Either way I don't have the patch that added in liunx-kselftest repo:
+> 
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+> 
+> thanks,
+> -- Shuah
+
+I forgot to add the tag:
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+
+--
+Muhammad Usama Anjum
