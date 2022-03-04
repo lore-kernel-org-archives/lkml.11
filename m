@@ -2,135 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F19FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbiCDUBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:01:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        id S229558AbiCDUBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiCDT7I (ORCPT
+        with ESMTP id S229995AbiCDUA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 14:59:08 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A64F269A72;
-        Fri,  4 Mar 2022 11:50:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646423437; x=1677959437;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0gCGaKq7Xe8qe6mLTW21EYOpmLPqpJ1qEQNcNiEwsMM=;
-  b=TOL6nC7+/bPAmGKg47V6/Yv+2USdan6vtUN6LyQXtbuJGxCNaHLYM9td
-   Y7rxq6yO4mWvhacKw1lUYRPIWrcXf5AlBjbIt7bS2XyvG5qmEEikTZkea
-   TgEjIsoNNsQxElw1p2wvngtUuePxk1F3+3m5jDnzpAMY/ueTtNRz1rg18
-   kl8/5BzezzzhjRPZnu7pS5Wuj7yFT3pRq27x2RpWsqYLC9JcG+P6IFd5z
-   HuyAB7Yd9ycacK5wOSXtQa8glAzzp9jGSsH/Uyku8i+OZ0D2t83IOCPzD
-   TFWnUc4VMWnIc4Zr2Jx6YkzcctAg07tfplGG2SzHUGFLXQz1Z6N/Pq/nB
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779625"
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253779625"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:36 -0800
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344488"
-Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:36 -0800
-From:   isaku.yamahata@intel.com
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 074/104] KVM: x86: Add a switch_db_regs flag to handle TDX's auto-switched behavior
-Date:   Fri,  4 Mar 2022 11:49:30 -0800
-Message-Id: <76c87a1d33bb3ec4a68fe3db2a840b6ddc951929.1646422845.git.isaku.yamahata@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
+        Fri, 4 Mar 2022 15:00:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7770F23BF05;
+        Fri,  4 Mar 2022 11:52:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABE50B82B5E;
+        Fri,  4 Mar 2022 19:24:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E62EC340E9;
+        Fri,  4 Mar 2022 19:24:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646421874;
+        bh=56U7h/PWatXCc+X0v4IbqX2HG9yyywUYaKIctbWn0sI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=rcP1L14pFaadmjABQMFUr1EX7rWJpbYgqQlSedShGUvIRlZ8fa4jppJuK+5TIdI2g
+         wibl11/CJ6TjP8fu7MvwoRWIejhd4jB3LvIoeQkylIrREoRzQUkMIQRZTUbjldUszp
+         zCjaWrxHMHV6DfUWk453gSFhDX2+0ofcCUp7G5vUgvHTiBRluWdDHjOHRh/7lb60jq
+         jmoaWcRzOe35+r9+UystrpbhsHpwc/Jxy6rb2chN2Eq8yfmDf+A+JFjNFJ6WuZ/HCl
+         ztl8skrIds3LAyw2HgJ6Wd5mZP+fXAZuInXKeTd+HzMsdWuIL1nnbxfhwG5VK1axZP
+         Jr2SPQZffiFoA==
+Message-ID: <7cc65bbd-e323-eabb-c576-b5656a3355ac@kernel.org>
+Date:   Fri, 4 Mar 2022 11:24:30 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 01/12] mm/shmem: Introduce F_SEAL_INACCESSIBLE
+Content-Language: en-US
+To:     Steven Price <steven.price@arm.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        qemu-devel@nongnu.org, Linux API <linux-api@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <20220118132121.31388-2-chao.p.peng@linux.intel.com>
+ <619547ad-de96-1be9-036b-a7b4e99b09a6@kernel.org>
+ <20220217130631.GB32679@chaop.bj.intel.com>
+ <2ca78dcb-61d9-4c9d-baa9-955b6f4298bb@www.fastmail.com>
+ <20220223114935.GA53733@chaop.bj.intel.com>
+ <71a06402-6743-bfd2-bbd4-997f8e256554@arm.com>
+From:   Andy Lutomirski <luto@kernel.org>
+In-Reply-To: <71a06402-6743-bfd2-bbd4-997f8e256554@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+On 2/23/22 04:05, Steven Price wrote:
+> On 23/02/2022 11:49, Chao Peng wrote:
+>> On Thu, Feb 17, 2022 at 11:09:35AM -0800, Andy Lutomirski wrote:
+>>> On Thu, Feb 17, 2022, at 5:06 AM, Chao Peng wrote:
+>>>> On Fri, Feb 11, 2022 at 03:33:35PM -0800, Andy Lutomirski wrote:
+>>>>> On 1/18/22 05:21, Chao Peng wrote:
+>>>>>> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+>>>>>>
+>>>>>> Introduce a new seal F_SEAL_INACCESSIBLE indicating the content of
+>>>>>> the file is inaccessible from userspace through ordinary MMU access
+>>>>>> (e.g., read/write/mmap). However, the file content can be accessed
+>>>>>> via a different mechanism (e.g. KVM MMU) indirectly.
+>>>>>>
+>>>>>> It provides semantics required for KVM guest private memory support
+>>>>>> that a file descriptor with this seal set is going to be used as the
+>>>>>> source of guest memory in confidential computing environments such
+>>>>>> as Intel TDX/AMD SEV but may not be accessible from host userspace.
+>>>>>>
+>>>>>> At this time only shmem implements this seal.
+>>>>>>
+>>>>>
+>>>>> I don't dislike this *that* much, but I do dislike this. F_SEAL_INACCESSIBLE
+>>>>> essentially transmutes a memfd into a different type of object.  While this
+>>>>> can apparently be done successfully and without races (as in this code),
+>>>>> it's at least awkward.  I think that either creating a special inaccessible
+>>>>> memfd should be a single operation that create the correct type of object or
+>>>>> there should be a clear justification for why it's a two-step process.
+>>>>
+>>>> Now one justification maybe from Stever's comment to patch-00: for ARM
+>>>> usage it can be used with creating a normal memfd, (partially)populate
+>>>> it with initial guest memory content (e.g. firmware), and then
+>>>> F_SEAL_INACCESSIBLE it just before the first time lunch of the guest in
+>>>> KVM (definitely the current code needs to be changed to support that).
+>>>
+>>> Except we don't allow F_SEAL_INACCESSIBLE on a non-empty file, right?  So this won't work.
+>>
+>> Hmm, right, if we set F_SEAL_INACCESSIBLE on a non-empty file, we will
+>> need to make sure access to existing mmap-ed area should be prevented,
+>> but that is hard.
+>>
+>>>
+>>> In any case, the whole confidential VM initialization story is a bit buddy.  From the earlier emails, it sounds like ARM expects the host to fill in guest memory and measure it.  From my recollection of Intel's scheme (which may well be wrong, and I could easily be confusing it with SGX), TDX instead measures what is essentially a transcript of the series of operations that initializes the VM.  These are fundamentally not the same thing even if they accomplish the same end goal.  For TDX, we unavoidably need an operation (ioctl or similar) that initializes things according to the VM's instructions, and ARM ought to be able to use roughly the same mechanism.
+>>
+>> Yes, TDX requires a ioctl. Steven may comment on the ARM part.
+> 
+> The Arm story is evolving so I can't give a definite answer yet. Our
+> current prototyping works by creating the initial VM content in a
+> memslot as with a normal VM and then calling an ioctl which throws the
+> big switch and converts all the (populated) pages to be protected. At
+> this point the RMM performs a measurement of the data that the VM is
+> being populated with.
+> 
+> The above (in our prototype) suffers from all the expected problems with
+> a malicious VMM being able to trick the host kernel into accessing those
+> pages after they have been protected (causing a fault detected by the
+> hardware).
+> 
+> The ideal (from our perspective) approach would be to follow the same
+> flow but where the VMM populates a memfd rather than normal anonymous
+> pages. The memfd could then be sealed and the pages converted to
+> protected ones (with the RMM measuring them in the process).
+> 
+> The question becomes how is that memfd populated? It would be nice if
+> that could be done using normal operations on a memfd (i.e. using
+> mmap()) and therefore this code could be (relatively) portable. This
+> would mean that any pages mapped from the memfd would either need to
+> block the sealing or be revoked at the time of sealing.
+> 
+> The other approach is we could of course implement a special ioctl which
+> effectively does a memcpy into the (created empty and sealed) memfd and
+> does the necessary dance with the RMM to measure the contents. This
+> would match the "transcript of the series of operations" described above
+> - but seems much less ideal from the viewpoint of the VMM.
 
-Add a flag, KVM_DEBUGREG_AUTO_SWITCHED_GUEST, to skip saving/restoring DRs
-irrespective of any other flags.  TDX-SEAM unconditionally saves and
-restores guest DRs and reset to architectural INIT state on TD exit.
-So, KVM needs to save host DRs before TD enter without restoring guest DRs
-and restore host DRs after TD exit.
+A VMM that supports Other Vendors will need to understand this sort of 
+model regardless.
 
-Opportunistically convert the KVM_DEBUGREG_* definitions to use BIT().
+I don't particularly mind the idea of having the kernel consume a normal 
+memfd and spit out a new object, but I find the concept of changing the 
+type of the object in place, even if it has other references, and trying 
+to control all the resulting races to be somewhat alarming.
 
-Reported-by: Xiaoyao Li <xiaoyao.li@intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Co-developed-by: Chao Gao <chao.gao@intel.com>
-Signed-off-by: Chao Gao <chao.gao@intel.com>
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
----
- arch/x86/include/asm/kvm_host.h | 10 ++++++++--
- arch/x86/kvm/vmx/tdx.c          |  1 +
- arch/x86/kvm/x86.c              |  3 ++-
- 3 files changed, 11 insertions(+), 3 deletions(-)
+In pseudo-Rust, this is the difference between:
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index b6396d11139e..489374a57b66 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -535,8 +535,14 @@ struct kvm_pmu {
- struct kvm_pmu_ops;
- 
- enum {
--	KVM_DEBUGREG_BP_ENABLED = 1,
--	KVM_DEBUGREG_WONT_EXIT = 2,
-+	KVM_DEBUGREG_BP_ENABLED		= BIT(0),
-+	KVM_DEBUGREG_WONT_EXIT		= BIT(1),
-+	KVM_DEBUGREG_RELOAD		= BIT(2),
-+	/*
-+	 * Guest debug registers are saved/restored by hardware on exit from
-+	 * or enter guest. KVM needn't switch them.
-+	 */
-+	KVM_DEBUGREG_AUTO_SWITCH	= BIT(3),
- };
- 
- struct kvm_mtrr_range {
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 690298fb99c7..3a0e826fbe0c 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -485,6 +485,7 @@ int tdx_vcpu_create(struct kvm_vcpu *vcpu)
- 
- 	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
- 
-+	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
- 	vcpu->arch.cr0_guest_owned_bits = -1ul;
- 	vcpu->arch.cr4_guest_owned_bits = -1ul;
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 45e8a02e99bf..89d04cd64cd0 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -10084,7 +10084,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	if (vcpu->arch.guest_fpu.xfd_err)
- 		wrmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
- 
--	if (unlikely(vcpu->arch.switch_db_regs)) {
-+	if (unlikely(vcpu->arch.switch_db_regs & ~KVM_DEBUGREG_AUTO_SWITCH)) {
- 		set_debugreg(0, 7);
- 		set_debugreg(vcpu->arch.eff_db[0], 0);
- 		set_debugreg(vcpu->arch.eff_db[1], 1);
-@@ -10126,6 +10126,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	 */
- 	if (unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)) {
- 		WARN_ON(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP);
-+		WARN_ON(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH);
- 		static_call(kvm_x86_sync_dirty_debug_regs)(vcpu);
- 		kvm_update_dr0123(vcpu);
- 		kvm_update_dr7(vcpu);
--- 
-2.25.1
+fn convert_to_private(in: &mut Memfd)
 
+and
+
+fn convert_to_private(in: Memfd) -> PrivateMemoryFd
+
+This doesn't map particularly nicely to the kernel, though.
+
+--Andy\
