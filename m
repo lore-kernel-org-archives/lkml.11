@@ -2,142 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 00:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB84C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 01:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237528AbiCDBAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 20:00:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        id S233632AbiCDBEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 20:04:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237523AbiCDA7k (ORCPT
+        with ESMTP id S230272AbiCDBEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 19:59:40 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38E61405F3;
-        Thu,  3 Mar 2022 16:58:53 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id e13so6351786plh.3;
-        Thu, 03 Mar 2022 16:58:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=s4j6M/QS1mgW5MTxzHwE3g8Q8Q6w+oMyq63tCyKGxiU=;
-        b=DWC4DkI9wrUscASe9OTO/VybE2truTUQRwJVLU7Dr7Lk3zIGDp1ucqsHmEnuMtKhWG
-         k9jIOF+x7ZeehiBWYJe+et8X/l9bv2+vk/rYAw2YokDjRLUbPm9wTMwEYhz1glnVwL8u
-         eHLe41yXVJK6osaYY8sWxlvRDG+h6boLQwa0wIqmAS7sbiY4qR6XNEreJHO+FzbExMXm
-         ym9UIYoS8Hj6SIy3RrXBTxF0Lpd/Oqcs2wZy5ytdjzGwrojFuSgClxMsQieXTc+hnDO6
-         eHF4vUrqnwRZs8rDqTPUzE4+j9/6pf6jn6ahS5i8U78hccAvU6OnUOB+VGVQIUhG72DM
-         l8Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=s4j6M/QS1mgW5MTxzHwE3g8Q8Q6w+oMyq63tCyKGxiU=;
-        b=ngCTGKhFX+fXsXhpV6p96Wh+6Hq9XdKj6HvC83HMjAcJpE9yiidYXlr6h7UyFvcgJV
-         5+9N/CMOxgvL6gJoNAyujIbHH/gv8f0NAqKbsNqDGRtxA6U6uN5ms2uF1nXJ2qsucNom
-         aCTaTKhC9ore5FlB8LtSZ+FoA01A6ZMwt0VO2yZYEMt/ZJLx9Uz376rNoWyYjxqFizKd
-         oUKGHbhXmob/+60RYeRNdKatIQ5u3nMPXBmmSueqgkaEKX3P8FxZhZFXvJHxxr7jg45W
-         6WoMgVzsDoUzeyXKlztEOClShvTj92WNnIBaRwyU7Km/0SnL70VhRGRe1DJd0YTWS+3y
-         WlnA==
-X-Gm-Message-State: AOAM530ihf0QhJgt5Qot9rTwjndTS66n9/t0bO0ElXdJbnp6sVafaH0+
-        Cf/J1O76heduf9o7JbqKif/HWwcImso=
-X-Google-Smtp-Source: ABdhPJzA5bZTW91ErXFqEOX9J0gm0y6jMQksaO9v3kaCeVmebqi6yV6gwM7M+14FmNYid9bPqdN7eQ==
-X-Received: by 2002:a17:902:cec2:b0:151:b337:a699 with SMTP id d2-20020a170902cec200b00151b337a699mr3710872plg.59.1646355533288;
-        Thu, 03 Mar 2022 16:58:53 -0800 (PST)
-Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
-        by smtp.gmail.com with ESMTPSA id ob13-20020a17090b390d00b001becfd7c6f3sm3246386pjb.27.2022.03.03.16.58.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 16:58:52 -0800 (PST)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 4/4] drm/msm/a6xx: Zap counters across context switch
-Date:   Thu,  3 Mar 2022 16:52:17 -0800
-Message-Id: <20220304005317.776110-5-robdclark@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304005317.776110-1-robdclark@gmail.com>
-References: <20220304005317.776110-1-robdclark@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 3 Mar 2022 20:04:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDFB57B3D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 17:03:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EFD2617CA
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:03:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BF4C340E9;
+        Fri,  4 Mar 2022 01:03:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1646355804;
+        bh=kEGxW7YmAqNPZGYRTWmVUsbA8UegX6jJvMlZtWicT4M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YpLXx7TWbtRmK31E33qnQgUjEcp2DYpVsFjNH1B1BDsAynYPFzUtaD1cnW5n1ULIb
+         +r3jqEystMhLPKLO4Va6NbWAdz02KdTsLFdH0PHQJwPNbvEwXDczzcf1SiuaGpWemh
+         A1IrjbEYeJ081+qenPQIToO+qNaetbNeWn+PqlC8=
+Date:   Thu, 3 Mar 2022 17:03:23 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [patch v3] mm: lru_cache_disable: replace work queue
+ synchronization with synchronize_rcu
+Message-Id: <20220303170323.82d8424d214fcb3a32155952@linux-foundation.org>
+In-Reply-To: <YhUKRzEKxMvlGQ5n@fuller.cnet>
+References: <YhUI1wUtV8yguijO@fuller.cnet>
+        <YhUKRzEKxMvlGQ5n@fuller.cnet>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+(Question for paulmck below, please)
 
-Any app controlled perfcntr collection (GL_AMD_performance_monitor, etc)
-does not require counters to maintain state across context switches.  So
-clear them if systemwide profiling is not active.
+On Tue, 22 Feb 2022 13:07:35 -0300 Marcelo Tosatti <mtosatti@redhat.com> wrote:
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 29 +++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+> 
+> On systems that run FIFO:1 applications that busy loop 
+> on isolated CPUs, executing tasks on such CPUs under
+> lower priority is undesired (since that will either
+> hang the system, or cause longer interruption to the
+> FIFO task due to execution of lower priority task 
+> with very small sched slices).
+> 
+> Commit d479960e44f27e0e52ba31b21740b703c538027c ("mm: disable LRU 
+> pagevec during the migration temporarily") relies on 
+> queueing work items on all online CPUs to ensure visibility
+> of lru_disable_count.
+> 
+> However, its possible to use synchronize_rcu which will provide the same
+> guarantees (see comment this patch modifies on lru_cache_disable).
+> 
+> Fixes:
+> 
+> [ 1873.243925] INFO: task kworker/u160:0:9 blocked for more than 622 seconds.
+> [ 1873.243927]       Tainted: G          I      --------- ---  5.14.0-31.rt21.31.el9.x86_64 #1
+> [ 1873.243929] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [ 1873.243929] task:kworker/u160:0  state:D stack:    0 pid:    9 ppid:     2 flags:0x00004000
+> [ 1873.243932] Workqueue: cpuset_migrate_mm cpuset_migrate_mm_workfn
+> [ 1873.243936] Call Trace:
+> [ 1873.243938]  __schedule+0x21b/0x5b0
+> [ 1873.243941]  schedule+0x43/0xe0
+> [ 1873.243943]  schedule_timeout+0x14d/0x190
+> [ 1873.243946]  ? resched_curr+0x20/0xe0
+> [ 1873.243953]  ? __prepare_to_swait+0x4b/0x70
+> [ 1873.243958]  wait_for_completion+0x84/0xe0
+> [ 1873.243962]  __flush_work.isra.0+0x146/0x200
+> [ 1873.243966]  ? flush_workqueue_prep_pwqs+0x130/0x130
+> [ 1873.243971]  __lru_add_drain_all+0x158/0x1f0
+> [ 1873.243978]  do_migrate_pages+0x3d/0x2d0
+> [ 1873.243985]  ? pick_next_task_fair+0x39/0x3b0
+> [ 1873.243989]  ? put_prev_task_fair+0x1e/0x30
+> [ 1873.243992]  ? pick_next_task+0xb30/0xbd0
+> [ 1873.243995]  ? __tick_nohz_task_switch+0x1e/0x70
+> [ 1873.244000]  ? raw_spin_rq_unlock+0x18/0x60
+> [ 1873.244002]  ? finish_task_switch.isra.0+0xc1/0x2d0
+> [ 1873.244005]  ? __switch_to+0x12f/0x510
+> [ 1873.244013]  cpuset_migrate_mm_workfn+0x22/0x40
+> [ 1873.244016]  process_one_work+0x1e0/0x410
+> [ 1873.244019]  worker_thread+0x50/0x3b0
+> [ 1873.244022]  ? process_one_work+0x410/0x410
+> [ 1873.244024]  kthread+0x173/0x190
+> [ 1873.244027]  ? set_kthread_struct+0x40/0x40
+> [ 1873.244031]  ret_from_fork+0x1f/0x30
+> 
+> ...
+>
+> --- a/mm/swap.c
+> +++ b/mm/swap.c
+> @@ -831,8 +831,7 @@ inline void __lru_add_drain_all(bool force_all_cpus)
+>  	for_each_online_cpu(cpu) {
+>  		struct work_struct *work = &per_cpu(lru_add_drain_work, cpu);
+>  
+> -		if (force_all_cpus ||
+> -		    pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
+> +		if (pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
+>  		    data_race(pagevec_count(&per_cpu(lru_rotate.pvec, cpu))) ||
+>  		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate_file, cpu)) ||
+>  		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate, cpu)) ||
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 237c2e7a7baa..02b47977b5c3 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -101,6 +101,7 @@ static void get_stats_counter(struct msm_ringbuffer *ring, u32 counter,
- static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
- 		struct msm_ringbuffer *ring, struct msm_file_private *ctx)
- {
-+	bool sysprof = refcount_read(&a6xx_gpu->base.base.sysprof_active) > 1;
- 	phys_addr_t ttbr;
- 	u32 asid;
- 	u64 memptr = rbmemptr(ring, ttbr0);
-@@ -111,6 +112,15 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
- 	if (msm_iommu_pagetable_params(ctx->aspace->mmu, &ttbr, &asid))
- 		return;
- 
-+	if (!sysprof) {
-+		/* Turn off protected mode to write to special registers */
-+		OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
-+		OUT_RING(ring, 0);
-+
-+		OUT_PKT4(ring, REG_A6XX_RBBM_PERFCTR_SRAM_INIT_CMD, 1);
-+		OUT_RING(ring, 1);
-+	}
-+
- 	/* Execute the table update */
- 	OUT_PKT7(ring, CP_SMMU_TABLE_UPDATE, 4);
- 	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_0_TTBR0_LO(lower_32_bits(ttbr)));
-@@ -137,6 +147,25 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
- 
- 	OUT_PKT7(ring, CP_EVENT_WRITE, 1);
- 	OUT_RING(ring, 0x31);
-+
-+	if (!sysprof) {
-+		/*
-+		 * Wait for SRAM clear after the pgtable update, so the
-+		 * two can happen in parallel:
-+		 */
-+		OUT_PKT7(ring, CP_WAIT_REG_MEM, 6);
-+		OUT_RING(ring, CP_WAIT_REG_MEM_0_FUNCTION(WRITE_EQ));
-+		OUT_RING(ring, CP_WAIT_REG_MEM_1_POLL_ADDR_LO(
-+				REG_A6XX_RBBM_PERFCTR_SRAM_INIT_STATUS));
-+		OUT_RING(ring, CP_WAIT_REG_MEM_2_POLL_ADDR_HI(0));
-+		OUT_RING(ring, CP_WAIT_REG_MEM_3_REF(0x1));
-+		OUT_RING(ring, CP_WAIT_REG_MEM_4_MASK(0x1));
-+		OUT_RING(ring, CP_WAIT_REG_MEM_5_DELAY_LOOP_CYCLES(0));
-+
-+		/* Re-enable protected mode: */
-+		OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
-+		OUT_RING(ring, 1);
-+	}
- }
- 
- static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
--- 
-2.35.1
+This change appears to be "don't queue work on CPUs which don't have
+any work to do".  Correct?  This isn't changelogged?
+
+> @@ -876,14 +875,19 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
+>  void lru_cache_disable(void)
+>  {
+>  	atomic_inc(&lru_disable_count);
+> +	synchronize_rcu();
+>  #ifdef CONFIG_SMP
+>  	/*
+> -	 * lru_add_drain_all in the force mode will schedule draining on
+> -	 * all online CPUs so any calls of lru_cache_disabled wrapped by
+> -	 * local_lock or preemption disabled would be ordered by that.
+> -	 * The atomic operation doesn't need to have stronger ordering
+> -	 * requirements because that is enforced by the scheduling
+> -	 * guarantees.
+> +	 * synchronize_rcu() waits for preemption disabled
+> +	 * and RCU read side critical sections.
+> +	 * For the users of lru_disable_count:
+> +	 *
+> +	 * preempt_disable, local_irq_disable  [bh_lru_lock()]
+> +	 * rcu_read_lock		       [rt_spin_lock CONFIG_PREEMPT_RT]
+> +	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
+> +	 *
+> +	 * so any calls of lru_cache_disabled wrapped by local_lock or
+> +	 * preemption disabled would be ordered by that.
+>  	 */
+>  	__lru_add_drain_all(true);
+>  #else
+
+Does this also work with CONFIG_TINY_RCU?
+
+This seems abusive of synchronize_rcu().  None of this code uses RCU,
+but it so happens that synchronize_rcu() happily provides the desired
+effects.  Changes in RCU's happy side-effects might break this. 
+Perhaps a formal API function which does whatever-you-want-it-to-do
+would be better.
+
+And...  I really don't understand the fix.  What is it about
+synchronize_rcu() which guarantees that a work function which is queued
+on CPU N will now get executed even if CPU N is spinning in SCHED_FIFO
+userspace?
 
