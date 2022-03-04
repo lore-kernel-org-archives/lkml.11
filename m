@@ -2,94 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:40:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C909C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237117AbiCDKla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:41:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S237222AbiCDKlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:41:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234714AbiCDKl3 (ORCPT
+        with ESMTP id S231206AbiCDKlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 05:41:29 -0500
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 02:40:42 PST
-Received: from esa8.hc1455-7.c3s2.iphmx.com (esa8.hc1455-7.c3s2.iphmx.com [139.138.61.253])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C0A1AAA6C;
-        Fri,  4 Mar 2022 02:40:41 -0800 (PST)
-IronPort-SDR: /XpGn0MPJ/xl47bOdczlEV42ipOTrZWl4DxUG6oOg59wiRhvwgfnJ3WVG+vs4jGP5REFLTYEuk
- dIY4XnzXl+mAObTysOdCF9vYHrJcy7MomWb/8Xv94V0xS/oO8uEhl99wxrHkiyxm3ujb4HG86p
- Pju1mPxJfxDJ4EbneE2dGfCxq2LEXMSdfutDJdmRTQP9wNHz/cyS6URRy1RtL2uiKyKAGZQa2y
- U+rGAMT8wX+xFxGYUazNRk59ShRcskQJI7DtZynhu095fbsRDpBqwlXG7+YbFxlRgk68uxiJcV
- cF/e0VjjO/euZu8711M7hyDl
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="53044691"
-X-IronPort-AV: E=Sophos;i="5.90,154,1643641200"; 
-   d="scan'208";a="53044691"
-Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
-  by esa8.hc1455-7.c3s2.iphmx.com with ESMTP; 04 Mar 2022 19:39:34 +0900
-Received: from oym-m3.gw.nic.fujitsu.com (oym-nat-oym-m3.gw.nic.fujitsu.com [192.168.87.60])
-        by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id DDBD1E07E0;
-        Fri,  4 Mar 2022 19:39:33 +0900 (JST)
-Received: from oym-om4.fujitsu.com (oym-om4.o.css.fujitsu.com [10.85.58.164])
-        by oym-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 26634D95E9;
-        Fri,  4 Mar 2022 19:39:33 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by oym-om4.fujitsu.com (Postfix) with ESMTP id 06B3140451C6F;
-        Fri,  4 Mar 2022 19:39:33 +0900 (JST)
-From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        tan.shaopeng@jp.fujitsu.com, Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH v4 3/6] selftests/resctrl: Fix resctrl_tests' return code to work with selftest framework
-Date:   Fri,  4 Mar 2022 19:38:31 +0900
-Message-Id: <20220304103834.486892-4-tan.shaopeng@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220304103834.486892-1-tan.shaopeng@jp.fujitsu.com>
-References: <20220304103834.486892-1-tan.shaopeng@jp.fujitsu.com>
+        Fri, 4 Mar 2022 05:41:52 -0500
+Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61821AAA41;
+        Fri,  4 Mar 2022 02:41:00 -0800 (PST)
+Received: from newone.lan (_gateway [10.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id 25F4B2007F;
+        Fri,  4 Mar 2022 11:40:59 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1646390459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gi3oag741MmfzNLj56sOKtyORMvHf4rZPmjeOraX1bc=;
+        b=EhvHq2flWaQOrst+UhAEkjP3h48l7aex/820wc7aoecs5QQzb2/RS1qC5oEW9rXKF+Ut4B
+        pDb4hUqo/y73GS3ffQ2sWSCMcIzc92ov+WttjIQLbJwM1pU3ZjUgIYyarWUdIBtEydT40t
+        tKKtVkXwmNmIDQsyJ5iH9txgIq/azWo=
+From:   David Heidelberg <david@ixit.cz>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     David Heidelberg <david@ixit.cz>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Input: synaptics: change initialization error into warning
+Date:   Fri,  4 Mar 2022 11:40:55 +0100
+Message-Id: <20220304104055.9048-1-david@ixit.cz>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In kselftest framework, if a sub test can not run by some reasons,
-the test result should be marked as SKIP rather than FAIL.
-Return KSFT_SKIP(4) instead of KSFT_FAIL(1) if resctrl_tests is not run
-as root or it is run on a test environment which does not support resctrl.
+Since touchpad work on Dell XPS 9360 as expected while using
+Synopsys DesignWare driver, let's assume
+warning about not loading driver can be lowered from error to warning.
 
- - ksft_exit_fail_msg(): returns KSFT_FAIL(1)
- - ksft_exit_skip(): returns KSFT_SKIP(4)
+Lower in some cases useless errors like these to warnings:
+psmouse serio1: synaptics: Unable to query device: -5
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Signed-off-by: David Heidelberg <david@ixit.cz>
 ---
- tools/testing/selftests/resctrl/resctrl_tests.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/input/mouse/synaptics.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
-index 973f09a66e1e..a44afb05b848 100644
---- a/tools/testing/selftests/resctrl/resctrl_tests.c
-+++ b/tools/testing/selftests/resctrl/resctrl_tests.c
-@@ -205,7 +205,7 @@ int main(int argc, char **argv)
- 	 * 2. We execute perf commands
- 	 */
- 	if (geteuid() != 0)
--		return ksft_exit_fail_msg("Not running as root, abort testing.\n");
-+		return ksft_exit_skip("Not running as root. Skipping...\n");
+diff --git a/drivers/input/mouse/synaptics.c b/drivers/input/mouse/synaptics.c
+index ffad142801b3..ffb13055c7dc 100644
+--- a/drivers/input/mouse/synaptics.c
++++ b/drivers/input/mouse/synaptics.c
+@@ -1668,7 +1668,7 @@ static int __synaptics_init(struct psmouse *psmouse, bool absolute_mode)
  
- 	/* Detect AMD vendor */
- 	detect_amd();
-@@ -235,7 +235,7 @@ int main(int argc, char **argv)
- 	sprintf(bm_type, "fill_buf");
+ 	error = synaptics_query_hardware(psmouse, &info);
+ 	if (error) {
+-		psmouse_err(psmouse, "Unable to query device: %d\n", error);
++		psmouse_warn(psmouse, "Unable to query device: %d\n", error);
+ 		return error;
+ 	}
  
- 	if (!check_resctrlfs_support())
--		return ksft_exit_fail_msg("resctrl FS does not exist\n");
-+		return ksft_exit_skip("resctrl FS does not exist. Enable X86_CPU_RESCTRL and PROC_CPU_RESCTRL config options.\n");
+@@ -1824,7 +1824,7 @@ int synaptics_init_smbus(struct psmouse *psmouse)
  
- 	filter_dmesg();
+ 	error = synaptics_query_hardware(psmouse, &info);
+ 	if (error) {
+-		psmouse_err(psmouse, "Unable to query device: %d\n", error);
++		psmouse_warn(psmouse, "Unable to query device: %d\n", error);
+ 		return error;
+ 	}
+ 
+@@ -1864,7 +1864,7 @@ int synaptics_init(struct psmouse *psmouse)
+ 
+ 	error = synaptics_query_hardware(psmouse, &info);
+ 	if (error) {
+-		psmouse_err(psmouse, "Unable to query device: %d\n", error);
++		psmouse_warn(psmouse, "Unable to query device: %d\n", error);
+ 		return error;
+ 	}
  
 -- 
-2.27.0
+2.34.1
 
