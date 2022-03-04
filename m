@@ -2,73 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241730AbiCDSea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:34:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
+        id S241703AbiCDSfD convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:35:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241763AbiCDSeO (ORCPT
+        with ESMTP id S235729AbiCDSfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:34:14 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937A615B984;
-        Fri,  4 Mar 2022 10:33:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E5895CE2BF5;
-        Fri,  4 Mar 2022 18:33:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2105DC340E9;
-        Fri,  4 Mar 2022 18:33:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646418793;
-        bh=oh6K4828NJ6PlOTyn19BY42pcI859VwVqoiEDViV8sk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iGYaznCvrI8jRQ5Jq1PYUkieDADP5PCSyEIFL8cOxB/E5+f7Dwf0Ely8tAVwmNKcM
-         kf2F6PDzy0mjmcP5BevT+ROUFxp0tHfhpL3ELs1Fdx5QMYSB/1qjpPA7deEGZmF1sN
-         Sral4FiYICTM+F8EyiATbcbFSvOk1JNY+td968wI=
-Date:   Fri, 4 Mar 2022 19:32:55 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 08/28] HID: allow to change the report
- descriptor from an eBPF program
-Message-ID: <YiJbVw/9v23wNt3a@kroah.com>
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-9-benjamin.tissoires@redhat.com>
+        Fri, 4 Mar 2022 13:35:00 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2A55F66;
+        Fri,  4 Mar 2022 10:34:12 -0800 (PST)
+Date:   Fri, 04 Mar 2022 18:33:59 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [Letux-kernel] [PATCH v16 1/4] drm/bridge: dw-hdmi: introduce
+ dw_hdmi_enable_poll()
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        David Airlie <airlied@linux.ie>,
+        Robert Foss <robert.foss@linaro.org>,
+        linux-mips <linux-mips@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Message-Id: <NWG88R.ZTPBZB4D9J5Z@crapouillou.net>
+In-Reply-To: <5CC8B441-AA50-45F5-A5D3-2F40F72A1B50@goldelico.com>
+References: <cover.1645895582.git.hns@goldelico.com>
+        <e54838849f80454b863f9f5634dd10f79ef7bb8f.1645895582.git.hns@goldelico.com>
+        <983e9064-17ad-e646-f37d-ca9173ba0967@baylibre.com>
+        <C8AE9A7A-E288-4637-ACAD-40CD33CD5F8C@goldelico.com>
+        <3E620AF4-402E-45EA-9D92-92EAEA9647F5@goldelico.com>
+        <SHH68R.Z3J9KSY0GQVA2@crapouillou.net>
+        <ABC1BD09-383B-4499-B034-340CE88725B3@goldelico.com>
+        <RUI68R.Z009SPJAAD8N1@crapouillou.net>
+        <F0F8F36B-3A0A-476C-8C7D-566255C629C6@goldelico.com>
+        <a52702bd-c929-8170-8896-d34ba82aba3c@baylibre.com>
+        <VYB88R.ATGIVGZ13PFM1@crapouillou.net>
+        <929BF693-D54F-40F0-BB61-520301D1C31F@goldelico.com>
+        <8JF88R.9V5YQ3Q6E8QO2@crapouillou.net>
+        <5CC8B441-AA50-45F5-A5D3-2F40F72A1B50@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304172852.274126-9-benjamin.tissoires@redhat.com>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 06:28:32PM +0100, Benjamin Tissoires wrote:
-> Make use of BPF_HID_ATTACH_RDESC_FIXUP so we can trigger an rdesc fixup
-> in the bpf world.
-> 
-> Whenever the program gets attached/detached, the device is reconnected
-> meaning that userspace will see it disappearing and reappearing with
-> the new report descriptor.
-> 
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> 
 
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Le ven., mars 4 2022 at 19:15:13 +0100, H. Nikolaus Schaller 
+<hns@goldelico.com> a écrit :
+> Hi Paul,
+> 
+>>  Am 04.03.2022 um 19:04 schrieb Paul Cercueil <paul@crapouillou.net>:
+>> 
+>> 
+>> 
+>>  Le ven., mars 4 2022 at 18:51:14 +0100, H. Nikolaus Schaller 
+>> <hns@goldelico.com> a écrit :
+>>>  Hi Paul, Neil,
+>>>>  Am 04.03.2022 um 17:47 schrieb Paul Cercueil 
+>>>> <paul@crapouillou.net>:
+>>>>  From what I understood in Nikolaus' last message, HDMI hotplug is 
+>>>> actually correctly detected, so there's no need for polling. What 
+>>>> is missing is the call to drm_kms_helper_hotplug_event 
+>>>> *somewhere*, so that the information is correctly relayed to 
+>>>> userspace.
+>>>  Exactly.
+>>>  As Maxime pointed out it should already be called by 
+>>> drm_helper_hpd_irq_event() in dw_hdmi_irq() but isn't
+>>>  because mode_config.poll_enabled isn't enabled.
+>>>  So we can either
+>>>  a) enable mode_config.poll_enabled so that it is called by 
+>>> drm_helper_hpd_irq_event() or
+>>>  b) make drm_kms_helper_hotplug_event() being called explicitly in 
+>>> dw_hdmi_irq().
+>>>    We could guard that by mode_config.poll_enabled to avoid 
+>>> drm_kms_helper_hotplug_event()
+>>>    being called twice (but I think the "changed" mechanism will 
+>>> take care of).
+>>>>  I think this issue can be fixed by calling 
+>>>> drm_bridge_connector_enable_hpd() on the connector in 
+>>>> ingenic-drm-drv.c.
+>>>  I don't see yet how this would solve it, but it may work.
+>> 
+>>  dw_hdmi_irq() calls drm_bridge_hpd_notify(), which would call 
+>> bridge->hpd_cb() if it was non-NULL.
+> 
+> Ok, this is a case c).
+> 
+> I vaguely remember having tried to analyse what bridge->hpd_cb is but 
+> stopped since it is NULL...
+> 
+>> 
+>>  Calling drm_bridge_connector_enable_hpd() will set the 
+>> bridge->hpd_cb() callback to point to drm_bridge_connector_hpd_cb(), 
+>> which itself will call drm_kms_helper_hotplug_event(). Therefore, 
+>> all that is missing is one call to drm_bridge_connector_enable_hpd().
+> 
+> Ah, ok, I see.
+> 
+>>>  Anyways, this all is a missing feature (sometimes called "bug") of 
+>>> the *dw-hdmi driver* and IMHO
+>>>  neither of the connector nor the ingenic-drm-drv.
+> 
+> Well, a little more analysis shows that 
+> drm_bridge_connector_enable_hpd is called
+> in the *-drv.c for some other plaforms:
+> 
+> https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/imx/dcss/dcss-dev.c#L292
+> https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/imx/dcss/dcss-kms.c#L145
+> https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/omapdrm/omap_drv.c#L393
+> https://elixir.bootlin.com/linux/v5.17-rc6/source/drivers/gpu/drm/msm/hdmi/hdmi.c#L317
+> 
+>>>  So I think it should not be solved outside dw-hdmi.
+> 
+> Hm. Can we call drm_bridge_connector_enable_hpd() from inside dw-hdmi?
+> 
+> Or would this be the solution if merged? (I currently can't try code).
+> 
+> https://lore.kernel.org/lkml/a7d0b013-6114-07b3-0a7b-0d17db8a3982@cogentembedded.com/T/
+
+Looks correct to me. It has been reviewed by two people so I believe it 
+will be merged very soon.
+
+Cheers,
+-Paul
+
+
