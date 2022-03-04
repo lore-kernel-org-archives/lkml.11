@@ -2,126 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31901C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C539C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbiCDUDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:03:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
+        id S230003AbiCDUDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiCDUDD (ORCPT
+        with ESMTP id S229723AbiCDUDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:03:03 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1CB1AF8C9
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 11:54:04 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id qx21so19538301ejb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 11:54:04 -0800 (PST)
+        Fri, 4 Mar 2022 15:03:16 -0500
+Received: from mail-oi1-x249.google.com (mail-oi1-x249.google.com [IPv6:2607:f8b0:4864:20::249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697E82A7534
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 11:59:56 -0800 (PST)
+Received: by mail-oi1-x249.google.com with SMTP id u13-20020a056808150d00b002d73c61e0d7so6237221oiw.6
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 11:59:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ETvfGVoGLXwDhWPGfvHwKsO/zr0ji0OYPvNdqU+p67c=;
-        b=jWz+XRpv+mw5fFBHNcSDIuUw96ucnDzuIlqQnDDKWkAtP0g3jcvohja1IbZoolKrqs
-         QXK0ZLrPl16cNWRZ8xdl8uVMs2ATrPO8t/Ile0J31U3qX36fVyvbq6Xp3wO99dssUw/G
-         9glD2oaj5XdVP858LqiDcCgqrKzvvBJbKiRT2o4TgXj7FVGTD5AKVWq+XwmG+IxI9LC3
-         P3we66PEZVOOWF67TeHAa392lhrrtzfhle/V++6Kx8rR5B31wmrsAJuVl6uecgUplbT7
-         xFIKJTxRxiykxF1DeTwuOwBR9aex/kHiS7kNcfynnemvNL7te9c736eKtaOhnDA4Ermh
-         1cDw==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=J64es7HM/NEnjdZCnfIshrO3wOmcq5xIZ4GZ3l0aZZI=;
+        b=GItdpzKUBGucNm4WOe+HN7O/1STAH96AycQndTvxw/AJHcG/IZXBQqhHpuZ05xhR4h
+         s4/tKY3tQeE7DrutZ5Ai6jwAl8HZtsKW56JRi+K1/bpZ5fj9ArMcTSHKmuftwci5pnc5
+         8185Z7VFl8q58WBsa5DKcW7AqVcRHiRJlzc8uTybp2GtjLt3aimA8WJqpE9dZYDCaKpg
+         nSDfUCu2diH4MZ2AkU0UqvXwMpOpJHeKUdcg+CDWj/hZdns7uGct3IOKaTBZkWLRZBTm
+         LT0ppGdP7Ddd/W2mtx4Yd4qmSgUu1hBcDWvQ1o0GawHtl57BA07e3RkLP77VwgB12XvH
+         SzyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ETvfGVoGLXwDhWPGfvHwKsO/zr0ji0OYPvNdqU+p67c=;
-        b=dqQIlJLnsGfpI1Ua2Hi33COu249TEtB1dXkObNg5NmYm1zlQHzsrVzu0QCx1eql9FE
-         sxI6PCMDB8uNxDQcdWe36Mf7tRUGwrkdSLCxjSXqRrdqN10GHLGQQLvSh0w/6Whux2wm
-         P5PoeL77Jb4rwJSoPpMgFbhon/OsOhUshNng455saaCfSMqIsuChIa95MS7/PtKGzq4y
-         j6JAL9Ycc9F1jBmArooXMa5MKzSwf5VntrS/ANI6zW7VK9n6LR+Juf0zDep6xc/lqMvN
-         G+PrZ5oMXK+13siVxMgB36wWEcMpdB5At8X7q/EwSJCTLt4chUN1TsiZM8IeeJ0nB2q3
-         AR1A==
-X-Gm-Message-State: AOAM5305zd86E1pu8SvNOgFXWMqQWbdkpf/Zc/XZXYvYRHb5Y8aMLAGl
-        r77gFZVtczc0gq8JUukkpRmX0//uYrVszg==
-X-Google-Smtp-Source: ABdhPJxm9tqRyk8xsBN77c/Xmt6AJupjBLplMEQ+2Kmms6Qrh+W4GHJMNEDXhpMLq5aO4v57wA0w6Q==
-X-Received: by 2002:a5d:4992:0:b0:1f0:68bd:4c34 with SMTP id r18-20020a5d4992000000b001f068bd4c34mr242607wrq.670.1646423198257;
-        Fri, 04 Mar 2022 11:46:38 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:c62:d373:a349:12ac? ([2a01:e34:ed2f:f020:c62:d373:a349:12ac])
-        by smtp.googlemail.com with ESMTPSA id f186-20020a1c38c3000000b00382a9b91515sm10314281wma.37.2022.03.04.11.46.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 11:46:37 -0800 (PST)
-Message-ID: <80f949af-ddab-b54d-b6ee-0fbcb1f74b51@linaro.org>
-Date:   Fri, 4 Mar 2022 20:46:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 0/6] clocksource/drivers/timer-microchip-pit64b: fixes
- and improvements
-Content-Language: en-US
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>, tglx@linutronix.de
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220304133601.2404086-1-claudiu.beznea@microchip.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220304133601.2404086-1-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=J64es7HM/NEnjdZCnfIshrO3wOmcq5xIZ4GZ3l0aZZI=;
+        b=YN3lUN68o6VzuTaTSrpFcumbnZo8jVUMdFJwOSXW6ug+yDv3QFdkPWgyjFf8FSoix0
+         N8JUAQW2w9cOyiY19q6F2UqawOt2M0dqSpf+rJQeB2N0hi7zoFOivewWpfPARyNOmPV3
+         m1GAAJwLPhj1sbvERMFvMAqbrRAnXhPxz2B+yHJY3kFK3Nz5SsnHyL5kZNt6G4842rLV
+         FcribcbSujJv1OxAyzP8Vf4BkICU69Z3MFJayHnllWDNCl1+ZwOA8/5Ch5+sACeBLQm+
+         ONoRWaqGdZNuTwiQzoByV5lZfRpJy+Fiude32YEHyb8lQIwN0odngshpnPI2swVXSIke
+         Br1g==
+X-Gm-Message-State: AOAM533PYg0PRJ3PmrncxqrBl/eAPXrHW18rc5QnAmIbmM5tJr4K+UWI
+        O/I4vGwEzM0lgTALW66OdmWtCoZPNMG3QQ==
+X-Google-Smtp-Source: ABdhPJx1JBku7Y5F4eCh0ATGfGMRZ6wb/cJ1gQZwri0EnQCSBm4x3jk1yCC9794gkFLFxVD0xxm+uUa1OAahIg==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a05:6902:3cc:b0:628:73aa:9c7f with SMTP
+ id g12-20020a05690203cc00b0062873aa9c7fmr20910540ybs.632.1646421963101; Fri,
+ 04 Mar 2022 11:26:03 -0800 (PST)
+Date:   Fri, 4 Mar 2022 19:26:00 +0000
+In-Reply-To: <20220304171912.305060-1-hannes@cmpxchg.org>
+Message-Id: <20220304192600.rvmgbg72aq6idooc@google.com>
+Mime-Version: 1.0
+References: <20220304171912.305060-1-hannes@cmpxchg.org>
+Subject: Re: [PATCH] mm: madvise: MADV_DONTNEED_LOCKED
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        David Hildenbrand <david@redhat.com>, dgilbert@redhat.com,
+        Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
+        linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Mar 04, 2022 at 12:19:12PM -0500, Johannes Weiner wrote:
+> MADV_DONTNEED historically rejects mlocked ranges, but with
+> MLOCK_ONFAULT and MCL_ONFAULT allowing to mlock without populating,
+> there are valid use cases for depopulating locked ranges as well.
 
-Hi Claudiu,
+> Users mlock memory to protect secrets. There are allocators for secure
+> buffers that want in-use memory generally mlocked, but cleared and
+> invalidated memory to give up the physical pages. This could be done
+> with explicit munlock -> mlock calls on free -> alloc of course, but
+> that adds two unnecessary syscalls, heavy mmap_sem write locks, vma
+> splits and re-merges - only to get rid of the backing pages.
 
-I would like to pick patches 1,2,3 but not the others one because I'm 
-not convinced about the suspend / resume changes and need some time to 
-think about it.
+> Users also mlockall(MCL_ONFAULT) to suppress sustained paging, but are
+> okay with on-demand initial population. It seems valid to selectively
+> free some memory during the lifetime of such a process, without having
+> to mess with its overall policy.
 
-   -- D.
+> Why add a separate flag? Isn't this a pretty niche usecase?
 
+> - MADV_DONTNEED has been bailing on locked vmas forever. It's at least
+>    conceivable that someone, somewhere is relying on mlock to protect
+>    data from perhaps broader invalidation calls. Changing this behavior
+>    now could lead to quiet data corruption.
 
-On 04/03/2022 14:35, Claudiu Beznea wrote:
-> Hi,
-> 
-> The series adds one fix and few improvement for PIT64B timer. Patch 1/7
-> was initially posted at [1].
-> 
-> Thank you,
-> Claudiu Beznea
-> 
-> [1] https://lore.kernel.org/lkml/20210707054415.92832-1-claudiu.beznea@microchip.com/
-> 
-> Changes in v3:
-> - removed patch "clocksource/drivers/timer-microchip-pit64b: remove timer-of depenency"
->    as it breaks build on other platforms
-> - adapt patch 6/6 to comply with kernel-doc specification
-> 
-> Changes in v2:
-> - removed patch 5/7 "clocksource/drivers/timer-microchip-pit64b: add delay timer"
->    to avoid compilation errors on non ARM platforms; will re-introduce it after
->    a bit of rework on AT91 specific Kconfig
-> - added patch "clocksource/drivers/timer-microchip-pit64b: fix compilation warnings"
-> - in patch "clocksource/drivers/timer-microchip-pit64b: use mchp_pit64b_{suspend,
->    resume}" remove gclk_unprepare, pclk_unprepare labels and code under them
-> 
-> 
-> Claudiu Beznea (6):
->    clocksource/drivers/timer-microchip-pit64b: remove mmio selection
->    clocksource/drivers/timer-microchip-pit64b: use notrace
->    clocksource/drivers/timer-microchip-pit64b: use 5MHz for clockevent
->    clocksource/drivers/timer-microchip-pit64b: remove suspend/resume ops
->      for ce
->    clocksource/drivers/timer-microchip-pit64b: use mchp_pit64b_{suspend,
->      resume}
->    clocksource/drivers/timer-microchip-pit64b: fix compilation warnings
-> 
->   drivers/clocksource/Kconfig                  |  1 -
->   drivers/clocksource/timer-microchip-pit64b.c | 72 ++++++++------------
->   2 files changed, 30 insertions(+), 43 deletions(-)
-> 
+> - It also clarifies expectations around MADV_FREE and maybe
+>    MADV_REMOVE. It avoids the situation where one quietly behaves
+>    different than the others. MADV_FREE_LOCKED can be added later.
 
+> - The combination of mlock() and madvise() in the first place is
+>    probably niche. But where it happens, I'd say that dropping pages
+>    from a locked region once they don't contain secrets or won't page
+>    anymore is much saner than relying on mlock to protect memory from
+>    speculative or errant invalidation calls. It's just that we can't
+>    change the default behavior because of the two previous points.
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+> Given that, an explicit new flag seems to make the most sense.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> Acked-by: Michal Hocko <mhocko@suse.com>
+
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
