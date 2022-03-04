@@ -2,79 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03612C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B099C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240260AbiCDRLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:11:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
+        id S240869AbiCDRLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231630AbiCDRLK (ORCPT
+        with ESMTP id S231630AbiCDRLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:11:10 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CE91CBA97;
-        Fri,  4 Mar 2022 09:10:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=WbFFgJ3TOElNmD+ADc11e8q9EbVb53G89PRSG/O0iSU=; b=HABnBLdjCuVOVOvY7g92QYd3LH
-        wL06Bw1jB1JQ0fhcGnX9IeNAMOKhbYyKMn74p8qAX1S9CnfsPzk8tWDPTR1RwhmdoHcn3zabgqNIS
-        kZIbAumkfljep8Cw1F2aHRJd/q1z4FV+86aIq/QhJ4uTFO6hJWDhT5FplV7UQ2EFf37eIjz9/yfRK
-        dwLUdLUtlOamhoIx/CZJMOi3+TI3nCfdH6qqP8bAAD8oZ6YYwZ4X6JuvmisnBDPMqk5VU5e3uJRju
-        7XWGaHiJOEssEykkqemoPAI7vu+tTUJEjdokwmJPf3vHSS6yEpdOd66k/NiJrCQJULU6WGlo941Wl
-        8SRcBXzg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nQBRP-00CoTk-7I; Fri, 04 Mar 2022 17:10:07 +0000
-Message-ID: <e1a5f3ad-c33d-46f1-48c6-9c6b377ea211@infradead.org>
-Date:   Fri, 4 Mar 2022 09:10:02 -0800
+        Fri, 4 Mar 2022 12:11:33 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DC27DA90;
+        Fri,  4 Mar 2022 09:10:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646413846; x=1677949846;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=OhqliwMn1x7qp8itaCieEl3E+urUC3dE0PGBdn7lXQU=;
+  b=EpgcfJSvXmKDRIwtQprI2zwnPK+H+E39986ncVQCI2EYuZG2zvmNRjuN
+   vKsm5MZq4nUooYu32rHGjYkXcJlf1Kiu3DRGhONLbw+e9Tg+S/9qKtmJk
+   nLOc7f+8KF6XOaZY3KJ4P1LEOEYEYA+GFqLWxwMFXymeaTYJ7cWm6jao+
+   U1LNidqNZ/HHZuk9JBU0txC40uDWJwhe1aZX+t8+ZAIldkRgPW17ykoew
+   A2wxpFYyGxfIs78B9c+n8ShfOWXwMsUHRTDhjR1wVON8f8nxRhYV+ISJt
+   P4OBX/jvvejBQXcj1qG53c3xywKaAV2mtlPFYoG9bUzPTBa4khHLCzE36
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253747548"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="253747548"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 09:08:28 -0800
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="552288470"
+Received: from eabada-mobl2.amr.corp.intel.com (HELO [10.209.6.252]) ([10.209.6.252])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 09:08:28 -0800
+Message-ID: <94c4b8e2-1bf8-5a2a-7e76-6b8cad3c6b21@intel.com>
+Date:   Fri, 4 Mar 2022 09:08:20 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: mmotm 2022-03-03-21-24 uploaded
- [drivers/platform/x86/x86-android-tablets.ko]
+ Thunderbird/91.5.0
 Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
-        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        platform-driver-x86@vger.kernel.org
-References: <20220304052444.C157EC340E9@smtp.kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220304052444.C157EC340E9@smtp.kernel.org>
+To:     Jarkko Sakkinen <jarkko@kernel.org>, linux-sgx@vger.kernel.org
+Cc:     Reinette Chatre <reinette.chatre@intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+References: <20220304122852.563475-1-jarkko@kernel.org>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH RFC] x86: Add SGX_IOC_ENCLAVE_AUGMENT_PAGES
+In-Reply-To: <20220304122852.563475-1-jarkko@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+On 3/4/22 04:28, Jarkko Sakkinen wrote:
+> Explicit EAUG ioctl is a better choice than an implicit EAUG from a page
+> fault handler because it allows to have O(1) number of kernel-enclave round
+> trips for EAUG-EACCEPT{COPY} process, instead of O(n), as it is in the case
+> when a page fault handler EAUG single page at a time.
 
-On 3/3/22 21:24, Andrew Morton wrote:
-> The mm-of-the-moment snapshot 2022-03-03-21-24 has been uploaded to
-> 
->    https://www.ozlabs.org/~akpm/mmotm/
-> 
-> mmotm-readme.txt says
-> 
-> README for mm-of-the-moment:
-> 
-> https://www.ozlabs.org/~akpm/mmotm/
-> 
-> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> more than once a week.
-> 
-> You will need quilt to apply these patches to the latest Linus release (5.x
-> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-> https://ozlabs.org/~akpm/mmotm/series
-
-on i386:
-when CONFIG_SPI is not set/enabled:
-
-ERROR: modpost: "spi_bus_type" [drivers/platform/x86/x86-android-tablets.ko] undefined!
-
--- 
-~Randy
+So this is basically an optimization?  It's MADV_WILLNEED or
+MAP_POPULATE to the cost of avoid future faults?
