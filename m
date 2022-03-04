@@ -2,87 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50154C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 01:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B15C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 01:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236513AbiCDBOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 20:14:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56520 "EHLO
+        id S236758AbiCDBRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 20:17:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiCDBOT (ORCPT
+        with ESMTP id S231246AbiCDBRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 20:14:19 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1402990FF5;
-        Thu,  3 Mar 2022 17:13:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=YP/xPHEToJlBuN8DCPqXaoW92yPiieu61YrqcXy3zcY=; b=G8Nwr9R47ujV1G8aAl6Pv5g91x
-        SibuUE/P+DNqz6CqPwJWnXtwUQBBdPP1Hj+NCZAjVy8Gv5Jm8Ee0Kec83IdY+lTiSvWVbM5RdjF6G
-        JG6tpMekhLPjFctVHoNl4h42K/tZtaGvkbiQbdVs3PSfrqmBZh5d5gSg+5vpIhognJejdExqWOXV/
-        X92kUfOnrQF9WibzNGdfv9952u002NOn9e3TmpDR1pCpg7/sbnh3xv5p0qYnJ4/zj4m8rm+WTBjQV
-        zhWsnmZP60mEWKpZ5wn5E6tpytH0Rf3kT5729EYmD3WEVcH+cxFZfsQ30IKxUQZbvKRBdyBY3RTRB
-        nO6fOvTg==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPwVd-008Dgj-P7; Fri, 04 Mar 2022 01:13:29 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>, linux-mips@vger.kernel.org
-Subject: [PATCH] mips: DEC: honor CONFIG_MIPS_FP_SUPPORT=n
-Date:   Thu,  3 Mar 2022 17:13:28 -0800
-Message-Id: <20220304011328.27459-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 3 Mar 2022 20:17:50 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D2617AEDD
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 17:17:04 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id bx5so6108249pjb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 17:17:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kx5Jp4/0ww7++KGVRBeTTTvpau2ndGSiDv71YsjwVqk=;
+        b=Nej3XIybw8L9KhSnUMcPkV/ZHDELs8Rz7aThhpO8znjxk18FqCRWlZBar3Zt7ifoyg
+         dXpn9iZkajl5C5sKOZcmz9rDhvl+Kczn7GuNzYFWv/p/OtKj7dpUvWPDqXklah2m230y
+         q6A1A7w7WJz/Bjq4FqJzQoEvuEsbNM2svXjo7EXGixz1ukRldztqT+V49kpHk8h2PvCJ
+         804ejnC+jM67RYNSZ1loBUZMyOkeuelTUqGzmW0SQA8k4J1I1afcik2paf5/U08bfBvq
+         HV1lWgBzg0j7YTqrA4ic//hc8MUHuzvapMVWcytM9TxANXwaVJtLXWbxAYGSrYqIsU5+
+         MDRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kx5Jp4/0ww7++KGVRBeTTTvpau2ndGSiDv71YsjwVqk=;
+        b=S+5wcKifn2qGu0Hv3Mgd+MMAv2/SGczzsL1TKQNuQ7rtMl4gNOOxL8XiJcXs4Uh4y2
+         Yz+XazxS/z9PF6Hf69AguS8P5OpgMn9Av0R8V3CT4cyXRZPOPUgUYY9V+RSvpVEOFzou
+         YB3MPbPt5VgZiZSVjmtVDJg2F8GCKHeP9fonAgxKU8c7J9M842TxKApj31zb7MnfV78W
+         xZHCmj3Az7GC3cFCXYLlsFSzjLjcGr4xSXTjaJklocvuyQi9zN8EBwS5dgalytnOovOl
+         BSHoSIApULYWiwaW8AtjuGbOvrPM+ARVoa9Dc2nVK7bTc2IPkvqOGl4+cXKJ5pi3w/Z3
+         i2cQ==
+X-Gm-Message-State: AOAM5335g1k/ik0PulttxCDR+j589ETr21u1xN/O+hnE6s0nkFF+Owh3
+        HbYC767JsAANGUrmMF/tAVkD5w==
+X-Google-Smtp-Source: ABdhPJwRtsxVbXHpeu1pMjZ85vERlwkEBvx2oMLzzmbNukNprT83DewEGg1uh3mGv5PGaKYRwShFSQ==
+X-Received: by 2002:a17:902:7296:b0:151:62b1:e2b0 with SMTP id d22-20020a170902729600b0015162b1e2b0mr24588921pll.165.1646356623568;
+        Thu, 03 Mar 2022 17:17:03 -0800 (PST)
+Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
+        by smtp.gmail.com with ESMTPSA id k5-20020aa788c5000000b004df7bf0a290sm3809208pff.1.2022.03.03.17.17.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 17:17:02 -0800 (PST)
+Date:   Fri, 4 Mar 2022 01:16:59 +0000
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>
+Subject: Re: [PATCH v4 18/30] KVM: x86/mmu: Zap only TDP MMU leafs in
+ kvm_zap_gfn_range()
+Message-ID: <YiFoi8SjWiCHax0P@google.com>
+References: <20220303193842.370645-1-pbonzini@redhat.com>
+ <20220303193842.370645-19-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303193842.370645-19-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include the DECstation interrupt handler in opting out of
-FPU support.
+On Thu, Mar 03, 2022, Paolo Bonzini wrote:
+> From: Sean Christopherson <seanjc@google.com>
+> 
+> Zap only leaf SPTEs in the TDP MMU's zap_gfn_range(), and rename various
+> functions accordingly.  When removing mappings for functional correctness
+> (except for the stupid VFIO GPU passthrough memslots bug), zapping the
+> leaf SPTEs is sufficient as the paging structures themselves do not point
+> at guest memory and do not directly impact the final translation (in the
+> TDP MMU).
+> 
+> Note, this aligns the TDP MMU with the legacy/full MMU, which zaps only
+> the rmaps, a.k.a. leaf SPTEs, in kvm_zap_gfn_range() and
+> kvm_unmap_gfn_range().
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Ben Gardon <bgardon@google.com>
+> Message-Id: <20220226001546.360188-18-seanjc@google.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c     |  4 ++--
+>  arch/x86/kvm/mmu/tdp_mmu.c | 41 ++++++++++----------------------------
+>  arch/x86/kvm/mmu/tdp_mmu.h |  8 +-------
+>  3 files changed, 14 insertions(+), 39 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 8408d7db8d2a..febdcaaa7b94 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -5834,8 +5834,8 @@ void kvm_zap_gfn_range(struct kvm *kvm, gfn_t gfn_start, gfn_t gfn_end)
+>  
+>  	if (is_tdp_mmu_enabled(kvm)) {
+>  		for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++)
+> -			flush = kvm_tdp_mmu_zap_gfn_range(kvm, i, gfn_start,
+> -							  gfn_end, flush);
+> +			flush = kvm_tdp_mmu_zap_leafs(kvm, i, gfn_start,
+> +						      gfn_end, true, flush);
+>  	}
+>  
+>  	if (flush)
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index f3939ce4a115..c71debdbc732 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -834,10 +834,8 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+>  }
+>  
+>  /*
+> - * Tears down the mappings for the range of gfns, [start, end), and frees the
+> - * non-root pages mapping GFNs strictly within that range. Returns true if
+> - * SPTEs have been cleared and a TLB flush is needed before releasing the
+> - * MMU lock.
+> + * Zap leafs SPTEs for the range of gfns, [start, end). Returns true if SPTEs
+> + * have been cleared and a TLB flush is needed before releasing the MMU lock.
 
-Fixes a linker error:
+I think the original code does not _over_ zapping. But the new version
+does. Will that have some side effects? In particular, if the range is
+within a huge page (or HugeTLB page of various sizes), then we choose to
+zap it even if it is more than the range.
 
-mips-linux-ld: arch/mips/dec/int-handler.o: in function `fpu':
-(.text+0x148): undefined reference to `handle_fpe_int'
+Regardless of side effect, I think we probably should mention that in
+the comments?
 
-Fixes: 183b40f992c8 ("MIPS: Allow FP support to be disabled")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Paul Burton <paulburton@kernel.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: linux-mips@vger.kernel.org
----
-This builds OK. Is it enough for runtime interrupt handling?
-
- arch/mips/dec/int-handler.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- mmotm-2022-0302-1653.orig/arch/mips/dec/int-handler.S
-+++ mmotm-2022-0302-1653/arch/mips/dec/int-handler.S
-@@ -139,7 +139,7 @@
- 
- 		beqz	t0,spurious
- 
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- 		 and	t2,t0
- 		bnez	t2,fpu			# handle FPU immediately
- #endif
-@@ -280,7 +280,7 @@ handle_it:
- 		j	dec_irq_dispatch
- 		 nop
- 
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- fpu:
- 		lw	t0,fpu_kstat_irq
- 		nop
+>   *
+>   * If can_yield is true, will release the MMU lock and reschedule if the
+>   * scheduler needs the CPU or there is contention on the MMU lock. If this
+> @@ -845,42 +843,25 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+>   * the caller must ensure it does not supply too large a GFN range, or the
+>   * operation can cause a soft lockup.
+>   */
+> -static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
+> -			  gfn_t start, gfn_t end, bool can_yield, bool flush)
+> +static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+> +			      gfn_t start, gfn_t end, bool can_yield, bool flush)
+>  {
+> -	bool zap_all = (start == 0 && end >= tdp_mmu_max_gfn_host());
+>  	struct tdp_iter iter;
+>  
+> -	/*
+> -	 * No need to try to step down in the iterator when zapping all SPTEs,
+> -	 * zapping the top-level non-leaf SPTEs will recurse on their children.
+> -	 */
+> -	int min_level = zap_all ? root->role.level : PG_LEVEL_4K;
+> -
+>  	end = min(end, tdp_mmu_max_gfn_host());
+>  
+>  	lockdep_assert_held_write(&kvm->mmu_lock);
+>  
+>  	rcu_read_lock();
+>  
+> -	for_each_tdp_pte_min_level(iter, root, min_level, start, end) {
+> +	for_each_tdp_pte_min_level(iter, root, PG_LEVEL_4K, start, end) {
+>  		if (can_yield &&
+>  		    tdp_mmu_iter_cond_resched(kvm, &iter, flush, false)) {
+>  			flush = false;
+>  			continue;
+>  		}
+>  
+> -		if (!is_shadow_present_pte(iter.old_spte))
+> -			continue;
+> -
+> -		/*
+> -		 * If this is a non-last-level SPTE that covers a larger range
+> -		 * than should be zapped, continue, and zap the mappings at a
+> -		 * lower level, except when zapping all SPTEs.
+> -		 */
+> -		if (!zap_all &&
+> -		    (iter.gfn < start ||
+> -		     iter.gfn + KVM_PAGES_PER_HPAGE(iter.level) > end) &&
+> +		if (!is_shadow_present_pte(iter.old_spte) ||
+>  		    !is_last_spte(iter.old_spte, iter.level))
+>  			continue;
+>  
+> @@ -898,13 +879,13 @@ static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
+>   * SPTEs have been cleared and a TLB flush is needed before releasing the
+>   * MMU lock.
+>   */
+> -bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
+> -				 gfn_t end, bool can_yield, bool flush)
+> +bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start, gfn_t end,
+> +			   bool can_yield, bool flush)
+>  {
+>  	struct kvm_mmu_page *root;
+>  
+>  	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
+> -		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush);
+> +		flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, false);
+>  
+>  	return flush;
+>  }
+> @@ -1202,8 +1183,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>  bool kvm_tdp_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range,
+>  				 bool flush)
+>  {
+> -	return __kvm_tdp_mmu_zap_gfn_range(kvm, range->slot->as_id, range->start,
+> -					   range->end, range->may_block, flush);
+> +	return kvm_tdp_mmu_zap_leafs(kvm, range->slot->as_id, range->start,
+> +				     range->end, range->may_block, flush);
+>  }
+>  
+>  typedef bool (*tdp_handler_t)(struct kvm *kvm, struct tdp_iter *iter,
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
+> index 5e5ef2576c81..54bc8118c40a 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.h
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.h
+> @@ -15,14 +15,8 @@ __must_check static inline bool kvm_tdp_mmu_get_root(struct kvm_mmu_page *root)
+>  void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
+>  			  bool shared);
+>  
+> -bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
+> +bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start,
+>  				 gfn_t end, bool can_yield, bool flush);
+> -static inline bool kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id,
+> -					     gfn_t start, gfn_t end, bool flush)
+> -{
+> -	return __kvm_tdp_mmu_zap_gfn_range(kvm, as_id, start, end, true, flush);
+> -}
+> -
+>  bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp);
+>  void kvm_tdp_mmu_zap_all(struct kvm *kvm);
+>  void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm);
+> -- 
+> 2.31.1
+> 
+> 
