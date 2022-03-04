@@ -2,107 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E836CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C39C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229468AbiCDVs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 16:48:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
+        id S229922AbiCDVue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 16:50:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiCDVsS (ORCPT
+        with ESMTP id S229713AbiCDVub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 16:48:18 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBC4390
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 13:47:27 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id e2so8557172qte.12
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 13:47:27 -0800 (PST)
+        Fri, 4 Mar 2022 16:50:31 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4963E21F9F8
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 13:49:43 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id bi12so6964471ejb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 13:49:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=07QUV/roAPX5T4vcJdRHGYdQI94K3C6oZepbJubN048=;
-        b=ZyQ0k5CWcpdtr4eC0/7b4Rznt5zb4XDOsarVR6S+cR1VoJ6KfH1s56A5+EZ5tRASZZ
-         aq/wddTwsm4FUsvSZKAsJALQCvCagM8jQ1E1K52lCcoGFEbInN7CTr0orGcbGAW7uCOW
-         uy+L6y+GIzRI+1IHMDUv4XuJF7DfO+LvVFAJl+qtGHVcO4Sh5iCgobpjofpA94KxeKA8
-         KFlJECZwlUrNgIRtpzLt35h8VGRxm7TFI07cLe4VcIcq9w7FUCghDT4L49vZl2Qn414R
-         kt2CXu3c7zwgOJETW3d/HYBv9JvzvJO9JWIO7qJPPxzTRtP1Xnyw063zMJwt0qPhKwOZ
-         fzdw==
+        bh=gorolFJ2WIFQvAsoxOSrO8YEN0k5n1TryFpMGW1zZQQ=;
+        b=LzsQ5rUYvvNub8x9l9kvDaWf7K77rlY+iRkn5dlD+82ZPl7ZCGrmcqBTtvNe+X0bPW
+         MXRTMoQCl8ndHSQ6jy2WO/qD7mm7dVBag6oQqBnicr4/Dj55BzR195+oqLqUf8RbLZob
+         PzkGqmSuP2Iou/Cr3Jb7zTgkEP2cvx8IU6iZs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=07QUV/roAPX5T4vcJdRHGYdQI94K3C6oZepbJubN048=;
-        b=rd5gveTKBOcqNOm2Op3Rpxu2gowNtVnp0sYOsieFnf2XerJjdzyxTi07d9yiNlkJzn
-         UXpKrPbKE1Ylna56iJNmzA+he3rmTPoPz7e9naW0r3tGA6Gxquq6TayGIS3AlOg0y+uw
-         HA5Ovhh0U9Ce4jsCXJ9TKK2Shmd1yExOGohUmFGX4FL5vZLTVh3pu9aXL+YX0eA6QX/Z
-         tSLXaeLNYvVSE8cUyaMkBgziZ6uaEFSTZrR43C8kiiIl/cQdecF4lPSvTJwaqagsJuF6
-         DHIu08Iv5XydMtexmhu2fGKwKhEkyXUVry6G87snTqTZBGMthfYjTARWA/5hiTBoZ8UB
-         ooYg==
-X-Gm-Message-State: AOAM532QAYccKUdjBzzvhS4mU+GA2Jt0/JYeMaM8g0aFd758WRnMFD6p
-        TdvKhKKMzU/LMECZNZAqRdnG4PUmYBOvwVYPmLoU3w==
-X-Google-Smtp-Source: ABdhPJz79U1gHypq9yZMvIBnhQSWouY8E2jvQI7JMuB03UuB1XxnCs8Hf/wSBrxsG1zxreEQkdCnmKSY5cuJydinrzQ=
-X-Received: by 2002:ac8:5b84:0:b0:2e0:234:73c1 with SMTP id
- a4-20020ac85b84000000b002e0023473c1mr784457qta.62.1646430446705; Fri, 04 Mar
- 2022 13:47:26 -0800 (PST)
+        bh=gorolFJ2WIFQvAsoxOSrO8YEN0k5n1TryFpMGW1zZQQ=;
+        b=MEDDYPAaVMjiR4kPBaVou4GQqmS5DiREpgZNm9Sn+uB5KAOvtVOUVsfCEKPgrJL8Ky
+         BhnIj19UwG8TtLMXHuBnz36ciRAEVE01AFv9nLmGrzueRzKEWljhhMT/gwqpU2ezO0b6
+         AdY6o+FGhMsu6WIS/ugAanG7jogm68D3HP5f3OQSLXBGGeYvD+TqwQC3PORfDJejQdWt
+         Gukq8DzqRlTtnZbg+vbrEdpk3qiBBW+6ZdNL8JF6L8OGAx73qn6C2gs9l/t6GEOO74V1
+         C+xuTIJ81tg/KdEa/Q+DfBDyrrl3o1tm9YbQ8abmCKo5NxwS8RE/1XobxbCrKdtGpJ8V
+         zx7g==
+X-Gm-Message-State: AOAM5320b6W3tAzYmQGNfI0Wq4DIJSC15G1v96jV4h1S2uJsfFx+D8+E
+        QmsVEljWNCz8Rvu/uJDCa9olkQglk3bg7wko
+X-Google-Smtp-Source: ABdhPJxtR2k8tFkjSkZ4ob6zzY+9D1Kpa4WpFy6reyjvJaAmytd7dQcOpMLlcsCGFb2/iD6U0q6k7w==
+X-Received: by 2002:a17:906:66cb:b0:6cf:e4f7:9504 with SMTP id k11-20020a17090666cb00b006cfe4f79504mr695564ejp.142.1646430581340;
+        Fri, 04 Mar 2022 13:49:41 -0800 (PST)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
+        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006d2a835ac33sm2192587ejc.197.2022.03.04.13.49.40
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 13:49:40 -0800 (PST)
+Received: by mail-wm1-f52.google.com with SMTP id k29-20020a05600c1c9d00b003817fdc0f00so5831813wms.4
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 13:49:40 -0800 (PST)
+X-Received: by 2002:a05:600c:1d08:b0:381:6eda:67d1 with SMTP id
+ l8-20020a05600c1d0800b003816eda67d1mr9758221wms.88.1646430579829; Fri, 04 Mar
+ 2022 13:49:39 -0800 (PST)
 MIME-Version: 1.0
-References: <20220304202406.846485-1-robdclark@gmail.com>
-In-Reply-To: <20220304202406.846485-1-robdclark@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sat, 5 Mar 2022 00:47:15 +0300
-Message-ID: <CAA8EJprik57F+t0KicoYaRm=oDOgcQHyHSBjJKbekBKjO_-=0A@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/a6xx: Fix missing ARRAY_SIZE() check
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        open list <linux-kernel@vger.kernel.org>
+References: <1646300401-9063-1-git-send-email-quic_vpolimer@quicinc.com>
+ <1646300401-9063-5-git-send-email-quic_vpolimer@quicinc.com>
+ <CAA8EJpqkK8q7g8q56rfiOO22ykxgycJTpSJKHuhcqGk05nsVzA@mail.gmail.com>
+ <CAE-0n53jGQcn=NThrrW92NL-cry8yrFErdSYTHHEHWW48b3xbg@mail.gmail.com> <CAA8EJpoEpn2RPByeDkaGPUX+OC7tvbEw4k78Gd+RKs02jpzG1w@mail.gmail.com>
+In-Reply-To: <CAA8EJpoEpn2RPByeDkaGPUX+OC7tvbEw4k78Gd+RKs02jpzG1w@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 4 Mar 2022 13:49:27 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=WZUSuNa0Ei_0ByjHRdsJ7smhD+uVghs28NzNGvGp0LwQ@mail.gmail.com>
+Message-ID: <CAD=FV=WZUSuNa0Ei_0ByjHRdsJ7smhD+uVghs28NzNGvGp0LwQ@mail.gmail.com>
+Subject: Re: [PATCH v4 4/4] arm64/dts/qcom/sm8250: remove assigned-clock-rate
+ property for mdp clk
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Vinod Polimera <quic_vpolimer@quicinc.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>, quic_kalyant@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 at 23:23, Rob Clark <robdclark@gmail.com> wrote:
+Hi,
+
+On Thu, Mar 3, 2022 at 4:16 PM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
 >
-> From: Rob Clark <robdclark@chromium.org>
+> On Fri, 4 Mar 2022 at 02:56, Stephen Boyd <swboyd@chromium.org> wrote:
+> >
+> > Quoting Dmitry Baryshkov (2022-03-03 15:50:50)
+> > > On Thu, 3 Mar 2022 at 12:40, Vinod Polimera <quic_vpolimer@quicinc.com> wrote:
+> > > >
+> > > > Kernel clock driver assumes that initial rate is the
+> > > > max rate for that clock and was not allowing it to scale
+> > > > beyond the assigned clock value.
+> > > >
+> > > > Drop the assigned clock rate property and vote on the mdp clock as per
+> > > > calculated value during the usecase.
+> > > >
+> > > > Fixes: 7c1dffd471("arm64: dts: qcom: sm8250.dtsi: add display system nodes")
+> > >
+> > > Please remove the Fixes tags from all commits. Otherwise the patches
+> > > might be picked up into earlier kernels, which do not have a patch
+> > > adding a vote on the MDP clock.
+> >
+> > What patch is that? The Fixes tag could point to that commit.
 >
-> Fixes: f6d62d091cfd ("drm/msm/a6xx: add support for Adreno 660 GPU")
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> Please correct me if I'm wrong.
+> Currently the dtsi enforces bumping the MDP clock when the mdss device
+> is being probed and when the dpu device is being probed.
+> Later during the DPU lifetime the core_perf would change the clock's
+> rate as it sees fit according to the CRTC requirements.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-However see the comment below.
+"Currently" means _before_ ${SUBJECT} patch lands, right? Since
+${SUBJECT} patch is removing the bump to max.
 
-> ---
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 1 +
->  1 file changed, 1 insertion(+)
+
+> However it would happen only when the during the
+> dpu_crtc_atomic_flush(), before we call this function, the MDP clock
+> is left in the undetermined state. The power rails controlled by the
+> opp table are left in the undetermined state.
 >
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index 02b47977b5c3..6406d8c3411a 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -687,6 +687,7 @@ static void a6xx_set_cp_protect(struct msm_gpu *gpu)
->
->         BUILD_BUG_ON(ARRAY_SIZE(a6xx_protect) > 32);
->         BUILD_BUG_ON(ARRAY_SIZE(a650_protect) > 48);
-> +       BUILD_BUG_ON(ARRAY_SIZE(a660_protect) > 48);
+> I suppose that during the dpu_bind we should bump the clock to the max
+> possible freq and let dpu_core_perf handle it afterwards.
 
-The magic number 32 and 48 are repeated through this code. I'd suggest
-to define them and use defined names.
-It can come up as a separate commit.
+Definitely feels like seeing the clock to something predictable during
+the initial probe makes sense. If it's just for the initial probe then
+setting it to max (based on the opp table) seems fine. I think an
+earlier version of this series set it to max every time we did runtime
+resume. We'd have to have a good reason to do that.
 
->         if (adreno_is_a650(adreno_gpu)) {
->                 regs = a650_protect;
-> --
-> 2.35.1
->
-
-
--- 
-With best wishes
-Dmitry
+-Doug
