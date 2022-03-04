@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiCDUHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:07:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
+        id S230359AbiCDUHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:07:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbiCDUHA (ORCPT
+        with ESMTP id S230401AbiCDUHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:07:00 -0500
+        Fri, 4 Mar 2022 15:07:32 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2196CA76FD;
-        Fri,  4 Mar 2022 12:01:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415CEA7756;
+        Fri,  4 Mar 2022 12:01:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424097; x=1677960097;
+  t=1646424109; x=1677960109;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Zhkd9vMW4IoFvLpPP2WdaDbfud+1lrbpgFdFlKEXWIw=;
-  b=Xtw+KfuQGKjvX5po7xEKUzAik6Ma++SegukFzj/Wr2Xun7Uj3fcU0izl
-   W6KRzJRStBzn+qCUEksHVtpzcC+4hM6TWNg1cY2aN2RjOGWoyjko5DjGu
-   /IuE2uzsFR3MahAczvgeZbQc5NaiubQqqpbikWAX9+cvAv/U3rIRjb8Ed
-   ZGby3iVYny1LS0jxVqcxikytz3HiAuSUG+6v7rUIkjMfn3q+fd9i7cm3a
-   N0InC3ueZTrvTKAht5e0M3t2G/j40N5VzE9F2z6ljv0VFIpb6ogCR/jUI
-   r1/5Eg0iLJ8rRdQeRPTVBk93iCUNKs/8uliE4UvLGf4x9Mkii6HYZUDa5
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983376"
+  bh=pH5YDceO6tTdr5IZ6o3dwukz5Ln1m9AUbdFUHciWGhM=;
+  b=HF1XjB/A3rmE9G6OoCzQ+h06F4cFNMmmYsItBv2JbFH5bYobiITXajJU
+   3m4ryL3snT+XYcIYjy4fWdMqg8wrXhd9UADVCxGAn5nOKmTCt/WSLsylI
+   idPozNI1lRlOZqvZbmCngGAlkR975khhKm1KpiBQD0djj5dHn0AYIrLQq
+   5M5VGIsOGCmw+fKq6CE6gvfgacrLMRL9xIInnGgi2SnSnp+RG2p/2glDo
+   Djn6Cy5KVnscbXnNwmZdEbfaD7GS3RtVhOItTd8fpdsnZ7+L1UPbjQF34
+   llXNwDrnml7Qe+jBUXwEZBhaPaUQgP1KRWXjmkdNKzEgtGbOgBGHzD5S7
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983411"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983376"
+   d="scan'208";a="253983411"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:12 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:15 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344222"
+   d="scan'208";a="552344265"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:12 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:15 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 020/104] KVM: TDX: allocate per-package mutex
-Date:   Fri,  4 Mar 2022 11:48:36 -0800
-Message-Id: <f7b44d1d5a61f788294c399b63b505b3ff4d301b.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 026/104] KVM: TDX: x86: Add vm ioctl to get TDX systemwide parameters
+Date:   Fri,  4 Mar 2022 11:48:42 -0800
+Message-Id: <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,112 +58,156 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Several TDX SEAMCALLs are per-package scope (concretely per memory
-controller) and they need to be serialized per-package.  Allocate mutex for
-it.
+Implement a VM-scoped subcomment to get system-wide parameters.  Although
+this is system-wide parameters not per-VM, this subcomand is VM-scoped
+because
+- Device model needs TDX system-wide parameters after creating KVM VM.
+- This subcommands requires to initialize TDX module.  For lazy
+  initialization of the TDX module, vm-scope ioctl is better.
 
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/main.c    |  8 +++++++-
- arch/x86/kvm/vmx/tdx.c     | 18 ++++++++++++++++++
- arch/x86/kvm/vmx/x86_ops.h |  2 ++
- 3 files changed, 27 insertions(+), 1 deletion(-)
+ arch/x86/include/uapi/asm/kvm.h       | 22 ++++++++++++++
+ arch/x86/kvm/vmx/tdx.c                | 41 +++++++++++++++++++++++++++
+ tools/arch/x86/include/uapi/asm/kvm.h | 22 ++++++++++++++
+ 3 files changed, 85 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 8103d1c32cc9..6111c6485d8e 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -25,6 +25,12 @@ static __init int vt_hardware_setup(void)
- 	return 0;
- }
+diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+index 2ad61caf4e0b..70f9be4ea575 100644
+--- a/arch/x86/include/uapi/asm/kvm.h
++++ b/arch/x86/include/uapi/asm/kvm.h
+@@ -530,6 +530,8 @@ struct kvm_pmu_event_filter {
  
-+static void vt_hardware_unsetup(void)
-+{
-+	tdx_hardware_unsetup();
-+	vmx_hardware_unsetup();
-+}
+ /* Trust Domain eXtension sub-ioctl() commands. */
+ enum kvm_tdx_cmd_id {
++	KVM_TDX_CAPABILITIES = 0,
 +
- static int vt_vm_init(struct kvm *kvm)
- {
- 	int ret;
-@@ -42,7 +48,7 @@ static int vt_vm_init(struct kvm *kvm)
- struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.name = "kvm_intel",
+ 	KVM_TDX_CMD_NR_MAX,
+ };
  
--	.hardware_unsetup = vmx_hardware_unsetup,
-+	.hardware_unsetup = vt_hardware_unsetup,
+@@ -539,4 +541,24 @@ struct kvm_tdx_cmd {
+ 	__u64 data;
+ };
  
- 	.hardware_enable = vmx_hardware_enable,
- 	.hardware_disable = vmx_hardware_disable,
++struct kvm_tdx_cpuid_config {
++	__u32 leaf;
++	__u32 sub_leaf;
++	__u32 eax;
++	__u32 ebx;
++	__u32 ecx;
++	__u32 edx;
++};
++
++struct kvm_tdx_capabilities {
++	__u64 attrs_fixed0;
++	__u64 attrs_fixed1;
++	__u64 xfam_fixed0;
++	__u64 xfam_fixed1;
++
++	__u32 nr_cpuid_configs;
++	__u32 padding;
++	struct kvm_tdx_cpuid_config cpuid_configs[0];
++};
++
+ #endif /* _ASM_X86_KVM_H */
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index e8d293a3c11c..1c8222f54764 100644
+index 8c67444d052a..20b45bb0b032 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -34,6 +34,8 @@ struct tdx_capabilities {
- /* Capabilities of KVM + the TDX module. */
- struct tdx_capabilities tdx_caps;
- 
-+static struct mutex *tdx_mng_key_config_lock;
-+
- static u64 hkid_mask __ro_after_init;
- static u8 hkid_start_pos __ro_after_init;
- 
-@@ -112,7 +114,9 @@ bool tdx_is_vm_type_supported(unsigned long type)
- 
- static int __init __tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
- {
-+	int max_pkgs;
- 	u32 max_pa;
-+	int i;
- 
- 	if (!enable_ept) {
- 		pr_warn("Cannot enable TDX with EPT disabled\n");
-@@ -127,6 +131,14 @@ static int __init __tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
- 	if (WARN_ON_ONCE(x86_ops->tlb_remote_flush))
- 		return -EIO;
- 
-+	max_pkgs = topology_max_packages();
-+	tdx_mng_key_config_lock = kcalloc(max_pkgs, sizeof(*tdx_mng_key_config_lock),
-+				   GFP_KERNEL);
-+	if (!tdx_mng_key_config_lock)
-+		return -ENOMEM;
-+	for (i = 0; i < max_pkgs; i++)
-+		mutex_init(&tdx_mng_key_config_lock[i]);
-+
- 	max_pa = cpuid_eax(0x80000008) & 0xff;
- 	hkid_start_pos = boot_cpu_data.x86_phys_bits;
- 	hkid_mask = GENMASK_ULL(max_pa - 1, hkid_start_pos);
-@@ -147,6 +159,12 @@ void __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
- 		enable_tdx = false;
+@@ -349,6 +349,44 @@ int tdx_vm_init(struct kvm *kvm)
+ 	return ret;
  }
  
-+void tdx_hardware_unsetup(void)
++static int tdx_capabilities(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
 +{
-+	/* kfree accepts NULL. */
-+	kfree(tdx_mng_key_config_lock);
++	struct kvm_tdx_capabilities __user *user_caps;
++	struct kvm_tdx_capabilities caps;
++
++	BUILD_BUG_ON(sizeof(struct kvm_tdx_cpuid_config) !=
++		     sizeof(struct tdx_cpuid_config));
++
++	WARN_ON(cmd->id != KVM_TDX_CAPABILITIES);
++	if (cmd->metadata)
++		return -EINVAL;
++
++	user_caps = (void __user *)cmd->data;
++	if (copy_from_user(&caps, user_caps, sizeof(caps)))
++		return -EFAULT;
++
++	if (caps.nr_cpuid_configs < tdx_caps.nr_cpuid_configs)
++		return -E2BIG;
++
++	caps = (struct kvm_tdx_capabilities) {
++		.attrs_fixed0 = tdx_caps.attrs_fixed0,
++		.attrs_fixed1 = tdx_caps.attrs_fixed1,
++		.xfam_fixed0 = tdx_caps.xfam_fixed0,
++		.xfam_fixed1 = tdx_caps.xfam_fixed1,
++		.nr_cpuid_configs = tdx_caps.nr_cpuid_configs,
++		.padding = 0,
++	};
++
++	if (copy_to_user(user_caps, &caps, sizeof(caps)))
++		return -EFAULT;
++	if (copy_to_user(user_caps->cpuid_configs, &tdx_caps.cpuid_configs,
++			 tdx_caps.nr_cpuid_configs *
++			 sizeof(struct tdx_cpuid_config)))
++		return -EFAULT;
++
++	return 0;
 +}
 +
- void __init tdx_pre_kvm_init(unsigned int *vcpu_size,
- 			unsigned int *vcpu_align, unsigned int *vm_size)
+ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
  {
-diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 78331dbc29f7..da32b4b86b19 100644
---- a/arch/x86/kvm/vmx/x86_ops.h
-+++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -131,11 +131,13 @@ void __init tdx_pre_kvm_init(unsigned int *vcpu_size,
- 			unsigned int *vcpu_align, unsigned int *vm_size);
- bool tdx_is_vm_type_supported(unsigned long type);
- void __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops);
-+void tdx_hardware_unsetup(void);
- #else
- static inline void tdx_pre_kvm_init(
- 	unsigned int *vcpu_size, unsigned int *vcpu_align, unsigned int *vm_size) {}
- static inline bool tdx_is_vm_type_supported(unsigned long type) { return false; }
- static inline void tdx_hardware_setup(struct kvm_x86_ops *x86_ops) {}
-+static inline void tdx_hardware_unsetup(void) {}
- #endif
+ 	struct kvm_tdx_cmd tdx_cmd;
+@@ -360,6 +398,9 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
+ 	mutex_lock(&kvm->lock);
  
- #endif /* __KVM_X86_VMX_X86_OPS_H */
+ 	switch (tdx_cmd.id) {
++	case KVM_TDX_CAPABILITIES:
++		r = tdx_capabilities(kvm, &tdx_cmd);
++		break;
+ 	default:
+ 		r = -EINVAL;
+ 		goto out;
+diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
+index 2ad61caf4e0b..70f9be4ea575 100644
+--- a/tools/arch/x86/include/uapi/asm/kvm.h
++++ b/tools/arch/x86/include/uapi/asm/kvm.h
+@@ -530,6 +530,8 @@ struct kvm_pmu_event_filter {
+ 
+ /* Trust Domain eXtension sub-ioctl() commands. */
+ enum kvm_tdx_cmd_id {
++	KVM_TDX_CAPABILITIES = 0,
++
+ 	KVM_TDX_CMD_NR_MAX,
+ };
+ 
+@@ -539,4 +541,24 @@ struct kvm_tdx_cmd {
+ 	__u64 data;
+ };
+ 
++struct kvm_tdx_cpuid_config {
++	__u32 leaf;
++	__u32 sub_leaf;
++	__u32 eax;
++	__u32 ebx;
++	__u32 ecx;
++	__u32 edx;
++};
++
++struct kvm_tdx_capabilities {
++	__u64 attrs_fixed0;
++	__u64 attrs_fixed1;
++	__u64 xfam_fixed0;
++	__u64 xfam_fixed1;
++
++	__u32 nr_cpuid_configs;
++	__u32 padding;
++	struct kvm_tdx_cpuid_config cpuid_configs[0];
++};
++
+ #endif /* _ASM_X86_KVM_H */
 -- 
 2.25.1
 
