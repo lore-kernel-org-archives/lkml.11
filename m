@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 733D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238079AbiCDRdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
+        id S241290AbiCDReB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:34:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241328AbiCDRdE (ORCPT
+        with ESMTP id S241232AbiCDRdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:33:04 -0500
+        Fri, 4 Mar 2022 12:33:49 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CA691CD9CD
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:32:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38333381B7
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:32:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646415135;
+        s=mimecast20190719; t=1646415172;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jXjAemh+tgaeshWdU0Zw5DqV+Jw6OpdtZV+yJ3YWHiI=;
-        b=C1Fa/jY7gUFx+oZV11T/bN8KB1Zkgee6kafC35dN8OUh8KK6C6rLeYcJ0t1qJD4bMzKiV5
-        k4hL1vzyyURZyLnKTF9NfbKik295+tJwhtIY1QHWJWqh7VpnG0YuPm9gqUGgc18IWgAIqw
-        0fBiXkmw1MxJfBPGhXhQ4iMMItDp/ik=
+        bh=Ux6twZOFT9lb2qTfIZn2kGfR1Z5YetNZFcKf5G8re3c=;
+        b=h13fUwSPYf8LdK3JUe7UPvatGwjSn9uP3Pgy/1N5iE/LlPQ6DHo7+pzOQFBjVHb95J6j7y
+        vIY0pafOnwRXxHBMWTBCnAzBt4Xd8ePZa7sP7C45zuMkr6HhIi90/oH3x0e5Ob6KRUewnK
+        QkY4K8RVLwKt2q0ZWI0ZIq0JZN9vSVE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-204-hTrIEclbMQmRMq9TQ7IA5A-1; Fri, 04 Mar 2022 12:32:12 -0500
-X-MC-Unique: hTrIEclbMQmRMq9TQ7IA5A-1
+ us-mta-452-PycJhc6zM8GUH9sRgyf9ng-1; Fri, 04 Mar 2022 12:32:47 -0500
+X-MC-Unique: PycJhc6zM8GUH9sRgyf9ng-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 59BC51091DA0;
-        Fri,  4 Mar 2022 17:32:10 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8702B824FA7;
+        Fri,  4 Mar 2022 17:32:44 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 49C2486595;
-        Fri,  4 Mar 2022 17:32:06 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ABB6786595;
+        Fri,  4 Mar 2022 17:32:40 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v2 11/28] samples/bpf: add a report descriptor fixup
-Date:   Fri,  4 Mar 2022 18:28:35 +0100
-Message-Id: <20220304172852.274126-12-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v2 14/28] selftests/bpf: add tests for hid_{get|set}_data helpers
+Date:   Fri,  4 Mar 2022 18:28:38 +0100
+Message-Id: <20220304172852.274126-15-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -67,54 +67,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-the program inverts the definition of X and Y at a given place in the
-report descriptor of my mouse.
+Simple test added here, with one use of each helper.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 ---
 
 changes in v2:
-- split the series by bpf/libbpf/hid/selftests and samples
+- split the patch with libbpf left outside.
 ---
- samples/bpf/hid_mouse_kern.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/hid.c | 65 ++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/hid.c      | 45 ++++++++++++++
+ 2 files changed, 110 insertions(+)
 
-diff --git a/samples/bpf/hid_mouse_kern.c b/samples/bpf/hid_mouse_kern.c
-index c24a12e06b40..958820caaf5d 100644
---- a/samples/bpf/hid_mouse_kern.c
-+++ b/samples/bpf/hid_mouse_kern.c
-@@ -62,5 +62,30 @@ int hid_x_event(struct hid_bpf_ctx *ctx)
- 	return 0;
+diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
+index 91543b8078ca..74426523dd6f 100644
+--- a/tools/testing/selftests/bpf/prog_tests/hid.c
++++ b/tools/testing/selftests/bpf/prog_tests/hid.c
+@@ -297,6 +297,68 @@ static int test_hid_raw_event(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
+ 	return ret;
  }
  
-+SEC("hid/rdesc_fixup")
-+int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
++/*
++ * Attach hid_set_get_data to the given uhid device,
++ * retrieve and open the matching hidraw node,
++ * inject one event in the uhid device,
++ * check that the program makes correct use of bpf_hid_{set|get}_data.
++ */
++static int test_hid_set_get_data(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
 +{
-+	if (ctx->type != HID_BPF_RDESC_FIXUP)
-+		return 0;
++	int err, hidraw_ino, hidraw_fd = -1;
++	char hidraw_path[64] = {0};
++	u8 buf[10] = {0};
++	int ret = -1;
 +
-+	bpf_printk("rdesc: %02x %02x %02x",
-+		   ctx->data[0],
-+		   ctx->data[1],
-+		   ctx->data[2]);
-+	bpf_printk("       %02x %02x %02x",
-+		   ctx->data[3],
-+		   ctx->data[4],
-+		   ctx->data[5]);
-+	bpf_printk("       %02x %02x %02x ...",
-+		   ctx->data[6],
-+		   ctx->data[7],
-+		   ctx->data[8]);
++	/* attach hid_set_get_data program */
++	hid_skel->links.hid_set_get_data =
++		bpf_program__attach_hid(hid_skel->progs.hid_set_get_data, sysfs_fd);
++	if (!ASSERT_OK_PTR(hid_skel->links.hid_set_get_data,
++			   "attach_hid(hid_set_get_data)"))
++		return PTR_ERR(hid_skel->links.hid_set_get_data);
 +
-+	ctx->data[39] = 0x31;
-+	ctx->data[41] = 0x30;
++	hidraw_ino = get_hidraw(hid_skel->links.hid_set_get_data);
++	if (!ASSERT_GE(hidraw_ino, 0, "get_hidraw"))
++		goto cleanup;
 +
-+	return 0;
++	/* open hidraw node to check the other side of the pipe */
++	sprintf(hidraw_path, "/dev/hidraw%d", hidraw_ino);
++	hidraw_fd = open(hidraw_path, O_RDWR | O_NONBLOCK);
++
++	if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
++		goto cleanup;
++
++	/* inject one event */
++	buf[0] = 1;
++	buf[1] = 42;
++	send_event(uhid_fd, buf, 6);
++
++	/* read the data from hidraw */
++	memset(buf, 0, sizeof(buf));
++	err = read(hidraw_fd, buf, sizeof(buf));
++	if (!ASSERT_EQ(err, 6, "read_hidraw"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(buf[2], (42 >> 2), "hid_set_get_data"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(buf[3], 1, "hid_set_get_data"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(buf[4], 42, "hid_set_get_data"))
++		goto cleanup;
++
++	ret = 0;
++
++cleanup:
++	if (hidraw_fd >= 0)
++		close(hidraw_fd);
++
++	hid__detach(hid_skel);
++
++	return ret;
 +}
 +
- char _license[] SEC("license") = "GPL";
- u32 _version SEC("version") = LINUX_VERSION_CODE;
+ /*
+  * Attach hid_rdesc_fixup to the given uhid device,
+  * retrieve and open the matching hidraw node,
+@@ -395,6 +457,9 @@ void serial_test_hid_bpf(void)
+ 	err = test_hid_raw_event(hid_skel, uhid_fd, sysfs_fd);
+ 	ASSERT_OK(err, "hid");
+ 
++	err = test_hid_set_get_data(hid_skel, uhid_fd, sysfs_fd);
++	ASSERT_OK(err, "hid_set_get_data");
++
+ 	err = test_rdesc_fixup(hid_skel, uhid_fd, sysfs_fd);
+ 	ASSERT_OK(err, "hid_rdesc_fixup");
+ 
+diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
+index 2270448d0d3f..de6668471940 100644
+--- a/tools/testing/selftests/bpf/progs/hid.c
++++ b/tools/testing/selftests/bpf/progs/hid.c
+@@ -66,3 +66,48 @@ int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
+ 
+ 	return 0;
+ }
++
++SEC("hid/device_event")
++int hid_set_get_data(struct hid_bpf_ctx *ctx)
++{
++	int ret;
++	__u8 *buf;
++
++	buf = bpf_ringbuf_reserve(&ringbuf, 8, 0);
++	if (!buf)
++		return -12; /* -ENOMEM */
++
++	/* first try read/write with n > 32 */
++	ret = bpf_hid_get_data(ctx, 0, 64, buf, 8);
++	if (ret < 0)
++		goto discard;
++
++	/* reinject it */
++	ret = bpf_hid_set_data(ctx, 24, 64, buf, 8);
++	if (ret < 0)
++		goto discard;
++
++	/* extract data at bit offset 10 of size 4 (half a byte) */
++	ret = bpf_hid_get_data(ctx, 10, 4, buf, 8);  /* expected to fail */
++	if (ret > 0) {
++		ret = -1;
++		goto discard;
++	}
++
++	ret = bpf_hid_get_data(ctx, 10, 4, buf, 4);
++	if (ret < 0)
++		goto discard;
++
++	/* reinject it */
++	ret = bpf_hid_set_data(ctx, 16, 4, buf, 4);
++	if (ret < 0)
++		goto discard;
++
++	ret = 0;
++
++ discard:
++
++	bpf_ringbuf_discard(buf, 0);
++
++	return ret;
++}
 -- 
 2.35.1
 
