@@ -2,166 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD01AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44851C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237160AbiCDOoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        id S239924AbiCDOo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239904AbiCDOoB (ORCPT
+        with ESMTP id S233357AbiCDOoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:44:01 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818511BD072
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:43:12 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso10771600pjj.2
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 06:43:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ze2fqoG8Uv2ivOdemEby3h5mEqMYX8ZelC0Z+W02JsY=;
-        b=MByDOnLKlFXdAZczHK4WVBzn4RAn6PAHsHIoSaVTs0Hd0A9DZT3CFOy2QmicB40p5j
-         DyQT2LZiwFafH9eamIKEoh0PuIFAkMzhGsEHPz3VgijVEDjImTUWNn3mozIJp4QgnY27
-         276pkjtyHVm1SQY0FstynGu5/6sB0ML6eFEtcWccIgrlTJHhr8TTnrm4LfEwgtOXealL
-         tD1WrPbWEc8eDFGMgCY2rjJHVFUyEXMnHWQuv9H1xvDQ4rCi08c2njHZ26qCI5CR6mCM
-         +zHqtbNTXi6AzslQtMfQr4syff73Alj+suX1drdIzowGvnnE7J1T6oyNxdn0W2Uqs2O6
-         vPBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ze2fqoG8Uv2ivOdemEby3h5mEqMYX8ZelC0Z+W02JsY=;
-        b=IFHsmeOBUql+LyEAy60bEJX0J+vdxp6RUwQKYfaScvqsvPc1coNpMNrSp2cy0PDf0W
-         HokcRuN+lpYU7vm1iJC2mz6Ki+0BlM+uZ4N+OMql111w3u475mCUkqZakRSaVQWswJDy
-         /DaxTT1iaE2S+UYTBnSDgSGTb4ughVtbMF8M8YK0Am2CJ9ldCat5UEqvq6163WPqIqo4
-         muFvQz+77Y/s3JQz6LMdJmIhmanom7L3S2r7SJd8cfgQkd6iTfRM71EfHr9q+88I1Iwb
-         KPWlxEXol6L9Hyi5g7taqaqQekbdws3R79Rs8+o8FS4hTFjeHFpQGCIIrAueJm7LTDZe
-         TSHA==
-X-Gm-Message-State: AOAM5318Y4TdQMH7e7FmgIVHBKiIH65HoSEN/63E+kmyIHQyScFRJtuV
-        nBDecBctClgEVbJBYypCRU49cw==
-X-Google-Smtp-Source: ABdhPJx2Krb3aVoml7oYDj/wYF2zHt9MFApRDg9L25cSW2GzVlZ0CxIxRFV7Ju0TLpp/Uo/PKUNvRg==
-X-Received: by 2002:a17:90a:a887:b0:1bc:388a:329f with SMTP id h7-20020a17090aa88700b001bc388a329fmr11106568pjq.17.1646404991696;
-        Fri, 04 Mar 2022 06:43:11 -0800 (PST)
-Received: from ?IPV6:2409:8a28:e6d:cc00:d089:89fd:5c33:f12? ([2409:8a28:e6d:cc00:d089:89fd:5c33:f12])
-        by smtp.gmail.com with ESMTPSA id s21-20020a056a00195500b004f65b15b3a0sm6169814pfk.8.2022.03.04.06.43.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 06:43:11 -0800 (PST)
-Message-ID: <f649a2f1-1029-dd69-47c6-f61f0fcc4313@bytedance.com>
-Date:   Fri, 4 Mar 2022 22:43:01 +0800
+        Fri, 4 Mar 2022 09:44:23 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5D31BD061
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:43:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646405015; x=1677941015;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CW0GZlgSnEJ+z/BmZSRD3m0q4ahJDHVBRYgA4ELGTuQ=;
+  b=Da82NlmDu3Rc4JRJt+loH/XuG8r2/keqZTkeGrBQnUAYJukjjLQapl/C
+   jClP0blbog0pvuXgfwCQP7TuEn2ArnCRtVW4Yimp4E0YwkDxGBz223xsR
+   GGcI8hHuekEpOs7ZRU4mHVBW5rrg+ySX6q/iW37eYlJOGpfYEw/4Chra/
+   8r0pgLySkOEDWfvzV2+3CoIQ5FmaMWG/OWShKJpNcP2iSIy00Z1/UQxpf
+   5Lxm48ESBVOX4zRBbMgMbC0xoVKMf7TvLO0EsRmPWaC12Xxnm/UPQoDmH
+   P3j86UTS3BHOAcdGSekvqqP07Ag39QJnGsVLY9e1QoiXzI/bSxVI4cJed
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="150870328"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 07:43:34 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 07:43:34 -0700
+Received: from ness.home (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 4 Mar 2022 07:43:32 -0700
+From:   <nicolas.ferre@microchip.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        <arm@kernel.org>, <soc@kernel.org>
+CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Linux Kernel list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [GIT PULL] ARM: at91: soc for 5.18 #2
+Date:   Fri, 4 Mar 2022 15:42:17 +0100
+Message-ID: <20220304144216.23340-1-nicolas.ferre@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [External] Re: [PATCH] psi: remove CPU full metric at system
- level
-Content-Language: en-US
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     corbet@lwn.net, mingo@redhat.com, peterz@infradead.org,
-        surenb@google.com, ebiggers@google.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        Martin Steigerwald <Martin.Steigerwald@proact.de>
-References: <20220303055814.93057-1-zhouchengming@bytedance.com>
- <YiDB8pjzthSk0X7Q@cmpxchg.org>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <YiDB8pjzthSk0X7Q@cmpxchg.org>
-Content-Type: text/plain; charset=UTF-8
+Organization: microchip
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/3 9:26 下午, Johannes Weiner wrote:
-> On Thu, Mar 03, 2022 at 01:58:14PM +0800, Chengming Zhou wrote:
->> Martin find it confusing when look at the /proc/pressure/cpu output,
->> and found no hint about that CPU "full" line in psi Documentation.
->>
->> % cat /proc/pressure/cpu
->> some avg10=0.92 avg60=0.91 avg300=0.73 total=933490489
->> full avg10=0.22 avg60=0.23 avg300=0.16 total=358783277
->>
->> The PSI_CPU_FULL state is introduced by commit e7fcd7622823
->> ("psi: Add PSI_CPU_FULL state"), which mainly for cgroup level,
->> but also counted at the system level as a side effect.
->>
->> Naturally, the FULL state doesn't exist for the CPU resource at
->> the system level. These "full" numbers can come from CPU idle
->> schedule latency. For example, t1 is the time when task wakeup
->> on an idle CPU, t2 is the time when CPU pick and switch to it.
->> The delta of (t2 - t1) will be in CPU_FULL state.
->>
->> Another case all processes can be stalled is when all cgroups
->> have been throttled at the same time, which unlikely to happen.
->>
->> Anyway, CPU_FULL metric is meaningless and confusing at the
->> system level. So this patch removed CPU full metric at the
->> system level, and removed it's monitor function too. The psi
->> Documentation has also been updated accordingly.
->>
->> Fixes: e7fcd7622823 ("psi: Add PSI_CPU_FULL state")
->> Reported-by: Martin Steigerwald <Martin.Steigerwald@proact.de>
->> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->> ---
->>  Documentation/accounting/psi.rst | 18 +++++++++++++++---
->>  kernel/sched/psi.c               | 10 +++++++++-
->>  2 files changed, 24 insertions(+), 4 deletions(-)
->>
->> diff --git a/Documentation/accounting/psi.rst b/Documentation/accounting/psi.rst
->> index 860fe651d645..519652c06d7d 100644
->> --- a/Documentation/accounting/psi.rst
->> +++ b/Documentation/accounting/psi.rst
->> @@ -178,8 +178,20 @@ Cgroup2 interface
->>  In a system with a CONFIG_CGROUP=y kernel and the cgroup2 filesystem
->>  mounted, pressure stall information is also tracked for tasks grouped
->>  into cgroups. Each subdirectory in the cgroupfs mountpoint contains
->> -cpu.pressure, memory.pressure, and io.pressure files; the format is
->> -the same as the /proc/pressure/ files.
->> +cpu.pressure, memory.pressure, and io.pressure files; the format of
->> +memory.pressure and io.pressure is the same as the /proc/pressure/ files.
->> +
->> +But the format of cpu.pressure is as such::
->> +	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
->> +	full avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> 
-> It's the format of cpu.pressure, except when it's
-> /sys/fs/cgroup/cpu.pressure... I think this is getting maybe a tad too
-> difficult to write parsers for. Plus, we added the line over a year
-> ago so we might break somebody by removing it again.
-> 
-> How about reporting zeroes at the system level?
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Ok, it's really better for userspace parsers, will change to this way
-and send later.
+Arnd, Olof,
 
-Thanks.
+One more patch for 5.18 on the SoC branch.
+You already have the patch made by Conor "soc: microchip: make
+mpfs_sys_controller_put static" in your tree, so I didn't add it here.
 
-> 
-> diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-> index e14358178849..86824de404bc 100644
-> --- a/kernel/sched/psi.c
-> +++ b/kernel/sched/psi.c
-> @@ -1062,14 +1062,17 @@ int psi_show(struct seq_file *m, struct psi_group *group, enum psi_res res)
->  	mutex_unlock(&group->avgs_lock);
->  
->  	for (full = 0; full < 2; full++) {
-> -		unsigned long avg[3];
-> -		u64 total;
-> +		unsigned long avg[3] = { 0, };
-> +		u64 total = 0;
->  		int w;
->  
-> -		for (w = 0; w < 3; w++)
-> -			avg[w] = group->avg[res * 2 + full][w];
-> -		total = div_u64(group->total[PSI_AVGS][res * 2 + full],
-> -				NSEC_PER_USEC);
-> +		/* CPU FULL is undefined at the system level */
-> +		if (!(group == &psi_system && res == PSI_CPU && full)) {
-> +			for (w = 0; w < 3; w++)
-> +				avg[w] = group->avg[res * 2 + full][w];
-> +			total = div_u64(group->total[PSI_AVGS][res * 2 + full],
-> +					NSEC_PER_USEC);
-> +		}
->  
->  		seq_printf(m, "%s avg10=%lu.%02lu avg60=%lu.%02lu avg300=%lu.%02lu total=%llu\n",
->  			   full ? "full" : "some",
+Thanks, best regards,
+  Nicolas
+
+The following changes since commit d0054a470c33902f5ae88835ed8a8ecc3cf8faa4:
+
+  soc: add microchip polarfire soc system controller (2022-02-25 12:50:59 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-soc-5.18-2
+
+for you to fetch changes up to def8abbb1464579c37f15b3d7a95e5f3bab758dc:
+
+  ARM: at91: add support in soc driver for new SAMA5D29 (2022-03-04 12:49:22 +0100)
+
+----------------------------------------------------------------
+AT91 SoC #2 for 5.18:
+
+- SAMA5D29 variant to the SAMA5D2 family in SoC driver.
+
+----------------------------------------------------------------
+Mihai Sain (1):
+      ARM: at91: add support in soc driver for new SAMA5D29
+
+ drivers/soc/atmel/soc.c | 3 +++
+ drivers/soc/atmel/soc.h | 1 +
+ 2 files changed, 4 insertions(+)
+
+-- 
+Nicolas Ferre
