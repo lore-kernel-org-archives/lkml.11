@@ -2,169 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B64CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05173C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229550AbiCDVMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 16:12:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58176 "EHLO
+        id S229628AbiCDVOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 16:14:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiCDVMu (ORCPT
+        with ESMTP id S229464AbiCDVOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 16:12:50 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE0838BC2
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 13:12:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646428321; x=1677964321;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ykWgWP/GD+9Jm+IbipK2/JYt9vytoc4D+hbYU5DMUts=;
-  b=BHr+YwXpuqNZhFBZJhrSWd94weN1x8LqMRtZgctOQKHM07CVOLIygvF8
-   DX2l4usEU/93e4OH2TRgG3u+pVIUmgqlb3DaUVfKJ1G0YMPhX2SeXi/Y+
-   hsKVqVABE6gPaumqj8JW1wlMkSmfHYO2hW8F+QSATHw4xft706RDIsMTi
-   TOHfdLYC2cGtPaL7PMoojWs+fl57XIW/q38qwFKweAZ8bI+H09wwBwvtN
-   YMtleo4r118Gm+kRZt1iFX2e3iHJ1K6SsJq22tHBZiTDlQW9i6nyO6qQx
-   z6Nii6PaTEHosXuLsi7++NEprX6tNR6O5yEqEEs1jRdBP3bdeBkEYjRp3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="278757374"
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="278757374"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 13:12:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552369587"
-Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.151])
-  by orsmga008.jf.intel.com with SMTP; 04 Mar 2022 13:11:54 -0800
-Received: by stinkbox (sSMTP sendmail emulation); Fri, 04 Mar 2022 23:11:54 +0200
-Date:   Fri, 4 Mar 2022 23:11:54 +0200
-From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
-To:     trix@redhat.com
-Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, nathan@kernel.org,
-        ndesaulniers@google.com, matthew.d.roper@intel.com,
-        lucas.demarchi@intel.com, airlied@redhat.com, imre.deak@intel.com,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] drm/i915: rework the error handling in *_dpll_params
-Message-ID: <YiKAmhXEye0fpAyF@intel.com>
-References: <20220304210355.608898-1-trix@redhat.com>
+        Fri, 4 Mar 2022 16:14:01 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9952213CEC1;
+        Fri,  4 Mar 2022 13:13:12 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id BDB1892009C; Fri,  4 Mar 2022 22:13:11 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id B6A0792009B;
+        Fri,  4 Mar 2022 21:13:11 +0000 (GMT)
+Date:   Fri, 4 Mar 2022 21:13:11 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] MIPS: Sanitise Cavium switch cases in TLB handler
+ synthesizers
+Message-ID: <alpine.DEB.2.21.2203042044580.47558@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220304210355.608898-1-trix@redhat.com>
-X-Patchwork-Hint: comment
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 01:03:55PM -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Clang static analysis reports this issue
-> intel_dpll.c:472:31: warning: The left operand of '-'
->   is a garbage value [core.UndefinedBinaryOperatorResult]
->   this_err = abs(clock.dot - target);
->                  ~~~~~~~~~ ^
-> 
-> In a loop clock.dot is set on successful call to
-> i9xx_calc_dpll_params().  If the call fails, the later
-> *is_valid() will use the previous loop's clock.dot.
+It makes no sense to fall through to `break'.  Therefore reorder the 
+switch statements so as to have the Cavium cases first, followed by the 
+default case, which improves readability and pacifies code analysis 
+tools.  No change in semantics, assembly produced is exactly the same.
 
-I don't think this can happen. intel_pll_is_valid() validates
-all the dividers first and bails out if they are junk.
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: bc431d2153cc ("MIPS: Fix fall-through warnings for Clang")
+---
+ arch/mips/mm/tlbex.c |   23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
-> 
-> The *_dpll_params functions return an arithmetic statement
-> with the clock.dot as the variable.  Change the error handler
-> to set clock.dot to 0 and jump to the return statement.
-> 
-> Fixes: dccbea3b0704 ("drm/i915: calculate the port clock rate along with other PLL params")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/gpu/drm/i915/display/intel_dpll.c | 32 ++++++++++++++---------
->  1 file changed, 20 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/display/intel_dpll.c b/drivers/gpu/drm/i915/display/intel_dpll.c
-> index 0ae37fdbf2a5b..ba7cada704288 100644
-> --- a/drivers/gpu/drm/i915/display/intel_dpll.c
-> +++ b/drivers/gpu/drm/i915/display/intel_dpll.c
-> @@ -309,11 +309,13 @@ int pnv_calc_dpll_params(int refclk, struct dpll *clock)
->  {
->  	clock->m = clock->m2 + 2;
->  	clock->p = clock->p1 * clock->p2;
-> -	if (WARN_ON(clock->n == 0 || clock->p == 0))
-> -		return 0;
-> +	if (WARN_ON(clock->n == 0 || clock->p == 0)) {
-> +		clock->dot = 0;
-> +		goto end;
-> +	}
->  	clock->vco = DIV_ROUND_CLOSEST(refclk * clock->m, clock->n);
->  	clock->dot = DIV_ROUND_CLOSEST(clock->vco, clock->p);
-> -
-> +end:
->  	return clock->dot;
->  }
->  
-> @@ -326,11 +328,13 @@ int i9xx_calc_dpll_params(int refclk, struct dpll *clock)
->  {
->  	clock->m = i9xx_dpll_compute_m(clock);
->  	clock->p = clock->p1 * clock->p2;
-> -	if (WARN_ON(clock->n + 2 == 0 || clock->p == 0))
-> -		return 0;
-> +	if (WARN_ON(clock->n + 2 == 0 || clock->p == 0)) {
-> +		clock->dot = 0;
-> +		goto end;
-> +	}
->  	clock->vco = DIV_ROUND_CLOSEST(refclk * clock->m, clock->n + 2);
->  	clock->dot = DIV_ROUND_CLOSEST(clock->vco, clock->p);
-> -
-> +end:
->  	return clock->dot;
->  }
->  
-> @@ -338,11 +342,13 @@ int vlv_calc_dpll_params(int refclk, struct dpll *clock)
->  {
->  	clock->m = clock->m1 * clock->m2;
->  	clock->p = clock->p1 * clock->p2;
-> -	if (WARN_ON(clock->n == 0 || clock->p == 0))
-> -		return 0;
-> +	if (WARN_ON(clock->n == 0 || clock->p == 0)) {
-> +		clock->dot = 0;
-> +		goto end;
-> +	}
->  	clock->vco = DIV_ROUND_CLOSEST(refclk * clock->m, clock->n);
->  	clock->dot = DIV_ROUND_CLOSEST(clock->vco, clock->p);
-> -
-> +end:
->  	return clock->dot / 5;
->  }
->  
-> @@ -350,12 +356,14 @@ int chv_calc_dpll_params(int refclk, struct dpll *clock)
->  {
->  	clock->m = clock->m1 * clock->m2;
->  	clock->p = clock->p1 * clock->p2;
-> -	if (WARN_ON(clock->n == 0 || clock->p == 0))
-> -		return 0;
-> +	if (WARN_ON(clock->n == 0 || clock->p == 0)) {
-> +		clock->dot = 0;
-> +		goto end;
-> +	}
->  	clock->vco = DIV_ROUND_CLOSEST_ULL(mul_u32_u32(refclk, clock->m),
->  					   clock->n << 22);
->  	clock->dot = DIV_ROUND_CLOSEST(clock->vco, clock->p);
-> -
-> +end:
->  	return clock->dot / 5;
->  }
->  
-> -- 
-> 2.26.3
-
--- 
-Ville Syrjälä
-Intel
+linux-mips-tlbex-cavium-odd-switch.diff
+Index: linux-macro/arch/mips/mm/tlbex.c
+===================================================================
+--- linux-macro.orig/arch/mips/mm/tlbex.c
++++ linux-macro/arch/mips/mm/tlbex.c
+@@ -2160,16 +2160,14 @@ static void build_r4000_tlb_load_handler
+ 		uasm_i_tlbr(&p);
+ 
+ 		switch (current_cpu_type()) {
+-		default:
+-			if (cpu_has_mips_r2_exec_hazard) {
+-				uasm_i_ehb(&p);
+-			fallthrough;
+-
+ 		case CPU_CAVIUM_OCTEON:
+ 		case CPU_CAVIUM_OCTEON_PLUS:
+ 		case CPU_CAVIUM_OCTEON2:
+-				break;
+-			}
++			break;
++		default:
++			if (cpu_has_mips_r2_exec_hazard)
++				uasm_i_ehb(&p);
++			break;
+ 		}
+ 
+ 		/* Examine  entrylo 0 or 1 based on ptr. */
+@@ -2236,15 +2234,14 @@ static void build_r4000_tlb_load_handler
+ 		uasm_i_tlbr(&p);
+ 
+ 		switch (current_cpu_type()) {
+-		default:
+-			if (cpu_has_mips_r2_exec_hazard) {
+-				uasm_i_ehb(&p);
+-
+ 		case CPU_CAVIUM_OCTEON:
+ 		case CPU_CAVIUM_OCTEON_PLUS:
+ 		case CPU_CAVIUM_OCTEON2:
+-				break;
+-			}
++			break;
++		default:
++			if (cpu_has_mips_r2_exec_hazard)
++				uasm_i_ehb(&p);
++			break;
+ 		}
+ 
+ 		/* Examine  entrylo 0 or 1 based on ptr. */
