@@ -2,126 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62589C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F820C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238622AbiCDRba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:31:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        id S241062AbiCDRbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:31:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239723AbiCDRbZ (ORCPT
+        with ESMTP id S240891AbiCDRbu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:31:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 864D81BE12F
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:30:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646415036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7ZanlT+mtaAIwjGwU2toplmlGf6ZuTIRandFY4G7p54=;
-        b=NbwZ7U0NeGXLlFySUT3RipN6s9pKGJ1SBVOF/VjgbsOjbMM1bXof856eHzDzE92KYNxzwG
-        CP4jLNampR0FKKgULVgByLCUVomarXSMCkshn31GDv0lZM3C8mP1yuIA7jh+n5/X1M5N9o
-        UbSxF3SIu5IEzpGiTFhk771ILMnV/FA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-yu9FeJp1MuappFvdmDwWdQ-1; Fri, 04 Mar 2022 12:30:30 -0500
-X-MC-Unique: yu9FeJp1MuappFvdmDwWdQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F9781854E37;
-        Fri,  4 Mar 2022 17:30:18 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9CC6286599;
-        Fri,  4 Mar 2022 17:29:21 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Sean Young <sean@mess.org>
-Subject: [PATCH bpf-next v2 01/28] bpf: add new is_sys_admin_prog_type() helper
-Date:   Fri,  4 Mar 2022 18:28:25 +0100
-Message-Id: <20220304172852.274126-2-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+        Fri, 4 Mar 2022 12:31:50 -0500
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C621CD9DA;
+        Fri,  4 Mar 2022 09:31:01 -0800 (PST)
+Received: by mail-yb1-f182.google.com with SMTP id j2so18346985ybu.0;
+        Fri, 04 Mar 2022 09:31:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uDGIY2zwKZIzvKJRqnjWoDg4iEG13RBS5dNdwIAZJ6k=;
+        b=l/Gvj88ofCz3+AwTkSL6w9uUD05oERk2ON2eQQLhmo/jtjNwe5+nuM1gUCnAJFj7Jv
+         tHlQq/3hW/Lc4eOcz6qMIkRAvplVGDs66hvBmnpVSidWdpUkcl7I+RJvCIT/F4WD3O+7
+         T5YfXQJGPTjnMuGFQIWfWM9uvV4Ws35TRa1zXBvmrXjjFn8KTqtjGq1qxVJDsUcKEXMC
+         U2owLIxpL+j5rbcdVpXOl3HE1tIxsJRcEq9maBisBzzee55KBd8AZRki1kyQrqxCpJY0
+         ADYLF8AC6dpxQ9D7nqpSGBJQdXBHIHp8HwCglpeFA7EwtZvgA0nQbZuZ34N+He3FRfiB
+         I0Ig==
+X-Gm-Message-State: AOAM5333SWY8++vYNzq0jPfl7nQg+JKfieVtrphPU7ZdcIzEu3pVjYSE
+        9xBhTdeAS2lY1wmpEjbsb1RLZkU6kkOjqpbRgnY=
+X-Google-Smtp-Source: ABdhPJzGdcfDcFhvRMKBUtpb1WMOq7XyKvsFCnal9Pr7bWhUsMLATseb8bX5h5/YhPOZMlOzDnFyZoRdR5ff8Vm+E4Y=
+X-Received: by 2002:a25:fe10:0:b0:625:262f:e792 with SMTP id
+ k16-20020a25fe10000000b00625262fe792mr37227265ybe.365.1646415060952; Fri, 04
+ Mar 2022 09:31:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20220223083441.1.I925ce9fa12992a58caed6b297e0171d214866fe7@changeid>
+ <CAPDyKFrMu+zfsTzqEA-EtBdU4Wo5m=LwAEoYXPs5PFkxOERnfg@mail.gmail.com>
+In-Reply-To: <CAPDyKFrMu+zfsTzqEA-EtBdU4Wo5m=LwAEoYXPs5PFkxOERnfg@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 4 Mar 2022 18:30:49 +0100
+Message-ID: <CAJZ5v0hOQS66hSWEFVSGsnpeoHCe_0UqHn3vQ_K9NhKv-HK3UQ@mail.gmail.com>
+Subject: Re: [PATCH] PM: runtime: Have devm_pm_runtime_enable() handle pm_runtime_dont_use_autosuspend()
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LIRC_MODE2 does not really need net_admin capability, but only sys_admin.
+On Fri, Mar 4, 2022 at 11:04 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> On Wed, 23 Feb 2022 at 17:35, Douglas Anderson <dianders@chromium.org> wrote:
+> >
+> > The PM Runtime docs say:
+> >   Drivers in ->remove() callback should undo the runtime PM changes done
+> >   in ->probe(). Usually this means calling pm_runtime_disable(),
+> >   pm_runtime_dont_use_autosuspend() etc.
+> >
+> > From grepping code, it's clear that many people aren't aware of the
+> > need to call pm_runtime_dont_use_autosuspend().
+> >
+> > When brainstorming solutions, one idea that came up was to leverage
+> > the new-ish devm_pm_runtime_enable() function. The idea here is that:
+> > * When the devm action is called we know that the driver is being
+> >   removed. It's the perfect time to undo the use_autosuspend.
+> > * The code of pm_runtime_dont_use_autosuspend() already handles the
+> >   case of being called when autosuspend wasn't enabled.
+> >
+> > Suggested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>
+> Okay, this provides an improvement from the short term perspective.
 
-Extract a new helper for it, it will be also used for the HID bpf
-implementation.
+I agree.
 
-Cc: Sean Young <sean@mess.org>
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
----
+And so I've queued up the patch (for 5.18).
 
-new in v2
----
- kernel/bpf/syscall.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index db402ebc5570..cc570891322b 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2165,7 +2165,6 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
- 	case BPF_PROG_TYPE_LWT_SEG6LOCAL:
- 	case BPF_PROG_TYPE_SK_SKB:
- 	case BPF_PROG_TYPE_SK_MSG:
--	case BPF_PROG_TYPE_LIRC_MODE2:
- 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
- 	case BPF_PROG_TYPE_CGROUP_DEVICE:
- 	case BPF_PROG_TYPE_CGROUP_SOCK:
-@@ -2202,6 +2201,17 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
- 	}
- }
- 
-+static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
-+{
-+	switch (prog_type) {
-+	case BPF_PROG_TYPE_LIRC_MODE2:
-+	case BPF_PROG_TYPE_EXT: /* extends any prog */
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
- /* last field in 'union bpf_attr' used by this command */
- #define	BPF_PROG_LOAD_LAST_FIELD core_relo_rec_size
- 
-@@ -2252,6 +2262,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
- 		return -EPERM;
- 	if (is_perfmon_prog_type(type) && !perfmon_capable())
- 		return -EPERM;
-+	if (is_sys_admin_prog_type(type) && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
- 
- 	/* attach_prog_fd/attach_btf_obj_fd can specify fd of either bpf_prog
- 	 * or btf, we need to check which one it is
--- 
-2.35.1
-
+Thanks!
