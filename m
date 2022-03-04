@@ -2,100 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44851C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4686C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239924AbiCDOo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:44:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47930 "EHLO
+        id S239936AbiCDOok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233357AbiCDOoX (ORCPT
+        with ESMTP id S239928AbiCDOof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:44:23 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5D31BD061
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:43:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646405015; x=1677941015;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CW0GZlgSnEJ+z/BmZSRD3m0q4ahJDHVBRYgA4ELGTuQ=;
-  b=Da82NlmDu3Rc4JRJt+loH/XuG8r2/keqZTkeGrBQnUAYJukjjLQapl/C
-   jClP0blbog0pvuXgfwCQP7TuEn2ArnCRtVW4Yimp4E0YwkDxGBz223xsR
-   GGcI8hHuekEpOs7ZRU4mHVBW5rrg+ySX6q/iW37eYlJOGpfYEw/4Chra/
-   8r0pgLySkOEDWfvzV2+3CoIQ5FmaMWG/OWShKJpNcP2iSIy00Z1/UQxpf
-   5Lxm48ESBVOX4zRBbMgMbC0xoVKMf7TvLO0EsRmPWaC12Xxnm/UPQoDmH
-   P3j86UTS3BHOAcdGSekvqqP07Ag39QJnGsVLY9e1QoiXzI/bSxVI4cJed
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
-   d="scan'208";a="150870328"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 07:43:34 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 07:43:34 -0700
-Received: from ness.home (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 4 Mar 2022 07:43:32 -0700
-From:   <nicolas.ferre@microchip.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        <arm@kernel.org>, <soc@kernel.org>
-CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Linux Kernel list <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [GIT PULL] ARM: at91: soc for 5.18 #2
-Date:   Fri, 4 Mar 2022 15:42:17 +0100
-Message-ID: <20220304144216.23340-1-nicolas.ferre@microchip.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 4 Mar 2022 09:44:35 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764F41BD06F
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:43:47 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id bg10so17975079ejb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 06:43:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9EdPYiVYFEGT7WXfdTQ+DM8Rd0Oojjp9HvMnxorUW0w=;
+        b=2j4G/eCC5cV6nb3yTMvSO4aNKmommilMbdTyKZIgLCh6pbC0rCz0DMiqWj6OV3ivwN
+         yFepQ49oQyQm0bvgi0cqP5Ipc7SrYCUGLYXQjM91bSqh2D1AX5tAE6Buc5MMQLjzqBVV
+         sQ0hHlSbXynWvtz3J6lkHx2XbwAHOBT5nfATFDiPjxeb6nvrP4uURtDtR03NCEh7ayHW
+         F6x65vtBMZWhuzj1JiuJS5pKPOuA7iU3/OAkiwoLOmlU3Q/jPcjs1VLp/eOMHxIhWyQC
+         47jSjsq7S2TrP6pxOJGMEGDuz9/FizoFlMz0PvFNDhJeyGBejzD71WEoLr4LkyDgAm0m
+         BYtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9EdPYiVYFEGT7WXfdTQ+DM8Rd0Oojjp9HvMnxorUW0w=;
+        b=Uaq/GlmaAm26fYMuJsk1pX5CaDCbkysKauPQgz7PqXUAg4iN/ETirhYLZjX/5rDbbx
+         10b6V9bPImNAoYqCC5TnB0HkmNqKac84WYo/fBcgyZEQpLrDwW6GXHT1lymKijT0C3l0
+         Tkt2mxsZhwO2gGLlEk2obhmGKzJKcstSoWgLqbtICmHEGq3GBkTmb52bGuJ1ImvvMG72
+         5YxFyN/SYtzW8D0ECthEMXF3uU+/ql5DkRsAB6Jh5faFiQ52blMvdU+W+fHMspJMyN3D
+         PCBD1ZgTYlIV/RvqsPnDCORz7G9MRieyc5BHdzR7AJNh6O41nUUIC0WTtkem7a3bdC/x
+         53+Q==
+X-Gm-Message-State: AOAM533aZagy/aQ7NkoxuEhreSuXbeXTbpBg9NxXGeArUhHVhyvbh+3y
+        o1y+sRSWsmFXlXf0hGaYgzcn4hw+i1344YFi62RP
+X-Google-Smtp-Source: ABdhPJwYUPmHIXmuKyRCCCuUwU1LnQ4xS2DnqMVUc3W2/V05vUsnDQ9LEnCVCgEeQJeBjV1s2lpXWERkfieRwSRzXkc=
+X-Received: by 2002:a17:907:da6:b0:6da:8f3f:d563 with SMTP id
+ go38-20020a1709070da600b006da8f3fd563mr6651337ejc.112.1646405025870; Fri, 04
+ Mar 2022 06:43:45 -0800 (PST)
 MIME-Version: 1.0
-Organization: microchip
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220202235323.23929-1-casey@schaufler-ca.com>
+ <20220202235323.23929-25-casey@schaufler-ca.com> <CAHC9VhS6An9L7LavYTP57QXdOugQf62NCjDmS4kQq3wk+yemcg@mail.gmail.com>
+ <0bbd2d61-415f-08f2-251e-2dd6b8991d6a@schaufler-ca.com>
+In-Reply-To: <0bbd2d61-415f-08f2-251e-2dd6b8991d6a@schaufler-ca.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 4 Mar 2022 09:43:34 -0500
+Message-ID: <CAHC9VhQEJOu_G16eSfMipbMyU-fQZW6bnm2OdstmKHLdgm9Nsg@mail.gmail.com>
+Subject: Re: [PATCH v32 24/28] Audit: Add framework for auxiliary records
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-audit@redhat.com, keescook@chromium.org,
+        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
+        sds@tycho.nsa.gov, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
+On Thu, Mar 3, 2022 at 9:13 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> On 3/3/2022 3:36 PM, Paul Moore wrote:
+> > Adding a new aux record would involve calling some private audit
+> > function (no one outside of the audit subsystem should need access)
+> > that would allocate a new skb similar to what we do in
+> > audit_buffer_alloc() and add it to the end of the sk_buff_head list
+> > via skb_queue_tail() and resetting audit_buffer::skb to point to the
+> > newly allocated skb.
+>
+> Good naming may be tricky as we need to indicate that a new buffer is
+> being allocated for an attached aux record and that the buffer to which
+> it's being attached is going to temporarily be in a curious state.
+> audit_buffer_add_aux() seems wordy, but it's what I'll start with lacking
+> a better suggestion.
 
-Arnd, Olof,
+I agree that it will leave the audit_buffer in an odd state, at least
+with the current definition of the audit_buffer.  However, this is
+mitigated by the restriction that the only callers should be within
+the audit subsystem.  Here is some quick pseudo-code mockup of what
+I'm thinking:
 
-One more patch for 5.18 on the SoC branch.
-You already have the patch made by Conor "soc: microchip: make
-mpfs_sys_controller_put static" in your tree, so I didn't add it here.
+/* on success, ab->skb will point to the new aux record */
+static int audit_buffer_aux_new(struct audit_buffer *ab, int type)
+{
+  WARN_ON(ab->skb != skb_peek(&ab->skb_list));
 
-Thanks, best regards,
-  Nicolas
+  ab->skb = nlmsg_new(AUDIT_BUFSIZ, ab->gfp_mask);
+  if (!ab->skb)
+    goto err;
+  if (!nlmsg_put(ab->skb, 0, 0, type, 0, 0))
+    goto err;
+  skb_queue_tail(&ab->skb_list);
+  return 0;
 
-The following changes since commit d0054a470c33902f5ae88835ed8a8ecc3cf8faa4:
+err:
+  kfree_skb(&ab->skb);
+  ab->skb = skb_peek(&ab->skb_list);
+  return -ENOMEM;
+}
 
-  soc: add microchip polarfire soc system controller (2022-02-25 12:50:59 +0100)
+/* restores the "main" record into ab->skb */
+static void audit_buffer_aux_end(struct audit_buffer *ab)
+{
+  ab->skb = skb_peek(&ab->skb_list);
+}
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-soc-5.18-2
-
-for you to fetch changes up to def8abbb1464579c37f15b3d7a95e5f3bab758dc:
-
-  ARM: at91: add support in soc driver for new SAMA5D29 (2022-03-04 12:49:22 +0100)
-
-----------------------------------------------------------------
-AT91 SoC #2 for 5.18:
-
-- SAMA5D29 variant to the SAMA5D2 family in SoC driver.
-
-----------------------------------------------------------------
-Mihai Sain (1):
-      ARM: at91: add support in soc driver for new SAMA5D29
-
- drivers/soc/atmel/soc.c | 3 +++
- drivers/soc/atmel/soc.h | 1 +
- 2 files changed, 4 insertions(+)
+/* free the current aux record and reset ab->skb to the "main" */
+static void audit_buffer_aux_cancel(struct audit_buffer *ab)
+{
+  if (ab->skb != skb_peek_tail(&ab->skb_list)) {
+    BUG();
+    return;
+  }
+  ab->skb = skb_peek(&ab->skb_list);
+  kfree_skb(skb_dequeue_tail(&ab->skb_list));
+}
 
 -- 
-Nicolas Ferre
+paul-moore.com
