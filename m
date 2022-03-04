@@ -2,146 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61725C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbiCDULK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:11:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
+        id S231319AbiCDULR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:11:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbiCDUIp (ORCPT
+        with ESMTP id S232277AbiCDUJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:08:45 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248BF23A1B9
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:04:26 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id p12-20020a05683019cc00b005af1442c9e9so8256765otp.13
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 12:04:26 -0800 (PST)
+        Fri, 4 Mar 2022 15:09:04 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B8620C2DA;
+        Fri,  4 Mar 2022 12:03:31 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id f37so15972832lfv.8;
+        Fri, 04 Mar 2022 12:03:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=7J5xZolceiL495PA4LrptiYb01qKHBDWhuLdkam6bj8=;
-        b=UQRxHd9yjv5NrGtZb3wTkZO/S0f+DyyHvqEsmvjMk1Oqg2H+t5Sd6EeC817WdlDGFF
-         XBu43L6pggqUtK+nLbo2lWpai+HHZx0LJJxLDXQrNBkiJWRGPkTWBTTh8skHtUcPrfH5
-         ISCe+OeKtoGySHbXyENb+bEbJsExQQZBEBn4pTEECbf7gqa6JJwGXVcXXnN7wwB0/2nL
-         HV6XFHFiRGObYfxH040xH/AbI41TUzsPFwGXV4esGyDmuVLxYuWUVVibQ/RuFpizrvdM
-         5A86kdABWi+aTNgBrC62Meg9ld6ypQ0RXIipwphoZnxcLeU79EPRf3CkY/Pk57hrXTDJ
-         WEZg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2feTJ8tP3DC/YFFoVPPzvKdizBU6tg9lhj95h2BK0Uk=;
+        b=M6uJy3jiqnYZQ0PUmcG9NFo1HLo/wJenMcAEDj8OcYlR9/RQqdhxHfSkm6Iz8Hh9j+
+         S2tVbOzWmTyNQWI7IehtdN0/doGOGBH+9z4AYvxiIUBQtm/oGDsIMDl/58jnglUsqcs6
+         4PG/NyJteifuVuoi41+Wbf2iHgHbzRXtxdFTI3sszlV8I+N/veBbFrR16u6uKEZzWuWT
+         YB8aIEu9GUS8lTNfvcjZ9yuYi6h33a3rVUp5BRkgiLUbna+Tq5TxZEFS5VJG9e5t2vUC
+         BsUnwJ8dXcPJk8VIQXlJjC6sYe8z8GsVkL68X9QTAQjrlf6qV+IkO1ovVHYW7UYuq3cp
+         wDjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7J5xZolceiL495PA4LrptiYb01qKHBDWhuLdkam6bj8=;
-        b=pt4U7C7e+HfCcj+3fygLcdORPxQaHTkcyhx6jJSdNba+2bJwgiSbT6/XcSMY7d71/G
-         GkVjbipkZdfNlEnmBD6uxwpW1xBKL+K5wkQ+XsXj2GNQ4zSoVnrs9KtzGdoamx7lfdTS
-         XaJnno8ENLT3PbtUJVWzdtJDzzkXweaR1MOsgom0+oEUZWXeL1Wpig50mZK7fvdMCaw8
-         qZT+j4VIEceXd1L5i4VvdFJK7tkV9fVQOOt8n9hJpVXSAic2/93nLav2wTPbD+6eCkd9
-         m94Mlg3nuMIJ11/ULklr5vGgjq6ao8+Wi30q9kLrm3EzgyoK1FxOLF7HKG8pGke2xnWh
-         WNWg==
-X-Gm-Message-State: AOAM5315vxXeZCNHUfWIZzyUbI2WrM/Ol27wC2HkZcBK8L3y5E4gPptb
-        ii1T232zz4hlK2K4LgtUMFMJfi2iSIc=
-X-Google-Smtp-Source: ABdhPJxfegI64M6j8rtErGH0VoGb2dwzS4/4bmu63bVt8mFLR2+HcBhmQZ9Kb8OYw4J0dH0VBJfEHg==
-X-Received: by 2002:a9d:6e09:0:b0:5ad:1fcd:bfd0 with SMTP id e9-20020a9d6e09000000b005ad1fcdbfd0mr181791otr.312.1646424264609;
-        Fri, 04 Mar 2022 12:04:24 -0800 (PST)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id v7-20020a4aa507000000b0031c01a4ef37sm2652822ook.32.2022.03.04.12.04.22
+        bh=2feTJ8tP3DC/YFFoVPPzvKdizBU6tg9lhj95h2BK0Uk=;
+        b=VkEohwuwCex97HTqNctxF6HRD2n31mM7U+S/HaDSMkguxXuIkBtfdWcGNjDFsA5mks
+         RtjjlGwA7UJQvRySBZ3vaZd0/M3T0/h/kMkLj5+kNOftnWCL/LPWVR04+HIro96Rro2o
+         CRMnKdT3erR9/HBsHTMitQmQue/7un8mmxFYWBzdsADgIMUDwCd3d3Gy3QuI4I/CnyCv
+         NmbMJlV9zjFyb5VK2yjxL8R56IRoe3qMjBHH5aeucRbl3Vc64gTO61UtbEFWVJMIybtL
+         StA9wzoizf2z7H/k8r5KJdVhzc+1WmXRlW7P4l3/EcfpWO1s7pGNi3Jbv1r43tE4QMzD
+         Dndg==
+X-Gm-Message-State: AOAM533EzWywU5wnqzyeIdTyCbzGPvotA7UytGmepImdx8cZ1/livitZ
+        lk4wVatPmJh+8dyAytt00tQ3X6bBXrPQ7w==
+X-Google-Smtp-Source: ABdhPJxDMYpnJkvbS4DeRXy/SlQQziXOQnVycA9teF/oaohkBhHHeN4VqtYX3TuB4i8JAUwVxLhqXg==
+X-Received: by 2002:a17:907:334c:b0:6cd:76b7:3948 with SMTP id yr12-20020a170907334c00b006cd76b73948mr262340ejb.55.1646422143286;
+        Fri, 04 Mar 2022 11:29:03 -0800 (PST)
+Received: from [192.168.1.103] ([178.176.72.82])
+        by smtp.gmail.com with ESMTPSA id s15-20020a056402520f00b00415e50f8ce1sm2242179edd.54.2022.03.04.11.28.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 12:04:23 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <fc6d94ff-4c06-8dcb-b53c-2ba7cd64ef7b@roeck-us.net>
-Date:   Fri, 4 Mar 2022 12:04:21 -0800
+        Fri, 04 Mar 2022 11:29:02 -0800 (PST)
+Subject: Re: [PATCH v4 16/24] locking/lockdep, cpu/hotplus: Use a weaker
+ annotation in AP thread
+To:     Byungchul Park <byungchul.park@lge.com>,
+        torvalds@linux-foundation.org
+Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        mingo@redhat.com, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
+        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
+        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
+        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
+        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
+        amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
+        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
+ <1646377603-19730-17-git-send-email-byungchul.park@lge.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <aac81d30-ccc6-b351-729a-7265e8b6ec2c@gmail.com>
+Date:   Fri, 4 Mar 2022 22:28:57 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
+In-Reply-To: <1646377603-19730-17-git-send-email-byungchul.park@lge.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Cc:     Roger Quadros <rogerq@kernel.org>,
-        krzysztof.kozlowski@canonical.com, vigneshr@ti.com, nm@ti.com,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220220004415.GA1519274@roeck-us.net>
- <4bbe337e-8cd8-a4d6-303d-d5aa21bee2e0@infradead.org>
- <20220304165451.0129012e@xps13>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] mtd: rawnand: omap2: Actually prevent invalid
- configuration and build error
-In-Reply-To: <20220304165451.0129012e@xps13>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 07:54, Miquel Raynal wrote:
-> Hi Guenter, Roger,
-> 
-> rdunlap@infradead.org wrote on Sat, 26 Feb 2022 22:55:28 -0800:
-> 
->> On 2/19/22 16:44, Guenter Roeck wrote:
->>> On Sat, Feb 19, 2022 at 09:36:00PM +0200, Roger Quadros wrote:
->>>> The root of the problem is that we are selecting symbols that have
->>>> dependencies. This can cause random configurations that can fail.
->>>> The cleanest solution is to avoid using select.
->>>>
->>>> This driver uses interfaces from the OMAP_GPMC driver so we have to
->>>> depend on it instead.
->>>>
->>>> Fixes: 4cd335dae3cf ("mtd: rawnand: omap2: Prevent invalid configuration and build error")
->>>> Signed-off-by: Roger Quadros <rogerq@kernel.org>
->>>
->>> Tested-by: Guenter Roeck <linux@roeck-us.net>
->>
->> Tested-by: Randy Dunlap <rdunlap@infradead.org>
-> 
-> Sorry for noticing that just now, but there is still a problem with
-> this patch: we now always compile-in the OMAP_GPMC driver whenever we
-> need the NAND controller, even though it is not needed. This grows the
-> kernel for no reason.
-> 
+On 3/4/22 10:06 AM, Byungchul Park wrote:
 
-Sorry, you lost me.
+> cb92173d1f0 (locking/lockdep, cpu/hotplug: Annotate AP thread) was
 
-> In fact, Roger once said:
+   You need to enclose the commit summary in (""), not just (). :-)
+
+> introduced to make lockdep_assert_cpus_held() work in AP thread.
 > 
-> 	"We will figure out how to enable OMAP_GPMC for K3 architecture
-> 	some other way."
+> However, the annotation is too strong for that purpose. We don't have to
+> use more than try lock annotation for that.
 > 
-> It turns out this is not what was finally proposed. Could we try yet
-> another solution?
+> Furthermore, now that Dept was introduced, false positive alarms was
+> reported by that. Replaced it with try lock annotation.
 > 
->>
->> Thanks.
->>
->>>    
->>>> ---
->>>>   drivers/mtd/nand/raw/Kconfig | 3 +--
->>>>   1 file changed, 1 insertion(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
->>>> index 36e697456ec4..9b078e78f3fa 100644
->>>> --- a/drivers/mtd/nand/raw/Kconfig
->>>> +++ b/drivers/mtd/nand/raw/Kconfig
->>>> @@ -42,8 +42,7 @@ config MTD_NAND_OMAP2
->>>>   	tristate "OMAP2, OMAP3, OMAP4 and Keystone NAND controller"
->>>>   	depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
->>>>   	depends on HAS_IOMEM
->>>> -	select MEMORY
->>>> -	select OMAP_GPMC
->>>> +	depends on OMAP_GPMC
+> Signed-off-by: Byungchul Park <byungchul.park@lge.com>
+[...]
 
-No matter if select or depend, both result in OMAP_GPMC enabled
-if MTD_NAND_OMAP2={m,y}, and both suggest that OMAP_GPMC is
-needed for MTD_NAND_OMAP2. That conflicts with
-
-  we now always compile-in the OMAP_GPMC driver whenever we
-  need the NAND controller, even though it is not needed
-                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If it isn't needed, why the dependency in the first place ?
-Also, commit 4cd335dae3cf2 states "this driver depends on OMAP_GPMC
-driver and uses symbols from there". Are you saying that this is not
-correct ?
-
-Guenter
+MBR, Sergey
