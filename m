@@ -2,121 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D446C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BDDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234941AbiCDIoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:44:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
+        id S234962AbiCDIoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234697AbiCDIoA (ORCPT
+        with ESMTP id S234701AbiCDIoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 03:44:00 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9466662F
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:43:10 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id cx5so6832236pjb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:43:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O3fmm4nvalmQleWa1byPzKYwRMYCW7Pxtk8Gk5epwAE=;
-        b=DdaVsAKprHzLmoEOoj7hXNT+Eeasjy3ANt5B6k52rePYudsdXjfR8CCclb5wZdHnEf
-         /jgBudJsh2wvZwJw/OERuUAIO60Ri0ua4fo10FGa9AKcX0TraqEZMf51mbPB2qQGJ+jv
-         6Xyr8BUa2AlZdrDwLWnGWhQMXdKQy7P5i5iEb8tQaZSTQaSjx3NvKxb/aZmDKQ6cpbzS
-         rXEG9L4VFJyCl/9o7NzDXvMMnKnLK6aPGyfM8c6sVy0RolXmpNs2BcVj/vuDgag8Dvkj
-         Y2prHnlitDZDPD+7urtYUWiaqPYLxQrHiJOk4qlLK3IP2wbBi81rhE7aMy2DN051H+1R
-         /YAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O3fmm4nvalmQleWa1byPzKYwRMYCW7Pxtk8Gk5epwAE=;
-        b=1ng+lriDYYoj8pxmLIbB55WFp+B0gGQgJs2nb8FwjuLoQfNbo9UqTZq9Kpwkkuls1I
-         e4PrSJXC7Kf0YnNlEi9ibN9UB6FI+qGFIWSDhBQGGfkvBI1X0GIJUyHyGSKVVWYT3Yb3
-         vk6eZV39H25bSMSqG4eisG/ktdBYyNZHsBKX3s9JiJ3rcuRGMjfs4BtmCMyO+edDhc4/
-         P1rCNUuSAsibJoKaows9ZAG5PjVuEV0lU+5J/fxb5KEv1rjp3AY0vPt+FYKnhoDV+xPD
-         m1ymKWOrC9dvZ+uTGiGDxTwbT1YoiBneNjKwdvMVV5XepUAIvlZke6O9yIwTo3gKItqv
-         lGdg==
-X-Gm-Message-State: AOAM532UE5tNSSFZzvNHhxN38dKZYddLI2UK6mIIEGAhBjGXNzAF64r2
-        sUtkG6MAcRhm6xgMyGKY0krCWw==
-X-Google-Smtp-Source: ABdhPJzDQYRRNKtWR17zpM/+FYK3UlyVp5mrA7EmJm310J0T55vcLfD40IjArzY41WnCFi9Aw5b5gg==
-X-Received: by 2002:a17:902:b602:b0:14f:e42b:d547 with SMTP id b2-20020a170902b60200b0014fe42bd547mr40717392pls.91.1646383389827;
-        Fri, 04 Mar 2022 00:43:09 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id mu1-20020a17090b388100b001bedddf2000sm4245191pjb.14.2022.03.04.00.43.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 00:43:09 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v6 2/3] riscv: dts: Add dma-channels property and modify compatible
-Date:   Fri,  4 Mar 2022 16:42:56 +0800
-Message-Id: <df3a3e170af82070b0bfaa03e66b6570718dea77.1646383150.git.zong.li@sifive.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1646383150.git.zong.li@sifive.com>
-References: <cover.1646383150.git.zong.li@sifive.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66977652D6;
+        Fri,  4 Mar 2022 00:43:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F8A1614DC;
+        Fri,  4 Mar 2022 08:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B38C340F3;
+        Fri,  4 Mar 2022 08:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646383388;
+        bh=Y/h5g78WyLqqOP8Rn0lKLi8NsiNAlk4GlgEJY1S01sI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hwgDBdQxwNwUxcqs7Mrm6x8e1VA+vX8/2al4UI9R/pPxoeGSTYzEB/JANFjqUVv8B
+         wcUkeo0ApVoHqGCkQsQ8Y9gFq9xBYQB7ON9ca+8tP2IuFxZM/4FeBGnV1NTP4mWZON
+         a0TqKCG0m7L8u76K9yjxGxprev3gBcg7oAkH8NbaWWYQSP59sHR6fDU1q0j3j7AGnq
+         yXsNaFMViEmYKAkisJEWLmbF/WzGEQlgxXvW9r+z/3zPPbKU5Tu8ocANRM52/qDBQs
+         W5D6LPPO361ku0kN+AkN25Vx7ya8oXUA5k5freV1T0vy9r9cU0EhA32R7ZZU1Q6WVT
+         ohjD9Bq4GhB7Q==
+Date:   Fri, 4 Mar 2022 09:43:05 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc:     Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] i2c: at91: use dma safe buffers
+Message-ID: <YiHRGa5bDJAuBuHj@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, stable@vger.kernel.org
+References: <20220303161724.3324948-1-michael@walle.cc>
+ <fff424e7-247c-38d8-4151-8b0503a16a7d@amd.com>
+ <YiHIIjSs03gDJmHV@shikoro>
+ <4e25e595-cccb-0970-67b3-fc215bfd5b14@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="MgWtAcUD42BapLAT"
+Content-Disposition: inline
+In-Reply-To: <4e25e595-cccb-0970-67b3-fc215bfd5b14@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dma-channels property, then we can determine how many channels there
-by device tree, in addition, we add the pdma versioning scheme for
-compatible.
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
-Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi | 3 ++-
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi        | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+--MgWtAcUD42BapLAT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-index 869aaf0d5c06..d8869ec99945 100644
---- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-@@ -187,11 +187,12 @@ plic: interrupt-controller@c000000 {
- 		};
- 
- 		dma@3000000 {
--			compatible = "sifive,fu540-c000-pdma";
-+			compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
- 			reg = <0x0 0x3000000 0x0 0x8000>;
- 			interrupt-parent = <&plic>;
- 			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
- 				     <30>;
-+			dma-channels = <4>;
- 			#dma-cells = <1>;
- 		};
- 
-diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-index 3eef52b1a59b..6a3011180846 100644
---- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-+++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-@@ -168,11 +168,12 @@ uart0: serial@10010000 {
- 			status = "disabled";
- 		};
- 		dma: dma@3000000 {
--			compatible = "sifive,fu540-c000-pdma";
-+			compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
- 			reg = <0x0 0x3000000 0x0 0x8000>;
- 			interrupt-parent = <&plic0>;
- 			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
- 				     <30>;
-+			dma-channels = <4>;
- 			#dma-cells = <1>;
- 		};
- 		uart1: serial@10011000 {
--- 
-2.31.1
 
+> I'm getting quite a bunch of unrelated mails because the regex is not the
+> best.
+
+I can imagine!
+
+> On the other hand the framework is used in a lot of drivers and I do want to
+> be notified when they mess with their interfaces.
+
+Sure thing. I am convinced the regex can be improved to ensure that to a
+high degree. I think it is also less work for you than asking people to
+rename their variable all the time :)
+
+> Going to take a another look at that when I have time.
+
+Thank you!
+
+
+--MgWtAcUD42BapLAT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIh0RQACgkQFA3kzBSg
+KbaJFBAAqSSNSBv1vXoKC5gg1YCzVL7Z8QcCOY32Q2Ai40kXufU/bZLFFViRm1lF
+TiAd3E3ENGMg7jK9VPwxHQGhbMSQ0Agf8tzNXYbDBCp9dYtgD6Xx42KSK6PAXGZX
+wI4zyr4QpW+gwqPa/1ZzFdAi6YJ6Ow4yzUnLcmF4X/0D01B/VwnRf3pQMdA7Zi5N
+at2M36wMnW5hYx/YXTg7CAP6BRhLdvbxzGeEvQySX1CK0CGOM38zYSjucL+FMB/+
+FosFvlt7/yjNHe9Gp0yO673YNaiZ0ugk63PoaM2+U5gsMvYRuJ1FEeXpsQfissVy
+O9co7S6LkoIQ3HfnIWEQ7FUfIANmYsiX4+zE9j/JDV+RxqbkLARQVAXJbIB9v1oN
+0ZlxorUzxT5fpxLwgyWSJe4/ZqnbPapjr8tXFrl/7Rqzgl9HpgSfeqtbAPHNwSo5
+xZB1z2JgUEtTaljT75JeuLs3D6DhYl75uZLqkl47iybY45+tCFJOKo51PB3CIKfn
+lHk3hnPstc2TgUtGP3uxqn8PjIlqybOEGFnfCdfJNEajsPdcskyKlDOOtUkvO2NC
+j/RR84QKsz8AcbfmbS47kAmS3owUeQLHvZF7Jf0AZwrg5sWTJb5MuabNc1uJscYK
+H2df7m+0afUQeOVx40UmLUDZDl3pDW1J8bmvIQh0tPhL6+RG3nU=
+=H7in
+-----END PGP SIGNATURE-----
+
+--MgWtAcUD42BapLAT--
