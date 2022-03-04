@@ -2,165 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB76C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 11:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 11:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238677AbiCDLjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 06:39:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40000 "EHLO
+        id S229911AbiCDLk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 06:40:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236264AbiCDLjT (ORCPT
+        with ESMTP id S229490AbiCDLkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 06:39:19 -0500
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860F574629;
-        Fri,  4 Mar 2022 03:38:30 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id C24063200F76;
-        Fri,  4 Mar 2022 06:38:29 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 04 Mar 2022 06:38:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kkourt.io; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=mesmtp; bh=Gy3tSBO8IHs1mjjECvdkiou/qGkQa3BE2jjRgMF+fhg=; b=uG
-        By56qClk9Qno8wSiIRwWXnvRpWfmRvPxPUa/mhb5EHlD6GsVXZWx10O8RSBFERfR
-        k8aAT6p388NuiYfwtm0EZ+pC5CQo+iAaqUpnfYlzv1AOyQzHVZX+6jIIiIHVYhRA
-        5suk535PVlI30Q0FgqLoW2BXvRTjtLHtw1ou/5lIs=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm2; bh=Gy3tSBO8IHs1mjjECvdkiou/qGkQa
-        3BE2jjRgMF+fhg=; b=BvkQDo/LydqMR+lLvt1PtFmqpdaVM7qYLXnX4+0vHabmo
-        yOCF7Kx7YKEmZQb9zpX6Gttau4H42wJqeZuNDSCwOW6vlwLzRhHZUz+Wtspjooie
-        id+8HgUNNHBDwW85gimvqr8yF8K+1SRkdidr+Ht2E/p0ILBCu7tscBL4cMMb20Km
-        8TwVqp1NFuvFFaVPkVIXFznsgCCA+hYIGjBtgUfW/SYu7hfXUV13oMh73goBI7Hu
-        PySrABNdwdlAj5U6SDaKs6v5Ur99ZRwF4ZNoQhcvZuuaZn2ufWkfjPCcmnmFH+m9
-        ygZKwUHBuFUth8VTgfqBEKgZrIgMEiZZI8dSL21GQ==
-X-ME-Sender: <xms:NfohYtgh8UUXOv_B8IvXSJorBieibNs7_hM3QXaXlFh5K33QkAdbWA>
-    <xme:NfohYiCVKTdsmeFSnfAiR4L2cw3tSqHaNozB1dyaZFwLsD2kZCtQ-nZ5MV_k8aog8
-    STlPiMh6GhTlhdRrw>
-X-ME-Received: <xmr:NfohYtGWjwlzi1vrOoZUFcxWWDKrqH94edwLM_Bde3Xs5L84XWJg9P5J_lhPpPuEuEE0X5pWMtntw3hAPPxRIwK71QxH>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgfedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpehkkhhouhhrthes
-    khhkohhurhhtrdhiohenucggtffrrghtthgvrhhnpeelkeeffeejleeihfehgeeltdevle
-    ffgfffleevuefhhedtieevudejuefgudehieenucffohhmrghinhepshhouhhrtggvfigr
-    rhgvrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepkhhkohhurhhtsehkkhhouhhrthdrihho
-X-ME-Proxy: <xmx:NfohYiRpMp-HLyThVxmKTN5Difl3LjzGTYa8O_x9IXXB42LZk-RxxQ>
-    <xmx:NfohYqzgYHSKmjWmKx0YkLSxI6yhui_Yk01QiOFN472yANX7S_GBFw>
-    <xmx:NfohYo7NkF6T9KTc4JaRloJspw7BFP8Zqkn6rfb3fKBx1_lwctm00w>
-    <xmx:NfohYu8WhO0YLgEqtuVARkCGG1Gfqpw_BskOYcqtM6fPIvVd-h79Pw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 4 Mar 2022 06:38:29 -0500 (EST)
-Received: by kkourt.io (Postfix, from userid 1000)
-        id C11A22541AC9; Fri,  4 Mar 2022 12:38:27 +0100 (CET)
-From:   kkourt@kkourt.io
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     dwarves@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kornilios Kourtis <kornilios@isovalent.com>
-Subject: [PATCH] pahole: avoid segfault when parsing a problematic file
-Date:   Fri,  4 Mar 2022 12:38:21 +0100
-Message-Id: <20220304113821.2366328-1-kkourt@kkourt.io>
-X-Mailer: git-send-email 2.35.1
+        Fri, 4 Mar 2022 06:40:25 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6FFE1B4A
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 03:39:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=soYLqIaabrojJTsdxVxq7SKnvZyWr2ESfZBpZ/MSOIM=; b=ldSSjBN6xi5Dv2O2I+P4B4NsgB
+        LhdNpQ4gXpormFHR4jxrp3KDBCQQzfIakm4LZzmDMmjU5pCERn4ieQYiqRQB+NrG+pQ8jHg9ciSq/
+        UY6FpyVEn23umt20IuCTqnc/92WWVa22FxrYuiWIz816/TjKygSx5FL1hf0Z48o0mwkLQv4onCFlA
+        fxQPsydbX5tCziDYjm5tTLwK8s0nDsMSDQ2ZYPSDqOlqb2/vMblaa4WJoChvH8+Ua0YhcdbvIwvhG
+        RK7doZxRPOCeTh/CbWvDugBJZiR9a2AkaD9kp7l1KfiF7ks61bnOvfy1bJZl1e2ejgesxHsQoOk0g
+        4KtuwZAw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nQ6HF-00FBIZ-W6; Fri, 04 Mar 2022 11:39:18 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A95483001EA;
+        Fri,  4 Mar 2022 12:39:15 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3902C2C7FBE92; Fri,  4 Mar 2022 12:39:15 +0100 (CET)
+Date:   Fri, 4 Mar 2022 12:39:15 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Juri Lelli <juri.lelli@redhat.com>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Mel Gorman <mgorman@suse.de>, Ben Segall <bsegall@google.com>,
+        Luca Abeni <luca.abeni@santannapisa.it>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] sched/deadline, (rt): Sched class cleanups
+Message-ID: <YiH6Y5NYgRlZJHua@hirez.programming.kicks-ass.net>
+References: <20220302183433.333029-1-dietmar.eggemann@arm.com>
+ <YiHaLT39YcsjPeTB@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiHaLT39YcsjPeTB@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kornilios Kourtis <kornilios@isovalent.com>
+On Fri, Mar 04, 2022 at 10:21:49AM +0100, Juri Lelli wrote:
+> Hi,
+> 
+> On 02/03/22 19:34, Dietmar Eggemann wrote:
+> > While trying to improve the Deadline sched class behaviour for
+> > asymmetric CPU capacity systems I came across some possible
+> > cleanups for DL (and RT).
+> > 
+> > Overview:
+> > 
+> > [PATCH 1/6] - Remove `struct dl_bandwidth def_dl_bandwidth`.
+> > 
+> > [PATCH 2/6] - Move functions into DL sched class which don't have to
+> >               be exported.
+> > 
+> > [PATCH 3/6] - Merge two DL admission control functions which provide
+> >               very similar functionality.
+> > 
+> > [PATCH 4/6] - Use DL rb_entry() macros and cached rbtree wrapper
+> >               `rb_first_cached()` consistently.
+> > 
+> > [PATCH 5/6] - Remove unused !CONFIG_SMP function definitions in DL/RT.
+> > 
+> > [PATCH 6/6] - Remove redundant function parameter in DL/RT.
+> > 
+> > Dietmar Eggemann (6):
+> >   sched/deadline: Remove unused def_dl_bandwidth
+> >   sched/deadline: Move bandwidth mgmt and reclaim functions into sched
+> >     class source file
+> >   sched/deadline: Merge dl_task_can_attach() and dl_cpu_busy()
+> >   sched/deadline: Use __node_2_[pdl|dle]() and rb_first_cached()
+> >     consistently
+> >   sched/deadline,rt: Remove unused functions for !CONFIG_SMP
+> >   sched/deadline,rt: Remove unused parameter from
+> >     pick_next_[rt|dl]_entity()
+> > 
+> >  kernel/sched/core.c     |  14 ++--
+> >  kernel/sched/deadline.c | 141 ++++++++++++++++++++--------------------
+> >  kernel/sched/rt.c       |  16 +----
+> >  kernel/sched/sched.h    |  53 +--------------
+> >  4 files changed, 84 insertions(+), 140 deletions(-)
+> 
+> These look ok to me. Thanks for the cleanups!
+> 
+> Acked-by: Juri Lelli <juri.lelli@redhat.com>
 
-When trying to use btf encoding for an apparently problematic kernel file,
-pahole segfaults. As can be seen below [1], the problem is that we are trying to
-dereference a NULL decoder.
-
-Fix this by checking the return value of dwfl_getmodules which [2] whill return
--1 on errors or an offset if one of the modules did not return DWARF_CB_OK. (In
-this specific case, it was __cus__load_debug_types that returnd
-DWARF_CB_ABORT.)
-
-Also, ensure that we get a reasonable error by setting errno in
-cus__load_files(). Otherwise, we get a "No such file or directory" error which
-might be confusing.
-
-After tha patch:
-$ ./pahole -J vmlinux-5.3.18-24.102-default.debug
-pahole: vmlinux-5.3.18-24.102-default.debug: Unknown error -22
-
-[1]:
-$ gdb -q --args ./pahole -J vmlinux-5.3.18-24.102-default.debug
-Reading symbols from ./pahole...
-(gdb) r
-Starting program: /tmp/pahole/build/pahole -J vmlinux-5.3.18-24.102-default.debug
-[Thread debugging using libthread_db enabled]
-Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
-
-Program received signal SIGSEGV, Segmentation fault.
-0x00007ffff7f4000e in gobuffer__size (gb=0x18) at /tmp/pahole/gobuffer.h:39
-39              return gb->index;
-(gdb) bt
-(gdb) frame 1
-1042            if (gobuffer__size(&encoder->percpu_secinfo) != 0)
-(gdb) list
-1037
-1038    int btf_encoder__encode(struct btf_encoder *encoder)
-1039    {
-1040            int err;
-1041
-1042            if (gobuffer__size(&encoder->percpu_secinfo) != 0)
-1043                    btf_encoder__add_datasec(encoder, PERCPU_SECTION);
-1044
-1045            /* Empty file, nothing to do, so... done! */
-1046            if (btf__get_nr_types(encoder->btf) == 0)
-(gdb) print encoder
-$1 = (struct btf_encoder *) 0x0
-
-[2] https://sourceware.org/git/?p=elfutils.git;a=blob;f=libdwfl/libdwfl.h;h=f98f1d525d94bc7bcfc7c816890de5907ee4bd6d;hb=HEAD#l200
-
-Signed-off-by: Kornilios Kourtis <kornilios@isovalent.com>
----
- dwarf_loader.c | 5 ++++-
- dwarves.c      | 5 ++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/dwarf_loader.c b/dwarf_loader.c
-index e30b03c..fecf711 100644
---- a/dwarf_loader.c
-+++ b/dwarf_loader.c
-@@ -3235,7 +3235,10 @@ static int cus__process_file(struct cus *cus, struct conf_load *conf, int fd,
- 	};
- 
- 	/* Process the one or more modules gleaned from this file. */
--	dwfl_getmodules(dwfl, cus__process_dwflmod, &parms, 0);
-+	int err = dwfl_getmodules(dwfl, cus__process_dwflmod, &parms, 0);
-+	if (err) {
-+		return -1;
-+	}
- 
- 	// We can't call dwfl_end(dwfl) here, as we keep pointers to strings
- 	// allocated by libdw that will be freed at dwfl_end(), so leave this for
-diff --git a/dwarves.c b/dwarves.c
-index 81fa47b..c5935ec 100644
---- a/dwarves.c
-+++ b/dwarves.c
-@@ -2391,8 +2391,11 @@ int cus__load_files(struct cus *cus, struct conf_load *conf,
- 	int i = 0;
- 
- 	while (filenames[i] != NULL) {
--		if (cus__load_file(cus, conf, filenames[i]))
-+		int err = cus__load_file(cus, conf, filenames[i]);
-+		if (err) {
-+			errno = err;
- 			return -++i;
-+		}
- 		++i;
- 	}
- 
--- 
-2.25.1
-
+Thanks!
