@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31995C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F48BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbiCDUGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:06:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
+        id S230271AbiCDUGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:06:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiCDUGP (ORCPT
+        with ESMTP id S230267AbiCDUG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:06:15 -0500
+        Fri, 4 Mar 2022 15:06:29 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF042A2E15;
-        Fri,  4 Mar 2022 12:01:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18955291CE3;
+        Fri,  4 Mar 2022 12:01:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424102; x=1677960102;
+  t=1646424099; x=1677960099;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=p4K/gmqXDxXdRUzf9TmVyz0WUmZV+enBJQ9EkmF3YDs=;
-  b=TeG66tMMCUQSC49G1ZF4hnwqL1IeRLAjwKjip79ZNYilm3kJoTLRxg/O
-   uhqXKIsvHdItmMhm1jTTMtH58TDR5FTfKXNUWMWe5Y5SSzieTmhjGTdVe
-   aKV1z+q1GFZlcbzQln838dJvQeXtGExsuvCD0Hs1LHnTtNlLs0Q3XLPkE
-   4o53I76akKpyzPnstAqT0syUSl0Y8parfwL0gPuspvbHyBsAkwxL0Nbld
-   Sv94O0S+XINsFv/PlAjM/EioKX9z3EvYifVBHgqB+dgtpbmttTQ1Pd4qo
-   LrVzBJaZGvspDNoBRz596/g18l3asGqNqdRL5ckCnUOPV75n0+GabvHuR
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983394"
+  bh=bqNrTmx/pGbILehdDfcJ8UEk7uMEWH3fJAQefvphR38=;
+  b=IWwKTYQT6W6RmSlX6h9GFqxSlYlGHvV2U8Trss8hKk2LWrNCn6mo7QXv
+   /pyvC+tltBi8iGAol7t3CWSW5xqeTrlWLYyj4gSpNRGDSjQFUv61ngVFl
+   N8EgIYJLxbgpLy1G/laD0K4j8P6x2Z7YOnbFuczXg3hrVWvqJup3Mfe1c
+   /vH8+y0lCyqxfIsXd1q+l6VFMQX7eHbAdojh6uUUbhgPng5sdL66qmT6e
+   V5rOd5FKIz3E+khLb6iy9rIYgHkHhoypF86fQ90W28WoqJHZlJ0N3zLmF
+   7wECsGnuSPL4ns5BtVmiQaJGYW6Y1Pcy2HrtGCBVGNFbFEFvcEAbaHGfZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983381"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983394"
+   d="scan'208";a="253983381"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:14 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:13 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344254"
+   d="scan'208";a="552344231"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:13 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:12 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 023/104] x86/cpu: Add helper functions to allocate/free MKTME keyid
-Date:   Fri,  4 Mar 2022 11:48:39 -0800
-Message-Id: <a1d1e4f26c6ef44a557e873be2818e6a03e12038.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 021/104] KVM: x86: Introduce hooks to free VM callback prezap and vm_free
+Date:   Fri,  4 Mar 2022 11:48:37 -0800
+Message-Id: <af18a5c763a78af2b7de6e6e0841d9e61a571dc4.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -56,96 +56,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Kai Huang <kai.huang@intel.com>
 
-MKTME keyid is assigned to guest TD.  The memory controller encrypts guest
-TD memory with key id.  Add helper functions to allocate/free MKTME keyid
-so that TDX KVM assign keyid.
+Before tearing down private page tables, TDX requires some resources of the
+guest TD to be destroyed (i.e. keyID must have been reclaimed, etc).  Add
+prezap callback before tearing down private page tables for it.
 
-Also export MKTME global keyid that is used to encrypt TDX module and its
-memory.
+TDX needs to free some resources after other resources (i.e. vcpu related
+resources).  Add vm_free callback at the end of kvm_arch_destroy_vm().
 
+Signed-off-by: Kai Huang <kai.huang@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/asm/tdx.h |  6 ++++++
- arch/x86/virt/vmx/tdx.c    | 33 ++++++++++++++++++++++++++++++++-
- 2 files changed, 38 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/kvm-x86-ops.h | 2 ++
+ arch/x86/include/asm/kvm_host.h    | 2 ++
+ arch/x86/kvm/x86.c                 | 8 ++++++++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 9a8dc6afcb63..73bb472bd515 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -139,6 +139,9 @@ int tdx_detect(void);
- int tdx_init(void);
- bool platform_has_tdx(void);
- const struct tdsysinfo_struct *tdx_get_sysinfo(void);
-+u32 tdx_get_global_keyid(void);
-+int tdx_keyid_alloc(void);
-+void tdx_keyid_free(int keyid);
- #else
- static inline void tdx_detect_cpu(struct cpuinfo_x86 *c) { }
- static inline int tdx_detect(void) { return -ENODEV; }
-@@ -146,6 +149,9 @@ static inline int tdx_init(void) { return -ENODEV; }
- static inline bool platform_has_tdx(void) { return false; }
- struct tdsysinfo_struct;
- static inline const struct tdsysinfo_struct *tdx_get_sysinfo(void) { return NULL; }
-+static inline u32 tdx_get_global_keyid(void) { return 0; };
-+static inline int tdx_keyid_alloc(void) { return -EOPNOTSUPP; }
-+static inline void tdx_keyid_free(int keyid) { }
- #endif /* CONFIG_INTEL_TDX_HOST */
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 8125d43d3566..ef48dcc98cfc 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -20,7 +20,9 @@ KVM_X86_OP(has_emulated_msr)
+ KVM_X86_OP(vcpu_after_set_cpuid)
+ KVM_X86_OP(is_vm_type_supported)
+ KVM_X86_OP(vm_init)
++KVM_X86_OP_NULL(mmu_prezap)
+ KVM_X86_OP_NULL(vm_destroy)
++KVM_X86_OP_NULL(vm_free)
+ KVM_X86_OP(vcpu_create)
+ KVM_X86_OP(vcpu_free)
+ KVM_X86_OP(vcpu_reset)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 8de357a9ad30..5ff7a0fba311 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1326,7 +1326,9 @@ struct kvm_x86_ops {
+ 	bool (*is_vm_type_supported)(unsigned long vm_type);
+ 	unsigned int vm_size;
+ 	int (*vm_init)(struct kvm *kvm);
++	void (*mmu_prezap)(struct kvm *kvm);
+ 	void (*vm_destroy)(struct kvm *kvm);
++	void (*vm_free)(struct kvm *kvm);
  
- #endif /* !__ASSEMBLY__ */
-diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
-index e45f188479cb..d714106321d4 100644
---- a/arch/x86/virt/vmx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx.c
-@@ -113,7 +113,13 @@ static int tdx_cmr_num;
- static struct tdsysinfo_struct tdx_sysinfo;
- 
- /* TDX global KeyID to protect TDX metadata */
--static u32 tdx_global_keyid;
-+static u32 __read_mostly tdx_global_keyid;
-+
-+u32 tdx_get_global_keyid(void)
-+{
-+	return tdx_global_keyid;
-+}
-+EXPORT_SYMBOL_GPL(tdx_get_global_keyid);
- 
- static bool enable_tdx_host;
- 
-@@ -189,6 +195,31 @@ static void detect_seam(struct cpuinfo_x86 *c)
- 		detect_seam_ap(c);
+ 	/* Create, but do not attach this VCPU */
+ 	int (*vcpu_create)(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index f6438750d190..a48f5c69fadb 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11779,6 +11779,7 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
+ 	kvm_page_track_cleanup(kvm);
+ 	kvm_xen_destroy_vm(kvm);
+ 	kvm_hv_destroy_vm(kvm);
++	static_call_cond(kvm_x86_vm_free)(kvm);
  }
  
-+/* TDX KeyID pool */
-+static DEFINE_IDA(tdx_keyid_pool);
-+
-+int tdx_keyid_alloc(void)
-+{
-+	if (WARN_ON_ONCE(!tdx_keyid_start || !tdx_keyid_num))
-+		return -EINVAL;
-+
-+	/* The first keyID is reserved for the global key. */
-+	return ida_alloc_range(&tdx_keyid_pool, tdx_keyid_start + 1,
-+			       tdx_keyid_start + tdx_keyid_num - 1,
-+			       GFP_KERNEL);
-+}
-+EXPORT_SYMBOL_GPL(tdx_keyid_alloc);
-+
-+void tdx_keyid_free(int keyid)
-+{
-+	/* keyid = 0 is reserved. */
-+	if (!keyid || keyid <= 0)
-+		return;
-+
-+	ida_free(&tdx_keyid_pool, keyid);
-+}
-+EXPORT_SYMBOL_GPL(tdx_keyid_free);
-+
- static void detect_tdx_keyids_bsp(struct cpuinfo_x86 *c)
+ static void memslot_rmap_free(struct kvm_memory_slot *slot)
+@@ -12036,6 +12037,13 @@ void kvm_arch_commit_memory_region(struct kvm *kvm,
+ 
+ void kvm_arch_flush_shadow_all(struct kvm *kvm)
  {
- 	u64 keyid_part;
++	/*
++	 * kvm_mmu_zap_all() zaps both private and shared page tables.  Before
++	 * tearing down private page tables, TDX requires some TD resources to
++	 * be destroyed (i.e. keyID must have been reclaimed, etc).  Invoke
++	 * kvm_x86_mmu_prezap() for this.
++	 */
++	static_call_cond(kvm_x86_mmu_prezap)(kvm);
+ 	kvm_mmu_zap_all(kvm);
+ }
+ 
 -- 
 2.25.1
 
