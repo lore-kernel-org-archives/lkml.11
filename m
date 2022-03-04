@@ -2,91 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C267BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 04:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7484C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 04:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237864AbiCDEEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 23:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
+        id S237872AbiCDEH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 23:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229965AbiCDEE0 (ORCPT
+        with ESMTP id S233770AbiCDEH1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 23:04:26 -0500
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3AF9793A2
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 20:03:37 -0800 (PST)
-Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay01.hostedemail.com (Postfix) with ESMTP id 608BC60B54;
-        Fri,  4 Mar 2022 04:03:35 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id 478FA20033;
-        Fri,  4 Mar 2022 04:03:32 +0000 (UTC)
-Message-ID: <7368bc3ea6dece01004c3e0c194abb0d26d4932b.camel@perches.com>
-Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
-From:   Joe Perches <joe@perches.com>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Finn Thain <fthain@linux-m68k.org>
-Cc:     Konrad Wilhelm Kleine <kkleine@redhat.com>,
-        Tom Rix <trix@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        megaraidlinux.pdl@broadcom.com, scsi <linux-scsi@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
-In-Reply-To: <CANiq72kOJh_rGg6cT+S833HYqwHnZJzZss8v+kQDcgz_cZUfBQ@mail.gmail.com>
-References: <20220127151945.1244439-1-trix@redhat.com>
-         <d26d4bd8-b5e1-f4d5-b563-9bc4dd384ff8@acm.org>
-         <0adde369-3fd7-3608-594c-d199cce3c936@redhat.com>
-         <e3ae392a16491b9ddeb1f0b2b74fdf05628b1996.camel@perches.com>
-         <46441b86-1d19-5eb4-0013-db1c63a9b0a5@redhat.com>
-         <8dd05afd-0bb9-c91b-6393-aff69f1363e1@redhat.com>
-         <233660d0-1dee-7d80-1581-2e6845bf7689@linux-m68k.org>
-         <CABRYuGk+1AGpvfkR7=LTCm+bN4kt55fwQnQXCjidSXWxuMWsiQ@mail.gmail.com>
-         <95f5be1d-f5f3-478-5ccb-76556a41de78@linux-m68k.org>
-         <CANiq72kOJh_rGg6cT+S833HYqwHnZJzZss8v+kQDcgz_cZUfBQ@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
+        Thu, 3 Mar 2022 23:07:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F6A17FD12;
+        Thu,  3 Mar 2022 20:06:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 642A6B82750;
+        Fri,  4 Mar 2022 04:06:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF720C340E9;
+        Fri,  4 Mar 2022 04:06:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646366798;
+        bh=JA53j2AgX/X9G8Xvc7wkJOeH5rUcfRDdjpdniPTSIVE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oAHVzz7X5kV61UUkWQKjfmwMykgBKD7PJkuQSgcKFBIw2YjksnJrCxtuntINs5owG
+         Yl0e0u1JcN2qjzcdy1LS7/3v7LMdxJKVbdeeuA+/xPZlegElPBP/Nfb+Vjmj99Jlzd
+         oWoEeQyHGHX4bt0D0DZpLUeKkaBXtLaL8qqnmQHIOj1nl1lCy+RZgLa0aU5frAx5AA
+         DJg34gTsypaZcTNM1C+jE3PovbGMmD4VKx4H7Kss8tKwYviTYfVzh2MEdyCZOi1G6o
+         gWkVmRHi3lLNBq/Z1EI+9Mqlll+/ywKFIwbgQS3sjlaPGMFlgCRfLn+yLkIn9otE52
+         ipwYAJ7AlcYVQ==
+Date:   Thu, 3 Mar 2022 20:06:35 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     menglong8.dong@gmail.com, dsahern@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        imagedong@tencent.com, edumazet@google.com, talalahmad@google.com,
+        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
+        flyingpeng@tencent.com, mengensun@tencent.com, atenart@kernel.org,
+        bigeasy@linutronix.de, memxor@gmail.com, arnd@arndb.de,
+        pabeni@redhat.com, willemb@google.com, vvs@virtuozzo.com,
+        cong.wang@bytedance.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next 2/7] net: skb: introduce the function
+ kfree_skb_list_reason()
+Message-ID: <20220303200635.0718540e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <40f63798-2b85-c31c-9722-ee24d55093a8@oracle.com>
+References: <20220303174707.40431-1-imagedong@tencent.com>
+        <20220303174707.40431-3-imagedong@tencent.com>
+        <40f63798-2b85-c31c-9722-ee24d55093a8@oracle.com>
 MIME-Version: 1.0
-Date:   Thu, 03 Mar 2022 15:38:27 -0800
-User-Agent: Evolution 3.40.4-1ubuntu2 
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 478FA20033
-X-Stat-Signature: yz18ifsua7kdmzp74w4prbz8mu3wc8q6
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18oUcfg3lbyw2FPCUH8mnKyjJijBMjDisc=
-X-HE-Tag: 1646366612-611934
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-03-04 at 00:17 +0100, Miguel Ojeda wrote:
-> On Thu, Mar 3, 2022 at 11:44 PM Finn Thain <fthain@linux-m68k.org> wrote:
-> > 
-> > Others might argue that they should always be changed from,
-> > 
-> > /*
-> >  * this style
-> >  * of multiline comment
-> >  */
-> > 
-> > to
-> > 
-> > /* this style
-> >  * of multiline comment
-> >  */
+On Thu, 3 Mar 2022 16:12:05 -0800 Dongli Zhang wrote:
+> I am going to send another v5 soon which introduces kfree_skb_list_reason() as well.
 > 
-> In general, for things that the coding style guide talks about, we
-> should follow them, even if some subsystems do not (they can always
-> override in their folder if they really, really want it). So, here for
-> instance, the first one should be used.
+> https://lore.kernel.org/all/20220226084929.6417-2-dongli.zhang@oracle.com/
+> 
+> I will need to make it inline as suggested by Jakub.
+> 
+> Not sure how to handle such scenario :)
 
-It's up to individual maintainers to each decide on what might be
-considered unnecessary churn for the subsystems they control.
-
-One argument is that churn leads to difficulty in backporting
-fixes to older 'stable' versions.
-
-I think the churn argument is overstated.
-
-
+Probably nothing we can do about that :( I'd say proceed as if the
+other series didn't exist, and after one series is merged the author
+of the other one will have to rebase.
