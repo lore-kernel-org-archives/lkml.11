@@ -2,97 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 602FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238729AbiCDNxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:53:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
+        id S238564AbiCDNyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 08:54:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235016AbiCDNx2 (ORCPT
+        with ESMTP id S230098AbiCDNyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:53:28 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778C73E0DA;
-        Fri,  4 Mar 2022 05:52:37 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 224C7LfC026984;
-        Fri, 4 Mar 2022 14:51:47 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=9JE03u4sfdT0zvRoo95MCiqvaB33/YInHqU6AdtpVKc=;
- b=dk7XRLbqWXKacTDClup5Bgfmh3YJc5ZrIRf2U3JOp5LzHZ9H45c7s5M+YjJ4JqEyOBv+
- FVjYeOSsJ03uxz16/x/fzLRtIRldCRwsIoWSdBnIbfjIq+wqBrUYmMNgh6LYrgan8AVs
- rbX8MEZVM2cO+PC/R7GRSwJ3xZolrf+f8ST9oe3HkMHJbUbAnJYoQ7S8bgrtcUyQ+Pe+
- 2JNUIoofngkeb/orgBeAZ6O8CF97wUvKNWtfbmpCCAC7l6jei2mZv6d28R9+C4VwKb08
- 4kENr9i9/P/kjRIcO4WYCHOwH2D0Xus8KcnvsTzMSBPIEXelEe0s2DeXaou14tXjxTrf pA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ek4jxd558-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 14:51:47 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 01BF610002A;
-        Fri,  4 Mar 2022 14:51:42 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D4A96222CBE;
-        Fri,  4 Mar 2022 14:51:42 +0100 (CET)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 4 Mar 2022 14:51:42
- +0100
-From:   Yann Gautier <yann.gautier@foss.st.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>, <kernel@dh-electronics.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>,
-        Yann Gautier <yann.gautier@foss.st.com>
-Subject: [PATCH 0/3] mmc: mmci: stm32: updates for SDIO
-Date:   Fri, 4 Mar 2022 14:51:31 +0100
-Message-ID: <20220304135134.47827-1-yann.gautier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 4 Mar 2022 08:54:13 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16884532E5;
+        Fri,  4 Mar 2022 05:53:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646402006; x=1677938006;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EBV+8A/WSH+HEZn2WXFADUJhrDTrMNNGavJydqTbqEE=;
+  b=TpyPI486IwuLTlbBIKbByPctIkCTcqCopfetMFCemqeHECpunCMyY3h4
+   KkOYqRzkM71RIs73pv5+iG0+KxderaHJsVtZTNFrpED3Wg4h25/vIJeob
+   8rFm8/M0TTWls1s98+p/98Ghb5hQjucAroOFCXjc19Go0LNo1dR6WPuTk
+   GzxTzS++P0frb/I62QGZ4gDaogRjo9QvYd84k+XqUI2DPqXDAi1Cq3t9s
+   aNKcb+U2KStjMxUu9X2CdxJA1zb/xt8rjrABNU+3AqYbLbPGIbDaGKwGc
+   3GNlStBW/5pRxvCFVLtBH39aKxZeRCLZWXTEXm70Ok3rbxhSoktbDCkZH
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="254170019"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="254170019"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 05:53:25 -0800
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="642513908"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 05:53:22 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nQ8MG-00BF56-8O;
+        Fri, 04 Mar 2022 15:52:36 +0200
+Date:   Fri, 4 Mar 2022 15:52:35 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v3 1/6] device property: Helper to match multiple
+ connections
+Message-ID: <YiIZoyfsJDcwR4gr@smile.fi.intel.com>
+References: <20220303223351.141238-1-bjorn.andersson@linaro.org>
+ <YiIL/ejgxhfRhTDP@smile.fi.intel.com>
+ <YiIXDZnquRZj8dU5@paasikivi.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-04_06,2022-03-04_01,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiIXDZnquRZj8dU5@paasikivi.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To properly manage SDIO on STM32 variant of PL18x, we cannot have DMA
-Linked Lists enable. As it has to be disabled during probe sequence,
-we cannot wait until we have communicated with the SDIO chip. This
-should then be done through a DT property.
-The MMC_PM_KEEP_POWER should also be disabled on STM32MP157x-DK2 board
-as the clock used for wifi is not always-on.
+On Fri, Mar 04, 2022 at 03:41:33PM +0200, Sakari Ailus wrote:
+> On Fri, Mar 04, 2022 at 02:54:21PM +0200, Andy Shevchenko wrote:
+> > On Thu, Mar 03, 2022 at 02:33:46PM -0800, Bjorn Andersson wrote:
 
-Yann Gautier (3):
-  dt-bindings: mmc: mmci: add a property to disable DMA LLI
-  mmc: mmci: stm32: manage st,disable-dma-lli property
-  mmc: mmci: manage MMC_PM_KEEP_POWER per variant config
+...
 
- Documentation/devicetree/bindings/mmc/arm,pl18x.yaml |  5 +++++
- drivers/mmc/host/mmci.c                              |  5 ++++-
- drivers/mmc/host/mmci.h                              |  1 +
- drivers/mmc/host/mmci_stm32_sdmmc.c                  | 10 ++++++++--
- 4 files changed, 18 insertions(+), 3 deletions(-)
+> > > +		if (count >= matches_len && matches) {
+> > > +			fwnode_handle_put(ep);
+> > > +			return count;
+> > > +		}
+> > 
+> > Wouldn't be the same as
+> > 
+> > 		if (count >= matches_len) {
+> > 			fwnode_handle_put(ep);
+> > 			break;
+> > 		}
+> 
+> Don't you need to check for non-NULL matches here?
+
+Right, this should be kept as in original patch.
+
+> I find return above easier to read.
+
+Okay, original code may work, so I have no strong opinion about return vs
+break, although I find slightly better to have a single point of return in
+such case.
+
+> > ?
+
+...
+
+> > > +	count_graph = fwnode_graph_devcon_matches(fwnode, con_id, data, match,
+> > > +						  matches, matches_len);
+> > 
+> > > +	matches += count_graph;
+> > > +	matches_len -= count_graph;
+> > 
+> > No, won't work when matches == NULL.
+> > 
+> > Also, matches_len is expected to be 0 in that case (or at least being ignored,
+> > check with vsnprintf() behaviour in similar case).
+> > 
+> > So, something like this, perhaps
+> > 
+> > 	if (matches && matches_len) {
+> > 		matches += count_graph;
+> > 		matches_len -= count_graph;
+> > 	}
+> 
+> Good find!
+
+I have checked vsnprintf() and indeed, it expects to have the size is 0 when
+the resulting buffer pointer is NULL, and it doesn't do any additional checks.
+
+> > > +	count_ref = fwnode_devcon_matches(fwnode, con_id, data, match,
+> > > +					  matches, matches_len);
 
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
