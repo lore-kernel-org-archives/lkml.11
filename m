@@ -2,72 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B099C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAC2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240869AbiCDRLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
+        id S240888AbiCDRLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:11:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231630AbiCDRLd (ORCPT
+        with ESMTP id S240870AbiCDRLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:11:33 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DC27DA90;
-        Fri,  4 Mar 2022 09:10:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646413846; x=1677949846;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=OhqliwMn1x7qp8itaCieEl3E+urUC3dE0PGBdn7lXQU=;
-  b=EpgcfJSvXmKDRIwtQprI2zwnPK+H+E39986ncVQCI2EYuZG2zvmNRjuN
-   vKsm5MZq4nUooYu32rHGjYkXcJlf1Kiu3DRGhONLbw+e9Tg+S/9qKtmJk
-   nLOc7f+8KF6XOaZY3KJ4P1LEOEYEYA+GFqLWxwMFXymeaTYJ7cWm6jao+
-   U1LNidqNZ/HHZuk9JBU0txC40uDWJwhe1aZX+t8+ZAIldkRgPW17ykoew
-   A2wxpFYyGxfIs78B9c+n8ShfOWXwMsUHRTDhjR1wVON8f8nxRhYV+ISJt
-   P4OBX/jvvejBQXcj1qG53c3xywKaAV2mtlPFYoG9bUzPTBa4khHLCzE36
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253747548"
-X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="253747548"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 09:08:28 -0800
-X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="552288470"
-Received: from eabada-mobl2.amr.corp.intel.com (HELO [10.209.6.252]) ([10.209.6.252])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 09:08:28 -0800
-Message-ID: <94c4b8e2-1bf8-5a2a-7e76-6b8cad3c6b21@intel.com>
-Date:   Fri, 4 Mar 2022 09:08:20 -0800
+        Fri, 4 Mar 2022 12:11:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2581CD9D6;
+        Fri,  4 Mar 2022 09:10:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33402B827EA;
+        Fri,  4 Mar 2022 17:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F16C1C340E9;
+        Fri,  4 Mar 2022 17:10:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646413849;
+        bh=Ds1CUkU7UJjiWAdE0+xZMgQsZmoxCwPqtCIMS0NNp5A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=EA7yu/IROGfdSgKyOrBu8bT76eexmYri8ZSVbgz1qHTtzt1RI+qQdCks6wtlyl3eW
+         4XWB3HCTp6HtkpAAFNwdzQFn60forLUNs1zvg+mdX4mTJFCV9fKz03gGy3lgRHmrsZ
+         DNKBc28pZVlNB9VBlpkpVozlz75RUsvq+YXASqYajSkHNEv8c1BXroYR9QRz+0b6B9
+         Ss1SYTBV4zI9Xolb5L+Yl+HuevD4rfjGKHOKtehMtBNWH9hKbjkxqHGOlLf5GrvGVK
+         oSPmW8nEIyt0j1fVH15vsJShel4+aqY4NkDb4PpnaFKwAJ2qAYn7Ur9qMjr8jEg4us
+         qbX0wXDKvNj+A==
+Received: by mail-ed1-f50.google.com with SMTP id q17so11607608edd.4;
+        Fri, 04 Mar 2022 09:10:48 -0800 (PST)
+X-Gm-Message-State: AOAM533fofffIpN/fp+iKoMny2wK8/ThsGaGKWbVvZnu310+u70mbHqN
+        XEdJadZ7nGqlI5bV6Dxpl+SZ81fqAO1M9H4m2A==
+X-Google-Smtp-Source: ABdhPJyv33ipIntcHpbv1qfxGMnwrXmM5pCVhZvYqYuBcIOtqTdc2+oPX0xtMXbyCVPXlf8ixI0YtHesErJAvOBNjaY=
+X-Received: by 2002:aa7:d147:0:b0:415:c68c:f8d6 with SMTP id
+ r7-20020aa7d147000000b00415c68cf8d6mr12008248edo.67.1646413847174; Fri, 04
+ Mar 2022 09:10:47 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>, linux-sgx@vger.kernel.org
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-References: <20220304122852.563475-1-jarkko@kernel.org>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH RFC] x86: Add SGX_IOC_ENCLAVE_AUGMENT_PAGES
-In-Reply-To: <20220304122852.563475-1-jarkko@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <6d26f16646294836b87611f4dc5fe763@huawei.com>
+In-Reply-To: <6d26f16646294836b87611f4dc5fe763@huawei.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Fri, 4 Mar 2022 11:10:33 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKKj5znW1z7Oyk03O1qLVADUNRC5GthoVcM37HajHnxBA@mail.gmail.com>
+Message-ID: <CAL_JsqKKj5znW1z7Oyk03O1qLVADUNRC5GthoVcM37HajHnxBA@mail.gmail.com>
+Subject: Re: [PATCH] PCI: dwc: solve returning success but actually failed
+To:     "Zhangjiantao(Kirin,Nanjing)" <water.zhangjiantao@huawei.com>
+Cc:     "jingoohan1@gmail.com" <jingoohan1@gmail.com>,
+        "gustavo.pimentel@synopsys.com" <gustavo.pimentel@synopsys.com>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Caiyadong <caiyadong@huawei.com>,
+        guhengsheng <guhengsheng@hisilicon.com>,
+        "zhangjianrong (E)" <zhangjianrong5@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 04:28, Jarkko Sakkinen wrote:
-> Explicit EAUG ioctl is a better choice than an implicit EAUG from a page
-> fault handler because it allows to have O(1) number of kernel-enclave round
-> trips for EAUG-EACCEPT{COPY} process, instead of O(n), as it is in the case
-> when a page fault handler EAUG single page at a time.
+On Fri, Mar 4, 2022 at 6:06 AM Zhangjiantao(Kirin,Nanjing)
+<water.zhangjiantao@huawei.com> wrote:
+>
 
-So this is basically an optimization?  It's MADV_WILLNEED or
-MAP_POPULATE to the cost of avoid future faults?
+For the subject, something like: 'PCI: dwc: Fix setting error return
+on MSI DMA mapping failure'
+
+> When dma_mapping_error returns error because of no enough memory available, dw_pcie_host_init will return success, which will mislead the callers.
+
+Wrap lines at 72 char.
+
+>
+
+Add a Fixes tag with whatever commit introduced the problem.
+
+> Signed-off-by: zhangjianrong <zhangjianrong5@huawei.com>
+> Signed-off-by: zhangjiantao <water.zhangjiantao@huawei.com>
+
+Author and S-o-b names should match.
+
+>
+> ---
+>   drivers/pci/controller/dwc/pcie-designware-host.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c
+> b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index f4755f3a03be..ac691d733848 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -393,6 +393,7 @@ int dw_pcie_host_init(struct pcie_port *pp)
+>               if (dma_mapping_error(pci->dev, pp->msi_data)) {
+>                   dev_err(pci->dev, "Failed to map MSI data\n");
+>                   pp->msi_data = 0;
+> +                ret = -1;
+
+Use an errno value. ENOMEM seems to be common, but I also see EIO and
+EFAULT used.
+
+Rob
