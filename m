@@ -2,177 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235088AbiCDNKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:10:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        id S239737AbiCDNKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 08:10:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiCDNJd (ORCPT
+        with ESMTP id S239005AbiCDNKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:09:33 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D824D16AA68;
-        Fri,  4 Mar 2022 05:08:37 -0800 (PST)
-X-UUID: a68173b037ce4846a86f34057d6317a2-20220304
-X-UUID: a68173b037ce4846a86f34057d6317a2-20220304
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 441445737; Fri, 04 Mar 2022 21:08:32 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 4 Mar 2022 21:08:30 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 4 Mar 2022 21:08:30 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v3 20/21] arm64: dts: mt8192: Add gce info for display nodes
-Date:   Fri, 4 Mar 2022 21:08:08 +0800
-Message-ID: <20220304130809.12924-21-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220304130809.12924-1-allen-kh.cheng@mediatek.com>
-References: <20220304130809.12924-1-allen-kh.cheng@mediatek.com>
+        Fri, 4 Mar 2022 08:10:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E02371B50DC
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 05:09:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646399343;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jV96QDQfXFziaL0vRlxFYke/x+ja4OWA5o4UOaANEss=;
+        b=K6aGf5Zx4NTarbSWY0l61NbtzpWz1bMEhHPWCRZBzZAqK/aSSeVmzE3WrMBTqYUaTDXtxY
+        x6zMwtXWlIZVQj6v2AXS2Q3Pf4tJ/WCIfPhQP8zKeF3luU5gB5rREF5+WBOabcTU2JRQZw
+        G6EzbjhX3a7M5Qs4FpkNL2XwFqbDFk8=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-625-JsxlKjzdNo6ctDD6dyUyAQ-1; Fri, 04 Mar 2022 08:09:00 -0500
+X-MC-Unique: JsxlKjzdNo6ctDD6dyUyAQ-1
+Received: by mail-wm1-f71.google.com with SMTP id 187-20020a1c19c4000000b0037cc0d56524so4135501wmz.2
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 05:09:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=jV96QDQfXFziaL0vRlxFYke/x+ja4OWA5o4UOaANEss=;
+        b=u2Ev7XuGfclbBUuh9R3lFWgX7hruAeqCcQszV2I5GCDOJYrnNpubTfuSbLTMlfSAwJ
+         ylWXdQacSxst66nnXGP2QF57LgMECLmDeDB6BOzbFA2DBPxBHFSTSAyjvzNtmNpRpVwB
+         EqiguPsjtBs8TlYFscXZCyhNG2pHq/2C9FItI1cf1NIG0IwDgDjj3G5OFE0LCoS1+xQC
+         qNZC5529FysTw4jhy4gwXlAtv0dEbuqnX2xp7q1tZ+4qRvihUWVJ2tmk3ZsRjPmBTRnV
+         o0lYXMAbB4s2i+Y/fjzB0ZWAmcUfT2l2RdYSOOjuDaH84h6+81RZ+eTfrEEkKsa4ChBI
+         ZCww==
+X-Gm-Message-State: AOAM530IuWErpskuUESuyjVPp8R5wKV9oRscsV0+QXHoBzi4rnnY2ro4
+        CglOJD6UQddpq+U3CeSfe7h7uO6vsCL0ahozlC6RM++MpJf/d7DEsDH65ACU3kL+oy71FInpwVa
+        zykGtx6jY1UqjkzgRwb80Z0DV
+X-Received: by 2002:a5d:4dc4:0:b0:1ef:7aa9:5a8e with SMTP id f4-20020a5d4dc4000000b001ef7aa95a8emr24348666wru.168.1646399339606;
+        Fri, 04 Mar 2022 05:08:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwTMqwe4LsUwaoHrcsvjBPAt9as9hy5C/Ekyk/47uS9Fy4qmMvnToGpILbP7mlm9PMiAlnQXQ==
+X-Received: by 2002:a5d:4dc4:0:b0:1ef:7aa9:5a8e with SMTP id f4-20020a5d4dc4000000b001ef7aa95a8emr24348658wru.168.1646399339359;
+        Fri, 04 Mar 2022 05:08:59 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:4600:7355:df2c:f6ff:94d? (p200300cbc70946007355df2cf6ff094d.dip0.t-ipconnect.de. [2003:cb:c709:4600:7355:df2c:f6ff:94d])
+        by smtp.gmail.com with ESMTPSA id m10-20020adfe94a000000b001ef57f562ccsm4501764wrn.51.2022.03.04.05.08.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 05:08:58 -0800 (PST)
+Message-ID: <d67e9c8c-fa82-3ce4-1894-f2ad1779d834@redhat.com>
+Date:   Fri, 4 Mar 2022 14:08:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] mm: madvise: MADV_DONTNEED_LOCKED
+Content-Language: en-US
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "dgilbert@redhat.com" <dgilbert@redhat.com>
+References: <20220303212956.229409-1-hannes@cmpxchg.org>
+ <YiE3do4qCmJ6RsmP@cmpxchg.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YiE3do4qCmJ6RsmP@cmpxchg.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add gce info for display nodes
-- It's required to get drivers' CMDQ support
+On 03.03.22 22:47, Johannes Weiner wrote:
+> On Thu, Mar 03, 2022 at 04:29:56PM -0500, Johannes Weiner wrote:
+>> MADV_DONTNEED historically rejects mlocked ranges, but with
+>> MLOCK_ONFAULT and MCL_ONFAULT allowing to mlock without populating,
+>> there are valid use cases for depopulating locked ranges as well.
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Indeed, there are. I'd have use for that in QEMU for virtio-mem (which
+uses MADV_POPULATE_WRITE+MADV_DONTNEED to dynamically allocate/discard
+memory in a sparse memory mapping to be used by the VM, currently
+doesn't support mlock for obvious reasons).
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 3d16cb0b3ea1..70b50aa0a03c 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -1202,6 +1202,9 @@
- 		mmsys: syscon@14000000 {
- 			compatible = "mediatek,mt8192-mmsys", "syscon";
- 			reg = <0 0x14000000 0 0x1000>;
-+			mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST 1>,
-+				 <&gce 1 CMDQ_THR_PRIO_HIGHEST 1>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-@@ -1210,6 +1213,8 @@
- 			reg = <0 0x14001000 0 0x1000>;
- 			interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH 0>;
- 			clocks = <&mmsys CLK_MM_DISP_MUTEX0>;
-+			mediatek,gce-events = <CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_0>,
-+					      <CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_1>;
- 		};
- 
- 		smi_common: smi@14002000 {
-@@ -1251,6 +1256,7 @@
- 			iommus = <&iommu0 M4U_PORT_L0_OVL_RDMA0>,
- 				 <&iommu0 M4U_PORT_L0_OVL_RDMA0_HDR>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
- 		};
- 
- 		ovl_2l0: ovl@14006000 {
-@@ -1261,6 +1267,7 @@
- 			clocks = <&mmsys CLK_MM_DISP_OVL0_2L>;
- 			iommus = <&iommu0 M4U_PORT_L1_OVL_2L_RDMA0>,
- 				 <&iommu0 M4U_PORT_L1_OVL_2L_RDMA0_HDR>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
- 		};
- 
- 		rdma0: rdma@14007000 {
-@@ -1272,6 +1279,7 @@
- 			mediatek,larb = <&larb0>;
- 			mediatek,rdma-fifo-size = <5120>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x7000 0x1000>;
- 		};
- 
- 		color0: color@14009000 {
-@@ -1281,6 +1289,7 @@
- 			interrupts = <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH 0>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_COLOR0>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x9000 0x1000>;
- 		};
- 
- 		ccorr0: ccorr@1400a000 {
-@@ -1289,6 +1298,7 @@
- 			interrupts = <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH 0>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_CCORR0>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xa000 0x1000>;
- 		};
- 
- 		aal0: aal@1400b000 {
-@@ -1298,6 +1308,7 @@
- 			interrupts = <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH 0>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_AAL0>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xb000 0x1000>;
- 		};
- 
- 		gamma0: gamma@1400c000 {
-@@ -1307,6 +1318,7 @@
- 			interrupts = <GIC_SPI 261 IRQ_TYPE_LEVEL_HIGH 0>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_GAMMA0>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xc000 0x1000>;
- 		};
- 
- 		postmask0: postmask@1400d000 {
-@@ -1316,6 +1328,7 @@
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_POSTMASK0>;
- 			iommus = <&iommu0 M4U_PORT_L0_DISP_POSTMASK0>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xd000 0x1000>;
- 		};
- 
- 		dither0: dither@1400e000 {
-@@ -1325,6 +1338,7 @@
- 			interrupts = <GIC_SPI 263 IRQ_TYPE_LEVEL_HIGH 0>;
- 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_DITHER0>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xe000 0x1000>;
- 		};
- 
- 		dsi0: dsi@14010000 {
-@@ -1349,6 +1363,7 @@
- 			clocks = <&mmsys CLK_MM_DISP_OVL2_2L>;
- 			iommus = <&iommu0 M4U_PORT_L1_OVL_2L_RDMA2>,
- 				 <&iommu0 M4U_PORT_L1_OVL_2L_RDMA2_HDR>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x4000 0x1000>;
- 		};
- 
- 		rdma4: rdma@14015000 {
-@@ -1359,6 +1374,7 @@
- 			clocks = <&mmsys CLK_MM_DISP_RDMA4>;
- 			iommus = <&iommu0 M4U_PORT_L1_DISP_RDMA4>;
- 			mediatek,rdma-fifo-size = <2048>;
-+			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x5000 0x1000>;
- 		};
- 
- 		dpi0: dpi@14016000 {
+Further, QEMU postcopy live migration handling requires an munlockall()
+before registering the uffd handler and discarding all RAM via
+MADV_DONTNEED. Once postcopy finished, we have to mlock() again. I
+didn't check if there would be more stopping uffd from working on a
+mlocked region, but this would be one piece of the puzzle I guess.
+
 -- 
-2.18.0
+Thanks,
+
+David / dhildenb
 
