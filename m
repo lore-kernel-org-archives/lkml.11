@@ -2,220 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A39C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241290AbiCDReB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:34:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
+        id S241265AbiCDReG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241232AbiCDRdt (ORCPT
+        with ESMTP id S241222AbiCDRds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:33:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38333381B7
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:32:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646415172;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ux6twZOFT9lb2qTfIZn2kGfR1Z5YetNZFcKf5G8re3c=;
-        b=h13fUwSPYf8LdK3JUe7UPvatGwjSn9uP3Pgy/1N5iE/LlPQ6DHo7+pzOQFBjVHb95J6j7y
-        vIY0pafOnwRXxHBMWTBCnAzBt4Xd8ePZa7sP7C45zuMkr6HhIi90/oH3x0e5Ob6KRUewnK
-        QkY4K8RVLwKt2q0ZWI0ZIq0JZN9vSVE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-452-PycJhc6zM8GUH9sRgyf9ng-1; Fri, 04 Mar 2022 12:32:47 -0500
-X-MC-Unique: PycJhc6zM8GUH9sRgyf9ng-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8702B824FA7;
-        Fri,  4 Mar 2022 17:32:44 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ABB6786595;
-        Fri,  4 Mar 2022 17:32:40 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v2 14/28] selftests/bpf: add tests for hid_{get|set}_data helpers
-Date:   Fri,  4 Mar 2022 18:28:38 +0100
-Message-Id: <20220304172852.274126-15-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+        Fri, 4 Mar 2022 12:33:48 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4AB1BEB5;
+        Fri,  4 Mar 2022 09:32:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646415166; x=1677951166;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WxH94sQT9bd80kpGay6iFp+GMfyabjLVSaP0PrDfODE=;
+  b=g8C3hNPdqoeimuZXNIcuXKdAQNhEcAdtZp7+zd87JL4ORoJU5t3SaxNQ
+   JW04lnbhSJMUyAnejCPjGNvSrUT5WPUvZTOIE9Prn6TZPaDAxDqLxdVMp
+   qLOfL7TFIRl8pZPyzn8bcNdqcTY6GMavdn96jqSGED34DtAB0e2lHcSYd
+   rotV6B6O1t/6ss95WOOIkygnkXrt31R/NsjJibMUNm2jDIhFBdywg4YY3
+   8V16ZNqG49FxDo1TDigxczgHAmKRBJC1RuDm7A1aMoshGyVPndGp49ESM
+   X8p9hLqI07fJFdwbGFLzzfs9ZL/VU05V8kFhZ93WSKPjris1XyKGdKIf8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="241445927"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="241445927"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 09:32:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="552298153"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga008.jf.intel.com with ESMTP; 04 Mar 2022 09:32:40 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 80034A7; Fri,  4 Mar 2022 19:32:58 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Subject: [PATCH v2 1/1] device property: Allow error pointer to be passed to fwnode APIs
+Date:   Fri,  4 Mar 2022 19:32:56 +0200
+Message-Id: <20220304173256.39059-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simple test added here, with one use of each helper.
+Some of the fwnode APIs might return an error pointer instead of NULL
+or valid fwnode handle. The result of such API call may be considered
+optional and hence the test for it is usually done in a form of
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+	fwnode = fwnode_find_reference(...);
+	if (IS_ERR_OR_NULL(fwnode))
+		...error handling...
 
+Nevertheless the resulting fwnode may have bumped reference count and
+hence caller of the above API is obliged to call fwnode_handle_put().
+Since fwnode may be not valid either as NULL or error pointer the check
+has to be performed there. This approach uglifies the code and adds
+a point of making a mistake, i.e. forgetting about error point case.
+
+To prevent this allow error pointer to be passed to the fwnode APIs.
+
+Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
+Reported-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 
-changes in v2:
-- split the patch with libbpf left outside.
----
- tools/testing/selftests/bpf/prog_tests/hid.c | 65 ++++++++++++++++++++
- tools/testing/selftests/bpf/progs/hid.c      | 45 ++++++++++++++
- 2 files changed, 110 insertions(+)
+v2: adjusted the entire fwnode API (Sakari)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-index 91543b8078ca..74426523dd6f 100644
---- a/tools/testing/selftests/bpf/prog_tests/hid.c
-+++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-@@ -297,6 +297,68 @@ static int test_hid_raw_event(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
- 	return ret;
+Nuno, can you test this with the ltc2983 series, including the IS_ERR_OR_NULL()
+fix to it?
+
+ drivers/base/property.c | 45 +++++++++++++++++++++++++----------------
+ include/linux/fwnode.h  | 10 ++++-----
+ 2 files changed, 33 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index c0e94cce9c29..1922818470b0 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/acpi.h>
+ #include <linux/export.h>
++#include <linux/fwnode.h>
+ #include <linux/kernel.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -45,14 +46,16 @@ EXPORT_SYMBOL_GPL(device_property_present);
+ bool fwnode_property_present(const struct fwnode_handle *fwnode,
+ 			     const char *propname)
+ {
+-	bool ret;
++	if (IS_ERR_OR_NULL(fwnode))
++		return false;
+ 
+-	ret = fwnode_call_bool_op(fwnode, property_present, propname);
+-	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
+-					 propname);
+-	return ret;
++	if (fwnode_call_bool_op(fwnode, property_present, propname))
++		return true;
++
++	if (IS_ERR_OR_NULL(fwnode->secondary))
++		return false;
++
++	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
  }
+ EXPORT_SYMBOL_GPL(fwnode_property_present);
  
-+/*
-+ * Attach hid_set_get_data to the given uhid device,
-+ * retrieve and open the matching hidraw node,
-+ * inject one event in the uhid device,
-+ * check that the program makes correct use of bpf_hid_{set|get}_data.
-+ */
-+static int test_hid_set_get_data(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
-+{
-+	int err, hidraw_ino, hidraw_fd = -1;
-+	char hidraw_path[64] = {0};
-+	u8 buf[10] = {0};
-+	int ret = -1;
-+
-+	/* attach hid_set_get_data program */
-+	hid_skel->links.hid_set_get_data =
-+		bpf_program__attach_hid(hid_skel->progs.hid_set_get_data, sysfs_fd);
-+	if (!ASSERT_OK_PTR(hid_skel->links.hid_set_get_data,
-+			   "attach_hid(hid_set_get_data)"))
-+		return PTR_ERR(hid_skel->links.hid_set_get_data);
-+
-+	hidraw_ino = get_hidraw(hid_skel->links.hid_set_get_data);
-+	if (!ASSERT_GE(hidraw_ino, 0, "get_hidraw"))
-+		goto cleanup;
-+
-+	/* open hidraw node to check the other side of the pipe */
-+	sprintf(hidraw_path, "/dev/hidraw%d", hidraw_ino);
-+	hidraw_fd = open(hidraw_path, O_RDWR | O_NONBLOCK);
-+
-+	if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
-+		goto cleanup;
-+
-+	/* inject one event */
-+	buf[0] = 1;
-+	buf[1] = 42;
-+	send_event(uhid_fd, buf, 6);
-+
-+	/* read the data from hidraw */
-+	memset(buf, 0, sizeof(buf));
-+	err = read(hidraw_fd, buf, sizeof(buf));
-+	if (!ASSERT_EQ(err, 6, "read_hidraw"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[2], (42 >> 2), "hid_set_get_data"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[3], 1, "hid_set_get_data"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[4], 42, "hid_set_get_data"))
-+		goto cleanup;
-+
-+	ret = 0;
-+
-+cleanup:
-+	if (hidraw_fd >= 0)
-+		close(hidraw_fd);
-+
-+	hid__detach(hid_skel);
-+
-+	return ret;
-+}
-+
- /*
-  * Attach hid_rdesc_fixup to the given uhid device,
-  * retrieve and open the matching hidraw node,
-@@ -395,6 +457,9 @@ void serial_test_hid_bpf(void)
- 	err = test_hid_raw_event(hid_skel, uhid_fd, sysfs_fd);
- 	ASSERT_OK(err, "hid");
+@@ -232,10 +235,12 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
  
-+	err = test_hid_set_get_data(hid_skel, uhid_fd, sysfs_fd);
-+	ASSERT_OK(err, "hid_set_get_data");
++	if (IS_ERR_OR_NULL(fwnode))
++		return -EINVAL;
 +
- 	err = test_rdesc_fixup(hid_skel, uhid_fd, sysfs_fd);
- 	ASSERT_OK(err, "hid_rdesc_fixup");
+ 	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
+ 				 elem_size, val, nval);
+-	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
++	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode->secondary))
+ 		ret = fwnode_call_int_op(
+ 			fwnode->secondary, property_read_int_array, propname,
+ 			elem_size, val, nval);
+@@ -371,10 +376,12 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
  
-diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-index 2270448d0d3f..de6668471940 100644
---- a/tools/testing/selftests/bpf/progs/hid.c
-+++ b/tools/testing/selftests/bpf/progs/hid.c
-@@ -66,3 +66,48 @@ int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
++	if (IS_ERR_OR_NULL(fwnode))
++		return -EINVAL;
++
+ 	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
+ 				 val, nval);
+-	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
++	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode->secondary))
+ 		ret = fwnode_call_int_op(fwnode->secondary,
+ 					 property_read_string_array, propname,
+ 					 val, nval);
+@@ -480,11 +487,12 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
  
- 	return 0;
- }
++	if (IS_ERR_OR_NULL(fwnode))
++		return -ENOENT;
 +
-+SEC("hid/device_event")
-+int hid_set_get_data(struct hid_bpf_ctx *ctx)
-+{
-+	int ret;
-+	__u8 *buf;
+ 	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
+ 				 nargs, index, args);
+-
+-	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
++	if (ret < 0 && !IS_ERR_OR_NULL(fwnode->secondary))
+ 		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
+ 					 prop, nargs_prop, nargs, index, args);
+ 
+@@ -798,6 +806,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
+  */
+ bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
+ {
++	if (IS_ERR_OR_NULL(fwnode))
++		return false;
 +
-+	buf = bpf_ringbuf_reserve(&ringbuf, 8, 0);
-+	if (!buf)
-+		return -12; /* -ENOMEM */
+ 	if (!fwnode_has_op(fwnode, device_is_available))
+ 		return true;
+ 
+@@ -988,11 +999,11 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
+ 		parent = fwnode_graph_get_port_parent(prev);
+ 	else
+ 		parent = fwnode;
++	if (IS_ERR_OR_NULL(parent))
++		return NULL;
+ 
+ 	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
+-
+-	if (IS_ERR_OR_NULL(ep) &&
+-	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
++	if (!ep && !IS_ERR_OR_NULL(parent->secondary))
+ 		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+ 
+ 	return ep;
+diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+index 3a532ba66f6c..7defac04f9a3 100644
+--- a/include/linux/fwnode.h
++++ b/include/linux/fwnode.h
+@@ -148,12 +148,12 @@ struct fwnode_operations {
+ 	int (*add_links)(struct fwnode_handle *fwnode);
+ };
+ 
+-#define fwnode_has_op(fwnode, op)				\
+-	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
++#define fwnode_has_op(fwnode, op)					\
++	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
 +
-+	/* first try read/write with n > 32 */
-+	ret = bpf_hid_get_data(ctx, 0, 64, buf, 8);
-+	if (ret < 0)
-+		goto discard;
-+
-+	/* reinject it */
-+	ret = bpf_hid_set_data(ctx, 24, 64, buf, 8);
-+	if (ret < 0)
-+		goto discard;
-+
-+	/* extract data at bit offset 10 of size 4 (half a byte) */
-+	ret = bpf_hid_get_data(ctx, 10, 4, buf, 8);  /* expected to fail */
-+	if (ret > 0) {
-+		ret = -1;
-+		goto discard;
-+	}
-+
-+	ret = bpf_hid_get_data(ctx, 10, 4, buf, 4);
-+	if (ret < 0)
-+		goto discard;
-+
-+	/* reinject it */
-+	ret = bpf_hid_set_data(ctx, 16, 4, buf, 4);
-+	if (ret < 0)
-+		goto discard;
-+
-+	ret = 0;
-+
-+ discard:
-+
-+	bpf_ringbuf_discard(buf, 0);
-+
-+	return ret;
-+}
+ #define fwnode_call_int_op(fwnode, op, ...)				\
+-	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
+-		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
+-	 -EINVAL)
++	(fwnode_has_op(fwnode, op) ?					\
++	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
+ 
+ #define fwnode_call_bool_op(fwnode, op, ...)		\
+ 	(fwnode_has_op(fwnode, op) ?			\
 -- 
-2.35.1
+2.34.1
 
