@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F09CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC492C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240100AbiCDPIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:08:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
+        id S240137AbiCDPIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:08:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240066AbiCDPI3 (ORCPT
+        with ESMTP id S240068AbiCDPIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:08:29 -0500
+        Fri, 4 Mar 2022 10:08:30 -0500
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5C53FDB0;
-        Fri,  4 Mar 2022 07:07:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472D041635;
+        Fri,  4 Mar 2022 07:07:41 -0800 (PST)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2244w2hF013723;
-        Fri, 4 Mar 2022 09:07:26 -0600
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2244w2hJ013723;
+        Fri, 4 Mar 2022 09:07:30 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=j+aRd3p3l8MH2yYipEWQW5VKVEv+0k9D+Y84o7OTai0=;
- b=b56gBAJoMnwaxBybF08I3OvG6i6PFV26Io0zooU7l90DumQtTZHrtebVoondv7Po1e9c
- 49K36yNoK2n3XA/UTB9BaNS5CvfeWXPJPsNnGCJZen+Gbfr5HpEBXSu+xh6nJTvJd9uA
- 6rhsuwpJQtqQITmS9bIw+ze8B0us5KsI3Q3N2vQJq42ErxtqynvLHLIJEp0guehaxdDo
- ZKY76AgEd76UjMGiPFaHAc0DRsx/2Xk8jkdJhBWho7m401T/YurJvwM6mNRuZAP1sH+x
- EBCr/CjAMbKFCDipRGwDiHjeRtvqtI+o2X99BjZm612SVLM2oWw/wiSrujHw7JJO0Xhn wQ== 
+ bh=jPt/cfXYkcSIdY91R4XLOOF/Ab/YvNIlCw06bl45M0w=;
+ b=S54ucqtkvSio2PNR/zfTL0kI9hMtK/XRJHdFEGfG2jnZTO18CCToOE+aqHfeXV0KtCiZ
+ 1T4udIZorNqV1Y7ZrHTUFzj3aOsjGsavOTdSc6LNTnVVABzM5yxWDLp0VmqvVzJX076Z
+ Dst+Pzc6e/NaMrYZdVYtynz/sbo+zM5q5UMFkWaX3mADqHZ+aGvk9A3RycysY7kBlOBG
+ Sp8FHkQxoWt4DykVM+U1Lz/UXtHlgLOyZIncF9G3rk4DhUp+iySvVnTaNAM9tUhBDXpM
+ vnps+R4Ap0FEibj+ADOgbZldot2EHg5cWAAiPqsse6+PWx9uYD7mcr1IYwMbE03RSOnp cQ== 
 Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h414-1
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h414-5
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 04 Mar 2022 09:07:25 -0600
+        Fri, 04 Mar 2022 09:07:30 -0600
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
  (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Mar
- 2022 15:07:24 +0000
+ 2022 15:07:27 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 4 Mar 2022 15:07:24 +0000
+ Transport; Fri, 4 Mar 2022 15:07:27 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.65.198])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A8C7D7C;
-        Fri,  4 Mar 2022 15:07:23 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 79C6A11D1;
+        Fri,  4 Mar 2022 15:07:27 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -48,50 +48,62 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
         Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        David Rhodes <drhodes@opensource.cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Subject: [PATCH v2 01/20] ASoC: cs35l41: Fix GPIO2 configuration
-Date:   Fri, 4 Mar 2022 15:07:02 +0000
-Message-ID: <20220304150721.3802-2-tanureal@opensource.cirrus.com>
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: [PATCH v2 11/20] hda: cs35l41: Put the device into safe mode for external boost
+Date:   Fri, 4 Mar 2022 15:07:12 +0000
+Message-ID: <20220304150721.3802-12-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
 References: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: ABmFhauVmGBe644gF1lDSn0je8X6Zu3Y
-X-Proofpoint-ORIG-GUID: ABmFhauVmGBe644gF1lDSn0je8X6Zu3Y
+X-Proofpoint-GUID: z4yCgEpUNYltcpj7-f0JCEPAVdJh3LFw
+X-Proofpoint-ORIG-GUID: z4yCgEpUNYltcpj7-f0JCEPAVdJh3LFw
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Rhodes <drhodes@opensource.cirrus.com>
+All external boost setups should be put into safe mode.
 
-Fix GPIO2 polarity and direction configuration
-
-Fixes: fe1024d50477b ("ASoC: cs35l41: Combine adjacent register writes")
-Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
- sound/soc/codecs/cs35l41.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/hda/cs35l41_hda.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-index 77a017694645..90c91b00288b 100644
---- a/sound/soc/codecs/cs35l41.c
-+++ b/sound/soc/codecs/cs35l41.c
-@@ -1035,8 +1035,8 @@ static int cs35l41_irq_gpio_config(struct cs35l41_private *cs35l41)
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 17660ce71f93..3b9515ed871d 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -109,8 +109,6 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
+ };
  
- 	regmap_update_bits(cs35l41->regmap, CS35L41_GPIO2_CTRL1,
- 			   CS35L41_GPIO_POL_MASK | CS35L41_GPIO_DIR_MASK,
--			   irq_gpio_cfg1->irq_pol_inv << CS35L41_GPIO_POL_SHIFT |
--			   !irq_gpio_cfg1->irq_out_en << CS35L41_GPIO_DIR_SHIFT);
-+			   irq_gpio_cfg2->irq_pol_inv << CS35L41_GPIO_POL_SHIFT |
-+			   !irq_gpio_cfg2->irq_out_en << CS35L41_GPIO_DIR_SHIFT);
- 
- 	regmap_update_bits(cs35l41->regmap, CS35L41_GPIO_PAD_CONTROL,
- 			   CS35L41_GPIO1_CTRL_MASK | CS35L41_GPIO2_CTRL_MASK,
+ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
+-	.probe		= cs35l41_reset_to_safe,
+-	.num_probe	= ARRAY_SIZE(cs35l41_reset_to_safe),
+ 	.prepare	= cs35l41_safe_to_active,
+ 	.num_prepare	= ARRAY_SIZE(cs35l41_safe_to_active),
+ 	.cleanup	= cs35l41_active_to_safe,
+@@ -224,10 +222,15 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
+ 			return ret;
+ 		break;
+ 	case CS35L41_EXT_BOOST:
+-		cs35l41->reg_seq = &cs35l41_hda_reg_seq_ext_bst;
+-		break;
+ 	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
+-		cs35l41->reg_seq = &cs35l41_hda_reg_seq_no_bst;
++		if (hw_cfg->bst_type == CS35L41_EXT_BOOST)
++			cs35l41->reg_seq = &cs35l41_hda_reg_seq_ext_bst;
++		else
++			cs35l41->reg_seq = &cs35l41_hda_reg_seq_no_bst;
++		ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_reset_to_safe,
++					     ARRAY_SIZE(cs35l41_reset_to_safe));
++		if (ret)
++			return ret;
+ 		break;
+ 	default:
+ 		dev_err(cs35l41->dev, "Boost type %d not supported\n", hw_cfg->bst_type);
 -- 
 2.35.1
 
