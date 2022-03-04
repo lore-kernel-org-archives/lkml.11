@@ -2,152 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D133C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239691AbiCDMHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 07:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
+        id S239701AbiCDMHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 07:07:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239677AbiCDMHK (ORCPT
+        with ESMTP id S233619AbiCDMHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 07:07:10 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807E01B30A4;
-        Fri,  4 Mar 2022 04:06:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646395583; x=1677931583;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gZtyK7pDwLY5lAZrCyJHDcj242KDLDUK8zT8V+IfAjI=;
-  b=2kGsGoJqcUzDc0l+/4+cfvp8oJ/tsYBEV/Aq5wUA3fJH4EoAdIRYPMnY
-   bEHuYbZpbL8VdJH8ohMbigYceA4wtTEXX+Z8ofgPmit9ecAFsu2W2w2MV
-   OYvfHGUk81CuKXMhEtHFcLpME1XaoUqP9Sqo5EJW12rD/h2KDBAHF/3Sm
-   v+WhmToKQgVSTgDjHCjSVr1fPl/QzGS4utCSB0UwUO91nwhFikPkzSXAq
-   95zGEdpOUXNOq7RdUqRDYn1Nx/41ifAWI/zy1xkuc3E5bFgxSNNHruWv7
-   1sOJLKG1omr21flg7WVct/r9WULm6z/gkltNC2ZVIpEnJNqApVoOcz+uM
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
-   d="scan'208";a="148093200"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 05:06:22 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 05:06:21 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 4 Mar 2022 05:06:21 -0700
-Date:   Fri, 4 Mar 2022 13:09:11 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <UNGLinuxDriver@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Colin Foster <colin.foster@in-advantage.com>
-Subject: Re: [PATCH v1 5/5] pinctrl: microchip-sgpio: wait until output is
- actually set
-Message-ID: <20220304120911.i5rngplg5l6gnnyy@soft-dev3-1.localhost>
-References: <20220224161021.2197263-1-michael@walle.cc>
- <20220224161021.2197263-6-michael@walle.cc>
- <20220225092427.jjilv3qo52crsmuw@soft-dev3-1.localhost>
- <2f8a215c67269d639290515931d10b78@walle.cc>
+        Fri, 4 Mar 2022 07:07:12 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB7E61B309F;
+        Fri,  4 Mar 2022 04:06:24 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 4950592009C; Fri,  4 Mar 2022 13:06:22 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 4313A92009B;
+        Fri,  4 Mar 2022 12:06:22 +0000 (GMT)
+Date:   Fri, 4 Mar 2022 12:06:22 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Richard Genoud <richard.genoud@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH v4] serial: make uart_console_write->putchar()'s character
+ an unsigned char
+In-Reply-To: <20220303080831.21783-1-jslaby@suse.cz>
+Message-ID: <alpine.DEB.2.21.2203041155090.47558@angie.orcam.me.uk>
+References: <20220303080831.21783-1-jslaby@suse.cz>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <2f8a215c67269d639290515931d10b78@walle.cc>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 02/25/2022 12:29, Michael Walle wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Thu, 3 Mar 2022, Jiri Slaby wrote:
 
-Hi Michael,
+> Currently, uart_console_write->putchar's second parameter (the
+> character) is of type int. It makes little sense, provided uart_console_write()
+> accepts the input string as "const char *s" and passes its content -- the
+> characters -- to putchar(). So switch the character's type to unsigned
+> char.
 
-Sorry for late reply.
+ For:
 
-> 
-> Hi Horatiu,
-> 
-> Am 2022-02-25 10:24, schrieb Horatiu Vultur:
-> > The 02/24/2022 17:10, Michael Walle wrote:
-> > > Right now, when a gpio value is set, the actual hardware pin gets set
-> > > asynchronously. When linux write the output register, it takes some
-> > > time
-> > > until it is actually propagated to the output shift registers. If that
-> > > output port is connected to an I2C mux for example, the linux driver
-> > > assumes the I2C bus is already switched although it is not.
-> > > 
-> > > Fortunately, there is a single shot mode with a feedback: you can
-> > > trigger the single shot and the hardware will clear that bit once it
-> > > has
-> > > finished the clocking and strobed the load signal of the shift
-> > > registers. This can take a considerable amount of time though.
-> > > Measuremens have shown that it takes up to a whole burst cycle gap
-> > > which
-> > > is about 50ms on the largest setting. Therefore, we have to mark the
-> > > output bank as sleepable. To avoid unnecessary waiting, just trigger
-> > > the
-> > > single shot if the value was actually changed.
-> > 
-> > I have tested this patch series on our lan9668 board and it worked
-> > fine. Thanks!
-> 
-> Thanks for testing!
-> 
-> > I just have few questions:
-> > 1. What about other boards/chips that have this sgpio, do they have
-> > also
-> >    the same issue? Because from what I recall on sparx5 they don't have
-> >    this issue. I have seen it only on lan9668.
-> 
-> Unfortunatly, I don't have any knowledge what IP core is used in
-> which SoC. I assumed the lan9668 used the same as the sparx5. If
-> that is not the case, we need a new compatible. Do you know if it
-> the same?
+>  drivers/tty/serial/dz.c                    | 2 +-
 
-From what I see, it is the same IP.
+DECstation DZ serial driver version 1.04
+ttyS0 at MMIO 0x1c000000 (irq = 4, base_baud = 0) is a DZ
+ttyS1 at MMIO 0x1c000000 (irq = 4, base_baud = 0) is a DZ
+ttyS2 at MMIO 0x1c000000 (irq = 4, base_baud = 0) is a DZ
+ttyS3 at MMIO 0x1c000000 (irq = 4, base_baud = 0) is a DZ
 
-> 
-> On the sparx5 are there any peripheral who you would actually
-> notice that the timing is off?
+(I guess I ought to make it report "base_baud = 9600" though there is no 
+programmable clock divider there and instead there is simply a 15-way rate 
+selector for standard baud rates of up to 9600bps in addition to external 
+clocking chosen with the 16th setting), and:
 
-There are some SFP connected, similar to lan966x. So I don't understand
-why that issue is not seen there.
+>  drivers/tty/serial/sb1250-duart.c          | 2 +-
 
-> 
-> That being said, I'd assume all the serial gpio controller has
-> this "flaw". Simply because a register write won't block until the
-> value is shifted out to the shift register and actualy loaded by
-> strobing the load signal. It just depends on your burst setting
-> (even with bursts off, and clocking all the time) on how large
-> the delay is. So you might or might not notice it on a board.
-> 
-> Could you also have a look at the other supported sgpio block,
-> the ocelot and the luton? I don't have any register description
-> of these.
-> 
-> > 2. I remember that I have tried to fix this issue like this [1], but
-> >    unfortunetly that was never accepted. Is this something that is
-> > worth
-> >    at looking at?
-> 
-> That fix is at the wrong place. You'd need to fix every gpio user, no?
-> Instead this tries to fix the controller.
+duart0 at MMIO 0x10060100 (irq = 8, base_baud = 5000000) is a SB1250 DUART
+duart1 at MMIO 0x10060200 (irq = 9, base_baud = 5000000) is a SB1250 DUART
 
-Yes, you are right.
+(this does require some TLC though as there's a "refcount_t: saturated; 
+leaking memory." warning issued in driver's initialisation) and:
 
-> 
-> > 
-> > [1]
-> > https://patchwork.ozlabs.org/project/linux-i2c/patch/20211103091839.1665672-3-horatiu.vultur@microchip.com/
-> 
-> -michael
+>  drivers/tty/serial/zs.c                    | 2 +-
 
--- 
-/Horatiu
+DECstation Z85C30 serial driver version 0.10
+ttyS0 at MMIO 0x1f900008 (irq = 14, base_baud = 460800) is a Z85C30 SCC
+ttyS1 at MMIO 0x1f900000 (irq = 14, base_baud = 460800) is a Z85C30 SCC
+ttyS2 at MMIO 0x1f980008 (irq = 15, base_baud = 460800) is a Z85C30 SCC
+ttyS3 at MMIO 0x1f980000 (irq = 15, base_baud = 460800) is a Z85C30 SCC
+
+Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Tested-by: Maciej W. Rozycki <macro@orcam.me.uk>
+
+ However please consider my notes in the branch of discussion with David 
+too WRT (not) changing the signedness.
+
+ Myself I'll look into GCC and see why it doen't fold the truncation into
+the load operation.  Maybe just a MIPS backend issue, such as a missing 
+RTL pattern the lack of which prevents combine from doing its job here.  
+Any fix will have to wait a couple of months for upstreaming though as the 
+compiler is currently at a stage where regression fixes are accepted only 
+for the upcoming GCC 12 release, so no general development is allowed on 
+trunk.
+
+ Thank you for working on this!
+
+  Maciej
