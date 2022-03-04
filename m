@@ -2,129 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA0BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55194C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239864AbiCDR4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:56:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48302 "EHLO
+        id S234941AbiCDR5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:57:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiCDR4O (ORCPT
+        with ESMTP id S239907AbiCDR5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:56:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4F41BB72C;
-        Fri,  4 Mar 2022 09:55:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A06960AC9;
-        Fri,  4 Mar 2022 17:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F257C340F2;
-        Fri,  4 Mar 2022 17:55:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646416526;
-        bh=J6hloWIO/6m3VRXucz1U/coFUk2wFv7ErlZ9Bs+z3oc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jSfNaKKMGCBtztEnASWwH28GmNY/S0ATzomDddon4T/3U66LGD1lOaBaSMHV+60KY
-         8g3g2qcSMtbzMSqlofD6zTHjH3ijEau9SqIz3lBEMfxS0Yt5AQas3K5pVLNt1nmIEX
-         nMY3080xaAvikH3M9NI51gINxube5j6pmzeefVBs=
-Date:   Fri, 4 Mar 2022 18:55:19 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Wei Liu <wei.liu@kernel.org>
-Cc:     Iouri Tarassov <iourit@linux.microsoft.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        spronovo@microsoft.com, spronovo@linux.microsoft.com
-Subject: Re: [PATCH v3 02/30] drivers: hv: dxgkrnl: Driver initialization and
- loading
-Message-ID: <YiJSh4WRmVdWvUc8@kroah.com>
-References: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
- <739cf89e71ff72436d7ca3f846881dfb45d07a6a.1646163378.git.iourit@linux.microsoft.com>
- <Yh6F9cG6/SV6Fq8Q@kroah.com>
- <20220301222321.yradz24nuyhzh7om@liuwe-devbox-debian-v2>
- <Yh8ia7nJNN7ISR1l@kroah.com>
- <c848ade1-48e4-1868-b890-9c3401cff9de@linux.microsoft.com>
- <YiDBGFJcQXfx/hwG@kroah.com>
- <20220304160410.zbdbds6wh3omi5mk@liuwe-devbox-debian-v2>
+        Fri, 4 Mar 2022 12:57:12 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 066161CBAA6;
+        Fri,  4 Mar 2022 09:56:24 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 37CC692009C; Fri,  4 Mar 2022 18:56:23 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 3072C92009B;
+        Fri,  4 Mar 2022 17:56:23 +0000 (GMT)
+Date:   Fri, 4 Mar 2022 17:56:23 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Randy Dunlap <rdunlap@infradead.org>
+cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        kernel test robot <lkp@intel.com>,
+        Paul Burton <paulburton@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v3] mips: DEC: honor CONFIG_MIPS_FP_SUPPORT=n
+In-Reply-To: <20220304162427.27276-1-rdunlap@infradead.org>
+Message-ID: <alpine.DEB.2.21.2203041755430.47558@angie.orcam.me.uk>
+References: <20220304162427.27276-1-rdunlap@infradead.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304160410.zbdbds6wh3omi5mk@liuwe-devbox-debian-v2>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 04:04:10PM +0000, Wei Liu wrote:
-> > > A PCI device device is created for each virtual compute device.
-> > > Therefore, there should be a global list of objects and a mutex to
-> > > synchronize access to the list.
-> > 
-> > Woah, what?  You create a fake PCI device for each virtual device?  If
-> > so, great, then you are now a PCI bus and create the PCI devices
-> > properly so that the PCI core can handle and manage them and then
-> > assign them to your driver.  You should NEVER have a global list of
-> > these devices, as that is what the driver model should be managing.
-> > Not you!
-> > 
-> 
-> No, there is no fake PCI device. The device object is still coming from
-> the PCI core driver. There is code to match against PCI vendor ID and
-> device ID, and follow the usual way of managing PCI device.
+On Fri, 4 Mar 2022, Randy Dunlap wrote:
 
-So it is a real PCI device?  Why the confusion?
+> Include the DECstation interrupt handler in opting out of
+> FPU support.
 
-> Iouri understands device specific state should be encapsulated in the
-> private data field in their respective device. And I believe the code
-> can perhaps be rewritten to better conform to Linux kernel's model.
+Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
 
-It has to follow the Linux kernel model, to think otherwise is quite
-odd.
+ Thank you!
 
-> > > IO space is shared by all compute devices, so its parameters should
-> > > be global.
-> > 
-> > Huh?  If that's the case then you have bigger problems.  Use the aux
-> > bus for devices that share io space.  That is what it was created for,
-> > do not ignore the functionality that Linux already provides you by
-> > trying to go around it and writing your own code.  Use the frameworks
-> > we have already debugged and support.  This is why your Linux driver
-> > should be at least 1/3 smaller than drivers for other operating
-> > systems.
-> > 
-> 
-> To be fair, auxiliary bus was only added in 5.11, while this series was
-> written long before that. Unfortunately one only has so much time to
-> follow Linux kernel development closely. I admit this is the first time
-> I hear about it. :-)
-
-5.11 was over a year ago.  We do not take "old" drivers into the kernel
-tree, and if this series has not been touched for over a year, um, you
-all have bigger problems here and are just wasting our time :(
-
-> > Then fix this.  Make your compute devices store the needed information
-> > when they are created.  Again, we have loads of examples in the kernel,
-> > this is nothing new.
-> > 
-> 
-> At this point, I think Iouri and I have settled on more encapsulation is
-> needed. Yet there is something I don't know how to square yet. That is,
-> devices (either from vmbus or pci) don't form a clear hierarchy.
-
-That is because devices don't care where they are in the larger kernel
-tree of devices, they are independant.  To try to claim there is a
-needed hierarchy is quite odd and will cause lots of problems when that
-heirachy changes by the underlying system.
-
-> If
-> there isn't a linked list or some sort to organize them it would be
-> difficult to cross-reference.
-
-You should never be touching another device from another one.  There are
-a few rare exceptions but they are rare and you should not use them at
-all.  And if you do have to do so, you better get the reference counting
-logic correct.
-
-good luck!
-
-greg k-h
+  Maciej
