@@ -2,114 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17321C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 13:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238443AbiCDNze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 08:55:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
+        id S238580AbiCDN4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 08:56:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231634AbiCDNzb (ORCPT
+        with ESMTP id S229687AbiCDN42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 08:55:31 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3990515B99D;
-        Fri,  4 Mar 2022 05:54:44 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id DFB801F386;
-        Fri,  4 Mar 2022 13:54:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646402082;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gnx66aWeykrzI2XBQv7Kx5jZUN33fVmg1ARGMWpelfY=;
-        b=iTrWdsmDK1S4NboUAhMqnFvdWBSELXhlHkF3jJwhTAwb5Fs/fv1AOCRgy8sRX9xcNht9no
-        grpDBosjamSuehPsL8JiGi0KP4z0CDSIKozde2a54j1NGPiSb7vRc7XhfYwDaKLgwF/vGv
-        VtEaZMz7iBHpawYosGBDw1/azw99eNQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646402082;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gnx66aWeykrzI2XBQv7Kx5jZUN33fVmg1ARGMWpelfY=;
-        b=FtJtQkec5uCj7/Iheh2GsT6By6GvhuKne8SEjp38JlclBPYOOEDtaCrJ1fwodYNWsSM5Pi
-        /kjQxcQJ2yO1B2DA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 93DEDA3B8F;
-        Fri,  4 Mar 2022 13:54:42 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id A3123DA80E; Fri,  4 Mar 2022 14:50:49 +0100 (CET)
-Date:   Fri, 4 Mar 2022 14:50:49 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Anand Jain <anand.jain@oracle.com>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Mason <clm@fb.com>,
-        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
-        Josef Bacik <josef@toxicpanda.com>, dsterba@suse.cz,
-        David Sterba <dsterba@suse.com>
-Subject: Re: [PATCH] btrfs: don't access possibly stale fs_info data in
- device_list_add
-Message-ID: <20220304135049.GY12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Anand Jain <anand.jain@oracle.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Mason <clm@fb.com>,
-        syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>
-References: <20220303144027.1981835-1-dzm91@hust.edu.cn>
- <20220303182431.GW12643@suse.cz>
- <e3f0ab62-3d1f-a316-2d7b-a0b791120f87@oracle.com>
+        Fri, 4 Mar 2022 08:56:28 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3606619D634;
+        Fri,  4 Mar 2022 05:55:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646402141; x=1677938141;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=c4N+V43B3i0c7JWoTDHNDNh4DYCcViChbXoi/oxgYJ4=;
+  b=nOzgqITRsYTt3w3jH6R4vrDtROCF2kN2Q9RZ329aWoWgCxUGPkyE9FpJ
+   0bKMjYn5S7aBex4XDPD8gm24Tm4uJCFYISHl/XYMwPY/TtRp+WQ8OgQoG
+   O5b+8Ex3mDwyKX4QJECQeZioe8utkAHvxS7bbjPJ2/FaKr/rzGBbaqU5Z
+   d78vi5BtDMNxNxJbdZWGkSzfNsM5fqJ5BARrDdhoxVHIAOgg1PSnEV0qn
+   mS9EmC3sZ8Y/x+XFOlomzjmmbAmQjSEMgU4s0Ex8EdbOMDIM42NKGbcXj
+   QpIHWBjW0HADYY/407JMXkOxFCUm/SkNXVVRQ1sMsi8pzn3nWuWdMwXL8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="314693087"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="314693087"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 05:55:40 -0800
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="511854676"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 05:55:37 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nQ8OR-00BF8a-QX;
+        Fri, 04 Mar 2022 15:54:51 +0200
+Date:   Fri, 4 Mar 2022 15:54:51 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v3 4/6] typec: mux: Allow multiple mux_devs per mux
+Message-ID: <YiIaK8kSYGtivvhk@smile.fi.intel.com>
+References: <20220303223351.141238-1-bjorn.andersson@linaro.org>
+ <20220303223351.141238-4-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e3f0ab62-3d1f-a316-2d7b-a0b791120f87@oracle.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220303223351.141238-4-bjorn.andersson@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 07:53:27AM +0800, Anand Jain wrote:
-> On 04/03/2022 02:24, David Sterba wrote:
-> > On Thu, Mar 03, 2022 at 10:40:27PM +0800, Dongliang Mu wrote:
-> >>
-> >> Fix this by modifying device->fs_info to NULL too.
-> >>
-> >> Reported-and-tested-by: syzbot+82650a4e0ed38f218363@syzkaller.appspotmail.com
-> >> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> >> ---
-> >>   fs/btrfs/volumes.c | 2 +-
-> >>   1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-> >> index b07d382d53a8..c1325bdae9a1 100644
-> >> --- a/fs/btrfs/volumes.c
-> >> +++ b/fs/btrfs/volumes.c
-> >> @@ -954,7 +954,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
-> >>   						  task_pid_nr(current));
-> >>   				return ERR_PTR(-EEXIST);
-> >>   			}
-> >> -			btrfs_info_in_rcu(device->fs_info,
-> >> +			btrfs_info_in_rcu(NULL,
-> > 
-> > A few lines above this is also NULL and was fixed by 0697d9a61099
-> > ("btrfs: don't access possibly stale fs_info data for printing duplicate
-> > device"), so yeah we probably need the same here.
+On Thu, Mar 03, 2022 at 02:33:49PM -0800, Bjorn Andersson wrote:
+> In the Qualcomm platforms the USB/DP PHY handles muxing and orientation
+> switching of the SuperSpeed lines, but the SBU lines needs to be
+> connected and switched by external (to the SoC) hardware.
 > 
-> So it appears that device->fs_info was garbage instead of NULL OR
-> fs_info->sb was NULL?
+> It's therefor necessary to be able to have the TypeC controller operate
+> multiple TypeC muxes and switches. Use the newly introduced indirection
+> object to handle this, to avoid having to taint the TypeC controllers
+> with knowledge about the downstream hardware configuration.
+> 
+> The max number of devs per indirection is set to 3, which account for
+> being able to mux/switch the USB HS, SS and SBU lines, as per defined
+> defined in the usb-c-connector binding. This number could be grown if
+> need arrises at a later point in time.
 
-I think it's a warning that something could happen, in this case
-potential garbage value of fs_info.
+...
 
-> Because we always had a check if fs_info is null in btrfs_printk()
-> further the commit a0f6d924cada ("btrfs: remove stub device info from
-> messages when we have no fs_info") made it better.
+> +	for (i = 0; i < count; i++) {
+> +		if (IS_ERR(sw_devs[i])) {
+> +			err = PTR_ERR(sw_devs[i]);
+> +			goto put_sw_devs;
+> +		}
+> +	}
+>  
+> -	sw->sw_dev = sw_dev;
+> +	for (i = 0; i < count; i++) {
+> +		WARN_ON(!try_module_get(sw_devs[i]->dev.parent->driver->owner));
+> +		sw->sw_devs[i] = sw_devs[i];
+> +	}
+> +
+> +	sw->num_sw_devs = count;
+>  
+>  	return sw;
+> +
+> +put_sw_devs:
+> +	for (i = 0; i < count; i++) {
 
-Yeah, that's removing a potential crash but still the NULL value could
-come from a freed memory. Seems taht we can't rely on fs_info in
-device_list_add at all and passing NULL is the only safe way.
+Shouldn't it be
+
+	while (i--)
+
+?
+
+> +		if (!IS_ERR(sw_devs[i]))
+
+We may get rid of this check if we guarantee that the device is NULL.
+
+> +			put_device(&sw_devs[i]->dev);
+> +	}
+> +
+> +	kfree(sw);
+> +
+> +	return ERR_PTR(err);
+>  }
+
+...
+
+> +	for (i = 0; i < count; i++) {
+> +		if (IS_ERR(mux_devs[i])) {
+> +			err = PTR_ERR(mux_devs[i]);
+> +			goto put_mux_devs;
+> +		}
+
+Ditto.
+
+> +	}
+
+...
+
+> +put_mux_devs:
+> +	for (i = 0; i < count; i++) {
+> +		if (!IS_ERR(mux_devs[i]))
+> +			put_device(&mux_devs[i]->dev);
+> +	}
+
+Ditto.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
