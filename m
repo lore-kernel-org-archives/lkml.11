@@ -2,105 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 11:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 11:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236156AbiCDLt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 06:49:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
+        id S235042AbiCDLus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 06:50:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233991AbiCDLt6 (ORCPT
+        with ESMTP id S229491AbiCDLuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 06:49:58 -0500
-Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0751B1DD1;
-        Fri,  4 Mar 2022 03:49:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1646394544;
-        bh=AIDMXBc8l59dOY/mPpvQ/FWRUbozuV63c41/mFfvSC4=;
-        h=From:To:Cc:Subject:Date;
-        b=Iza5Lj9JE74WREUC+zbYWrNnApwfW5En6mpdwOknxeQIQCzYmGm1LrKYCnggqu2x/
-         pRD+ioCJMUer0oQIw863j0Pat3S75g0lofWKw33p5Un0MT/4cB/kr5BDzAnxsyzDYI
-         yyRll4hh2wNFBPykWMZOHZAETycNtJcAPWsNsavE=
-Received: from localhost.localdomain ([43.227.136.188])
-        by newxmesmtplogicsvrszc9.qq.com (NewEsmtp) with SMTP
-        id C3BA481B; Fri, 04 Mar 2022 19:48:59 +0800
-X-QQ-mid: xmsmtpt1646394539tj8y1kb28
-Message-ID: <tencent_E6A97F6B1009E6F65C230E070A9770612507@qq.com>
-X-QQ-XMAILINFO: ODdZrkDuTlAgNeTh1j/G2NL1AHblXm8Qf0chvyulSFxRRsk53IVVHln3BhaP3j
-         2x5HpnqX8bUwH3ycK+VgZkGcJTJhweMZum9+agjIf2ncDjQARXi4dawI+P27G8ZBH08KIEixBcYa
-         EznLl8Wd2lAcMF5R85X/Ygw0VMWvlKg0B2PWlFfsN3kIFOHplJ5syzyxBnJ7dJtF6bzqrUnFqf1k
-         XCAdRLu8WKnXOm+UidM9WcwlQCNO3m3RX26yZoeK3wMM93cLJddmnpAvYesw2Rocobulvp9qWHtv
-         F2Bpr5Ot9E6acH8nyfpr81Y2B4agNTqwMfnosbK1Hmr5HiPE79Cvy8qE2giNb6053C3owoTXuOMo
-         CIvh5LN14UalMBbz5WXVl1Xkp0yu1qcuGdftXuN6A7mF2mJwZwkKdZULfKgNLIQRKXFcB2dPagOG
-         MwwaROLOGV+9Lu8XqgylvdetCC9Jwv2jD5Y1r2OKlBZN8z9JJoVj7PVZArvqT/yX9yCE64wq6Etw
-         zfQQZEAIKDcnZJX9lNcvcuGxcnIflzVV92DdehSyldaWE4HeavEKx0KKMMpv4kR/stp84mt1iO9F
-         aZ0v7rbODV6StlE0zLOZ187lY62L8hFrdKitagf9+GHsU4YoTa7LyNkeBGE5xCWI+226T+rJ9I/O
-         3TYPHAoMrKIolhNM9ZbElkQB8YIHmSjod6Zwhk2OFQQ+1pNkvQ4qUk4Y1NKslU5BGR2yNGuq7i6K
-         L2TQU0U1tGwN6ax0kO7IP27NpYtBEm5vpptYuk3dzzkKRCpn3hv+Ic9oiOoiDAw7SGY+FfMHNyvr
-         Cfe+DfWs21W0nzdmkFT/sH5T0G7KXeVFtCB7B11sPjRlbuJnAc6sII+EW8HwoH6sPOR/bqTgcvKV
-         P0NKBOV4v2sFGWxPmdEVkZmRlACLENcKpq+Mx+EMROy1lFWgi34ca4uxy2sZ6hcgqF0CkrJ+4p8s
-         V5JyKPVHO01FhkM6AuUQ==
-From:   xkernel.wang@foxmail.com
-To:     laurent.pinchart@ideasonboard.com, sakari.ailus@iki.fi,
-        mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] media: omap3isp: check the return of __ccp2_get_format()
-Date:   Fri,  4 Mar 2022 19:48:18 +0800
-X-OQ-MSGID: <20220304114819.5566-1-xkernel.wang@foxmail.com>
+        Fri, 4 Mar 2022 06:50:46 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EEE18022F
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 03:49:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646394598; x=1677930598;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=fUXyJLIdFhiyxULhk8zOA6BP1tAoMR/8RP78/EcpwW0=;
+  b=wWM65DfJJBlGCxTKE2Y35NoPgP24nebFyaSQQ2FgoDBLItzGCe2fjVuv
+   LQAFkRInehUkKlXmXeRjiqRU4+/Tx4mk8eRUW69wuloViMtaaomTflGBp
+   RU+x0N21izHasq6Zvl8DkaYbUovs4BlbLX36I+JO6yYXACyWzb+5ElPZ4
+   N97YU/surm3h6X6VkItQ5en8tbQvbcUWQQNO1NzCR5lBbrm/7ih78/cmo
+   IarpzIEvxJQ6UJe41wl+4vqzyGfGc1DR2DsgS0O9HdfAxcqEij3Kqixg5
+   Zn+kSUr6OBOAvdPpykTflSkksMvW8NxfNimTkdJ87eA1ZfRtUqYwvGV2/
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="87826588"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 04:49:57 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 04:49:57 -0700
+Received: from [10.12.72.98] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 4 Mar 2022 04:49:56 -0700
+Message-ID: <60224607-230a-8933-bb6e-f907df0630c8@microchip.com>
+Date:   Fri, 4 Mar 2022 12:49:55 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ARM: at91: add support in soc driver for new SAMA5D29
+Content-Language: en-US
+To:     Claudiu Beznea - M18063 <Claudiu.Beznea@microchip.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Mihai Sain - M19926" <Mihai.Sain@microchip.com>
+References: <20220302155329.27668-1-nicolas.ferre@microchip.com>
+ <63d5bc08-7681-954a-2106-2653abf76b57@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <63d5bc08-7681-954a-2106-2653abf76b57@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On 03/03/2022 at 09:19, Claudiu Beznea - M18063 wrote:
+> On 02.03.2022 17:53, nicolas.ferre@microchip.com wrote:
+>> From: Mihai Sain <mihai.sain@microchip.com>
+>>
+>> Add detection of new SAMA5D29 by the SoC driver.
+>>
+>> Signed-off-by: Mihai Sain <mihai.sain@microchip.com>
+>> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> 
+> Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-__ccp2_get_format() returns format structure or NULL on error.
-So it is better to check the return value of it to prevent potential
-wrong memory access.
+Queued in at91-soc for 5.18.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- drivers/media/platform/omap3isp/ispccp2.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Best regards,
+   Nicolas
 
-diff --git a/drivers/media/platform/omap3isp/ispccp2.c b/drivers/media/platform/omap3isp/ispccp2.c
-index acb58b6..81881b1 100644
---- a/drivers/media/platform/omap3isp/ispccp2.c
-+++ b/drivers/media/platform/omap3isp/ispccp2.c
-@@ -675,8 +675,10 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
- 		 */
- 		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SINK,
- 					   which);
--		memcpy(fmt, format, sizeof(*fmt));
--		fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
-+		if (format != NULL) {
-+			memcpy(fmt, format, sizeof(*fmt));
-+			fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
-+		}
- 		break;
- 	}
- 
-@@ -709,6 +711,9 @@ static int ccp2_enum_mbus_code(struct v4l2_subdev *sd,
- 
- 		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SINK,
- 					   code->which);
-+		if (format == NULL)
-+			return -EINVAL;
-+
- 		code->code = format->code;
- 	}
- 
-@@ -792,6 +797,9 @@ static int ccp2_set_format(struct v4l2_subdev *sd,
- 	if (fmt->pad == CCP2_PAD_SINK) {
- 		format = __ccp2_get_format(ccp2, sd_state, CCP2_PAD_SOURCE,
- 					   fmt->which);
-+		if (format == NULL)
-+			return -EINVAL;
-+
- 		*format = fmt->format;
- 		ccp2_try_format(ccp2, sd_state, CCP2_PAD_SOURCE, format,
- 				fmt->which);
+> 
+>> ---
+>>   drivers/soc/atmel/soc.c | 3 +++
+>>   drivers/soc/atmel/soc.h | 1 +
+>>   2 files changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/soc/atmel/soc.c b/drivers/soc/atmel/soc.c
+>> index a490ad7e090f..b2d365ae0282 100644
+>> --- a/drivers/soc/atmel/soc.c
+>> +++ b/drivers/soc/atmel/soc.c
+>> @@ -156,6 +156,9 @@ static const struct at91_soc socs[] __initconst = {
+>>   	AT91_SOC(SAMA5D2_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
+>>   		 AT91_CIDR_VERSION_MASK, SAMA5D28C_LD2G_EXID_MATCH,
+>>   		 "sama5d28c 256MiB LPDDR2 SiP", "sama5d2"),
+>> +	AT91_SOC(SAMA5D2_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
+>> +		 AT91_CIDR_VERSION_MASK, SAMA5D29CN_EXID_MATCH,
+>> +		 "sama5d29", "sama5d2"),
+>>   	AT91_SOC(SAMA5D3_CIDR_MATCH, AT91_CIDR_MATCH_MASK,
+>>   		 AT91_CIDR_VERSION_MASK, SAMA5D31_EXID_MATCH,
+>>   		 "sama5d31", "sama5d3"),
+>> diff --git a/drivers/soc/atmel/soc.h b/drivers/soc/atmel/soc.h
+>> index c3eb3c8f0834..2ecaa75b00f0 100644
+>> --- a/drivers/soc/atmel/soc.h
+>> +++ b/drivers/soc/atmel/soc.h
+>> @@ -95,6 +95,7 @@ at91_soc_init(const struct at91_soc *socs);
+>>   #define SAMA5D28C_LD2G_EXID_MATCH	0x00000072
+>>   #define SAMA5D28CU_EXID_MATCH		0x00000010
+>>   #define SAMA5D28CN_EXID_MATCH		0x00000020
+>> +#define SAMA5D29CN_EXID_MATCH		0x00000023
+>>   
+>>   #define SAMA5D3_CIDR_MATCH		0x0a5c07c0
+>>   #define SAMA5D31_EXID_MATCH		0x00444300
+> 
+
+
 -- 
+Nicolas Ferre
