@@ -2,94 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2AA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240317AbiCDPXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
+        id S240307AbiCDPYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240257AbiCDPXY (ORCPT
+        with ESMTP id S240313AbiCDPXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:23:24 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4FC3FBEB
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 07:22:36 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id q20so2883441wmq.1
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 07:22:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=4W8I3tuoGx81FDxurpr4MQTsgqMFmG2Aaynw/Q1B6WQ=;
-        b=k+JiVAPhTAqF+YhhbFY6K4lLY0h6PsOG37nRSTtxjgjMYEjnkXYdM8ue2neMxbOUMd
-         glwEwfVtimdk+5VC7t8ggYeOnY3vFNqk37zudCmGNA4+TNvkYjDYVQfjCV/CAIs4sI1J
-         /RItdEOsUsK896yZv7ixVficdL48rnKo0v23B8y3bqasDUYTfBDPjodUEJZo6Kl1HVaW
-         oca1BIl3h2lxf5XDiEo0TxQNabbqWAne5cV6MTt5iEUN98Z4cS/ySDOn2UOyIMNL8ya6
-         vMWMoiSWViYt5GdRRB1HTkWWjm+3YfM+dp8FkzuUCx/WVBqB1GR5Uk7s0Qbv2E2XVoS8
-         Z+Mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4W8I3tuoGx81FDxurpr4MQTsgqMFmG2Aaynw/Q1B6WQ=;
-        b=YYntYs8M/Ys7+agCcUJPQ9L7EGSeU/hSQ8MjHxcpx4sTaDQ/KGTnOCU2hpWn4jlZP2
-         lfbnCkV1DvJf4pXXti9aWOIYFJjbedk8YwHhTZmZxHWiI44ujpgw7occNa1Xy+zU92Ct
-         yFRbdKn1vNmvknoOn8cz8zgEI/bETsXBR4UEmmojR8uE8D+sDABCFgEwaeyyuu5F6qp7
-         G2zzcvRRP9ii+faA5Bq9FeR9U8G1SAA5x8c5Y68/vGgfCmCILNJCfrjuFEST/58DZ/9I
-         UtGo4aTxrxqDfufhYId1N0qf124XMPdv4ziDgBT289jKRWjFVXa8Zmtc6lqsld1g9Y9c
-         jfew==
-X-Gm-Message-State: AOAM531FAU60pawmBhQ7MkTxaeXKZMoCAhyEu4M9vMfie6NcECFAUuPl
-        pL2AxwRXZFLEtzTehkf0udhaNw==
-X-Google-Smtp-Source: ABdhPJxyPmGIr1XY/Q8xeCKdKIUg6uvyxv3uFluaInb3jO0pRYMOkp8CabliJMJWznAUeyx6sVvC7g==
-X-Received: by 2002:a7b:c4c7:0:b0:381:874e:30a9 with SMTP id g7-20020a7bc4c7000000b00381874e30a9mr7932742wmk.53.1646407354614;
-        Fri, 04 Mar 2022 07:22:34 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm4809507wrw.49.2022.03.04.07.22.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 07:22:34 -0800 (PST)
-Date:   Fri, 4 Mar 2022 15:22:32 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <YiIuuHwY194VlLPx@google.com>
-References: <20220302075421.2131221-1-lee.jones@linaro.org>
- <20220303235937-mutt-send-email-mst@kernel.org>
+        Fri, 4 Mar 2022 10:23:48 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444D41BB702;
+        Fri,  4 Mar 2022 07:22:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646407380; x=1677943380;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=66bGrpR5PYIU1/su9EGXUAH+XSxS4Nhc40zZxcfzJR8=;
+  b=mn5DeOLLKsmGtbGPwlMokWBBx0yzKxnnOjgO+3j87I2wo4Q0ohhDyYin
+   jPrGdqPO74uMMQuxqXZhRml+uB38xidZl5hDaKBroIWn9bvTi1bjgJHS1
+   IDn00uwmKuh99ESnYta/4InvMlSHl+phcBr5whxdMZ5lBZvj/c2QSZyzp
+   lhBdJbhuKzf41iow9/4+ipXz3Tji8SMZJc6S7Ei/Mrrpfgg56n1iWPrX8
+   20lqgSAXyNlulVwKCKqGTOmmIYmHtfg36F9EbW1GdzIo7Uk3sOP4sbqBK
+   tBmrk+bEG+h58584SfVuo8K3U8yztxid7lJ2BTiFbY70nzQND2nRbOOjc
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="233954757"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="233954757"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 07:22:59 -0800
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="609970281"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 07:22:54 -0800
+Received: by lahna (sSMTP sendmail emulation); Fri, 04 Mar 2022 17:21:41 +0200
+Date:   Fri, 4 Mar 2022 17:21:41 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 0/3] x86/PCI: Clip only partial E820 overlaps
+Message-ID: <YiIuhYVpgkzVwtAi@lahna>
+References: <20220304035110.988712-1-helgaas@kernel.org>
+ <4836963c-7a1e-7452-eb88-454f2b75e407@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220303235937-mutt-send-email-mst@kernel.org>
+In-Reply-To: <4836963c-7a1e-7452-eb88-454f2b75e407@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 04 Mar 2022, Michael S. Tsirkin wrote:
+Hi,
 
-> On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
-> > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > to vhost_get_vq_desc().  All we have to do is take the same lock
-> > during virtqueue clean-up and we mitigate the reported issues.
-> > 
-> > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
-> > 
-> > Cc: <stable@vger.kernel.org>
-> > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+On Fri, Mar 04, 2022 at 03:15:16PM +0100, Hans de Goede wrote:
+> Hi Bjorn,
 > 
-> So combine with the warning patch and update description with
-> the comment I posted, explaining it's more a just in case thing.
+> On 3/4/22 04:51, Bjorn Helgaas wrote:
+> > From: Bjorn Helgaas <bhelgaas@google.com>
+> > 
+> > This is based on Hans' extensive debugging and patch at
+> > https://lore.kernel.org/r/20220228105259.230903-1-hdegoede@redhat.com
+> > and applies on 7e57714cd0ad ("Linux 5.17-rc6").
+> > 
+> > This is basically the same idea (applying the 4dc2287c1805 workaround only
+> > when an E820 region *partially* overlaps a host bridge window), but I think
+> > it's a little simpler.
+> > 
+> > This also adds a little dmesg output when clipping, which should make
+> > future debugging easier.
+> > 
+> > I bcc'd several folks who didn't have public email addresses in the RedHat
+> > bugzilla or Launchpad.  If you review or test this, I'd be happy to
+> > acknowledge that.
+> > 
+> > Bjorn Helgaas (3):
+> >   x86/PCI: Eliminate remove_e820_regions() common subexpressions
+> >   x86/PCI: Log host bridge window clipping for E820 regions
+> >   x86/PCI: Preserve host bridge windows completely covered by E820
+> 
+> Thanks, I agree that this is better then my fix I also like the logging
+> added to 2/3 which lets us know if the commit 4dc2287c1805 workaround
+> is active.
+> 
+> I have one small remark on 3/3. Regardless of that getting addressed
+> the entire series is:
+> 
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-Will do.  Plan is to submit this on Monday.
+Looks good to me too :)
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
