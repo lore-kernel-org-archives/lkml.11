@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE821C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 19:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C54C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 19:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiCDT7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 14:59:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36820 "EHLO
+        id S229662AbiCDT7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 14:59:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiCDT7L (ORCPT
+        with ESMTP id S229545AbiCDT7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 14:59:11 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAA8240DCF;
-        Fri,  4 Mar 2022 11:50:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0052325FA;
+        Fri,  4 Mar 2022 11:50:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646423445; x=1677959445;
+  t=1646423443; x=1677959443;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+nGQVrBe96XTUjrDdPql+9GcVxyKPhvOW6aWfhm10vM=;
-  b=JIOYX9fBvqLcVEI9SkR95tYsDp0MPMUlICNvS/WyPgWv/AypE2v8sEa3
-   tLUH9ezx4Hr2hQ8Vyz7pHzgEgyCXej7nV2y7o8Ozy7Mql1phbXBKoAAMl
-   EF4dIShw7m/8nE6tggKToX7cWegmTlSDI53Xx78sruNIaGYej9eRFu/8v
-   OuhkUHGNT0vFaB/ZUF4XGbdaWJLp+AjZSpxu3+oW51Eq6yajsxKQVGfka
-   NdLpEE/cxY05glAcytZLDJxHHFEK4NVl/3lfj55dtGvgMWLHzrDkOXgyE
-   lyL+eCAysbwt7Hmt/O2+8V71U2fcasCG62cbshHVUUaLorlScHD9h85BK
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779655"
+  bh=KX9kh0sEpKB3rNczvVxtkpqa7NUsAD/OB2itPzf1ICs=;
+  b=Y3SB05IC3wp5GWbYqKKRYCHVDt2v2N34rCBhpOKALs5RSSvzxn9lwPGN
+   303Wt9xTdOPsxT6KONag01bMMP4M/DGwUQyZUPXfFxvo+fSWLH8wHHI/k
+   4FW3YMJWcMllaL88LtRUOiw9FLHpog3YwS+s24gFreKJHgORxotNXPph5
+   Mun043CNIlWqYrxuOq1VJKVT4M2kdqw9mnWFr3o+ri3Ome9ktz0F81Plf
+   1HfoXlXW/ku3O9gSe08vz6l8fkmcN2/9rMNN8sXwwJ5x0D3OCvQupJeCl
+   rXKRGgs0cFUZlk+hEtCd0AtaDm+991N2cbFzx/Tja3Pls8ztYupldN7xr
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253779642"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253779655"
+   d="scan'208";a="253779642"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:44 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:41 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344562"
+   d="scan'208";a="552344533"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:44 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:41 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 092/104] KVM: TDX: Handle TDX PV HLT hypercall
-Date:   Fri,  4 Mar 2022 11:49:48 -0800
-Message-Id: <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 086/104] KVM: TDX: handle ept violation/misconfig exit
+Date:   Fri,  4 Mar 2022 11:49:42 -0800
+Message-Id: <1df5271baa641d9d189edb86f9ee0921ea3a83e0.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,83 +58,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Wire up TDX PV HLT hypercall to the KVM backend function.
-
-When the guest issues HLT, the hypercall instruction can be the right after
-CLI instruction.  Atomically unmask virtual interrupt and issue HLT
-hypercall. The virtual interrupts can arrive right after CLI instruction
-before switching back to VMM.  In such a case, the VMM should return to the
-guest without losing the interrupt.  Check if interrupts arrived before the
-TDX module switching to VMM.  And return to the guest in such cases.
+On EPT violation, call a common function, __vmx_handle_ept_violation() to
+trigger x86 MMU code.  On EPT misconfiguration, exit to ring 3 with
+KVM_EXIT_UNKNOWN.  because EPT misconfiguration can't happen as MMIO is
+trigged by TDG.VP.VMCALL. No point to set a misconfiguration value for the
+fast path.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 45 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 44 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/tdx.c | 40 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index f7c9170d596a..b0dcc2421649 100644
+index 6fbe89bcfe1e..2c35dcad077e 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -917,6 +917,48 @@ static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
- 	return 1;
+@@ -1081,6 +1081,40 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
+ 	__vmx_deliver_posted_interrupt(vcpu, &tdx->pi_desc, vector);
  }
  
-+static int tdx_emulate_hlt(struct kvm_vcpu *vcpu)
++#define TDX_SEPT_PFERR (PFERR_WRITE_MASK | PFERR_USER_MASK)
++
++static int tdx_handle_ept_violation(struct kvm_vcpu *vcpu)
 +{
-+	bool interrupt_disabled = tdvmcall_p1_read(vcpu);
-+	union tdx_vcpu_state_details details;
++	unsigned long exit_qual;
 +
-+	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+
-+	if (!interrupt_disabled) {
-+		/*
-+		 * Virtual interrupt can arrive after TDG.VM.VMCALL<HLT> during
-+		 * the TDX module executing.  On the other hand, KVM doesn't
-+		 * know if vcpu was executing in the guest TD or the TDX module.
-+		 *
-+		 * CPU mode transition:
-+		 * TDG.VP.VMCALL<HLT> (SEAM VMX non-root mode) ->
-+		 * the TDX module (SEAM VMX root mode) ->
-+		 * KVM (Legacy VMX root mode)
-+		 *
-+		 * If virtual interrupt arrives to this vcpu
-+		 * - In the guest TD executing:
-+		 *   KVM can handle it in the same way to the VMX case.
-+		 * - During the TDX module executing:
-+		 *   The TDX modules switches to KVM with TDG.VM.VMCALL<HLT>
-+		 *   exit reason.  KVM thinks the guest was running.  So KVM
-+		 *   vcpu wake up logic doesn't kick in.  Check if virtual
-+		 *   interrupt is pending and resume vcpu without blocking vcpu.
-+		 * - KVM executing:
-+		 *   The existing logic wakes up the target vcpu on injecting
-+		 *   virtual interrupt in the same way to the VMX case.
-+		 *
-+		 * Check if the interrupt is already pending.  If yes, resume
-+		 * vcpu from guest HLT without emulating hlt instruction.
-+		 */
-+		details.full = td_state_non_arch_read64(
-+			to_tdx(vcpu), TD_VCPU_STATE_DETAILS_NON_ARCH);
-+		if (details.vmxip)
-+			return 1;
++	if (kvm_is_private_gpa(vcpu->kvm, tdexit_gpa(vcpu)))
++		exit_qual = TDX_SEPT_PFERR;
++	else {
++		exit_qual = tdexit_exit_qual(vcpu);
++		if (exit_qual & EPT_VIOLATION_ACC_INSTR) {
++			pr_warn("kvm: TDX instr fetch to shared GPA = 0x%lx @ RIP = 0x%lx\n",
++				tdexit_gpa(vcpu), kvm_rip_read(vcpu));
++			vcpu->run->exit_reason = KVM_EXIT_EXCEPTION;
++			vcpu->run->ex.exception = PF_VECTOR;
++			vcpu->run->ex.error_code = exit_qual;
++			return 0;
++		}
 +	}
 +
-+	return kvm_emulate_halt_noskip(vcpu);
++	trace_kvm_page_fault(tdexit_gpa(vcpu), exit_qual);
++	return __vmx_handle_ept_violation(vcpu, tdexit_gpa(vcpu), exit_qual);
 +}
 +
- static int handle_tdvmcall(struct kvm_vcpu *vcpu)
++static int tdx_handle_ept_misconfig(struct kvm_vcpu *vcpu)
++{
++	WARN_ON(1);
++
++	vcpu->run->exit_reason = KVM_EXIT_UNKNOWN;
++	vcpu->run->hw.hardware_exit_reason = EXIT_REASON_EPT_MISCONFIG;
++
++	return 0;
++}
++
+ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
  {
- 	struct vcpu_tdx *tdx = to_tdx(vcpu);
-@@ -930,7 +972,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- 	switch (tdvmcall_exit_reason(vcpu)) {
- 	case EXIT_REASON_CPUID:
- 		return tdx_emulate_cpuid(vcpu);
+ 	union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
+@@ -1097,6 +1131,10 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
+ 	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
+ 
+ 	switch (exit_reason.basic) {
++	case EXIT_REASON_EPT_VIOLATION:
++		return tdx_handle_ept_violation(vcpu);
++	case EXIT_REASON_EPT_MISCONFIG:
++		return tdx_handle_ept_misconfig(vcpu);
+ 	case EXIT_REASON_OTHER_SMI:
+ 		/*
+ 		 * If reach here, it's not a MSMI.
+@@ -1378,8 +1416,6 @@ void tdx_flush_tlb(struct kvm_vcpu *vcpu)
+ 		cpu_relax();
+ }
+ 
+-#define TDX_SEPT_PFERR (PFERR_WRITE_MASK | PFERR_USER_MASK)
 -
-+	case EXIT_REASON_HLT:
-+		return tdx_emulate_hlt(vcpu);
- 	default:
- 		break;
- 	}
+ static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
+ {
+ 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 -- 
 2.25.1
 
