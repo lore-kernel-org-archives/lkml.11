@@ -2,79 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A28C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA19EC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240064AbiCDPHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49634 "EHLO
+        id S240087AbiCDPIc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:08:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiCDPHa (ORCPT
+        with ESMTP id S240067AbiCDPI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:07:30 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9C21BE132;
-        Fri,  4 Mar 2022 07:06:42 -0800 (PST)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2247SMLb025160;
-        Fri, 4 Mar 2022 09:05:57 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=hHITQXFDQDnRVWlkIt1+iWr/oKBoaKdy+qjH2sz4sAM=;
- b=IsJ8rhNcxyRTNptJtHGf/XKlRes2VmKvXjN4MiC3hXgjc+SCQAGlcP7wFPe5Qiu/cI/d
- lLT+tZo+wdUn+yZM8sTE0XtZBI71J5pJVBNUoIvQhgwFZAOFDZ0y6g0XLn7Nox3FWbsE
- 4sDx6JOQH4xHyBsiUYnoKsyMK2yu9A+h41AcllIp3YGJDFC7AiVOOmYFMRJhO+BN/skR
- 1f7XFo4WlzsCgJeC+Syi4Wt1UyNLeQBGYlAkTqjNMEkZoqyE5Z/526UyTGgQqfXw9ed7
- ZO5EewpTc/AlXUh3V7gE+UzYM6R7mbdAUB36kKMt1upplO/JrjgKJ3z+UhVIzgZUpAqw Dw== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j1s3c6-1
+        Fri, 4 Mar 2022 10:08:29 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D71D40A33;
+        Fri,  4 Mar 2022 07:07:40 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2244w2hH013723;
+        Fri, 4 Mar 2022 09:07:28 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=xtsITB9MtsbQbh9Pg7CKoJN9r/LR7G1l1Q0NK9S3HWk=;
+ b=GXMmKAcEDKZz9m79azSLkQtB74mgqlRr7NZ7HERWK4cmmQXnDmREiJF9P3sbRvIyrPmr
+ lmizC8wgKrgK9SQq9nLHRvyrpuiWS68PjIoM5jPxBSniGR4Hh2bWW+nP77mooB2uhEla
+ 63jRGBMxUt394hMb9tpSJ48oCV6wVZzwLutuC/csflrLX6o2wNez6E0RlSp8Ui2jg0QZ
+ UGZmIa+PvOlGsEbMhHaIfdfOXctDywUUor1Dg45jErHDgH1ZV7BW7/nHOYLVusk7peEy
+ UzbBktdBDaznF/8elbTwim/jN4cXL0JNY5CJCasM7Hd7F32yqd6/BhgTlyokK6wQNfnF oA== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3h414-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 04 Mar 2022 09:05:57 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 04 Mar 2022 09:07:28 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Mar
- 2022 15:05:55 +0000
+ 2022 15:07:24 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 4 Mar 2022 15:05:55 +0000
-Received: from [198.61.65.198] (unknown [198.61.65.198])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 27CBE7C;
-        Fri,  4 Mar 2022 15:05:55 +0000 (UTC)
-Message-ID: <f4e04900-1451-0b6a-e4c1-cc51cafe9309@opensource.cirrus.com>
-Date:   Fri, 4 Mar 2022 15:05:54 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 15/20] hda: cs35l41: Remove unnecessary log
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
+ Transport; Fri, 4 Mar 2022 15:07:24 +0000
+Received: from aryzen.ad.cirrus.com (unknown [198.61.65.198])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 7A8727C;
+        Fri,  4 Mar 2022 15:07:24 +0000 (UTC)
+From:   Lucas Tanure <tanureal@opensource.cirrus.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220303173059.269657-1-tanureal@opensource.cirrus.com>
- <20220303173059.269657-16-tanureal@opensource.cirrus.com>
- <YiD/0ZMcSGVRTZxx@sirena.org.uk>
-From:   Lucas tanure <tanureal@opensource.cirrus.com>
-In-Reply-To: <YiD/0ZMcSGVRTZxx@sirena.org.uk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: g_vDq3ATg4q1fK_fIDlsb4DJAWr8jJmS
-X-Proofpoint-ORIG-GUID: g_vDq3ATg4q1fK_fIDlsb4DJAWr8jJmS
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Subject: [PATCH v2 03/20] ASoC: cs35l41: Fix DSP mbox start command and global enable order
+Date:   Fri, 4 Mar 2022 15:07:04 +0000
+Message-ID: <20220304150721.3802-4-tanureal@opensource.cirrus.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
+References: <20220304150721.3802-1-tanureal@opensource.cirrus.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: v53xgvSt1xnUz19cGb4h6JaH_adorjaA
+X-Proofpoint-ORIG-GUID: v53xgvSt1xnUz19cGb4h6JaH_adorjaA
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/3/22 17:50, Mark Brown wrote:
-> On Thu, Mar 03, 2022 at 05:30:54PM +0000, Lucas Tanure wrote:
-> 
->> If regmap fails would fail during probe of the device.
-> 
-> I'm pretty sure circumstances could arise which would break things at
-> runtime.
-Yes, so instead of not logging that, we can log the last regmap access 
-per switch case, instead of all of them.
+Global enable must happen before CSPL_MBOX_CMD_RESUME command
+is sent. Move it to PRE_PMU as both events use
+SND_SOC_DAPM_OUT_DRV_E macro.
+
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+---
+ sound/soc/codecs/cs35l41.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
+index f3787d77f892..05de94fd2e55 100644
+--- a/sound/soc/codecs/cs35l41.c
++++ b/sound/soc/codecs/cs35l41.c
+@@ -573,7 +573,7 @@ static int cs35l41_main_amp_event(struct snd_soc_dapm_widget *w,
+ 	int ret = 0;
+ 
+ 	switch (event) {
+-	case SND_SOC_DAPM_POST_PMU:
++	case SND_SOC_DAPM_PRE_PMU:
+ 		regmap_multi_reg_write_bypassed(cs35l41->regmap,
+ 						cs35l41_pup_patch,
+ 						ARRAY_SIZE(cs35l41_pup_patch));
+@@ -649,7 +649,7 @@ static const struct snd_soc_dapm_widget cs35l41_dapm_widgets[] = {
+ 
+ 	SND_SOC_DAPM_OUT_DRV_E("Main AMP", CS35L41_PWR_CTRL2, 0, 0, NULL, 0,
+ 			       cs35l41_main_amp_event,
+-			       SND_SOC_DAPM_POST_PMD |	SND_SOC_DAPM_POST_PMU),
++			       SND_SOC_DAPM_POST_PMD |	SND_SOC_DAPM_PRE_PMU),
+ 
+ 	SND_SOC_DAPM_MUX("ASP TX1 Source", SND_SOC_NOPM, 0, 0, &asp_tx1_mux),
+ 	SND_SOC_DAPM_MUX("ASP TX2 Source", SND_SOC_NOPM, 0, 0, &asp_tx2_mux),
+-- 
+2.35.1
+
