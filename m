@@ -2,191 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC963C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59898C433EF
 	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234939AbiCDKbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:31:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        id S234727AbiCDKbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:31:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234464AbiCDKbo (ORCPT
+        with ESMTP id S234383AbiCDKbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 05:31:44 -0500
-X-Greylist: delayed 328 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 02:30:57 PST
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3780116BCE6
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 02:30:57 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 889845C0368;
-        Fri,  4 Mar 2022 05:25:27 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 04 Mar 2022 05:25:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; bh=XPo646Lh4bAU5kxG3smqO0CDWOi5eh
-        E4dmIoAiLUrjE=; b=aM+zvgewHBBuWFY0jI9+VlTD5h0RwmPbUhfGfTQ875169S
-        O/BYkm+f5Gmh0+1nJAEguccAKlCOeHgN+WyDmBLOXvw6W0fHeCdeGvjfv8kEw2y6
-        WMPRu10tUbVb6DPVS2rePVjVKL26hcWdAxv4xnwqdLpLxgmnZWHooGamvB5/oYhm
-        f3L0eFRmy8TxWhmJBgiM5vgvMzWQz1Pbo13diU2XcTFCy8jxlD0srDc4979q8ts+
-        oTHBXZHxG55avJ8xpFbQKLqbikhWzJzqNIBkG0y4OWt3GQ+wWID+agVcVNfddmp7
-        ND3ShSGYHMQ0cF82D0MIYBQCyc5ZcIyxWPz2FVsg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=XPo646Lh4bAU5kxG3
-        smqO0CDWOi5ehE4dmIoAiLUrjE=; b=dvG6jG9BHHGf8pbvATEXsXL0EgPg+I63O
-        fpUgKLr5PR93kcEbr5Vh19kj32UK071+iOADjRiN3qO1m3y1p+jv0ePdFsj9vd12
-        HEBboxKVy4aKLV0yjAbrrqe9cP6ertJ3Qw1+pvAypax8Dmv6dwXMOs9P6iQ2FGDr
-        6vgfZdrhpYj/XKj5KZFkA3fvEJDqRSqoviy24GGhnV4d3RRGC+mz+XGPN2m/4mia
-        z/t927NflYaQOI/+1CH+30FT6CPa6A8Tn/Kavb068rnNjGoLhwTBu6cw3GZkxfaE
-        fz0M23begueXYjGXu+JkNDhgk0QwQJuPsc2O5vXHJ4HzFzUykVppg==
-X-ME-Sender: <xms:F-khYnSlAk2AHNGxI9qwfvBx0FqUfmrIqDiIZreYzRjTSA712LSKsA>
-    <xme:F-khYozGrJHorvQGcfJ-N5ESqUeC5053XmB-SLmJSjlKZGvIV_DUocETDrp6Etxwy
-    dSuejlA-QK8QbHHUn4>
-X-ME-Received: <xmr:F-khYs2pYqmROiZMCSYedglBy8zCIFk61APgKUBZZELyKhpcQBhvUKEHOM8G_flyF-4BU7J2rj37G20maM8MWSq0WKNGZ0ARIw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgudehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvrghkrghs
-    hhhiucfurghkrghmohhtohcuoehoqdhtrghkrghshhhisehsrghkrghmohgttghhihdrjh
-    hpqeenucggtffrrghtthgvrhhnpeelhfeugedvjefgjefgudekfedutedvtddutdeuieev
-    tddtgeetjeekvdefgeefhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehoqdhtrghkrghshhhisehsrghkrghmohgttghhihdrjhhp
-X-ME-Proxy: <xmx:F-khYnDmb1dBzGmfx37UD6KyOM8WxKekyzd_AOsRJiiBQz8zdEvclQ>
-    <xmx:F-khYgiCMY90qq-IAGPBpie3nvR7dFPscSq6yTZktqXfT6yWnMMOUA>
-    <xmx:F-khYropLsOvZC9uDB2sUUK-TszRxBoq51syJW4RGBHT3O9JuWw5Tw>
-    <xmx:F-khYsZPE79YVHAJEB3snnjBLdzKxw7N0z6QAMcF0jmEZX-4ryKrkA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 4 Mar 2022 05:25:26 -0500 (EST)
-Date:   Fri, 4 Mar 2022 19:25:23 +0900
-From:   Takashi Sakamoto <o-takashi@sakamocchi.jp>
-To:     Niels Dossche <dossche.niels@gmail.com>
-Cc:     linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] firewire: core: extend card->lock in
- fw_core_handle_bus_reset
-Message-ID: <YiHpEx/1LaGuzEMC@workstation>
-Mail-Followup-To: Niels Dossche <dossche.niels@gmail.com>,
-        linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org
-References: <20220303183038.54126-1-dossche.niels@gmail.com>
+Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7169716BFAC
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 02:30:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1646389850;
+        bh=lWyaumg3DAV6K6mwQJGodMoZXgiEDM6A7q29hCzQNEM=;
+        h=From:To:Cc:Subject:Date;
+        b=ZxzzA7kk36YTYHZb6KJqWR4mfTA7eV2ol13wKwIKW9cW6/jb7ww+qIVdlHfFMxkMB
+         rWTwb+NdPwNVAlZeURtx9r07l5Kautyv6Zdr6Seyw+QuQ2GZ1KsKykNffIu3fycCYc
+         ds7eM5+fpJ80tnodLyI7DHouFenvykSt+ZGY9KUw=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id 7AF34219; Fri, 04 Mar 2022 18:30:47 +0800
+X-QQ-mid: xmsmtpt1646389847tppgzcpa0
+Message-ID: <tencent_5585FF0A904C66C5DC1D8E120AC0F0002507@qq.com>
+X-QQ-XMAILINFO: OKkKo7I1HxIe9JbE8Y6zN8gmAhbqYsL8XRbKtldCSvGqt/3CKmVFBJ9ln5uZzs
+         Yi+pXIZ6FswivyrvBbAxbTXGiMBY+ReqstIi1N8etvOmUAOuaTbPzcb/gCdod+tI28/osT+GXToa
+         5uzUnwU8RGUwSNS+w7O+V/UPOzmSeMEEZJJ3KPCFnC0xOjZFZjtknX6mk4zwJ4hteofgg9sGDCCS
+         +ukl6JoWDID8nwQlN86TPuHQVQ2cZeD9SyUKXyhU51KHjeexKxwB8LaZOrDY6c98WIYwNlS2OjeU
+         gI26ew9ON5tTnACbAUs1Fi8Yn5/TRqDFqCRhCp2JEZqiJav+Pl8rrpL4LBIAhbAbV0bGLNOHS/3L
+         qrsWEAykVxZSIwRECDsnQCtyJUEHZM1rcYnxrsAd+Sneqo6ZoTskzCA1LKWxZ3egNSr9p7/fj6Jb
+         6X/0aHHJ+sR+ssPplqiGqQsx97ijxQ3dPa4LNtWUs11UnQc2E1gznsH+mT43j6vNXElo49em/+6o
+         b0QIk2cDvoZOyRh51zlTjJ8qhvL6zCZV5lWZPza+IZrwNiLot0tavUxRkrP24hLtwPMVpjfKrooI
+         5usuWvxIGj8PsY29tdsZxl3By4y+tIl2SubvuH6Vde4mWI3Sko7KyQ8D5hxcb/JwurJxnH/gpKFh
+         fOKftAJX6IXI7vendijqYvnd8+vR+24qMqLyjJ1YZe7alGAopTilLHRbAEq9ylCve8b3QPkf4s+m
+         X7HxpzT9UnPd56qwE/hieFEAQIUSkna+sC0KC6dkMAXh9i5wVwpPd5ySeajuwGkC93ULvE+oZM/I
+         vvJ9BmlRpLmhUm8Wppj9hV/gvHX14CooMhnnVO/3CW0d5GdiA6vEF3st66sPaEm1MR5tEDGqQOZx
+         hnpVowlpDQ8RsfzmTYpy/iD5Ur1TbiX4VqkZKbOre3HH8v2K8KyO0AhyUeiuYAjAmhxMvtTGPj
+From:   xkernel.wang@foxmail.com
+To:     keescook@chromium.org
+Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] lkdtm: add checks for the return of memory allocation functions
+Date:   Fri,  4 Mar 2022 18:30:35 +0800
+X-OQ-MSGID: <20220304103035.5389-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303183038.54126-1-dossche.niels@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-On Thu, Mar 03, 2022 at 07:30:38PM +0100, Niels Dossche wrote:
-> card->local_node and card->bm_retries are both always accessed under
-> card->lock.
-> fw_core_handle_bus_reset has a check whose condition depends on
-> card->local_node and whose body writes to card->bm_retries.
-> Both of these accesses are not under card->lock. Move the lock acquiring
-> of card->lock to before this check such that these accesses do happen
-> when card->lock is held.
-> fw_destroy_nodes is called inside the check.
-> Since fw_destroy_nodes already acquires card->lock inside its function
-> body, move this out to the callsites of fw_destroy_nodes.
-> Also add a comment to indicate which locking is necessary when calling
-> fw_destroy_nodes.
-> 
-> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-> ---
->  drivers/firewire/core-card.c     | 3 +++
->  drivers/firewire/core-topology.c | 9 +++------
->  2 files changed, 6 insertions(+), 6 deletions(-)
- 
-It looks good to me and is preferable as Niels said.
+kmalloc() and vmalloc() are all memory allocation functions which can
+return NULL when some internal errors happen. So it is better to check
+the return value of it for better testing the preset purpose.
 
-Reviewed-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Tested-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/misc/lkdtm/perms.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-
-I think the patch is for minor code refactoring rather than bug fix
-since it is unlikely that the rate condition occurs. The bus_reset_work
-is synchronously canceled in the beginning of pci_remove().
-
-```
-pci_remove()
-->cancel_work_sync(&ohci->bus_reset_work);
-->fw_core_remove_card(&ohci->card);
-->software_reset(ohci);
-->free_irq(dev->irq, ohci);
-```
-
-But I have no confidence that the above calls are done in the order by
-processor...
-
-> diff --git a/drivers/firewire/core-card.c b/drivers/firewire/core-card.c
-> index 54be88167c60..f3b3953cac83 100644
-> --- a/drivers/firewire/core-card.c
-> +++ b/drivers/firewire/core-card.c
-> @@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
->  void fw_core_remove_card(struct fw_card *card)
->  {
->  	struct fw_card_driver dummy_driver = dummy_driver_template;
-> +	unsigned long flags;
->  
->  	card->driver->update_phy_reg(card, 4,
->  				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
-> @@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card *card)
->  	dummy_driver.stop_iso		= card->driver->stop_iso;
->  	card->driver = &dummy_driver;
->  
-> +	spin_lock_irqsave(&card->lock, flags);
->  	fw_destroy_nodes(card);
-> +	spin_unlock_irqrestore(&card->lock, flags);
->  
->  	/* Wait for all users, especially device workqueue jobs, to finish. */
->  	fw_card_put(card);
-> diff --git a/drivers/firewire/core-topology.c b/drivers/firewire/core-topology.c
-> index b63d55f5ebd3..f40c81534381 100644
-> --- a/drivers/firewire/core-topology.c
-> +++ b/drivers/firewire/core-topology.c
-> @@ -375,16 +375,13 @@ static void report_found_node(struct fw_card *card,
->  	card->bm_retries = 0;
->  }
->  
-> +/* Must be called with card->lock held */
->  void fw_destroy_nodes(struct fw_card *card)
->  {
-> -	unsigned long flags;
-> -
-> -	spin_lock_irqsave(&card->lock, flags);
->  	card->color++;
->  	if (card->local_node != NULL)
->  		for_each_fw_node(card, card->local_node, report_lost_node);
->  	card->local_node = NULL;
-> -	spin_unlock_irqrestore(&card->lock, flags);
->  }
->  
->  static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
-> @@ -510,6 +507,8 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
->  	struct fw_node *local_node;
->  	unsigned long flags;
->  
-> +	spin_lock_irqsave(&card->lock, flags);
-> +
->  	/*
->  	 * If the selfID buffer is not the immediate successor of the
->  	 * previously processed one, we cannot reliably compare the
-> @@ -521,8 +520,6 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
->  		card->bm_retries = 0;
->  	}
->  
-> -	spin_lock_irqsave(&card->lock, flags);
-> -
->  	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
->  	card->node_id = node_id;
->  	/*
-> -- 
-> 2.35.1
-
-
-Regards
-
-Takashi Sakamoto
+diff --git a/drivers/misc/lkdtm/perms.c b/drivers/misc/lkdtm/perms.c
+index 2dede2e..3eabc6f 100644
+--- a/drivers/misc/lkdtm/perms.c
++++ b/drivers/misc/lkdtm/perms.c
+@@ -138,6 +138,10 @@ void lkdtm_EXEC_STACK(void)
+ void lkdtm_EXEC_KMALLOC(void)
+ {
+ 	u32 *kmalloc_area = kmalloc(EXEC_SIZE, GFP_KERNEL);
++	if (!kmalloc_area) {
++		pr_warn("Failed to allocate memory\n");
++		return;
++	}
+ 	execute_location(kmalloc_area, CODE_WRITE);
+ 	kfree(kmalloc_area);
+ }
+@@ -145,6 +149,10 @@ void lkdtm_EXEC_KMALLOC(void)
+ void lkdtm_EXEC_VMALLOC(void)
+ {
+ 	u32 *vmalloc_area = vmalloc(EXEC_SIZE);
++	if (!vmalloc_area) {
++		pr_warn("Failed to allocate memory\n");
++		return;
++	}
+ 	execute_location(vmalloc_area, CODE_WRITE);
+ 	vfree(vmalloc_area);
+ }
+-- 
