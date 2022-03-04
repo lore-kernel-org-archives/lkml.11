@@ -2,92 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18187C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 023B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:19:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240976AbiCDRUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:20:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
+        id S240997AbiCDRUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:20:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237373AbiCDRUK (ORCPT
+        with ESMTP id S240974AbiCDRUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:20:10 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF7221480C9
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:19:21 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF1971424;
-        Fri,  4 Mar 2022 09:19:21 -0800 (PST)
-Received: from e121896.arm.com (unknown [10.57.42.166])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1308B3F73D;
-        Fri,  4 Mar 2022 09:19:19 -0800 (PST)
-From:   James Clark <james.clark@arm.com>
-To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mike.leach@linaro.org, anshuman.khandual@arm.com
-Cc:     mathieu.poirier@linaro.org, leo.yan@linaro.com,
-        James Clark <james.clark@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 00/15] Make ETM register accesses consistent with sysreg.h
-Date:   Fri,  4 Mar 2022 17:18:57 +0000
-Message-Id: <20220304171913.2292458-1-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 4 Mar 2022 12:20:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EDA91451C2;
+        Fri,  4 Mar 2022 09:19:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A0D7B82AC7;
+        Fri,  4 Mar 2022 17:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA34AC340F1;
+        Fri,  4 Mar 2022 17:19:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646414360;
+        bh=MaF5anHurB1xUF2NaRcNb2bM5G1HoBIKDIJkPgP80kA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ooK74z0tQ6mby+x2Ja2LiccQRUg7Y74ztqDw28vi8MoFDiuwe/WFW0JroTKEHQ5LB
+         PB2gKNQ+zAtUpIpZtI5oXJKf49Gw1uOHDjoKukMWfEnr9Ei4fHHCQzL38M9vy88Cgl
+         J8scrSTHTInFgSEW88Z+wzuRV56Tk5dXgHJ/M/YgURxGibY6IdUviyEcAbPJcENgto
+         vvx6C9V7T+TEi5jEOGa8u/0qNqZrAHrNVzdIN6U8+OSqDsOzcxy0lyhJ544auCWDNm
+         M5QLrhia9T0ZEAcXfLBsI09tS77UPFJGAJNPsQjZTVhv4TTDa9bPtZ5C2SR6JGXNqW
+         6vOyJ9DYRQQuw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nQBaI-00CHlw-7o; Fri, 04 Mar 2022 17:19:18 +0000
+Date:   Fri, 04 Mar 2022 17:19:17 +0000
+Message-ID: <87ilst1vqi.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH 0/5] gpiolib: Handle immutable irq_chip structures
+In-Reply-To: <371a530ea9ae8c58bf13ac16d1f2cd3c@kernel.org>
+References: <20220223154405.54912-1-maz@kernel.org>
+        <Yhe1Cxdn8t3oVxMZ@orome>
+        <371a530ea9ae8c58bf13ac16d1f2cd3c@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: thierry.reding@gmail.com, linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, tglx@linutronix.de, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v2:
- * Implement Mike's suggestion of not having _SHIFT and using the existing
-   FIELD_GET and FIELD_PREP methods.
- * Dropped the change to add the new REG_VAL macro because of the above.
- * FIELD_PREP could be used in some trivial cases, but in some cases the
-   shift is still required but can be calculated with __bf_shf
- * Improved the commit messages.
- * The change is still binary equivalent, but requires an extra step 
-   mentioned at the end of this cover letter.
+On Thu, 24 Feb 2022 17:42:02 +0000,
+Marc Zyngier <maz@kernel.org> wrote:
+> 
+> On 2022-02-24 16:40, Thierry Reding wrote:
+> > On Wed, Feb 23, 2022 at 03:44:00PM +0000, Marc Zyngier wrote:
+> >> I recently realised that the gpiolib play ugly tricks on the
+> >> unsuspecting irq_chip structures by patching the callbacks.
+> >> 
+> >> Not only this breaks when an irq_chip structure is made const (which
+> >> really should be the default case), but it also forces this structure
+> >> to be copied at nauseam for each instance of the GPIO block, which is
+> >> a waste of memory.
+> >> 
+> >> My current approach is to add a new irq_chip flag (IRQCHIP_IMMUTABLE)
+> >> which does what it says on the tin: don't you dare writing there.
+> >> Gpiolib is further updated not to install its own callbacks, and it
+> >> becomes the responsibility of the driver to call into the gpiolib when
+> >> required. This is similar to what we do for other subsystems such as
+> >> PCI-MSI.
+> >> 
+> >> 3 drivers are updated to this new model: M1, QC and Tegra, as I
+> >> actively use them (though Tegra is hosed at the moment), keeping a
+> > 
+> > Hosed in what way? Anything I can help with?
+> 
+> Tegra186 doesn't boot as host1x is been broken since -rc1.
+> 
+> I have been carrying this[1] patch which has been in -next for
+> some time, but still not merged AFAICS.
 
-Applies to coresight/next 3619ee28488
-Also available at https://gitlab.arm.com/linux-arm/linux-jc/-/tree/james-cs-register-refactor-v3
+Looks like it finally made it -rc6.
 
-To check for binary equivalence follow the same steps in the cover letter
-of v2, but apply the following change to coresight-priv.h. This is because
-the existing version of the macros wrap the expression in a new scope {}
-that flips something in the compiler:
+Thanks,
 
-  #undef FIELD_GET
-  #define FIELD_GET(_mask, _reg) (((_reg) & (_mask)) >> __bf_shf(_mask))
-  #undef FIELD_PREP
-  #define FIELD_PREP(_mask, _val) (((_val) << __bf_shf(_mask)) & (_mask))
-
-Thanks
-James
-
-James Clark (15):
-  coresight: etm4x: Cleanup TRCIDR0 register accesses
-  coresight: etm4x: Cleanup TRCIDR2 register accesses
-  coresight: etm4x: Cleanup TRCIDR3 register accesses
-  coresight: etm4x: Cleanup TRCIDR4 register accesses
-  coresight: etm4x: Cleanup TRCIDR5 register accesses
-  coresight: etm4x: Cleanup TRCCONFIGR register accesses
-  coresight: etm4x: Cleanup TRCEVENTCTL1R register accesses
-  coresight: etm4x: Cleanup TRCSTALLCTLR register accesses
-  coresight: etm4x: Cleanup TRCVICTLR register accesses
-  coresight: etm3x: Cleanup ETMTECR1 register accesses
-  coresight: etm4x: Cleanup TRCACATRn register accesses
-  coresight: etm4x: Cleanup TRCSSCCRn and TRCSSCSRn register accesses
-  coresight: etm4x: Cleanup TRCSSPCICRn register accesses
-  coresight: etm4x: Cleanup TRCBBCTLR register accesses
-  coresight: etm4x: Cleanup TRCRSCTLRn register accesses
-
- .../coresight/coresight-etm3x-core.c          |   2 +-
- .../coresight/coresight-etm3x-sysfs.c         |   2 +-
- .../coresight/coresight-etm4x-core.c          | 136 +++++--------
- .../coresight/coresight-etm4x-sysfs.c         | 180 +++++++++---------
- drivers/hwtracing/coresight/coresight-etm4x.h | 122 ++++++++++--
- 5 files changed, 244 insertions(+), 198 deletions(-)
+	M.
 
 -- 
-2.28.0
-
+Without deviation from the norm, progress is not possible.
