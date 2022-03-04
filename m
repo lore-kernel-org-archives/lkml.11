@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3511C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76184C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbiCDUJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:09:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
+        id S230512AbiCDUJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:09:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbiCDUHd (ORCPT
+        with ESMTP id S230390AbiCDUHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:07:33 -0500
+        Fri, 4 Mar 2022 15:07:15 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED1A208328;
-        Fri,  4 Mar 2022 12:01:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C92A2E29;
+        Fri,  4 Mar 2022 12:01:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424113; x=1677960113;
+  t=1646424102; x=1677960102;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sG60/vJk52wN/rYHCbzWHx4dsR8CDuplnR/pAk7hQNI=;
-  b=C0xuyFUWaXgdN79OhNrn9h9tfN6U48axxim7hXNqlfe9N20Ghk3rNlW+
-   q0v6tQUpXBT2FDfZp8pWvz2YQbadaF/t3ySO/YjY4l+XRcT76qunbR364
-   x7mEI8jes9xFiq9xYCLcwzcxF1wjn4rXce4b7Zx+w20s9kRVMin4JO9oM
-   PZPwpuJ+AYi7Yp4tCgxeimzzmzl+HNqV8VdJHol2udQ1FW6P/F8K32gHO
-   zREgw4tkHm6981DIVLNu1Zgv2TdREplNU3n8dySgW4q3X0dLfxlOpJhYX
-   /V60jCYVNwmGMPGlQW5pNBevmfRg3FfoDfhidlivprTpZdWW/dZ4foez6
+  bh=LWUmzn6AWC5WMpBWBQ3lJbhgFkdCMEMw7dpXlimA02I=;
+  b=feB/TNBtT0+o39AsjsPxGbWDYFeGBBw+nMkCi5bAGf54D+/7VAPFqAgJ
+   zo9xYZLz73aahf/JribaMuoNDeyiKzK5Ei2TgM38O63pT5CDiKQa1n2fX
+   evT6GY91FshXtpZYtsFgkRjOeCucgkybDciXsRTnwWa9QuOrHtgdGghED
+   /qwaJDM7Ap0GMPe81x9oMdaxRzU56cRTWZl5gSMD0qCz/Uj/uovA69hOE
+   aUeAi6OpNN8Bs/U0RoIFEOD7LWTwYGJ4iS8k+f92Sl9OlDemkTN6RtSA9
+   4S4IMY6a9ChZu6/aVEJkztP1crr1L2rNjUQSgVYPiKwGtQlDaJU43bhEU
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983422"
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983404"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983422"
+   d="scan'208";a="253983404"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:16 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:15 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344273"
+   d="scan'208";a="552344262"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:16 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:14 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 028/104] [MARKER] The start of TDX KVM patch series: TD vcpu creation/destruction
-Date:   Fri,  4 Mar 2022 11:48:44 -0800
-Message-Id: <174ea3a45b41127ea921ba671cd8b918f1801cec.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 025/104] KVM: TDX: Add place holder for TDX VM specific mem_enc_op ioctl
+Date:   Fri,  4 Mar 2022 11:48:41 -0800
+Message-Id: <156ab9c6979c4b70e3d0d76e55e3aba370f58cea.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,37 +58,156 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This empty commit is to mark the start of patch series of TD vcpu
-creation/destruction.
+Add a place holder function for TDX specific VM-scoped ioctl as mem_enc_op.
+TDX specific sub-commands will be added to retrieve/pass TDX specific
+parameters.
+
+KVM_MEMORY_ENCRYPT_OP was introduced for VM-scoped operations specific for
+guest state-protected VM.  It defined subcommands for technology-specific
+operations under KVM_MEMORY_ENCRYPT_OP.  Despite its name, the subcommands
+are not limited to memory encryption, but various technology-specific
+operations are defined.  It's natural to repurpose KVM_MEMORY_ENCRYPT_OP
+for TDX specific operations and define subcommands.
+
+TDX requires VM-scoped, and VCPU-scoped TDX-specific operations for device
+model, for example, qemu.  Getting system-wide parameters, TDX-specific VM
+initialization, and TDX-specific vCPU initialization.  Which requires KVM
+vCPU-scoped operations in addition to the existing VM-scoped operations.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- Documentation/virt/kvm/intel-tdx-layer-status.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/include/uapi/asm/kvm.h       | 11 +++++++++++
+ arch/x86/kvm/vmx/main.c               | 10 ++++++++++
+ arch/x86/kvm/vmx/tdx.c                | 24 ++++++++++++++++++++++++
+ arch/x86/kvm/vmx/x86_ops.h            |  4 ++++
+ tools/arch/x86/include/uapi/asm/kvm.h | 11 +++++++++++
+ 5 files changed, 60 insertions(+)
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-index 4066495da3d1..9b63afa6cd1a 100644
---- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
-+++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-@@ -9,15 +9,15 @@ Layer status
- What qemu can do
- ----------------
- - TDX VM TYPE is exposed to Qemu.
--- Qemu can try to create VM of TDX VM type and then fails.
-+- Qemu can create/destroy guest of TDX vm type.
+diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+index 71a5851475e7..2ad61caf4e0b 100644
+--- a/arch/x86/include/uapi/asm/kvm.h
++++ b/arch/x86/include/uapi/asm/kvm.h
+@@ -528,4 +528,15 @@ struct kvm_pmu_event_filter {
+ #define KVM_X86_DEFAULT_VM	0
+ #define KVM_X86_TDX_VM		1
  
- Patch Layer status
- ------------------
-   Patch layer                          Status
- * TDX, VMX coexistence:                 Applied
- * TDX architectural definitions:        Applied
--* TD VM creation/destruction:           Applying
--* TD vcpu creation/destruction:         Not yet
-+* TD VM creation/destruction:           Applied
-+* TD vcpu creation/destruction:         Applying
- * TDX EPT violation:                    Not yet
- * TD finalization:                      Not yet
- * TD vcpu enter/exit:                   Not yet
++/* Trust Domain eXtension sub-ioctl() commands. */
++enum kvm_tdx_cmd_id {
++	KVM_TDX_CMD_NR_MAX,
++};
++
++struct kvm_tdx_cmd {
++	__u32 id;
++	__u32 metadata;
++	__u64 data;
++};
++
+ #endif /* _ASM_X86_KVM_H */
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index 5c3a904a30e8..fc497f50e0e1 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -57,6 +57,14 @@ static void vt_vm_free(struct kvm *kvm)
+ 		return tdx_vm_free(kvm);
+ }
+ 
++static int vt_mem_enc_op(struct kvm *kvm, void __user *argp)
++{
++	if (!is_td(kvm))
++		return -ENOTTY;
++
++	return tdx_vm_ioctl(kvm, argp);
++}
++
+ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.name = "kvm_intel",
+ 
+@@ -195,6 +203,8 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.complete_emulated_msr = kvm_complete_insn_gp,
+ 
+ 	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
++
++	.mem_enc_op = vt_mem_enc_op,
+ };
+ 
+ struct kvm_x86_init_ops vt_init_ops __initdata = {
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 702953fd365f..8c67444d052a 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -349,6 +349,30 @@ int tdx_vm_init(struct kvm *kvm)
+ 	return ret;
+ }
+ 
++int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
++{
++	struct kvm_tdx_cmd tdx_cmd;
++	int r;
++
++	if (copy_from_user(&tdx_cmd, argp, sizeof(struct kvm_tdx_cmd)))
++		return -EFAULT;
++
++	mutex_lock(&kvm->lock);
++
++	switch (tdx_cmd.id) {
++	default:
++		r = -EINVAL;
++		goto out;
++	}
++
++	if (copy_to_user(argp, &tdx_cmd, sizeof(struct kvm_tdx_cmd)))
++		r = -EFAULT;
++
++out:
++	mutex_unlock(&kvm->lock);
++	return r;
++}
++
+ static int __tdx_module_setup(void)
+ {
+ 	const struct tdsysinfo_struct *tdsysinfo;
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 2b2738c768d6..9d88ba9b093b 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -136,6 +136,8 @@ void tdx_hardware_unsetup(void);
+ int tdx_vm_init(struct kvm *kvm);
+ void tdx_mmu_prezap(struct kvm *kvm);
+ void tdx_vm_free(struct kvm *kvm);
++
++int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+ #else
+ static inline void tdx_pre_kvm_init(
+ 	unsigned int *vcpu_size, unsigned int *vcpu_align, unsigned int *vm_size) {}
+@@ -146,6 +148,8 @@ static inline void tdx_hardware_unsetup(void) {}
+ static inline int tdx_vm_init(struct kvm *kvm) { return -EOPNOTSUPP; }
+ static inline void tdx_mmu_prezap(struct kvm *kvm) {}
+ static inline void tdx_vm_free(struct kvm *kvm) {}
++
++static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
+ #endif
+ 
+ #endif /* __KVM_X86_VMX_X86_OPS_H */
+diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
+index 71a5851475e7..2ad61caf4e0b 100644
+--- a/tools/arch/x86/include/uapi/asm/kvm.h
++++ b/tools/arch/x86/include/uapi/asm/kvm.h
+@@ -528,4 +528,15 @@ struct kvm_pmu_event_filter {
+ #define KVM_X86_DEFAULT_VM	0
+ #define KVM_X86_TDX_VM		1
+ 
++/* Trust Domain eXtension sub-ioctl() commands. */
++enum kvm_tdx_cmd_id {
++	KVM_TDX_CMD_NR_MAX,
++};
++
++struct kvm_tdx_cmd {
++	__u32 id;
++	__u32 metadata;
++	__u64 data;
++};
++
+ #endif /* _ASM_X86_KVM_H */
 -- 
 2.25.1
 
