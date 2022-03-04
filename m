@@ -2,77 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63063C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 23:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C77C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 23:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiCDXNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 18:13:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        id S230019AbiCDXMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 18:12:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbiCDXNc (ORCPT
+        with ESMTP id S229542AbiCDXM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 18:13:32 -0500
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C275E0AF;
-        Fri,  4 Mar 2022 15:12:43 -0800 (PST)
-Received: by mail-oi1-f179.google.com with SMTP id l25so9368172oic.13;
-        Fri, 04 Mar 2022 15:12:43 -0800 (PST)
+        Fri, 4 Mar 2022 18:12:26 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2943727B929;
+        Fri,  4 Mar 2022 15:11:38 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id c23so11216271ioi.4;
+        Fri, 04 Mar 2022 15:11:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WMYQjlufi219kBckXHrmZ59mOYrpYpcXHXQJbwGQ/Pc=;
+        b=OMoGxLR4MZVjm3RcfwM0Wdf3BKqIen4nHOnAFYk0HEdPl9USyJrqWHaRSX02dZ2I21
+         iy32OEKWrnA98EwaZYZYQxaX5tCpAzmVhxxz9UpZMnlogWqWovo/wkk35luKpl+gX71I
+         cAB0EOLwJqyOgGXFqARIIsDqGh9LdZBQjC8RN5Chg6mQjY/ubqb99hDjd9E0uJYjCIr8
+         hdNzJ/0OavB8NnENeP0ZP7OL4ILiSubLNzSaZgbL8KhZ6/yEEg6NvANLzDOWSYxA+b+O
+         2coGuqGpGO/Is6kAElHhw8tpcVTSkcItxiww7OsONLFQCcT1qAmHVmPmQVQpNlCOdgK5
+         FNyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KVWbDqpK6bOdzGo2h0qtWE+fgf4PwelKmZTMZdMDaZ0=;
-        b=fEdj2ho0HTfVmwb6ikxcEh9FQXfnI4SMJ+2iiPxAfCKBbPhMehzGxDP2V0nHK8hQsJ
-         wnb8M5KkvWVPZn8K+dcZqbfnwjA6pXT2L46MmLaT231svEw6OVjHd5xMtPyyB7mAbeL6
-         wMU915nOBRe74Miq209nrfBjOu3GDN8qt1jWro/aT1969D7EYzsImPMYlE37i7iYelHJ
-         qW5JzpZFA9bfLmuG4p5W91CbvkhoANTGq1Fsfhz4TRdY9jDnw1Hus2ocq7L6eBit5WZa
-         0W0IvmVzItMQHGhg/ItqNCQzqxfXt78es9zIGKTMPE/7zm9nAI6MSQCFI1f53gL3mTAZ
-         z3Kw==
-X-Gm-Message-State: AOAM530vZIlIuXIRsVY3xkeywT0dTSK4Qy5Pjs6PbCoF+v4vFprfVRLb
-        aQkWzf5j9RJ5IcvlADXKGvRhHcYYdA==
-X-Google-Smtp-Source: ABdhPJzBGD3S4vU8ZCKqlhfZLNdTutmb70tW40mVotqvoPSlg1sjO3pVV1WVraWzwiGw/TjOnMbAiw==
-X-Received: by 2002:a05:6808:2393:b0:2d9:a01a:487b with SMTP id bp19-20020a056808239300b002d9a01a487bmr994342oib.198.1646435562446;
-        Fri, 04 Mar 2022 15:12:42 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id l15-20020a0568302b0f00b005b0285d2434sm144236otv.40.2022.03.04.15.12.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 15:12:41 -0800 (PST)
-Received: (nullmailer pid 638646 invoked by uid 1000);
-        Fri, 04 Mar 2022 23:12:40 -0000
-Date:   Fri, 4 Mar 2022 17:12:40 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        Taniya Das <tdas@codeaurora.org>
-Subject: Re: [PATCH v6 02/15] dt-bindings: clock: simplify qcom,gcc-apq8064
- Documentation
-Message-ID: <YiKc6Ho9D1VLiOqB@robh.at.kernel.org>
-References: <20220226135235.10051-1-ansuelsmth@gmail.com>
- <20220226135235.10051-3-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WMYQjlufi219kBckXHrmZ59mOYrpYpcXHXQJbwGQ/Pc=;
+        b=G6EMpwYO7sMghmUuG5ESkrmdSqbOpp5N46xOpsVRMBo3iH9vZ5wt9esiJINimRS385
+         mUMXHdI3uxASq89OLl9VX9rcIBsZXhpp2n8RGBsWmxKtuzhJaWHURNCtgodjR6M4jmAv
+         27mvER/tEx/2dwUBCQ65qDj8SOBl2CFhx7n/9JlYdVPkJ4DagT4lK+WSLRAOkbrcguFo
+         a5x596Y/Ud9ed2nJi+xVO66Ty/1uY0fgkoZdzL9ltnZXuebHxqh/Jnpj/rQml4Vh+mKn
+         rTTQDKQory0b2AfuJVIXWKE1WwC0H5ayJj9KJlEL+g2LYDkSBCoHhu2KmuuPh2LznfYn
+         iR6w==
+X-Gm-Message-State: AOAM530b16bgCHFSW0sNIisitfKs1oz1ud4uoSeYS4K+ogF8UB2e2TS+
+        M338rHgxWJ0CbjBp8J5chysikpJ3hUZUTxI9nIwLx8TcBUg=
+X-Google-Smtp-Source: ABdhPJy8YiUtVDrIHUNcSSBJVOoBbqJYOSDBqdCWj9X7n5pS3Y2c7UBPg7D9k6N2Oqgi4iqfXEO9XtqTvM23iOeGSm0=
+X-Received: by 2002:a6b:e901:0:b0:640:7bf8:f61d with SMTP id
+ u1-20020a6be901000000b006407bf8f61dmr754404iof.112.1646435497530; Fri, 04 Mar
+ 2022 15:11:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220226135235.10051-3-ansuelsmth@gmail.com>
+References: <20220222170600.611515-1-jolsa@kernel.org> <20220222170600.611515-11-jolsa@kernel.org>
+In-Reply-To: <20220222170600.611515-11-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 4 Mar 2022 15:11:26 -0800
+Message-ID: <CAEf4BzZW-W5PcNmB2PoRE-70e1FjqpE-EJKgxfj2SsvjwdBjRA@mail.gmail.com>
+Subject: Re: [PATCH 10/10] selftest/bpf: Add kprobe_multi test for bpf_cookie values
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 26 Feb 2022 14:52:22 +0100, Ansuel Smith wrote:
-> Simplify qcon,gcc-apq8064 Documentation by using qcom,gcc.yaml as a
-> template and remove the compatible from qcom,gcc.yaml
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+On Tue, Feb 22, 2022 at 9:08 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding bpf_cookie test for programs attached by kprobe_multi links.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  .../bindings/clock/qcom,gcc-apq8064.yaml      | 29 +++++--------------
->  .../bindings/clock/qcom,gcc-other.yaml        |  3 --
->  2 files changed, 7 insertions(+), 25 deletions(-)
-> 
+>  .../selftests/bpf/prog_tests/bpf_cookie.c     | 72 +++++++++++++++++++
+>  .../bpf/progs/kprobe_multi_bpf_cookie.c       | 62 ++++++++++++++++
+>  2 files changed, 134 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> index cd10df6cd0fc..edfb9f8736c6 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> @@ -7,6 +7,7 @@
+>  #include <unistd.h>
+>  #include <test_progs.h>
+>  #include "test_bpf_cookie.skel.h"
+> +#include "kprobe_multi_bpf_cookie.skel.h"
+>
+>  /* uprobe attach point */
+>  static void trigger_func(void)
+> @@ -63,6 +64,75 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
+>         bpf_link__destroy(retlink2);
+>  }
+>
+> +static void kprobe_multi_subtest(void)
+> +{
+> +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
+> +       int err, prog_fd, link1_fd = -1, link2_fd = -1;
+> +       LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+consistency ftw, LIBBPF_OPTS
+
+
+> +       struct kprobe_multi_bpf_cookie *skel = NULL;
+> +       __u64 addrs[8], cookies[8];
+> +
+
+[..]
+
+> diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
+> new file mode 100644
+> index 000000000000..d6f8454ba093
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
+> @@ -0,0 +1,62 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +extern const void bpf_fentry_test1 __ksym;
+> +extern const void bpf_fentry_test2 __ksym;
+> +extern const void bpf_fentry_test3 __ksym;
+> +extern const void bpf_fentry_test4 __ksym;
+> +extern const void bpf_fentry_test5 __ksym;
+> +extern const void bpf_fentry_test6 __ksym;
+> +extern const void bpf_fentry_test7 __ksym;
+> +extern const void bpf_fentry_test8 __ksym;
+> +
+> +/* No tests, just to trigger bpf_fentry_test* through tracing test_run */
+> +SEC("fentry/bpf_modify_return_test")
+> +int BPF_PROG(test1)
+> +{
+> +       return 0;
+> +}
+> +
+> +__u64 test2_result = 0;
+> +
+> +SEC("kprobe.multi/bpf_fentry_tes??")
+> +int test2(struct pt_regs *ctx)
+> +{
+> +       __u64 cookie = bpf_get_attach_cookie(ctx);
+> +       __u64 addr = bpf_get_func_ip(ctx);
+> +
+> +       test2_result += (const void *) addr == &bpf_fentry_test1 && cookie == 1;
+> +       test2_result += (const void *) addr == &bpf_fentry_test2 && cookie == 2;
+> +       test2_result += (const void *) addr == &bpf_fentry_test3 && cookie == 3;
+> +       test2_result += (const void *) addr == &bpf_fentry_test4 && cookie == 4;
+> +       test2_result += (const void *) addr == &bpf_fentry_test5 && cookie == 5;
+> +       test2_result += (const void *) addr == &bpf_fentry_test6 && cookie == 6;
+> +       test2_result += (const void *) addr == &bpf_fentry_test7 && cookie == 7;
+> +       test2_result += (const void *) addr == &bpf_fentry_test8 && cookie == 8;
+
+this is not parallel mode friendly
+
+let's filter by pid, but also it's best to do count locally and just
+assign it (so that multiple calls of the program still produce the
+same value, instead of constantly increasing global variable with each
+run)
+
+
+> +
+> +       return 0;
+> +}
+> +
+> +__u64 test3_result = 0;
+> +
+> +SEC("kretprobe.multi/bpf_fentry_test*")
+> +int test3(struct pt_regs *ctx)
+> +{
+> +       __u64 cookie = bpf_get_attach_cookie(ctx);
+> +       __u64 addr = bpf_get_func_ip(ctx);
+> +
+> +       test3_result += (const void *) addr == &bpf_fentry_test1 && cookie == 8;
+> +       test3_result += (const void *) addr == &bpf_fentry_test2 && cookie == 7;
+> +       test3_result += (const void *) addr == &bpf_fentry_test3 && cookie == 6;
+> +       test3_result += (const void *) addr == &bpf_fentry_test4 && cookie == 5;
+> +       test3_result += (const void *) addr == &bpf_fentry_test5 && cookie == 4;
+> +       test3_result += (const void *) addr == &bpf_fentry_test6 && cookie == 3;
+> +       test3_result += (const void *) addr == &bpf_fentry_test7 && cookie == 2;
+> +       test3_result += (const void *) addr == &bpf_fentry_test8 && cookie == 1;
+> +
+> +       return 0;
+> +}
+> --
+> 2.35.1
+>
