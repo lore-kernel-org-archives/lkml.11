@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A566EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF1BC43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbiCDUJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:09:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
+        id S230495AbiCDUJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:09:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbiCDUHe (ORCPT
+        with ESMTP id S230409AbiCDUHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 15:07:34 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7CE2D3C81;
-        Fri,  4 Mar 2022 12:02:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8EA23D1A5;
+        Fri,  4 Mar 2022 12:01:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424134; x=1677960134;
+  t=1646424115; x=1677960115;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jhRol7GK7Pro/lhZst5qHkbc2tFnfk5xyikTLCTZnMs=;
-  b=HR+1WJkrB4W8nsKXKB3hY/lryxELWZRLIBiEtNgbJnlC8sgJVY0ssrBw
-   umtfWitA9t2XEaTtCfBw9FEwxTrDVuiEzgvukIDkf28ffBpcl3q1jB7Z8
-   FTMT7JnQcVyH6ltP/g68O3Q4odazw9t9OIpIlKmd900Do8JsxTcRbqk7L
-   JphpQj2qKt+jDu6zPUhjK6y3M7wZrZniLn3atWksW7PRMyrzcfkTc00qZ
-   1MJC+5TV4VZ3AY1Pr7rCipQ/6qXRir0DwCG1MK5+ujZ4OibQeuOCUgdzQ
-   eIJsQ26OpNQgZbWS2I1DyA2RsgmnZTA/ZTw37N+XbvwBlKrhsKElpUzL4
+  bh=qTKzxJmBcGUXHgBGaCkS1bVjqag0/RxxHA61F+6Uu50=;
+  b=W8+evKJY6UP4aNUcW0Kreso729RCFUG9k315Wvaaag1AgTeSn4sJtWcA
+   y9t0F6dr75j/AHh94s7J210Kfdp3B9vPyjjMDFwg64osIdzA12ro6790m
+   psCFSZcNfw7GRzBFdnl8NfMeZI9XDTAqgP93wMMSggt4EhHOm5XLtvUcr
+   8DEWtAN/ssvS4o8vdmAGyPUhVHLVyd0ww0YDeecIkwXAtdchZuLK7TNZH
+   0R/+VNUTOVcsgoX3ZIyQMeIpkJhRfcaDGag+ANK13IEyx+6xCYK99+/tp
+   rCMj0r55YMv5Trlk+0mU7WGEsljnc88oULBfdD8bZXM6v2m9HniyfUprl
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983480"
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983435"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983480"
+   d="scan'208";a="253983435"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:21 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:17 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344330"
+   d="scan'208";a="552344283"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:21 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:17 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 041/104] KVM: VMX: Move setting of EPT MMU masks to common VT-x code
-Date:   Fri,  4 Mar 2022 11:48:57 -0800
-Message-Id: <4dbe2defb66835ac414cdb2dc5974fa4a6820101.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 031/104] [MARKER] The start of TDX KVM patch series: KVM MMU GPA stolen bits
+Date:   Fri,  4 Mar 2022 11:48:47 -0800
+Message-Id: <80ecda3744e7701b333a81e530f5c266b0e7675b.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -56,57 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-EPT MMU masks are used commonly for VMX and TDX.  The value needs to be
-initialized in common code before both VMX/TDX-specific initialization
-code.
+This empty commit is to mark the start of patch series of KVM MMU GPA
+stolen bits.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/main.c | 5 +++++
- arch/x86/kvm/vmx/vmx.c  | 4 ----
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 3eb9db6d83ac..51aaafe6b432 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -4,6 +4,7 @@
- #include "x86_ops.h"
- #include "vmx.h"
- #include "nested.h"
-+#include "mmu.h"
- #include "pmu.h"
- #include "tdx.h"
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index 9b63afa6cd1a..32e93d63972a 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -10,6 +10,7 @@ What qemu can do
+ ----------------
+ - TDX VM TYPE is exposed to Qemu.
+ - Qemu can create/destroy guest of TDX vm type.
++- Qemu can create/destroy vcpu of TDX vm type.
  
-@@ -22,6 +23,10 @@ static __init int vt_hardware_setup(void)
+ Patch Layer status
+ ------------------
+@@ -17,13 +18,13 @@ Patch Layer status
+ * TDX, VMX coexistence:                 Applied
+ * TDX architectural definitions:        Applied
+ * TD VM creation/destruction:           Applied
+-* TD vcpu creation/destruction:         Applying
++* TD vcpu creation/destruction:         Applied
+ * TDX EPT violation:                    Not yet
+ * TD finalization:                      Not yet
+ * TD vcpu enter/exit:                   Not yet
+ * TD vcpu interrupts/exit/hypercall:    Not yet
  
- 	tdx_hardware_setup(&vt_x86_ops);
- 
-+	if (enable_ept)
-+		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
-+				      cpu_has_vmx_ept_execute_only());
-+
- 	return 0;
- }
- 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 0edeeed0b4c8..07fd892768be 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7817,10 +7817,6 @@ __init int vmx_hardware_setup(void)
- 
- 	set_bit(0, vmx_vpid_bitmap); /* 0 is reserved for host */
- 
--	if (enable_ept)
--		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
--				      cpu_has_vmx_ept_execute_only());
--
- 	kvm_configure_mmu(enable_ept, 0, vmx_get_max_tdp_level(),
- 			  ept_caps_to_lpage_level(vmx_capability.ept));
- 
+-* KVM MMU GPA stolen bits:              Not yet
++* KVM MMU GPA stolen bits:              Applying
+ * KVM TDP refactoring for TDX:          Not yet
+ * KVM TDP MMU hooks:                    Not yet
+ * KVM TDP MMU MapGPA:                   Not yet
 -- 
 2.25.1
 
