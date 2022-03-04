@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 364B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFC2C43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 12:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239203AbiCDM0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 07:26:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
+        id S234479AbiCDM0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 07:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237994AbiCDMZx (ORCPT
+        with ESMTP id S233420AbiCDMZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 07:25:53 -0500
+        Fri, 4 Mar 2022 07:25:54 -0500
 Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5611B01B1
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 04:25:05 -0800 (PST)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632301B0BCF
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 04:25:07 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DCCAC3F60D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:25:03 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 355B23F1C5
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:25:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646396703;
-        bh=8rZ/otR1F7WKrTMiyMk5wOYz0m0MXO9OQ24s6TpVerE=;
+        s=20210705; t=1646396706;
+        bh=sMfVOQVh3QDv09HKuf77ip6IaDuNbDVh/tnxPccjD3M=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=DwHhy6+MPsP1aNRmjIxp8rPI560OReEVAFxq1bdoGMdK5si1DrRboKxrzF9Pw/wln
-         gEQZWkAY/jL8KlQXqc/qxl3l3mv9aM+x79lCT5kRoloz6xKKTHO0mftbIOZpQaLiCZ
-         qKmlffLcSglclaIOIRr1fG4CVDAHMhXLPbdE8dUpYii0vegg+GSGmpfJxgFBZUnqO+
-         rmmzdyv7hg/Z0gc6EZSxSAF6cM8Q7BXPRTJ9kbXYb/usMO4QF1HKk1FZC7gkYJftxn
-         uP0jNT79K/VFzY23PlLsjps0EqQtOb4h5YggsIV/cw41faNJUAZAcJ2mi7Dvp2GBuC
-         HItU9pUtdYmnA==
-Received: by mail-ej1-f72.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso4313651ejk.17
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 04:25:03 -0800 (PST)
+        b=OSiNLVksYhv5BFZYyWz7Z0kz/NKn/mboV6ONJF/avttnv/LglB34ywPTh/xlOuCA1
+         zXQNGtB6dlkV7ovP8rmL+8ono9GJ4sQTfrbtGZne7WpZEGYcsjcGNMn2+TxXi4JlHK
+         8rA61suFkKRiZkgewlCQ+8ORtdatiVZ0TLdxBfsRNSOVz73kOSPSqqlr+gd+mpwcVh
+         IhaEXsgJ34l5Ms5YxxZkdzw4YY47w/rHqLwpN7+OsYZVO0NzDql0ZZzwLm6YzfhVCE
+         en3IY63jKPoGsr8U3JkycQmDWNMWW5KrYmQ0PvtULLHt57ibEwKxFmfrKcvrGZw+x2
+         q+j83C6TgpSYQ==
+Received: by mail-ed1-f69.google.com with SMTP id o20-20020aa7dd54000000b00413bc19ad08so4508300edw.7
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 04:25:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8rZ/otR1F7WKrTMiyMk5wOYz0m0MXO9OQ24s6TpVerE=;
-        b=MgcTS0xMIHrjEW8ZOI/XWe8W9OmcEkeNODmFkJtCuTkDG9TLRiZoFwYdHnFM2pn7Xw
-         AS8aBZAuOQrtxMs6+jXBbt4KpgEugSYHBw8e1Vl5GG9pO8EW3PGXbEFLZg4O35PFSXe1
-         UH5WZBBXRvif81Y8rR3tZNOFvvTIZsB6rXzWEw6hn1BC3E6TicYZ1HcEm/CAB/RA8RTd
-         B6iy5tZbgW619fPLgE1aiEU/L7zZX5n2Z9uiXI+MslVDrvEDirAqcidA8D6EvoE5y3M5
-         qRAqoLmISOSoHKPne/4Ik+UYuxsTHVkFwPoYR18RzQshRp28uWixCIRsv0ICcxKaa0KD
-         Yk8A==
-X-Gm-Message-State: AOAM531dJD6uqpCIHfG8JZTBnZYm2xvEJhp9J8LobGcn6NryVxqprYNN
-        onQydRTdCx3TRo2kJmnvEKEAyh2fhnSyl0sCHYdGXuAfXALqq47FVTA+Q042Vt2REa3pY5WabF1
-        8wCHnDDCJQnDoqvJBwPPMQMmAB0s3BRym9Sq+1Lm2tw==
-X-Received: by 2002:a17:907:168a:b0:6da:9167:47dc with SMTP id hc10-20020a170907168a00b006da916747dcmr6181641ejc.126.1646396703280;
-        Fri, 04 Mar 2022 04:25:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxYnlrU15FhMF0oUQPKf5WnMr8bWPH6aPXJDLlecWPFgjllSaff6YzTPQ5Q1kJHCpa0MndoPQ==
-X-Received: by 2002:a17:907:168a:b0:6da:9167:47dc with SMTP id hc10-20020a170907168a00b006da916747dcmr6181627ejc.126.1646396703104;
-        Fri, 04 Mar 2022 04:25:03 -0800 (PST)
+        bh=sMfVOQVh3QDv09HKuf77ip6IaDuNbDVh/tnxPccjD3M=;
+        b=483kRIHYyv41b5xF74up2ZV6IOeAsoFbrC2FAtMpmZdsSLJpOP4KibzUWlNZTMcKmo
+         0nl+h7BQwgHYW4yGb4T+MAwNUidHb75Nthqy8RxrYsXH6ixp6PoYgiubybPiKjycxHwE
+         tRTjv/r48hL6HET25IN/86roQzYzvcILmbuZxNPrE8op/euPnUUEpkw6H5mjcHNLsdo0
+         3fA8l+HzPs+02tYkVIROACCpSqylZBDgn04kqswxGjkXieSsUh4cEoJb9ohqjrgpiMFt
+         5rK/Pyoy4ASclit50Y50ISBayJHXdC2Hvk9ZA0BzTDrzVYEj8LsVumIqgJvleMfeOap7
+         gOAA==
+X-Gm-Message-State: AOAM532lT5k2VSSHTwcduYQbzOJYz+V+noT9DWgEvDVxJ+4C5NhD3k7F
+        Lx3LSAgEO2R+jDh9od4imqs/9iGaQkV1Sy42YY16kbwCxYpm4WfEtuYddOgaS1HF9BlElc0jWqr
+        hBA9ZuvoZT1fTo+CLzkhKC+oOuT5V1Pz1bskUyNGQCw==
+X-Received: by 2002:aa7:d14f:0:b0:415:cf37:324b with SMTP id r15-20020aa7d14f000000b00415cf37324bmr9098552edo.263.1646396705938;
+        Fri, 04 Mar 2022 04:25:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzKMSVDmEk/neqIWD4dYZYTA7KTOdHcqfRP178ukkaNKBBjSxa1rHQ9JAwE06E9Efaict8Eiw==
+X-Received: by 2002:aa7:d14f:0:b0:415:cf37:324b with SMTP id r15-20020aa7d14f000000b00415cf37324bmr9098533edo.263.1646396705766;
+        Fri, 04 Mar 2022 04:25:05 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id r23-20020aa7da17000000b00415a1431488sm2047368eds.4.2022.03.04.04.25.01
+        by smtp.gmail.com with ESMTPSA id r23-20020aa7da17000000b00415a1431488sm2047368eds.4.2022.03.04.04.25.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 04:25:02 -0800 (PST)
+        Fri, 04 Mar 2022 04:25:05 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -66,9 +66,9 @@ To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 2/4] ARM: dts: exynos: add a specific compatible to MCT
-Date:   Fri,  4 Mar 2022 13:24:22 +0100
-Message-Id: <20220304122424.307885-3-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 4/4] arm64: dts: tesla: add a specific compatible to MCT on FSD
+Date:   Fri,  4 Mar 2022 13:24:24 +0100
+Message-Id: <20220304122424.307885-5-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220304122424.307885-1-krzysztof.kozlowski@canonical.com>
 References: <20220304122424.307885-1-krzysztof.kozlowski@canonical.com>
@@ -78,76 +78,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-One compatible is used for the Multi-Core Timer on most of the Samsung
-Exynos SoCs, which is correct but not specific enough.  These MCT blocks
-have different number of interrupts, so add a second specific
-compatible to Exynos3250 and all Exynos5 SoCs.
+One compatible is used for the Multi-Core Timer on Tesla FSD SoC, which
+is correct but not specific enough.  The MCT blocks have different
+number of interrupts, so add a second specific compatible to Tesla FSD.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 ---
- arch/arm/boot/dts/exynos3250.dtsi | 3 ++-
- arch/arm/boot/dts/exynos5250.dtsi | 3 ++-
- arch/arm/boot/dts/exynos5260.dtsi | 3 ++-
- arch/arm/boot/dts/exynos54xx.dtsi | 3 ++-
- 4 files changed, 8 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/tesla/fsd.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/exynos3250.dtsi b/arch/arm/boot/dts/exynos3250.dtsi
-index ae644315855d..41bb421e67c2 100644
---- a/arch/arm/boot/dts/exynos3250.dtsi
-+++ b/arch/arm/boot/dts/exynos3250.dtsi
-@@ -269,7 +269,8 @@ gic: interrupt-controller@10481000 {
+diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
+index 9a652abcbcac..10c217a57a7d 100644
+--- a/arch/arm64/boot/dts/tesla/fsd.dtsi
++++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
+@@ -727,7 +727,7 @@ spi_2: spi@14160000 {
  		};
  
- 		timer@10050000 {
+ 		timer@10040000 {
 -			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos3250-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x10050000 0x800>;
- 			interrupts = <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH>,
-diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
-index 5baaa7eb71a4..63d1dcf2c55c 100644
---- a/arch/arm/boot/dts/exynos5250.dtsi
-+++ b/arch/arm/boot/dts/exynos5250.dtsi
-@@ -245,7 +245,8 @@ clock_audss: audss-clock-controller@3810000 {
- 		};
- 
- 		timer@101c0000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos5250-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x101C0000 0x800>;
- 			clocks = <&clock CLK_FIN_PLL>, <&clock CLK_MCT>;
- 			clock-names = "fin_pll", "mct";
-diff --git a/arch/arm/boot/dts/exynos5260.dtsi b/arch/arm/boot/dts/exynos5260.dtsi
-index 56271e7c4587..ff1ee409eff3 100644
---- a/arch/arm/boot/dts/exynos5260.dtsi
-+++ b/arch/arm/boot/dts/exynos5260.dtsi
-@@ -333,7 +333,8 @@ chipid: chipid@10000000 {
- 		};
- 
- 		mct: timer@100b0000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos5260-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x100B0000 0x1000>;
- 			clocks = <&fin_pll>, <&clock_peri PERI_CLK_MCT>;
- 			clock-names = "fin_pll", "mct";
-diff --git a/arch/arm/boot/dts/exynos54xx.dtsi b/arch/arm/boot/dts/exynos54xx.dtsi
-index 2ddb7a5f12b3..3ec43761d8b9 100644
---- a/arch/arm/boot/dts/exynos54xx.dtsi
-+++ b/arch/arm/boot/dts/exynos54xx.dtsi
-@@ -74,7 +74,8 @@ smp-sram@53000 {
- 		};
- 
- 		mct: timer@101c0000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos5420-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x101c0000 0xb00>;
- 			interrupts-extended = <&combiner 23 3>,
- 					      <&combiner 23 4>,
++			compatible = "tesla,fsd-mct", "samsung,exynos4210-mct";
+ 			reg = <0x0 0x10040000 0x0 0x800>;
+ 			interrupts = <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>,
+ 				<GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>,
 -- 
 2.32.0
 
