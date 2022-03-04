@@ -2,92 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF39C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 06:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 06:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238490AbiCDGrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 01:47:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        id S238500AbiCDGrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 01:47:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiCDGrd (ORCPT
+        with ESMTP id S229889AbiCDGri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 01:47:33 -0500
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C657218CC21;
-        Thu,  3 Mar 2022 22:46:45 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowADHqPHQtSFiSwAcAg--.15700S2;
-        Fri, 04 Mar 2022 14:46:41 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     broonie@kernel.org, michal.simek@xilinx.com
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] spi: spi-zynq-qspi: Handle error for clk_enable
-Date:   Fri,  4 Mar 2022 14:46:39 +0800
-Message-Id: <20220304064639.416690-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 4 Mar 2022 01:47:38 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Mar 2022 22:46:50 PST
+Received: from esa11.hc1455-7.c3s2.iphmx.com (esa11.hc1455-7.c3s2.iphmx.com [207.54.90.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D186418CC23;
+        Thu,  3 Mar 2022 22:46:50 -0800 (PST)
+IronPort-SDR: EI5VdwU71qwp/hTU6E1u7csQh7X91ZB0CD35wA/uIVwTF/ebimlljlEUodpEXU9vMbJIj7Ea3K
+ /M0czsdvdvhu3gzIrIga/f3b7gpxr07384+d1uIlSrBDrEjJGhAQ7tsGwAvP46JZM/S/m2lk/I
+ Gi7t6ceLeAohYJnk6iutItdztg0KS8hPtjBlMGgSX8eu55BiNrl53kLnH2oNv7kqVJK8jfA9Xr
+ 00H14hynqsqZyzTID70LRBiaL1Mhex9MFeInNm9orYqM+MKAbzN9MjQMOx5LzZHttPBNE6UI3V
+ Ah8oeaTmS1da8Jj7xhb4N8Xo
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="44623340"
+X-IronPort-AV: E=Sophos;i="5.90,154,1643641200"; 
+   d="scan'208";a="44623340"
+Received: from unknown (HELO yto-r2.gw.nic.fujitsu.com) ([218.44.52.218])
+  by esa11.hc1455-7.c3s2.iphmx.com with ESMTP; 04 Mar 2022 15:45:44 +0900
+Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
+        by yto-r2.gw.nic.fujitsu.com (Postfix) with ESMTP id 630A8C68A4;
+        Fri,  4 Mar 2022 15:45:44 +0900 (JST)
+Received: from yto-om2.fujitsu.com (yto-om2.o.css.fujitsu.com [10.128.89.163])
+        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id A9E14CFBC0;
+        Fri,  4 Mar 2022 15:45:43 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om2.fujitsu.com (Postfix) with ESMTP id 7D372403884F7;
+        Fri,  4 Mar 2022 15:45:42 +0900 (JST)
+From:   Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
+To:     linux-arm-kernel@lists.infradead.org, soc@kernel.org,
+        linux-serial@vger.kernel.org, sumit.garg@linaro.org
+Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
+        will@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org,
+        hasegawa-hitomi@fujitsu.com
+Subject: [PATCH v2 0/2] soc: fujitsu: Add A64FX diagnostic interrupt driver
+Date:   Fri,  4 Mar 2022 15:43:22 +0900
+Message-Id: <20220304064324.331217-1-hasegawa-hitomi@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowADHqPHQtSFiSwAcAg--.15700S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xr47tF17AF47CryxZr1rtFb_yoWkGrg_Ca
-        17XrZIqrs8uw4xCF1xtr4DAFyUurs5Xr12q3Wvqay3trZxJrnFqrWDZrWUJ34fZw1UCrs3
-        Cr429340yr43CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbzxFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
-        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
-        vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IY
-        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
-        xKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
-        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbrMaUUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+The interrupt is set using pseudo-NMI if it is available. Arm has a
+diagnostic interrupt feature called "Arm Generic Diagnostic Dump and
+Reset device", but the A64FX does not support this feature and instead
+has its own device definition.
 
-Fixes: 67dca5e580f1 ("spi: spi-mem: Add support for Zynq QSPI controller")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/spi/spi-zynq-qspi.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+This patch series includes ones created by Sumit.[1]
 
-diff --git a/drivers/spi/spi-zynq-qspi.c b/drivers/spi/spi-zynq-qspi.c
-index 78f31b61a2aa..77ea6b522348 100644
---- a/drivers/spi/spi-zynq-qspi.c
-+++ b/drivers/spi/spi-zynq-qspi.c
-@@ -379,12 +379,21 @@ static int zynq_qspi_setup_op(struct spi_device *spi)
- {
- 	struct spi_controller *ctlr = spi->master;
- 	struct zynq_qspi *qspi = spi_controller_get_devdata(ctlr);
-+	int ret;
- 
- 	if (ctlr->busy)
- 		return -EBUSY;
- 
--	clk_enable(qspi->refclk);
--	clk_enable(qspi->pclk);
-+	ret = clk_enable(qspi->refclk);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_enable(qspi->pclk);
-+	if (ret) {
-+		clk_disable(qspi->refclk);
-+		return ret;
-+	}
-+
- 	zynq_qspi_write(qspi, ZYNQ_QSPI_ENABLE_OFFSET,
- 			ZYNQ_QSPI_ENABLE_ENABLE_MASK);
- 
+I tested on FX700:
+$ echo 1 > /proc/sys/kernel/sysrq
+$ echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
+[  124.712351] lkdtm: Performing direct entry HARDLOCKUP
+[  147.232096] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+:
+:
+
+Send the "chassis power diag" command from the management server
+using ipmitool, the following message is shown:
+[  206.061770] sysrq: Trigger a crash
+[  206.061779] Kernel panic - not syncing: sysrq triggered crash
+:
+:
+
+Changes in V2:
+ - Include Sumit's patch.
+ - The handler calls handle_sysrq() to use the sysrq feature to cause
+   a panic.
+ - request_nmi() and request_irq() now use the same handler, and
+   the function name of the handler has also changed.
+ - Use readl()/writel() instead of readl_relaxed()/writel_relaxed().
+
+V1:
+  https://lore.kernel.org/linux-arm-kernel/20220218092010.1327309-1-hasegawa-hitomi@fujitsu.com/
+
+[1] https://lore.kernel.org/all/20220228135408.1452882-1-sumit.garg@linaro.org/
+
+Sumit Garg (1):
+  tty/sysrq: Make sysrq handler NMI aware
+
+Hitomi Hasegawa (1):
+  soc: fujitsu: Add A64FX diagnostic interrupt driver
+
+ MAINTAINERS                      |   5 +
+ drivers/soc/Kconfig              |   1 +
+ drivers/soc/Makefile             |   1 +
+ drivers/soc/fujitsu/Kconfig      |  13 +++
+ drivers/soc/fujitsu/Makefile     |   3 +
+ drivers/soc/fujitsu/a64fx-diag.c | 151 +++++++++++++++++++++++++++++++
+ drivers/tty/sysrq.c              |  45 ++++++++-
+ include/linux/sysrq.h            |   1 +
+ kernel/debug/debug_core.c        |   1 +
+ 9 files changed, 220 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/soc/fujitsu/Kconfig
+ create mode 100644 drivers/soc/fujitsu/Makefile
+ create mode 100644 drivers/soc/fujitsu/a64fx-diag.c
+
 -- 
-2.25.1
+2.27.0
 
