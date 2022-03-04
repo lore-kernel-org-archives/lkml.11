@@ -2,155 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2412C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 04:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F310AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 04:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237947AbiCDEvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 23:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
+        id S237953AbiCDExi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 23:53:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233893AbiCDEv3 (ORCPT
+        with ESMTP id S233099AbiCDExf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 23:51:29 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1594180D37
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 20:50:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646369442; x=1677905442;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=y1EIFb0hbrwuTnbPwetKPQSFa5pVtnHwNw6ckjC0A3M=;
-  b=PJnCwMaai2BXBQTpX832AbJewGGle3GqLRO5n7QwHFgRG4p7+jo92s9I
-   8XR8PoyTS9w2sHnkKF2d21vx1vva7U/ONNz8xCK8aS8iQIrOA3ha48895
-   lsS2xOj7Z+F9ZTPLTvuN8guxO7y25cfdMGs9yFIjqEctPao22X12IyQ5/
-   Di1MOjzPeT+xRw/Pkb0ro71VkGS0yHSDOfWNbRKAmh4NT/yBnk9dj3PXq
-   7rFoPSVyLY4JdTtjPyQeuRfjDguGk/+mpVWRDmUj5zcjm4dZmDJiAWE8I
-   klwBYodCSMFWdjajre4LxW/k+tOsR2SGTnqxRbMMDeDsHrajMKL00V6OC
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="241317036"
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="241317036"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 20:50:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="779525847"
-Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Mar 2022 20:50:41 -0800
-Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPzto-0001HD-Aa; Fri, 04 Mar 2022 04:50:40 +0000
-Date:   Fri, 4 Mar 2022 12:49:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [andersson:tuxsuite 9/42]
- drivers/gpu/drm/i915/display/intel_dp.c:4838:36: error: passing argument 2
- of 'test_bit' from incompatible pointer type
-Message-ID: <202203041222.EU5Eal5c-lkp@intel.com>
+        Thu, 3 Mar 2022 23:53:35 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078DC3B3F5;
+        Thu,  3 Mar 2022 20:52:42 -0800 (PST)
+X-UUID: a9fa9b595d30426180269d85e18dfcb4-20220304
+X-UUID: a9fa9b595d30426180269d85e18dfcb4-20220304
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 200241363; Fri, 04 Mar 2022 12:52:38 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 4 Mar 2022 12:52:37 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 4 Mar 2022 12:52:36 +0800
+From:   <yf.wang@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
+        Yunfei Wang <yf.wang@mediatek.com>, <stable@vger.kernel.org>
+Subject: [PATCH] iommu/iova: Free all CPU rcache for retry when iova alloc failure
+Date:   Fri, 4 Mar 2022 12:46:34 +0800
+Message-ID: <20220304044635.4273-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/andersson/kernel tuxsuite
-head:   0fff1d7836dde54d8a7ce2f9010fd46a40f23aee
-commit: f5897d405897f092921dfbc5e00c4f3fb4172b01 [9/42] drm: Add HPD state to drm_connector_oob_hotplug_event()
-config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220304/202203041222.EU5Eal5c-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/andersson/kernel/commit/f5897d405897f092921dfbc5e00c4f3fb4172b01
-        git remote add andersson https://github.com/andersson/kernel
-        git fetch --no-tags andersson tuxsuite
-        git checkout f5897d405897f092921dfbc5e00c4f3fb4172b01
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+In alloc_iova_fast function, if an iova alloc request fail,
+it will free the iova ranges present in the percpu iova
+rcaches and free global iova rcache and then retry, but
+flushing CPU iova rcaches only for each online CPU, which
+will cause incomplete rcache cleaning, and iova rcaches of
+not online CPU cannot be flushed, because iova rcaches may
+also lead to fragmentation of iova space, so the next retry
+action may still be fail.
 
-All errors (new ones prefixed by >>):
+Based on the above, so need to flushing all iova rcaches
+for each possible CPU, use for_each_possible_cpu instead of
+for_each_online_cpu like in free_iova_rcaches function,
+so that all rcaches can be completely released to try
+replenishing IOVAs.
 
-   drivers/gpu/drm/i915/display/intel_dp.c: In function 'intel_dp_oob_hotplug_event':
->> drivers/gpu/drm/i915/display/intel_dp.c:4838:36: error: passing argument 2 of 'test_bit' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    4838 |  if (hpd_high != test_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpd_pin)) {
-         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                    |
-         |                                    unsigned int *
-   In file included from arch/x86/include/asm/bitops.h:390,
-                    from include/linux/bitops.h:33,
-                    from include/linux/of.h:15,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/linux/i2c.h:13,
-                    from drivers/gpu/drm/i915/display/intel_dp.c:29:
-   include/asm-generic/bitops/instrumented-non-atomic.h:132:77: note: expected 'const volatile long unsigned int *' but argument is of type 'unsigned int *'
-     132 | static __always_inline bool test_bit(long nr, const volatile unsigned long *addr)
-         |                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
->> drivers/gpu/drm/i915/display/intel_dp.c:4838:18: error: too many arguments to function 'test_bit'
-    4838 |  if (hpd_high != test_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpd_pin)) {
-         |                  ^~~~~~~~
-   In file included from arch/x86/include/asm/bitops.h:390,
-                    from include/linux/bitops.h:33,
-                    from include/linux/of.h:15,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/linux/i2c.h:13,
-                    from drivers/gpu/drm/i915/display/intel_dp.c:29:
-   include/asm-generic/bitops/instrumented-non-atomic.h:132:29: note: declared here
-     132 | static __always_inline bool test_bit(long nr, const volatile unsigned long *addr)
-         |                             ^~~~~~~~
->> drivers/gpu/drm/i915/display/intel_dp.c:4841:64: error: 'hpg_high' undeclared (first use in this function); did you mean 'hpd_high'?
-    4841 |   __assign_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpg_high);
-         |                                                                ^~~~~~~~
-         |                                                                hpd_high
-   drivers/gpu/drm/i915/display/intel_dp.c:4841:64: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/gpu/drm/i915/display/intel_dp.c:4841:25: error: passing argument 2 of '__assign_bit' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    4841 |   __assign_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpg_high);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                         |
-         |                         unsigned int *
-   In file included from include/linux/of.h:15,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/linux/i2c.h:13,
-                    from drivers/gpu/drm/i915/display/intel_dp.c:29:
-   include/linux/bitops.h:214:75: note: expected 'volatile long unsigned int *' but argument is of type 'unsigned int *'
-     214 | static __always_inline void __assign_bit(long nr, volatile unsigned long *addr,
-         |                                                   ~~~~~~~~~~~~~~~~~~~~~~~~^~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/test_bit +4838 drivers/gpu/drm/i915/display/intel_dp.c
-
-  4827	
-  4828	static void intel_dp_oob_hotplug_event(struct drm_connector *connector,
-  4829					       enum drm_connector_hpd_state hpd_state)
-  4830	{
-  4831		struct intel_encoder *encoder = intel_attached_encoder(to_intel_connector(connector));
-  4832		struct drm_i915_private *i915 = to_i915(connector->dev);
-  4833		bool hpd_high = hpd_state == DRM_CONNECTOR_HPD_HIGH;
-  4834		unsigned int hpd_pin = encoder->hpd_pin;
-  4835		bool need_work = false;
-  4836	
-  4837		spin_lock_irq(&i915->irq_lock);
-> 4838		if (hpd_high != test_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpd_pin)) {
-  4839			i915->hotplug.event_bits |= BIT(hpd_pin);
-  4840	
-> 4841			__assign_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpg_high);
-  4842			need_work = true;
-  4843		}
-  4844		spin_unlock_irq(&i915->irq_lock);
-  4845	
-  4846		if (need_work)
-  4847			queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
-  4848	}
-  4849	
-
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+Cc: <stable@vger.kernel.org> # 5.4.*
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/iommu/iova.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index b28c9435b898..5a0637cd7bc2 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -460,7 +460,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 
+ 		/* Try replenishing IOVAs by flushing rcache. */
+ 		flush_rcache = false;
+-		for_each_online_cpu(cpu)
++		for_each_possible_cpu(cpu)
+ 			free_cpu_cached_iovas(cpu, iovad);
+ 		free_global_cached_iovas(iovad);
+ 		goto retry;
+-- 
+2.18.0
