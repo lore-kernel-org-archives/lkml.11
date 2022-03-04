@@ -2,79 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D731C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234283AbiCDIlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:41:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        id S234462AbiCDIlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:41:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235197AbiCDIkA (ORCPT
+        with ESMTP id S234248AbiCDIko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:40:00 -0500
-Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAC51A41C0
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:38:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1646383126;
-        bh=VhTKKyAhQFqLXrwmbMwbMaF9x5HZIH2oU44KJBELClQ=;
-        h=From:To:Cc:Subject:Date;
-        b=jTTonvd+Gqp7il2o4Dt6VecIFDvZnAYQFo/HJ6MP+smS9kO/jmvGDdPGe/szxAw6X
-         2HEv+6tObxoAh8co9AP3itUIdn1BIy1wQLuHIxbfxWNG3PpCKWf8PAZMWqglrTGV2s
-         +PSG+RPenI0jdqDVBIGHN+htoBQQ19GM1j7IqY+A=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc8.qq.com (NewEsmtp) with SMTP
-        id 9AB026B7; Fri, 04 Mar 2022 16:38:43 +0800
-X-QQ-mid: xmsmtpt1646383123txww0qwx1
-Message-ID: <tencent_4221FC4089F6DF01C48F192E5784038BA205@qq.com>
-X-QQ-XMAILINFO: NhUkPfKlCtQww2mZ0zeqm2zgwoQjyTa62EicOQuEEZvwAXJNVniFcmgXAouBPt
-         X3wiozJpRIdopfA+s4aNJVEFr+kXchO9S1w/gMpl8GBJY81NBpF1wkl3jl/rdwoHRQohHP4zzKbZ
-         tuxM//p0BJDkeFfMWdUMelUHQn0Ot/S1iLVUY/Bcy5300esWq2CI19ZwR89NoxQy4sD2d+W3zECQ
-         pvHONYi5yLsbsEU77yc1UTwxGFXZiDyxMrankNm6MeOt69l3VUkZ0qROkq3TOpSk9/ugOA2f73Hi
-         aTiLOYji3RvBdFhtpWyF1MfOsbxyhe4Oayf8Yv9FStXeNoHHpyR7YyPJQdila+OMva15SQnAG0FY
-         LXEQJWnqDNZ4/iT6DnDFraJaQKrlaKHYcnomzzAa8NaunqAGZjH13DleayC+Mj+NK2+YuYi4Iqgk
-         UEjWwNGun0x9FTCreEe1wxEjwN2w1mntY+y70TlIAQcQAyK2yiZb1i/pCRu2sH5sjMxRbKqIA6cz
-         nLur0eB7tQ9vEWO+XmUNZ8AiPHinKv018u0eIduxJE86FBxQ7GolMSWenbcQ0EnBGjdJe4w5TrwR
-         jLhEUtoUF6MF991x5j1XDSKMArrPG7ZhEo/4mdkGPv4H8MSJGtFgNGid5dfAdmEhNH9LdAvjjuiG
-         w3QxYWB7EJauH0J1xxO2seXPEBRaInLmMU/OQa4CeTmdXCWvdfZScKC++sOJ+hnUXxbAHjyFCYV0
-         wRAi0JvKxMR+tj3pugUwyMpTLu2PEwPQ3alD2LRPBnJfwYX6cx1D72pj/z0ENcRVvSa/KKuU8Jfv
-         279RRdRL9d3L2P7VA7/RLGD0P7Gxy4VLYCixzZOGyopjLpAkg2ESRE5E9DCAUQ3QmcXOTLakJw0O
-         5Dq+tYn3sFpSgG8/KgKcxtEYDTGfL0uW4ipGZ04H8Qnc6HMCZKdrspOkcIwpCoNWD0lO64bloj
-From:   xkernel.wang@foxmail.com
-To:     perex@perex.cz, tiwai@suse.com
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] ALSA: lola: add a check for the return of vmalloc()
-Date:   Fri,  4 Mar 2022 16:38:20 +0800
-X-OQ-MSGID: <20220304083820.4914-1-xkernel.wang@foxmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 4 Mar 2022 03:40:44 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D217119D762;
+        Fri,  4 Mar 2022 00:39:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646383146; x=1677919146;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=q8WhDt1fJAVdhqFFxJcC9dsIft2QvOtRyhyaF+jsgXI=;
+  b=IfSg17M5IUAlyjDR3QrP9Izyp6HXVXGJqg+jnw9eTAr81SyeRniYxfsz
+   cYupe5BmtFuKjs6Y4A4i6YgCi271CIFYnj9NKfRbrsyhXeXB6+6DY/eLg
+   2eNJ2ESkQl3QMt+lZjelDwsqMtZd1CYZn2HrmhatYCoZI9UIaodzZlTCs
+   7dz367QJlMpQV+sgp3eYU8LJg9V0gjNHKHavaLDXsoB94f64KP01o84dP
+   2HuGH/GoU2N6gsvMkEEJEWxaE3cN/BUUXG6hrHL/eoipR14tCozGvz5ur
+   ZiFfVRnnV/ByLkNq6d3zE+76uL5mRgwGa2uhqxU0Mf3jdm3UjihpZkAKd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="234537716"
+X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
+   d="scan'208";a="234537716"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:34 -0800
+X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
+   d="scan'208";a="552141488"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:28 -0800
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>
+Subject: [PATCH v7 5/8] KVM: x86: Add support for vICR APIC-write VM-Exits in x2APIC mode
+Date:   Fri,  4 Mar 2022 16:07:22 +0800
+Message-Id: <20220304080725.18135-6-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220304080725.18135-1-guang.zeng@intel.com>
+References: <20220304080725.18135-1-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Upcoming Intel CPUs will support virtual x2APIC MSR writes to the vICR,
+i.e. will trap and generate an APIC-write VM-Exit instead of intercepting
+the WRMSR.  Add support for handling "nodecode" x2APIC writes, which
+were previously impossible.
 
-vmalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check the return
-of it to catch the error in time.
+Note, x2APIC MSR writes are 64 bits wide.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
 ---
- sound/pci/lola/lola_mixer.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/lapic.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-diff --git a/sound/pci/lola/lola_mixer.c b/sound/pci/lola/lola_mixer.c
-index e2c8f14..6b16248 100644
---- a/sound/pci/lola/lola_mixer.c
-+++ b/sound/pci/lola/lola_mixer.c
-@@ -121,6 +121,8 @@ int lola_init_mixer_widget(struct lola *chip, int nid)
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 629c116b0d3e..22929b5b3f9b 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -67,6 +67,7 @@ static bool lapic_timer_advance_dynamic __read_mostly;
+ #define LAPIC_TIMER_ADVANCE_NS_MAX     5000
+ /* step-by-step approximation to mitigate fluctuation */
+ #define LAPIC_TIMER_ADVANCE_ADJUST_STEP 8
++static int kvm_lapic_msr_read(struct kvm_lapic *apic, u32 reg, u64 *data);
  
- 	/* reserve memory to copy mixer data for sleep mode transitions */
- 	chip->mixer.array_saved = vmalloc(sizeof(struct lola_mixer_array));
-+	if (!chip->mixer.array_saved)
-+		return -ENOMEM;
+ static inline void __kvm_lapic_set_reg(char *regs, int reg_off, u32 val)
+ {
+@@ -2227,10 +2228,25 @@ EXPORT_SYMBOL_GPL(kvm_lapic_set_eoi);
+ /* emulate APIC access in a trap manner */
+ void kvm_apic_write_nodecode(struct kvm_vcpu *vcpu, u32 offset)
+ {
+-	u32 val = kvm_lapic_get_reg(vcpu->arch.apic, offset);
++	struct kvm_lapic *apic = vcpu->arch.apic;
++	u64 val;
++
++	if (apic_x2apic_mode(apic)) {
++		/*
++		 * When guest APIC is in x2APIC mode and IPI virtualization
++		 * is enabled, accessing APIC_ICR may cause trap-like VM-exit
++		 * on Intel hardware. Other offsets are not possible.
++		 */
++		if (WARN_ON_ONCE(offset != APIC_ICR))
++			return;
  
- 	/* mixer matrix sources are physical input data and play streams */
- 	chip->mixer.src_stream_outs = chip->pcm[PLAY].num_streams;
+-	/* TODO: optimize to just emulate side effect w/o one more write */
+-	kvm_lapic_reg_write(vcpu->arch.apic, offset, val);
++		kvm_lapic_msr_read(apic, offset, &val);
++		kvm_apic_send_ipi(apic, (u32)val, (u32)(val >> 32));
++	} else {
++		val = kvm_lapic_get_reg(apic, offset);
++		/* TODO: optimize to just emulate side effect w/o one more write */
++		kvm_lapic_reg_write(apic, offset, (u32)val);
++	}
+ }
+ EXPORT_SYMBOL_GPL(kvm_apic_write_nodecode);
+ 
 -- 
+2.27.0
+
