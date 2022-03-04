@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB14CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239817AbiCDO3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:29:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
+        id S239834AbiCDO3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:29:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239789AbiCDO3q (ORCPT
+        with ESMTP id S239792AbiCDO3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 09:29:46 -0500
-Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.216])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B116B1B60BA
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:28:58 -0800 (PST)
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id 125DA501C
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 08:28:58 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id Q8vRnY7eyXvvJQ8vSn23vL; Fri, 04 Mar 2022 08:28:58 -0600
-X-Authority-Reason: nr=8
-Received: from host-82-63-1-3.business.telecomitalia.it ([82.63.1.3]:40132 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nQ8vR-0046yN-AP; Fri, 04 Mar 2022 08:28:57 -0600
-Message-ID: <78d798aa-388c-70bc-4227-985ba76c1d7e@kernel.org>
-Date:   Fri, 4 Mar 2022 15:28:54 +0100
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABBE1B60B4;
+        Fri,  4 Mar 2022 06:28:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646404138; x=1677940138;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=H/iynhIkpEfv9ZlpWMFfCVlJ4/W9smECL8yrvx7yXlc=;
+  b=O8JwIQEbXGhE2qiQx0/1sEH8T4yei0r6BkYzeV6G26ST1pQeqEN0cyt5
+   iiESw6IdH5Ce6mEPaX/8LJ8HlDdZHGPF4cW0V78oq8KCWTZiTyJFooTAs
+   /f46ub+ugNXrpsawMkUQd6wdPXBhOdIIHl+JWKeEFzWRIs12GYsWfUUc6
+   bqwzarqJXbwma2cOpN63HqRaU+o0FzAzuMD9id9j52nkHbyabvuTNqnja
+   cga4Cq2tHheSgt1WDCHncbJf3QrgoNt/JHCBNvwEebBBQsTSMbv95UTtC
+   3/OgkV10vbF0rCaWHGLlQJ2xsiICdds/9CnFEcN/kAZyGMPUE+fTI79GC
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="150868593"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 07:28:57 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 07:28:57 -0700
+Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 07:28:54 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
+        <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
+CC:     <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH v3 0/5] dt-bindings: rtc: convert at91sam9 bindings to
+Date:   Fri, 4 Mar 2022 16:27:41 +0200
+Message-ID: <20220304142746.121947-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org,
-        mtosatti@redhat.com, paulmck@kernel.org, rostedt@goodmis.org
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220228141423.259691-1-nsaenzju@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 82.63.1.3
-X-Source-L: No
-X-Exim-ID: 1nQ8vR-0046yN-AP
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-82-63-1-3.business.telecomitalia.it ([10.0.0.45]) [82.63.1.3]:40132
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 4
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/28/22 15:14, Nicolas Saenz Julienne wrote:
-> At the moment running osnoise on an isolated CPU and a PREEMPT_RCU
-> kernel might have the side effect of extending grace periods too much.
-> This will eventually entice RCU to schedule a task on the isolated CPU
-> to end the overly extended grace period, adding unwarranted noise to the
-> CPU being traced in the process.
-> 
-> So, check if we're the only ones running on this isolated CPU and that
-> we're on a PREEMPT_RCU setup. If so, let's force quiescent states in
-> between measurements.
-> 
-> Non-PREEMPT_RCU setups don't need to worry about this as osnoise main
-> loop's cond_resched() will go though a quiescent state for them.
-> 
-> Note that this same exact problem is what extended quiescent states were
-> created for. But adapting them to this specific use-case isn't trivial
-> as it'll imply reworking entry/exit and dynticks/context tracking code.
+This patch series addresses the conversion of the RTC binding for
+Atmel/Microchip SoCs to Device Tree Schema format. It also changes
+the node names from some of the "dtsi" files from "rtt" to the more
+generic "rtc", while adding the `atmel,rtt-rtc-time-reg` required
+property to the board files that were missing it.
 
-Hey Nicolas,
+Changes since v2:
+- Removed patch that would move the `atmel,rtt-rtc-time-reg` property
+from the board file to the SoC file.
+- Modified the patch that adds the `atmel,rtt-rtc-time-reg` property
+to add it in the board file instead of the SoC file.
+- Replaced `start-year` and `additionalProperties` from the DT binding
+with `unevaluatedProperties`.
+- Modified the `atmel,rtt-rtc-time-reg` property described in the DT
+binding to use items with description.
+- Used macro for the IRQ type of the example node's interrupt property
+of the DT binding.
 
-While testing this patch with rtla osnoise on the 5.17.0-rc6-rt10+, when I hit
-^c on osnoise top, the system freezes :-/.
+Sergiu Moga (5):
+  ARM: dts: at91: Add the required `atmel,rtt-rtc-time-reg` property
+  ARM: dts: at91: Use the generic "rtc" node name for the rtt IPs
+  dt-bindings: rtc: convert at91sam9 bindings to json-schema
+  dt-bindings: rtc: at91: Use macros for the IRQ type
+  dt-bindings: rtc: at91: Add SAMA7G5 compatible strings list
 
-Could you try that on your system?
+ .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 -------
+ .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 69 +++++++++++++++++++
+ arch/arm/boot/dts/at91sam9261ek.dts           |  4 ++
+ arch/arm/boot/dts/at91sam9263ek.dts           |  8 +++
+ arch/arm/boot/dts/at91sam9rlek.dts            |  4 ++
+ arch/arm/boot/dts/sam9x60.dtsi                |  2 +-
+ arch/arm/boot/dts/sama7g5.dtsi                |  2 +-
+ 7 files changed, 87 insertions(+), 27 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
+ create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
 
--- Daniel
+-- 
+2.25.1
+
