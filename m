@@ -2,225 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 17:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241265AbiCDReG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 12:34:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
+        id S241301AbiCDReK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 12:34:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241222AbiCDRds (ORCPT
+        with ESMTP id S241219AbiCDRdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 12:33:48 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4AB1BEB5;
-        Fri,  4 Mar 2022 09:32:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646415166; x=1677951166;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WxH94sQT9bd80kpGay6iFp+GMfyabjLVSaP0PrDfODE=;
-  b=g8C3hNPdqoeimuZXNIcuXKdAQNhEcAdtZp7+zd87JL4ORoJU5t3SaxNQ
-   JW04lnbhSJMUyAnejCPjGNvSrUT5WPUvZTOIE9Prn6TZPaDAxDqLxdVMp
-   qLOfL7TFIRl8pZPyzn8bcNdqcTY6GMavdn96jqSGED34DtAB0e2lHcSYd
-   rotV6B6O1t/6ss95WOOIkygnkXrt31R/NsjJibMUNm2jDIhFBdywg4YY3
-   8V16ZNqG49FxDo1TDigxczgHAmKRBJC1RuDm7A1aMoshGyVPndGp49ESM
-   X8p9hLqI07fJFdwbGFLzzfs9ZL/VU05V8kFhZ93WSKPjris1XyKGdKIf8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="241445927"
-X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="241445927"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 09:32:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="552298153"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 04 Mar 2022 09:32:40 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 80034A7; Fri,  4 Mar 2022 19:32:58 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v2 1/1] device property: Allow error pointer to be passed to fwnode APIs
-Date:   Fri,  4 Mar 2022 19:32:56 +0200
-Message-Id: <20220304173256.39059-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 4 Mar 2022 12:33:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6CA9275E2
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646415167;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WeTIWQC6fVAlk6Saj5kWD691Ja7Vds/ypH8GpPfWruc=;
+        b=Qq/QFcehw+WHXNYiQumYzGr3D5khM3jfGfLoWlRK1tK0xxniP3m10I3avXArNII93j0Ktq
+        g2wP7no/elJ3Y1IPwvF6B21DojuLHRgWSV1r916ND/hqgAxRVoOMn2ZtV1+Xp49ulF4hME
+        /MsNssYTZZbQTDsslvOndVUjMiT32OU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-394-0nhDjJoCOhe0PWVuPWThqg-1; Fri, 04 Mar 2022 12:32:42 -0500
+X-MC-Unique: 0nhDjJoCOhe0PWVuPWThqg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5BF2B8066F3;
+        Fri,  4 Mar 2022 17:32:40 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.192.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F2038659E;
+        Fri,  4 Mar 2022 17:32:36 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v2 13/28] HID: bpf: implement hid_bpf_get|set_data
+Date:   Fri,  4 Mar 2022 18:28:37 +0100
+Message-Id: <20220304172852.274126-14-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the fwnode APIs might return an error pointer instead of NULL
-or valid fwnode handle. The result of such API call may be considered
-optional and hence the test for it is usually done in a form of
+We have 2 cases of usage here:
+- either n <= 32: we are addressing individual bits at the given offset
 
-	fwnode = fwnode_find_reference(...);
-	if (IS_ERR_OR_NULL(fwnode))
-		...error handling...
+- either n > 32: we are using a memcpy to transmit the data to the caller,
+  meaning that we need to be byte-aligned.
 
-Nevertheless the resulting fwnode may have bumped reference count and
-hence caller of the above API is obliged to call fwnode_handle_put().
-Since fwnode may be not valid either as NULL or error pointer the check
-has to be performed there. This approach uglifies the code and adds
-a point of making a mistake, i.e. forgetting about error point case.
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-To prevent this allow error pointer to be passed to the fwnode APIs.
-
-Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
-Reported-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 
-v2: adjusted the entire fwnode API (Sakari)
+changes in v2:
+- split the series by bpf/libbpf/hid/selftests and samples
+- allow for n > 32, by relying on memcpy
+---
+ drivers/hid/hid-bpf.c  | 68 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-core.c |  4 +--
+ include/linux/hid.h    |  2 ++
+ 3 files changed, 72 insertions(+), 2 deletions(-)
 
-Nuno, can you test this with the ltc2983 series, including the IS_ERR_OR_NULL()
-fix to it?
-
- drivers/base/property.c | 45 +++++++++++++++++++++++++----------------
- include/linux/fwnode.h  | 10 ++++-----
- 2 files changed, 33 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index c0e94cce9c29..1922818470b0 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -9,6 +9,7 @@
- 
- #include <linux/acpi.h>
- #include <linux/export.h>
-+#include <linux/fwnode.h>
- #include <linux/kernel.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
-@@ -45,14 +46,16 @@ EXPORT_SYMBOL_GPL(device_property_present);
- bool fwnode_property_present(const struct fwnode_handle *fwnode,
- 			     const char *propname)
- {
--	bool ret;
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return false;
- 
--	ret = fwnode_call_bool_op(fwnode, property_present, propname);
--	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
--					 propname);
--	return ret;
-+	if (fwnode_call_bool_op(fwnode, property_present, propname))
-+		return true;
-+
-+	if (IS_ERR_OR_NULL(fwnode->secondary))
-+		return false;
-+
-+	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
+diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
+index 510e24f4307c..8ae247fba5bc 100644
+--- a/drivers/hid/hid-bpf.c
++++ b/drivers/hid/hid-bpf.c
+@@ -105,6 +105,72 @@ static void hid_bpf_array_detached(struct hid_device *hdev, enum bpf_hid_attach_
+ 	}
  }
- EXPORT_SYMBOL_GPL(fwnode_property_present);
  
-@@ -232,10 +235,12 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
++int hid_bpf_get_data(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
++		     u8 *data, u64 data_size)
++{
++	u32 *value = (u32 *)data;
++
++	if (((offset + n) >> 3) >= buf_size)
++		return -E2BIG;
++
++	if (n <= 32) {
++		/* data must be a pointer to a u32 */
++		if (data_size != 4)
++			return -EINVAL;
++
++		*value = hid_field_extract(hdev, buf, offset, n);
++		return 4;
++	}
++
++	/* if n > 32, use memcpy, but ensure we are dealing with full bytes */
++	if ((n | offset) & 0x7)
 +		return -EINVAL;
 +
- 	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
- 				 elem_size, val, nval);
--	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
-+	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode->secondary))
- 		ret = fwnode_call_int_op(
- 			fwnode->secondary, property_read_int_array, propname,
- 			elem_size, val, nval);
-@@ -371,10 +376,12 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
++	/* work on bytes now */
++	offset = offset >> 3;
++	n = n >> 3;
++
++	if (n > data_size)
 +		return -EINVAL;
 +
- 	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
- 				 val, nval);
--	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
-+	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode->secondary))
- 		ret = fwnode_call_int_op(fwnode->secondary,
- 					 property_read_string_array, propname,
- 					 val, nval);
-@@ -480,11 +487,12 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
++	memcpy(data, buf + offset, n);
++
++	return n;
++}
++
++int hid_bpf_set_data(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
++		     u8 *data, u64 data_size)
++{
++	u32 *value = (u32 *)data;
++
++	if (((offset + n) >> 3) >= buf_size)
++		return -E2BIG;
++
++	if (n <= 32) {
++		/* data must be a pointer to a u32 */
++		if (data_size != 4)
++			return -EINVAL;
++
++		implement(hdev, buf, offset, n, *value);
++		return 4;
++	}
++
++	/* if n > 32, use memcpy, but ensure we are dealing with full bytes */
++	if ((n | offset) & 0x7)
++		return -EINVAL;
++
++	/* work on bytes now */
++	offset = offset >> 3;
++	n = n >> 3;
++
++	if (n > data_size)
++		return -EINVAL;
++
++	memcpy(buf + offset, data, n);
++
++	return n;
++}
++
+ static int hid_bpf_run_progs(struct hid_device *hdev, enum bpf_hid_attach_type type,
+ 			     struct hid_bpf_ctx *ctx, u8 *data, int size)
  {
- 	int ret;
+@@ -204,6 +270,8 @@ int __init hid_bpf_module_init(void)
+ 		.link_attach = hid_bpf_link_attach,
+ 		.link_attached = hid_bpf_link_attached,
+ 		.array_detached = hid_bpf_array_detached,
++		.hid_get_data = hid_bpf_get_data,
++		.hid_set_data = hid_bpf_set_data,
+ 	};
  
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -ENOENT;
-+
- 	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
- 				 nargs, index, args);
--
--	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
-+	if (ret < 0 && !IS_ERR_OR_NULL(fwnode->secondary))
- 		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
- 					 prop, nargs_prop, nargs, index, args);
+ 	bpf_hid_set_hooks(&hooks);
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index 0eb8189faaee..d3f4499ee4cd 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1416,8 +1416,8 @@ static void __implement(u8 *report, unsigned offset, int n, u32 value)
+ 	}
+ }
  
-@@ -798,6 +806,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
-  */
- bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
+-static void implement(const struct hid_device *hid, u8 *report,
+-		      unsigned offset, unsigned n, u32 value)
++void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
++	       u32 value)
  {
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return false;
-+
- 	if (!fwnode_has_op(fwnode, device_is_available))
- 		return true;
+ 	if (unlikely(n > 32)) {
+ 		hid_warn(hid, "%s() called with n (%d) > 32! (%s)\n",
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index 66d949d10b78..7454e844324c 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -944,6 +944,8 @@ bool hid_compare_device_paths(struct hid_device *hdev_a,
+ s32 hid_snto32(__u32 value, unsigned n);
+ __u32 hid_field_extract(const struct hid_device *hid, __u8 *report,
+ 		     unsigned offset, unsigned n);
++void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
++	       u32 value);
  
-@@ -988,11 +999,11 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
- 		parent = fwnode_graph_get_port_parent(prev);
- 	else
- 		parent = fwnode;
-+	if (IS_ERR_OR_NULL(parent))
-+		return NULL;
- 
- 	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
--
--	if (IS_ERR_OR_NULL(ep) &&
--	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
-+	if (!ep && !IS_ERR_OR_NULL(parent->secondary))
- 		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
- 
- 	return ep;
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 3a532ba66f6c..7defac04f9a3 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -148,12 +148,12 @@ struct fwnode_operations {
- 	int (*add_links)(struct fwnode_handle *fwnode);
- };
- 
--#define fwnode_has_op(fwnode, op)				\
--	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
-+#define fwnode_has_op(fwnode, op)					\
-+	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
-+
- #define fwnode_call_int_op(fwnode, op, ...)				\
--	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
--		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
--	 -EINVAL)
-+	(fwnode_has_op(fwnode, op) ?					\
-+	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
- 
- #define fwnode_call_bool_op(fwnode, op, ...)		\
- 	(fwnode_has_op(fwnode, op) ?			\
+ #ifdef CONFIG_PM
+ int hid_driver_suspend(struct hid_device *hdev, pm_message_t state);
 -- 
-2.34.1
+2.35.1
 
