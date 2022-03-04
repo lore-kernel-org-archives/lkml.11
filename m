@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238101AbiCDFTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 00:19:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
+        id S238110AbiCDFT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 00:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238121AbiCDFTo (ORCPT
+        with ESMTP id S238095AbiCDFTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 00:19:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5807EF1EA1
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 21:18:54 -0800 (PST)
+        Fri, 4 Mar 2022 00:19:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BAF6BF8B84
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 21:19:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646371133;
+        s=mimecast20190719; t=1646371141;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Jyv1lzZ4mkTvzdL9kLWgnj86vlKE/ygyLYqVdoUf6Sw=;
-        b=VXl9iCoiO9qlufgXhHbdWOyK+RBcsRdQPGh7ddP0bZElMiSsCioVmCE49qDkEZgsDIg0MW
-        SDV8mzBkOHzcw4lQ+oEMaHErKC8hdb81RGE2jXUsJRctXTIV7fWGnOsdaO85CLqBIyfgTG
-        B3imoILp1uw7H20QngzhOyFBR007LDk=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=n7rwO48JtzdkJuoHFZCI8H9KL9Pu0D4gPtoWSB8Kejg=;
+        b=ecAZ2Y+vYtgrk7sA2cJMta3taQpgBxozb0/JKhMInqcxd/a4jFyNecvvtJi1IF3DrwBz40
+        6cVwomrlUlB5c1R9r4kWhCCcYpVNGqMebd4Hk9Q4BIotDjeJjA4wA3t4eHUcIrXHYrrKUH
+        bECSPROEp/EL0PkLGdkHH6tbO67Pduw=
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
+ [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-481-qQiV0rURMXqdGsEzr2f61g-1; Fri, 04 Mar 2022 00:18:52 -0500
-X-MC-Unique: qQiV0rURMXqdGsEzr2f61g-1
-Received: by mail-pl1-f199.google.com with SMTP id n12-20020a170902e54c00b0015011534fa3so4107140plf.9
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 21:18:52 -0800 (PST)
+ us-mta-226-NJAUmqREMhauC9GZO3UN0A-1; Fri, 04 Mar 2022 00:19:00 -0500
+X-MC-Unique: NJAUmqREMhauC9GZO3UN0A-1
+Received: by mail-pg1-f200.google.com with SMTP id h12-20020a63530c000000b0037c8f45bf1bso1026095pgb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 21:19:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Jyv1lzZ4mkTvzdL9kLWgnj86vlKE/ygyLYqVdoUf6Sw=;
-        b=ajn9wtqVyKKw8AjP5rOuGudoDZOr9Ncj+Mb6I2Xft4pRqn/kFUtVGn6yXbRNLAwNyB
-         hHafJVw5bSqzoltIWDu4m+qwSiKBWOcfH7tgui4Nl03T+HwYY5eN2/Fpng2u0s00owCV
-         90lmjV/dGpNynEg9RRCBZJwLQ1JpRWYfxjmseeij7d6r7uNhVu2ZrDWcIMQAeSpvPS6n
-         mtKiziNhCdc5eu3sSua5VRkQWCQWtArAssVwQ2rSErRuuVCDIIsAtXC7slSBZrIPghnm
-         Q8slCKYBUnFj9uNAh9ttNYojGa+QuEY4U9btR3qu95tEzkKRgjm2lm/1hncMBjGSwtfZ
-         CziA==
-X-Gm-Message-State: AOAM530eYZafTfjtgVBW27JsYVAcwxhQ1xy1XEfXlQU8v1FLGPLpWw4l
-        9gPrd8minknk/NPINZvUt4KRisjVqvaN+gCJ23Oc/P8o32UCly63111KKD5LRngRrMT7Xis5f0e
-        +izxEkxd5A63VOJS67NfDU0NH
-X-Received: by 2002:a63:944:0:b0:374:5324:eea1 with SMTP id 65-20020a630944000000b003745324eea1mr33249203pgj.366.1646371131327;
-        Thu, 03 Mar 2022 21:18:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwhisbQFqQkhrO4+7tBm5bGrC3HEMdBg8mxUGWFFpK8iGmzvB3YNBGzza29cCioxbX4vov0sQ==
-X-Received: by 2002:a63:944:0:b0:374:5324:eea1 with SMTP id 65-20020a630944000000b003745324eea1mr33249184pgj.366.1646371131059;
-        Thu, 03 Mar 2022 21:18:51 -0800 (PST)
+        bh=n7rwO48JtzdkJuoHFZCI8H9KL9Pu0D4gPtoWSB8Kejg=;
+        b=Z6gT0HuqO7KkQDsBKYNvB3d6StQ0OOpRMyMyoNDDT8jFMdnz+7CKW+/6jH9t0ncOkg
+         WGL91LqJNrMtx7ZjfqFXsiRCyEVI58Bt1bxXyqL55zY/R4M5ZNQ25w07+mx7wc/bisC7
+         DTmH2tPNOW/E4uJIUu2aWfRjKsn3UHHFcAq/LpKb3u/rve8mS6RSM3dO3Kgubdh/wmM8
+         xQxqyHq69GYURiQprnBx/wuIaoGSzGMsVZPW8C66AY1DN7sV9DFJqs6fD6Qge7/8xqaA
+         Vzj63O5xGDAp+U2scx7b2LOBe3ObwT9zdDsXLBre2WcXvR/VhYCBy0X+5vKzsI/W2+Rc
+         FKzg==
+X-Gm-Message-State: AOAM532pEcGk43dPJc3Qf8gxUacIn6YRkQLYf3RzHsnp5R0mINfEVahP
+        9ERsLi+ln+Pv5+MS9FGz2SRqs56gKjlfqB/wyzV4miROmLdyFB6fueg0jTvHJsOp9xlmL1G6Qs1
+        Tcy0zr3Pbh0RzN7BO6j7qx+a8
+X-Received: by 2002:a17:902:bc83:b0:14f:d9b7:ab3 with SMTP id bb3-20020a170902bc8300b0014fd9b70ab3mr38914578plb.23.1646371139355;
+        Thu, 03 Mar 2022 21:18:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyxQvXTM1bbdfv800pkAzqKOP1rVnQ9jp11rKIolBaZd7PJNXmzE+rE+wUwHWSuQvUScVEx9A==
+X-Received: by 2002:a17:902:bc83:b0:14f:d9b7:ab3 with SMTP id bb3-20020a170902bc8300b0014fd9b70ab3mr38914569plb.23.1646371139079;
+        Thu, 03 Mar 2022 21:18:59 -0800 (PST)
 Received: from localhost.localdomain ([94.177.118.59])
-        by smtp.gmail.com with ESMTPSA id p16-20020a056a000b5000b004f669806cd9sm4323865pfo.87.2022.03.03.21.18.43
+        by smtp.gmail.com with ESMTPSA id p16-20020a056a000b5000b004f669806cd9sm4323865pfo.87.2022.03.03.21.18.51
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 03 Mar 2022 21:18:50 -0800 (PST)
+        Thu, 03 Mar 2022 21:18:58 -0800 (PST)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Cc:     peterx@redhat.com, Nadav Amit <nadav.amit@gmail.com>,
@@ -69,9 +69,9 @@ Cc:     peterx@redhat.com, Nadav Amit <nadav.amit@gmail.com>,
         Mike Kravetz <mike.kravetz@oracle.com>,
         "Kirill A . Shutemov" <kirill@shutemov.name>,
         Andrea Arcangeli <aarcange@redhat.com>
-Subject: [PATCH v7 11/23] mm/hugetlb: Introduce huge pte version of uffd-wp helpers
-Date:   Fri,  4 Mar 2022 13:16:56 +0800
-Message-Id: <20220304051708.86193-12-peterx@redhat.com>
+Subject: [PATCH v7 12/23] mm/hugetlb: Hook page faults for uffd write protection
+Date:   Fri,  4 Mar 2022 13:16:57 +0800
+Message-Id: <20220304051708.86193-13-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220304051708.86193-1-peterx@redhat.com>
 References: <20220304051708.86193-1-peterx@redhat.com>
@@ -81,70 +81,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-They will be used in the follow up patches to either check/set/clear uffd-wp
-bit of a huge pte.
+Hook up hugetlbfs_fault() with the capability to handle userfaultfd-wp faults.
 
-So far it reuses all the small pte helpers.  Archs can overwrite these versions
-when necessary (with __HAVE_ARCH_HUGE_PTE_UFFD_WP* macros) in the future.
+We do this slightly earlier than hugetlb_cow() so that we can avoid taking some
+extra locks that we definitely don't need.
 
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- arch/s390/include/asm/hugetlb.h | 15 +++++++++++++++
- include/asm-generic/hugetlb.h   | 15 +++++++++++++++
- 2 files changed, 30 insertions(+)
+ mm/hugetlb.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/arch/s390/include/asm/hugetlb.h b/arch/s390/include/asm/hugetlb.h
-index 60f9241e5e4a..19c4b4431d27 100644
---- a/arch/s390/include/asm/hugetlb.h
-+++ b/arch/s390/include/asm/hugetlb.h
-@@ -115,6 +115,21 @@ static inline pte_t huge_pte_modify(pte_t pte, pgprot_t newprot)
- 	return pte_modify(pte, newprot);
- }
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index b34f50156f7e..d2539e2fe066 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5680,6 +5680,26 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	if (unlikely(!pte_same(entry, huge_ptep_get(ptep))))
+ 		goto out_ptl;
  
-+static inline pte_t huge_pte_mkuffd_wp(pte_t pte)
-+{
-+	return pte;
-+}
++	/* Handle userfault-wp first, before trying to lock more pages */
++	if (userfaultfd_wp(vma) && huge_pte_uffd_wp(huge_ptep_get(ptep)) &&
++	    (flags & FAULT_FLAG_WRITE) && !huge_pte_write(entry)) {
++		struct vm_fault vmf = {
++			.vma = vma,
++			.address = haddr,
++			.real_address = address,
++			.flags = flags,
++		};
 +
-+static inline pte_t huge_pte_clear_uffd_wp(pte_t pte)
-+{
-+	return pte;
-+}
++		spin_unlock(ptl);
++		if (pagecache_page) {
++			unlock_page(pagecache_page);
++			put_page(pagecache_page);
++		}
++		mutex_unlock(&hugetlb_fault_mutex_table[hash]);
++		i_mmap_unlock_read(mapping);
++		return handle_userfault(&vmf, VM_UFFD_WP);
++	}
 +
-+static inline int huge_pte_uffd_wp(pte_t pte)
-+{
-+	return 0;
-+}
-+
- static inline bool gigantic_page_runtime_supported(void)
- {
- 	return true;
-diff --git a/include/asm-generic/hugetlb.h b/include/asm-generic/hugetlb.h
-index f39cad20ffc6..896f341f614d 100644
---- a/include/asm-generic/hugetlb.h
-+++ b/include/asm-generic/hugetlb.h
-@@ -35,6 +35,21 @@ static inline pte_t huge_pte_modify(pte_t pte, pgprot_t newprot)
- 	return pte_modify(pte, newprot);
- }
- 
-+static inline pte_t huge_pte_mkuffd_wp(pte_t pte)
-+{
-+	return pte_mkuffd_wp(pte);
-+}
-+
-+static inline pte_t huge_pte_clear_uffd_wp(pte_t pte)
-+{
-+	return pte_clear_uffd_wp(pte);
-+}
-+
-+static inline int huge_pte_uffd_wp(pte_t pte)
-+{
-+	return pte_uffd_wp(pte);
-+}
-+
- #ifndef __HAVE_ARCH_HUGE_PTE_CLEAR
- static inline void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
- 		    pte_t *ptep, unsigned long sz)
+ 	/*
+ 	 * hugetlb_cow() requires page locks of pte_page(entry) and
+ 	 * pagecache_page, so here we need take the former one
 -- 
 2.32.0
 
