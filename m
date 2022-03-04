@@ -2,87 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA12C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 268F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236000AbiCDJ3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:29:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
+        id S236920AbiCDJ3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:29:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiCDJ3e (ORCPT
+        with ESMTP id S236851AbiCDJ3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:29:34 -0500
-Received: from out162-62-57-210.mail.qq.com (out162-62-57-210.mail.qq.com [162.62.57.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604E215678D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:28:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1646386119;
-        bh=9nv3X+PI2qu6S4FIO3dCfbr9ddZT2wf9ArBKScnME/0=;
-        h=From:To:Cc:Subject:Date;
-        b=VBlSSm+K4N84PyldKA051om/DtFDMIdKNXpSapGz69ke3yj8jaLQQFkoy/kZGNb/q
-         n99NdkVBVHvXigTJij7//6QK5TT8HNuTFhSl4gHCy4WIX3G4R9eYP8F2pw1dnsV+/Y
-         dyYlCQiD6W9kxKWfYHXglm0lterVQKNvtQRKucy0=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
-        id 72409668; Fri, 04 Mar 2022 17:28:36 +0800
-X-QQ-mid: xmsmtpt1646386116tbkzo2c36
-Message-ID: <tencent_DE1C3D1422E1DD4A35FFDE2048CC48B94E08@qq.com>
-X-QQ-XMAILINFO: MB5+LsFw85NozOAi+JJCABEY3i1EXbuvNRsh15xf91h5rO8srnqJ7a4cQkxZyU
-         yMtZYX08rGRz2HoXf9OkTZWzJ2Nf2SiuTB6L5a1wAKykuso4yqT4U3P+ttqVgliTJFHk6cHQ3unL
-         E9m8+1LkSdU8d0zaD1wq6Wnx4BzJkyLW/2ZATSR62kbv5vr1RqBvfp9x9cjc4JYdu0VFTYO6gm/6
-         gdcU7SDadfg8KCHMyulAoZT9MF1syTbLfs2rsCNR9uGLrv085QiHH7qYfCmiYJAFvm99JA0L+vU1
-         wkO/yTRBPtX+PF9HDRF85y7bx+bV67exLS9I1cchNZXHj4vjZDKIf4VRkk9vzKMiyKdocAEqSj0d
-         lBcHa6nhzqOu4vZOl+UHrbVnlsVqfoPsLXmsz8cnN24ITeSUhENF0Cx/AAj6Qnte4eVYL9h7PDIp
-         6pKkI6Z0sjYMSj/fnvC4XjjlLBaWaLOxWoNOjPSo9vwE4Bl9MVzWVSYVcnAnxu7dysR3P0NW3W3l
-         ABpwOHXoBnEmRqolSfRrdICmEBm+iyjYpSAELX/7Z0gwi20jdNOa/b+592zvuPrevEk7QRtZyJZb
-         G5o3w9NafwRxefHs/8u1Is+nLVjESNSa9CshQ1UHRGpmdvvrO5g9HKwYdlKGMkqXnleakR/UG5ka
-         Vnz3dUVvzABZ+IUNtNHbCqjFUsJRk3yvXA0konaER1l6S7Hhary8dztgfr99HkjKuomz85D5qvbj
-         KnfvrDpwr0cLsU9sua1ljXUQSTB7MTiZNcT5IZW7RMCxaVpBb9GViHE/WRnkoVKjiywloRAby81q
-         Ud2pWoLV9XwkTueT0sA9NRvMIGBlvVrMeJUvoUpyASl3AMyV3KOxD0oE/7K9KGTA8+JMSQ8YcjzV
-         e5odC5TfMSC/txIpI+8Jlatl1inYx4/2b2rBy41K7WhFIZnl+mBMAKAP0R06FPrdBoPbhOxVgr
-From:   xkernel.wang@foxmail.com
-To:     linux@dominikbrodowski.net, akpm@linux-foundation.org,
-        pombredanne@nexb.com, gregkh@linuxfoundation.org, arnd@arndb.de,
-        luc.vanoostenryck@gmail.com
-Cc:     linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] init/initramfs.c: check the return value of kstrdup()
-Date:   Fri,  4 Mar 2022 17:27:34 +0800
-X-OQ-MSGID: <20220304092734.5096-1-xkernel.wang@foxmail.com>
+        Fri, 4 Mar 2022 04:29:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49B015C650
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 01:28:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E3AD61882
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 09:28:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98404C340E9;
+        Fri,  4 Mar 2022 09:28:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646386126;
+        bh=3ZyGHoh6IanTsSvqHkAqFuBcwQnAyxkVM3EI89FxsvQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=J/veIj1vtbDybWYerGw3lXjK+ySuWAXxTr6gAZNl90zMlIWxoBGvmmyysLDTxUclj
+         qjUCOsPaZB2tkCm5McrasfHjow1XEeGNe9PCGx2wwcODeJqQm/03N3pasadBU2N31i
+         HhsIZ41i141/Eh8hDk5fCn6zelHz0bJCXHf6clQu+epx/E65joOgMhPY4BPzVg43zb
+         PTS4hy2Y+aqXNCIonWxEGu66sVnvE9U+IlOIPUENkuv3dh0ZCDcbHv8nq21YcnSwPh
+         /MoTmGt8/WSMyyK5Wu75F725f5nMq18insR+znYtTC1WNUKe+fWKUp+iwGtSBLitbF
+         pOe6fvmurTPOQ==
+Message-ID: <cac5624c-6338-b42a-346b-b6bfd86dda74@kernel.org>
+Date:   Fri, 4 Mar 2022 17:28:43 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [f2fs-dev] [PATCH 2/2] f2fs: introduce F2FS_UNFAIR_RWSEM to
+ support unfair rwsem
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     kernel test robot <oliver.sang@intel.com>
+References: <20220304021955.2524246-1-jaegeuk@kernel.org>
+ <20220304021955.2524246-2-jaegeuk@kernel.org>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220304021955.2524246-2-jaegeuk@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On 2022/3/4 10:19, Jaegeuk Kim wrote:
+> Unfair rwsem should be used when blk-cg is on. Otherwise, there is regression.
+> 
+> FYI, we noticed a -26.7% regression of aim7.jobs-per-min due to commit:
+> 
+> commit: e4544b63a7ee49e7fbebf35ece0a6acd3b9617ae ("f2fs: move f2fs to use reader-unfair rwsems")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> in testcase: aim7
+> on test machine: 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz with 128G memory
+> with following parameters:
+> 
+> 	disk: 4BRD_12G
+> 	md: RAID0
+> 	fs: f2fs
+> 	test: sync_disk_rw
+> 	load: 100
+> 	cpufreq_governor: performance
+> 	ucode: 0x500320a
+> 
+> test-description: AIM7 is a traditional UNIX system level benchmark suite which is used to test and measure the performance of multiuser system.
+> test-url: https://apc01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fsourceforge.net%2Fprojects%2Faimbench%2Ffiles%2Faim-suite7%2F&amp;data=04%7C01%7Cchao.yu%40oppo.com%7C22ad61cc1e204e1d63e908d9fd858d65%7Cf1905eb1c35341c5951662b4a54b5ee6%7C0%7C0%7C637819572336831789%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=SMV5sGpVhSvjC8sbrKpKGT27J35Bm1%2B3KoM4yeraceA%3D&amp;reserved=0
+> 
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 
-kstrdup() is also a memory allocation function which is similar
-with kmalloc() in some way. Once some internal memory errors
-happen, it will return NULL. It is better to check the return
-value of it so to catch the memory error in time.
+Reviewed-by: Chao Yu <chao@kernel.org>
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- init/initramfs.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/init/initramfs.c b/init/initramfs.c
-index a842c05..49deffb 100644
---- a/init/initramfs.c
-+++ b/init/initramfs.c
-@@ -139,8 +139,12 @@ static void __init dir_add(const char *name, time64_t mtime)
- 	struct dir_entry *de = kmalloc(sizeof(struct dir_entry), GFP_KERNEL);
- 	if (!de)
- 		panic_show_mem("can't allocate dir_entry buffer");
--	INIT_LIST_HEAD(&de->list);
- 	de->name = kstrdup(name, GFP_KERNEL);
-+	if (!de->name) {
-+		kfree(de);
-+		panic_show_mem("can't duplicate dir name");
-+	}
-+	INIT_LIST_HEAD(&de->list);
- 	de->mtime = mtime;
- 	list_add(&de->list, &dir_list);
- }
--- 
+Thanks,
