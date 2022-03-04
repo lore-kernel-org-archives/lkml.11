@@ -2,62 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C870FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 02:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D55DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 02:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236874AbiCDCof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 21:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
+        id S237738AbiCDCs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 21:48:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbiCDCod (ORCPT
+        with ESMTP id S232400AbiCDCsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 21:44:33 -0500
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9C66107099;
-        Thu,  3 Mar 2022 18:43:45 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowADHztrffCFiGDUYAg--.9975S2;
-        Fri, 04 Mar 2022 10:43:43 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     ckeepax@opensource.cirrus.com
-Cc:     sre@kernel.org, patches@opensource.cirrus.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] power: supply: Handle error for wm8350_register_irq
-Date:   Fri,  4 Mar 2022 10:43:42 +0800
-Message-Id: <20220304024342.392044-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 3 Mar 2022 21:48:25 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0671BE8D;
+        Thu,  3 Mar 2022 18:47:38 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B8EE1218D9;
+        Fri,  4 Mar 2022 02:47:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646362056; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bRC9lR391e01DA8hmQQ11oCmTpgoNtai0DhkKiv/gqA=;
+        b=DPBLhpCy8tSefU0o/0cGFUNHFB2ENiUdz7DL+/QuL66B+hanK6/YVNBgksSwMuDLV2K7do
+        gLidl4GftwWDduPicJm1Lt/WdYmoepv57PKKCdtFCC0ehwriXODLDFTWOGNFVdmoGAplJO
+        DhmYXWeTCsa6asBh2ztOs4cXy4qTCUw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646362056;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bRC9lR391e01DA8hmQQ11oCmTpgoNtai0DhkKiv/gqA=;
+        b=OC3LPp6wdT68pzKK+cC/1gJqegadfEfURfONkeOYiYNj+tndz1PDCoyP7hDil8izMoBJdD
+        3yON2S4St8a2wPDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AA36313AF7;
+        Fri,  4 Mar 2022 02:47:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id dPl5GcF9IWJxAgAAMHmgww
+        (envelope-from <neilb@suse.de>); Fri, 04 Mar 2022 02:47:29 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowADHztrffCFiGDUYAg--.9975S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYO7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z2
-        80aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
-        zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
-        8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIF
-        xwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
-        IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
-        6r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2
-        IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW3JVWrJr1lIxAIcVC2z280
-        aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43
-        ZEXa7VUbxpnPUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+From:   "NeilBrown" <neilb@suse.de>
+To:     "Jeff Layton" <jlayton@kernel.org>
+Cc:     "Andrew Morton" <akpm@linux-foundation.org>,
+        "Jan Kara" <jack@suse.cz>, "Wu Fengguang" <fengguang.wu@intel.com>,
+        "Jaegeuk Kim" <jaegeuk@kernel.org>, "Chao Yu" <chao@kernel.org>,
+        "Ilya Dryomov" <idryomov@gmail.com>,
+        "Miklos Szeredi" <miklos@szeredi.hu>,
+        "Trond Myklebust" <trond.myklebust@hammerspace.com>,
+        "Anna Schumaker" <anna.schumaker@netapp.com>,
+        "Ryusuke Konishi" <konishi.ryusuke@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        "Philipp Reisner" <philipp.reisner@linbit.com>,
+        "Lars Ellenberg" <lars.ellenberg@linbit.com>,
+        "Paolo Valente" <paolo.valente@linaro.org>,
+        "Jens Axboe" <axboe@kernel.dk>, linux-doc@vger.kernel.org,
+        linux-mm@kvack.org, linux-nilfs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-ext4@vger.kernel.org,
+        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 06/11] ceph: remove reliance on bdi congestion
+In-reply-to: <e8ec98a9c4fab9b7aa099001f09ff9b11f0c3f96.camel@kernel.org>
+References: <164549971112.9187.16871723439770288255.stgit@noble.brown>,
+ <164549983739.9187.14895675781408171186.stgit@noble.brown>,
+ <ccc81eb5c23f933137c5da8d5050540cc54e58f0.camel@kernel.org>,
+ <164568131640.25116.884631856219777713@noble.neil.brown.name>,
+ <e8ec98a9c4fab9b7aa099001f09ff9b11f0c3f96.camel@kernel.org>
+Date:   Fri, 04 Mar 2022 13:47:26 +1100
+Message-id: <164636204663.29369.1845040729675190216@noble.neil.brown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 09:41:03PM +0800, Charles Keepax wrote:
->> +	if (ret)
->> +		goto free_CHG_BAT_HOT;
-> 
-> Probably be nicer to use non-caps for the labels, otherwise looks
-> good to me.
+On Thu, 24 Feb 2022, Jeff Layton wrote:
+> On Thu, 2022-02-24 at 16:41 +1100, NeilBrown wrote:
+> > On Thu, 24 Feb 2022, Jeff Layton wrote:
+> > > On Tue, 2022-02-22 at 14:17 +1100, NeilBrown wrote:
+> > > > The bdi congestion tracking in not widely used and will be removed.
+> > > >=20
+> > > > CEPHfs is one of a small number of filesystems that uses it, setting
+> > > > just the async (write) congestion flags at what it determines are
+> > > > appropriate times.
+> > > >=20
+> > > > The only remaining effect of the async flag is to cause (some)
+> > > > WB_SYNC_NONE writes to be skipped.
+> > > >=20
+> > > > So instead of setting the flag, set an internal flag and change:
+> > > >  - .writepages to do nothing if WB_SYNC_NONE and the flag is set
+> > > >  - .writepage to return AOP_WRITEPAGE_ACTIVATE if WB_SYNC_NONE
+> > > >     and the flag is set.
+> > > >=20
+> > > > The writepages change causes a behavioural change in that pageout() c=
+an
+> > > > now return PAGE_ACTIVATE instead of PAGE_KEEP, so SetPageActive() will
+> > > > be called on the page which (I think) wil further delay the next atte=
+mpt
+> > > > at writeout.  This might be a good thing.
+> > > >=20
+> > > > Signed-off-by: NeilBrown <neilb@suse.de>
+> > >=20
+> > > Maybe. I have to wonder whether all of this is really useful.
+> > >=20
+> > > When things are congested we'll avoid trying to issue new writeback
+> > > requests. Note that we don't prevent new pages from being dirtied here -
+> > > - only their being written back.
+> > >=20
+> > > This also doesn't do anything in the DIO or sync_write cases, so if we
+> > > lose caps or are doing DIO, we'll just keep churning out "unlimited"
+> > > writes in those cases anyway.
+> >=20
+> > I think the point of congestion tracking is to differentiate between
+> > sync and async IO.  Or maybe "required" and "optional".
+> > Eventually the "optional" IO will become required, but if we can delay
+> > it until a time when there is less "required" io, then maybe we can
+> > improve perceived latency.
+> >=20
+> > "optional" IO here is write-back and read-ahead.  If the load of
+> > "required" IO is bursty, and if we can shuffle that optional stuff into
+> > the quiet periods, we might win.
+> >=20
+>=20
+> In that case, maybe we should be counting in-flight reads too and deny
+> readahead when the count crosses some threshold? It seems a bit silly to
+> only look at writes when it comes to "congestion".
 
-Thanks, I have submitted a v2 to fix them.
+I agree that seems a bit silly.
 
-Jiang
+>=20
+> > Whether this is a real need is an important question that I don't have an
+> > answer for.  And whether it is better to leave delayed requests in the
+> > page cache, or in the low-level queue with sync requests able to
+> > over-take them - I don't know.  If you have multiple low-level queue as
+> > you say you can with ceph, then lower might be better.
+> >=20
+> > The block layer has REQ_RAHEAD ..  maybe those request get should get a
+> > lower priority ... though I don't think they do.
+> > NFS has a 3 level priority queue, with write-back going at a lower
+> > priority ... I think... for NFSv3 at least.
+> >=20
+> > Sometimes I suspect that as all our transports have become faster, we
+> > have been able to ignore the extra latency caused by poor scheduling of
+> > optional requests.  But at other times when my recently upgraded desktop
+> > is struggling to view a web page while compiling a kernel ...  I wonder
+> > if maybe we don't have the balance right any more.
+> >=20
+> > So maybe you are right - maybe we can rip all this stuff out.
+> >=20
+>=20
+> I lean more toward just removing it. The existing implementation seems a
+> bit half-baked with the gaps in what's being counted. Granted, the
+> default congestion threshold is pretty high with modern memory sizes, so
+> it probably doesn't come into play much in practice, but removing it
+> would reduce some complexity in the client.
 
+I'd love to have some test that could reliably generate congestion and
+measure latencies for other IO.  Without that, it is mostly guess work.
+So I cannot argue against your proposal, and do agree that removing the
+code would reduce complexity.  I have no idea what the costs might be -
+if any.  Hence my focus was on not changing behaviour.
+
+Thanks,
+NeilBrown
