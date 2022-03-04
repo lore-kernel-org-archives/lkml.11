@@ -2,77 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC84C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E84C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241756AbiCDSdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:33:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
+        id S241497AbiCDSeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:34:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241709AbiCDSdk (ORCPT
+        with ESMTP id S241796AbiCDSeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:33:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CC5157239;
-        Fri,  4 Mar 2022 10:32:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 4 Mar 2022 13:34:11 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A4A15AF39
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 10:33:12 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 420C061661;
-        Fri,  4 Mar 2022 18:32:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82BDC340E9;
-        Fri,  4 Mar 2022 18:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646418765;
-        bh=Vu4fL4KE530EAVkO1moX8T+C8QaTr+SV8CFC4jhiG24=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OKyDe0C9noUTIXE09lh4DwDhngdpLhcawCoQ3TQr+JTv6ZRPK55n/BnxyjuO8XA4H
-         SG3WVlgjPdSXf3Vrl46ebyHI6HTmKORztjkkNy0JSIIMjLM86XZZD2raaHbyFLHiza
-         tyxVx6CYcsKolpW7P8XJKAhyMHI8qd/JSf1xt+gs=
-Date:   Fri, 4 Mar 2022 19:32:26 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 07/28] bpf/hid: add a new attach type to
- change the report descriptor
-Message-ID: <YiJbOu8NY9UhigKZ@kroah.com>
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-8-benjamin.tissoires@redhat.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id AAD6B21136;
+        Fri,  4 Mar 2022 18:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646418790; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gJnCxkBq7SDkx56n/I8CCu4Rod5CPYjuSp+zNXS2bSA=;
+        b=t3fzROUoQfIORgMlNQfrmE24E4i5w4V9gbKbCg0gPcmdp3VuViPQc4JNMG+bVKLDiTBB7n
+        9XoCWe+WZcoAhWSfiaLr9mUJNiDILJMTiuGI70n3vGmP8/9WRQgc22s2eiaby99v+9Q8pB
+        lNEKjwVp7zaK8Ni8JfC7mm4qrnuEPMk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646418790;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gJnCxkBq7SDkx56n/I8CCu4Rod5CPYjuSp+zNXS2bSA=;
+        b=xarTsfu/8RTPI5FgQc2k8FfN4wFIS5J8JYlLKVqYVeXyhHwx2vz5Zdu77qvw2XIv1lLYZU
+        Fvbpw/mxnngYHoDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7C7C313B70;
+        Fri,  4 Mar 2022 18:33:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id RPkmHWZbImLdBAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 04 Mar 2022 18:33:10 +0000
+Message-ID: <e0e983ae-fce7-f814-131e-ac5386550bc3@suse.cz>
+Date:   Fri, 4 Mar 2022 19:33:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304172852.274126-8-benjamin.tissoires@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2 4/5] mm/slub: limit number of node partial slabs only
+ in cache creation
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        linux-kernel@vger.kernel.org
+References: <20220304063427.372145-1-42.hyeyoo@gmail.com>
+ <20220304063427.372145-5-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220304063427.372145-5-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 06:28:31PM +0100, Benjamin Tissoires wrote:
-> The report descriptor is the dictionary of the HID protocol specific
-> to the given device.
-> Changing it is a common habit in the HID world, and making that feature
-> accessible from eBPF allows to fix devices without having to install a
-> new kernel.
+On 3/4/22 07:34, Hyeonggon Yoo wrote:
+> SLUB sets number of minimum partial slabs for node (min_partial)
+> using set_min_partial(). SLUB holds at least min_partial slabs even if
+> they're empty to avoid excessive use of page allocator.
 > 
-> However, the report descriptor is supposed to be static on a device.
-> To be able to change it, we need to reconnect the device at the HID
-> level.
-> So whenever the report descriptor program type is attached or detached,
-> we call on a hook on HID to notify it that there is something to be
-> done.
+> set_min_partial() limits value of min_partial limits value of
+> min_partial MIN_PARTIAL and MAX_PARTIAL. As set_min_partial() can be
+> called by min_partial_store() too, Only limit value of min_partial
+> in kmem_cache_open() so that it can be changed to value that a user wants.
 > 
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> [ rientjes@google.com: Fold set_min_partial() into its callers ]
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+
+> ---
+>  mm/slub.c | 14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
+> 
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 6f0ebadd8f30..f9ae983a3dc6 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -3981,15 +3981,6 @@ static int init_kmem_cache_nodes(struct kmem_cache *s)
+>  	return 1;
+>  }
+>  
+> -static void set_min_partial(struct kmem_cache *s, unsigned long min)
+> -{
+> -	if (min < MIN_PARTIAL)
+> -		min = MIN_PARTIAL;
+> -	else if (min > MAX_PARTIAL)
+> -		min = MAX_PARTIAL;
+> -	s->min_partial = min;
+> -}
+> -
+>  static void set_cpu_partial(struct kmem_cache *s)
+>  {
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+> @@ -4196,7 +4187,8 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+>  	 * The larger the object size is, the more slabs we want on the partial
+>  	 * list to avoid pounding the page allocator excessively.
+>  	 */
+> -	set_min_partial(s, ilog2(s->size) / 2);
+> +	s->min_partial = min_t(unsigned long, MAX_PARTIAL, ilog2(s->size) / 2);
+> +	s->min_partial = max_t(unsigned long, MIN_PARTIAL, s->min_partial);
+>  
+>  	set_cpu_partial(s);
+>  
+> @@ -5361,7 +5353,7 @@ static ssize_t min_partial_store(struct kmem_cache *s, const char *buf,
+>  	if (err)
+>  		return err;
+>  
+> -	set_min_partial(s, min);
+> +	s->min_partial = min;
+>  	return length;
+>  }
+>  SLAB_ATTR(min_partial);
+
