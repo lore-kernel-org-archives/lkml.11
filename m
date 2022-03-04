@@ -2,74 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F951C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 22:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69135C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 22:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiCDWPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 17:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
+        id S229916AbiCDWTS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 17:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiCDWPo (ORCPT
+        with ESMTP id S229468AbiCDWTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 17:15:44 -0500
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D15E61F3;
-        Fri,  4 Mar 2022 14:14:56 -0800 (PST)
-Received: by mail-oi1-f172.google.com with SMTP id ay7so9248368oib.8;
-        Fri, 04 Mar 2022 14:14:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IF4uwZ2Wt/aHg+83dvg/o/2ECkCwnq/lAioga7Vlr3w=;
-        b=jmGy4loJFjJqCySbOrbXHLgeRkc1wy84w0tWi/ucvgIASmpgLsLLAE7FMXHoJwKhW5
-         fi7YKhOTXH1fBAeCzN6SMVLwEmCVoKSUMC5WBosD3MDef49CfWnd7U8E1NXGZHMppE/Z
-         2zu/YNOw+JV3bg4rorCWuMv04AVqocNSpoL1m5Yu6mlhXwa403utyGRiXy4Nrzqnm9Jc
-         yrxp3qRB2Lk998IhK7FFruY/4YhhQClFXFO6OXWnF3lUiPDEkYuKdbpOPlLzYKO35OkO
-         9z1UVWqCXjhCFE+d9LR+76az4+0XkQDbfNwFcigtnaSMtAF6Rn4usqm1Bj9vMMWK+1a+
-         6Y/w==
-X-Gm-Message-State: AOAM533PRIIxvYpOGr4YqlnV7E9W4FN/TGXs32Rxg87KjQV7pkZXC37s
-        /1PWr0M8iOLLpRCsGKIGzQ==
-X-Google-Smtp-Source: ABdhPJwSeDbwhQKWruWDXmLve/lD7Xfuz2Qycvq28+Vh7DfyWCbdXrBzsKFGnQtDK72Tbr4dmFQDGA==
-X-Received: by 2002:a05:6808:14ca:b0:2d9:a01a:48b5 with SMTP id f10-20020a05680814ca00b002d9a01a48b5mr813325oiw.256.1646432095905;
-        Fri, 04 Mar 2022 14:14:55 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bq3-20020a05680823c300b002d4f8fe4881sm3240213oib.39.2022.03.04.14.14.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 14:14:55 -0800 (PST)
-Received: (nullmailer pid 527296 invoked by uid 1000);
-        Fri, 04 Mar 2022 22:14:54 -0000
-Date:   Fri, 4 Mar 2022 16:14:54 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sergiu Moga <sergiu.moga@microchip.com>
-Cc:     a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        krzysztof.kozlowski@canonical.com, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, linux-rtc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] dt-bindings: rtc: convert at91sam9 bindings to
- json-schema
-Message-ID: <YiKPXmf4L6aLGM5a@robh.at.kernel.org>
-References: <20220304161159.147784-1-sergiu.moga@microchip.com>
- <20220304161159.147784-4-sergiu.moga@microchip.com>
+        Fri, 4 Mar 2022 17:19:16 -0500
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B9C31BEB7;
+        Fri,  4 Mar 2022 14:18:27 -0800 (PST)
+Received: from dread.disaster.area (pa49-186-17-0.pa.vic.optusnet.com.au [49.186.17.0])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 6B2FC10E1C43;
+        Sat,  5 Mar 2022 09:18:26 +1100 (AEDT)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nQGFl-001Zzq-Nx; Sat, 05 Mar 2022 09:18:25 +1100
+Date:   Sat, 5 Mar 2022 09:18:25 +1100
+From:   Dave Chinner <david@fromorbit.com>
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] vfs: do not try to evict inode when super is frozen
+Message-ID: <20220304221825.GM3927073@dread.disaster.area>
+References: <20220304022104.2525009-1-jaegeuk@kernel.org>
+ <20220304024843.GK3927073@dread.disaster.area>
+ <YiGgSmEOZUvgmSto@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304161159.147784-4-sergiu.moga@microchip.com>
+In-Reply-To: <YiGgSmEOZUvgmSto@google.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=62229032
+        a=+dVDrTVfsjPpH/ci3UuFng==:117 a=+dVDrTVfsjPpH/ci3UuFng==:17
+        a=FCBBoiUPZGnDA3Uh:21 a=kj9zAlcOel0A:10 a=o8Y5sQTvuykA:10 a=7-415B0cAAAA:8
+        a=kobbvlOx0iqVO4J9MBYA:9 a=CjuIK1q_8ugA:10 a=ZXjPKerQ9QDAtgzuyCT9:22
+        a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 06:11:58PM +0200, Sergiu Moga wrote:
-> Convert RTC binding for Atmel/Microchip SoCs to Device Tree Schema
-> format.
+On Thu, Mar 03, 2022 at 09:14:50PM -0800, Jaegeuk Kim wrote:
+> On 03/04, Dave Chinner wrote:
+> > On Thu, Mar 03, 2022 at 06:21:04PM -0800, Jaegeuk Kim wrote:
+> > > Otherwise, we will get a deadlock.
+> > 
+> > NACK.
+> > 
+> > We have to be able to evict clean inodes from memory on frozen
+> > inodes because we can still instantiate inodes while the filesytem
+> > is frozen. e.g. there's a find running when the filesystem is
+> > frozen. What happens if we can't evict clean cached inodes from
+> > memory when we run out of memory trying to instantiate new inodes?
 > 
-> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-> ---
->  .../bindings/rtc/atmel,at91sam9-rtc.txt       | 25 -------
->  .../bindings/rtc/atmel,at91sam9-rtc.yaml      | 65 +++++++++++++++++++
->  2 files changed, 65 insertions(+), 25 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.txt
->  create mode 100644 Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+> Ok, that makes sense.
+> 
+> > 
+> > > 
+> > > [freeze test]                         shrinkder
+> > > freeze_super
+> > >  - pwercpu_down_write(SB_FREEZE_FS)
+> > >                                        - super_cache_scan
+> > >                                          - down_read(&sb->s_umount)
+> > >                                            - prune_icache_sb
+> > >                                             - dispose_list
+> > >                                              - evict
+> > >                                               - f2fs_evict_inode
+> > > thaw_super
+> > >  - down_write(&sb->s_umount);
+> > >                                               - __percpu_down_read(SB_FREEZE_FS)
+> > 
+> > That seems like a f2fs bug, not a generic problem.
+> > 
+> > Filesystems already have to handle stuff like this if an unlinked
+> > file is closed while the fs is frozen - we have to handle inode
+> > eviction needing to modify the file, and different filesystems
+> > handle this differently. Most filesystems simply block in
+> > ->evict_inode in this case, but this never occurs from the shrinker
+> > context.
+> > 
+> > IOWs, the shrinker should never be evicting inodes that require the
+> > filesystem to immediately block on frozen filesystems. If you have
+> > such inodes in cache at the time the filesystem is frozen, then they
+> > should be purged from the cache as part of the freeze process so the
+> > shrinker won't ever find inodes that it could deadlock on.
+> 
+> If so, is this a bug in drop_caches_sysctl_handler?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+IMO, no.
+
+> Or, I shouldn't have
+> used "echo 3 > sysfs/drop_caches" with freezefs in xfstests?
+
+That should just work.
+
+As I said above - if the filesystem cannot process eviction of
+certain types of inodes when the filesystem is frozen, it needs to
+take steps during the freeze process to ensure they can't be evicted
+when the fs is frozen....
+
+Cheers,
+
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
