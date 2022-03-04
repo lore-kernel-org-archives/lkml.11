@@ -2,91 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55191C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 05:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238044AbiCDFXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 00:23:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        id S238176AbiCDFX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 00:23:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235088AbiCDFXl (ORCPT
+        with ESMTP id S238154AbiCDFXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 00:23:41 -0500
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7BC2A277;
-        Thu,  3 Mar 2022 21:22:53 -0800 (PST)
-Received: by mail-pg1-f169.google.com with SMTP id 6so2049244pgg.0;
-        Thu, 03 Mar 2022 21:22:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OUz+YHeOX2526f3yLcPlYSdunuzlqb7mEsolHTN6QCc=;
-        b=TKGhxT1xQjOI9NiK5fFVY2Xrn5tNT2acTtC8M5brN33736eI3K9Ui3NL4wfrFmnh9e
-         mroaJSygxTK+9hUq4MgFMd6BsAn/G5MTdRp5nlXgo62iRkkYPkbA5Ys0eMi4N3S0x2SM
-         jsDUS2HfUIMiqtBh8/KZhqrUBHgHbSNhQX/s+BwxeATaRp17z9rv8Uf/lDZ757cNzdqI
-         efnx83xHMgPTq7eHkOBcRq2P09zjrCIeqka/taN5gFSdgrDFilv9fTi7IP5Q6PpUUzEW
-         jiBEnvmNlPYCgr0nTGSWswvBH/bkfhcumv9NZJHFq7E3ytvXbnEt2oErpGqZdKOIT+g5
-         dy8Q==
-X-Gm-Message-State: AOAM532larrWurJGNanoj3Fa5+5RoNPt3gieaMQgyk48CTAizDxUj42C
-        r5G1bNNtmipqtg5cD7zLT6A=
-X-Google-Smtp-Source: ABdhPJxYq0TQM9vFcm1Kh6j0fbxqoFm/wrv7nZEyjEvofCbrP3HT13X6zNV9QhK/eSCtlBdJzomxHA==
-X-Received: by 2002:a63:4c07:0:b0:374:a41b:62e1 with SMTP id z7-20020a634c07000000b00374a41b62e1mr32490448pga.541.1646371373021;
-        Thu, 03 Mar 2022 21:22:53 -0800 (PST)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id s21-20020a056a00195500b004f65b15b3a0sm4274787pfk.8.2022.03.03.21.22.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 21:22:52 -0800 (PST)
-Message-ID: <e7e99791-aade-55fd-ac75-71478699cbe0@acm.org>
-Date:   Thu, 3 Mar 2022 21:22:50 -0800
+        Fri, 4 Mar 2022 00:23:51 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2098.outbound.protection.outlook.com [40.107.220.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B633184B79;
+        Thu,  3 Mar 2022 21:23:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n+uIiSKsoNaGBGRDFhsEdlT2PTL/+t6xv410OUPTygF2SorOlZgfcZR0yGlepVMvcFOldDi2yZGAyYHI2zb1J0ECDPBTtY9F+6kv5Tr3b6fcPb26lXp6vqaVDxfqKXupXaEV95K3s9Q+AEJzeGTUi8lmPl5EtjBByEImNhWlDjwW3nX9y5B+98sEyGtYLz1EpvlRSmZdDkpEhOA5iJvCJK3H/FU2H5GG0zKIVyIO0T1VCVzoP3O1cAfPiYLN2AvFFE6F1TfOR1+y2snvB9YqGud7aiWa+msgobD+uuI1YmZU7KathpqFUxIz7xyWXsmMStPXjARuN0ihrXbVeb6P3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8Mnt0BVzRyWj/Pd9UarkC1p5dfib/C8yCO0tbyIgLpY=;
+ b=iGgJILJSYeX5F9HRKy2bgPrHTj8CskboYR12qFEgYoQallTp5tBZjKWTWzVAKyg1KYz7n4HnydQNOL9cst6I8EaR8Riugf0/Q3Z5ewU2W0HEFuPsTl2jjvguzqU2mOeLwVEuYu2Ed6+bXwWw4AyUJ5fFSw6t7LvQqCrnlc7picd9mzJFZtlOFZzAPKwFWHQB5A2joNMZiQKWiecwHArvDD13PMf/pWf7lJ7StaaOzm1MVYDUomJ99VYVDV5ImPjRO7OR16MnW6X4Um9pBT3/j9JsNSPIU0j0fxm0ZTJBsQO0M56uI6hSTupHtHJ1SHg2Uxkb+nTqKw8OdHF6IPw1Hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8Mnt0BVzRyWj/Pd9UarkC1p5dfib/C8yCO0tbyIgLpY=;
+ b=QvpO3/1tvcOxgGZ/HAA80ac4BJY6vPRCaFxuMce5SW1q+D6IW3nXfqSWZiLYmxTC6/2fm1a09eIRZIwkqkZBesNDgdmSjMEyN0YS6S08DDxUcvqsPcQHYSMnkoOyMqCG5eiERslbz9gxtiljlkgqD709V+D9ZH0uEHnS3REhTmw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from DM5PR0102MB3590.prod.exchangelabs.com (2603:10b6:4:a4::25) by
+ CH2PR01MB5896.prod.exchangelabs.com (2603:10b6:610:39::30) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5017.22; Fri, 4 Mar 2022 05:23:01 +0000
+Received: from DM5PR0102MB3590.prod.exchangelabs.com
+ ([fe80::181b:1522:26bc:c243]) by DM5PR0102MB3590.prod.exchangelabs.com
+ ([fe80::181b:1522:26bc:c243%4]) with mapi id 15.20.5017.026; Fri, 4 Mar 2022
+ 05:23:01 +0000
+From:   Ilkka Koskinen <ilkka@os.amperecomputing.com>
+To:     lorenzo.pieralisi@arm.com, guohanjun@huawei.com,
+        sudeep.holla@arm.com, rafael@kernel.org, linux@armlinux.org.uk
+Cc:     lenb@kernel.org, robert.moore@intel.com, james.morse@arm.com,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, patches@amperecomputing.com,
+        scott@os.amperecomputing.com, darren@os.amperecomputing.com
+Subject: xFrom e2ebdef7c3a5e7ba998ff20bf62806c388efeaac Mon Sep 17 00:00:00 2001
+Date:   Thu,  3 Mar 2022 21:22:39 -0800
+Message-Id: <20220304052241.151946-1-ilkka@os.amperecomputing.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: CH2PR12CA0006.namprd12.prod.outlook.com
+ (2603:10b6:610:57::16) To DM5PR0102MB3590.prod.exchangelabs.com
+ (2603:10b6:4:a4::25)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] scsi: megaraid: cleanup formatting of megaraid
-Content-Language: en-US
-To:     Joe Perches <joe@perches.com>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Finn Thain <fthain@linux-m68k.org>
-Cc:     Konrad Wilhelm Kleine <kkleine@redhat.com>,
-        Tom Rix <trix@redhat.com>, kashyap.desai@broadcom.com,
-        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        megaraidlinux.pdl@broadcom.com, scsi <linux-scsi@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
-References: <20220127151945.1244439-1-trix@redhat.com>
- <d26d4bd8-b5e1-f4d5-b563-9bc4dd384ff8@acm.org>
- <0adde369-3fd7-3608-594c-d199cce3c936@redhat.com>
- <e3ae392a16491b9ddeb1f0b2b74fdf05628b1996.camel@perches.com>
- <46441b86-1d19-5eb4-0013-db1c63a9b0a5@redhat.com>
- <8dd05afd-0bb9-c91b-6393-aff69f1363e1@redhat.com>
- <233660d0-1dee-7d80-1581-2e6845bf7689@linux-m68k.org>
- <CABRYuGk+1AGpvfkR7=LTCm+bN4kt55fwQnQXCjidSXWxuMWsiQ@mail.gmail.com>
- <95f5be1d-f5f3-478-5ccb-76556a41de78@linux-m68k.org>
- <CANiq72kOJh_rGg6cT+S833HYqwHnZJzZss8v+kQDcgz_cZUfBQ@mail.gmail.com>
- <7368bc3ea6dece01004c3e0c194abb0d26d4932b.camel@perches.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <7368bc3ea6dece01004c3e0c194abb0d26d4932b.camel@perches.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d09ac243-c7e0-4fc3-7cd8-08d9fd9f0cc9
+X-MS-TrafficTypeDiagnostic: CH2PR01MB5896:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR01MB589630800B67255675A971619D059@CH2PR01MB5896.prod.exchangelabs.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /dcdi9a37MlyA03+0b52pMibpNGV3FHSaGzqOg2CAu2xr4kSRl6dn56X1Pkj21BIUEW3f6UoAfs8HeZzZrnuwZ7b8TNXo0pctCLhHKANX561Skh3D9+dZd5OfgfDDMSOj25FxcdIQzsS9RUO0VLEtrJV2OmdqKmOzimdhQjkH2Bn18wOBiHlMKfifIXjTVmys0b3zz/+wgzv6X8tux2aM3ocKnRvvH3VLcZavL7yEEIhMQD7KQLgimYt55c1p1LAPXZvS61O9YUpGJBaOh/mKztxZyWGoRLzGahvb7JOOJZMT4VNa1Le7TubSssIjGSLZLcCCnsVJBtqbyjvMe3NC9sm63l28w3qokuz9p5b2O5h9qDCujyrDs12AnDzzYU+FzilAGB3kgpJfGAS/hJARhtV2hqhp9jOJvfmFG7wXeS/QbWOn/hi+ZxIWlniMrXILF9qMK403drvYd87wzbn5PvNW8JQFTKqhzGqpvnnbY4fstGuXKcJKpEqBvr0a+Z6O28O6yLmwL/YV+3SABYfK57YibLauUIE+2k8Suqa0ydHH27ZzUWj0w2ucl4suuinQCAOBQmXCw95v/ioJO2tNpvgqFIyNKCJhgQmH4RqYaGbR+/1nWh2DBJW0Dvpsehxk+ufGBUn+kTw6046tGt7a3QYMtkV6vucxxJILRzl5JBjhfZcD2htyp7zyooiWp/nEVg5w2kKaH33mDxD0bjWfwUx0pwsHPIz2YeYz810V6wE+FNfqlM4MirKqhVSyJ1zMnYc5l0ivejddmKZnde2Yrd0OnJhtSvBElqX41c+puY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR0102MB3590.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(5660300002)(6512007)(7416002)(26005)(8936002)(107886003)(2906002)(186003)(2616005)(6486002)(83380400001)(38350700002)(38100700002)(508600001)(6506007)(316002)(52116002)(66556008)(6666004)(4326008)(8676002)(66476007)(66946007)(86362001)(966005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9ae8yS2lwiLpFTrqChycuVeWLhJMGnhw5rbaKr5T0MN4eNPxhCZ2TeT5mVm5?=
+ =?us-ascii?Q?HXO2LQpJWsDL4IcAeqc6Xawy18Zl/wQylPvvA3Sx6BfA9Vwc5UGUjgK2GfJF?=
+ =?us-ascii?Q?l7jpVQRcp8s4xox2rkxv1blq2TbvH0BAEYXnJ3OnlxqHU8ncH+qQNyF55x5b?=
+ =?us-ascii?Q?sYLkJAzXEE7+8JGhoCqGOFuG//fcoGQ5teutbZpwdTU/P8zm2S2PdhzP/96G?=
+ =?us-ascii?Q?wsMd3yCEK/We75KX99o6dQV1mGxQ9eewtPZcdFBlNhS/SF+85M2rK/JGu9I6?=
+ =?us-ascii?Q?alNaZZPbKa6MaHM+P1up82NHNVbryVM90g5J/RmoOcM7/3MGT2LHfEjACDPK?=
+ =?us-ascii?Q?E62tNw/EOrU+8/aaO2oK9DvVEOtL7uZJBk0uE1oQx23PXms7N98/bhOykFwn?=
+ =?us-ascii?Q?+T+G2e/fNIf0JKYZOMcbitCojthh1mXVKEBGqMXg5XaqqvhNK4utgHhuUNAn?=
+ =?us-ascii?Q?JjWW851hWbGe6dNnrfaA/5r0EqylT3HWGqBUsC/Sf4a9hUaBzU4NKf2YEL78?=
+ =?us-ascii?Q?zF6kYz385357k4JIO8deoayESqcZVctZJz/CRdPx5INunf3sKS7hakvq6JrV?=
+ =?us-ascii?Q?Rv2jV0zRJQcZULX4OTMYaGFEj9Ov83UMQAqBZpz+pQqVWbwfgr6si/k+u+Gi?=
+ =?us-ascii?Q?U4ZIUGV85LHxKse6Hh0jtoYBWyDw7lTTZe1uDStcc3UiMwXLSH+4NVz3uHia?=
+ =?us-ascii?Q?ganBX4ocmubwucqRd78PTbDsncfLjIythOnGa1IJFf1vlLvnu9GRt1jqDSPV?=
+ =?us-ascii?Q?V4/khqXrSbqHvOpImVB5RyZ1RTbY/KztB8KLxRZHsoEgCDq6GsyJEDdclDJy?=
+ =?us-ascii?Q?RTtsBEbFs16IzI99SLnE6tnksO5cSWf9UQpnXkbMW/g+J2QBZXQHkT+4nNuE?=
+ =?us-ascii?Q?CE0aDegwZUTUPE8MT9bKqe8eSiYsBLzZLBfM6MDd2D7wK2fVKWY8fmlyoIxO?=
+ =?us-ascii?Q?ILCh73A9DMzp1hADcgScljdOIJ9YSQ/yytPDv/YS2XWwoyQqGF43q8/Rs/Ji?=
+ =?us-ascii?Q?uZTk/poALcPg0BcWN9fxFSZlwYH7p3V72dxjTU2efWsOaCRg1x+QnencJahZ?=
+ =?us-ascii?Q?wiQ/JXOy1KRMA97+YGe/zCVjjXk66pq30p34NQSErLN/73q4aULrIR1HJsWA?=
+ =?us-ascii?Q?zL20vZzKV0hsdhwGdE43dXx1ZXjP7O1Jvy9B3v8hZ2XdpRhFg65eJ/d8CAeq?=
+ =?us-ascii?Q?Gr8wOt7pREGC+C3WWwsGrUqbeANfXO13+LlcYgN32l9y64RPRWlvRLySz+2H?=
+ =?us-ascii?Q?hsH2w1QqNv5zQc6AYex3W6xpRIRWmaqactLGaeu1CBCdb7c7/ubvH2/RDSyS?=
+ =?us-ascii?Q?wXO+y9/FJMGbTvhDFvi4qYNdElq03Wo8RkTitEKU2L3tLtxjo08zZrlXekS5?=
+ =?us-ascii?Q?gBd8k6q9cbi2Ie0S27bx/T33/0haiM9Lb9/wRGV7UF0siedcyZ/L8lhCbfIX?=
+ =?us-ascii?Q?eEY+x8+snIKKKkHPRr9KINfH9BDm7iySb+cQYCla2B9lKo9SpmauMDwKUupS?=
+ =?us-ascii?Q?VnPsExojEIOJQPqp2+llw9/58RNQYIpXK2q+BMr9THqUmNBrR8q9YpMPuN+k?=
+ =?us-ascii?Q?dlVKiRhCw0n12gV9lg2QV5A3X8Vl/Nojbi0I90D0ftPj8k4r/7mXsVvSd2Bt?=
+ =?us-ascii?Q?wbUKBQkAzklEA2GuckHsGGTsDk/H7xSP76/fAs2M3T8sXHgFq+tv7o4piEe4?=
+ =?us-ascii?Q?yNOUqSn5ss1DlfTg3nFMQcZUE48R97qw/6CKYQDVSacnoYVMSjSzFUL/jvjN?=
+ =?us-ascii?Q?fyW95qrKbw=3D=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d09ac243-c7e0-4fc3-7cd8-08d9fd9f0cc9
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR0102MB3590.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 05:23:01.1106
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aCrwLDUmhKa/OUbtj8d7WEJuCbILx4OLVKpYzdsMfTE3kZZ50O+7qu5V7pAw4feHIAmZr/8o3tVpEu9cIJ+++47e76UqhwAaZTZfWm4Ypejvux3rNAVfuf3fd34J55dN
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR01MB5896
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/3/22 15:38, Joe Perches wrote:
-> One argument is that churn leads to difficulty in backporting
-> fixes to older 'stable' versions.
-> 
-> I think the churn argument is overstated.
+Hi Lorenzo,
 
-I'm often backporting patches to older kernels and I think the churn argument 
-has not been emphasized enough. Backporting patches is a normal aspect of a 
-product lifecycle since a kernel version is chosen when development of a 
-product starts and bugfixes are cherry-picked from upstream selectively.
+Would you prefer this version, which doesn't have platform device/driver
+any more?
 
-Thanks,
+--Ilkka
 
-Bart.
+
+----
+
+Arm Generic Diagnostic Dump and Reset device enables a maintainer to
+request OS to perform a diagnostic dump and reset a system via SDEI
+event or an interrupt. This patchset adds support for the SDEI path.
+
+I do have a patch to enable the interrupt path as well but I'm holding
+it back since AGDI table is missing interrupt configuration fields
+(trigger type etc.).
+
+The recently published specification is available at
+https://developer.arm.com/documentation/den0093/latest
+
+The patchset was tested on Ampere Altra/Mt. Jade.
+
+The patchset applies on top of
+  git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm bleeding-edge (9db71e8e3027)
+
+I also tested it works on top of Shuai Xue's new patches in bleeding-edge branch (c6f4ba2d2b9a)
+
+From v1:
+     * Moved pdata to the stack and dropped unnecessary kzalloc() in agdi_init()
+     * Changed the ACPICA patch upstreaming order comment in the paragraph above
+
+From v2:
+     * The first patch was split. The most of it was merged to ACPICA project
+       at first and later ported to linux-acpi
+       (fd919e37cb15914c6fe13e13d530a4f732407c6d). The rest are in the first
+       patch.
+
+From v3:
+     Fixed:
+	* Moved header files in alphabetical order and removed unnecessary ones
+
+From v4:
+	* Platform device/driver stuff removed
+	* acpi_agdi_init() call moved from device_initcall to acpi_init() 
+	* Slightly modified Kconfig text to keep checkpatch happy
+
+Ilkka Koskinen (2):
+  ACPI: tables: Add AGDI to the list of known table signatures
+  ACPI: AGDI: Add support for Arm Generic Diagnostic Dump and Reset
+    device
+
+ drivers/acpi/arm64/Kconfig  | 10 +++++++
+ drivers/acpi/arm64/Makefile |  1 +
+ drivers/acpi/arm64/agdi.c   | 52 +++++++++++++++++++++++++++++++++++++
+ drivers/acpi/bus.c          |  2 ++
+ drivers/acpi/tables.c       |  2 +-
+ include/linux/acpi_agdi.h   | 13 ++++++++++
+ 6 files changed, 79 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/acpi/arm64/agdi.c
+ create mode 100644 include/linux/acpi_agdi.h
+
+-- 
+2.17.1
 
