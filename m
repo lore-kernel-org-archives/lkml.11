@@ -2,150 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1083EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8278CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237464AbiCDKmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:42:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
+        id S237672AbiCDKm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:42:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbiCDKmJ (ORCPT
+        with ESMTP id S237463AbiCDKmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 05:42:09 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D1A1AAFD7
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 02:41:22 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id b22-20020a6b6716000000b0064070ce7b49so5278897ioc.5
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 02:41:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6SuusqU261l0YZRBubHgkzmZFekkg3laoBBQucPRrgA=;
-        b=Embc3b3kK/sY4WCB7ab8gXePy8i/BIN75gK6T4EFoxTZOLSR+JGJapD3pp3L6iUWNc
-         QM/zgqivzUmJu06KQ3bdIKBKhUBmETGBR171Q4LtYnlIZf/V5CHHT6PjItHYLJhzfkKE
-         dFuhpvMZ8bIww//+ZDSCk1PSEtzwLTjrKTQzq1nD4Vm71hPF50JGWHQXK+YP77/oiAXR
-         3hfuSIdKD2XtcRr4R2ZH269Hh4kEC4EMyKZKCOcA7sC23SHQjGhnTx9P/7U+zLhZ55ZI
-         jgxRrBuPqke3vdd3MVgAbGs6Bpped/p2YXGPFdtGDpuChRMD8VVgUWqPRni8jKbDmR+v
-         295w==
-X-Gm-Message-State: AOAM533xMJZCiFUpvJe2x66HSQuL3TdK43nwsyvCoBBer8KLmMDZ1X/x
-        ihojK5Cx0h8DTl8Gdo82KA7gK1REY50HCIty/Neu2uw/sMKY
-X-Google-Smtp-Source: ABdhPJwKCMl3GU2i9vbnDTeANVWYScaZeMCV2tSwF1TW5fUve4h9UUDcIrdH6VmCvdsJafXL55JBIVWVo0pCWJHPquGCcHchQG9J
+        Fri, 4 Mar 2022 05:42:23 -0500
+Received: from esa8.hc1455-7.c3s2.iphmx.com (esa8.hc1455-7.c3s2.iphmx.com [139.138.61.253])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AD41AAFDE;
+        Fri,  4 Mar 2022 02:41:35 -0800 (PST)
+IronPort-SDR: sNKOLv2BAlkibgeIIZSso01JBiPWq9hMk8+Zc8u/1hGej2VX84Y9wPdMXj4DlBuTxw9FddHGj4
+ 7wZVCHpuhHyU8I/7hZ7ftE7uCBDq+zTCLfPbHhOVDv3CpBpGa6lRnNcufWF/hR69Hw34uUI3me
+ HlhvSg/+UpwJ/nmdsSvtiPuC8ypOOBZo05b7WZc0t55wbG7Ge6TexFys1gQMwSIpG8lTI22dlh
+ xDAwy1EHCmzG1RT36+LqyuVNaJSq0MQrWROZUjayCd7Barlbo66iwbbFZ58jlQoTVJpAXvRs2v
+ ZBQ3MpLGlQpl8J9IL0USEkNv
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="53044773"
+X-IronPort-AV: E=Sophos;i="5.90,154,1643641200"; 
+   d="scan'208";a="53044773"
+Received: from unknown (HELO yto-r2.gw.nic.fujitsu.com) ([218.44.52.218])
+  by esa8.hc1455-7.c3s2.iphmx.com with ESMTP; 04 Mar 2022 19:40:29 +0900
+Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
+        by yto-r2.gw.nic.fujitsu.com (Postfix) with ESMTP id 92D2CC68A8;
+        Fri,  4 Mar 2022 19:40:28 +0900 (JST)
+Received: from yto-om2.fujitsu.com (yto-om2.o.css.fujitsu.com [10.128.89.163])
+        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 38230E679E;
+        Fri,  4 Mar 2022 19:40:27 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om2.fujitsu.com (Postfix) with ESMTP id 0C38C403884E6;
+        Fri,  4 Mar 2022 19:40:27 +0900 (JST)
+From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        tan.shaopeng@jp.fujitsu.com
+Subject: [PATCH v3] selftests/resctrl: Print a message if the result of MBM&CMT tests is failed on Intel cpu
+Date:   Fri,  4 Mar 2022 19:39:57 +0900
+Message-Id: <20220304103957.487660-1-tan.shaopeng@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:178f:b0:2c4:b692:a8ec with SMTP id
- y15-20020a056e02178f00b002c4b692a8ecmr13307761ilu.296.1646390481472; Fri, 04
- Mar 2022 02:41:21 -0800 (PST)
-Date:   Fri, 04 Mar 2022 02:41:21 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cf53e605d96227cd@google.com>
-Subject: [syzbot] linux-next boot error: WARNING: suspicious RCU usage in cpuacct_charge
-From:   syzbot <syzbot+16e3f2c77e7c5a0113f9@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        brauner@kernel.org, cgroups@vger.kernel.org, daniel@iogearbox.net,
-        hannes@cmpxchg.org, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org, lizefan.x@bytedance.com,
-        netdev@vger.kernel.org, sfr@canb.auug.org.au,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+According to "Intel Resource Director Technology (Intel RDT) on 
+2nd Generation Intel Xeon Scalable Processors Reference Manual",
+When the Intel Sub-NUMA Clustering(SNC) feature is enabled,
+Intel CMT and MBM counters may not be accurate.
+
+However, there does not seem to be an architectural way to detect
+if SNC is enabled.
+
+If the result of MBM&CMT test fails on Intel CPU,
+print a message to let users know a possible cause of failure.
+
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+---
 Hello,
 
-syzbot found the following issue on:
+In PATCH V2, I tried to detect whether SNC is enabled by NUMA info and
+cpuinfo(socket_num), but it is not reliable and no future-proof.
 
-HEAD commit:    6d284ba80c0c Add linux-next specific files for 20220304
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15c283d1700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=26714bde6b3ad08b
-dashboard link: https://syzkaller.appspot.com/bug?extid=16e3f2c77e7c5a0113f9
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+I just print a message to let users know a possible cause of "not ok",
+When CMT or MBM test runs on Intel CPU, and the result is "not ok".
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+16e3f2c77e7c5a0113f9@syzkaller.appspotmail.com
+This patch is based on v5.16.
 
+ tools/testing/selftests/resctrl/resctrl_tests.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-=============================
-WARNING: suspicious RCU usage
-5.17.0-rc6-next-20220304-syzkaller #0 Not tainted
------------------------------
-include/linux/cgroup.h:494 suspicious rcu_dereference_check() usage!
+diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
+index 973f09a66e1e..ec2bdce7b85f 100644
+--- a/tools/testing/selftests/resctrl/resctrl_tests.c
++++ b/tools/testing/selftests/resctrl/resctrl_tests.c
+@@ -14,8 +14,9 @@
+ #define BENCHMARK_ARG_SIZE	64
+ 
+ bool is_amd;
++bool is_intel;
+ 
+-void detect_amd(void)
++void detect_vendor(void)
+ {
+ 	FILE *inf = fopen("/proc/cpuinfo", "r");
+ 	char *res;
+@@ -29,6 +30,7 @@ void detect_amd(void)
+ 		char *s = strchr(res, ':');
+ 
+ 		is_amd = s && !strcmp(s, ": AuthenticAMD\n");
++		is_intel = s && !strcmp(s, ": GenuineIntel\n");
+ 		free(res);
+ 	}
+ 	fclose(inf);
+@@ -70,6 +72,8 @@ static void run_mbm_test(bool has_ben, char **benchmark_cmd, int span,
+ 		sprintf(benchmark_cmd[5], "%s", MBA_STR);
+ 	res = mbm_bw_change(span, cpu_no, bw_report, benchmark_cmd);
+ 	ksft_test_result(!res, "MBM: bw change\n");
++	if (is_intel && res)
++		ksft_print_msg("Intel CMT and MBM counters may be inaccurate when Sub-NUMA Clustering (SNC) is enabled. Ensure SNC is disabled in the BIOS if this system supports SNC.\n");
+ 	mbm_test_cleanup();
+ }
+ 
+@@ -106,6 +110,8 @@ static void run_cmt_test(bool has_ben, char **benchmark_cmd, int cpu_no)
+ 		sprintf(benchmark_cmd[5], "%s", CMT_STR);
+ 	res = cmt_resctrl_val(cpu_no, 5, benchmark_cmd);
+ 	ksft_test_result(!res, "CMT: test\n");
++	if (is_intel && res)
++		ksft_print_msg("Intel CMT and MBM counters may be inaccurate when Sub-NUMA Clustering (SNC) is enabled. Ensure SNC is disabled in the BIOS if this system supports SNC.\n");
+ 	cmt_test_cleanup();
+ }
+ 
+@@ -207,8 +213,8 @@ int main(int argc, char **argv)
+ 	if (geteuid() != 0)
+ 		return ksft_exit_fail_msg("Not running as root, abort testing.\n");
+ 
+-	/* Detect AMD vendor */
+-	detect_amd();
++	/* Detect AMD/INTEL vendor */
++	detect_vendor();
+ 
+ 	if (has_ben) {
+ 		/* Extract benchmark command from command line. */
+-- 
+2.27.0
 
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 1, debug_locks = 1
-2 locks held by kthreadd/2:
- #0: ffff8881401726e0 (&p->pi_lock){....}-{2:2}, at: task_rq_lock+0x63/0x360 kernel/sched/core.c:578
- #1: ffff8880b9c39f98 (&rq->__lock){-...}-{2:2}, at: raw_spin_rq_lock_nested+0x2b/0x120 kernel/sched/core.c:478
-
-stack backtrace:
-CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.17.0-rc6-next-20220304-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- task_css include/linux/cgroup.h:494 [inline]
- task_ca kernel/sched/cpuacct.c:40 [inline]
- cpuacct_charge+0x2af/0x3c0 kernel/sched/cpuacct.c:342
- cgroup_account_cputime include/linux/cgroup.h:792 [inline]
- update_curr+0x37b/0x830 kernel/sched/fair.c:907
- dequeue_entity+0x23/0xfd0 kernel/sched/fair.c:4422
- dequeue_task_fair+0x238/0xea0 kernel/sched/fair.c:5771
- dequeue_task kernel/sched/core.c:2019 [inline]
- __do_set_cpus_allowed+0x186/0x960 kernel/sched/core.c:2508
- __set_cpus_allowed_ptr_locked+0x2ba/0x4e0 kernel/sched/core.c:2841
- __set_cpus_allowed_ptr kernel/sched/core.c:2874 [inline]
- set_cpus_allowed_ptr+0x78/0xa0 kernel/sched/core.c:2879
- kthreadd+0x44/0x750 kernel/kthread.c:724
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-=============================
-WARNING: suspicious RCU usage
-5.17.0-rc6-next-20220304-syzkaller #0 Not tainted
------------------------------
-include/linux/cgroup.h:481 suspicious rcu_dereference_check() usage!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 1, debug_locks = 1
-2 locks held by kthreadd/2:
- #0: ffff8881401726e0 (&p->pi_lock){....}-{2:2}, at: task_rq_lock+0x63/0x360 kernel/sched/core.c:578
- #1: ffff8880b9c39f98 (&rq->__lock){-...}-{2:2}, at: raw_spin_rq_lock_nested+0x2b/0x120 kernel/sched/core.c:478
-
-stack backtrace:
-CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.17.0-rc6-next-20220304-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- task_css_set include/linux/cgroup.h:481 [inline]
- task_dfl_cgroup include/linux/cgroup.h:550 [inline]
- cgroup_account_cputime include/linux/cgroup.h:794 [inline]
- update_curr+0x671/0x830 kernel/sched/fair.c:907
- dequeue_entity+0x23/0xfd0 kernel/sched/fair.c:4422
- dequeue_task_fair+0x238/0xea0 kernel/sched/fair.c:5771
- dequeue_task kernel/sched/core.c:2019 [inline]
- __do_set_cpus_allowed+0x186/0x960 kernel/sched/core.c:2508
- __set_cpus_allowed_ptr_locked+0x2ba/0x4e0 kernel/sched/core.c:2841
- __set_cpus_allowed_ptr kernel/sched/core.c:2874 [inline]
- set_cpus_allowed_ptr+0x78/0xa0 kernel/sched/core.c:2879
- kthreadd+0x44/0x750 kernel/kthread.c:724
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
