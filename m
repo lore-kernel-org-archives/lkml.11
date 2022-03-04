@@ -2,194 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F79EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70668C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241676AbiCDSbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+        id S241698AbiCDSbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236086AbiCDSbg (ORCPT
+        with ESMTP id S241672AbiCDSbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:31:36 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F081D3AE2
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 10:30:47 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id bd1so8464529plb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 10:30:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4TXeZfUVYIjCnHQMV6GLGvwrY0CWJzDnslUJHUckzkQ=;
-        b=JbrcThimgiaKc5S2YQMaLPzVI7b4VpmiL4LZyRwYBbYzH35zGMw49m0tLZRCurJ9QP
-         F74959iH9i2Rkb6nxh59Zu2oQp03sindhh36rPwErHSj6CBwRTlbz740QEXrOfLk7GpE
-         oOUJdvhK3UCpAqWFjXQiZ4vDwG5gMQUgz2H9LKLieqiMmteTFE1ZOOhVWGZIWa3NSgZC
-         qXFk0I7pPC73+c3IqozDVhvEgAr7JgDlPGG+ZEWmN5bzWPhftUdk3B+cWpwJsKLfXgjS
-         WCaMdevWEJGtkqmlgREDvYSdNsedckjjpxhS07+ERSFtstRzWvWwvWOt9jS0/oC7gOSP
-         xxfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4TXeZfUVYIjCnHQMV6GLGvwrY0CWJzDnslUJHUckzkQ=;
-        b=zw5oJKmE1u4tijcfm4Gnpf8ao22G1/NgP7SbfSrrQ4TIoXl8ziZswN1NynjaCN/tJu
-         byBnHIgSoOMdez61wWoHXqRxq5xrLPwE9+jJWK3tkFjW29TgBoOklcqC9BhmBSy7WVpE
-         6wLnhyI2Uo6RH50rhSskI72lncwgw6dAbcOvCvhtH5/Qh4/w1z8pfgzbl5tln54uxQJh
-         PFP9dHbOq3owpB3uzGRdAEipg3nwfvc98gIK/spKzERCsPjVRK5ZgsNsnF6R9+RjsopI
-         jENymKcyyLqVFoHSl3P8iWqCxEaOoRrPnanMaCKsxP8kUkXA39SmkC3NGbcRwgz7oEYo
-         wgxQ==
-X-Gm-Message-State: AOAM530hHdHF3sGNqBcUgH/prk0MTUcO2cO+XSS6Mhxc7yF/Xg7CX/yY
-        cSGWkWzTt5ObcBYBbIjMvXXzpy6kee01RqomwzjwU4h4
-X-Google-Smtp-Source: ABdhPJx6A0futcYkk5JbU5g+4xbv7vqSLzojRm+OEOU8dYMdPjKY5ewTBjlJRcXONf/pStKwe/8/5CfaySChj1JsAxk=
-X-Received: by 2002:a17:90b:4f8f:b0:1bf:ac1:2016 with SMTP id
- qe15-20020a17090b4f8f00b001bf0ac12016mr10854185pjb.21.1646418647497; Fri, 04
- Mar 2022 10:30:47 -0800 (PST)
+        Fri, 4 Mar 2022 13:31:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0446B1D3D89;
+        Fri,  4 Mar 2022 10:30:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C263B827FA;
+        Fri,  4 Mar 2022 18:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA989C340EE;
+        Fri,  4 Mar 2022 18:30:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646418652;
+        bh=C+X/aD4OLdI4XG9yzbc4VuND9rs+OIvUqRV8tAkZSpI=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=pnxKiSLZgzRT33vPCes9z31ENwlmFQiiaZaecuWomvEVNxLIBfCjR2YJ4aDF5Hkoe
+         1Bx+arm+V0dsjHBQBjrzLdfIhia4Ulo5r4JDUzy5+TRxPvfAs2AS7yGjlstRml5349
+         SCR6qAroFI8/cYngMDyizjeqlO5yaSfqtHxADABgfb+2iXFPKSMrfJag+l0mGN6oDa
+         6sPfjMioiUQO8jzCPiNhCHkkglS+gCm3jbj6Q5xvPqIUQx5KHUlC7QpsElOzXlDe2M
+         LrVAlHgPrxwxVPdWG0ZtsNj3SBdUmT7uVT/TskwmAtA8OXy8FPZtaH3YA4L4MZDd+u
+         ugilkfIY8ZrnA==
+Message-ID: <e7f91d0be0f41320e5a4f38ded1bde166626a17f.camel@kernel.org>
+Subject: Re: [PATCH 0/3] ceph: minor fixes and encrypted snapshot names
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>
+Cc:     Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 04 Mar 2022 13:30:50 -0500
+In-Reply-To: <87fsnx4rb3.fsf@brahms.olymp>
+References: <20220304161403.19295-1-lhenriques@suse.de>
+         <87fsnx4rb3.fsf@brahms.olymp>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-References: <20220303222014.517033-1-shy828301@gmail.com> <CADFyXm6W9CVkO4XPYep-tHg55c8m8NES783kcVYrdjSMbzYoDA@mail.gmail.com>
-In-Reply-To: <CADFyXm6W9CVkO4XPYep-tHg55c8m8NES783kcVYrdjSMbzYoDA@mail.gmail.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Fri, 4 Mar 2022 10:30:35 -0800
-Message-ID: <CAHbLzkriyBy2HqjssurLSnhoyuUzpJRZjMPNx34MTgxeO0dddg@mail.gmail.com>
-Subject: Re: [PATCH] mm: thp: don't have to lock page anymore when splitting PMD
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 9:06 PM David Hildenbrand <david@redhat.com> wrote:
->
-> Hi,
->
-> This probably bounces on the list due to html junk from the gmail app.
->
-> What happened to
->
-> https://lore.kernel.org/linux-mm/20220131162940.210846-10-david@redhat.co=
-m/
->
-> Included in the very series mentioned below?
->
-> Was this silently dropped due to folio conversion collisions? :/
+On Fri, 2022-03-04 at 16:26 +0000, Luís Henriques wrote:
+> Luís Henriques <lhenriques@suse.de> writes:
+> 
+> > Hi!
+> > 
+> > I'm sending another iteration of the encrypted snapshot names patch.  This
+> > patch assumes PR#45224 [1] to be merged as it adds support for the
+> > alternate names.
+> > 
+> > Two notes:
+> > 
+> > 1. Patch 0001 is just a small fix from another fscrypt patch.  It's
+> >    probably better to simply squash it.
+> > 
+> > 2. I'm not sure how easy it is to hit the UAF fixed by patch 0002.  I can
+> >    reproduce it easily by commenting the code that adds the
+> >    DCACHE_NOKEY_NAME flag in patch 0003.
+> 
+> Obviously, immediately after sending this patchset I realized I failed to
+> mention a very (*VERY*) important note:
+> 
+> Snapshot names can not start with a '_'.  I think the reason is related
+> with the 'long snapshot names', but I can't really remember the details
+> anymore.  The point is that an encrypted snapshot name base64-encoded
+> *may* end-up starting with an '_' as we're using the base64-url variant.
+> 
+> I really don't know if it's possible to fix that.  I guess that in that
+> case the user will get an error and fail to create the snapshot but he'll
+> be clueless because the reason.  Probably a warning can be added to the
+> kernel logs, but maybe there are other ideas.
+> 
 
-I really didn't notice you already proposed this. Maybe folio
-conversion, maybe mlock cleanup, I can't tell. But anyway this patch
-needs to get rebased. I will submit v2 to solve the comment, will add
-your signed-off-by.
 
->
-> Yang Shi <shy828301@gmail.com> schrieb am Do. 3. M=C3=A4rz 2022 um 23:20:
->>
->> The commit c444eb564fb1 ("mm: thp: make the THP mapcount atomic against
->> __split_huge_pmd_locked()") locked the page for PMD split to make
->> mapcount stable for reuse_swap_page(), then commit 1c2f67308af4 ("mm:
->> thp: fix MADV_REMOVE deadlock on shmem THP") reduce the scope to
->> anonymous page only.
->>
->> However COW has not used mapcount to determine if the page is shared or
->> not anymore due to the COW fixes [1] from David Hildenbrand and the
->> reuse_swap_page() was removed as well.  So PMD split doesn't have to
->> lock the page anymore.  This patch basically reverted the above two
->> commits.
->>
->> [1] https://lore.kernel.org/linux-mm/20220131162940.210846-1-david@redha=
-t.com/
->>
->> Cc: David Hildenbrand <david@redhat.com>
->> Cc: Andrea Arcangeli <aarcange@redhat.com>
->> Cc: Hugh Dickins <hughd@google.com>
->> Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
->> Signed-off-by: Yang Shi <shy828301@gmail.com>
->> ---
->>  mm/huge_memory.c | 44 +++++---------------------------------------
->>  1 file changed, 5 insertions(+), 39 deletions(-)
->>
->> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
->> index b49e1a11df2e..daaa698bd273 100644
->> --- a/mm/huge_memory.c
->> +++ b/mm/huge_memory.c
->> @@ -2134,8 +2134,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, =
-pmd_t *pmd,
->>  {
->>         spinlock_t *ptl;
->>         struct mmu_notifier_range range;
->> -       bool do_unlock_folio =3D false;
->> -       pmd_t _pmd;
->>
->>         mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->v=
-m_mm,
->>                                 address & HPAGE_PMD_MASK,
->> @@ -2148,48 +2146,16 @@ void __split_huge_pmd(struct vm_area_struct *vma=
-, pmd_t *pmd,
->>          * pmd against. Otherwise we can end up replacing wrong folio.
->>          */
->>         VM_BUG_ON(freeze && !folio);
->> -       if (folio) {
->> -               VM_WARN_ON_ONCE(!folio_test_locked(folio));
->> -               if (folio !=3D page_folio(pmd_page(*pmd)))
->> -                       goto out;
->> -       }
->> +       if (folio && folio !=3D page_folio(pmd_page(*pmd)))
->> +               goto out;
->>
->> -repeat:
->> -       if (pmd_trans_huge(*pmd)) {
->> -               if (!folio) {
->> -                       folio =3D page_folio(pmd_page(*pmd));
->> -                       /*
->> -                        * An anonymous page must be locked, to ensure t=
-hat a
->> -                        * concurrent reuse_swap_page() sees stable mapc=
-ount;
->> -                        * but reuse_swap_page() is not used on shmem or=
- file,
->> -                        * and page lock must not be taken when zap_pmd_=
-range()
->> -                        * calls __split_huge_pmd() while i_mmap_lock is=
- held.
->> -                        */
->> -                       if (folio_test_anon(folio)) {
->> -                               if (unlikely(!folio_trylock(folio))) {
->> -                                       folio_get(folio);
->> -                                       _pmd =3D *pmd;
->> -                                       spin_unlock(ptl);
->> -                                       folio_lock(folio);
->> -                                       spin_lock(ptl);
->> -                                       if (unlikely(!pmd_same(*pmd, _pm=
-d))) {
->> -                                               folio_unlock(folio);
->> -                                               folio_put(folio);
->> -                                               folio =3D NULL;
->> -                                               goto repeat;
->> -                                       }
->> -                                       folio_put(folio);
->> -                               }
->> -                               do_unlock_folio =3D true;
->> -                       }
->> -               }
->> -       } else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
->> +       if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
->>                 goto out;
->> +
->>         __split_huge_pmd_locked(vma, pmd, range.start, freeze);
->>  out:
->>         spin_unlock(ptl);
->> -       if (do_unlock_folio)
->> -               folio_unlock(folio);
->> +
->>         /*
->>          * No need to double call mmu_notifier->invalidate_range() callb=
-ack.
->>          * They are 3 cases to consider inside __split_huge_pmd_locked()=
-:
->> --
->> 2.26.3
->>
+Ouch. Is that imposed by the MDS? It'd be best if we could remove that
+limitation from it altogether if we can.
+
+If we can't, then we might be able to get away with prepending all the
+encrypted names with some legal characte. Then when we go to decrypt it
+we just strip that off.
+
+We could also consider changing the base64 routine to use something else
+in lieu of '_' but that's more of a hassle.
+-- 
+Jeff Layton <jlayton@kernel.org>
