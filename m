@@ -2,105 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84842C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 00:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3997DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 00:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237349AbiCDAQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 19:16:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
+        id S237358AbiCDAVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 19:21:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231175AbiCDAQy (ORCPT
+        with ESMTP id S231175AbiCDAVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 19:16:54 -0500
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A333C1768D3
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 16:16:01 -0800 (PST)
-Received: by mail-qv1-xf34.google.com with SMTP id gm1so5447321qvb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 16:16:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eCjc4x4By6clCaeAiAFIhXtDZP9qpnoE7G+iXzZ8y04=;
-        b=oP3Se4QqoP9oAlQ1HRVSjzyG5E2i34IxROypI6Bz8iIiSEekElY8/BTpuNTyk1HKwf
-         G7LkEPxIO5SPYolkl29HrX0Ox50rktrbuHE/KZoQqyyZ1tJAlFmeVxoYHFGEQ363oRhz
-         9tD+IEJaGkj6cadV74LDDg52Z4I4om+nAsNfXOsMY2idn/iul+VqA9UBWw28A6N4VLom
-         +qwsMv4qn+Uo3rXGbQA0+czOGICIRcUvvdyT6zxOqZm73F6dk9FgBbqu6vVsKwjAeDiJ
-         uzugSydM4U8v9MWShFmWMA1PVBrpWbLrdJ0eDQlRjim8O8Xfk69nxx3+yR3Us6QdFQYH
-         uWsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eCjc4x4By6clCaeAiAFIhXtDZP9qpnoE7G+iXzZ8y04=;
-        b=fi243oAIxa0V+PTCYFFi0f8l7BXrYhAuhPOrbWqKi2VNyshjIiAUg/tFN4CmCof60y
-         eQ1iAekvwO3kMTZ3EMlQhf/Cf5BKpc2P/63LljNR1z2PaiLJtI6ncLVgvjmwPJtaEYIt
-         vIC2q0Gw+HlG27yjnGhlF7Audtf5jV0TNd6DZpSVW9ISUWk14L6mWCiob2mVCBnsK0dU
-         bVD9bXvqPQMhYEwEVCfrd4uJAp060KelHp3qtbI/V2tcxMX03a2Ahu+zcoDbIO/By+F2
-         +IrYyrYbdOt8izLDdRjG2mrWNyWHC4bzdbeqAaV7T+5R8gBAQhndYFeHs/eDEajdW6gs
-         xi0g==
-X-Gm-Message-State: AOAM532QCU0z4U6hCnFx+rC2a6kQC8LhONVmx1hGAxcIp1+qso1hQOrL
-        vqgI0bzKVBr7t/aK1dEdbVZSls5yThbcND8Cbz8TQA==
-X-Google-Smtp-Source: ABdhPJxum/m+TEt3e7BQD9vNYZDUIpyt+gK4TZ209Fwn4ctVQ9miyXr7mySaKYi3BuSGNSTDSVnqVqbdgDlUxVbPp/Q=
-X-Received: by 2002:a0c:d807:0:b0:42c:1ff7:7242 with SMTP id
- h7-20020a0cd807000000b0042c1ff77242mr26194090qvj.119.1646352960853; Thu, 03
- Mar 2022 16:16:00 -0800 (PST)
+        Thu, 3 Mar 2022 19:21:22 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C28947386
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 16:20:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646353236; x=1677889236;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mwcN7ntVvz5WcBm9chQ0TkpYzN/Y70j/s9y/vh/Debk=;
+  b=C9oea4UIzDhhyYbTuMVzijQsdXoeTrOsaCaOLbaALdKLsh0U7VBGq/Hg
+   oReyypvuIeeZ2Y+qrTfMiYLAa/yEVthZF4Vjgw30aMwHr5gzkL7qFZwRG
+   JOPP52xuT4X00EaA/dcmSUlXLmAO8/xOlWYcYX8y+KJR4Voai+U+9a2wY
+   WNkmatNPiOkCXcqnfk6HiCVdNRaDnnWzifBrlz7gdCKErmAIgWGLP+Lfx
+   ltq+f62EezGXWjHphPdLtn6JGX5spJIxuc3KUTw3sqXXrv2xLwGAO7bBN
+   wEnVqFGAV8U2h+57GIuHjCEC3SsK2OmctPA28Gw5me/A/eWxwxNBJq0zp
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="233813096"
+X-IronPort-AV: E=Sophos;i="5.90,153,1643702400"; 
+   d="scan'208";a="233813096"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 16:20:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,153,1643702400"; 
+   d="scan'208";a="511660252"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 03 Mar 2022 16:20:34 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPvgP-00014Z-Lu; Fri, 04 Mar 2022 00:20:33 +0000
+Date:   Fri, 04 Mar 2022 08:20:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:auto-latest] BUILD SUCCESS
+ a66320f041601309f1885bcb52e27e0c2f72079b
+Message-ID: <62215b35./4X/f6SLAAN1slXF%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <1646300401-9063-1-git-send-email-quic_vpolimer@quicinc.com>
- <1646300401-9063-5-git-send-email-quic_vpolimer@quicinc.com>
- <CAA8EJpqkK8q7g8q56rfiOO22ykxgycJTpSJKHuhcqGk05nsVzA@mail.gmail.com> <CAE-0n53jGQcn=NThrrW92NL-cry8yrFErdSYTHHEHWW48b3xbg@mail.gmail.com>
-In-Reply-To: <CAE-0n53jGQcn=NThrrW92NL-cry8yrFErdSYTHHEHWW48b3xbg@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Fri, 4 Mar 2022 03:15:49 +0300
-Message-ID: <CAA8EJpoEpn2RPByeDkaGPUX+OC7tvbEw4k78Gd+RKs02jpzG1w@mail.gmail.com>
-Subject: Re: [PATCH v4 4/4] arm64/dts/qcom/sm8250: remove assigned-clock-rate
- property for mdp clk
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, quic_kalyant@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 at 02:56, Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Dmitry Baryshkov (2022-03-03 15:50:50)
-> > On Thu, 3 Mar 2022 at 12:40, Vinod Polimera <quic_vpolimer@quicinc.com> wrote:
-> > >
-> > > Kernel clock driver assumes that initial rate is the
-> > > max rate for that clock and was not allowing it to scale
-> > > beyond the assigned clock value.
-> > >
-> > > Drop the assigned clock rate property and vote on the mdp clock as per
-> > > calculated value during the usecase.
-> > >
-> > > Fixes: 7c1dffd471("arm64: dts: qcom: sm8250.dtsi: add display system nodes")
-> >
-> > Please remove the Fixes tags from all commits. Otherwise the patches
-> > might be picked up into earlier kernels, which do not have a patch
-> > adding a vote on the MDP clock.
->
-> What patch is that? The Fixes tag could point to that commit.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git auto-latest
+branch HEAD: a66320f041601309f1885bcb52e27e0c2f72079b  Merge branch into tip/master: 'core/core'
 
-Please correct me if I'm wrong.
-Currently the dtsi enforces bumping the MDP clock when the mdss device
-is being probed and when the dpu device is being probed.
-Later during the DPU lifetime the core_perf would change the clock's
-rate as it sees fit according to the CRTC requirements.
+elapsed time: 725m
 
-However it would happen only when the during the
-dpu_crtc_atomic_flush(), before we call this function, the MDP clock
-is left in the undetermined state. The power rails controlled by the
-opp table are left in the undetermined state.
+configs tested: 155
+configs skipped: 3
 
-I suppose that during the dpu_bind we should bump the clock to the max
-possible freq and let dpu_core_perf handle it afterwards.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+mips                 randconfig-c004-20220303
+arm                          iop32x_defconfig
+x86_64                              defconfig
+ia64                         bigsur_defconfig
+h8300                    h8300h-sim_defconfig
+microblaze                          defconfig
+arm                       omap2plus_defconfig
+arm                          badge4_defconfig
+m68k                       m5249evb_defconfig
+sh                            migor_defconfig
+arm                           sunxi_defconfig
+mips                         db1xxx_defconfig
+sh                            shmin_defconfig
+m68k                             allyesconfig
+arm                         axm55xx_defconfig
+arm                        mvebu_v7_defconfig
+arm                        cerfcube_defconfig
+h8300                            alldefconfig
+powerpc                  iss476-smp_defconfig
+nios2                         10m50_defconfig
+arc                        nsim_700_defconfig
+sh                          kfr2r09_defconfig
+sh                          r7780mp_defconfig
+arm                           sama5_defconfig
+arm                         lubbock_defconfig
+sparc                       sparc64_defconfig
+riscv             nommu_k210_sdcard_defconfig
+h8300                     edosk2674_defconfig
+xtensa                generic_kc705_defconfig
+mips                           jazz_defconfig
+mips                            gpr_defconfig
+sh                   sh7724_generic_defconfig
+microblaze                      mmu_defconfig
+sparc                            allyesconfig
+powerpc                     taishan_defconfig
+m68k                        stmark2_defconfig
+nds32                            alldefconfig
+arm                            qcom_defconfig
+um                             i386_defconfig
+sh                        sh7757lcr_defconfig
+powerpc                     sequoia_defconfig
+parisc64                         alldefconfig
+powerpc                     tqm8548_defconfig
+powerpc                 mpc837x_mds_defconfig
+sh                          urquell_defconfig
+arm                            lart_defconfig
+arc                        nsimosci_defconfig
+sh                           se7722_defconfig
+um                           x86_64_defconfig
+sparc64                          alldefconfig
+powerpc                        warp_defconfig
+s390                          debug_defconfig
+arm                           h5000_defconfig
+arm                            mps2_defconfig
+arm                        clps711x_defconfig
+m68k                        m5407c3_defconfig
+sh                           se7712_defconfig
+m68k                          multi_defconfig
+powerpc                    sam440ep_defconfig
+powerpc                      arches_defconfig
+arm                        trizeps4_defconfig
+arm                  randconfig-c002-20220302
+arm                  randconfig-c002-20220303
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+i386                          randconfig-a003
+i386                          randconfig-a001
+i386                          randconfig-a005
+x86_64                        randconfig-a015
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+i386                          randconfig-a014
+i386                          randconfig-a016
+i386                          randconfig-a012
+arc                  randconfig-r043-20220303
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                            allmodconfig
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
 
---
-With best wishes
-Dmitry
+clang tested configs:
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220303
+riscv                randconfig-c006-20220303
+i386                          randconfig-c001
+arm                  randconfig-c002-20220303
+mips                 randconfig-c004-20220303
+powerpc              randconfig-c003-20220302
+riscv                randconfig-c006-20220302
+arm                  randconfig-c002-20220302
+mips                 randconfig-c004-20220302
+arm                      tct_hammer_defconfig
+i386                             allyesconfig
+powerpc                      ppc64e_defconfig
+mips                        workpad_defconfig
+mips                           mtx1_defconfig
+arm                        vexpress_defconfig
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220303
+riscv                randconfig-r042-20220303
+hexagon              randconfig-r041-20220303
+s390                 randconfig-r044-20220303
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
