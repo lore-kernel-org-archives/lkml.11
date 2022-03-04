@@ -2,78 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4969BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 10:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239533AbiCDKEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 05:04:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
+        id S239512AbiCDKEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 05:04:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239485AbiCDKEc (ORCPT
+        with ESMTP id S239486AbiCDKEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 05:04:32 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B12419F457;
-        Fri,  4 Mar 2022 02:03:35 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2245iwq8027365;
-        Fri, 4 Mar 2022 04:02:54 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=M7y9+ws1UzFnCV73zGH8Gh0p6l/ZnIf+ItwTTnOX80E=;
- b=NpBgSUXi2fBIKxscTv8bXJlYkrg/wYdQUy08by/lIe8lQ/V87BJOJ9V/HfWk1+aVWnLV
- ZVEGrlYxF18FAmXVsht74N9ihoPlb8rJCcmyWEWJV/f2lRVy233e6EiYPh+yGmIihuRF
- ROL9gXqsJRkM3h7nidazoc5Bck7p40EF4BNtdRQ/sYZm0NaslyPmidY5hhKLvEF1FxBA
- co8SjOdDePUmLSA7vPKh7ofA76g3/2i2ERMzwS1XfT+/6wmpwzLAQUlnwGnlT8NXDqas
- zWLCd2BW55MFn/Qn4VHdGJm47xZ9Y/xelwK3pBA9T6lqosyvFs7vBVuauY3OpTxbXSkR ew== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ek4j3gsb6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 04 Mar 2022 04:02:54 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Mar
- 2022 10:02:52 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 4 Mar 2022 10:02:52 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D0FCD7C;
-        Fri,  4 Mar 2022 10:02:52 +0000 (UTC)
-Date:   Fri, 4 Mar 2022 10:02:52 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Lucas Tanure <tanureal@opensource.cirrus.com>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 04/20] ASoC: cs35l41: Remove unnecessary param
-Message-ID: <20220304100252.GZ38351@ediswmail.ad.cirrus.com>
-References: <20220303173059.269657-1-tanureal@opensource.cirrus.com>
- <20220303173059.269657-5-tanureal@opensource.cirrus.com>
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB0119E002
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 02:03:35 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id c1so7087836pgk.11
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 02:03:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UJ7+kaESGdNAzAImLBta6phpylHoIMJb1C9yUH40IE0=;
+        b=XRvdFl7el/25PA7mmFcR0nR9j3sLUqN75EPFgUDfUYA4aIAEHPsbE+uakszi+zi3FK
+         UFa23RawxMsgEyvSS7qMPT+T4yEDukMlYqwgEhF+U8ic2PbC7MOaKz6//nzSZGV9ww5B
+         VIGGwpGOmx1ECCUAn+KfOck1FjqZ9HAAtYji4WQgcbfMjnlwVQ2jOUJSdJ6x5Lv/s4vl
+         W84eu+JybUxJg+h0nAYcNLgUrUhsVI9lOrjc7Ae8I4RHWyEXxa29owvqHgRodRfxyGx7
+         KpitxF3S0WNsajmQMenx3c+9EhjXZypOKlGyOYqmadFIm0Rj9gjHOmuUEvHC/suPr6C1
+         Fwqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UJ7+kaESGdNAzAImLBta6phpylHoIMJb1C9yUH40IE0=;
+        b=YgplaWgmRalP+CasNTTblEqB6zbMVzKm1FgsKP5nypM1tLzx/IbhLNXmK6qnooI8+X
+         dw/3UbGPKPJc9nyg6iVs3DGkWkjNCtOvMSMw76xI8aUzm4sA/fV1M20m00c3W54kkaIh
+         ZNHg0WWrLPn4em/YykOzVVk6u2hP+fpU5Tys1qsiZurEV7shXG2Bnv7wjMoEuY7XhRHZ
+         Z/Tt8Y/RiyEvtMRfIyz9c/1ZN9Ym6JkFrC92xSDUdF0rxEr2sW6FGXEX+ipgVGzlwpCX
+         PeEXFBDi3ckRhAGNOaR3YPpr4siRVGebhL/3k8xzy51K3V2nRvKvn5IQDXmHGP0DdoY6
+         2XCw==
+X-Gm-Message-State: AOAM531ke3otE6Cw+nNLK44d0vBzhXeO59wE4+mjqWnlbHdxjQNiqsby
+        tLqEfZDea9p5TtC4UxZn4XrJn62R4OkC5A==
+X-Google-Smtp-Source: ABdhPJx0WWFoRPseHrDzlawbRLombRu5TBWXnZU8CJ5ltfuldD5/terJjgVkeo1JnwVVL7q6K2w8hg==
+X-Received: by 2002:a05:6a00:1c46:b0:4e1:82cb:e39c with SMTP id s6-20020a056a001c4600b004e182cbe39cmr43032010pfw.18.1646388215245;
+        Fri, 04 Mar 2022 02:03:35 -0800 (PST)
+Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id j8-20020a056a00174800b004f26d3f5b03sm5461605pfc.39.2022.03.04.02.03.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 02:03:34 -0800 (PST)
+From:   Zong Li <zong.li@sifive.com>
+To:     mturquette@baylibre.com, sboyd@kernel.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v2 3/5] riscv: dts: Change the macro name of prci in each device node
+Date:   Fri,  4 Mar 2022 18:03:19 +0800
+Message-Id: <db92d209fa700f7da8bc8028083476fcc138d80e.1646388139.git.zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1646388139.git.zong.li@sifive.com>
+References: <cover.1646388139.git.zong.li@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220303173059.269657-5-tanureal@opensource.cirrus.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: LeB-Qxya0jLL_KwkkA27oMicAUA6qXYA
-X-Proofpoint-ORIG-GUID: LeB-Qxya0jLL_KwkkA27oMicAUA6qXYA
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 05:30:43PM +0000, Lucas Tanure wrote:
-> cs35l41_private is not used on cs35l41_handle_pdata
-> 
-> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-> ---
+We currently change the macro name for fu540 and fu740 by adding the
+prefix respectively, these marcos are referenced by some device nodes,
+they should be modified as well.
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Zong Li <zong.li@sifive.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 22 +++++++++---------
+ arch/riscv/boot/dts/sifive/fu740-c000.dtsi | 26 +++++++++++-----------
+ 2 files changed, 24 insertions(+), 24 deletions(-)
 
-Thanks,
-Charles
+diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+index 3eef52b1a59b..aad45d7f498f 100644
+--- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+@@ -164,7 +164,7 @@ uart0: serial@10010000 {
+ 			reg = <0x0 0x10010000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <4>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			status = "disabled";
+ 		};
+ 		dma: dma@3000000 {
+@@ -180,7 +180,7 @@ uart1: serial@10011000 {
+ 			reg = <0x0 0x10011000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <5>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			status = "disabled";
+ 		};
+ 		i2c0: i2c@10030000 {
+@@ -188,7 +188,7 @@ i2c0: i2c@10030000 {
+ 			reg = <0x0 0x10030000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <50>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <1>;
+ 			#address-cells = <1>;
+@@ -201,7 +201,7 @@ qspi0: spi@10040000 {
+ 			      <0x0 0x20000000 0x0 0x10000000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <51>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -212,7 +212,7 @@ qspi1: spi@10041000 {
+ 			      <0x0 0x30000000 0x0 0x10000000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <52>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -222,7 +222,7 @@ qspi2: spi@10050000 {
+ 			reg = <0x0 0x10050000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <6>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -235,8 +235,8 @@ eth0: ethernet@10090000 {
+ 			      <0x0 0x100a0000 0x0 0x1000>;
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clock-names = "pclk", "hclk";
+-			clocks = <&prci PRCI_CLK_GEMGXLPLL>,
+-				 <&prci PRCI_CLK_GEMGXLPLL>;
++			clocks = <&prci FU540_PRCI_CLK_GEMGXLPLL>,
++				 <&prci FU540_PRCI_CLK_GEMGXLPLL>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -246,7 +246,7 @@ pwm0: pwm@10020000 {
+ 			reg = <0x0 0x10020000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <42>, <43>, <44>, <45>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			#pwm-cells = <3>;
+ 			status = "disabled";
+ 		};
+@@ -255,7 +255,7 @@ pwm1: pwm@10021000 {
+ 			reg = <0x0 0x10021000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <46>, <47>, <48>, <49>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			#pwm-cells = <3>;
+ 			status = "disabled";
+ 		};
+@@ -281,7 +281,7 @@ gpio: gpio@10060000 {
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+-			clocks = <&prci PRCI_CLK_TLCLK>;
++			clocks = <&prci FU540_PRCI_CLK_TLCLK>;
+ 			status = "disabled";
+ 		};
+ 	};
+diff --git a/arch/riscv/boot/dts/sifive/fu740-c000.dtsi b/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
+index 8464b0e3c887..7b77c13496d8 100644
+--- a/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
+@@ -166,7 +166,7 @@ uart0: serial@10010000 {
+ 			reg = <0x0 0x10010000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <39>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			status = "disabled";
+ 		};
+ 		uart1: serial@10011000 {
+@@ -174,7 +174,7 @@ uart1: serial@10011000 {
+ 			reg = <0x0 0x10011000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <40>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			status = "disabled";
+ 		};
+ 		i2c0: i2c@10030000 {
+@@ -182,7 +182,7 @@ i2c0: i2c@10030000 {
+ 			reg = <0x0 0x10030000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <52>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <1>;
+ 			#address-cells = <1>;
+@@ -194,7 +194,7 @@ i2c1: i2c@10031000 {
+ 			reg = <0x0 0x10031000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <53>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <1>;
+ 			#address-cells = <1>;
+@@ -207,7 +207,7 @@ qspi0: spi@10040000 {
+ 			      <0x0 0x20000000 0x0 0x10000000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <41>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -218,7 +218,7 @@ qspi1: spi@10041000 {
+ 			      <0x0 0x30000000 0x0 0x10000000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <42>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -228,7 +228,7 @@ spi0: spi@10050000 {
+ 			reg = <0x0 0x10050000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <43>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -241,8 +241,8 @@ eth0: ethernet@10090000 {
+ 			      <0x0 0x100a0000 0x0 0x1000>;
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clock-names = "pclk", "hclk";
+-			clocks = <&prci PRCI_CLK_GEMGXLPLL>,
+-				 <&prci PRCI_CLK_GEMGXLPLL>;
++			clocks = <&prci FU740_PRCI_CLK_GEMGXLPLL>,
++				 <&prci FU740_PRCI_CLK_GEMGXLPLL>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+@@ -252,7 +252,7 @@ pwm0: pwm@10020000 {
+ 			reg = <0x0 0x10020000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <44>, <45>, <46>, <47>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			#pwm-cells = <3>;
+ 			status = "disabled";
+ 		};
+@@ -261,7 +261,7 @@ pwm1: pwm@10021000 {
+ 			reg = <0x0 0x10021000 0x0 0x1000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <48>, <49>, <50>, <51>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			#pwm-cells = <3>;
+ 			status = "disabled";
+ 		};
+@@ -287,7 +287,7 @@ gpio: gpio@10060000 {
+ 			#gpio-cells = <2>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+-			clocks = <&prci PRCI_CLK_PCLK>;
++			clocks = <&prci FU740_PRCI_CLK_PCLK>;
+ 			status = "disabled";
+ 		};
+ 		pcie@e00000000 {
+@@ -316,7 +316,7 @@ pcie@e00000000 {
+ 					<0x0 0x0 0x0 0x3 &plic0 59>,
+ 					<0x0 0x0 0x0 0x4 &plic0 60>;
+ 			clock-names = "pcie_aux";
+-			clocks = <&prci PRCI_CLK_PCIE_AUX>;
++			clocks = <&prci FU740_PRCI_CLK_PCIE_AUX>;
+ 			pwren-gpios = <&gpio 5 0>;
+ 			reset-gpios = <&gpio 8 0>;
+ 			resets = <&prci 4>;
+-- 
+2.31.1
+
