@@ -2,126 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 820B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbiCDULH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:11:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
+        id S230466AbiCDULK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiCDUIp (ORCPT
+        with ESMTP id S232010AbiCDUIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 15:08:45 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564F3246377
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:03:39 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id bu29so16122998lfb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 12:03:39 -0800 (PST)
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248BF23A1B9
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:04:26 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id p12-20020a05683019cc00b005af1442c9e9so8256765otp.13
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 12:04:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ezyv1VQurSCvMLPyyjSXdpAtKbFJe7/Z+K4sj3jG0wM=;
-        b=hxPBJ3m48XyNYVJVoIRVY+1Xdmo1N815wvrVTc8ULWIJ83HYLTDLzqiThHtfRr7X21
-         xA4R++rxKPYmV+93S4dazGkJTPW2qu9PE4Pafcr7+m2972BnsapIxHO0eEJt2BW1GRlx
-         xh5bHEXV89rwpx36KQa8GJg6ZYevDFP+EN4NEcphNX+j++JExCXBk0g+74vY5DbN716r
-         I2Ah5EORgpdfgiXtHNYtIC48NbjJVz+D7nnqOBxVKBMdjRWwTtH2MEKkMaupkD38PNey
-         ymEYxsMgLgmiQlLNi1ojRG9ck3XlkKMtOz9O29vaV9KzAG8rt/yUR4PN46ESd6XfjOg8
-         imDQ==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=7J5xZolceiL495PA4LrptiYb01qKHBDWhuLdkam6bj8=;
+        b=UQRxHd9yjv5NrGtZb3wTkZO/S0f+DyyHvqEsmvjMk1Oqg2H+t5Sd6EeC817WdlDGFF
+         XBu43L6pggqUtK+nLbo2lWpai+HHZx0LJJxLDXQrNBkiJWRGPkTWBTTh8skHtUcPrfH5
+         ISCe+OeKtoGySHbXyENb+bEbJsExQQZBEBn4pTEECbf7gqa6JJwGXVcXXnN7wwB0/2nL
+         HV6XFHFiRGObYfxH040xH/AbI41TUzsPFwGXV4esGyDmuVLxYuWUVVibQ/RuFpizrvdM
+         5A86kdABWi+aTNgBrC62Meg9ld6ypQ0RXIipwphoZnxcLeU79EPRf3CkY/Pk57hrXTDJ
+         WEZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ezyv1VQurSCvMLPyyjSXdpAtKbFJe7/Z+K4sj3jG0wM=;
-        b=8LiWbeGbbkZ7THE58Js2JnBL1TLnmEhIIItXkXLNzdz4aYKbR/XINY92IqgMrprkDY
-         e34ecLV3Xf1tjK20411TZBx/XIIGZ7H/eVdZ4ORMJQduzISSaYcjdOT53cZL6tzNA41k
-         acii511f7dEhBoebQUEZ3LMZavglPqoIJu2w99Dx/qPRGESIoWt5SpFkC9EXPVFJsmwB
-         oGA5apvtFIfak1Bn8CKjiQluzle6HGH2UivbmiFvDaglZyXBfL1OHCzkdfaa36LQzPW/
-         +vYhdw539LwYmg/kZPFNhctvU283XMDIS2f3wMcUtXAK6gD3Vz83d6LaYDJYPsuOlYwK
-         7BHw==
-X-Gm-Message-State: AOAM530xqy9c2zLw1HhiRX8j7BcdEIYqoXbG0G0ZxY5sWPRD/kPb/Bz+
-        DSES9xLqfB5vNzJ60k5psgeR2+S7KC6Cl5f6y14T+srr3Vyjjw==
-X-Google-Smtp-Source: ABdhPJyeJI+eEvcLyb1Yk9T/jvj7tly4lTwlit2+iut4SgJgn8zcqd01rrN5NCgScbj3UFMKz3cBEbz+2WJy7ZB3XEc=
-X-Received: by 2002:a05:6512:10c2:b0:437:96e3:3a86 with SMTP id
- k2-20020a05651210c200b0043796e33a86mr175445lfg.87.1646422019803; Fri, 04 Mar
- 2022 11:26:59 -0800 (PST)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=7J5xZolceiL495PA4LrptiYb01qKHBDWhuLdkam6bj8=;
+        b=pt4U7C7e+HfCcj+3fygLcdORPxQaHTkcyhx6jJSdNba+2bJwgiSbT6/XcSMY7d71/G
+         GkVjbipkZdfNlEnmBD6uxwpW1xBKL+K5wkQ+XsXj2GNQ4zSoVnrs9KtzGdoamx7lfdTS
+         XaJnno8ENLT3PbtUJVWzdtJDzzkXweaR1MOsgom0+oEUZWXeL1Wpig50mZK7fvdMCaw8
+         qZT+j4VIEceXd1L5i4VvdFJK7tkV9fVQOOt8n9hJpVXSAic2/93nLav2wTPbD+6eCkd9
+         m94Mlg3nuMIJ11/ULklr5vGgjq6ao8+Wi30q9kLrm3EzgyoK1FxOLF7HKG8pGke2xnWh
+         WNWg==
+X-Gm-Message-State: AOAM5315vxXeZCNHUfWIZzyUbI2WrM/Ol27wC2HkZcBK8L3y5E4gPptb
+        ii1T232zz4hlK2K4LgtUMFMJfi2iSIc=
+X-Google-Smtp-Source: ABdhPJxfegI64M6j8rtErGH0VoGb2dwzS4/4bmu63bVt8mFLR2+HcBhmQZ9Kb8OYw4J0dH0VBJfEHg==
+X-Received: by 2002:a9d:6e09:0:b0:5ad:1fcd:bfd0 with SMTP id e9-20020a9d6e09000000b005ad1fcdbfd0mr181791otr.312.1646424264609;
+        Fri, 04 Mar 2022 12:04:24 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id v7-20020a4aa507000000b0031c01a4ef37sm2652822ook.32.2022.03.04.12.04.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 12:04:23 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <fc6d94ff-4c06-8dcb-b53c-2ba7cd64ef7b@roeck-us.net>
+Date:   Fri, 4 Mar 2022 12:04:21 -0800
 MIME-Version: 1.0
-References: <20220303110755.24147-1-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20220303110755.24147-1-mailhol.vincent@wanadoo.fr>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 4 Mar 2022 11:26:47 -0800
-Message-ID: <CAKwvOd=Fyu6S=pK-tGeYgoJL3ntGRSC0EQ6si8Cdg9q2pn0a6A@mail.gmail.com>
-Subject: Re: [PATCH] x86/bug: __WARN_FLAGS: prevent shadowing by renaming
- local variable f to __flags
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Cc:     Roger Quadros <rogerq@kernel.org>,
+        krzysztof.kozlowski@canonical.com, vigneshr@ti.com, nm@ti.com,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220220004415.GA1519274@roeck-us.net>
+ <4bbe337e-8cd8-a4d6-303d-d5aa21bee2e0@infradead.org>
+ <20220304165451.0129012e@xps13>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] mtd: rawnand: omap2: Actually prevent invalid
+ configuration and build error
+In-Reply-To: <20220304165451.0129012e@xps13>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 3:08 AM Vincent Mailhol
-<mailhol.vincent@wanadoo.fr> wrote:
->
-> The macro __WARN_FLAGS() uses a local variable named "f". This being a
-> common name, there is a risk of shadowing other variables.
->
-> For example:
->
-> | In file included from ./include/linux/bug.h:5,
-> |                  from ./include/linux/cpumask.h:14,
-> |                  from ./arch/x86/include/asm/cpumask.h:5,
-> |                  from ./arch/x86/include/asm/msr.h:11,
-> |                  from ./arch/x86/include/asm/processor.h:22,
-> |                  from ./arch/x86/include/asm/timex.h:5,
-> |                  from ./include/linux/timex.h:65,
-> |                  from ./include/linux/time32.h:13,
-> |                  from ./include/linux/time.h:60,
-> |                  from ./include/linux/stat.h:19,
-> |                  from ./include/linux/module.h:13,
-> |                  from virt/lib/irqbypass.mod.c:1:
-> | ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
-> | ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
-> |    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
-> |       |                     ^
-> | ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
-> |   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
-> |       |                 ^~~~~~~~~~~~
-> | ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
-> |  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
-> |       |         ^~~~~~~~~~~~
-> | In file included from ./include/linux/rbtree.h:24,
-> |                  from ./include/linux/mm_types.h:11,
-> |                  from ./include/linux/buildid.h:5,
-> |                  from ./include/linux/module.h:14,
-> |                  from virt/lib/irqbypass.mod.c:1:
-> | ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
-> |  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
-> |       |                                               ~~~~~~~~~~~~~~~^
->
-> This patch renames the variable from f to __flags (with two underscore
-> prefixes as suggested in the Linux kernel coding style [1]) in order
-> to prevent collisions.
->
-> [1] Linux kernel coding style, section 12) Macros, Enums and RTL,
-> paragraph 5) namespace collisions when defining local variables in
-> macros resembling functions
-> https://www.kernel.org/doc/html/v4.10/process/coding-style.html#macros-enums-and-rtl
+On 3/4/22 07:54, Miquel Raynal wrote:
+> Hi Guenter, Roger,
+> 
+> rdunlap@infradead.org wrote on Sat, 26 Feb 2022 22:55:28 -0800:
+> 
+>> On 2/19/22 16:44, Guenter Roeck wrote:
+>>> On Sat, Feb 19, 2022 at 09:36:00PM +0200, Roger Quadros wrote:
+>>>> The root of the problem is that we are selecting symbols that have
+>>>> dependencies. This can cause random configurations that can fail.
+>>>> The cleanest solution is to avoid using select.
+>>>>
+>>>> This driver uses interfaces from the OMAP_GPMC driver so we have to
+>>>> depend on it instead.
+>>>>
+>>>> Fixes: 4cd335dae3cf ("mtd: rawnand: omap2: Prevent invalid configuration and build error")
+>>>> Signed-off-by: Roger Quadros <rogerq@kernel.org>
+>>>
+>>> Tested-by: Guenter Roeck <linux@roeck-us.net>
+>>
+>> Tested-by: Randy Dunlap <rdunlap@infradead.org>
+> 
+> Sorry for noticing that just now, but there is still a problem with
+> this patch: we now always compile-in the OMAP_GPMC driver whenever we
+> need the NAND controller, even though it is not needed. This grows the
+> kernel for no reason.
+> 
 
-Ah, thanks for the patch. I missed that coding style recommendation.
-Might want to link to a newer (or evergreen) version of the docs
-though:
-https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
-Not sure what happens when we start shadowing variables named __flags,
-but maybe we cross that bridge if/when we get there.
+Sorry, you lost me.
 
-Thanks for the fix!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
--- 
-Thanks,
-~Nick Desaulniers
+> In fact, Roger once said:
+> 
+> 	"We will figure out how to enable OMAP_GPMC for K3 architecture
+> 	some other way."
+> 
+> It turns out this is not what was finally proposed. Could we try yet
+> another solution?
+> 
+>>
+>> Thanks.
+>>
+>>>    
+>>>> ---
+>>>>   drivers/mtd/nand/raw/Kconfig | 3 +--
+>>>>   1 file changed, 1 insertion(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
+>>>> index 36e697456ec4..9b078e78f3fa 100644
+>>>> --- a/drivers/mtd/nand/raw/Kconfig
+>>>> +++ b/drivers/mtd/nand/raw/Kconfig
+>>>> @@ -42,8 +42,7 @@ config MTD_NAND_OMAP2
+>>>>   	tristate "OMAP2, OMAP3, OMAP4 and Keystone NAND controller"
+>>>>   	depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
+>>>>   	depends on HAS_IOMEM
+>>>> -	select MEMORY
+>>>> -	select OMAP_GPMC
+>>>> +	depends on OMAP_GPMC
+
+No matter if select or depend, both result in OMAP_GPMC enabled
+if MTD_NAND_OMAP2={m,y}, and both suggest that OMAP_GPMC is
+needed for MTD_NAND_OMAP2. That conflicts with
+
+  we now always compile-in the OMAP_GPMC driver whenever we
+  need the NAND controller, even though it is not needed
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If it isn't needed, why the dependency in the first place ?
+Also, commit 4cd335dae3cf2 states "this driver depends on OMAP_GPMC
+driver and uses symbols from there". Are you saying that this is not
+correct ?
+
+Guenter
