@@ -2,73 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B139C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD552C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239789AbiCDOSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:18:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49372 "EHLO
+        id S239613AbiCDOSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:18:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233928AbiCDOSM (ORCPT
+        with ESMTP id S229594AbiCDOSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:18:12 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EE01BAF0C;
-        Fri,  4 Mar 2022 06:17:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fc5dWG3q5m1cYUkVdN+LsNuTJy5E+l+aX5nXhLu/16Y=; b=MuHzsVb2Ih5KqtR1+dPpAKS7Ke
-        2gyDBuYvz+kI6k6amskMynJewZLZ1P81K54zAOXF/jt73lM4jAbP4/ZE+Zfr3IAjYxyGNsLWlwKq9
-        t1CW0dzJFLhLTK0a7TbVu9KnG4/pTB4YEXYcb3P5SLI78oTT+N72RjmV5PoU+1Q0JKL0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nQ8kB-009Eyz-3O; Fri, 04 Mar 2022 15:17:19 +0100
-Date:   Fri, 4 Mar 2022 15:17:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, Divya.Koppera@microchip.com,
-        netdev@vger.kernel.org, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, kuba@kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, madhuri.sripada@microchip.com,
-        manohar.puri@microchip.com
-Subject: Re: [PATCH net-next 0/3] Add support for 1588 in LAN8814
-Message-ID: <YiIfb821yzXf7YqY@lunn.ch>
-References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
- <164639821168.27302.1826304809342359025.git-patchwork-notify@kernel.org>
- <YiIO7lAMCkHhd11L@lunn.ch>
- <20220304.132121.856864783082151547.davem@davemloft.net>
- <20220304140628.GF16032@hoboy.vegasvil.org>
+        Fri, 4 Mar 2022 09:18:38 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1842559B;
+        Fri,  4 Mar 2022 06:17:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646403470; x=1677939470;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=or3pXL7frdL+sQOxlxnzqbp2iB/FyXVFN2iAqqfq00c=;
+  b=gFMQ9jfeg38vNguS5itQreotU4r2bH/Brn7m+7HSPGJ63/+LFihsNQp+
+   2azxkFZPQ28jKmGDY8s5zjVYH3ufj3L8/pPEoD4X0+ND1Jhm+qMvCOuKS
+   rtRzGHOsotROQfa4BmiGsrL2cbWV/ps0p5LfJUGQlL3l9ZXRSKvN1GDt/
+   ZWcTyPCwWF6kqadDRhou9FTLtyl3yS8Nj7eN5OwihB/8Cq4XQV3LFIsAv
+   VJutUV+urkdsRLvzg/CCxyBaPrF+wHmNvx+tg47awQCqGOwCK5OmWl4iU
+   H/XtkoJhlGFopRg1P8aT3gJzN+orsJiUXEeQ7QxS9ulvthT7ymDj/wTOd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="253711653"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="253711653"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 06:17:50 -0800
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="710345703"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 06:17:48 -0800
+Received: by lahna (sSMTP sendmail emulation); Fri, 04 Mar 2022 16:17:45 +0200
+Date:   Fri, 4 Mar 2022 16:17:45 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Sanju.Mehta@amd.com
+Subject: Re: [PATCH v2 1/5] thunderbolt: Retry DROM reads for more failure
+ scenarios
+Message-ID: <YiIfiYyJrdmavuAD@lahna>
+References: <20220303131328.4150454-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304140628.GF16032@hoboy.vegasvil.org>
+In-Reply-To: <20220303131328.4150454-1-mario.limonciello@amd.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 06:06:28AM -0800, Richard Cochran wrote:
-> On Fri, Mar 04, 2022 at 01:21:21PM +0000, David Miller wrote:
-> 
-> > Sorry, it seemed satraightforward to me, and I try to get the backlog under 40 patches before
-> > I hand over to Jakub for the day.
-> 
-> Day by day, it seems like there is more and more of this PTP driver
-> stuff.  Maybe it is time for me to manage a separate PTP driver tree.
-> I could get the reviews and acks, then place a PR to netdev or lkml
-> when ready.
-> 
-> Thoughts?
+Hi Mario,
 
-Hi Richard
+On Thu, Mar 03, 2022 at 07:13:24AM -0600, Mario Limonciello wrote:
+> Currently DROM reads are only retried in the case that parsing failed.
+> However if the size or CRC fails, then there should also be a retry.
+> 
+> This helps with reading the DROM on TBT3 devices connected to AMD
+> Yellow Carp which will sometimes fail on the first attempt.
+> 
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-My perception is that you also like to sleep at nights, and cannot
-keep up with David rapid pace. So setting up your own tree, collecting
-reviews and acks yourself will help you and the quality of the PTP
-code. So yes, go for it.  I just think it is wrong you have to do
-this.
-
-    Andrew
+This and the rest of the patches applied to thunderbolt.git/next,
+thanks!
