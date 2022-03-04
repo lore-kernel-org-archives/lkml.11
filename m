@@ -2,121 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A14C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 04:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 351FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 04:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237935AbiCDElb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 23:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
+        id S237944AbiCDEt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 23:49:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbiCDEl3 (ORCPT
+        with ESMTP id S233620AbiCDEtW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 23:41:29 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB580180D29
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 20:40:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646368842; x=1677904842;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=aBR0XG0k+tv6/c82I4f74WJwaoS+TwzVjvDsorZXYQM=;
-  b=AD2ohaOX2qdpY1tzegu9gduxtg8IN7mHlAakIo5l6ig9BiEX/y0Z8z2p
-   Fv/Q4vdA2DSxiHdaGtDRb+8svLFNCnVXqwcUtvwi3UlhJNIelrNu87r/p
-   ikONB9KCqcdamh6NStkBqksi0AQTgowAI2zt067iBDttNcWkYx5fBPE9A
-   fi/SHGoEnqutYPTvBkeToMh51xIwyYXyp2z5saEUx+hKAzDQc1UJ+8QlN
-   YIXFagWAvSQBnqucgcp6PVFeS6uTilQVmaSiqw94EvKGMuZWQvaWxT2C3
-   Ca27aHuCKswQ2cWYFlL2uHSe2HsVzXGdkhZoZ73K1+JBBSYA4NARNFqeK
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="317117980"
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="317117980"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 20:40:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="508867809"
-Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 03 Mar 2022 20:40:40 -0800
-Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPzk8-0001Gh-6A; Fri, 04 Mar 2022 04:40:40 +0000
-Date:   Fri, 4 Mar 2022 12:39:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Connor O'Brien <connoro@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.14-stable
- 640/9999] kernel/bpf/core.c:1500:31: sparse: sparse: incorrect type in
- return expression (different address spaces)
-Message-ID: <202203041208.lGSLS1gi-lkp@intel.com>
+        Thu, 3 Mar 2022 23:49:22 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC2B134DCC
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 20:48:34 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id z11so6731354pla.7
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 20:48:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ri9qeC8RR8CGain9Bg7eVi/1eh8/QDMjrM/3UAGQLAk=;
+        b=PXtRY0hxgnrtqzjIHTTEN/Jfh2c8RhhBY5t9dwNrEBs6VOoLYBuikMk+TtXpTFp44A
+         cuT71xzIifuVbTkzTdeeA8xvCYOYIjaJKVCWBfusmi/GVAvHgNl63+3fnNUmIPik6FOe
+         uMYBwCV56ZxnJdRke+Mu/9M7mFfZju5GQLaKs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ri9qeC8RR8CGain9Bg7eVi/1eh8/QDMjrM/3UAGQLAk=;
+        b=iHDdJTR2X8z8rlzgb4Mvnftt6Y/bYhl+mKwJ7wmk6q8W41RKsQejI9wvEZ7CfrQNUn
+         ql+c3PDfFPQ2Ni+PJa1Z0WBW5p44zfSGTsQ7M4LM/GmyHThOp2Q/tQ1c7S+ElqcSN8fV
+         wUD8dx3a1514qf2Ul5C5RvyNGvUf1izaeDE8eIDkBZGcPKMVtCndgv09oiBZVHonEXIZ
+         bX8mo7FdA/zYyqAEubPDemIgb0eqf5+zG/+cmNpk9I8VsVAz3OknG6datVqNnAtKSOal
+         PG3Znn9iuJ+W6WYmNyn+dLeYHXCkJcy+ucTVpaCaFcLs2NgPM1AmWSOqVSalS8ft/OWR
+         4JTw==
+X-Gm-Message-State: AOAM533FyYueymZJkiF7pgL2hqK5+T6yFHkNQBAo8uZXvfXGoD55PLaA
+        CstHSVKvTQuPF1DvU5Fv4fTsmw==
+X-Google-Smtp-Source: ABdhPJyQNWTopy4B9gFA1y+6qGGV7b+LOm34nlwWaqK1F5w5NbaUAl8KnUoQ/BuXUoi0OIfOd70JcA==
+X-Received: by 2002:a17:902:bc47:b0:151:ac43:eae0 with SMTP id t7-20020a170902bc4700b00151ac43eae0mr5525362plz.117.1646369314041;
+        Thu, 03 Mar 2022 20:48:34 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e30-20020a056a0000de00b004ef299a4f89sm4399458pfj.180.2022.03.03.20.48.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 20:48:33 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     David Gow <davidgow@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        =?UTF-8?q?Magnus=20Gro=C3=9F?= <magnus.gross@rwth-aachen.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2] binfmt_elf: Introduce KUnit test
+Date:   Thu,  3 Mar 2022 20:48:31 -0800
+Message-Id: <20220304044831.962450-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6317; h=from:subject; bh=a4w0s4IZAhRLqjb5tB/XeGI0pZPXrfhf132TKT4W6sM=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiIZoe6mzGMiS+V65tUEDI5benpoYIwRU5izGHNxNp trQdi96JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYiGaHgAKCRCJcvTf3G3AJswOD/ wJArtGLzdWsYsMObVWMpcm/KSKI6gij5EcZ0Sl/YMn4hB/wbunDSg4l3qUISZ6WBNg999FHe+aN19L kNL44u28ADAqX9UXGCwi1MSZ0ngJQm8XTG3QMoD6lE/Dg4ZQAw/YJYdydHX7xwpvxSJJb46JF63oOf auz58w+XMMJqfO3lUu2svzbgS7gAAeB98TXqzhDWJ5q/Yscm7oU6I7FXUFWixP4fo6anwZtUmh8NVS X77rvrn9nbnAPUB8wN9wbyGXMKCAD2tROg67MHhCmY7oYRA2O1p90gE1l3OL3xNRXdjU1q3I5mXl4H 0V+u/rHf17xNmTJLkhETgCnJBK//XBDnKbDz4jBSiKOvZI3wDpLxn47U2PNAtxgknDaMH50eCyyOVx tHWxouBVHHABaAIKbvr+dD2v/5zQneUShenswE5eclzBqKWuv0IRh5VS9GNlrN4BaJ6bYVnGGnXyNJ ugAxp/CEJSRwbnt/uVU5srLzjAPa8/jLjqKteWXzVvbXRTcdkbzcpdqVmAq+M/WoNRpFPnp5mzHdFH wk1l/Ixz3p0NVEuL6O/MD3tXA8xRprySCgbp5Ke8zeyVUTyYZGgq6pqJ+88zpxtUIerl0hoEybso6d gyEorJy2/nrp1A6ecczPU2crgQm+Xc0S+GKGbBqoQi8AS7Zd/Q+z6LI8jo0g==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.14-stable
-head:   4ab5bac1598e3ed91a6267f6cada336467312112
-commit: 9e61c87b1f47b4dc3d48de83d85e9f17c320f91e [640/9999] UPSTREAM: bpf: multi program support for cgroup+bpf
-config: i386-randconfig-s001-20211101 (https://download.01.org/0day-ci/archive/20220304/202203041208.lGSLS1gi-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/9e61c87b1f47b4dc3d48de83d85e9f17c320f91e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.14-stable
-        git checkout 9e61c87b1f47b4dc3d48de83d85e9f17c320f91e
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/virtio/ kernel/bpf/
+Adds simple KUnit test for some binfmt_elf internals: specifically a
+regression test for the problem fixed by commit 8904d9cd90ee ("ELF:
+fix overflow in total mapping size calculation").
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+$ ./tools/testing/kunit/kunit.py run --arch x86_64 \
+    --kconfig_add CONFIG_IA32_EMULATION=y '*binfmt_elf'
+...
+[19:41:08] ================== binfmt_elf (1 subtest) ==================
+[19:41:08] [PASSED] total_mapping_size_test
+[19:41:08] =================== [PASSED] binfmt_elf ====================
+[19:41:08] ============== compat_binfmt_elf (1 subtest) ===============
+[19:41:08] [PASSED] total_mapping_size_test
+[19:41:08] ================ [PASSED] compat_binfmt_elf ================
+[19:41:08] ============================================================
+[19:41:08] Testing complete. Passed: 2, Failed: 0, Crashed: 0, Skipped: 0, Errors: 0
 
-
-sparse warnings: (new ones prefixed by >>)
-   kernel/bpf/core.c:1095:43: sparse: sparse: arithmetics on pointers to functions
->> kernel/bpf/core.c:1500:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected struct bpf_prog_array [noderef] <asn:4> * @@     got void * @@
-   kernel/bpf/core.c:1500:31: sparse:     expected struct bpf_prog_array [noderef] <asn:4> *
-   kernel/bpf/core.c:1500:31: sparse:     got void *
->> kernel/bpf/core.c:1504:17: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected struct bpf_prog_array [noderef] <asn:4> * @@     got struct bpf_prog_array * @@
-   kernel/bpf/core.c:1504:17: sparse:     expected struct bpf_prog_array [noderef] <asn:4> *
-   kernel/bpf/core.c:1504:17: sparse:     got struct bpf_prog_array *
-   kernel/bpf/core.c:1512:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct callback_head *head @@     got struct callback_head [noderef] <asn:4> * @@
-   kernel/bpf/core.c:1512:9: sparse:     expected struct callback_head *head
-   kernel/bpf/core.c:1512:9: sparse:     got struct callback_head [noderef] <asn:4> *
-   kernel/bpf/core.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/bpf.h, ...):
-   include/trace/events/bpf.h:56:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/bpf.h:92:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/bpf.h:117:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/bpf.h:188:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/bpf.h:228:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/bpf.h:282:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/bpf.h:312:1: sparse: sparse: Using plain integer as NULL pointer
-   kernel/bpf/core.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/xdp.h, ...):
-   include/trace/events/xdp.h:28:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:53:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:111:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:126:1: sparse: sparse: Using plain integer as NULL pointer
-
-vim +1500 kernel/bpf/core.c
-
-  1496	
-  1497	struct bpf_prog_array __rcu *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags)
-  1498	{
-  1499		if (prog_cnt)
-> 1500			return kzalloc(sizeof(struct bpf_prog_array) +
-  1501				       sizeof(struct bpf_prog *) * (prog_cnt + 1),
-  1502				       flags);
-  1503	
-> 1504		return &empty_prog_array.hdr;
-  1505	}
-  1506	
-
+Cc: Eric Biederman <ebiederm@xmission.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+This is now at the top of my for-next/execve tree
+v1: https://lore.kernel.org/lkml/20220224054332.1852813-1-keescook@chromium.org
+v2:
+ - improve commit log
+ - fix comment URL (Daniel)
+ - drop redundant KUnit Kconfig help info (Daniel)
+ - note in Kconfig help that COMPAT builds add a compat test (David)
+---
+ fs/Kconfig.binfmt      | 10 +++++++
+ fs/binfmt_elf.c        |  4 +++
+ fs/binfmt_elf_test.c   | 64 ++++++++++++++++++++++++++++++++++++++++++
+ fs/compat_binfmt_elf.c |  2 ++
+ 4 files changed, 80 insertions(+)
+ create mode 100644 fs/binfmt_elf_test.c
+
+diff --git a/fs/Kconfig.binfmt b/fs/Kconfig.binfmt
+index 4d5ae61580aa..f7065e825b7f 100644
+--- a/fs/Kconfig.binfmt
++++ b/fs/Kconfig.binfmt
+@@ -28,6 +28,16 @@ config BINFMT_ELF
+ 	  ld.so (check the file <file:Documentation/Changes> for location and
+ 	  latest version).
+ 
++config BINFMT_ELF_KUNIT_TEST
++	bool "Build KUnit tests for ELF binary support" if !KUNIT_ALL_TESTS
++	depends on KUNIT=y && BINFMT_ELF=y
++	default KUNIT_ALL_TESTS
++	help
++	  This builds the ELF loader KUnit tests, which try to gather
++	  prior bug fixes into a regression test collection. This is really
++	  only needed for debugging. Note that with CONFIG_COMPAT=y, the
++	  compat_binfmt_elf KUnit test is also created.
++
+ config COMPAT_BINFMT_ELF
+ 	def_bool y
+ 	depends on COMPAT && BINFMT_ELF
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index 4c5a2175f605..eaf39b1bdbbb 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -2346,3 +2346,7 @@ static void __exit exit_elf_binfmt(void)
+ core_initcall(init_elf_binfmt);
+ module_exit(exit_elf_binfmt);
+ MODULE_LICENSE("GPL");
++
++#ifdef CONFIG_BINFMT_ELF_KUNIT_TEST
++#include "binfmt_elf_test.c"
++#endif
+diff --git a/fs/binfmt_elf_test.c b/fs/binfmt_elf_test.c
+new file mode 100644
+index 000000000000..11d734fec366
+--- /dev/null
++++ b/fs/binfmt_elf_test.c
+@@ -0,0 +1,64 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <kunit/test.h>
++
++static void total_mapping_size_test(struct kunit *test)
++{
++	struct elf_phdr empty[] = {
++		{ .p_type = PT_LOAD, .p_vaddr = 0, .p_memsz = 0, },
++		{ .p_type = PT_INTERP, .p_vaddr = 10, .p_memsz = 999999, },
++	};
++	/*
++	 * readelf -lW /bin/mount | grep '^  .*0x0' | awk '{print "\t\t{ .p_type = PT_" \
++	 *				$1 ", .p_vaddr = " $3 ", .p_memsz = " $6 ", },"}'
++	 */
++	struct elf_phdr mount[] = {
++		{ .p_type = PT_PHDR, .p_vaddr = 0x00000040, .p_memsz = 0x0002d8, },
++		{ .p_type = PT_INTERP, .p_vaddr = 0x00000318, .p_memsz = 0x00001c, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x00000000, .p_memsz = 0x0033a8, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x00004000, .p_memsz = 0x005c91, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x0000a000, .p_memsz = 0x0022f8, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x0000d330, .p_memsz = 0x000d40, },
++		{ .p_type = PT_DYNAMIC, .p_vaddr = 0x0000d928, .p_memsz = 0x000200, },
++		{ .p_type = PT_NOTE, .p_vaddr = 0x00000338, .p_memsz = 0x000030, },
++		{ .p_type = PT_NOTE, .p_vaddr = 0x00000368, .p_memsz = 0x000044, },
++		{ .p_type = PT_GNU_PROPERTY, .p_vaddr = 0x00000338, .p_memsz = 0x000030, },
++		{ .p_type = PT_GNU_EH_FRAME, .p_vaddr = 0x0000b490, .p_memsz = 0x0001ec, },
++		{ .p_type = PT_GNU_STACK, .p_vaddr = 0x00000000, .p_memsz = 0x000000, },
++		{ .p_type = PT_GNU_RELRO, .p_vaddr = 0x0000d330, .p_memsz = 0x000cd0, },
++	};
++	size_t mount_size = 0xE070;
++	/* https://lore.kernel.org/linux-fsdevel/YfF18Dy85mCntXrx@fractal.localdomain */
++	struct elf_phdr unordered[] = {
++		{ .p_type = PT_LOAD, .p_vaddr = 0x00000000, .p_memsz = 0x0033a8, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x0000d330, .p_memsz = 0x000d40, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x00004000, .p_memsz = 0x005c91, },
++		{ .p_type = PT_LOAD, .p_vaddr = 0x0000a000, .p_memsz = 0x0022f8, },
++	};
++
++	/* No headers, no size. */
++	KUNIT_EXPECT_EQ(test, total_mapping_size(NULL, 0), 0);
++	KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 0), 0);
++	/* Empty headers, no size. */
++	KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 1), 0);
++	/* No PT_LOAD headers, no size. */
++	KUNIT_EXPECT_EQ(test, total_mapping_size(&empty[1], 1), 0);
++	/* Empty PT_LOAD and non-PT_LOAD headers, no size. */
++	KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 2), 0);
++
++	/* Normal set of PT_LOADS, and expected size. */
++	KUNIT_EXPECT_EQ(test, total_mapping_size(mount, ARRAY_SIZE(mount)), mount_size);
++	/* Unordered PT_LOADs result in same size. */
++	KUNIT_EXPECT_EQ(test, total_mapping_size(unordered, ARRAY_SIZE(unordered)), mount_size);
++}
++
++static struct kunit_case binfmt_elf_test_cases[] = {
++	KUNIT_CASE(total_mapping_size_test),
++	{},
++};
++
++static struct kunit_suite binfmt_elf_test_suite = {
++	.name = KBUILD_MODNAME,
++	.test_cases = binfmt_elf_test_cases,
++};
++
++kunit_test_suite(binfmt_elf_test_suite);
+diff --git a/fs/compat_binfmt_elf.c b/fs/compat_binfmt_elf.c
+index 95e72d271b95..8f0af4f62631 100644
+--- a/fs/compat_binfmt_elf.c
++++ b/fs/compat_binfmt_elf.c
+@@ -135,6 +135,8 @@
+ #define elf_format		compat_elf_format
+ #define init_elf_binfmt		init_compat_elf_binfmt
+ #define exit_elf_binfmt		exit_compat_elf_binfmt
++#define binfmt_elf_test_cases	compat_binfmt_elf_test_cases
++#define binfmt_elf_test_suite	compat_binfmt_elf_test_suite
+ 
+ /*
+  * We share all the actual code with the native (64-bit) version.
+-- 
+2.32.0
+
