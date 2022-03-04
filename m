@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07985C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C21C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236457AbiCDHKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 02:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
+        id S233093AbiCDHKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 02:10:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238730AbiCDHIt (ORCPT
+        with ESMTP id S238723AbiCDHIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Mar 2022 02:08:49 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D49218FAC1
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FE84190C24
         for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:07:09 -0800 (PST)
 Received: from unknown (HELO lgemrelse6q.lge.com) (156.147.1.121)
-        by 156.147.23.53 with ESMTP; 4 Mar 2022 16:07:08 +0900
+        by 156.147.23.52 with ESMTP; 4 Mar 2022 16:07:08 +0900
 X-Original-SENDERIP: 156.147.1.121
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
@@ -47,9 +47,9 @@ Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com
-Subject: [PATCH v4 15/24] dept: Apply SDT to wait(waitqueue)
-Date:   Fri,  4 Mar 2022 16:06:34 +0900
-Message-Id: <1646377603-19730-16-git-send-email-byungchul.park@lge.com>
+Subject: [PATCH v4 14/24] dept: Apply SDT to swait
+Date:   Fri,  4 Mar 2022 16:06:33 +0900
+Message-Id: <1646377603-19730-15-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
 References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
@@ -57,123 +57,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Makes SDT able to track dependencies by wait(waitqueue).
+Makes SDT able to track dependencies by swait.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- include/linux/wait.h |  6 +++++-
- kernel/sched/wait.c  | 16 ++++++++++++++++
- 2 files changed, 21 insertions(+), 1 deletion(-)
+ include/linux/swait.h |  4 ++++
+ kernel/sched/swait.c  | 10 ++++++++++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/include/linux/wait.h b/include/linux/wait.h
-index 851e07d..2133998 100644
---- a/include/linux/wait.h
-+++ b/include/linux/wait.h
-@@ -7,6 +7,7 @@
- #include <linux/list.h>
+diff --git a/include/linux/swait.h b/include/linux/swait.h
+index 6a8c22b..dbdf2ce 100644
+--- a/include/linux/swait.h
++++ b/include/linux/swait.h
+@@ -6,6 +6,7 @@
  #include <linux/stddef.h>
  #include <linux/spinlock.h>
+ #include <linux/wait.h>
 +#include <linux/dept_sdt.h>
- 
  #include <asm/current.h>
- #include <uapi/linux/wait.h>
-@@ -37,6 +38,7 @@ struct wait_queue_entry {
- struct wait_queue_head {
- 	spinlock_t		lock;
- 	struct list_head	head;
+ 
+ /*
+@@ -43,6 +44,7 @@
+ struct swait_queue_head {
+ 	raw_spinlock_t		lock;
+ 	struct list_head	task_list;
 +	struct dept_map		dmap;
  };
- typedef struct wait_queue_head wait_queue_head_t;
  
-@@ -56,7 +58,8 @@ struct wait_queue_head {
+ struct swait_queue {
+@@ -61,6 +63,7 @@ struct swait_queue {
+ #define __SWAIT_QUEUE_HEAD_INITIALIZER(name) {				\
+ 	.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		\
+ 	.task_list	= LIST_HEAD_INIT((name).task_list),		\
++	.dmap		= DEPT_SDT_MAP_INIT(name),			\
+ }
  
- #define __WAIT_QUEUE_HEAD_INITIALIZER(name) {					\
- 	.lock		= __SPIN_LOCK_UNLOCKED(name.lock),			\
--	.head		= LIST_HEAD_INIT(name.head) }
-+	.head		= LIST_HEAD_INIT(name.head),				\
-+	.dmap		= DEPT_SDT_MAP_INIT(name) }
- 
- #define DECLARE_WAIT_QUEUE_HEAD(name) \
- 	struct wait_queue_head name = __WAIT_QUEUE_HEAD_INITIALIZER(name)
-@@ -67,6 +70,7 @@ struct wait_queue_head {
- 	do {									\
- 		static struct lock_class_key __key;				\
- 										\
-+		sdt_map_init(&(wq_head)->dmap);					\
- 		__init_waitqueue_head((wq_head), #wq_head, &__key);		\
+ #define DECLARE_SWAIT_QUEUE_HEAD(name)					\
+@@ -72,6 +75,7 @@ extern void __init_swait_queue_head(struct swait_queue_head *q, const char *name
+ #define init_swait_queue_head(q)				\
+ 	do {							\
+ 		static struct lock_class_key __key;		\
++		sdt_map_init(&(q)->dmap);			\
+ 		__init_swait_queue_head((q), #q, &__key);	\
  	} while (0)
  
-diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
-index eca3810..fc5a16a 100644
---- a/kernel/sched/wait.c
-+++ b/kernel/sched/wait.c
-@@ -105,6 +105,7 @@ static int __wake_up_common(struct wait_queue_head *wq_head, unsigned int mode,
- 		if (flags & WQ_FLAG_BOOKMARK)
- 			continue;
+diff --git a/kernel/sched/swait.c b/kernel/sched/swait.c
+index e1c655f..4ca7d6e 100644
+--- a/kernel/sched/swait.c
++++ b/kernel/sched/swait.c
+@@ -27,6 +27,7 @@ void swake_up_locked(struct swait_queue_head *q)
+ 		return;
  
-+		sdt_event(&wq_head->dmap);
- 		ret = curr->func(curr, mode, wake_flags, key);
- 		if (ret < 0)
- 			break;
-@@ -268,6 +269,9 @@ void __wake_up_pollfree(struct wait_queue_head *wq_head)
- 		__add_wait_queue(wq_head, wq_entry);
+ 	curr = list_first_entry(&q->task_list, typeof(*curr), task_list);
++	sdt_event(&q->dmap);
+ 	wake_up_process(curr->task);
+ 	list_del_init(&curr->task_list);
+ }
+@@ -69,6 +70,7 @@ void swake_up_all(struct swait_queue_head *q)
+ 	while (!list_empty(&tmp)) {
+ 		curr = list_first_entry(&tmp, typeof(*curr), task_list);
+ 
++		sdt_event(&q->dmap);
+ 		wake_up_state(curr->task, TASK_NORMAL);
+ 		list_del_init(&curr->task_list);
+ 
+@@ -97,6 +99,9 @@ void prepare_to_swait_exclusive(struct swait_queue_head *q, struct swait_queue *
+ 	__prepare_to_swait(q, wait);
  	set_current_state(state);
- 	spin_unlock_irqrestore(&wq_head->lock, flags);
+ 	raw_spin_unlock_irqrestore(&q->lock, flags);
 +
 +	if (state & TASK_NORMAL)
-+		sdt_wait_prepare(&wq_head->dmap);
++		sdt_wait_prepare(&q->dmap);
  }
- EXPORT_SYMBOL(prepare_to_wait);
+ EXPORT_SYMBOL(prepare_to_swait_exclusive);
  
-@@ -286,6 +290,10 @@ void __wake_up_pollfree(struct wait_queue_head *wq_head)
+@@ -119,12 +124,16 @@ long prepare_to_swait_event(struct swait_queue_head *q, struct swait_queue *wait
  	}
- 	set_current_state(state);
- 	spin_unlock_irqrestore(&wq_head->lock, flags);
-+
-+	if (state & TASK_NORMAL)
-+		sdt_wait_prepare(&wq_head->dmap);
-+
- 	return was_empty;
- }
- EXPORT_SYMBOL(prepare_to_wait_exclusive);
-@@ -331,6 +339,9 @@ long prepare_to_wait_event(struct wait_queue_head *wq_head, struct wait_queue_en
- 	}
- 	spin_unlock_irqrestore(&wq_head->lock, flags);
+ 	raw_spin_unlock_irqrestore(&q->lock, flags);
  
 +	if (!ret && state & TASK_NORMAL)
-+		sdt_wait_prepare(&wq_head->dmap);
++		sdt_wait_prepare(&q->dmap);
 +
  	return ret;
  }
- EXPORT_SYMBOL(prepare_to_wait_event);
-@@ -352,7 +363,9 @@ int do_wait_intr(wait_queue_head_t *wq, wait_queue_entry_t *wait)
- 		return -ERESTARTSYS;
+ EXPORT_SYMBOL(prepare_to_swait_event);
  
- 	spin_unlock(&wq->lock);
-+	sdt_wait_prepare(&wq->dmap);
- 	schedule();
+ void __finish_swait(struct swait_queue_head *q, struct swait_queue *wait)
+ {
 +	sdt_wait_finish();
- 	spin_lock(&wq->lock);
- 
- 	return 0;
-@@ -369,7 +382,9 @@ int do_wait_intr_irq(wait_queue_head_t *wq, wait_queue_entry_t *wait)
- 		return -ERESTARTSYS;
- 
- 	spin_unlock_irq(&wq->lock);
-+	sdt_wait_prepare(&wq->dmap);
- 	schedule();
-+	sdt_wait_finish();
- 	spin_lock_irq(&wq->lock);
- 
- 	return 0;
-@@ -389,6 +404,7 @@ void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_en
+ 	__set_current_state(TASK_RUNNING);
+ 	if (!list_empty(&wait->task_list))
+ 		list_del_init(&wait->task_list);
+@@ -134,6 +143,7 @@ void finish_swait(struct swait_queue_head *q, struct swait_queue *wait)
  {
  	unsigned long flags;
  
 +	sdt_wait_finish();
  	__set_current_state(TASK_RUNNING);
- 	/*
- 	 * We can check for list emptiness outside the lock
+ 
+ 	if (!list_empty_careful(&wait->task_list)) {
 -- 
 1.9.1
 
