@@ -2,134 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 22:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 22:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiCDWUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 17:20:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
+        id S229946AbiCDWXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 17:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiCDWUv (ORCPT
+        with ESMTP id S229618AbiCDWXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 17:20:51 -0500
-X-Greylist: delayed 269 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 14:20:03 PST
-Received: from smtp-out3.electric.net (smtp-out3.electric.net [208.70.128.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4740115B980
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 14:20:03 -0800 (PST)
-Received: from 1nQGCy-0002oo-VO by out3b.electric.net with emc1-ok (Exim 4.94.2)
-        (envelope-from <kris@embeddedTS.com>)
-        id 1nQGCz-0002s3-Vq; Fri, 04 Mar 2022 14:15:33 -0800
-Received: by emcmailer; Fri, 04 Mar 2022 14:15:33 -0800
-Received: from [66.210.251.27] (helo=mail.embeddedts.com)
-        by out3b.electric.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <kris@embeddedTS.com>)
-        id 1nQGCy-0002oo-VO; Fri, 04 Mar 2022 14:15:32 -0800
-Received: from tsdebian.ts-local.net (_gateway [192.168.0.64])
-        by mail.embeddedts.com (Postfix) with ESMTPSA id 017173A8F8;
-        Fri,  4 Mar 2022 15:15:31 -0700 (MST)
-From:   Kris Bahnsen <kris@embeddedTS.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mark Featherston <mark@embeddedTS.com>,
-        Kris Bahnsen <kris@embeddedTS.com>
-Subject: [PATCH] gpio: ts4900: Do not set DAT and OE together
-Date:   Fri,  4 Mar 2022 14:15:17 -0800
-Message-Id: <20220304221517.30213-1-kris@embeddedTS.com>
-X-Mailer: git-send-email 2.11.0
-X-Outbound-IP: 66.210.251.27
-X-Env-From: kris@embeddedTS.com
-X-Proto: esmtps
-X-Revdns: wsip-66-210-251-27.ph.ph.cox.net
-X-HELO: mail.embeddedts.com
-X-TLS:  TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256
-X-Authenticated_ID: 
-X-Virus-Status: Scanned by VirusSMART (c)
-X-Virus-Status: Scanned by VirusSMART (b)
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=embeddedTS.com; s=mailanyone20220121;h=Message-Id:Date:To:From; bh=8QQF6dKhkO+Z5X7/e+vXsxFm9xV9/q6QSNG67LdjZHs=;b=fODEx0ph/I0Bo9UrO6oHYrSzq7nqFvuhsC2DLPJLZRzQ+jhRuHD7OaGm9NrZgt9C1ihCBnqHWwiXNiGjZ/JQbEogu+ADftMAzT4L5W1A0AEHVpCQgxpx1ZMwUzEq8ELQZ5ihBMmpRROsVza1kHH9dvAno67zrapBtTn/fRKddWLRKzjVbVIQgmH4euVmFPVjW57KwTMS3k6YZ+wwqV9slbi3NW0LW3KQjkKP1n3ccsPoIrr4p80iYVu1KHrjNbnkkYTCiNRXUAqEdVHiZWH6UDjVTkdZwWxWpk2ssrRoj3qa6yGrsC3eRLQNmW/X0uJyJ70lxh4rOK/vGpCsl1tnjQ==;
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
+        Fri, 4 Mar 2022 17:23:37 -0500
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4D3119F28;
+        Fri,  4 Mar 2022 14:22:48 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id 6-20020a4a0906000000b0031d7eb98d31so11023812ooa.10;
+        Fri, 04 Mar 2022 14:22:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FK6O8iZYd30gBa2H7oi4DqRG0FOU8lUzNheBx5but+U=;
+        b=34DDPIZm6A13OrvsLvs1Vpvdvsol7L8TBwB+z9w3vaQXTt+WXKEOw/jYBp7NZUKhXz
+         yOEHa785GzXTIxOHYOgnLqBy8eqBaQcr3hKZcvBeoZHwP2fjNgB0QlGVYTVRPNokb2I3
+         AtgQyeAKaA7nUTG39OrlNPtNbbumJVkAqvm5ybnt2HBG+anYCL1iIA2OfXORtOgHE1GO
+         24H8RYPKSnzvoqYuPD5x5f+tOd7mqUMcOS6JbR2ok57bz/qJDR2RdIW3LGI7Fk5Jyl3M
+         2U0QaWFab83eaMaxY6z5LDz4DpwxOD7duoL3nXciBuyvoZMVzhMqKQUfyAcHLBqf0NMC
+         RZsg==
+X-Gm-Message-State: AOAM533HuUuj5pQfxfamRggTDuS5X0mIcyZQ5xMkrOat4V768Bx8Lug1
+        WfEPb5dQnBExdu5iMegtwA==
+X-Google-Smtp-Source: ABdhPJw1skblzO/l37y1Ad9RMSdf/uLpokD28+b8ny8V7h1Wyw+1qpcXIpCmOYkOFGCjdu8+ICChTw==
+X-Received: by 2002:a4a:d415:0:b0:31c:3fc0:74ce with SMTP id n21-20020a4ad415000000b0031c3fc074cemr238974oos.47.1646432567688;
+        Fri, 04 Mar 2022 14:22:47 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id e13-20020a9d490d000000b005b029275a9csm2945058otf.58.2022.03.04.14.22.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 14:22:46 -0800 (PST)
+Received: (nullmailer pid 546919 invoked by uid 1000);
+        Fri, 04 Mar 2022 22:22:44 -0000
+Date:   Fri, 4 Mar 2022 16:22:44 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
+        perex@perex.cz, bjorn.andersson@linaro.org,
+        linux-arm-msm@vger.kernel.org, judyhsiao@chromium.org,
+        linux-kernel@vger.kernel.org, vkoul@kernel.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>,
+        quic_plai@quicinc.com, sanyog.r.kale@intel.com, tiwai@suse.com,
+        broonie@kernel.org, rohitkr@codeaurora.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        bgoswami@codeaurora.org, robh+dt@kernel.org,
+        yung-chuan.liao@linux.intel.com, agross@kernel.org,
+        lgirdwood@gmail.com, srinivas.kandagatla@linaro.org
+Subject: Re: [PATCH v7 2/2] dt-bindings: soundwire: qcom: Add bindings for
+ audio clock reset control property
+Message-ID: <YiKRNFONirytK+4X@robh.at.kernel.org>
+References: <1646316128-21082-1-git-send-email-quic_srivasam@quicinc.com>
+ <1646316128-21082-3-git-send-email-quic_srivasam@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1646316128-21082-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Featherston <mark@embeddedTS.com>
+On Thu, 03 Mar 2022 19:32:08 +0530, Srinivasa Rao Mandadapu wrote:
+> Update description for audio clock reset control property, which is required
+> for latest chipsets, to allow rx, tx and wsa bus clock enabling in software
+>  control mode by configuring dynamic clock gating control registers.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/soundwire/qcom,sdw.txt | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
 
-This works around an issue with the hardware where both OE and
-DAT are exposed in the same register. If both are updated
-simultaneously, the harware makes no guarantees that OE or DAT
-will actually change in any given order and may result in a
-glitch of a few ns on a GPIO pin when changing direction and value
-in a single write.
-
-Setting direction to input now only affects OE bit. Setting
-direction to output updates DAT first, then OE.
-
-Signed-off-by: Mark Featherston <mark@embeddedTS.com>
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
----
- drivers/gpio/gpio-ts4900.c | 25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
-index d885032cf814..fbabfca030c0 100644
---- a/drivers/gpio/gpio-ts4900.c
-+++ b/drivers/gpio/gpio-ts4900.c
-@@ -1,7 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * Digital I/O driver for Technologic Systems I2C FPGA Core
-  *
-- * Copyright (C) 2015 Technologic Systems
-+ * Copyright (C) 2015-2018 Technologic Systems
-  * Copyright (C) 2016 Savoir-Faire Linux
-  *
-  * This program is free software; you can redistribute it and/or
-@@ -55,19 +56,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
- {
- 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
- 
--	/*
--	 * This will clear the output enable bit, the other bits are
--	 * dontcare when this is cleared
-+	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
-+	 * with OE and data getting to the physical pin at different times.
- 	 */
--	return regmap_write(priv->regmap, offset, 0);
-+	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
- }
- 
- static int ts4900_gpio_direction_output(struct gpio_chip *chip,
- 					unsigned int offset, int value)
- {
- 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
-+	unsigned int reg;
- 	int ret;
- 
-+	/* If changing from an input to an output, we need to first set the
-+	 * proper data bit to what is requested and then set OE bit. This
-+	 * prevents a glitch that can occur on the IO line
-+	 */
-+	regmap_read(priv->regmap, offset, &reg);
-+	if (!(reg & TS4900_GPIO_OE)) {
-+		if (value)
-+			reg = TS4900_GPIO_OUT;
-+		else
-+			reg &= ~TS4900_GPIO_OUT;
-+
-+		regmap_write(priv->regmap, offset, reg);
-+	}
-+
- 	if (value)
- 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
- 							 TS4900_GPIO_OUT);
--- 
-2.11.0
-
+Acked-by: Rob Herring <robh@kernel.org>
