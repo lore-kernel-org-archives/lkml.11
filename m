@@ -2,127 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232580AbiCDPki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:40:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        id S240461AbiCDPnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:43:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240461AbiCDPkc (ORCPT
+        with ESMTP id S233917AbiCDPnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:40:32 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF671C664A;
-        Fri,  4 Mar 2022 07:39:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=a2oRDZsuNGrwg4ZW4QGeKyjKlKY/1cuXv9zPS2PZras=; b=SH/pl5Db9JCgKZpNoXynYkzcn9
-        K6K6kmc5uFDT2VLC/i9cnD7UaJF1TJXstrezlE8pLc32wryhkQXgePI9ZlhmBJfNgcWCJUkXPeNGS
-        PMReH4h6GJOWiV62TlogrsDyqr92faFaeuqOByZZF9l3+CdTMzAaK56nBoaocvD0nSQSNCBRTg+Qd
-        4BsHZpf5f+ha0hImA7vPhg55lw1LH4u24842SLUuIoO70Qxz6p5pQIPhYafclAoSjAgpZoI4Bn+n+
-        X+80sOHS8/rQe4lhz8B7Bqkd+HTk+x05nUaXMvXuJypgfUZwDY+yZyO0+Vrq2e15gW6XE0dDp8qHK
-        8n4SYstQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nQA1f-00Ckbk-FB; Fri, 04 Mar 2022 15:39:27 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7FAE73001EA;
-        Fri,  4 Mar 2022 16:39:24 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 507452012A02A; Fri,  4 Mar 2022 16:39:24 +0100 (CET)
-Date:   Fri, 4 Mar 2022 16:39:24 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Wen Yang <simon.wy@alibaba-inc.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephane Eranian <eranian@google.com>,
-        mark rutland <mark.rutland@arm.com>,
-        jiri olsa <jolsa@redhat.com>,
-        namhyung kim <namhyung@kernel.org>,
-        borislav petkov <bp@alien8.de>, x86@kernel.org,
-        Wen Yang <wenyang@linux.alibaba.com>,
-        "h. peter anvin" <hpa@zytor.com>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH 2/2] perf/x86: improve the event scheduling to
- avoid unnecessary pmu_stop/start
-Message-ID: <YiIyrFn7upPEouVt@hirez.programming.kicks-ass.net>
-References: <20220304110351.47731-1-simon.wy@alibaba-inc.com>
- <20220304110351.47731-2-simon.wy@alibaba-inc.com>
+        Fri, 4 Mar 2022 10:43:31 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED04924088;
+        Fri,  4 Mar 2022 07:42:43 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id gj15-20020a17090b108f00b001bef86c67c1so8156049pjb.3;
+        Fri, 04 Mar 2022 07:42:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YgucM+pyBKX8gfpYonvUJSz0KwBP+cTn6q7it4dMeJw=;
+        b=BQLDSB2P5WBjDBnJWqSX/5NWZ0uUXnd5kwq62qhSOIkTDR8ph9lnqQlO3kjiKynaHM
+         mMHxXPaJHEaApjW4Wqngbn1zlGFUm9jMwZkk/qg6wVU7CUe1B14fpZxAqeEC7OX0Ag3g
+         Z+EJsM48zpNVSpZMS36o8jDMTQShQEnOqX3j3+v8QkpGNVOz4kXoK/ScmhabZF5sJKyu
+         ekwRmXoZ4pAneh9ujEfdwfbg4jP3YBKF67nkDr7gsAHoIlRWf+OiKB4276cnHLanH+HL
+         uSFHPtEWYAJqhQ+3rmO48AASvZAMEyPP/4vFrX4tY2D3pLf2q5C81XUdi9goFeTz8EaM
+         NHtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YgucM+pyBKX8gfpYonvUJSz0KwBP+cTn6q7it4dMeJw=;
+        b=sUrx4nsHO6Guz2OR8wO9BNQQpW8FXphX1naJFMTpphBuIFeQQ0xKYZb877HMHtSqq+
+         LDm1EMtlQyd+9LjlZjrBlwUhledAY2vXfKoYH39PPyP8L9OabNWTNcmL6X2xzIpjuaKT
+         49InDmOlxPxabPbMpVnvGrcjkEV6My7awevWH7Hu1svl0x/LsT7pJPRCfdUWI+goweqp
+         1Udel358tr4+eaujdOzPTUCFKs3alqq/cpmcxtX8SmOjwTlCzQn17mHeEFax40iBLfAN
+         4P7/01E6xDDDNsiapVc3P3jLHJFm7vsvHwVP5cggSwjLUMBzRrW4njviY15Jy6N2QZiV
+         Z4rA==
+X-Gm-Message-State: AOAM533OSLXKQe6jC8O9WqubydalckhvDwYOx1Ah1k6Fg1LqXqQnsMn8
+        IKk/BmTCwVmwL9X62mwuhZcFvkTqiU0=
+X-Google-Smtp-Source: ABdhPJyejU5rfz127LXWtET01fbm7lJIft9hDGfGYPcKay7D8wXRpNXedntDeQ6KNyv5TZZWAZlzDg==
+X-Received: by 2002:a17:902:7086:b0:14f:ee29:5ef0 with SMTP id z6-20020a170902708600b0014fee295ef0mr41307036plk.142.1646408563050;
+        Fri, 04 Mar 2022 07:42:43 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id nk11-20020a17090b194b00b001beed2f1046sm8739014pjb.28.2022.03.04.07.42.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 07:42:42 -0800 (PST)
+Date:   Fri, 4 Mar 2022 07:42:39 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>, Divya.Koppera@microchip.com,
+        netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, madhuri.sripada@microchip.com,
+        manohar.puri@microchip.com
+Subject: Re: [PATCH net-next 0/3] Add support for 1588 in LAN8814
+Message-ID: <20220304154239.GA13902@hoboy.vegasvil.org>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <164639821168.27302.1826304809342359025.git-patchwork-notify@kernel.org>
+ <YiIO7lAMCkHhd11L@lunn.ch>
+ <20220304.132121.856864783082151547.davem@davemloft.net>
+ <20220304140628.GF16032@hoboy.vegasvil.org>
+ <YiIfb821yzXf7YqY@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304110351.47731-2-simon.wy@alibaba-inc.com>
+In-Reply-To: <YiIfb821yzXf7YqY@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 07:03:51PM +0800, Wen Yang wrote:
-> this issue has been there for a long time, we could reproduce it as follows:
+On Fri, Mar 04, 2022 at 03:17:19PM +0100, Andrew Lunn wrote:
 
-What issue? You've not described an issue. So you cannot reference one.
+> My perception is that you also like to sleep at nights, and cannot
+> keep up with David rapid pace. So setting up your own tree, collecting
+> reviews and acks yourself will help you and the quality of the PTP
+> code. So yes, go for it.  I just think it is wrong you have to do
+> this.
 
-This is still completely unreadable gibberish.
+I agree that PTP drivers are being merged too quickly without enough
+review, and my commitment to maintaining a PTP tree will both allow
+better review and reduce davem's burden.
 
-> 1, run a script that periodically collects perf data, eg:
-> while true
-> do
->     perf stat -e cache-misses,cache-misses,cache-misses -c 1 sleep 2
->     perf stat -e cache-misses -c 1 sleep 2
->     sleep 1
-> done
-> 
-> 2, run another one to capture the ipc, eg:
-> perf stat -e cycles:d,instructions:d  -c 1 -i 1000
+So maybe it is right for me to do this after all.
 
-<snip line noise>
+Thanks,
+Richard
 
-> the reason is that the nmi watchdog permanently consumes one fp
-> (*cycles*). therefore, when the above shell script obtains *cycles*
-> again, only one gp can be used, and its weight is 5.
-> but other events (like *cache-misses*) have a weight of 4,
-> so the counter used by *cycles* will often be taken away, as in
-> the raw data above:
-> [1]
->   n_events = 3
->   assign = {33, 1, 32, ...}
-> -->
->   n_events = 6
->   assign = {33, 3, 32, 0, 1, 2, ...}
 
-Again unreadable... what do any of those numbers mean?
 
-> 
-> so it will cause unnecessary pmu_stop/start and also cause abnormal cpi.
 
-How?!?
-
-> Cloud servers usually continuously monitor the cpi data of some important
-> services. This issue affects performance and misleads monitoring.
-> 
-> The current event scheduling algorithm is more than 10 years old:
-> commit 1da53e023029 ("perf_events, x86: Improve x86 event scheduling")
-
-irrelevant
-
-> we wish it could be optimized a bit.
-
-I wish for a unicorn ...
-
-> The fields msk_counters and msk_events are added to indicate currently
-> used counters and events so that the used ones can be skipped
-> in __perf_sched_find_counter and perf_sched_next_event functions to avoid
-> unnecessary pmu_stop/start.
-
-Still not sure what your actual problem is, nor what the actual proposal
-is.
-
-Why should I attempt to reverse engineer your code without basic
-understanding of what you're actually trying to achieve?
