@@ -2,121 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4397DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5304AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 15:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240121AbiCDPOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        id S240150AbiCDPPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:15:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240075AbiCDPOl (ORCPT
+        with ESMTP id S240122AbiCDPO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:14:41 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E409F1B124C;
-        Fri,  4 Mar 2022 07:13:51 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98267143D;
-        Fri,  4 Mar 2022 07:13:51 -0800 (PST)
-Received: from lpieralisi (unknown [10.57.37.112])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 96D4F3F73D;
-        Fri,  4 Mar 2022 07:13:49 -0800 (PST)
-Date:   Fri, 4 Mar 2022 15:13:44 +0000
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Ilkka Koskinen <ilkka@os.amperecomputing.com>
-Cc:     guohanjun@huawei.com, sudeep.holla@arm.com, rafael@kernel.org,
-        linux@armlinux.org.uk, lenb@kernel.org, robert.moore@intel.com,
-        james.morse@arm.com, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        patches@amperecomputing.com, scott@os.amperecomputing.com,
-        darren@os.amperecomputing.com
-Subject: Re: [PATCH v5 RESEND 0/2] ACPI: Arm Generic Diagnostic Dump and
- Reset device
-Message-ID: <YiIsYzGeeYWPQKsp@lpieralisi>
-References: <20220304054003.152319-1-ilkka@os.amperecomputing.com>
+        Fri, 4 Mar 2022 10:14:57 -0500
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C2361B124C;
+        Fri,  4 Mar 2022 07:14:06 -0800 (PST)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nQ9d5-0008Id-00; Fri, 04 Mar 2022 16:14:03 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 373FEC0F3F; Fri,  4 Mar 2022 16:10:52 +0100 (CET)
+Date:   Fri, 4 Mar 2022 16:10:52 +0100
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/4] MIPS: Refactor early_parse_mem() to fix mem=
+ parameter
+Message-ID: <20220304151052.GA27642@alpha.franken.de>
+References: <1646108941-27919-1-git-send-email-yangtiezhu@loongson.cn>
+ <1646108941-27919-2-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304054003.152319-1-ilkka@os.amperecomputing.com>
+In-Reply-To: <1646108941-27919-2-git-send-email-yangtiezhu@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 09:40:01PM -0800, Ilkka Koskinen wrote:
-> Hi Lorenzo,
+On Tue, Mar 01, 2022 at 12:28:58PM +0800, Tiezhu Yang wrote:
+> According to Documentation/admin-guide/kernel-parameters.txt,
+> the kernel command-line parameter mem= means "Force usage of
+> a specific amount of memory", but when add "mem=3G" to the
+> command-line, kernel boot hangs in sparse_init().
 > 
-> Would you prefer this version, which doesn't have platform
-> device/driver any more?
+> This commit is similar with the implementation of the other
+> archs such as arm64, powerpc and riscv, refactor the function
+> early_parse_mem() and then use memblock_enforce_memory_limit()
+> to limit the memory size.
+> 
+> With this patch, when add "mem=3G" to the command-line, the
+> kernel boots successfully, we can see the following messages:
 
-I thought about that and in order to keep consistency it is better to
-keep the platform device model, so please resend the latest version
-platform device based and I will ACK it (hopefully it is not too late
-for v5.18).
+unfortunately this patch would break platforms without memory detection,
+which simply use mem=32M for memory configuration. Not sure how many
+rely on this mechanism. If we can make sure nobody uses it, I'm fine
+with your patch.
 
-Please note before resending it that sdei_event_unregister() requires a
-retry loop since it can return -EINPROGRESS (see sdei_unregister_ghes()).
+Thomas.
 
-Thanks,
-Lorenzo
-
-> 
-> --Ilkka
-> 
-> 
-> ----
-> 
-> Arm Generic Diagnostic Dump and Reset device enables a maintainer to
-> request OS to perform a diagnostic dump and reset a system via SDEI
-> event or an interrupt. This patchset adds support for the SDEI path.
-> 
-> I do have a patch to enable the interrupt path as well but I'm holding
-> it back since AGDI table is missing interrupt configuration fields
-> (trigger type etc.).
-> 
-> The recently published specification is available at
-> https://developer.arm.com/documentation/den0093/latest
-> 
-> The patchset was tested on Ampere Altra/Mt. Jade.
-> 
-> The patchset applies on top of
->   git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm bleeding-edge (9db71e8e3027)
-> 
-> I also tested it works on top of Shuai Xue's new patches in bleeding-edge branch (c6f4ba2d2b9a)
-> 
-> From v1:
->      * Moved pdata to the stack and dropped unnecessary kzalloc() in agdi_init()
->      * Changed the ACPICA patch upstreaming order comment in the paragraph above
-> 
-> From v2:
->      * The first patch was split. The most of it was merged to ACPICA project
->        at first and later ported to linux-acpi
->        (fd919e37cb15914c6fe13e13d530a4f732407c6d). The rest are in the first
->        patch.
-> 
-> From v3:
->      Fixed:
-> 	* Moved header files in alphabetical order and removed unnecessary ones
-> 
-> From v4:
-> 	* Platform device/driver stuff removed
-> 	* acpi_agdi_init() call moved from device_initcall to acpi_init() 
-> 	* Slightly modified Kconfig text to keep checkpatch happy
-> 
-> Ilkka Koskinen (2):
->   ACPI: tables: Add AGDI to the list of known table signatures
->   ACPI: AGDI: Add support for Arm Generic Diagnostic Dump and Reset
->     device
-> 
->  drivers/acpi/arm64/Kconfig  | 10 +++++++
->  drivers/acpi/arm64/Makefile |  1 +
->  drivers/acpi/arm64/agdi.c   | 52 +++++++++++++++++++++++++++++++++++++
->  drivers/acpi/bus.c          |  2 ++
->  drivers/acpi/tables.c       |  2 +-
->  include/linux/acpi_agdi.h   | 13 ++++++++++
->  6 files changed, 79 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/acpi/arm64/agdi.c
->  create mode 100644 include/linux/acpi_agdi.h
-> 
-> -- 
-> 2.17.1
-> 
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
