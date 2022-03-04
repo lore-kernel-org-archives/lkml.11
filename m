@@ -2,137 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AFA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233277AbiCDIYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
+        id S233285AbiCDIYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:24:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiCDIYg (ORCPT
+        with ESMTP id S233188AbiCDIYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:24:36 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B31D18A7AF
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:23:49 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so7351962pjl.4
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:23:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=N+axBdq9gIf7Sm45r2wp0IbGpMCe8j9pbsmbjijGtEs=;
-        b=f0829CVHzlWItVcZBqryJZuX5e70twUX9KzKUD6tLvj+/lFCRe2gezWAbn4XvkN9gW
-         RX9D927IMO5VWmFw/dT2JzOJF4XFZlkvooVVVwck1QjBq+qIetDHaHeBMru7r02HxVAo
-         v0TQUsT4E+NMM0bFygzW0RBla5Iu3Zt0/QmNtQcAv8Snx4xBINawzNKpqJU/rLNsldvd
-         n4hf8eypUH+SNXZIj2hTmqFnmRusfnthhxwGrPyXfsfeCfyxwV/3AWSUxQ30lWdo4qQo
-         AL1caR8IHWqwPxaONOiBkZxJPFMTAKv4E2ec5Qprect3vZDulpo0alU7hRDVUWjqhyJc
-         /R1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N+axBdq9gIf7Sm45r2wp0IbGpMCe8j9pbsmbjijGtEs=;
-        b=MKJYdIXD7AZIXTFhmDjj6cabjc+zN27CTGf3by+QN/Ao2emIRIrHPmiABXnTI7joM5
-         vYiLmP3ObgMvfHwI+ywnxCvs4hk7JSBjihh1HEV4RQpHJSS7+NljE8UKKI0bqIPvQ2uO
-         iZUQUPzoxz7UGdhlVXCuqx7Ss5HQ+XauAo3CBwURk6vZNRKlBvQ1zdgmD7wARKGbqFVF
-         g2+EEEY3aS1Haiz+5u7V0ZUD4URSaXMcJH5Yg+srihAjEH9MzDqiHepCEz6hfyCAqO2Q
-         e+0MKgMTCC2NqNUIbw0sujKdvfRVLDSHln3i5caO+q7kgPrMvqM4JKzR3L6jee84iQSm
-         qrCA==
-X-Gm-Message-State: AOAM532vRIyK+mq9a2xgvxBLBETPM6VKm1qVhkPyKCqmlFDlWiEwwC/g
-        F2u2tqCkgqqbIGCqU76taE5RBQ==
-X-Google-Smtp-Source: ABdhPJy8J5ilB+dFny6fOUlfNEKYRdwad4gzPC5QyQ9vdQkTY78rBNDkNRO6BhI/UBTXUl5qRfmbuA==
-X-Received: by 2002:a17:90b:4f4e:b0:1bf:887:9352 with SMTP id pj14-20020a17090b4f4e00b001bf08879352mr9410324pjb.199.1646382229105;
-        Fri, 04 Mar 2022 00:23:49 -0800 (PST)
-Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id x6-20020a17090aa38600b001bce781ce03sm4105189pjp.18.2022.03.04.00.23.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 00:23:48 -0800 (PST)
-Date:   Fri, 4 Mar 2022 16:23:42 +0800
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 2/2] irqchip: Add Qualcomm MPM controller driver
-Message-ID: <20220304082342.GO269879@dragon>
-References: <20220301062414.2987591-1-shawn.guo@linaro.org>
- <20220301062414.2987591-3-shawn.guo@linaro.org>
- <87ee3m2aed.wl-maz@kernel.org>
- <20220302084028.GL269879@dragon>
- <877d9c3b2u.wl-maz@kernel.org>
- <20220302133441.GM269879@dragon>
- <875yow31a0.wl-maz@kernel.org>
- <20220303040229.GN269879@dragon>
- <87fsnytagc.wl-maz@kernel.org>
+        Fri, 4 Mar 2022 03:24:51 -0500
+Received: from APC01-HK2-obe.outbound.protection.outlook.com (mail-eopbgr1300099.outbound.protection.outlook.com [40.107.130.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3D818BA5F;
+        Fri,  4 Mar 2022 00:24:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UhJOhKMHgGvk9fGXVWDvOfNakHcmbIYlfzeNw+4C2xzjjMxg3yVplDLz1n20O5RBZQ9XAu8jcoadWnKUuTTfob+wJeYcbCNZww1FmN37isrNmBb9mhVFG7T2so6pfImCYmUmgmNe2spu81i3sS9ofkpCwVq4iIs3GWDvIypjnL7V01s+cu9WbhhTyCFmCZzT/euA7eRDFVu4oRTaVObDZSqXg3FHbSiq4AZwX8rsJMGajL+2EIRuNlPhr9NkblRVsAXvJ5Ykdkb/b9LsnYtV8VAuQkdvVrI8m7T/8IiYIjq4TFBoLQeIF5w2QYycLrCRK0Wzg/YhwgE6FjoFNFQNGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kuqEfBXCTL5RtQccKhpIkfq/bB5XqscDbM/1iOAExRU=;
+ b=DlDAKNfTPGv/UQmZsLoSEfw1yQq1OqpfhCoBQWZTEyroS84nryUE4THaP76YghOVie6Ladth8tGLm14J5MU5x4BqB0tW6l2sfBZESN5g0yYXEaixT64laXDkoLRZFIpnBScMCVT5xttTRmxFdtvs2k60GCygBc62iGb29AUbIExmmFD+CQjUrkIz99lK6mpHKyH8d2/co8OLlW3zXU/lTh+/A6CClqKwz9J4RNzGSZdejBc0y717+hdaOZKdam6KgW4+2qj9nnSSdLU0B+sa/ex7VkwdaNgD/4DcivE0RDmyk/UTSX+RmCzNYtXAqqXqp4mXth4TbBAcqPGRCCZREQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kuqEfBXCTL5RtQccKhpIkfq/bB5XqscDbM/1iOAExRU=;
+ b=SlbyqeJAwo38c/nExbXdlJ4HwCHubDipXVHBnTv/8nRLJVredmojAf9XylBke3fjC/GJ1ovtYtvpy0BEZAxMaz5mfdRHQmYKU+oBwLEhI13du0x1c/HDQwaC3Swg0HqlrL/CNE1KwwTdryiH6iXk0wG0BT6wbFed5u2cHH/sTMM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
+ by SEYPR06MB5160.apcprd06.prod.outlook.com (2603:1096:101:5c::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Fri, 4 Mar
+ 2022 08:24:00 +0000
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59]) by HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59%5]) with mapi id 15.20.5038.014; Fri, 4 Mar 2022
+ 08:24:00 +0000
+From:   Guo Zhengkui <guozhengkui@vivo.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>,
+        linux-mm@kvack.org (open list:MEMORY MANAGEMENT),
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     Guo Zhengkui <guozhengkui@vivo.com>
+Subject: [PATCH] userfaultfd/selftests: fix uninitialized_var.cocci warning
+Date:   Fri,  4 Mar 2022 16:23:32 +0800
+Message-Id: <20220304082333.9252-1-guozhengkui@vivo.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR04CA0051.apcprd04.prod.outlook.com
+ (2603:1096:202:14::19) To HK2PR06MB3492.apcprd06.prod.outlook.com
+ (2603:1096:202:2f::10)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87fsnytagc.wl-maz@kernel.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0bffcd8f-fcd3-447e-d5d0-08d9fdb854bf
+X-MS-TrafficTypeDiagnostic: SEYPR06MB5160:EE_
+X-Microsoft-Antispam-PRVS: <SEYPR06MB5160CCB164B1EFB1C92FAAA6C7059@SEYPR06MB5160.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +03uD3mxD1jaXM1lltqSI38hO9Pqx99S5xDHoAtq5kO3w9QUFRTPqVeR39YiRNQezMwkXNb4bNktytMtQCHYA9uqkEhKSC+aKMICNQo2dZC6JtElnJsE6vilCk073kjT1eLFcsQm73qwcWUQLkNgY4PqV3NT/VwkKISOubzb4xIUxOxAzNXOiJlt9H7SblJmkxqTMpVDGprSHiwLWxE8KRPre0X+sr6mX+bBHxPQRa/1epaKDPfLBlGSvfVyJtZvGaMiNLJ0wJWB/9QzWcAgZHAGctvoiSnz11sBNegcFLPcUW5JVKeWrENv0fvOaQc1cYsgMpPF4gqXniGsWIIq4YvTGCX9EZGY6V5iX+plPC09sFHzzjuKFvCHcHWtbaPH66wQ2Ld3Y4EABl0L84mMRxL1aiRZUnJBiUvdC3XgCmdszftNtDmYjwPh720etNzeG/eSqQFy0QDGgoQw3ZL/ZdMee3njlzVExX6/DI9QmYRncY7/sGd4c7aKEN4TyqYTKTRq9phFb33hpqil7fPdvIgbmL36s1VrRK6wXC3r25Bn/2K5q9B5pFsHM64s8CeyChWZUWkU/wGfgMIjG96E8x8pPTnyN/Le5sqMbEApXKVT83kWxpsVPCQKthbCdaxBgJkGW++v+/974GhxzlXBMzeOpoCeZjL51McA6cdjX+JYqGmYNfdJoF0RPL8aG5MNmC0yKZKbz+XSuz0VJOtdieEQw+ZOkv2FB188JJElMcdjrMTfx3g/FsEAGz7PyQkRxmH7Nv33940lZ8vHI5I6c+4zv08SNuStU2qOR/kRVR8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(2906002)(107886003)(38100700002)(38350700002)(1076003)(110136005)(316002)(26005)(186003)(6506007)(5660300002)(6666004)(52116002)(8936002)(86362001)(66476007)(6512007)(4326008)(66556008)(66946007)(508600001)(6486002)(966005)(36756003)(83380400001)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L3bMJsFDBGVaDOe+YjcGCAzpk+bBjEHfJdzqdyE6rWjV+owO+0vSAVBPxjcI?=
+ =?us-ascii?Q?rubGf5GtxcSAVbf+7XT97hO+Hviz3knwhbzk7RguTEbikLVkeGNawhNSzz/2?=
+ =?us-ascii?Q?6xIHIKMxMOfvFPlPpW0RFhG89VQRVrIn1hu5UJOnLhV9F97DOaMhRCqQsAHa?=
+ =?us-ascii?Q?r6t2mq/quDbzowHEoKmNWaq1kqSxedQiI9h0W5Q4bNdQBbYi6HYW8mKwVjp9?=
+ =?us-ascii?Q?jtDb0Ezn3GJ0xMPpwZNrm+oP1dleLTnqqu/vqHp6aAyeC3FzwmYpT7flWcvx?=
+ =?us-ascii?Q?3JcISu3qEEqDlwLIvbNfFDPVGFNUMO17x84ho8QnRz0+VVE5PTy1u4NMTIQ7?=
+ =?us-ascii?Q?d4WwQyCz5uJd2PbWM263kcAX4Sb+fPF6OoTdkwaYvYchLvY91JyUcJ4r5IxA?=
+ =?us-ascii?Q?v5ySCcyQa6+pECV/i1Fdcj/TlXr+EQfys6VU8kdAMy89jbquI/jrOgwRBp77?=
+ =?us-ascii?Q?Csbcwt0ZyRfsOX5GjcE+AyCf/lft7knSn3W5FXbB2UgRxBRGa3XOBlwCgSzA?=
+ =?us-ascii?Q?MfCOiF9OiGzEmLf3F5Ob7wWABtdmkn+4vJdcNNYNymxk6xqk7sQTnO1Wn8R2?=
+ =?us-ascii?Q?ykLa08gMM2jIpL50K5pPW9dTyLdhdGJq3K8drZPQu9lf0oG4D4clDER39DAu?=
+ =?us-ascii?Q?8dZuWcgssbgIKCEQZPZU1dLVfIOHrbrZkqd5vhuO/WNqmJi0ykw3FDZI2aDb?=
+ =?us-ascii?Q?FZpJoKU4g0sgrGoe3k86AGtyHcgFoFeD17nkGwGqBnVNKI2NLyGm4Vl3bJPP?=
+ =?us-ascii?Q?rNT3zP3lqBem+aJEClYN+Zjz5T8RjpNGrqAfOQMC4sN0m9hQYf0SvwK3wX1H?=
+ =?us-ascii?Q?VwmlUAmgNm3mrDb/+dcHxFNb7qUOoTZMoV6UkvfO1pS3TUF5TNSgseQu5bOg?=
+ =?us-ascii?Q?i/mEhOitTBIHFzdTnlXq7Z6djUICHA8JvTivxpSiQsiux18ZBCNkXm03bbRw?=
+ =?us-ascii?Q?meHnJ1hN9w3eizD9j1h1Kr8NtZIkDCMS5/12uFDkcXW2xBbb98nRYF+Lt1jY?=
+ =?us-ascii?Q?snX24zev+QAKLZtZWZrAEXcZNHVeDvxV1h5pMkSKeW4TNlnPBKEgeyTpKqKE?=
+ =?us-ascii?Q?nQ9axKpNYNYpZSJeLKUEDSccW0xye6w3mfFdQu/76Gyh7narzyCRm3t6/ePa?=
+ =?us-ascii?Q?KvdbXrCQKniyN08vJ1d2Qz1Op4I3zbUbJbosKdLykj12MJujPYtiMcM6Z6NF?=
+ =?us-ascii?Q?y+MLE3QJDiDao/N0XdAfTIA4G6xYkGvl6halgudLF+DP9rAwGB9B7d+E9teT?=
+ =?us-ascii?Q?9c4U4sIiGxyMHDOQ1qVGO5Y4VHroMMXm7JfdtUGB9k5zInTo+K3rgIux80b9?=
+ =?us-ascii?Q?Ycl0J9FICD+gYXh+IxDCAZJ7YEjf0R1Lidn9KmD9nwMiAF/VnMlGEYyN6Eki?=
+ =?us-ascii?Q?P7W0GBwf0Mmo8h7IfyvUnMCYQg7Mk5DpaB0W39CHxNCxmJr15llCB8+kZ1OH?=
+ =?us-ascii?Q?+uVVODHBbSxK8acBQp6dmZ8Q1ubizEjQjwgu28Qj6vDJA5MIafnNA77DUy4O?=
+ =?us-ascii?Q?W765BMEgwXuXnmPehH9mHhEDmdPqkyOQcnDQfx/cSXtxO05zasxIaKbnXF4C?=
+ =?us-ascii?Q?o5ITwtEJQ5xNJ9CcinSA43l5a0WHlqOa3IO/UY8wuY4j79ncxt4FmuD6GYzN?=
+ =?us-ascii?Q?MP7BEJhimLCju3p49CZwU+c=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bffcd8f-fcd3-447e-d5d0-08d9fdb854bf
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 08:23:59.1678
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sVAwrjlod2jobgz6NL5mLANNAIfibddx1keXHO8tXaJGjdFN2QzhOIzeSXQ4LlhazMuDSV4wSW7RH2BF0BFF6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR06MB5160
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 07:59:15AM +0000, Marc Zyngier wrote:
-> On Thu, 03 Mar 2022 04:02:29 +0000,
-> Shawn Guo <shawn.guo@linaro.org> wrote:
-> > 
-> > On Wed, Mar 02, 2022 at 01:57:27PM +0000, Marc Zyngier wrote:
-> > > This code actually makes me ask more questions. Why is it programming
-> > > 2 'pins' for each IRQ?
-> > 
-> > The mapping between MPM pin and GIC IRQ is not strictly 1-1.  There are
-> > some rare case that up to 2 MPM pins map to a single GIC IRQ, for
-> > example the last two in QC2290 'qcom,mpm-pin-map' below.
-> > 
-> > 	qcom,mpm-pin-map = <2 275>,     /* tsens0_tsens_upper_lower_int */
-> > 			   <5 296>,     /* lpass_irq_out_sdc */
-> > 			   <12 422>,    /* b3_lfps_rxterm_irq */
-> > 			   <24 79>,     /* bi_px_lpi_1_aoss_mx */
-> > 			   <86 183>,    /* mpm_wake,spmi_m */
-> > 			   <90 260>,    /* eud_p0_dpse_int_mx */
-> > 			   <91 260>;    /* eud_p0_dmse_int_mx */
-> > 
-> > 
-> > The downstream uses a DT bindings that specifies GIC hwirq number in
-> > client device nodes.  In that case, d->hwirq in the driver is GIC IRQ
-> > number, and the driver will need to query mapping table, find out the
-> > possible 2 MPM pins, and set them up.
-> > 
-> > The patches I'm posting here use a different bindings that specifies MPM
-> > pin instead in client device nodes.  Thus the driver can simply get the
-> > MPM pin from d->hwirq, so that the whole look-up procedure can be saved.
-> 
-> It still remains that there is no 1:1 mapping between input and
-> output, which is the rule #1 to be able to use a hierarchical setup.
+fix following coccicheck warning:
+tools/testing/selftests/vm/userfaultfd.c:556:23-24:
+WARNING this kind of initialization is deprecated
 
-For direction of MPM pin -> GIC interrupt, it's a 1:1 mapping, i.e. for
-given MPM pin, there is only one GIC interrupt.  And that's the
-mapping MPM driver relies on.  For GIC interrupt -> MPM pin, it's not
-a strict 1:1 mapping.  For given GIC interrupt, there could be up to 2
-MPM pin mapped to it.  MPM driver doesn't use this direction of mapping
-though.
+`unsigned long page_nr = *(&page_nr)` has the same form of
+uninitialized_var() macro. I remove the redundant assignement. It has
+been tested with gcc (Debian 8.3.0-6) 8.3.0.
 
-> 
-> /me puzzled.
-> 
-> >
-> > > 
-> > > > 
-> > > > It seems MPM_REG_POLARITY is only meant for level interrupts, since edge
-> > > > interrupts already have separate registers for rising and falling.
-> > > 
-> > > Then level interrupts must clear both the edge registers at all times.
-> > 
-> > The downstream logic already covers that, right?  The edge register bits
-> > will be cleared as long as 'flowtype' is not EDGE.
-> 
-> I am talking about *your* code, not the Qualcomm stuff.
+The patch which removed uninitialized_var() is:
+https://lore.kernel.org/all/20121028102007.GA7547@gmail.com/
+And there is very few "/* GCC */" comments in the Linux kernel code now.
 
-OK. If you do not see anything wrong on the vendor code logic, I plan to
-replace my broken code with it.
+Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+---
+ tools/testing/selftests/vm/userfaultfd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Shawn
+diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+index fe404398c65a..203c4a2c2109 100644
+--- a/tools/testing/selftests/vm/userfaultfd.c
++++ b/tools/testing/selftests/vm/userfaultfd.c
+@@ -553,7 +553,7 @@ static void continue_range(int ufd, __u64 start, __u64 len)
+ static void *locking_thread(void *arg)
+ {
+ 	unsigned long cpu = (unsigned long) arg;
+-	unsigned long page_nr = *(&(page_nr)); /* uninitialized warning */
++	unsigned long page_nr;
+ 	unsigned long long count;
+ 
+ 	if (!(bounces & BOUNCE_RANDOM)) {
+-- 
+2.20.1
+
