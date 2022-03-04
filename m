@@ -2,106 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD751C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D3E9C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 07:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238383AbiCDHHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 02:07:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
+        id S238640AbiCDHH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 02:07:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231714AbiCDHHM (ORCPT
+        with ESMTP id S238487AbiCDHH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 02:07:12 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1F718E430;
-        Thu,  3 Mar 2022 23:06:25 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id b8so6647606pjb.4;
-        Thu, 03 Mar 2022 23:06:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Q/M3caOnFE3N93SPkyxpAe4BQV2suFmBpM97xNgq+TA=;
-        b=anS/vfnrEbn89xVNCCdRDdOukM3FAdc/3eOHFcE9uWJA+9Xx46X3WP0tLapUtRkGPd
-         Hj0FMecC2bNJmBBnyKEJqIOuvkWrTVI8vwTS6oXYbo6c38lu70/HoAnkMHCPSW8k3rOh
-         ekyJ6fFjyp61UiOGj1uhC5ZoYVdioNtO9AxJmFzumb1AY5ffwwLjcPWPbsV8s2wZJq4h
-         7ZZ39NvWbSpJezJ95Xm6u7Nsh4kL8sEWvDwuU73cBWIET6ZJ1iYihl6SoP5bf146yDJG
-         gtYKBwgDcbRy3qfT8QQhzxWbHuOpuB76lauxlTn7F2YXaeeWkHg1FAAWjenCOdF7bk89
-         3a3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Q/M3caOnFE3N93SPkyxpAe4BQV2suFmBpM97xNgq+TA=;
-        b=jbKdqX+xh8BQVrnKSWgI64PQwZYC5l0A3mh095Sii9AhHvrfeRFAhCfcln3UPpNnyA
-         Gc1FOnxniPFYwU5ZOFcUoANOaItY6M7v2r+0D3gMXxZlCSLW6DpFpgT3+aDwGX54852x
-         3E1YJi2Au8sApALefw9VYOYNeQOp2uh1kMisgD/orG3+iKAEEhM6WiXkejWRb4oi4Ulf
-         aqx0BDkKljHuDgLhLy+TqP2SPsKHBWKqJNuPMEeLj4DlhW0ssFsWn3MgPw9P9UlHJcsy
-         JucdVDtJQzgImknTJiucHWJaVF0pvi7eK4RVKIKioOP5mbFXwoGgC+k6fqK6a1gZJ7r2
-         k+aw==
-X-Gm-Message-State: AOAM5338RmWVKUxrTOA3DLideliS0IcMp95pobaE+hO0Qym8d3xQVqjV
-        jmqQtKE8noqpYq52dwLgxB8=
-X-Google-Smtp-Source: ABdhPJxJWAPOFI6E9NdzxWEpdtku8KpJi10GWzq0ldm6Pw+2AH4SvRr9Of/Dd1ZzIZzxezLQ0njqLg==
-X-Received: by 2002:a17:902:e5cf:b0:151:b24e:8d3b with SMTP id u15-20020a170902e5cf00b00151b24e8d3bmr4883162plf.29.1646377585360;
-        Thu, 03 Mar 2022 23:06:25 -0800 (PST)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id c34-20020a630d22000000b0034cb89e4695sm3783586pgl.28.2022.03.03.23.06.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 23:06:24 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     yhs@fb.com
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com, ytcoode@gmail.com
-Subject: [PATCH bpf-next v2] bpf: Replace strncpy() with strscpy()
-Date:   Fri,  4 Mar 2022 15:04:08 +0800
-Message-Id: <20220304070408.233658-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <e1e060a0-898f-1969-abec-ca01c2eb2049@fb.com>
-References: <e1e060a0-898f-1969-abec-ca01c2eb2049@fb.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 4 Mar 2022 02:07:56 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4A5118F22E
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 23:07:07 -0800 (PST)
+Received: from unknown (HELO lgemrelse6q.lge.com) (156.147.1.121)
+        by 156.147.23.52 with ESMTP; 4 Mar 2022 16:07:06 +0900
+X-Original-SENDERIP: 156.147.1.121
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
+        by 156.147.1.121 with ESMTP; 4 Mar 2022 16:07:06 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     torvalds@linux-foundation.org
+Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        mingo@redhat.com, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
+        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
+        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
+        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
+        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
+        amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
+        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+Subject: [PATCH v4 05/24] dept: Apply Dept to spinlock
+Date:   Fri,  4 Mar 2022 16:06:24 +0900
+Message-Id: <1646377603-19730-6-git-send-email-byungchul.park@lge.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
+References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using strncpy() on NUL-terminated strings is considered deprecated[1].
-Moreover, if the length of 'task->comm' is less than the destination buffer
-size, strncpy() will NUL-pad the destination buffer, which is a needless
-performance penalty.
+Makes Dept able to track dependencies by spinlock.
 
-Replacing strncpy() with strscpy() fixes all these issues.
-
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
-
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
-v1 -> v2: replace strncpy() with strscpy() instead of strscpy_pad()
+ include/linux/lockdep.h            | 18 +++++++++++++++---
+ include/linux/spinlock.h           | 26 ++++++++++++++++++++++++++
+ include/linux/spinlock_types_raw.h | 13 +++++++++++++
+ 3 files changed, 54 insertions(+), 3 deletions(-)
 
- kernel/bpf/helpers.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index ae64110a98b5..315053ef6a75 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -225,13 +225,8 @@ BPF_CALL_2(bpf_get_current_comm, char *, buf, u32, size)
- 	if (unlikely(!task))
- 		goto err_clear;
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index c1a56fe..529ea18 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -584,9 +584,21 @@ static inline void print_irqtrace_events(struct task_struct *curr)
+ #define lock_acquire_shared(l, s, t, n, i)		lock_acquire(l, s, t, 1, 1, n, i)
+ #define lock_acquire_shared_recursive(l, s, t, n, i)	lock_acquire(l, s, t, 2, 1, n, i)
  
--	strncpy(buf, task->comm, size);
--
--	/* Verifier guarantees that size > 0. For task->comm exceeding
--	 * size, guarantee that buf is %NUL-terminated. Unconditionally
--	 * done here to save the size test.
--	 */
--	buf[size - 1] = 0;
-+	/* Verifier guarantees that size > 0 */
-+	strscpy(buf, task->comm, size);
- 	return 0;
- err_clear:
- 	memset(buf, 0, size);
+-#define spin_acquire(l, s, t, i)		lock_acquire_exclusive(l, s, t, NULL, i)
+-#define spin_acquire_nest(l, s, t, n, i)	lock_acquire_exclusive(l, s, t, n, i)
+-#define spin_release(l, i)			lock_release(l, i)
++#define spin_acquire(l, s, t, i)					\
++do {									\
++	lock_acquire_exclusive(l, s, t, NULL, i);			\
++	dept_spin_lock(&(l)->dmap, s, t, NULL, "spin_unlock", i);	\
++} while (0)
++#define spin_acquire_nest(l, s, t, n, i)				\
++do {									\
++	lock_acquire_exclusive(l, s, t, n, i);				\
++	dept_spin_lock(&(l)->dmap, s, t, (n) ? &(n)->dmap : NULL, "spin_unlock", i); \
++} while (0)
++#define spin_release(l, i)						\
++do {									\
++	lock_release(l, i);						\
++	dept_spin_unlock(&(l)->dmap, i);				\
++} while (0)
+ 
+ #define rwlock_acquire(l, s, t, i)		lock_acquire_exclusive(l, s, t, NULL, i)
+ #define rwlock_acquire_read(l, s, t, i)					\
+diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
+index 5c0c517..6b5c3f4 100644
+--- a/include/linux/spinlock.h
++++ b/include/linux/spinlock.h
+@@ -95,6 +95,32 @@
+ # include <linux/spinlock_up.h>
+ #endif
+ 
++#ifdef CONFIG_DEPT
++#define dept_spin_lock(m, ne, t, n, e_fn, ip)				\
++do {									\
++	if (t) {							\
++		dept_ecxt_enter(m, 1UL, ip, __func__, e_fn, ne);	\
++		dept_ask_event(m);					\
++	} else if (n) {							\
++		dept_skip(m);						\
++	} else {							\
++		dept_wait(m, 1UL, ip, __func__, ne);			\
++		dept_ecxt_enter(m, 1UL, ip, __func__, e_fn, ne);	\
++		dept_ask_event(m);					\
++	}								\
++} while (0)
++#define dept_spin_unlock(m, ip)						\
++do {									\
++	if (!dept_unskip_if_skipped(m)) {				\
++		dept_event(m, 1UL, ip, __func__);			\
++		dept_ecxt_exit(m, ip);					\
++	}								\
++} while (0)
++#else
++#define dept_spin_lock(m, ne, t, n, e_fn, ip)	do { } while (0)
++#define dept_spin_unlock(m, ip)			do { } while (0)
++#endif
++
+ #ifdef CONFIG_DEBUG_SPINLOCK
+   extern void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
+ 				   struct lock_class_key *key, short inner);
+diff --git a/include/linux/spinlock_types_raw.h b/include/linux/spinlock_types_raw.h
+index 91cb36b..279e821 100644
+--- a/include/linux/spinlock_types_raw.h
++++ b/include/linux/spinlock_types_raw.h
+@@ -26,16 +26,28 @@
+ 
+ #define SPINLOCK_OWNER_INIT	((void *)-1L)
+ 
++#ifdef CONFIG_DEPT
++# define RAW_SPIN_DMAP_INIT(lockname)	.dmap = { .name = #lockname, .skip_cnt = ATOMIC_INIT(0) },
++# define SPIN_DMAP_INIT(lockname)	.dmap = { .name = #lockname, .skip_cnt = ATOMIC_INIT(0) },
++# define LOCAL_SPIN_DMAP_INIT(lockname)	.dmap = { .name = #lockname, .skip_cnt = ATOMIC_INIT(0) },
++#else
++# define RAW_SPIN_DMAP_INIT(lockname)
++# define SPIN_DMAP_INIT(lockname)
++# define LOCAL_SPIN_DMAP_INIT(lockname)
++#endif
++
+ #ifdef CONFIG_DEBUG_LOCK_ALLOC
+ # define RAW_SPIN_DEP_MAP_INIT(lockname)		\
+ 	.dep_map = {					\
+ 		.name = #lockname,			\
+ 		.wait_type_inner = LD_WAIT_SPIN,	\
++		RAW_SPIN_DMAP_INIT(lockname)		\
+ 	}
+ # define SPIN_DEP_MAP_INIT(lockname)			\
+ 	.dep_map = {					\
+ 		.name = #lockname,			\
+ 		.wait_type_inner = LD_WAIT_CONFIG,	\
++		SPIN_DMAP_INIT(lockname)		\
+ 	}
+ 
+ # define LOCAL_SPIN_DEP_MAP_INIT(lockname)		\
+@@ -43,6 +55,7 @@
+ 		.name = #lockname,			\
+ 		.wait_type_inner = LD_WAIT_CONFIG,	\
+ 		.lock_type = LD_LOCK_PERCPU,		\
++		LOCAL_SPIN_DMAP_INIT(lockname)		\
+ 	}
+ #else
+ # define RAW_SPIN_DEP_MAP_INIT(lockname)
 -- 
-2.35.1
+1.9.1
 
