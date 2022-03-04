@@ -2,99 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE257C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 18:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241672AbiCDS2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 13:28:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
+        id S241676AbiCDS3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:29:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241639AbiCDS2j (ORCPT
+        with ESMTP id S239963AbiCDS3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 13:28:39 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36224DF46;
-        Fri,  4 Mar 2022 10:27:50 -0800 (PST)
+        Fri, 4 Mar 2022 13:29:32 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCF64C79B;
+        Fri,  4 Mar 2022 10:28:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646418470; x=1677954470;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=DWG7yBjX/SsVDq1FNBzX1eDw1t6YL3NhhuMKSucJuqU=;
-  b=O4vH4eOHEJQ7lchSM0g0Gr3Fu9772Hi3MWYOc8quI/8yJRWiqvfRB7W0
-   nxk7/fl7yKWKa3S+WkqfQQqcOBUtOtibh2v5CrVUBFcmji2QCiSmWqllW
-   9wrlz1ue5RSQaPQr2hmY+ver7/ZOby0cydtIqLmVUaDY+68BCdJw63v8G
-   AnBtEbaF1ZXgk5t7zcKwMg031MtZbAs9SCrKyg2cvpTXdAPpadO+hXkX4
-   pLS0dtmjI3z3s/9RgSOKf+KXfWX/jbUJX/Pz6SO5QS91n5LenRVKjlrVw
-   PoiSIY8E2KS0CM6FkzfbFwkrfYNRXQZD/KMs9X5uUgfsOr5UfXLH9lDTf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253969031"
+  t=1646418524; x=1677954524;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=GiSHayaTp3plS/8dF4tiE4fhYopJ+xm/lVEP2Z67CGk=;
+  b=EiDoe8kLGaOx5oA41UB+Nx9CHOqFoJm3GqEW2zqpNFMKTXyyfBZithAG
+   rV9X8pH+hkntnhMYR3jC6f1OVx1l9LRMlNzDk1MYqiJOVWZZlv1oi2u4z
+   urZZtD9mMb9P+We4dR0+BLBoC2ABYbql1uEM3Aj/2m7hYTNYiGO0igXeH
+   ql3bgNfT12BuUx7gXbiRSu0mGoFjGdos3ATbGAU+wb4IiK0O7jrSCGHk0
+   3opOcnALZXGaGaFaG3KjVw7c2e6FhvFxLPupW/2g/Ah8RmN4NrSuRNV3+
+   hdbIijUfgG5sewN/2gbGfB1UCWbZZEVy01ym1pUFQabu0ClhuiypeiRnR
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="278726905"
 X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="253969031"
+   d="scan'208";a="278726905"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:27:50 -0800
-X-ExtLoop1: 1
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:28:44 -0800
 X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="552317837"
-Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
-  by orsmga008.jf.intel.com with ESMTP; 04 Mar 2022 10:27:46 -0800
-Message-ID: <853ce127-25f0-d0fe-1d8f-0b0dd4f3ce71@intel.com>
-Date:   Fri, 4 Mar 2022 20:27:45 +0200
+   d="scan'208";a="552318052"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.40])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:28:43 -0800
+Date:   Fri, 4 Mar 2022 10:30:47 -0800 (PST)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Russ Weight <russell.h.weight@intel.com>
+cc:     Tom Rix <trix@redhat.com>, hao.wu@intel.com, yilun.xu@intel.com,
+        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org, corbet@lwn.net,
+        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dan.j.williams@intel.com,
+        ashok.raj@intel.com, tianfei.zhang@intel.com
+Subject: Re: [PATCH v2 1/2] Documentation: fpga: dfl: add PCI Identification
+ documentation
+In-Reply-To: <bc41bc12-0d88-771f-7e78-4e29361fcfd8@intel.com>
+Message-ID: <alpine.DEB.2.22.394.2203041021240.3408681@rhweight-WRK1>
+References: <20220303003534.3307971-1-matthew.gerlach@linux.intel.com> <20220303003534.3307971-2-matthew.gerlach@linux.intel.com> <6448f21f-7ce1-d9ce-1048-29aca14f9d3d@redhat.com> <bc41bc12-0d88-771f-7e78-4e29361fcfd8@intel.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH V2 03/11] perf/x86: Add support for TSC in nanoseconds as
- a perf event clock
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>
-References: <20220214110914.268126-1-adrian.hunter@intel.com>
- <20220214110914.268126-4-adrian.hunter@intel.com>
- <YiIXFmA4vpcTSk2L@hirez.programming.kicks-ass.net>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <YiIXFmA4vpcTSk2L@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323328-2071792777-1646418653=:3408681"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/03/2022 15:41, Peter Zijlstra wrote:
-> On Mon, Feb 14, 2022 at 01:09:06PM +0200, Adrian Hunter wrote:
->> Currently, when Intel PT is used within a VM guest, it is not possible to
->> make use of TSC because perf clock is subject to paravirtualization.
-> 
-> Yeah, so how much of that still makes sense, or ever did? AFAIK the
-> whole pv_clock thing is utter crazy. Should we not fix that instead?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Presumably pv_clock must work with different host operating systems.
-Similarly, KVM must work with different guest operating systems.
-Perhaps I'm wrong, but I imagine re-engineering time virtualization
-might be a pretty big deal,  far exceeding the scope of these patches.
+--8323328-2071792777-1646418653=:3408681
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8BIT
 
-While it is not something that I really need, it is also not obvious
-that the virtualization people would see any benefit.
 
-My primary goal is to be able to make a trace covering the host and
-(Linux) guests.  Intel PT can do that.  It can trace straight through
-VM-Entries/Exits, politely noting them on the way past.  Perf tools
-already supports decoding that, but only for tracing the kernel because
-it needs more information (so-called side-band events) to decode guest
-user space.  The simplest way to get that is to run perf inside the
-guests to capture the side-band events, and then inject them into the
-host perf.data file during post processing.  That, however, requires a
-clock that works for both host and guests.  TSC is suitable because
-KVM largely leaves it alone, except for VMX TSC Offset and Scaling,
-but that has to be dealt with anyway because it also affects the
-Intel PT trace.
+
+On Fri, 4 Mar 2022, Russ Weight wrote:
+
+>
+>
+> On 3/3/22 14:04, Tom Rix wrote:
+>>
+>> On 3/2/22 4:35 PM, matthew.gerlach@linux.intel.com wrote:
+>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>
+>>> Add documentation on identifying FPGA based PCI cards prompted
+>>> by discussion on the linux-fpga@vger.kernel.org mailing list.
+>>>
+>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>> ---
+>>> v2: Introduced in v2.
+>>> ---
+>>>   Documentation/fpga/dfl.rst | 20 ++++++++++++++++++++
+>>>   1 file changed, 20 insertions(+)
+>>>
+>>> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+>>> index ef9eec71f6f3..5fb2ca8e76d7 100644
+>>> --- a/Documentation/fpga/dfl.rst
+>>> +++ b/Documentation/fpga/dfl.rst
+>>> @@ -502,6 +502,26 @@ Developer only needs to provide a sub feature driver with matched feature id.
+>>>   FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme-pr.c)
+>>>   could be a reference.
+>>>   +PCI Device Identification
+>>> +================================
+>>> +Since FPGA based PCI cards can be reconfigured to a perform a completely
+>>> +new function at runtime, properly identifying such cards and binding the
+>>> +correct driver can be challenging. In many use cases, deployed FPGA based
+>>> +PCI cards are essentially static and the PCI Product ID and Vendor ID pair
+>>> +is sufficient to identify the card.  The DFL framework helps with the
+>>> +dynamic case of deployed FPGA cards changing at run time by providing
+>>> +more detailed information about card discoverable at runtime.
+>>> +
+>>> +At one level, the DFL on a PCI card describes the function of the card.
+>>> +However, the same DFL could be instantiated on different physical cards.
+>>> +Conversely, different DFLs could be instantiated on the same physical card.
+>>> +Practical management of a cloud containing a heterogeneous set of such cards
+>>> +requires a PCI level of card identification. While the PCI Product ID and
+>>> +Vendor ID may be sufficient to bind the dfl-pci driver, it is expected
+>>> +that FPGA PCI cards would advertise suitable Subsystem ID and Subsystem
+>>> +Vendor ID values. PCI Vital Product Data (VPD) can also be used for
+>>> +more granular information about the board.
+>>
+>> This describes a bit more of the problem, it should describe it wrt ofs dev id. The introduction of the ofs dev should be explicitly called out as a generic pci id.
+
+The problem I'm describing exists for all FPGA based PCI cards; so I am 
+purposely trying to be abstract as much as possible.
+
+>>
+>> Why couldn't one of the old pci id's be reused ?
+
+Yes, old pci id's could be reused, and people have done just that.  We 
+thought a new PCI ID would minimize confusion with cards that have already 
+been deployed.
+
+>>
+>> How will the subvendor/subid be enforced ?
+
+Subvendor and Subid are managed just like any other PCI card with or 
+without a FPGA.
+
+>>
+>> Is the current security manager patchset smart enough to save the board from being bricked when a user doesn't look beyond the pci id ?
+>
+> Yes - the security manager is invoked based of DFL feature ID and revision, and the functionality is differentiated based on the same information.
+>
+>>
+>> What happens if a board uses this device id but doesn't have a max10 to do the update ?
+
+If a board doesn't have a max10, then there will be no DFH for a max10 in 
+the board's DFLs.  Presumeably, the board would need some update process, 
+and an approprate DFH would be in that board's DFL.
+
+>>
+>> Tom
+>>
+>>> +
+>>>   Location of DFLs on a PCI Device
+>>>   ================================
+>>>   The original method for finding a DFL on a PCI device assumed the start of the
+>>
+>
+>
+--8323328-2071792777-1646418653=:3408681--
