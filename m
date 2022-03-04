@@ -2,90 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 21:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbiCDVDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 16:03:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
+        id S229821AbiCDVEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 16:04:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiCDVDr (ORCPT
+        with ESMTP id S229794AbiCDVE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 16:03:47 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4D46D4C3
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 13:02:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646427778; x=1677963778;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=84rzB7EGCaXOZL1cBO3nEdZINVTxlpedFJz4fEGxUic=;
-  b=HGW00jORUgLSWp8CiOzpAhHiHcKA/4a2HCXJzSuz/PwN8wlBt9eK9pfW
-   IlzhKomc5SoQJQLlhRHgBg5anqx33N/p9CIalN/Os72ds+NWHxvkk1wnH
-   XbIOov/kd7O2yDw/rwwKhklPFOIuTX5hJjElcjbNL1B9tSvDQZ9NZAzN3
-   GqMYuxBK+YqyDuDSKYLyezgkD5lgHSHeclnENu3DqmLVAeT7r2cN9YXq/
-   c8bSxdR294uzmcZaQkEB/C/H5NBYAK54vq3U2LPMIJOP6NDd11Qo9TZ2C
-   aIcbyvxZslk5ldjksDVmWBDCbV6F2aT0Ke0q4rb3NHBHEBekQng0ccxHl
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="340493361"
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="340493361"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 13:02:58 -0800
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="810883039"
-Received: from fushengl-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.64.239])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 13:02:58 -0800
-From:   ira.weiny@intel.com
-To:     Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] x86/pkeys: Remove __arch_set_user_pkey_access() declaration
-Date:   Fri,  4 Mar 2022 13:02:48 -0800
-Message-Id: <20220304210248.3490549-1-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 4 Mar 2022 16:04:28 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423515FCA;
+        Fri,  4 Mar 2022 13:03:40 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 040BA1F461A5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646427819;
+        bh=RguIVMUzGoTQTBf2hjCZ6TUs5RZVfDH4SuiI8h8Kljg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FBuL2L308Ew+2uXBezgOcyRKa7g8U6w/sGREWzp++LUsUUt1d9tR3iV7MPcw5wUOI
+         TTGKfvPD6KaIen0hC5967lteFN4C+LyOtCdIGuZkAlUOqexJGPxKUxeaUCaKz3R9DZ
+         l/LWcSLjqdkpPFF0AKLnDyybrpuV600LgD7DzLvxKojNTscZD7sr2/ztaoOjke3fWP
+         /mD9onUAf0NHihanqB0QHS1nz7x8Mv8g2UYom8X4ZUIlKBJh/g/yMmTvq+v2RDKlwa
+         Qbsf7PF1uZJke93JwLsKKUhjL8A+MpzBuRagcqo6JN1IdqKqCO8unPpuWLB0lFJjos
+         VA+eyMDUv2lmA==
+Received: by mercury (Postfix, from userid 1000)
+        id B2BB91060602; Fri,  4 Mar 2022 22:03:36 +0100 (CET)
+Date:   Fri, 4 Mar 2022 22:03:36 +0100
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Yihao Han <hanyihao@vivo.com>
+Cc:     Chen-Yu Tsai <wens@csie.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+Subject: Re: [PATCH] power: supply: axp20x_ac_power: fix
+ platform_get_irq.cocci warning
+Message-ID: <20220304210336.pxuof34536g5w2ku@mercury.elektranox.org>
+References: <20220303122719.2855-1-hanyihao@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tm4mdjva6vpqbfts"
+Content-Disposition: inline
+In-Reply-To: <20220303122719.2855-1-hanyihao@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
 
-In the x86 code __arch_set_user_pkey_access() is not used and is not
-defined.
+--tm4mdjva6vpqbfts
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Remove the dead declaration.
+Hi,
 
-To: Dave Hansen <dave.hansen@intel.com>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
----
- arch/x86/include/asm/pkeys.h | 5 -----
- 1 file changed, 5 deletions(-)
+On Thu, Mar 03, 2022 at 04:27:19AM -0800, Yihao Han wrote:
+> Remove dev_err() messages after platform_get_irq*() failures.
+> platform_get_irq() already prints an error.
+>=20
+> Generated by: scripts/coccinelle/api/platform_get_irq.cocci
+>=20
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> ---
 
-diff --git a/arch/x86/include/asm/pkeys.h b/arch/x86/include/asm/pkeys.h
-index 1d5f14aff5f6..5292e6dfe2a7 100644
---- a/arch/x86/include/asm/pkeys.h
-+++ b/arch/x86/include/asm/pkeys.h
-@@ -41,9 +41,6 @@ static inline int arch_override_mprotect_pkey(struct vm_area_struct *vma,
- 	return __arch_override_mprotect_pkey(vma, prot, pkey);
- }
- 
--extern int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
--		unsigned long init_val);
--
- #define ARCH_VM_PKEY_FLAGS (VM_PKEY_BIT0 | VM_PKEY_BIT1 | VM_PKEY_BIT2 | VM_PKEY_BIT3)
- 
- #define mm_pkey_allocation_map(mm)	(mm->context.pkey_allocation_map)
-@@ -120,8 +117,6 @@ int mm_pkey_free(struct mm_struct *mm, int pkey)
- 
- extern int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
- 		unsigned long init_val);
--extern int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
--		unsigned long init_val);
- 
- static inline int vma_pkey(struct vm_area_struct *vma)
- {
--- 
-2.35.1
+Thanks, queued.
 
+-- Sebastian
+
+>  drivers/power/supply/axp20x_ac_power.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/power/supply/axp20x_ac_power.c b/drivers/power/suppl=
+y/axp20x_ac_power.c
+> index ac360016b08a..57e50208d537 100644
+> --- a/drivers/power/supply/axp20x_ac_power.c
+> +++ b/drivers/power/supply/axp20x_ac_power.c
+> @@ -377,11 +377,9 @@ static int axp20x_ac_power_probe(struct platform_dev=
+ice *pdev)
+>  	/* Request irqs after registering, as irqs may trigger immediately */
+>  	for (i =3D 0; i < axp_data->num_irq_names; i++) {
+>  		irq =3D platform_get_irq_byname(pdev, axp_data->irq_names[i]);
+> -		if (irq < 0) {
+> -			dev_err(&pdev->dev, "No IRQ for %s: %d\n",
+> -				axp_data->irq_names[i], irq);
+> +		if (irq < 0)
+>  			return irq;
+> -		}
+> +
+>  		power->irqs[i] =3D regmap_irq_get_virq(axp20x->regmap_irqc, irq);
+>  		ret =3D devm_request_any_context_irq(&pdev->dev, power->irqs[i],
+>  						   axp20x_ac_power_irq, 0,
+> --=20
+> 2.17.1
+>=20
+
+--tm4mdjva6vpqbfts
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmIifqgACgkQ2O7X88g7
++pr4fQ/+P4vl8QdMKX868E69dvmd9lMhr8cLEUqxkdXmNFZi07MX5qAe9WjRAc6U
+xxrzbb97LpHEvoWTjTG9VTn6CHzej/WhVg3Yh5MRy+TZ7Dt2W3660rVKrIFr1NbI
+ghfDpU9Ud7bFDC50vAlMzyX7aNrGBTsAYFh+WlYzvgtNp5UsG9NnogjKan7Pzml6
+9+V1nlsEb4D6XCBQNi9GzpFFS3nGvUmuL9iHKOzK5nNAO72wqJ3zvq4ZVu5oz2kQ
+PyFXHjqX0qRszB9qQpRkCB02t+o3ttSCX2YfsClAOwoYrK4r/1Cq8nZWbf066C3p
+0HQXtx1GBjavk6XQ/kYVUobjPn39fuLSSxm89ScKKINvN3wgjpYHZMB6ieWqL3tR
+v4+oAPrq2PL0GAUFBrlUIcxE6WcC9QkB3w6V4S7hfdWfvOAQo5Ziy7yVU9oYcggj
+7v9Q7OfSsmeqa1IrL16SqAUwWkTJI32hZ3zzmV/Ip+uRDVbWPXIKl9It4qHPjHBW
+jXtUktuIVcrVGrM4zeG50jH4t17KjOcy73qviA63Rc0/wmadBRY+gjnMOVshnSqH
+SFgQzhwvG6n8v7vENmHK3qVCN4T6fZo8nM/DYE+txypUDLJMJehh8f2m63sFLeus
+Zof+q1LTYiyMaal4pCuNP4A1yFq2jlr/oms/TfTu6fEJGihwX2w=
+=Iw+l
+-----END PGP SIGNATURE-----
+
+--tm4mdjva6vpqbfts--
