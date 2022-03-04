@@ -2,235 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3209C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 06:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D17C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 06:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiCDGwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 01:52:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
+        id S238589AbiCDG6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 01:58:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234866AbiCDGwR (ORCPT
+        with ESMTP id S234866AbiCDG6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 01:52:17 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343F118E3D5
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 22:51:29 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id bk29so11211559wrb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 22:51:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GRZSImiH7Wss3a2faHehvfqVy9T4SH0ZG+g8SuIj5A8=;
-        b=UEhxPLytUhCPSOLtYfNjeMJ73Nqs2iCDCinLvHxtTcSLdJjlxzqasuly8aOshP5MtA
-         xGy4DQMC+agAgL/KaYLVBb/8UskiPw/kD4OOCQANXau9vPkV8KZYlen+UsJYFNHnLuG+
-         PpTOxiqLmznpwpaeKe77vgcIexcXpsbqOsPH4B3PFUAHrJAD+RvY4uAFJpODYoNnGYBK
-         UFPJ4bSISo01fbWTKujxv1R5aQp7UWFbPc71n/m5tWowcK1Aegt8PJZa3upIcgRHVK+p
-         RhDrBnofYOEtGUh163Tw0luqESH0j1Yq5lnma5PDFLpZRICuJWlRO2Kwccurs+JX2i2E
-         dXjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GRZSImiH7Wss3a2faHehvfqVy9T4SH0ZG+g8SuIj5A8=;
-        b=Ij0txTmOZYQtiDorri7Y638EIOYg8F9NUGzziMBZWU49vEQBjZZtwhlJqfgpyPX5i9
-         FT5/sovv58426QIlib2W1iLCu8V1rNrOC087zNwxSznIxRAkAEWe6fW32ZwOBzLQYNR9
-         fHzpEwq0sDBPuQdUqhq29GE7cr2pTfgV7AFAq55G1BcO2yMNUgdayrG2VDQO3Uc8Ig0b
-         NR85YROZ+3s+Z6aww5xYgNw1F9JpIX6yGx0j99vflOoW3anyqwfAtktbJaL8YQqhuRwL
-         wAEuRadF7uapo4r8MyOLFD4etDXaSLf8GH30bZRUBZSSHhV3/z4MScXuyZiCAP/19FDQ
-         rAkg==
-X-Gm-Message-State: AOAM532KKsOGLCCE61n1cgsJDma2sg+qOjHMtKsTbQrVeQLt4wecTRsZ
-        RJ5R60sIpJQrSu1zvifIk7CXes0UF6FCap07chWing==
-X-Google-Smtp-Source: ABdhPJxiVAtU1A7z1i59IHCoGvemYK4OIg1qA96J/v4q3pxraY3oW56Zz4BtnLSZ2OAKjPIQoPXo/xJwv+/P/w68Q8k=
-X-Received: by 2002:adf:fd0a:0:b0:1f0:25fd:4082 with SMTP id
- e10-20020adffd0a000000b001f025fd4082mr8680894wrr.501.1646376687561; Thu, 03
- Mar 2022 22:51:27 -0800 (PST)
-MIME-Version: 1.0
-References: <20220303090643.241747-1-davidgow@google.com> <YiD7R2wRxoWxtVq7@dev-arch.thelio-3990X>
-In-Reply-To: <YiD7R2wRxoWxtVq7@dev-arch.thelio-3990X>
-From:   David Gow <davidgow@google.com>
-Date:   Fri, 4 Mar 2022 14:51:16 +0800
-Message-ID: <CABVgOSkQPNK59vvhAMFM_5jWF-hNPZXdou8UC31RM0TEXT-=Fg@mail.gmail.com>
-Subject: Re: [PATCH] um: clang: Strip out -mno-global-merge from USER_CFLAGS
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-kbuild@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        llvm@lists.linux.dev,
+        Fri, 4 Mar 2022 01:58:00 -0500
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0FE418DAB9;
+        Thu,  3 Mar 2022 22:57:01 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 9549480E1;
+        Fri,  4 Mar 2022 06:55:47 +0000 (UTC)
+Date:   Fri, 4 Mar 2022 08:56:59 +0200
+From:   Tony Lindgren <tony@atomide.com>
+To:     Adam Ford <aford173@gmail.com>
+Cc:     Linux-OMAP <linux-omap@vger.kernel.org>,
+        "Andrew F . Davis" <afd@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Keerthy <j-keerthy@ti.com>, Nishanth Menon <nm@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Roger Quadros <rogerq@ti.com>, Suman Anna <s-anna@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a6863805d95ef127"
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        =?utf-8?B?QW5kcsOp?= Hentschel <nerv@dawncrow.de>,
+        "H . Nikolaus Schaller" <hns@goldelico.com>
+Subject: Re: [PATCH 6/7] bus: ti-sysc: Implement SoC revision handling
+Message-ID: <YiG4O2h4oVX7CqIe@atomide.com>
+References: <20200221195256.54016-1-tony@atomide.com>
+ <20200221195256.54016-7-tony@atomide.com>
+ <CAHCN7xJ0j4kZXiQs-5GrrKLxXYgkYJsnNDreH0MKi8mHPs_Xvw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHCN7xJ0j4kZXiQs-5GrrKLxXYgkYJsnNDreH0MKi8mHPs_Xvw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000a6863805d95ef127
-Content-Type: text/plain; charset="UTF-8"
+Hi,
 
-On Fri, Mar 4, 2022 at 1:30 AM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> Hi David,
->
-> On Thu, Mar 03, 2022 at 05:06:42PM +0800, David Gow wrote:
-> > The things built with USER_CFLAGS don't seem to recognise it as a
-> > compiler option, and print a warning:
-> > clang: warning: argument unused during compilation: '-mno-global-merge' [-Wunused-command-line-argument]
-> >
-> > Fixes: 744814d2fa ("um: Allow builds with Clang")
-> > Signed-off-by: David Gow <davidgow@google.com>
-> > ---
-> >
-> > This warning shows up after merging:
-> > https://lore.kernel.org/lkml/20220227184517.504931-6-keescook@chromium.org/
-> >
-> > I'm not 100% sure why this is necessary, but it does seem to work. All
-> > the attempts to get rid of -mno-global-merge entirely have been met with
-> > skepticism, but I'm guessing that it's not a problem for just the UML
-> > "user" files, as they shouldn't(?) interact too much with modules.
->
-> Thank you for the patch! I think it is correct, as this flag only works
-> for AArch64 and ARM, as it is only used in Clang::AddAArch64TargetArgs()
-> and Clang::AddARMTargetArgs() in clang/lib/Driver/ToolChains/Clang.cpp,
-> which are obviously never called with UML. I am not sure why we do not
-> see warning during regular kernel builds, maybe something about how UML
-> objects are compiled exposes this?
+* Adam Ford <aford173@gmail.com> [220302 14:37]:
+> I apologize for digging up an old thread, but I finally managed to get
+> my hands on an OMAP3503.  It seems like older kernels do not boot at
+> all or hang somewhere in the boot process.  I am still seeing a
+> difference in behavior between OMAP3503 and OMAP3530, where 3505
+> throws a bunch of splat and a kernel panic, while the 3530 appears to
+> boot happily.
+> 
+> Using the latest 5.17-rc6, I had to remove some IVA and SGX references
+> from omap_l3_smx.h to get the 3503 to stop crashing on boot.
 
-Yeah: this only seems to show up with UML source compiled as "user"
-files (i.e., talking to the host system). Most of the kernel source
-doesn't show the warning because -Qunused-arguments is set somewhere,
-probably in KBUILD_CPPFLAGS, which doesn't filter down into
-USER_CFLAGS:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Makefile?id=7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3#n784
+OK interesting, I did not know those registers are not accessible
+on 3503.
 
-Is this flag supposed to only work on ARM/AArch64, or is it just
-currently not implemented anywhere else. If it's actually
-ARM-specific, then moving it to the arch/arm{,64} makefile as in Kees'
-patch definitely makes more sense. If it's going to show up on other
-architectures at some point anyway, maybe something like this makes
-sense.
+> Do you have any ideas how we can make the omap3_l3_app_bases and
+> omap3_l3_debug_bases more cleanly remove the IVA and SGX references
+> if/when OMAP3503 is detected?  I assume the same algorithm would have
+> to detect a AM3703 as well.  I'm trying to get my hands on an AM3703
+> to see if there is similar behavior as what I'm seeing on the
+> OMAP3503.
 
->
-> Regardless, I would definitely like to clean up this instance of the
-> warning because I would like to make this warning a hard error so that
-> we do not get cryptic cc-option failures:
->
-> https://github.com/ClangBuiltLinux/linux/issues/1587
->
-> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
->
-> One small comment below.
->
-> >  arch/um/Makefile | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/arch/um/Makefile b/arch/um/Makefile
-> > index f2fe63bfd819..320b09cd513c 100644
-> > --- a/arch/um/Makefile
-> > +++ b/arch/um/Makefile
-> > @@ -75,6 +75,10 @@ USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
-> >               -D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
-> >               -idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
-> >
-> > +ifdef CONFIG_CC_IS_CLANG
->
-> Is this ifdef needed?
->
-No: it works fine without the ifdef: I just wanted to limit the damage
-I could do playing with things I didn't fully understand. :-)
+As there are possibly multiple omap3 variants used on the same
+boards, we need to rely on the runtime detection of the SoC.
+So yeah soc_device_attribute is the way to go here.
 
-> > +USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
-> > +endif
-> > +
-> >  #This will adjust *FLAGS accordingly to the platform.
-> >  include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
-> >
+I don't recall any similar issues booting 3703 but it's been a while
+so worth testing for sure.
 
-Cheers,
--- David
+Regards,
 
---000000000000a6863805d95ef127
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-G7p3AiuB2sgfq6cOpbO5MEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
-AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
-LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
-Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQBsL34EJkCtu9Nu
-2+R6l1Qzno5Gl+N2Cm6/YLujukDGYa1JW27txXiilR9dGP7yl60HYyG2Exd5i6fiLDlaNEw0SqzE
-dw9ZSIak3Qvm2UybR8zcnB0deCUiwahqh7ZncEPlhnPpB08ETEUtwBEqCEnndNEkIN67yz4kniCZ
-jZstNF/BUnI3864fATiXSbnNqBwlJS3YkoaCTpbI9qNTrf5VIvnbryT69xJ6f25yfmxrXNJJe5OG
-ncB34Cwnb7xQyk+uRLZ465yUBkbjk9pC/yamL0O7SOGYUclrQl2c5zzGuVBD84YcQGDOK6gSPj6w
-QuBfOooZPOyZZZ8AMih7J980MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
-R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
-MDIwAhABQeVybOOpR4bOOXZYL5T3MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCo
-gZZNfyHC7gt32VURB7bs1waIRwAVDcFVg+WAp+4WPzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0yMjAzMDQwNjUxMjdaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
-BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
-CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAT4EZ9MXnq6fg9Dha0yqy
-ueRk6qFYjNDrL33X/dy8jrP2j4Z+SCgRWnxM73PN4kGbQUksGTqkOl3uBJ5gF96+DHphqLQJFCxZ
-8I+MMkY9XQ1hK6sxugoNxwDXGsBbXFBuRYCKAUIeDM2wel2nj/foSO8kf+O5wbzIx5gBXJa4SdWu
-JAVKmSJtjlspiPZOKvtsWPM2EyetLWOf29VX+fT2LHHn2sO/zCqmrtrgn306Zl629PMDBVG+j//k
-mPZHPc9hijjliTjp5MvzCtqH5eAX/kT4MfE85F3tJM2fPJ/+Iq0f8reHT/TdCS59CGEYg++SZunD
-qfwkhyGcsIj0Ha9zDg==
---000000000000a6863805d95ef127--
+Tony
