@@ -2,199 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234560AbiCDIji convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:39:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46660 "EHLO
+        id S235210AbiCDIkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234055AbiCDIiq (ORCPT
+        with ESMTP id S234212AbiCDIja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:38:46 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBF124094;
-        Fri,  4 Mar 2022 00:37:58 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2245JNOH021192;
-        Fri, 4 Mar 2022 08:36:52 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ek8mxpp6e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 08:36:52 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2248XJ2V027393;
-        Fri, 4 Mar 2022 08:36:50 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3ek4k8124g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 08:36:50 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2248amEB47186186
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 4 Mar 2022 08:36:48 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1AEAD42042;
-        Fri,  4 Mar 2022 08:36:48 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 73D0D42045;
-        Fri,  4 Mar 2022 08:36:47 +0000 (GMT)
-Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri,  4 Mar 2022 08:36:47 +0000 (GMT)
-Received: from yukon.home (unknown [9.171.91.16])
-        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 89B872200FD;
-        Fri,  4 Mar 2022 09:36:45 +0100 (CET)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-Subject: [PATCH v3 00/11] spi: spi-mem: Add driver for Aspeed SMC controllers
-Date:   Fri,  4 Mar 2022 09:36:32 +0100
-Message-Id: <20220304083643.1079142-1-clg@kaod.org>
-X-Mailer: git-send-email 2.34.1
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: RFuuLzC8JejxWrm4oynsn6-IAqVUMeMt
-X-Proofpoint-ORIG-GUID: RFuuLzC8JejxWrm4oynsn6-IAqVUMeMt
-Content-Transfer-Encoding: 8BIT
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-04_02,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=999 lowpriorityscore=0 mlxscore=0 impostorscore=0 adultscore=0
- spamscore=0 priorityscore=1501 phishscore=0 suspectscore=0 bulkscore=0
- clxscore=1034 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203040044
+        Fri, 4 Mar 2022 03:39:30 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2234119DE9A;
+        Fri,  4 Mar 2022 00:38:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646383098; x=1677919098;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=deXF0w/g3GEKCFYlAA26gSaxEU6JgT+SfaAaWeFPzgM=;
+  b=Fvnn/mbXZYKfWrFqo8E2d+tgdittAilRJ3WOiPwOKfrLzKlITtaqeGo2
+   7PEcbR5Z5IeViT/Yf8YppeaXWN2pCrXingU7wRC2VTrNIfEe0i+GtZdRU
+   u+H+Pai3hBZ/eHAWAYHz6r6BRTOIvjboolwJfKsGFEAJLLDDHI0ZKydRY
+   I1XK5LmSmFyOeg+kpQpQunMBD6n0xPllh28Gg7aYSNW5pv/IE9qPMGHza
+   8Cmm5TSn8sneuB3E+6b8XkYEaXXuMh3i80Uikl/+g+aIWDC9AYomSsGYh
+   CHLOJHSUHvGje4e4v1/EtZ6LSmjcoLx2VPz5nnP1+mKbjSMDJ8NbVwMZg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="233889281"
+X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
+   d="scan'208";a="233889281"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:17 -0800
+X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
+   d="scan'208";a="552141448"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 00:38:11 -0800
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>,
+        Robert Hoo <robert.hu@linux.intel.com>
+Subject: [PATCH v7 2/8] KVM: VMX: Extend BUILD_CONTROLS_SHADOW macro to support 64-bit variation
+Date:   Fri,  4 Mar 2022 16:07:19 +0800
+Message-Id: <20220304080725.18135-3-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220304080725.18135-1-guang.zeng@intel.com>
+References: <20220304080725.18135-1-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Robert Hoo <robert.hu@linux.intel.com>
 
-This series adds a new SPI driver using the spi-mem interface for the
-Aspeed static memory controllers of the AST2600, AST2500 and AST2400
-SoCs.
+The Tertiary VM-Exec Control, different from previous control fields, is 64
+bit. So extend BUILD_CONTROLS_SHADOW() by adding a 'bit' parameter, to
+support both 32 bit and 64 bit fields' auxiliary functions building.
 
- * AST2600 Firmware SPI Memory Controller (FMC)
- * AST2600 SPI Flash Controller (SPI1 and SPI2)
- * AST2500 Firmware SPI Memory Controller (FMC)
- * AST2500 SPI Flash Controller (SPI1 and SPI2)
- * AST2400 New Static Memory Controller (also referred as FMC)
- * AST2400 SPI Flash Controller (SPI)
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Robert Hoo <robert.hu@linux.intel.com>
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+---
+ arch/x86/kvm/vmx/vmx.h | 59 ++++++++++++++++++++++--------------------
+ 1 file changed, 31 insertions(+), 28 deletions(-)
 
-It is based on the current OpenBMC kernel driver [1], using directly
-the MTD SPI-NOR interface and on a patchset [2] previously proposed
-adding support for the AST2600 only. This driver takes a slightly
-different approach to cover all 6 controllers.
-
-It does not make use of the controller register disabling Address and
-Data byte lanes because is not available on the AST2400 SoC. We could
-introduce a specific handler for new features available on recent SoCs
-if needed. As there is not much difference on performance, the driver
-chooses the common denominator: "User mode" which has been heavily
-tested in [1]. "User mode" is also used as a fall back method when
-flash device mapping window is too small.
-
-Problems to address with spi-mem were the configuration of the mapping
-windows and the calibration of the read timings. The driver handles
-them in the direct mapping handler when some knowledge on the size of
-the flash device is know. It is not perfect but not incorrect either.
-The algorithm is one from [1] because it doesn't require the DMA
-registers which are not available on all controllers.
-
-Direct mapping for writes is not supported (yet). I have seen some
-corruption with writes and I preferred to use the safer and proven
-method of the initial driver [1]. We can improve that later.
-
-The driver supports Quad SPI RX transfers on the AST2600 SoC but it
-didn't have the expected results. Therefore it is not activated yet.
-There are some issues on the pinctrl to investigate first. 
-
-The series does not remove the current Aspeed SMC driver but prepares
-ground for its removal by changing its CONFIG option. This last step
-can be addressed as a followup when the new driver using the spi-mem
-interface has been sufficiently exposed. 
-
-Tested on:
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 7f2c82e7f38f..e07c76974fb0 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -456,35 +456,38 @@ static inline u8 vmx_get_rvi(void)
+ 	return vmcs_read16(GUEST_INTR_STATUS) & 0xff;
+ }
  
- * OpenPOWER Palmetto (AST2400)
- * Facebook Wedge 100 BMC (AST2400) by Tao Ren <rentao.bupt@gmail.com>
- * Evaluation board (AST2500) 
- * Inspur FP5280G2 BMC (AST2500) by John Wang <wangzq.jn@gmail.com>
- * Facebook Backpack CMM BMC (AST2500) by Tao Ren <rentao.bupt@gmail.com>
- * OpenPOWER Witherspoon (AST2500)
- * Evaluation board (AST2600 A0 and A3)
- * Rainier board (AST2600)
+-#define BUILD_CONTROLS_SHADOW(lname, uname)				    \
+-static inline void lname##_controls_set(struct vcpu_vmx *vmx, u32 val)	    \
+-{									    \
+-	if (vmx->loaded_vmcs->controls_shadow.lname != val) {		    \
+-		vmcs_write32(uname, val);				    \
+-		vmx->loaded_vmcs->controls_shadow.lname = val;		    \
+-	}								    \
+-}									    \
+-static inline u32 __##lname##_controls_get(struct loaded_vmcs *vmcs)	    \
+-{									    \
+-	return vmcs->controls_shadow.lname;				    \
+-}									    \
+-static inline u32 lname##_controls_get(struct vcpu_vmx *vmx)		    \
+-{									    \
+-	return __##lname##_controls_get(vmx->loaded_vmcs);		    \
+-}									    \
+-static inline void lname##_controls_setbit(struct vcpu_vmx *vmx, u32 val)   \
+-{									    \
+-	lname##_controls_set(vmx, lname##_controls_get(vmx) | val);	    \
+-}									    \
+-static inline void lname##_controls_clearbit(struct vcpu_vmx *vmx, u32 val) \
+-{									    \
+-	lname##_controls_set(vmx, lname##_controls_get(vmx) & ~val);	    \
++#define BUILD_CONTROLS_SHADOW(lname, uname, bits)			\
++static inline								\
++void lname##_controls_set(struct vcpu_vmx *vmx, u##bits val)		\
++{									\
++	if (vmx->loaded_vmcs->controls_shadow.lname != val) {		\
++		vmcs_write##bits(uname, val);				\
++		vmx->loaded_vmcs->controls_shadow.lname = val;		\
++	}								\
++}									\
++static inline u##bits __##lname##_controls_get(struct loaded_vmcs *vmcs)\
++{									\
++	return vmcs->controls_shadow.lname;				\
++}									\
++static inline u##bits lname##_controls_get(struct vcpu_vmx *vmx)	\
++{									\
++	return __##lname##_controls_get(vmx->loaded_vmcs);		\
++}									\
++static inline								\
++void lname##_controls_setbit(struct vcpu_vmx *vmx, u##bits val)		\
++{									\
++	lname##_controls_set(vmx, lname##_controls_get(vmx) | val);	\
++}									\
++static inline								\
++void lname##_controls_clearbit(struct vcpu_vmx *vmx, u##bits val)	\
++{									\
++	lname##_controls_set(vmx, lname##_controls_get(vmx) & ~val);	\
+ }
+-BUILD_CONTROLS_SHADOW(vm_entry, VM_ENTRY_CONTROLS)
+-BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS)
+-BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL)
+-BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL)
+-BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL)
++BUILD_CONTROLS_SHADOW(vm_entry, VM_ENTRY_CONTROLS, 32)
++BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS, 32)
++BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL, 32)
++BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL, 32)
++BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL, 32)
  
-[1] https://github.com/openbmc/linux/blob/dev-5.15/drivers/mtd/spi-nor/controllers/aspeed-smc.c
-[2] https://patchwork.ozlabs.org/project/linux-aspeed/list/?series=212394
-
-Thanks,
-
-C. 
-
-Changes in v3:
-
- - Fixed compile warning on aspeed_spi_dirmap_read() prototype reported
-   by kernel test robot 
- - Removed unnecessary entry in ast2600-fmc.yaml
- - New patch from Tao to set spi-max-frequency on all FMC devices
-
-Changes in v2:
-
- - Fixed dt_binding_check warnings (Rob)
- - New entry in MAINTAINERS 
- - Addressed Lukas comments regarding the SPI controller registration
-   and device removal. Checked with driver bind/unbind   
- - Introduced setup and cleanup handlers and removed routine looping
-   on the DT children properties (Pratyush)
- - Clarified in commit log requirements for training.
- - Removed defconfig changes of patch 1 since they were reverted in
-   the last patch (Joel)
-
-Cédric Le Goater (10):
-  mtd: spi-nor: aspeed: Rename Kconfig option
-  ARM: dts: aspeed: Adjust "reg" property of FMC/SPI controllers
-  dt-bindings: spi: Add Aspeed SMC controllers device tree binding
-  spi: spi-mem: Add driver for Aspeed SMC controllers
-  spi: aspeed: Add support for direct mapping
-  spi: aspeed: Adjust direct mapping to device size
-  spi: aspeed: Workaround AST2500 limitations
-  spi: aspeed: Add support for the AST2400 SPI controller
-  spi: aspeed: Calibrate read timings
-  ARM: dts: aspeed: Enable Dual SPI RX transfers
-
-Tao Ren (1):
-  ARM: dts: aspeed-g4: Set spi-max-frequency for all flashes
-
- drivers/spi/spi-aspeed-smc.c                  | 1184 +++++++++++++++++
- .../bindings/spi/aspeed,ast2600-fmc.yaml      |   87 ++
- MAINTAINERS                                   |   10 +
- arch/arm/boot/dts/aspeed-g4.dtsi              |   16 +-
- arch/arm/boot/dts/aspeed-g5.dtsi              |   16 +-
- arch/arm/boot/dts/aspeed-g6.dtsi              |   17 +-
- drivers/mtd/spi-nor/controllers/Kconfig       |    4 +-
- drivers/mtd/spi-nor/controllers/Makefile      |    2 +-
- drivers/spi/Kconfig                           |   11 +
- drivers/spi/Makefile                          |    1 +
- 10 files changed, 1329 insertions(+), 19 deletions(-)
- create mode 100644 drivers/spi/spi-aspeed-smc.c
- create mode 100644 Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
-
+ /*
+  * VMX_REGS_LAZY_LOAD_SET - The set of registers that will be updated in the
 -- 
-2.34.1
+2.27.0
 
