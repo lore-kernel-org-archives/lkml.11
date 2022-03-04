@@ -2,210 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6594C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 08:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235162AbiCDIxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 03:53:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53626 "EHLO
+        id S235184AbiCDIz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 03:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235081AbiCDIxP (ORCPT
+        with ESMTP id S229789AbiCDIz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 03:53:15 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E27719E03C
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 00:52:24 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id 5so10998346lfz.9
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 00:52:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JVS7H4RjB5XseP/Xjap3fzMX0Z4jiKkznceF9UGo7Zs=;
-        b=BC9k+77wH7iWvQo4xoNDRfhzbdUBsksudCgI5FMkYhI6yPGZsN5yG/cANwi/w3qP/P
-         iHbEtuCTyne3zPZkM6BsdZYRudql0R2D1VkE0665hJT3Col8QNxjrKQs4Dt/O2lJT0bR
-         bwyAPjoWWnKwpenXrZvwTRR5vdofYEb98Dj8Sq/eMrQ3xhtPdnHqBaMmXDxuOiRFLxrF
-         yhaiQXv8M0A/AUqQfGc2zc54Mf9yNyg/TgDPxC72NwsANh94bSgeQBX8lZSeUPgDfAB5
-         d6BPJpPT9rfW2XLl5E3qyeIVOdTuFgK6liM7anWH+pjz83wRo7YKloFvi3oD3ASnP3Ju
-         BvOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JVS7H4RjB5XseP/Xjap3fzMX0Z4jiKkznceF9UGo7Zs=;
-        b=Xs4AWISJU46GC/0yEFRxL0sUiz/P8YlRaoWZfsz5KYVn0jiTh7vaEVbY9kpZ63W9OC
-         Kmt5nB5HR+PBt5RAkXsHFUWhJP1QJmiA8r+Zd3DSmDHxjrAZSGXNeztfs1uSQRKBI112
-         7RZtDvAvxwJ2yOdrvBpRT+PsKfJK5+ARsaZcQPMwJu94JEKMKDblvnhh6jZVPNFmx62D
-         FGwpDHGvio4WJ25omKLRYCPa7jwUvU7dZuc/DXmnphQIpFHqlXYOSo4EVjDpAg6nC2Dk
-         tFiyI+I4AXsEiDKyeNIGA3c3RMCyBCM7B2VeDgP9l04mXqlzwze4eePtg9kr8Vw5nrY5
-         ARDw==
-X-Gm-Message-State: AOAM532xr36KnkiaVnAsN0iSlfgWxjG5i0LMvirl08rPAYG7P/aJzcnv
-        uqD0hIcwr8/VhZZPkqLkKLZ1dMJzbFQJABHJZBOTyA==
-X-Google-Smtp-Source: ABdhPJziXGuvZzENri3frf+wrhfF9pwsHIxWKUsgNiKEGNqwpEsa/j3uYsWTAYwfR2t/w1cQqzDdrE/DKG99LbtagsU=
-X-Received: by 2002:a05:6512:2387:b0:43d:165:b5d1 with SMTP id
- c7-20020a056512238700b0043d0165b5d1mr23767900lfv.510.1646383942830; Fri, 04
- Mar 2022 00:52:22 -0800 (PST)
+        Fri, 4 Mar 2022 03:55:26 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2065.outbound.protection.outlook.com [40.107.94.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D99819DEB2;
+        Fri,  4 Mar 2022 00:54:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hn8wcRvhNK2pDXNMoWtzA0IxQyEZpqG/jIM4ZIfUq3ocrepCdchydmVd9+2j8BYwHLaD/HTkiwklAJ3saqSgXy+Bdil96vZP2A9VZeTQfVJag9a5xHq2RWPTkAigqoVex3qGECCh9Fir0XMuaN1TaLUldtp+OCXdwpWHiqSrYe2+lTeZ/MIgUqzmjpfsC51vA+07vdhq99bpXly9E+d3crJ6x0/Y5vCMD9YRnOJhwK1ZTwxyGC2rPeklaXDLihXHa0/8AYgxJWz2ioNZ/0eJSoBMS/vQAXx/mlbThmdJL5oai92buhRp6Zdol4ryRRkacwUq+jEbVZbvh66CI2/VnA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/r+MatPPCy0pohx0s7qXFkl3DnCYd4LOmBIhKQGzTS4=;
+ b=Ru/EosZHrGV3Y5/vsEQ9DYkSsFuJJcB64LDiSNZrTc0QbQ/8VtzL+UrpIsZFMEyxlnCwF6Eh1zz5AecBP8qwdA7bPi4FtkfR1NM2oHaEVlD9RrGoH9ar11Zk+NpOmr/7VOTd26W6MUH1ELcBTbDxVd/c2jYWFVKXOI5IcHdaxG7ivDXi1ArBLK4g+71HPxf+NeewYTiaPor1y7MdalyCXNrcGA0JUyzusUgS69C2aHdKtRaBFAlrxyqNI1p2/4wR9dEsoXxT50aacJJKVBhzNOF22e9ZEB584kZB8+aa4X141W9dGSluTQsGyfW+q9iK16eOUtdwGUoLWmNLbqQ0kA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/r+MatPPCy0pohx0s7qXFkl3DnCYd4LOmBIhKQGzTS4=;
+ b=a6DoSsZEZtD/v1865SsRnVaoEfwjvgLyrZcdSUaUZVCnqfXgvJR0x57A1py5RsPYRtACBrq/Jcivl602kYzvFMmhvEZnPOXxmIb3q1e9vSCF7ZoLbFWX8aRSp7rJ2QYqERwhtsejnzngr/USwBSrdz9cvy+tB9uVrC71GsCcxTg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by CY4PR12MB1816.namprd12.prod.outlook.com (2603:10b6:903:11c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 4 Mar
+ 2022 08:54:33 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::e03f:901a:be6c:b581]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::e03f:901a:be6c:b581%6]) with mapi id 15.20.5038.014; Fri, 4 Mar 2022
+ 08:54:32 +0000
+Message-ID: <dbb0f319-5e54-8a86-fcee-2c88c9891898@amd.com>
+Date:   Fri, 4 Mar 2022 09:54:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] i2c: at91: use dma safe buffers
+Content-Language: en-US
+To:     Wolfram Sang <wsa@kernel.org>, Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        stable@vger.kernel.org
+References: <20220303161724.3324948-1-michael@walle.cc>
+ <fff424e7-247c-38d8-4151-8b0503a16a7d@amd.com> <YiHIIjSs03gDJmHV@shikoro>
+ <4e25e595-cccb-0970-67b3-fc215bfd5b14@amd.com> <YiHRGa5bDJAuBuHj@shikoro>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <YiHRGa5bDJAuBuHj@shikoro>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM7PR02CA0015.eurprd02.prod.outlook.com
+ (2603:10a6:20b:100::25) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 MIME-Version: 1.0
-References: <CANXhq0p-Jv2HMNu9NaG=03yudanoqV6MH=LhiCspHbj5nTn+GQ@mail.gmail.com>
- <mhng-956767d2-f9fc-4d96-8a05-f7a618e3a16b@palmer-ri-x1c9>
-In-Reply-To: <mhng-956767d2-f9fc-4d96-8a05-f7a618e3a16b@palmer-ri-x1c9>
-From:   Zong Li <zong.li@sifive.com>
-Date:   Fri, 4 Mar 2022 16:52:11 +0800
-Message-ID: <CANXhq0o6=z0e18MGgTvVhWMP8pabV29pdJe-n=ey-p50krGZ8w@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] dmaengine: sf-pdma: Get number of channel by
- device tree
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Vinod <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Bin Meng <bin.meng@windriver.com>,
-        Green Wan <green.wan@sifive.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 907f7b6b-a15f-42dc-00b9-08d9fdbc996f
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1816:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1816671B2E3CC1947950AAD683059@CY4PR12MB1816.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NQg0o6ElwuDjAF2zwxdianzTthERJcOkdffV3ZU0m3/ilSQqPTOIprbpmkFlOAfd0Hy3YZl5sHB/EMfY1wJIMGuO9umQu25AU0jiggjGTxs4xUxQ5TdmlzJqKxsd8mrzEI/ipA4fblN7ZMiMLDX55Plczt8bFTO2TMwQ1p9/vK1jyK21uvC4EuB+FunC3pBPgAEvAlfvkvzyNAY9LSYwMF46JLG4+u2WBRA6tqpPTYe0aWNA0el6ESCHmGf57GFbyYLtmu5zu0dcsWrBfJNUHqWkSJGj6fo8o+aqd1PhJXQG/TTL44720ZfTFgod4T+SD9+R9EoATqPyP8TclBMnAyEsWgShpE84bKAu2Q43esQbaII8XTjvwNNyY2IpcskjX3bcG/rlXTyoUExHuFwhnUOvoqKBw1gfwG3yH6f6agW5D2hLjuMERHSkIGmqGOz3POgDiZA1rwVEqsrDvovLqJxmV+DChbyQLOqxF1xwPJ5Pqp9RUza3Xi+RBDoNPK9ZpWp1kekpaVhLJ3rmXSA5MniUAV0pnvsdr8vddb/DIDfZ74/Z8N2WuCXLRxHxtyDFYGxSi+DdMiaPcuh61up+yDQ7Upv1tokFgEDm3neSjvcw/e4L+wzDIBz9KzzNcSh39CFjgtMQ7MyLXhQ5Bz2KBAaM3uxn/JyFUR0bd0uyOC1OcI9hkDxApwmh9qk/gfNHUt50FPG86nD+blTiiB8GU9d/UtDFYUVhx04god3ibTZRoM+n2gr1d//Wz37wqNdrWaWiBHYZWjDDUIlMMCKW3A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4744005)(7416002)(31686004)(921005)(8936002)(36756003)(2906002)(2616005)(26005)(186003)(38100700002)(316002)(110136005)(6486002)(8676002)(31696002)(86362001)(508600001)(5660300002)(66476007)(6666004)(6512007)(66556008)(6506007)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z3BMSWUwNFV1YlNUdUtIcWJOdUNZaCtyejk4QTZzSUtaOGJRRERHcFFBb2t2?=
+ =?utf-8?B?YTVtc0NvVjV6c2lRUHNZdlpQc2d5dkNyL1gyQlB1TUcwM09Wei9IRU0xTGNE?=
+ =?utf-8?B?K2E1SlhWQXN2bVBRdzVJV2lyNFp3M0dlSTZ6ZkZ6cnRuN1NmTzdhakUxQkk1?=
+ =?utf-8?B?V1pQSUpkT1IvdnN2L3NQTmlBbVZLdGt5ai9ZblVGaStwN3o1ZzVUSCsxTnRm?=
+ =?utf-8?B?K0syVHJVREtDblh4SFZBaFlwdjNIVnBob213VlhUNHBVSlJieXlNY0xYWnNX?=
+ =?utf-8?B?Z1R6RllEcnRVbnNlcjZjS3VqNVZ4THo2alMyZHdCRzVXVzA0V2pHeTU5OW5s?=
+ =?utf-8?B?cEc5WGtqSkdpdVJ4Sll1Q1JtVURwQlRWMWJWaVVnemZYZHFTREpmdHNrY2w5?=
+ =?utf-8?B?TWxhbmJQamNOR0xkdVVTOElSQjMxWFAxV0E1NGpHb2tpTDJrWDhxUTNjbTB5?=
+ =?utf-8?B?TEMzVzY3YnNWdDlWa1ZhY0ZuRUpKc3M2djdUNFB6elJCOGM1TWRkMDFEb2g5?=
+ =?utf-8?B?elBMM1FHdWMzcGJhMGN5NGQ5cUZZd010MW5tNmhmaTRVRzVjaCt6cFpBMGdQ?=
+ =?utf-8?B?aUxLM0dCcEp0M0NBcWozQkhLK3BvQjhFMUJmeFNDL1pFWENOcnBJejBaNjNB?=
+ =?utf-8?B?Y0hxeU1zN2N0MWhTTGNhWlZ6WGlXWXBaU0RzWkFwdlRRUnVvZXkwQnhnNzF5?=
+ =?utf-8?B?VituaEw1TVFSWEQ2Wm9JMlYyajg1TVhBRXpiSDVlV3BENlFsUFNkUXM4Y05u?=
+ =?utf-8?B?N0VTRlJLOHFEelVRZTJmMTFPY3BkYnRZYVZneVNFNVpTYm01RmZrVVNITDdJ?=
+ =?utf-8?B?ZG9BMWQvcUlwZC9oVUpLbnVJeVNlanRQNTErNGpVdE9PQ1AzTDVrUk8wclZN?=
+ =?utf-8?B?bC8xTHJ1LzlEMWFRbFlMcVNXYzQrdmZZWnltSlY4WnU2TnBpSWxPVHdGSEZ6?=
+ =?utf-8?B?L00yeW5GYVdsWWlrSXVneThYYU9sejdHY0FxbmJDZ281UlJoVkpyNC8xV0dn?=
+ =?utf-8?B?Q0xuM0JHVzBPaVc5eVFBMTB5RHlZWXRtTjZtWGxDSHdSVDFINE1hN3BXaE9T?=
+ =?utf-8?B?dTgzM3AwQUVlU2d2c3RwVUdXalJvdEpIMCsvbHd1WGRIeU9WV0FDa2UyMmhU?=
+ =?utf-8?B?MFoyZzNkTnpjbGFYOG1DSmUyaDFiUTcrWFhBd2JmQ04vcElkWjJIR01RK1Ru?=
+ =?utf-8?B?MVp6WFFEdEgzZ2pSUEVlOEppOEVnWnczUGRzeENUODBkNDduN3hQeTJmNlRz?=
+ =?utf-8?B?QnU2OW5Wa1NDYWhhMHI0dTRHRk5IbzJEQUtFdlU4ZUY3N1o4bVpMU3U1K050?=
+ =?utf-8?B?a2hweWF5eVBidEVOalBVT2RpazVhMlFVTE4zWFBDdlhaNjJNcDcremRNZmpV?=
+ =?utf-8?B?QjJEU2FqSlVEb2FyK1Z6dFdkNEcyZVl3U0tqQml5NVlmb0FkYVUrUHJQY09i?=
+ =?utf-8?B?OWJSRmcyOHVQU1ZoeFBhUHoxRUlWUVVkZHBVU1N1ckh4MXlmdnNKUWIwVTRD?=
+ =?utf-8?B?WHQ4U0dUYzlSZXZMaHQwdmNiZVhXQTBuSXdsK1NEMERMRHZoZC9Ybm1ETmNC?=
+ =?utf-8?B?YVU4dm9kcmcrazBmaW5vV2FYY3hpKzZKYUNvVVE0Vm9YMEIyQ1h1eDQ2VnNJ?=
+ =?utf-8?B?ckVDTk9hSmhDNHhxOG9xWEd1ajBzYzFGbmd1TnJaSi8yZHVWcm9nQVpYVmc0?=
+ =?utf-8?B?dks2ZVZrams3a2o1WW9jVjFsRStJSDdVaTFNNW9TMVJvbVQwT09KaWdpb29X?=
+ =?utf-8?B?K05peXhLbzNIQ0k0dVpLb01jQnF0cTBORWIrbXQweGhWQ0p5NEJsNFhpMXJP?=
+ =?utf-8?B?WXZIMWNnV1VrWG15YzRJdXc0N1B3OVRSZVVnNFUwblNvSVhsc3VuTzhFUWhU?=
+ =?utf-8?B?RG8yTVNNcnpMOFVSTFhVeWdOZGpYQnc5bEo0VWhOUXlZVVcybER5aGdWUCtp?=
+ =?utf-8?B?VThDbnJydGgralo2Um1ZTkQ5WHpRU2tWTXBTTHJIL0N5T0xKWGp6a3ZUSUp5?=
+ =?utf-8?B?c2k2WXZlbnlXUVF5UWFLOW56aFJkQW8zbXA1QmttRGV1ODdDWGkzemZyVkYr?=
+ =?utf-8?B?ZllsNFhCdEV5OFkyUVdlelBLUHgzZjdPNnM5WlVTVGNzWUYzdU05QjNRUnl6?=
+ =?utf-8?Q?riMg=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 907f7b6b-a15f-42dc-00b9-08d9fdbc996f
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 08:54:32.2315
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KzoCr3sb31YDjLEqJIDLukpBXIVC1OrdSk0616uWIzt1zepnbTv4js9TnZU03/Dj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1816
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 4:43 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+Am 04.03.22 um 09:43 schrieb Wolfram Sang:
+>> I'm getting quite a bunch of unrelated mails because the regex is not the
+>> best.
+> I can imagine!
 >
-> On Tue, 15 Feb 2022 22:52:14 PST (-0800), zong.li@sifive.com wrote:
-> > On Tue, Feb 15, 2022 at 8:06 PM Vinod Koul <vkoul@kernel.org> wrote:
-> >>
-> >> On 07-02-22, 14:30, Zong Li wrote:
-> >> > It currently assumes that there are always four channels, it would
-> >> > cause the error if there is actually less than four channels. Change
-> >> > that by getting number of channel from device tree.
-> >> >
-> >> > For backwards-compatibility, it uses the default value (i.e. 4) when
-> >> > there is no 'dma-channels' information in dts.
-> >> >
-> >> > Signed-off-by: Zong Li <zong.li@sifive.com>
-> >> > ---
-> >> >  drivers/dma/sf-pdma/sf-pdma.c | 21 ++++++++++++++-------
-> >> >  drivers/dma/sf-pdma/sf-pdma.h |  8 ++------
-> >> >  2 files changed, 16 insertions(+), 13 deletions(-)
-> >> >
-> >> > diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-> >> > index f12606aeff87..2ae10b61dfa1 100644
-> >> > --- a/drivers/dma/sf-pdma/sf-pdma.c
-> >> > +++ b/drivers/dma/sf-pdma/sf-pdma.c
-> >> > @@ -482,9 +482,7 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
-> >> >  static int sf_pdma_probe(struct platform_device *pdev)
-> >> >  {
-> >> >       struct sf_pdma *pdma;
-> >> > -     struct sf_pdma_chan *chan;
-> >> >       struct resource *res;
-> >> > -     int len, chans;
-> >> >       int ret;
-> >> >       const enum dma_slave_buswidth widths =
-> >> >               DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
-> >> > @@ -492,13 +490,21 @@ static int sf_pdma_probe(struct platform_device *pdev)
-> >> >               DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
-> >> >               DMA_SLAVE_BUSWIDTH_64_BYTES;
-> >> >
-> >> > -     chans = PDMA_NR_CH;
-> >> > -     len = sizeof(*pdma) + sizeof(*chan) * chans;
-> >> > -     pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
-> >> > +     pdma = devm_kzalloc(&pdev->dev, sizeof(*pdma), GFP_KERNEL);
-> >> >       if (!pdma)
-> >> >               return -ENOMEM;
-> >> >
-> >> > -     pdma->n_chans = chans;
-> >> > +     ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
-> >> > +                                &pdma->n_chans);
-> >> > +     if (ret) {
-> >> > +             dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
-> >>
-> >> This is useful for only debug i think, so dev_dbg perhaps
-> >>
-> >
-> > Thanks for your suggestion, let me change it in the next version.
+>> On the other hand the framework is used in a lot of drivers and I do want to
+>> be notified when they mess with their interfaces.
+> Sure thing. I am convinced the regex can be improved to ensure that to a
+> high degree. I think it is also less work for you than asking people to
+> rename their variable all the time :)
+
+Well not all the time. It's just that you absolutely hit the nail on the 
+head with the name.
+
+The local variable for the DMA-buf handle is just nearly always named 
+dma_buf or dmabuf in the drivers.
+
+Christian.
+
 >
-> Not sure if I'm missing something, but I don't see a v6.  I'm going to
-> assume that one will be sent, but the suggested changes look minor
-> enough so
+>> Going to take a another look at that when I have time.
+> Thank you!
 >
 
-I have been sending the v6 patchset, thank you for the review.
-
-> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
->
-> LMK if you guys were expecting this to go in via the RISC-V tree,
-> otherwise I'll assume this aimed at the dmaengine tree.  Probably best to keep
-> all three together, so feel free to take the DTS updates as well -- having some
-> shared tag never hurts, but the DTs don't move that much so any conflicts
-> should be straight-forward to just fix at merge time.
->
-
-Yes, if the v6 version is good enough and you could pick them into
-RISC-V tree, I'd appreciate that. Thanks!
-
-> Thanks!
->
-> >> > +             pdma->n_chans = PDMA_MAX_NR_CH;
-> >> > +     }
-> >> > +
-> >> > +     if (pdma->n_chans > PDMA_MAX_NR_CH) {
-> >> > +             dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
-> >> > +             return -EINVAL;
-> >> > +     }
-> >> >
-> >> >       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >> >       pdma->membase = devm_ioremap_resource(&pdev->dev, res);
-> >> > @@ -556,7 +562,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
-> >> >       struct sf_pdma_chan *ch;
-> >> >       int i;
-> >> >
-> >> > -     for (i = 0; i < PDMA_NR_CH; i++) {
-> >> > +     for (i = 0; i < pdma->n_chans; i++) {
-> >> >               ch = &pdma->chans[i];
-> >> >
-> >> >               devm_free_irq(&pdev->dev, ch->txirq, ch);
-> >> > @@ -574,6 +580,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
-> >> >
-> >> >  static const struct of_device_id sf_pdma_dt_ids[] = {
-> >> >       { .compatible = "sifive,fu540-c000-pdma" },
-> >> > +     { .compatible = "sifive,pdma0" },
-> >> >       {},
-> >> >  };
-> >> >  MODULE_DEVICE_TABLE(of, sf_pdma_dt_ids);
-> >> > diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
-> >> > index 0c20167b097d..8127d792f639 100644
-> >> > --- a/drivers/dma/sf-pdma/sf-pdma.h
-> >> > +++ b/drivers/dma/sf-pdma/sf-pdma.h
-> >> > @@ -22,11 +22,7 @@
-> >> >  #include "../dmaengine.h"
-> >> >  #include "../virt-dma.h"
-> >> >
-> >> > -#define PDMA_NR_CH                                   4
-> >> > -
-> >> > -#if (PDMA_NR_CH != 4)
-> >> > -#error "Please define PDMA_NR_CH to 4"
-> >> > -#endif
-> >> > +#define PDMA_MAX_NR_CH                                       4
-> >> >
-> >> >  #define PDMA_BASE_ADDR                                       0x3000000
-> >> >  #define PDMA_CHAN_OFFSET                             0x1000
-> >> > @@ -118,7 +114,7 @@ struct sf_pdma {
-> >> >       void __iomem            *membase;
-> >> >       void __iomem            *mappedbase;
-> >> >       u32                     n_chans;
-> >> > -     struct sf_pdma_chan     chans[PDMA_NR_CH];
-> >> > +     struct sf_pdma_chan     chans[PDMA_MAX_NR_CH];
-> >>
-> >> why waste memory allocating max, we know number of channels in probe,
-> >> why not allocate runtime?
-> >>
-> >
-> > I kept it there because I'd like to do minimum change in this patch
-> > set. You're right, let me change it in the next version.
-> >
-> >> --
-> >> ~Vinod
