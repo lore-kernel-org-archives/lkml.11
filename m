@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D50C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231304AbiCDULm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:11:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
+        id S231366AbiCDULp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:11:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230519AbiCDUHt (ORCPT
+        with ESMTP id S230484AbiCDUHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:07:49 -0500
+        Fri, 4 Mar 2022 15:07:41 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D90B2D14F6;
-        Fri,  4 Mar 2022 12:02:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBB7269A76;
+        Fri,  4 Mar 2022 12:02:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424133; x=1677960133;
+  t=1646424126; x=1677960126;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8HkNPm4p6ixqVsTq2b6fg8lotfqs570eZGkLrJu+SxI=;
-  b=JiuTxZPZvhKSsZnla5h54B7xjyx4sCvBKAlDQ0aDSeY+J2o6qaJfLYtD
-   6Ue07ByQHlVZyahUvESXV6wnyC5Vxsw47ybq7lX7sjJZaZlzHSo8WdnNH
-   dZ/6TfRFetq7/j4qOEqgspYzEPFrslQ3t6upgRhJ9Tio6hHUXzQYy3/D3
-   /sa+oXlo6JYNsVzXPZfJU69wbNbTYZLqm3kHBOkqkDiRQxccCSvPckpZo
-   Dnd0u5NnNHqcdkn6YCoZrtlBmW+mDMjHlHJwOPeFrFBj+IE74mPBM7qmS
-   SkywEnebNlJdxVBqfqK29DgiksYgZJheeLKApVzB6wS+gGFkgIwRc0+xH
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983476"
+  bh=8l8peHNVZyeS/auPKUnLmYj1Qk41lhKXin8JnhT2XHY=;
+  b=BOqqTk8/SqdXnbd9eusAr/cKyYg6F/sJqWv8GoMrQLWjCYhR5hFOwk3b
+   +bH1HjrfEmo6h97KaDkjbRPVje5iVD6pYz7dtNJwtcITmR2gmNeGp2QDz
+   f4YtKfuxDiXv3z+cwjL56HFXCxmrMKx6Fbm35h7PYgTopP2qDNkPvaBIp
+   txLycVy4jyEymfdbRysjxru77Q+Tvx3yJV27Cq9Av/SoCi5r2V3a1157t
+   3zg36EpqcJWZirsLT5Z/jAGg2YtYhme6pKpeoTG9lZ9rZzFX98P6D7qwX
+   lVYD+zAaF091E/vj3lS4sThRhKKdgoHlzE2oKFcmGpyajaYYezFhjiu70
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253983457"
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253983476"
+   d="scan'208";a="253983457"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:21 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:19 -0800
 X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552344327"
+   d="scan'208";a="552344305"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:21 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:50:19 -0800
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [RFC PATCH v5 040/104] KVM: VMX: Split out guts of EPT violation to common/exposed function
-Date:   Fri,  4 Mar 2022 11:48:56 -0800
-Message-Id: <d7ea79b7fbebf723540672bd027d48158fcde0ff.1646422845.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v5 036/104] KVM: x86/mmu: Explicitly check for MMIO spte in fast page fault
+Date:   Fri,  4 Mar 2022 11:48:52 -0800
+Message-Id: <b0e81b4a4abfbe8bd6d43e4b1c0349a79517dfb0.1646422845.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1646422845.git.isaku.yamahata@intel.com>
 References: <cover.1646422845.git.isaku.yamahata@intel.com>
@@ -58,129 +58,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-The difference of TDX EPT violation is how to retrieve information, GPA,
-and exit qualification.  To share the code to handle EPT violation, split
-out the guts of EPT violation handler so that VMX/TDX exit handler can call
-it after retrieving GPA and exit qualification.
+Explicitly check for an MMIO spte in the fast page fault flow.  TDX will
+use a not-present entry for MMIO sptes, which can be mistaken for an
+access-tracked spte since both have SPTE_SPECIAL_MASK set.
+
+The fast page fault handles the case of changing access bits without
+obtaining mmu_lock.  For example, clear write protect bit for dirty page
+tracking.  MMIO emulation is handled in a slow path.  So it doesn't affect
+the default VM case.
 
 Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/common.h | 35 +++++++++++++++++++++++++++++++++++
- arch/x86/kvm/vmx/vmx.c    | 34 ++++++----------------------------
- 2 files changed, 41 insertions(+), 28 deletions(-)
- create mode 100644 arch/x86/kvm/vmx/common.h
+ arch/x86/kvm/mmu/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/common.h b/arch/x86/kvm/vmx/common.h
-new file mode 100644
-index 000000000000..1052b3c93eb8
---- /dev/null
-+++ b/arch/x86/kvm/vmx/common.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef __KVM_X86_VMX_COMMON_H
-+#define __KVM_X86_VMX_COMMON_H
-+
-+#include <linux/kvm_host.h>
-+
-+#include "mmu.h"
-+
-+static inline int __vmx_handle_ept_violation(struct kvm_vcpu *vcpu, gpa_t gpa,
-+					     unsigned long exit_qualification)
-+{
-+	u64 error_code;
-+
-+	/* Is it a read fault? */
-+	error_code = (exit_qualification & EPT_VIOLATION_ACC_READ)
-+		     ? PFERR_USER_MASK : 0;
-+	/* Is it a write fault? */
-+	error_code |= (exit_qualification & EPT_VIOLATION_ACC_WRITE)
-+		      ? PFERR_WRITE_MASK : 0;
-+	/* Is it a fetch fault? */
-+	error_code |= (exit_qualification & EPT_VIOLATION_ACC_INSTR)
-+		      ? PFERR_FETCH_MASK : 0;
-+	/* ept page table entry is present? */
-+	error_code |= (exit_qualification &
-+		       (EPT_VIOLATION_READABLE | EPT_VIOLATION_WRITABLE |
-+			EPT_VIOLATION_EXECUTABLE))
-+		      ? PFERR_PRESENT_MASK : 0;
-+
-+	error_code |= (exit_qualification & EPT_VIOLATION_GVA_TRANSLATED) != 0 ?
-+	       PFERR_GUEST_FINAL_MASK : PFERR_GUEST_PAGE_MASK;
-+
-+	return kvm_mmu_page_fault(vcpu, gpa, error_code, NULL, 0);
-+}
-+
-+#endif /* __KVM_X86_VMX_COMMON_H */
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 7838cd177f0e..0edeeed0b4c8 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -50,6 +50,7 @@
- #include <asm/vmx.h>
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index b68191aa39bf..9907cb759fd1 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3167,7 +3167,7 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 			break;
  
- #include "capabilities.h"
-+#include "common.h"
- #include "cpuid.h"
- #include "evmcs.h"
- #include "hyperv.h"
-@@ -5381,11 +5382,10 @@ static int handle_task_switch(struct kvm_vcpu *vcpu)
+ 		sp = sptep_to_sp(sptep);
+-		if (!is_last_spte(spte, sp->role.level))
++		if (!is_last_spte(spte, sp->role.level) || is_mmio_spte(spte))
+ 			break;
  
- static int handle_ept_violation(struct kvm_vcpu *vcpu)
- {
--	unsigned long exit_qualification;
--	gpa_t gpa;
--	u64 error_code;
-+	unsigned long exit_qualification = vmx_get_exit_qual(vcpu);
-+	gpa_t gpa = vmcs_read64(GUEST_PHYSICAL_ADDRESS);
- 
--	exit_qualification = vmx_get_exit_qual(vcpu);
-+	trace_kvm_page_fault(gpa, exit_qualification);
- 
- 	/*
- 	 * EPT violation happened while executing iret from NMI,
-@@ -5394,31 +5394,9 @@ static int handle_ept_violation(struct kvm_vcpu *vcpu)
- 	 * AAK134, BY25.
- 	 */
- 	if (!(to_vmx(vcpu)->idt_vectoring_info & VECTORING_INFO_VALID_MASK) &&
--			enable_vnmi &&
--			(exit_qualification & INTR_INFO_UNBLOCK_NMI))
-+	    enable_vnmi && (exit_qualification & INTR_INFO_UNBLOCK_NMI))
- 		vmcs_set_bits(GUEST_INTERRUPTIBILITY_INFO, GUEST_INTR_STATE_NMI);
- 
--	gpa = vmcs_read64(GUEST_PHYSICAL_ADDRESS);
--	trace_kvm_page_fault(gpa, exit_qualification);
--
--	/* Is it a read fault? */
--	error_code = (exit_qualification & EPT_VIOLATION_ACC_READ)
--		     ? PFERR_USER_MASK : 0;
--	/* Is it a write fault? */
--	error_code |= (exit_qualification & EPT_VIOLATION_ACC_WRITE)
--		      ? PFERR_WRITE_MASK : 0;
--	/* Is it a fetch fault? */
--	error_code |= (exit_qualification & EPT_VIOLATION_ACC_INSTR)
--		      ? PFERR_FETCH_MASK : 0;
--	/* ept page table entry is present? */
--	error_code |= (exit_qualification &
--		       (EPT_VIOLATION_READABLE | EPT_VIOLATION_WRITABLE |
--			EPT_VIOLATION_EXECUTABLE))
--		      ? PFERR_PRESENT_MASK : 0;
--
--	error_code |= (exit_qualification & EPT_VIOLATION_GVA_TRANSLATED) != 0 ?
--	       PFERR_GUEST_FINAL_MASK : PFERR_GUEST_PAGE_MASK;
--
- 	vcpu->arch.exit_qualification = exit_qualification;
- 
- 	/*
-@@ -5432,7 +5410,7 @@ static int handle_ept_violation(struct kvm_vcpu *vcpu)
- 	if (unlikely(allow_smaller_maxphyaddr && kvm_vcpu_is_illegal_gpa(vcpu, gpa)))
- 		return kvm_emulate_instruction(vcpu, 0);
- 
--	return kvm_mmu_page_fault(vcpu, gpa, error_code, NULL, 0);
-+	return __vmx_handle_ept_violation(vcpu, gpa, exit_qualification);
- }
- 
- static int handle_ept_misconfig(struct kvm_vcpu *vcpu)
+ 		/*
 -- 
 2.25.1
 
