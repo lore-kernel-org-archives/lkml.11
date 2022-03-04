@@ -2,113 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 14:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239943AbiCDOo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 09:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        id S239922AbiCDOql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 09:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239929AbiCDOoy (ORCPT
+        with ESMTP id S230382AbiCDOqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 09:44:54 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDC61BD075
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:44:06 -0800 (PST)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Fri, 4 Mar 2022 09:46:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753801BD07B
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 06:45:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2CAFE3F618
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 14:44:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646405045;
-        bh=gSSf/oFGcND5LFz2K7Y2Hc6MnvHoRe40iy4ZtWWVreU=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=vlfvc+2HV2skxVKXrB5iiu8z0hPXLZwV+DvX3fOsVuNBRVPk1BPS79c1poLK2F5fM
-         /Iu6S0MU/U7UkXA82dbNmvIh6FbUbhotNMP6NsdqB5pojX/3vutspDyGgvKXXz38m8
-         J1XceyTDx7T24D4rD05KM9b6T4Rc9fPkdiZRK1mX7Fod4N2OAGdapU5PTGiNZ7U5+L
-         ZtD0xX4rWfH0YlbJ4UDsLSxvkGE379q65osEZF+R76o438txpAl4dLDB0b1juZZYXq
-         /DUfdv2ogtlduKCt1s6P1aLxRs3ckw0tT+B6ni0SY1cPvHjkFK5AY5Lzzn9em9swy8
-         QTmjfEvm+4BlQ==
-Received: by mail-ej1-f70.google.com with SMTP id go11-20020a1709070d8b00b006cf0d933739so4509527ejc.5
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 06:44:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gSSf/oFGcND5LFz2K7Y2Hc6MnvHoRe40iy4ZtWWVreU=;
-        b=A7OGIRHc8LJYvWdvVTp4LkRupYbN00ppyn3WesrC41W5GNatyTgsCryGQhRbypyqN9
-         8oU9aV6Zc/Rp4P0lO3o2gwqlQPyA0EHHdO7CEP9FGza4aI0AWMOC0whJK++FM6SNrhPa
-         w8AuBMIfTyzN6xRbXLJfTgH5DUA5dACzIJk8u99JE4h+oAXx/yhYITeQCfZFQfkfIPxh
-         MHDjmcoZ69oiAHHyI4FdiV6D0oxDQIMFEV/tnhbgeAvVgzenMryO05WxVh7CLxeFtmRs
-         DEJ2S6uo//w/zt7oEXu3O5iFl2HbOPsDKmV8qInQoR73qIxjytJ3jkWz+bZJCCevkqi+
-         A2gw==
-X-Gm-Message-State: AOAM532PHlz2i98rcHLfVkpYKCb2D63wjDMzpUJXP/gUp+E87y/GoSBA
-        iQxui+NAB0yrAV8rWfonkwXu+AdlR7Dk3QYi+5jlcYXXvHeBvqtM86nL7UTp2VaNxAAoadR2YoM
-        lr14oEIkeb0Io/TWpPkSSpP5MoqZbUfpPFrIyRGx5Eg==
-X-Received: by 2002:a17:906:32d0:b0:6ce:e1cf:3f2e with SMTP id k16-20020a17090632d000b006cee1cf3f2emr30484870ejk.214.1646405044639;
-        Fri, 04 Mar 2022 06:44:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy9+otEuho6Pdcwo/wfGl1pcYpW5/3K6MleLdh+2KoSkgGl4V3ktzs2YBifoCwSJYV6fHucfg==
-X-Received: by 2002:a17:906:32d0:b0:6ce:e1cf:3f2e with SMTP id k16-20020a17090632d000b006cee1cf3f2emr30484851ejk.214.1646405044405;
-        Fri, 04 Mar 2022 06:44:04 -0800 (PST)
-Received: from [192.168.0.139] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id b7-20020a170906490700b006b2512921b2sm1835912ejq.48.2022.03.04.06.44.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 06:44:03 -0800 (PST)
-Message-ID: <e97cf184-4e38-c540-da5a-28c762d8d21a@canonical.com>
-Date:   Fri, 4 Mar 2022 15:44:03 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2681B829C7
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 14:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71B04C340E9;
+        Fri,  4 Mar 2022 14:45:45 +0000 (UTC)
+Message-ID: <cbdbb347-b510-131f-e961-09f1545fb891@linux-m68k.org>
+Date:   Sat, 5 Mar 2022 00:45:43 +1000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v3 4/5] dt-bindings: rtc: at91: Use macros for the IRQ
- type
+Subject: Re: [PATCH] m68k: tweak coldfire/device.c for COMPILE_TEST
 Content-Language: en-US
-To:     Sergiu Moga <sergiu.moga@microchip.com>, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
-        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com
-Cc:     linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220304142746.121947-1-sergiu.moga@microchip.com>
- <20220304142746.121947-5-sergiu.moga@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220304142746.121947-5-sergiu.moga@microchip.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     patches@lists.linux.dev, kernel test robot <lkp@intel.com>,
+        Angelo Dureghello <angelo@sysam.it>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org
+References: <20220304033531.28667-1-rdunlap@infradead.org>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <20220304033531.28667-1-rdunlap@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/03/2022 15:27, Sergiu Moga wrote:
-> Prefer using macros for the IRQ type of the example node's
-> interrupt property.
+Hi Randy,
+
+On 4/3/22 13:35, Randy Dunlap wrote:
+> When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
+> CONFIG_M5441x), coldfire/device.c has compile errors due to
+> missing MCFEDMA_* symbols. In the .config file that was provided,
+> CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
+> included in coldfire/device.c.
 > 
-> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+> Only build the MCF_EDMA code in coldfire/device.c if both MCF_EDMA
+> and M5441x are enabled.
+> 
+> Fixes these build errors:
+> 
+> ../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
+>    512 |                 .start          = MCFEDMA_BASE,
+> ../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
+>    513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
+> ../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
+>    517 |                 .start          = MCFEDMA_IRQ_INTR0,
+> ../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
+>    523 |                 .start          = MCFEDMA_IRQ_INTR16,
+> ../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
+>    529 |                 .start          = MCFEDMA_IRQ_INTR56,
+> ../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
+>    535 |                 .start          = MCFEDMA_IRQ_ERR,
+> 
+> Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
+> Cc: Angelo Dureghello <angelo@sysam.it>
+> Cc: Greg Ungerer <gerg@kernel.org>
+> Cc: Greg Ungerer <gerg@linux-m68k.org>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: linux-m68k@lists.linux-m68k.org
+> Cc: uclinux-dev@uclinux.org
 > ---
->  Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>   arch/m68k/coldfire/device.c |    6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-> index af25cc275356..d2452067bfe4 100644
-> --- a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-> +++ b/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-> @@ -54,10 +54,12 @@ unevaluatedProperties: false
->  
->  examples:
->    - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
->      rtc@fffffd20 {
->          compatible = "atmel,at91sam9260-rtt";
->          reg = <0xfffffd20 0x10>;
-> -        interrupts = <1 4 7>;
-> +        interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+> --- linux-next-20220303.orig/arch/m68k/coldfire/device.c
+> +++ linux-next-20220303/arch/m68k/coldfire/device.c
+> @@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 =
+>   #endif /* MCFI2C_BASE5 */
+>   #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
+>   
+> -#if IS_ENABLED(CONFIG_MCF_EDMA)
+> +#if IS_ENABLED(CONFIG_MCF_EDMA) && IS_ENABLED(CONFIG_M5441x)
 
-Ah, I see the change now. This should be squashed with previous patch.
-There is no point to add imperfect DTS code which is being changed a
-commit later. Example is not bindings.
+I really try to avoid making these ColdFire SoC specific. Freescale has
+a habit of using the same hardware blocks across a number of parts.
+The model so far has been to let the Kconfig select these out as required
+(and so not having to conditionally duplicate that here).
 
-Best regards,
-Krzysztof
+I would prefer it to be conditional on !COMPILE_TEST if that is what
+is ultimately causing the problem.
+
+Regards
+Greg
+
+
+
+>   
+>   static const struct dma_slave_map mcf_edma_map[] = {
+>   	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
+> @@ -552,7 +552,7 @@ static struct platform_device mcf_edma =
+>   		.platform_data = &mcf_edma_data,
+>   	}
+>   };
+> -#endif /* IS_ENABLED(CONFIG_MCF_EDMA) */
+> +#endif /* IS_ENABLED(CONFIG_MCF_EDMA) && IS_ENABLED(CONFIG_M5441x) */
+>   
+>   #ifdef MCFSDHC_BASE
+>   static struct mcf_esdhc_platform_data mcf_esdhc_data = {
+> @@ -651,7 +651,7 @@ static struct platform_device *mcf_devic
+>   	&mcf_i2c5,
+>   #endif
+>   #endif
+> -#if IS_ENABLED(CONFIG_MCF_EDMA)
+> +#if IS_ENABLED(CONFIG_MCF_EDMA) && IS_ENABLED(CONFIG_M5441x)
+>   	&mcf_edma,
+>   #endif
+>   #ifdef MCFSDHC_BASE
