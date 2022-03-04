@@ -2,70 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 670F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbiCDUXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:23:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
+        id S230081AbiCDUXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230122AbiCDUWv (ORCPT
+        with ESMTP id S229746AbiCDUXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:22:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EE315168E
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:22:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52E22B82B88
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 20:22:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 20743C340EE;
-        Fri,  4 Mar 2022 20:22:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646425321;
-        bh=k7I20oRAc7QQlFOC75wm4+L8hQNSXc34k5IdGMa59vI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=GLAltWoTCLlKjQgq2q+m6CWEZx9X8h11AdHj4Q77FaptZpUNKqR9NnmH8+lsUX3ZW
-         9aze1BCy95RmZ89vY7tCvkGO9BsBJk+4l3fbcAhooH/TJMEPTQorkAmVEVi84NuIPG
-         H7T9UY7Kyv1zujg1b4FKDFeIKHgYANuN59d07NCOCgPWnWVJRH3mYTe+LzAQfKxRVW
-         tnM9RAWZ/Q5LL49CbwghK4qtDyb3PI2A7MLsFNuDq5cEFzhHdvZqDEM70WONoBiG8b
-         2lMP+jIbwBlu1Ey1o/Z81lbVS3YWiV30sSGzB5NRdqVy5SoyqZYwGJUpCq8yUg9nwB
-         q0Nv8fYzIdM7w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 07908E7BB18;
-        Fri,  4 Mar 2022 20:22:01 +0000 (UTC)
-Subject: Re: [git pull] drm fixes for 5.17-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAPM=9txdUAqhJOhz+09qtFLJNOThDMNQxLu6kV-v6o1bopXhNA@mail.gmail.com>
-References: <CAPM=9txdUAqhJOhz+09qtFLJNOThDMNQxLu6kV-v6o1bopXhNA@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAPM=9txdUAqhJOhz+09qtFLJNOThDMNQxLu6kV-v6o1bopXhNA@mail.gmail.com>
-X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-03-04
-X-PR-Tracked-Commit-Id: 8fdb19679722a02fe21642d39710c701d2ed567a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c4fc118ae26f9d4e5885d151f9b0f96467a136da
-Message-Id: <164642532102.24805.6722187428894435121.pr-tracker-bot@kernel.org>
-Date:   Fri, 04 Mar 2022 20:22:01 +0000
-To:     Dave Airlie <airlied@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Fri, 4 Mar 2022 15:23:40 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348AD1D06E5
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 12:22:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=uVPrSHaqLF9b3ORXlMh5Qj9V4zOmWj8SncI5qbaLawc=; b=ZySsesB8Tuo0Fb1eYIXWq5nFbA
+        bObP7Pnz7h8twGUphf7sKoXp5ybJxhj/q7W8OZvVKDEIEzmULQKSpj/4pF9WAfO7p3g2U+UzRsB2r
+        eDE2VG5gYqZwGsD8uqy47SISepW457EcJDvVNCdC35/I8yEeSKsucLvHm5+RC2PDBKVmBQdx9jXy3
+        4YO9xaJK+rZXZTbWhtN+M0y6ezpGhIdeCCp+t8AeAvgxr/RAN6hmeiKXrGoJ0YTEyI/u2CtS2MxLz
+        +ncRkx/hsMMuuWW64MZqfR1VPEWYcizNzvPkverh2buh9Hc7hiZVvf4dy8UAsqQfGLOtZEr+cCFKZ
+        u4em/8ew==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nQERW-00Cz2o-Ff; Fri, 04 Mar 2022 20:22:26 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4D2E198624E; Fri,  4 Mar 2022 21:22:25 +0100 (CET)
+Date:   Fri, 4 Mar 2022 21:22:25 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v3 00/39] x86: Kernel IBT
+Message-ID: <20220304202225.GO11184@worktop.programming.kicks-ass.net>
+References: <20220303112321.422525803@infradead.org>
+ <20220304190958.comlw5wt7zdgeakc@treble>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304190958.comlw5wt7zdgeakc@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 4 Mar 2022 13:34:36 +1000:
+On Fri, Mar 04, 2022 at 11:09:58AM -0800, Josh Poimboeuf wrote:
 
-> git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-03-04
+> I'm getting some warnings with CONFIG_X86_KERNEL_IBT=n:
+> 
+>   arch/x86/entry/entry_64.o: warning: objtool: irq_entries_start()+0x7: unreachable instruction
+>   arch/x86/kernel/ftrace_64.o: warning: objtool: return_to_handler()+0x2a: unreachable instruction
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c4fc118ae26f9d4e5885d151f9b0f96467a136da
+Urgh, lemme go chase that.
 
-Thank you!
+> And a warning with CONFIG_X86_KERNEL_IBT=y:
+> 
+>   vmlinux.o: warning: objtool: .text+0xaf0: unreachable instruction
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+This is that weak symbol issue :/ We talked about it on IRC, but i've
+not yet come around to fixing it.
+
+This is mostly a pre-existing issue, only uncovered because we run on
+vmlinux more..
