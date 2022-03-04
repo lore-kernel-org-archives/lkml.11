@@ -2,70 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 807D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 09:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239399AbiCDJxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 04:53:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38234 "EHLO
+        id S239411AbiCDJzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 04:55:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239313AbiCDJw7 (ORCPT
+        with ESMTP id S231617AbiCDJzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 04:52:59 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7636D979;
-        Fri,  4 Mar 2022 01:52:12 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K93576PYXzdgBy;
-        Fri,  4 Mar 2022 17:50:51 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Mar 2022 17:52:10 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 4 Mar
- 2022 17:52:10 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
-Subject: [PATCH] crypto: hisilicon/qm - fix memset during queues clearing
-Date:   Fri, 4 Mar 2022 17:46:47 +0800
-Message-ID: <20220304094647.6845-1-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Fri, 4 Mar 2022 04:55:52 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4568B3B034;
+        Fri,  4 Mar 2022 01:55:05 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id B18E11F46483
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646387703;
+        bh=EfrLQeiJMUy4oMQI58UrAdjbGw+ADzKMI7I2grHoz4M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LJuRzerx/ge7QtwE1iuUcucq6QplNy5celhG3oIai0DzzGpXlLqI/R0DQlelkg3nz
+         BnbC5PXT2XvUCdjrgyhE3M60uVU85X5rg6GSOLu7MXsCeqFs/QCY7rVhv7geTHc+GF
+         c/+2NUH4XSyIeK+TwD8p9u/RWCYMN9246caOp5e1uyU0Oyisba04A5lm/ZFJbTpvXQ
+         uWOF09ZcwSVxxoSSkMxgKq9q2oOocWInIhklbyR+S1KvHGntFoiYcEU2hd4kp8AxV/
+         y+671YfAqPE5EnJlthsSaUSMnYcgcPZSQX/tw99UorcH1mcAEVOy8Crq9aneJjKxt0
+         dj9rPtk84IMiQ==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     chunkuang.hu@kernel.org
+Cc:     p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        matthias.bgg@gmail.com, ck.hu@mediatek.com, jitao.shi@mediatek.com,
+        jason-jh.lin@mediatek.com, dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 0/3] Fix MediaTek display dt-bindings issues
+Date:   Fri,  4 Mar 2022 10:54:55 +0100
+Message-Id: <20220304095458.12409-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to that extra page addr is used as a qp error flag when the device
-resetting. So it not should to clear this qp flag in userspace.
+The vdosys0 series carried a nice dt-bindings conversion of the old
+txt documentation for the entire mediatek-drm driver, but some of
+the issues in there weren't seen.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/crypto/hisilicon/qm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This series is fixing all of the issues pointed out by a
+`dt_binding_check` run, followed by `dtbs_check`.
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index 3b29c8993b8c..453390044181 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -3840,7 +3840,7 @@ static void qm_clear_queues(struct hisi_qm *qm)
- 
- 	for (i = 0; i < qm->qp_num; i++) {
- 		qp = &qm->qp_array[i];
--		if (qp->is_resetting)
-+		if (qp->is_in_kernel && qp->is_resetting)
- 			memset(qp->qdma.va, 0, qp->qdma.size);
- 	}
- 
+AngeloGioacchino Del Regno (3):
+  dt-bindings: display: mediatek,mutex: Fix mediatek,gce-events type
+  dt-bindings: display: mediatek,ovl: Fix 'iommu' required property typo
+  dt-bindings: display: mediatek: Fix examples on new bindings
+
+ .../display/mediatek/mediatek,aal.yaml        | 24 +++--
+ .../display/mediatek/mediatek,ccorr.yaml      | 23 +++--
+ .../display/mediatek/mediatek,color.yaml      | 23 +++--
+ .../display/mediatek/mediatek,dither.yaml     | 23 +++--
+ .../display/mediatek/mediatek,dpi.yaml        |  3 +-
+ .../display/mediatek/mediatek,dsc.yaml        | 23 +++--
+ .../display/mediatek/mediatek,ethdr.yaml      | 99 ++++++++++---------
+ .../display/mediatek/mediatek,gamma.yaml      | 23 +++--
+ .../display/mediatek/mediatek,merge.yaml      | 49 +++++----
+ .../display/mediatek/mediatek,mutex.yaml      | 27 +++--
+ .../display/mediatek/mediatek,od.yaml         | 14 ++-
+ .../display/mediatek/mediatek,ovl-2l.yaml     | 26 +++--
+ .../display/mediatek/mediatek,ovl.yaml        | 28 ++++--
+ .../display/mediatek/mediatek,postmask.yaml   | 23 +++--
+ .../display/mediatek/mediatek,rdma.yaml       | 28 ++++--
+ .../display/mediatek/mediatek,split.yaml      | 17 +++-
+ .../display/mediatek/mediatek,ufoe.yaml       | 19 ++--
+ .../display/mediatek/mediatek,wdma.yaml       | 26 +++--
+ 18 files changed, 318 insertions(+), 180 deletions(-)
+
 -- 
-2.33.0
+2.35.1
 
