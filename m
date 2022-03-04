@@ -2,124 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CAEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 00:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E39E4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 00:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232276AbiCDAG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 19:06:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
+        id S232307AbiCDAHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 19:07:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232108AbiCDAGR (ORCPT
+        with ESMTP id S232108AbiCDAHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 19:06:17 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E949ECB2E;
-        Thu,  3 Mar 2022 16:05:31 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id p17so6233379plo.9;
-        Thu, 03 Mar 2022 16:05:31 -0800 (PST)
+        Thu, 3 Mar 2022 19:07:40 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3567BED943
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 16:06:53 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id cl16-20020a17090af69000b001beea61ada4so3022296pjb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 16:06:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dDVQJ3Fq8NBV53TAXzlYHtLwOtwjE+voGwaucY4wx34=;
-        b=gPjui2DQAJT11QB7bvVksvTzwzRqpRLrNPFoj5FXj2Ut0PuKxsPx8oMNHtIQPSiyTt
-         UJsVH2XelkWFeimWp1lQlsu5f3RvmBsaDAb3i48qI4bql6kiWZiUJusX0V970DvsGDki
-         boZ7cHglI/P3s0pft6CfS6NvfO/eumlaHoD3DYSDfbfBiyQK2yLRXm5f504rO7Pp13Ei
-         OLrNkARM3uHg764DbuLHtzGwhKq2xHrSdxIVLIeVc2Vck8kP3tTSX8//1LP/+IPizB6z
-         O5kw9Dn4aPxFppudagbwz15ZbQgCCN43ILDi79dicsFvKAQ522Obc8ir2T10kku1o4g6
-         UFNQ==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=L2EqmECeGnDxBTpQsY7qBHnNCdpRu+0gpxLs2lR25VM=;
+        b=Od6sUIoBeI6YLIHz8dugjZNkV2e1G9ybEJ+EtPnZaPldHnMI495OSQXixpu5cD8MIL
+         LftkXHa1bDXNL/O7LVOgt6AQJJvJ0Z2+X/vMsRdavLJfC5JpSufc7XnPYGoIJYPFiMxt
+         SAHSYAxwfxCNp+0SYsc4xSvU7KTsOv2itMiPEVdMknFAsmNfYdZJ/rWBKFh0Bnhmv5ce
+         T7BDGlgmj141JJuCh9WvVnH0a0SXb+fEAuA4BXQieWuqf+pR/BtURhwmoeNU27CHClQb
+         kp55gbk1n8GvC5i6hbNFSqVC5JYHoxiOtNPthp61DnahHJj9bxhC570JzV2IIQQMnQY5
+         Co3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dDVQJ3Fq8NBV53TAXzlYHtLwOtwjE+voGwaucY4wx34=;
-        b=eXOAe3OVZDb3xpE+lu1zEpIqfrsjIidhm/sPI58CBECMMrPGoj4AzSyr+qiw97IfIb
-         pzGFlSqzd/eGVK2fLiL4tgjQpIg4JcsDFNA3aZLjoMJ/VtBOKdnzVL1+rSAn3cUBRraE
-         44gTUsdwOtjaVFwSmGXkJZJM1JtHVBcLlxn69epeRJo6jSW5Bylv0Rjmdcf3Oefoo/tO
-         lZQbnkxoLsUJEahSo1++Cc2AAh6w1TIeYrRYGMiMzJJ5AF9YJ3bjEMU9i15m3wgtK2ph
-         6s7BxR3wggTvJ3FRQQ8NjvTE/OzqP48FlYYK7dUVTYpcW93oIRss3Akhr6WdHR2N/Nmc
-         G62Q==
-X-Gm-Message-State: AOAM533nR/SGDiIJ6ORWnszwOhCm23SXw7d43xuRZqrGUXGr6WJjEawz
-        t0xICo4+oENX/sMZg1UprJXD0O4tJJg=
-X-Google-Smtp-Source: ABdhPJz3y6lV6BvGL2/RX1XgNR2fiySzaPtkag0ily56mlXWCNyI+gA7+An4+RMcQ4J2PxbcLbjutw==
-X-Received: by 2002:a17:903:291:b0:150:4197:7cf2 with SMTP id j17-20020a170903029100b0015041977cf2mr33508491plr.173.1646352330829;
-        Thu, 03 Mar 2022 16:05:30 -0800 (PST)
-Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id h22-20020a056a001a5600b004f41a2a6cf9sm3485793pfv.134.2022.03.03.16.05.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 16:05:30 -0800 (PST)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 6/8] compiler_types.h: Add unified __diag_ignore_all for GCC/LLVM
-Date:   Fri,  4 Mar 2022 05:35:06 +0530
-Message-Id: <20220304000508.2904128-7-memxor@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304000508.2904128-1-memxor@gmail.com>
-References: <20220304000508.2904128-1-memxor@gmail.com>
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1928; h=from:subject; bh=GM32fUklsZxVmnh4SsQp2kGBKENfBpd3/E++0grOsvk=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiIVd/uurNr9aPwnll4PFTLHqfDRT07+h7GF9UMqxl cR9jt+uJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYiFXfwAKCRBM4MiGSL8RyqD2D/ 4o/FXw5ZfJ8g9L7BT/KdKZqz7RCXd4mDkVT//ppB84uVMF7ZlLimMv1+dpm29Ye5j/5GyQCqi4nwxO ty2dOkhePchauOqo4CM8XBDWKvtyY+xO7mgHSN0ceb9+MP9BAu9pkrPccQNzfB3CcfWSeoLooO1WfL lhl/qpU92S6EsBVTImcZz91u4nH0HpzuFJp627/6F3pP1vTJa2RwFykX3WMUQzSkG8uViJLPnnd1lw nMit8aKRVbGHzbslfebCLGbyiA8OycqDP6hKz8tPf2qJEsxTrWlFxbbfiGx120pHve8d4Z2Au1h5r1 Bp6wBXxVn4MuQLvoddcEkKpQdaaec2MV3ygx5DyEPofAtFY9Tjs69/A0piFbyL/xhFPD15HjW+RrsF 9hVkrkKFPrys9vMBG2epCRY3d2BQNbhB+7mxpN7DuFivnFMQffIS2IcszbLUtELxJloJurSv1frN0N INRa2PegVoJSRZFX5vp0+cgBdE5Q7LFuaMD7p4GrGuPieOzEKjVP9BttE8zBV3rxqVtGMW+WlhxqgX oT7+t8fUY8J6UkHN3Ovy4lC9euhhmhkw4hi+mt9l2vFoirIzXiO4lc4+5ZAWO78o/bCwFvbM4YDs9F UYhJa3LhyHfiAhcxEG7cJI4jF9c9Tha9sSg3O/bYYyVD+B0bfcMlJXtizO3A==
-X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=L2EqmECeGnDxBTpQsY7qBHnNCdpRu+0gpxLs2lR25VM=;
+        b=22jmwDxaHSAS3tqPk3CnuIBrbk6aH4whqiowtfGkmQ2dFyR8tXRgKnaZ87dYCPONsQ
+         3WpQBvX9IT8xZzqglWQKAvKsfveSsI5/bUuZ+pD5uu/hziDWm5t+q8+zzlZSHoBzFrOb
+         F9l3XKKiESsYc/JX/mOhEiVxaCZYZDcVseSj3GlnjNPgRnJDvP39RK+U0C6pllH/WQ18
+         9DScQndV3fDa3j8iDL8jeCM8OG+4JKYDJIFq7sIYKwbFfdBbqnxKs2DVFiLeQz7gwfEc
+         +gBxlPWJeF8VnucomSQEQ4o41C9BtV6of1LJ2VlgmxcRoAEjJ2/mvOoGqVOnH4IVpD80
+         Xrew==
+X-Gm-Message-State: AOAM531TJqpVEt6k55ZOpqkN8iBcn/z9mQX553ptT22IOBoLX6eEkitB
+        8RcOWuNKcpZX55mcV+6mDKjij+vaCZX5YYZY
+X-Google-Smtp-Source: ABdhPJwf+20lur8uv++KBdcOVEbgmjgiEAuuWAsUNu0PrpdZBGP1HHD9FdhGtIOfDG0Vu8bdNEN7h6tsuFuUnliQ
+X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
+ (user=yosryahmed job=sendgmr) by 2002:a05:6a00:de:b0:4e0:ca1a:9f07 with SMTP
+ id e30-20020a056a0000de00b004e0ca1a9f07mr41091497pfj.11.1646352412683; Thu,
+ 03 Mar 2022 16:06:52 -0800 (PST)
+Date:   Fri,  4 Mar 2022 00:06:45 +0000
+Message-Id: <20220304000645.1888133-1-yosryahmed@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+Subject: [PATCH] selftests: vm: fix clang build error multiple output files
+From:   Yosry Ahmed <yosryahmed@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a __diag_ignore_all macro, to ignore warnings for both GCC and LLVM,
-without having to specify the compiler type and version. By default, GCC
-8 and clang 11 are used. This will be used by bpf subsystem to ignore
--Wmissing-prototypes warning for functions that are meant to be global
-functions so that they are in vmlinux BTF, but don't have a prototype.
+When building the vm selftests using clang, some errors are seen due to
+having headers in the compilation command:
 
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+clang -Wall -I ../../../../usr/include  -no-pie    gup_test.c ../../../../mm/gup_test.h -lrt -lpthread -o .../tools/testing/selftests/vm/gup_test
+clang: error: cannot specify -o when generating multiple output files
+make[1]: *** [../lib.mk:146: .../tools/testing/selftests/vm/gup_test] Error 1
+
+Rework to add the header files to LOCAL_HDRS before including ../lib.mk,
+since the dependency is evaluated in '$(OUTPUT)/%:%.c $(LOCAL_HDRS)' in
+file lib.mk.
+
+Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 ---
- include/linux/compiler-clang.h | 3 +++
- include/linux/compiler-gcc.h   | 3 +++
- include/linux/compiler_types.h | 4 ++++
- 3 files changed, 10 insertions(+)
+This patch was inspired by:
+https://lore.kernel.org/lkml/20211105162530.3307666-1-anders.roxell@linaro.org/
 
-diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
-index f1aa41d520bd..babb1347148c 100644
---- a/include/linux/compiler-clang.h
-+++ b/include/linux/compiler-clang.h
-@@ -90,3 +90,6 @@
- #else
- #define __diag_clang_11(s)
- #endif
-+
-+#define __diag_ignore_all(option, comment) \
-+	__diag_clang(11, ignore, option)
-diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-index ccbbd31b3aae..d364c98a4a80 100644
---- a/include/linux/compiler-gcc.h
-+++ b/include/linux/compiler-gcc.h
-@@ -151,6 +151,9 @@
- #define __diag_GCC_8(s)
- #endif
+
+---
+ tools/testing/selftests/vm/Makefile | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+index 1607322a112c..a14b5b800897 100644
+--- a/tools/testing/selftests/vm/Makefile
++++ b/tools/testing/selftests/vm/Makefile
+@@ -1,6 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Makefile for vm selftests
  
-+#define __diag_ignore_all(option, comment) \
-+	__diag_GCC(8, ignore, option)
++LOCAL_HDRS += $(selfdir)/vm/local_config.h $(top_srcdir)/mm/gup_test.h
 +
- /*
-  * Prior to 9.1, -Wno-alloc-size-larger-than (and therefore the "alloc_size"
-  * attribute) do not work, and must be disabled.
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 3f31ff400432..8e5d2f50f951 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -371,4 +371,8 @@ struct ftrace_likely_data {
- #define __diag_error(compiler, version, option, comment) \
- 	__diag_ ## compiler(version, error, option)
+ include local_config.mk
  
-+#ifndef __diag_ignore_all
-+#define __diag_ignore_all(option, comment)
-+#endif
-+
- #endif /* __LINUX_COMPILER_TYPES_H */
+ uname_M := $(shell uname -m 2>/dev/null || echo not)
+@@ -140,10 +142,6 @@ endif
+ 
+ $(OUTPUT)/mlock-random-test $(OUTPUT)/memfd_secret: LDLIBS += -lcap
+ 
+-$(OUTPUT)/gup_test: ../../../../mm/gup_test.h
+-
+-$(OUTPUT)/hmm-tests: local_config.h
+-
+ # HMM_EXTRA_LIBS may get set in local_config.mk, or it may be left empty.
+ $(OUTPUT)/hmm-tests: LDLIBS += $(HMM_EXTRA_LIBS)
+ 
 -- 
-2.35.1
+2.35.1.616.g0bdcbb4464-goog
 
