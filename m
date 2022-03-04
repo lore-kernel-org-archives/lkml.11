@@ -2,83 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 02:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1992CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 03:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237796AbiCDC7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Mar 2022 21:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
+        id S237812AbiCDDN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Mar 2022 22:13:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232147AbiCDC71 (ORCPT
+        with ESMTP id S232147AbiCDDN4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Mar 2022 21:59:27 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B874BC9A24
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 18:58:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646362720; x=1677898720;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EcBtmFJuJNoYciCGF9wR5xhGPLuRM/VGy1M6e8FxYBA=;
-  b=Ql5KHrvMGRB8HbNObJqbwqzngiG+k3DJRUwhPqQ+AF2CaTYWOFZ9rlo9
-   P8+ooLhsn1hs9hk669ATseKxJ5EG601tdzXLmO2cZQ5Ze98B0gjYnCCDt
-   h8uoAG9Kp2uLtYhhFNBOJhSNfKFQTGzyRDtEFMl7PnDbkDzaIDkn5qysA
-   BCWpQOh7PBBax4hf+Ei3n2j34ln5POnK6o3EtdFSvnFWscOclOMWOBOrs
-   KaN1FVvqcBPN9Hd1kFu+J6zXkyZH2N33TW4i7+mLM2RK9tkWMKcoJvqxy
-   HgW07fyJvzYpZc5fJC6rJySphKHn14ZMhq7bbTR48sT9Up0QEbq1Lvjfe
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="317103425"
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="317103425"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 18:58:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,154,1643702400"; 
-   d="scan'208";a="536114477"
-Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 03 Mar 2022 18:58:39 -0800
-Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPy9O-0001Db-H1; Fri, 04 Mar 2022 02:58:38 +0000
-Date:   Fri, 4 Mar 2022 10:58:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [netfilter-nf-next:testing 12/15] undefined reference to
- `__nf_ct_ext_find'
-Message-ID: <202203041055.zmW888Xf-lkp@intel.com>
+        Thu, 3 Mar 2022 22:13:56 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAF2B2E16
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Mar 2022 19:13:08 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id yy13so5854004ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Mar 2022 19:13:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X2tjHudClzP6uv3cMrI69fVLZFBQkgyyeXuaq1ZBH24=;
+        b=ltbve/s2pob2R9jiZUzt0ic2ZBkBaxCjviP8mgn55L3q2tB/qv0r4RJ5MJA5vbCNY+
+         mtqQTzfBDVmJM/+lQOzOSMDcP6RTtfR1dzvWWNf5NN4PO4urUlsqKjfUc8wZPjcImYKc
+         0H8tB507WyYi9qoaaP6RfUda4jVogmrmH8vDWTsJlAANnSI2qP1sqdYtbYBu6605qRbB
+         R63v+0ksDuP48x8xvfHQ5oDUXfg+iRrqCcVn+4UDFDldbHfDtHPb2AQ/XO/sVXvQ/Pc3
+         U4xRQICfbK7IpQzQRRraoPRJkltkaNfMJHCcB9HE3EcAW5tdX9R54vq2s2tZyMnoSrAD
+         pYgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X2tjHudClzP6uv3cMrI69fVLZFBQkgyyeXuaq1ZBH24=;
+        b=qmQjDCyCu0y+sbeSLI+3ll50grbvzAqqD5T7nIbJcWkB3SF37CyGnVgZjwixJ4cV3F
+         FVhiyPQZMO4T8eJ7P3FJeim6/3ovTtFASXg7A3rzQxJYiOd6I/+xa1BXqb6cePGPXn07
+         Eh0NcF0bS1tH/Fb6nZirGxzUJNnr8YhjeIk4QVcMC8/jn4ZG6ACyBCMzEzumCyi38E/e
+         1IqmXGxoouEI8fmHsbDj4mYTTpW1KS3NK5T9x35gw7Fj+qHgi90oSZbMyTz/bCiuujM7
+         G32MrtCD5xGRBBKiVwRpw8do7wkqP3obzGjazLRoae+kmReOeqFsRDKG9BkSQtFOtwkT
+         EJEw==
+X-Gm-Message-State: AOAM5301I6qCWaXr0jfjWH7DuMDPu8zUXR0FJwkDpHmoRCKlr3yQXTEv
+        7QI4Fizzv4Nk3mMiLW0LZvt5NT4RQVFDfAVXHcY=
+X-Google-Smtp-Source: ABdhPJxSp4jfTsn56gIeof17rCmCcIuhSCOpE1s1ouTFdd2E1JDvbsOxDwaan29+TVCjqG9xeP322TckuYusKO7s7ak=
+X-Received: by 2002:a17:906:3a4f:b0:6cf:86e0:586c with SMTP id
+ a15-20020a1709063a4f00b006cf86e0586cmr29541511ejf.626.1646363587256; Thu, 03
+ Mar 2022 19:13:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220303222014.517033-1-shy828301@gmail.com> <78dab4e0-1d68-c54b-2463-c0a5420b07d9@huawei.com>
+In-Reply-To: <78dab4e0-1d68-c54b-2463-c0a5420b07d9@huawei.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Thu, 3 Mar 2022 19:12:55 -0800
+Message-ID: <CAHbLzkpbnQyHRckoRtbZoaLvANu92MY4kEsbKudaQ8MDUA3nVg@mail.gmail.com>
+Subject: Re: [PATCH] mm: thp: don't have to lock page anymore when splitting PMD
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git testing
-head:   608a724032f9807149638d5f7bde065500e8c4ba
-commit: 9c1bc3d863d9e8437347149391ad3918eb95ed36 [12/15] netfilter: extensions: introduce extension genid count
-config: s390-defconfig (https://download.01.org/0day-ci/archive/20220304/202203041055.zmW888Xf-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git/commit/?id=9c1bc3d863d9e8437347149391ad3918eb95ed36
-        git remote add netfilter-nf-next git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-        git fetch --no-tags netfilter-nf-next testing
-        git checkout 9c1bc3d863d9e8437347149391ad3918eb95ed36
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+On Thu, Mar 3, 2022 at 6:25 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> On 2022/3/4 6:20, Yang Shi wrote:
+> > The commit c444eb564fb1 ("mm: thp: make the THP mapcount atomic against
+> > __split_huge_pmd_locked()") locked the page for PMD split to make
+> > mapcount stable for reuse_swap_page(), then commit 1c2f67308af4 ("mm:
+> > thp: fix MADV_REMOVE deadlock on shmem THP") reduce the scope to
+> > anonymous page only.
+> >
+> > However COW has not used mapcount to determine if the page is shared or
+> > not anymore due to the COW fixes [1] from David Hildenbrand and the
+> > reuse_swap_page() was removed as well.  So PMD split doesn't have to
+> > lock the page anymore.  This patch basically reverted the above two
+> > commits.
+> >
+>
+> Sounds reasonable. Since mapcount is not used to determine if we need to COW
+> the page, PMD split doesn't have to lock the page anymore.
+>
+> > [1] https://lore.kernel.org/linux-mm/20220131162940.210846-1-david@redhat.com/
+> >
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: Andrea Arcangeli <aarcange@redhat.com>
+> > Cc: Hugh Dickins <hughd@google.com>
+> > Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+> > Signed-off-by: Yang Shi <shy828301@gmail.com>
+> > ---
+> >  mm/huge_memory.c | 44 +++++---------------------------------------
+> >  1 file changed, 5 insertions(+), 39 deletions(-)
+> >
+> > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> > index b49e1a11df2e..daaa698bd273 100644
+> > --- a/mm/huge_memory.c
+> > +++ b/mm/huge_memory.c
+> > @@ -2134,8 +2134,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+> >  {
+> >       spinlock_t *ptl;
+> >       struct mmu_notifier_range range;
+> > -     bool do_unlock_folio = false;
+> > -     pmd_t _pmd;
+> >
+> >       mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
+> >                               address & HPAGE_PMD_MASK,
+> > @@ -2148,48 +2146,16 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+> >        * pmd against. Otherwise we can end up replacing wrong folio.
+> >        */
+> >       VM_BUG_ON(freeze && !folio);
+> > -     if (folio) {
+> > -             VM_WARN_ON_ONCE(!folio_test_locked(folio));
+> > -             if (folio != page_folio(pmd_page(*pmd)))
+> > -                     goto out;
+> > -     }
+> > +     if (folio && folio != page_folio(pmd_page(*pmd)))
+> > +             goto out;
+> >
+> > -repeat:
+> > -     if (pmd_trans_huge(*pmd)) {
+> > -             if (!folio) {
+> > -                     folio = page_folio(pmd_page(*pmd));
+> > -                     /*
+> > -                      * An anonymous page must be locked, to ensure that a
+> > -                      * concurrent reuse_swap_page() sees stable mapcount;
+> > -                      * but reuse_swap_page() is not used on shmem or file,
+> > -                      * and page lock must not be taken when zap_pmd_range()
+> > -                      * calls __split_huge_pmd() while i_mmap_lock is held.
+> > -                      */
+> > -                     if (folio_test_anon(folio)) {
+> > -                             if (unlikely(!folio_trylock(folio))) {
+> > -                                     folio_get(folio);
+> > -                                     _pmd = *pmd;
+> > -                                     spin_unlock(ptl);
+> > -                                     folio_lock(folio);
+> > -                                     spin_lock(ptl);
+> > -                                     if (unlikely(!pmd_same(*pmd, _pmd))) {
+> > -                                             folio_unlock(folio);
+> > -                                             folio_put(folio);
+> > -                                             folio = NULL;
+> > -                                             goto repeat;
+> > -                                     }
+> > -                                     folio_put(folio);
+> > -                             }
+> > -                             do_unlock_folio = true;
+> > -                     }
+> > -             }
+> > -     } else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
+> > +     if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
+> >               goto out;
+> > +
+> >       __split_huge_pmd_locked(vma, pmd, range.start, freeze);
+>
+> IUUC, here should be something like below:
+> if (pmd_trans_huge(*pmd) || pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd))
+>         __split_huge_pmd_locked(vma, pmd, range.start, freeze);
+>
+> i.e. the pmd_trans_huge case is missing in the above change. Or am I miss something ?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, you are definitely right. Must have pmd_trans_huge(*pmd).
 
-All errors (new ones prefixed by >>):
-
-   s390-linux-ld: net/core/flow_dissector.o: in function `skb_flow_dissect_ct':
->> (.text+0x49e): undefined reference to `__nf_ct_ext_find'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> Thanks for the patch. This really simplify the code and avoid the unneeded overhead.
+>
+> >  out:
+> >       spin_unlock(ptl);
+> > -     if (do_unlock_folio)
+> > -             folio_unlock(folio);
+> > +
+> >       /*
+> >        * No need to double call mmu_notifier->invalidate_range() callback.
+> >        * They are 3 cases to consider inside __split_huge_pmd_locked():
+> >
+>
