@@ -2,174 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A864C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Mar 2022 20:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbiCDUBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 15:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
+        id S229922AbiCDUBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 15:01:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiCDUA5 (ORCPT
+        with ESMTP id S230039AbiCDUBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 15:00:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7770F23BF05;
-        Fri,  4 Mar 2022 11:52:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABE50B82B5E;
-        Fri,  4 Mar 2022 19:24:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E62EC340E9;
-        Fri,  4 Mar 2022 19:24:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646421874;
-        bh=56U7h/PWatXCc+X0v4IbqX2HG9yyywUYaKIctbWn0sI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=rcP1L14pFaadmjABQMFUr1EX7rWJpbYgqQlSedShGUvIRlZ8fa4jppJuK+5TIdI2g
-         wibl11/CJ6TjP8fu7MvwoRWIejhd4jB3LvIoeQkylIrREoRzQUkMIQRZTUbjldUszp
-         zCjaWrxHMHV6DfUWk453gSFhDX2+0ofcCUp7G5vUgvHTiBRluWdDHjOHRh/7lb60jq
-         jmoaWcRzOe35+r9+UystrpbhsHpwc/Jxy6rb2chN2Eq8yfmDf+A+JFjNFJ6WuZ/HCl
-         ztl8skrIds3LAyw2HgJ6Wd5mZP+fXAZuInXKeTd+HzMsdWuIL1nnbxfhwG5VK1axZP
-         Jr2SPQZffiFoA==
-Message-ID: <7cc65bbd-e323-eabb-c576-b5656a3355ac@kernel.org>
-Date:   Fri, 4 Mar 2022 11:24:30 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 01/12] mm/shmem: Introduce F_SEAL_INACCESSIBLE
-Content-Language: en-US
-To:     Steven Price <steven.price@arm.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        qemu-devel@nongnu.org, Linux API <linux-api@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-2-chao.p.peng@linux.intel.com>
- <619547ad-de96-1be9-036b-a7b4e99b09a6@kernel.org>
- <20220217130631.GB32679@chaop.bj.intel.com>
- <2ca78dcb-61d9-4c9d-baa9-955b6f4298bb@www.fastmail.com>
- <20220223114935.GA53733@chaop.bj.intel.com>
- <71a06402-6743-bfd2-bbd4-997f8e256554@arm.com>
-From:   Andy Lutomirski <luto@kernel.org>
-In-Reply-To: <71a06402-6743-bfd2-bbd4-997f8e256554@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Fri, 4 Mar 2022 15:01:17 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9157223D02C
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 11:52:50 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc44b6dc9dso47594327b3.23
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 11:52:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=n2NqcUHbJsWardOwH6kbWHzl6hZnl0/7q7/h4tOTkqg=;
+        b=brNL5BLowTA5Lbs7SQfkYniaerH4AtPVOQyQtLOhaKCY+l1sZObrIKaasUtJdUshpz
+         l5GtEpc7cEqUNN4fTLs2aVsDy7MSdip6q1Y6KrqiLZrbhcKQWz2hiNcluZVqTmwNN+t3
+         Sx60dpGknsXUv9EI3xsoZC7cR2ExQu6dml82GFAgLfs94MIVQ8w32ld6wyYnVT3YlrEs
+         EuQFRD3g526TZxoRI/QZM2xr3pSmQ8xVE44t4hpsc5YGwdFq7V4owU5iBw3Nkgz95u7u
+         ArbzhhNSNMKFB+uv0mfVwgePqhyxBXGGWLzKUdyxKgXGZoS5Rn7JmKSMZh4e8sdg/wDG
+         T1yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=n2NqcUHbJsWardOwH6kbWHzl6hZnl0/7q7/h4tOTkqg=;
+        b=Lssohv0atmNAEmjELWsAmuYBjr4b9/3sJoEiy8MG4s/DFmUWoyANB41IPg4nCm6vdt
+         H7NFExbQlgVrBtNdDce3Z89mlZQQuHQNLYKc+MIO4C1+uP8Y9kct0hsGdiUeu2ujzy85
+         SB/48E4hjbh99Z89sBlPRZPpj0fKxR60KuuxOV2bfDWOwuJ+ytA8lUmcJ9DNT5oKGr5d
+         PVSMa9UXMyFW8tAGEFAke81P181JPc+kBhOCdyL1CSny2u4DSj7Yaf16p4sYac9J6fcZ
+         kor9PVVGCnO7Aj5BEdqAKGylCxpWA3NOy/lKcyRgoKS7xFngpEXr7/XP4NXlcgvz9F9m
+         mYzA==
+X-Gm-Message-State: AOAM5303hxO0+RaENj8aKIAtgJsMExH/7HRBbTtHMhTY1yxTUX8TaxT8
+        kEdiXXeogv6IuUGkeZegStgf4mK+4g==
+X-Google-Smtp-Source: ABdhPJyc9COjNjk++hBy8X04xgiuTrsxUwxw4yNtOBmi2JhrnOMaTg5HtQuo6HkG1pLfJbiDlQcPlToz2Q==
+X-Received: from decot.svl.corp.google.com ([2620:15c:2c5:11:5d36:3405:ac8a:5148])
+ (user=decot job=sendgmr) by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id
+ t6-20020a5b07c6000000b0060ba0ce019bmr42008ybq.407.1646423569785; Fri, 04 Mar
+ 2022 11:52:49 -0800 (PST)
+Date:   Fri,  4 Mar 2022 11:52:38 -0800
+Message-Id: <20220304195238.1141725-1-decot+git@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+Subject: [PATCH v1 1/1] irqchip/gic-v3-its: fixup IRQ affinities to account
+ for online CPUs
+From:   David Decotigny <decot+git@google.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org
+Cc:     David Decotigny <ddecotig@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/23/22 04:05, Steven Price wrote:
-> On 23/02/2022 11:49, Chao Peng wrote:
->> On Thu, Feb 17, 2022 at 11:09:35AM -0800, Andy Lutomirski wrote:
->>> On Thu, Feb 17, 2022, at 5:06 AM, Chao Peng wrote:
->>>> On Fri, Feb 11, 2022 at 03:33:35PM -0800, Andy Lutomirski wrote:
->>>>> On 1/18/22 05:21, Chao Peng wrote:
->>>>>> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
->>>>>>
->>>>>> Introduce a new seal F_SEAL_INACCESSIBLE indicating the content of
->>>>>> the file is inaccessible from userspace through ordinary MMU access
->>>>>> (e.g., read/write/mmap). However, the file content can be accessed
->>>>>> via a different mechanism (e.g. KVM MMU) indirectly.
->>>>>>
->>>>>> It provides semantics required for KVM guest private memory support
->>>>>> that a file descriptor with this seal set is going to be used as the
->>>>>> source of guest memory in confidential computing environments such
->>>>>> as Intel TDX/AMD SEV but may not be accessible from host userspace.
->>>>>>
->>>>>> At this time only shmem implements this seal.
->>>>>>
->>>>>
->>>>> I don't dislike this *that* much, but I do dislike this. F_SEAL_INACCESSIBLE
->>>>> essentially transmutes a memfd into a different type of object.  While this
->>>>> can apparently be done successfully and without races (as in this code),
->>>>> it's at least awkward.  I think that either creating a special inaccessible
->>>>> memfd should be a single operation that create the correct type of object or
->>>>> there should be a clear justification for why it's a two-step process.
->>>>
->>>> Now one justification maybe from Stever's comment to patch-00: for ARM
->>>> usage it can be used with creating a normal memfd, (partially)populate
->>>> it with initial guest memory content (e.g. firmware), and then
->>>> F_SEAL_INACCESSIBLE it just before the first time lunch of the guest in
->>>> KVM (definitely the current code needs to be changed to support that).
->>>
->>> Except we don't allow F_SEAL_INACCESSIBLE on a non-empty file, right?  So this won't work.
->>
->> Hmm, right, if we set F_SEAL_INACCESSIBLE on a non-empty file, we will
->> need to make sure access to existing mmap-ed area should be prevented,
->> but that is hard.
->>
->>>
->>> In any case, the whole confidential VM initialization story is a bit buddy.  From the earlier emails, it sounds like ARM expects the host to fill in guest memory and measure it.  From my recollection of Intel's scheme (which may well be wrong, and I could easily be confusing it with SGX), TDX instead measures what is essentially a transcript of the series of operations that initializes the VM.  These are fundamentally not the same thing even if they accomplish the same end goal.  For TDX, we unavoidably need an operation (ioctl or similar) that initializes things according to the VM's instructions, and ARM ought to be able to use roughly the same mechanism.
->>
->> Yes, TDX requires a ioctl. Steven may comment on the ARM part.
-> 
-> The Arm story is evolving so I can't give a definite answer yet. Our
-> current prototyping works by creating the initial VM content in a
-> memslot as with a normal VM and then calling an ioctl which throws the
-> big switch and converts all the (populated) pages to be protected. At
-> this point the RMM performs a measurement of the data that the VM is
-> being populated with.
-> 
-> The above (in our prototype) suffers from all the expected problems with
-> a malicious VMM being able to trick the host kernel into accessing those
-> pages after they have been protected (causing a fault detected by the
-> hardware).
-> 
-> The ideal (from our perspective) approach would be to follow the same
-> flow but where the VMM populates a memfd rather than normal anonymous
-> pages. The memfd could then be sealed and the pages converted to
-> protected ones (with the RMM measuring them in the process).
-> 
-> The question becomes how is that memfd populated? It would be nice if
-> that could be done using normal operations on a memfd (i.e. using
-> mmap()) and therefore this code could be (relatively) portable. This
-> would mean that any pages mapped from the memfd would either need to
-> block the sealing or be revoked at the time of sealing.
-> 
-> The other approach is we could of course implement a special ioctl which
-> effectively does a memcpy into the (created empty and sealed) memfd and
-> does the necessary dance with the RMM to measure the contents. This
-> would match the "transcript of the series of operations" described above
-> - but seems much less ideal from the viewpoint of the VMM.
+From: David Decotigny <ddecotig@google.com>
 
-A VMM that supports Other Vendors will need to understand this sort of 
-model regardless.
+In some cases (eg. when booting with maxcpus=X), it is possible that
+the preset IRQ affinity masks don't intersect with the set of online
+CPUs. This patch extends the fallback strategy implemented when
+IRQD_AFFINITY_MANAGED is not set to all cases. This is logged the
+first time that happens.
 
-I don't particularly mind the idea of having the kernel consume a normal 
-memfd and spit out a new object, but I find the concept of changing the 
-type of the object in place, even if it has other references, and trying 
-to control all the resulting races to be somewhat alarming.
+Fixes: c5d6082d35e0 ("irqchip/gic-v3-its: Balance initial LPI affinity across CPUs")
 
-In pseudo-Rust, this is the difference between:
+---
+ drivers/irqchip/irq-gic-v3-its.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-fn convert_to_private(in: &mut Memfd)
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index cd772973114a..de862fd9ad73 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -1618,11 +1618,6 @@ static int its_select_cpu(struct irq_data *d,
+ 		/* Try the intersection of the affinity and online masks */
+ 		cpumask_and(tmpmask, aff_mask, cpu_online_mask);
+ 
+-		/* If that doesn't fly, the online mask is the last resort */
+-		if (cpumask_empty(tmpmask))
+-			cpumask_copy(tmpmask, cpu_online_mask);
+-
+-		cpu = cpumask_pick_least_loaded(d, tmpmask);
+ 	} else {
+ 		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
+ 
+@@ -1630,9 +1625,13 @@ static int its_select_cpu(struct irq_data *d,
+ 		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
+ 		    node != NUMA_NO_NODE)
+ 			cpumask_and(tmpmask, tmpmask, cpumask_of_node(node));
+-
+-		cpu = cpumask_pick_least_loaded(d, tmpmask);
+ 	}
++
++	/* If that doesn't fly, the online mask is the last resort */
++	if (WARN_ON_ONCE(cpumask_empty(tmpmask)))
++		cpumask_copy(tmpmask, cpu_online_mask);
++
++	cpu = cpumask_pick_least_loaded(d, tmpmask);
+ out:
+ 	free_cpumask_var(tmpmask);
+ 
+-- 
+2.35.1.616.g0bdcbb4464-goog
 
-and
-
-fn convert_to_private(in: Memfd) -> PrivateMemoryFd
-
-This doesn't map particularly nicely to the kernel, though.
-
---Andy\
