@@ -2,67 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A053C43217
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B0DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231700AbiCEMc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 07:32:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        id S231707AbiCEMcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 07:32:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiCEMcZ (ORCPT
+        with ESMTP id S231688AbiCEMcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 5 Mar 2022 07:32:25 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1694323F3DF;
-        Sat,  5 Mar 2022 04:31:35 -0800 (PST)
-Received: from kwepemi100015.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K9kVc4yKpzbcBG;
-        Sat,  5 Mar 2022 20:26:48 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi100015.china.huawei.com (7.221.188.125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 5 Mar 2022 20:31:32 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B718240048
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 04:31:35 -0800 (PST)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K9kWw3JHYz9sPg;
+        Sat,  5 Mar 2022 20:27:56 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 5 Mar
- 2022 20:31:31 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <smayhew@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
-Subject: [PATCH -next 0/2] nfs: check writeback errors correctly
-Date:   Sat, 5 Mar 2022 20:46:34 +0800
-Message-ID: <20220305124636.2002383-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+ 2022 20:31:33 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <jk@ozlabs.org>, <arnd@arndb.de>, <mpe@ellerman.id.au>,
+        <benh@kernel.crashing.org>, <paulus@samba.org>
+CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] powerpc/spufs: Fix build warning when CONFIG_PROC_FS=n
+Date:   Sat, 5 Mar 2022 20:31:16 +0800
+Message-ID: <20220305123116.26828-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600015.china.huawei.com (7.193.23.52)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series fixes nfs writeback error checking bugs.
+arch/powerpc/platforms/cell/spufs/sched.c:1055:12: warning: ‘show_spu_loadavg’ defined but not used [-Wunused-function]
+ static int show_spu_loadavg(struct seq_file *s, void *private)
+            ^~~~~~~~~~~~~~~~
 
-If there is an error during the writeback process, it should be returned
-when user space calls close() or fsync().
+Mark this as __maybe_unused to fix this.
 
-filemap_sample_wb_err() will return 0 if nobody has seen the error yet,
-then filemap_check_wb_err() will return the unchanged writeback error.
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ arch/powerpc/platforms/cell/spufs/sched.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-ChenXiaoSong (2):
-  nfs: nfs{,4}_file_flush should consume writeback error
-  nfs: nfs_file_write() check writeback errors correctly
-
- fs/nfs/file.c     | 8 +++-----
- fs/nfs/nfs4file.c | 4 +---
- 2 files changed, 4 insertions(+), 8 deletions(-)
-
+diff --git a/arch/powerpc/platforms/cell/spufs/sched.c b/arch/powerpc/platforms/cell/spufs/sched.c
+index d058f6233e66..c46835625133 100644
+--- a/arch/powerpc/platforms/cell/spufs/sched.c
++++ b/arch/powerpc/platforms/cell/spufs/sched.c
+@@ -1052,7 +1052,7 @@ void spuctx_switch_state(struct spu_context *ctx,
+ 	}
+ }
+ 
+-static int show_spu_loadavg(struct seq_file *s, void *private)
++static int __maybe_unused show_spu_loadavg(struct seq_file *s, void *private)
+ {
+ 	int a, b, c;
+ 
 -- 
-2.31.1
+2.17.1
 
