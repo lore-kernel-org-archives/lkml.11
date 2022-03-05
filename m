@@ -2,104 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 02:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D3F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 02:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230096AbiCECaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 21:30:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
+        id S230461AbiCECdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 21:33:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiCEC35 (ORCPT
+        with ESMTP id S229565AbiCECdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 21:29:57 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6CD54F9C
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 18:29:08 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id s6so5651235qtc.4
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 18:29:08 -0800 (PST)
+        Fri, 4 Mar 2022 21:33:10 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E9E230E68;
+        Fri,  4 Mar 2022 18:32:21 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id n5-20020a4a9545000000b0031d45a442feso11499803ooi.3;
+        Fri, 04 Mar 2022 18:32:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=Hbm5TQmw1l7ulFWRyo3PHqo3g4u481T5gjdYr0TUKCE=;
-        b=AkMbkY1eAnNbHGBkJymyFX3/nVr8dWYsyjBZHMm57+Uz14pt9E+foHVje2wkScfWZ1
-         sFd1/4MrHiCMeA3VZaJ+mNY21yj9hVY62p1c7EHoHpELnHSJ43T+coUtbncZZZjXgrQf
-         MnIxg1LeCQ+GBo0Kp9XuFJ3weTzYffVMxSsIT1MNzDni3nQ3gksyWMALlSckh3NF0fZV
-         hNcHIg82bWugN0GGk67XeXw7L9zt5I137Wd1cvyWGcPm2JBqbFrwPYto657CNRIDJOR7
-         Gr5Uf+kbKwUujOhOjp2/ENpvEe/9EO9Q529LzAEiLATuRwxYdwFZweHPtnq8PQzwvlJP
-         ED6Q==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iFq5ilKFOxR6t6aC3pK/MvPKcBTbF799h40RZuoXp6s=;
+        b=Rv7xyDfyINVGIDTtWnfOYa3zhYPcZoIF0xbOktgJBQr3MFzJ+x95qwpChVYJLkcC9p
+         uWVgeAM55LMlkNAyPjl1qrYHASqeR6707wpN2wkKikiC8YTUAxMQarVgkYfGzCR5pIsU
+         w8ZcYWf9lRMdeROU5/gPHQH73OLGn7EMVGzyP9e1yDoExFpLc9mJWMFVF4W/B8O0w10D
+         hHrAJiOdnBbTpgauZUXxVAL4rAwEJoiS0E87oLdt27BBH0EJEXw1efeL2KvRraegBUNz
+         iKkzaPE7WFx2Y1Q8rEiXl1+o+XkhkgEd0Skq/oqj7ktqIuDuSdpJR1CJQ3yLAI/Z9vrP
+         puWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=Hbm5TQmw1l7ulFWRyo3PHqo3g4u481T5gjdYr0TUKCE=;
-        b=GKpCDxP91LZQJOKcFDKNUM3JsOecbSuj0bTMEVt66j751omOVrcZSzYr1dnE9ySQJD
-         Mgnv9YUmZR4KCaj+dVGG5vRE7UUfDMj1CmBgISiLL6461DA4qLUTk0kVqbfe6pCC5AFC
-         wYDrQhXuPYd/IJJUspLiSSMUp6Dy7k8kTZ6X27cyz5Xif4GudJQOmllng/UmmmgRWKrK
-         jIRA5dTQpEc8nEeZOphInQfWG1etIbASif7Zx/Ki0K6Sb2J/AQg45eEwjBedV08Avdu4
-         EmTkG7rrjioYMPN/86sW22FNhNp3EJhUDcYvBEGday1YvEedFrjesy1hhCfNYozbYc9Q
-         fr3A==
-X-Gm-Message-State: AOAM532ZeteC7f3v0vy9o9DarG90YtmxY4ApueZJcn7WE1BY0AdkQNH8
-        Iudxbr8YOpqZ7vJT5if6Zeqq0+62CJ252w==
-X-Google-Smtp-Source: ABdhPJy7j8smbdmCLE5IwuCz3JExPO+cf+fzfc6lOzHcmAlL51rTdMqWIu+iRWD0iKA1Z6TI1+xcMg==
-X-Received: by 2002:ac8:5c14:0:b0:2de:2b69:dae7 with SMTP id i20-20020ac85c14000000b002de2b69dae7mr1436589qti.185.1646447347043;
-        Fri, 04 Mar 2022 18:29:07 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id v14-20020a05622a014e00b002cf75f5b11esm4508896qtw.64.2022.03.04.18.29.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iFq5ilKFOxR6t6aC3pK/MvPKcBTbF799h40RZuoXp6s=;
+        b=o+OGso6qQnwNFeclzFZjfQfIatu+wI6pgae3UsON3QFuJ4etg4C4KmD+tdOo4n5Tdo
+         +ObpZKkKWgBvNeSh+tQ4imcqS+L4qccLYmknMKxNb8AZkEmelEAs+NadmldUfe/VE2QI
+         z9IP819oGopNUQlLjwjHX3enOKiUbmymf51rz86qJPp+M8ex9A+E2XB3UhfWF/RipgFF
+         0g5lY+gIIeNkKaZnm0ZU4otG2iNIOQg83AQk7IKmzsazYO2yF8HwNfy57W2Rr125ySHB
+         cMs30KKV+vlSSCqd7Y2TlG7h1TxVr5WpXqGiBj5Najz2B/ZT5LNEFAehEq9xDlw7bQWS
+         HDgw==
+X-Gm-Message-State: AOAM532xRtigb9CoibkUs0zeTXu3MbF2Wo8R0RZ++mXZW4xHHWDkN8XL
+        vdJWyOdxHeObiksRmOsNO90=
+X-Google-Smtp-Source: ABdhPJw3V11UONP5t2HNgXEWPRk3PvUtshcW0XVoQ/3zF9hMAwS7V+zqvLJeprcqLNcPMTrxwczhSw==
+X-Received: by 2002:a05:6870:b507:b0:da:b3f:2b40 with SMTP id v7-20020a056870b50700b000da0b3f2b40mr1154579oap.223.1646447541196;
+        Fri, 04 Mar 2022 18:32:21 -0800 (PST)
+Received: from marsc.168.1.7 ([2804:30c:b7a:7b00:70e:e3d5:be94:991])
+        by smtp.gmail.com with ESMTPSA id w20-20020a056870339400b000d75f1d9b83sm2984548oae.48.2022.03.04.18.32.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 18:29:06 -0800 (PST)
-Date:   Fri, 4 Mar 2022 18:28:39 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Liam Howlett <liam.howlett@oracle.com>
-cc:     Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-Subject: Re: [PATCH mmotm] mempolicy: mbind_range() set_policy() after
- vma_merge()
-In-Reply-To: <20220305020021.qmwg5dkham4lyz6v@revolver>
-Message-ID: <29eac73-4f94-1688-3834-8bd6687a18@google.com>
-References: <319e4db9-64ae-4bca-92f0-ade85d342ff@google.com> <20220304184927.vkq6ewn6uqtcesma@revolver> <20220304190531.6giqbnnaka4xhovx@revolver> <6038ebc2-bc88-497d-a3f3-5936726fb023@google.com> <20220305020021.qmwg5dkham4lyz6v@revolver>
+        Fri, 04 Mar 2022 18:32:20 -0800 (PST)
+Date:   Fri, 4 Mar 2022 23:32:17 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     "Colin King (gmail)" <colin.i.king@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: iio:adc:ad7280a: Move out of staging
+Message-ID: <YiLLsQmnK+f6hjvi@marsc.168.1.7>
+References: <69aeef03-69ba-07f4-2506-31e481f86c76@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <69aeef03-69ba-07f4-2506-31e481f86c76@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 5 Mar 2022, Liam Howlett wrote:
-> * Hugh Dickins <hughd@google.com> [220304 17:48]:
-> > On Fri, 4 Mar 2022, Liam Howlett wrote:
-> > > * Liam R. Howlett <Liam.Howlett@Oracle.com> [220304 13:49]:
-> > > > * Hugh Dickins <hughd@google.com> [220303 23:36]:
-> > > 
-> > > I just thought of something after my initial email
-> > > 
-> > > How does the ->set_policy() requirement on tmpfs play out for the
-> > > mpol_equal() check earlier in that for loop?
-> > 
-> > It took me a while to page all this back in (and remind myself of
-> > what is case 8) to answer that question!
-> > 
-> > The answer is that the mpol_equal() check at the top of the loop is on
-> > an existing, unmodified vma; so it's right to assume that any necessary
-> > set_policy() has already been done.
-> > 
-> > Whereas the mpol_equal() check being removed in this patch, is being
-> > done on a vma which may have just been extended to cover a greater range:
-> > so although the relevant set_policy() may have already been done on a part
-> > of its range, there is now another part which needs the policy applied.
+On 02/24, Colin King (gmail) wrote:
+> Hi,
 > 
-> Doesn't the policy get checked during vma_merge()?  Specifically the
-> mpol_equal(policy, vma_policy(next)) check?
+> Static analysis with clang scan picked up a potential issue with
+> drivers/iio/adc/ad7280a.c in function ad7280a_write_thresh, the analysis is
+> as follows:
+> 
+>         switch (chan->type) {
+>         case IIO_VOLTAGE:
+>                 value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
+>                 value = clamp(value, 0L, 0xFFL);
+> 
+>                 ^^
+> Note: variable value is being assigned a value
+> 
+>                 switch (dir) {
+>                 case IIO_EV_DIR_RISING:
+>                         addr = AD7280A_CELL_OVERVOLTAGE_REG;
+>                         ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+>                                            1, val);
+>                         if (ret)
+>                                 break;
+>                         st->cell_threshhigh = value;
+> 
+> ..and value is being used here ^^
+> 
+>                         break;
+>                 case IIO_EV_DIR_FALLING:
+>                         addr = AD7280A_CELL_UNDERVOLTAGE_REG;
+>                         ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+>                                            1, val);
+>                         if (ret)
+>                                 break;
+>                         st->cell_threshlow = value;
+> 
+> and value is being used here ^^
+> 
+>                         break;
+>                 default:
+>                         ret = -EINVAL;
+>                         goto err_unlock;
+>                 }
+>                 break;
+> 
+> However for the IIO_TEMP case:
+> 
+>         case IIO_TEMP:
+>                 value = (val * 10) / 196; /* LSB 19.6mV */
+>                 value = clamp(value, 0L, 0xFFL);
+> 
+>                 ^^
+> Note: variable value is being assigned a value
+> 
+>                 switch (dir) {
+>                 case IIO_EV_DIR_RISING:
+>                         addr = AD7280A_AUX_ADC_OVERVOLTAGE_REG;
+>                         ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+>                                            1, val);
+>                         if (ret)
+>                                 break;
+>                         st->aux_threshhigh = val;
+>                                              ^^
+> But val is being used here rather than value
+> 
+>                         break;
+>                 case IIO_EV_DIR_FALLING:
+>                         addr = AD7280A_AUX_ADC_UNDERVOLTAGE_REG;
+>                         ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, addr,
+>                                            1, val);
+>                         if (ret)
+>                                 break;
+>                         st->aux_threshlow = val;
+>                                             ^^
+> and val us being used here rather than value too
+> 
+> 
+> So for the IIO_TEMP case either the assignment to value is redundant or the
+> setting of st->aux_threshhigh or st->auxthreashlow is incorrect.
 
-Sorry, I'm reduced to the unhelpful reply of "Yes. So?"
+Good catch. This has really slipped through my review.
+It's impressive how we can discuss changes at one specific part of the
+code and miss inconsistencies a few lines below it.
 
-If vma_merge() finds that vma's new_pol allows it to be merged with prev,
-that still requires mbind_range() (or its call to vma_replace_policy())
-to set_policy() on prev (now assigned to vma), to apply that new_pol to
-the extension of prev - vma_merge() would have checked mpol_equal(),
-but would not have done the set_policy().
+Thanks,
+Marcelo
 
-Hugh
+> 
+> Colin
