@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2EEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9A3C433F5
 	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 21:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbiCEVdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 16:33:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S232641AbiCEVc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 16:32:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232659AbiCEVdP (ORCPT
+        with ESMTP id S230119AbiCEVc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 16:33:15 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29D55AED7
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 13:32:23 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id q14so2063027wrc.4
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Mar 2022 13:32:23 -0800 (PST)
+        Sat, 5 Mar 2022 16:32:57 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CD455741
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 13:32:06 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id n15so3505600wra.6
+        for <linux-kernel@vger.kernel.org>; Sat, 05 Mar 2022 13:32:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=9IH5+QpuYr8xx7VseEHwb3B5cUXtUdnzvWAtsWC3Lqo=;
-        b=jjohIZhvIlSjJYT5OU4GmDH7lyi5I14Gd5Leo4WCzgkFaN0zY3hfFz1iGgWe0x3rNp
-         N7cu2YM2M4kmsLsQ76HEflqobBdlIucQ9Bi4Rt1ro46WtEeRg8+IgqKOpnZ5N8vz0BTg
-         6UNWOQyJ3Sw2IkdhYB+o7HMqEYRVx4/BfexsE3fH86a6E3m7iacquC3FEW2EGe4zo2Gc
-         VmE1aR17MIp4vunFL9JG7x3YMTs+sfN2SI956OsFcO/yHAjB0Qmyma4lFsnZhw2IfDOU
-         oiWLfz8ROFsWBV22K1RGvFEC04OG7D3/K7Ghqvfg3U3i/O72n8Po/7C5VAB2jOhlWm4W
-         QRbA==
+        bh=6UZ/MpVxQQe0WGfPdM9RkSy+enCWjxgD5uwVrrDdFnQ=;
+        b=WN4G5XTEARjxlnBz+MybGKIAyjG/qtmxcwSd+NhcoamE2IfiCW1l2uBeAMgCWZ7IBz
+         0mnFXYOZBTt0AQUP2NfJ3zW3MjtG/CK/36pjENs5a7HmXXgq7fbnJTksZl36LBHXhjlW
+         vNOIlBAOTR7ICgy70f/Mj5XzMV0fci59jOd+JeIE1LoPwpIcq7v2E4d1J5sjlyo2fUTq
+         lb+NDW53fV/1HNCiuoq2AP3ik3tiuJXNFFWSQjJa7RZOQBDCXqaw7oi9CoDWZe3wiqPu
+         zM803FNY2SAahg29Om9jB5C6IsjyuXiKI9fwtfEM3v5Ac95H5yYE56XhSTTtKfM80OSp
+         zIPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9IH5+QpuYr8xx7VseEHwb3B5cUXtUdnzvWAtsWC3Lqo=;
-        b=ZMSlpXoF9tZfvvteUm1aQB2rugGirqUZGnzFijAAQScaDJ2jyTXJoEOdDbIEFkEP9M
-         IrAtaZ5CkkrJ/nhSTcrsgQbc3470zngSlRmavpz46Kustxrr8hXPoLQ5nPENzMRgC/vw
-         Virtdd/RYRj+0pAoyRWRWiG2YTPXSZ9jMGpiP4qVB2WurpbqlijPZ/OIa+FWEoiV56tA
-         eAZWtjQE66J1GMQy51U7VAdENf0s0g+E70zee/5tNEVzJcukyftjqreZZSyILIXGV2UO
-         0yey8DeUjAG6gabWdxfMSAsmuwvszcpvmIcDJhBPQRkFIFVZl9Ykm55RUuAjAQw63EHx
-         WN+A==
-X-Gm-Message-State: AOAM530Lo47m2x2KoKoPIPZ2hH9LnpsoXfSiqn34a48VwtD3mOiDFzzg
-        5yqSwEIkIAFb8VAildyXQgE=
-X-Google-Smtp-Source: ABdhPJzV5HWPYwTYCrqKU/3cUb4+hY5cPjIC2BdFXXdl50Tp9vTG7vFSAKADoYcLSC7M8LEa3kMvjQ==
-X-Received: by 2002:a5d:4609:0:b0:1f1:de8a:af07 with SMTP id t9-20020a5d4609000000b001f1de8aaf07mr3180549wrq.549.1646515942625;
-        Sat, 05 Mar 2022 13:32:22 -0800 (PST)
+        bh=6UZ/MpVxQQe0WGfPdM9RkSy+enCWjxgD5uwVrrDdFnQ=;
+        b=mSlWTsLcT6m//IUMBUo/PsB3aXQ347P7d+77jrjSZgoPwFWVrLOSBJcJh4aW4ww5Fy
+         Up08X7Iwk+1qnHKo1BrOoQjsOJSpbwjsOAHs97alb/qv35Fg4ru9nKd4+e0+DjRQD9QK
+         XDYV63itIGx9u5IdLmEK3mfT3BIEt5xi9VmqrR8ug1qdZimfoEVdtKsvWeF2Q5kM4JiQ
+         CrZ478PxYAWHHXScrXZS29tG5qig1DKyDzx3QWoelsEMccB6wdFH1b7YYSZbTUf4p3L+
+         zejxwvJvZXxDviSYzIYA9cq2Zd634aIVzDTSLYfUcHimoJVymH+sx7AzE4q4txQaSog6
+         v8jg==
+X-Gm-Message-State: AOAM530oB2+XHrFYsW77xkboQc6Sm/eaqoHG3xT5YQlsXx0DkxJgPIC6
+        ZsNmbttoghTNd/Rzk5AcK/rAi6NPsAY=
+X-Google-Smtp-Source: ABdhPJx/pGAO+jaXXCVJKaEwM+jVLaJ1h0UPyKYKCQ4yRY+mzjgc6//G8DjW6YvUdmI0kak30pYNlw==
+X-Received: by 2002:a05:6000:186d:b0:1e8:49fc:69ce with SMTP id d13-20020a056000186d00b001e849fc69cemr3442992wri.80.1646515925361;
+        Sat, 05 Mar 2022 13:32:05 -0800 (PST)
 Received: from matrix-ESPRIMO-P710 (p57935aa6.dip0.t-ipconnect.de. [87.147.90.166])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm11472031wmq.35.2022.03.05.13.32.21
+        by smtp.gmail.com with ESMTPSA id y10-20020adfee0a000000b001f0639001ffsm9662098wrn.9.2022.03.05.13.32.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Mar 2022 13:32:22 -0800 (PST)
-Date:   Sat, 5 Mar 2022 22:32:20 +0100
+        Sat, 05 Mar 2022 13:32:05 -0800 (PST)
+Date:   Sat, 5 Mar 2022 22:32:03 +0100
 From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
 To:     Forest Bond <forest@alittletooquiet.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] staging: vt6655: Remove unused byRFType in card.c
-Message-ID: <5554b243ae285e3274d9968575aadd1a79806b01.1646512837.git.philipp.g.hortmann@gmail.com>
+Subject: [PATCH 1/4] staging: vt6655: Remove unused byRFType in channel.c
+Message-ID: <3724590188e72e8f531fe03c2821c5d3d08e2e29.1646512837.git.philipp.g.hortmann@gmail.com>
 References: <cover.1646512837.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -68,101 +68,133 @@ Remove byRFType that support 5GHz band.
 
 Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
 ---
- drivers/staging/vt6655/card.c | 56 +----------------------------------
- 1 file changed, 1 insertion(+), 55 deletions(-)
+ drivers/staging/vt6655/channel.c | 85 +-------------------------------
+ 1 file changed, 1 insertion(+), 84 deletions(-)
 
-diff --git a/drivers/staging/vt6655/card.c b/drivers/staging/vt6655/card.c
-index ee2d145778ed..1110366fc415 100644
---- a/drivers/staging/vt6655/card.c
-+++ b/drivers/staging/vt6655/card.c
-@@ -183,32 +183,11 @@ bool CARDbSetPhyParameter(struct vnt_private *priv, u8 bb_type)
- 	unsigned char bySlot = 0;
- 	unsigned char bySIFS = 0;
- 	unsigned char byDIFS = 0;
--	unsigned char data;
- 	int i;
+diff --git a/drivers/staging/vt6655/channel.c b/drivers/staging/vt6655/channel.c
+index e37c8e35a45b..abe867814dc8 100644
+--- a/drivers/staging/vt6655/channel.c
++++ b/drivers/staging/vt6655/channel.c
+@@ -25,17 +25,6 @@ static struct ieee80211_rate vnt_rates_bg[] = {
+ 	{ .bitrate = 540, .hw_value = RATE_54M },
+ };
  
- 	/* Set SIFS, DIFS, EIFS, SlotTime, CwMin */
- 	if (bb_type == BB_TYPE_11A) {
--		if (priv->byRFType == RF_AIROHA7230) {
--			/* AL7230 use single PAPE and connect to PAPE_2.4G */
--			MACvSetBBType(priv->port_offset, BB_TYPE_11G);
--			priv->abyBBVGA[0] = 0x20;
--			priv->abyBBVGA[2] = 0x10;
--			priv->abyBBVGA[3] = 0x10;
--			bb_read_embedded(priv, 0xE7, &data);
--			if (data == 0x1C)
--				bb_write_embedded(priv, 0xE7, priv->abyBBVGA[0]);
+-static struct ieee80211_rate vnt_rates_a[] = {
+-	{ .bitrate = 60,  .hw_value = RATE_6M },
+-	{ .bitrate = 90,  .hw_value = RATE_9M },
+-	{ .bitrate = 120, .hw_value = RATE_12M },
+-	{ .bitrate = 180, .hw_value = RATE_18M },
+-	{ .bitrate = 240, .hw_value = RATE_24M },
+-	{ .bitrate = 360, .hw_value = RATE_36M },
+-	{ .bitrate = 480, .hw_value = RATE_48M },
+-	{ .bitrate = 540, .hw_value = RATE_54M },
+-};
 -
--		} else if (priv->byRFType == RF_UW2452) {
--			MACvSetBBType(priv->port_offset, BB_TYPE_11A);
--			priv->abyBBVGA[0] = 0x18;
--			bb_read_embedded(priv, 0xE7, &data);
--			if (data == 0x14) {
--				bb_write_embedded(priv, 0xE7, priv->abyBBVGA[0]);
--				bb_write_embedded(priv, 0xE1, 0x57);
--			}
--		} else {
--			MACvSetBBType(priv->port_offset, BB_TYPE_11A);
--		}
-+		MACvSetBBType(priv->port_offset, BB_TYPE_11A);
- 		bb_write_embedded(priv, 0x88, 0x03);
- 		bySlot = C_SLOT_SHORT;
- 		bySIFS = C_SIFS_A;
-@@ -216,22 +195,6 @@ bool CARDbSetPhyParameter(struct vnt_private *priv, u8 bb_type)
- 		byCWMaxMin = 0xA4;
- 	} else if (bb_type == BB_TYPE_11B) {
- 		MACvSetBBType(priv->port_offset, BB_TYPE_11B);
--		if (priv->byRFType == RF_AIROHA7230) {
--			priv->abyBBVGA[0] = 0x1C;
--			priv->abyBBVGA[2] = 0x00;
--			priv->abyBBVGA[3] = 0x00;
--			bb_read_embedded(priv, 0xE7, &data);
--			if (data == 0x20)
--				bb_write_embedded(priv, 0xE7, priv->abyBBVGA[0]);
--
--		} else if (priv->byRFType == RF_UW2452) {
--			priv->abyBBVGA[0] = 0x14;
--			bb_read_embedded(priv, 0xE7, &data);
--			if (data == 0x18) {
--				bb_write_embedded(priv, 0xE7, priv->abyBBVGA[0]);
--				bb_write_embedded(priv, 0xE1, 0xD3);
--			}
--		}
- 		bb_write_embedded(priv, 0x88, 0x02);
- 		bySlot = C_SLOT_LONG;
- 		bySIFS = C_SIFS_BG;
-@@ -239,22 +202,6 @@ bool CARDbSetPhyParameter(struct vnt_private *priv, u8 bb_type)
- 		byCWMaxMin = 0xA5;
- 	} else { /* PK_TYPE_11GA & PK_TYPE_11GB */
- 		MACvSetBBType(priv->port_offset, BB_TYPE_11G);
--		if (priv->byRFType == RF_AIROHA7230) {
--			priv->abyBBVGA[0] = 0x1C;
--			priv->abyBBVGA[2] = 0x00;
--			priv->abyBBVGA[3] = 0x00;
--			bb_read_embedded(priv, 0xE7, &data);
--			if (data == 0x20)
--				bb_write_embedded(priv, 0xE7, priv->abyBBVGA[0]);
--
--		} else if (priv->byRFType == RF_UW2452) {
--			priv->abyBBVGA[0] = 0x14;
--			bb_read_embedded(priv, 0xE7, &data);
--			if (data == 0x18) {
--				bb_write_embedded(priv, 0xE7, priv->abyBBVGA[0]);
--				bb_write_embedded(priv, 0xE1, 0xD3);
--			}
--		}
- 		bb_write_embedded(priv, 0x88, 0x08);
- 		bySIFS = C_SIFS_BG;
+ static struct ieee80211_channel vnt_channels_2ghz[] = {
+ 	{ .center_freq = 2412, .hw_value = 1 },
+ 	{ .center_freq = 2417, .hw_value = 2 },
+@@ -53,51 +42,6 @@ static struct ieee80211_channel vnt_channels_2ghz[] = {
+ 	{ .center_freq = 2484, .hw_value = 14 }
+ };
  
-@@ -417,7 +364,6 @@ void CARDbRadioPowerOff(struct vnt_private *priv)
+-static struct ieee80211_channel vnt_channels_5ghz[] = {
+-	{ .center_freq = 4915, .hw_value = 15 },
+-	{ .center_freq = 4920, .hw_value = 16 },
+-	{ .center_freq = 4925, .hw_value = 17 },
+-	{ .center_freq = 4935, .hw_value = 18 },
+-	{ .center_freq = 4940, .hw_value = 19 },
+-	{ .center_freq = 4945, .hw_value = 20 },
+-	{ .center_freq = 4960, .hw_value = 21 },
+-	{ .center_freq = 4980, .hw_value = 22 },
+-	{ .center_freq = 5035, .hw_value = 23 },
+-	{ .center_freq = 5040, .hw_value = 24 },
+-	{ .center_freq = 5045, .hw_value = 25 },
+-	{ .center_freq = 5055, .hw_value = 26 },
+-	{ .center_freq = 5060, .hw_value = 27 },
+-	{ .center_freq = 5080, .hw_value = 28 },
+-	{ .center_freq = 5170, .hw_value = 29 },
+-	{ .center_freq = 5180, .hw_value = 30 },
+-	{ .center_freq = 5190, .hw_value = 31 },
+-	{ .center_freq = 5200, .hw_value = 32 },
+-	{ .center_freq = 5210, .hw_value = 33 },
+-	{ .center_freq = 5220, .hw_value = 34 },
+-	{ .center_freq = 5230, .hw_value = 35 },
+-	{ .center_freq = 5240, .hw_value = 36 },
+-	{ .center_freq = 5260, .hw_value = 37 },
+-	{ .center_freq = 5280, .hw_value = 38 },
+-	{ .center_freq = 5300, .hw_value = 39 },
+-	{ .center_freq = 5320, .hw_value = 40 },
+-	{ .center_freq = 5500, .hw_value = 41 },
+-	{ .center_freq = 5520, .hw_value = 42 },
+-	{ .center_freq = 5540, .hw_value = 43 },
+-	{ .center_freq = 5560, .hw_value = 44 },
+-	{ .center_freq = 5580, .hw_value = 45 },
+-	{ .center_freq = 5600, .hw_value = 46 },
+-	{ .center_freq = 5620, .hw_value = 47 },
+-	{ .center_freq = 5640, .hw_value = 48 },
+-	{ .center_freq = 5660, .hw_value = 49 },
+-	{ .center_freq = 5680, .hw_value = 50 },
+-	{ .center_freq = 5700, .hw_value = 51 },
+-	{ .center_freq = 5745, .hw_value = 52 },
+-	{ .center_freq = 5765, .hw_value = 53 },
+-	{ .center_freq = 5785, .hw_value = 54 },
+-	{ .center_freq = 5805, .hw_value = 55 },
+-	{ .center_freq = 5825, .hw_value = 56 }
+-};
+-
+ static struct ieee80211_supported_band vnt_supported_2ghz_band = {
+ 	.channels = vnt_channels_2ghz,
+ 	.n_channels = ARRAY_SIZE(vnt_channels_2ghz),
+@@ -105,13 +49,6 @@ static struct ieee80211_supported_band vnt_supported_2ghz_band = {
+ 	.n_bitrates = ARRAY_SIZE(vnt_rates_bg),
+ };
  
- 	case RF_AIROHA:
- 	case RF_AL2230S:
+-static struct ieee80211_supported_band vnt_supported_5ghz_band = {
+-	.channels = vnt_channels_5ghz,
+-	.n_channels = ARRAY_SIZE(vnt_channels_5ghz),
+-	.bitrates = vnt_rates_a,
+-	.n_bitrates = ARRAY_SIZE(vnt_rates_a),
+-};
+-
+ static void vnt_init_band(struct vnt_private *priv,
+ 			  struct ieee80211_supported_band *supported_band,
+ 			  enum nl80211_band band)
+@@ -129,23 +66,7 @@ static void vnt_init_band(struct vnt_private *priv,
+ 
+ void vnt_init_bands(struct vnt_private *priv)
+ {
+-	switch (priv->byRFType) {
 -	case RF_AIROHA7230:
- 		MACvWordRegBitsOff(priv->port_offset, MAC_REG_SOFTPWRCTL,
- 				   SOFTPWRCTL_SWPE2);
- 		MACvWordRegBitsOff(priv->port_offset, MAC_REG_SOFTPWRCTL,
+-	case RF_UW2452:
+-	case RF_NOTHING:
+-	default:
+-		vnt_init_band(priv, &vnt_supported_5ghz_band,
+-			      NL80211_BAND_5GHZ);
+-		fallthrough;
+-	case RF_RFMD2959:
+-	case RF_AIROHA:
+-	case RF_AL2230S:
+-	case RF_UW2451:
+-	case RF_VT3226:
+-		vnt_init_band(priv, &vnt_supported_2ghz_band,
+-			      NL80211_BAND_2GHZ);
+-		break;
+-	}
++	vnt_init_band(priv, &vnt_supported_2ghz_band, NL80211_BAND_2GHZ);
+ }
+ 
+ /**
+@@ -179,10 +100,6 @@ bool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch)
+ 	 * it is for better TX throughput
+ 	 */
+ 
+-	if (priv->byRFType == RF_AIROHA7230)
+-		RFbAL7230SelectChannelPostProcess(priv, priv->byCurrentCh,
+-						  ch->hw_value);
+-
+ 	priv->byCurrentCh = ch->hw_value;
+ 	ret &= RFbSelectChannel(priv, priv->byRFType,
+ 				ch->hw_value);
 -- 
 2.25.1
 
