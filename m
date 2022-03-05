@@ -2,89 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D05C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 19:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C8F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 19:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232211AbiCETWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 14:22:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59080 "EHLO
+        id S232257AbiCETnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 14:43:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbiCETWI (ORCPT
+        with ESMTP id S232252AbiCETnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 14:22:08 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B233535DCE;
-        Sat,  5 Mar 2022 11:21:17 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 7791F92009C; Sat,  5 Mar 2022 20:21:15 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 6990592009B;
-        Sat,  5 Mar 2022 19:21:15 +0000 (GMT)
-Date:   Sat, 5 Mar 2022 19:21:15 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Mike Rapoport <rppt@kernel.org>
-cc:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] MIPS: Modify mem= and memmap= parameter
-In-Reply-To: <YiNlDxF9WppxbkiX@kernel.org>
-Message-ID: <alpine.DEB.2.21.2203051837280.47558@angie.orcam.me.uk>
-References: <1646108941-27919-1-git-send-email-yangtiezhu@loongson.cn> <Yh3tgr+g/6IElq0P@kernel.org> <cfd74b5b-39c3-733a-5226-515991f91f39@loongson.cn> <Yh4uUoYT+YS5Jxsv@kernel.org> <8956c625-c18d-846e-3e65-7920776b27f3@loongson.cn>
- <alpine.DEB.2.21.2203041627150.47558@angie.orcam.me.uk> <4e10d7a4-3b3e-a220-8cd2-565614288950@loongson.cn> <YiNlDxF9WppxbkiX@kernel.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Sat, 5 Mar 2022 14:43:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBB46928C
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 11:43:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4E4560AB6
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 19:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68459C004E1;
+        Sat,  5 Mar 2022 19:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646509381;
+        bh=aTwFDS8jMOiSeLykSnLcKQ9n+zp/EVyGHLTn7DlzIkY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=veIwZV6CHYNDlYHUU0i4h/aqyLz0BpL3r442nxVH4Fhow68c3KJgMw82DjRZtHGg+
+         BvQr/1VWlJBPSGOqnAPmUhylAJ85ZEIlCgQSFSLEZOql/1nvNxTLG/WgRLKxkOsi/r
+         E2m/lWGlkFhIoYSMNYsTWO3+bKA1ptcJyiuFcaGM=
+Date:   Sat, 5 Mar 2022 20:42:56 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     zhanglianjie <zhanglianjie@uniontech.com>
+Cc:     Juergen Gross <jgross@suse.com>,
+        David Vrabel <david.vrabel@citrix.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH] drivers/xen: use helper macro __ATTR_RW
+Message-ID: <YiO9QDpqepZXEZ6L@kroah.com>
+References: <20220305133823.158961-1-zhanglianjie@uniontech.com>
+ <YiNry3TtIPbEh1Yr@kroah.com>
+ <622382f3.1c69fb81.55f81.aff0SMTPIN_ADDED_BROKEN@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <622382f3.1c69fb81.55f81.aff0SMTPIN_ADDED_BROKEN@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 5 Mar 2022, Mike Rapoport wrote:
-
-> > >  For example I have an x86 system that Linux does not how to interrogate
-> > > for RAM beyond 64MiB, so I do use `memmap=128M@0' (for legacy reasons the
-> > > x86 platform has a special exception to always exclude area between 640K
-> > > and 1M from being used even if not explicitly specified, but we do not
-> > > have a need for such legacy such legacy concerns with the MIPS port).  I
-> > > consider it an interim measure however until the kernel has been fixed.
-> > > 
-> > >   Maciej
-> > > 
-> > 
-> > Hi Mike, Thomas and Maciej,
-> > 
-> > Thank you very much for your feedbacks and discussions.
-> > 
-> > To be frank, I think mem= and memmap= are used for debugging and testing
-> > in most cases, the intention of this patchset is to refactor the related
-> > code to make them work well on mips.
+On Sat, Mar 05, 2022 at 11:33:58PM +0800, zhanglianjie wrote:
+> Hi,
 > 
-> mem= works fine on mips and there is no need to change it.
-> 
-> If you must supply complex memory layout on the command line, consider
-> implementing support for memmap=exact and multiple memmap= parameters on
-> the kernel command line, like x86 does.
+> 在 2022/3/5 21:55, Greg Kroah-Hartman 写道:
+> > On Sat, Mar 05, 2022 at 09:38:23PM +0800, zhanglianjie wrote:
+> > > Use helper macro __ATTR_RW to define HYPERVISOR_ATTR_RW to make code more clear.
+> > > Minor readability improvement.
+> > > 
+> > > Signed-off-by: zhanglianjie <zhanglianjie@uniontech.com>
+> > 
+> > Is this the name you sign legal documents with?  (I have to ask...)
+> Yes, this is my signature.
+> > 
+> > > 
+> > > diff --git a/drivers/xen/sys-hypervisor.c b/drivers/xen/sys-hypervisor.c
+> > > index feb1d16252e7..fcb0792f090e 100644
+> > > --- a/drivers/xen/sys-hypervisor.c
+> > > +++ b/drivers/xen/sys-hypervisor.c
+> > > @@ -22,11 +22,10 @@
+> > >   #endif
+> > > 
+> > >   #define HYPERVISOR_ATTR_RO(_name) \
+> > > -static struct hyp_sysfs_attr  _name##_attr = __ATTR_RO(_name)
+> > > +static struct hyp_sysfs_attr _name##_attr = __ATTR_RO(_name)
+> > 
+> > Why change this line?  That's not relevant to this change :(
+> > 
+> There are two spaces between struct hyp_sysfs_attr and _name, by the way,
+> modify it.
 
- There's nothing to implement as the MIPS port has supported arbitrary 
-memory maps since Dec 11th, 2000; that's almost 22 years now.  C.f.: 
-<https://lore.kernel.org/linux-mips/Pine.GSO.3.96.1000814133957.7256S-100000@delta.ds2.pg.gda.pl/>, 
-<https://git.kernel.org/pub/scm/linux/kernel/git/ralf/linux.git/commit/?id=97b7ae4257ef>.
+Coding style cleanups should be a separate patch, as each change should
+only do one logical thing.
 
- Sadly commit a09fc446fb6d ("[MIPS] setup.c: use early_param() for early 
-command line parsing") removed last pieces of inline documentation; I 
-don't know why things like that get approved, but neither I can take 
-responsibility.
+But hey, I'm not the maintainer of this file/driver, others might be
+more lax.
 
- Also to say (in said commit):
+good luck!
 
-"There's no point to rewrite some logic to parse command line
-to pass initrd parameters or to declare a user memory area.
-We could use instead parse_early_param() that does the same
-thing."
-
-is IMHO unfair given that the "rewrite" was there in place almost six 
-years before `parse_early_param' even started to exist!  Why do people 
-assume things have always been like they see them at the time they look?
-
-  Maciej
+greg k-h
