@@ -2,141 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3840AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B94C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbiCEMov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 07:44:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S231723AbiCEMrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 07:47:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiCEMot (ORCPT
+        with ESMTP id S229516AbiCEMrt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 07:44:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35BCE1CC7FD
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 04:44:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646484239;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y9DMcHNF6Q5hsRov5tA0bx8gObhioE41OPn/GJ5m62E=;
-        b=BK6O+jn/o2xeShsyU6psoRUmQJetKsBFqiVL36CuT6VPpQuqu5N8580lKIiPwRvQmkFPaS
-        RYDuKJsCHwWNOmE+eqTrYMpNpIxFXnUo519GsO/wixO79msYvdvLE9NObFSt5k8192dvBc
-        ZIQfXfnvW1Itp6+EF0ZHFE2m75ZoSKk=
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
- [209.85.210.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-110-RvHlIy37Py2BpCBjNY7yKw-1; Sat, 05 Mar 2022 07:43:58 -0500
-X-MC-Unique: RvHlIy37Py2BpCBjNY7yKw-1
-Received: by mail-pf1-f197.google.com with SMTP id x8-20020aa79ac8000000b004f6caa3e63dso2090591pfp.17
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Mar 2022 04:43:58 -0800 (PST)
+        Sat, 5 Mar 2022 07:47:49 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAEB1CC7FD;
+        Sat,  5 Mar 2022 04:46:59 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id hw13so22669056ejc.9;
+        Sat, 05 Mar 2022 04:46:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=HVyxOquQB+7ZUikAfJUPHlomKB3BFHBzFj8UIR5y97Y=;
+        b=YHThSsVQxENQwpRIGbl+NzzSfHCB5mdRYcKSwy35/gQm3vfd4EM/h1iR9w30EKp3v8
+         xSDAUMeBBq587t/YU3OB7qbOMRSudCGes748JHPb8oYHEOdrNiLgBki19XxUTp5V9H21
+         Bx56vmwJLGbbrQoIk1rXuCR6/hb+gJbKSIZN4L/KKvgMKEMXoEzP0UeS5RGKHqGajXpQ
+         tkH34htZD8+yhcytVN2LG3v40NbB7CFjbuSFznha5IZLlTQLj3RZpp4Rhp5Wc2NzURoW
+         zwie4QH7g7lDXNUnaBrs2DFu5Qigy6MwVqCrEOwIVFRCmwx/vKj25fVMal9b5KNv6NhI
+         gL/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=y9DMcHNF6Q5hsRov5tA0bx8gObhioE41OPn/GJ5m62E=;
-        b=v+L/xUB38rJGjtnArAhRXvS8rul7N89DX6WdTmMs/UH5gBexcqhDRehIQHPxg8AbLD
-         gIimu62AObM0w1VfuC1uR+Ay4SJhMYdk1dr+Lzf1cFUgVQQxvuA2pTAO54c+dkoTNHw1
-         kdrgUyZJtDlnw+qJ6UIX0SsQVetmRGMK1RzAy6yH/SLkiliqsMH7JY+aU/fdomRQZ08Q
-         ZwLRmCmG6bZ8VeRF5orn79YxuWnOSFDIrE7hU+eQ4OuUtDf42Qhw1/18zs9OG9zRjFWA
-         cCCAwSEsUeXHS2nFtkGkV/ILROhElOQxhXuO1urExqz0bNHygreQArzI1MlBQhPx/66j
-         oypw==
-X-Gm-Message-State: AOAM531Zq82U51GsNY+Lfg7+J8BlqI37OdxAdmiMu+Es2p9dWLQfuX2G
-        ahVMzxU0QxR2NcRcNW6kaNL93fwpqorEK0rjqgsIunE39g5noEGFUA/tJnuLiHHs+PQpc10d5dZ
-        BBqTeUXfsmTjyK3ijnTXMT9ANNwWvNp+WbinWXtd/YUKYR6Xr/suhlm4TzFiJd2iSqRYCn3VY0Q
-        ==
-X-Received: by 2002:a17:902:d485:b0:151:addf:15a2 with SMTP id c5-20020a170902d48500b00151addf15a2mr3267145plg.2.1646484236742;
-        Sat, 05 Mar 2022 04:43:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyj4OOcRGZ03ZRL2cY0F8oICrjeXYA7L+F5luCfeHTZM2uNL0U8vTVBNMgly98lIJXClk4aLQ==
-X-Received: by 2002:a17:902:d485:b0:151:addf:15a2 with SMTP id c5-20020a170902d48500b00151addf15a2mr3267119plg.2.1646484236360;
-        Sat, 05 Mar 2022 04:43:56 -0800 (PST)
-Received: from [10.72.13.171] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id bh3-20020a056a02020300b00378b62df320sm6877474pgb.73.2022.03.05.04.43.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Mar 2022 04:43:55 -0800 (PST)
-Subject: Re: [PATCH 3/3] ceph: add support for encrypted snapshot names
-To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220304161403.19295-1-lhenriques@suse.de>
- <20220304161403.19295-4-lhenriques@suse.de>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <7e78567d-5729-9890-a309-d75b6c1c098e@redhat.com>
-Date:   Sat, 5 Mar 2022 20:43:50 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=HVyxOquQB+7ZUikAfJUPHlomKB3BFHBzFj8UIR5y97Y=;
+        b=5yChgqJUFtyR2mztbeMlSceWhKlpruW28+rhoIkpJ934XqT/00SJc/I+/4Tal6H93F
+         cUXRCBkMQi4b9ccRbMNtJBjw4lNKgi4zMHTyMGoj90ZN680haVdVQglIo/YV6K4oYjnE
+         98lQdLptBl9gP00LGtA5D1mh+xzeaA6IpfOQOKFhipe17+iZUgjoRnGLeVw0HE0lEc7N
+         pgvtGkf6mU9P51hvRpIaRkAaDUnypu7RPqAQDTyfwhVCOpPMvZMi3zolmVhliycDb/2i
+         ldWb/IMqG4d8/gJy/I0NZenAcBdcv0Sw3JOYbTfNbL71sdz1uyFOu/jqc1OT81Oli8uY
+         YzOg==
+X-Gm-Message-State: AOAM5326p1zwCXnaQVZVraobOxXQ/rAz1/FqyI1egv+gniCS3yZ4ibtz
+        sKNFjk53OtPIex83L3/XiuY=
+X-Google-Smtp-Source: ABdhPJxfXD8S/M/zEtq28L8UG0gavIYUYDqwOWdyNIkqfnuUFztvUxL+bWZPVEYjVh5Cpoio1rYllQ==
+X-Received: by 2002:a17:907:d06:b0:6da:2902:e9ad with SMTP id gn6-20020a1709070d0600b006da2902e9admr2727047ejc.566.1646484418264;
+        Sat, 05 Mar 2022 04:46:58 -0800 (PST)
+Received: from ?IPv6:2001:a61:2ae0:801:d90b:c312:2baa:2aa3? ([2001:a61:2ae0:801:d90b:c312:2baa:2aa3])
+        by smtp.gmail.com with ESMTPSA id a1-20020aa7d901000000b00416217c99bcsm684935edr.65.2022.03.05.04.46.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Mar 2022 04:46:57 -0800 (PST)
+Message-ID: <8afcf0b81f78ffdda8bcac5f0fd1d4c40dc4f8d6.camel@gmail.com>
+Subject: Re: [PATCH v2 1/1] device property: Allow error pointer to be
+ passed to fwnode APIs
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Date:   Sat, 05 Mar 2022 13:46:56 +0100
+In-Reply-To: <20220304173256.39059-1-andriy.shevchenko@linux.intel.com>
+References: <20220304173256.39059-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-In-Reply-To: <20220304161403.19295-4-lhenriques@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 3/5/22 12:14 AM, Luís Henriques wrote:
-> Since filenames in encrypted directories are already encrypted and shown
-> as a base64-encoded string when the directory is locked, snapshot names
-> should show a similar behaviour.
->
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+On Fri, 2022-03-04 at 19:32 +0200, Andy Shevchenko wrote:
+> Some of the fwnode APIs might return an error pointer instead of NULL
+> or valid fwnode handle. The result of such API call may be considered
+> optional and hence the test for it is usually done in a form of
+> 
+>         fwnode = fwnode_find_reference(...);
+>         if (IS_ERR_OR_NULL(fwnode))
+>                 ...error handling...
+> 
+> Nevertheless the resulting fwnode may have bumped reference count and
+> hence caller of the above API is obliged to call fwnode_handle_put().
+> Since fwnode may be not valid either as NULL or error pointer the
+> check
+> has to be performed there. This approach uglifies the code and adds
+> a point of making a mistake, i.e. forgetting about error point case.
+> 
+> To prevent this allow error pointer to be passed to the fwnode APIs.
+> 
+> Fixes: 83b34afb6b79 ("device property: Introduce
+> fwnode_find_reference()")
+> Reported-by: Nuno Sá <nuno.sa@analog.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->   fs/ceph/dir.c   |  9 +++++++++
->   fs/ceph/inode.c | 13 +++++++++++++
->   2 files changed, 22 insertions(+)
->
-> diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
-> index 934402f5e9e6..17d2f18a1fd1 100644
-> --- a/fs/ceph/dir.c
-> +++ b/fs/ceph/dir.c
-> @@ -1069,6 +1069,15 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
->   		op = CEPH_MDS_OP_MKSNAP;
->   		dout("mksnap dir %p snap '%pd' dn %p\n", dir,
->   		     dentry, dentry);
-> +		/*
-> +		 * Encrypted snapshots require d_revalidate to force a
-> +		 * LOOKUPSNAP to cleanup dcache
-> +		 */
-> +		if (IS_ENCRYPTED(dir)) {
-> +			spin_lock(&dentry->d_lock);
-> +			dentry->d_flags |= DCACHE_NOKEY_NAME;
-> +			spin_unlock(&dentry->d_lock);
-> +		}
+> 
+> v2: adjusted the entire fwnode API (Sakari)
+> 
+> Nuno, can you test this with the ltc2983 series, including the
+> IS_ERR_OR_NULL()
+> fix to it?
+> 
 
-Yeah, this fix looks cool.
-
-
->   	} else if (ceph_snap(dir) == CEPH_NOSNAP) {
->   		dout("mkdir dir %p dn %p mode 0%ho\n", dir, dentry, mode);
->   		op = CEPH_MDS_OP_MKDIR;
-> diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-> index 8b0832271fdf..357335a11384 100644
-> --- a/fs/ceph/inode.c
-> +++ b/fs/ceph/inode.c
-> @@ -182,6 +182,19 @@ struct inode *ceph_get_snapdir(struct inode *parent)
->   	ci->i_rbytes = 0;
->   	ci->i_btime = ceph_inode(parent)->i_btime;
->   
-> +	/* if encrypted, just borrow fscrypt_auth from parent */
-> +	if (IS_ENCRYPTED(parent)) {
-> +		struct ceph_inode_info *pci = ceph_inode(parent);
+Sure... I will test that series together with this patch.
+>  drivers/base/property.c | 45 +++++++++++++++++++++++++--------------
+> --
+>  include/linux/fwnode.h  | 10 ++++-----
+>  2 files changed, 33 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> index c0e94cce9c29..1922818470b0 100644
+> --- a/drivers/base/property.c
+> +++ b/drivers/base/property.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/acpi.h>
+>  #include <linux/export.h>
+> +#include <linux/fwnode.h>
+>  #include <linux/kernel.h>
+>  #include <linux/of.h>
+>  #include <linux/of_address.h>
+> @@ -45,14 +46,16 @@ EXPORT_SYMBOL_GPL(device_property_present);
+>  bool fwnode_property_present(const struct fwnode_handle *fwnode,
+>                              const char *propname)
+>  {
+> -       bool ret;
+> +       if (IS_ERR_OR_NULL(fwnode))
+> +               return false;
+>  
+> -       ret = fwnode_call_bool_op(fwnode, property_present,
+> propname);
+> -       if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
+> -           !IS_ERR_OR_NULL(fwnode->secondary))
+> -               ret = fwnode_call_bool_op(fwnode->secondary,
+> property_present,
+> -                                        propname);
+> -       return ret;
+> +       if (fwnode_call_bool_op(fwnode, property_present, propname))
+> +               return true;
 > +
-> +		ci->fscrypt_auth = kmemdup(pci->fscrypt_auth,
-> +					   pci->fscrypt_auth_len,
-> +					   GFP_KERNEL);
-> +		if (ci->fscrypt_auth) {
-> +			inode->i_flags |= S_ENCRYPTED;
-> +			ci->fscrypt_auth_len = pci->fscrypt_auth_len;
-> +		} else
-> +			dout("Failed to alloc memory for fscrypt_auth in snapdir\n");
-> +	}
->   	if (inode->i_state & I_NEW) {
->   		inode->i_op = &ceph_snapdir_iops;
->   		inode->i_fop = &ceph_snapdir_fops;
->
+> +       if (IS_ERR_OR_NULL(fwnode->secondary))
+> +               return false;
+> +
+> +       return fwnode_call_bool_op(fwnode->secondary,
+> property_present, propname);
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_property_present);
+>  
+> @@ -232,10 +235,12 @@ static int fwnode_property_read_int_array(const
+> struct fwnode_handle *fwnode,
+>  {
+>         int ret;
+>  
+> +       if (IS_ERR_OR_NULL(fwnode))
+> +               return -EINVAL;
+> +
+>         ret = fwnode_call_int_op(fwnode, property_read_int_array,
+> propname,
+>                                  elem_size, val, nval);
+> -       if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+> -           !IS_ERR_OR_NULL(fwnode->secondary))
+> +       if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode->secondary))
+>                 ret = fwnode_call_int_op(
+>                         fwnode->secondary, property_read_int_array,
+> propname,
+>                         elem_size, val, nval);
+> @@ -371,10 +376,12 @@ int fwnode_property_read_string_array(const
+> struct fwnode_handle *fwnode,
+>  {
+>         int ret;
+>  
+> +       if (IS_ERR_OR_NULL(fwnode))
+> +               return -EINVAL;
+> +
+>         ret = fwnode_call_int_op(fwnode, property_read_string_array,
+> propname,
+>                                  val, nval);
+> -       if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+> -           !IS_ERR_OR_NULL(fwnode->secondary))
+> +       if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode->secondary))
+>                 ret = fwnode_call_int_op(fwnode->secondary,
+>                                          property_read_string_array,
+
+Isn't !IS_ERR_OR_NULL(fwnode->secondary)) redundant? AFAIU,
+fwnode_call_int_op() will already check the fwnode and only call the op
+if the pointer is valid... 
+
+- Nuno Sá
 
