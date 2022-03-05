@@ -2,310 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA49C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 11:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB922C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 11:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbiCELNz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 06:13:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
+        id S231577AbiCELZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 06:25:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiCELNw (ORCPT
+        with ESMTP id S230452AbiCELZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 06:13:52 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4626D761A;
-        Sat,  5 Mar 2022 03:13:01 -0800 (PST)
-X-UUID: df944644938c4e3cbacd0d079e0f1b42-20220305
-X-UUID: df944644938c4e3cbacd0d079e0f1b42-20220305
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1916300288; Sat, 05 Mar 2022 19:12:53 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Sat, 5 Mar 2022 19:12:52 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 5 Mar 2022 19:12:51 +0800
-Message-ID: <f11791bc48c466ddc737e23d767bb8dadd218a36.camel@mediatek.com>
-Subject: Re: [v2 07/17] ASoC: mediatek: mt8186: support pcm in platform
- driver
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <broonie@kernel.org>
-CC:     <lgirdwood@gmail.com>, <tiwai@suse.com>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <perex@perex.cz>,
-        <p.zabel@pengutronix.de>, <geert+renesas@glider.be>,
-        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
-        <aaronyu@google.com>, <zhangqilong3@huawei.com>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Sat, 5 Mar 2022 19:12:51 +0800
-In-Reply-To: <78474983-a07c-6b1d-797a-d0788f3577b6@collabora.com>
-References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
-         <20220217134205.15400-8-jiaxin.yu@mediatek.com>
-         <78474983-a07c-6b1d-797a-d0788f3577b6@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+        Sat, 5 Mar 2022 06:25:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B6B3F888
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 03:24:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A564F611D7
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 11:24:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12F2BC340EC;
+        Sat,  5 Mar 2022 11:24:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646479497;
+        bh=qCo0pwezqT2xKEd7m5v7jYOp12d25MhNEuqdikO48bg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W5xIWSVvQRmSYBOW8lyADWW1FhhXdTMK50w+RI+ab7zi7Jb5DcZfI8hnWzXLhNolq
+         moDMiBxUQBLwmhNzfI9NIKJyOrcrDCkDBAQilg0Qrd3xvqU1TJ8i+TQ9d8GmWA3frw
+         fB/9uRGw2bzzeFpVYNwwU55m5w+rOpi/8yhXhQNRU5dtumFPUeo4UY8hd0Kzfd/mWO
+         D51jvCPMxN0r9BuuPPH44Og+GnzrqSWXyxJSB1klzklXcx+YZn/ECpZCFE7wXxAR2+
+         GXkuorOVUiPbjCJ1GQ/l7Ksc2I21z4y2nuoKNeU47xjgr9UV40Q9nd82chptuzf8+o
+         9GWR3Z6CB68Lw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=billy-the-mountain.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nQSWs-00CQcA-Mv; Sat, 05 Mar 2022 11:24:54 +0000
+Date:   Sat, 05 Mar 2022 11:24:54 +0000
+Message-ID: <87bkyktzeh.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     David Decotigny <decot+git@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        David Decotigny <ddecotig@google.com>
+Subject: Re: [PATCH v1 1/1] irqchip/gic-v3-its: fixup IRQ affinities to account for online CPUs
+In-Reply-To: <20220304195238.1141725-1-decot+git@google.com>
+References: <20220304195238.1141725-1-decot+git@google.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: decot+git@google.com, tglx@linutronix.de, linux-kernel@vger.kernel.org, ddecotig@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-18 at 15:54 +0100, AngeloGioacchino Del Regno wrote:
-> Il 17/02/22 14:41, Jiaxin Yu ha scritto:
-> > This patch adds mt8186 pcm dai driver.
-> > 
-> > Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> > ---
-> >   sound/soc/mediatek/mt8186/mt8186-dai-pcm.c | 432
-> > +++++++++++++++++++++
-> >   1 file changed, 432 insertions(+)
-> >   create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-pcm.c
-> > 
-> > diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-pcm.c
-> > b/sound/soc/mediatek/mt8186/mt8186-dai-pcm.c
-> > new file mode 100644
-> > index 000000000000..73b3f720ed35
-> > --- /dev/null
-> > +++ b/sound/soc/mediatek/mt8186/mt8186-dai-pcm.c
-> > @@ -0,0 +1,432 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +//
-> > +// MediaTek ALSA SoC Audio DAI I2S Control
-> > +//
-> > +// Copyright (c) 2022 MediaTek Inc.
-> > +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> > +
-> > +#include <linux/regmap.h>
-> > +#include <sound/pcm_params.h>
-> > +#include "mt8186-afe-common.h"
-> > +#include "mt8186-afe-gpio.h"
-> > +#include "mt8186-interconnection.h"
-> > +
-> > +struct mtk_afe_pcm_priv {
-> > +	unsigned int id;
-> > +	unsigned int fmt;
-> > +	unsigned int bck_invert;
-> > +	unsigned int lck_invert;
-> > +};
-> > +
-> > +enum AUD_TX_LCH_RPT {
+On Fri, 04 Mar 2022 19:52:38 +0000,
+David Decotigny <decot+git@google.com> wrote:
 > 
-> lowercase enumeration names please...
+> From: David Decotigny <ddecotig@google.com>
 > 
-> enum aud_tx_lch_rpt {
-> 	AUD_TX....BLAH
-> };
+> In some cases (eg. when booting with maxcpus=X), it is possible that
+> the preset IRQ affinity masks don't intersect with the set of online
+> CPUs. This patch extends the fallback strategy implemented when
+> IRQD_AFFINITY_MANAGED is not set to all cases. This is logged the
+> first time that happens.
 > 
-Ok, I will fix them.
-
-> > +	AUD_TX_LCH_RPT_NO_REPEAT = 0,
-> > +	AUD_TX_LCH_RPT_REPEAT = 1
-> > +};
-> > +
-> > +enum AUD_VBT_16K_MODE {
-> > +	AUD_VBT_16K_MODE_DISABLE = 0,
-> > +	AUD_VBT_16K_MODE_ENABLE = 1
-> > +};
-> > +
-> > +enum AUD_EXT_MODEM {
-> > +	AUD_EXT_MODEM_SELECT_INTERNAL = 0,
-> > +	AUD_EXT_MODEM_SELECT_EXTERNAL = 1
-> > +};
-> > +
-> > +enum AUD_PCM_SYNC_TYPE {
-> > +	/* bck sync length = 1 */
-> > +	AUD_PCM_ONE_BCK_CYCLE_SYNC = 0,
-> > +	/* bck sync length = PCM_INTF_CON1[9:13] */
-> > +	AUD_PCM_EXTENDED_BCK_CYCLE_SYNC = 1
-> > +};
-> > +
-> > +enum AUD_BT_MODE {
-> > +	AUD_BT_MODE_DUAL_MIC_ON_TX = 0,
-> > +	AUD_BT_MODE_SINGLE_MIC_ON_TX = 1
-> > +};
-> > +
-> > +enum AUD_PCM_AFIFO_SRC {
-> > +	/* slave mode & external modem uses different crystal */
-> > +	AUD_PCM_AFIFO_ASRC = 0,
-> > +	/* slave mode & external modem uses the same crystal */
-> > +	AUD_PCM_AFIFO_AFIFO = 1
-> > +};
-> > +
-> > +enum AUD_PCM_CLOCK_SOURCE {
-> > +	AUD_PCM_CLOCK_MASTER_MODE = 0,
-> > +	AUD_PCM_CLOCK_SLAVE_MODE = 1
-> > +};
-> > +
-> > +enum AUD_PCM_WLEN {
-> > +	AUD_PCM_WLEN_PCM_32_BCK_CYCLES = 0,
-> > +	AUD_PCM_WLEN_PCM_64_BCK_CYCLES = 1
-> > +};
-> > +
-> > +enum AUD_PCM_24BIT {
-> > +	AUD_PCM_24BIT_PCM_16_BITS = 0,
-> > +	AUD_PCM_24BIT_PCM_24_BITS = 1
-> > +};
-> > +
-> > +enum AUD_PCM_MODE {
-> > +	AUD_PCM_MODE_PCM_MODE_8K = 0,
-> > +	AUD_PCM_MODE_PCM_MODE_16K = 1,
-> > +	AUD_PCM_MODE_PCM_MODE_32K = 2,
-> > +	AUD_PCM_MODE_PCM_MODE_48K = 3,
-> > +};
-> > +
-> > +enum AUD_PCM_FMT {
-> > +	AUD_PCM_FMT_I2S = 0,
-> > +	AUD_PCM_FMT_EIAJ = 1,
-> > +	AUD_PCM_FMT_PCM_MODE_A = 2,
-> > +	AUD_PCM_FMT_PCM_MODE_B = 3
-> > +};
-> > +
-> > +enum AUD_BCLK_OUT_INV {
-> > +	AUD_BCLK_OUT_INV_NO_INVERSE = 0,
-> > +	AUD_BCLK_OUT_INV_INVERSE = 1
-> > +};
-> > +
-> > +enum AUD_LRCLK_OUT_INV {
-> > +	AUD_LRCLK_OUT_INV_NO_INVERSE = 0,
-> > +	AUD_LRCLK_OUT_INV_INVERSE = 1
-> > +};
-> > +
-> > +enum AUD_PCM_EN {
-> > +	AUD_PCM_EN_DISABLE = 0,
-> > +	AUD_PCM_EN_ENABLE = 1
-> > +};
-> > +
-> 
-> ..snip..
-> 
-> > +
-> > +/* dai ops */
-> > +static int mtk_dai_pcm_hw_params(struct snd_pcm_substream
-> > *substream,
-> > +				 struct snd_pcm_hw_params *params,
-> > +				 struct snd_soc_dai *dai)
-> > +{
-> > +	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-> > +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> > +	int pcm_id = dai->id;
-> > +	struct mtk_afe_pcm_priv *pcm_priv = afe_priv->dai_priv[pcm_id];
-> > +	unsigned int rate = params_rate(params);
-> > +	unsigned int rate_reg = mt8186_rate_transform(afe->dev, rate,
-> > dai->id);
-> > +	snd_pcm_format_t format = params_format(params);
-> > +	unsigned int data_width =
-> > +		snd_pcm_format_width(format);
-> > +	unsigned int wlen_width =
-> > +		snd_pcm_format_physical_width(format);
-> > +	unsigned int pcm_con = 0;
-> > +
-> > +	dev_info(afe->dev, "%s(), id %d, stream %d, widget active p %d,
-> > c %d\n",
-> > +		 __func__,
-> > +		 dai->id,
-> > +		 substream->stream,
-> > +		 dai->playback_widget->active,
-> > +		 dai->capture_widget->active);
-> > +	dev_info(afe->dev, "%s(), rate %d, rate_reg %d, data_width %d,
-> > wlen_width %d\n",
-> > +		 __func__,
-> > +		 rate,
-> > +		 rate_reg,
-> > +		 data_width,
-> > +		 wlen_width);
-> 
-> dev_dbg() - also, you don't need one line per variable.
+> Fixes: c5d6082d35e0 ("irqchip/gic-v3-its: Balance initial LPI affinity across CPUs")
 > 
 
-Yes, I will line them up in two.
-> > +
-> > +	if (dai->playback_widget->active || dai->capture_widget-
-> > >active)
-> > +		return 0;
-> > +
-> > +	switch (dai->id) {
-> > +	case MT8186_DAI_PCM:
-> > +		pcm_con |= AUD_TX_LCH_RPT_NO_REPEAT <<
-> > PCM_TX_LCH_RPT_SFT;
-> > +		pcm_con |= AUD_VBT_16K_MODE_DISABLE <<
-> > PCM_VBT_16K_MODE_SFT;
-> > +		pcm_con |= AUD_EXT_MODEM_SELECT_EXTERNAL <<
-> > PCM_EXT_MODEM_SFT;
-> > +		pcm_con |= AUD_PCM_ONE_BCK_CYCLE_SYNC <<
-> > PCM_SYNC_TYPE_SFT;
-> > +		pcm_con |= AUD_BT_MODE_DUAL_MIC_ON_TX <<
-> > PCM_BT_MODE_SFT;
-> > +		pcm_con |= AUD_PCM_AFIFO_AFIFO << PCM_BYP_ASRC_SFT;
-> > +		pcm_con |= AUD_PCM_CLOCK_MASTER_MODE << PCM_SLAVE_SFT;
-> > +		pcm_con |= 0 << PCM_SYNC_LENGTH_SFT;
-> > +
-> > +		/* sampling rate */
-> > +		pcm_con |= rate_reg << PCM_MODE_SFT;
-> > +
-> > +		/* format */
-> > +		pcm_con |= pcm_priv->fmt << PCM_FMT_SFT;
-> > +
-> > +		/* 24bit data width */
-> > +		if (data_width > 16)
-> > +			pcm_con |= AUD_PCM_24BIT_PCM_24_BITS <<
-> > PCM_24BIT_SFT;
-> > +		else
-> > +			pcm_con |= AUD_PCM_24BIT_PCM_16_BITS <<
-> > PCM_24BIT_SFT;
-> > +
-> > +		/* wlen width*/
-> > +		if (wlen_width > 16)
-> > +			pcm_con |= AUD_PCM_WLEN_PCM_64_BCK_CYCLES <<
-> > PCM_WLEN_SFT;
-> > +		else
-> > +			pcm_con |= AUD_PCM_WLEN_PCM_32_BCK_CYCLES <<
-> > PCM_WLEN_SFT;
-> > +
-> > +		/* clock invert */
-> > +		pcm_con |= pcm_priv->lck_invert <<
-> > PCM_SYNC_OUT_INV_SFT;
-> > +		pcm_con |= pcm_priv->bck_invert <<
-> > PCM_BCLK_OUT_INV_SFT;
-> > +
-> > +		regmap_update_bits(afe->regmap, PCM_INTF_CON1,
-> > +				   0xfffffffe, pcm_con);
-> 
-> Fits in one line.
-> 
-> > +		break;
-> > +	default:
-> > +		dev_info(afe->dev, "%s(), id %d not support\n",
-> > +			 __func__, dai->id);
-> 
-> dev_err()
-> 
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mtk_dai_pcm_set_fmt(struct snd_soc_dai *dai, unsigned
-> > int fmt)
-> > +{
-> > +	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-> > +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> > +	struct mtk_afe_pcm_priv *pcm_priv = afe_priv->dai_priv[dai-
-> > >id];
-> > +
-> > +	if (!pcm_priv) {
-> > +		dev_info(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> 
-> dev_err()
-> 
-> > +		return -EINVAL;
-> > +	}
-> > +
+Missing SoB?
 
+> ---
+>  drivers/irqchip/irq-gic-v3-its.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> index cd772973114a..de862fd9ad73 100644
+> --- a/drivers/irqchip/irq-gic-v3-its.c
+> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> @@ -1618,11 +1618,6 @@ static int its_select_cpu(struct irq_data *d,
+>  		/* Try the intersection of the affinity and online masks */
+>  		cpumask_and(tmpmask, aff_mask, cpu_online_mask);
+>  
+> -		/* If that doesn't fly, the online mask is the last resort */
+> -		if (cpumask_empty(tmpmask))
+> -			cpumask_copy(tmpmask, cpu_online_mask);
+> -
+> -		cpu = cpumask_pick_least_loaded(d, tmpmask);
+>  	} else {
+>  		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
+>  
+> @@ -1630,9 +1625,13 @@ static int its_select_cpu(struct irq_data *d,
+>  		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
+>  		    node != NUMA_NO_NODE)
+>  			cpumask_and(tmpmask, tmpmask, cpumask_of_node(node));
+> -
+> -		cpu = cpumask_pick_least_loaded(d, tmpmask);
+>  	}
+> +
+> +	/* If that doesn't fly, the online mask is the last resort */
+> +	if (WARN_ON_ONCE(cpumask_empty(tmpmask)))
+> +		cpumask_copy(tmpmask, cpu_online_mask);
+> +
+> +	cpu = cpumask_pick_least_loaded(d, tmpmask);
+>  out:
+>  	free_cpumask_var(tmpmask);
+>  
+
+Known issue, see [1] and [2].
+
+I don't think the above is the right approach. For managed interrupts,
+we shouldn't try and enable these interrupts until the CPUs are up,
+and activating them on *another* CPU breaks the abstraction entirely.
+
+The right way to do it would be to not activate them (marking them as
+shutdown) until the CPUs are up and running, similarly to what x86
+does (but we obviously can't reuse the matrix allocator for that).
+Looking into this is on my TODO list, just didn't get the time to work
+on it.
+
+	M.
+
+[1] https://lore.kernel.org/r/78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com
+[2] https://lore.kernel.org/r/20220124073440.88598-1-wangxiongfeng2@huawei.com
+
+-- 
+Without deviation from the norm, progress is not possible.
