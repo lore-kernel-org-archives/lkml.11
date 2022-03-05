@@ -2,159 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9281BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 16:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 16:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbiCEQyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 11:54:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
+        id S232077AbiCEQyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 11:54:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiCEQyb (ORCPT
+        with ESMTP id S231156AbiCEQyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 11:54:31 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2136.outbound.protection.outlook.com [40.107.93.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4633403FB;
-        Sat,  5 Mar 2022 08:53:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Lvi8DSD0bHU9SEC63nabseTqWFpSUXTeoKGlioHMz3MYBVx87djdzk0V6nuwkV1fmmdhXLSx9s4eLHh+KtBYfq29SInFwQVIrijs9CjLleA3AWe9LXuyVsGoezIuKQe/4ZrcdEJHqGwf+j7E6OwwrXO3WoTOqOZQi61at36PgwyYzBBiFArebk5h5NQK6LuFU/tckqnpOHyMEyuVlM0TK54zc1JjGDVvSppUY1wqxlY2TDPgLhppBhPsT6Dgqxp09YcLJ/Xt2jNNg/C7QnDvS8EsjzCvW1bVG6eM5cE1ZKDqVE+DmHa6/+FCA7g/QAlnpkKy16PUDXwTeqLBBXUD5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wpzTftYsa+A7wrZta9CyDereF1eU1FGIWqS4jOw4DDo=;
- b=ZmLqgNok1qRQCZZrc8MjelBHKPTVwtJBTcfmzC04Oa0gNJ2kyuHd3U/SqiL0qRs/xQnqQBGekbSxSV39KuMP8AaObmdAyE5X2CHy1GrFxoMd0n5letaka9p8byEQSa0ms/KfD8xaBFf6w5j3LQAU4VrW4mYJaswV5P/Fa3f8KC257xEplKahaSm/q35JEpwOJTLXXZIsEUCNWbzxx0kNvOCay6avTmAVhvqitAkF0s3AYSv+cb8c+PnVYiGdTCJ74Hfq5eP5oFpyCfUTRqVl08W3AP/d9Nl1A41mm3mS2K1arZI8WfXrB58rCXel3sF1f9OQhMRgiXEQiPch1fM01Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hammerspace.com; dmarc=pass action=none
- header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wpzTftYsa+A7wrZta9CyDereF1eU1FGIWqS4jOw4DDo=;
- b=bUk/KwaO8wjLh+1q+x3jG4/1T8aluEiz+65o4qJ/MEcM1HDFQohN78AdW8T758lsmwhfr2VIfRLsuPqsDxyWfin4OAX+hkXKAKSwZ6mpyHRPfsirXi2ibofY3+u/G02Vwj0Vx+vopm6+1MS9LDXoV1v/JknnUd42jaDBMg2JU+c=
-Received: from CH0PR13MB5084.namprd13.prod.outlook.com (2603:10b6:610:111::7)
- by SA1PR13MB5053.namprd13.prod.outlook.com (2603:10b6:806:1aa::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.4; Sat, 5 Mar
- 2022 16:53:36 +0000
-Received: from CH0PR13MB5084.namprd13.prod.outlook.com
- ([fe80::70cc:dd9c:25b:4f3f]) by CH0PR13MB5084.namprd13.prod.outlook.com
- ([fe80::70cc:dd9c:25b:4f3f%7]) with mapi id 15.20.5061.013; Sat, 5 Mar 2022
- 16:53:36 +0000
-From:   Trond Myklebust <trondmy@hammerspace.com>
-To:     "anna@kernel.org" <anna@kernel.org>,
-        "chenxiaosong2@huawei.com" <chenxiaosong2@huawei.com>,
-        "smayhew@redhat.com" <smayhew@redhat.com>
-CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "liuyongqiang13@huawei.com" <liuyongqiang13@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "yi.zhang@huawei.com" <yi.zhang@huawei.com>,
-        "zhangxiaoxu5@huawei.com" <zhangxiaoxu5@huawei.com>
-Subject: Re: [PATCH -next 1/2] nfs: nfs{,4}_file_flush should consume
- writeback error
-Thread-Topic: [PATCH -next 1/2] nfs: nfs{,4}_file_flush should consume
- writeback error
-Thread-Index: AQHYMIz4ntebXgxsJ0GgUhvxvI+AhayxAgAA
-Date:   Sat, 5 Mar 2022 16:53:36 +0000
-Message-ID: <ca81e90788eabbf6b5df5db7ea407199a6a3aa04.camel@hammerspace.com>
-References: <20220305124636.2002383-1-chenxiaosong2@huawei.com>
-         <20220305124636.2002383-2-chenxiaosong2@huawei.com>
-In-Reply-To: <20220305124636.2002383-2-chenxiaosong2@huawei.com>
-Accept-Language: en-US, en-GB
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=hammerspace.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c540bc94-5341-40b8-a9c1-08d9fec8b0db
-x-ms-traffictypediagnostic: SA1PR13MB5053:EE_
-x-microsoft-antispam-prvs: <SA1PR13MB505301A3E17DF2FD0C460E7DB8069@SA1PR13MB5053.namprd13.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BOQVnYk7qXWJ8v2dI6QhC2+AzwsNFRSYNJBCkyryn/WAC+IJtYCbSofw9w6UVRuiSkGeXUwrjS5drVgmAXwJGP3C2OVB8pwbU49fZfVlN3CAH23DVdoTjAFKXM0dQO6ojHJThYo+9xBsxUuJdG/gBsdKE4El75cDmDZgOU8mW5LE3i3nIWUcgb//3WKuzRn3bPE353F5ArnxnQ+Z0P1gL87qt3aNGuqcE1lRGPw8pv523+wmuolqxROzyJRPaSs01j0dFZOJWVzmirtX0IsTG7+fPxl7OSkqNP/LLdGYGELZ4aoGlI0z4dt3qjnaKxcLSDbGUBJjpt8aiXfe8sJORlrK8HE+1qrjnuDmCZGlr+HcZ6tbb3eOJUZE7NJaTd0wXgVizLN24YBm0S20UX/y1A1vnY/nqEr4+BomxOvXdRbIROboFC8obyPE0IQraxxhP/wtQAyQqFsIYhrL7NkrZ0so7ES14r3EZ8cq+eTlLCE6CvEgqOMJTSSbr/XbWHHLtwPkbenlG9ndhHA6IqGd+JeNKHZeIpCdO8KDtwAbjucARHtJxr3nnuyjPUFq4TSPqK/MS02Bwos5F74B9LGysD7V3l6dGK8MCCRy8tLKwTy/goOrt7rgf/9jpOANXiOZPskt2lyxgtXHHKz+ttT6NAralkDImPmTckLdyueuWgThhkCu5CGp8YewRNCQbHcJlVhJZ3Pym0PV3xsJIdyqPYMJerW8jvEeb0RsIhLpu3XOKv6G72OaczQXtpSARhYTsJRiWcy0WEGZ1SHOsJWK9ceg8nEhcfkKyu40KkSic/aQfAuX6gNtQyfCvpzIGTtuD9aTBWlIQZJnrYB6CbZPhA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR13MB5084.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(6506007)(4326008)(2616005)(86362001)(36756003)(38070700005)(38100700002)(2906002)(26005)(186003)(71200400001)(122000001)(66476007)(66946007)(76116006)(64756008)(66446008)(66556008)(508600001)(8676002)(54906003)(110136005)(966005)(6486002)(5660300002)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aFNtcWFadHVrcmRkc1k0WUd2OHpmQnVwVEpVTzhXbHQ3cHNoS0ZBS1Q5NVRv?=
- =?utf-8?B?N0Zwa3pmUndIdHB2R2tqU0NuTFphU2F5UFF2Z2RPSm5iUWdjOXVISURQWU9K?=
- =?utf-8?B?NWd4T1ZoQ0FvL3JDd2ZSQjVkSk9QSEljTFp4YXVFck9sQ1gwblIyZUJFQnQv?=
- =?utf-8?B?ZndhYStRSzYzRG00VDk4YnRKSU1DeHBmV3ZIVzZUdE1ESXhmRUZJVTVQamMy?=
- =?utf-8?B?dGozeTdBcGtac3o5YnlKN2Q0ci9icHhWbExNT0VQVHZNc3lIYm41Mkdldk83?=
- =?utf-8?B?MDA3Rk9ETVMxRTV6ZWNUYy9wWGJJbEh6aTBpVDNOS1NZclhaLzYyUHh4RTYz?=
- =?utf-8?B?cXUrTGlsVmdzbEZiVFRYUUdpYkRNWFBjTGRUK2lDWklPK1pub2hlQnJRYXVx?=
- =?utf-8?B?K3lpTml6NXdpK09Za1Z3Vm9GRjZUZ2ZYY2dWcGg1Y3FOTjN1NWhhOTJGWlQ1?=
- =?utf-8?B?UWxWckR0d2VDcnNvOWMzSFkvUi94bEFiUkZZbGFMOWxKcE0xeEdmYjFmdWxL?=
- =?utf-8?B?N2EyNVh3QUpQekRmZ1ljSFdTVEtGQjFlWFZsQXlSRlJkVEZzQm9wVnpjWUdC?=
- =?utf-8?B?dVVNZGx0eHQ2b1NPd3p6QUx0QitRc2J6SERPbFQ2T1dBOG1GaWVYaVdNczM1?=
- =?utf-8?B?R3Qrc3hiK0ZVMmYyTk04eVpwbWErZ2FSNUxPNC9PaVJxME9aZTJWcXRKcm5a?=
- =?utf-8?B?SEZNYXEwRGFWWjBBMmgyQ2RyQ29sZW9BbTZGUlVMZVNlVHBieGxzeHBtSGNY?=
- =?utf-8?B?KzdsQjkySUV0c3FESkJFdVRxZG1Bd1JNSFlRM2FFcVg2N2Nabjc5WGNsSEhU?=
- =?utf-8?B?OXByZ2N2V2IxZ2xLSG03Z0s0OGF4N0ljVDlsV2JhdjlBTi9MbWpOR0s3Q3gx?=
- =?utf-8?B?TDlxblJGMmdyRzROREdTTXpqRFlOekQrb2NQbjBLSTVBd1JvL0lBQVJORENw?=
- =?utf-8?B?cDNGRUdWSzJYcjY5QkFWbmdIWElEWEhJTmVaMkJoYTMvY1ZnNUVXUVA2azZ5?=
- =?utf-8?B?U2RZQUd4NDVYdnZTYkdzZUw4aGlQMks5SHlRc29xcmxrOEpmTTlsbUxibElx?=
- =?utf-8?B?L3dUR3NrOHBLbERIdGlyWXlmZ3NOYXpVcllWMStyQTZMbG5CNEtzazNKY0hn?=
- =?utf-8?B?aHg0Z0Jpd2NlZXU2N3poREZoRldxZHZKL0JCQldZVzhsWWxCY1JuVWxQRks4?=
- =?utf-8?B?V3Yyb3R6RGg3Y3BmcjNKb1Y5ck55bUFtYmNZNnJQZlNzTVQ2OHorWCtvbG1r?=
- =?utf-8?B?VmJCN09mVEY0M0FNN0lnTXhReGFNdUcxdHV2RVV3aTVmaW93WkJObEpVdDZk?=
- =?utf-8?B?RHlGTDNsdzBZb09BajNGZ3ltL0FrZUx6Q3hVd2hwWVVVWlBmd3h2cHNqWGlJ?=
- =?utf-8?B?N0QyRmFjOUhhelFuL1ZDMWpkWGhJbWZIOU9YV21XSElkYktzU2ZRSG1lWVU4?=
- =?utf-8?B?ek93N0JKUHhCaGJTMWRnSWNueWw5UzFVeVFnTy9hR3ZUZmhoV2RGcXpzUUZx?=
- =?utf-8?B?OFYrTUZXWWN0c0ZaN3dqN2NjcEJtWVNSNXl6M1RiTTgzS085OXhTbmtrSFBp?=
- =?utf-8?B?VGpLMHpNNzN2Z01yT2dMQ05BZE80c1NsaysyS09JZWZZa3NrcnJhNXNRWDVo?=
- =?utf-8?B?cE1wa1RQWWhNaVZ2UFp6QmFkM2NjZ3ZZV1ZlbVB2dGQ3aFhFQjEyS2ZXVG44?=
- =?utf-8?B?TWhwdDI1Q0JReVVHOVpvSHBPWVUrMTJWU3hWNnFHS052RG9VME50L2tLM3hk?=
- =?utf-8?B?S0hEd3ZERHpBMXF3RDgyMjZVazg0Q25sS1BvdnM5ZGpGNnZvWUV4bk1NMlox?=
- =?utf-8?B?Q1dHTkFPdERkeG5zNFRPaU5xNUpwUytLUXhDNFVCaHVCOTFOQTArZFRoSm15?=
- =?utf-8?B?NnNiZHh0Zjlzb004TG1zeDRESFp6cEZOQWhGZUk1VjRLVmVTNWpoZ3BDcHdD?=
- =?utf-8?B?N3hQUkJ3U1QrM3liUTNZYjVBS1JpakNCV3Nia0RqdkhRM1pkbkxRbHVaK3JV?=
- =?utf-8?B?bXZrc2htT3pnPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B31299C9783C754ABA8C2A28F1333D03@namprd13.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Sat, 5 Mar 2022 11:54:32 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CCC40900;
+        Sat,  5 Mar 2022 08:53:42 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id f8so14459038edf.10;
+        Sat, 05 Mar 2022 08:53:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZnICtdrKBzusdGxlyHl7enNc8IAVDezeQhCdTV5JKag=;
+        b=p+QjerLuez8O5QBcv+wAfHoueIWcVuxVHRWxCWsoi9AbhnuL/LMyUJa7wxwUAsdRT1
+         MdI7kH0zaUyoK0F+YzOKqk6NQbFaM5Tndnc8tcU7UQb93ncHzA9vxce++bwozjM8PRJn
+         kfipC/QPVMJRrqOCVtuTYkC+DTOQfHgkgeJSwBAT5Lyz9ZxFcbmvTAtoG2wtZkbRpqVi
+         LctAitFRVPcRXrLDBsksQkjh8m7mLVPNnZhvgjnqbrUOwHuMdjkOAjFTBoZ7mTTPS3/X
+         QKC/WiQeKfziKyz+2ZQmEvMXrKEjL79EjIQ/YSzm+THsVsFT5Y9qIMvCFQlkMwFD7Hlk
+         IeAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZnICtdrKBzusdGxlyHl7enNc8IAVDezeQhCdTV5JKag=;
+        b=A3oDFLoG0Ko2WbYXPG0iP8mSFE/dIhZXVQhJp91mu+agx/dHhFsFuyElGxSwgyu/8S
+         wyELnZM3eyXV1UuksDEKvqlbbKx0FueH5/7sbO8sCoz609XUNKqgdXR6gkmu1bDI126k
+         TMmokAO9oBi33M8Q7QiU57zAJtAmMI/NyZoW7hF0D2QMkR444MIj3oxH3wsWxMSV7y0p
+         9DZciNX1R4ICXmWqXjlporM5ntPm8VpdahubMZWJg0QXMbkbb8g9DlPdqMGI/knv9u1i
+         P9R1xpg0LBZ8zidPU6YJ5EqCtfv2swxx3M4/E89s4Ke5D68PiQxUJifKrEBfVhiVKFCd
+         SUyQ==
+X-Gm-Message-State: AOAM532i4tYGr1zHCo8pEIOfpCcDdoBFKp8gFaFtjftqhM9eMCkm+eD8
+        +URNliD6kl328LX/l9xbTfmfmMUbxy4f6w==
+X-Google-Smtp-Source: ABdhPJxoC6PBf31uGQ36r0/k0WVQJF9AnWs1Fmm+0OQR1A+ysmMI7LwQLTkXxDGom+1rHH+8jqte4g==
+X-Received: by 2002:a05:6402:3549:b0:412:b31c:5509 with SMTP id f9-20020a056402354900b00412b31c5509mr3659801edd.224.1646499220498;
+        Sat, 05 Mar 2022 08:53:40 -0800 (PST)
+Received: from localhost.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id go41-20020a1709070da900b006d643bdd4d4sm2990932ejc.56.2022.03.05.08.53.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Mar 2022 08:53:40 -0800 (PST)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        jeff@labundy.com, markuss.broks@gmail.com,
+        dmitry.torokhov@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com, rydberg@bitmath.com,
+        sfr@canb.auug.org.au, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v10 0/2] Add support for Imagis touchscreens
+Date:   Sat,  5 Mar 2022 18:53:28 +0200
+Message-Id: <20220305165330.13061-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: hammerspace.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR13MB5084.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c540bc94-5341-40b8-a9c1-08d9fec8b0db
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Mar 2022 16:53:36.2798
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: d3H6OXKIimIOyvmUMe2W5iSplAhGpd7Td8fJ8h6hcerfYh8bP+tbN/l6AHjyg+zMcQClfavzfL294IZumC/CAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5053
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gU2F0LCAyMDIyLTAzLTA1IGF0IDIwOjQ2ICswODAwLCBDaGVuWGlhb1Nvbmcgd3JvdGU6Cj4g
-ZmlsZW1hcF9zYW1wbGVfd2JfZXJyKCkgd2lsbCByZXR1cm4gMCBpZiBub2JvZHkgaGFzIHNlZW4g
-dGhlIGVycm9yCj4geWV0LAo+IHRoZW4gZmlsZW1hcF9jaGVja193Yl9lcnIoKSB3aWxsIHJldHVy
-biB0aGUgdW5jaGFuZ2VkIHdyaXRlYmFjawo+IGVycm9yLgo+IAo+IFJlcHJvZHVjZXI6Cj4gwqDC
-oMKgwqDCoMKgwqAgbmZzIHNlcnZlcsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqDC
-oMKgwqDCoCBuZnMgY2xpZW50Cj4gwqAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLXwt
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+IC0tLS0tLS0tLS0tLQo+IMKgIyBO
-byBzcGFjZSBsZWZ0IG9uIHNlcnZlcsKgwqDCoMKgwqDCoCB8Cj4gwqBmYWxsb2NhdGUgLWwgMTAw
-RyAvc2VydmVyL2ZpbGUxIHwKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwgbW91bnQgLXQgbmZzICRuZnNfc2VydmVyX2lw
-Oi8gL21udAo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgfCAjIEV4cGVjdGVkIGVycm9yOiBObyBzcGFjZSBsZWZ0IG9uCj4g
-ZGV2aWNlCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCB8IGRkIGlmPS9kZXYvemVybyBvZj0vbW50L2ZpbGUyCj4gY291bnQ9
-MSBpYnM9MTAwSwo+IMKgIyBSZWxlYXNlIHNwYWNlIG9uIHNlcnZlcsKgwqDCoMKgwqDCoCB8Cj4g
-wqBybSAvc2VydmVyL2ZpbGUxwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwKPiDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHwgIyBVbmV4cGVjdGVkIGVycm9yOiBObyBzcGFjZSBsZWZ0Cj4gb24gZGV2aWNlCj4gwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCB8IGRkIGlmPS9kZXYvemVybyBvZj0vbW50L2ZpbGUyCj4gY291bnQ9MSBpYnM9MTAwSwo+
-IAoKJ3JtJyBkb2Vzbid0IG9wZW4gYW55IGZpbGVzIG9yIGRvIGFueSBJL08sIHNvIGl0IHNob3Vs
-ZG4ndCBiZSByZXR1cm5pbmcKYW55IGVycm9ycyBmcm9tIHRoZSBwYWdlIGNhY2hlLgoKSU9XOiBU
-aGUgcHJvYmxlbSBoZXJlIGlzIG5vdCB0aGF0IHdlJ3JlIGZhaWxpbmcgdG8gY2xlYXIgYW4gZXJy
-b3IgZnJvbQp0aGUgcGFnZSBjYWNoZS4gSXQgaXMgdGhhdCBzb21ldGhpbmcgaW4gJ3JtJyBpcyBj
-aGVja2luZyB0aGUgcGFnZSBjYWNoZQphbmQgcmV0dXJuaW5nIGFueSBlcnJvcnMgdGhhdCBpdCBm
-aW5kcyB0aGVyZS4KCklzICdybScgcGVyaGFwcyBkb2luZyBhIHN0YXQoKSBvbiB0aGUgZmlsZSBp
-dCBpcyBkZWxldGluZz8gSWYgc28sIGRvZXMKdGhpcyBwYXRjaCBmaXggdGhlIGJ1Zz8KCmh0dHBz
-Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4
-LmdpdC9jb21tCml0Lz9pZD1kMTllMDE4M2E4ODMKCi0tIApUcm9uZCBNeWtsZWJ1c3QKTGludXgg
-TkZTIGNsaWVudCBtYWludGFpbmVyLCBIYW1tZXJzcGFjZQp0cm9uZC5teWtsZWJ1c3RAaGFtbWVy
-c3BhY2UuY29tCgoK
+Add support for Imagis touchscreens, used on various mobile
+devices such as Samsung Galaxy J5 (2015), J3 (2015), J5 (2016).
+
+v2: rebase on top of the correct tree
+v3:
+- prefix all defines as IST3038C
+- use two tabs for all defines
+- add missing <linux/regulator/consumer.h> header
+- drop ADDR_LEN and DATA_LEN defines; use sizeof(reg_be) instead
+- use __be32 type for reg_be
+- add a comment about i2c read not being successful on first try
+- use "ret" instead of "res" in read_reg function
+- don't use the internal __cpu_to_be32 function, use cpu_to_be32 instead
+- use "error" instead of "ret" in interrupt handler
+- pass the slot state directly, without ternary operator
+- drop the dev_err in init_input_dev function
+- reorder the functions in _probe so that the chipid command is read as fast 
+as possible
+- don't use imagis_start in probe
+- initialize the irq after the chip is powered
+- save the return value in imagis_resume
+- drop WIDTH_MAJOR since only TOUCH_MAJOR is reported
+- the "chip detected" message is now dev_dbg
+- reorder headers so they are in alphabetic order
+- use GENMASK to generate masks for getting the X and Y coordinates and touch area
+- drop *_pressure from device tree bindings since the driver doesn't
+support reporting pressure
+- fix the typo with i2c address in device treee bindings (48 instead of 50)
+- add IRQF_NO_AUTOEN flag to avoid unbalanced irq enable
+v4:
+- alphabetically order MAINTAINERS entry
+- alphabetically order Kconfig and Makefile
+- drop the error message in init_regulators
+- disable regulators on probe error
+- drop IRQF_TRIGGER_FALLING
+- @ is not optional (device tree bindings)
+- don't use items for compatible
+- add maxItems property to reg, drop the comment
+v5:
+- compatible enum is not an item of the list, drop "-"
+v6:
+- add _MS suffix to the delay define, drop the comment
+- change the reason for retry comment
+- add imagis_power_off and imagis_power_on functions to turn regulators
+on and off
+- use imagis_power_on/off in imagis_start and imagis_stop as well as in probe function
+- use error instead of ret in calls to functions which only return 0 or -errno
+- include linux/bits.h
+- proper indentation in Kconfig
+- drop the dev_dbg chip id message
+- MODULE_DEVICE_TABLE(of, ...);
+- no extra tabs in i2c_driver struct
+- save the return value in imagis_suspend
+v7:
+- initialize ret with 0 in _suspend and _resume (kernel test robot)
+- use a separate ret_be variable to avoid casting to __be32 (kernel test robot)
+v8:
+- use poweroff action
+- power_off returns void
+- ret -> error
+- combine dev declaration and assignment
+- use same style for error everywhere
+- return devm_regulator_bulk_get() directly
+v9:
+- don't return in power_off (forgot to commit)
+v10:
+- check for error before sleeping
+- duplicate msleep in imagis_start
+- return 0 since error can only be 0 in imagis_start
+- move poweroff action below imagis_power_off
+
+Markuss Broks (2):
+  dt-bindings: input/touchscreen: bindings for Imagis
+  Input: add Imagis touchscreen driver
+
+ .../input/touchscreen/imagis,ist3038c.yaml    |  74 ++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   6 +
+ drivers/input/touchscreen/Kconfig             |  10 +
+ drivers/input/touchscreen/Makefile            |   1 +
+ drivers/input/touchscreen/imagis.c            | 348 ++++++++++++++++++
+ 6 files changed, 441 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
+ create mode 100644 drivers/input/touchscreen/imagis.c
+
+-- 
+2.20.1
+
