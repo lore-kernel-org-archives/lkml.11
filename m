@@ -2,193 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 08:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A39C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 08:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229837AbiCEI1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 03:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
+        id S229992AbiCEIfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 03:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiCEI1l (ORCPT
+        with ESMTP id S229580AbiCEIfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 03:27:41 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82B223DE9B;
-        Sat,  5 Mar 2022 00:26:51 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id r11so7304274ioh.10;
-        Sat, 05 Mar 2022 00:26:51 -0800 (PST)
+        Sat, 5 Mar 2022 03:35:41 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8E115C660;
+        Sat,  5 Mar 2022 00:34:50 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id p17so9731533plo.9;
+        Sat, 05 Mar 2022 00:34:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=N3jszANDmQZb7r8aK3P3yVdAGaQPSTJ02JYEy2KHSAA=;
-        b=HQBmYXXLNzBEafcE4+NaQuLIveaRglkhC0IilGHutfbgxUn6pojISyU2rqGDGdP4Sf
-         sRppPzeXMOcVWmP5SPFVMyVNuM6Xl4eZCR4i7Kwzqs0hyoAFECuopLTek0gtu8l6Xt2u
-         HNlA5ekScYGoaZF8ZIkm4ZSP1Y72D1MuO2gnRTUdSIHa9Ex+OR+M7M45gv9gkPAtox7/
-         dB4TEOXQfNWu6Im247UeHE99Tbh4CJ0SGvIY5KOGd4cPrRX+bZcdlUrp8VhIKDv8krd0
-         AMU1UBkxrKGQ0lwS8ytqeiK1ZBOhAkLbnWQWJQqsEyMhUPP9w2lVsxriU7bRGteNgMgd
-         PCWQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=bKoGjMpVki5+pEboRYBURTgHG86d4vDBENvylWQqmc4=;
+        b=VffkC3CAaW5Tu/D9jSeUDcsfdU3OI4TYEVI/SonbCvOrh0nMJdm8ZNCW3pH7NXOKJL
+         vUG6iDypntoGFqWzhemd0+EMjPQv1OT/aNFMc/1jcZiWvhKwVSoh9mO+jMG7Mj21aLPV
+         kyvqd4QFRD2Er2j1iYex9Z/j/GfwlSAzDw3TQtb0ooxF/zFY186hiamwpEIVAzoN9pKY
+         p2U091UsH2aA0qm0kR4zFfO6jGuk0qsHBcdhLN+b2FTeUm/RJiGdYSfeHNaobNbsHSI9
+         otznM9yiTupQb90VKA8ymC1sbO3LfNyH6fPdx5UkMSV7xrFsF5JbRTREPNKABek2haoB
+         W5rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=N3jszANDmQZb7r8aK3P3yVdAGaQPSTJ02JYEy2KHSAA=;
-        b=N0CbpseHuV0zWuEOCYbwjkzid2FSWHI9FOdG+rmqYE6YmImuKWVtZaQPW/9mBWQh6w
-         bsoVi6b4ImBlpphLn0inlI3UCz97DUS9YX7Xs2lCikp4puQldmnQuJaCrzy5+gqcdlum
-         4VbOMiAiT2304e7dGLrqO3IltCnjp9A35Nbg5aynx2p5OSNPr+xkoe0y2eiZQaeaR5Is
-         YQXRfQWM607lWUFf/JcRADnrWN99VnTWuEHyL9E7TM7MmlEYgjUCSEOdKARTut7PC/Dd
-         GU9LLCctoZKb6z6ApUoOFziyOluEx9wAh9LNfaWXNRP8/ihsi7DY0dKPRMj/cLp9ZPRT
-         iZag==
-X-Gm-Message-State: AOAM530qGrLwoivK/mOo85Oli9Tj0fLnDQbFtaoK8ABluV4wuPoQK7zr
-        6R1QKa6+za5OA0P4LgiBNX+GeZRYtogsaAzOug2ru2Jg3grjrQ==
-X-Google-Smtp-Source: ABdhPJxJcRfEtngRc3JCaV9Phg3XF4GTLXJ/OXmlOhY5CuWMptNstyKWhmvvtE63xfJJ4TFLMRWelFzK3TWFxBaeU/8=
-X-Received: by 2002:a6b:c98f:0:b0:637:fd11:42a0 with SMTP id
- z137-20020a6bc98f000000b00637fd1142a0mr2240722iof.48.1646468810813; Sat, 05
- Mar 2022 00:26:50 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=bKoGjMpVki5+pEboRYBURTgHG86d4vDBENvylWQqmc4=;
+        b=Q1qz6rDXnYilPTZQ/rMagY/jjfdI2Xx4jB/PuV5rn2eXzdmzkr0RAG5NLUeSbRyhOs
+         STOWL7OJ4SRGVB5JK/EhbI1NpDxPU6rb4gijzOC+NRXqjU1Bd/ah+QctOxzW8xWWC+0J
+         6m8iG5d3zo3z0MxES1OK2K3TI2ry3+8C4LSPcJnH/fHRDNSg4mSR1k4K3gKhMA0BsgCO
+         AUscch1xFn4VROiB/JH1iAyiMNXm/ffOcgaUgCTJY6QkYyWEdpgQqgHNkq6PqO0vJH9m
+         JI+Y1pWGLaKEjBQFpvN2y8gwYhz7pjkV/L8ctB6ifgkgGB3YGskyZ58ZSV+1FXdGZVl7
+         /DAg==
+X-Gm-Message-State: AOAM532vHnJewXD8cgNKgVVmClke+HvzYz7KqcOVoTEMXgV8AGCAiq4/
+        dQBAHTICuPxTfrKi8g2PES+d1jZ1+QE=
+X-Google-Smtp-Source: ABdhPJwGL5uQN87rWwwBhYsunuw0Lg0IW+j9fHGqx+cHwpOfMqcnwlHDO0guw3+uhxL9PBMkEEqbVA==
+X-Received: by 2002:a17:902:da85:b0:151:8d9e:e31b with SMTP id j5-20020a170902da8500b001518d9ee31bmr2372204plx.166.1646469289720;
+        Sat, 05 Mar 2022 00:34:49 -0800 (PST)
+Received: from [192.168.1.103] ([166.111.139.99])
+        by smtp.gmail.com with ESMTPSA id z129-20020a626587000000b004f6b398faabsm4936236pfb.139.2022.03.05.00.34.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Mar 2022 00:34:49 -0800 (PST)
+Subject: Re: [PATCH] isdn: hfcpci: check the return value of dma_set_mask() in
+ setup_hw()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     isdn@linux-pingi.de, davem@davemloft.net, zou_wei@huawei.com,
+        zheyuma97@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220303025710.1201-1-baijiaju1990@gmail.com>
+ <20220303211557.16458976@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <1650c170-3223-d74f-23ac-a05440765ad0@gmail.com>
+Date:   Sat, 5 Mar 2022 16:34:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <CA+icZUWHd4VTKNwBtuxt9-fHoiYV+Q7tQ809Cn83k8sbQ_uNHw@mail.gmail.com>
- <CA+icZUW7LESaDG5gLQs9kOJp=0Anp=+jNb8L1u91iAf625m6wA@mail.gmail.com>
-In-Reply-To: <CA+icZUW7LESaDG5gLQs9kOJp=0Anp=+jNb8L1u91iAf625m6wA@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Sat, 5 Mar 2022 09:26:14 +0100
-Message-ID: <CA+icZUVd19avD71K1NcCogr86fxkGHxEWVeFzYW-AWuoGJ3zzA@mail.gmail.com>
-Subject: Re: [Linux-v5.17-rc6] Building tools/perf with perl v5.34
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220303211557.16458976@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 5, 2022 at 8:57 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
->
-> On Sat, Mar 5, 2022 at 8:52 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > I am here on Debian/unstable AMD64 which switched over to perl v5.34
-> > in February 2022.
-> >
-> > Unfortunately, my perf does not build with this (lib)perl version:
-> >
-> > $ ~/bin/perf -vv
-> > perf version 5.17-rc6
-> >                 dwarf: [ on  ]  # HAVE_DWARF_SUPPORT
-> >    dwarf_getlocations: [ on  ]  # HAVE_DWARF_GETLOCATIONS_SUPPORT
-> >                 glibc: [ on  ]  # HAVE_GLIBC_SUPPORT
-> >         syscall_table: [ on  ]  # HAVE_SYSCALL_TABLE_SUPPORT
-> >                libbfd: [ on  ]  # HAVE_LIBBFD_SUPPORT
-> >                libelf: [ on  ]  # HAVE_LIBELF_SUPPORT
-> >               libnuma: [ on  ]  # HAVE_LIBNUMA_SUPPORT
-> > numa_num_possible_cpus: [ on  ]  # HAVE_LIBNUMA_SUPPORT
-> >               libperl: [ OFF ]  # HAVE_LIBPERL_SUPPORT
-> >             libpython: [ on  ]  # HAVE_LIBPYTHON_SUPPORT
-> >              libslang: [ on  ]  # HAVE_SLANG_SUPPORT
-> >             libcrypto: [ on  ]  # HAVE_LIBCRYPTO_SUPPORT
-> >             libunwind: [ on  ]  # HAVE_LIBUNWIND_SUPPORT
-> >    libdw-dwarf-unwind: [ on  ]  # HAVE_DWARF_SUPPORT
-> >                  zlib: [ on  ]  # HAVE_ZLIB_SUPPORT
-> >                  lzma: [ on  ]  # HAVE_LZMA_SUPPORT
-> >             get_cpuid: [ on  ]  # HAVE_AUXTRACE_SUPPORT
-> >                   bpf: [ on  ]  # HAVE_LIBBPF_SUPPORT
-> >                   aio: [ on  ]  # HAVE_AIO_SUPPORT
-> >                  zstd: [ on  ]  # HAVE_ZSTD_SUPPORT
-> >               libpfm4: [ OFF ]  # HAVE_LIBPFM
-> >
-> > $ grep libperl ../make-log_perf-python3.10-install_bin.txt
-> > 9:Makefile.config:788: Missing perl devel files. Disabling perl
-> > scripting support, please install perl-ExtUtils-Embed/libperl-dev
-> > 22:...                       libperl: [ OFF ]
-> >
-> > Checking for these requirements:
-> >
-> > # dpkg -l | grep perl | grep 5.34 | awk '/^ii/ {print $1 " " $2 " "
-> > $3}' | column -t
-> > ii  libperl-dev:amd64  5.34.0-3
-> > ii  libperl5.34:amd64  5.34.0-3
-> > ii  perl               5.34.0-3
-> > ii  perl-base          5.34.0-3
-> > ii  perl-modules-5.34  5.34.0-3
-> >
-> > # dpkg -L perl-modules-5.34 | grep -i ExtUtils | grep -i Embed
-> > /usr/share/perl/5.34.0/ExtUtils/Embed.pm
-> >
-> > Can you please comment on this?
-> >
-> > Thanks.
-> >
-> > Regards,
-> > - Sedat -
-> >
-> > [1] https://unix.stackexchange.com/questions/167292/what-is-debian-equivalent-of-rpm-package-perl-extutils-embed
->
-> My command-line:
->
-> cd /path/to/linux.git
->
-> $ make V=1 -j4 HOSTCC=clang HOSTCXX=clang++ HOSTLD=ld.lld
-> HOSTAR=llvm-ar CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm
-> OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump OBJSIZE=llvm-size
-> READELF=llvm-readelf STRIP=llvm-strip LLVM_IAS=1 -C tools/perf
-> PYTHON=python3.10 install-bin
->
-> I use the -gnu-std-11 patchset plus some own:
->
-> $ git log --oneline v5.17-rc6.. | grep 'std=gnu11'
-> 05d8e9b88918 tools: libtraceevent: Use -std=gnu11
-> ee44279e6b01 tools: libsubcmd: Use -std=gnu11
-> 411fa2d6da5c tools: libapi: Use -std=gnu11
-> 3f0092b7e1b9 tools: perf: Use -std=gnu11
-> 0cf56ddf2b41 tools: libbpf: Use -std=gnu11
-> 96a4222bdd4c Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS
-> 6a7cc105b238 Kbuild: move to -std=gnu11
->
-> If this matters...
->
 
-[ tools/perf/Makefile.config ]
 
-ifdef NO_LIBPERL
-  CFLAGS += -DNO_LIBPERL
-else
-  PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
-  PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
-  PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
-  PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
-  PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
-  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects,
-$(PERL_EMBED_CCOPTS))
-  PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
-  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+On 2022/3/4 13:15, Jakub Kicinski wrote:
+> On Wed,  2 Mar 2022 18:57:10 -0800 Jia-Ju Bai wrote:
+>> The function dma_set_mask() in setup_hw() can fail, so its return value
+>> should be checked.
+>>
+>> Fixes: e85da794f658 ("mISDN: switch from 'pci_' to 'dma_' API")
+> The change under Fixes only switched the helper the driver uses,
+> it did not introduce the problem. The Fixes tag should point to
+> the earliest commit where the problem is present.
 
-  ifneq ($(feature-libperl), 1)
-    CFLAGS += -DNO_LIBPERL
-    NO_LIBPERL := 1
-    msg := $(warning Missing perl devel files. Disabling perl
-scripting support, please install perl-ExtUtils-Embed/libperl-dev);
-  else
-    LDFLAGS += $(PERL_EMBED_LDFLAGS)
-    EXTLIBS += $(PERL_EMBED_LIBADD)
-    CFLAGS += -DHAVE_LIBPERL_SUPPORT
-    $(call detected,CONFIG_LIBPERL)
-  endif
-endif
+Hi Jakub,
 
-$ perl -MExtUtils::Embed -e ldopts
--Wl,-E  -fstack-protector-strong -L/usr/local/lib
--L/usr/lib/x86_64-linux-gnu/perl/5.34/CORE -lperl -ldl -lm -lpthread
--lc -lcrypt
+Thanks for the advice.
+I will send a V2 patch.
 
-$ perl -MExtUtils::Embed -e ccopts
--D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fwrapv -fno-strict-aliasing -pipe
--I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
--I/usr/lib/x86_64-linux-gnu/perl/5.34/CORE
 
-- Sedat -
+Best wishes,
+Jia-Ju Bai
