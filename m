@@ -2,99 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7429C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 03:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E379AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 04:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231129AbiCEDmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 22:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        id S231147AbiCEEBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 23:01:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbiCEDmL (ORCPT
+        with ESMTP id S230201AbiCEEBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 22:42:11 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A6C229C98
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 19:41:18 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id mv5-20020a17090b198500b001bf2a039831so2795552pjb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 19:41:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g3T8Wrd1J7uGYe15NcawUAYKxW858bm+7idoDqUxKYI=;
-        b=MyaYOjbzKClchfYsPyWtaapwj4xAq3tSb4HBkNNsRnhNYZTuEomnmeMB4qHMTVEYLf
-         u7IYfAxFrljMrpJ5U148gK8VLJL8mZSazH5MslieGV4nb3kyeUTiGa7Le9jFztpUzjPK
-         /hFELLvBajcg0wrFpUDLEEcuWt67POL2MCKy4HISQ5W20yghK4E1lQto1s/O6WhNLUml
-         x2J/ZSdWA4XoA655TSnAWldBccQGT4aQZt8nvqrNXarkACbhsq73irzwEX68lHfzexAs
-         UfWnSYy8uEi56AwIIHiEHgvVM2lzs7CBRtb0eAmi3EwVdwpMJSA6Xu5kZ53n6czbV3An
-         tJ3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g3T8Wrd1J7uGYe15NcawUAYKxW858bm+7idoDqUxKYI=;
-        b=SU3L0EzkDuwcZne5Qx5wzwMKDNWlKP0/ZGI75zXfetz1A7Ao9HRsx+m8Ct1PYTEJyi
-         mg7n5JHq2gFGyl9GVCdmwJP3Xm1xjnRfH0UaD9DTVXo+3oidXKcvGK5G5Pc/bgTkh112
-         kik54MvJVamjNsEqtof2kLP8gsR8+vY6Llskda6Uz1RZvS7dKRCr1GCxHfNNVAO7Xq49
-         rzGex5JsHd37hDqlFPzfEYGIq8m59SyITQ4WxJDroITaDcP0vob3+hgNNkRHhRC6eqgH
-         OrQHlcaktghnuUTFZ4QjBmcVMExdT5+5eJutPY/1yhu9gegl4RVf7IKVMY3cVlRsJWKF
-         5dcg==
-X-Gm-Message-State: AOAM531n1QiEH4hUrYpPamXA/awWmyvBt4H17SgtV84Xc7SbHrN+Qtvz
-        G+4E+vmlDrFDKMBm6Y9FFA3pDw==
-X-Google-Smtp-Source: ABdhPJxvVO84UijMWteTh39H+Sz9+e3LBMyDKw84DqwLeJMQyNDa3ooXBiIpls9IiNWRP8tv+hlaIg==
-X-Received: by 2002:a17:903:124a:b0:151:99fe:1a10 with SMTP id u10-20020a170903124a00b0015199fe1a10mr1545897plh.87.1646451678079;
-        Fri, 04 Mar 2022 19:41:18 -0800 (PST)
-Received: from localhost.localdomain ([2409:8a28:e6d:cc00:d089:89fd:5c33:f12])
-        by smtp.gmail.com with ESMTPSA id h5-20020a056a001a4500b004e177b8cbfdsm7360927pfv.197.2022.03.04.19.41.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 19:41:17 -0800 (PST)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     tj@kernel.org, lizefan.x@bytedance.com, hannes@cmpxchg.org,
-        peterz@infradead.org
-Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        syzbot+16e3f2c77e7c5a0113f9@syzkaller.appspotmail.com,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>
-Subject: [PATCH linux-next] cgroup: fix suspicious rcu_dereference_check() usage warning
-Date:   Sat,  5 Mar 2022 11:41:03 +0800
-Message-Id: <20220305034103.57123-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 4 Mar 2022 23:01:01 -0500
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06FA48880
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 20:00:11 -0800 (PST)
+Received: from localhost.localdomain ([106.133.30.151])
+        by smtp.orange.fr with ESMTPA
+        id QLa9ndULWQTuBQLaMn8sXz; Sat, 05 Mar 2022 05:00:09 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
+X-ME-Date: Sat, 05 Mar 2022 05:00:09 +0100
+X-ME-IP: 106.133.30.151
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2] x86/bug: __WARN_FLAGS: prevent shadowing by renaming local variable f to __flags
+Date:   Sat,  5 Mar 2022 12:59:43 +0900
+Message-Id: <20220305035943.2420331-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-task_css_set_check() will use rcu_dereference_check() to check for
-rcu_read_lock_held() on the read-side, which is not true after commit
-dc6e0818bc9a ("sched/cpuacct: Optimize away RCU read lock"). This
-commit drop explicit rcu_read_lock(), change to RCU-sched read-side
-critical section. So fix the RCU warning by adding check for
-rcu_read_lock_sched_held().
+The macro __WARN_FLAGS() uses a local variable named "f". This being a
+common name, there is a risk of shadowing other variables.
 
-Fixes: dc6e0818bc9a ("sched/cpuacct: Optimize away RCU read lock")
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Reported-by: syzbot+16e3f2c77e7c5a0113f9@syzkaller.appspotmail.com
-Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+For example:
+
+| In file included from ./include/linux/bug.h:5,
+|                  from ./include/linux/cpumask.h:14,
+|                  from ./arch/x86/include/asm/cpumask.h:5,
+|                  from ./arch/x86/include/asm/msr.h:11,
+|                  from ./arch/x86/include/asm/processor.h:22,
+|                  from ./arch/x86/include/asm/timex.h:5,
+|                  from ./include/linux/timex.h:65,
+|                  from ./include/linux/time32.h:13,
+|                  from ./include/linux/time.h:60,
+|                  from ./include/linux/stat.h:19,
+|                  from ./include/linux/module.h:13,
+|                  from virt/lib/irqbypass.mod.c:1:
+| ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
+| ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
+|    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
+|       |                     ^
+| ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
+|   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
+|       |                 ^~~~~~~~~~~~
+| ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
+|  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
+|       |         ^~~~~~~~~~~~
+| In file included from ./include/linux/rbtree.h:24,
+|                  from ./include/linux/mm_types.h:11,
+|                  from ./include/linux/buildid.h:5,
+|                  from ./include/linux/module.h:14,
+|                  from virt/lib/irqbypass.mod.c:1:
+| ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
+|  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
+|       |                                               ~~~~~~~~~~~~~~~^
+
+This patch renames the variable from f to __flags (with two underscore
+prefixes as suggested in the Linux kernel coding style [1]) in order
+to prevent collisions.
+
+[1] Linux kernel coding style, section 12) Macros, Enums and RTL,
+paragraph 5) namespace collisions when defining local variables in
+macros resembling functions
+https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
+
+Fixes: bfb1a7c91fb7 ("x86/bug: Merge annotate_reachable() into_BUG_FLAGS() asm")
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- include/linux/cgroup.h | 1 +
- 1 file changed, 1 insertion(+)
+Changelog:
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 1e356c222756..0d1ada8968d7 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -450,6 +450,7 @@ extern struct mutex cgroup_mutex;
- extern spinlock_t css_set_lock;
- #define task_css_set_check(task, __c)					\
- 	rcu_dereference_check((task)->cgroups,				\
-+		rcu_read_lock_sched_held() ||				\
- 		lockdep_is_held(&cgroup_mutex) ||			\
- 		lockdep_is_held(&css_set_lock) ||			\
- 		((task)->flags & PF_EXITING) || (__c))
+v1 -> v2:
+
+   * Update the reference link to the kernel documentation to latest version.
+   * Do not break the Fixes: tag to a new line.
+   * Added the Acked-by and Reviewed-by tags.
+---
+ arch/x86/include/asm/bug.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
+index bab883c0b6fe..66570e95af39 100644
+--- a/arch/x86/include/asm/bug.h
++++ b/arch/x86/include/asm/bug.h
+@@ -77,9 +77,9 @@ do {								\
+  */
+ #define __WARN_FLAGS(flags)					\
+ do {								\
+-	__auto_type f = BUGFLAG_WARNING|(flags);		\
++	__auto_type __flags = BUGFLAG_WARNING|(flags);		\
+ 	instrumentation_begin();				\
+-	_BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);			\
++	_BUG_FLAGS(ASM_UD2, __flags, ASM_REACHABLE);		\
+ 	instrumentation_end();					\
+ } while (0)
+ 
 -- 
-2.20.1
+2.34.1
 
