@@ -2,131 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 05:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C8FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 05:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231276AbiCEFi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 00:38:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
+        id S231285AbiCEFkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 00:40:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiCEFi4 (ORCPT
+        with ESMTP id S229516AbiCEFkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 00:38:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48874EF54;
-        Fri,  4 Mar 2022 21:38:06 -0800 (PST)
+        Sat, 5 Mar 2022 00:40:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3508CADD67;
+        Fri,  4 Mar 2022 21:40:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77003B80EFF;
-        Sat,  5 Mar 2022 05:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71DBC004E1;
-        Sat,  5 Mar 2022 05:38:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C70A060A6F;
+        Sat,  5 Mar 2022 05:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83642C340EE;
+        Sat,  5 Mar 2022 05:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646458684;
-        bh=LMIqGM/SSvRoh46+l9QergJBMyKlC0EkMePi5NTOh3E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xx6ZZpRR51eOrgP3VHLkyq0oI9f+lQgG/RHntdgVG0kW5s2Y2G0V30gGpl9ZbCCO0
-         nJLmwDBmNgOeNP1lpv9Tt63QlJ0Sx5nEC0oRyQPutYGU/caPNeIE9NMcEM7KEO82WX
-         ePz/DcJtB6Hej4colruuNJGRF5DhD3wEH/7wDSEBHtQyloBi55DRR4dZ0qdfBAo96L
-         hRzbTWvvo3rElHn+Y4rAzRYP6MBpc125vhWfJcyqDHVZYWTwVfYn0EcncFIQ+TyRHR
-         m2vjOb2TQnbpmnTt8gITTIoq75tl1cuRmMf3zx3BaVglwsQXp62ik42VjWIKJfR/2E
-         8ce06Nnqy2CEQ==
-Date:   Sat, 5 Mar 2022 07:37:18 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Nayna Jain <nayna@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        dhowells@redhat.com, zohar@linux.ibm.com,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, rnsastry@linux.ibm.com
-Subject: Re: [PATCH v9 0/3] integrity: support including firmware ".platform"
- keys at build time
-Message-ID: <YiL3DvrlAHaMm+lk@iki.fi>
-References: <20220304175403.20092-1-nayna@linux.ibm.com>
+        s=k20201202; t=1646458802;
+        bh=6DhOwJx5m+Etdnfg4q7LUPFaVS97iP6TaGZP2zeFvZw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aw1iEaPaNE6rO2cxFNyohcnCrsOnTFPxHyrovQO/up2h1VckyiNPIhtzkQSuXbgxk
+         2B+4vy1Oc7193yf4ndm9og/pk4V3BBSl0uHxkkRwYy08lzt51BwJehizRaJTiDWAS7
+         ix7x09/mDUC1iQGUClusydJLAsVF85hL8u+fvZvNp3xNsUxG4OuzGgHquLClRNVx0O
+         e2tFkn5OFl6ATWD3xGrF7z4h+X+P/bbgeBczdfZpmJB8plKtUrchaktkusTx6LXAFz
+         df+obcRewhOeroq+6OwUJSApYj3HyT7PHr6sLtMhPHSyHmxov3DbEaxdBrPUH7h3Df
+         lNB1dhWSMBv2Q==
+Date:   Fri, 4 Mar 2022 21:40:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
+Cc:     Brian Vazquez <brianvv@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jeffreyji <jeffreyji@google.com>
+Subject: Re: [PATCH v2 net-next] net-core: add rx_otherhost_dropped counter
+Message-ID: <20220304214000.597c7165@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMzD94SRmG12Zot+eZTDcSDaviceBqn6egCdGZBoy_cbJLa5xw@mail.gmail.com>
+References: <20220303003034.1906898-1-jeffreyjilinux@gmail.com>
+        <CAMzD94SRmG12Zot+eZTDcSDaviceBqn6egCdGZBoy_cbJLa5xw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304175403.20092-1-nayna@linux.ibm.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 12:54:00PM -0500, Nayna Jain wrote:
-> Some firmware support secure boot by embedding static keys to verify the
-> Linux kernel during boot. However, these firmware do not expose an
-> interface for the kernel to load firmware keys onto the ".platform"
-> keyring, preventing the kernel from verifying the kexec kernel image
-> signature.
+On Thu, 3 Mar 2022 13:59:58 -0800 Brian Vazquez wrote:
+> LGTM, thanks Jeffrey!
 > 
-> This patchset exports load_certificate_list() and defines a new function
-> load_builtin_platform_cert() to load compiled in certificates onto the
-> ".platform" keyring.
-> 
-> Changelog:
-> v9:
-> * Rebased on tpmdd master branch repo - 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
-> 
-> v8:
-> * Includes Jarkko's feedback on patch description and removed Reported-by
-> for Patch 1.
-> 
-> v7:
-> * Incldues Jarkko's feedback on patch description for Patch 1 and 3.
-> 
-> v6:
-> * Includes Jarkko's feedback:
->  * Split Patch 2 into two.
->  * Update Patch description.
-> 
-> v5:
-> * Renamed load_builtin_platform_cert() to load_platform_certificate_list()
-> and config INTEGRITY_PLATFORM_BUILTIN_KEYS to INTEGRITY_PLATFORM_KEYS, as
-> suggested by Mimi Zohar.
-> 
-> v4:
-> * Split into two patches as per Mimi Zohar and Dimitri John Ledkov
-> recommendation.
-> 
-> v3:
-> * Included Jarkko's feedback
->  ** updated patch description to include approach.
->  ** removed extern for function declaration in the .h file.
-> * Included load_certificate_list() within #ifdef CONFIG_KEYS condition.
-> 
-> v2:
-> * Fixed the error reported by kernel test robot
-> * Updated patch description based on Jarkko's feedback.
-> 
-> Nayna Jain (3):
->   certs: export load_certificate_list() to be used outside certs/
->   integrity: make integrity_keyring_from_id() non-static
->   integrity: support including firmware ".platform" keys at build time
-> 
->  certs/Makefile                                |  5 ++--
->  certs/blacklist.c                             |  1 -
->  certs/common.c                                |  2 +-
->  certs/common.h                                |  9 -------
->  certs/system_keyring.c                        |  1 -
->  include/keys/system_keyring.h                 |  6 +++++
->  security/integrity/Kconfig                    | 10 +++++++
->  security/integrity/Makefile                   | 15 ++++++++++-
->  security/integrity/digsig.c                   |  2 +-
->  security/integrity/integrity.h                |  6 +++++
->  .../integrity/platform_certs/platform_cert.S  | 23 ++++++++++++++++
->  .../platform_certs/platform_keyring.c         | 26 +++++++++++++++++++
->  12 files changed, 90 insertions(+), 16 deletions(-)
->  delete mode 100644 certs/common.h
->  create mode 100644 security/integrity/platform_certs/platform_cert.S
-> 
-> 
-> base-commit: c9e54f38976a1c0ec69c0a6208b3fd55fceb01d1
-> -- 
-> 2.27.0
+> Reviewed-by: Brian Vazquez <brianvv@google.com>
 
-Thank you, applied. 
+Please keep Brian's review tag..
 
-BR, Jarkko
+> On Wed, Mar 2, 2022 at 4:30 PM Jeffrey Ji <jeffreyjilinux@gmail.com> wrote:
+> >
+> > From: jeffreyji <jeffreyji@google.com>
+> >
+> > Increment rx_otherhost_dropped counter when packet dropped due to
+> > mismatched dest MAC addr.
+> >
+> > An example when this drop can occur is when manually crafting raw
+> > packets that will be consumed by a user space application via a tap
+> > device. For testing purposes local traffic was generated using trafgen
+> > for the client and netcat to start a server
+> >
+> > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> > with "{eth(daddr=$INCORRECT_MAC...}", verified that iproute2 showed the
+> > counter was incremented. (Also had to modify iproute2 to show the stat,
+> > additional patch for that coming next.)
+> >
+> > changelog:
+> >
+> > v2: add kdoc comment
 
+move the changelog under the '---' separator
 
+> > Signed-off-by: jeffreyji <jeffreyji@google.com>
+> > ---
+> >  include/linux/netdevice.h    | 3 +++
+> >  include/uapi/linux/if_link.h | 5 +++++
+> >  net/core/dev.c               | 2 ++
+> >  net/ipv4/ip_input.c          | 1 +
+> >  net/ipv6/ip6_input.c         | 1 +
+> >  5 files changed, 12 insertions(+)
+
+> > diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> > index e315e53125f4..17e74385fca8 100644
+> > --- a/include/uapi/linux/if_link.h
+> > +++ b/include/uapi/linux/if_link.h
+> > @@ -211,6 +211,9 @@ struct rtnl_link_stats {
+> >   * @rx_nohandler: Number of packets received on the interface
+> >   *   but dropped by the networking stack because the device is
+> >   *   not designated to receive packets (e.g. backup link in a bond).
+> > + *
+> > + * @rx_otherhost_dropped: Number of packets dropped due to mismatch in
+> > + * packet's destination MAC address.
+> >   */
+> >  struct rtnl_link_stats64 {
+> >         __u64   rx_packets;
+> > @@ -243,6 +246,8 @@ struct rtnl_link_stats64 {
+> >         __u64   rx_compressed;
+> >         __u64   tx_compressed;
+> >         __u64   rx_nohandler;
+> > +
+> > +       __u64   rx_otherhost_dropped;
+> >  };
+> >
+> >  /* The struct should be in sync with struct ifmap */
+
+rebase on latest net-next/master and repost. 
+
+Looks like it's conflicting with recently merged 
+commit 9309f97aef6d ("net: dev: Add hardware stats support")
