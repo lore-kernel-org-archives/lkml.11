@@ -2,83 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 082B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 21:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0172C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 21:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232673AbiCEVfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 16:35:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
+        id S229832AbiCEVkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 16:40:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiCEVfH (ORCPT
+        with ESMTP id S230112AbiCEVk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 16:35:07 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2AD29805
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 13:34:16 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id dr20so24322245ejc.6
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Mar 2022 13:34:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XFY4TtTjXdWPbTMt2IvpCEWRTxBseEWRBtu+kYXkcuk=;
-        b=Yyel5NfrEkG77OKFkltSillJS5j9Vf1YU5SiNYEAXt6ScDLMX23VdX69Ho6+UNipYM
-         Lk9KFXcs0fGsaU8KnVHvrlW+07FWwnjMI7DtLkD+lEsing4NkqqGBYOukpRPYGBAw50t
-         BvBPK/AS4U0LOM9sbpyfyEhVKtcexORgqxVkO6QCZJPr29lnvpa/dKD6Wr16sOAehwBH
-         pYzlyz9VRx8ZVn9hEPqd2zJXelVxIdC/dfn8y2FVrcyZ/yI0Z7iVHGpTAc6YEabNH8Ov
-         ScNaroS3MKNLFjHWGcjRvhve+hdygRfbcKziHFn3pqsi7E0i8znZURGdjS9b45OVcnuo
-         PRRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XFY4TtTjXdWPbTMt2IvpCEWRTxBseEWRBtu+kYXkcuk=;
-        b=e+XtBMlZ5yOyj6TpXs3B8XS4BhJH7Jie5W1+/+0tRqzW0OvPtAD72UiRk1jjCV2AyD
-         38mQRlUoV09k1kuzwq3oYr8Pcrlk99HcLplXPaNltgrCGIg5bmqTl8NEj/iYXDdTUgeV
-         Py7qtEgnpqinghU9aFZJbmp51Eg2+R2W8SntCnjfr/1poldf+Xx/OXgzjKs/uOVZliYr
-         /MgOivPoZHc/cvHZJH/+WaTwb5yL3P/ViK+2I/W9tJAQoClhQcoWhYcrwQNLWSZSmXB3
-         diGrGdv9YjVnLP7jxh59E7EyLIU30ZPymnsFwRgkAfYtmDl2c4g5daq4s2+YF2nXMnH2
-         JgmA==
-X-Gm-Message-State: AOAM530JZqqTP2vvLP6jYlsWganBdN6ZbFKHyIu7tcIbscscXLMeAD7r
-        G16Ct8+oXaTlzQ2iSpTpEda6uesVw4hVdWt2V1E=
-X-Google-Smtp-Source: ABdhPJz4vmxxvwU59IvMLBk19rc8XncC8y8R1qUZrxuAe3CC7r7csI30J5hQTplD1Wk0ubq9ZID1os65qAxNIPCIaFs=
-X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id
- q7-20020a1709064cc700b006d07efb049fmr3860758ejt.639.1646516054814; Sat, 05
- Mar 2022 13:34:14 -0800 (PST)
+        Sat, 5 Mar 2022 16:40:29 -0500
+X-Greylist: delayed 538 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Mar 2022 13:39:31 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444863700A;
+        Sat,  5 Mar 2022 13:39:31 -0800 (PST)
+Received: from leknes.fjasle.eu ([46.142.99.106]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1M4JeB-1nQKsf2rsf-000HIv; Sat, 05 Mar 2022 22:22:52 +0100
+Received: by leknes.fjasle.eu (Postfix, from userid 1000)
+        id C33913C084; Sat,  5 Mar 2022 22:22:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
+        t=1646515367; bh=VVb1CgKBX0kCKQXocnAMbSC/sePuvQMCodg6jDvav/Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=plh6PCa2hEr74wCYxBGs1lg3LGj4FoG9+J0Jdv/wlFCXYl16MVkajCuOZ3x1NxSW2
+         edNhy0O0afXoHtmEuy6vlPciZBmCWsn6pPiy2RXY3AbPVh9fvz8KTgXO3h8zJuHNvT
+         uDbB4k9DWl8js9K3x/2+P7v16Z4SkFd0PwYNNBu8=
+Date:   Sat, 5 Mar 2022 22:22:47 +0100
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Chun-Tse Shao <ctshao@google.com>
+Cc:     rostedt@goodmis.org, ndesaulniers@google.com,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        keyrings@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3] config: Allow kernel installation packaging to
+ override pkg-config
+Message-ID: <YiPUp2KDmlnzv0MR@fjasle.eu>
+References: <20220304041449.939308-1-ctshao@google.com>
 MIME-Version: 1.0
-References: <20220304124416.1181029-1-mailhol.vincent@wanadoo.fr>
- <CAHp75VeT3LbdbSaiwcC2YW40LnA2h8ADtGva-CKU_xh8Edi0nw@mail.gmail.com> <CAMZ6RqJL2G=i-x3wwBD92devAxdNcnmwfDqz30+GFGobp21s+Q@mail.gmail.com>
-In-Reply-To: <CAMZ6RqJL2G=i-x3wwBD92devAxdNcnmwfDqz30+GFGobp21s+Q@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 5 Mar 2022 23:33:38 +0200
-Message-ID: <CAHp75VdTzjW_YONcFy0qQGvT-xMDQOXTYsAun40106Spzgx_2Q@mail.gmail.com>
-Subject: Re: [PATCH] linux/bits.h: fix -Wtype-limits warnings in GENMASK_INPUT_CHECK()
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304041449.939308-1-ctshao@google.com>
+X-Provags-ID: V03:K1:ZTPKmg5lMYxvmlGfvYK6oNxUamFwwjyCH+SpD50e8sJcs+Mvg7h
+ oLInTiZ7wYdfo3gesvnSRum6rUHEtj0CwH1yfA6Fs7PB16yBMv8G5j2S7isHClQ5Mjj/L+h
+ tqIzhHqWIDxNLYZXgDDiITfz03Zrtao7ND2a0hEXmjlkD3XZOXPG1wLM64TUCg0rxUj+BL3
+ V7vweONIr2LYQKz4TlN7w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:YVzQ1H78vwQ=:XEbYARMzYw3Jem6ZchATg+
+ v4nweGdCQqj4iriHkAP1QN1REQpNk76IO5BxebCSjf/KN4OFIDInGzJqDsNNrZCA7hPRnsIIZ
+ CWbVdVTKFEokpSOX5L8uYX7FEmKQ5hT0xmFVi29j8SwHEXgptpCkRA58O1dvBU3j8vBopcrf4
+ eOdHYXL5+vH4Fn/cHtBkTb883S9kdpeRKV4z9Cujhh6UCJMApuMR5VOzWHOSnC92qJAt8P53J
+ fEVvIyA1NSHhzWe59Eh0YfKubjczvUPorzegukSic1OQP1POFj8eIXPBIDWEXmaQVf09d5Plr
+ wC1W96LVoPOopk3GR8tYLeXj+yLiQcvREzfaq/kaLmQqLcO2gT/c6ukfDx1wGtCppwQRbJKZv
+ LFduJgbzBP9g/V5JaS5tw8U2pZC292mWIMt2iiM3eufHgqDevpau7DWTOWTtqT/4N/d9S9gwt
+ yrRO34gajtE6ypVmVieo4AuoVsr9V1YcB5osULKw81sim05O6f1rEmYbUd5ORMIXOM6R4klC2
+ wBhgI+kAZTrK+ywtJGKu4g8yWeYDRJPuWhDyBe6mMSLwSSXCfI2KXSSZKi038VQloxzFpSuFa
+ zSI2VToODjU31nwwu199ESnmHNbx/UYIP4o2bZ/mkW1008RQdwtVPfb+wYpPi5nQsxlQ52eOb
+ v3t8yFTlUvrmLkVAv7lUTby9+nGLC3NMw+AEch5SiYlvyZE7RPRaww3H34lu9y6Ti0Yk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 5, 2022 at 2:43 PM Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> On Tue. 5 Mar 2022 at 03:46, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Fri, Mar 4, 2022 at 7:36 PM Vincent Mailhol
-> > <mailhol.vincent@wanadoo.fr> wrote:
+On Fri, Mar 04, 2022 at 04:14:51AM +0000 Chun-Tse Shao wrote:
+> [ Resending as a separate thread ]
+> 
+> Add HOSTPKG_CONFIG to allow tooling that builds the kernel to override
+> what pkg-config and parameters are used.
+> 
+> Signed-off-by: Chun-Tse Shao <ctshao@google.com>
+> ---
+> Changes from v2: https://lore.kernel.org/all/20220302193638.11034-1-ctshao@google.com/
+>   - Fix more open coded instance of pkg-config in scripts and certs
+>   - Tested with make allmodconfig
+> 
+> Changes from v1: https://lore.kernel.org/all/20220301230629.1892828-1-ctshao@google.com/
+>   - Make the commit message more clearer.
+> ---
+> 
+>  Makefile                     |  3 ++-
+>  certs/Makefile               |  4 ++--
+>  scripts/Makefile             |  4 ++--
+>  scripts/dtc/Makefile         |  6 +++---
+>  scripts/kconfig/gconf-cfg.sh | 10 +++++-----
+>  scripts/kconfig/mconf-cfg.sh | 14 +++++++-------
+>  scripts/kconfig/nconf-cfg.sh | 14 +++++++-------
+>  scripts/kconfig/qconf-cfg.sh | 14 +++++++-------
+>  tools/objtool/Makefile       |  4 ++--
+>  9 files changed, 37 insertions(+), 36 deletions(-)
+> 
+> diff --git a/Makefile b/Makefile
+> index daeb5c88b50b..f6c5bef7e141 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -430,6 +430,7 @@ else
+>  HOSTCC	= gcc
+>  HOSTCXX	= g++
+>  endif
+> +HOSTPKG_CONFIG	= pkg-config
+> 
+>  export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
+>  			      -O2 -fomit-frame-pointer -std=gnu89
+> @@ -525,7 +526,7 @@ KBUILD_LDFLAGS_MODULE :=
+>  KBUILD_LDFLAGS :=
+>  CLANG_FLAGS :=
+> 
+> -export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
+> +export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC HOSTPKG_CONFIG
+>  export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS LEX YACC AWK INSTALLKERNEL
+>  export PERL PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
+>  export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD
+> diff --git a/certs/Makefile b/certs/Makefile
+> index 3ea7fe60823f..fa540d14ef2d 100644
+> --- a/certs/Makefile
+> +++ b/certs/Makefile
+> @@ -89,5 +89,5 @@ targets += x509_revocation_list
+> 
+>  hostprogs := extract-cert
+> 
+> -HOSTCFLAGS_extract-cert.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+> -HOSTLDLIBS_extract-cert = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
+> +HOSTCFLAGS_extract-cert.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
+> +HOSTLDLIBS_extract-cert = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+> diff --git a/scripts/Makefile b/scripts/Makefile
+> index ce5aa9030b74..f084f08ed176 100644
+> --- a/scripts/Makefile
+> +++ b/scripts/Makefile
+> @@ -14,8 +14,8 @@ hostprogs-always-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE)	+= insert-sys-cert
+>  HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
+>  HOSTLDLIBS_sorttable = -lpthread
+>  HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+> -HOSTCFLAGS_sign-file.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+> -HOSTLDLIBS_sign-file = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
+> +HOSTCFLAGS_sign-file.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
+> +HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+> 
+>  ifdef CONFIG_UNWINDER_ORC
+>  ifeq ($(ARCH),x86_64)
+> diff --git a/scripts/dtc/Makefile b/scripts/dtc/Makefile
+> index 95aaf7431bff..743fc08827ea 100644
+> --- a/scripts/dtc/Makefile
+> +++ b/scripts/dtc/Makefile
+> @@ -18,7 +18,7 @@ fdtoverlay-objs	:= $(libfdt) fdtoverlay.o util.o
+>  # Source files need to get at the userspace version of libfdt_env.h to compile
+>  HOST_EXTRACFLAGS += -I $(srctree)/$(src)/libfdt
+> 
+> -ifeq ($(shell pkg-config --exists yaml-0.1 2>/dev/null && echo yes),)
+> +ifeq ($(shell $(HOSTPKG_CONFIG) --exists yaml-0.1 2>/dev/null && echo yes),)
+>  ifneq ($(CHECK_DT_BINDING)$(CHECK_DTBS),)
+>  $(error dtc needs libyaml for DT schema validation support. \
+>  	Install the necessary libyaml development package.)
+> @@ -27,9 +27,9 @@ HOST_EXTRACFLAGS += -DNO_YAML
+>  else
+>  dtc-objs	+= yamltree.o
+>  # To include <yaml.h> installed in a non-default path
+> -HOSTCFLAGS_yamltree.o := $(shell pkg-config --cflags yaml-0.1)
+> +HOSTCFLAGS_yamltree.o := $(shell $(HOSTPKG_CONFIG) --cflags yaml-0.1)
+>  # To link libyaml installed in a non-default path
+> -HOSTLDLIBS_dtc	:= $(shell pkg-config yaml-0.1 --libs)
+> +HOSTLDLIBS_dtc	:= $(shell $(HOSTPKG_CONFIG) yaml-0.1 --libs)
+>  endif
+> 
+>  # Generated files need one more search path to include headers in source tree
+> diff --git a/scripts/kconfig/gconf-cfg.sh b/scripts/kconfig/gconf-cfg.sh
+> index 480ecd8b9f41..267ef6012203 100755
+> --- a/scripts/kconfig/gconf-cfg.sh
+> +++ b/scripts/kconfig/gconf-cfg.sh
+> @@ -3,14 +3,14 @@
+> 
+>  PKG="gtk+-2.0 gmodule-2.0 libglade-2.0"
+> 
+> -if [ -z "$(command -v pkg-config)" ]; then
+> +if [ -z "$(command -v $(HOSTPKG_CONFIG))" ]; then
 
-...
+Dereferencing variables in shell scripts has to be done by using "${var}" or
+"$var".  "$(var)" starts a sub-shell and executes "var", which is not your
+intention.  Thus, better try something like:
 
-> > NAK.
->
-> Are you willing to change your decision following my comments?
+    if [ -z "$(command -v "${HOSTPKG_CONFIG}")" ]; then
 
-Have you read this discussion (read the thread in full)
-https://lore.kernel.org/lkml/cover.1590017578.git.syednwaris@gmail.com/
+(and all other shell script replacements in need to be revised, too.)
 
--- 
-With Best Regards,
-Andy Shevchenko
+Kind regards,
+Nicolas
