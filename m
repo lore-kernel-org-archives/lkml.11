@@ -2,150 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 304E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 11:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF5DC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 11:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbiCEL1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 06:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
+        id S231659AbiCEL23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 06:28:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231600AbiCEL1P (ORCPT
+        with ESMTP id S231634AbiCEL2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 06:27:15 -0500
-Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBD940E7D;
-        Sat,  5 Mar 2022 03:26:25 -0800 (PST)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout2.routing.net (Postfix) with ESMTP id 8AA445FD5D;
-        Sat,  5 Mar 2022 11:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1646479584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oeojDkbixb+3+AqcShTPnuHWz+1GrcPznWJUJt5Sy3k=;
-        b=v+/pylN7fIi8+EJUtnWzr056KkXzMdaedd8sSSturEfyQOeI/a9pkpI49bIs4yF/Ja939r
-        PGjd/jAyuF/eyz+2yuGft/UJbOOMwn/NJkYAHL3di/Z10AG0fLpyvwGR17sXfiZhtiOV2b
-        w34lFlqgJmc4Nma/5qE68J+88L8z9Mw=
-Received: from localhost.localdomain (fttx-pool-217.61.157.101.bambit.de [217.61.157.101])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 9D40F1007DD;
-        Sat,  5 Mar 2022 11:26:23 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     devicetree@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH v5 5/5] arm64: dts: rockchip: Add sata nodes to rk356x
-Date:   Sat,  5 Mar 2022 12:26:07 +0100
-Message-Id: <20220305112607.257734-6-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220305112607.257734-1-linux@fw-web.de>
-References: <20220305112607.257734-1-linux@fw-web.de>
+        Sat, 5 Mar 2022 06:28:20 -0500
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Mar 2022 03:27:28 PST
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174C846140
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 03:27:26 -0800 (PST)
+Received: (wp-smtpd smtp.wp.pl 14111 invoked from network); 5 Mar 2022 12:20:42 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1646479242; bh=6AbNWZDZCiF9jH5VR5VSePUPgG0zk15w1zGXl48ihEA=;
+          h=From:To:Cc:Subject;
+          b=puyzONj/lzworgWrJ+9XQb6eehA+uMpq3bf/dGBBOInrxXDQga09PndMyGOCxuy4a
+           4GcJUfWRQypytZTXLmh3BsGslZNXr24zD4TzEI/UmvCV4jQ7/zMvlwTx8mblT94Cd2
+           LTc1ftUat/D8/Svzfo5yZeivO9N1/elDKjBkHB2I=
+Received: from riviera.nat.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <hauke@hauke-m.de>; 5 Mar 2022 12:20:42 +0100
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
+        olek2@wp.pl, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net] net: lantiq_xrx200: fix use after free bug
+Date:   Sat,  5 Mar 2022 12:20:39 +0100
+Message-Id: <20220305112039.3989-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 6c0e6171-3ca7-422f-bfb9-56d26079865c
+X-WP-MailID: 1b6ae7147e494104fbc28afc62fdc88d
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [0aME]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+The skb->len field is read after the packet is sent to the network
+stack. In the meantime, skb can be freed. This patch fixes this bug.
 
-RK356x supports up to 3 sata controllers which were compatible with the
-existing snps,dwc-ahci binding.
-
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Fixes: c3e6b2c35b34 ("net: lantiq_xrx200: add ingress SG DMA support")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
 ---
-changes in v4:
- - drop newline in dts
- - re-add clock-names
- -  add soc specific compatible
-changes in v3:
-  - fix combphy error by moving sata0 to rk3568.dtsi
-  - remove clock-names and interrupt-names
-changes in v2:
-  - added sata0 + 1, but have only tested sata2
----
- arch/arm64/boot/dts/rockchip/rk3568.dtsi | 14 ++++++++++++
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 28 ++++++++++++++++++++++++
- 2 files changed, 42 insertions(+)
+ drivers/net/ethernet/lantiq_xrx200.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-index 5b0f528d6818..3e07d9f6a2d1 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-@@ -8,6 +8,20 @@
- / {
- 	compatible = "rockchip,rk3568";
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+index 41d11137cde0..5712c3e94be8 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -260,9 +260,9 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
  
-+	sata0: sata@fc000000 {
-+		compatible = "rockchip,rk3568-dwc-ahci", "snps,dwc-ahci";
-+		reg = <0 0xfc000000 0 0x1000>;
-+		clocks = <&cru ACLK_SATA0>, <&cru CLK_SATA0_PMALIVE>,
-+			 <&cru CLK_SATA0_RXOOB>;
-+		clock-names = "sata", "pmalive", "rxoob";
-+		interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+		phys = <&combphy0 PHY_TYPE_SATA>;
-+		phy-names = "sata-phy";
-+		ports-implemented = <0x1>;
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		status = "disabled";
-+	};
-+
- 	pipe_phy_grf0: syscon@fdc70000 {
- 		compatible = "rockchip,rk3568-pipe-phy-grf", "syscon";
- 		reg = <0x0 0xfdc70000 0x0 0x1000>;
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index 7cdef800cb3c..264dd030e703 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -230,6 +230,34 @@ scmi_shmem: sram@0 {
- 		};
- 	};
- 
-+	sata1: sata@fc400000 {
-+		compatible = "rockchip,rk3568-dwc-ahci", "snps,dwc-ahci";
-+		reg = <0 0xfc400000 0 0x1000>;
-+		clocks = <&cru ACLK_SATA1>, <&cru CLK_SATA1_PMALIVE>,
-+			 <&cru CLK_SATA1_RXOOB>;
-+		clock-names = "sata", "pmalive", "rxoob";
-+		interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-+		phys = <&combphy1 PHY_TYPE_SATA>;
-+		phy-names = "sata-phy";
-+		ports-implemented = <0x1>;
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		status = "disabled";
-+	};
-+
-+	sata2: sata@fc800000 {
-+		compatible = "rockchip,rk3568-dwc-ahci", "snps,dwc-ahci";
-+		reg = <0 0xfc800000 0 0x1000>;
-+		clocks = <&cru ACLK_SATA2>, <&cru CLK_SATA2_PMALIVE>,
-+			 <&cru CLK_SATA2_RXOOB>;
-+		clock-names = "sata", "pmalive", "rxoob";
-+		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+		phys = <&combphy2 PHY_TYPE_SATA>;
-+		phy-names = "sata-phy";
-+		ports-implemented = <0x1>;
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		status = "disabled";
-+	};
-+
- 	gic: interrupt-controller@fd400000 {
- 		compatible = "arm,gic-v3";
- 		reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
+ 	if (ctl & LTQ_DMA_EOP) {
+ 		ch->skb_head->protocol = eth_type_trans(ch->skb_head, net_dev);
+-		netif_receive_skb(ch->skb_head);
+ 		net_dev->stats.rx_packets++;
+ 		net_dev->stats.rx_bytes += ch->skb_head->len;
++		netif_receive_skb(ch->skb_head);
+ 		ch->skb_head = NULL;
+ 		ch->skb_tail = NULL;
+ 		ret = XRX200_DMA_PACKET_COMPLETE;
 -- 
-2.25.1
+2.30.2
 
