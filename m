@@ -2,88 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93252C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiCEMcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 07:32:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
+        id S231379AbiCEMdB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 07:33:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbiCEMcZ (ORCPT
+        with ESMTP id S231761AbiCEMcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 07:32:25 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3EB24004A;
-        Sat,  5 Mar 2022 04:31:35 -0800 (PST)
-Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K9kYy17jSzBryw;
-        Sat,  5 Mar 2022 20:29:42 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 5 Mar 2022 20:31:34 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+        Sat, 5 Mar 2022 07:32:54 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C0024004C;
+        Sat,  5 Mar 2022 04:32:05 -0800 (PST)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K9kb80KzXzdbH0;
+        Sat,  5 Mar 2022 20:30:44 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 5 Mar
- 2022 20:31:33 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <smayhew@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
-Subject: [PATCH -next 2/2] nfs: nfs_file_write() check writeback errors correctly
-Date:   Sat, 5 Mar 2022 20:46:36 +0800
-Message-ID: <20220305124636.2002383-3-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220305124636.2002383-1-chenxiaosong2@huawei.com>
-References: <20220305124636.2002383-1-chenxiaosong2@huawei.com>
+ 2022 20:32:03 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <thierry.reding@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <jonathanh@nvidia.com>, <mperttunen@nvidia.com>
+CC:     <dri-devel@lists.freedesktop.org>, <linux-tegra@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] drm/tegra: vic: Fix build warning When CONFIG_PM=n
+Date:   Sat, 5 Mar 2022 20:32:00 +0800
+Message-ID: <20220305123200.16572-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
 X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600015.china.huawei.com (7.193.23.52)
+ canpemm500007.china.huawei.com (7.192.104.62)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If nobody has seen the writeback error yet, then filemap_sample_wb_err()
-always return 0. Even if there is no new writeback error between
-filemap_sample_wb_err() and filemap_check_wb_err(),
-filemap_check_wb_err() will return the old error.
+drivers/gpu/drm/tegra/vic.c:326:12: error: ‘vic_runtime_suspend’ defined but not used [-Werror=unused-function]
+ static int vic_runtime_suspend(struct device *dev)
+            ^~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/tegra/vic.c:292:12: error: ‘vic_runtime_resume’ defined but not used [-Werror=unused-function]
+ static int vic_runtime_resume(struct device *dev)
+            ^~~~~~~~~~~~~~~~~~
 
-Fix this by using file->f_mapping->wb_err as the old error.
+Mark it as __maybe_unused.
 
-Fixes: ce368536dd61 ("nfs: nfs_file_write() should check for writeback errors")
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- fs/nfs/file.c | 4 ++--
+ drivers/gpu/drm/tegra/vic.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 83d63bce9596..8763f89c176a 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -635,7 +635,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
+index 1e342fa3d27b..b25a6c7127b3 100644
+--- a/drivers/gpu/drm/tegra/vic.c
++++ b/drivers/gpu/drm/tegra/vic.c
+@@ -289,7 +289,7 @@ static int vic_load_firmware(struct vic *vic)
+ }
  
- 	nfs_clear_invalid_mapping(file->f_mapping);
  
--	since = filemap_sample_wb_err(file->f_mapping);
-+	since = file->f_mapping->wb_err;
- 	nfs_start_io_write(inode);
- 	result = generic_write_checks(iocb, from);
- 	if (result > 0) {
-@@ -669,7 +669,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 		goto out;
+-static int vic_runtime_resume(struct device *dev)
++static int __maybe_unused vic_runtime_resume(struct device *dev)
+ {
+ 	struct vic *vic = dev_get_drvdata(dev);
+ 	int err;
+@@ -323,7 +323,7 @@ static int vic_runtime_resume(struct device *dev)
+ 	return err;
+ }
  
- 	/* Return error values */
--	error = filemap_check_wb_err(file->f_mapping, since);
-+	error = errseq_check(&file->f_mapping->wb_err, since);
- 	if (nfs_need_check_write(file, inode, error)) {
- 		int err = nfs_wb_all(inode);
- 		if (err < 0)
+-static int vic_runtime_suspend(struct device *dev)
++static int __maybe_unused vic_runtime_suspend(struct device *dev)
+ {
+ 	struct vic *vic = dev_get_drvdata(dev);
+ 	int err;
 -- 
-2.31.1
+2.17.1
 
