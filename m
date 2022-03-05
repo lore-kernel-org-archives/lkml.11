@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E339C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 14:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F04C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 14:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbiCEOB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 09:01:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        id S231790AbiCEOFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 09:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiCEOBY (ORCPT
+        with ESMTP id S229948AbiCEOFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 09:01:24 -0500
+        Sat, 5 Mar 2022 09:05:17 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF6A4ECFE
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 06:00:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4836F1E6964
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 06:04:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=uN2YqCFYxNaPrhAtrpzGne50Njd776Ops2A1Ik2InlM=; b=IlK7BZltsplKRPTKOsfyiStA8a
-        D6ajVssDEq87Gm4ohj+BBdMU+bRRhDzGks9LaHj3o/GvRdKW96pTFbCUxbZR5ZBz6Yd8AZgeBdXE2
-        EVHU69Uhmulv+XZkaC0XK6WKsk+QTmC2ttXfWxDwETHwFZHv+KHJEjMy+okQtnxZpleBQPC/Z2buj
-        23Wbn/y8b8PRLz7eJqcnfzdwIEqfLGcslmpG6lY7r2uUd76iK2tJfCe9Pv3R2UlvWcXayzF6fFg7J
-        e50WqTw5XAr+aFvTPrxUQ8gxUfybYK/1fsbcVr97CMx4XBLFjItvvxra0Ip80EHSPOZAJg4Nt+rf/
-        zOZLThyA==;
+        bh=NydjA5kv8ZCf0kRVe5emvW4OhDq/FOKXK8BMQgNvh20=; b=j6e82fnSkEmL4g50pNhxbOStmJ
+        B2mtQnd0KrzoSnEUcDYH8Pv0KiPFuSm7E2ewr9IyYloWN+N0UwXJdYgp7sGSsO7owD3X6wBzqtbw/
+        gpiqJ1SMihN7JPloFTneeItVUT07J3FvPMPOl3Yb40BWiqvRJuDWgFlynKHLwMu+Pco+rK8vZxTkv
+        STb6OG4tW363WoN2ReeO2rrRW2OZYzq7U2+nIx38ipbC+S8bAjWipLprJ25DwPB5C1NElbBlq0fNq
+        ZIFpJ6MPTHLxYQMvjCbOrwhPN5dknQulfqlmXlkQSFT7cjKTO/ByB0WXA6rWnxVNL9BzfXc15mvbX
+        jL8RJMKQ==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nQUwg-00FX30-KE; Sat, 05 Mar 2022 13:59:42 +0000
+        id 1nQV0x-00FX7Y-5G; Sat, 05 Mar 2022 14:04:07 +0000
 Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7B0AF9865F2; Sat,  5 Mar 2022 14:59:40 +0100 (CET)
-Date:   Sat, 5 Mar 2022 14:59:40 +0100
+        id 7EC4B98685B; Sat,  5 Mar 2022 15:03:21 +0100 (CET)
+Date:   Sat, 5 Mar 2022 15:03:21 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Frederic Weisbecker <frederic@kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>, Phil Auld <pauld@redhat.com>,
@@ -46,58 +46,25 @@ Cc:     LKML <linux-kernel@vger.kernel.org>, Phil Auld <pauld@redhat.com>,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
         Uladzislau Rezki <uladzislau.rezki@sony.com>,
         Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [PATCH 02/19] context_tracking: Rename
- context_tracking_user_enter/exit() to user_enter/exit_callable()
-Message-ID: <20220305135940.GU11184@worktop.programming.kicks-ass.net>
+Subject: Re: [PATCH 04/19] context_tracking: Rename
+ context_tracking_cpu_set() to context_tracking_cpu_track_user()
+Message-ID: <20220305140321.GW11184@worktop.programming.kicks-ass.net>
 References: <20220302154810.42308-1-frederic@kernel.org>
- <20220302154810.42308-3-frederic@kernel.org>
+ <20220302154810.42308-5-frederic@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220302154810.42308-3-frederic@kernel.org>
+In-Reply-To: <20220302154810.42308-5-frederic@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 04:47:53PM +0100, Frederic Weisbecker wrote:
-> diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-> index ad2a973393a6..83e050675b23 100644
-> --- a/kernel/context_tracking.c
-> +++ b/kernel/context_tracking.c
-> @@ -125,11 +125,16 @@ void context_tracking_enter(enum ctx_state state)
->  NOKPROBE_SYMBOL(context_tracking_enter);
->  EXPORT_SYMBOL_GPL(context_tracking_enter);
->  
-> -void context_tracking_user_enter(void)
-> +/**
-> + * user_enter_callable() - Unfortunate ASM callable version of user_enter() for
-> + * 			   archs that didn't manage to check the context tracking
-> + * 			   static key from low level code.
-> + */
-> +void user_enter_callable(void)
->  {
->  	user_enter();
->  }
-> -NOKPROBE_SYMBOL(context_tracking_user_enter);
-> +NOKPROBE_SYMBOL(user_enter_callable);
->  
->  /**
->   * __ct_user_exit - Inform the context tracking that the CPU is
-> @@ -182,11 +187,16 @@ void context_tracking_exit(enum ctx_state state)
->  NOKPROBE_SYMBOL(context_tracking_exit);
->  EXPORT_SYMBOL_GPL(context_tracking_exit);
->  
-> -void context_tracking_user_exit(void)
-> +/**
-> + * user_exit_callable() - Unfortunate ASM callable version of user_exit() for
-> + * 			  archs that didn't manage to check the context tracking
-> + * 			  static key from low level code.
-> + */
-> +void user_exit_callable(void)
->  {
->  	user_exit();
->  }
-> -NOKPROBE_SYMBOL(context_tracking_user_exit);
-> +NOKPROBE_SYMBOL(user_exit_callable);
+On Wed, Mar 02, 2022 at 04:47:55PM +0100, Frederic Weisbecker wrote:
+> context_tracking_cpu_set() is called in order to tell a CPU to track
+> user/kernel transitions. Since context tracking is going to expand in
+> to also track transitions from/to idle/IRQ/NMIs, the scope
+> of this function name becomes too broad and needs to be made more
+> specific.
 
-I'm thinking all this wants to be noinstr instead of NOKPROBE_SYMBOL..
+The previous patches did: s/context_tracking_/ct_/ on these names, and
+this one makes it longer still?
