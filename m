@@ -2,79 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BEF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A053C43217
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 12:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231536AbiCEMLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 07:11:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S231700AbiCEMc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 07:32:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiCEMLB (ORCPT
+        with ESMTP id S229568AbiCEMcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 07:11:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1395440E51;
-        Sat,  5 Mar 2022 04:10:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B787DB80BE7;
-        Sat,  5 Mar 2022 12:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 80BF2C340F1;
-        Sat,  5 Mar 2022 12:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646482209;
-        bh=POlbJ+3a+0ccS7uKBAWFPqA5GXG9dgf0YBx1qQKxGzM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DZY+59sp7fffH6fhjfe6Sx8Ae95LTXMiWduV+06/ey2DcQAu5N0o4oLPMiPrsd8w5
-         7X6DwClq5TkO7nzdfLH8twDsvwxlNO2Z4Sg1ZcS6R23CkP/2bOP70gfJoDF3owOvjX
-         6+JqzEw0F/pa3SykM4YudRV8ecFdb0NVdurBtWD10oNc5fuTZIXDxEf4XHw+lEyI66
-         4+WTmo5WOcfheusU2KketcowtGhIWHGPtEYdH5VbVYazgeacvFZlTmBdT9uoJjEaQ8
-         7ZQS9bpi/0qj/+MjzQMJgM4yX183GVPv/NRU/hlDaEpJNNnZGlqeV1+j+cOvDyAn1E
-         shJ7sIli90Ngw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 68076EAC095;
-        Sat,  5 Mar 2022 12:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sat, 5 Mar 2022 07:32:25 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1694323F3DF;
+        Sat,  5 Mar 2022 04:31:35 -0800 (PST)
+Received: from kwepemi100015.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K9kVc4yKpzbcBG;
+        Sat,  5 Mar 2022 20:26:48 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi100015.china.huawei.com (7.221.188.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 5 Mar 2022 20:31:32 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 5 Mar
+ 2022 20:31:31 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
+        <smayhew@redhat.com>
+CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
+        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
+Subject: [PATCH -next 0/2] nfs: check writeback errors correctly
+Date:   Sat, 5 Mar 2022 20:46:34 +0800
+Message-ID: <20220305124636.2002383-1-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] mISDN: Fix memory leak in dsp_pipeline_build()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164648220942.4612.11657656133766874161.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Mar 2022 12:10:09 +0000
-References: <1646418336-12115-1-git-send-email-khoroshilov@ispras.ru>
-In-Reply-To: <1646418336-12115-1-git-send-email-khoroshilov@ispras.ru>
-To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
-Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+This series fixes nfs writeback error checking bugs.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+If there is an error during the writeback process, it should be returned
+when user space calls close() or fsync().
 
-On Fri,  4 Mar 2022 21:25:36 +0300 you wrote:
-> dsp_pipeline_build() allocates dup pointer by kstrdup(cfg),
-> but then it updates dup variable by strsep(&dup, "|").
-> As a result when it calls kfree(dup), the dup variable contains NULL.
-> 
-> Found by Linux Driver Verification project (linuxtesting.org) with SVACE.
-> 
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Fixes: 960366cf8dbb ("Add mISDN DSP")
-> 
-> [...]
+filemap_sample_wb_err() will return 0 if nobody has seen the error yet,
+then filemap_check_wb_err() will return the unchanged writeback error.
 
-Here is the summary with links:
-  - mISDN: Fix memory leak in dsp_pipeline_build()
-    https://git.kernel.org/netdev/net/c/c6a502c22999
+ChenXiaoSong (2):
+  nfs: nfs{,4}_file_flush should consume writeback error
+  nfs: nfs_file_write() check writeback errors correctly
 
-You are awesome, thank you!
+ fs/nfs/file.c     | 8 +++-----
+ fs/nfs/nfs4file.c | 4 +---
+ 2 files changed, 4 insertions(+), 8 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
