@@ -2,104 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29235C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 22:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AFC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 22:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232705AbiCEWHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 17:07:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        id S232753AbiCEWep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 17:34:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiCEWG7 (ORCPT
+        with ESMTP id S230376AbiCEWen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 17:06:59 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51D75FF07
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 14:06:08 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6BBDF3F5FC
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 22:06:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646517967;
-        bh=r8hK9O7GWDOrBuci3LT6A/3z57WQVywUK2jujxtgGEU=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=pXV2k9WycoiEsbBXj6aeiHbPfB09M7jhvPBmdzCKqFGFsBGpCYjpUbVsC0Anc/D0o
-         J4pc7iRs0itOMmCAuhE6BpB4pdG8twCP5c6PczCqNo9qZaMGHq2+4JDuHxVmn//BZI
-         KQI6HgVadLnz4dfTsVXeZgI3gVCscxP5qtfTA1bAtjKVP9pYiKsHW4pkibeRVW0fP5
-         2xffyhC9RJY7zbpjuBVMmfUHIKgTAsfNCnoz1jEZ2d0x0WwFmLsPhZKoEaFy5R0I0x
-         nqjFtms9kfguK8H+7tjYoK81fStSFQHfFuAzsQ2j3ofdwdpxQQDYIsNWjcVrky7c1c
-         TF5UFIUw7tX0g==
-Received: by mail-ed1-f72.google.com with SMTP id l8-20020a056402028800b0041636072ef0so25549edv.13
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Mar 2022 14:06:07 -0800 (PST)
+        Sat, 5 Mar 2022 17:34:43 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C3C5AA49;
+        Sat,  5 Mar 2022 14:33:53 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id kx1-20020a17090b228100b001bf2dd26729so3692088pjb.1;
+        Sat, 05 Mar 2022 14:33:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=cZapo6sd4e3L55/3+wn+gVa77A42F2g2ptUKnd7guMQ=;
+        b=gFICULfuX0JVUB8l5lRUmlwIXPGbq3uIuiwCZMFQhhMbWsnYpJ+mmL5X0KWqCz22eQ
+         YCrM7mbHFO1DJRX1mpcvwrDu2p4OPRNHnGElEQYneiG0xuqhVZGMhDXA2CCN7NrHwqqB
+         CgnRzrp7jqhKUIZ0HbDHABx1ZjINjZ8jfYLVP50EVf729XL2qAy8/+vi0eKeo3WfxB7N
+         ZAFA/t4gs3Vr5yjUXwUHaYB6qqyJ0lsowBMLtLtTMCN5DyIkUsuXzoMTUd0bdZW1wEp/
+         uSlORYQGEKo2yws/Wd/0RACJ6haSy8io99a7RgWV4ytCSGtKoUCtmu0ObrPRpYjitpZH
+         nLiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=r8hK9O7GWDOrBuci3LT6A/3z57WQVywUK2jujxtgGEU=;
-        b=7uT5prg0InI4zivUVZGfxNLyAZuWmPOZvldyc0LXYShho+Xlt2ifeC4YCNGm3p4ln1
-         BhYM6QTilD5IOjAUfqcWgjkh62irkqG3oRlY/9pDeyrclOrfJuc9ye6tBBZWl2TIigs+
-         Bg/rz6X09mhuqB64ju2mhDV51M/UTe+GNSRsf7Y0gfPUlJW/pMR4D09TEYCQJcylkAKH
-         LV0+BGJ20Yo7QZnc/6mrceWirNPzlEbBDFj9KQBZfgO7b5CkBtxOjnQq7wb43ZGe3+RL
-         x/4CwTRqySgNhc+6yrEZModBinxNG/iw9w8H64nNStyBexbs0Xe7hEpYtwWTCh2OlmGQ
-         jC+g==
-X-Gm-Message-State: AOAM532bz47IDOQnwOqrfyOR4dkVRCGheOS6bi0hNzohXqu3zsVbUS7G
-        iFwaoIHAPOwHSeR6zRxh5HcJOJiZN9wD9mRQRQVZzk2DUNLXBt1GULm86v/1NUyhFKYICFdfqLU
-        4Bt1wMWkbvAQddE4GpuCIlMsbugO05MpCIgV5kC7J9g==
-X-Received: by 2002:a17:906:c116:b0:6d6:f8b3:cd47 with SMTP id do22-20020a170906c11600b006d6f8b3cd47mr4092233ejc.501.1646517967070;
-        Sat, 05 Mar 2022 14:06:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzjslF+FUEkcRwcoMmxVUwk3J5/UIuEwE01ZQJAdNyMizt1aMsZPYM/4p28F52HYriTaxmKsw==
-X-Received: by 2002:a17:906:c116:b0:6d6:f8b3:cd47 with SMTP id do22-20020a170906c11600b006d6f8b3cd47mr4092223ejc.501.1646517966857;
-        Sat, 05 Mar 2022 14:06:06 -0800 (PST)
-Received: from [192.168.0.140] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id g22-20020a170906395600b006cec40b9cf0sm3248038eje.92.2022.03.05.14.06.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Mar 2022 14:06:06 -0800 (PST)
-Message-ID: <14fea5bb-cf9a-b2db-10d1-0015b97ae61b@canonical.com>
-Date:   Sat, 5 Mar 2022 23:06:05 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=cZapo6sd4e3L55/3+wn+gVa77A42F2g2ptUKnd7guMQ=;
+        b=I+oA04dVYPmXZnarjeMptFMZ/h7K3d4k+MD3iek56rhi+F6e9gE8GOWBdSrTdW1RGu
+         hAA6UlXK2dOR/Lyqe+akM5FGvr03xjgCVBWhW9HpWY6wxS1PnxJvLFod2DdnjIVqqBs5
+         oBZ3wyeaPQ8L49zcPjbYdFl+op06FXglTKjxRfINy3hn6jYMPfbQmJDCcyYcJFz7rkvd
+         p/gIgBRF9A3V5KZX8pKRm+0Ybuqug+G7UwMcvU0ccdo0Ikzd1AvEEN/gmmlRaFNrUuKB
+         HhY11fi63Uyv8FoQt5jZrqPu0gd1gXMQHpNvwSGN/z2aX8pnlkzJzVaE0C6XLDWEu59S
+         MFKw==
+X-Gm-Message-State: AOAM530aslKpgUjYHO+S7JeFOPTlit3D4ty9q0r8BVlpYVfQqZOy+s0j
+        1di3qOeu17V+GvuOFhjpzjM=
+X-Google-Smtp-Source: ABdhPJyQs4bpbxDn7b/q1KbHh4DGCVWmb9zwXHBLfc/rUGBBKkuH5wiCzHUVmbs6s30Q+BS+U0q5MA==
+X-Received: by 2002:a17:903:244d:b0:150:1d22:617e with SMTP id l13-20020a170903244d00b001501d22617emr5346439pls.38.1646519632697;
+        Sat, 05 Mar 2022 14:33:52 -0800 (PST)
+Received: from google.com ([2620:15c:202:201:15af:5d15:3044:acb9])
+        by smtp.gmail.com with ESMTPSA id o5-20020a655bc5000000b00372f7ecfcecsm7738582pgr.37.2022.03.05.14.33.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Mar 2022 14:33:52 -0800 (PST)
+Date:   Sat, 5 Mar 2022 14:33:49 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: [git pull] Input updates for v5.17-rc6
+Message-ID: <YiPlTcVeLWi2pDiq@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4/6] ARM: dts: at91: sama7g5: add nodes for PDMC
-Content-Language: en-US
-To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     lars@metafoo.de, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, robh+dt@kernel.org, nicolas.ferre@microchip.com
-References: <20220304181756.1894561-1-codrin.ciubotariu@microchip.com>
- <20220304181756.1894561-5-codrin.ciubotariu@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220304181756.1894561-5-codrin.ciubotariu@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/03/2022 19:17, Codrin Ciubotariu wrote:
-> Microchip's SAMA7G5 embeds two PDMCs. The PDMCs can be used to connect 2x4
-> PDM microphones.
-> 
-> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-> ---
->  arch/arm/boot/dts/sama7g5.dtsi | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-> index eddcfbf4d223..85a22c3a8e57 100644
-> --- a/arch/arm/boot/dts/sama7g5.dtsi
-> +++ b/arch/arm/boot/dts/sama7g5.dtsi
-> @@ -275,6 +275,30 @@ pwm: pwm@e1604000 {
->  			status = "disabled";
->  		};
->  
-> +		pdmc0: pdmc@e1608000 {
+Hi Linus,
 
-Similarly to bindings - generic node name.
+Please pull from:
 
-Best regards,
-Krzysztof
+	git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git for-linus
+
+to receive updates for the input subsystem. You will get:
+
+- a fixup for Goodix touchscreen driver allowing it to work on certain
+  Cherry Trail devices;
+
+- a fix for imbalanced enable/disable regulator in Elam touchpad driver
+  that became apparent when used with Asus TF103C 2-in-1 dock;
+
+- a couple new input keycodes used on newer keyboards.
+
+Changelog:
+---------
+
+David Gow (1):
+      Input: samsung-keypad - properly state IOMEM dependency
+
+Hans de Goede (4):
+      Input: goodix - use the new soc_intel_is_byt() helper
+      Input: goodix - workaround Cherry Trail devices with a bogus ACPI Interrupt() resource
+      Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+      Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
+
+William Mahon (2):
+      HID: add mapping for KEY_DICTATE
+      HID: add mapping for KEY_ALL_APPLICATIONS
+
+Diffstat:
+--------
+
+ drivers/hid/hid-debug.c                |  5 ++-
+ drivers/hid/hid-input.c                |  3 ++
+ drivers/input/keyboard/Kconfig         |  2 +-
+ drivers/input/mouse/elan_i2c_core.c    | 64 ++++++++++++----------------------
+ drivers/input/touchscreen/goodix.c     | 34 +++++++++---------
+ include/uapi/linux/input-event-codes.h |  4 ++-
+ 6 files changed, 51 insertions(+), 61 deletions(-)
+
+Thanks.
+
+
+-- 
+Dmitry
