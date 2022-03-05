@@ -2,119 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05184C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 04:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 04:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbiCED6y convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Mar 2022 22:58:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50982 "EHLO
+        id S231161AbiCEEBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Mar 2022 23:01:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbiCED6w (ORCPT
+        with ESMTP id S231152AbiCEEBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Mar 2022 22:58:52 -0500
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B915F37A06
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 19:58:02 -0800 (PST)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2dbfe58670cso111941067b3.3
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 19:58:02 -0800 (PST)
+        Fri, 4 Mar 2022 23:01:06 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4655574E
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Mar 2022 20:00:17 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id m2so3446242pll.0
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Mar 2022 20:00:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wM3eFqrqM0GuC7lgIlL7krmA9FgA7rdYgF/tZhSxxr4=;
+        b=In5oS8ygv57WDqgGEdEWpKehvtF7uZ27kO3NGv3dlP4/E/E2DaYZQRx6Ha3xK+E/Og
+         YSkO2MSNpHGFHOeoIdTaAv7AhTHBAoQYFI4O7F9IsrMZxureqz4q7PzfLn4U4MOEAiQQ
+         IQ9vTyjcu+ZbfsLHmj/dgIcYOhqtYlIydl+vjoY4bQQ7EZenHuXt7K3arMXa36g+1ZRk
+         j2TQDJ4bkTa74hsjvyjuju2SW2RL7AaRltSEagPZycctrsf8ht0VxF2uU+IWCL9PYuY2
+         9O63QUbtMZSOcp4Yi4MhDFliU6r+UJMvLOwdCGLyMIENzAJOYWlsu81zRub3E5Xi8luE
+         502w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=k/KxZWnsipa0LOVNrv/AsWXD0KCOxYbfZhWdDw0/Nm4=;
-        b=BFqdwGgy2XlTQ/eStV24a7ZzYuvCfbpd5YieUJE4Fbr7Z04hla5zUnMcPb4TBJb3WI
-         dbq4x+uFhODA3/TwVvdwr9YF6KpkLiKJ1Frk3y0P7E+WxHKO08tr1U9+annPdibX3PNN
-         4dz50UhESRbklggWq6slY5/rzJUHwE9yLndLpaiJaebR0SQs5l4mzDoDZw8zv/fTjyyt
-         tzj/E2NaA2fHQhBd1my7wn/HTvINbG8qYz1BpV8xFE3OHIYhDIQ8EwBm4HtWfWFmqbCu
-         XOefRywwQIn5pcif333Dl8f0qoGx5bV3R8A/ipz9+QUN9yTHxHEFFeFDkZxRV/CIIUkO
-         YgGw==
-X-Gm-Message-State: AOAM530pQ9w3ZUVgRww+1eTY6GmeED3LhduFuzvnLOzpbxdU/uW0cT5b
-        0inVsgDjDTKmwqw2OWlEuXsqaXBYEI9/0jk72gZwgAxiyZc=
-X-Google-Smtp-Source: ABdhPJwTfa6aCxlr0sFO35UhWl3Vyye6JHsSSKz2bi39j8Uw4B9EyrgTuuVV1JikDrCPMZalNw5Fytn14W0TJrmvBpE=
-X-Received: by 2002:a81:6bc6:0:b0:2db:fe24:d5ee with SMTP id
- g189-20020a816bc6000000b002dbfe24d5eemr1424302ywc.392.1646452681895; Fri, 04
- Mar 2022 19:58:01 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wM3eFqrqM0GuC7lgIlL7krmA9FgA7rdYgF/tZhSxxr4=;
+        b=nV64BPU7pg1hJcA1JLtAV/FnSpekIOjGfP1yXOWfRrYcUMCWxRWt0fMIL+J7idJPHa
+         J5L9CeehHmIUimgQ18O/PVuEaV5/qveJmsJzmNRHyNlgNU3N68NXu1tFRA1TTlysFzUf
+         WiiwLICVGs40ZLNflupaC2hVlVPNA19SC2MfdA2ikXng9bqaD2bOWXI9N3UtgRtaPT6L
+         uqPUrw0yfHEPW9eib4swvovUsiOccMmUrdG8AdYzzGDVtyMOeui7F6umB5EwWBx9Gmw6
+         CoEii/7EdyQMKqL/izhkM9rRLIBEQXNKZz/pzTLSOfBPYrGr1Tn8HeN52TGB8se8nW/R
+         p+wQ==
+X-Gm-Message-State: AOAM532UZMqwM+62xxWxRxDHoK4LtJz2VX+oV5Q2F/TbAgR8owMN3shS
+        Ac4223Bo/efAeeWrniO5w64=
+X-Google-Smtp-Source: ABdhPJxbraCj+k+dgk89zE35TCChDzD1WRpEdRo7w/OivKhf1onKp7KlG2KgTE5p+VCGRMcdSKYLOg==
+X-Received: by 2002:a17:902:f70b:b0:14d:643d:9c99 with SMTP id h11-20020a170902f70b00b0014d643d9c99mr1867666plo.18.1646452817035;
+        Fri, 04 Mar 2022 20:00:17 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm7961872pfw.188.2022.03.04.20.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 20:00:16 -0800 (PST)
+Date:   Sat, 5 Mar 2022 04:00:12 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Marco Elver <elver@google.com>
+Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Matthew WilCox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/5] slab cleanups
+Message-ID: <YiLgTNaBCzjNU5gD@ip-172-31-19-208.ap-northeast-1.compute.internal>
+References: <20220304063427.372145-1-42.hyeyoo@gmail.com>
+ <CANpmjNNv8+frHPdvT=0ZNuz5phUy1WRanJ6DkiiNvDTBtFraAQ@mail.gmail.com>
+ <YiH/6MeYNaEehXmj@ip-172-31-19-208.ap-northeast-1.compute.internal>
+ <CANpmjNNYt9AG8RrGF0pq2dPbFc=vw2kaOnL2k5+8kfJeEMGuwg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220303110755.24147-1-mailhol.vincent@wanadoo.fr> <CAKwvOd=Fyu6S=pK-tGeYgoJL3ntGRSC0EQ6si8Cdg9q2pn0a6A@mail.gmail.com>
-In-Reply-To: <CAKwvOd=Fyu6S=pK-tGeYgoJL3ntGRSC0EQ6si8Cdg9q2pn0a6A@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 5 Mar 2022 12:57:50 +0900
-Message-ID: <CAMZ6Rq+DmXexN62m8AxPrjT=Fi=3fEg_VVjOOm3YV+X22Td0PA@mail.gmail.com>
-Subject: Re: [PATCH] x86/bug: __WARN_FLAGS: prevent shadowing by renaming
- local variable f to __flags
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANpmjNNYt9AG8RrGF0pq2dPbFc=vw2kaOnL2k5+8kfJeEMGuwg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue. 5 Mar 2022 à 04:26, Nick Desaulniers <ndesaulniers@google.com> wrote:
-> On Thu, Mar 3, 2022 at 3:08 AM Vincent Mailhol
-> <mailhol.vincent@wanadoo.fr> wrote:
-> > The macro __WARN_FLAGS() uses a local variable named "f". This being a
-> > common name, there is a risk of shadowing other variables.
+On Fri, Mar 04, 2022 at 02:11:50PM +0100, Marco Elver wrote:
+> On Fri, 4 Mar 2022 at 13:02, Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
 > >
-> > For example:
+> > On Fri, Mar 04, 2022 at 12:50:21PM +0100, Marco Elver wrote:
+> > > On Fri, 4 Mar 2022 at 07:34, Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+> > > >
+> > > > Changes from v1:
+> > > >         Now SLAB passes requests larger than order-1 page
+> > > >         to page allocator.
+> > > >
+> > > >         Adjusted comments from Matthew, Vlastimil, Rientjes.
+> > > >         Thank you for feedback!
+> > > >
+> > > >         BTW, I have no idea what __ksize() should return when an object that
+> > > >         is not allocated from slab is passed. both 0 and folio_size()
+> > > >         seems wrong to me.
+> > >
+> > > Didn't we say 0 would be the safer of the two options?
+> > > https://lkml.kernel.org/r/0e02416f-ef43-dc8a-9e8e-50ff63dd3c61@suse.cz
+> > >
 > >
-> > | In file included from ./include/linux/bug.h:5,
-> > |                  from ./include/linux/cpumask.h:14,
-> > |                  from ./arch/x86/include/asm/cpumask.h:5,
-> > |                  from ./arch/x86/include/asm/msr.h:11,
-> > |                  from ./arch/x86/include/asm/processor.h:22,
-> > |                  from ./arch/x86/include/asm/timex.h:5,
-> > |                  from ./include/linux/timex.h:65,
-> > |                  from ./include/linux/time32.h:13,
-> > |                  from ./include/linux/time.h:60,
-> > |                  from ./include/linux/stat.h:19,
-> > |                  from ./include/linux/module.h:13,
-> > |                  from virt/lib/irqbypass.mod.c:1:
-> > | ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
-> > | ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
-> > |    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
-> > |       |                     ^
-> > | ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
-> > |   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
-> > |       |                 ^~~~~~~~~~~~
-> > | ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
-> > |  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
-> > |       |         ^~~~~~~~~~~~
-> > | In file included from ./include/linux/rbtree.h:24,
-> > |                  from ./include/linux/mm_types.h:11,
-> > |                  from ./include/linux/buildid.h:5,
-> > |                  from ./include/linux/module.h:14,
-> > |                  from virt/lib/irqbypass.mod.c:1:
-> > | ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
-> > |  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
-> > |       |                                               ~~~~~~~~~~~~~~~^
+> > Oh sorry, I didn't understand why 0 was safer when I was reading it.
 > >
-> > This patch renames the variable from f to __flags (with two underscore
-> > prefixes as suggested in the Linux kernel coding style [1]) in order
-> > to prevent collisions.
-> >
-> > [1] Linux kernel coding style, section 12) Macros, Enums and RTL,
-> > paragraph 5) namespace collisions when defining local variables in
-> > macros resembling functions
-> > https://www.kernel.org/doc/html/v4.10/process/coding-style.html#macros-enums-and-rtl
+> > Reading again, 0 is safer because kasan does not unpoison for
+> > wrongly passed object, right?
+> 
+> Not quite. KASAN can tell if something is wrong, i.e. invalid object.
+> Similarly, if you are able to tell if the passed pointer is not a
+> valid object some other way, you can do something better - namely,
+> return 0.
+>
+> The intuition here is that the caller has a pointer to an
+> invalid object, and wants to use ksize() to determine its size, and
+> most likely access all those bytes. Arguably, at that point the kernel
+> is already in a degrading state. But we can try to not let things get
+> worse by having ksize() return 0, in the hopes that it will stop
+> corrupting more memory. It won't work in all cases, but should avoid
+> things like "s = ksize(obj); touch_all_bytes(obj, s)" where the size
+> bounds the memory accessed corrupting random memory.
 
-Indeed! Will update this in v2 (and will also fix the Fixes: tag as
-pointed by Josh).
+Oh, it's to prevent to corrupt memory further in failure case,
+like memset(obj, 0, s);
 
-> Ah, thanks for the patch. I missed that coding style recommendation.
-> Might want to link to a newer (or evergreen) version of the docs
-> though:
-> https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
-> Not sure what happens when we start shadowing variables named __flags,
-> but maybe we cross that bridge if/when we get there.
+> The other reason is that a caller could actually check the size, and
+> if 0, do something else. Few callers will do so, because nobody
+> expects that their code has a bug. :-)
 
-Ack.
+and making it able to check errors by caller.
+Thank you so much for kind explanation.
 
-> Thanks for the fix!
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+I'll add what Vlastimil suggested in next series. Thanks!
+
+-- 
+Thank you, You are awesome!
+Hyeonggon :-)
