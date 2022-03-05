@@ -2,111 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BADF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 08:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 08:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229448AbiCEIjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 03:39:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
+        id S230200AbiCEIz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 03:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiCEIjK (ORCPT
+        with ESMTP id S229448AbiCEIz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 03:39:10 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ACC8433BF;
-        Sat,  5 Mar 2022 00:38:19 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id q11so9734840pln.11;
-        Sat, 05 Mar 2022 00:38:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=4q9rupxAtgeh0z74bvSngfTH3q+iMizoxg7UH0B4T/o=;
-        b=btIKdS/FS+BX5jnCkXzHGhLWyAwM7A4CN9T3gOQW3bKxtSfv1NLvqa2oPzSDgPUIvI
-         UVLo3SWgHLbmQVWY1SH4Jl1WF3D02PyCrf05AvaTR79v8kYsgerAmHM145FhUkiEHE/0
-         pXVk7/6CjNYa1i7CjX4T5NeE0oOrgn30aP3p6pu9wcLB/MS60SzeeFqlwdD0Y/CDPivG
-         /3mgWdGeorKgmq/+zOmM9W4UBhaPGYDjwI6j3a0jpbZQrTFD1m+uWR/XBeATEQdyQre5
-         Fu6jYuTcCQZGPO3pAp5FZ+jDScDuyJLT2w1W6J/iG+rq1kTsDV7kHKNk+U6KEQ1Z5jfA
-         okgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=4q9rupxAtgeh0z74bvSngfTH3q+iMizoxg7UH0B4T/o=;
-        b=J+kzv5ZHfe8sZnjNo2vYIwCrOiQow5sVO59tvngszN53P1V807JSOM5T34GzqZaYs/
-         fzT9rHJpL8VRgkQgeVWA1u8G+vWkBu4lrsPobXmr4DhTAP29bbl8YRs2FayDXb64/Jo4
-         XfWUi+JgP2J8UdqYd2eObh/U0eFRWXSBKSqiOaU/TV9HGtZhu7fKf5rXZiHfdP1+JLrH
-         lfIZ0+A36PM2BPHG4zEbe9ypG4+XR89iD8JdXedzZhd0/uXPACHPNUMinwoRIhvh5c93
-         1gK6gsX2EpazwyBoWYiyDm4dVhwkNO/9LKC9hUhYJ3NgFcsEfdXhCNRZ7ra8b9U+ILDw
-         eIvw==
-X-Gm-Message-State: AOAM530fR6x8aaLTx+/jpBGI1CWC4DHc1VO2KAJHh/nN0sWeTQ7PdBXO
-        5yEc0+j4djtp7FR4xJo4vvw=
-X-Google-Smtp-Source: ABdhPJwrqasm/Aj96Sb/8B66of8QRPaNNoC3JjmddWhpSQd0G6BpPFgWNdhVFq3NO2IF1nkMqSouag==
-X-Received: by 2002:a17:902:ccc6:b0:14f:88e6:8040 with SMTP id z6-20020a170902ccc600b0014f88e68040mr2332802ple.13.1646469498919;
-        Sat, 05 Mar 2022 00:38:18 -0800 (PST)
-Received: from [10.107.0.6] ([64.64.123.82])
-        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm12586726pju.44.2022.03.05.00.38.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:38:18 -0800 (PST)
-Subject: Re: [PATCH] dma: xilinx: check the return value of dma_set_mask() in
- zynqmp_dma_probe()
-To:     Michael Tretter <m.tretter@pengutronix.de>
-Cc:     vkoul@kernel.org, michal.simek@xilinx.com, yukuai3@huawei.com,
-        lars@metafoo.de, libaokun1@huawei.com, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20220303024334.813-1-baijiaju1990@gmail.com>
- <20220304082024.GO8137@pengutronix.de>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <47bca068-9bc2-73c7-dfa4-ddd5ce78618c@gmail.com>
-Date:   Sat, 5 Mar 2022 16:38:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Sat, 5 Mar 2022 03:55:27 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5A124A137;
+        Sat,  5 Mar 2022 00:54:36 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K9dhG5jcSzbbwp;
+        Sat,  5 Mar 2022 16:49:50 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 5 Mar 2022 16:54:34 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 5 Mar
+ 2022 16:54:34 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
+CC:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <anthony.l.nguyen@intel.com>, <karol.kolacinski@intel.com>
+Subject: [PATCH -next] ice: fix return value check in ice_gnss.c
+Date:   Sat, 5 Mar 2022 17:04:30 +0800
+Message-ID: <20220305090430.3078757-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220304082024.GO8137@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+kthread_create_worker() and tty_alloc_driver() return ERR_PTR()
+and never return NULL. The NULL test in the return value check
+should be replaced with IS_ERR().
 
+Fixes: 43113ff73453 ("ice: add TTY for GNSS module for E810T device")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/intel/ice/ice_gnss.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 2022/3/4 16:20, Michael Tretter wrote:
-> On Wed, 02 Mar 2022 18:43:34 -0800, Jia-Ju Bai wrote:
->> The function dma_set_mask() in zynqmp_dma_probe() can fail, so its
->> return value should be checked.
->>
->> Fixes: b0cc417c1637 ("dmaengine: Add Xilinx zynqmp dma engine driver support")
->> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
->> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
->> ---
->>   drivers/dma/xilinx/zynqmp_dma.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
->> index 7aa63b652027..963fb1de93af 100644
->> --- a/drivers/dma/xilinx/zynqmp_dma.c
->> +++ b/drivers/dma/xilinx/zynqmp_dma.c
->> @@ -1050,7 +1050,8 @@ static int zynqmp_dma_probe(struct platform_device *pdev)
->>   	zdev->dev = &pdev->dev;
->>   	INIT_LIST_HEAD(&zdev->common.channels);
->>   
->> -	dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
->> +	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(44)))
->> +		return -EIO;
-> Thanks.
->
-> You may print an error message with dev_err_probe and forward the return value
-> of dma_set_mask.
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+index 755e1580f368..35579cf4283f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.c
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+@@ -125,7 +125,7 @@ static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
+ 	 * writes.
+ 	 */
+ 	kworker = kthread_create_worker(0, "ice-gnss-%s", dev_name(dev));
+-	if (!kworker) {
++	if (IS_ERR(kworker)) {
+ 		kfree(gnss);
+ 		return NULL;
+ 	}
+@@ -253,7 +253,7 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
+ 	int err;
+ 
+ 	tty_driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
+-	if (!tty_driver) {
++	if (IS_ERR(tty_driver)) {
+ 		dev_err(ice_pf_to_dev(pf), "Failed to allocate memory for GNSS TTY\n");
+ 		return NULL;
+ 	}
+-- 
+2.25.1
 
-Hi Michael,
-
-Thanks for the advice.
-I will send a V2 patch.
-
-
-Best wishes,
-Jia-Ju Bai
