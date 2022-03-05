@@ -2,102 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 21:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 21:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232600AbiCEVNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 16:13:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
+        id S232622AbiCEV22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 16:28:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiCEVNh (ORCPT
+        with ESMTP id S230119AbiCEV2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 16:13:37 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7751164BFF
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 13:12:47 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4A3373F614
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 21:12:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646514766;
-        bh=c7nvDWFcwUU/UCEXDJQ70xZTwc42c5nskfhluppR+58=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=B2nfFygCbl/IfokpY9TqXZqYKX2OA+4PFQfgrVtdz/3QQGCkwSHGuLJv9+QhME3Hc
-         dEUwwbOZXxT4fnQs7c2qOcCEQCvUPFWC3x+OQTFWzyKEXevC+V9j7UYv0AOhjy0JcL
-         hiRA0kqcwIf0uJOWY8bdhjOOoBRtFQ/UZYMmWsOt1n6Yh7EPWgJQjq/3Z+cSljrKdH
-         w0BLOdwWjJwMFh2+CYb/7oWOE3rof/ZgnzGe6lAB0BjRfVInnmYI29WUOxmAQWdb2k
-         GNBUrWvKVjweMn1oeCJNi8/f6d/DYVTstIVOBKMPzzqW2dVwSaQyXRcRF2BWSxC02/
-         OtxOmr6ZFBiYA==
-Received: by mail-ej1-f69.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso5978212ejk.17
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Mar 2022 13:12:46 -0800 (PST)
+        Sat, 5 Mar 2022 16:28:25 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2792311C3C;
+        Sat,  5 Mar 2022 13:27:34 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id bi12so11229544ejb.3;
+        Sat, 05 Mar 2022 13:27:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JsR7zrG3vxL7/XJnLXmd7BhQLLdAdgVDWSojck8Ik4c=;
+        b=k357gdJWiPFAUbXLxtRrFpAeCeK/pP4d9f61XGg1A7xQDMrHVSEcwg3xvpzXo5yhh4
+         p7F2vOHK4R7NJ0K4SB64LyKaYJngfMzpsZXBQMPZWpbnWOZe7tD2d2EeEjTgdrrVZK5u
+         63aXOAllerV1NlxndawECf4kg/14UX+hBN75jWAJD8cDQp1VUBL2mA9pBzNzmhnQJReu
+         qpyqeLiQxk6ntooIv6yz+nWRLJO75aZdrviKa3OQ2HCyIOQA01xt4k0Y7dOueeNtyhR9
+         rcktTrF7YHTYnVoisA/qnxa7JKekLqKOlNhZLzZnhWaRhClx8gjhORwAt5JqzewfUxmj
+         NZLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=c7nvDWFcwUU/UCEXDJQ70xZTwc42c5nskfhluppR+58=;
-        b=ifn0hRD/5N5ZYkUV0l9BsdwPLnENkOHHAY4x3wUBCdAweYGtWwQwX3KuxZMjHkU4lm
-         Z9SogEbsKwLpJG1ghfDLIIDZz02PGUHljKrhVcHmnURcop5FxTkBNddhtNax33XbJJLu
-         SiUFZ1ent+rqxpUpQeuqrxh0UXS2u2e1fdGYxVhQp7knoWwW/vUKbTRbq94nzLohbAaa
-         d53TsZ1Sl5hd4bNlwXuysL/P6a2ZfSjUMwUS/sE9SqbuAsMwWn3odlLrzpRbVeQt/0dw
-         As7UKf3ONtKE0IWZ35gk4xi9v55C9ox4xpicX/9JOIDwmJGUKq/a9Oin8FK/HWO0ha8L
-         j+vw==
-X-Gm-Message-State: AOAM530mxY5XTO9K0hK3oSAAoe7HNrWfL6zWk6mcQC7wAhrGMCUDW4CF
-        H9YTKaUxZpjdtqMxf+zgbKPVlGSD5OzA6vZ+oYP+0MlxUDD0GCt7vTEWiOmwSV9TLoQevhasjFF
-        dy7FqXU6ULB+e4voJitImBJP22sWfRmYfq/zHl0Vv+A==
-X-Received: by 2002:a17:906:2846:b0:6ce:21cd:5398 with SMTP id s6-20020a170906284600b006ce21cd5398mr3859161ejc.49.1646514765640;
-        Sat, 05 Mar 2022 13:12:45 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwQWtd1Rccv7Kbrfkpj21uOWYbCPVJQ8Isf4LoTsdDQe/XmKzNu3ITY1TALeARndSrDs8ssrg==
-X-Received: by 2002:a17:906:2846:b0:6ce:21cd:5398 with SMTP id s6-20020a170906284600b006ce21cd5398mr3859151ejc.49.1646514765494;
-        Sat, 05 Mar 2022 13:12:45 -0800 (PST)
-Received: from [192.168.0.139] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id o2-20020a50d802000000b00410d7f0c52csm4018060edj.8.2022.03.05.13.12.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Mar 2022 13:12:45 -0800 (PST)
-Message-ID: <ed2c1e67-4d45-5602-7adc-be0451c7ae1f@canonical.com>
-Date:   Sat, 5 Mar 2022 22:12:43 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JsR7zrG3vxL7/XJnLXmd7BhQLLdAdgVDWSojck8Ik4c=;
+        b=EuAobb9f9YjIqQVgDSWCkmDcEVf79D2+Jtx6pkw6upz4UpxQzNcvBTQ3FY5sdduzL1
+         Qo8+nnUgwV/tfK7Ftp3zTTS1i7Chk63CKjuTSznue44DJRPEFBZ5AYyZ5W6dhCS9ve1h
+         5KPCw8NK6u6J545iphW8jce0q124hdhxP0Xnm+RVDX6g9PN357TOPdRLrZM3pdCkGWdd
+         x3IpXPwOBahEPQ104FG+zisZzfTkp/QdHVkdrXhAHY9Mls22axOm3DTgpyD0BQ2Jh0Gw
+         MCNkyqjbcHWjACEHKt1aZUcp2U1Bt+gEZPlMm2XQfRGqVo6E+0aFO1rHBU4Qsj2ypEHi
+         /ZXw==
+X-Gm-Message-State: AOAM531+5OULzd5yCA4USioRv4yV+QSDR4xkWJsM7EQqvTAj5mvk5Ubi
+        JKLdpiJ1JQaXhXzP7fxEfsBZ3wp7uB0dMq+DE0FYpqEG9In+5w==
+X-Google-Smtp-Source: ABdhPJyE40Mn6JcdNnjxW1HBwtFUxDfHOM3cw6oQRBCm0q87Zikh9cfGDj9UaNhF/WVIcB7JfkZRw/wcOwZP5caMfiU=
+X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id
+ q7-20020a1709064cc700b006d07efb049fmr3847317ejt.639.1646515651958; Sat, 05
+ Mar 2022 13:27:31 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/4] dt-bindings: firmware: qcom-scm: Document msm8976
- bindings
-Content-Language: en-US
-To:     Adam Skladowski <a39.skl@gmail.com>, phone-devel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220305164906.16853-1-a39.skl@gmail.com>
- <20220305164906.16853-4-a39.skl@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220305164906.16853-4-a39.skl@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220305154256.278394-1-brgl@bgdev.pl>
+In-Reply-To: <20220305154256.278394-1-brgl@bgdev.pl>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 5 Mar 2022 23:26:55 +0200
+Message-ID: <CAHp75VefVkNfGoFKtG3-3fF4TEiu33u-EaASEiTUmj_OAm-onA@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: fix the size of the ngpios variable
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/03/2022 17:49, Adam Skladowski wrote:
-> SCM driver on MSM8976 requires 3 clocks.
-> Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-> ---
->  Documentation/devicetree/bindings/firmware/qcom,scm.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+On Sat, Mar 5, 2022 at 10:14 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+>
+> The ngpio fields both in struct gpio_device as well as gpio_chip are
+> 16 bit unsigned integers. Let's not risk an overflow and use the correct
+> size when reading the device property.
 
-Same as in other patches - missing blank line before SoB.
+...
 
-With that fixed:
+> -               ret = device_property_read_u32(&gdev->dev, "ngpios", &ngpios);
+> +               ret = device_property_read_u16(&gdev->dev, "ngpios", &ngpios);
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+AFAIU DT format you may not do this. The property is ABI-like and it's
+32-bit (BE!). Reading as u16 will bring you 2 MSB (bytes) out of 4
+from the 32-bit value.
 
-
-Best regards,
-Krzysztof
+-- 
+With Best Regards,
+Andy Shevchenko
