@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 08:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B0DC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Mar 2022 08:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiCEIz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 03:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39910 "EHLO
+        id S230400AbiCEI5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 03:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiCEIz1 (ORCPT
+        with ESMTP id S229977AbiCEI5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 03:55:27 -0500
+        Sat, 5 Mar 2022 03:57:32 -0500
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5A124A137;
-        Sat,  5 Mar 2022 00:54:36 -0800 (PST)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K9dhG5jcSzbbwp;
-        Sat,  5 Mar 2022 16:49:50 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE600254A92;
+        Sat,  5 Mar 2022 00:56:42 -0800 (PST)
+Received: from kwepemi100005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K9dpd5r8hzdcJs;
+        Sat,  5 Mar 2022 16:55:21 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100005.china.huawei.com (7.221.188.155) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 5 Mar 2022 16:54:34 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ 15.1.2308.21; Sat, 5 Mar 2022 16:56:40 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 5 Mar
- 2022 16:54:34 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
-CC:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <anthony.l.nguyen@intel.com>, <karol.kolacinski@intel.com>
-Subject: [PATCH -next] ice: fix return value check in ice_gnss.c
-Date:   Sat, 5 Mar 2022 17:04:30 +0800
-Message-ID: <20220305090430.3078757-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 2022 16:56:40 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <tj@kernel.org>, <axboe@kernel.dk>, <paolo.valente@linaro.org>,
+        <jack@suse.cz>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next 01/11] block, bfq: add new apis to iterate bfq entities
+Date:   Sat, 5 Mar 2022 17:11:55 +0800
+Message-ID: <20220305091205.4188398-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220305091205.4188398-1-yukuai3@huawei.com>
+References: <20220305091205.4188398-1-yukuai3@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
+X-Originating-IP: [10.175.127.227]
 X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+ kwepemm600009.china.huawei.com (7.193.23.164)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kthread_create_worker() and tty_alloc_driver() return ERR_PTR()
-and never return NULL. The NULL test in the return value check
-should be replaced with IS_ERR().
+The old and the new apis are the same currently, prepare to count
+root group into 'num_groups_with_pending_reqs'. The old apis will be
+used to iterate with root group's entity, and the new apis will be
+used to iterate without root group's entity.
 
-Fixes: 43113ff73453 ("ice: add TTY for GNSS module for E810T device")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- drivers/net/ethernet/intel/ice/ice_gnss.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ block/bfq-iosched.h | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
-index 755e1580f368..35579cf4283f 100644
---- a/drivers/net/ethernet/intel/ice/ice_gnss.c
-+++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
-@@ -125,7 +125,7 @@ static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
- 	 * writes.
- 	 */
- 	kworker = kthread_create_worker(0, "ice-gnss-%s", dev_name(dev));
--	if (!kworker) {
-+	if (IS_ERR(kworker)) {
- 		kfree(gnss);
- 		return NULL;
- 	}
-@@ -253,7 +253,7 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
- 	int err;
+diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+index 3b83e3d1c2e5..d703492714e2 100644
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -1037,9 +1037,20 @@ extern struct blkcg_policy blkcg_policy_bfq;
+ #define for_each_entity_safe(entity, parent) \
+ 	for (; entity && ({ parent = entity->parent; 1; }); entity = parent)
  
- 	tty_driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
--	if (!tty_driver) {
-+	if (IS_ERR(tty_driver)) {
- 		dev_err(ice_pf_to_dev(pf), "Failed to allocate memory for GNSS TTY\n");
- 		return NULL;
- 	}
++#define is_root_entity(entity) \
++	(entity->sched_data == NULL)
++
++#define for_each_entity_not_root(entity) \
++	for (; entity && !is_root_entity(entity); entity = entity->parent)
++
++#define for_each_entity_not_root_safe(entity, parent) \
++	for (; entity && !is_root_entity(entity) && \
++	       ({ parent = entity->parent; 1; }); entity = parent)
+ #else /* CONFIG_BFQ_GROUP_IOSCHED */
++#define is_root_entity(entity) (false)
++
+ /*
+- * Next two macros are fake loops when cgroups support is not
++ * Next four macros are fake loops when cgroups support is not
+  * enabled. I fact, in such a case, there is only one level to go up
+  * (to reach the root group).
+  */
+@@ -1048,6 +1059,12 @@ extern struct blkcg_policy blkcg_policy_bfq;
+ 
+ #define for_each_entity_safe(entity, parent) \
+ 	for (parent = NULL; entity ; entity = parent)
++
++#define for_each_entity_not_root(entity) \
++	for (; entity ; entity = NULL)
++
++#define for_each_entity_not_root_safe(entity, parent) \
++	for (parent = NULL; entity ; entity = parent)
+ #endif /* CONFIG_BFQ_GROUP_IOSCHED */
+ 
+ struct bfq_queue *bfq_entity_to_bfqq(struct bfq_entity *entity);
 -- 
-2.25.1
+2.31.1
 
