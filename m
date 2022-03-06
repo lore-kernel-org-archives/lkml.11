@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D33C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 11:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C67EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 11:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233328AbiCFLNB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 06:13:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
+        id S233398AbiCFLNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 06:13:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233337AbiCFLMp (ORCPT
+        with ESMTP id S233335AbiCFLMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 06:12:45 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317B2606E5
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 03:11:53 -0800 (PST)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        Sun, 6 Mar 2022 06:12:41 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFD860CF6
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 03:11:48 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 505473F60D
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 11:11:40 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 639AD3F62E
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 11:11:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646565100;
-        bh=lf3L+0o9CMSrEd/gKJSlHCZX7vz5FnWuL1aM1XjlPVQ=;
+        s=20210705; t=1646565105;
+        bh=xb1NVPmzCu//acWeZYDa5U/h0JIp5bKXDfT7rDv6gyY=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=J1THvrZYUvPmdS1vOqxHdr8hyySTKa679+xacMDyJdfDVhvXIlS+ezxsv51VFbw0j
-         NskXMbKer5FrFR4gjJanP6z2C1OkKCD5+l6GTsNLEBav3yDh61AFLzaT3DmFnN6hpg
-         l4iZs/AYwzulCKiT4Qqw5A6vcjrae9JDqBCxZ0SuA2RFO/dmlRlyc+R1bGTo9t2Dxf
-         BBavFPu+1d73Xgc/H/r5h8+WUkB6pacY5j+GSeU7d7o6LErtNj3QamKqQMYcAmhwbD
-         ZyYQAe2Hfrvi73kf5nJEiQjLH2F5jKzUEyVIKLUPBJ2B0aY2U76NVTznMAxouLYSa9
-         DUOo0OUlzoQDQ==
-Received: by mail-ed1-f70.google.com with SMTP id n11-20020a50cc4b000000b00415e939bf9eso4588421edi.22
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 03:11:40 -0800 (PST)
+        b=CMG5g3dgHgKCD90u05vIsomchSxBmlCi37/4Dc102Qbud1/gWSzSLOZqV5jSVkAhC
+         EaJLLfWxvwjklEVvNPs1Ktr/DQTKIua/Vn2dPzt+OhKLqD+lfVOD+XLzhHmK7NesGf
+         I+fKh8+uBDzbU6UU/rfacLN2QXBzQ09NGBKqv5BKXIMl9wDrhTDOpkNEvlmfCh5Y+N
+         C1ut1FxBUGbIluxTG6q04aV1rCpC74sH2oIyWM903j/WlchfDM36E60evToYQ5AR5l
+         hqlPwismeoxsQ4C+g8UA1ewroMCGWQ3xPHw+vRf9CDUZ3WvavAQoFeBREyv/4eIcuI
+         ZazXWox46HWNg==
+Received: by mail-ed1-f72.google.com with SMTP id l8-20020a056402028800b0041636072ef0so730289edv.13
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 03:11:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lf3L+0o9CMSrEd/gKJSlHCZX7vz5FnWuL1aM1XjlPVQ=;
-        b=JiIXUZ8JbdsTz8HCsOHiKxbdLDnCzbXPhtq/rqPJd/p+CY4wwK6jBM44hWKhscZWbn
-         UekjIee468VJ15U86VBLdJXjDdBXhTb890v/vStMcKY9wm2fw5l8VAQFsU75WWZBBo/D
-         SXX/NSypXE5rBnZG/TGoRbJCQ1Erb6tdXfUV6pgduifI8yRsNtMbcgYL01XyZvwF7/Rn
-         O5en6y2oV57VAod3jkShYiXP1dbgrEdrJHh379WVegT7FD3E07gIMdjpKAnS9bfLD/wL
-         Ay56h0Gjm8Cwm8IG6OAGEb0OfxCfqlhVxyTdf0oWVjUUZV5aeMXFyU5b2CcDZWWuuLkL
-         k0gQ==
-X-Gm-Message-State: AOAM531WIAT4VoyKgvX1c7wohpsV8WD9vEJR1Fn1mQDyaHsYAwB65OSM
-        QZq43D9JuF9WhhwPH3SbGlaM6bdD9YOOWkSGxCDsKUcyvfnxgzJk7votgCWxWsRaGybnPERLMFe
-        31xA7z9IcmZmiW61PJvh9C9TGMJVrNfgVnVaNt/HL7w==
-X-Received: by 2002:a05:6402:d0d:b0:416:1d69:f23b with SMTP id eb13-20020a0564020d0d00b004161d69f23bmr6273185edb.141.1646565091334;
-        Sun, 06 Mar 2022 03:11:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwZtXPDKuzvvxfR2qyr8z+IQLrONJ/y+63x3Fbz/V1C7LxKea28+CanHlFXHMdCVOY2o4Xmiw==
-X-Received: by 2002:a05:6402:d0d:b0:416:1d69:f23b with SMTP id eb13-20020a0564020d0d00b004161d69f23bmr6273165edb.141.1646565091125;
-        Sun, 06 Mar 2022 03:11:31 -0800 (PST)
+        bh=xb1NVPmzCu//acWeZYDa5U/h0JIp5bKXDfT7rDv6gyY=;
+        b=g2/YtO7PMI93aezSNO+K46R4ZgL8S0e2yohd7his9GFRT7RPe14WQWjnRxDefG2Mc/
+         Hatr3CETewMoJxRGfZzQyYRakuJjvorLzzqOJ3kRnO5IlDfUkTbMFU88fpICnxSjHlAb
+         NBuszcIeAhSlUQW1YXZ4eT+oM/88lKhW1cvmOng8MxWCswnN6qld67bDK57HOhN++X10
+         8fwpc5KbgWZ04bpNqJ1hwEARk3rbtnScWXcPs0oIt26qohuffR2/zPAn0WPxeCLpwqmE
+         /K56kwfsMfJkpyBTvuEMzhbmmX19Urn42GwEguQA2GzZ56h+5EpJ++gFYMmAN1SVyGg0
+         50FA==
+X-Gm-Message-State: AOAM532MLrsMVoiStBNoIi98g0k/l+2detF3LThz9NVEi5l9+566fdHc
+        43dfWEklnC1Ea2aNijc7zyWrnsuD5/ORR/oOz5SC3eJwvvPWin6RCXTFoSDgwU8RIHG7BiL7mz4
+        e8fO7eYIQXjXi9nH+WsUQ2YYkK7M+HiWpK8LF8OeIfQ==
+X-Received: by 2002:a17:906:3ad1:b0:6ce:a880:7745 with SMTP id z17-20020a1709063ad100b006cea8807745mr5480165ejd.46.1646565104764;
+        Sun, 06 Mar 2022 03:11:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxkqOPNZGWUEHHQJ1DdvnKzAnwvejxildLb9k95BB+Ex4BtuNUf/GcST/RwEz/yOnL8XuyPOQ==
+X-Received: by 2002:a17:906:3ad1:b0:6ce:a880:7745 with SMTP id z17-20020a1709063ad100b006cea8807745mr5480132ejd.46.1646565104528;
+        Sun, 06 Mar 2022 03:11:44 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id a9-20020a1709066d4900b006da888c3ef0sm3720444ejt.108.2022.03.06.03.11.29
+        by smtp.gmail.com with ESMTPSA id a9-20020a1709066d4900b006da888c3ef0sm3720444ejt.108.2022.03.06.03.11.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 03:11:30 -0800 (PST)
+        Sun, 06 Mar 2022 03:11:43 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Alim Akhtar <alim.akhtar@samsung.com>,
         Avri Altman <avri.altman@wdc.com>,
@@ -74,9 +74,9 @@ To:     Alim Akhtar <alim.akhtar@samsung.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 01/12] dt-bindings: ufs: add common platform bindings
-Date:   Sun,  6 Mar 2022 12:11:14 +0100
-Message-Id: <20220306111125.116455-2-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v3 09/12] arm64: dts: hisilicon: align 'freq-table-hz' with dtschema in UFS
+Date:   Sun,  6 Mar 2022 12:11:22 +0100
+Message-Id: <20220306111125.116455-10-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220306111125.116455-1-krzysztof.kozlowski@canonical.com>
 References: <20220306111125.116455-1-krzysztof.kozlowski@canonical.com>
@@ -86,118 +86,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for common parts (platform) of Universal Flash Storage
-(UFS) Host Controllers in dtschema format.
-
-Include also the bindings directory in the UFS maintainers entry.
+The DT schema expects 'freq-table-hz' property to be an uint32-matrix,
+which is also easier to read.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../devicetree/bindings/ufs/ufs-common.yaml   | 82 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 83 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/ufs/ufs-common.yaml
+ arch/arm64/boot/dts/hisilicon/hi3660.dtsi | 4 ++--
+ arch/arm64/boot/dts/hisilicon/hi3670.dtsi | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/ufs/ufs-common.yaml b/Documentation/devicetree/bindings/ufs/ufs-common.yaml
-new file mode 100644
-index 000000000000..47a4e9e1a775
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ufs/ufs-common.yaml
-@@ -0,0 +1,82 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ufs/ufs-common.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Common properties for Universal Flash Storage (UFS) Host Controllers
-+
-+maintainers:
-+  - Alim Akhtar <alim.akhtar@samsung.com>
-+  - Avri Altman <avri.altman@wdc.com>
-+
-+properties:
-+  clocks: true
-+
-+  clock-names: true
-+
-+  freq-table-hz:
-+    items:
-+      items:
-+        - description: Minimum frequency for given clock in Hz
-+        - description: Maximum frequency for given clock in Hz
-+    description: |
-+      Array of <min max> operating frequencies in Hz stored in the same order
-+      as the clocks property. If this property is not defined or a value in the
-+      array is "0" then it is assumed that the frequency is set by the parent
-+      clock or a fixed rate clock source.
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  lanes-per-direction:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [1, 2]
-+    default: 2
-+    description:
-+      Number of lanes available per direction.  Note that it is assume same
-+      number of lanes is used both directions at once.
-+
-+  vdd-hba-supply:
-+    description:
-+      Phandle to UFS host controller supply regulator node.
-+
-+  vcc-supply:
-+    description:
-+      Phandle to VCC supply regulator node.
-+
-+  vccq-supply:
-+    description:
-+      Phandle to VCCQ supply regulator node.
-+
-+  vccq2-supply:
-+    description:
-+      Phandle to VCCQ2 supply regulator node.
-+
-+  vcc-supply-1p8:
-+    type: boolean
-+    description:
-+      For embedded UFS devices, valid VCC range is 1.7-1.95V or 2.7-3.6V. This
-+      boolean property when set, specifies to use low voltage range of
-+      1.7-1.95V. Note for external UFS cards this property is invalid and valid
-+      VCC range is always 2.7-3.6V.
-+
-+  vcc-max-microamp:
-+    description:
-+      Specifies max. load that can be drawn from VCC supply.
-+
-+  vccq-max-microamp:
-+    description:
-+      Specifies max. load that can be drawn from VCCQ supply.
-+
-+  vccq2-max-microamp:
-+    description:
-+      Specifies max. load that can be drawn from VCCQ2 supply.
-+
-+dependencies:
-+  freq-table-hz: [ 'clocks' ]
-+
-+required:
-+  - interrupts
-+
-+additionalProperties: true
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d7ea92ce1b1d..ef16268b6ca6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -20100,6 +20100,7 @@ R:	Alim Akhtar <alim.akhtar@samsung.com>
- R:	Avri Altman <avri.altman@wdc.com>
- L:	linux-scsi@vger.kernel.org
- S:	Supported
-+F:	Documentation/devicetree/bindings/ufs/
- F:	Documentation/scsi/ufs.rst
- F:	drivers/scsi/ufs/
- 
+diff --git a/arch/arm64/boot/dts/hisilicon/hi3660.dtsi b/arch/arm64/boot/dts/hisilicon/hi3660.dtsi
+index 8bd6d7e8a474..6b3057a09251 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi3660.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hi3660.dtsi
+@@ -1045,8 +1045,8 @@ ufs: ufs@ff3b0000 {
+ 			clocks = <&crg_ctrl HI3660_CLK_GATE_UFSIO_REF>,
+ 				<&crg_ctrl HI3660_CLK_GATE_UFSPHY_CFG>;
+ 			clock-names = "ref_clk", "phy_clk";
+-			freq-table-hz = <0 0
+-					 0 0>;
++			freq-table-hz = <0 0>,
++					<0 0>;
+ 			/* offset: 0x84; bit: 12 */
+ 			resets = <&crg_rst 0x84 12>;
+ 			reset-names = "rst";
+diff --git a/arch/arm64/boot/dts/hisilicon/hi3670.dtsi b/arch/arm64/boot/dts/hisilicon/hi3670.dtsi
+index 636c8817df7e..3125c3869c69 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi3670.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hi3670.dtsi
+@@ -671,8 +671,8 @@ ufs: ufs@ff3c0000 {
+ 			clocks = <&crg_ctrl HI3670_CLK_GATE_UFSIO_REF>,
+ 				 <&crg_ctrl HI3670_CLK_GATE_UFS_SUBSYS>;
+ 			clock-names = "ref_clk", "phy_clk";
+-			freq-table-hz = <0 0
+-					 0 0>;
++			freq-table-hz = <0 0>,
++					<0 0>;
+ 			/* offset: 0x84; bit: 12 */
+ 			resets = <&crg_rst 0x84 12>;
+ 			reset-names = "rst";
 -- 
 2.32.0
 
