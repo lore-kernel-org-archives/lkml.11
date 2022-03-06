@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13909C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B85D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbiCFRxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 12:53:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S234104AbiCFRx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 12:53:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234129AbiCFRwq (ORCPT
+        with ESMTP id S234198AbiCFRw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 12:52:46 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90AD54BEB;
-        Sun,  6 Mar 2022 09:51:39 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id yy13so18613264ejb.2;
-        Sun, 06 Mar 2022 09:51:39 -0800 (PST)
+        Sun, 6 Mar 2022 12:52:59 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F053EF30;
+        Sun,  6 Mar 2022 09:51:50 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id bi12so14345023ejb.3;
+        Sun, 06 Mar 2022 09:51:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zn5EzvNdFkkfq9WLeKE8vnjWGv8x8y/sNNvXHm8oKGY=;
-        b=CibBxlAmJ+b26tsYTln2yODIK63moPUKBg4ThtwpcCVTkYbiGYvteUI4hjDr/ZILBd
-         5V8FzlHyysBxSBVejJif9uF53N50M69JZH8UJP6Nfqjcto+8qkRpKoO3JZL5qhJoVZwu
-         QcPM1uprJtw7VigiwDFrt0Hf7EaegTMcXMOAZDSv8wLRZvEXbAsMcxY6kAtL/ghXvPS+
-         8FLmhGhVM3JF4DYdGOHF//Eq8X0nnLtbxaqZkpulpa3LFwqQKuWmWncmLfofoU9DOPhe
-         0yw62fUb6Bu22Y91COkYc6CEjilGXRxZ6VZVbyPURaNRpBObRNOTcXim5OLmoZ1lm6ww
-         B5vw==
+        bh=HcQZB6Ou2DJOpmDHHbEeLT9eVra9fyNzoo1Isgk0YuU=;
+        b=G31UKxrXM0ceKXWQOtiF6wqKmSQfZ83nhi589fq6DGgiMF0n9ZjeLl0ryCQoijQWhZ
+         ap6sQT6lAHkedMcbN/K/WLzVuF5S3JxkLhxnN/YkzZ4roTQRGmRChY7WvCci8/UfjCKP
+         xMqmv80JZZBQkj0D9FhL/nsjA063Bb+aL4M640Cn0TEwlzFBDWJnmHUcIb1Qv3FN65VB
+         CS93zKq4467GNhU81fFb5IqDD6iCQjONnEJL9MPiP/EDQR7YNz1O9vrRlhUGY+qCLvi7
+         xrDlfLPQCjAR4ijT1aianHXk5XNVJTmO5oIU336kyiGQPheymeOqJjBFcJHQxxgO1BPz
+         0mwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zn5EzvNdFkkfq9WLeKE8vnjWGv8x8y/sNNvXHm8oKGY=;
-        b=vzA4RIs709JdhazHoELc7nkVF5bG3DF0Xc18RsbeLgCq5jqJRVGfetfITr7tdysd8a
-         /25bH6ir5N8sKn7dg70NMeIN3JFBM+f1SLtxxkIN6u3Qdeaj4FEkqeEEVgHneadDXoqN
-         6yjO/uEcC1Fb9X8QOf81gp+ddyWfQpyN9+vONNSP4gWd6JyNB/3CkK2d2ogpm1+E0dYX
-         Oi14YxlxBs11xdZ/o61+jF9VJnuvMAkJfH7f4hoG9+o0vvp6XrwR9vY4ffVku9KZpey6
-         UAzpcETpdSLO7iFmZi/N72w/6o8tWQux4PWu7VMiaG9InKALDQozmjoJWEmSPESb9lEw
-         AQZA==
-X-Gm-Message-State: AOAM533RqfiN0lKGEYNmmcFQPcKW1ERjizmOaGPJr+/Ch//gMsUyMYSm
-        IY0mMn6FLvgyP99neu8cLlQ=
-X-Google-Smtp-Source: ABdhPJyEUmbzavFxuxNs5CE9PEv2BMQu0+VKX+xGhrNN14rjmWPymqB7BsY86nqd/5KkzLfH4r9ydA==
-X-Received: by 2002:a17:906:4cd2:b0:6c8:7a90:9c7 with SMTP id q18-20020a1709064cd200b006c87a9009c7mr6466344ejt.439.1646589098341;
-        Sun, 06 Mar 2022 09:51:38 -0800 (PST)
+        bh=HcQZB6Ou2DJOpmDHHbEeLT9eVra9fyNzoo1Isgk0YuU=;
+        b=TrNI0CQVImFV1iFpgjNCrSG6yjRHbQujyGuSeWZGSx1Hi5CElJkVyg4kGj4G5lTtFc
+         rGeOuL3nh3+9Kbp6qMkQzQhVr+Pi3J6QzxdjgqNzbvj5eMndeQmTKzw/FVxeOfo6rDoN
+         5T1D82Wu+J3Hc+71Lf8mScNWSyr+WVcRdlDLqByDrH8Cp/ADwexXd+SkfJsCd3tmSX0p
+         PfzRPOaen+Q8XJVMV27NrGlz5gYImu8StjxvuMyeaFfM4wG7lr1mR91aACcZQbmRPLbw
+         uRey46S5FofKotwuO27lkOOOgJH4dzFeMfOUmbrNjbWREVAF4L5aWQJFPGoy7QD/5e4P
+         gNTg==
+X-Gm-Message-State: AOAM532NJ7Q7kQPQQDVmmgM67NcpMg3KXWjw7ZgfTJD0+ZaPcDyKJvv7
+        k/ueJBwAtyjoiw1VnxnVHYA=
+X-Google-Smtp-Source: ABdhPJzIYgztiVm79b+tYLDse5ioBPvmL8FWLZSMdXXTiwy7PDaN42gD7M5HGDOIE0iwmdYSgsWvtw==
+X-Received: by 2002:a17:907:1c20:b0:6da:8a7f:657 with SMTP id nc32-20020a1709071c2000b006da8a7f0657mr6640896ejc.730.1646589102253;
+        Sun, 06 Mar 2022 09:51:42 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.37
+        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:51:37 -0800 (PST)
+        Sun, 06 Mar 2022 09:51:41 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -74,9 +74,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH 23/26] usb: gadget: udc: s3c2410: replace usage of rc to check if a list element was found
-Date:   Sun,  6 Mar 2022 18:50:31 +0100
-Message-Id: <20220306175034.3084609-24-jakobkoschel@gmail.com>
+Subject: [PATCH 26/26] usb: gadget: udc: s3c2410: replace usage of rc to check if a list element was found
+Date:   Sun,  6 Mar 2022 18:50:34 +0100
+Message-Id: <20220306175034.3084609-27-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220306175034.3084609-1-jakobkoschel@gmail.com>
 References: <20220306175034.3084609-1-jakobkoschel@gmail.com>
@@ -100,45 +100,44 @@ by checking if the variable was set within the list traversal loop.
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/composite.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/udc/s3c2410_udc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/gadget/composite.c b/drivers/usb/gadget/composite.c
-index 26908d012ac8..fa9f4aedf52d 100644
---- a/drivers/usb/gadget/composite.c
-+++ b/drivers/usb/gadget/composite.c
-@@ -863,14 +863,14 @@ static int set_config(struct usb_composite_dev *cdev,
- 		const struct usb_ctrlrequest *ctrl, unsigned number)
- {
- 	struct usb_gadget	*gadget = cdev->gadget;
--	struct usb_configuration *c = NULL;
-+	struct usb_configuration *c = NULL, *iter;
- 	int			result = -EINVAL;
- 	unsigned		power = gadget_is_otg(gadget) ? 8 : 100;
- 	int			tmp;
+diff --git a/drivers/usb/gadget/udc/s3c2410_udc.c b/drivers/usb/gadget/udc/s3c2410_udc.c
+index e3931da24277..fe6ecb0d16d1 100644
+--- a/drivers/usb/gadget/udc/s3c2410_udc.c
++++ b/drivers/usb/gadget/udc/s3c2410_udc.c
+@@ -1265,7 +1265,7 @@ static int s3c2410_udc_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ 	struct s3c2410_ep	*ep = to_s3c2410_ep(_ep);
+ 	int			retval = -EINVAL;
+ 	unsigned long		flags;
+-	struct s3c2410_request	*req = NULL;
++	struct s3c2410_request	*req = NULL, *tmp;
  
- 	if (number) {
--		list_for_each_entry(c, &cdev->configs, list) {
--			if (c->bConfigurationValue == number) {
-+		list_for_each_entry(iter, &cdev->configs, list) {
-+			if (iter->bConfigurationValue == number) {
- 				/*
- 				 * We disable the FDs of the previous
- 				 * configuration only if the new configuration
-@@ -878,11 +878,12 @@ static int set_config(struct usb_composite_dev *cdev,
- 				 */
- 				if (cdev->config)
- 					reset_config(cdev);
-+				c = iter;
- 				result = 0;
- 				break;
- 			}
+ 	dprintk(DEBUG_VERBOSE, "%s(%p,%p)\n", __func__, _ep, _req);
+ 
+@@ -1277,16 +1277,17 @@ static int s3c2410_udc_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ 
+ 	local_irq_save(flags);
+ 
+-	list_for_each_entry(req, &ep->queue, queue) {
+-		if (&req->req == _req) {
+-			list_del_init(&req->queue);
++	list_for_each_entry(tmp, &ep->queue, queue) {
++		if (&tmp->req == _req) {
++			list_del_init(&tmp->queue);
+ 			_req->status = -ECONNRESET;
++			req = tmp;
+ 			retval = 0;
+ 			break;
  		}
--		if (result < 0)
-+		if (!c)
- 			goto done;
- 	} else { /* Zero configuration value - need to reset the config */
- 		if (cdev->config)
+ 	}
+ 
+-	if (retval == 0) {
++	if (req) {
+ 		dprintk(DEBUG_VERBOSE,
+ 			"dequeued req %p from %s, len %d buf %p\n",
+ 			req, _ep->name, _req->length, _req->buf);
 -- 
 2.25.1
 
