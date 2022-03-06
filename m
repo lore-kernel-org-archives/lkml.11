@@ -2,209 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3B7C43217
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 10:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 649B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 10:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233240AbiCFKxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 05:53:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33256 "EHLO
+        id S233266AbiCFKzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 05:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233242AbiCFKxC (ORCPT
+        with ESMTP id S233247AbiCFKzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 05:53:02 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 696B842EF9
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 02:52:09 -0800 (PST)
-Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
-        by 156.147.23.53 with ESMTP; 6 Mar 2022 19:52:07 +0900
-X-Original-SENDERIP: 156.147.1.126
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.126 with ESMTP; 6 Mar 2022 19:52:07 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     tytso@mit.edu
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        torvalds@linux-foundation.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
-        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: Re: Report 2 in ext4 and journal based on v5.17-rc1
-Date:   Sun,  6 Mar 2022 19:51:42 +0900
-Message-Id: <1646563902-6671-1-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <YiQq6Ou39uzHC0mu@mit.edu>
-References: <YiQq6Ou39uzHC0mu@mit.edu>
+        Sun, 6 Mar 2022 05:55:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 517D95131F
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 02:54:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646564086;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6C+14RT/WBu/+yhSoFqCrDNXOq/wjuT0/qYJr4t18Zo=;
+        b=NtGEoeSWuWyC4w8LVSEho9ZdhEKlYyB+WyGwV3cWAm4jUrRf62KEtIKtnevOVERPo6Pctt
+        JtEEoqj+wLz8UJ+ebjev8FqBmWCddutipPOQ1s4PfOU/PwmXzjhxHnN7BcPCSMY/FUMQ9T
+        dZAanj+AS46O+X8tbxdZymmw3ECYxbk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-354-p2wh5w0zNHCENBnLgi_j4A-1; Sun, 06 Mar 2022 05:54:41 -0500
+X-MC-Unique: p2wh5w0zNHCENBnLgi_j4A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2F78659;
+        Sun,  6 Mar 2022 10:54:40 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 73B271F467;
+        Sun,  6 Mar 2022 10:54:40 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [GIT PULL] More KVM fixes for Linux 5.17-rc7
+Date:   Sun,  6 Mar 2022 05:54:39 -0500
+Message-Id: <20220306105439.141939-1-pbonzini@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ted wrote:
-> On Sat, Mar 05, 2022 at 11:55:34PM +0900, Byungchul Park wrote:
-> > > that is why some of the DEPT reports were completely incomprehensible
-> > 
-> > It's because you are blinded to blame at it without understanding how
-> > Dept works at all. I will fix those that must be fixed. Don't worry.
-> 
-> Users of DEPT must not have to understand how DEPT works in order to
+Linus,
 
-Users must not have to understand how Dept works for sure, and haters
-must not blame things based on what they guess wrong.
+The following changes since commit ece32a75f003464cad59c26305b4462305273d70:
 
-> understand and use DEPT reports.  If you think I don't understand how
-> DEPT work, I'm going to gently suggest that this means DEPT reports
-> are clear enough, and/or DEPT documentation needs to be
-> *substantially* improved, or both --- and these needs to happen before
-> DEPT is ready to be merged.
+  Merge tag 'kvmarm-fixes-5.17-4' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD (2022-02-25 09:49:30 -0500)
 
-Okay.
+are available in the Git repository at:
 
-> > > So if DEPT is issuing lots of reports about apparently circular
-> > > dependencies, please try to be open to the thought that the fault is
-> > 
-> > No one was convinced that Dept doesn't have a fault. I think your
-> > worries are too much.
-> 
-> In that case, may I ask that you add back a RFC to the subject prefix
-> (e.g., [PATCH RFC -v5]?)  Or maybe even add the subject prefix NOT YET
+  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
 
-I will.
+for you to fetch changes up to 8d25b7beca7ed6ca34f53f0f8abd009e2be15d94:
 
-> READY?  I have seen cases when after a patch series get to PATCH -v22,
-> and then people assume that it *must* be ready, as opposed what it
-> really means, which is "the author is just persistently reposting and
-> rebasing the patch series over and over again".  It would be helpful
-> if you directly acknowledge, in each patch submission, that it is not
-> yet ready for prime time.
-> 
-> After all, right now, DEPT has generated two reports in ext4, both of
-> which were false positives, and both of which have required a lot of
-> maintainer times to prove to you that they were in fact false
-> positives.  So are we all agreed that DEPT is not ready for prime
-> time?
+  KVM: x86: pull kvm->srcu read-side to kvm_arch_vcpu_ioctl_run (2022-03-02 10:55:58 -0500)
 
-Yes.
+----------------------------------------------------------------
+x86 guest:
 
-> > No one argued that their code must be buggy, either. So I don't think
-> > you have to worry about what's never happened.
-> 
-> Well, you kept on insisting that ext4 must have a circular dependency,
-> and that depending on a "rescue wakeup" is bad programming practice,
-> but you'll reluctantly agree to make DEPT accept "rescue wakeups" if
-> that is the will of the developers.  My concern here is the
-> fundmaental concept of "rescue wakeups" is wrong; I don't see how you
-> can distinguish between a valid wakeup and one that you and DEPT is
-> going to somehow characterize as dodgy.
+* Tweaks to the paravirtualization code, to avoid using them
+when they're pointless or harmful
 
-Your concern on it makes sense. I need to explain how I think about it
-more, but not now cuz I guess the other folks alrealy got tired enough.
-Let's talk about it later when needed again.
+x86 host:
 
-> Consider: a process can first subscribe to multiple wait queues, and
-> arrange to be woken up by a timeout, and then call schedule() to go to
-> sleep.  So it is not waiting on a single wait channel, but potentially
-> *multiple* wakeup sources.  If you are going to prove that kernel is
-> not going to make forward progress, you need to prove that *all* ways
-> that process might not wake up aren't going to happen for some reason.
-> 
-> Just because one wakeup source seems to form a circular dependency
-> proves nothing, since another wakeup source might be the designed and
-> architected way that code makes forward progress.
+* Fix for SRCU lockdep splat
 
-I also think it's legal if the design is intended. But it's not if not.
-This is what I meant. Again, it's not about ext4.
+* Brown paper bag fix for the propagation of errno
 
-> You seem to be assuminng that one wakeup source is somehow the
-> "correct" one, and the other ways that process could be woken up is a
-> "rescue wakeup source" and you seem to believe that relying on a
-> "rescue wakeup source" is bad.  But in the case of a process which has
+----------------------------------------------------------------
+Dexuan Cui (1):
+      x86/kvmclock: Fix Hyper-V Isolated VM's boot issue when vCPUs > 64
 
-It depends on whether or not it's intended IMHO.
+Li RongQing (1):
+      KVM: x86: Yield to IPI target vCPU only if it is busy
 
-> called prepare-to-wait on more than one wait queue, how is DEPT going
-> to distinguish between your "morally correct" wkaeup source, and the
-> "rescue wakeup source"?
+Like Xu (1):
+      KVM: x86/mmu: Passing up the error state of mmu_alloc_shadow_roots()
 
-Sure, it should be done manually. I should do it on my own when that
-kind of issue arises. Agian, ext4 is not the case cuz, based on what Jan
-explained, there's no real circular dependency wrt commit wq, done wq
-and so on.
+Paolo Bonzini (1):
+      KVM: x86: pull kvm->srcu read-side to kvm_arch_vcpu_ioctl_run
 
-> > No doubt. I already think so. But it doesn't mean that I have to keep
-> > quiet without discussing to imporve Dept. I will keep improving Dept in
-> > a reasonable way.
-> 
-> Well, I don't want to be in a position of having to prove that every
-> single DEPT report in my code that doesn't make sense to me is
-> nonsense, or else DEPT will get merged.
-> 
-> So maybe we need to reverse the burden of proof.
+Wanpeng Li (2):
+      x86/kvm: Don't use PV TLB/yield when mwait is advertised
+      x86/kvm: Don't waste memory if kvmclock is disabled
 
-I will keep in mind.
+ arch/x86/kernel/kvm.c      |  4 +++-
+ arch/x86/kernel/kvmclock.c |  3 +++
+ arch/x86/kvm/mmu/mmu.c     |  2 +-
+ arch/x86/kvm/x86.c         | 25 +++++++++++++------------
+ 4 files changed, 20 insertions(+), 14 deletions(-)
 
-> Instead of just sending a DEPT report, and then asking the maintainers
-> to explain why it is a false positive, how about if *you* use the DEPT
-> report to examinie the subsystem code, and then explain plain English,
-> how you think this could trigger in real life, or cause a performance
-> problem in real life or perhaps provide a script or C reproducer that
-> triggers the supposed deadlock?
-
-Makes sense. Let me try.
-
-> Yes, that means you will need to understand the code in question, but
-> hopefully the DEPT reports should be clear enough that someone who
-> isn't a deep expert in the code should be able to spot the bug.  If
-> not, and if only a few deep experts of code in question will be able
-> to decipher the DEPT report and figure out a fix, that's really not
-> ideal.
-
-Agree. Just FYI, I've never blamed you are not the expert on Dept.
-
-> If DEPT can find a real bug and you can show that Lockdep wouldn't
-> have been able to find it, then that would be proof that it is making
-> a real contribution.  That's would be real benefit.  At the same time,
-> DEPT will hopefully be able to demonstrate a false positive rate which
-> is low enough that the benefits clearly outweight the costs.
-> 
-> At the moment, I believe the scoreboard for DEPT with respect to ext4
-> is zero real bugs found, and two false positives, both of which have
-> required significant rounds of e-mail before the subsystem maintainers
-> were able to prove to you that it was, indeed, DEPT reporting a false
-> positive.
-
-Right. But we've barely talked in a productive way. We've talked about
-other things way more than proving what you're mentioning.
-
-> Do you now understand why I am so concerned that you aren't putting an
-> RFC or NOT YET READY in the subject line?
-
-Yes. I will.
-
-> - Ted
-> 
-> P.S.  If DEPT had a CONFIG_EXPERIMENTAL, with a disclaimer in the
-> KConfig that some of its reports might be false positives, that might
-> be another way of easing my fears that this won't get used by
-> Syzkaller, and to generate a lot of burdensome triage work on the
-> maintainers.
-
-Thank you for straightforward explanation this time,
-Byungchul
