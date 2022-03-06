@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A746C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A93C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbiCFRx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 12:53:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S234207AbiCFRxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 12:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234088AbiCFRwh (ORCPT
+        with ESMTP id S234076AbiCFRwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 12:52:37 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F893EAAE;
-        Sun,  6 Mar 2022 09:51:34 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id dr20so27420130ejc.6;
-        Sun, 06 Mar 2022 09:51:34 -0800 (PST)
+        Sun, 6 Mar 2022 12:52:49 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624BB5DA46;
+        Sun,  6 Mar 2022 09:51:41 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id qt6so27421502ejb.11;
+        Sun, 06 Mar 2022 09:51:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+21SkvZ1V0/Yykwt/4suhWYPa8wNy+dkzerfqHH80FU=;
-        b=j0sbbeSivVNug0gFNVXL4njiYWbwx0G/t8XpNp2ot9fBGkc/MpuppbR6dq76oV9h34
-         U4a9R5oAGigRltG4E2uk8LVf3Sr/Q+H5IItb3nj/xqIqPylZABLpRab8JloSPrOBLPYP
-         SbwwnVfEaJOGR7jQcCi5VoarY+iDvxeAEpSZFoxf9vwuViVIpJj5i14UBiphGs7tq6Q/
-         hIGFu9Goy9U9LBhAz6XYA1tQ+WhrjiEZugaELer4pLcWgtHB1TJuyRV7paYGxGpcPILJ
-         3GwHXCcRDLlh8APdGthGD+mSejgQPfWUjBFv8SMHNb9JxUziDQunYUTisCu0PpEENUjq
-         2Y1g==
+        bh=Mabw6oo0UExXVw3UKbG1p1cOpksqyZA3+XNF2Z0ESy0=;
+        b=Sj5WgvjVNGKGioDvkwEfdSxzknyIiisqz6LNams662IbPPPpzFVO3pBtK1+GOAO37l
+         OFiGhAWIjmz1Tf717cO1p9miIL+PB3rp4alrNokui1CGX3/nJ/36VUxfv+X4C4DfO8Wp
+         hgkYVde0YzBh0ru4Rz4yvU5h7rmYF0+CRyMpcpfWuYEmLdofFcD77E7I1gAxRti5bFt9
+         WHm1Dz6hdklJQ8/AdPB9OZqS3VmIafvIpx6vJvPYafq5/08ywEqI5uPyMZ0YKk1Bsnwv
+         M1jEUfDOI5I6rIaHI0pTLAbeni4JtGGS9o1LRIfwO4LwryhsPyoM8AkyK3SAGLaoTS+j
+         8wqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+21SkvZ1V0/Yykwt/4suhWYPa8wNy+dkzerfqHH80FU=;
-        b=Ll75Yf9Q4Nz8/OOlErr6/42+5giFPnkpdwcQNLb3PmGwm3BlTKaMaIKLi49TXo36GH
-         D05mbx1MCzqFfiNKx17G1GxOhqEhoC5AxOdhhDD1rs0y7kCtJR3UfTnprSNjyQwHAZ0v
-         ZssKknnHM+5AFx6keZjyrel0OwF4m9Yfj3HQeU+5hDumnlIB1lXYlzeje4jAQgXMgsX3
-         KGRtoR77VAbfUa1TXvvLxN+J3+vcllaRqT5mTmxICfcrPlsjJdKST9jQi+i14wLA0wGe
-         gxYFsXVTBo/RJLOYqzh4NtXVorp8XWGeICj0tUY5xp9DMul8mQG8tQTRnsTx30KPOACt
-         z+oA==
-X-Gm-Message-State: AOAM533Y8I8SDf9hQA4BHvfQ/P0ivmyLwbE5pDxtnE/8wQ+ODFz8bLv+
-        U7qM8k5MeqKVOqg0kfS4aJ8=
-X-Google-Smtp-Source: ABdhPJz+IRqxea7CTn4M8DREljvADWarmfOp1KMJjR26UN4FAa8Qc8zIgRSmkU15EdtUT+rM96ZaXg==
-X-Received: by 2002:a17:906:8d8:b0:6d2:131d:be51 with SMTP id o24-20020a17090608d800b006d2131dbe51mr6483746eje.564.1646589093126;
-        Sun, 06 Mar 2022 09:51:33 -0800 (PST)
+        bh=Mabw6oo0UExXVw3UKbG1p1cOpksqyZA3+XNF2Z0ESy0=;
+        b=SESvHTF9K4EXfJWrWqxdofXGd+bNsQyrBbY17LOlOzKSsZErz4IblOseOHqpesKBTR
+         aQSvjcnHNPEG/UDcOay+XklpoVH7Y07F84mJBDyEyJa/xeTqJTYEVHWk7HUw2a7OGto0
+         5TsNwWPAtV9hSAzLCFzbvp0q4GWvHNeXKCVLlRh8oA2HG+Q/drJf8RxbrFpp3VOLZwvs
+         n7CmjHYi8leyV9aNZQpY6VnCBMPmA7wZzDAhQDXxcTmwOLfCPEbrZygf8+5KWbrMXDl7
+         D+QX5Q25DNVWGNPtua64XOkKGECMYoJI9yRiRV7tTorHVMgftjAamMz17rWNk+ej7J4U
+         ZNCw==
+X-Gm-Message-State: AOAM530Q10UVgVgHJ66r8XMAMl/IGRz8bJ/+oKuUmCvwVz0EXmzIH3k6
+        6TLrugBr3DM7ByC+xw44nPs=
+X-Google-Smtp-Source: ABdhPJwHiCsF874nALTnLvOsZlmaSBwgAGtg0Nx9+1Eu9B5wfvuj0173uoVehKdX38U4l5Kw3rikUQ==
+X-Received: by 2002:a17:907:a40f:b0:6d7:9f56:b511 with SMTP id sg15-20020a170907a40f00b006d79f56b511mr6476006ejc.674.1646589099630;
+        Sun, 06 Mar 2022 09:51:39 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.32
+        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:51:32 -0800 (PST)
+        Sun, 06 Mar 2022 09:51:39 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -74,9 +74,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH 19/26] usb: gadget: udc: max3420_udc: remove using list iterator after loop body as a ptr
-Date:   Sun,  6 Mar 2022 18:50:27 +0100
-Message-Id: <20220306175034.3084609-20-jakobkoschel@gmail.com>
+Subject: [PATCH 24/26] usb: gadget: udc: core: replace usage of rc to check if a list element was found
+Date:   Sun,  6 Mar 2022 18:50:32 +0100
+Message-Id: <20220306175034.3084609-25-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220306175034.3084609-1-jakobkoschel@gmail.com>
 References: <20220306175034.3084609-1-jakobkoschel@gmail.com>
@@ -86,56 +86,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the list does not contain the expected element, the value of
-list_for_each_entry() iterator will not point to a valid structure.
-To avoid type confusion in such case, the list iterator
-scope will be limited to list_for_each_entry() loop.
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-In preparation to limiting scope of a list iterator to the list traversal
-loop, use a dedicated pointer to point to the found element [1].
-Determining if an element was found is then simply checking if
-the pointer is != NULL instead of using the potentially bogus pointer.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable [1].
+
+This removes the need to check the rc value to determine if the
+break/goto was hit and can be made more obvious
+by checking if the variable was set within the list traversal loop.
 
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/udc/max3420_udc.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/udc/core.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/max3420_udc.c b/drivers/usb/gadget/udc/max3420_udc.c
-index d2a2b20cc1ad..d1b010b5f4a0 100644
---- a/drivers/usb/gadget/udc/max3420_udc.c
-+++ b/drivers/usb/gadget/udc/max3420_udc.c
-@@ -1044,22 +1044,25 @@ static int max3420_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
+diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
+index 568534a0d17c..d3c269ce3851 100644
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1528,7 +1528,7 @@ static int udc_bind_to_driver(struct usb_udc *udc, struct usb_gadget_driver *dri
  
- static int max3420_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ int usb_gadget_probe_driver(struct usb_gadget_driver *driver)
  {
--	struct max3420_req *t, *req = to_max3420_req(_req);
-+	struct max3420_req *t = NULL;
-+	struct max3420_req *req = to_max3420_req(_req);
-+	struct max3420_req *tmp;
- 	struct max3420_ep *ep = to_max3420_ep(_ep);
- 	unsigned long flags;
+-	struct usb_udc		*udc = NULL;
++	struct usb_udc		*udc = NULL, *tmp;
+ 	int			ret = -ENODEV;
  
- 	spin_lock_irqsave(&ep->lock, flags);
+ 	if (!driver || !driver->bind || !driver->setup)
+@@ -1536,10 +1536,12 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver)
  
- 	/* Pluck the descriptor from queue */
--	list_for_each_entry(t, &ep->queue, queue)
--		if (t == req) {
-+	list_for_each_entry(tmp, &ep->queue, queue)
-+		if (tmp == req) {
- 			list_del_init(&req->queue);
-+			t = tmp;
- 			break;
+ 	mutex_lock(&udc_lock);
+ 	if (driver->udc_name) {
+-		list_for_each_entry(udc, &udc_list, list) {
+-			ret = strcmp(driver->udc_name, dev_name(&udc->dev));
+-			if (!ret)
++		list_for_each_entry(tmp, &udc_list, list) {
++			ret = strcmp(driver->udc_name, dev_name(&tmp->dev));
++			if (!ret) {
++				udc = tmp;
+ 				break;
++			}
  		}
+ 		if (ret)
+ 			ret = -ENODEV;
+@@ -1548,10 +1550,12 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver)
+ 		else
+ 			goto found;
+ 	} else {
+-		list_for_each_entry(udc, &udc_list, list) {
++		list_for_each_entry(tmp, &udc_list, list) {
+ 			/* For now we take the first one */
+-			if (!udc->driver)
++			if (!tmp->driver) {
++				udc = tmp;
+ 				goto found;
++			}
+ 		}
+ 	}
  
- 	spin_unlock_irqrestore(&ep->lock, flags);
- 
--	if (t == req)
-+	if (t)
- 		max3420_req_done(req, -ECONNRESET);
- 
- 	return 0;
 -- 
 2.25.1
 
