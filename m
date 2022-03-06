@@ -2,129 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6BAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3151C4332F
 	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 15:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiCFPaX convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 10:30:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47390 "EHLO
+        id S233728AbiCFPbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 10:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiCFPaU (ORCPT
+        with ESMTP id S230420AbiCFPb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 10:30:20 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4E7403F9
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 07:29:28 -0800 (PST)
-Date:   Sun, 06 Mar 2022 15:29:17 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH -next] misc: rtsx: fix build for CONFIG_PM not set
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei WANG <wei_wang@realsil.com.cn>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Sun, 6 Mar 2022 10:31:29 -0500
+X-Greylist: delayed 1885 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Mar 2022 07:30:35 PST
+Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE6B403F9
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 07:30:35 -0800 (PST)
+Received: from p5098d998.dip0.t-ipconnect.de ([80.152.217.152] helo=hermes.fivetechno.de); authenticated
+        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1nQsLi-0001BA-1O; Sun, 06 Mar 2022 15:59:06 +0100
+X-Virus-Scanned: by amavisd-new 2.12.1 using newest ClamAV at
+        linuxbbg.five-lan.de
+Received: from odroid-x2.fritz.box (p5b125a90.dip0.t-ipconnect.de [91.18.90.144])
+        (authenticated bits=0)
+        by hermes.fivetechno.de (8.15.2/8.16.1/SUSE Linux 0.8) with ESMTPSA id 226Ex2O1032520
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Sun, 6 Mar 2022 15:59:03 +0100
+From:   Markus Reichl <m.reichl@fivetechno.de>
+To:     Evgeniy Polyakov <zbr@ioremap.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Message-Id: <TOXB8R.SKOD9EMPEKSW1@crapouillou.net>
-In-Reply-To: <20220306151212.00003e6f@Huawei.com>
-References: <20220226222457.13668-1-rdunlap@infradead.org>
-        <CAK8P3a07PoFGC8jyRG5_CjfVPCc2T79c7Fs_WmHZEkuqtG+oPg@mail.gmail.com>
-        <449d6ceb-7308-9543-c23c-831bebffda21@infradead.org>
-        <CAK8P3a30RbSk3Y5CyRrOjfTiq0c9XGxC3qjAD0154j3a7k+xQQ@mail.gmail.com>
-        <0D5Z7R.NUOWBMRT4GQ2@crapouillou.net>
-        <CAK8P3a3=5uud3jd7N3FEAnaLapX-0OYaiscBFNEQm2hzkTmj7g@mail.gmail.com>
-        <7U5Z7R.RNKITPUWCPX32@crapouillou.net> <20220306151212.00003e6f@Huawei.com>
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] w1: w1_therm: Add support for Maxim MAX31850 thermoelement IF.
+Date:   Sun,  6 Mar 2022 15:58:08 +0100
+Message-Id: <20220306145817.8753-1-m.reichl@fivetechno.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1646580635;4b2939a2;
+X-HE-SMSGID: 1nQsLi-0001BA-1O
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jonathan,
+MAX31850 shares family number 0x3B with DS1825. The device is generally
+compatible with DS1825 but needs a different temperature readout.
+It operates always in 14 bit mode and has all 4 higher bits of the
+Config register set to 1. Conversion time is 100ms.
 
-Le dim., mars 6 2022 at 15:12:12 +0000, Jonathan Cameron 
-<Jonathan.Cameron@Huawei.com> a écrit :
-> On Sun, 27 Feb 2022 17:56:31 +0000
-> Paul Cercueil <paul@crapouillou.net> wrote:
-> 
->>  Le dim., févr. 27 2022 at 18:51:38 +0100, Arnd Bergmann
->>  <arnd@arndb.de> a écrit :
->>  > On Sun, Feb 27, 2022 at 6:46 PM Paul Cercueil 
->> <paul@crapouillou.net>
->>  > wrote:
->>  >>  Le dim., févr. 27 2022 at 18:30:16 +0100, Arnd Bergmann
->>  >>
->>  >>  There could be a DEFINE_DEV_PM_OPS(), but I don't think that's
->>  >> really
->>  >>  needed - you can very well declare your struct dev_pm_ops 
->> without
->>  >> using
->>  >>  one of these macros. Just make sure to use the 
->> SYSTEM_SLEEP_PM_OPS /
->>  >>  RUNTIME_PM_OPS macros for the callbacks and pm_ptr() for the
->>  >> device.pm
->>  >>  pointer.
->>  >
->>  > Ah, of course, so it comes down to
->>  > s/SET_SYSTEM_SLEEP_PM_OPS/SYSTEM_SLEEP_PM_OPS/ while
->>  > removing all the #ifdef an __maybe_unused annotations. The 
->> pm_ptr()
->>  > in driver.pm makes this slightly more optimized AFAICT, but has no
->>  > effect on behavior, right?
->> 
->>  The use of SYSTEM_SLEEP_PM_OPS makes sure that the callbacks are
->>  dropped if the dev_pm_ops is dead code, and the pm_ptr() must be 
->> used
->>  for the compiler to know that the dev_pm_ops is dead code.
->> 
->>  -Paul
->> 
->> 
-> 
-> Hi Paul,
-> 
-> We have one remaining case which is still ugly to do.
-> Where both SYSTEM_SLEEP_PM_OPS/RUNTIME_PM_OPS are set and
-> the dev_pm_ops structure is exported.
-> 
-> For that one we still need to expose #ifdef fun in the
-> drivers I think.
-> 
-> Any suggestions on a clean solution for that?
+Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
+---
+ drivers/w1/slaves/w1_therm.c | 70 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 68 insertions(+), 2 deletions(-)
 
-Use the _EXPORT_DEV_PM_OPS() macro?
-
-If you make it call __EXPORT_SYMBOL() (with two underscores instead of 
-one) you can specify the namespace as well. All you need then is a nice 
-wrapper macro in pm_runtime.h, that can be used in the driver.
-
-Cheers,
--Paul
-
-> Currently I have this...
-> 
-> #ifdef CONFIG_PM
-> const struct dev_pm_ops bmc150_magn_pm_ops = {
-> 	SYSTEM_SLEEP_PM_OPS(...)
-> 	RUNTIME_PM_OPS(...)
-> };
-> EXPORT_SYMBOL_NS(bmc150_magn_pm_ops, IIO_BMC150_MAGN);
-> #else
-> static const __maybe_unused dev_pm_ops bmc150_magn_pm_ops = {
-> 	SYSTEM_SLEEP_PM_OPS(...)
-> 	RUNTIME_PM_OPS(...)
-> };
-> #endif
-> Not super clean but perhaps we do need
-> EXPORT_NS_DEV_PM_OPS
-> EXPORT_NS_GPL_DEV_PM_OPS
-> and potentially the non namespaced versions.
-> 
-> Thanks,
-> 
-> Jonathan
-
+diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
+index ca70c5f03206..5c794f558945 100644
+--- a/drivers/w1/slaves/w1_therm.c
++++ b/drivers/w1/slaves/w1_therm.c
+@@ -574,6 +574,41 @@ static inline int w1_DS18S20_convert_time(struct w1_slave *sl)
+ 		return SLAVE_CONV_TIME_OVERRIDE(sl);
+ }
+ 
++static inline int w1_DS1825_convert_time(struct w1_slave *sl)
++{
++	int ret;
++
++	if (!sl->family_data)
++		return -ENODEV;	/* device unknown */
++
++	if (SLAVE_CONV_TIME_OVERRIDE(sl) != CONV_TIME_DEFAULT)
++		return SLAVE_CONV_TIME_OVERRIDE(sl);
++
++	/* Return the conversion time, depending on resolution,
++	 * select maximum conversion time among all compatible devices
++	 */
++	switch (SLAVE_RESOLUTION(sl)) {
++	case 9:
++		ret = 95;
++		break;
++	case 10:
++		ret = 190;
++		break;
++	case 11:
++		ret = 375;
++		break;
++	case 12:
++		ret = 750;
++		break;
++	case 14:
++		ret = 100; /* MAX31850 only. Datasheet says 100ms  */
++		break;
++	default:
++		ret = 750;
++	}
++	return ret;
++}
++
+ static inline int w1_DS18B20_write_data(struct w1_slave *sl,
+ 				const u8 *data)
+ {
+@@ -594,6 +629,7 @@ static inline int w1_DS18B20_set_resolution(struct w1_slave *sl, int val)
+ 
+ 	/* DS18B20 resolution is 9 to 12 bits */
+ 	/* GX20MH01 resolution is 9 to 14 bits */
++	/* MAX31850 resolution is fixed 14 bits */
+ 	if (val < W1_THERM_RESOLUTION_MIN || val > W1_THERM_RESOLUTION_MAX)
+ 		return -EINVAL;
+ 
+@@ -649,6 +685,7 @@ static inline int w1_DS18B20_get_resolution(struct w1_slave *sl)
+ 		+ W1_THERM_RESOLUTION_MIN;
+ 	/* GX20MH01 has one special case:
+ 	 *   >=14 means 14 bits when getting resolution from bit value.
++	 * MAX31850 delivers fixed 15 and has 14 bits.
+ 	 * Other devices have no more then 12 bits.
+ 	 */
+ 	if (resolution > W1_THERM_RESOLUTION_MAX)
+@@ -715,6 +752,34 @@ static inline int w1_DS18S20_convert_temp(u8 rom[9])
+ 	return t;
+ }
+ 
++/**
++ * w1_DS1825_convert_temp() - temperature computation for DS1825
++ * @rom: data read from device RAM (8 data bytes + 1 CRC byte)
++ *
++ * Can be called for any DS1825 compliant device.
++ * Is used by MAX31850, too
++ *
++ * Return: value in millidegrees Celsius.
++ */
++
++static inline int w1_DS1825_convert_temp(u8 rom[9])
++{
++	u16 bv;
++	s16 t;
++
++	/* Signed 16-bit value to unsigned, cpu order */
++	bv = le16_to_cpup((__le16 *)rom);
++
++	/* Config register bit 7 = 1 - MA31850 found, 14 bit resolution */
++	if (rom[4] & 0x80) {
++		/* Mask out bits 0 (Fault) and 1 (Reserved) */
++		/* Avoid arithmetic shift of signed value */
++		bv = (bv & 0xFFFC); /* Degrees, lowest 4 bits are 2^-1, 2^-2 and 2 zero bits */
++	}
++	t = (s16)bv;	/* Degrees, lowest bit is 2^-4 */
++	return (int)t * 1000 / 16;	/* Sign-extend to int; millidegrees */
++}
++
+ /* Device capability description */
+ /* GX20MH01 device shares family number and structure with DS18B20 */
+ 
+@@ -757,9 +822,10 @@ static struct w1_therm_family_converter w1_therm_families[] = {
+ 		.bulk_read			= false
+ 	},
+ 	{
++		/* Also used for MAX31850 */
+ 		.f				= &w1_therm_family_DS1825,
+-		.convert			= w1_DS18B20_convert_temp,
+-		.get_conversion_time	= w1_DS18B20_convert_time,
++		.convert			= w1_DS1825_convert_temp,
++		.get_conversion_time	= w1_DS1825_convert_time,
+ 		.set_resolution		= w1_DS18B20_set_resolution,
+ 		.get_resolution		= w1_DS18B20_get_resolution,
+ 		.write_data			= w1_DS18B20_write_data,
+-- 
+2.30.2
 
