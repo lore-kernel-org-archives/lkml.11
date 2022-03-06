@@ -2,88 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D2F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 10:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 11:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233268AbiCFK6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 05:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44068 "EHLO
+        id S233296AbiCFLMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 06:12:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbiCFK6L (ORCPT
+        with ESMTP id S233271AbiCFLM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 05:58:11 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B510251327;
-        Sun,  6 Mar 2022 02:57:19 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id u61so25627525ybi.11;
-        Sun, 06 Mar 2022 02:57:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aHEq+uTl6nfvsjsO/RJcNNeHwQ4EKazLFhLjmEVQatc=;
-        b=MxBksCesBDIcCWl+hkBYg/w6miXRG9Q5QrE5gjytZ6YKublGRH9IYnkpD0RzjgIkMM
-         Ybh0KOf6dtjpuq9kCTt4E7V1UfmygXNWfCINHRLa08wpRGCs0lNcyPvbRDZnLNBkV84z
-         rj/Glxe5SM5cHaRqyBdtvKL/RDdDkPsU1uTZyeclgHZ9C67hEibAWAanMAmVw/zICM95
-         Vqtoo6CNXnH63pboR78m7cZjfQucUP7CbDCNbHvoKKbYX0FxBx4F00WxDrVzw4YvAFhx
-         xCwFfhPf+Dj9bUr7WHxHXTYjFqaNzTPfYhsppMAyzrL/NFBXtnTOcfUxcW2Bnb0Uv1dD
-         DdCw==
+        Sun, 6 Mar 2022 06:12:26 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4886606E1
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 03:11:34 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 627CE3F62D
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 11:11:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646565093;
+        bh=l+3yBFGs2kRX1wnF/pKhhZHPFcB8pp4apl6TxfDIAEo=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=cNaou40RPlvBhEhsJwKhPo6bGSoddqMe9MgHZCG9Jb2UvptSeUqi4YeEgCS5/2SsX
+         FXECURlxxqHJ3t5jsrjVRGj+Qy3g0+Ne3NKJVAVIwMi7zNdhHo/KwLQTkq2eXAnHGK
+         /oPD3YcMzb5W5h7cNz302qKYUF/ZZ0rzr4GYx1+C471gNOmpV1tfOUlr9EA42/xE4u
+         wGclw7t9Oo3Jz46gQaEor5Pgjwt0e7DgXJDL0wPJuhI9hbFAFLgQZR8ApFfpWCAT59
+         szwUrzxsvny96weNlj4vDtYyvvmNp5Lr1lQboLNEAje+9XQAXdvF4djXmYOTLXhcze
+         YZSjtKi0EUWTw==
+Received: by mail-ej1-f70.google.com with SMTP id le4-20020a170907170400b006dab546bc40so2878340ejc.15
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 03:11:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aHEq+uTl6nfvsjsO/RJcNNeHwQ4EKazLFhLjmEVQatc=;
-        b=XL1OM3ZEJfK7rrxZKf7g0hayTwOR6wP+dNqk9POXnnQOeQOfhKp1iXtpHCLXu+CioD
-         m6YOlr6DUXe7D5aINqNanqz+LCH2za8lS/58/OCP9/7bhmtoXC6lP0vUMI59CTf+hrJh
-         Famq5Mvr+pJM3RL6g9debJ+fiwX1Gz2IBRLB3g6Iy8zr/P0ojmjz5tvg9lJCdfT3f917
-         36MNPQfehZUMrDKZZuFa3gtyYigv3k1tXDlkajeGiCZRs5O9XqBkj1EoKFDKutWP/Mtz
-         3R/7yehGZ8NQb2iRjw+/hWEcT6c1dZj7+Q7SMMGHzzE1LER31IwmEk4lpaANjvHraMBC
-         GbTg==
-X-Gm-Message-State: AOAM530/w+CpZ887AQ5PgcCmBCWoaJkuPjQX4kNcin10Pxjc1KiaiXFP
-        k3LEry7hAXnBKiYbpS/tNAa2oCuWaTF/Kp2aORTEKLDkyBe1ng==
-X-Google-Smtp-Source: ABdhPJybb2kdKRoB/rsyuepmnmiAe86JSY4KXc40Fc9E2GwkqLNQDoZvLstL653EXSTGn3ccBwMmArYLPv0I+kbebCQ=
-X-Received: by 2002:a25:a064:0:b0:629:4589:ed3 with SMTP id
- x91-20020a25a064000000b0062945890ed3mr299260ybh.301.1646564238978; Sun, 06
- Mar 2022 02:57:18 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l+3yBFGs2kRX1wnF/pKhhZHPFcB8pp4apl6TxfDIAEo=;
+        b=deRZH8+UxYCmdN9sYyVeApWfmBgH92FmZV3MYNDorV0rX4lkoR9VOGBYn0iki7LVUZ
+         mKWntdcAWV+tAB/rIIhCOj9Qw6bwiSmQ87tjwvfCY9MVeXobHjjGI1eSc4QfEfBj+BHd
+         BlV7uLZ3SX5TMsPTBtAPyHhFiA+KlEjOABCrBjj5SIzUg39DNqTIf8D7H06X49wrjMrd
+         JlVkDH0VKNKDt20Omv7nzfc5Vjn5L/z/x7r67hFXu3s/wJT3IFpQbZSTKDLuM9ljInCW
+         U0YAgRYMjHY0/XO9+VWk940r8Z157/+gRMo2yuoQqnfN9xLf5+LApm4JzxwD4yiaEX6l
+         j5Vw==
+X-Gm-Message-State: AOAM530rl1t+Tzf9rXPTHd8Mpp8W42IZ1ZEax/YQG2N3luI71DuejWCc
+        GhRzFgQWS485//4epgtmZdXmS9VWp0Py5v73l3nf3JqpwGu/XLaPUzPgoHt4K1YnJEJrtl02r75
+        IJqk0OuYEjDSv40L96KH5lup8Uv1JBkJO5tF+xIakKw==
+X-Received: by 2002:a17:906:2bd7:b0:6cd:f89d:c828 with SMTP id n23-20020a1709062bd700b006cdf89dc828mr5685959ejg.232.1646565092949;
+        Sun, 06 Mar 2022 03:11:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzFqqBEGSiJykeoRQrbuWpAeTlK57pqo/2+l/saQ7OCHi1VkQZAPsAbz54RGXOqql4jg2q7ZA==
+X-Received: by 2002:a17:906:2bd7:b0:6cd:f89d:c828 with SMTP id n23-20020a1709062bd700b006cdf89dc828mr5685937ejg.232.1646565092784;
+        Sun, 06 Mar 2022 03:11:32 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id a9-20020a1709066d4900b006da888c3ef0sm3720444ejt.108.2022.03.06.03.11.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Mar 2022 03:11:32 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jan Kotas <jank@cadence.com>, Li Wei <liwei213@huawei.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-scsi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Cc:     Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 02/12] dt-bindings: ufs: samsung,exynos-ufs: use common bindings
+Date:   Sun,  6 Mar 2022 12:11:15 +0100
+Message-Id: <20220306111125.116455-3-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220306111125.116455-1-krzysztof.kozlowski@canonical.com>
+References: <20220306111125.116455-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <CAFQXTv2B10=i6DMV1iJpOT-Mj9F93hOi_415cn49N6X_yDFw2g@mail.gmail.com>
- <YiSOjGLzMCvKOm0G@kroah.com>
-In-Reply-To: <YiSOjGLzMCvKOm0G@kroah.com>
-From:   Yunhao Tian <t123yh.xyz@gmail.com>
-Date:   Sun, 6 Mar 2022 18:57:08 +0800
-Message-ID: <CAFQXTv1CACLRB-Tx07pR4xFNQncdq=i7Q7=vQzgD3hpdehr7cQ@mail.gmail.com>
-Subject: Re: PREEMPT_RT causes scheduling errors with f_rndis USB gadget
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2022=E5=B9=B43=E6=9C=886=E6=
-=97=A5=E5=91=A8=E6=97=A5 18:36=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Sun, Mar 06, 2022 at 06:17:54PM +0800, Yunhao Tian wrote:
-> > Hi everyone,
-> >
-> > I'm using Linux 5.15.24-rt31 kernel with PREEMPT_RT enabled, on my
-> > RK3308 board. I set up f_rndis gadget with the following script, and
-> > plugged my board to a x86 Linux computer running 5.15.25 kernel:
->
-> Does the same thing happen with the non-rt kernel?
->
-> thanks,
->
-> greg k-h
+Use common UFS bindings in Samsung Exynos UFS to cover generic/common
+properties in DTS.
 
-Hi Greg,
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/ufs/samsung,exynos-ufs.yaml | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-Thanks for your reply!
+diff --git a/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml b/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml
+index 95ac1c18334d..c949eb617313 100644
+--- a/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml
++++ b/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml
+@@ -11,12 +11,11 @@ maintainers:
+ 
+ description: |
+   Each Samsung UFS host controller instance should have its own node.
+-  This binding define Samsung specific binding other then what is used
+-  in the common ufshcd bindings
+-  [1] Documentation/devicetree/bindings/ufs/ufshcd-pltfrm.txt
+ 
+-properties:
++allOf:
++  - $ref: ufs-common.yaml
+ 
++properties:
+   compatible:
+     enum:
+       - samsung,exynos7-ufs
+@@ -47,9 +46,6 @@ properties:
+       - const: core_clk
+       - const: sclk_unipro_main
+ 
+-  interrupts:
+-    maxItems: 1
+-
+   phys:
+     maxItems: 1
+ 
+@@ -67,13 +63,12 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - interrupts
+   - phys
+   - phy-names
+   - clocks
+   - clock-names
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+-- 
+2.32.0
 
-This doesn't happen to non-rt kernel. It will only happen when
-PREEMPT_RT is turned on, with rt kernel.
-
-Regards,
-Yunhao
