@@ -2,167 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6997C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 16:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3330AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 16:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233793AbiCFQTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 11:19:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
+        id S233796AbiCFQZq convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 11:25:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233782AbiCFQTs (ORCPT
+        with ESMTP id S231939AbiCFQZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 11:19:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBA827143;
-        Sun,  6 Mar 2022 08:18:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6DB60EA9;
-        Sun,  6 Mar 2022 16:18:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AA61C340EC;
-        Sun,  6 Mar 2022 16:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646583534;
-        bh=kOCpLPMeKx6btbtkAxuflj8Zx9UJum6VwZbdJ7WeSlo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O+6JgA927oSdPWroQOKsnWLFD0U2LTzEcpwRMQ0rBtcDZ9mhKmWrJs8IVM4JskX3D
-         X4/F7sTWM8KMhKo0oH7iFmEGK6Gin2hdPRrJgMo5rzxvtvVjAn8w0CgjfOr9sDjQ52
-         KW6eJDolkYz1P217nTUYyvqQWtxBzip6oVr7rdlEfpZEoIO1JkAw77Mb4qPvt9I4kv
-         rYNvlJwvWO+9h7l1+9wXHHuh9lH0XcJvc3dlBqUKLNzIpqqD7KoZ3ciQlYdMjm1jPi
-         CrUH/r07kJWOvPrPKDKDi01zApjwURgRscmgQRXzs/WxaKdd5Z0uNIBX7e5uaKhyu5
-         CVZ4w3zvp1tww==
-Date:   Sun, 6 Mar 2022 18:18:13 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Haitao Huang <haitao.huang@linux.intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC] x86: Add SGX_IOC_ENCLAVE_AUGMENT_PAGES
-Message-ID: <YiTexZ9ob7Xtd8LG@iki.fi>
-References: <20220304122852.563475-1-jarkko@kernel.org>
- <op.1iilcwhywjvjmi@hhuan26-mobl1.mshome.net>
- <YiK8NEnvgPerEdFB@iki.fi>
- <op.1il2uqzhwjvjmi@hhuan26-mobl1.mshome.net>
+        Sun, 6 Mar 2022 11:25:45 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAB73EBB6
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 08:24:52 -0800 (PST)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KBRkQ1S5Qz67Gvv;
+        Mon,  7 Mar 2022 00:24:30 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sun, 6 Mar 2022 17:24:49 +0100
+Received: from localhost (10.47.64.190) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sun, 6 Mar
+ 2022 16:24:49 +0000
+Date:   Sun, 6 Mar 2022 16:24:43 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Paul Cercueil <paul@crapouillou.net>
+CC:     Arnd Bergmann <arnd@arndb.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Wei WANG <wei_wang@realsil.com.cn>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH -next] misc: rtsx: fix build for CONFIG_PM not set
+Message-ID: <20220306162443.00006a0d@Huawei.com>
+In-Reply-To: <20220306151212.00003e6f@Huawei.com>
+References: <20220226222457.13668-1-rdunlap@infradead.org>
+        <CAK8P3a07PoFGC8jyRG5_CjfVPCc2T79c7Fs_WmHZEkuqtG+oPg@mail.gmail.com>
+        <449d6ceb-7308-9543-c23c-831bebffda21@infradead.org>
+        <CAK8P3a30RbSk3Y5CyRrOjfTiq0c9XGxC3qjAD0154j3a7k+xQQ@mail.gmail.com>
+        <0D5Z7R.NUOWBMRT4GQ2@crapouillou.net>
+        <CAK8P3a3=5uud3jd7N3FEAnaLapX-0OYaiscBFNEQm2hzkTmj7g@mail.gmail.com>
+        <7U5Z7R.RNKITPUWCPX32@crapouillou.net>
+        <20220306151212.00003e6f@Huawei.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <op.1il2uqzhwjvjmi@hhuan26-mobl1.mshome.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.47.64.190]
+X-ClientProxiedBy: lhreml745-chm.china.huawei.com (10.201.108.195) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 06, 2022 at 07:38:40AM -0600, Haitao Huang wrote:
-> On Fri, 04 Mar 2022 19:26:12 -0600, Jarkko Sakkinen <jarkko@kernel.org>
-> wrote:
+On Sun, 6 Mar 2022 15:12:12 +0000
+Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+
+> On Sun, 27 Feb 2022 17:56:31 +0000
+> Paul Cercueil <paul@crapouillou.net> wrote:
 > 
-> > On Fri, Mar 04, 2022 at 10:27:58AM -0600, Haitao Huang wrote:
-> > > On Fri, 04 Mar 2022 06:28:52 -0600, Jarkko Sakkinen <jarkko@kernel.org>
-> > > wrote:
+> > Le dim., févr. 27 2022 at 18:51:38 +0100, Arnd Bergmann 
+> > <arnd@arndb.de> a écrit :  
+> > > On Sun, Feb 27, 2022 at 6:46 PM Paul Cercueil <paul@crapouillou.net> 
+> > > wrote:    
+> > >>  Le dim., févr. 27 2022 at 18:30:16 +0100, Arnd Bergmann
+> > >> 
+> > >>  There could be a DEFINE_DEV_PM_OPS(), but I don't think that's 
+> > >> really
+> > >>  needed - you can very well declare your struct dev_pm_ops without 
+> > >> using
+> > >>  one of these macros. Just make sure to use the SYSTEM_SLEEP_PM_OPS /
+> > >>  RUNTIME_PM_OPS macros for the callbacks and pm_ptr() for the 
+> > >> device.pm
+> > >>  pointer.    
 > > > 
-> > > > With SGX1 an enclave needs to be created with its maximum memory
-> > > demands
-> > > > allocated. Pages cannot be added to an enclave after it is
-> > > initialized.
-> > > > SGX2 introduces a new function, ENCLS[EAUG], that can be used to add
-> > > > pages
-> > > > to an initialized enclave. With SGX2 the enclave still needs to
-> > > set aside
-> > > > address space for its maximum memory demands during enclave
-> > > creation, but
-> > > > all pages need not be added before enclave initialization. Pages
-> > > can be
-> > > > added during enclave runtime.
-> > > >
-> > > > Add support for dynamically adding pages to an initialized enclave
-> > > with
-> > > > SGX_IOC_ENCLAVE_AUGMENT_PAGES, which performs EAUG's to a given
-> > > range of
-> > > > pages. Do not enforce any particular permissions from kernel, like is
-> > > > done
-> > > > for the pages added during the pre-initialization phase, as enclave
-> > > > controls the final permissions and content for these pages by issuing
-> > > > either ENCLU[EACCEPT] (empty RW) or ENCLU[EACCEPTCOPY] (arbitrary data
-> > > > and
-> > > > permissions).
-> > > >
-> > > > Explicit EAUG ioctl is a better choice than an implicit EAUG from
-> > > a page
-> > > > fault handler because it allows to have O(1) number of kernel-enclave
-> > > > round
-> > > > trips for EAUG-EACCEPT{COPY} process, instead of O(n), as it is in the
-> > > > case
-> > > > when a page fault handler EAUG single page at a time.
-> > > >
-> > > > Cc: Reinette Chatre <reinette.chatre@intel.com>
-> > > > Cc: Nathaniel McCallum <nathaniel@profian.com>
-> > > > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > > > ---
-> > > > Is contained in sgx2-v2.1 branch of
-> > > > git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-sgx.git
-> > > > ---
-> > > >  arch/x86/include/uapi/asm/sgx.h |  14 +++
-> > > >  arch/x86/kernel/cpu/sgx/ioctl.c | 159
-> > > ++++++++++++++++++++++++++++++++
-> > > >  2 files changed, 173 insertions(+)
-> > > >
-> > > > diff --git a/arch/x86/include/uapi/asm/sgx.h
-> > > > b/arch/x86/include/uapi/asm/sgx.h
-> > > > index c4e0326d281d..2b3a606e78fe 100644
-> > > > --- a/arch/x86/include/uapi/asm/sgx.h
-> > > > +++ b/arch/x86/include/uapi/asm/sgx.h
-> > > > @@ -35,6 +35,8 @@ enum sgx_page_flags {
-> > > >  	_IOWR(SGX_MAGIC, 0x06, struct sgx_enclave_modt)
-> > > >  #define SGX_IOC_ENCLAVE_REMOVE_PAGES \
-> > > >  	_IOWR(SGX_MAGIC, 0x08, struct sgx_enclave_remove_pages)
-> > > > +#define SGX_IOC_ENCLAVE_AUGMENT_PAGES \
-> > > > +	_IOWR(SGX_MAGIC, 0x09, struct sgx_enclave_augment_pages)
-> > > > /**
-> > > >   * struct sgx_enclave_create - parameter structure for the
-> > > > @@ -138,6 +140,18 @@ struct sgx_enclave_remove_pages {
-> > > >  	__u64 count;
-> > > >  };
-> > > > +/**
-> > > > + * struct sgx_enclave_augment_pages - parameter structure for the
-> > > > %SGX_IOC_ENCLAVE_ADD_PAGE ioctl
-> > > > + * @offset:	starting page offset
-> > > > + * @length:	length of the data (multiple of the page size)
-> > > > + * @count:	number of bytes added (multiple of the page size)
-> > > > + */
-> > > > +struct sgx_enclave_augment_pages {
-> > > > +	__u64 offset;
-> > > > +	__u64 length;
-> > > > +	__u64 count;
-> > > > +};
-> > > > +
-> > > 
-> > > As I stated in another thread, we need a mechanism to allow EAUG page
-> > > lazily, e.g., on #PF. Can we add a field here to indicate that?
+> > > Ah, of course, so it comes down to
+> > > s/SET_SYSTEM_SLEEP_PM_OPS/SYSTEM_SLEEP_PM_OPS/ while
+> > > removing all the #ifdef an __maybe_unused annotations. The pm_ptr()
+> > > in driver.pm makes this slightly more optimized AFAICT, but has no
+> > > effect on behavior, right?    
 > > 
-> > ioctl *does not* prevent lazy behaviour where, or if, it makes sense.
+> > The use of SYSTEM_SLEEP_PM_OPS makes sure that the callbacks are 
+> > dropped if the dev_pm_ops is dead code, and the pm_ptr() must be used 
+> > for the compiler to know that the dev_pm_ops is dead code.
 > > 
-> > For growing memory (e.g. MAP_GROWSDOWN) you should just take advantage of
-> > the vDSO's exception handling mechanism and call the ioctl on demand.
+> > -Paul
 > > 
-> > For a high-performance user space you still want to be also do minimum
-> > round trip "batch jobs" where they are possible.
-> > 
+> >   
 > 
-> Looks like you are pursuing MAP_POPULATE to optimize out the O(N) trips.
-> Just for my understanding of your proposal in case this ever comes back. For
-> the on-demand case,  this ioctl is required for for each #PF. That's extra
-> round trip compared to automatic kernel EAUG on #PF.
+> Hi Paul,
+> 
+> We have one remaining case which is still ugly to do.
+> Where both SYSTEM_SLEEP_PM_OPS/RUNTIME_PM_OPS are set and
+> the dev_pm_ops structure is exported.
+> 
+> For that one we still need to expose #ifdef fun in the
+> drivers I think.
+> 
+> Any suggestions on a clean solution for that?
+> 
+> Currently I have this...
+> 
+> #ifdef CONFIG_PM
+> const struct dev_pm_ops bmc150_magn_pm_ops = {
+> 	SYSTEM_SLEEP_PM_OPS(...)
+> 	RUNTIME_PM_OPS(...)
+> };
+> EXPORT_SYMBOL_NS(bmc150_magn_pm_ops, IIO_BMC150_MAGN);
+> #else
+> static const __maybe_unused dev_pm_ops bmc150_magn_pm_ops = {
+With this renamed to dummy_bmc150_magn_pm_ops to avoid
+the previous declared warning I'll otherwise get. oops.
+> 	SYSTEM_SLEEP_PM_OPS(...)
+> 	RUNTIME_PM_OPS(...)
+> };
+> #endif
+> Not super clean but perhaps we do need
+> EXPORT_NS_DEV_PM_OPS
+> EXPORT_NS_GPL_DEV_PM_OPS
+> and potentially the non namespaced versions.
+> 
+> Thanks,
+> 
+> Jonathan
 
-Point taken.
-
-I think we could have both. It would then work quite a lot like for
-normal memory.
-
-BR, Jarkko
