@@ -2,171 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3151C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 15:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14185C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 15:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233728AbiCFPbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 10:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        id S233741AbiCFPcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 10:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiCFPb3 (ORCPT
+        with ESMTP id S230420AbiCFPcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 10:31:29 -0500
-X-Greylist: delayed 1885 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Mar 2022 07:30:35 PST
-Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE6B403F9
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 07:30:35 -0800 (PST)
-Received: from p5098d998.dip0.t-ipconnect.de ([80.152.217.152] helo=hermes.fivetechno.de); authenticated
-        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1nQsLi-0001BA-1O; Sun, 06 Mar 2022 15:59:06 +0100
-X-Virus-Scanned: by amavisd-new 2.12.1 using newest ClamAV at
-        linuxbbg.five-lan.de
-Received: from odroid-x2.fritz.box (p5b125a90.dip0.t-ipconnect.de [91.18.90.144])
-        (authenticated bits=0)
-        by hermes.fivetechno.de (8.15.2/8.16.1/SUSE Linux 0.8) with ESMTPSA id 226Ex2O1032520
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sun, 6 Mar 2022 15:59:03 +0100
-From:   Markus Reichl <m.reichl@fivetechno.de>
-To:     Evgeniy Polyakov <zbr@ioremap.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] w1: w1_therm: Add support for Maxim MAX31850 thermoelement IF.
-Date:   Sun,  6 Mar 2022 15:58:08 +0100
-Message-Id: <20220306145817.8753-1-m.reichl@fivetechno.de>
-X-Mailer: git-send-email 2.30.2
+        Sun, 6 Mar 2022 10:32:53 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4762540928;
+        Sun,  6 Mar 2022 07:32:01 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id t11so14567637ioi.7;
+        Sun, 06 Mar 2022 07:32:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=lTxXsLQ3/sJFqkOXAUPDqcJOvuhEL+3+rvVpOV3yWgw=;
+        b=RnGMWIJ3X7XTQvdkajhB5xVRNavoMahZJLBD9vyo0KNzdbWHGQaNf6knBDBoQ55VKT
+         F1YZYuOBsKX7jyVBVwT6yyn6ij94uvyHV75j+fGsXYREYMcGkTcobcAkuRiSpWYhyHbj
+         4apRIQoLGDHinLIEd+yHG8G1ErdUdvduAtRLBoAmOf3DsWksKa8xDilKfoZNdqxC0urv
+         8sYOAwGPAjSknRcnPCgDWuzHcloa4RF3zBgQPUqtiLbF1xLpauScZEhOgHQJQUCzcu13
+         1g46ZyUKbOOCasFMGWhP2+Arb1JT/MrH66sT0nJia2yu+1W1ufX86S1zeHHIF+9e8M+O
+         HYnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=lTxXsLQ3/sJFqkOXAUPDqcJOvuhEL+3+rvVpOV3yWgw=;
+        b=tGppqTxHMLi1QrCSoiQmmc3yLzTrXPKz6e0P7a0pkiLmrDHdrtFQ5YxZLs5yCcIyV0
+         CwGyUDyGGg4SkfrDRDY74susVcc8gZdeZrBD/6Mq+bmvkhsSbocOO6IZB3k1rHuE1cMh
+         Eg91o5pK31b2VSCkmc+xpq5CQJUs61L8rG4eQ36aRlP+Ixmmvgz7G6dyoUHIaaLYP57p
+         2yBp8zFHDmXAMf7wEGel3n4R4awGkifOMfpTx+qKd0u2CX4He0sew8Ab6sSQRXOnhl1Z
+         LrBxV7Z35i3hITzm3fCeyqEbrd+RLQraoIwlbn8/b82mggxQ1CrQ2RVl+eVNwE5QZxQx
+         T+IA==
+X-Gm-Message-State: AOAM530FfYYbQdazA3wcJiV+/0VQGq7G2KssEAaza6qBI5RPIpPyOHzl
+        B2D5h8EnxnS61ojkuGzVaDB6eKFeVJ1lQYW/JH8LRo+GIZDinw==
+X-Google-Smtp-Source: ABdhPJyurIugi2NpH/AHJdPJSjrCSnkjk+CgFnV6VItjl+2OHue5fkK5G7G6tY9vo60gMRNBnEb4/q68ZQ/zEQ56f2o=
+X-Received: by 2002:a05:6638:168b:b0:314:7a8d:19d4 with SMTP id
+ f11-20020a056638168b00b003147a8d19d4mr7354926jat.199.1646580720634; Sun, 06
+ Mar 2022 07:32:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1646580635;4b2939a2;
-X-HE-SMSGID: 1nQsLi-0001BA-1O
+References: <20220301145233.3689119-1-arnd@kernel.org> <CA+icZUW8N25F_9_DVhRiQoe6rnvARH2AhKJgjKeYyNmdz5t_Lw@mail.gmail.com>
+In-Reply-To: <CA+icZUW8N25F_9_DVhRiQoe6rnvARH2AhKJgjKeYyNmdz5t_Lw@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Sun, 6 Mar 2022 16:31:24 +0100
+Message-ID: <CA+icZUUM1v1FCaJDk1BaRN9+uOQD53r5Rwcv=ESQHhdN9QRedA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] [v3] Kbuild: move to -std=gnu11
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MAX31850 shares family number 0x3B with DS1825. The device is generally
-compatible with DS1825 but needs a different temperature readout.
-It operates always in 14 bit mode and has all 4 higher bits of the
-Config register set to 1. Conversion time is 100ms.
+On Fri, Mar 4, 2022 at 5:25 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+[ ... ]
+> When I saw the first patches in this area, I was thinking what about
+> the tools/ build-system?
+> This ECO system has its own rules.
+>
 
-Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
----
- drivers/w1/slaves/w1_therm.c | 70 ++++++++++++++++++++++++++++++++++--
- 1 file changed, 68 insertions(+), 2 deletions(-)
+My other goal was to build perf with my selfmade or distro LLVM/Clang
+and -std=gnu11.
 
-diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
-index ca70c5f03206..5c794f558945 100644
---- a/drivers/w1/slaves/w1_therm.c
-+++ b/drivers/w1/slaves/w1_therm.c
-@@ -574,6 +574,41 @@ static inline int w1_DS18S20_convert_time(struct w1_slave *sl)
- 		return SLAVE_CONV_TIME_OVERRIDE(sl);
- }
- 
-+static inline int w1_DS1825_convert_time(struct w1_slave *sl)
-+{
-+	int ret;
-+
-+	if (!sl->family_data)
-+		return -ENODEV;	/* device unknown */
-+
-+	if (SLAVE_CONV_TIME_OVERRIDE(sl) != CONV_TIME_DEFAULT)
-+		return SLAVE_CONV_TIME_OVERRIDE(sl);
-+
-+	/* Return the conversion time, depending on resolution,
-+	 * select maximum conversion time among all compatible devices
-+	 */
-+	switch (SLAVE_RESOLUTION(sl)) {
-+	case 9:
-+		ret = 95;
-+		break;
-+	case 10:
-+		ret = 190;
-+		break;
-+	case 11:
-+		ret = 375;
-+		break;
-+	case 12:
-+		ret = 750;
-+		break;
-+	case 14:
-+		ret = 100; /* MAX31850 only. Datasheet says 100ms  */
-+		break;
-+	default:
-+		ret = 750;
-+	}
-+	return ret;
-+}
-+
- static inline int w1_DS18B20_write_data(struct w1_slave *sl,
- 				const u8 *data)
- {
-@@ -594,6 +629,7 @@ static inline int w1_DS18B20_set_resolution(struct w1_slave *sl, int val)
- 
- 	/* DS18B20 resolution is 9 to 12 bits */
- 	/* GX20MH01 resolution is 9 to 14 bits */
-+	/* MAX31850 resolution is fixed 14 bits */
- 	if (val < W1_THERM_RESOLUTION_MIN || val > W1_THERM_RESOLUTION_MAX)
- 		return -EINVAL;
- 
-@@ -649,6 +685,7 @@ static inline int w1_DS18B20_get_resolution(struct w1_slave *sl)
- 		+ W1_THERM_RESOLUTION_MIN;
- 	/* GX20MH01 has one special case:
- 	 *   >=14 means 14 bits when getting resolution from bit value.
-+	 * MAX31850 delivers fixed 15 and has 14 bits.
- 	 * Other devices have no more then 12 bits.
- 	 */
- 	if (resolution > W1_THERM_RESOLUTION_MAX)
-@@ -715,6 +752,34 @@ static inline int w1_DS18S20_convert_temp(u8 rom[9])
- 	return t;
- }
- 
-+/**
-+ * w1_DS1825_convert_temp() - temperature computation for DS1825
-+ * @rom: data read from device RAM (8 data bytes + 1 CRC byte)
-+ *
-+ * Can be called for any DS1825 compliant device.
-+ * Is used by MAX31850, too
-+ *
-+ * Return: value in millidegrees Celsius.
-+ */
-+
-+static inline int w1_DS1825_convert_temp(u8 rom[9])
-+{
-+	u16 bv;
-+	s16 t;
-+
-+	/* Signed 16-bit value to unsigned, cpu order */
-+	bv = le16_to_cpup((__le16 *)rom);
-+
-+	/* Config register bit 7 = 1 - MA31850 found, 14 bit resolution */
-+	if (rom[4] & 0x80) {
-+		/* Mask out bits 0 (Fault) and 1 (Reserved) */
-+		/* Avoid arithmetic shift of signed value */
-+		bv = (bv & 0xFFFC); /* Degrees, lowest 4 bits are 2^-1, 2^-2 and 2 zero bits */
-+	}
-+	t = (s16)bv;	/* Degrees, lowest bit is 2^-4 */
-+	return (int)t * 1000 / 16;	/* Sign-extend to int; millidegrees */
-+}
-+
- /* Device capability description */
- /* GX20MH01 device shares family number and structure with DS18B20 */
- 
-@@ -757,9 +822,10 @@ static struct w1_therm_family_converter w1_therm_families[] = {
- 		.bulk_read			= false
- 	},
- 	{
-+		/* Also used for MAX31850 */
- 		.f				= &w1_therm_family_DS1825,
--		.convert			= w1_DS18B20_convert_temp,
--		.get_conversion_time	= w1_DS18B20_convert_time,
-+		.convert			= w1_DS1825_convert_temp,
-+		.get_conversion_time	= w1_DS1825_convert_time,
- 		.set_resolution		= w1_DS18B20_set_resolution,
- 		.get_resolution		= w1_DS18B20_get_resolution,
- 		.write_data			= w1_DS18B20_write_data,
--- 
-2.30.2
+I was able to do so:
 
+$ git log --oneline --no-merges v5.17-rc6..for-5.17/tools-std_gnu11-dileks-v2
+2d99b1cfa897 (for-5.17/tools-std_gnu11-dileks-v2) perf: Use -std=gnu11
+c345a183c4ef tools: libtraceevent: Use -std=gnu11
+26f77082f233 tools: libsubcmd: Use -std=gnu11
+aaba58ec81c8 tools: libbpf: Use -std=gnu11
+ffc800af3be4 tools: libapi: Use -std=gnu11
+
+For perf/libperl-support I needed an extra patch:
+
+$ git log --oneline --no-merges
+v5.17-rc6..for-5.17/perf-libperl_support-clang-dileks
+316a1917ec05 (for-5.17/perf-libperl_support-clang-dileks) perf: Fix
+libperl support with clang and perl v5.34
+
+For details see [1].
+
+I can send the patches if someone wants them.
+
+[1] https://marc.info/?t=164646683300002&r=1&w=2
