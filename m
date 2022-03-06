@@ -2,230 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 02:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 737CDC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 02:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232494AbiCFCOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Mar 2022 21:14:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
+        id S232528AbiCFCRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Mar 2022 21:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbiCFCOq (ORCPT
+        with ESMTP id S230439AbiCFCRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Mar 2022 21:14:46 -0500
-Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560B725C42
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Mar 2022 18:13:54 -0800 (PST)
-X-QQ-mid: bizesmtp81t1646532785t9u92oyv
-Received: from localhost.localdomain ( [114.222.120.105])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 06 Mar 2022 10:12:57 +0800 (CST)
-X-QQ-SSF: 01400000002000B0I000B00A0000000
-X-QQ-FEAT: TskX/GkkryDl1ebvnVWbkmMHiBjfiugUE3fW1N5Gxre2+vjdIH/KUeZp8+ZoO
-        /EZHC0T1v47W8jWzh/DD9Ne5AwHfy46VoajLTi3JnjNeDXrkViZm9Drxh6v2uRv20To9Mim
-        ND2rMoK0HVi6fmBdgWPpwOMo7VkjNmEdB4r4z2N/ZQ2opJO01l1BIHvjzasjfuIG7HYZ6q2
-        dczvhDyu5DiYMbQ2yOq6F8JOVeZ9EG8mDaDySIHkh/ioLhC2bykRwaovj8N11JdFHDhgi/P
-        pe/WGphfS/SVRJ2NvQ1bH4xxwQSTQ60+sKrrwqvBrERDmAuXZO9gBnWYzUHaZuLArE8LAD+
-        u+UIrw077Ol2Ez2AvHMu2OJnIJx9w==
-X-QQ-GoodBg: 2
-From:   zhanglianjie <zhanglianjie@uniontech.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        zhanglianjie <zhanglianjie@uniontech.com>
-Subject: [PATCH 1/2] cpufreq: unify the show() and store() styles of attr
-Date:   Sun,  6 Mar 2022 10:12:49 +0800
-Message-Id: <20220306021250.64315-1-zhanglianjie@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Sat, 5 Mar 2022 21:17:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A975325C49;
+        Sat,  5 Mar 2022 18:16:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B083B80CAF;
+        Sun,  6 Mar 2022 02:16:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AD35C004E1;
+        Sun,  6 Mar 2022 02:16:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646532977;
+        bh=qhbhEF4KNGgan5nuXFyOhv3ib4IX2nZMIJjs4aq0fyQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ri6fW/rNQDL3GJBOmTvy22BllCS0Mx9/2fq6gRMgmLrV6oJc4Z2gFimfPkRq3hRsC
+         Gd7hao4qpgmCrY0RcAChZl2tehIZm230vlPKPGMneipK6jdZ8pDGUSHd8gBVlbMeMK
+         ZUso1mtvVo9bhmQXpMyoN0Ww/usgHR98ELsEexGCufyRWxoyRfA6q9NAMM2FmUQOEb
+         A75ydaj0A4LkH0hekXA2YYPWbBOFG0WVqGA7jMmKI1RflqrU1JMT6V278Ql4KEUgMa
+         XmYSpW4XlvIh2EVoWNqWMWo9RWSZl4HsxtTkhbi7WK+g6xt9qgN3Y7ROSGrUvG5KI1
+         mQVatFyzsCRiQ==
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        linux-sgx@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        codalist@coda.cs.cmu.edu, linux-unionfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH RFC] mm: Add f_ops->populate()
+Date:   Sun,  6 Mar 2022 04:15:33 +0200
+Message-Id: <20220306021534.83553-1-jarkko@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unify the show() and store() styles of attr,
-change show_xxx(), store_xxx() to xxx_show(), xxx_store().
+Sometimes you might want to use MAP_POPULATE to ask a device driver to
+initialize the device memory in some specific manner. SGX driver can use
+this to request more memory by issuing ENCLS[EAUG] x86 opcode for each
+page in the address range.
 
-Signed-off-by: zhanglianjie <zhanglianjie@uniontech.com>
+Add f_ops->populate() with the same parameters as f_ops->mmap() and make
+it conditionally called inside call_mmap(). Update call sites
+accodingly.
 
-diff --git a/drivers/cpufreq/cpufreq_conservative.c b/drivers/cpufreq/cpufreq_conservative.c
-index 08515f7e515f..b6bd0ff35323 100644
---- a/drivers/cpufreq/cpufreq_conservative.c
-+++ b/drivers/cpufreq/cpufreq_conservative.c
-@@ -146,7 +146,7 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+---
+ arch/mips/kernel/vdso.c                    |  2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c |  2 +-
+ fs/coda/file.c                             |  2 +-
+ fs/overlayfs/file.c                        |  2 +-
+ include/linux/fs.h                         | 10 ++++++++--
+ include/linux/mm.h                         |  2 +-
+ ipc/shm.c                                  |  2 +-
+ mm/mmap.c                                  | 10 +++++-----
+ mm/nommu.c                                 |  4 ++--
+ 9 files changed, 21 insertions(+), 15 deletions(-)
 
- /************************** sysfs interface ************************/
-
--static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
-+static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
- 					  const char *buf, size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -161,7 +161,7 @@ static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
- 	return count;
+diff --git a/arch/mips/kernel/vdso.c b/arch/mips/kernel/vdso.c
+index 3d0cf471f2fe..89f3f3da9abd 100644
+--- a/arch/mips/kernel/vdso.c
++++ b/arch/mips/kernel/vdso.c
+@@ -102,7 +102,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+ 		base = mmap_region(NULL, STACK_TOP, PAGE_SIZE,
+ 				VM_READ | VM_EXEC |
+ 				VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC,
+-				0, NULL);
++				0, NULL, false);
+ 		if (IS_ERR_VALUE(base)) {
+ 			ret = base;
+ 			goto out;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+index 1b526039a60d..4c71f64d6a79 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+@@ -107,7 +107,7 @@ static int i915_gem_dmabuf_mmap(struct dma_buf *dma_buf, struct vm_area_struct *
+ 	if (!obj->base.filp)
+ 		return -ENODEV;
+ 
+-	ret = call_mmap(obj->base.filp, vma);
++	ret = call_mmap(obj->base.filp, vma, false);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/fs/coda/file.c b/fs/coda/file.c
+index 29dd87be2fb8..e14f312fdbf8 100644
+--- a/fs/coda/file.c
++++ b/fs/coda/file.c
+@@ -173,7 +173,7 @@ coda_file_mmap(struct file *coda_file, struct vm_area_struct *vma)
+ 	spin_unlock(&cii->c_lock);
+ 
+ 	vma->vm_file = get_file(host_file);
+-	ret = call_mmap(vma->vm_file, vma);
++	ret = call_mmap(vma->vm_file, vma, false);
+ 
+ 	if (ret) {
+ 		/* if call_mmap fails, our caller will put host_file so we
+diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
+index fa125feed0ff..b963a9397e80 100644
+--- a/fs/overlayfs/file.c
++++ b/fs/overlayfs/file.c
+@@ -503,7 +503,7 @@ static int ovl_mmap(struct file *file, struct vm_area_struct *vma)
+ 	vma_set_file(vma, realfile);
+ 
+ 	old_cred = ovl_override_creds(file_inode(file)->i_sb);
+-	ret = call_mmap(vma->vm_file, vma);
++	ret = call_mmap(vma->vm_file, vma, false);
+ 	revert_creds(old_cred);
+ 	ovl_file_accessed(file);
+ 
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index e2d892b201b0..fb90284e1c82 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -1993,6 +1993,7 @@ struct file_operations {
+ 	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);
+ 	long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
+ 	int (*mmap) (struct file *, struct vm_area_struct *);
++	int (*populate)(struct file *, struct vm_area_struct *);
+ 	unsigned long mmap_supported_flags;
+ 	int (*open) (struct inode *, struct file *);
+ 	int (*flush) (struct file *, fl_owner_t id);
+@@ -2074,9 +2075,14 @@ static inline ssize_t call_write_iter(struct file *file, struct kiocb *kio,
+ 	return file->f_op->write_iter(kio, iter);
  }
-
--static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
-+static ssize_t up_threshold_store(struct gov_attr_set *attr_set,
- 				  const char *buf, size_t count)
+ 
+-static inline int call_mmap(struct file *file, struct vm_area_struct *vma)
++static inline int call_mmap(struct file *file, struct vm_area_struct *vma, bool do_populate)
  {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -177,7 +177,7 @@ static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
- 	return count;
+-	return file->f_op->mmap(file, vma);
++	int ret = file->f_op->mmap(file, vma);
++
++	if (!ret && do_populate)
++		ret = file->f_op->populate(file, vma);
++
++	return ret;
  }
-
--static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
-+static ssize_t down_threshold_store(struct gov_attr_set *attr_set,
- 				    const char *buf, size_t count)
+ 
+ extern ssize_t vfs_read(struct file *, char __user *, size_t, loff_t *);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 213cc569b192..6c8c036f423b 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2683,7 +2683,7 @@ extern unsigned long get_unmapped_area(struct file *, unsigned long, unsigned lo
+ 
+ extern unsigned long mmap_region(struct file *file, unsigned long addr,
+ 	unsigned long len, vm_flags_t vm_flags, unsigned long pgoff,
+-	struct list_head *uf);
++	struct list_head *uf, bool do_populate);
+ extern unsigned long do_mmap(struct file *file, unsigned long addr,
+ 	unsigned long len, unsigned long prot, unsigned long flags,
+ 	unsigned long pgoff, unsigned long *populate, struct list_head *uf);
+diff --git a/ipc/shm.c b/ipc/shm.c
+index b3048ebd5c31..89b28f32acf0 100644
+--- a/ipc/shm.c
++++ b/ipc/shm.c
+@@ -587,7 +587,7 @@ static int shm_mmap(struct file *file, struct vm_area_struct *vma)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = call_mmap(sfd->file, vma);
++	ret = call_mmap(sfd->file, vma, do_populate);
+ 	if (ret) {
+ 		shm_close(vma);
+ 		return ret;
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 1e8fdb0b51ed..5eca79957d4c 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1413,6 +1413,7 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
+ 			unsigned long flags, unsigned long pgoff,
+ 			unsigned long *populate, struct list_head *uf)
  {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -195,7 +195,7 @@ static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
- 	return count;
++	bool do_populate = (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE;
+ 	struct mm_struct *mm = current->mm;
+ 	vm_flags_t vm_flags;
+ 	int pkey = 0;
+@@ -1579,10 +1580,9 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
+ 			vm_flags |= VM_NORESERVE;
+ 	}
+ 
+-	addr = mmap_region(file, addr, len, vm_flags, pgoff, uf);
++	addr = mmap_region(file, addr, len, vm_flags, pgoff, uf, do_populate);
+ 	if (!IS_ERR_VALUE(addr) &&
+-	    ((vm_flags & VM_LOCKED) ||
+-	     (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE))
++	    ((vm_flags & VM_LOCKED) || do_populate))
+ 		*populate = len;
+ 	return addr;
  }
-
--static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
-+static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
- 				      const char *buf, size_t count)
+@@ -1721,7 +1721,7 @@ static inline int accountable_mapping(struct file *file, vm_flags_t vm_flags)
+ 
+ unsigned long mmap_region(struct file *file, unsigned long addr,
+ 		unsigned long len, vm_flags_t vm_flags, unsigned long pgoff,
+-		struct list_head *uf)
++		struct list_head *uf, bool do_populate)
  {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -220,7 +220,7 @@ static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
- 	return count;
- }
-
--static ssize_t store_freq_step(struct gov_attr_set *attr_set, const char *buf,
-+static ssize_t freq_step_store(struct gov_attr_set *attr_set, const char *buf,
- 			       size_t count)
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma, *prev, *merge;
+@@ -1790,7 +1790,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+ 		}
+ 
+ 		vma->vm_file = get_file(file);
+-		error = call_mmap(file, vma);
++		error = call_mmap(file, vma, do_populate);
+ 		if (error)
+ 			goto unmap_and_free_vma;
+ 
+diff --git a/mm/nommu.c b/mm/nommu.c
+index 55a9e48a7a02..a3c20b803c27 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -941,7 +941,7 @@ static int do_mmap_shared_file(struct vm_area_struct *vma)
  {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-diff --git a/drivers/cpufreq/cpufreq_governor.c b/drivers/cpufreq/cpufreq_governor.c
-index 63f7c219062b..0d42cf8b88d8 100644
---- a/drivers/cpufreq/cpufreq_governor.c
-+++ b/drivers/cpufreq/cpufreq_governor.c
-@@ -27,7 +27,7 @@ static DEFINE_MUTEX(gov_dbs_data_mutex);
-
- /* Common sysfs tunables */
- /*
-- * store_sampling_rate - update sampling rate effective immediately if needed.
-+ * sampling_rate_store - update sampling rate effective immediately if needed.
-  *
-  * If new rate is smaller than the old, simply updating
-  * dbs.sampling_rate might not be appropriate. For example, if the
-@@ -41,7 +41,7 @@ static DEFINE_MUTEX(gov_dbs_data_mutex);
-  * This must be called with dbs_data->mutex held, otherwise traversing
-  * policy_dbs_list isn't safe.
-  */
--ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
-+ssize_t sampling_rate_store(struct gov_attr_set *attr_set, const char *buf,
- 			    size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -80,7 +80,7 @@ ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
-
- 	return count;
- }
--EXPORT_SYMBOL_GPL(store_sampling_rate);
-+EXPORT_SYMBOL_GPL(sampling_rate_store);
-
- /**
-  * gov_update_cpu_data - Update CPU load data.
-diff --git a/drivers/cpufreq/cpufreq_governor.h b/drivers/cpufreq/cpufreq_governor.h
-index bab8e6140377..65ecf32ba4f8 100644
---- a/drivers/cpufreq/cpufreq_governor.h
-+++ b/drivers/cpufreq/cpufreq_governor.h
-@@ -51,7 +51,7 @@ static inline struct dbs_data *to_dbs_data(struct gov_attr_set *attr_set)
- }
-
- #define gov_show_one(_gov, file_name)					\
--static ssize_t show_##file_name						\
-+static ssize_t file_name##_show						\
- (struct gov_attr_set *attr_set, char *buf)				\
- {									\
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);		\
-@@ -60,7 +60,7 @@ static ssize_t show_##file_name						\
- }
-
- #define gov_show_one_common(file_name)					\
--static ssize_t show_##file_name						\
-+static ssize_t file_name##_show						\
- (struct gov_attr_set *attr_set, char *buf)				\
- {									\
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);		\
-@@ -69,11 +69,11 @@ static ssize_t show_##file_name						\
-
- #define gov_attr_ro(_name)						\
- static struct governor_attr _name =					\
--__ATTR(_name, 0444, show_##_name, NULL)
-+__ATTR(_name, 0444, _name##_show, NULL)
-
- #define gov_attr_rw(_name)						\
- static struct governor_attr _name =					\
--__ATTR(_name, 0644, show_##_name, store_##_name)
-+__ATTR(_name, 0644, _name##_show, _name##_store)
-
- /* Common to all CPUs of a policy */
- struct policy_dbs_info {
-@@ -176,7 +176,7 @@ void od_register_powersave_bias_handler(unsigned int (*f)
- 		(struct cpufreq_policy *, unsigned int, unsigned int),
- 		unsigned int powersave_bias);
- void od_unregister_powersave_bias_handler(void);
--ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
-+ssize_t sampling_rate_store(struct gov_attr_set *attr_set, const char *buf,
- 			    size_t count);
- void gov_update_cpu_data(struct dbs_data *dbs_data);
- #endif /* _CPUFREQ_GOVERNOR_H */
-diff --git a/drivers/cpufreq/cpufreq_ondemand.c b/drivers/cpufreq/cpufreq_ondemand.c
-index 6a41ea4729b8..e8fbf970ff07 100644
---- a/drivers/cpufreq/cpufreq_ondemand.c
-+++ b/drivers/cpufreq/cpufreq_ondemand.c
-@@ -202,7 +202,7 @@ static unsigned int od_dbs_update(struct cpufreq_policy *policy)
- /************************** sysfs interface ************************/
- static struct dbs_governor od_dbs_gov;
-
--static ssize_t store_io_is_busy(struct gov_attr_set *attr_set, const char *buf,
-+static ssize_t io_is_busy_store(struct gov_attr_set *attr_set, const char *buf,
- 				size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -220,7 +220,7 @@ static ssize_t store_io_is_busy(struct gov_attr_set *attr_set, const char *buf,
- 	return count;
- }
-
--static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
-+static ssize_t up_threshold_store(struct gov_attr_set *attr_set,
- 				  const char *buf, size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -237,7 +237,7 @@ static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
- 	return count;
- }
-
--static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
-+static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
- 					  const char *buf, size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -265,7 +265,7 @@ static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
- 	return count;
- }
-
--static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
-+static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
- 				      const char *buf, size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
-@@ -290,7 +290,7 @@ static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
- 	return count;
- }
-
--static ssize_t store_powersave_bias(struct gov_attr_set *attr_set,
-+static ssize_t powersave_bias_store(struct gov_attr_set *attr_set,
- 				    const char *buf, size_t count)
- {
- 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
---
-2.20.1
-
-
+ 	int ret;
+ 
+-	ret = call_mmap(vma->vm_file, vma);
++	ret = call_mmap(vma->vm_file, vma, false);
+ 	if (ret == 0) {
+ 		vma->vm_region->vm_top = vma->vm_region->vm_end;
+ 		return 0;
+@@ -972,7 +972,7 @@ static int do_mmap_private(struct vm_area_struct *vma,
+ 	 * - VM_MAYSHARE will be set if it may attempt to share
+ 	 */
+ 	if (capabilities & NOMMU_MAP_DIRECT) {
+-		ret = call_mmap(vma->vm_file, vma);
++		ret = call_mmap(vma->vm_file, vma, false);
+ 		if (ret == 0) {
+ 			/* shouldn't return success if we're not sharing */
+ 			BUG_ON(!(vma->vm_flags & VM_MAYSHARE));
+-- 
+2.35.1
 
