@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35772C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231279AbiCFRxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 12:53:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        id S233602AbiCFRxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 12:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234107AbiCFRwj (ORCPT
+        with ESMTP id S234119AbiCFRwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 12:52:39 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ADC3EF35;
-        Sun,  6 Mar 2022 09:51:36 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id x5so16956339edd.11;
-        Sun, 06 Mar 2022 09:51:36 -0800 (PST)
+        Sun, 6 Mar 2022 12:52:44 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FF83EF32;
+        Sun,  6 Mar 2022 09:51:38 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id f8so16969057edf.10;
+        Sun, 06 Mar 2022 09:51:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=M3NmIv2lxSwyciO5fMF4SzE6/Z1J/5GfYbZbUZ0NpkQ=;
-        b=GloWxkEKoUd1n3zcMloIVrOvLZBuvCZEyIWCJYqYe8TaK774kpfNhEyp6TgDKNPmGS
-         VkP4epagNT//AJdlnorqgF8WrOeoyJwLIdmPDefytnlMJ4eTXNmY31TFDYpTNRkUzIpQ
-         Ni/a6TyP8Lgnt+DB1NE7UcmKmGVTRaq269eEuazVe9aRVf01aZkftAHuE2+oo95/RjT1
-         xkpnhRhork+4bL9MP2QRYXzI2qpjJor5GdFEWo+rT/5R8UJIo5s4rrugIXMu0QsLhnvd
-         j6HeoWbk1FJXOzkjmPljO2HjeXA7OFH+HQkJXd3fRyB+5biM4HEzwX0yxbrMsLNOboCx
-         BZ/g==
+        bh=XKTcpjYqRS4uQbtkHCNXnLN0vPC/RNRvwxWfOqD2TvU=;
+        b=jToVGfKuRLRBrK4ZqfLgc2Zrod2uqO8U9qHRHHzSfQS1clzwMQUCqJ9guwSTqdVsy/
+         RaklZeqjcO4OrfixJae0WRU6WG8bqRqhxYCXhB8SKwceqBVE7cR7K1AaFyST7vIDIBtq
+         WTZlPjX3jRjdX4ZOo1tT6tdYRTvFhn0IcbZI0AT8sFjka7A+/qw/jF/E6L3p94k/NHYG
+         rKcUo/oRI3d7NgLwbPrpmQbWnC0DGHWf1I2p99YLbV4FVpiJLF/rYqzv6X4IwxczmHW2
+         yWa/KH3swYpneuO5o1AflJDAYxBq/TB+zrDwaEGQTg4T6DYjXJeIibFJ9rOPzyUs4v+9
+         eCGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=M3NmIv2lxSwyciO5fMF4SzE6/Z1J/5GfYbZbUZ0NpkQ=;
-        b=DeRzDLyrvNUbq1EuDCV0vTHNCQdu0jogs1xkU1RDfBEb7j/17CG0yqFHBJ/ZI5DG5b
-         TXfLXvubjy/vsniG2uE6hRIsA2DuDJ2m6t+LANPZMMAkxZRCfsQ0XwizUDWeEvwwUVBV
-         SaY+AckxwliHU9fOI1pIPitu8iXDGZnG7dZJQrLbz/utWwkSp2cKAlluzTIbGinge0EX
-         wWk/I6ttU4UElPsEkThhFtsyZjPx88eGiN+Fz+o18TPvdvqC9H6c6C/W39gcldFOAzo4
-         75J+qby9juoo7QGTwP9MBDGbgY2v0zQagGAn33uZaVxE3kNZKY8A0bhb2EoxR6OZi6BT
-         avqA==
-X-Gm-Message-State: AOAM531ajKv9h9jpV/koAg5dScYTwsQEvYPmhsCpCw2Xh/m+DS8u5kBt
-        xDuFToj7R8X1k9FowQLQ+lQ=
-X-Google-Smtp-Source: ABdhPJwrlyOl/C5mF6YI5RoCgIA4G9pTJYIaIywNTdmGCl2pJCordfAtGGDq+i/IJSpT/Y3ql53nXg==
-X-Received: by 2002:aa7:cb09:0:b0:413:2be4:c9fa with SMTP id s9-20020aa7cb09000000b004132be4c9famr7771105edt.106.1646589094457;
-        Sun, 06 Mar 2022 09:51:34 -0800 (PST)
+        bh=XKTcpjYqRS4uQbtkHCNXnLN0vPC/RNRvwxWfOqD2TvU=;
+        b=uwY+3ZqlAhOQJYWrAOs8qUm7i1VFc1j8MrawWTc8FUXaP+dbuZMxOzf78hjw0fdo5N
+         zZc0qrKWuj082Kcy1XyMrtlrLpnoVvUQRoaEobHhjKKB/cSmpVx+k+MSqWZVoqd6cl5d
+         GANruuI7WrCBraHpGA6UXXh9QMIylL2W2CNXjPkKGEK1ysTWNst2Oxjb3Fr0b51/WJZ8
+         u+sV+w8WSg0bbgDXZ2goc6cSNltfFWYiZyWZL/YtzBSbq9WCTA26Uv7yiEu5sxddkxG0
+         r0E95l2llwq3b6rDnTE2c0EVydLOfqA87j6foxUHz7EGr1e2Tf4vpvp+oTOm3DCoKOux
+         dJHg==
+X-Gm-Message-State: AOAM530ioChE2mAxvD5ZJgfHhrltYfvqvY7ghCsktvz3WFbtGJ0GLTwG
+        /H7FJd7h+8sHFCYiiNRnMe0=
+X-Google-Smtp-Source: ABdhPJz+oIZawQWxxP2050yuUydT5hnlPsXvNkl3GbdaPI80qnu1uIORJN5sMFPiAej3oTM6D/euOQ==
+X-Received: by 2002:aa7:d505:0:b0:415:9f06:d4f5 with SMTP id y5-20020aa7d505000000b004159f06d4f5mr7840371edq.305.1646589097019;
+        Sun, 06 Mar 2022 09:51:37 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.33
+        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:51:34 -0800 (PST)
+        Sun, 06 Mar 2022 09:51:36 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -74,9 +74,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH 20/26] usb: gadget: tegra-xudc: remove using list iterator after loop body as a ptr
-Date:   Sun,  6 Mar 2022 18:50:28 +0100
-Message-Id: <20220306175034.3084609-21-jakobkoschel@gmail.com>
+Subject: [PATCH 22/26] usb: gadget: pxa27x_udc: replace usage of rc to check if a list element was found
+Date:   Sun,  6 Mar 2022 18:50:30 +0100
+Message-Id: <20220306175034.3084609-23-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220306175034.3084609-1-jakobkoschel@gmail.com>
 References: <20220306175034.3084609-1-jakobkoschel@gmail.com>
@@ -86,51 +86,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the list does not contain the expected element, the value of
-list_for_each_entry() iterator will not point to a valid structure.
-To avoid type confusion in such case, the list iterator
-scope will be limited to list_for_each_entry() loop.
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-In preparation to limiting scope of a list iterator to the list traversal
-loop, use a dedicated pointer to point to the found element [1].
-Determining if an element was found is then simply checking if
-the pointer is != NULL instead of using the potentially bogus pointer.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable [1].
+
+This removes the need to check the rc value to determine if the
+break/goto was hit and can be made more obvious
+by checking if the variable was set within the list traversal loop.
 
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/udc/tegra-xudc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/udc/pxa27x_udc.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
-index 43f1b0d461c1..7c39d8a9e49d 100644
---- a/drivers/usb/gadget/udc/tegra-xudc.c
-+++ b/drivers/usb/gadget/udc/tegra-xudc.c
-@@ -1413,18 +1413,20 @@ __tegra_xudc_ep_dequeue(struct tegra_xudc_ep *ep,
- 			struct tegra_xudc_request *req)
+diff --git a/drivers/usb/gadget/udc/pxa27x_udc.c b/drivers/usb/gadget/udc/pxa27x_udc.c
+index f4b7a2a3e711..eed793deeda0 100644
+--- a/drivers/usb/gadget/udc/pxa27x_udc.c
++++ b/drivers/usb/gadget/udc/pxa27x_udc.c
+@@ -1159,7 +1159,7 @@ static int pxa_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
  {
- 	struct tegra_xudc *xudc = ep->xudc;
--	struct tegra_xudc_request *r;
-+	struct tegra_xudc_request *r = NULL, *tmp;
- 	struct tegra_xudc_trb *deq_trb;
- 	bool busy, kick_queue = false;
- 	int ret = 0;
+ 	struct pxa_ep		*ep;
+ 	struct udc_usb_ep	*udc_usb_ep;
+-	struct pxa27x_request	*req;
++	struct pxa27x_request	*req = NULL, *tmp;
+ 	unsigned long		flags;
+ 	int			rc = -EINVAL;
  
- 	/* Make sure the request is actually queued to this endpoint. */
--	list_for_each_entry(r, &ep->queue, list) {
--		if (r == req)
-+	list_for_each_entry(tmp, &ep->queue, list) {
-+		if (tmp == req) {
-+			r = tmp;
+@@ -1173,15 +1173,16 @@ static int pxa_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ 	spin_lock_irqsave(&ep->lock, flags);
+ 
+ 	/* make sure it's actually queued on this endpoint */
+-	list_for_each_entry(req, &ep->queue, queue) {
+-		if (&req->req == _req) {
++	list_for_each_entry(tmp, &ep->queue, queue) {
++		if (&tmp->req == _req) {
++			req = tmp;
+ 			rc = 0;
  			break;
-+		}
+ 		}
  	}
  
--	if (r != req)
-+	if (!r)
- 		return -EINVAL;
- 
- 	/* Request hasn't been queued in the transfer ring yet. */
+ 	spin_unlock_irqrestore(&ep->lock, flags);
+-	if (!rc)
++	if (req)
+ 		req_done(ep, req, -ECONNRESET, NULL);
+ 	return rc;
+ }
 -- 
 2.25.1
 
