@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B92A5C43217
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED22C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234189AbiCFRw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 12:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
+        id S233896AbiCFRxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 12:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234023AbiCFRw1 (ORCPT
+        with ESMTP id S234096AbiCFRwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 12:52:27 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DAE4132F;
-        Sun,  6 Mar 2022 09:51:28 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id d10so27427109eje.10;
-        Sun, 06 Mar 2022 09:51:28 -0800 (PST)
+        Sun, 6 Mar 2022 12:52:34 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E503EF30;
+        Sun,  6 Mar 2022 09:51:32 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id p15so27459368ejc.7;
+        Sun, 06 Mar 2022 09:51:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+laazn1CopjYa20d+WHM4bkWo61KY20pgKEJdkgNZoo=;
-        b=J3rodyH1WlYVoUO0kqbj9dBFM00KrNZIc2lpsI7rqSFubeDQjNO5bv1Y/HdeakucFf
-         2DrG2YBBiPJxoL/CLyneZwoUhrgBDS+lVxn5oSfNNhWKoIJwj5qP1EM6OK1bu+wFlYwr
-         WPOanxP6W8nMvnjnMgMD+EXwoM5O2u2mwP4VpjAWrNSSZyI7DbeF/dlFTTx+3LdB/GiF
-         p0RLfQy5VJf2SkhJm9hZZMvYzcSZ8G8Ym/KnY63tos1H36uHzK5NlzaL08XHRR1OPfuo
-         itI54Bv+knGvasu1kDkRt+82Pc5I+KQlg3JAkozyxzFcXoMYcQz+7+COwWdap223YLwI
-         GwLg==
+        bh=2lnsjgc8gTgQJKHb5cwbwqNyvDuf7SwnwUQTslH8JIg=;
+        b=NUkgQni0X1/qeySbGiP7hm5BAvV+9Q/VvDRnNz4MWc5wa3HELzvzA64dM+BsUqK2f1
+         KX/cn1d2QSgwIJPbSU0DlmE7K/JjGfn/iTnhaeV62PSkYCUDFTFyzK+T9Sm6wMG57UEl
+         teGnJjgldP1mdgxErJt4Pqyrxy3rPHJHFEu/nMaV7O6bFwOsEJeWhSbakTMq+cKXGYuF
+         Yy4sjs9dFPKXsz3F06+/1QVHwbCFcwKB9Sll9WH9EX9MzsEYCHC5BWeEt8HvVO+zhKY1
+         Yz5klNdlUO+Ro1IKWhLjVytM+9mpAZ4Y4/+eJlATFBOg0G+vCkNX7NundYOR2Hzx5Jym
+         lIEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+laazn1CopjYa20d+WHM4bkWo61KY20pgKEJdkgNZoo=;
-        b=N+a0zC2bVUiUGOiW2EukvBGlxxIG5MaKdIoVRZIdg+ZVmFsV43Iw5rKkzSSnPI4l96
-         3ZtJ2p8BEwoxG9keNruGjPookFWDg02h9glyw38DsOSGgmq0bgjVOmYAKDO5H3CcvH4L
-         Ts+r2JZ4T9YQLut2nAZDCQKeJNEPHe5bBlUNxEOYmpgsDeqBiutB1VpSgCnbPXfXRoYg
-         gQuFmiv7jQTNIYhEOxCK8mb3tTnLSzFkNsRm1kqIqlFawoIZjFRuQyXxabqu7phjIXUk
-         wnDBaAhy33jIZ9XTJZOuEyU+26VqzUwkA55xUGeLpPPqXVnXunsckdy2Yh0YCTtlt4zu
-         ioSw==
-X-Gm-Message-State: AOAM5332lRmZttwVIY/cYuvVUCpOS2sX7hGFmB2wzcWHaW7NodcL0M9h
-        qwkOR24RrtzM52MZKkgeZUQ=
-X-Google-Smtp-Source: ABdhPJxhoEeJNQ0cMQH5hmQKGphrFV8eRPY932fnE2Yvg6TjrjBkipqTZEj0B1kYEbqYyNX9gxOrLw==
-X-Received: by 2002:a17:906:6a81:b0:6da:d7e5:4fa with SMTP id p1-20020a1709066a8100b006dad7e504famr6311763ejr.223.1646589086810;
-        Sun, 06 Mar 2022 09:51:26 -0800 (PST)
+        bh=2lnsjgc8gTgQJKHb5cwbwqNyvDuf7SwnwUQTslH8JIg=;
+        b=itSZMnnsDQ/w0DCHFasaEoF2gBGEZu1qJrNDFEy4O7ZLLtb2CLg/kaWiMGCyxSeyQP
+         xvdk6gAnwXErHrvM3B11IixOJYLS9CJ0iQCVSWYq5bN80waRYCT7b9l72ltO0AQLMk/p
+         6HNfHNEBK8fKzWQ4SW1I5ExNzBsnG4M+m14OmAq5TxkSocUP5z38rZNWCXTKk8KVNnyz
+         dS1pquEADBltrOnAtPQ+ggKTFSAqaP0wJbHCXmjHZ/W0Y8cbdTWg+cJhjw1KaZOP5B62
+         oFisi6zfpXgXcsIwRoDfSxrffan7tOctXT2dOw63pNzlY+3z93bzvdbag1jzANj4lAnq
+         CG8Q==
+X-Gm-Message-State: AOAM531m1nuCPK99L6X4ws8EftTOBfJL9LPQgOkRhs47DLZmOqVhM1E2
+        FfhD4su7MjZnSNmC99afJ4M=
+X-Google-Smtp-Source: ABdhPJxu6+Bb8dW2HuL99DdSI+RhF569LcaEu/oMldym/QqqyufCsU3wFtLHvfoB1DJzp/giTDNjbw==
+X-Received: by 2002:a17:907:62a1:b0:6da:7952:d4d2 with SMTP id nd33-20020a17090762a100b006da7952d4d2mr6359621ejc.260.1646589090480;
+        Sun, 06 Mar 2022 09:51:30 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.25
+        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:51:26 -0800 (PST)
+        Sun, 06 Mar 2022 09:51:30 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -74,9 +74,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH 14/26] usb: gadget: s3c-hsudc: remove usage of list iterator past the loop body
-Date:   Sun,  6 Mar 2022 18:50:22 +0100
-Message-Id: <20220306175034.3084609-15-jakobkoschel@gmail.com>
+Subject: [PATCH 17/26] usb: gadget: configfs: remove using list iterator after loop body as a ptr
+Date:   Sun,  6 Mar 2022 18:50:25 +0100
+Message-Id: <20220306175034.3084609-18-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220306175034.3084609-1-jakobkoschel@gmail.com>
 References: <20220306175034.3084609-1-jakobkoschel@gmail.com>
@@ -86,49 +86,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the list representing the request queue does not contain the expected
-request, the value of the list_for_each_entry() iterator will not point
-to a valid structure. To avoid type confusion in such case, the list
-iterator scope will be limited to the list_for_each_entry() loop.
+If the list does not contain the expected element, the value of
+list_for_each_entry() iterator will not point to a valid structure.
+To avoid type confusion in such case, the list iterator
+scope will be limited to list_for_each_entry() loop.
 
-In preparation to limiting scope of the list iterator to the list traversal
-loop, use a dedicated pointer to point to the found request object [1].
+In preparation to limiting scope of a list iterator to the list traversal
+loop, use a dedicated pointer to point to the found element [1].
+Determining if an element was found is then simply checking if
+the pointer is != NULL instead of using the potentially bogus pointer.
 
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/udc/s3c-hsudc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/configfs.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/s3c-hsudc.c b/drivers/usb/gadget/udc/s3c-hsudc.c
-index 89f1f8c9f02e..ddfc30b1d248 100644
---- a/drivers/usb/gadget/udc/s3c-hsudc.c
-+++ b/drivers/usb/gadget/udc/s3c-hsudc.c
-@@ -877,7 +877,7 @@ static int s3c_hsudc_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct s3c_hsudc_ep *hsep = our_ep(_ep);
- 	struct s3c_hsudc *hsudc = hsep->dev;
--	struct s3c_hsudc_req *hsreq;
-+	struct s3c_hsudc_req *hsreq = NULL, *tmp;
- 	unsigned long flags;
+diff --git a/drivers/usb/gadget/configfs.c b/drivers/usb/gadget/configfs.c
+index d4a678c0806e..938cd43e74c6 100644
+--- a/drivers/usb/gadget/configfs.c
++++ b/drivers/usb/gadget/configfs.c
+@@ -418,7 +418,7 @@ static int config_usb_cfg_link(
  
- 	hsep = our_ep(_ep);
-@@ -886,11 +886,13 @@ static int s3c_hsudc_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ 	struct usb_function_instance *fi =
+ 			to_usb_function_instance(usb_func_ci);
+-	struct usb_function_instance *a_fi;
++	struct usb_function_instance *a_fi = NULL, *tmp;
+ 	struct usb_function *f;
+ 	int ret;
  
- 	spin_lock_irqsave(&hsudc->lock, flags);
- 
--	list_for_each_entry(hsreq, &hsep->queue, queue) {
--		if (&hsreq->req == _req)
-+	list_for_each_entry(tmp, &hsep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			hsreq = tmp;
+@@ -428,11 +428,13 @@ static int config_usb_cfg_link(
+ 	 * from another gadget or a random directory.
+ 	 * Also a function instance can only be linked once.
+ 	 */
+-	list_for_each_entry(a_fi, &gi->available_func, cfs_list) {
+-		if (a_fi == fi)
++	list_for_each_entry(tmp, &gi->available_func, cfs_list) {
++		if (tmp == fi) {
++			a_fi = tmp;
  			break;
 +		}
  	}
--	if (&hsreq->req != _req) {
-+	if (!hsreq) {
- 		spin_unlock_irqrestore(&hsudc->lock, flags);
- 		return -EINVAL;
+-	if (a_fi != fi) {
++	if (!a_fi) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+@@ -882,15 +884,17 @@ static int os_desc_link(struct config_item *os_desc_ci,
+ 	struct gadget_info *gi = os_desc_item_to_gadget_info(os_desc_ci);
+ 	struct usb_composite_dev *cdev = &gi->cdev;
+ 	struct config_usb_cfg *c_target = to_config_usb_cfg(usb_cfg_ci);
+-	struct usb_configuration *c;
++	struct usb_configuration *c = NULL, *tmp;
+ 	int ret;
+ 
+ 	mutex_lock(&gi->lock);
+-	list_for_each_entry(c, &cdev->configs, list) {
+-		if (c == &c_target->c)
++	list_for_each_entry(tmp, &cdev->configs, list) {
++		if (tmp == &c_target->c) {
++			c = tmp;
+ 			break;
++		}
+ 	}
+-	if (c != &c_target->c) {
++	if (!c) {
+ 		ret = -EINVAL;
+ 		goto out;
  	}
 -- 
 2.25.1
