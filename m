@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67479C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A746C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Mar 2022 17:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232159AbiCFRxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 12:53:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41150 "EHLO
+        id S229864AbiCFRx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 12:53:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234098AbiCFRwm (ORCPT
+        with ESMTP id S234088AbiCFRwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 12:52:42 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F12F3EAA6;
-        Sun,  6 Mar 2022 09:51:37 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id a8so27438916ejc.8;
-        Sun, 06 Mar 2022 09:51:37 -0800 (PST)
+        Sun, 6 Mar 2022 12:52:37 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F893EAAE;
+        Sun,  6 Mar 2022 09:51:34 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id dr20so27420130ejc.6;
+        Sun, 06 Mar 2022 09:51:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=MLBHYSaeD3eFzFQMOP5a1mgmC2xAZpNxSDfQ1U/Maqg=;
-        b=X6Eiym0FGEc/Yg2lPaH7lAvq2l4n8uQyMYgQ5bQFCommhQHJy9m6qmVkseS5uNsqMa
-         3XfEX9CxwQPRbg2B4OkXWeqfC7zqF5m78NCSd6NpT+c0W+3XsV2A4zqZWtnfzw+o46L+
-         PQ49OmX4AzP1O3Iz8a9ZJT4XQMPamNRj2g/Ef5EBA6kID9Ng5/kokaZMVIe1DzZX/4EI
-         yLdpMu0W/WHGXEJv8ENoQpSG8aP5IV6cLpD/43UTgj7uEEfkMu0dXApbWPPYr8gDSLQQ
-         i2MN5eGCC6DH5OOnoS7wM8RaSYkXz9t1e+x5zSsP7L95PQJE0hDH8eqLZD8fh+3ZObWO
-         luKg==
+        bh=+21SkvZ1V0/Yykwt/4suhWYPa8wNy+dkzerfqHH80FU=;
+        b=j0sbbeSivVNug0gFNVXL4njiYWbwx0G/t8XpNp2ot9fBGkc/MpuppbR6dq76oV9h34
+         U4a9R5oAGigRltG4E2uk8LVf3Sr/Q+H5IItb3nj/xqIqPylZABLpRab8JloSPrOBLPYP
+         SbwwnVfEaJOGR7jQcCi5VoarY+iDvxeAEpSZFoxf9vwuViVIpJj5i14UBiphGs7tq6Q/
+         hIGFu9Goy9U9LBhAz6XYA1tQ+WhrjiEZugaELer4pLcWgtHB1TJuyRV7paYGxGpcPILJ
+         3GwHXCcRDLlh8APdGthGD+mSejgQPfWUjBFv8SMHNb9JxUziDQunYUTisCu0PpEENUjq
+         2Y1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=MLBHYSaeD3eFzFQMOP5a1mgmC2xAZpNxSDfQ1U/Maqg=;
-        b=H6RNt3La/xOeBgSb/sMJhgZShbmB/PrNpdZHB8FSDds80Cp+ufO/KHtWrkDWJ5yjCt
-         39Sv0hZkK+9jUkVAbM5HCOe1AOAynTLCzW45OkXgy5ZoFkqZDbadX4Kh50SWYNAjCJ+M
-         v53R29riuQ6ZwL0k+hW/6+dkpFNFiVCcOxlXth18/2uZQGZkCMPFDTr6VZ4EK0paOpv1
-         OcIGtB7yddUy2Cx1IxR4Vzfsfsut/2mYCILodNN7O9l4jZSSviI2wQbs7QDLZXJv85p+
-         MR0lljdiEPERP/3sHKxWqW+Mh/bjAVnYoeW5v+T4qZlO8ZMAXrCdAH4uxNENbkGqoAWm
-         Edag==
-X-Gm-Message-State: AOAM530MdnkOuWTryXpu7jWW3ECtLZL0D/iFK6LtaSdDLYPNQaA8YjB3
-        5zgD9UCtCp/IJZKo0N58pRQ=
-X-Google-Smtp-Source: ABdhPJxDxPmdry9ej5ZNQ7R5EE2walSLSRO7ED+xafi0SIp4n09749RDjSh2oQFkuaZp+MS22p83FQ==
-X-Received: by 2002:a17:906:b052:b0:6ce:88a5:e42a with SMTP id bj18-20020a170906b05200b006ce88a5e42amr6562556ejb.237.1646589095739;
-        Sun, 06 Mar 2022 09:51:35 -0800 (PST)
+        bh=+21SkvZ1V0/Yykwt/4suhWYPa8wNy+dkzerfqHH80FU=;
+        b=Ll75Yf9Q4Nz8/OOlErr6/42+5giFPnkpdwcQNLb3PmGwm3BlTKaMaIKLi49TXo36GH
+         D05mbx1MCzqFfiNKx17G1GxOhqEhoC5AxOdhhDD1rs0y7kCtJR3UfTnprSNjyQwHAZ0v
+         ZssKknnHM+5AFx6keZjyrel0OwF4m9Yfj3HQeU+5hDumnlIB1lXYlzeje4jAQgXMgsX3
+         KGRtoR77VAbfUa1TXvvLxN+J3+vcllaRqT5mTmxICfcrPlsjJdKST9jQi+i14wLA0wGe
+         gxYFsXVTBo/RJLOYqzh4NtXVorp8XWGeICj0tUY5xp9DMul8mQG8tQTRnsTx30KPOACt
+         z+oA==
+X-Gm-Message-State: AOAM533Y8I8SDf9hQA4BHvfQ/P0ivmyLwbE5pDxtnE/8wQ+ODFz8bLv+
+        U7qM8k5MeqKVOqg0kfS4aJ8=
+X-Google-Smtp-Source: ABdhPJz+IRqxea7CTn4M8DREljvADWarmfOp1KMJjR26UN4FAa8Qc8zIgRSmkU15EdtUT+rM96ZaXg==
+X-Received: by 2002:a17:906:8d8:b0:6d2:131d:be51 with SMTP id o24-20020a17090608d800b006d2131dbe51mr6483746eje.564.1646589093126;
+        Sun, 06 Mar 2022 09:51:33 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.34
+        by smtp.googlemail.com with ESMTPSA id 20-20020a17090601d400b006caff964e30sm4052606ejj.19.2022.03.06.09.51.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:51:35 -0800 (PST)
+        Sun, 06 Mar 2022 09:51:32 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -74,9 +74,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH 21/26] usb: gadget: composite: remove check of list iterator against head past the loop body
-Date:   Sun,  6 Mar 2022 18:50:29 +0100
-Message-Id: <20220306175034.3084609-22-jakobkoschel@gmail.com>
+Subject: [PATCH 19/26] usb: gadget: udc: max3420_udc: remove using list iterator after loop body as a ptr
+Date:   Sun,  6 Mar 2022 18:50:27 +0100
+Message-Id: <20220306175034.3084609-20-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220306175034.3084609-1-jakobkoschel@gmail.com>
 References: <20220306175034.3084609-1-jakobkoschel@gmail.com>
@@ -86,53 +86,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When list_for_each_entry() completes the iteration over the whole list
-without breaking the loop, the iterator value will be a bogus pointer
-computed based on the head element.
+If the list does not contain the expected element, the value of
+list_for_each_entry() iterator will not point to a valid structure.
+To avoid type confusion in such case, the list iterator
+scope will be limited to list_for_each_entry() loop.
 
-While it is safe to use the pointer to determine if it was computed
-based on the head element, either with list_entry_is_head() or
-&pos->member == head, using the iterator variable after the loop should
-be avoided.
-
-In preparation to limiting the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
+In preparation to limiting scope of a list iterator to the list traversal
+loop, use a dedicated pointer to point to the found element [1].
+Determining if an element was found is then simply checking if
+the pointer is != NULL instead of using the potentially bogus pointer.
 
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/composite.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/udc/max3420_udc.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/gadget/composite.c b/drivers/usb/gadget/composite.c
-index 9315313108c9..26908d012ac8 100644
---- a/drivers/usb/gadget/composite.c
-+++ b/drivers/usb/gadget/composite.c
-@@ -1690,6 +1690,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
- 	u16				w_value = le16_to_cpu(ctrl->wValue);
- 	u16				w_length = le16_to_cpu(ctrl->wLength);
- 	struct usb_function		*f = NULL;
-+	struct usb_function		*tmp;
- 	u8				endp;
+diff --git a/drivers/usb/gadget/udc/max3420_udc.c b/drivers/usb/gadget/udc/max3420_udc.c
+index d2a2b20cc1ad..d1b010b5f4a0 100644
+--- a/drivers/usb/gadget/udc/max3420_udc.c
++++ b/drivers/usb/gadget/udc/max3420_udc.c
+@@ -1044,22 +1044,25 @@ static int max3420_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
  
- 	if (w_length > USB_COMP_EP0_BUFSIZ) {
-@@ -2046,12 +2047,12 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
- 			if (!cdev->config)
- 				break;
- 			endp = ((w_index & 0x80) >> 3) | (w_index & 0x0f);
--			list_for_each_entry(f, &cdev->config->functions, list) {
--				if (test_bit(endp, f->endpoints))
-+			list_for_each_entry(tmp, &cdev->config->functions, list) {
-+				if (test_bit(endp, tmp->endpoints)) {
-+					f = tmp;
- 					break;
-+				}
- 			}
--			if (&f->list == &cdev->config->functions)
--				f = NULL;
+ static int max3420_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ {
+-	struct max3420_req *t, *req = to_max3420_req(_req);
++	struct max3420_req *t = NULL;
++	struct max3420_req *req = to_max3420_req(_req);
++	struct max3420_req *tmp;
+ 	struct max3420_ep *ep = to_max3420_ep(_ep);
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&ep->lock, flags);
+ 
+ 	/* Pluck the descriptor from queue */
+-	list_for_each_entry(t, &ep->queue, queue)
+-		if (t == req) {
++	list_for_each_entry(tmp, &ep->queue, queue)
++		if (tmp == req) {
+ 			list_del_init(&req->queue);
++			t = tmp;
  			break;
  		}
- try_fun_setup:
+ 
+ 	spin_unlock_irqrestore(&ep->lock, flags);
+ 
+-	if (t == req)
++	if (t)
+ 		max3420_req_done(req, -ECONNRESET);
+ 
+ 	return 0;
 -- 
 2.25.1
 
