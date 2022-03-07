@@ -2,111 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD898C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 22:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 22:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343623AbiCGWMY convert rfc822-to-8bit (ORCPT
+        id S1343681AbiCGWOu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 17:12:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        Mon, 7 Mar 2022 17:14:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237315AbiCGWMV (ORCPT
+        with ESMTP id S1343673AbiCGWOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 17:12:21 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D6698BF28
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 14:11:26 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-213-iFbUxoq8N32Ti0xfCSXC3A-1; Mon, 07 Mar 2022 22:11:23 +0000
-X-MC-Unique: iFbUxoq8N32Ti0xfCSXC3A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 7 Mar 2022 22:11:19 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 7 Mar 2022 22:11:19 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christoph Hellwig' <hch@infradead.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-CC:     Matthew Wilcox <willy@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Nathaniel McCallum" <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthew Auld <matthew.auld@intel.com>,
-        =?iso-8859-1?Q?Thomas_Hellstr=F6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Chris Wilson <chris@chris-wilson.co.uk>, "G@iki.fi" <G@iki.fi>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        zhangyiru <zhangyiru3@huawei.com>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Alexander Mikhalitsyn" <alexander.mikhalitsyn@virtuozzo.com>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "codalist@coda.cs.cmu.edu" <codalist@coda.cs.cmu.edu>,
-        "linux-unionfs@vger.kernel.org" <linux-unionfs@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-Subject: RE: [PATCH RFC 0/3] MAP_POPULATE for device memory
-Thread-Topic: [PATCH RFC 0/3] MAP_POPULATE for device memory
-Thread-Index: AQHYMjv2CAL18nxa1UOLUz+3aRpSlay0etRA
-Date:   Mon, 7 Mar 2022 22:11:19 +0000
-Message-ID: <5729d03d6a174da6b66d1534ebdb1127@AcuMS.aculab.com>
-References: <20220306053211.135762-1-jarkko@kernel.org>
- <YiSb7tsUEBRGS+HA@casper.infradead.org> <YiW4yurDXSifTYUt@infradead.org>
- <YiYIv9guOgClLKT8@iki.fi> <YiYrRWMp1akXY8Vb@infradead.org>
-In-Reply-To: <YiYrRWMp1akXY8Vb@infradead.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 7 Mar 2022 17:14:47 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8F3580C3;
+        Mon,  7 Mar 2022 14:13:51 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id u10so23906845wra.9;
+        Mon, 07 Mar 2022 14:13:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S4KRc2JPrzXRUzhnhouVf6rWLnTNsy7QJgg90N+SFgg=;
+        b=OJtwXtXx5Eannq7k//Jp5ML1sR9bjgU0QhTwDhoiYjGHJzvyWMKCjsL6808BvtzLX7
+         MsCm1kwWhic6uQ2XcyfXFmqa0/UI0qPdcdwqiu3Q+jCCsbmRv4pdtgatzOZ3qkBkDdSK
+         M62qT+tJqC7J/4A91+1QBiosBt66dMVGT0lNc/NBJ1QO3wKDdUm22UbmqOh0+EX/3CMg
+         IdtfFVzSgrYJyZhXrzvjRa3RD7MyWNiAW0yQlzWHxhPsuxFrUjIxz1ubrg8oRy1hlURO
+         yLJTC9J4X9bIXlj3+yRkucOed8eOecV5OfSJdP2xpJpveTN8hFSgJFJvtKMTDOkZfXUQ
+         kdMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S4KRc2JPrzXRUzhnhouVf6rWLnTNsy7QJgg90N+SFgg=;
+        b=edQ1riKNDLM3hSPhHy1mq15+WYXnAO6sPO3l4wHGo+TMgCWXNmR/FP8rNo3bm08JTW
+         49nwtms0eMumoaImm2zsO44TYzBCrVyl7/LS/9uHBdTQHoJuneqrovtZUT0VUBSuWrt4
+         E/fvXeQ0GTcqTV6xLJb60O22Kn6VhP25VLzIwZlvWHxAiiArfvl3I9BajDtDTsmTEoou
+         +T879qGFHKl2Fnjyesqu8H0hg9fAYdp0uMzj4hQrWKisH92rQuHjhu86LLa8qnw3agXf
+         BVuZ0zpR0EOI7bas7eiOl9jO+9V/GYLiqxBadZcQ0GYND5Ekli91Dc6oTHBIljtHMll1
+         9sFA==
+X-Gm-Message-State: AOAM530Afh5s2UNz7nPdBfpcpVyIuYAbPhxulX1H11fP3pN3RwuI0OXe
+        gexncZO+mx22ICa45+lgjG0=
+X-Google-Smtp-Source: ABdhPJxuX46N8YfLziPqQK5LGqqqEsE4uEjlh6AByOvMMDk5DZJk92B96+DWQv3THo8a6V4GBZOjJg==
+X-Received: by 2002:adf:eb4d:0:b0:1ed:c1f7:a951 with SMTP id u13-20020adfeb4d000000b001edc1f7a951mr9484235wrn.454.1646691230225;
+        Mon, 07 Mar 2022 14:13:50 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id n4-20020a056000170400b001f1fefa429bsm2741564wrc.8.2022.03.07.14.13.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 14:13:49 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Taras Chornyi <tchornyi@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] net: prestera: acl: make read-only array client_map static const
+Date:   Mon,  7 Mar 2022 22:13:49 +0000
+Message-Id: <20220307221349.164585-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig
-> Sent: 07 March 2022 15:57
-> 
-> On Mon, Mar 07, 2022 at 03:29:35PM +0200, Jarkko Sakkinen wrote:
-> > So what would you suggest to sort out the issue? I'm happy to go with
-> > ioctl if nothing else is acceptable.
-> 
-> PLenty of drivers treat all mmaps as if MAP_POPULATE was specified,
-> typically by using (io_)remap_pfn_range.  If there any reason to only
-> optionally have the pre-fault semantics for sgx?  If not this should
-> be really simple.  And if we have a real need for it to be optional
-> we'll just need to find a sane way to pass that information to ->mmap.
+Don't populate the read-only array client_map  on the stack but
+instead make it static const. Also makes the object code a little
+smaller.
 
-Is there any space in vma->vm_flags ?
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/marvell/prestera/prestera_acl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-That would be better than an extra argument or function.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.c b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
+index e4af8a503277..47c899c08951 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_acl.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
+@@ -91,7 +91,7 @@ static const struct rhashtable_params __prestera_acl_rule_entry_ht_params = {
+ 
+ int prestera_acl_chain_to_client(u32 chain_index, u32 *client)
+ {
+-	u32 client_map[] = {
++	static const u32 client_map[] = {
+ 		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0,
+ 		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_1,
+ 		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_2
+-- 
+2.35.1
 
