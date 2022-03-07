@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9961C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240013AbiCGKX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:23:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
+        id S240475AbiCGKXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240415AbiCGKBB (ORCPT
+        with ESMTP id S240727AbiCGKBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162C811145;
-        Mon,  7 Mar 2022 01:48:00 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2683666AD7;
+        Mon,  7 Mar 2022 01:50:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8851B810A8;
-        Mon,  7 Mar 2022 09:47:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DC72C340E9;
-        Mon,  7 Mar 2022 09:47:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B52B960A28;
+        Mon,  7 Mar 2022 09:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B2CC340F5;
+        Mon,  7 Mar 2022 09:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646477;
-        bh=aKWI7FxW7YgojpTi0wCa3Cp03GMcrydlkLjqorr25Gw=;
+        s=korg; t=1646646642;
+        bh=mjh7f8+Yb4NnRkOtN88dWS8ISENtaghbL4Bw9Q8yKiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mx1xcNEg85Q/z+uinj4kTjVdtjEggbvYqGzit/kryVlmmZdxAQ8b35OshCROLafY/
-         +3JD6vs5CdD0Wfl78TqmrPfqgE5N64vUW/XzinuqeEu6LoyGm0Vveqx+TmjawISPke
-         qA5pSiILowz0W2AZLif+sc6vX8N3B7+/3cyYCpvw=
+        b=xJJo/ciZ+dMBwH9BpUQ7sK3aD1DKYY5NHNQmLVP6GzDsDYgwOU3EGLsfkm0kZrlSo
+         f+7/t3FXydvVtLH38no6XseDli9+gb2matEILG5cCidR+vhDJcoJAkfzlNMYSei9S3
+         ekNVx6lJ4Dwi+ymnh/x5HpX5iizFBzBRTpqsf8zk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 254/262] btrfs: fix lost prealloc extents beyond eof after full fsync
-Date:   Mon,  7 Mar 2022 10:19:58 +0100
-Message-Id: <20220307091710.840326288@linuxfoundation.org>
+        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 046/186] btrfs: defrag: bring back the old file extent search behavior
+Date:   Mon,  7 Mar 2022 10:18:04 +0100
+Message-Id: <20220307091655.383171724@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
+References: <20220307091654.092878898@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,175 +48,251 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit d99478874355d3a7b9d86dfb5d7590d5b1754b1f upstream.
+commit d5633b0dee02d7d25e93463a03709f11c71500e2 upstream.
 
-When doing a full fsync, if we have prealloc extents beyond (or at) eof,
-and the leaves that contain them were not modified in the current
-transaction, we end up not logging them. This results in losing those
-extents when we replay the log after a power failure, since the inode is
-truncated to the current value of the logged i_size.
+For defrag, we don't really want to use btrfs_get_extent() to iterate
+all extent maps of an inode.
 
-Just like for the fast fsync path, we need to always log all prealloc
-extents starting at or beyond i_size. The fast fsync case was fixed in
-commit 471d557afed155 ("Btrfs: fix loss of prealloc extents past i_size
-after fsync log replay") but it missed the full fsync path. The problem
-exists since the very early days, when the log tree was added by
-commit e02119d5a7b439 ("Btrfs: Add a write ahead tree log to optimize
-synchronous operations").
+The reasons are:
 
-Example reproducer:
+- btrfs_get_extent() can merge extent maps
+  And the result em has the higher generation of the two, causing defrag
+  to mark unnecessary part of such merged large extent map.
 
-  $ mkfs.btrfs -f /dev/sdc
-  $ mount /dev/sdc /mnt
+  This in fact can result extra IO for autodefrag in v5.16+ kernels.
 
-  # Create our test file with many file extent items, so that they span
-  # several leaves of metadata, even if the node/page size is 64K. Use
-  # direct IO and not fsync/O_SYNC because it's both faster and it avoids
-  # clearing the full sync flag from the inode - we want the fsync below
-  # to trigger the slow full sync code path.
-  $ xfs_io -f -d -c "pwrite -b 4K 0 16M" /mnt/foo
+  However this patch is not going to completely solve the problem, as
+  one can still using read() to trigger extent map reading, and got
+  them merged.
 
-  # Now add two preallocated extents to our file without extending the
-  # file's size. One right at i_size, and another further beyond, leaving
-  # a gap between the two prealloc extents.
-  $ xfs_io -c "falloc -k 16M 1M" /mnt/foo
-  $ xfs_io -c "falloc -k 20M 1M" /mnt/foo
+  The completely solution for the extent map merging generation problem
+  will come as an standalone fix.
 
-  # Make sure everything is durably persisted and the transaction is
-  # committed. This makes all created extents to have a generation lower
-  # than the generation of the transaction used by the next write and
-  # fsync.
-  sync
+- btrfs_get_extent() caches the extent map result
+  Normally it's fine, but for defrag the target range may not get
+  another read/write for a long long time.
+  Such cache would only increase the memory usage.
 
-  # Now overwrite only the first extent, which will result in modifying
-  # only the first leaf of metadata for our inode. Then fsync it. This
-  # fsync will use the slow code path (inode full sync bit is set) because
-  # it's the first fsync since the inode was created/loaded.
-  $ xfs_io -c "pwrite 0 4K" -c "fsync" /mnt/foo
+- btrfs_get_extent() doesn't skip older extent map
+  Unlike the old find_new_extent() which uses btrfs_search_forward() to
+  skip the older subtree, thus it will pick up unnecessary extent maps.
 
-  # Extent list before power failure.
-  $ xfs_io -c "fiemap -v" /mnt/foo
-  /mnt/foo:
-   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-     0: [0..7]:          2178048..2178055     8   0x0
-     1: [8..16383]:      26632..43007     16376   0x0
-     2: [16384..32767]:  2156544..2172927 16384   0x0
-     3: [32768..34815]:  2172928..2174975  2048 0x800
-     4: [34816..40959]:  hole              6144
-     5: [40960..43007]:  2174976..2177023  2048 0x801
+This patch will fix the regression by introducing defrag_get_extent() to
+replace the btrfs_get_extent() call.
 
-  <power fail>
+This helper will:
 
-  # Mount fs again, trigger log replay.
-  $ mount /dev/sdc /mnt
+- Not cache the file extent we found
+  It will search the file extent and manually convert it to em.
 
-  # Extent list after power failure and log replay.
-  $ xfs_io -c "fiemap -v" /mnt/foo
-  /mnt/foo:
-   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-     0: [0..7]:          2178048..2178055     8   0x0
-     1: [8..16383]:      26632..43007     16376   0x0
-     2: [16384..32767]:  2156544..2172927 16384   0x1
+- Use btrfs_search_forward() to skip entire ranges which is modified in
+  the past
 
-  # The prealloc extents at file offsets 16M and 20M are missing.
+This should reduce the IO for autodefrag.
 
-So fix this by calling btrfs_log_prealloc_extents() when we are doing a
-full fsync, so that we always log all prealloc extents beyond eof.
-
-A test case for fstests will follow soon.
-
-CC: stable@vger.kernel.org # 4.19+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reported-by: Filipe Manana <fdmanana@suse.com>
+Fixes: 7b508037d4ca ("btrfs: defrag: use defrag_one_cluster() to implement btrfs_defrag_file()")
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |   43 +++++++++++++++++++++++++++++++------------
- 1 file changed, 31 insertions(+), 12 deletions(-)
+ fs/btrfs/ioctl.c |  161 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 157 insertions(+), 4 deletions(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -4423,7 +4423,7 @@ static int log_one_extent(struct btrfs_t
- 
- /*
-  * Log all prealloc extents beyond the inode's i_size to make sure we do not
-- * lose them after doing a fast fsync and replaying the log. We scan the
-+ * lose them after doing a full/fast fsync and replaying the log. We scan the
-  * subvolume's root instead of iterating the inode's extent map tree because
-  * otherwise we can log incorrect extent items based on extent map conversion.
-  * That can happen due to the fact that extent maps are merged when they
-@@ -5208,6 +5208,7 @@ static int copy_inode_items_to_log(struc
- 				   struct btrfs_log_ctx *ctx,
- 				   bool *need_log_inode_item)
- {
-+	const u64 i_size = i_size_read(&inode->vfs_inode);
- 	struct btrfs_root *root = inode->root;
- 	int ins_start_slot = 0;
- 	int ins_nr = 0;
-@@ -5228,13 +5229,21 @@ again:
- 		if (min_key->type > max_key->type)
- 			break;
- 
--		if (min_key->type == BTRFS_INODE_ITEM_KEY)
-+		if (min_key->type == BTRFS_INODE_ITEM_KEY) {
- 			*need_log_inode_item = false;
--
--		if ((min_key->type == BTRFS_INODE_REF_KEY ||
--		     min_key->type == BTRFS_INODE_EXTREF_KEY) &&
--		    inode->generation == trans->transid &&
--		    !recursive_logging) {
-+		} else if (min_key->type == BTRFS_EXTENT_DATA_KEY &&
-+			   min_key->offset >= i_size) {
-+			/*
-+			 * Extents at and beyond eof are logged with
-+			 * btrfs_log_prealloc_extents().
-+			 * Only regular files have BTRFS_EXTENT_DATA_KEY keys,
-+			 * and no keys greater than that, so bail out.
-+			 */
-+			break;
-+		} else if ((min_key->type == BTRFS_INODE_REF_KEY ||
-+			    min_key->type == BTRFS_INODE_EXTREF_KEY) &&
-+			   inode->generation == trans->transid &&
-+			   !recursive_logging) {
- 			u64 other_ino = 0;
- 			u64 other_parent = 0;
- 
-@@ -5265,10 +5274,8 @@ again:
- 				btrfs_release_path(path);
- 				goto next_key;
- 			}
--		}
--
--		/* Skip xattrs, we log them later with btrfs_log_all_xattrs() */
--		if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
-+		} else if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
-+			/* Skip xattrs, logged later with btrfs_log_all_xattrs() */
- 			if (ins_nr == 0)
- 				goto next_slot;
- 			ret = copy_items(trans, inode, dst_path, path,
-@@ -5321,9 +5328,21 @@ next_key:
- 			break;
- 		}
- 	}
--	if (ins_nr)
-+	if (ins_nr) {
- 		ret = copy_items(trans, inode, dst_path, path, ins_start_slot,
- 				 ins_nr, inode_only, logged_isize);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (inode_only == LOG_INODE_ALL && S_ISREG(inode->vfs_inode.i_mode)) {
-+		/*
-+		 * Release the path because otherwise we might attempt to double
-+		 * lock the same leaf with btrfs_log_prealloc_extents() below.
-+		 */
-+		btrfs_release_path(path);
-+		ret = btrfs_log_prealloc_extents(trans, inode, dst_path);
-+	}
- 
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -986,8 +986,155 @@ out:
  	return ret;
  }
+ 
++/*
++ * Defrag specific helper to get an extent map.
++ *
++ * Differences between this and btrfs_get_extent() are:
++ *
++ * - No extent_map will be added to inode->extent_tree
++ *   To reduce memory usage in the long run.
++ *
++ * - Extra optimization to skip file extents older than @newer_than
++ *   By using btrfs_search_forward() we can skip entire file ranges that
++ *   have extents created in past transactions, because btrfs_search_forward()
++ *   will not visit leaves and nodes with a generation smaller than given
++ *   minimal generation threshold (@newer_than).
++ *
++ * Return valid em if we find a file extent matching the requirement.
++ * Return NULL if we can not find a file extent matching the requirement.
++ *
++ * Return ERR_PTR() for error.
++ */
++static struct extent_map *defrag_get_extent(struct btrfs_inode *inode,
++					    u64 start, u64 newer_than)
++{
++	struct btrfs_root *root = inode->root;
++	struct btrfs_file_extent_item *fi;
++	struct btrfs_path path = { 0 };
++	struct extent_map *em;
++	struct btrfs_key key;
++	u64 ino = btrfs_ino(inode);
++	int ret;
++
++	em = alloc_extent_map();
++	if (!em) {
++		ret = -ENOMEM;
++		goto err;
++	}
++
++	key.objectid = ino;
++	key.type = BTRFS_EXTENT_DATA_KEY;
++	key.offset = start;
++
++	if (newer_than) {
++		ret = btrfs_search_forward(root, &key, &path, newer_than);
++		if (ret < 0)
++			goto err;
++		/* Can't find anything newer */
++		if (ret > 0)
++			goto not_found;
++	} else {
++		ret = btrfs_search_slot(NULL, root, &key, &path, 0, 0);
++		if (ret < 0)
++			goto err;
++	}
++	if (path.slots[0] >= btrfs_header_nritems(path.nodes[0])) {
++		/*
++		 * If btrfs_search_slot() makes path to point beyond nritems,
++		 * we should not have an empty leaf, as this inode must at
++		 * least have its INODE_ITEM.
++		 */
++		ASSERT(btrfs_header_nritems(path.nodes[0]));
++		path.slots[0] = btrfs_header_nritems(path.nodes[0]) - 1;
++	}
++	btrfs_item_key_to_cpu(path.nodes[0], &key, path.slots[0]);
++	/* Perfect match, no need to go one slot back */
++	if (key.objectid == ino && key.type == BTRFS_EXTENT_DATA_KEY &&
++	    key.offset == start)
++		goto iterate;
++
++	/* We didn't find a perfect match, needs to go one slot back */
++	if (path.slots[0] > 0) {
++		btrfs_item_key_to_cpu(path.nodes[0], &key, path.slots[0]);
++		if (key.objectid == ino && key.type == BTRFS_EXTENT_DATA_KEY)
++			path.slots[0]--;
++	}
++
++iterate:
++	/* Iterate through the path to find a file extent covering @start */
++	while (true) {
++		u64 extent_end;
++
++		if (path.slots[0] >= btrfs_header_nritems(path.nodes[0]))
++			goto next;
++
++		btrfs_item_key_to_cpu(path.nodes[0], &key, path.slots[0]);
++
++		/*
++		 * We may go one slot back to INODE_REF/XATTR item, then
++		 * need to go forward until we reach an EXTENT_DATA.
++		 * But we should still has the correct ino as key.objectid.
++		 */
++		if (WARN_ON(key.objectid < ino) || key.type < BTRFS_EXTENT_DATA_KEY)
++			goto next;
++
++		/* It's beyond our target range, definitely not extent found */
++		if (key.objectid > ino || key.type > BTRFS_EXTENT_DATA_KEY)
++			goto not_found;
++
++		/*
++		 *	|	|<- File extent ->|
++		 *	\- start
++		 *
++		 * This means there is a hole between start and key.offset.
++		 */
++		if (key.offset > start) {
++			em->start = start;
++			em->orig_start = start;
++			em->block_start = EXTENT_MAP_HOLE;
++			em->len = key.offset - start;
++			break;
++		}
++
++		fi = btrfs_item_ptr(path.nodes[0], path.slots[0],
++				    struct btrfs_file_extent_item);
++		extent_end = btrfs_file_extent_end(&path);
++
++		/*
++		 *	|<- file extent ->|	|
++		 *				\- start
++		 *
++		 * We haven't reached start, search next slot.
++		 */
++		if (extent_end <= start)
++			goto next;
++
++		/* Now this extent covers @start, convert it to em */
++		btrfs_extent_item_to_extent_map(inode, &path, fi, false, em);
++		break;
++next:
++		ret = btrfs_next_item(root, &path);
++		if (ret < 0)
++			goto err;
++		if (ret > 0)
++			goto not_found;
++	}
++	btrfs_release_path(&path);
++	return em;
++
++not_found:
++	btrfs_release_path(&path);
++	free_extent_map(em);
++	return NULL;
++
++err:
++	btrfs_release_path(&path);
++	free_extent_map(em);
++	return ERR_PTR(ret);
++}
++
+ static struct extent_map *defrag_lookup_extent(struct inode *inode, u64 start,
+-					       bool locked)
++					       u64 newer_than, bool locked)
+ {
+ 	struct extent_map_tree *em_tree = &BTRFS_I(inode)->extent_tree;
+ 	struct extent_io_tree *io_tree = &BTRFS_I(inode)->io_tree;
+@@ -1009,7 +1156,7 @@ static struct extent_map *defrag_lookup_
+ 		/* get the big lock and read metadata off disk */
+ 		if (!locked)
+ 			lock_extent_bits(io_tree, start, end, &cached);
+-		em = btrfs_get_extent(BTRFS_I(inode), NULL, 0, start, sectorsize);
++		em = defrag_get_extent(BTRFS_I(inode), start, newer_than);
+ 		if (!locked)
+ 			unlock_extent_cached(io_tree, start, end, &cached);
+ 
+@@ -1037,7 +1184,12 @@ static bool defrag_check_next_extent(str
+ 	if (em->start + em->len >= i_size_read(inode))
+ 		return false;
+ 
+-	next = defrag_lookup_extent(inode, em->start + em->len, locked);
++	/*
++	 * We want to check if the next extent can be merged with the current
++	 * one, which can be an extent created in a past generation, so we pass
++	 * a minimum generation of 0 to defrag_lookup_extent().
++	 */
++	next = defrag_lookup_extent(inode, em->start + em->len, 0, locked);
+ 	/* No more em or hole */
+ 	if (!next || next->block_start >= EXTENT_MAP_LAST_BYTE)
+ 		goto out;
+@@ -1188,7 +1340,8 @@ static int defrag_collect_targets(struct
+ 		u64 range_len;
+ 
+ 		last_is_target = false;
+-		em = defrag_lookup_extent(&inode->vfs_inode, cur, locked);
++		em = defrag_lookup_extent(&inode->vfs_inode, cur,
++					  newer_than, locked);
+ 		if (!em)
+ 			break;
+ 
 
 
