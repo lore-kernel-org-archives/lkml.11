@@ -2,143 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237591AbiCGJff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:35:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
+        id S231339AbiCGJfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:35:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237063AbiCGJ1N (ORCPT
+        with ESMTP id S237124AbiCGJ1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:27:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0809361A35;
-        Mon,  7 Mar 2022 01:24:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 334E461154;
-        Mon,  7 Mar 2022 09:24:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42EE7C340F3;
-        Mon,  7 Mar 2022 09:24:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645077;
-        bh=LhIqB/AXGZIWV3j1TOPEnsVqsIHXY5aG13aEurkFvyk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p0+jj0oM0U86oDw7VufXhWO9AUlCv/7V/RWqrUfPdP2IOEig1dxfiF8dIw68sGdbb
-         gVFCyi4ZARmjEX3FcK63nu/Rtwvq7tfuSSbyu3prR6m570eET2VJFOyCAnwRsjIPOs
-         9Soa+IHqGNwyD/J2CF/WrtdUV3M0TDBBy8k7be6Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 07/51] cifs: fix double free race when mount fails in cifs_get_root()
-Date:   Mon,  7 Mar 2022 10:18:42 +0100
-Message-Id: <20220307091637.203435578@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-References: <20220307091636.988950823@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:27:44 -0500
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679B75A085;
+        Mon,  7 Mar 2022 01:24:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1646645089;
+  x=1678181089;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4CmVi/4Nf+c+fLXTqFUvrIaFiJk/ULe4N6+IxCPq3IQ=;
+  b=GC2kH2F+Y2dJTEEI/0VeXF1PrM/7q65pYGHW+mOxqBG5cP9C/3cSKl8c
+   tCmu3/bWfntMP2eNYBv1Zildq1NfifIa/6RzVs6/CKaLtjXdbWfpv+1aM
+   iwL8E5hwb60pu8na6qBbnzDz+xBHcRsXzNPmYSo9dF5YWGch5Oo6EaW1K
+   cXqRHk3nDuAqSeQN+8ueevQ59OO/LHEWi0b+4jLZgfegpwGBr7xXAYiNf
+   oHoU8sq19TBn5DLrMFkWJUoiluZYTj1JYyV1Io9kT9Zm/22I0xrpv0i6h
+   EqylWszECzVtbo7xVt+t2126rtOBa7wmKfPmWAirj3xKUMdAkQGLvBViL
+   w==;
+Date:   Mon, 7 Mar 2022 10:24:37 +0100
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>, kernel <kernel@axis.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH] clocksource/drivers/exynos_mct: Support using only local
+ timer
+Message-ID: <20220307092437.GA32457@axis.com>
+References: <20220307083255.1577365-1-vincent.whitchurch@axis.com>
+ <08992f48-6cb6-8dc0-33d2-f18f942d2bee@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <08992f48-6cb6-8dc0-33d2-f18f942d2bee@canonical.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+On Mon, Mar 07, 2022 at 10:06:26AM +0100, Krzysztof Kozlowski wrote:
+> On 07/03/2022 09:32, Vincent Whitchurch wrote:
+> > The ARTPEC-8 SoC has a quad-core Cortex-A53 and a single-core Cortex-A5
+> > which share one MCT with one global and eight local timers.
+> > 
+> > The Cortex-A53 boots first and starts the global FRC and also registers
+> > a clock events device using the global timer.  (This global timer clock
+> > events is usually replaced by arch timer clock events for each of the
+> > cores.)
+> > 
+> > When the A5 boots, we should not use the global timer interrupts or
+> > write to the global timer registers.  This is because even if there are
+> > four global comparators, the control bits for all four are in the same
+> > registers, and we would need to synchronize between the cpus.  Instead,
+> > the global timer FRC (already started by the A53) should be used as the
+> > clock source, and one of the local timers which are not used by the A53
+> > can be used for clock events on the A5.
+> > 
+> > To support this, add a module param to set the local timer starting
+> > index.  If this parameter is non-zero, the global timer clock events
+> > device is not registered and we don't write to the global FRC if it is
+> > already started.
+> > 
+> > Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> > ---
+> >  drivers/clocksource/exynos_mct.c | 29 ++++++++++++++++++++++++-----
+> >  1 file changed, 24 insertions(+), 5 deletions(-)
+> 
+> This should not be send separately from the previous patch.
 
-[ Upstream commit 3d6cc9898efdfb062efb74dc18cfc700e082f5d5 ]
+OK, I will put it in a series.
 
-When cifs_get_root() fails during cifs_smb3_do_mount() we call
-deactivate_locked_super() which eventually will call delayed_free() which
-will free the context.
-In this situation we should not proceed to enter the out: section in
-cifs_smb3_do_mount() and free the same resources a second time.
+> 
+> > 
+> > diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+> > index f29c812b70c9..7ea2919b1808 100644
+> > --- a/drivers/clocksource/exynos_mct.c
+> > +++ b/drivers/clocksource/exynos_mct.c
+> > @@ -33,7 +33,7 @@
+> >  #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
+> >  #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
+> >  #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
+> > -#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
+> > +#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
+> >  #define EXYNOS4_MCT_L_MASK		(0xffffff00)
+> >  
+> >  #define MCT_L_TCNTB_OFFSET		(0x00)
+> > @@ -77,6 +77,13 @@ static unsigned long clk_rate;
+> >  static unsigned int mct_int_type;
+> >  static int mct_irqs[MCT_NR_IRQS];
+> >  
+> > +/*
+> > + * First local timer index to use.  If non-zero, global
+> > + * timer is not written to.
+> > + */
+> > +static unsigned int mct_local_idx;
+> > +module_param_named(local_idx, mct_local_idx, int, 0);
+> 
+> No, it's a no go. Please use dedicated compatible if you need specific
+> quirks.
 
-[Thu Feb 10 12:59:06 2022] BUG: KASAN: use-after-free in rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022] Read of size 8 at addr ffff888364f4d110 by task swapper/1/0
+I could add a compatible, but please note that the hardware itself does
+not have any quirks, it's only the usage of the hardware from one of the
+Linux kernels (see the explanation below) which is different.  Is it
+correct to use a compatible to distinguish between these kind of
+software-determined usage differences?
 
-[Thu Feb 10 12:59:06 2022] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE     5.17.0-rc3+ #4
-[Thu Feb 10 12:59:06 2022] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.0 12/17/2019
-[Thu Feb 10 12:59:06 2022] Call Trace:
-[Thu Feb 10 12:59:06 2022]  <IRQ>
-[Thu Feb 10 12:59:06 2022]  dump_stack_lvl+0x5d/0x78
-[Thu Feb 10 12:59:06 2022]  print_address_description.constprop.0+0x24/0x150
-[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  kasan_report.cold+0x7d/0x117
-[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  __asan_load8+0x86/0xa0
-[Thu Feb 10 12:59:06 2022]  rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  rcu_core+0x547/0xca0
-[Thu Feb 10 12:59:06 2022]  ? call_rcu+0x3c0/0x3c0
-[Thu Feb 10 12:59:06 2022]  ? __this_cpu_preempt_check+0x13/0x20
-[Thu Feb 10 12:59:06 2022]  ? lock_is_held_type+0xea/0x140
-[Thu Feb 10 12:59:06 2022]  rcu_core_si+0xe/0x10
-[Thu Feb 10 12:59:06 2022]  __do_softirq+0x1d4/0x67b
-[Thu Feb 10 12:59:06 2022]  __irq_exit_rcu+0x100/0x150
-[Thu Feb 10 12:59:06 2022]  irq_exit_rcu+0xe/0x30
-[Thu Feb 10 12:59:06 2022]  sysvec_hyperv_stimer0+0x9d/0xc0
-...
-[Thu Feb 10 12:59:07 2022] Freed by task 58179:
-[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
-[Thu Feb 10 12:59:07 2022]  kasan_set_track+0x25/0x30
-[Thu Feb 10 12:59:07 2022]  kasan_set_free_info+0x24/0x40
-[Thu Feb 10 12:59:07 2022]  ____kasan_slab_free+0x137/0x170
-[Thu Feb 10 12:59:07 2022]  __kasan_slab_free+0x12/0x20
-[Thu Feb 10 12:59:07 2022]  slab_free_freelist_hook+0xb3/0x1d0
-[Thu Feb 10 12:59:07 2022]  kfree+0xcd/0x520
-[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0x149/0xbe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
-[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
-[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
-[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
-[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
-[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> > +
+> >  struct mct_clock_event_device {
+> >  	struct clock_event_device evt;
+> >  	unsigned long base;
+> > @@ -157,6 +164,17 @@ static void exynos4_mct_frc_start(void)
+> >  	u32 reg;
+> >  
+> >  	reg = readl_relaxed(reg_base + EXYNOS4_MCT_G_TCON);
+> > +
+> > +	/*
+> > +	 * If the FRC is already running, we don't need to start it again.  We
+> > +	 * could probably just do this on all systems, but, to avoid any risk
+> > +	 * for regressions, we only do it on systems where it's absolutely
+> > +	 * necessary (i.e., on systems where writes to the global registers
+> > +	 * need to be avoided).
+> > +	 */
+> > +	if (mct_local_idx && (reg & MCT_G_TCON_START))
+> > +		return;
+> 
+> I don't get it. exynos4_mct_frc_start() is called exactly only once in
+> the system - during init. Not once per every CPU or cluster (I
+> understood you have two clusters, right?).
 
-[Thu Feb 10 12:59:07 2022] Last potentially related work creation:
-[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
-[Thu Feb 10 12:59:07 2022]  __kasan_record_aux_stack+0xb6/0xc0
-[Thu Feb 10 12:59:07 2022]  kasan_record_aux_stack_noalloc+0xb/0x10
-[Thu Feb 10 12:59:07 2022]  call_rcu+0x76/0x3c0
-[Thu Feb 10 12:59:07 2022]  cifs_umount+0xce/0xe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  cifs_kill_sb+0xc8/0xe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  deactivate_locked_super+0x5d/0xd0
-[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0xab9/0xbe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
-[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
-[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
-[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
-[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
-[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Reported-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/cifs/cifsfs.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index bc906fcf3f6db..baa1713d66958 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -779,6 +779,7 @@ cifs_smb3_do_mount(struct file_system_type *fs_type,
- 
- out_super:
- 	deactivate_locked_super(sb);
-+	return root;
- out:
- 	cifs_cleanup_volume_info(volume_info);
- 	return root;
--- 
-2.34.1
-
-
-
+Not quite.  The Cortex-A53 and the Cortex-A5 do not have cache-coherency
+between them, so they are not run in an SMP configuration.  From the
+Cortex-A53's perspective, the Cortex-A5 looks like any other hardware
+block.  The Cortex-A5 could just as well have run some other operating
+system, but I run Linux on it.  So there are two separate, independent
+Linux kernels running on the SoC.
