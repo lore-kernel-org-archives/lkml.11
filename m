@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC6CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7485EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232385AbiCGJ0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
+        id S236846AbiCGJ0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:26:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237346AbiCGJXs (ORCPT
+        with ESMTP id S237265AbiCGJXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2530753702;
-        Mon,  7 Mar 2022 01:22:54 -0800 (PST)
+        Mon, 7 Mar 2022 04:23:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1696522C5;
+        Mon,  7 Mar 2022 01:22:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B40D26112D;
-        Mon,  7 Mar 2022 09:22:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C186CC340E9;
-        Mon,  7 Mar 2022 09:22:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CD4AB810BC;
+        Mon,  7 Mar 2022 09:22:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D684DC340F3;
+        Mon,  7 Mar 2022 09:22:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644973;
-        bh=2hD2Zy8q0u/gvLIiemZem1RJ9k1fcEV26TC5ytos6DE=;
+        s=korg; t=1646644933;
+        bh=nB+IriusxrNw8RVnFBG5j8tEtcqp3hdPm/KX5tASSSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8s+1UfFUXPEs9CfGCyN4eh6+UWwIKh6dD3YF6L18CjHVU3fnWNsCoLSQlf4fPLe6
-         vTPmeM1DHCusR50t/8rAfebjPvpLsj5fUZB2Rd2PSyUIt2dz9oz1ZABA+iJ7nTQfa0
-         SUN7uKmBvHowQo3VQ7ddDii03zVzTiahGzWI1KwA=
+        b=yR77wSL7yJFXtVrXe96j8lVscRYPDxbW6HU7O47ICZr0NTDUzoymNsTmzWISKn/+K
+         kiOC/MJ/vRtBU4neQ767UO1U/lx0yXOn8/HFSeoXoc6g7c6YRKCTwoHGjyiZBwiQxk
+         LdwiqhHR71qGxuNtUbBLq4N495gvSRgEE9+I0ELE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 4.14 40/42] HID: add mapping for KEY_ALL_APPLICATIONS
-Date:   Mon,  7 Mar 2022 10:19:14 +0100
-Message-Id: <20220307091637.319648176@linuxfoundation.org>
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 08/42] i2c: qup: allow COMPILE_TEST
+Date:   Mon,  7 Mar 2022 10:18:42 +0100
+Message-Id: <20220307091636.393518294@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -49,61 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Mahon <wmahon@chromium.org>
+From: Wolfram Sang <wsa@kernel.org>
 
-commit 327b89f0acc4c20a06ed59e4d9af7f6d804dc2e2 upstream.
+[ Upstream commit 5de717974005fcad2502281e9f82e139ca91f4bb ]
 
-This patch adds a new key definition for KEY_ALL_APPLICATIONS
-and aliases KEY_DASHBOARD to it.
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-It also maps the 0x0c/0x2a2 usage code to KEY_ALL_APPLICATIONS.
-
-Signed-off-by: William Mahon <wmahon@chromium.org>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/20220303035618.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-debug.c                |    4 +++-
- drivers/hid/hid-input.c                |    2 ++
- include/uapi/linux/input-event-codes.h |    3 ++-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hid/hid-debug.c
-+++ b/drivers/hid/hid-debug.c
-@@ -835,7 +835,9 @@ static const char *keys[KEY_MAX + 1] = {
- 	[KEY_F22] = "F22",			[KEY_F23] = "F23",
- 	[KEY_F24] = "F24",			[KEY_PLAYCD] = "PlayCD",
- 	[KEY_PAUSECD] = "PauseCD",		[KEY_PROG3] = "Prog3",
--	[KEY_PROG4] = "Prog4",			[KEY_SUSPEND] = "Suspend",
-+	[KEY_PROG4] = "Prog4",
-+	[KEY_ALL_APPLICATIONS] = "AllApplications",
-+	[KEY_SUSPEND] = "Suspend",
- 	[KEY_CLOSE] = "Close",			[KEY_PLAY] = "Play",
- 	[KEY_FASTFORWARD] = "FastForward",	[KEY_BASSBOOST] = "BassBoost",
- 	[KEY_PRINT] = "Print",			[KEY_HP] = "HP",
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1026,6 +1026,8 @@ static void hidinput_configure_usage(str
- 		case 0x28b: map_key_clear(KEY_FORWARDMAIL);	break;
- 		case 0x28c: map_key_clear(KEY_SEND);		break;
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index ab9c7f2f1f79b..2619f1dc095aa 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -836,7 +836,7 @@ config I2C_PXA_SLAVE
  
-+		case 0x2a2: map_key_clear(KEY_ALL_APPLICATIONS);	break;
-+
- 		case 0x2c7: map_key_clear(KEY_KBDINPUTASSIST_PREV);		break;
- 		case 0x2c8: map_key_clear(KEY_KBDINPUTASSIST_NEXT);		break;
- 		case 0x2c9: map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);		break;
---- a/include/uapi/linux/input-event-codes.h
-+++ b/include/uapi/linux/input-event-codes.h
-@@ -278,7 +278,8 @@
- #define KEY_PAUSECD		201
- #define KEY_PROG3		202
- #define KEY_PROG4		203
--#define KEY_DASHBOARD		204	/* AL Dashboard */
-+#define KEY_ALL_APPLICATIONS	204	/* AC Desktop Show All Applications */
-+#define KEY_DASHBOARD		KEY_ALL_APPLICATIONS
- #define KEY_SUSPEND		205
- #define KEY_CLOSE		206	/* AC Close */
- #define KEY_PLAY		207
+ config I2C_QUP
+ 	tristate "Qualcomm QUP based I2C controller"
+-	depends on ARCH_QCOM
++	depends on ARCH_QCOM || COMPILE_TEST
+ 	help
+ 	  If you say yes to this option, support will be included for the
+ 	  built-in I2C interface on the Qualcomm SoCs.
+-- 
+2.34.1
+
 
 
