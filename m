@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB89C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D9EC3527E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241505AbiCGKUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:20:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
+        id S241273AbiCGKUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238784AbiCGJ44 (ORCPT
+        with ESMTP id S240970AbiCGKBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:56:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5992D7A997;
-        Mon,  7 Mar 2022 01:45:56 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B2B6E4E3;
+        Mon,  7 Mar 2022 01:51:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC44661380;
-        Mon,  7 Mar 2022 09:45:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84AFC340E9;
-        Mon,  7 Mar 2022 09:45:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D36B560A23;
+        Mon,  7 Mar 2022 09:51:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E55BAC340F4;
+        Mon,  7 Mar 2022 09:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646351;
-        bh=qj+6Zq47nzRvlAhK7B+0w7NYRpn+RlKjgo26dVjP3W4=;
+        s=korg; t=1646646672;
+        bh=J3C58RKqRkdt0Z9ppRxUiMEM8xgTHy1k+NvGXw5NCTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DtXiylEk6QyS/JujNylBWHJDwEl7JSlLJfZpHY7YvKZzsjMZMljG3jG5JapdIoTtF
-         LJkJSW5mBndC2TD0v3a4haXmWEezVYgtScQRfSlu/Q9Kt1nSv+KQefAnsWnY39hrkZ
-         2jnGzzote00AecV7t2OcI45qeURF+AmA6HOkPW/o=
+        b=EQf0zwO7foI4V5CsScP69zWSYpS7LTJWU23LsES1IsvRqK9diAMlANY7eA6/9bRLq
+         D3qXxqSmr+Ux20LG0XTvWQ9v7rjugQIsmUCLzRHeSpeeNFImA6vFe1KgiDD9uTGaZJ
+         gUo1A+OKNVEjDkABErEo23OQbZNzNrvjNVAZ3Zlo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 213/262] netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant
-Date:   Mon,  7 Mar 2022 10:19:17 +0100
-Message-Id: <20220307091708.929533453@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 055/186] ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
+Date:   Mon,  7 Mar 2022 10:18:13 +0100
+Message-Id: <20220307091655.631688958@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
+References: <20220307091654.092878898@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit ae089831ff28a115908b8d796f667c2dadef1637 ]
+commit 9bdd10d57a8807dba0003af0325191f3cec0f11c upstream.
 
-While kfree_rcu(ptr) _is_ supported, it has some limitations.
+While the $val/$val2 values passed in from userspace are always >= 0
+integers, the limits of the control can be signed integers and the $min
+can be non-zero and less than zero. To correctly validate $val/$val2
+against platform_max, add the $min offset to val first.
 
-Given that 99.99% of kfree_rcu() users [1] use the legacy
-two parameters variant, and @catchall objects do have an rcu head,
-simply use it.
-
-Choice of kfree_rcu(ptr) variant was probably not intentional.
-
-[1] including calls from net/netfilter/nf_tables_api.c
-
-Fixes: aaa31047a6d2 ("netfilter: nftables: add catch-all set element support")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 817f7c9335ec0 ("ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220215130645.164025-1-marex@denx.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c | 4 ++--
+ sound/soc/soc-ops.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index a65b530975f5..2b2e0210a7f9 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -4486,7 +4486,7 @@ static void nft_set_catchall_destroy(const struct nft_ctx *ctx,
- 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
- 		list_del_rcu(&catchall->list);
- 		nft_set_elem_destroy(set, catchall->elem, true);
--		kfree_rcu(catchall);
-+		kfree_rcu(catchall, rcu);
- 	}
- }
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -317,7 +317,7 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 		mask = BIT(sign_bit + 1) - 1;
  
-@@ -5653,7 +5653,7 @@ static void nft_setelem_catchall_remove(const struct net *net,
- 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
- 		if (catchall->elem == elem->priv) {
- 			list_del_rcu(&catchall->list);
--			kfree_rcu(catchall);
-+			kfree_rcu(catchall, rcu);
- 			break;
- 		}
- 	}
--- 
-2.34.1
-
+ 	val = ucontrol->value.integer.value[0];
+-	if (mc->platform_max && val > mc->platform_max)
++	if (mc->platform_max && ((int)val + min) > mc->platform_max)
+ 		return -EINVAL;
+ 	if (val > max - min)
+ 		return -EINVAL;
+@@ -330,7 +330,7 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	val = val << shift;
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+ 		val2 = ucontrol->value.integer.value[1];
+-		if (mc->platform_max && val2 > mc->platform_max)
++		if (mc->platform_max && ((int)val2 + min) > mc->platform_max)
+ 			return -EINVAL;
+ 		if (val2 > max - min)
+ 			return -EINVAL;
 
 
