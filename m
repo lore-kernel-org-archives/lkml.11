@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C0AC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240899AbiCGKTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
+        id S241436AbiCGKUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240524AbiCGKBF (ORCPT
+        with ESMTP id S241287AbiCGKBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381521ADBE;
-        Mon,  7 Mar 2022 01:50:03 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C46723CA;
+        Mon,  7 Mar 2022 01:51:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB91D60010;
-        Mon,  7 Mar 2022 09:50:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDC18C340F3;
-        Mon,  7 Mar 2022 09:50:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBDAD60919;
+        Mon,  7 Mar 2022 09:51:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3686C340F3;
+        Mon,  7 Mar 2022 09:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646602;
-        bh=28iw5wanEUAnHfqZ+jvoczZh8C45puLtYOCOE0FUdeY=;
+        s=korg; t=1646646697;
+        bh=+0EpU+HNeg1odvwyzGPv0Wt95moAaPvI9wujS/xY2j0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lJmrUmCN2ASloqZHSnOwuTGqZ8h6CfR11ARjSIKU1h7xro++d8L65mfRPtx1Q1+9t
-         DWeibhbwk3IDVLfnYhwOFT6D3A/Brl05QPwMog3qHlfzzDjKkgAadCsV85XV8D/sme
-         UwOB6BcLVmj+llVvr0WoxjgXjzVGBXAYITGXnrAk=
+        b=iCyo5hfLsWcg0IrSuQXhQuil61yi1jZCfcSYbe2zGhBQBfQMPHrd6dXS/wjXp75W/
+         sMpk2dfpbzk8X5etCVBKFSvRpUd7klMFQMXTHNRjp8EQ/duXzIun+VqklZAgM6hPZb
+         FFGsUzQOqCMBmq6AM3WhGGcEHLkwtXRoz2yeoVPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Valentin Caron <valentin.caron@foss.st.com>,
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 034/186] serial: stm32: prevent TDR register overwrite when sending x_char
-Date:   Mon,  7 Mar 2022 10:17:52 +0100
-Message-Id: <20220307091655.049293702@linuxfoundation.org>
+Subject: [PATCH 5.16 023/186] i2c: cadence: allow COMPILE_TEST
+Date:   Mon,  7 Mar 2022 10:17:41 +0100
+Message-Id: <20220307091654.744227783@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,55 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Caron <valentin.caron@foss.st.com>
+From: Wolfram Sang <wsa@kernel.org>
 
-[ Upstream commit d3d079bde07e1b7deaeb57506dc0b86010121d17 ]
+[ Upstream commit 0b0dcb3882c8f08bdeafa03adb4487e104d26050 ]
 
-When sending x_char in stm32_usart_transmit_chars(), driver can overwrite
-the value of TDR register by the value of x_char. If this happens, the
-previous value that was present in TDR register will not be sent through
-uart.
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-This code checks if the previous value in TDR register is sent before
-writing the x_char value into register.
-
-Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
-Link: https://lore.kernel.org/r/20220111164441.6178-2-valentin.caron@foss.st.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/stm32-usart.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 2d3fbcbfaf108..93c2a5c956540 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -520,10 +520,22 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 	struct circ_buf *xmit = &port->state->xmit;
-+	u32 isr;
-+	int ret;
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index dce3928390176..b1c20859fe8c9 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -488,7 +488,7 @@ config I2C_BRCMSTB
  
- 	if (port->x_char) {
- 		if (stm32_port->tx_dma_busy)
- 			stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
-+
-+		/* Check that TDR is empty before filling FIFO */
-+		ret =
-+		readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
-+						  isr,
-+						  (isr & USART_SR_TXE),
-+						  10, 1000);
-+		if (ret)
-+			dev_warn(port->dev, "1 character may be erased\n");
-+
- 		writel_relaxed(port->x_char, port->membase + ofs->tdr);
- 		port->x_char = 0;
- 		port->icount.tx++;
+ config I2C_CADENCE
+ 	tristate "Cadence I2C Controller"
+-	depends on ARCH_ZYNQ || ARM64 || XTENSA
++	depends on ARCH_ZYNQ || ARM64 || XTENSA || COMPILE_TEST
+ 	help
+ 	  Say yes here to select Cadence I2C Host Controller. This controller is
+ 	  e.g. used by Xilinx Zynq.
 -- 
 2.34.1
 
