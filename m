@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E87C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238038AbiCGVkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 16:40:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        id S239039AbiCGVk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 16:40:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343613AbiCGVhs (ORCPT
+        with ESMTP id S1343707AbiCGVh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 16:37:48 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2047.outbound.protection.outlook.com [40.107.236.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55F675E6C;
-        Mon,  7 Mar 2022 13:35:33 -0800 (PST)
+        Mon, 7 Mar 2022 16:37:56 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2084.outbound.protection.outlook.com [40.107.93.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2265175E4E;
+        Mon,  7 Mar 2022 13:35:58 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gdEkVjqBJ5ARV6ABcj6gHLedWlsvKxqyBx0GjK0C0mqILLmz8+z/N2vqL7mhxnuQbw0Gt5ttvBYq2y+RsNZLEcglhf8x9eFyCb04rfZbzL3bgx/jwU/23B9VpycemssxAocuujhlQgcqnRt8O7PIOzjcPNoAEChEVdcUTNSWEQHV5NQW025haiF6CorJ5/FHeOtDDduemZ0vPHyvyfasPZYsdzDC2tYaSubr45cgj5G2A50QM5kpUzHtCYNaPXFQtDw4uMfEJGY1BTJIRVbSsffq79EAXJHhNP1NtmBrPZ4woCvv1F7VDGvG92I06b/K0GLXe++3Fp09Vlb8F+5fcA==
+ b=bNmtcd/wc1kVYSvNM6iMRRZvpCDNdTqshmPk6X2++eZP/BIzOQvcZj1PVFGegbH5xF0BNr0u20dveeR5OON/Fvl5ye1iwa0HM9I/PLK/7cFkpxlvS3jL0dxCBLaKHPHAph7flpSqho87sWpg11wVEQeGROtVXSMFswWoV2E1xM9KMdWYHwf8WaWNtEeb0tBPYSnB6JL7UdhDILI24TUxICvY9ihdXnPVsQIcUxYPKEVoa5kAXDdHH5WN7qPfZ6IQgnawoSFVBc1xlLS4dSvjQyLjKrHGWoonp3WoCf5lVPEViYZ9JqGcZlsR0ytvjkX6cLOqNqbrBzFRj6z/YC1s3w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ROVC6Dlv5LcS0CSnBzw22q0dJBQB7GHMlyI2WLNxpUE=;
- b=BtaJ+QACa6Igm2C8TWRpruT8DRS4+2i3W14fzb4ae3WdKGNmOSNM1Rw9qYiIICLLOEUjHWxSR5ZhkNoV1foejH3lhs9Bnv7nbQD4ds4QyxYdKKcRMoUI8O+48cxUFiRhN0VjXwTTq6bt8iMd3NMkAG75MtD1dRXPZKok+yGJKMBChtk5XHmr8yaoXu1NPIDvN40fcD8kat4MNyYG3+2GiUmJ/8yhQb/hBpuMQ+OJj26b51dzQhkOVkfMkFvFXQJUmGWZu4nImvB3Y1QwR8h3boFaZfcWYj2Q/KNSXfwyUUzEVuYg+8oneIYUt/Isj+64UGmtKoCMnzP+4AQue/guwQ==
+ bh=sWobb2aiOG2Wk/2j/o4EOfKRABBsz/YlVzD0P5q7RJg=;
+ b=LJRL8lDqX8JKPALtgGZUi5ieWV+TJs1QyHQNo6Zn1l8S08OcgXmmGlsdhk1gKD5cAXWqidGBrnNUnBIYmWKPIAR2J/DzfWOtQLVfX9fh0rzb/arj8YCEi/1a69dAujzzXmqpaWoyLp83t+pc8Mkgy9jly4TWaOAsc/mwG4yhzr2AImaAiK7OwNxg0/UnccsAwvFH90AUkY6GBDjKpvZJdA0Tjw8anHTKRiYtvZMkdl/rM95IPgAJ/64n9T6kHczwT0HJcFsgTWW5DVPCfg4xvLJHNYmbCqXZJ05GIYF6mKoMT/AMxDXtBo+vrNqYVM0qA5iplHwcFyK+PVmFA1N55w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ROVC6Dlv5LcS0CSnBzw22q0dJBQB7GHMlyI2WLNxpUE=;
- b=PRBmLG9fcy4Rv9UiteRUs+n/7e4JuAKgILgD+ydwhTGMheA1AK/dJGXweiPZku5+SLj8g1B9kUOSWtb/KF7aCwx+ulAEgFAuX0dAj1sJT2Dupuwahli4GKRBfHubS7YCUifTqgAh217ToMJa465EGNQeyrPdWUjdrkpxivGV3t8=
-Received: from BN9PR03CA0096.namprd03.prod.outlook.com (2603:10b6:408:fd::11)
- by BN7PR12MB2674.namprd12.prod.outlook.com (2603:10b6:408:29::28) with
+ bh=sWobb2aiOG2Wk/2j/o4EOfKRABBsz/YlVzD0P5q7RJg=;
+ b=36Sbjgwf2yxVRjnizh4xt3mQft2XvaOVwMUVytBP9CMa8HrjHBkpLeFwmgO+vCy/BNa6WEHSaOMfPZOZjHecxYSVKVDJlJYkbLMvMVaaZSW662DL1mrKZBUKN7tb1cpMYEb1XInRSulmG9z7oZ4gl3ntxQvByw5n1dflDnNYsvg=
+Received: from BN9PR03CA0110.namprd03.prod.outlook.com (2603:10b6:408:fd::25)
+ by CY4PR12MB1336.namprd12.prod.outlook.com (2603:10b6:903:40::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Mon, 7 Mar
- 2022 21:35:22 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.18; Mon, 7 Mar
+ 2022 21:35:34 +0000
 Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fd:cafe::82) by BN9PR03CA0096.outlook.office365.com
- (2603:10b6:408:fd::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16 via Frontend
- Transport; Mon, 7 Mar 2022 21:35:22 +0000
+ (2603:10b6:408:fd:cafe::6c) by BN9PR03CA0110.outlook.office365.com
+ (2603:10b6:408:fd::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.13 via Frontend
+ Transport; Mon, 7 Mar 2022 21:35:34 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -49,11 +49,11 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 21:35:22 +0000
+ 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 21:35:34 +0000
 Received: from sbrijesh-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Mar
- 2022 15:35:15 -0600
+ 2022 15:35:27 -0600
 From:   Brijesh Singh <brijesh.singh@amd.com>
 To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
         <kvm@vger.kernel.org>, <linux-efi@vger.kernel.org>,
@@ -82,11 +82,10 @@ CC:     Thomas Gleixner <tglx@linutronix.de>,
         Andi Kleen <ak@linux.intel.com>,
         "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
         <brijesh.ksingh@gmail.com>, <tony.luck@intel.com>,
-        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>
-Subject: [PATCH v12 33/46] x86/boot: Add a pointer to Confidential Computing blob in bootparams
-Date:   Mon, 7 Mar 2022 15:33:43 -0600
-Message-ID: <20220307213356.2797205-34-brijesh.singh@amd.com>
+        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v12 40/46] x86/sev: add sev=debug cmdline option to dump SNP CPUID table
+Date:   Mon, 7 Mar 2022 15:33:50 -0600
+Message-ID: <20220307213356.2797205-41-brijesh.singh@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220307213356.2797205-1-brijesh.singh@amd.com>
 References: <20220307213356.2797205-1-brijesh.singh@amd.com>
@@ -98,113 +97,163 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0bca2664-5d24-4fe8-e17b-08da0082625f
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2674:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB2674F845D6FCE04A26EEEF3EE5089@BN7PR12MB2674.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 195064d7-d6e7-4cb3-c9fa-08da008269a5
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1336:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB13364996282E26A37B6D8957E5089@CY4PR12MB1336.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SCbetWe49F6DInvGg3BkhfRbjnqwM9Z/m51QEfNVaayE5ztXut/jfTWICBFRb4erJwQIUYOmOVtf4emVZzY4O9PJAP9Eqjv32PDnxfMnu1Vk4nmm+HW1LpCixNMXHIH8kqFL1uqL+bkykSSnth4pKckHNiB9pt5m8kAcYWanDkj4zZWADRoD1Fvut1dyl8r9jrKfuyoRcVGmnJOncc9rCfIA2LLh5fGxP4ivHlEwRa4vXd+8CmJtBY8CiLPzcBWg79j95aqAinuwQ7tryM8oB2igx/NHijnVHjz8ZEKEDJqIMwANPBUpGFC6LvRpfxxfhFyeNOwHjDOzBeM1KHOjqhCP0kzpUDz+GzEXzq7Thm5wyMFb0cmgC5nWzOzEwns+epGAaB5WPzgAb16TUnrK6O+jZNZ8avVCtdnPoqTwkmC3LGa8znfdvvn9f86B6fKmvo+sAcYGy1sH9FjyrcAD2Qslcvc3u9RBDupJophW3Xz3S9Hvi2+RPJZmqyXvbqmNglBkMKT015Ju19BW2yCE9yIpoIWKCCjA4UjomJ0QFYFBrPfVVUmUBm4Ln8/R08buGsNtMDIK2YSbjz1AnbRYN0kkAGQC9ndlKSJd/5/e7Mr3wsIPXJbAljAG6ZHF8J4U2CdSyXpmuzTpJg0rkVRcSlKpws06j7bvtLUkPNM/mGBTP9MR3BrjU0fA2/QMgmIAruk1CKEZYmmk2+eCxF9z+EuuvikRrxK3AtqLL/t74nM=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(83380400001)(40460700003)(7406005)(7416002)(2906002)(44832011)(36756003)(508600001)(36860700001)(6666004)(7696005)(426003)(336012)(5660300002)(26005)(8936002)(186003)(81166007)(16526019)(86362001)(356005)(70206006)(4326008)(8676002)(1076003)(70586007)(2616005)(110136005)(54906003)(316002)(47076005)(82310400004)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: cg17bm2oRggRCeIy8edPGWl1sK8gj9ubIPJOlg3pEHc9tdE7MSy61V3jxv3X5+Q6sE4rMNBvGfwer7xaYjPGDs03d+PYrGrGszsITTutqSqqYZJtTePaDLruemrlwVFu0KSGOFxfm1f8KZmVd49VBtkdBSJ6leVUgl3bjZ/poAY9PcQSH8nzwFaycMIIr9QO2swMRgZYYZBVf4TpynJo8KxxN9Rl6RXseA71F1760gL6Vk+9XLb22KALT7hzt2O9zWujexJAVxO1vEKHE7TCbT9R5rXbR5Ijv8KFKIr8FXzSowLQME3hIpga+B5whmm2nC1zMoxE1Uj7wT2cS3bPiG3mRrDMi0PRiiLNAvtNXy35cwtyCPSMhtBHVkmIerdZ/Fi3ZJN5Jn8dPi8jMId2hCJzoxrcCsZUQX5eGNjVN2blKzcMBi6jhait0Ke3x/Hj6UWwNRkIn5wt8e3hXMvXidrUT7rkUG7eYMTjsWN/iJYmWkahrCZkhaJFnRtklrEqsiK5cpdhHSDUm1hAZM0mTezVFLJGblN/0S5gl3yOMJceCr9OvLPW8fllM3AMOaK1+A66aKe4VkzDntmkZfMUYOKhIin1a6S6qcsPBcQZChekw4Xk/taqACOjKJ2Qvwq/KzNnavLSnciDUau1lEgKFnHmhVQuAP5EQnwY+6V5Z0S1kf58gqumTHjei35WROzXWRYjy3Sk3IcMG3+wiaVe/yg1Z8zvGZryNnaj/T7AjYI=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(2906002)(508600001)(5660300002)(81166007)(86362001)(6666004)(36860700001)(7416002)(7406005)(7696005)(44832011)(336012)(47076005)(82310400004)(83380400001)(426003)(356005)(8676002)(36756003)(70586007)(70206006)(1076003)(40460700003)(26005)(2616005)(186003)(16526019)(316002)(54906003)(8936002)(110136005)(4326008)(36900700001)(2101003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 21:35:22.1764
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 21:35:34.3786
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bca2664-5d24-4fe8-e17b-08da0082625f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 195064d7-d6e7-4cb3-c9fa-08da008269a5
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2674
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1336
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Michael Roth <michael.roth@amd.com>
 
-The previously defined Confidential Computing blob is provided to the
-kernel via a setup_data structure or EFI config table entry. Currently
-these are both checked for by boot/compressed kernel to access the
-CPUID table address within it for use with SEV-SNP CPUID enforcement.
+For debugging purposes it is very useful to have a way to see the full
+contents of the SNP CPUID table provided to a guest. Add an sev=debug
+kernel command-line option to do so.
 
-To also enable SEV-SNP CPUID enforcement for the run-time kernel,
-similar early access to the CPUID table is needed early on while it's
-still using the identity-mapped page table set up by boot/compressed,
-where global pointers need to be accessed via fixup_pointer().
+Also introduce some infrastructure so that additional options can be
+specified via sev=option1[,option2] over time in a consistent manner.
 
-This isn't much of an issue for accessing setup_data, and the EFI
-config table helper code currently used in boot/compressed *could* be
-used in this case as well since they both rely on identity-mapping.
-However, it has some reliance on EFI helpers/string constants that
-would need to be accessed via fixup_pointer(), and fixing it up while
-making it shareable between boot/compressed and run-time kernel is
-fragile and introduces a good bit of uglyness.
-
-Instead, add a boot_params->cc_blob_address pointer that the
-boot/compressed kernel can initialize so that the run-time kernel can
-access the CC blob from there instead of re-scanning the EFI config
-table.
-
-Also document these in Documentation/x86/zero-page.rst. While there,
-add missing documentation for the acpi_rsdp_addr field, which serves a
-similar purpose in providing the run-time kernel a pointer to the ACPI
-RSDP table so that it does not need to [re-]scan the EFI configuration
-table.
-
+Suggested-by: Borislav Petkov <bp@alien8.de>
 Signed-off-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 ---
- Documentation/x86/zero-page.rst        | 2 ++
- arch/x86/include/asm/bootparam_utils.h | 1 +
- arch/x86/include/uapi/asm/bootparam.h  | 3 ++-
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ .../admin-guide/kernel-parameters.txt         |  2 +
+ Documentation/x86/x86_64/boot-options.rst     | 14 +++++
+ arch/x86/kernel/sev.c                         | 58 +++++++++++++++++++
+ 3 files changed, 74 insertions(+)
 
-diff --git a/Documentation/x86/zero-page.rst b/Documentation/x86/zero-page.rst
-index f088f5881666..45aa9cceb4f1 100644
---- a/Documentation/x86/zero-page.rst
-+++ b/Documentation/x86/zero-page.rst
-@@ -19,6 +19,7 @@ Offset/Size	Proto	Name			Meaning
- 058/008		ALL	tboot_addr      	Physical address of tboot shared page
- 060/010		ALL	ist_info		Intel SpeedStep (IST) BIOS support information
- 						(struct ist_info)
-+070/008		ALL	acpi_rsdp_addr		Physical address of ACPI RSDP table
- 080/010		ALL	hd0_info		hd0 disk parameter, OBSOLETE!!
- 090/010		ALL	hd1_info		hd1 disk parameter, OBSOLETE!!
- 0A0/010		ALL	sys_desc_table		System description table (struct sys_desc_table),
-@@ -27,6 +28,7 @@ Offset/Size	Proto	Name			Meaning
- 0C0/004		ALL	ext_ramdisk_image	ramdisk_image high 32bits
- 0C4/004		ALL	ext_ramdisk_size	ramdisk_size high 32bits
- 0C8/004		ALL	ext_cmd_line_ptr	cmd_line_ptr high 32bits
-+13C/004		ALL	cc_blob_address		Physical address of Confidential Computing blob
- 140/080		ALL	edid_info		Video mode setup (struct edid_info)
- 1C0/020		ALL	efi_info		EFI 32 information (struct efi_info)
- 1E0/004		ALL	alt_mem_k		Alternative mem check, in KB
-diff --git a/arch/x86/include/asm/bootparam_utils.h b/arch/x86/include/asm/bootparam_utils.h
-index 981fe923a59f..53e9b0620d96 100644
---- a/arch/x86/include/asm/bootparam_utils.h
-+++ b/arch/x86/include/asm/bootparam_utils.h
-@@ -74,6 +74,7 @@ static void sanitize_boot_params(struct boot_params *boot_params)
- 			BOOT_PARAM_PRESERVE(hdr),
- 			BOOT_PARAM_PRESERVE(e820_table),
- 			BOOT_PARAM_PRESERVE(eddbuf),
-+			BOOT_PARAM_PRESERVE(cc_blob_address),
- 		};
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f5a27f067db9..809e8adc9bb2 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5229,6 +5229,8 @@
  
- 		memset(&scratch, 0, sizeof(scratch));
-diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
-index 1ac5acca72ce..bea5cdcdf532 100644
---- a/arch/x86/include/uapi/asm/bootparam.h
-+++ b/arch/x86/include/uapi/asm/bootparam.h
-@@ -188,7 +188,8 @@ struct boot_params {
- 	__u32 ext_ramdisk_image;			/* 0x0c0 */
- 	__u32 ext_ramdisk_size;				/* 0x0c4 */
- 	__u32 ext_cmd_line_ptr;				/* 0x0c8 */
--	__u8  _pad4[116];				/* 0x0cc */
-+	__u8  _pad4[112];				/* 0x0cc */
-+	__u32 cc_blob_address;				/* 0x13c */
- 	struct edid_info edid_info;			/* 0x140 */
- 	struct efi_info efi_info;			/* 0x1c0 */
- 	__u32 alt_mem_k;				/* 0x1e0 */
+ 	serialnumber	[BUGS=X86-32]
+ 
++	sev=option[,option...] [X86-64] See Documentation/x86/x86_64/boot-options.rst
++
+ 	shapers=	[NET]
+ 			Maximal number of shapers.
+ 
+diff --git a/Documentation/x86/x86_64/boot-options.rst b/Documentation/x86/x86_64/boot-options.rst
+index 07aa0007f346..66c970117f0e 100644
+--- a/Documentation/x86/x86_64/boot-options.rst
++++ b/Documentation/x86/x86_64/boot-options.rst
+@@ -310,3 +310,17 @@ Miscellaneous
+     Do not use GB pages for kernel direct mappings.
+   gbpages
+     Use GB pages for kernel direct mappings.
++
++
++AMD SEV (Secure Encrypted Virtualization)
++=========================================
++Options relating to AMD SEV, specified via the following format:
++
++::
++
++   sev=option1[,option2]
++
++The available options are:
++
++   debug
++     Enable verbose debug messages.
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index c6b2e0c58255..0b70ebb6df1d 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -112,6 +112,13 @@ DEFINE_STATIC_KEY_FALSE(sev_es_enable_key);
+ 
+ static DEFINE_PER_CPU(struct sev_es_save_area *, sev_vmsa);
+ 
++struct sev_config {
++	__u64 debug		: 1,
++	      __reserved	: 63;
++};
++
++static struct sev_config sev_cfg __read_mostly;
++
+ static __always_inline bool on_vc_stack(struct pt_regs *regs)
+ {
+ 	unsigned long sp = regs->sp;
+@@ -2045,6 +2052,23 @@ void __init snp_abort(void)
+ 	sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SNP_UNSUPPORTED);
+ }
+ 
++static void dump_cpuid_table(void)
++{
++	const struct snp_cpuid_table *cpuid_table = snp_cpuid_get_table();
++	int i = 0;
++
++	pr_info("count=%d reserved=0x%x reserved2=0x%llx\n",
++		cpuid_table->count, cpuid_table->__reserved1, cpuid_table->__reserved2);
++
++	for (i = 0; i < SNP_CPUID_COUNT_MAX; i++) {
++		const struct snp_cpuid_fn *fn = &cpuid_table->fn[i];
++
++		pr_info("index=%3d fn=0x%08x subfn=0x%08x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x xcr0_in=0x%016llx xss_in=0x%016llx reserved=0x%016llx\n",
++			i, fn->eax_in, fn->ecx_in, fn->eax, fn->ebx, fn->ecx,
++			fn->edx, fn->xcr0_in, fn->xss_in, fn->__reserved);
++	}
++}
++
+ /*
+  * It is useful from an auditing/testing perspective to provide an easy way
+  * for the guest owner to know that the CPUID table has been initialized as
+@@ -2062,6 +2086,40 @@ static int __init report_cpuid_table(void)
+ 	pr_info("Using SNP CPUID table, %d entries present.\n",
+ 		cpuid_table->count);
+ 
++	if (sev_cfg.debug)
++		dump_cpuid_table();
++
+ 	return 0;
+ }
+ arch_initcall(report_cpuid_table);
++
++static bool matches_option(const char *option, const char *arg, int arg_len)
++{
++	return strncmp(option, arg, max(arg_len, (int)strlen(option))) == 0;
++}
++
++static int __init init_sev_config(char *str)
++{
++	if ((*str) == '=')
++		str++;
++
++	while (*str) {
++		char *arg = str;
++		int arg_len;
++
++		while (*str && *str != ',')
++			str++;
++
++		arg_len = str - arg;
++		if (*str == ',')
++			str++;
++
++		if (matches_option("debug", arg, arg_len))
++			sev_cfg.debug = true;
++		else
++			pr_info("SEV command-line option '%.*s' was not recognized\n", arg_len, arg);
++	}
++
++	return 1;
++}
++__setup("sev", init_sev_config);
 -- 
 2.25.1
 
