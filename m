@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C27C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F866C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237385AbiCGJeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:34:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57962 "EHLO
+        id S237249AbiCGJeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:34:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238758AbiCGJ3k (ORCPT
+        with ESMTP id S238750AbiCGJ3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:40 -0500
+        Mon, 7 Mar 2022 04:29:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F017B5B893;
-        Mon,  7 Mar 2022 01:28:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881DB58E4B;
+        Mon,  7 Mar 2022 01:28:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 995AFB810B2;
-        Mon,  7 Mar 2022 09:28:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3801C340E9;
-        Mon,  7 Mar 2022 09:28:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41365B810B6;
+        Mon,  7 Mar 2022 09:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA06C340F3;
+        Mon,  7 Mar 2022 09:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645305;
-        bh=n5T1+I/pmeyijBxU7FOIfuJEcV3dxvkqCaFuwww8pfg=;
+        s=korg; t=1646645293;
+        bh=KjGoanFe9yX2UdN5dVRQKQaNmaQjJPnPPFDSw4zrYPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MOxwcVXguvS1L9VbHa/8vrnmxaSP65MkWMMlZ0dKO3pS7Glmm/jUc7OEzS0RzI+Ta
-         lhec6GwbwJR/2tKd8tUXoN6EVA7YgvLMIPb6s70Ttb+u8GJohZA8towf6BCpLJ8vpN
-         04kM+fk/6+KDha+AxStMNMxkOIfBX5N9BGZATFqg=
+        b=EITSur4PIT8XVWTsgWKzI0f2ebtrCJbq/ht6bPfkbvQ+uEfrqMlTO97HyrqNYIooS
+         w83W57eguHJoP5ggKc9kQ+ckP/Z1uwWXf1QTWW2K+xe8zLomk1soY2btTX2HD5PkQK
+         q1n+HvScSJRlPtyfVxIjMAAANlawgVpin3qHL+2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/64] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
-Date:   Mon,  7 Mar 2022 10:18:44 +0100
-Message-Id: <20220307091639.465137235@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Stezenbach <js@sig21.net>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.4 46/64] ARM: Fix kgdb breakpoint for Thumb2
+Date:   Mon,  7 Mar 2022 10:19:19 +0100
+Message-Id: <20220307091640.458774703@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -49,38 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
+commit d920eaa4c4559f59be7b4c2d26fa0a2e1aaa3da9 upstream.
 
-Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
-0x1071 composition in order to avoid bind error.
+The kgdb code needs to register an undef hook for the Thumb UDF
+instruction that will fault in order to be functional on Thumb2
+platforms.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Johannes Stezenbach <js@sig21.net>
+Tested-by: Johannes Stezenbach <js@sig21.net>
+Fixes: 5cbad0ebf45c ("kgdb: support for ARCH=arm")
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/kernel/kgdb.c |   36 ++++++++++++++++++++++++++++--------
+ 1 file changed, 28 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index 77ac5a721e7b6..414341c9cf5ae 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -658,6 +658,11 @@ static const struct usb_device_id mbim_devs[] = {
- 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
- 	},
+--- a/arch/arm/kernel/kgdb.c
++++ b/arch/arm/kernel/kgdb.c
+@@ -154,22 +154,38 @@ static int kgdb_compiled_brk_fn(struct p
+ 	return 0;
+ }
  
-+	/* Telit FN990 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
-+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
-+	},
+-static struct undef_hook kgdb_brkpt_hook = {
++static struct undef_hook kgdb_brkpt_arm_hook = {
+ 	.instr_mask		= 0xffffffff,
+ 	.instr_val		= KGDB_BREAKINST,
+-	.cpsr_mask		= MODE_MASK,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+ 	.cpsr_val		= SVC_MODE,
+ 	.fn			= kgdb_brk_fn
+ };
+ 
+-static struct undef_hook kgdb_compiled_brkpt_hook = {
++static struct undef_hook kgdb_brkpt_thumb_hook = {
++	.instr_mask		= 0xffff,
++	.instr_val		= KGDB_BREAKINST & 0xffff,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
++	.cpsr_val		= PSR_T_BIT | SVC_MODE,
++	.fn			= kgdb_brk_fn
++};
 +
- 	/* default entry */
- 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
- 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
--- 
-2.34.1
-
++static struct undef_hook kgdb_compiled_brkpt_arm_hook = {
+ 	.instr_mask		= 0xffffffff,
+ 	.instr_val		= KGDB_COMPILED_BREAK,
+-	.cpsr_mask		= MODE_MASK,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+ 	.cpsr_val		= SVC_MODE,
+ 	.fn			= kgdb_compiled_brk_fn
+ };
+ 
++static struct undef_hook kgdb_compiled_brkpt_thumb_hook = {
++	.instr_mask		= 0xffff,
++	.instr_val		= KGDB_COMPILED_BREAK & 0xffff,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
++	.cpsr_val		= PSR_T_BIT | SVC_MODE,
++	.fn			= kgdb_compiled_brk_fn
++};
++
+ static int __kgdb_notify(struct die_args *args, unsigned long cmd)
+ {
+ 	struct pt_regs *regs = args->regs;
+@@ -210,8 +226,10 @@ int kgdb_arch_init(void)
+ 	if (ret != 0)
+ 		return ret;
+ 
+-	register_undef_hook(&kgdb_brkpt_hook);
+-	register_undef_hook(&kgdb_compiled_brkpt_hook);
++	register_undef_hook(&kgdb_brkpt_arm_hook);
++	register_undef_hook(&kgdb_brkpt_thumb_hook);
++	register_undef_hook(&kgdb_compiled_brkpt_arm_hook);
++	register_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
+ 
+ 	return 0;
+ }
+@@ -224,8 +242,10 @@ int kgdb_arch_init(void)
+  */
+ void kgdb_arch_exit(void)
+ {
+-	unregister_undef_hook(&kgdb_brkpt_hook);
+-	unregister_undef_hook(&kgdb_compiled_brkpt_hook);
++	unregister_undef_hook(&kgdb_brkpt_arm_hook);
++	unregister_undef_hook(&kgdb_brkpt_thumb_hook);
++	unregister_undef_hook(&kgdb_compiled_brkpt_arm_hook);
++	unregister_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
+ 	unregister_die_notifier(&kgdb_notifier);
+ }
+ 
 
 
