@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D716C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AC2C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237688AbiCGJ2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:28:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36328 "EHLO
+        id S237830AbiCGJ22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:28:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236868AbiCGJZv (ORCPT
+        with ESMTP id S236933AbiCGJ0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:25:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E505BE47;
-        Mon,  7 Mar 2022 01:24:07 -0800 (PST)
+        Mon, 7 Mar 2022 04:26:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1E85C353;
+        Mon,  7 Mar 2022 01:24:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 803DB6114E;
-        Mon,  7 Mar 2022 09:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BEA3C340E9;
-        Mon,  7 Mar 2022 09:24:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1862DB810B2;
+        Mon,  7 Mar 2022 09:24:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B0D2C340F3;
+        Mon,  7 Mar 2022 09:24:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645046;
-        bh=kAINjm5pGm6Wwf2aRhnQzFP+7D9QNyq/bQgVTYYsAvo=;
+        s=korg; t=1646645052;
+        bh=cYXrRg0bKDaRuFtwOPMDCLHu9zFCT4+KPhzPcZjVbFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IZYze5aSFu+COn8OKSqA4iV8tSvTURZnf/+q/ON77KN+YPxvE35NBS77V15xxeeoU
-         ca662nxUg6loBiES53MmUN4Wwo51WWqhfZA+8w9EKsab31lMnO98/iDL++HEJbaLi+
-         Gw/65Xl4ZIm1uUuasYEaly8C+ChfrlLFPg6FAOIc=
+        b=ZZXXWr2XQO/rVlFWf/9JNEmY8ITMJUiwLdOp39jvy9NZke/0mwizXaJ/GBPJQnPH8
+         0w2s1PWsijDZyImUPiMFnIzYO0BLBKeI/Muh8J36LP8eAz1p+EaZe7PISnQUj1wxro
+         xYOAsZQuLKqq9hqNgfAeGRJyld8eawO4ezrrEyNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH 4.19 20/51] xfrm: enforce validity of offload input flags
-Date:   Mon,  7 Mar 2022 10:18:55 +0100
-Message-Id: <20220307091637.564998502@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH 4.19 22/51] netfilter: nf_queue: fix possible use-after-free
+Date:   Mon,  7 Mar 2022 10:18:57 +0100
+Message-Id: <20220307091637.624376245@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -48,65 +49,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 7c76ecd9c99b6e9a771d813ab1aa7fa428b3ade1 upstream.
+commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
 
-struct xfrm_user_offload has flags variable that received user input,
-but kernel didn't check if valid bits were provided. It caused a situation
-where not sanitized input was forwarded directly to the drivers.
+Eric Dumazet says:
+  The sock_hold() side seems suspect, because there is no guarantee
+  that sk_refcnt is not already 0.
 
-For example, XFRM_OFFLOAD_IPV6 define that was exposed, was used by
-strongswan, but not implemented in the kernel at all.
+On failure, we cannot queue the packet and need to indicate an
+error.  The packet will be dropped by the caller.
 
-As a solution, check and sanitize input flags to forward
-XFRM_OFFLOAD_INBOUND to the drivers.
+v2: split skb prefetch hunk into separate change
 
-Fixes: d77e38e612a0 ("xfrm: Add an IPsec hardware offloading API")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/xfrm.h |    6 ++++++
- net/xfrm/xfrm_device.c    |    6 +++++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ include/net/netfilter/nf_queue.h |    2 +-
+ net/netfilter/nf_queue.c         |   11 +++++++++--
+ net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
+ 3 files changed, 19 insertions(+), 6 deletions(-)
 
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -504,6 +504,12 @@ struct xfrm_user_offload {
- 	int				ifindex;
- 	__u8				flags;
- };
-+/* This flag was exposed without any kernel code that supporting it.
-+ * Unfortunately, strongswan has the code that uses sets this flag,
-+ * which makes impossible to reuse this bit.
-+ *
-+ * So leave it here to make sure that it won't be reused by mistake.
-+ */
- #define XFRM_OFFLOAD_IPV6	1
- #define XFRM_OFFLOAD_INBOUND	2
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -32,7 +32,7 @@ void nf_register_queue_handler(struct ne
+ void nf_unregister_queue_handler(struct net *net);
+ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
  
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -153,6 +153,9 @@ int xfrm_dev_state_add(struct net *net,
- 	if (x->encap || x->tfcpad)
- 		return -EINVAL;
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
  
-+	if (xuo->flags & ~(XFRM_OFFLOAD_IPV6 | XFRM_OFFLOAD_INBOUND))
-+		return -EINVAL;
+ static inline void init_hashrandom(u32 *jhash_initval)
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -82,10 +82,13 @@ void nf_queue_entry_release_refs(struct
+ EXPORT_SYMBOL_GPL(nf_queue_entry_release_refs);
+ 
+ /* Bump dev refs so they don't vanish while packet is out */
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
+ {
+ 	struct nf_hook_state *state = &entry->state;
+ 
++	if (state->sk && !refcount_inc_not_zero(&state->sk->sk_refcnt))
++		return false;
 +
- 	dev = dev_get_by_index(net, xuo->ifindex);
- 	if (!dev) {
- 		if (!(xuo->flags & XFRM_OFFLOAD_INBOUND)) {
-@@ -190,7 +193,8 @@ int xfrm_dev_state_add(struct net *net,
+ 	if (state->in)
+ 		dev_hold(state->in);
+ 	if (state->out)
+@@ -104,6 +107,7 @@ void nf_queue_entry_get_refs(struct nf_q
+ 			dev_hold(physdev);
+ 	}
+ #endif
++	return true;
+ }
+ EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
  
- 	xso->dev = dev;
- 	xso->num_exthdrs = 1;
--	xso->flags = xuo->flags;
-+	/* Don't forward bit that is not implemented */
-+	xso->flags = xuo->flags & ~XFRM_OFFLOAD_IPV6;
+@@ -195,7 +199,10 @@ static int __nf_queue(struct sk_buff *sk
+ 		.size	= sizeof(*entry) + route_key_size,
+ 	};
  
- 	err = dev->xfrmdev_ops->xdo_dev_state_add(x);
- 	if (err) {
+-	nf_queue_entry_get_refs(entry);
++	if (!nf_queue_entry_get_refs(entry)) {
++		kfree(entry);
++		return -ENOTCONN;
++	}
+ 
+ 	switch (entry->state.pf) {
+ 	case AF_INET:
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -716,9 +716,15 @@ static struct nf_queue_entry *
+ nf_queue_entry_dup(struct nf_queue_entry *e)
+ {
+ 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
+-	if (entry)
+-		nf_queue_entry_get_refs(entry);
+-	return entry;
++
++	if (!entry)
++		return NULL;
++
++	if (nf_queue_entry_get_refs(entry))
++		return entry;
++
++	kfree(entry);
++	return NULL;
+ }
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
 
 
