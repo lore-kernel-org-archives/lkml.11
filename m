@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD10C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237350AbiCGJfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:35:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S237661AbiCGJf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237849AbiCGJ23 (ORCPT
+        with ESMTP id S237913AbiCGJ2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:29 -0500
+        Mon, 7 Mar 2022 04:28:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA486BDEF;
-        Mon,  7 Mar 2022 01:26:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B8F6C1E4;
+        Mon,  7 Mar 2022 01:26:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B30426116E;
-        Mon,  7 Mar 2022 09:26:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1ABAC340E9;
-        Mon,  7 Mar 2022 09:26:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF9661150;
+        Mon,  7 Mar 2022 09:26:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47353C340F4;
+        Mon,  7 Mar 2022 09:26:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645166;
-        bh=XeQWuE9QS00qsRaIJms6ytgoEPSUO8UYDaaenG9fc9I=;
+        s=korg; t=1646645175;
+        bh=z6WtXkdplajcHr5U4+TEBsmCq0vuiEtw9uFAEm14z5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=btCnVASBdAB8vPWEZVFG2om6p36/gflqnVHd5BFzmK9bV7/1Zw0cZwpF/QDGWKlu1
-         cbMtGAtW2ojNDrO51CLwyLaBazzLUe/bmFFxPZpL5w2ttHBGd21YDyn5a6Wl2mXjQ2
-         eNTNrNBN6aFGq0ZrP63mjntj7yFT9ViEijo13Ccg=
+        b=qJ6J5pR4ARnE3OMF6nzFMKueeiJMhAZ1YGfssk0Pdf6c+lSBBDLLMwQkXSPFYiemc
+         n43wYELX51y5t25QqhPXMhDdecsFt+9jomII3B3WRQXDKSjMRPwTYeLYxJF47rqDm6
+         KfMc6vuOzrLbcxnIGaY55nSs2/vffKv8xuKg9cys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 26/51] net: dcb: flush lingering app table entries for unregistered devices
-Date:   Mon,  7 Mar 2022 10:19:01 +0100
-Message-Id: <20220307091637.737283808@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 03/64] i2c: bcm2835: Avoid clock stretching timeouts
+Date:   Mon,  7 Mar 2022 10:18:36 +0100
+Message-Id: <20220307091639.236601603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-References: <20220307091636.988950823@linuxfoundation.org>
+In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
+References: <20220307091639.136830784@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,103 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Eric Anholt <eric@anholt.net>
 
-commit 91b0383fef06f20b847fa9e4f0e3054ead0b1a1b upstream.
+[ Upstream commit 9495b9b31abe525ebd93da58de2c88b9f66d3a0e ]
 
-If I'm not mistaken (and I don't think I am), the way in which the
-dcbnl_ops work is that drivers call dcb_ieee_setapp() and this populates
-the application table with dynamically allocated struct dcb_app_type
-entries that are kept in the module-global dcb_app_list.
+The CLKT register contains at poweron 0x40, which at our typical 100kHz
+bus rate means .64ms. But there is no specified limit to how long devices
+should be able to stretch the clocks, so just disable the timeout. We
+still have a timeout wrapping the entire transfer.
 
-However, nobody keeps exact track of these entries, and although
-dcb_ieee_delapp() is supposed to remove them, nobody does so when the
-interface goes away (example: driver unbinds from device). So the
-dcb_app_list will contain lingering entries with an ifindex that no
-longer matches any device in dcb_app_lookup().
-
-Reclaim the lost memory by listening for the NETDEV_UNREGISTER event and
-flushing the app table entries of interfaces that are now gone.
-
-In fact something like this used to be done as part of the initial
-commit (blamed below), but it was done in dcbnl_exit() -> dcb_flushapp(),
-essentially at module_exit time. That became dead code after commit
-7a6b6f515f77 ("DCB: fix kconfig option") which essentially merged
-"tristate config DCB" and "bool config DCBNL" into a single "bool config
-DCB", so net/dcb/dcbnl.c could not be built as a module anymore.
-
-Commit 36b9ad8084bd ("net/dcb: make dcbnl.c explicitly non-modular")
-recognized this and deleted dcbnl_exit() and dcb_flushapp() altogether,
-leaving us with the version we have today.
-
-Since flushing application table entries can and should be done as soon
-as the netdevice disappears, fundamentally the commit that is to blame
-is the one that introduced the design of this API.
-
-Fixes: 9ab933ab2cc8 ("dcbnl: add appliction tlv handlers")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+BugLink: https://github.com/raspberrypi/linux/issues/3064
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dcb/dcbnl.c |   44 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/i2c/busses/i2c-bcm2835.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -2054,10 +2054,54 @@ u8 dcb_ieee_getapp_default_prio_mask(con
- }
- EXPORT_SYMBOL(dcb_ieee_getapp_default_prio_mask);
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index 5ab901ad615dd..c265fe4621621 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -23,6 +23,11 @@
+ #define BCM2835_I2C_FIFO	0x10
+ #define BCM2835_I2C_DIV		0x14
+ #define BCM2835_I2C_DEL		0x18
++/*
++ * 16-bit field for the number of SCL cycles to wait after rising SCL
++ * before deciding the slave is not responding. 0 disables the
++ * timeout detection.
++ */
+ #define BCM2835_I2C_CLKT	0x1c
  
-+static void dcbnl_flush_dev(struct net_device *dev)
-+{
-+	struct dcb_app_type *itr, *tmp;
-+
-+	spin_lock(&dcb_lock);
-+
-+	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
-+		if (itr->ifindex == dev->ifindex) {
-+			list_del(&itr->list);
-+			kfree(itr);
-+		}
-+	}
-+
-+	spin_unlock(&dcb_lock);
-+}
-+
-+static int dcbnl_netdevice_event(struct notifier_block *nb,
-+				 unsigned long event, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+
-+	switch (event) {
-+	case NETDEV_UNREGISTER:
-+		if (!dev->dcbnl_ops)
-+			return NOTIFY_DONE;
-+
-+		dcbnl_flush_dev(dev);
-+
-+		return NOTIFY_OK;
-+	default:
-+		return NOTIFY_DONE;
-+	}
-+}
-+
-+static struct notifier_block dcbnl_nb __read_mostly = {
-+	.notifier_call  = dcbnl_netdevice_event,
-+};
-+
- static int __init dcbnl_init(void)
- {
-+	int err;
-+
- 	INIT_LIST_HEAD(&dcb_app_list);
+ #define BCM2835_I2C_C_READ	BIT(0)
+@@ -479,6 +484,12 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 	adap->dev.of_node = pdev->dev.of_node;
+ 	adap->quirks = of_device_get_match_data(&pdev->dev);
  
-+	err = register_netdevice_notifier(&dcbnl_nb);
-+	if (err)
-+		return err;
-+
- 	rtnl_register(PF_UNSPEC, RTM_GETDCB, dcb_doit, NULL, 0);
- 	rtnl_register(PF_UNSPEC, RTM_SETDCB, dcb_doit, NULL, 0);
++	/*
++	 * Disable the hardware clock stretching timeout. SMBUS
++	 * specifies a limit for how long the device can stretch the
++	 * clock, but core I2C doesn't.
++	 */
++	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_CLKT, 0);
+ 	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_C, 0);
  
+ 	ret = i2c_add_adapter(adap);
+-- 
+2.34.1
+
 
 
