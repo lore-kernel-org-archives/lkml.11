@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F137C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F021FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238992AbiCGPmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:42:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
+        id S243824AbiCGPmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:42:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbiCGPmT (ORCPT
+        with ESMTP id S237594AbiCGPmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:42:19 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D504F73076;
-        Mon,  7 Mar 2022 07:41:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646667686; x=1678203686;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XlQwsZSDIaDfWV/087cdbqswb5XX5+Ou9ZV0yaZmxrE=;
-  b=UGBYK5svF3juTh1kCxlXM2GkpmbRt4hnsFKtsk3Y3k5OD3JdhPKO1yA0
-   Ywn+QKRAlU475INVtJAD4ZNU0LasuvFsJZNbCgmUHsdwPuUe0mDtkbdQA
-   uvkQ/hfFFOej12EY3qAxI8FS+yJQnGpltBJaW89zItrmzQM4flP4QpoR6
-   rC0gKhE6Ihcf0hqv1vPjyVq+8+YyzUEh6V2NI5TfsEB5euCa5SLQh/NT8
-   VaXgULSMuh2o/a3il/6nlzT9Gg1LHP1TNBjHk45NN9NVJ3YDViMSF7TqR
-   0rNb63r0YZDyeq6IwSRmt+QDOglIwClIolI2Hq68mGdUiROw6kfwr2xfk
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
-   d="scan'208";a="155514444"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 08:41:25 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 08:41:23 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 08:41:19 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <claudiu.beznea@microchip.com>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH v3 2/2] dt-bindings: pwm: at91: Add SAMA7G5 compatible strings list
-Date:   Mon, 7 Mar 2022 17:36:56 +0200
-Message-ID: <20220307153656.177589-3-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220307153656.177589-1-sergiu.moga@microchip.com>
-References: <20220307153656.177589-1-sergiu.moga@microchip.com>
+        Mon, 7 Mar 2022 10:42:44 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5062E73076
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:41:50 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 078501477;
+        Mon,  7 Mar 2022 07:41:50 -0800 (PST)
+Received: from [10.57.88.173] (unknown [10.57.88.173])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6ED823F66F;
+        Mon,  7 Mar 2022 07:41:48 -0800 (PST)
+Message-ID: <0aa9553b-b227-a1b5-16ca-b72a8d4be87b@arm.com>
+Date:   Mon, 7 Mar 2022 15:41:46 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH] cpu/hotplug: Set st->cpu earlier
+Content-Language: en-US
+To:     Steven Price <steven.price@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+References: <20220225134918.105796-1-steven.price@arm.com>
+From:   Vincent Donnefort <vincent.donnefort@arm.com>
+In-Reply-To: <20220225134918.105796-1-steven.price@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible strings list for SAMA7G5.
+On 25/02/2022 13:49, Steven Price wrote:
+> Setting the 'cpu' member of struct cpuhp_cpu_state in cpuhp_create() is
+> too late as other callbacks can be made before that point. In particular > if one of the earlier callbacks fails and triggers a rollback that
+> rollback will be done with st->cpu==0 causing CPU0 to be erroneously set
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- .../bindings/pwm/atmel,at91sam-pwm.yaml           | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+st->cpu is even needed before any cpuhp_step callback has been run 
+(cpuhp_set_state() in _cpu_up()). So despite CPUHP_CREATE_THREADS being 
+the first step, this is indeed not early enough.
 
-diff --git a/Documentation/devicetree/bindings/pwm/atmel,at91sam-pwm.yaml b/Documentation/devicetree/bindings/pwm/atmel,at91sam-pwm.yaml
-index 5e8bb5a8095d..ab45df80345d 100644
---- a/Documentation/devicetree/bindings/pwm/atmel,at91sam-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/atmel,at91sam-pwm.yaml
-@@ -15,11 +15,16 @@ allOf:
- 
- properties:
-   compatible:
--    enum:
--      - atmel,at91sam9rl-pwm
--      - atmel,sama5d3-pwm
--      - atmel,sama5d2-pwm
--      - microchip,sam9x60-pwm
-+    oneOf:
-+      - items:
-+          - enum:
-+              - atmel,at91sam9rl-pwm
-+              - atmel,sama5d3-pwm
-+              - atmel,sama5d2-pwm
-+              - microchip,sam9x60-pwm
-+      - items:
-+          - const: microchip,sama7g5-pwm
-+          - const: atmel,sama5d2-pwm
- 
-   reg:
-     maxItems: 1
--- 
-2.25.1
+> to be dying, causing the scheduler to get mightily confused and throw
+> its toys out of the pram.
+> 
+> Move the assignment earlier before any callbacks have a chance to run.
 
+Probably needs a
+
+Fixes: 2ea46c6fc945 ("cpumask/hotplug: Fix cpu_dying() state tracking")
+
+> 
+> Signed-off-by: Steven Price <steven.price@arm.com>
+> CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> ---
+> This was initially triggered by a VM which didn't have enough memory for
+> its VCPUs, but an easier way of triggering it is to make a change like
+> below in __smpboot_create_thread (as suggested by Dietmar Eggemann) to
+> pretend the memory allocation fails for a particular CPU:
+> 
+>   	td = kzalloc_node(sizeof(*td), GFP_KERNEL, cpu_to_node(cpu));
+> -	if (!td)
+> +	if (!td || cpu == 1)
+>   		return -ENOMEM;
+> 
+> I'm not entirely sure quite where the best place to set st->cpu is, so
+> please do let me know if there's a better place to do the assignment.
+> ---
+>   kernel/cpu.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/cpu.c b/kernel/cpu.c
+> index 407a2568f35e..49c3ef6067e5 100644
+> --- a/kernel/cpu.c
+> +++ b/kernel/cpu.c
+> @@ -720,7 +720,6 @@ static void cpuhp_create(unsigned int cpu)
+>   
+>   	init_completion(&st->done_up);
+>   	init_completion(&st->done_down);
+> -	st->cpu = cpu;
+>   }
+>   
+>   static int cpuhp_should_run(unsigned int cpu)
+> @@ -1333,6 +1332,8 @@ static int _cpu_up(unsigned int cpu, int tasks_frozen, enum cpuhp_state target)
+>   		goto out;
+>   	}
+>   
+> +	st->cpu = cpu;
+> +
+
+Could eventually go just before cpuhp_set_state(), in the same function 
+as this seems to be the first user of st->cpu.
+
+>   	/*
+>   	 * The caller of cpu_up() might have raced with another
+>   	 * caller. Nothing to do.
