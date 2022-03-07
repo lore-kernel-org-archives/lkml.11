@@ -2,132 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7290C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 22:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 22:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343829AbiCGWkz (ORCPT
+        id S1343824AbiCGWmI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 17:40:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
+        Mon, 7 Mar 2022 17:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243209AbiCGWkv (ORCPT
+        with ESMTP id S237896AbiCGWmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 17:40:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89BB14665B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 14:39:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646692795;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oJJnjNEDLDCxgTnNZiuLduAW9RdSuGCDd7yDQswPSHQ=;
-        b=XjYpj5w0WyYp59YoxpO90KpD2P4RXY749mo/qsLlPgajXgarGewhuTmLV1JEmXh0VAFJl4
-        VORHKlaLQ6i/6P0xTYCi6O3UjP475+kRXTxTcN6K/ALlK118xx0ypCjY6YMr4UKbNFSwTd
-        +OiXSHHUxkQZMsTrYT2ON6oCAQlkdRc=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-508-NbtEaR6AMFaYtskT0OYjsA-1; Mon, 07 Mar 2022 17:39:54 -0500
-X-MC-Unique: NbtEaR6AMFaYtskT0OYjsA-1
-Received: by mail-ed1-f70.google.com with SMTP id r9-20020a05640251c900b00412d54ea618so9395771edd.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 14:39:54 -0800 (PST)
+        Mon, 7 Mar 2022 17:42:06 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943A213EAF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 14:41:10 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id w3-20020a4ac183000000b0031d806bbd7eso19722648oop.13
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 14:41:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u+HxVrmr9/wIVPGnqjkJowBAbXCNibxa+a47AT7FYmc=;
+        b=kVk8SOVW/iiKd2v1gTN9DpvUG9WzaoGZPbr9soXaMjEt6UsjM3EwBOPNVeQCX+2CLO
+         xPn23If8HwPAI5StphwjMWy7aaULGZuOK5dkKA/LYcUHxB6q1g3aNWJJSjIt5Rth6i1a
+         nVbUgWAqrk67KRodYd72vRKVsL+UkDkFnE/cdrPjGqPCybaJZzkUnU5g7kUMm+wX9HIO
+         M4ogM4vQyFaymIAEk7Eg+jP+Bak0vkN3J7ETbFdiyYhUIV2y3v4WRvfBedM0JB13CHZs
+         H8ud1QRKr3wKt7k9+Jg22qOvEq2UMuldaUlW72Ygzag6DFDMjEVUsslOFOGWDRRA7Lxp
+         haGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oJJnjNEDLDCxgTnNZiuLduAW9RdSuGCDd7yDQswPSHQ=;
-        b=bOZtHkJfXPbvkc3h2JlF6AEPazBRTikm2dvu0qZbI/cZ9bG78RlHt8zPo32D0OAHyh
-         yvfCWZX5zEUuxXc6E2Xa6z4ixc8eeNfX8eDalGLGC49B0ANYysndIjOmVU3RonkFCckg
-         cI6aPmEPXYv00Esqc48t6WUjFkXLveJUb5toB9ykgJFg8kwj/UbsjzBCkHnMm5a7ZLP0
-         84TtV68g/iA5Uz1kD4vWq3jFo8w0el1iDfn0jHiG3nVXqgRoWirHqPoRUQVj2kd9jIiH
-         edZVkjYWxDKFE5Cf0n2aOA/qws2ufLoHpgFH4fI4aCcxc97D/wv0pBXhbLvGwJv5BU4i
-         lcyQ==
-X-Gm-Message-State: AOAM533Svbuva7CE4LItJ4XdSHiCgsiaNun3+xOlBvvaOIfI7z2tlibA
-        uE2Relookbn0eg7c68B3VWX0efcC9Z/vo0VT27CloXffjL4V7lGgsiMf83lIhXmAwc83H6uojAR
-        oDYLYPU6RfJIucTnfv/DDVOZO
-X-Received: by 2002:a50:f68b:0:b0:415:a36c:5c0b with SMTP id d11-20020a50f68b000000b00415a36c5c0bmr13019185edn.272.1646692791965;
-        Mon, 07 Mar 2022 14:39:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzHmg2BC0xk8nWy9xaqU2GCk4lH6furT6guufXi8TPI/KI61k1O7Q5pN2MxtI0peMXSX0VM9Q==
-X-Received: by 2002:a50:f68b:0:b0:415:a36c:5c0b with SMTP id d11-20020a50f68b000000b00415a36c5c0bmr13019168edn.272.1646692791770;
-        Mon, 07 Mar 2022 14:39:51 -0800 (PST)
-Received: from redhat.com ([2.55.138.228])
-        by smtp.gmail.com with ESMTPSA id gf17-20020a170906e21100b006da960ce78dsm4913346ejb.59.2022.03.07.14.39.49
+        bh=u+HxVrmr9/wIVPGnqjkJowBAbXCNibxa+a47AT7FYmc=;
+        b=TEIArjDAv29GmUM/4cLFA6eyYTQpia9HomgQ2URFU7iWuIba6pICZ0nIG3DlkPPSwt
+         ZhEMt52jVJhTmJaUgEEvKd9EUsu9pcJifJo4k+E9NrXkAXm6mVmfWVmk2KP4UGhn2wtE
+         mWoWLah/9L4fiBn5ESNVC7AVgw3laMnxAXyisFUyNwZTdPqvMMICRymjv5tLAMs7U5Sq
+         eDg2SJA8NzF/GX+Senga2DaG00G6NtZDBeeIAvQGHiOLFI7pKxFQhuCftBYL5m5IJ34N
+         fNYXAqzyIuU9P09Jq3Qt43uM+Iou7XgX+haxHJUz7s+M95dDc51wuBB6UMi/JHgCF3NU
+         Lgmw==
+X-Gm-Message-State: AOAM532oS28oHIOnqo1JwbHtoGj59u9Y0kcH15uWVIo3Okjmi7ZSvL35
+        WxWqGgU/qJjwdpcMTwBZ+e0f6g==
+X-Google-Smtp-Source: ABdhPJynHgOD50IYhViIADKSPnv8ztHZHbrRi/3JCjkOSQU+0t0a9WCyxiSGe2Qqa3exr324JljcdQ==
+X-Received: by 2002:a05:6871:1d0:b0:da:b3f:3210 with SMTP id q16-20020a05687101d000b000da0b3f3210mr680906oad.192.1646692869913;
+        Mon, 07 Mar 2022 14:41:09 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id f21-20020a4ada55000000b0031c16df28f9sm6260868oou.42.2022.03.07.14.41.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 14:39:51 -0800 (PST)
-Date:   Mon, 7 Mar 2022 17:39:47 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Lee Jones <lee.jones@linaro.org>, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <20220307173807-mutt-send-email-mst@kernel.org>
-References: <20220307191757.3177139-1-lee.jones@linaro.org>
- <YiZeB7l49KC2Y5Gz@kroah.com>
+        Mon, 07 Mar 2022 14:41:09 -0800 (PST)
+Date:   Mon, 7 Mar 2022 14:42:53 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Georgi Djakov <djakov@kernel.org>
+Cc:     Sibi Sankar <quic_sibis@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] remoteproc: qcom: q6v5: Add interconnect path proxy vote
+Message-ID: <YiaKbbxJ/QE7yItC@ripper>
+References: <20220225033224.2238425-1-bjorn.andersson@linaro.org>
+ <5a9210d9-c726-1ef9-4bf2-716f2ed1fb8b@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YiZeB7l49KC2Y5Gz@kroah.com>
+In-Reply-To: <5a9210d9-c726-1ef9-4bf2-716f2ed1fb8b@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 08:33:27PM +0100, Greg KH wrote:
-> On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
-> > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > to vhost_get_vq_desc().  All we have to do here is take the same lock
-> > during virtqueue clean-up and we mitigate the reported issues.
+On Mon 07 Mar 10:35 PST 2022, Georgi Djakov wrote:
+
+> 
+> On 25.02.22 5:32, Bjorn Andersson wrote:
+> > Many remoteproc instances requires that Linux casts a proxy vote for an
+> > interconnect path during boot, until they can do it themselves. Add
+> > support for voting for a single path.
 > > 
-> > Also WARN() as a precautionary measure.  The purpose of this is to
-> > capture possible future race conditions which may pop up over time.
+> > As this is a shared problem between both PAS and MSS drivers, the path
+> > is acquired and votes casted from the common helper code.
 > > 
-> > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
-> > 
-> > Cc: <stable@vger.kernel.org>
-> > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 > > ---
-> >  drivers/vhost/vhost.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
 > > 
-> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > index 59edb5a1ffe28..ef7e371e3e649 100644
-> > --- a/drivers/vhost/vhost.c
-> > +++ b/drivers/vhost/vhost.c
-> > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> >  	int i;
-> >  
-> >  	for (i = 0; i < dev->nvqs; ++i) {
-> > +		/* No workers should run here by design. However, races have
-> > +		 * previously occurred where drivers have been unable to flush
-> > +		 * all work properly prior to clean-up.  Without a successful
-> > +		 * flush the guest will malfunction, but avoiding host memory
-> > +		 * corruption in those cases does seem preferable.
-> > +		 */
-> > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > Sibi posted recently a patch to add interconnect votes from the modem driver,
+> > today I needed the same feature for one of the PAS remoteprocs. After
+> > essentially duplicating Sibi's patch I realized that it doesn't look too bad to
+> > put this in the common Q6V5 code.
+> > 
+> > The main difference is that this would be messy if we need to support multiple
+> > paths, so we probably would have to push it out to the individual drivers at
+> > that point.
+> > 
+> > Sibi's patch can be found here.
+> > https://lore.kernel.org/all/1644813252-12897-3-git-send-email-quic_sibis@quicinc.com/
+> > 
+> > 
+> > This makes the implementation pick up one path, relevant DT bindings would
+> > still need to be updated in order be allowed to this in the DeviceTree files.
+> > 
+> >   drivers/remoteproc/qcom_q6v5.c | 21 ++++++++++++++++++++-
+> >   drivers/remoteproc/qcom_q6v5.h |  3 +++
+> >   2 files changed, 23 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/remoteproc/qcom_q6v5.c b/drivers/remoteproc/qcom_q6v5.c
+> > index 442a388f8102..5280ec9b5449 100644
+> > --- a/drivers/remoteproc/qcom_q6v5.c
+> > +++ b/drivers/remoteproc/qcom_q6v5.c
+> > @@ -8,6 +8,7 @@
+> >    */
+> >   #include <linux/kernel.h>
+> >   #include <linux/platform_device.h>
+> > +#include <linux/interconnect.h>
+> >   #include <linux/interrupt.h>
+> >   #include <linux/module.h>
+> >   #include <linux/soc/qcom/qcom_aoss.h>
+> > @@ -51,9 +52,17 @@ int qcom_q6v5_prepare(struct qcom_q6v5 *q6v5)
+> >   {
+> >   	int ret;
+> > +	ret = icc_set_bw(q6v5->path, 0, UINT_MAX);
+> > +	if (ret < 0) {
+> > +		dev_err(q6v5->dev, "failed to set bandwidth request\n");
+> > +		return ret;
+> > +	}
+> > +
+> >   	ret = q6v5_load_state_toggle(q6v5, true);
+> > -	if (ret)
+> > +	if (ret) {
+> > +		icc_set_bw(q6v5->path, 0, 0);
+> >   		return ret;
+> > +	}
+> >   	reinit_completion(&q6v5->start_done);
+> >   	reinit_completion(&q6v5->stop_done);
+> > @@ -78,6 +87,9 @@ int qcom_q6v5_unprepare(struct qcom_q6v5 *q6v5)
+> >   	disable_irq(q6v5->handover_irq);
+> >   	q6v5_load_state_toggle(q6v5, false);
+> > +	/* Disable interconnect vote, in case handover never happened */
+> > +	icc_set_bw(q6v5->path, 0, 0);
+> > +
+> >   	return !q6v5->handover_issued;
+> >   }
+> >   EXPORT_SYMBOL_GPL(qcom_q6v5_unprepare);
+> > @@ -160,6 +172,8 @@ static irqreturn_t q6v5_handover_interrupt(int irq, void *data)
+> >   	if (q6v5->handover)
+> >   		q6v5->handover(q6v5);
+> > +	icc_set_bw(q6v5->path, 0, 0);
+> > +
+> >   	q6v5->handover_issued = true;
+> >   	return IRQ_HANDLED;
+> > @@ -332,6 +346,11 @@ int qcom_q6v5_init(struct qcom_q6v5 *q6v5, struct platform_device *pdev,
+> >   		return load_state ? -ENOMEM : -EINVAL;
+> >   	}
+> > +	q6v5->path = devm_of_icc_get(&pdev->dev, NULL);
+> > +	if (IS_ERR(q6v5->path))
+> > +		return dev_err_probe(&pdev->dev, PTR_ERR(q6v5->path),
+> > +				     "failed to acquire interconnect path\n");
+> > +
+> >   	return 0;
+> >   }
+> >   EXPORT_SYMBOL_GPL(qcom_q6v5_init);
 > 
-> So you are trading one syzbot triggered issue for another one in the
-> future?  :)
+> Probably we should also call icc_put(q6v5->path) in qcom_q6v5_deinit().
 > 
-> If this ever can happen, handle it, but don't log it with a WARN_ON() as
-> that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
-> you want that to happen?
-> 
-> And what happens if the mutex is locked _RIGHT_ after you checked it?
-> You still have a race...
-> 
-> thanks,
-> 
-> greg k-h
 
-Well it's a symptom of a kernel bug. I guess people with panic on
-warn are not worried about DOS and more worried about integrity
-and security ... am I right?
+The use of devm_of_icc_get() should take care of that for us. Or am I
+missing something?
 
--- 
-MST
+> Reviewed-by: Georgi Djakov <djakov@kernel.org>
+> 
 
+Thanks,
+Bjorn
