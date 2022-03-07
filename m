@@ -2,85 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65968C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8428FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235772AbiCGKZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:25:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39752 "EHLO
+        id S238977AbiCGKZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:25:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241201AbiCGKBq (ORCPT
+        with ESMTP id S241333AbiCGKBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:46 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830BB71CA4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:51:33 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2270S1sH003599;
-        Mon, 7 Mar 2022 03:51:20 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=jooHwGpfszihrrJZuQ+nipQc96itDDqqbR2sPWXLPrU=;
- b=J+0DTmGrZVSwwC1zliZNMEaJwlH5M0d4XweuPUu3+TgkLnQQnJiki2U2NZ9uB8ysK+j7
- uI3J62Y04+zp8U2ZiUGZGdOsrtGVZ85pyX0oi/hE4rj0/X5jb72N2b0iowjjZ+9HWK2O
- UpR0Kmr953ahKWKxI/U+5An48+fwn6+sP/k4V3wIvL4UcgOSOlS4x4kqFuuO+NOin5/N
- nOpZyP6Japi5O5nH9RRMz7Tqg94qXNwwU7jAC1rjLaiXuWLzEUrHDWGgCRy7Om8ts9UZ
- fQr7RowTz+EtWIuhi7PSm5YoDX2y9r5od1dWSmYC4QyOECn9a972RM/pjSsc9OdLChkL gA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3em55stby0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 07 Mar 2022 03:51:20 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Mar
- 2022 09:51:18 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Mon, 7 Mar 2022 09:51:18 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C6B4AB10;
-        Mon,  7 Mar 2022 09:51:18 +0000 (UTC)
-Date:   Mon, 7 Mar 2022 09:51:18 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <trix@redhat.com>
-CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <orsonzhai@gmail.com>,
-        <baolin.wang7@gmail.com>, <zhang.lyra@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-Subject: Re: [PATCH] regulator: cleanup comments
-Message-ID: <20220307095118.GG38351@ediswmail.ad.cirrus.com>
-References: <20220305162438.689442-1-trix@redhat.com>
+        Mon, 7 Mar 2022 05:01:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2898473067;
+        Mon,  7 Mar 2022 01:51:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CB01B8102B;
+        Mon,  7 Mar 2022 09:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D428BC340F3;
+        Mon,  7 Mar 2022 09:51:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646700;
+        bh=XAdpkROvnoCMJTGEPTjC+34Zy9TbnvDoLlFeyd/ocdA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IPpi3hruWxAxAZIhbJfcp0/0KDlAF9o8di0qIGLogxFFmy/Obtz1bKTx3FzcTJgAe
+         mFMWjKnhLAiUVV+G8VD7OnsqSfNMYw9HgLl4JrpoRo4WPBYuUFIG0+WMmjde67n1zP
+         wODDBJUMcNZCLP5QHfMjpQAxaH4yiqjA06pibIvg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 024/186] i2c: imx: allow COMPILE_TEST
+Date:   Mon,  7 Mar 2022 10:17:42 +0100
+Message-Id: <20220307091654.771977488@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
+References: <20220307091654.092878898@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220305162438.689442-1-trix@redhat.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: hX91n6KPd1E_GBl5wrmJ7BQyyNn_SwQT
-X-Proofpoint-GUID: hX91n6KPd1E_GBl5wrmJ7BQyyNn_SwQT
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 08:24:38AM -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> For spdx
-> Remove leading space, add space after //
-> 
-> Replacements
-> overriden to overridden
-> Calulate to Calculate
-> addional to additional
-> regulatior to regulator
-> devive to device
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
+From: Wolfram Sang <wsa@kernel.org>
 
-For wm8350:
+[ Upstream commit 2ce4462f2724d1b3cedccea441c6d18bb360629a ]
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-Thanks,
-Charles
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index b1c20859fe8c9..66476c2257553 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -680,7 +680,7 @@ config I2C_IMG
+ 
+ config I2C_IMX
+ 	tristate "IMX I2C interface"
+-	depends on ARCH_MXC || ARCH_LAYERSCAPE || COLDFIRE
++	depends on ARCH_MXC || ARCH_LAYERSCAPE || COLDFIRE || COMPILE_TEST
+ 	select I2C_SLAVE
+ 	help
+ 	  Say Y here if you want to use the IIC bus controller on
+-- 
+2.34.1
+
+
+
