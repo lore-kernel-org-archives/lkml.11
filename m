@@ -2,97 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61265C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB046C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239624AbiCGJ7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:59:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        id S239578AbiCGJ7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:59:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240385AbiCGJk6 (ORCPT
+        with ESMTP id S237764AbiCGJgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:58 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73536BF49
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:37:36 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id x15so22174941wru.13
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:37:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Dedx0S9GHW+zCkwbwjAj7WEO1ltayYGHp0V6c4kJEK0=;
-        b=dOMdB7J6brgJ2xzB+wrppTiKJ6RjnpcClkRhOIwSfpgp+0jrJe2ORFPVEtMFRHrs9f
-         l7thIuzhh+jnrFKTDyLqsNLOdlRxEP8WMe22XbXC33fFvUdp4jwvpXmaEiiHvXaUIiFr
-         80NN8JS7ySADo621LVmJwOnq5GYHUkoRFL1hfn/0JliTL7fzwZAI1h9FP1JThlFJTpcR
-         szVt580bgl/aqI1RqcSQOFGjsvArGvodGKQrzZ/2rGGrIQN6GaOURjZ/eqn3l1hvyms7
-         CzR2V81RHFlGyBhVZ7S7r/Ejd99U+h5CfZFdtmB4WG/VbXN25a5NOyemfnlhmyA9LZM5
-         NWHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Dedx0S9GHW+zCkwbwjAj7WEO1ltayYGHp0V6c4kJEK0=;
-        b=Zu6f+OqmVEF3LnRuf1e/lUH9Iq7pbxuB4IKNseCB3wClBonGO+Ipiuw1AbG+zR82NC
-         k4yL4Dh/qe8n1YmqNN6c3V1dgYsZf1SEcaN46U2Cyog0t+mpDMXr9dQhB6MR0EWVKfjR
-         NM+gmfjzDqE/Z3iwTMA85Xijhp3UUipTwWV9Z31+ZW35jJ25zPlJ70SKCjRClJf9olyP
-         U7bh6B4ugyIVIKXaQkq/Fqryw8stx9SPNznwdGbHnXsnkXCHTUENKly9RNbLnUSyjPGH
-         Bx73GfRrHCZ7MS/JGWzuuK25m64K1oRe5NV04P9y6mvVW+Z0VgpduMFjJ9fCFloJZfy2
-         SvMw==
-X-Gm-Message-State: AOAM532prhlfgphOfHlm/9sQvZf7KNTa9dNtvhryH++BpjK2qxQ0wo6e
-        7hxpoHPhRasOrlN6Iur0akBP7A==
-X-Google-Smtp-Source: ABdhPJy1wHUzClgICXkLnTzjIevPBASUICHgXeFLBM/lOyLrfWzfrHSUqPuD86sAw3lLzcZ8afaSTw==
-X-Received: by 2002:a5d:6046:0:b0:1f0:4973:142f with SMTP id j6-20020a5d6046000000b001f04973142fmr7563737wrt.538.1646645853633;
-        Mon, 07 Mar 2022 01:37:33 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id bg18-20020a05600c3c9200b0037c2ef07493sm14826354wmb.3.2022.03.07.01.37.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:37:33 -0800 (PST)
-Date:   Mon, 7 Mar 2022 09:37:31 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 3/3] dt-bindings: mfd: maxim,max14577: convert to
- dtschema
-Message-ID: <YiXSWzuy9xAXpUMv@google.com>
-References: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
- <20220215074759.29402-4-krzysztof.kozlowski@canonical.com>
+        Mon, 7 Mar 2022 04:36:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827FF6E2AF;
+        Mon,  7 Mar 2022 01:31:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CBAF60FF6;
+        Mon,  7 Mar 2022 09:31:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51478C340F3;
+        Mon,  7 Mar 2022 09:31:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645479;
+        bh=qIEtfsXV4mFbk4F56zW+/PD3478NpqG9bicT6hHDAkw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nxSyvD9znO4/8cTy9ep5L14tSRGDSd7s65p3qSJbA7LTvV3c7jFPjkS1sgMOP6ayM
+         zNE7yBIFJf1+Uevm3cn+m5sy0mZVb6V/ntFfKPYmeJLTLnA73d7VbEXTB2LIlF+3Zh
+         zfhWREGBA+rnQsi63+1N5I0F5sqprmsTFYSgd7zU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH 5.10 044/105] netfilter: nf_queue: fix possible use-after-free
+Date:   Mon,  7 Mar 2022 10:18:47 +0100
+Message-Id: <20220307091645.425786626@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215074759.29402-4-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022, Krzysztof Kozlowski wrote:
+From: Florian Westphal <fw@strlen.de>
 
-> Convert the MFD part of Maxim MAX14577/MAX77836 MUIC to DT schema
-> format.  The example DTS was copied from existing DTS
-> (exynos3250-rinato.dts), so keep the license as GPL-2.0-only.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/mfd/max14577.txt      | 147 -------------
->  .../bindings/mfd/maxim,max14577.yaml          | 195 ++++++++++++++++++
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 196 insertions(+), 148 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mfd/max14577.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
+commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
 
-Applied, thanks.
+Eric Dumazet says:
+  The sock_hold() side seems suspect, because there is no guarantee
+  that sk_refcnt is not already 0.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+On failure, we cannot queue the packet and need to indicate an
+error.  The packet will be dropped by the caller.
+
+v2: split skb prefetch hunk into separate change
+
+Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/netfilter/nf_queue.h |    2 +-
+ net/netfilter/nf_queue.c         |   13 +++++++++----
+ net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
+ 3 files changed, 19 insertions(+), 8 deletions(-)
+
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -37,7 +37,7 @@ void nf_register_queue_handler(struct ne
+ void nf_unregister_queue_handler(struct net *net);
+ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
+ 
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ void nf_queue_entry_free(struct nf_queue_entry *entry);
+ 
+ static inline void init_hashrandom(u32 *jhash_initval)
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -100,16 +100,17 @@ static void __nf_queue_entry_init_physde
+ }
+ 
+ /* Bump dev refs so they don't vanish while packet is out */
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
+ {
+ 	struct nf_hook_state *state = &entry->state;
+ 
++	if (state->sk && !refcount_inc_not_zero(&state->sk->sk_refcnt))
++		return false;
++
+ 	if (state->in)
+ 		dev_hold(state->in);
+ 	if (state->out)
+ 		dev_hold(state->out);
+-	if (state->sk)
+-		sock_hold(state->sk);
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ 	if (entry->physin)
+@@ -117,6 +118,7 @@ void nf_queue_entry_get_refs(struct nf_q
+ 	if (entry->physout)
+ 		dev_hold(entry->physout);
+ #endif
++	return true;
+ }
+ EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
+ 
+@@ -205,7 +207,10 @@ static int __nf_queue(struct sk_buff *sk
+ 
+ 	__nf_queue_entry_init_physdevs(entry);
+ 
+-	nf_queue_entry_get_refs(entry);
++	if (!nf_queue_entry_get_refs(entry)) {
++		kfree(entry);
++		return -ENOTCONN;
++	}
+ 
+ 	switch (entry->state.pf) {
+ 	case AF_INET:
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -712,9 +712,15 @@ static struct nf_queue_entry *
+ nf_queue_entry_dup(struct nf_queue_entry *e)
+ {
+ 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
+-	if (entry)
+-		nf_queue_entry_get_refs(entry);
+-	return entry;
++
++	if (!entry)
++		return NULL;
++
++	if (nf_queue_entry_get_refs(entry))
++		return entry;
++
++	kfree(entry);
++	return NULL;
+ }
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+
+
