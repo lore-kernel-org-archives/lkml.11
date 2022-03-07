@@ -2,110 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC309C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA06FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237304AbiCGMFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:05:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        id S231898AbiCGMFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:05:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232575AbiCGME5 (ORCPT
+        with ESMTP id S234746AbiCGMFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:04:57 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28116E280
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 04:04:02 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KBxsr1shRzdb05;
-        Mon,  7 Mar 2022 20:02:40 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Mar 2022 20:04:00 +0800
-Subject: Re: [PATCH 12/16] mm/migration: fix potential page refcounts leak in
- migrate_pages
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        "Huang, Ying" <ying.huang@intel.com>
-CC:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
-        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
-        <minchan@kernel.org>, <apopple@nvidia.com>,
-        <dave.hansen@linux.intel.com>, <o451686892@gmail.com>,
-        <almasrymina@google.com>, <jhubbard@nvidia.com>,
-        <rcampbell@nvidia.com>, <peterx@redhat.com>,
-        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220304093409.25829-1-linmiaohe@huawei.com>
- <20220304093409.25829-13-linmiaohe@huawei.com>
- <20f47ec9-3b5b-5326-b1c3-4b1a0c38ef46@linux.alibaba.com>
- <87mti25p98.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <6c65c8b7-9a62-c027-e2b9-7d1531e43dfa@linux.alibaba.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <d0ff1de4-c6a3-d004-1d0f-86de999fe7c5@huawei.com>
-Date:   Mon, 7 Mar 2022 20:03:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 7 Mar 2022 07:05:43 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918D86EB09;
+        Mon,  7 Mar 2022 04:04:48 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DE1A62223A;
+        Mon,  7 Mar 2022 13:04:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1646654686;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nG3Uult3QUrmEBI/29xWk62uJTgK9WBGo1PMeAJ45F8=;
+        b=YCgWV+5UVQYW7R0+/OxWFQk9C2NjAxvrmB0LjDT0Iv1x6Fh2XdYhzuBAyuO25xwq5v7zpW
+        3znUg7wmgpXhOzQsA9KGdJXXrl2dHFJv+0ph9kOSPcB1LBvG+xqZgeI1dEVGr3QUMDwZpf
+        KbPrFlq8dkrDMRcfUaGAo6h+nfo/sDg=
 MIME-Version: 1.0
-In-Reply-To: <6c65c8b7-9a62-c027-e2b9-7d1531e43dfa@linux.alibaba.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Date:   Mon, 07 Mar 2022 13:04:45 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Claudiu.Beznea@microchip.com
+Cc:     Kavyasree.Kotagiri@microchip.com, Nicolas.Ferre@microchip.com,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com, alexandre.belloni@bootlin.com
+Subject: Re: [PATCH v1 3/6] ARM: dts: lan966x: add all flexcom usart nodes
+In-Reply-To: <bf005cd2-4c83-1552-8282-d229eacc51f3@microchip.com>
+References: <20220303160323.3316317-1-michael@walle.cc>
+ <20220303160323.3316317-4-michael@walle.cc>
+ <a33f0c73-df49-5a22-14b3-0059f7d6b827@microchip.com>
+ <2e0aefc90a80bdf13df0e59857c52ca7@walle.cc>
+ <bf005cd2-4c83-1552-8282-d229eacc51f3@microchip.com>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <219ffd086373c453d5d0aad897cd2d41@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/7 14:00, Baolin Wang wrote:
-> 
-> 
-> On 3/7/2022 1:02 PM, Huang, Ying wrote:
->> Baolin Wang <baolin.wang@linux.alibaba.com> writes:
->>
->>> Hi Miaohe,
->>>
->>> On 3/4/2022 5:34 PM, Miaohe Lin wrote:
->>>> In -ENOMEM case, there might be some subpages of fail-to-migrate THPs
->>>> left in thp_split_pages list. We should move them back to migration
->>>> list so that they could be put back to the right list by the caller
->>>> otherwise the page refcnt will be leaked here. Also adjust nr_failed
->>>> and nr_thp_failed accordingly to make vm events account more accurate.
->>>> Fixes: b5bade978e9b ("mm: migrate: fix the return value of
->>>> migrate_pages()")
->>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Am 2022-03-07 12:53, schrieb Claudiu.Beznea@microchip.com:
+> On 04.03.2022 13:01, Michael Walle wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
+>> the
+>> content is safe
+>> 
+>> Hi,
+>> 
+>> thanks for the quick review.
+>> 
+>> Am 2022-03-04 09:30, schrieb Claudiu.Beznea@microchip.com:
+>>> On 03.03.2022 18:03, Michael Walle wrote:
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you 
+>>>> know
+>>>> the content is safe
+>>>> 
+>>>> Add all the usart nodes for the flexcom block. There was already
+>>>> an usart node for the flexcom3 block. But it missed the DMA
+>>>> channels.
+>>> 
+>>> And it would be good to go though a different patch.
+>> 
+>> sure
+>> 
+>>>> Although the DMA channels are specified, DMA is not
+>>>> enabled by default because break detection doesn't work with DMA.
+>>>> 
+>>>> Keep the nodes disabled by default.
+>>>> 
+>>>> Signed-off-by: Michael Walle <michael@walle.cc>
 >>>> ---
->>>>    mm/migrate.c | 9 +++++++++
->>>>    1 file changed, 9 insertions(+)
->>>> diff --git a/mm/migrate.c b/mm/migrate.c
->>>> index e0db06927f02..6c2dfed2ddb8 100644
->>>> --- a/mm/migrate.c
->>>> +++ b/mm/migrate.c
->>>> @@ -1422,6 +1422,15 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->>>>                    }
->>>>                      nr_failed_pages += nr_subpages;
->>>> +                /*
->>>> +                 * There might be some subpages of fail-to-migrate THPs
->>>> +                 * left in thp_split_pages list. Move them back to migration
->>>> +                 * list so that they could be put back to the right list by
->>>> +                 * the caller otherwise the page refcnt will be leaked.
->>>> +                 */
->>>> +                list_splice_init(&thp_split_pages, from);
->>>> +                nr_failed += retry;
->>>> +                nr_thp_failed += thp_retry;
->>>
->>> Yes, I think we missed this case before, and your patch looks
->>> right. But we should also update the 'rc' to return the correct number
->>> of pages that were not migrated, right?
->>
->> Per my understanding, -ENOMEM should be returned to indicate an fatal
->> error.
->>
+>>>>  arch/arm/boot/dts/lan966x.dtsi | 55
+>>>> ++++++++++++++++++++++++++++++++++
+>>>>  1 file changed, 55 insertions(+)
+>>>> 
+>>>> diff --git a/arch/arm/boot/dts/lan966x.dtsi
+>>>> b/arch/arm/boot/dts/lan966x.dtsi
+>>>> index a7d46a2ca058..bea69b6d2749 100644
+>>>> --- a/arch/arm/boot/dts/lan966x.dtsi
+>>>> +++ b/arch/arm/boot/dts/lan966x.dtsi
+>>>> @@ -92,6 +92,19 @@ flx0: flexcom@e0040000 {
+>>>>                         #size-cells = <1>;
+>>>>                         ranges = <0x0 0xe0040000 0x800>;
+>>>>                         status = "disabled";
+>>>> +
+>>>> +                       usart0: serial@200 {
+>>>> +                               compatible =
+>>>> "atmel,at91sam9260-usart";
+>>> 
+>>> Are the usart blocks in lan966x 1:1 compatible with what is is 
+>>> sam9260?
+>>> In
+>>> case not it may worth to have a new compatible here, for lan966x, 
+>>> such
+>>> that
+>>> when new features will be implemented in usart driver for lan966x the
+>>> old
+>>> DT (this one) will work with the new kernel implementation.
+>> 
+>> During my review of the inital dtsi patch, I've asked the same 
+>> question
+>> [1]
+>> and I was told they are the same.
+>> 
+>> At least this exact usart compatible is already in this file. I was
+>> under
+>> the impression, that was the least controversial compatible :)
 > 
-> Ah, right. Sorry for noise.
-> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> OK.
+> 
+>> 
+>> But you'll need to tell me if they are the same or not, I don't have
+>> any clue what microchip has reused.
+> 
+> From software point of view comparing registers should be good, as far 
+> as I
+> can tell. All AT91 datasheet should be available. I though you have 
+> checked
+> one against LAN966. At the moment I don't have a DS for LAN966. I'll 
+> find
+> one and have a look.
 
-Oh, I missed this email. So we should return -ENOMEM in this case. Many thanks for both of you.
+So my train of thought was like: even if the registers are the same I
+cannot be sure that it is the exact same IP and will behave the same.
+Therefore, it is something only microchip can answer.
 
-> .
+You can find the registers at
+https://microchip-ung.github.io/lan9668_reginfo/reginfo_LAN9668.html
 
+I'm not aware of any "classic" datasheet.
+
+-michael
