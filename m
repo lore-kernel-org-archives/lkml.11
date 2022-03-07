@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3971C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC78C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238132AbiCGJrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        id S238332AbiCGJrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:47:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238508AbiCGJib (ORCPT
+        with ESMTP id S238586AbiCGJig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD854249F;
-        Mon,  7 Mar 2022 01:32:49 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC164A3CF;
+        Mon,  7 Mar 2022 01:33:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37057B810C0;
-        Mon,  7 Mar 2022 09:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699F1C340F5;
-        Mon,  7 Mar 2022 09:32:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3985560C7D;
+        Mon,  7 Mar 2022 09:32:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4530BC340F3;
+        Mon,  7 Mar 2022 09:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645566;
-        bh=zEsng+QabY6S/u4Deg/8fZ5H1jLxZcEmj/N6Lvj1rzM=;
+        s=korg; t=1646645563;
+        bh=SaOWSdfpn9CGBVS1B4toCBOUU00mGD5nHWoK8cA+Qkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRFiLNbJKiStHkqdlQ4euEkMmGofoyGoua3wiDMDGK+geEIR7eAbwRredaBwRPYGL
-         IpILAobuYaR8vG3H9oH+zKahiF4xyM1NWnXXWc1GDG5pOKmbXfvzOK61xI/ojML/sj
-         CjZwx9md9o76VQNtr1ERfxlyZ+O+cGHf5hWEGK94=
+        b=wrxA2oKIpxcZQlmDpb/rZwO6Xsvb+oCN1G39Mm2Jw56M4TKZLJh3UxNXeHFBv/pX+
+         1wWIBp7P/twooS0jOUTdBTLSTiLfEdF8TxBe52NnUuuyDIVWENWwKGgkZCLNMlTupa
+         z9uVueJJiwol3S0dvB5wcNYVOXb/wrc8umVVtDXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corinna Vinschen <vinschen@redhat.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 073/105] igc: igc_read_phy_reg_gpy: drop premature return
-Date:   Mon,  7 Mar 2022 10:19:16 +0100
-Message-Id: <20220307091646.231838760@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Siva Reddy <siva.kallam@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        Byungho An <bh74.an@samsung.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 064/105] net: sxgbe: fix return value of __setup handler
+Date:   Mon,  7 Mar 2022 10:19:07 +0100
+Message-Id: <20220307091645.980440650@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -50,37 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corinna Vinschen <vinschen@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit fda2635466cd26ad237e1bc5d3f6a60f97ad09b6 upstream.
+commit 50e06ddceeea263f57fe92baa677c638ecd65bb6 upstream.
 
-igc_read_phy_reg_gpy checks the return value from igc_read_phy_reg_mdic
-and if it's not 0, returns immediately. By doing this, it leaves the HW
-semaphore in the acquired state.
+__setup() handlers should return 1 on success, i.e., the parameter
+has been handled. A return of 0 causes the "option=value" string to be
+added to init's environment strings, polluting it.
 
-Drop this premature return statement, the function returns after
-releasing the semaphore immediately anyway.
-
-Fixes: 5586838fe9ce ("igc: Add code for PHY support")
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
+Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Siva Reddy <siva.kallam@samsung.com>
+Cc: Girish K S <ks.giri@samsung.com>
+Cc: Byungho An <bh74.an@samsung.com>
+Link: https://lore.kernel.org/r/20220224033528.24640-1-rdunlap@infradead.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_phy.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -781,8 +781,6 @@ s32 igc_read_phy_reg_gpy(struct igc_hw *
- 		if (ret_val)
- 			return ret_val;
- 		ret_val = igc_read_phy_reg_mdic(hw, offset, data);
--		if (ret_val)
--			return ret_val;
- 		hw->phy.ops.release(hw);
- 	} else {
- 		ret_val = igc_read_xmdio_reg(hw, (u16)offset, dev_addr,
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -2282,18 +2282,18 @@ static int __init sxgbe_cmdline_opt(char
+ 	char *opt;
+ 
+ 	if (!str || !*str)
+-		return -EINVAL;
++		return 1;
+ 	while ((opt = strsep(&str, ",")) != NULL) {
+ 		if (!strncmp(opt, "eee_timer:", 10)) {
+ 			if (kstrtoint(opt + 10, 0, &eee_timer))
+ 				goto err;
+ 		}
+ 	}
+-	return 0;
++	return 1;
+ 
+ err:
+ 	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
+-	return -EINVAL;
++	return 1;
+ }
+ 
+ __setup("sxgbeeth=", sxgbe_cmdline_opt);
 
 
