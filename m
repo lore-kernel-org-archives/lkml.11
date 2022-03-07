@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 834A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236522AbiCGJVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:21:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
+        id S236545AbiCGJV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:21:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236433AbiCGJVA (ORCPT
+        with ESMTP id S236566AbiCGJVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:21:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684DC52E41;
-        Mon,  7 Mar 2022 01:20:00 -0800 (PST)
+        Mon, 7 Mar 2022 04:21:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1001532C0;
+        Mon,  7 Mar 2022 01:20:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 025036102A;
-        Mon,  7 Mar 2022 09:20:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D698C340E9;
-        Mon,  7 Mar 2022 09:19:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E5DBB810BF;
+        Mon,  7 Mar 2022 09:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36FEC340E9;
+        Mon,  7 Mar 2022 09:20:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644799;
-        bh=w/LSniU9HL7T8izO5RIoccVJlyRX4WWQVkesBO8mLoU=;
+        s=korg; t=1646644802;
+        bh=8HVQ0bK50UVVZlUYGGpvPde5Jchndo2Q57B4WADFTzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AK2wbqW10TMccMvsTAaD5wbBQ0MZvJ/5tpjQwsD5X/dqTlz5uZt/a4tLA+4HAqP+O
-         HmFz30XGO66jBOWD9EkuuTlnP0jePpWOm5lLMh3VeAIfjLtZaad8W2hYEMCrJCsq/i
-         HiUTGuKU8wYFkmDCcqExomyD+ZvLJdxZmbhYfV0E=
+        b=aP1NcW7MzuQZLWJeyJBnZuFWTuQO3yhyowCgbzgr6mEv88OnJyfYi2sa36M6VYk4J
+         wpbT3ND4KSnWe48NkvNwl8ouMpyBni196ZmDIpT21SmdwF91UItJH7XWEYTRDYehuz
+         xIGC8WXvO0gRn/sv+SMEg6o4P4rBHXW1Tj3n78VA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 4.9 25/32] ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
-Date:   Mon,  7 Mar 2022 10:18:51 +0100
-Message-Id: <20220307091635.153023221@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 26/32] soc: fsl: qe: Check of ioremap return value
+Date:   Mon,  7 Mar 2022 10:18:52 +0100
+Message-Id: <20220307091635.182258183@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
 References: <20220307091634.434478485@linuxfoundation.org>
@@ -52,48 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 7b83299e5b9385943a857d59e15cba270df20d7e upstream.
+[ Upstream commit a222fd8541394b36b13c89d1698d9530afd59a9c ]
 
-early_param() handlers should return 0 on success.
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 would cause the "option=value" string
-to be added to init's environment strings, polluting it.
+As the possible failure of the ioremap(), the par_io could be NULL.
+Therefore it should be better to check it and return error in order to
+guarantee the success of the initiation.
+But, I also notice that all the caller like mpc85xx_qe_par_io_init() in
+`arch/powerpc/platforms/85xx/common.c` don't check the return value of
+the par_io_init().
+Actually, par_io_init() needs to check to handle the potential error.
+I will submit another patch to fix that.
+Anyway, par_io_init() itsely should be fixed.
 
-../arch/arm/mm/mmu.c: In function 'test_early_cachepolicy':
-../arch/arm/mm/mmu.c:215:1: error: no return statement in function returning non-void [-Werror=return-type]
-../arch/arm/mm/mmu.c: In function 'test_noalign_setup':
-../arch/arm/mm/mmu.c:221:1: error: no return statement in function returning non-void [-Werror=return-type]
-
-Fixes: b849a60e0903 ("ARM: make cr_alignment read-only #ifndef CONFIG_CPU_CP15")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7aa1aa6ecec2 ("QE: Move QE from arch/powerpc to drivers/soc")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mm/mmu.c |    2 ++
+ drivers/soc/fsl/qe/qe_io.c | 2 ++
  1 file changed, 2 insertions(+)
 
---- a/arch/arm/mm/mmu.c
-+++ b/arch/arm/mm/mmu.c
-@@ -228,12 +228,14 @@ early_param("ecc", early_ecc);
- static int __init early_cachepolicy(char *p)
- {
- 	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
-+	return 0;
- }
- early_param("cachepolicy", early_cachepolicy);
+diff --git a/drivers/soc/fsl/qe/qe_io.c b/drivers/soc/fsl/qe/qe_io.c
+index 7ae59abc7863..127a4a836e67 100644
+--- a/drivers/soc/fsl/qe/qe_io.c
++++ b/drivers/soc/fsl/qe/qe_io.c
+@@ -41,6 +41,8 @@ int par_io_init(struct device_node *np)
+ 	if (ret)
+ 		return ret;
+ 	par_io = ioremap(res.start, resource_size(&res));
++	if (!par_io)
++		return -ENOMEM;
  
- static int __init noalign_setup(char *__unused)
- {
- 	pr_warn("noalign kernel parameter not supported without cp15\n");
-+	return 1;
- }
- __setup("noalign", noalign_setup);
- 
+ 	num_ports = of_get_property(np, "num-ports", NULL);
+ 	if (num_ports)
+-- 
+2.34.1
+
 
 
