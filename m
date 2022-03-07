@@ -2,116 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5735C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236452AbiCGJU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
+        id S236430AbiCGJVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:21:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236369AbiCGJU3 (ORCPT
+        with ESMTP id S236431AbiCGJUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:20:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98ECB4DF4C;
-        Mon,  7 Mar 2022 01:19:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32E5761016;
-        Mon,  7 Mar 2022 09:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 300F7C340F4;
-        Mon,  7 Mar 2022 09:19:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644774;
-        bh=wghIGJkzpuodDEQFADyhIM+kLpXkawWG1rofmq3dkMY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=riDz0tpj+g63VWQv496gZ8dHIpySKIIA+TGavHyEr2U2UezYo7g6lb+69mvDQbSvl
-         oyfdHG9a3cvFjK1viGjfMWjQjzq2te1Q2slgNkA7udpFH3Q1208NoCgVvoIdhGFnXK
-         9hto9Zyz1Cxza1V7+crz2/5zj2W8xhDnpWvcLP+M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
-        Johan Hovold <johan@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.9 18/32] firmware: qemu_fw_cfg: fix kobject leak in probe error path
-Date:   Mon,  7 Mar 2022 10:18:44 +0100
-Message-Id: <20220307091634.956473211@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
-References: <20220307091634.434478485@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:20:48 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A5150E34
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:19:36 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id u1so22097307wrg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:19:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=9VDgvD8hgLbmfBQ2zpnnO+0UA2G5Bd0GMuXy+xL9DLE=;
+        b=kxG0AOY86sXrBpEmaWKRdNzoBJU4gaafM8rFPgSWHPyRTNLmVo+9jqlR0OBm3LSYuA
+         7l/JZsRbjwASKTUnAfyQeaXOG9tzCngV3yudjo/GsrY1xkU9s/rxr2yxyZ8S+JMd/Yu1
+         0YMZYkAK5T1B5MHGnm4VBYr9w1Ad1joSwJTwxwo3XUj9I9oMQm52RYEen6Bb1JF45cRb
+         AOPhwCzf4n4tKvPHW3p2dv5M/iVGJkAd2tb0JKB7BbP0Dt75+i5FD4httw+5IqpVXpex
+         PhlpxKkUwFFmXMRA/dyE4KSa+wLCg3Oa9igrp9+vGqummjizOvn3H7y30pcYcI53KZud
+         1ldg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=9VDgvD8hgLbmfBQ2zpnnO+0UA2G5Bd0GMuXy+xL9DLE=;
+        b=DabTFubKuwatqFzydA1io73DiEIkHUxHUg6sS18cS+6lXhJxFstGeqR9z/zCnL+Pj2
+         mg4Rtzcbt31VBPNSGDkbI4/ERqNwKGfDzBPaOYEU+PCu6RgA+KNaLU1Fcv84K+5N76oW
+         yVL4n1yF/A9tY5V3OW+28wyvJ5R6GjPVcm5XX0FH7ogdqORyVb0cBYmv5vqeBUKkszck
+         7IvcdU3W+aivR3uMrjArkgEo/bxOedjoYnSPmJ93SNYmYZ1337+Ecqn1ddQ68tOrvf4L
+         LHMLrKLOSDHMaPnuguqTAQ4xJ6lm2e+Ro9sHiJv26n/5YLwTbiTShKCCJ1R5mbksly7z
+         SOPw==
+X-Gm-Message-State: AOAM530taH3UNRQM/EOOHYjxpPjLSBu/BfJIEgYS021pRyRRtgdRAVLl
+        7j5irVwprd4oMd7G67SJbZ3XKQ==
+X-Google-Smtp-Source: ABdhPJw+ypTz3r2S5HKUX8p6+AeQ61RLKFg/YGgOcFB4jHbUfNirM8akMekPBR4Uvi6ybhQjjP+KKw==
+X-Received: by 2002:a5d:6f15:0:b0:1f1:f305:df0d with SMTP id ay21-20020a5d6f15000000b001f1f305df0dmr3756472wrb.504.1646644775533;
+        Mon, 07 Mar 2022 01:19:35 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id n5-20020a5d5985000000b001f0122f63e1sm5431000wri.85.2022.03.07.01.19.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:19:35 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:19:32 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/3] dt-bindings: mfd: maxim,max77802: convert to
+ dtschema
+Message-ID: <YiXOJMUz9fmuK7pT@google.com>
+References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+ <20220111175430.224421-3-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220111175430.224421-3-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+On Tue, 11 Jan 2022, Krzysztof Kozlowski wrote:
 
-commit 47a1db8e797da01a1309bf42e0c0d771d4e4d4f3 upstream.
+> Convert the MFD part of Maxim MAX77802 PMIC to DT schema format.  The
+> example DTS was copied from existing DTS (exynos5800-peach-pi.dts), so
+> keep the license as GPL-2.0-only.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/mfd/max77802.txt      |  25 ---
+>  .../bindings/mfd/maxim,max77802.yaml          | 194 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 195 insertions(+), 26 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mfd/max77802.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77802.yaml
 
-An initialised kobject must be freed using kobject_put() to avoid
-leaking associated resources (e.g. the object name).
+Applied, thanks.
 
-Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
-the leak in the first error path of the file registration helper but
-left the second one unchanged. This "fix" would however result in a NULL
-pointer dereference due to the release function also removing the never
-added entry from the fw_cfg_entry_cache list. This has now been
-addressed.
-
-Fix the remaining kobject leak by restoring the common error path and
-adding the missing kobject_put().
-
-Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
-Cc: stable@vger.kernel.org      # 4.6
-Cc: Gabriel Somlo <somlo@cmu.edu>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-3-johan@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/firmware/qemu_fw_cfg.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -461,15 +461,13 @@ static int fw_cfg_register_file(const st
- 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
- 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
- 				   fw_cfg_sel_ko, "%d", entry->f.select);
--	if (err) {
--		kobject_put(&entry->kobj);
--		return err;
--	}
-+	if (err)
-+		goto err_put_entry;
- 
- 	/* add raw binary content access */
- 	err = sysfs_create_bin_file(&entry->kobj, &fw_cfg_sysfs_attr_raw);
- 	if (err)
--		goto err_add_raw;
-+		goto err_del_entry;
- 
- 	/* try adding "/sys/firmware/qemu_fw_cfg/by_name/" symlink */
- 	fw_cfg_build_symlink(fw_cfg_fname_kset, &entry->kobj, entry->f.name);
-@@ -478,9 +476,10 @@ static int fw_cfg_register_file(const st
- 	fw_cfg_sysfs_cache_enlist(entry);
- 	return 0;
- 
--err_add_raw:
-+err_del_entry:
- 	kobject_del(&entry->kobj);
--	kfree(entry);
-+err_put_entry:
-+	kobject_put(&entry->kobj);
- 	return err;
- }
- 
-
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
