@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A494C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3B4C3527D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241524AbiCGKji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:39:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
+        id S241568AbiCGKjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:39:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239381AbiCGKQY (ORCPT
+        with ESMTP id S239314AbiCGKQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:16:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC258F994;
-        Mon,  7 Mar 2022 01:57:22 -0800 (PST)
+        Mon, 7 Mar 2022 05:16:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A048D8F60F;
+        Mon,  7 Mar 2022 01:57:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B7D260B6F;
-        Mon,  7 Mar 2022 09:56:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98B10C340E9;
-        Mon,  7 Mar 2022 09:56:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F46AB80E70;
+        Mon,  7 Mar 2022 09:57:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EFBAC340E9;
+        Mon,  7 Mar 2022 09:57:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646968;
-        bh=s2eekJYXb2Eohk+dVatEAsJSSu7Uj3FGTmgAXy0tyKw=;
+        s=korg; t=1646647032;
+        bh=ohnYKYo2lml7QBh0YB2fkZLgPTZvTVHY7s6SEjBwThU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOX7ny+S2RAK1FnGLrhs3GhY6X8iJKlRKlYpzF1tnx2bfmTlyUnpZ3JMoCVLHTJQw
-         tGYSqHu4hzlILb0w2iA3gytLpHX4diRQAlwxiRZOiw9oSjEk+IQkUihwiaQZczPeOP
-         DmqQAoBsOHVyNU2vEv3Kc6j3q+1enHJP4/FXPWf4=
+        b=FmbHjHbEzsCyKdRWAUgh38Z87OX9Ke1p41Hz/6arlHQ4TB1hecbdsVhqGB6pntMyF
+         tWZKaPsZuGVVcKaeL3rFozbCP5lXT1Ey8m8iSmbSSbOKBOVj5a0mYDEcalxnGgAyvx
+         gbXMVdznld6GtKs28NlttwGZ6n57RsgPomSl8WOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Casper Andersson <casper.casan@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 148/186] net: sparx5: Fix add vlan when invalid operation
-Date:   Mon,  7 Mar 2022 10:19:46 +0100
-Message-Id: <20220307091658.213575209@linuxfoundation.org>
+        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.16 170/186] HID: add mapping for KEY_ALL_APPLICATIONS
+Date:   Mon,  7 Mar 2022 10:20:08 +0100
+Message-Id: <20220307091658.831958934@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,64 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casper Andersson <casper.casan@gmail.com>
+From: William Mahon <wmahon@chromium.org>
 
-[ Upstream commit b3a34dc362c03215031b268fcc0b988e69490231 ]
+commit 327b89f0acc4c20a06ed59e4d9af7f6d804dc2e2 upstream.
 
-Check if operation is valid before changing any
-settings in hardware. Otherwise it results in
-changes being made despite it not being a valid
-operation.
+This patch adds a new key definition for KEY_ALL_APPLICATIONS
+and aliases KEY_DASHBOARD to it.
 
-Fixes: 78eab33bb68b ("net: sparx5: add vlan support")
+It also maps the 0x0c/0x2a2 usage code to KEY_ALL_APPLICATIONS.
 
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: William Mahon <wmahon@chromium.org>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20220303035618.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../ethernet/microchip/sparx5/sparx5_vlan.c   | 20 +++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/hid/hid-debug.c                |    4 +++-
+ drivers/hid/hid-input.c                |    2 ++
+ include/uapi/linux/input-event-codes.h |    3 ++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-index 4ce490a25f33..8e56ffa1c4f7 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-@@ -58,16 +58,6 @@ int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
- 	struct sparx5 *sparx5 = port->sparx5;
- 	int ret;
+--- a/drivers/hid/hid-debug.c
++++ b/drivers/hid/hid-debug.c
+@@ -825,7 +825,9 @@ static const char *keys[KEY_MAX + 1] = {
+ 	[KEY_F22] = "F22",			[KEY_F23] = "F23",
+ 	[KEY_F24] = "F24",			[KEY_PLAYCD] = "PlayCD",
+ 	[KEY_PAUSECD] = "PauseCD",		[KEY_PROG3] = "Prog3",
+-	[KEY_PROG4] = "Prog4",			[KEY_SUSPEND] = "Suspend",
++	[KEY_PROG4] = "Prog4",
++	[KEY_ALL_APPLICATIONS] = "AllApplications",
++	[KEY_SUSPEND] = "Suspend",
+ 	[KEY_CLOSE] = "Close",			[KEY_PLAY] = "Play",
+ 	[KEY_FASTFORWARD] = "FastForward",	[KEY_BASSBOOST] = "BassBoost",
+ 	[KEY_PRINT] = "Print",			[KEY_HP] = "HP",
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1086,6 +1086,8 @@ static void hidinput_configure_usage(str
  
--	/* Make the port a member of the VLAN */
--	set_bit(port->portno, sparx5->vlan_mask[vid]);
--	ret = sparx5_vlant_set_mask(sparx5, vid);
--	if (ret)
--		return ret;
--
--	/* Default ingress vlan classification */
--	if (pvid)
--		port->pvid = vid;
--
- 	/* Untagged egress vlan classification */
- 	if (untagged && port->vid != vid) {
- 		if (port->vid) {
-@@ -79,6 +69,16 @@ int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
- 		port->vid = vid;
- 	}
+ 		case 0x29d: map_key_clear(KEY_KBD_LAYOUT_NEXT);	break;
  
-+	/* Make the port a member of the VLAN */
-+	set_bit(port->portno, sparx5->vlan_mask[vid]);
-+	ret = sparx5_vlant_set_mask(sparx5, vid);
-+	if (ret)
-+		return ret;
++		case 0x2a2: map_key_clear(KEY_ALL_APPLICATIONS);	break;
 +
-+	/* Default ingress vlan classification */
-+	if (pvid)
-+		port->pvid = vid;
-+
- 	sparx5_vlan_port_apply(sparx5, port);
- 
- 	return 0;
--- 
-2.34.1
-
+ 		case 0x2c7: map_key_clear(KEY_KBDINPUTASSIST_PREV);		break;
+ 		case 0x2c8: map_key_clear(KEY_KBDINPUTASSIST_NEXT);		break;
+ 		case 0x2c9: map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);		break;
+--- a/include/uapi/linux/input-event-codes.h
++++ b/include/uapi/linux/input-event-codes.h
+@@ -278,7 +278,8 @@
+ #define KEY_PAUSECD		201
+ #define KEY_PROG3		202
+ #define KEY_PROG4		203
+-#define KEY_DASHBOARD		204	/* AL Dashboard */
++#define KEY_ALL_APPLICATIONS	204	/* AC Desktop Show All Applications */
++#define KEY_DASHBOARD		KEY_ALL_APPLICATIONS
+ #define KEY_SUSPEND		205
+ #define KEY_CLOSE		206	/* AC Close */
+ #define KEY_PLAY		207
 
 
