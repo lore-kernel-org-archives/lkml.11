@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F75C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240003AbiCGKfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:35:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
+        id S240151AbiCGKfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:35:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234901AbiCGKMF (ORCPT
+        with ESMTP id S235930AbiCGKMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:12:05 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5895979C62;
-        Mon,  7 Mar 2022 01:56:27 -0800 (PST)
+        Mon, 7 Mar 2022 05:12:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75ED8CDB2;
+        Mon,  7 Mar 2022 01:56:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DA6FCCE0E4A;
-        Mon,  7 Mar 2022 09:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E74BFC340E9;
-        Mon,  7 Mar 2022 09:56:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFBB460C6D;
+        Mon,  7 Mar 2022 09:56:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F1BC340E9;
+        Mon,  7 Mar 2022 09:56:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646977;
-        bh=+NzAtLObj6uMrptvGTkHCHEAmFeyo5+8E9Db1t+8QB8=;
+        s=korg; t=1646646980;
+        bh=XNFfssC4dcywt09vS1FDrDsp4FKO7LtqQ6ia6lOx3UI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eFrS5Fglxy7gf5JJGraQNahGv16upCQIyibp0L3kDwMg8eNqwpzUPI2Qh+ZDzFcQ5
-         iXAPGwUP4SnQZhOmelllYBncllkO6O1a9wz4/Gg1W6K8q/cOEU2r/5sdaMK1rAmMaX
-         aFQkdpAurcDCy2IXLY9oZ4L+pakmTkBWGh5hg9vE=
+        b=IzRNsdsDVhHASKCrG+oVu2BZVd/zzf18V7Zh/gkGh9hzJnDMBOyxXvH2LQcVSug/W
+         OwfUSELUge8FgQtC4wHdl3oo3PYAGSUvJ14XfxknOU+IYyTgP8KJD0lBFeHZIZUN9G
+         q6dCrMf8WBR72XqMlhMylY9SrGBBdGeQucPbEwaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 112/186] selftests: mlxsw: tc_police_scale: Make test more robust
-Date:   Mon,  7 Mar 2022 10:19:10 +0100
-Message-Id: <20220307091657.209641108@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 113/186] pinctrl: sunxi: Use unique lockdep classes for IRQs
+Date:   Mon,  7 Mar 2022 10:19:11 +0100
+Message-Id: <20220307091657.237365005@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,55 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit dc9752075341e7beb653e37c6f4a3723074dc8bc upstream.
+commit bac129dbc6560dfeb634c03f0c08b78024e71915 upstream.
 
-The test adds tc filters and checks how many of them were offloaded by
-grepping for 'in_hw'.
+This driver, like several others, uses a chained IRQ for each GPIO bank,
+and forwards .irq_set_wake to the GPIO bank's upstream IRQ. As a result,
+a call to irq_set_irq_wake() needs to lock both the upstream and
+downstream irq_desc's. Lockdep considers this to be a possible deadlock
+when the irq_desc's share lockdep classes, which they do by default:
 
-iproute2 commit f4cd4f127047 ("tc: add skip_hw and skip_sw to control
-action offload") added offload indication to tc actions, producing the
-following output:
+ ============================================
+ WARNING: possible recursive locking detected
+ 5.17.0-rc3-00394-gc849047c2473 #1 Not tainted
+ --------------------------------------------
+ init/307 is trying to acquire lock:
+ c2dfe27c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
 
- $ tc filter show dev swp2 ingress
- ...
- filter protocol ipv6 pref 1000 flower chain 0 handle 0x7c0
-   eth_type ipv6
-   dst_ip 2001:db8:1::7bf
-   skip_sw
-   in_hw in_hw_count 1
-         action order 1:  police 0x7c0 rate 10Mbit burst 100Kb mtu 2Kb action drop overhead 0b
-         ref 1 bind 1
-         not_in_hw
-         used_hw_stats immediate
+ but task is already holding lock:
+ c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
 
-The current grep expression matches on both 'in_hw' and 'not_in_hw',
-resulting in incorrect results.
+ other info that might help us debug this:
+  Possible unsafe locking scenario:
 
-Fix that by using JSON output instead.
+        CPU0
+        ----
+   lock(&irq_desc_lock_class);
+   lock(&irq_desc_lock_class);
 
-Fixes: 5061e773264b ("selftests: mlxsw: Add scale test for tc-police")
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  *** DEADLOCK ***
+
+  May be due to missing lock nesting notation
+
+ 4 locks held by init/307:
+  #0: c1f29f18 (system_transition_mutex){+.+.}-{3:3}, at: __do_sys_reboot+0x90/0x23c
+  #1: c20f7760 (&dev->mutex){....}-{3:3}, at: device_shutdown+0xf4/0x224
+  #2: c2e804d8 (&dev->mutex){....}-{3:3}, at: device_shutdown+0x104/0x224
+  #3: c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
+
+ stack backtrace:
+ CPU: 0 PID: 307 Comm: init Not tainted 5.17.0-rc3-00394-gc849047c2473 #1
+ Hardware name: Allwinner sun8i Family
+  unwind_backtrace from show_stack+0x10/0x14
+  show_stack from dump_stack_lvl+0x68/0x90
+  dump_stack_lvl from __lock_acquire+0x1680/0x31a0
+  __lock_acquire from lock_acquire+0x148/0x3dc
+  lock_acquire from _raw_spin_lock_irqsave+0x50/0x6c
+  _raw_spin_lock_irqsave from __irq_get_desc_lock+0x58/0xa0
+  __irq_get_desc_lock from irq_set_irq_wake+0x2c/0x19c
+  irq_set_irq_wake from irq_set_irq_wake+0x13c/0x19c
+    [tail call from sunxi_pinctrl_irq_set_wake]
+  irq_set_irq_wake from gpio_keys_suspend+0x80/0x1a4
+  gpio_keys_suspend from gpio_keys_shutdown+0x10/0x2c
+  gpio_keys_shutdown from device_shutdown+0x180/0x224
+  device_shutdown from __do_sys_reboot+0x134/0x23c
+  __do_sys_reboot from ret_fast_syscall+0x0/0x1c
+
+However, this can never deadlock because the upstream and downstream
+IRQs are never the same (nor do they even involve the same irqchip).
+
+Silence this erroneous lockdep splat by applying what appears to be the
+usual fix of moving the GPIO IRQs to separate lockdep classes.
+
+Fixes: a59c99d9eaf9 ("pinctrl: sunxi: Forward calls to irq_set_irq_wake")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220216040037.22730-1-samuel@sholland.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
-@@ -60,7 +60,8 @@ __tc_police_test()
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -36,6 +36,13 @@
+ #include "../core.h"
+ #include "pinctrl-sunxi.h"
  
- 	tc_police_rules_create $count $should_fail
++/*
++ * These lock classes tell lockdep that GPIO IRQs are in a different
++ * category than their parents, so it won't report false recursion.
++ */
++static struct lock_class_key sunxi_pinctrl_irq_lock_class;
++static struct lock_class_key sunxi_pinctrl_irq_request_class;
++
+ static struct irq_chip sunxi_pinctrl_edge_irq_chip;
+ static struct irq_chip sunxi_pinctrl_level_irq_chip;
  
--	offload_count=$(tc filter show dev $swp1 ingress | grep in_hw | wc -l)
-+	offload_count=$(tc -j filter show dev $swp1 ingress |
-+			jq "[.[] | select(.options.in_hw == true)] | length")
- 	((offload_count == count))
- 	check_err_fail $should_fail $? "tc police offload count"
- }
+@@ -1551,6 +1558,8 @@ int sunxi_pinctrl_init_with_variant(stru
+ 	for (i = 0; i < (pctl->desc->irq_banks * IRQ_PER_BANK); i++) {
+ 		int irqno = irq_create_mapping(pctl->domain, i);
+ 
++		irq_set_lockdep_class(irqno, &sunxi_pinctrl_irq_lock_class,
++				      &sunxi_pinctrl_irq_request_class);
+ 		irq_set_chip_and_handler(irqno, &sunxi_pinctrl_edge_irq_chip,
+ 					 handle_edge_irq);
+ 		irq_set_chip_data(irqno, pctl);
 
 
