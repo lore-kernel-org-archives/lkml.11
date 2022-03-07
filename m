@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E19C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbiCGJVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:21:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
+        id S236500AbiCGJVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:21:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236460AbiCGJUt (ORCPT
+        with ESMTP id S236406AbiCGJUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:20:49 -0500
+        Mon, 7 Mar 2022 04:20:50 -0500
 Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2055.outbound.protection.outlook.com [40.107.215.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D4451E54;
-        Mon,  7 Mar 2022 01:19:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B849522C3;
+        Mon,  7 Mar 2022 01:19:45 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XVL2LfXzNCscxgGd0QyNQHwGAWFFJaTW/WGv7q/ToF7m4QsJ/yxTuRmmvdFDf9Bikm0x3nn02+6TkY8ovsEZBdB7Xr3b/BAQMLzp+xEont/iKgv6n2Pkn9kplURMlZZBF5KZUseiVpIkBYdSSNwtcWvNtf6LFHZWkdsBVI/iD82QcMQsN5bICf4YNf/CoPS/CtchGDuz3sGu6C0ucOjd/3ZC55dFdzD6pdV4pnvNj9pnnPPvs6x4TsO2wUlfIrJafjDSfBJoAalQGqS1Aw46eK05q0kNy/KywGulTxtLa1+slihYtq3PgDKod9U1qGKO4PQdGysSeqfGCVdXSC/udA==
+ b=Kwh5Plf3eIQ9gs53ZERTk0TLNCR9Vd6KS1ITHC2mj6G9AtBB8j7qR97dcKglPvvy4KCfNlCUHKg+Ye9yDpOvnuTo9j/xQpY4hlBj7vgQUZBImVF6iyKwZi/t0gBbScw/ZshzJ15MSrHF6cBNSw0+Q7iAr5wrOmTM1p/uADXFveo66LfWSauBo1/jY7K+BbBxFdtfnC91VmWU3MBJ37laX5lAVGUIuU25IrpbmTU912tHOsO+PBgiFrZMOR+BSzrRpk/xOED44oeuHtpuOKlqEGd0nklmxIg+dcbLNvJMGXEFS71V0jW/dsMdFL+yGC6v4D2mLThJfqiGMZU7KdL7rQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Xk3fR0QObBpshHKCt59VGxdksnb+mElR9kwWjUsMm6Y=;
- b=HnVFljWGWhXtHDwakS/jJrUWfATHKEDLzoGBD1a6zZDuPtdvhwKxy9wcdracnzSeMdzZFZIEW+FzmCDsLpcjh2RpBQ3owL1KmqhHzviXTgo/6pR51QpFQeMpJ8D2Zad9H1QOhdex7Is3o9eTYxnFFHr+tnzw7H6CA/CwFfDGssZBqDYiBfke5+ZsEvu2031MBv81gJDCL5O0euMxHSP6GwFGelPv64PjdJDYTjIXTjS/Dp9bmbFY1QU+NfqPKvp2oGmnb7ONoRpvS94cKl45WP4SZA0d0H/f/5I/YTJ1mv4ZqgbEIBgRsPQh+c8W1ZBTYQtD7ls5wuS7jCpuaOgu4g==
+ bh=hjNjjnzCJMF2QjZTTKHEKWi2u+8FCf2NGgGvl5IlhIA=;
+ b=K/U2rRlbhW8SgfTfu8+3uQ8xkYHfCZBsRJgk2DnwLvhesOX2C88L7Bo3Xa8z0C+WZV4s4ShvGdVxlXOJA+xz/tiJ1iwk4B13zZ7urahu9cVQcbT9rPe8bsO7N8Qj5U/X1IwZ0nCmHCKTaB9J804TBrLYV+77KV9UuRHIjLBefgH2MXjUDHjU4Rx06SFagcFN+pvuBkTwQgN6bId0BEDwttukoP3H4FwdY9c9bw2hBilwubtmlu2B4hTPK5V2l0eCXZTbOmpbg0NL4wEuKD/PQ2t5Pn/AfeGR6CRjtI93EVMmsNAkyiegExm7ES1Isd+UlFSN+AfiMGGYx77cKbqckQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nuvoton.com; dmarc=pass action=none header.from=nuvoton.com;
  dkim=pass header.d=nuvoton.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=nuvoton.onmicrosoft.com; s=selector2-nuvoton-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xk3fR0QObBpshHKCt59VGxdksnb+mElR9kwWjUsMm6Y=;
- b=s9IDvTBem2qd5ExSQf2hbhRMrBsW22db0G/5fJXgKJyK7l3FPZNXXmABNm6mKl99xpQbAdpLLJxJ4KzSpjbS6RfVF5uCF1KLNJdmMJj0R4lUooGAotuQThNwSd+x63g7+34em/so80HJZ/XxESfgniisPMTwpBoXkB/CqJX4kSM=
+ bh=hjNjjnzCJMF2QjZTTKHEKWi2u+8FCf2NGgGvl5IlhIA=;
+ b=Csem5soSXU3IymIxtJfGl394wwyHsEdq9SbHCnVeogH/YwcUiHl/JO/udHsZXD1Bc3TW40TF4bQ5XcG5BLIwX2bUVQERxWM0xO+60frl1WN5RTUGdHjaGzVlVHpkOsWQyszmvi+HfBsKTWVFymeCs1h6ZdzxDBC/G5Uot7dTa7o=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nuvoton.com;
 Received: from HK0PR03MB4833.apcprd03.prod.outlook.com (2603:1096:203:b1::19)
  by KL1PR03MB4646.apcprd03.prod.outlook.com (2603:1096:820:1c::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.8; Mon, 7 Mar
- 2022 09:19:39 +0000
+ 2022 09:19:41 +0000
 Received: from HK0PR03MB4833.apcprd03.prod.outlook.com
  ([fe80::39bb:b24a:15ed:811e]) by HK0PR03MB4833.apcprd03.prod.outlook.com
  ([fe80::39bb:b24a:15ed:811e%3]) with mapi id 15.20.5061.017; Mon, 7 Mar 2022
- 09:19:39 +0000
+ 09:19:41 +0000
 From:   Jacky Huang <ychuang3@nuvoton.com>
 To:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
         arnd@arndb.de, olof@lixom.net
@@ -48,9 +48,9 @@ Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-clk@vger.kernel.org, soc@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Jacky Huang <ychuang3@nuvoton.com>
-Subject: [PATCH 2/3] dt-bindings: clock: Document MA35D1 clock controller bindings
-Date:   Mon,  7 Mar 2022 17:19:22 +0800
-Message-Id: <20220307091923.9909-3-ychuang3@nuvoton.com>
+Subject: [PATCH 3/3] arm64: dts: nuvoton: Add initial support for MA35D1
+Date:   Mon,  7 Mar 2022 17:19:23 +0800
+Message-Id: <20220307091923.9909-4-ychuang3@nuvoton.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220307091923.9909-1-ychuang3@nuvoton.com>
 References: <20220307091923.9909-1-ychuang3@nuvoton.com>
@@ -60,138 +60,231 @@ X-ClientProxiedBy: HK2PR04CA0079.apcprd04.prod.outlook.com
  (2603:1096:203:b1::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 039c6d3f-0226-480d-837d-08da001b9b50
+X-MS-Office365-Filtering-Correlation-Id: 98286bfb-2bc3-44a6-d1c8-08da001b9c88
 X-MS-TrafficTypeDiagnostic: KL1PR03MB4646:EE_
-X-Microsoft-Antispam-PRVS: <KL1PR03MB46466DD4C7F2FD0C6D8443DA9E089@KL1PR03MB4646.apcprd03.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <KL1PR03MB4646B43A5BE3938A798BECFC9E089@KL1PR03MB4646.apcprd03.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mEWJSdFXvOhqtT4fkkBiXE+elOOLHRVxF+HuVTQApfpuBtlxOyLZBIoPLJ3IunZqtPYztQdpBG2CUQtQhhOe7VU/pLJDMEoyAqJaXec1FlPQd6gsyhB7tzTVLwgHhoo4ZSS/4mDOtDN35n0mB6OV/yOKZnj1TkqR+bKYyfrXmIvXYOWXd7l57me7bZ/PcXQ/pf6Udd7Clh9K/lctKRPlLQ0V97GWI465HHnfjegJF9XK0esgDZGuFPs3GjRC4jlKDGWzHfJqPPPTia2o1DeJGRij+9tZHhfmg63g0x3Q7PWddoVbs9eNZb2Qv84QExJMUMmfye69UGWQ2IY68suY3tWgCDihFPyAfPTuEvbieT03dM07tlEVZ2KFLoQyGgW5wrMYzXvj1yZvuWxtIpgfxiW5jxH8wwtWiKT0akH+qJ1AUro9lHIAgVH9KM39M3uFULvyqzo2U7rKUqDeZXX3XV8lN8Xd1gT1slUwSfW0SHh+lAnYXwuAk1JuYbsE2J3MHF9Hv7wBSkACUnw+mFXPNuXURn1CG83ebJ9e+kMS9MsWqT0syHg0r0fvqUGvpcxbf+cyfusk1zIDQPw53tGmqKOXQ31s2UijYqmoz2G8tmLvp5jyGjvjMzmeF9UTgUtPwb0cAiDDCRSKdrXsQ7V50Z8GENbVKkN119cKlhNE7Ev6KFjl5bJNtDImbGD8R1Dc7jjAGVSAlljqY/w1yQaAQNgmn+buocNUXqelYvXV3IKMc/AWXimjvQMlq5nX1TVAKhukfJQR/jGkizXI7Sse3ICE0dkk0fLhETKTrkOMJmg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR03MB4833.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(38100700002)(966005)(38350700002)(2616005)(1076003)(186003)(508600001)(5660300002)(8936002)(7416002)(2906002)(26005)(36756003)(6666004)(6512007)(6506007)(66556008)(66476007)(86362001)(8676002)(66946007)(4326008)(52116002)(107886003)(83380400001)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: LQtfbZ34joxcM6pQ++h7Ic+cqex3smPuO6BN5CXt2JkLUpFNK8iVkbhs6IorLQLm+R1ohl+U3hQX/TOnlUw3Ub5S8sAwr2/rQQ9dyEr6Oo2il+Dl/O2GLCQutsh7Uvy181/GYYJicHK/kjGQHfvz1HIj77Eb+RomVvdQC4Z/Kn3jsT4siu+46v9lVoG9FuQf4jBx/V/v+xe1K3W+Us5yG3JIQs6FTVciqVEuJHGovZvitTH5AtEj79E75i72A8M5QZm2/GD5xgLLEe9gog2Aw6SY72lgP5AqyQHqdvNcDBiHA0/waiaQT4K1zlURhIvq/rlvz+pvZ004f/o+uYBzlVqzYVrHD0w63OuiyPiRRcd0YEWzJo/kFLPF06ZzvA8vxjunlTDw/nbXqe9QR289SPrxUQfQgZCbbDIF3Eef4Wazo3sKLupNcjFF5j1/6aMHLGmxgkmp686ScmySt4qwpcPHp59wrgDuHFEA7s9O022UoN7LaMLoKTwmT/QgME1vcYmwa13z0ROehTJKA9mAIfWchHZH5bk4LHetUf2LBAExIwV/rC7klBSdfmQAgBCDTOiqgNvUAn9U8dYBiwUA474lr4VacEkwYayr1KMCO/2vdAjlCLqEeZukFooW3OIrjgT0a+HpyDYQfnQMEZIxbxv8/oHTNJ+uq/RUFtYB6e0QEyjllZq/IZfgW0/o7EXdcg4GwpLPVPoBVNYX1qqx0Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR03MB4833.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(38100700002)(38350700002)(2616005)(1076003)(186003)(508600001)(5660300002)(8936002)(7416002)(2906002)(26005)(36756003)(6666004)(6512007)(6506007)(66556008)(66476007)(86362001)(8676002)(66946007)(4326008)(52116002)(107886003)(83380400001)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uIMoNOifoVcMH1cXbcrOT2OVHCPKa6trFmJdnXtO3eOocRb5QZOPLT9Bgp+Q?=
- =?us-ascii?Q?9ErG0ID8gqvSu9m28Bm2d8BThk91iMlZrGpAq1vSUZZyqEXkLJW2+BboN31r?=
- =?us-ascii?Q?C2YbovwfC78ic408yXpWaLXE/Am5f9AKLvURNkyJglfjUN4meWtsCDahXlr7?=
- =?us-ascii?Q?ozNr8oOz/ocNPUFmQOxZqPbO6muk5BYZ0awHb4JRczMAY/AP75qhfQUFMGNL?=
- =?us-ascii?Q?il/raK69KTi8j8XCAbasmbEb9ATls6xAP0TesxRFEBkQXb8ivf6Vst9CwY7Q?=
- =?us-ascii?Q?3jJaOZ9cFjGRQK+04pz3PKmRlSlvk+cbIlEgB6OmHqXaVdySEGI4PclUzpPx?=
- =?us-ascii?Q?N4UGJ7ax/B7Hzp+rg7esC+BVR8J2/FBt5a+HPmf2sH0QbRYvbUxXVzgVHIZ+?=
- =?us-ascii?Q?srvtfAzFJhszNuUuErlh8Z30XmqOItBJveFrKR497Nl0QH4sl7sRHYBq1u5r?=
- =?us-ascii?Q?LOBnQVgMSpA2F5cEYqny5x3+MAu7bnD4KZx8WuhIP5zNqAA0YZgHvdz4otrY?=
- =?us-ascii?Q?j856QDNQrIV1thJt77YgGHAUIH3ByEZWkgAfuBoaM9DmUSzMMqPlW8/rj06B?=
- =?us-ascii?Q?lLWjB+QLUbgxsWZAWBCakDntfo61Ja4PsjnNzzagvut+W3kmJSZhUrDojomX?=
- =?us-ascii?Q?XSFtZQ4DH10sMyhbNPbtZmu2spByaGW8COSDvf/PRrhS9ePqQcUHEOYvy86B?=
- =?us-ascii?Q?ONURbxw8JoqW8hO8/nm8g+8yG+1wucvOtW5Xz0ak59N+Dh3Yn/cBplsT5810?=
- =?us-ascii?Q?Vj6nFV7qZLrev43GIjtixGGgFUQLRQvIm+nZBTFzLLZJ7/glIgwdiU9nSKaj?=
- =?us-ascii?Q?J5C1pC7MEfxWeEmsQOptif1uDiUnnagMx6eg50Ln5Qdaal7csvY2Grvg6o2d?=
- =?us-ascii?Q?zAqL+o+VUI6QtRbZ8GWA3EQABvOTFiPsKPczpNFQUCRxmRy+U1ISWz8Se55e?=
- =?us-ascii?Q?5LKqu+FDYyscpNIsM50B/iNdGPjNQlHJTOJy/vj7wVymq3Ysyi+Bb8f5h1WR?=
- =?us-ascii?Q?RWYTdhZZAkJtG1ukLw+kp4hx1zeW3ZS7U3z0S1OvxKUdOrXbwBOtWyUWKf/9?=
- =?us-ascii?Q?sAu1vwR1pZmhiUQdFwVYZ8s9ixHf96Nvp1nC1Zghlo08gz045sltEFibX/NH?=
- =?us-ascii?Q?9FWADAzu93DHaLjPxti+Ps+1t1EtC3mJbI7DxJQE+PIlUJHDi8WPu9pRgGl9?=
- =?us-ascii?Q?OKKaDHOpfXQI7iymIjvt3VDVXCZ48kRqXqR0QvFBNQhB9fOY1/HLjfK8D0W2?=
- =?us-ascii?Q?43zYrpkLXa5fYcJpMyEVK1u4VcvxaKwrsKMzMkOa5wXN3KxYWbObm+4ywCQf?=
- =?us-ascii?Q?xALDhgs8b/E/BJEUxi+Fs9oP1S7enN5wMCKy3/OmW+9VIUMofO3e1KvAqycL?=
- =?us-ascii?Q?Sf6C0Y3FOclts6Q01FoMdReC8UsCHECSIG/iIXkDR+TEIxXGbR4w7pEizu9p?=
- =?us-ascii?Q?aPzNjer2cowQtx3n6j2c+CdsmJOb1/K8ikKoeUdHEXixlwtvHlgESQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XK2tvCUdKMK5w63kvgU7uOuGGAmY6kv1MkEZGbk9zIjYfAty9e91TBT3Uiao?=
+ =?us-ascii?Q?NDuPjZp8vOPB2N3VTXlDC4wqeAI8pQ6131fEK7sDrqAby5GVgTVx+gPgs95s?=
+ =?us-ascii?Q?S0uWQBDi7m6gy1SzbfwXqVI0IG4vAlwKVBoMAo7/iZNcS1pBRoSCLMBARj+v?=
+ =?us-ascii?Q?C1QDXKfK9+zcJ978Kggvm8vyNt/1vymqKCwg3Qtk0O5PvvPjhjIgSZH6lGhK?=
+ =?us-ascii?Q?dt7U1V74DiBVQitrIXaDYqa4Re6AAThtetQO2qAYVWbdPuSLewvEtexz5kpq?=
+ =?us-ascii?Q?BiiSA9Hdb0+xeZ2aeO8bhqmNxtMwsliTu8CKyk+vVNMFA7YfBUxSmobRswI5?=
+ =?us-ascii?Q?bdKOR0cQn4q1EDRqBNYJ4szB15pRQbWtSQ1c01yoV0rSSsQLGYKMEjskwCHc?=
+ =?us-ascii?Q?patmkWz720eRz7ZBQHTv65m5CgwJUlJFllP0bhBUh0TWWcTpWRrKk8G5URso?=
+ =?us-ascii?Q?U2CHtCnFH0nTgmc0Sne1erZJH2GDPWcH/raNhHUy2jYvwyKebWLz5tfXh8Zp?=
+ =?us-ascii?Q?HSHWHnXXuUEhTX/qvATKEcqtjifBdEZSyNfBdcoiXiRMrCdE5l2272WjMboz?=
+ =?us-ascii?Q?tTxcgqO7DeTEF3JE3HJe6m7duljn3WqoZC/i7KX4UdwYWPK5svaEsZ2uNcJj?=
+ =?us-ascii?Q?pQ9U1Gl+XLOkNfraV601tjed8jM+nUFn5AMin3FwT86skMUawDNY1wAehRho?=
+ =?us-ascii?Q?nqWjnZpaMxPzr/+JPGjnEObPomENhlUMz326kxbLaBVgBA2TrR1FNb3nDe3E?=
+ =?us-ascii?Q?0qLMdULYHOEnL9XrDFHkLmraAwQl9aonV6SiXS6niRIbepvBpcqcH0eRuvs3?=
+ =?us-ascii?Q?X9PDFELNqYg7JNHTaBuMx0z0jYPaPa6vkqAeVoVIYCxxc0fuyD8uXsuprdFw?=
+ =?us-ascii?Q?dks8wsb5pU2vPZr69mbmvZt9T5Bnr193Y38H0qdqbsZhQhun1MFCpNiLNN/c?=
+ =?us-ascii?Q?1bnOB59Qb9agNbBRQxOp5B15BoQv6dAJk2AePf9c9MVKpeypdnAjD4UX3GFI?=
+ =?us-ascii?Q?nEisaFrX5xdiLDG2NFBkjpVbLXoqDLXe1YxwE9P+8/FrpGFPbNRUxETDNJCt?=
+ =?us-ascii?Q?luUnsf/KTVSR/kdtMVqvJ7Tfbhx5Zv//35TSCHCq5EHRe87NKAZNid21MyEj?=
+ =?us-ascii?Q?mlYATYwX8GJncAJl2aYZYEcgREBzV++g+L+wtam1umNK715XX5/cmpjpqtuH?=
+ =?us-ascii?Q?G6NL6IQUJqI8Eaw9pqCU2VPT2qj/09CiwlX7sCPKrvyCEcN9cKzQtEEvXg+s?=
+ =?us-ascii?Q?QzBWZr2gp0px0UiNtChJPdxLo2eLrEIQqJ+bDf/KGpztD9AV9IdRVI1kygvL?=
+ =?us-ascii?Q?LAIOXaMeOeGIAn4zwubS15UhjzP0XQS1rubwmRfRZS/O7memIAPzAOUAQOOY?=
+ =?us-ascii?Q?Fn4HNAQzIlvag/B6jK9haNkdhTK9UPUlrsDfWFKTXQJ2mc/8BHX13KXNH2VP?=
+ =?us-ascii?Q?cyQANCK/W+qOtejaAmcqt124ck4dAVbg8EAU8dSedf4qEQU5231NiA=3D=3D?=
 X-OriginatorOrg: nuvoton.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 039c6d3f-0226-480d-837d-08da001b9b50
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98286bfb-2bc3-44a6-d1c8-08da001b9c88
 X-MS-Exchange-CrossTenant-AuthSource: HK0PR03MB4833.apcprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:19:39.7302
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:19:41.7769
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a3f24931-d403-4b4a-94f1-7d83ac638e07
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TyKpAPAjGbKnor7uU8wkqSJzQE8ChiQYE2U/UUJ0UDNdUmICBTFTpqRcavI1zZe0QTNVZUIJw6h6A4Jfeo2zIg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: E2fkD9qL1Rt5lJn+gxvaGy/3/X2SbQCEVD3HNJB9y3CcLoFDMxgpSO7nzAUJWZfKtihKmB4o4tZpx5SrIzMRdA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR03MB4646
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation to describe Nuvoton MA35D1 clock driver bindings.
+Add the initial device tree files for Nuvoton MA35D1 Soc.
 
 Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 ---
- .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 66 +++++++++++++++++++
- 1 file changed, 66 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-=
-clk.yaml
+ arch/arm64/boot/dts/Makefile               |   1 +
+ arch/arm64/boot/dts/nuvoton/Makefile       |   2 +
+ arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts |  23 +++++
+ arch/arm64/boot/dts/nuvoton/ma35d1.dtsi    | 106 +++++++++++++++++++++
+ 4 files changed, 132 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
 
-diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yam=
-l b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+index 639e01a4d855..28e01442094f 100644
+--- a/arch/arm64/boot/dts/Makefile
++++ b/arch/arm64/boot/dts/Makefile
+@@ -30,3 +30,4 @@ subdir-y +=3D synaptics
+ subdir-y +=3D ti
+ subdir-y +=3D toshiba
+ subdir-y +=3D xilinx
++subdir-y +=3D nuvoton
+diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuv=
+oton/Makefile
 new file mode 100644
-index 000000000000..f08b6f29bdcf
+index 000000000000..e1e0c466bf5e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/nuvoton,ma35d1-clk.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/arch/arm64/boot/dts/nuvoton/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_ARCH_NUVOTON) +=3D ma35d1-evb.dtb
+diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts b/arch/arm64/boot/d=
+ts/nuvoton/ma35d1-evb.dts
+new file mode 100644
+index 000000000000..38e4f734da0f
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+@@ -0,0 +1,23 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Device Tree Source for MA35D1 Evaluation Board (EVB)
++ *
++ * Copyright (C) 2021 Nuvoton Technology Corp.
++ */
 +
-+title: Nuvoton MA35D1 Clock Control Module Binding
++/dts-v1/;
++#include "ma35d1.dtsi"
 +
-+maintainers:
-+  - Chi-Fang Li <cfli0@nuvoton.com>
-+  - Jacky Huang <ychuang3@nuvoton.com>
++/ {
++       model =3D "Nuvoton MA35D1-EVB";
 +
-+description: |
-+  The MA35D1 clock controller generates clocks for the whole chip,
-+  including system clocks and all peripheral clocks.
++       chosen {
++               bootargs =3D "console=3DttyS0,115200n8";
++       };
 +
-+  See also:
-+    dt-bindings/clock/ma35d1-clk.h
++       memory@80000000 {
++               device_type =3D "memory";
++               reg =3D <0x00000000 0x80000000 0 0x10000000>;
++       };
++};
 +
-+properties:
-+  compatible:
-+    const: nuvoton,ma35d1-clk
+diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi b/arch/arm64/boot/dts/=
+nuvoton/ma35d1.dtsi
+new file mode 100644
+index 000000000000..27adac4975c3
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+@@ -0,0 +1,106 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2022 Nuvoton Technology Corp.
++ */
 +
-+  reg:
-+    maxItems: 1
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
 +
-+  '#clock-cells':
-+    const: 1
++/ {
++       compatible =3D "nuvoton,ma35d1";
++       interrupt-parent =3D <&gic>;
++       #address-cells =3D <2>;
++       #size-cells =3D <2>;
 +
-+  assigned-clocks:
-+    maxItems: 4
++       cpus {
++               #address-cells =3D <2>;
++               #size-cells =3D <0>;
++               cpu-map {
++                       cluster0 {
++                               core0 {
++                                       cpu =3D <&cpu0>;
++                               };
++                               core1 {
++                                       cpu =3D <&cpu1>;
++                               };
++                       };
++               };
++               cpu0: cpu@0 {
++                       device_type =3D "cpu";
++                       compatible =3D "arm,cortex-a35";
++                       reg =3D <0x0 0x0>;
++                       enable-method =3D "psci";
++                       next-level-cache =3D <&L2_0>;
++               };
++               cpu1: cpu@1 {
++                       device_type =3D "cpu";
++                       compatible =3D "arm,cortex-a35";
++                       reg =3D <0x0 0x1>;
++                       enable-method =3D "psci";
++                       next-level-cache =3D <&L2_0>;
++               };
++               L2_0: l2-cache0 {
++                       compatible =3D "cache";
++                       cache-level =3D <2>;
++               };
++       };
 +
-+  assigned-clock-rates:
-+    maxItems: 4
++       psci {
++               compatible =3D "arm,psci-0.2";
++               method =3D "smc";
++       };
 +
-+  clock-pll-mode:
-+    maxItems: 4
++       timer {
++               compatible =3D "arm,armv8-timer";
++               interrupts =3D <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
++                                         IRQ_TYPE_LEVEL_LOW)>,
++                            <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) |
++                                         IRQ_TYPE_LEVEL_LOW)>,
++                            <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) |
++                                         IRQ_TYPE_LEVEL_LOW)>,
++                            <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
++                                         IRQ_TYPE_LEVEL_LOW)>;
++               clock-frequency =3D <12000000>;
++       };
 +
-+required:
-+  - compatible
-+  - reg
-+  - '#clock-cells'
-+  - assigned-clocks
-+  - assigned-clock-rates
-+  - clock-pll-mode
++       sys: system-controller@40460000 {
++               compatible =3D "nuvoton,ma35d1-sys", "syscon", "simple-mfd"=
+;
++               reg =3D <0x0 0x40460000 0x0 0x200>;
++       };
 +
-+additionalProperties: false
++       reset: reset-controller {
++               compatible =3D "nuvoton,ma35d1-reset";
++               nuvoton,ma35d1-sys =3D <&sys>;
++               #reset-cells =3D <1>;
++       };
 +
-+examples:
-+  # clock control module node:
-+  - |
-+    clk: clock-controller@40460200 {
-+        compatible =3D "nuvoton,ma35d1-clk";
-+        reg =3D <0x00000000 0x40460200 0x0 0x100>;
-+        #clock-cells =3D <1>;
-+        assigned-clocks =3D <&clk DDRPLL>,
-+                          <&clk APLL>,
-+                          <&clk EPLL>,
-+                          <&clk VPLL>;
-+        assigned-clock-rates =3D <266000000>,
-+                               <180000000>,
-+                               <500000000>,
-+                               <102000000>;
-+        clock-pll-mode =3D <1>, <0>, <0>, <0>;
-+    };
-+...
++       clk: clock-controller@40460200 {
++               compatible =3D "nuvoton,ma35d1-clk";
++               reg =3D <0x00000000 0x40460200 0x0 0x100>;
++               #clock-cells =3D <1>;
++               assigned-clocks =3D <&clk DDRPLL>,
++                                 <&clk APLL>,
++                                 <&clk EPLL>,
++                                 <&clk VPLL>;
++               assigned-clock-rates =3D <266000000>,
++                                      <180000000>,
++                                      <500000000>,
++                                      <102000000>;
++               clock-pll-mode =3D <1>, <0>, <0>, <0>;
++       };
++
++       gic: interrupt-controller@50800000 {
++               compatible =3D "arm,gic-400";
++               #interrupt-cells =3D <3>;
++               interrupt-parent =3D <&gic>;
++               interrupt-controller;
++               reg =3D <0x0 0x50801000 0 0x1000>,
++                     <0x0 0x50802000 0 0x2000>,
++                     <0x0 0x50804000 0 0x2000>,
++                     <0x0 0x50806000 0 0x2000>;
++               interrupts =3D <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
++                                        IRQ_TYPE_LEVEL_HIGH)>;
++       };
++};
 --
 2.17.1
 
