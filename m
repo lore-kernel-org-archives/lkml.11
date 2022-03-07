@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D35C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 067D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234566AbiCGK07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:26:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
+        id S239957AbiCGK1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:27:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241571AbiCGKKU (ORCPT
+        with ESMTP id S241684AbiCGKK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5138B3586F;
-        Mon,  7 Mar 2022 01:53:25 -0800 (PST)
+        Mon, 7 Mar 2022 05:10:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73B539B82;
+        Mon,  7 Mar 2022 01:53:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A95A5B80E70;
-        Mon,  7 Mar 2022 09:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118DBC340F3;
-        Mon,  7 Mar 2022 09:53:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE82960A23;
+        Mon,  7 Mar 2022 09:53:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBD09C340F3;
+        Mon,  7 Mar 2022 09:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646802;
-        bh=ePmz86mPRMXE68iGLQpnwBF9ZBuR5kkBXH804rKDfwI=;
+        s=korg; t=1646646796;
+        bh=vr0+wwaEZAzHQoUwmpetBlQ5szZb4b7r+VodDSiJkzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YmE80F11eBoevJ1kyy2kQBhiG+G6LpJpAVtyzRzzF13kXKw6IN9af4Cjtx81DI2oh
-         yTlYhKJOBZLOeAvU88jgbSkGJuDY+SQokEeapf2BNHFiRE5w8PzmB6vMdH6/hEVuy2
-         owdtPAlkQBcKT0xl7hcXMg4PtujWpY4OrLK89liw=
+        b=JpbuLtckTuG5tQa02hx+xR/gUI1WeMUlLs0LZvmm3oJ4GnBNiDZa1Go8eu1MuoShL
+         oXAy0UQmd29GrZGggONbJYhNeyxvV0GG1mcplFYSoctNFhZ3vszk0qlB8Q+ycx3Qym
+         RWiljEyC3ZDkAdELm+u+jxTFL9HEGIZY4AH8mUrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 097/186] iavf: Fix deadlock in iavf_reset_task
-Date:   Mon,  7 Mar 2022 10:18:55 +0100
-Message-Id: <20220307091656.794834906@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 095/186] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+Date:   Mon,  7 Mar 2022 10:18:53 +0100
+Message-Id: <20220307091656.738781322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,36 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit e85ff9c631e1bf109ce8428848dfc8e8b0041f48 upstream.
+commit bd6f1fd5d33dfe5d1b4f2502d3694a7cc13f166d upstream.
 
-There exists a missing mutex_unlock call on crit_lock in
-iavf_reset_task call path.
+During driver initialization, the pointer of card info, i.e. the
+variable 'ci' is required. However, the definition of
+'com20020pci_id_table' reveals that this field is empty for some
+devices, which will cause null pointer dereference when initializing
+these devices.
 
-Unlock the crit_lock before returning from reset task.
+The following log reveals it:
 
-Fixes: 5ac49f3c2702 ("iavf: use mutexes for locking of critical sections")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
+[    3.975181] Call Trace:
+[    3.976208]  local_pci_probe+0x13f/0x210
+[    3.977248]  pci_device_probe+0x34c/0x6d0
+[    3.977255]  ? pci_uevent+0x470/0x470
+[    3.978265]  really_probe+0x24c/0x8d0
+[    3.978273]  __driver_probe_device+0x1b3/0x280
+[    3.979288]  driver_probe_device+0x50/0x370
+
+Fix this by checking whether the 'ci' is a null pointer first.
+
+Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/arcnet/com20020-pci.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2254,6 +2254,7 @@ static void iavf_reset_task(struct work_
- 			reg_val);
- 		iavf_disable_vf(adapter);
- 		mutex_unlock(&adapter->client_lock);
-+		mutex_unlock(&adapter->crit_lock);
- 		return; /* Do not attempt to reinit. It's dead, Jim. */
- 	}
+--- a/drivers/net/arcnet/com20020-pci.c
++++ b/drivers/net/arcnet/com20020-pci.c
+@@ -138,6 +138,9 @@ static int com20020pci_probe(struct pci_
+ 		return -ENOMEM;
+ 
+ 	ci = (struct com20020_pci_card_info *)id->driver_data;
++	if (!ci)
++		return -EINVAL;
++
+ 	priv->ci = ci;
+ 	mm = &ci->misc_map;
  
 
 
