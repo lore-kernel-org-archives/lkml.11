@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D501C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D025C3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240698AbiCGKTS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
+        id S240720AbiCGKTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:19:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240487AbiCGKBD (ORCPT
+        with ESMTP id S240533AbiCGKBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCCCB85C;
-        Mon,  7 Mar 2022 01:49:04 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150BF28982;
+        Mon,  7 Mar 2022 01:50:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4D0160748;
-        Mon,  7 Mar 2022 09:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB04C340E9;
-        Mon,  7 Mar 2022 09:49:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA5E1B80E70;
+        Mon,  7 Mar 2022 09:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E3EC340F5;
+        Mon,  7 Mar 2022 09:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646543;
-        bh=0mTfxsWnY7eOjg1D3xpao1Mo0MVsOT3V8E+vNe/VVXY=;
+        s=korg; t=1646646614;
+        bh=n3QwWAR+wfLNuvJcbKMdRrffzEFu6/xpFp/K+9FMyzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gYdBn+DASrBs8YzA8QeKaxUhhw0UdYr8xIxppoZ5UeJdCjanXpXOmFj4sr8FsTqeJ
-         oe3CRxUr6ePcDSsoSILNnmH/23h1XR/ackBLzeZCutoCsyqNZ4NeAspbxpHpC0h8kY
-         QtkAH98GOKRx/m+VuI4GOw3QN/kd4TlNUHWk72fs=
+        b=ApE2s0Fkj4ueox+QPCX9ccx9JhH7x5JzBKw05+m7vkrWdIIHuxzZIh9L9x7dXvgIh
+         up0Lgw5FM+W85moggeP7KehM3+QwAWZbSM0+wOwu51q4Vi8hEkR+MtYftG6+VakwbN
+         Nidxb6KtoPbTgrioqMn8mZHy4APwPsT9CmFQsdEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 015/186] HID: amd_sfh: Handle amd_sfh work buffer in PM ops
-Date:   Mon,  7 Mar 2022 10:17:33 +0100
-Message-Id: <20220307091654.523287169@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 020/186] drm/amd/pm: correct UMD pstate clocks for Dimgrey Cavefish and Beige Goby
+Date:   Mon,  7 Mar 2022 10:17:38 +0100
+Message-Id: <20220307091654.660999238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,46 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 0cf74235f4403b760a37f77271d2ca3424001ff9 ]
+[ Upstream commit 0136f5844b006e2286f873457c3fcba8c45a3735 ]
 
-Since in the current amd_sfh design the sensor data is periodically
-obtained in the form of poll data, during the suspend/resume cycle,
-scheduling a delayed work adds no value.
+Correct the UMD pstate profiling clocks for Dimgrey Cavefish and Beige
+Goby.
 
-So, cancel the work and restart back during the suspend/resume cycle
-respectively.
-
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.c   | 26 +++++++++++++++----
+ .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.h   |  8 ++++++
+ 2 files changed, 29 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-index d3f32ffe299a8..dacac30a6b27a 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-@@ -290,6 +290,8 @@ static int __maybe_unused amd_mp2_pci_resume(struct device *dev)
- 		}
- 	}
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+index b55118388d2d7..59e1b92f0d27e 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+@@ -1261,21 +1261,37 @@ static int sienna_cichlid_populate_umd_state_clk(struct smu_context *smu)
+ 				&dpm_context->dpm_tables.soc_table;
+ 	struct smu_umd_pstate_table *pstate_table =
+ 				&smu->pstate_table;
++	struct amdgpu_device *adev = smu->adev;
  
-+	schedule_delayed_work(&cl_data->work_buffer, msecs_to_jiffies(AMD_SFH_IDLE_LOOP));
+ 	pstate_table->gfxclk_pstate.min = gfx_table->min;
+ 	pstate_table->gfxclk_pstate.peak = gfx_table->max;
+-	if (gfx_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK)
+-		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
+ 
+ 	pstate_table->uclk_pstate.min = mem_table->min;
+ 	pstate_table->uclk_pstate.peak = mem_table->max;
+-	if (mem_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK)
+-		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
+ 
+ 	pstate_table->socclk_pstate.min = soc_table->min;
+ 	pstate_table->socclk_pstate.peak = soc_table->max;
+-	if (soc_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK)
 +
++	switch (adev->asic_type) {
++	case CHIP_SIENNA_CICHLID:
++	case CHIP_NAVY_FLOUNDER:
++		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
++		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
+ 		pstate_table->socclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK;
++		break;
++	case CHIP_DIMGREY_CAVEFISH:
++		pstate_table->gfxclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK;
++		pstate_table->uclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK;
++		pstate_table->socclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK;
++		break;
++	case CHIP_BEIGE_GOBY:
++		pstate_table->gfxclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK;
++		pstate_table->uclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK;
++		pstate_table->socclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK;
++		break;
++	default:
++		break;
++	}
+ 
  	return 0;
  }
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
+index 38cd0ece24f6b..42f705c7a36f8 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
+@@ -33,6 +33,14 @@ typedef enum {
+ #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK    960
+ #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK    1000
  
-@@ -312,6 +314,8 @@ static int __maybe_unused amd_mp2_pci_suspend(struct device *dev)
- 		}
- 	}
- 
-+	cancel_delayed_work_sync(&cl_data->work_buffer);
++#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK 1950
++#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK 960
++#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK 676
 +
- 	return 0;
- }
++#define BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK 2200
++#define BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK 960
++#define BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK 1000
++
+ extern void sienna_cichlid_set_ppt_funcs(struct smu_context *smu);
  
+ #endif
 -- 
 2.34.1
 
