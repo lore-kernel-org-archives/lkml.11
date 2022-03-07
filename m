@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0118AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D30C47084
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239779AbiCGJuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:50:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
+        id S238883AbiCGJsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240159AbiCGJko (ORCPT
+        with ESMTP id S239094AbiCGJjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFD06E4C5;
-        Mon,  7 Mar 2022 01:37:09 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3BD6D191;
+        Mon,  7 Mar 2022 01:34:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4B8561140;
-        Mon,  7 Mar 2022 09:36:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A3FC340E9;
-        Mon,  7 Mar 2022 09:36:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9488B80E70;
+        Mon,  7 Mar 2022 09:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13ED6C340E9;
+        Mon,  7 Mar 2022 09:33:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645807;
-        bh=mqQlBlOzmeSF6kjm5/81gVYISa9Xaknvi26FPi+wghc=;
+        s=korg; t=1646645615;
+        bh=HPXmOkP3wrkQiz6RZ2g/fuX9WBPu5Ha+Bz20V8cASm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZSiqUfDTyEW3aX2kr9tzL1CIETWHldVwTMdzbTUZIyUbv7sXYaTlEEnI6nFsuMUY
-         Od0QUUxfG+D7sEHBg/08htJljvd2k/axjFuVx8oHActnd5N7OOWH4bbCdkA+B1hfD8
-         fsZWBMjNMIHQ8q5BnIssyWUxR4a2SeX4NOGdhnm4=
+        b=F0dalyef/PLb7PFq9H7ETh+Zfm36Kpu1yV14cy3Yijme9E6ElND06nxpl44hf3zyp
+         Du9cEqE/whLl2YuHd3YkqnbnwXFuPV+PbhV2Uh/fivUmj6W42i1Vmz9jM6mBaSOuNG
+         m6mjmRaGyas2rci3ndrApLVkI0cW9QW7KC/HtjZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 005/262] ASoC: rt5682: do not block workqueue if card is unbound
-Date:   Mon,  7 Mar 2022 10:15:49 +0100
-Message-Id: <20220307091702.532460974@linuxfoundation.org>
+Subject: [PATCH 5.10 088/105] ibmvnic: define flush_reset_queue helper
+Date:   Mon,  7 Mar 2022 10:19:31 +0100
+Message-Id: <20220307091646.654996804@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,61 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 4c33de0673ced9c7c37b3bbd9bfe0fda72340b2a ]
+[ Upstream commit 83da53f7e4bd86dca4b2edc1e2bb324fb3c033a1 ]
 
-The current rt5682_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+Define and use a helper to flush the reset queue.
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
-
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
-
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-3-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index 757d1362b5f48..6ad3159eceb98 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -1090,11 +1090,13 @@ void rt5682_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5682_priv, jack_detect_work.work);
- 	int val, btn_type;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index de58824f4c18..f07468316656 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2304,12 +2304,23 @@ static void __ibmvnic_delayed_reset(struct work_struct *work)
+ 	__ibmvnic_reset(&adapter->ibmvnic_reset);
+ }
  
--	while (!rt5682->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5682->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5682->component || !rt5682->component->card ||
-+	    !rt5682->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5682->jack_detect_work, msecs_to_jiffies(15));
-+		return;
++static void flush_reset_queue(struct ibmvnic_adapter *adapter)
++{
++	struct list_head *entry, *tmp_entry;
++
++	if (!list_empty(&adapter->rwi_list)) {
++		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
++			list_del(entry);
++			kfree(list_entry(entry, struct ibmvnic_rwi, list));
++		}
 +	}
++}
++
+ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
+ 			 enum ibmvnic_reset_reason reason)
+ {
+-	struct list_head *entry, *tmp_entry;
+-	struct ibmvnic_rwi *rwi, *tmp;
+ 	struct net_device *netdev = adapter->netdev;
++	struct ibmvnic_rwi *rwi, *tmp;
+ 	unsigned long flags;
+ 	int ret;
  
- 	mutex_lock(&rt5682->calibrate_mutex);
- 
+@@ -2353,12 +2364,9 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
+ 	/* if we just received a transport event,
+ 	 * flush reset queue and process this reset
+ 	 */
+-	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
+-		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
+-			list_del(entry);
+-			kfree(list_entry(entry, struct ibmvnic_rwi, list));
+-		}
+-	}
++	if (adapter->force_reset_recovery)
++		flush_reset_queue(adapter);
++
+ 	rwi->reset_reason = reason;
+ 	list_add_tail(&rwi->list, &adapter->rwi_list);
+ 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %d)\n", reason);
 -- 
 2.34.1
 
