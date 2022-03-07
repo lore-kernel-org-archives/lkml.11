@@ -2,158 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F079C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91108C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233501AbiCGJBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:01:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
+        id S232692AbiCGJDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbiCGJBG (ORCPT
+        with ESMTP id S231402AbiCGJDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:01:06 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D81C60CFB;
-        Mon,  7 Mar 2022 01:00:13 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso15993946pjj.2;
-        Mon, 07 Mar 2022 01:00:13 -0800 (PST)
+        Mon, 7 Mar 2022 04:03:30 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07066168
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:02:35 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id n2so3666270plf.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:02:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iuFL9uyQNAriGpCD2xLghLhBAOHEFGsgHrDh4RbTasA=;
-        b=ZzeHWjwIaLjKsIEZ4QMsy1kuD3HrAsBrDCnWrcwZ2oqTafI6oShTU9AKAUeJ/hK2sU
-         QoJLXuDw+6vzkSqqpzylNl1VHxlPCD0/bEezuEDgEpaRbPbm7q61jzB4g4VxmrjYAdVz
-         nIpNzrokm5D0iynm2xjip5CzSVQIQzCaCdvoe5ONDGKxbaFdmJarW4XOYihRZrYCyPlW
-         X2BVI+/sHj4IUgNLJsA65RpHLa9GCxJ9caxONNQ+VyuPZjngLuXzxHYrIeWtrfKt6KgK
-         rn+W2cZO87kQi/Mi1O4JPbxQVUomsfRfoAcd78XXNMJENI62WzyN6bZjJFSGYwIe1LYf
-         Co8A==
+        h=from:to:subject:date:message-id;
+        bh=T9sNyGPslu7pePFJSRIoI7XN6IK0Rl/U6UawibuUj8w=;
+        b=kKYdGsJROD4OCCbZLJfSbXDMuUvSumWj8d/pHxsMdlNQJH0c43xdLeVuIhK/9jkAh9
+         I/had2q6jkKGNqwPXv2Q2kJ8q1/9lX+z92l3zRzcoUDnXBkuv7vmkyiZz2Tu+srNfcTI
+         zqzK+uNoiv9VvRd6zw/sAXbTUf8KfY8LboKMENE/cdvNF2R4HqOqAMQ87X5EIHDFY0tR
+         DdakT5HIykvDSRe/c1Ls15g/HzYEurN7pH/ysDj7aYBgDYwnGM6i0EWEPx7G5/OFU9t+
+         vSDvBcYM1ZBcHC6Oo8wbjfPGS1j0YIde0h7zzLs4gPVPYfY5/dJJxY3MuWtO9XpOiUif
+         biAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iuFL9uyQNAriGpCD2xLghLhBAOHEFGsgHrDh4RbTasA=;
-        b=v6bvcwELteOiQgoOiWC9ZCINJznoZP84dwtWaakqhhVQr9NMHTr5xAT3D0KhjgQiCY
-         wR02rWgKcVtjMiXiXTvbWFEBDI3uPFl5EzQmPO8PPQtpTr9yoY0e9W48a5U14OzSo7SW
-         duxPZnBostptxprErINiVfvFv+Fac3yik3EFl7gx7PKW6TX6N0HGU2wNabRc91LbmDWK
-         UwF8Fh14maGGwNWITjfxXc38b8YmcfuhwHPw41/xhsV0QEqCQqEx1JefaTsa20kDMLGO
-         Lvq5AeOkDV65o1kxiwGtfI6/yXUJ47PK4N3mmaKpsz+Zs4WqoI20z2NETLXz+ngIYfz/
-         f3iQ==
-X-Gm-Message-State: AOAM533XklZ8+4ZSWsSb6BKoCAGPTbOYmlJlap2xJwfaeqph1WrddEVY
-        cxDg5PuNVXupp9sFayTD9g+IYLd5u7E=
-X-Google-Smtp-Source: ABdhPJyPbv0WV5jxysEeKV5zDfDKHAqcALuZc09O/FfmMHAGIOFJcb8LidS157pEeKWugq6cvJgPYw==
-X-Received: by 2002:a17:902:8c8c:b0:150:739b:8ab1 with SMTP id t12-20020a1709028c8c00b00150739b8ab1mr10747897plo.3.1646643612702;
-        Mon, 07 Mar 2022 01:00:12 -0800 (PST)
-Received: from arch-pc.genesyslogic.com.tw (60-251-58-169.hinet-ip.hinet.net. [60.251.58.169])
-        by smtp.gmail.com with ESMTPSA id c30-20020a63725e000000b0037c8bf5b630sm8981840pgn.12.2022.03.07.01.00.10
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=T9sNyGPslu7pePFJSRIoI7XN6IK0Rl/U6UawibuUj8w=;
+        b=m8HmqUCMZNZwzgKT9LY+gQ/oqOB9qhSu3oQ3fTBzuWJaVtOrLU1ZwFMmuixDimm/Y3
+         YZ0fq1noDitAc42UxCTAYS2uWd176B5RdpCpEXk+D3sCEqcB8scIEnIMbLnWj1toaS1V
+         bIulBVL2T0/nQdBii97oBfm0nG126u1gynW5rSHl3FLA7z/Vq8Wza4ZTN7t82LqyPjmZ
+         HEe84GewBJ5mdA4ep5n36OYkU5gF/jTdgHLHWGSlreqn0NLCwhAEVwq6zlrIBjdTwRil
+         agqVz97QftQE+hxGVB+so1QE3TXJ5Mj/CHAdiSDUzE53PXPrkxna64HCQUnIEbaLHHap
+         h5+g==
+X-Gm-Message-State: AOAM532Gvd7rzbmmXtftI/ZzJMA6foJAoGBMLh815O6W0fXk8s7Sd5SE
+        fPWGKidFOgpth53cocOXkTE=
+X-Google-Smtp-Source: ABdhPJzkVOsSJAkFEiNUwUFAsy1730LBS8+OzwMcXGSseI3J/C0zrMKB8QafKzTl3vzqGryZ2R83uQ==
+X-Received: by 2002:a17:902:8b87:b0:14d:7920:e54a with SMTP id ay7-20020a1709028b8700b0014d7920e54amr10915799plb.140.1646643755176;
+        Mon, 07 Mar 2022 01:02:35 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id u10-20020a6540ca000000b0037445e95c93sm11177939pgp.15.2022.03.07.01.02.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:00:11 -0800 (PST)
-From:   Ben Chuang <benchuanggli@gmail.com>
-To:     adrian.hunter@intel.com, ulf.hansson@linaro.org
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        greg.tu@genesyslogic.com.tw, ben.chuang@genesyslogic.com.tw,
-        SeanHY.Chen@genesyslogic.com.tw, hl.liu@genesyslogic.com.tw,
-        Ben Chuang <benchuanggli@gmail.com>,
-        Kevin Chang <kevin.chang@lcfuturecenter.com>
-Subject: [PATCH V2] mmc: sdhci-pci-gli: Add runtime PM for GL9763E
-Date:   Mon,  7 Mar 2022 17:00:09 +0800
-Message-Id: <20220307090009.1386876-1-benchuanggli@gmail.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 07 Mar 2022 01:02:34 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: rk817: Fix missing clk_disable_unprepare() in rk817_platform_probe
+Date:   Mon,  7 Mar 2022 09:01:30 +0000
+Message-Id: <20220307090146.4104-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Chuang <ben.chuang@genesyslogic.com.tw>
+Fix the missing clk_disable_unprepare() before return
+from rk817_platform_probe() in the error handling case.
 
-Add runtime PM for GL9763E and disable PLL in runtime suspend. So power
-gated of upstream port can be enabled. GL9763E has an auxiliary power
-so it keep states in runtime suspend. In runtime resume, PLL is enabled
-and waits for it to stabilize.
-
-Signed-off-by: Ben Chuang <ben.chuang@genesyslogic.com.tw>
-Tested-by: Kevin Chang <kevin.chang@lcfuturecenter.com>
+Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
-Changes in v2:
-* modify commit messages
-* Use read_poll_timeout() instead of while loop
----
- drivers/mmc/host/sdhci-pci-gli.c | 47 ++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ sound/soc/codecs/rk817_codec.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-index 97035d77c18c..c854c8db32e4 100644
---- a/drivers/mmc/host/sdhci-pci-gli.c
-+++ b/drivers/mmc/host/sdhci-pci-gli.c
-@@ -13,6 +13,7 @@
- #include <linux/mmc/mmc.h>
- #include <linux/delay.h>
- #include <linux/of.h>
-+#include <linux/iopoll.h>
- #include "sdhci.h"
- #include "sdhci-pci.h"
- #include "cqhci.h"
-@@ -873,6 +874,47 @@ static void gli_set_gl9763e(struct sdhci_pci_slot *slot)
- 	pci_write_config_dword(pdev, PCIE_GLI_9763E_VHS, value);
+diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
+index 03f24edfe4f6..8fffe378618d 100644
+--- a/sound/soc/codecs/rk817_codec.c
++++ b/sound/soc/codecs/rk817_codec.c
+@@ -508,12 +508,14 @@ static int rk817_platform_probe(struct platform_device *pdev)
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "%s() register codec error %d\n",
+ 			__func__, ret);
+-		goto err_;
++		goto err_clk;
+ 	}
+ 
+ 	return 0;
+-err_:
+ 
++err_clk:
++	clk_disable_unprepare(rk817_codec_data->mclk);
++err_:
+ 	return ret;
  }
  
-+#ifdef CONFIG_PM
-+static int gl9763e_runtime_suspend(struct sdhci_pci_chip *chip)
-+{
-+	struct sdhci_pci_slot *slot = chip->slots[0];
-+	struct sdhci_host *host = slot->host;
-+	u16 clock;
-+
-+	clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
-+	clock &= ~(SDHCI_CLOCK_PLL_EN | SDHCI_CLOCK_CARD_EN);
-+	sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
-+
-+	return 0;
-+}
-+
-+static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
-+{
-+	struct sdhci_pci_slot *slot = chip->slots[0];
-+	struct sdhci_host *host = slot->host;
-+	u16 clock;
-+
-+	clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
-+
-+	clock |= SDHCI_CLOCK_PLL_EN;
-+	clock &= ~SDHCI_CLOCK_INT_STABLE;
-+	sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
-+
-+	/* Wait max 150 ms */
-+	if (read_poll_timeout(sdhci_readw, clock, (clock & SDHCI_CLOCK_INT_STABLE),
-+			      1000, 150000, false, host, SDHCI_CLOCK_CONTROL)) {
-+		pr_err("%s: PLL clock never stabilised.\n",
-+		       mmc_hostname(host->mmc));
-+		sdhci_dumpregs(host);
-+	}
-+
-+	clock |= SDHCI_CLOCK_CARD_EN;
-+	sdhci_writew(host, clock, SDHCI_CLOCK_CONTROL);
-+
-+	return 0;
-+}
-+#endif
-+
- static int gli_probe_slot_gl9763e(struct sdhci_pci_slot *slot)
- {
- 	struct pci_dev *pdev = slot->chip->pdev;
-@@ -982,6 +1024,11 @@ const struct sdhci_pci_fixes sdhci_gl9763e = {
- #ifdef CONFIG_PM_SLEEP
- 	.resume		= sdhci_cqhci_gli_resume,
- 	.suspend	= sdhci_cqhci_gli_suspend,
-+#endif
-+#ifdef CONFIG_PM
-+	.runtime_suspend = gl9763e_runtime_suspend,
-+	.runtime_resume  = gl9763e_runtime_resume,
-+	.allow_runtime_pm = true,
- #endif
- 	.add_host       = gl9763e_add_host,
- };
 -- 
-2.35.1
+2.17.1
 
