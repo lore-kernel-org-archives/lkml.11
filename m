@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C445C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3300C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237612AbiCGJdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:33:05 -0500
+        id S237709AbiCGJdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:33:08 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbiCGJ2C (ORCPT
+        with ESMTP id S238505AbiCGJ3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BDE5B3E4;
-        Mon,  7 Mar 2022 01:25:16 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C201A394;
+        Mon,  7 Mar 2022 01:27:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 818C16116F;
-        Mon,  7 Mar 2022 09:25:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB8CC340E9;
-        Mon,  7 Mar 2022 09:25:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECD00B810BF;
+        Mon,  7 Mar 2022 09:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A01C340E9;
+        Mon,  7 Mar 2022 09:27:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645105;
-        bh=AhXUlbjfx1RQm61Vv2Eqw9hgtDpyAwoe9JDwySpQJVg=;
+        s=korg; t=1646645250;
+        bh=BY9Ruxi67wd8m2eQOnaUyRhsnnq5NaqeJk5fab+ldGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TcYNqduRcJEYUqtCGrVulAWARHg+quJVMMP9P3wFLUlenU3e/hC+ujPFHc/uEqk4g
-         R//WU58pYjsSSMzSoYMcM0B8tdS4pwLr9IHD8RGPJPSqmz3fbPz5VE9GyxOqMIEfIq
-         KlmwHIGW+zvDnuViW8nvw8bGnD77o/zVbW6YPmAc=
+        b=dVWGhKYqJijVrd5EWIm+Oax5ELRHe/FhrtwHgfh7F4b6Y6N4etdbu/8gfbRNc8QeV
+         NWlpu/lUqS9Uj3dNyj/+/DjPtPel+0EhlzmHOEZUAQogJo84dnNfvNeuxzuq3ePZyq
+         dSXVk28Ezpr/GYMCvuFngbkk2mKkMpKRRnPDIgZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 4.19 40/51] ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
-Date:   Mon,  7 Mar 2022 10:19:15 +0100
-Message-Id: <20220307091638.132975931@linuxfoundation.org>
+        stable@vger.kernel.org, Remi Pommarel <repk@triplefau.lt>,
+        Nicolas Escande <nico.escande@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.4 34/64] mac80211: fix forwarded mesh frames AC & queue selection
+Date:   Mon,  7 Mar 2022 10:19:07 +0100
+Message-Id: <20220307091640.114466092@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-References: <20220307091636.988950823@linuxfoundation.org>
+In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
+References: <20220307091639.136830784@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Nicolas Escande <nico.escande@gmail.com>
 
-commit 7b83299e5b9385943a857d59e15cba270df20d7e upstream.
+commit 859ae7018316daa4adbc496012dcbbb458d7e510 upstream.
 
-early_param() handlers should return 0 on success.
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 would cause the "option=value" string
-to be added to init's environment strings, polluting it.
+There are two problems with the current code that have been highlighted
+with the AQL feature that is now enbaled by default.
 
-../arch/arm/mm/mmu.c: In function 'test_early_cachepolicy':
-../arch/arm/mm/mmu.c:215:1: error: no return statement in function returning non-void [-Werror=return-type]
-../arch/arm/mm/mmu.c: In function 'test_noalign_setup':
-../arch/arm/mm/mmu.c:221:1: error: no return statement in function returning non-void [-Werror=return-type]
+First problem is in ieee80211_rx_h_mesh_fwding(),
+ieee80211_select_queue_80211() is used on received packets to choose
+the sending AC queue of the forwarding packet although this function
+should only be called on TX packet (it uses ieee80211_tx_info).
+This ends with forwarded mesh packets been sent on unrelated random AC
+queue. To fix that, AC queue can directly be infered from skb->priority
+which has been extracted from QOS info (see ieee80211_parse_qos()).
 
-Fixes: b849a60e0903 ("ARM: make cr_alignment read-only #ifndef CONFIG_CPU_CP15")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Second problem is the value of queue_mapping set on forwarded mesh
+frames via skb_set_queue_mapping() is not the AC of the packet but a
+hardware queue index. This may or may not work depending on AC to HW
+queue mapping which is driver specific.
+
+Both of these issues lead to improper AC selection while forwarding
+mesh packets but more importantly due to improper airtime accounting
+(which is done on a per STA, per AC basis) caused traffic stall with
+the introduction of AQL.
+
+Fixes: cf44012810cc ("mac80211: fix unnecessary frame drops in mesh fwding")
+Fixes: d3c1597b8d1b ("mac80211: fix forwarded mesh frame queue mapping")
+Co-developed-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Nicolas Escande <nico.escande@gmail.com>
+Link: https://lore.kernel.org/r/20220214173214.368862-1-nico.escande@gmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/mmu.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/mac80211/rx.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/arm/mm/mmu.c
-+++ b/arch/arm/mm/mmu.c
-@@ -230,12 +230,14 @@ early_param("ecc", early_ecc);
- static int __init early_cachepolicy(char *p)
- {
- 	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
-+	return 0;
- }
- early_param("cachepolicy", early_cachepolicy);
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2852,13 +2852,13 @@ ieee80211_rx_h_mesh_fwding(struct ieee80
+ 	    ether_addr_equal(sdata->vif.addr, hdr->addr3))
+ 		return RX_CONTINUE;
  
- static int __init noalign_setup(char *__unused)
- {
- 	pr_warn("noalign kernel parameter not supported without cp15\n");
-+	return 1;
- }
- __setup("noalign", noalign_setup);
+-	ac = ieee80211_select_queue_80211(sdata, skb, hdr);
++	ac = ieee802_1d_to_ac[skb->priority];
+ 	q = sdata->vif.hw_queue[ac];
+ 	if (ieee80211_queue_stopped(&local->hw, q)) {
+ 		IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, dropped_frames_congestion);
+ 		return RX_DROP_MONITOR;
+ 	}
+-	skb_set_queue_mapping(skb, q);
++	skb_set_queue_mapping(skb, ac);
  
+ 	if (!--mesh_hdr->ttl) {
+ 		if (!is_multicast_ether_addr(hdr->addr1))
 
 
