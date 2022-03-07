@@ -2,171 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A9CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F20C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235404AbiCGFpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51982 "EHLO
+        id S233044AbiCGFxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:53:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235374AbiCGFpj (ORCPT
+        with ESMTP id S230482AbiCGFxL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:45:39 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2DC4B424
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:44:42 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id ay5so12833981plb.1
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 21:44:42 -0800 (PST)
+        Mon, 7 Mar 2022 00:53:11 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D4848395
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:52:18 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id w37so12692896pga.7
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 21:52:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SjzY9j/Keh5kcP1plUzMyATlCp3344jlI/9GvjcvYoo=;
-        b=H3ukiKpOjrWALA8cOGscza/eG7Y9H2VLma85d2rXV3BXdDxL23AADulFiqldBByUvF
-         WT8geB6FfT0goNe7T7/ASGaN1cwQlt950sSp9K3T3FyagkBawU++fkoDTJ2WEYkQ58MI
-         u2zlWVYRjMM4RFgRkJTVEc8HLTG835uxlwm3VLCxckYcnJl5S7+o4cVvSr0Be4cAbixI
-         IojXvz0/AEovaZpUoitVfkC0P1dp3LchCuHwZWp3okcn/ivmURm5SGsScCSuQ2aQHZbg
-         nZHdTH3xFtJOZxWtnStzka2lW4RKhHGLFSyKabTYgkBm1y9JJy1AuXOQ9JhkDlDhwZVO
-         Dkaw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Ug00C0TLqhMQFVRMFl4wzRsq93sEkVz4GF6pOmW3fxo=;
+        b=ORj58dgiICK4BAz457mklGokk8GqtxMq4KiofTaZ+jwDFCpEmEl+afUL09Si8xqHlU
+         zWOPhmlo1xg1vH+z0+JxbZrC3OR06F7H9jNk58OnJ1R0JAIRRvohGFjlVrTUfQN5LM8T
+         nEAGZ0JmS5RcbV/hm+p89949aHvfFX+R3fE9vbOozOdkIdGbRcboCX9r4yGQj8l25pA5
+         +PSauTsaIDrxUy/HfyE1sZJh0K+MoOrT0iCh7aKuWnPTc8VcB1766wh3XeMVcdTvn82c
+         FPyCqBCOAbbHkFX9W19S8i5DpzILw6YpkD7U8YjZDh+LoHvdXacYN7rEU+akLt9fmpON
+         VuHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SjzY9j/Keh5kcP1plUzMyATlCp3344jlI/9GvjcvYoo=;
-        b=xXrKO3NBBwxe8XXjU3Z8hBSvbrih+LZnHN58VPtlBItUA4wJsBcaPzhFfPkHf2YXh2
-         516OhUACeVo349pAnQu7sxi+mY2udKEye7xPZ3bUrQSR4RTGwOi0YDa19v0q8zp01bYp
-         NYT4mCODPOd2gldSaedx0CPdcU42AqOdwP5JLaTHRCPla/PALIcW0Hxxq4F5dhqpX+7G
-         9LyqUanIy38HTJme4H6xOy5VGf1zYvEOE2FPh+HmLDHEb0r8MgpPwOmYU/l7rFIX2cMh
-         zhZ31GLl1eHDITX9lNFt8HaxZvP0nIvJDe2AmMFg1U/4HFSdEDgwO4yXCm691tkoVURu
-         B3Fw==
-X-Gm-Message-State: AOAM530Ao6cB/+ZnGy3m/wP34dXwbF2hR6SipPK1X+bJHr6FB5T8fIgT
-        i7flgjgWCTeFDFvA4h3O33kU4A==
-X-Google-Smtp-Source: ABdhPJwmsg2NvIPGJKgc2QYAjoAgRREp5vq1gE8kB+AJyhWvnd21cTaR/lWtZMx27QIwQX1NVuEHUQ==
-X-Received: by 2002:a17:90a:950b:b0:1bf:4f9b:710e with SMTP id t11-20020a17090a950b00b001bf4f9b710emr6343302pjo.241.1646631882007;
-        Sun, 06 Mar 2022 21:44:42 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id k1-20020a056a00168100b004e0e45a39c6sm14447385pfc.181.2022.03.06.21.44.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Ug00C0TLqhMQFVRMFl4wzRsq93sEkVz4GF6pOmW3fxo=;
+        b=WPI5d+iyI0k411r5RX9GLij7A+aeipjIfSQJEyvT47DNteu/s2XAO9sGCS6AkBSKdl
+         2qO8ftSncYGafqKkNKVoLsppdLbidJpHOE5Pp4Mqk2BpEeR28HvYpAwvE0j2S+6RQYXb
+         uD2KmvEPYQSTCMOHsRThejHLYrvB96v3tCpipAoDZ5++eB1T5YftH+D5apNTVrcrpri6
+         8dwd+fzGvX0kjCtMbcLMzguotv8z3k4qAibi17tW8sWyo7wCdNYhzswLru4v+nWRwKER
+         5eDP9QYxoLqhej2cH9IHrc3+iY9IyJWeO1zNoZrcCAJvhz8Sv3NELGaUJDyXZZI3BNtQ
+         uXmw==
+X-Gm-Message-State: AOAM531k47RrQ59d6ix+8exgXilBN/v+YoAMCH17/PlYUIM69GZUXRBF
+        V1G1IihlELS2BKrTJ2Y2URImzw==
+X-Google-Smtp-Source: ABdhPJxZciYh+qVPD89mJ0oCH0qoYBdQP1QcrHrfO81wmAx9lQCSWy3OKk/0z9kR+M1+TNJhplE8lw==
+X-Received: by 2002:a05:6a00:1991:b0:4f7:1322:ca04 with SMTP id d17-20020a056a00199100b004f71322ca04mr209239pfl.85.1646632338180;
+        Sun, 06 Mar 2022 21:52:18 -0800 (PST)
+Received: from localhost ([223.184.83.228])
+        by smtp.gmail.com with ESMTPSA id p128-20020a622986000000b004e1366dd88esm13530071pfp.160.2022.03.06.21.52.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 21:44:41 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v7 3/3] dmaengine: sf-pdma: Get number of channel by device tree
-Date:   Mon,  7 Mar 2022 13:44:26 +0800
-Message-Id: <73fcb88608aa18c02e92f1641441c073a7912ea3.1646631717.git.zong.li@sifive.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1646631717.git.zong.li@sifive.com>
-References: <cover.1646631717.git.zong.li@sifive.com>
+        Sun, 06 Mar 2022 21:52:17 -0800 (PST)
+Date:   Mon, 7 Mar 2022 11:22:16 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     zhanglianjie <zhanglianjie@uniontech.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] cpufreq: unify the show() and store() styles of attr
+Message-ID: <20220307055216.gh3aiivz7o3tvomr@vireshk-i7>
+References: <20220306021250.64315-1-zhanglianjie@uniontech.com>
+ <20220307053931.kkhnxrujljynp5cz@vireshk-i7>
+ <62259d22.1c69fb81.5ba55.5efaSMTPIN_ADDED_BROKEN@mx.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62259d22.1c69fb81.5ba55.5efaSMTPIN_ADDED_BROKEN@mx.google.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It currently assumes that there are always four channels, it would
-cause the error if there is actually less than four channels. Change
-that by getting number of channel from device tree.
+On 07-03-22, 13:50, zhanglianjie wrote:
+> Usually /sys directory under the file, the corresponding Attribute contains
+> .show and .store, and their naming style is filename_show() and
+> filename_store(). But all naming style in 'cpufreq' is show_filename() and
+> store_filename(), So you need to change naming style.
 
-For backwards-compatibility, it uses the default value (i.e. 4) when
-there is no 'dma-channels' information in dts.
+This is something that is present within the kernel and not exposed to
+userspace. I don't see why we would need to make this change and what
+good it brings.
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- drivers/dma/sf-pdma/sf-pdma.c | 24 ++++++++++++++++--------
- drivers/dma/sf-pdma/sf-pdma.h |  8 ++------
- 2 files changed, 18 insertions(+), 14 deletions(-)
+I would have supported this if cpufreq itself had different names, but
+for this one, No.
 
-diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-index f12606aeff87..db5a4ef76077 100644
---- a/drivers/dma/sf-pdma/sf-pdma.c
-+++ b/drivers/dma/sf-pdma/sf-pdma.c
-@@ -482,23 +482,30 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
- static int sf_pdma_probe(struct platform_device *pdev)
- {
- 	struct sf_pdma *pdma;
--	struct sf_pdma_chan *chan;
- 	struct resource *res;
--	int len, chans;
--	int ret;
-+	int ret, n_chans;
- 	const enum dma_slave_buswidth widths =
- 		DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
- 		DMA_SLAVE_BUSWIDTH_4_BYTES | DMA_SLAVE_BUSWIDTH_8_BYTES |
- 		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
- 		DMA_SLAVE_BUSWIDTH_64_BYTES;
- 
--	chans = PDMA_NR_CH;
--	len = sizeof(*pdma) + sizeof(*chan) * chans;
--	pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
-+	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels", &n_chans);
-+	if (ret) {
-+		/* backwards-compatibility for no dma-channels property */
-+		dev_dbg(&pdev->dev, "set number of channels to default value: 4\n");
-+		n_chans = PDMA_MAX_NR_CH;
-+	} else if (n_chans > PDMA_MAX_NR_CH) {
-+		dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
-+		return -EINVAL;
-+	}
-+
-+	pdma = devm_kzalloc(&pdev->dev, struct_size(pdma, chans, n_chans),
-+			    GFP_KERNEL);
- 	if (!pdma)
- 		return -ENOMEM;
- 
--	pdma->n_chans = chans;
-+	pdma->n_chans = n_chans;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pdma->membase = devm_ioremap_resource(&pdev->dev, res);
-@@ -556,7 +563,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
- 	struct sf_pdma_chan *ch;
- 	int i;
- 
--	for (i = 0; i < PDMA_NR_CH; i++) {
-+	for (i = 0; i < pdma->n_chans; i++) {
- 		ch = &pdma->chans[i];
- 
- 		devm_free_irq(&pdev->dev, ch->txirq, ch);
-@@ -574,6 +581,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
- 
- static const struct of_device_id sf_pdma_dt_ids[] = {
- 	{ .compatible = "sifive,fu540-c000-pdma" },
-+	{ .compatible = "sifive,pdma0" },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, sf_pdma_dt_ids);
-diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
-index 0c20167b097d..dcb3687bd5da 100644
---- a/drivers/dma/sf-pdma/sf-pdma.h
-+++ b/drivers/dma/sf-pdma/sf-pdma.h
-@@ -22,11 +22,7 @@
- #include "../dmaengine.h"
- #include "../virt-dma.h"
- 
--#define PDMA_NR_CH					4
--
--#if (PDMA_NR_CH != 4)
--#error "Please define PDMA_NR_CH to 4"
--#endif
-+#define PDMA_MAX_NR_CH					4
- 
- #define PDMA_BASE_ADDR					0x3000000
- #define PDMA_CHAN_OFFSET				0x1000
-@@ -118,7 +114,7 @@ struct sf_pdma {
- 	void __iomem            *membase;
- 	void __iomem            *mappedbase;
- 	u32			n_chans;
--	struct sf_pdma_chan	chans[PDMA_NR_CH];
-+	struct sf_pdma_chan	chans[];
- };
- 
- #endif /* _SF_PDMA_H */
 -- 
-2.31.1
-
+viresh
