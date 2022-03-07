@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C950C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3095DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243515AbiCGOv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:51:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
+        id S243531AbiCGOwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:52:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243459AbiCGOvw (ORCPT
+        with ESMTP id S243514AbiCGOvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:51:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECD4E8F988
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:50:46 -0800 (PST)
+        Mon, 7 Mar 2022 09:51:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E48DA90270
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:50:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646664646;
+        s=mimecast20190719; t=1646664651;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8gDwUidIwqdJttGlcdrWpuSeGlEE0r2bY8JHq9AKfxA=;
-        b=Q8wi55o2SJ+7FLgn+skMSrbKHFxozn+QdJHQCJy7EMqmBzlIpwOb5rqwHpuSKJbqzZCU44
-        Ulq63CERjZmC+QXeOqjo76dVyBu1MRT6bNnKZeUamAbaTKsQ/iKc+3StiecVCF4zSlb5zw
-        hNELm9LDjodLervvA6qN0DGOvE2C0wo=
+        bh=rlVYgUkdWRyYsMOIFcOnRDf5aAd17ft9dtYdjY2xq6w=;
+        b=Bd6eIJ2Q9HxQ3F8DvWVHnKlr5HQt0CVj1Cj73hCYgqg4UrTI5fZDoQ1sBVregscq9WJMbs
+        +wZvmA4BhWOZwvbsxwxxZeDPDHk+AXwEJlA2KXFHXAROWdU0H/GZNTzBTii1MQdfCBrgu9
+        7rAN551LTM6V1++PDO4NVU/gJzTjdvY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-35-lVZ-WjKFPZaWuOb49y9MjQ-1; Mon, 07 Mar 2022 09:50:41 -0500
-X-MC-Unique: lVZ-WjKFPZaWuOb49y9MjQ-1
+ us-mta-492-pFf_aL_KPBiuFik1sJZDbQ-1; Mon, 07 Mar 2022 09:50:48 -0500
+X-MC-Unique: pFf_aL_KPBiuFik1sJZDbQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7FB481006AA5;
-        Mon,  7 Mar 2022 14:50:40 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B6DCC1091DA0;
+        Mon,  7 Mar 2022 14:50:45 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.193.244])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6317A7F0D6;
-        Mon,  7 Mar 2022 14:50:38 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8BC897F0D6;
+        Mon,  7 Mar 2022 14:50:43 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -47,9 +47,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         linux-hyperv@vger.kernel.org,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 05/19] KVM: x86: Prepare kvm_hv_flush_tlb() to handle L2's GPAs
-Date:   Mon,  7 Mar 2022 15:50:09 +0100
-Message-Id: <20220307145023.1913205-6-vkuznets@redhat.com>
+Subject: [PATCH RFC 07/19] KVM: x86: hyper-v: Create a separate ring for Direct TLB flush
+Date:   Mon,  7 Mar 2022 15:50:11 +0100
+Message-Id: <20220307145023.1913205-8-vkuznets@redhat.com>
 In-Reply-To: <20220307145023.1913205-1-vkuznets@redhat.com>
 References: <20220307145023.1913205-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,41 +59,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To handle Direct TLB flush requests from L2, KVM needs to translate the
-specified L2 GPA to L1 GPA to read hypercall arguments from there.
+To handle Direct TLB flush requests from L2 KVM needs to use a
+separate ring from regular Hyper-V TLB flush requests: e.g. when a
+request to flush something in L2 is made, the target vCPU can
+transition from L2 to L1, receive a request to flush a GVA for L1 and
+then try to enter L2 back. The first request needs to be processed
+then. Similarly, requests to flush GVAs in L1 must wait until L2
+exits to L1.
 
-No fucntional change as KVM doesn't handle VMCALL/VMMCALL from L2 yet.
+No functional change yet as KVM doesn't handle Direct TLB flush
+requests from L2 yet.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/hyperv.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  3 ++-
+ arch/x86/kvm/hyperv.c           |  7 ++++---
+ arch/x86/kvm/hyperv.h           | 17 ++++++++++++++---
+ 3 files changed, 20 insertions(+), 7 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 299f73d06680..750ac4055d0c 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -613,7 +613,8 @@ struct kvm_vcpu_hv {
+ 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
+ 	} cpuid_cache;
+ 
+-	struct kvm_vcpu_hv_tlbflush_ring tlb_flush_ring;
++	/* Two rings for regular Hyper-V TLB flush and Direct TLB flush */
++	struct kvm_vcpu_hv_tlbflush_ring tlb_flush_ring[2];
+ };
+ 
+ /* Xen HVM per vcpu emulation context */
 diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index f619acccbb6d..53eb9540494b 100644
+index 7efa34fb15ef..9dfc122d5eca 100644
 --- a/arch/x86/kvm/hyperv.c
 +++ b/arch/x86/kvm/hyperv.c
-@@ -23,6 +23,7 @@
- #include "ioapic.h"
- #include "cpuid.h"
- #include "hyperv.h"
-+#include "mmu.h"
- #include "xen.h"
+@@ -946,7 +946,8 @@ static int kvm_hv_vcpu_init(struct kvm_vcpu *vcpu)
  
- #include <linux/cpu.h>
-@@ -1969,6 +1970,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	 */
- 	BUILD_BUG_ON(KVM_HV_MAX_SPARSE_VCPU_SET_BITS > 64);
+ 	hv_vcpu->vp_index = vcpu->vcpu_idx;
  
-+	if (!hc->fast && is_guest_mode(vcpu)) {
-+		hc->ingpa = translate_nested_gpa(vcpu, hc->ingpa, 0, NULL);
-+		if (unlikely(hc->ingpa == UNMAPPED_GVA))
-+			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+	}
+-	spin_lock_init(&hv_vcpu->tlb_flush_ring.write_lock);
++	spin_lock_init(&hv_vcpu->tlb_flush_ring[0].write_lock);
++	spin_lock_init(&hv_vcpu->tlb_flush_ring[1].write_lock);
+ 
+ 	return 0;
+ }
+@@ -1874,7 +1875,7 @@ static void hv_tlb_flush_ring_enqueue(struct kvm_vcpu *vcpu, bool flush_all,
+ 	if (!hv_vcpu)
+ 		return;
+ 
+-	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
++	tlb_flush_ring = &hv_vcpu->tlb_flush_ring[0];
+ 
+ 	spin_lock_irqsave(&tlb_flush_ring->write_lock, flags);
+ 
+@@ -1934,7 +1935,7 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+ 		return;
+ 	}
+ 
+-	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
++	tlb_flush_ring = kvm_hv_get_tlb_flush_ring(vcpu);
+ 	read_idx = READ_ONCE(tlb_flush_ring->read_idx);
+ 	write_idx = READ_ONCE(tlb_flush_ring->write_idx);
+ 
+diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+index 83960d1bdb1f..137f906eb8c3 100644
+--- a/arch/x86/kvm/hyperv.h
++++ b/arch/x86/kvm/hyperv.h
+@@ -22,6 +22,7 @@
+ #define __ARCH_X86_KVM_HYPERV_H__
+ 
+ #include <linux/kvm_host.h>
++#include "x86.h"
+ 
+ /*
+  * The #defines related to the synthetic debugger are required by KDNet, but
+@@ -147,15 +148,25 @@ int kvm_vm_ioctl_hv_eventfd(struct kvm *kvm, struct kvm_hyperv_eventfd *args);
+ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 		     struct kvm_cpuid_entry2 __user *entries);
+ 
++static inline struct kvm_vcpu_hv_tlbflush_ring *kvm_hv_get_tlb_flush_ring(struct kvm_vcpu *vcpu)
++{
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 +
- 	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
- 	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE) {
- 		if (hc->fast) {
++	if (!is_guest_mode(vcpu))
++		return &hv_vcpu->tlb_flush_ring[0];
++
++	return &hv_vcpu->tlb_flush_ring[1];
++}
+ 
+ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++	struct kvm_vcpu_hv_tlbflush_ring *tlb_flush_ring;
+ 
+-	if (!hv_vcpu)
++	if (!to_hv_vcpu(vcpu))
+ 		return;
+ 
+-	hv_vcpu->tlb_flush_ring.read_idx = hv_vcpu->tlb_flush_ring.write_idx;
++	tlb_flush_ring = kvm_hv_get_tlb_flush_ring(vcpu);
++	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
+ }
+ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu);
+ 
 -- 
 2.35.1
 
