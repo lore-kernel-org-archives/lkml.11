@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8121C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238518AbiCGJw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
+        id S238533AbiCGJwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240992AbiCGJlo (ORCPT
+        with ESMTP id S241014AbiCGJlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892926582B;
-        Mon,  7 Mar 2022 01:39:01 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C2C6D3A0;
+        Mon,  7 Mar 2022 01:39:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9EBBB810CC;
-        Mon,  7 Mar 2022 09:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E7BC340E9;
-        Mon,  7 Mar 2022 09:38:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5EE46116E;
+        Mon,  7 Mar 2022 09:39:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63707C340E9;
+        Mon,  7 Mar 2022 09:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645938;
-        bh=i57U6srCUY6x6p72vBcDx7z8RlmPz/tzafs1rL/YY9w=;
+        s=korg; t=1646645948;
+        bh=jelnZl3ZRX+l4OmSRmakzD+X6v4N54ckjAV75aGfZgE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+WpiIcW57nBgieETTuRAzzyUNcUStMCBTb7EIjC+rMsQsVVAiuw9Vfn1OM5yeltg
-         EAa20eX8oAEZSNnEarurhu55d/5fTch/jZWc0xwVFFNMQNbBxPunVB7AOyn1RU8h7+
-         Yvacny5bKFRAW3Y9kMuYa5+SjVliuSISrMyIctBs=
+        b=g1/kOnKLvjsq13SrCsmcX0rCXteKxIB01PGC4xHC4O/UvT0iRSw6q5Wv+V6Wx740Y
+         GJuNdtSWx+880Cj6UYf1H3EY23qvPQGS4UjiN626SVpm7QXgP1wb1WPAjyIqx7zq29
+         pylDWorkLiUoSxTXZdmlTbqhdSAw+J4M9mImOZLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 081/262] SUNRPC: Fix sockaddr handling in svcsock_accept_class trace points
-Date:   Mon,  7 Mar 2022 10:17:05 +0100
-Message-Id: <20220307091704.773768226@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Xu <haoxu@linux.alibaba.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 045/262] io_uring: fix no lock protection for ctx->cq_extra
+Date:   Mon,  7 Mar 2022 10:16:29 +0100
+Message-Id: <20220307091703.794659099@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,48 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Hao Xu <haoxu@linux.alibaba.com>
 
-[ Upstream commit 16720861675393a35974532b3c837d9fd7bfe08c ]
+[ Upstream commit e302f1046f4c209291b07ff7bc4d15ca26891f16 ]
 
-Avoid potentially hazardous memory copying and the needless use of
-"%pIS" -- in the kernel, an RPC service listener is always bound to
-ANYADDR. Having the network namespace is helpful when recording
-errors, though.
+ctx->cq_extra should be protected by completion lock so that the
+req_need_defer() does the right check.
 
-Fixes: a0469f46faab ("SUNRPC: Replace dprintk call sites in TCP state change callouts")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hao Xu <haoxu@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20211125092103.224502-2-haoxu@linux.alibaba.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sunrpc.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/io_uring.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 1213c078dcca5..7c48613c18304 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -2112,17 +2112,17 @@ DECLARE_EVENT_CLASS(svcsock_accept_class,
- 	TP_STRUCT__entry(
- 		__field(long, status)
- 		__string(service, service)
--		__array(unsigned char, addr, sizeof(struct sockaddr_in6))
-+		__field(unsigned int, netns_ino)
- 	),
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index d7e49e87b49b9..156c54ebb62b7 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6573,11 +6573,14 @@ static bool io_drain_req(struct io_kiocb *req)
+ 	}
  
- 	TP_fast_assign(
- 		__entry->status = status;
- 		__assign_str(service, service);
--		memcpy(__entry->addr, &xprt->xpt_local, sizeof(__entry->addr));
-+		__entry->netns_ino = xprt->xpt_net->ns.inum;
- 	),
+ 	/* Still need defer if there is pending req in defer list. */
++	spin_lock(&ctx->completion_lock);
+ 	if (likely(list_empty_careful(&ctx->defer_list) &&
+ 		!(req->flags & REQ_F_IO_DRAIN))) {
++		spin_unlock(&ctx->completion_lock);
+ 		ctx->drain_active = false;
+ 		return false;
+ 	}
++	spin_unlock(&ctx->completion_lock);
  
--	TP_printk("listener=%pISpc service=%s status=%ld",
--		__entry->addr, __get_str(service), __entry->status
-+	TP_printk("addr=listener service=%s status=%ld",
-+		__get_str(service), __entry->status
- 	)
- );
- 
+ 	seq = io_get_sequence(req);
+ 	/* Still a chance to pass the sequence check */
 -- 
 2.34.1
 
