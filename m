@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8E0C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0461EC35274
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239862AbiCGJuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
+        id S240684AbiCGJvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:51:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240239AbiCGJku (ORCPT
+        with ESMTP id S240789AbiCGJle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C006E565;
-        Mon,  7 Mar 2022 01:37:19 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183936A066;
+        Mon,  7 Mar 2022 01:38:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD759B810DE;
-        Mon,  7 Mar 2022 09:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28CDDC340E9;
-        Mon,  7 Mar 2022 09:36:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B970E611D5;
+        Mon,  7 Mar 2022 09:38:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B0AC340E9;
+        Mon,  7 Mar 2022 09:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645766;
-        bh=PxzTc57IQdrmDgTvi0EtjhOekh9QUtO7TK6zL07Nh+g=;
+        s=korg; t=1646645890;
+        bh=8H1O5Gd8aWDSuSOPM7T7kVZcc3Rbn5AoTu7LfcSiU3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=POhx8CJ5ps5AZMwNsD/qCvlnPPI9nMPgovkoxx3/5W9eJGcMRkY6WLRU+OGc2dpB8
-         ET4SHBSfT08MRy5jLPPEnGvHvbVZXvc+U9wDncnUKdIZg16JS7LptruSwqOr3FVLN5
-         eyg76EHI66A2DPMCIoMTCivcdf/tPSwoDvNPzmEs=
+        b=Gw4BipxD8M6uPRSqIwxZfgwOrgamlXOhCdYSK9y53hX6ONHgLZcZEfS6QeC1eXTbL
+         u4k503wwAzqVrnqcYhUBlPzPP6ui1dBX2IF7h15gyVEDvyMzcAcAT6K3aYX1GAFFUZ
+         hjFyXEA+hnXThWYqb9xyDrCbYBu2Gkp7/S38QXhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 029/262] exfat: reuse exfat_inode_info variable instead of calling EXFAT_I()
-Date:   Mon,  7 Mar 2022 10:16:13 +0100
-Message-Id: <20220307091703.191142889@linuxfoundation.org>
+Subject: [PATCH 5.15 068/262] PCI: mvebu: Fix support for bus mastering and PCI_COMMAND on emulated bridge
+Date:   Mon,  7 Mar 2022 10:16:52 +0100
+Message-Id: <20220307091704.421592444@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,132 +50,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 7dee6f57d7f22a89dd214518c778aec448270d4c ]
+[ Upstream commit e42b85583719adb87ab88dc7bcd41b38011f7d11 ]
 
-Also add a local "struct exfat_inode_info *ei" variable to
-exfat_truncate() to simplify the code.
+According to PCI specifications bits [0:2] of Command Register, this should
+be by default disabled on reset. So explicitly disable these bits at early
+beginning of driver initialization.
 
-Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Also remove code which unconditionally enables all 3 bits and let kernel
+code (via pci_set_master() function) to handle bus mastering of PCI Bridge
+via emulated PCI_COMMAND on emulated bridge.
+
+Adjust existing functions mvebu_pcie_handle_iobase_change() and
+mvebu_pcie_handle_membase_change() to handle PCI_IO_BASE and PCI_MEM_BASE
+registers correctly even when bus mastering on emulated bridge is disabled.
+
+Link: https://lore.kernel.org/r/20211125124605.25915-7-pali@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/exfat/file.c  | 14 +++++++-------
- fs/exfat/inode.c |  9 ++++-----
- fs/exfat/namei.c |  6 +++---
- fs/exfat/super.c |  6 +++---
- 4 files changed, 17 insertions(+), 18 deletions(-)
+ drivers/pci/controller/pci-mvebu.c | 52 ++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 20 deletions(-)
 
-diff --git a/fs/exfat/file.c b/fs/exfat/file.c
-index 6af0191b648f1..848166d6d5e9d 100644
---- a/fs/exfat/file.c
-+++ b/fs/exfat/file.c
-@@ -110,8 +110,7 @@ int __exfat_truncate(struct inode *inode, loff_t new_size)
- 	exfat_set_volume_dirty(sb);
- 
- 	num_clusters_new = EXFAT_B_TO_CLU_ROUND_UP(i_size_read(inode), sbi);
--	num_clusters_phys =
--		EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk, sbi);
-+	num_clusters_phys = EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
- 
- 	exfat_chain_set(&clu, ei->start_clu, num_clusters_phys, ei->flags);
- 
-@@ -228,12 +227,13 @@ void exfat_truncate(struct inode *inode, loff_t size)
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index 5d5f23b1d355b..2e69455400288 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -215,16 +215,14 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
  {
- 	struct super_block *sb = inode->i_sb;
- 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
-+	struct exfat_inode_info *ei = EXFAT_I(inode);
- 	unsigned int blocksize = i_blocksize(inode);
- 	loff_t aligned_size;
- 	int err;
+ 	u32 cmd, mask;
  
- 	mutex_lock(&sbi->s_lock);
--	if (EXFAT_I(inode)->start_clu == 0) {
-+	if (ei->start_clu == 0) {
- 		/*
- 		 * Empty start_clu != ~0 (not allocated)
- 		 */
-@@ -260,11 +260,11 @@ void exfat_truncate(struct inode *inode, loff_t size)
- 		aligned_size++;
- 	}
+-	/* Point PCIe unit MBUS decode windows to DRAM space. */
+-	mvebu_pcie_setup_wins(port);
+-
+-	/* Master + slave enable. */
++	/* Disable Root Bridge I/O space, memory space and bus mastering. */
+ 	cmd = mvebu_readl(port, PCIE_CMD_OFF);
+-	cmd |= PCI_COMMAND_IO;
+-	cmd |= PCI_COMMAND_MEMORY;
+-	cmd |= PCI_COMMAND_MASTER;
++	cmd &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+ 	mvebu_writel(port, cmd, PCIE_CMD_OFF);
  
--	if (EXFAT_I(inode)->i_size_ondisk > i_size_read(inode))
--		EXFAT_I(inode)->i_size_ondisk = aligned_size;
-+	if (ei->i_size_ondisk > i_size_read(inode))
-+		ei->i_size_ondisk = aligned_size;
++	/* Point PCIe unit MBUS decode windows to DRAM space. */
++	mvebu_pcie_setup_wins(port);
++
+ 	/* Enable interrupt lines A-D. */
+ 	mask = mvebu_readl(port, PCIE_MASK_OFF);
+ 	mask |= PCIE_MASK_ENABLE_INTS;
+@@ -371,8 +369,7 @@ static void mvebu_pcie_handle_iobase_change(struct mvebu_pcie_port *port)
  
--	if (EXFAT_I(inode)->i_size_aligned > i_size_read(inode))
--		EXFAT_I(inode)->i_size_aligned = aligned_size;
-+	if (ei->i_size_aligned > i_size_read(inode))
-+		ei->i_size_aligned = aligned_size;
- 	mutex_unlock(&sbi->s_lock);
+ 	/* Are the new iobase/iolimit values invalid? */
+ 	if (conf->iolimit < conf->iobase ||
+-	    conf->iolimitupper < conf->iobaseupper ||
+-	    !(conf->command & PCI_COMMAND_IO)) {
++	    conf->iolimitupper < conf->iobaseupper) {
+ 		mvebu_pcie_set_window(port, port->io_target, port->io_attr,
+ 				      &desired, &port->iowin);
+ 		return;
+@@ -409,8 +406,7 @@ static void mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
+ 	struct pci_bridge_emul_conf *conf = &port->bridge.conf;
+ 
+ 	/* Are the new membase/memlimit values invalid? */
+-	if (conf->memlimit < conf->membase ||
+-	    !(conf->command & PCI_COMMAND_MEMORY)) {
++	if (conf->memlimit < conf->membase) {
+ 		mvebu_pcie_set_window(port, port->mem_target, port->mem_attr,
+ 				      &desired, &port->memwin);
+ 		return;
+@@ -430,6 +426,24 @@ static void mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
+ 			      &port->memwin);
  }
  
-diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
-index 1c7aa1ea4724c..aca2e64d045b6 100644
---- a/fs/exfat/inode.c
-+++ b/fs/exfat/inode.c
-@@ -114,10 +114,9 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
- 	unsigned int local_clu_offset = clu_offset;
- 	unsigned int num_to_be_allocated = 0, num_clusters = 0;
++static pci_bridge_emul_read_status_t
++mvebu_pci_bridge_emul_base_conf_read(struct pci_bridge_emul *bridge,
++				     int reg, u32 *value)
++{
++	struct mvebu_pcie_port *port = bridge->data;
++
++	switch (reg) {
++	case PCI_COMMAND:
++		*value = mvebu_readl(port, PCIE_CMD_OFF);
++		break;
++
++	default:
++		return PCI_BRIDGE_EMUL_NOT_HANDLED;
++	}
++
++	return PCI_BRIDGE_EMUL_HANDLED;
++}
++
+ static pci_bridge_emul_read_status_t
+ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 				     int reg, u32 *value)
+@@ -484,17 +498,14 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
  
--	if (EXFAT_I(inode)->i_size_ondisk > 0)
-+	if (ei->i_size_ondisk > 0)
- 		num_clusters =
--			EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk,
--			sbi);
-+			EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
+ 	switch (reg) {
+ 	case PCI_COMMAND:
+-	{
+-		if (!mvebu_has_ioport(port))
+-			conf->command &= ~PCI_COMMAND_IO;
+-
+-		if ((old ^ new) & PCI_COMMAND_IO)
+-			mvebu_pcie_handle_iobase_change(port);
+-		if ((old ^ new) & PCI_COMMAND_MEMORY)
+-			mvebu_pcie_handle_membase_change(port);
++		if (!mvebu_has_ioport(port)) {
++			conf->command = cpu_to_le16(
++				le16_to_cpu(conf->command) & ~PCI_COMMAND_IO);
++			new &= ~PCI_COMMAND_IO;
++		}
  
- 	if (clu_offset >= num_clusters)
- 		num_to_be_allocated = clu_offset - num_clusters + 1;
-@@ -416,10 +415,10 @@ static int exfat_write_end(struct file *file, struct address_space *mapping,
++		mvebu_writel(port, new, PCIE_CMD_OFF);
+ 		break;
+-	}
  
- 	err = generic_write_end(file, mapping, pos, len, copied, pagep, fsdata);
+ 	case PCI_IO_BASE:
+ 		mvebu_pcie_handle_iobase_change(port);
+@@ -554,6 +565,7 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+ }
  
--	if (EXFAT_I(inode)->i_size_aligned < i_size_read(inode)) {
-+	if (ei->i_size_aligned < i_size_read(inode)) {
- 		exfat_fs_error(inode->i_sb,
- 			"invalid size(size(%llu) > aligned(%llu)\n",
--			i_size_read(inode), EXFAT_I(inode)->i_size_aligned);
-+			i_size_read(inode), ei->i_size_aligned);
- 		return -EIO;
- 	}
- 
-diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
-index 24b41103d1cc0..9d8ada781250b 100644
---- a/fs/exfat/namei.c
-+++ b/fs/exfat/namei.c
-@@ -395,9 +395,9 @@ static int exfat_find_empty_entry(struct inode *inode,
- 
- 		/* directory inode should be updated in here */
- 		i_size_write(inode, size);
--		EXFAT_I(inode)->i_size_ondisk += sbi->cluster_size;
--		EXFAT_I(inode)->i_size_aligned += sbi->cluster_size;
--		EXFAT_I(inode)->flags = p_dir->flags;
-+		ei->i_size_ondisk += sbi->cluster_size;
-+		ei->i_size_aligned += sbi->cluster_size;
-+		ei->flags = p_dir->flags;
- 		inode->i_blocks += 1 << sbi->sect_per_clus_bits;
- 	}
- 
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index 5539ffc20d164..1a2115d73a48a 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -366,9 +366,9 @@ static int exfat_read_root(struct inode *inode)
- 
- 	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
- 			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
--	EXFAT_I(inode)->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
--	EXFAT_I(inode)->i_size_aligned = i_size_read(inode);
--	EXFAT_I(inode)->i_size_ondisk = i_size_read(inode);
-+	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
-+	ei->i_size_aligned = i_size_read(inode);
-+	ei->i_size_ondisk = i_size_read(inode);
- 
- 	exfat_save_attr(inode, ATTR_SUBDIR);
- 	inode->i_mtime = inode->i_atime = inode->i_ctime = ei->i_crtime =
+ static struct pci_bridge_emul_ops mvebu_pci_bridge_emul_ops = {
++	.read_base = mvebu_pci_bridge_emul_base_conf_read,
+ 	.write_base = mvebu_pci_bridge_emul_base_conf_write,
+ 	.read_pcie = mvebu_pci_bridge_emul_pcie_conf_read,
+ 	.write_pcie = mvebu_pci_bridge_emul_pcie_conf_write,
 -- 
 2.34.1
 
