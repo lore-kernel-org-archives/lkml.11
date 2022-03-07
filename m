@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD59C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5E0C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239316AbiCGJtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        id S239979AbiCGJu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:50:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238066AbiCGJh6 (ORCPT
+        with ESMTP id S240442AbiCGJlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:37:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4008C5BE4A;
-        Mon,  7 Mar 2022 01:31:58 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140C041327;
+        Mon,  7 Mar 2022 01:37:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B31261215;
-        Mon,  7 Mar 2022 09:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DA6C340F3;
-        Mon,  7 Mar 2022 09:31:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75539B810CB;
+        Mon,  7 Mar 2022 09:37:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC81EC340E9;
+        Mon,  7 Mar 2022 09:37:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645464;
-        bh=Fy7glTcXyXkGE6AUYyq5Dk0BcADG9nAA+8EYBPyqi10=;
+        s=korg; t=1646645830;
+        bh=Pbxjfsz5h7lA5AO4pfCoeS41QbTB3ix6m1vRTueHYLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P8Zn+EQQ+jBHW4sGCmAKVRsCD1j+lDxrxcVSWHz+OZ+Fohf8ovtTWr6ZTZ1XodNeH
-         A2FI83k+Be4P71sdgpFyUCRJV9qRNnT09ndZtbd4O0km89uHcWVpxwraObUcpuea45
-         y/iszJtB0VBbqpfM7ReDWBGfYuoh3T6h1xaxoPKU=
+        b=uNtaSpiUMzEGz569F3/kSyBvOfRmw3YN+9iBT8coP49S9pVOcm+f47AYz2f+ievCy
+         7f2vBkoFhlOJ1p28NZqJQCFJtEMfiw0UxTKwgOtI9MXu6gjhOk5zgzpRTvlF16j+N4
+         EzGH1Mjef4yC39JqkF/DgQlIE3r2sLbXBV+g7SNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH 5.10 039/105] xfrm: fix the if_id check in changelink
-Date:   Mon,  7 Mar 2022 10:18:42 +0100
-Message-Id: <20220307091645.287172677@linuxfoundation.org>
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 050/262] signal: In get_signal test for signal_group_exit every time through the loop
+Date:   Mon,  7 Mar 2022 10:16:34 +0100
+Message-Id: <20220307091703.932029160@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 6d0d95a1c2b07270870e7be16575c513c29af3f1 upstream.
+[ Upstream commit e7f7c99ba911f56bc338845c1cd72954ba591707 ]
 
-if_id will be always 0, because it was not yet initialized.
+Recently while investigating a problem with rr and signals I noticed
+that siglock is dropped in ptrace_signal and get_signal does not jump
+to relock.
 
-Fixes: 8dce43919566 ("xfrm: interface with if_id 0 should return error")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Looking farther to see if the problem is anywhere else I see that
+do_signal_stop also returns if signal_group_exit is true.  I believe
+that test can now never be true, but it is a bit hard to trace
+through and be certain.
+
+Testing signal_group_exit is not expensive, so move the test for
+signal_group_exit into the for loop inside of get_signal to ensure
+the test is never skipped improperly.
+
+This has been a potential problem since I added the test for
+signal_group_exit was added.
+
+Fixes: 35634ffa1751 ("signal: Always notice exiting tasks")
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lkml.kernel.org/r/875yssekcd.fsf_-_@email.froward.int.ebiederm.org
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_interface.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/signal.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -679,12 +679,12 @@ static int xfrmi_changelink(struct net_d
- 	struct net *net = xi->net;
- 	struct xfrm_if_parms p = {};
- 
-+	xfrmi_netlink_parms(data, &p);
- 	if (!p.if_id) {
- 		NL_SET_ERR_MSG(extack, "if_id must be non zero");
- 		return -EINVAL;
+diff --git a/kernel/signal.c b/kernel/signal.c
+index aea93d6a5520a..6e3dbb3d12170 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2710,19 +2710,19 @@ bool get_signal(struct ksignal *ksig)
+ 		goto relock;
  	}
  
--	xfrmi_netlink_parms(data, &p);
- 	xi = xfrmi_locate(net, &p);
- 	if (!xi) {
- 		xi = netdev_priv(dev);
+-	/* Has this task already been marked for death? */
+-	if (signal_group_exit(signal)) {
+-		ksig->info.si_signo = signr = SIGKILL;
+-		sigdelset(&current->pending.signal, SIGKILL);
+-		trace_signal_deliver(SIGKILL, SEND_SIG_NOINFO,
+-				&sighand->action[SIGKILL - 1]);
+-		recalc_sigpending();
+-		goto fatal;
+-	}
+-
+ 	for (;;) {
+ 		struct k_sigaction *ka;
+ 
++		/* Has this task already been marked for death? */
++		if (signal_group_exit(signal)) {
++			ksig->info.si_signo = signr = SIGKILL;
++			sigdelset(&current->pending.signal, SIGKILL);
++			trace_signal_deliver(SIGKILL, SEND_SIG_NOINFO,
++				&sighand->action[SIGKILL - 1]);
++			recalc_sigpending();
++			goto fatal;
++		}
++
+ 		if (unlikely(current->jobctl & JOBCTL_STOP_PENDING) &&
+ 		    do_signal_stop(0))
+ 			goto relock;
+-- 
+2.34.1
+
 
 
