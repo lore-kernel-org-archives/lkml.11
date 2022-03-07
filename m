@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C19C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA33FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234559AbiCGJef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:34:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
+        id S237392AbiCGJel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238749AbiCGJ3j (ORCPT
+        with ESMTP id S238755AbiCGJ3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF03D5BE5B;
-        Mon,  7 Mar 2022 01:28:09 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286BD59A74;
+        Mon,  7 Mar 2022 01:28:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A30E1B810B6;
-        Mon,  7 Mar 2022 09:28:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB2AC340F3;
-        Mon,  7 Mar 2022 09:28:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6F8E60C00;
+        Mon,  7 Mar 2022 09:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0466C340E9;
+        Mon,  7 Mar 2022 09:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645287;
-        bh=nE3TURHhz6+7IxE2urKC3IVfVPlbY4QgK6LnP5oCwWQ=;
+        s=korg; t=1646645296;
+        bh=1JdOwzAd4A8p14zKZkL9HsGfoOPkGQsKjtO9nw/zU1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQXOSocfWiHRTwWMBOr2Dl2XThNOqeJPRiJWS8ilF7cJqUzV060Pmph0Bk55gYv84
-         iduMUzexyBshaZTAhl/KiGW+07ttlq8Qv+YSAzU/3unspdMq1K+hx7Vdet/yhzVc1k
-         6mRmhz047bcpx8LkiebWdXfOmREzlNR+KV8C1zhw=
+        b=Ee0PDt9mXlu89/QRhkblAAiMyl1IdZHDhY3xHJrcgTkJmA/ytXLOakkUocE5GBx/H
+         fpcvrcsT3Jnr18w9lL9i2He33vKTksCfL46P4VBncFHaJcgMHbfa8GuamC7OQckrH+
+         HaqnHeDOnys//DBP/tierad+9E+3soq70lplPsVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corinna Vinschen <vinschen@redhat.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 45/64] igc: igc_read_phy_reg_gpy: drop premature return
-Date:   Mon,  7 Mar 2022 10:19:18 +0100
-Message-Id: <20220307091640.430467428@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.4 47/64] ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
+Date:   Mon,  7 Mar 2022 10:19:20 +0100
+Message-Id: <20220307091640.486020232@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -50,37 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corinna Vinschen <vinschen@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit fda2635466cd26ad237e1bc5d3f6a60f97ad09b6 upstream.
+commit 7b83299e5b9385943a857d59e15cba270df20d7e upstream.
 
-igc_read_phy_reg_gpy checks the return value from igc_read_phy_reg_mdic
-and if it's not 0, returns immediately. By doing this, it leaves the HW
-semaphore in the acquired state.
+early_param() handlers should return 0 on success.
+__setup() handlers should return 1 on success, i.e., the parameter
+has been handled. A return of 0 would cause the "option=value" string
+to be added to init's environment strings, polluting it.
 
-Drop this premature return statement, the function returns after
-releasing the semaphore immediately anyway.
+../arch/arm/mm/mmu.c: In function 'test_early_cachepolicy':
+../arch/arm/mm/mmu.c:215:1: error: no return statement in function returning non-void [-Werror=return-type]
+../arch/arm/mm/mmu.c: In function 'test_noalign_setup':
+../arch/arm/mm/mmu.c:221:1: error: no return statement in function returning non-void [-Werror=return-type]
 
-Fixes: 5586838fe9ce ("igc: Add code for PHY support")
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: b849a60e0903 ("ARM: make cr_alignment read-only #ifndef CONFIG_CPU_CP15")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: patches@armlinux.org.uk
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_phy.c |    2 --
- 1 file changed, 2 deletions(-)
+ arch/arm/mm/mmu.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -767,8 +767,6 @@ s32 igc_read_phy_reg_gpy(struct igc_hw *
- 		if (ret_val)
- 			return ret_val;
- 		ret_val = igc_read_phy_reg_mdic(hw, offset, data);
--		if (ret_val)
--			return ret_val;
- 		hw->phy.ops.release(hw);
- 	} else {
- 		ret_val = igc_read_xmdio_reg(hw, (u16)offset, dev_addr,
+--- a/arch/arm/mm/mmu.c
++++ b/arch/arm/mm/mmu.c
+@@ -229,12 +229,14 @@ early_param("ecc", early_ecc);
+ static int __init early_cachepolicy(char *p)
+ {
+ 	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
++	return 0;
+ }
+ early_param("cachepolicy", early_cachepolicy);
+ 
+ static int __init noalign_setup(char *__unused)
+ {
+ 	pr_warn("noalign kernel parameter not supported without cp15\n");
++	return 1;
+ }
+ __setup("noalign", noalign_setup);
+ 
 
 
