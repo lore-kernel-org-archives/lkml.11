@@ -2,135 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81203C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242874AbiCGQpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:45:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
+        id S244288AbiCGQpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:45:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233459AbiCGQp3 (ORCPT
+        with ESMTP id S244279AbiCGQpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:45:29 -0500
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF2D793BB;
-        Mon,  7 Mar 2022 08:44:34 -0800 (PST)
-Received: by mail-qk1-f173.google.com with SMTP id z66so12383641qke.10;
-        Mon, 07 Mar 2022 08:44:34 -0800 (PST)
+        Mon, 7 Mar 2022 11:45:40 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E308BF43
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:44:45 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id w1so13744994qtj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 08:44:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/XL/lMkKaAjZT+R1nP8H0cffa2vVj0nan43syJIwKEM=;
+        b=NGAxo4l6dVw4MjmbICDgizGHfOi4yre3b0pLfDORn6QkKhVCbfHF+rNemWGokfFRxH
+         NtY+yd2RUni7Od++YThC961zb+L5Yk2ElgJ+DYjcJKhNfNR2yIQmfScjlsvMIyDNMYQe
+         AXKXSlou68f/jC4mjOwJ8vmxzk+JY0I2UNLGmLBpfdJ5GRjidPgS/tcNepdp8+ee/Wmk
+         nr/FiTR9dxmfDbfhxRCDvHtnaGF39JYKTcY2bfSB3ZQERE5C1i1Es81mqkd3t5U9xMkN
+         VQwtkviAPHBlrajVClNPPqQ5qArz2i0+t0c+F1W37SpZXYWAeoHUyQ5m6fXR46JVYbnt
+         /Z1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jYMXxw5Dgc/2Porp8CGHtfTzswoYzip+SRwsyM3sZuE=;
-        b=DsdPHZ7x5yoak8k3v78MksTTVePfBVJStA5+mH7Th312PQW9iH1PdvYMP4fqfbE0lq
-         jtlLfl8vs5w7jwc4Z5SqY2PbeML53xDcYyPnAnWMCWiNBsQcIb4akeqHiKoavY+N/0lw
-         QNr/UbVHUScV93xxlmjLKqi+boXgBX1D8YIB7C+kD9o9KkJhF7hdijP0dhsVKCreaXtN
-         rvD9YHoFflmKVG0vznLkWE8hYN4f6PJZG+3qrRc91RqEiUjs0auOYec8m6hnVnO5r+qu
-         2anZr06FMQeXgk+81RIKmHDqTMxdd32xr443m3NkbV/C7HFsUV2xO1xj59RcD9CXXPbn
-         lgig==
-X-Gm-Message-State: AOAM532v2H+yeYdjKL5BsxfkOfdINhAc8fnlWYIwMnX1fIotiJ+OUFOg
-        g5RfAyJP82/3qeQfkQc81dMQmmFlKAetiw==
-X-Google-Smtp-Source: ABdhPJzAImexnNKFM16Gpe9M9fer3veNQ1r0ZlnTVi/gO6axHaH7Fm+/UZ++61Zu5FbjGTb1r/UVLw==
-X-Received: by 2002:a37:f518:0:b0:663:a53:8a5b with SMTP id l24-20020a37f518000000b006630a538a5bmr7423397qkk.546.1646671472542;
-        Mon, 07 Mar 2022 08:44:32 -0800 (PST)
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
-        by smtp.gmail.com with ESMTPSA id t18-20020ac85892000000b002de3a8bf768sm9339247qta.52.2022.03.07.08.44.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 08:44:32 -0800 (PST)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2dc348dab52so137273847b3.6;
-        Mon, 07 Mar 2022 08:44:31 -0800 (PST)
-X-Received: by 2002:a0d:f1c7:0:b0:2db:d2bc:be11 with SMTP id
- a190-20020a0df1c7000000b002dbd2bcbe11mr9141838ywf.62.1646671471556; Mon, 07
- Mar 2022 08:44:31 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/XL/lMkKaAjZT+R1nP8H0cffa2vVj0nan43syJIwKEM=;
+        b=Aq0SpGzHKpxpT5P0fR9JIdx0lqgB2AHPTvY/VDJ7TieZSxjgG0EHnI0dJBZu2VpYFs
+         C3IqBSDiod8EZNSR8qfWFUHyt+lj9Pp+GZTAsC13y2jkTnYnyLIEQfPUccCo+uqBvAl3
+         kzTVSRNQcbbz/VIt4ymmuIyYcZQchkgwyftMl3wu1ZtELYr1MEGKN4FEbuzxcrw4GYzu
+         TWkQuRve0SZWhs2hUzOYdgiuSW+nugZNgyLrDwGXE4l43QyTJpa22+E8B2CP4VDspq5E
+         X4QdQyHph+GuJxKM3oihhC6/WmILM0mUVJTFGFEP3oD88/3cIM7vK08mq2KwVFvHptdE
+         neBg==
+X-Gm-Message-State: AOAM5339qYPSH5yi04JTGeJgv66IlT7rLjJMtHkpMogA3DK01yAh0C28
+        G3QFaUNW77nldCdQuxjgg2u7gw==
+X-Google-Smtp-Source: ABdhPJxUlGfyQuqHLZdnpfRoANxV+0hXCfHucRHiuTC80Gc6WFLFnVnTTEp8Y7BcKFfazeg0zyoF8A==
+X-Received: by 2002:ac8:5c10:0:b0:2de:2dac:1ea1 with SMTP id i16-20020ac85c10000000b002de2dac1ea1mr10272361qti.600.1646671485033;
+        Mon, 07 Mar 2022 08:44:45 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id u14-20020ac858ce000000b002de89087e7dsm8747493qta.78.2022.03.07.08.44.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 08:44:44 -0800 (PST)
+Date:   Mon, 7 Mar 2022 11:44:39 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        David Hildenbrand <david@redhat.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [next] mips: madvise.c:55:7: error: 'MADV_DONTNEED_LOCKED'
+ undeclared
+Message-ID: <YiY2dx5F0pEbsxkU@cmpxchg.org>
+References: <CA+G9fYvPdufo6c3MgPjAMBrkTqoLDO+2LN1PV3V8rTsqN5XSFg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210922091007.5516-1-wsa+renesas@sang-engineering.com> <163282533892.34438.1878675609177525004.b4-ty@canonical.com>
-In-Reply-To: <163282533892.34438.1878675609177525004.b4-ty@canonical.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 7 Mar 2022 17:44:19 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUqQLo7=NFaNEukqniTJbx-mSZv7eQNB9eCT=L28y3u=A@mail.gmail.com>
-Message-ID: <CAMuHMdUqQLo7=NFaNEukqniTJbx-mSZv7eQNB9eCT=L28y3u=A@mail.gmail.com>
-Subject: Re: [RFC PATCH] memory: renesas-rpc-if: Correct QSPI data transfer in
- Manual mode
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Duc Nguyen <duc.nguyen.ub@renesas.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYvPdufo6c3MgPjAMBrkTqoLDO+2LN1PV3V8rTsqN5XSFg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof and Wolfram,
+On Mon, Mar 07, 2022 at 09:45:38PM +0530, Naresh Kamboju wrote:
+> Following build regressions errors/warnings noticed on mips architecture on
+> linux next-20220307 build.
+> 
+> make --silent --keep-going --jobs=8
+> O=/home/tuxbuild/.cache/tuxmake/builds/1/build ARCH=mips
+> CROSS_COMPILE=mips-linux-gnu- 'CC=sccache mips-linux-gnu-gcc'
+> 'HOSTCC=sccache gcc'
+> 
+> mm/madvise.c: In function 'madvise_need_mmap_write':
+> mm/madvise.c:55:7: error: 'MADV_DONTNEED_LOCKED' undeclared (first use
+> in this function); did you mean 'MADV_DONTNEED'?
+>    55 |  case MADV_DONTNEED_LOCKED:
 
-CC Sergey, Prabhakar, Andrew,
+Thanks for the report, I sent a fix in reply to Stephen:
 
-On Tue, Sep 28, 2021 at 12:36 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
-> On Wed, 22 Sep 2021 11:10:06 +0200, Wolfram Sang wrote:
-> > This patch fixes 2 problems:
-> > [1] The output warning logs and data loss when performing
-> > mount/umount then remount the device with jffs2 format.
-> > [2] The access width of SMWDR[0:1]/SMRDR[0:1] register is wrong.
-> >
-> > This is the sample warning logs when performing mount/umount then
-> > remount the device with jffs2 format:
-> > jffs2: jffs2_scan_inode_node(): CRC failed on node at 0x031c51d4:
-> > Read 0x00034e00, calculated 0xadb272a7
-> >
-> > [...]
->
-> Applied, thanks!
->
-> [1/1] memory: renesas-rpc-if: Correct QSPI data transfer in Manual mode
->       commit: fff53a551db50f5edecaa0b29a64056ab8d2bbca
-
-While trying to enable support for RPC on Salvator-X(S)[*], I
-discovered HyperFLASH detection is broken:
-
-    rpc-if-hyperflash rpc-if-hyperflash: probing of hyperbus device failed
-
-Reverting all commits to the RPC driver since Sergey's original
-commit 5de15b610f785f0e ("mtd: hyperbus: add Renesas RPC-IF driver")
-fixed probing:
-
-    rpc-if-hyperflash: Found 1 x16 devices at 0x0 in 16-bit bank.
-Manufacturer ID 0x000001 Chip ID 0x007000
-    Amd/Fujitsu Extended Query Table at 0x0040
-      Amd/Fujitsu Extended Query version 1.5.
-    rpc-if-hyperflash: CFI contains unrecognised boot bank location
-(0). Assuming bottom.
-    number of CFI chips: 1
-    10 fixed-partitions partitions found on MTD device rpc-if-hyperflash
-    Creating 10 MTD partitions on "rpc-if-hyperflash":
-    0x000000000000-0x000000040000 : "bootparam"
-    [...]
-
-However, there's still something wrong, as all HyperFLASH contents read
-back as zeros, while the FLASH contains the full boot loader stack.
-Bisecting the reverts pointed to this patch, and just reverting this
-patch (small whitespace conflict) fixes probing, too. Still, all zeros.
-
-Summary: needs more investigation ;-)
-
-Wolfram: which platform did you use for QSPI testing, so I don't
-break that again?
-
-[*] Firmware compiled with RCAR_RPC_HYPERFLASH_LOCKED=0 of course.
-    Without that (e.g. old H3 R-Car ES1.0), it crashes with an
-    Asynchronous SError Interrupt during driver initialization.
-
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+https://lore.kernel.org/lkml/YiY2KYyjsCaANwo0@cmpxchg.org/T/#m58a9804edb680303b7351fb7cf6d9c93096ccaad
