@@ -2,199 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237111AbiCGLLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
+        id S232589AbiCGLNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:13:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237782AbiCGLK4 (ORCPT
+        with ESMTP id S241808AbiCGLMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:10:56 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D945549E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:33:04 -0800 (PST)
-Received: from epcas3p4.samsung.com (unknown [182.195.41.22])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220307103302epoutp01bb4f8678611f00199aada29685d44d00~aErUGbt2V1552315523epoutp01Z
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:33:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220307103302epoutp01bb4f8678611f00199aada29685d44d00~aErUGbt2V1552315523epoutp01Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646649182;
-        bh=fZlgU1nbX7F2XKQr2SixygYb5L+8CKc3dsNWy01m7+E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BwywJxE5cAHxdgkDe+Q7HVQB3HTd9zIxpyq8h6f53x65JUbhTut77M1ov6CMcfj1d
-         mMN5RlOhrayzcwXdEwcf2WFQ9i0GCNG6MUFxs/Aj6uSQVMXlCUjAriFCVCE1WsNG9Q
-         BmdhyFy9vROKkIIbwj5J0C2Xk/9ISQsqM33KFbA8=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas3p4.samsung.com (KnoxPortal) with ESMTP id
-        20220307103301epcas3p42a0d12ad0ab318c6b3df330fe90e526f~aErTh6_l22736127361epcas3p4A;
-        Mon,  7 Mar 2022 10:33:01 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp4.localdomain
-        (Postfix) with ESMTP id 4KBvtP5ltVz4x9Q6; Mon,  7 Mar 2022 10:33:01 +0000
-        (GMT)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220307102715epcas2p3dbe8b3cd5683daa900849e208bb6406e~aEmRUI9fZ3131931319epcas2p3F;
-        Mon,  7 Mar 2022 10:27:15 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220307102715epsmtrp2c799d1036d4f3796c5e0405e400d20b7~aEmRTIPQs3120831208epsmtrp2L;
-        Mon,  7 Mar 2022 10:27:15 +0000 (GMT)
-X-AuditID: b6c32a29-41fff700000074af-a4-6225de039ad9
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F1.32.29871.30ED5226; Mon,  7 Mar 2022 19:27:15 +0900 (KST)
-Received: from ubuntu (unknown [12.36.155.120]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220307102715epsmtip285bb1fbbb799031fc22ac7835679adae~aEmRFvutL1012810128epsmtip2Q;
-        Mon,  7 Mar 2022 10:27:15 +0000 (GMT)
-Date:   Mon, 7 Mar 2022 19:26:11 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-Subject: Re: [PATCH v1 4/4] usb: host: add xhci-exynos module
-Message-ID: <1983025922.01646649181793.JavaMail.epsvc@epcpadp4>
+        Mon, 7 Mar 2022 06:12:37 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E04D996B
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:34:42 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id hw13so30751427ejc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 02:34:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M1rR/eY80n5vDuYqXPNSE6u83mcd2WVzC9/2TTt/Eo0=;
+        b=Gj9/fnWrwc6IHetIWpmkFgWwMuti9SnpBTZQI4+fpBSdSMDh78T9YTel1Ks7RaIY3f
+         zt5OncxwWYqxHOdhY9xn8K+MSHrrreD3qDrY/f9jhrpwKbCGBjunGgzzLDt1VLWVdZLc
+         VRRHaUu3KNRRT/eYvRBUHb9BxA8vk/e/bVT+31IvTkAPDpn6LOk6C+RyKZRq0ydfmFQb
+         E5RL6qF1WR/VI2wp4CZMK7TjH0h54ml3dEIiDwdC9JzDHKn5m7XO4frn1CD5GKKzfGp+
+         m6+cIe+wGQCr9BM1Hl3mg8089U0CYQPLnBvjkO7tnG2qferM0ANsSrtdVHqhBdUJ+Z3X
+         N56g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M1rR/eY80n5vDuYqXPNSE6u83mcd2WVzC9/2TTt/Eo0=;
+        b=n/nFanOL0uH0IFWjlskBRBHLdF5djvpr4zZdNWH6QPgqrPpm85S7Gc0JA6z2Jus5UT
+         0Jmtt8l9G2f5VfQLv3D5bIPGLvqkkVwZUvRqFRWUnBFVn6FCzQuirAinH22qf3HNS9+P
+         AkJ403Vqq7ksfFCmI+FGELbLp20GCg0OqScFZp3tlOSaL9b8rLpA32WETpctDrTwtvYR
+         zkgwiEnsk1x71QayUFtS1Ygkvx6fICNGkspX7pyQNhYMnNutfbDTEBWXq66Ajqi9jDe/
+         097qEFBQDUIcBJZE5996Pt51rXIzkqjt+q0fMvhbP61C8qIqUW/QHw74fp+MaKg90dKO
+         DsCA==
+X-Gm-Message-State: AOAM532Zf04uhuicasx4HKe9K5HgHBWIJxxKoe86DRRF5cUnQdlyU34b
+        orhrvRvJghJIXD1rlNC3l/yZ071SmjzAI75giOqiEvEJU3c=
+X-Google-Smtp-Source: ABdhPJyZ9XFlNCbQVulJPua3Jfgj9sQ1cpljwcF6zb22A8M+mwlVxG4zEsvsO1xYx7ek52amuGOhL0m4PYqKpZyjTr4=
+X-Received: by 2002:a17:906:cc12:b0:6b5:ec8f:fdf2 with SMTP id
+ ml18-20020a170906cc1200b006b5ec8ffdf2mr8297004ejb.579.1646649280273; Mon, 07
+ Mar 2022 02:34:40 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <32e72657-a43d-0ae1-1bf2-d15b7426765f@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnkeLIzCtJLcpLzFFi42LZdlhJXpf5nmqSwabfuhYrDs9jtHh5SNNi
-        88MrbBZPjixit2hevJ7N4vqf94wW7c8vsFmcP7+B3eLyrjlsFouWtTJbNG+awmoxc62yxds7
-        01ksuu7eYHTg87jc18vksWBTqcfmFVoei/e8ZPLYtKqTzWP/3DXsHi0n97N49G1ZxejxeZNc
-        AGcUl01Kak5mWWqRvl0CV8auU7+ZCxpEK15uVG9g/CLQxcjJISFgInFnwxvGLkYuDiGB3YwS
-        19tesUEkJCWWzr3BDmELS9xvOcIKUfSIUWLTvOPMXYwcHCwCKhKTLpeB1LAJaEnc+3GCGcQW
-        EdCUuP73O1g9s8BzZonOG5eZQBLCArYSy46/BCviFdCR2HJ2NwvE0GYmib+dIBtAEoISJ2c+
-        YQGxmYGm3vj3kglkGbOAtMTyfxwgYU4BO4k9n5exgoRFgW54dbB+AqPgLCTNs5A0z0JoXsDI
-        vIpRMrWgODc9t9iwwDAvtVyvODG3uDQvXS85P3cTIzjOtDR3MG5f9UHvECMTB+MhRgkOZiUR
-        3vvnVZKEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoEk2Xi4JRqYBJb
-        3bFq4RQLzkjFsqZPT615ejvjrd4p77ydbNrtk6jc8SfVmq9BxlV4wq5/X1mzVEwjDpUw2Cdv
-        q/TSWpb++e6rpJznuo5FnhMcxcUtbUMrzzLJV+srKM3fFHDr8seKg3Xs/HwOhXenCKvXB52S
-        mHBvxu5fBgYxH6exCCfU9Z5L5pzlyyllur75rzD/ij9lBvP7jrzXTnAXEvrDl2E142u++P/5
-        Sa8ZdyzpqDKUbo7dHy9S1ii8jH+PddvxmY3s39Y8Vn19Kuj67ysGoQE2JqeXCEy7Es1mqfn+
-        6y2WuE//j74QZ3j5Nu9o5e6cB+cvbli5pO/U3kdMSc9/S39aeqvB79UWP44qleqnIWY7lViK
-        MxINtZiLihMBuSdceyIDAAA=
-X-CMS-MailID: 20220307102715epcas2p3dbe8b3cd5683daa900849e208bb6406e
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220304062618epcas2p2e3c73b5c4ed0c9bc0ca0c02aa658d3fb
-References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220304062618epcas2p2e3c73b5c4ed0c9bc0ca0c02aa658d3fb@epcas2p2.samsung.com>
-        <1027007693.21646375582736.JavaMail.epsvc@epcpadp4>
-        <32e72657-a43d-0ae1-1bf2-d15b7426765f@kernel.org>
+References: <20220304124416.1181029-1-mailhol.vincent@wanadoo.fr>
+ <CAHp75VeT3LbdbSaiwcC2YW40LnA2h8ADtGva-CKU_xh8Edi0nw@mail.gmail.com>
+ <CAMZ6RqJL2G=i-x3wwBD92devAxdNcnmwfDqz30+GFGobp21s+Q@mail.gmail.com>
+ <CAHp75VdTzjW_YONcFy0qQGvT-xMDQOXTYsAun40106Spzgx_2Q@mail.gmail.com> <CAMZ6RqJAxqbbkMP=r7h0b2nvobYu8tcSm8PLaPNbXb0NV+gzaw@mail.gmail.com>
+In-Reply-To: <CAMZ6RqJAxqbbkMP=r7h0b2nvobYu8tcSm8PLaPNbXb0NV+gzaw@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 7 Mar 2022 12:33:22 +0200
+Message-ID: <CAHp75VcO+4jD_KVDjmOYCRKy31sdC3BwgcfcEOL=RtTjvzmzHQ@mail.gmail.com>
+Subject: Re: [PATCH] linux/bits.h: fix -Wtype-limits warnings in GENMASK_INPUT_CHECK()
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+On Sun, Mar 6, 2022 at 7:35 AM Vincent MAILHOL
+<mailhol.vincent@wanadoo.fr> wrote:
+> On Sun. 6 Mar 2022 at 06:33, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Sat, Mar 5, 2022 at 2:43 PM Vincent MAILHOL
+> > <mailhol.vincent@wanadoo.fr> wrote:
+> > > On Tue. 5 Mar 2022 at 03:46, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > > On Fri, Mar 4, 2022 at 7:36 PM Vincent Mailhol
+> > > > <mailhol.vincent@wanadoo.fr> wrote:
+> >
+> > ...
+> >
+> > > > NAK.
+> > >
+> > > Are you willing to change your decision following my comments?
+> >
+> > Have you read this discussion (read the thread in full)
+> > https://lore.kernel.org/lkml/cover.1590017578.git.syednwaris@gmail.com/
+>
+> Thank you, this was an instructive read.
+>
+> For what I understand, there was an effort to fix this when
+> -Wtype-limits was still a W=1 warning but the effort was stopped
+> after -Wtype-limits was moved to W=2 despite a v4 patch being very
+> close to the goal.
 
-On Mon, Mar 07, 2022 at 11:07:04AM +0100, Krzysztof Kozlowski wrote:
-> On 04/03/2022 07:23, Daehwan Jung wrote:
-> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-> 
-> +Cc Randy,
-> I guess here is the rest of the patches.
-> 
-> > ---
-> >  drivers/usb/host/xhci-exynos.c | 2025 ++++++++++++++++++++++++++++++++
-> >  drivers/usb/host/xhci-exynos.h |  150 +++
-> >  2 files changed, 2175 insertions(+)
-> >  create mode 100644 drivers/usb/host/xhci-exynos.c
-> >  create mode 100644 drivers/usb/host/xhci-exynos.h
-> > 
-> > diff --git a/drivers/usb/host/xhci-exynos.c b/drivers/usb/host/xhci-exynos.c
-> > new file mode 100644
-> > index 000000000000..3913c48d4b20
-> > --- /dev/null
-> > +++ b/drivers/usb/host/xhci-exynos.c
-> > @@ -0,0 +1,2025 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * xhci-exynos.c - xHCI host controller driver platform Bus Glue for Exynos.
-> > + *
-> > + * Copyright (C) 2022 Samsung Electronics Incorporated - http://www.samsung.com
-> > + * Author: Daehwan Jung <dh10.jung@samsung.com>
-> > + *
-> > + * A lot of code borrowed from the Linux xHCI driver.
-> 
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/dma-mapping.h>
-> > +#include <linux/module.h>
-> > +#include <linux/pci.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_device.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/usb/phy.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/phy/phy.h>
-> > +#include <linux/acpi.h>
-> > +#include <linux/usb/of.h>
-> > +#ifdef CONFIG_SND_EXYNOS_USB_AUDIO
-> 
-> This does not exist.
-> 
-> Please do not add dead code to Linux kernel.
-> 
-> > +#include "../../../sound/usb/exynos_usb_audio.h"
-> > +#include <linux/types.h>
-> > +#include "xhci-trace.h"
-> > +#endif
-> > +
-> > +#include "../core/hub.h"
-> > +#include "../core/phy.h"
-> > +#include "xhci.h"
-> > +#include "xhci-plat.h"
-> > +#include "xhci-mvebu.h"
-> > +#include "xhci-rcar.h"
-> > +#include "../dwc3/dwc3-exynos.h"
-> > +#include "../dwc3/exynos-otg.h"
-> 
-> No, how XHCI is related to dwc3? What if different block provides XHCI,
-> not DWC3?
-> 
-> > +#include "xhci-exynos.h"
-> > +#include <soc/samsung/exynos-cpupm.h>
-> 
-> This does not exist and does not even compile.
-> 
-> Please do not send code which does not compile... Also, just in case -
-> do not send code which compiles but does not work. :)
-> 
+My understanding of that discussion is that Wtype-limits is broken,
+and Linus pointed out many times that compiler warning on
 
-Hi Krzysztof
+    if ((unsigned int)foo < 0)
 
-I'm sorry to confuse you. But, it's just for reference module to introduce
-new feature. That's why I just submitted source code and header without
-makefile. It's not going to compiled at all now.
+is bogus. I.o.w. there is no issue with the code and hence nothing to fix.
 
-Best Regards,
-Jung Deahwan
+> Back to my patch, it successfully passes the lib/test_bits.c
+> build test (including the TEST_GENMASK_FAILURES) and it also
+> fixes the last open warning from the thread you pointed me to (on
+> drivers/crypto/inside-secure/safexcel.o):
+> https://lore.kernel.org/lkml/20200709123011.GA18734@gondor.apana.org.au/
+>
+> So, I am still not sure to understand what issue you see with my
+> patch. Is it that we should just not care about fixing W=2? Or
+> do you still see some issues which are not being addressed (if
+> so, sorry for not understanding)?
 
-> 
-> Best regards,
-> Krzysztof
-> 
+See above. You may Cc Linus himself to reignite the discussion.
 
-------CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_
-Content-Type: text/plain; charset="utf-8"
+> I do agree that fixing a W=2 has small value for all the files
+> which are still emitting some W=1. However, I think it is
+> beneficial to remove this W=2 spam for all the developers who
+> produced W=1 clean files and would like to tackle the W=2
+> warnings.
 
-
-------CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_--
-
+-- 
+With Best Regards,
+Andy Shevchenko
