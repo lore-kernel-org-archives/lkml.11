@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240032AbiCGK01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:26:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
+        id S240080AbiCGK0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240236AbiCGKGP (ORCPT
+        with ESMTP id S240276AbiCGKGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:06:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB89D75633;
-        Mon,  7 Mar 2022 01:52:20 -0800 (PST)
+        Mon, 7 Mar 2022 05:06:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC5E7EB30;
+        Mon,  7 Mar 2022 01:52:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98A56B80E70;
-        Mon,  7 Mar 2022 09:52:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18D8C340F3;
-        Mon,  7 Mar 2022 09:52:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C2A2B8102B;
+        Mon,  7 Mar 2022 09:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09AACC340F4;
+        Mon,  7 Mar 2022 09:52:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646728;
-        bh=G9AhXJMncP9M8uGCSalT39DSnLh5dH33AtDnouCfyEc=;
+        s=korg; t=1646646740;
+        bh=utN3Mg+TcaVZU78y1E4spj9075o+Spo/CeMcNVraL58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z5lnlKliJzF2gTo1aAg8UAo9pc9LMzaiPEPRW2OLljX9vPzyWRGZrpfQ5BnVLtACc
-         cVd+AxrcU1v1ymSS07TOGUCk9/QRPKkwktlQhnC5lPyeDZ+TuuUBL4cho1Y7oQAPo5
-         61Q4h1DgyltWpzr7ZOSSpCY9607Clep41JsZm+9M=
+        b=g1+vdAPwcuBfB3wzjGHMeGhXLbQW9N++LvjL4v2A0kVBY4kZdBVEpFPJsujs6MwpL
+         Hmx+sPyZ0VWhE2mNWo1hFEiVI+T1hyzfS98yEs1EFWsvIrtdyIKw6GnE1Hww5QiWuE
+         cDW1DUWKL1QfFiPox3sRe2xWMqKVoMSJpv+NADB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Stringer <joe@cilium.io>,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH 5.16 075/186] netfilter: nf_queue: handle socket prefetch
-Date:   Mon,  7 Mar 2022 10:18:33 +0100
-Message-Id: <20220307091656.186460618@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Nixdorf <j.nixdorf@avm.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 079/186] net: ipv6: ensure we call ipv6_mc_down() at most once
+Date:   Mon,  7 Mar 2022 10:18:37 +0100
+Message-Id: <20220307091656.296838128@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,53 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: j.nixdorf@avm.de <j.nixdorf@avm.de>
 
-commit 3b836da4081fa585cf6c392f62557496f2cb0efe upstream.
+commit 9995b408f17ff8c7f11bc725c8aa225ba3a63b1c upstream.
 
-In case someone combines bpf socket assign and nf_queue, then we will
-queue an skb who references a struct sock that did not have its
-reference count incremented.
+There are two reasons for addrconf_notify() to be called with NETDEV_DOWN:
+either the network device is actually going down, or IPv6 was disabled
+on the interface.
 
-As we leave rcu protection, there is no guarantee that skb->sk is still
-valid.
+If either of them stays down while the other is toggled, we repeatedly
+call the code for NETDEV_DOWN, including ipv6_mc_down(), while never
+calling the corresponding ipv6_mc_up() in between. This will cause a
+new entry in idev->mc_tomb to be allocated for each multicast group
+the interface is subscribed to, which in turn leaks one struct ifmcaddr6
+per nontrivial multicast group the interface is subscribed to.
 
-For refcount-less skb->sk case, try to increment the reference count
-and then override the destructor.
+The following reproducer will leak at least $n objects:
 
-In case of failure we have two choices: orphan the skb and 'delete'
-preselect or let nf_queue() drop the packet.
+ip addr add ff2e::4242/32 dev eth0 autojoin
+sysctl -w net.ipv6.conf.eth0.disable_ipv6=1
+for i in $(seq 1 $n); do
+	ip link set up eth0; ip link set down eth0
+done
 
-Do the latter, it should not happen during normal operation.
+Joining groups with IPV6_ADD_MEMBERSHIP (unprivileged) or setting the
+sysctl net.ipv6.conf.eth0.forwarding to 1 (=> subscribing to ff02::2)
+can also be used to create a nontrivial idev->mc_list, which will the
+leak objects with the right up-down-sequence.
 
-Fixes: cf7fbe660f2d ("bpf: Add socket assign support")
-Acked-by: Joe Stringer <joe@cilium.io>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Based on both sources for NETDEV_DOWN events the interface IPv6 state
+should be considered:
+
+ - not ready if the network interface is not ready OR IPv6 is disabled
+   for it
+ - ready if the network interface is ready AND IPv6 is enabled for it
+
+The functions ipv6_mc_up() and ipv6_down() should only be run when this
+state changes.
+
+Implement this by remembering when the IPv6 state is ready, and only
+run ipv6_mc_down() if it actually changed from ready to not ready.
+
+The other direction (not ready -> ready) already works correctly, as:
+
+ - the interface notification triggered codepath for NETDEV_UP /
+   NETDEV_CHANGE returns early if ipv6 is disabled, and
+ - the disable_ipv6=0 triggered codepath skips fully initializing the
+   interface as long as addrconf_link_ready(dev) returns false
+ - calling ipv6_mc_up() repeatedly does not leak anything
+
+Fixes: 3ce62a84d53c ("ipv6: exit early in addrconf_notify() if IPv6 is disabled")
+Signed-off-by: Johannes Nixdorf <j.nixdorf@avm.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_queue.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/ipv6/addrconf.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/net/netfilter/nf_queue.c
-+++ b/net/netfilter/nf_queue.c
-@@ -180,6 +180,18 @@ static int __nf_queue(struct sk_buff *sk
- 		break;
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3732,6 +3732,7 @@ static int addrconf_ifdown(struct net_de
+ 	struct inet6_dev *idev;
+ 	struct inet6_ifaddr *ifa, *tmp;
+ 	bool keep_addr = false;
++	bool was_ready;
+ 	int state, i;
+ 
+ 	ASSERT_RTNL();
+@@ -3797,7 +3798,10 @@ restart:
+ 
+ 	addrconf_del_rs_timer(idev);
+ 
+-	/* Step 2: clear flags for stateless addrconf */
++	/* Step 2: clear flags for stateless addrconf, repeated down
++	 *         detection
++	 */
++	was_ready = idev->if_flags & IF_READY;
+ 	if (!unregister)
+ 		idev->if_flags &= ~(IF_RS_SENT|IF_RA_RCVD|IF_READY);
+ 
+@@ -3871,7 +3875,7 @@ restart:
+ 	if (unregister) {
+ 		ipv6_ac_destroy_dev(idev);
+ 		ipv6_mc_destroy_dev(idev);
+-	} else {
++	} else if (was_ready) {
+ 		ipv6_mc_down(idev);
  	}
  
-+	if (skb_sk_is_prefetched(skb)) {
-+		struct sock *sk = skb->sk;
-+
-+		if (!sk_is_refcounted(sk)) {
-+			if (!refcount_inc_not_zero(&sk->sk_refcnt))
-+				return -ENOTCONN;
-+
-+			/* drop refcount on skb_orphan */
-+			skb->destructor = sock_edemux;
-+		}
-+	}
-+
- 	entry = kmalloc(sizeof(*entry) + route_key_size, GFP_ATOMIC);
- 	if (!entry)
- 		return -ENOMEM;
 
 
