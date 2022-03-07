@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC92C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4CDC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238682AbiCGJs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
+        id S238666AbiCGJsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238962AbiCGJjE (ORCPT
+        with ESMTP id S238939AbiCGJjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF6D6FA09;
-        Mon,  7 Mar 2022 01:33:59 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33FB6F497;
+        Mon,  7 Mar 2022 01:33:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB51B810BC;
-        Mon,  7 Mar 2022 09:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C62B8C340F4;
-        Mon,  7 Mar 2022 09:33:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4930A6112D;
+        Mon,  7 Mar 2022 09:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5203AC340E9;
+        Mon,  7 Mar 2022 09:33:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645600;
-        bh=vlwTNAYAgE8F9s04cHSroX9szAOlz5Ksx8YUDyM/b/A=;
+        s=korg; t=1646645627;
+        bh=/JrGYYlRVSlwF13yn3rkv1ymypqZju2Z3HICRek2zkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=odMikfkCqACSkBfsaIvmUhKo7x3bnGJwyPrcvFRXsdNQsj7wsqmbDKHU+ImAMeFD6
-         otAV9HABGMClU/xVevuM/EFIL6A/jrvopzy6ShtQ05s/Qj8iP2RxzjB03VFykgReR9
-         5qa41xP6EzH9zjfddenVEpon8t02bdnM8TcFMnHs=
+        b=DW7TS+lb17pGqn+Rv4epf9TFdq3Essz4ppie/u69y4wQ4hEnbIL7rqUg05lphcjPj
+         LsX6OSC02uCsPJKwvLdLD9BJUMc1+6R2Jp/wYiRlq+aGCmf8NacYH/6uCCzIktGK4K
+         2HGIidv9YPyHvqgFATVte79Hhn6sAl4JCQUwv57o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anthoine Bourgeois <anthoine.bourgeois@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 083/105] ARM: dts: Use 32KiHz oscillator on devkit8000
-Date:   Mon,  7 Mar 2022 10:19:26 +0100
-Message-Id: <20220307091646.513939516@linuxfoundation.org>
+Subject: [PATCH 5.10 092/105] nl80211: Handle nla_memdup failures in handle_nan_filter
+Date:   Mon,  7 Mar 2022 10:19:35 +0100
+Message-Id: <20220307091646.766274785@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -50,86 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 8840f5460a23759403f1f2860429dcbcc2f04a65 ]
+[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
 
-Devkit8000 board seems to always used 32k_counter as clocksource.
-Restore this behavior.
+As there's potential for failure of the nla_memdup(),
+check the return value.
 
-If clocksource is back to 32k_counter, timer12 is now the clockevent
-source (as before) and timer2 is not longer needed here.
-
-This commit fixes the same issue observed with commit 23885389dbbb
-("ARM: dts: Fix timer regression for beagleboard revision c") when sleep
-is blocked until hitting keys over serial console.
-
-Fixes: aba1ad05da08 ("clocksource/drivers/timer-ti-dm: Add clockevent and clocksource support")
-Fixes: e428e250fde6 ("ARM: dts: Configure system timers for omap3")
-Signed-off-by: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-devkit8000-common.dtsi | 17 +----------------
- drivers/clocksource/timer-ti-dm-systimer.c     |  3 +--
- 2 files changed, 2 insertions(+), 18 deletions(-)
+ net/wireless/nl80211.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
-index 0df2b1dd07f6..6883ccb45600 100644
---- a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
-+++ b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
-@@ -158,11 +158,6 @@
- 	status = "disabled";
- };
- 
--/* Unusable as clocksource because of unreliable oscillator */
--&counter32k {
--	status = "disabled";
--};
--
- /* Unusable as clockevent because if unreliable oscillator, allow to idle */
- &timer1_target {
- 	/delete-property/ti,no-reset-on-init;
-@@ -172,7 +167,7 @@
- 	};
- };
- 
--/* Preferred always-on timer for clocksource */
-+/* Preferred timer for clockevent */
- &timer12_target {
- 	ti,no-reset-on-init;
- 	ti,no-idle;
-@@ -181,16 +176,6 @@
- 	};
- };
- 
--/* Preferred timer for clockevent */
--&timer2_target {
--	ti,no-reset-on-init;
--	ti,no-idle;
--	timer@0 {
--		assigned-clocks = <&gpt2_fck>;
--		assigned-clock-parents = <&sys_ck>;
--	};
--};
--
- &twl_gpio {
- 	ti,use-leds;
- 	/*
-diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
-index 5c40ca1d4740..1fccb457fcc5 100644
---- a/drivers/clocksource/timer-ti-dm-systimer.c
-+++ b/drivers/clocksource/timer-ti-dm-systimer.c
-@@ -241,8 +241,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
- 	bool quirk_unreliable_oscillator = false;
- 
- 	/* Quirk unreliable 32 KiHz oscillator with incomplete dts */
--	if (of_machine_is_compatible("ti,omap3-beagle-ab4") ||
--	    of_machine_is_compatible("timll,omap3-devkit8000")) {
-+	if (of_machine_is_compatible("ti,omap3-beagle-ab4")) {
- 		quirk_unreliable_oscillator = true;
- 		counter_32k = -ENODEV;
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 8fb0478888fb..07bd7b00b56d 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -12930,6 +12930,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	i = 0;
+ 	nla_for_each_nested(attr, attr_filter, rem) {
+ 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
++		if (!filter[i].filter)
++			goto err;
++
+ 		filter[i].len = nla_len(attr);
+ 		i++;
  	}
+@@ -12942,6 +12945,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	}
+ 
+ 	return 0;
++
++err:
++	i = 0;
++	nla_for_each_nested(attr, attr_filter, rem) {
++		kfree(filter[i].filter);
++		i++;
++	}
++	kfree(filter);
++	return -ENOMEM;
+ }
+ 
+ static int nl80211_nan_add_func(struct sk_buff *skb,
 -- 
 2.34.1
 
