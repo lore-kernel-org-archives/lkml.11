@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D55C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18508C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:41:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238256AbiCGKm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:42:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        id S240862AbiCGKme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:42:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241663AbiCGKU5 (ORCPT
+        with ESMTP id S241483AbiCGKUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:20:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C43A90CFD;
-        Mon,  7 Mar 2022 01:58:20 -0800 (PST)
+        Mon, 7 Mar 2022 05:20:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCA81FCC4;
+        Mon,  7 Mar 2022 01:58:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DF6A60929;
-        Mon,  7 Mar 2022 09:58:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F417C340F3;
-        Mon,  7 Mar 2022 09:58:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44BFBB810CC;
+        Mon,  7 Mar 2022 09:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8330EC340F3;
+        Mon,  7 Mar 2022 09:57:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647097;
-        bh=aU0Y04APZ85P1rnfe0lrNNhe9t5kaVF9E89VwKMrJ18=;
+        s=korg; t=1646647042;
+        bh=RaYjYkA7wIi0Rylirk2RdrKmYfd6H+amg6j5Og9zKEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCNKqfRbHJE5GAk7K6xIw2DCxX7m33aCSc6gzlnPUQ8gV1fOeKSg0RxyTTY0bgKvc
-         wtgvx7utSAjruQVwraQGuo3WjYhkbV35Mr0hhi7aWjCXWS8sHCQVFA4PCHZTs+lFfK
-         IAPwCKirvk3oTO3X/6HTxEPLuqVxiuJsL5pXXRzw=
+        b=OwuSc3pdL44PvCASXyuLpcH00tMdlvuOjeCYh7G4OI/bsLS4vj88HVDo5JOH5rZEz
+         upQr0bKhw64GZ1bqJUrdYOiYCVAAekHH+h16tegivtzfnqRIfKojlANkjmsKeV7U0X
+         Qs1Z5G+MDovuHSvdEksc1DYvVMkXKG5EQO+N2T80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
-        Vinay Belgaumkar <vinay.belgaumkar@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 156/186] drm/i915/guc/slpc: Correct the param count for unset param
-Date:   Mon,  7 Mar 2022 10:19:54 +0100
-Message-Id: <20220307091658.438179941@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 173/186] btrfs: fix lost prealloc extents beyond eof after full fsync
+Date:   Mon,  7 Mar 2022 10:20:11 +0100
+Message-Id: <20220307091658.914403782@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,42 +48,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinay Belgaumkar <vinay.belgaumkar@intel.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit 1b279f6ad467535c3b8a66b4edefaca2cdd5bdc3 ]
+commit d99478874355d3a7b9d86dfb5d7590d5b1754b1f upstream.
 
-SLPC unset param H2G only needs one parameter - the id of the
-param.
+When doing a full fsync, if we have prealloc extents beyond (or at) eof,
+and the leaves that contain them were not modified in the current
+transaction, we end up not logging them. This results in losing those
+extents when we replay the log after a power failure, since the inode is
+truncated to the current value of the logged i_size.
 
-Fixes: 025cb07bebfa ("drm/i915/guc/slpc: Cache platform frequency limits")
+Just like for the fast fsync path, we need to always log all prealloc
+extents starting at or beyond i_size. The fast fsync case was fixed in
+commit 471d557afed155 ("Btrfs: fix loss of prealloc extents past i_size
+after fsync log replay") but it missed the full fsync path. The problem
+exists since the very early days, when the log tree was added by
+commit e02119d5a7b439 ("Btrfs: Add a write ahead tree log to optimize
+synchronous operations").
 
-Suggested-by: Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>
-Signed-off-by: Vinay Belgaumkar <vinay.belgaumkar@intel.com>
-Reviewed-by: Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>
-Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220216181504.7155-1-vinay.belgaumkar@intel.com
-(cherry picked from commit 9648f1c3739505557d94ff749a4f32192ea81fe3)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Example reproducer:
+
+  $ mkfs.btrfs -f /dev/sdc
+  $ mount /dev/sdc /mnt
+
+  # Create our test file with many file extent items, so that they span
+  # several leaves of metadata, even if the node/page size is 64K. Use
+  # direct IO and not fsync/O_SYNC because it's both faster and it avoids
+  # clearing the full sync flag from the inode - we want the fsync below
+  # to trigger the slow full sync code path.
+  $ xfs_io -f -d -c "pwrite -b 4K 0 16M" /mnt/foo
+
+  # Now add two preallocated extents to our file without extending the
+  # file's size. One right at i_size, and another further beyond, leaving
+  # a gap between the two prealloc extents.
+  $ xfs_io -c "falloc -k 16M 1M" /mnt/foo
+  $ xfs_io -c "falloc -k 20M 1M" /mnt/foo
+
+  # Make sure everything is durably persisted and the transaction is
+  # committed. This makes all created extents to have a generation lower
+  # than the generation of the transaction used by the next write and
+  # fsync.
+  sync
+
+  # Now overwrite only the first extent, which will result in modifying
+  # only the first leaf of metadata for our inode. Then fsync it. This
+  # fsync will use the slow code path (inode full sync bit is set) because
+  # it's the first fsync since the inode was created/loaded.
+  $ xfs_io -c "pwrite 0 4K" -c "fsync" /mnt/foo
+
+  # Extent list before power failure.
+  $ xfs_io -c "fiemap -v" /mnt/foo
+  /mnt/foo:
+   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+     0: [0..7]:          2178048..2178055     8   0x0
+     1: [8..16383]:      26632..43007     16376   0x0
+     2: [16384..32767]:  2156544..2172927 16384   0x0
+     3: [32768..34815]:  2172928..2174975  2048 0x800
+     4: [34816..40959]:  hole              6144
+     5: [40960..43007]:  2174976..2177023  2048 0x801
+
+  <power fail>
+
+  # Mount fs again, trigger log replay.
+  $ mount /dev/sdc /mnt
+
+  # Extent list after power failure and log replay.
+  $ xfs_io -c "fiemap -v" /mnt/foo
+  /mnt/foo:
+   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+     0: [0..7]:          2178048..2178055     8   0x0
+     1: [8..16383]:      26632..43007     16376   0x0
+     2: [16384..32767]:  2156544..2172927 16384   0x1
+
+  # The prealloc extents at file offsets 16M and 20M are missing.
+
+So fix this by calling btrfs_log_prealloc_extents() when we are doing a
+full fsync, so that we always log all prealloc extents beyond eof.
+
+A test case for fstests will follow soon.
+
+CC: stable@vger.kernel.org # 4.19+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/gt/uc/intel_guc_slpc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/tree-log.c |   43 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_slpc.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_slpc.c
-index 65a3e7fdb2b2..95ff630157b9 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_slpc.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_slpc.c
-@@ -133,7 +133,7 @@ static int guc_action_slpc_unset_param(struct intel_guc *guc, u8 id)
- {
- 	u32 request[] = {
- 		GUC_ACTION_HOST2GUC_PC_SLPC_REQUEST,
--		SLPC_EVENT(SLPC_EVENT_PARAMETER_UNSET, 2),
-+		SLPC_EVENT(SLPC_EVENT_PARAMETER_UNSET, 1),
- 		id,
- 	};
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -4658,7 +4658,7 @@ static int log_one_extent(struct btrfs_t
  
--- 
-2.34.1
-
+ /*
+  * Log all prealloc extents beyond the inode's i_size to make sure we do not
+- * lose them after doing a fast fsync and replaying the log. We scan the
++ * lose them after doing a full/fast fsync and replaying the log. We scan the
+  * subvolume's root instead of iterating the inode's extent map tree because
+  * otherwise we can log incorrect extent items based on extent map conversion.
+  * That can happen due to the fact that extent maps are merged when they
+@@ -5437,6 +5437,7 @@ static int copy_inode_items_to_log(struc
+ 				   struct btrfs_log_ctx *ctx,
+ 				   bool *need_log_inode_item)
+ {
++	const u64 i_size = i_size_read(&inode->vfs_inode);
+ 	struct btrfs_root *root = inode->root;
+ 	int ins_start_slot = 0;
+ 	int ins_nr = 0;
+@@ -5457,13 +5458,21 @@ again:
+ 		if (min_key->type > max_key->type)
+ 			break;
+ 
+-		if (min_key->type == BTRFS_INODE_ITEM_KEY)
++		if (min_key->type == BTRFS_INODE_ITEM_KEY) {
+ 			*need_log_inode_item = false;
+-
+-		if ((min_key->type == BTRFS_INODE_REF_KEY ||
+-		     min_key->type == BTRFS_INODE_EXTREF_KEY) &&
+-		    inode->generation == trans->transid &&
+-		    !recursive_logging) {
++		} else if (min_key->type == BTRFS_EXTENT_DATA_KEY &&
++			   min_key->offset >= i_size) {
++			/*
++			 * Extents at and beyond eof are logged with
++			 * btrfs_log_prealloc_extents().
++			 * Only regular files have BTRFS_EXTENT_DATA_KEY keys,
++			 * and no keys greater than that, so bail out.
++			 */
++			break;
++		} else if ((min_key->type == BTRFS_INODE_REF_KEY ||
++			    min_key->type == BTRFS_INODE_EXTREF_KEY) &&
++			   inode->generation == trans->transid &&
++			   !recursive_logging) {
+ 			u64 other_ino = 0;
+ 			u64 other_parent = 0;
+ 
+@@ -5494,10 +5503,8 @@ again:
+ 				btrfs_release_path(path);
+ 				goto next_key;
+ 			}
+-		}
+-
+-		/* Skip xattrs, we log them later with btrfs_log_all_xattrs() */
+-		if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
++		} else if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
++			/* Skip xattrs, logged later with btrfs_log_all_xattrs() */
+ 			if (ins_nr == 0)
+ 				goto next_slot;
+ 			ret = copy_items(trans, inode, dst_path, path,
+@@ -5550,9 +5557,21 @@ next_key:
+ 			break;
+ 		}
+ 	}
+-	if (ins_nr)
++	if (ins_nr) {
+ 		ret = copy_items(trans, inode, dst_path, path, ins_start_slot,
+ 				 ins_nr, inode_only, logged_isize);
++		if (ret)
++			return ret;
++	}
++
++	if (inode_only == LOG_INODE_ALL && S_ISREG(inode->vfs_inode.i_mode)) {
++		/*
++		 * Release the path because otherwise we might attempt to double
++		 * lock the same leaf with btrfs_log_prealloc_extents() below.
++		 */
++		btrfs_release_path(path);
++		ret = btrfs_log_prealloc_extents(trans, inode, dst_path);
++	}
+ 
+ 	return ret;
+ }
 
 
