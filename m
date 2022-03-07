@@ -2,99 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D52CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C25B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbiCGPA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:00:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44932 "EHLO
+        id S243423AbiCGPBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243285AbiCGPAx (ORCPT
+        with ESMTP id S231381AbiCGPBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:00:53 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B184C3CA65;
-        Mon,  7 Mar 2022 06:59:58 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id w4so17779258edc.7;
-        Mon, 07 Mar 2022 06:59:58 -0800 (PST)
+        Mon, 7 Mar 2022 10:01:23 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F13F33A19
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:00:28 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id l12so20785292ljh.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 07:00:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=VVnlaWLoAj4ztYijY1PVJxwx/BOoH/almjRyiU6VmRk=;
-        b=U/2luno5Chz3HyhMJsWNx9qQ1evwDAUbNkzGgKymgJHrNHS4ZLz3I6xud1s1X+s6Fi
-         rdyW+PV0npzc1qR0Z58dXus71PCDmTFIG/OG8OcDBZb3oYjqRTigMYgCH/DGf6A+3EMu
-         It5Evf9qGVfZZ7TUMNPInYS4J7pXjPqLl78tkpt0A4BCOloWgGApEaUBWR8Yb36tfv/s
-         OQ+lq3TvX5cjO1tygs0wkg9hQ+VqlgcH7D5sF4GZhXRO/w6gQNWaC216KkiYUMjszZ75
-         bCHFzgqfuNE500qkjS4re6PcidMvohmAU6xeNyJ1YCC1DZESS68G5/Ji3mgHcRygrwuj
-         X2xA==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=lJtjgve15KcPn5Fu9Ouzt1Wk99mJhKfetxwppVZu8NU=;
+        b=rwzKJtfJcICD1GmZEURxv1cmkMof2PEdjv5T839FXmnrp5OrFhLyJki6sy+pSUlouq
+         FkJcaTnPE0OsYdLxfzl1mZfg32F7cWz3dib3rPMfKtItblXggw3jt/GNeSww2Ef8C0uL
+         gyCBWhvKdWplhwbMHUjSVg/A4U3pOa2AEFqs0Phgz4YKo4ofnItLOnnsOFPyfe5tuG9c
+         SRp17Nn+DG+7vAp6nAiUeZ0nlmc/T6scQ7SoFo96XmvP3lxxmN6LV8/n9/JTppfaLVe9
+         8HNaUTibEAkvzt7SOMwMxVQpx7SIgwmp4x7xJ+DAJcInoaBFW8aYsQ1N6wiUFHnDl3qU
+         mGQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=VVnlaWLoAj4ztYijY1PVJxwx/BOoH/almjRyiU6VmRk=;
-        b=OTtFdq/U8FjpsCDLxVWYCZ4DlpSFM9td2TZdmRW7vbJ0O5Te97Gf2VCQJ4Y4NTZ4wg
-         I6kRf4inFBFyhx2H5QZBjn3vjPUlrzOdNoAl3gwV5JWjZcj/4S9GqCbuyh0PNnoEbM9l
-         773SUtjAj/I12tOlIMNkMLTZATnjFUmqXf6ZS0feFlEzUfsmcVLEIOrLCG2oWFMDAb+o
-         mKpdrffqcV8qXd52mmfrK0FiSyNKEp8G9g7SeuBE7S2gbpvakXG+zXchE5iQEto2pVdW
-         NVRh9bHyMMDqvfbEGs+CHpRwfT6jCP0OXTD/2nUF66d8ID3rna3UAWo0EJrwam7BvHbt
-         H9LQ==
-X-Gm-Message-State: AOAM5326BvMT7jkP4S8wTOxLE8eSO7/aXoaompgjWCyTsFPgkMfLRJfR
-        l4SiqVVxm9sY7swNbPpssBM=
-X-Google-Smtp-Source: ABdhPJz+iG+iwPoRYF1WfXSNBaaS2QmqI3mVJ9w/cDNyUryjnV1HzUyeATY108wz4okfIFkZMbHYWA==
-X-Received: by 2002:aa7:c5d7:0:b0:415:ee77:d6f2 with SMTP id h23-20020aa7c5d7000000b00415ee77d6f2mr11542074eds.208.1646665197090;
-        Mon, 07 Mar 2022 06:59:57 -0800 (PST)
-Received: from felia.fritz.box (200116b826f87d0045da35f0fd1c76e8.dip.versatel-1u1.de. [2001:16b8:26f8:7d00:45da:35f0:fd1c:76e8])
-        by smtp.gmail.com with ESMTPSA id h30-20020a056402095e00b00412b81dd96esm6218261edz.29.2022.03.07.06.59.55
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=lJtjgve15KcPn5Fu9Ouzt1Wk99mJhKfetxwppVZu8NU=;
+        b=gK0NX8QvFNyKvn+nennTk0s4+hOyotLp9ReP0ycHR+mpFLHsMWZClWFsU3mEgwovkn
+         QOL+qkaXLoUN4sr3TWO9TFai/+k+ZtgLPth+VJ4cK6XvTCYlWEi9Pc75OznrnCh3OyPr
+         JGXNShZkszkUpperCBhLPWG/nK6GpAwqtDenBBzf1csPJSa9h6kr01hnUlpyZO+x2iFK
+         5VQL/WVGJJgWFSGOWjHkt3wvokJOl32mXXzuGQ6jYhxD5kMYG9OW9YSGw/e8HubxSjp0
+         nmnmJqwV5V8VTPlqYAO3xFXmvQ5umnECQVDY/4DkWUp9z14yw2ZQcyV7K9faI1Cu1Y9r
+         SeGg==
+X-Gm-Message-State: AOAM532290SqN7A/CJcrqyR7aNiZEYnis1YFiD5uE255o5Usdbp1VdTv
+        jCXtWocFixVsqLdNxvoyFz2LbQ==
+X-Google-Smtp-Source: ABdhPJz4S0r8jeA4pBXHSvd68+6vZd78S3Itpg6kY1EELmS5SoYS0Tra6J0HwgxD0edOvclP8e5G3w==
+X-Received: by 2002:a05:651c:a0e:b0:247:daa7:4357 with SMTP id k14-20020a05651c0a0e00b00247daa74357mr7281184ljq.180.1646665224088;
+        Mon, 07 Mar 2022 07:00:24 -0800 (PST)
+Received: from wkz-x280 (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id bi25-20020a0565120e9900b0044757d26a47sm2498865lfb.290.2022.03.07.07.00.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 06:59:56 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-media@vger.kernel.org, linux-tegra@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-staging@lists.linux.dev, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: rectify entry for  MEDIA DRIVERS FOR NVIDIA TEGRA - VDE
-Date:   Mon,  7 Mar 2022 15:59:35 +0100
-Message-Id: <20220307145935.13178-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 07 Mar 2022 07:00:23 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 03/10] net: bridge: mst: Support setting and
+ reporting MST port states
+In-Reply-To: <53EED92D-FEAC-4CC6-AF2A-52E73F839AB5@blackwall.org>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
+ <20220301100321.951175-4-tobias@waldekranz.com>
+ <53EED92D-FEAC-4CC6-AF2A-52E73F839AB5@blackwall.org>
+Date:   Mon, 07 Mar 2022 16:00:22 +0100
+Message-ID: <874k49olix.fsf@waldekranz.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit ccc3016261ed ("media: dt: bindings: tegra-vde: Convert to schema")
-converts nvidia,tegra-vde.txt to nvidia,tegra-vde.yaml, but missed to
-adjust its reference in MAINTAINERS.
+On Wed, Mar 02, 2022 at 00:19, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> On 1 March 2022 11:03:14 CET, Tobias Waldekranz <tobias@waldekranz.com> wrote:
+>>Make it possible to change the port state in a given MSTI. This is
+>>done through a new netlink interface, since the MSTIs are objects in
+>>their own right. The proposed iproute2 interface would be:
+>>
+>>    bridge mst set dev <PORT> msti <MSTI> state <STATE>
+>>
+>>Current states in all applicable MSTIs can also be dumped. The
+>>proposed iproute interface looks like this:
+>>
+>>$ bridge mst
+>>port              msti
+>>vb1               0
+>>		    state forwarding
+>>		  100
+>>		    state disabled
+>>vb2               0
+>>		    state forwarding
+>>		  100
+>>		    state forwarding
+>>
+>>The preexisting per-VLAN states are still valid in the MST
+>>mode (although they are read-only), and can be queried as usual if one
+>>is interested in knowing a particular VLAN's state without having to
+>>care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
+>>bound to MSTI 100):
+>>
+>>$ bridge -d vlan
+>>port              vlan-id
+>>vb1               10
+>>		    state forwarding mcast_router 1
+>>		  20
+>>		    state disabled mcast_router 1
+>>		  30
+>>		    state disabled mcast_router 1
+>>		  40
+>>		    state forwarding mcast_router 1
+>>vb2               10
+>>		    state forwarding mcast_router 1
+>>		  20
+>>		    state forwarding mcast_router 1
+>>		  30
+>>		    state forwarding mcast_router 1
+>>		  40
+>>		    state forwarding mcast_router 1
+>>
+>>Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>>---
+>> include/uapi/linux/if_bridge.h |  16 +++
+>> include/uapi/linux/rtnetlink.h |   5 +
+>> net/bridge/br_mst.c            | 244 +++++++++++++++++++++++++++++++++
+>> net/bridge/br_netlink.c        |   3 +
+>> net/bridge/br_private.h        |   4 +
+>> 5 files changed, 272 insertions(+)
+>>
+>>diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+>>index b68016f625b7..784482527861 100644
+>>--- a/include/uapi/linux/if_bridge.h
+>>+++ b/include/uapi/linux/if_bridge.h
+>>@@ -785,4 +785,20 @@ enum {
+>> 	__BRIDGE_QUERIER_MAX
+>> };
+>> #define BRIDGE_QUERIER_MAX (__BRIDGE_QUERIER_MAX - 1)
+>>+
+>>+enum {
+>>+	BRIDGE_MST_UNSPEC,
+>>+	BRIDGE_MST_ENTRY,
+>>+	__BRIDGE_MST_MAX,
+>>+};
+>>+#define BRIDGE_MST_MAX (__BRIDGE_MST_MAX - 1)
+>>+
+>>+enum {
+>>+	BRIDGE_MST_ENTRY_UNSPEC,
+>>+	BRIDGE_MST_ENTRY_MSTI,
+>>+	BRIDGE_MST_ENTRY_STATE,
+>>+	__BRIDGE_MST_ENTRY_MAX,
+>>+};
+>>+#define BRIDGE_MST_ENTRY_MAX (__BRIDGE_MST_ENTRY_MAX - 1)
+>>+
+>> #endif /* _UAPI_LINUX_IF_BRIDGE_H */
+>>diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+>>index 0970cb4b1b88..4a48f3ce862c 100644
+>>--- a/include/uapi/linux/rtnetlink.h
+>>+++ b/include/uapi/linux/rtnetlink.h
+>>@@ -192,6 +192,11 @@ enum {
+>> 	RTM_GETTUNNEL,
+>> #define RTM_GETTUNNEL	RTM_GETTUNNEL
+>> 
+>>+	RTM_GETMST = 124 + 2,
+>>+#define RTM_GETMST	RTM_GETMST
+>>+	RTM_SETMST,
+>>+#define RTM_SETMST	RTM_SETMST
+>>+
+>
+> I think you should also update selinux  (see nlmsgtab.c)
+> I'll think about this one, if there is some nice way to avoid the new rtm types.
+>
+>> 	__RTM_MAX,
+>> #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
+>> };
+>>diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
+>>index f3b8e279b85c..8dea8e7257fd 100644
+>>--- a/net/bridge/br_mst.c
+>>+++ b/net/bridge/br_mst.c
+>>@@ -120,3 +120,247 @@ int br_mst_set_enabled(struct net_bridge *br, unsigned long val)
+>> 	br_opt_toggle(br, BROPT_MST_ENABLED, !!val);
+>> 	return 0;
+>> }
+>>+
+>>+static int br_mst_nl_get_one(struct net_bridge_port *p, struct sk_buff *skb,
+>>+			     struct netlink_callback *cb)
+>>+{
+>>+	struct net_bridge_vlan_group *vg = nbp_vlan_group(p);
+>>+	int err = 0, idx = 0, s_idx = cb->args[1];
+>>+	struct net_bridge_vlan *v;
+>>+	struct br_port_msg *bpm;
+>>+	struct nlmsghdr *nlh;
+>>+	struct nlattr *nest;
+>>+	unsigned long *seen;
+>>+
+>
+> Reverse xmas tree
 
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
+Both of these lines end at the 28th column. Is there some other
+tiebreaking mechanism that forces the reverse ordering of nest and seen?
 
-Repair this file reference in  MEDIA DRIVERS FOR NVIDIA TEGRA - VDE.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Dmitry, please ack.
-
-Thierry, please pick this minor non-urgent clean-up patch.
-
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 05fd080b82f3..2b96a22cf5ea 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11964,7 +11964,7 @@ L:	linux-media@vger.kernel.org
- L:	linux-tegra@vger.kernel.org
- S:	Maintained
- T:	git git://linuxtv.org/media_tree.git
--F:	Documentation/devicetree/bindings/media/nvidia,tegra-vde.txt
-+F:	Documentation/devicetree/bindings/media/nvidia,tegra-vde.yaml
- F:	drivers/staging/media/tegra-vde/
- 
- MEDIA DRIVERS FOR RENESAS - CEU
--- 
-2.17.1
-
+In a variable-width font, the nest declaration does appear shorter. I
+remember that you did not have your laptop with you, could that be it?
