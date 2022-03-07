@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:26:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235699AbiCGJ1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:27:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34238 "EHLO
+        id S236971AbiCGJ10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:27:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236436AbiCGJYL (ORCPT
+        with ESMTP id S235906AbiCGJYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:24:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387B3574A0;
-        Mon,  7 Mar 2022 01:23:17 -0800 (PST)
+        Mon, 7 Mar 2022 04:24:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56360580CB;
+        Mon,  7 Mar 2022 01:23:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D310BB810B2;
-        Mon,  7 Mar 2022 09:23:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22DC0C340E9;
-        Mon,  7 Mar 2022 09:23:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B4F4B80E70;
+        Mon,  7 Mar 2022 09:23:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5C7C340F3;
+        Mon,  7 Mar 2022 09:23:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644994;
-        bh=wghIGJkzpuodDEQFADyhIM+kLpXkawWG1rofmq3dkMY=;
+        s=korg; t=1646644997;
+        bh=U+Dj2hBlrheb83UZAlhZx5uzVl4V2xZS06Hq45i0zKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnWpyyOHp8ddj50uFnkoMEw4un7lRkeH2wxaCepTUt7ruSOFwXYp8lrzKltDHjuqY
-         VaCfqw7bAu1d85bcxqPGP3N1jTb2MgVVHyJiB8Y18hOECPnPrqJm1eyS88vuSEPjf0
-         9O7H2KsBg2+DwddyOYV9kKjajKy2e3AyVi6T6jvk=
+        b=OOEvl3P/RgZpBHPLP/fVCT2Pxl944bJ+fwsN2zmrzT0aXmlCRd6QGV8BKhQlwy4VF
+         Mif2P5R2WRy//5uSLKNJYe3sUMGooFByu2BMieX3FdmPbXtfwsuSL5MZly8GMAoliw
+         e8yWRQ3JMsMseNsZetA9lqEeQdoWK3FJEekK6a1Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
-        Johan Hovold <johan@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.14 27/42] firmware: qemu_fw_cfg: fix kobject leak in probe error path
-Date:   Mon,  7 Mar 2022 10:19:01 +0100
-Message-Id: <20220307091636.941846628@linuxfoundation.org>
+        stable@vger.kernel.org, Remi Pommarel <repk@triplefau.lt>,
+        Nicolas Escande <nico.escande@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.14 28/42] mac80211: fix forwarded mesh frames AC & queue selection
+Date:   Mon,  7 Mar 2022 10:19:02 +0100
+Message-Id: <20220307091636.972016857@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -49,69 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Nicolas Escande <nico.escande@gmail.com>
 
-commit 47a1db8e797da01a1309bf42e0c0d771d4e4d4f3 upstream.
+commit 859ae7018316daa4adbc496012dcbbb458d7e510 upstream.
 
-An initialised kobject must be freed using kobject_put() to avoid
-leaking associated resources (e.g. the object name).
+There are two problems with the current code that have been highlighted
+with the AQL feature that is now enbaled by default.
 
-Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
-the leak in the first error path of the file registration helper but
-left the second one unchanged. This "fix" would however result in a NULL
-pointer dereference due to the release function also removing the never
-added entry from the fw_cfg_entry_cache list. This has now been
-addressed.
+First problem is in ieee80211_rx_h_mesh_fwding(),
+ieee80211_select_queue_80211() is used on received packets to choose
+the sending AC queue of the forwarding packet although this function
+should only be called on TX packet (it uses ieee80211_tx_info).
+This ends with forwarded mesh packets been sent on unrelated random AC
+queue. To fix that, AC queue can directly be infered from skb->priority
+which has been extracted from QOS info (see ieee80211_parse_qos()).
 
-Fix the remaining kobject leak by restoring the common error path and
-adding the missing kobject_put().
+Second problem is the value of queue_mapping set on forwarded mesh
+frames via skb_set_queue_mapping() is not the AC of the packet but a
+hardware queue index. This may or may not work depending on AC to HW
+queue mapping which is driver specific.
 
-Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
-Cc: stable@vger.kernel.org      # 4.6
-Cc: Gabriel Somlo <somlo@cmu.edu>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-3-johan@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Both of these issues lead to improper AC selection while forwarding
+mesh packets but more importantly due to improper airtime accounting
+(which is done on a per STA, per AC basis) caused traffic stall with
+the introduction of AQL.
+
+Fixes: cf44012810cc ("mac80211: fix unnecessary frame drops in mesh fwding")
+Fixes: d3c1597b8d1b ("mac80211: fix forwarded mesh frame queue mapping")
+Co-developed-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Nicolas Escande <nico.escande@gmail.com>
+Link: https://lore.kernel.org/r/20220214173214.368862-1-nico.escande@gmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/qemu_fw_cfg.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ net/mac80211/rx.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -461,15 +461,13 @@ static int fw_cfg_register_file(const st
- 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
- 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
- 				   fw_cfg_sel_ko, "%d", entry->f.select);
--	if (err) {
--		kobject_put(&entry->kobj);
--		return err;
--	}
-+	if (err)
-+		goto err_put_entry;
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2631,13 +2631,13 @@ ieee80211_rx_h_mesh_fwding(struct ieee80
+ 	    ether_addr_equal(sdata->vif.addr, hdr->addr3))
+ 		return RX_CONTINUE;
  
- 	/* add raw binary content access */
- 	err = sysfs_create_bin_file(&entry->kobj, &fw_cfg_sysfs_attr_raw);
- 	if (err)
--		goto err_add_raw;
-+		goto err_del_entry;
+-	ac = ieee80211_select_queue_80211(sdata, skb, hdr);
++	ac = ieee802_1d_to_ac[skb->priority];
+ 	q = sdata->vif.hw_queue[ac];
+ 	if (ieee80211_queue_stopped(&local->hw, q)) {
+ 		IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, dropped_frames_congestion);
+ 		return RX_DROP_MONITOR;
+ 	}
+-	skb_set_queue_mapping(skb, q);
++	skb_set_queue_mapping(skb, ac);
  
- 	/* try adding "/sys/firmware/qemu_fw_cfg/by_name/" symlink */
- 	fw_cfg_build_symlink(fw_cfg_fname_kset, &entry->kobj, entry->f.name);
-@@ -478,9 +476,10 @@ static int fw_cfg_register_file(const st
- 	fw_cfg_sysfs_cache_enlist(entry);
- 	return 0;
- 
--err_add_raw:
-+err_del_entry:
- 	kobject_del(&entry->kobj);
--	kfree(entry);
-+err_put_entry:
-+	kobject_put(&entry->kobj);
- 	return err;
- }
- 
+ 	if (!--mesh_hdr->ttl) {
+ 		if (!is_multicast_ether_addr(hdr->addr1))
 
 
