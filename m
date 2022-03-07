@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E11EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B30ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235894AbiCGK0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:26:37 -0500
+        id S239094AbiCGK0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:26:43 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240284AbiCGKGl (ORCPT
+        with ESMTP id S240520AbiCGKIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:06:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026AE75E65;
-        Mon,  7 Mar 2022 01:52:25 -0800 (PST)
+        Mon, 7 Mar 2022 05:08:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D275BC86;
+        Mon,  7 Mar 2022 01:52:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96A7BB810B2;
-        Mon,  7 Mar 2022 09:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E90A0C340F4;
-        Mon,  7 Mar 2022 09:52:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9982B810A8;
+        Mon,  7 Mar 2022 09:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CEC0C340F4;
+        Mon,  7 Mar 2022 09:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646743;
-        bh=Fc98zMDhL8Mmh0dv/2NfafLTu+ILc5NmvsEARaw9H/M=;
+        s=korg; t=1646646746;
+        bh=939F57jTkV6r9LaQ26ldiqNZbd7zamWH3q3bvHXYq7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rsjon+fg1HlMsG9PpN9Xmb53DYA7u3U50i67WPlkOArMfBsSZpl/X2S+mr0jxCmHg
-         WfjL3oH+ealz7h2aNzxOsBdXqhtYR+VtzORrri0JYnknVNU1wUEhy2ASijX5ugvzQ+
-         VpqAZIB72/4cND9Ux28jtioQqP6OnjWECqreX0WQ=
+        b=WC1Ms1jriB++aEdVMhk7Ti8UEU9UH5xVSu9FkgRXQ2HYiiYjAjXyy2ZPc6Lusj4g+
+         +ec9Fe+NQqeKIDQrXHBj1wR4U31+nBHKvYNjl0FvUIZkTk51Im6QZYK04l9Ja5NyIS
+         RUK2GwogZerNqbPzMwYXB9KIslovU7NSVQX7sOFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Alex Elder <elder@linaro.org>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 080/186] net: dcb: flush lingering app table entries for unregistered devices
-Date:   Mon,  7 Mar 2022 10:18:38 +0100
-Message-Id: <20220307091656.324980468@linuxfoundation.org>
+Subject: [PATCH 5.16 081/186] net: ipa: fix a build dependency
+Date:   Mon,  7 Mar 2022 10:18:39 +0100
+Message-Id: <20220307091656.352609325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,101 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Alex Elder <elder@linaro.org>
 
-commit 91b0383fef06f20b847fa9e4f0e3054ead0b1a1b upstream.
+commit caef14b7530c065fb85d54492768fa48fdb5093e upstream.
 
-If I'm not mistaken (and I don't think I am), the way in which the
-dcbnl_ops work is that drivers call dcb_ieee_setapp() and this populates
-the application table with dynamically allocated struct dcb_app_type
-entries that are kept in the module-global dcb_app_list.
+An IPA build problem arose in the linux-next tree the other day.
+The problem is that a recent commit adds a new dependency on some
+code, and the Kconfig file for IPA doesn't reflect that dependency.
+As a result, some configurations can fail to build (particularly
+when COMPILE_TEST is enabled).
 
-However, nobody keeps exact track of these entries, and although
-dcb_ieee_delapp() is supposed to remove them, nobody does so when the
-interface goes away (example: driver unbinds from device). So the
-dcb_app_list will contain lingering entries with an ifindex that no
-longer matches any device in dcb_app_lookup().
+The recent patch adds calls to qmp_get(), qmp_put(), and qmp_send(),
+and those are built based on the QCOM_AOSS_QMP config option.  If
+that symbol is not defined, stubs are defined, so we just need to
+ensure QCOM_AOSS_QMP is compatible with QCOM_IPA, or it's not
+defined.
 
-Reclaim the lost memory by listening for the NETDEV_UNREGISTER event and
-flushing the app table entries of interfaces that are now gone.
-
-In fact something like this used to be done as part of the initial
-commit (blamed below), but it was done in dcbnl_exit() -> dcb_flushapp(),
-essentially at module_exit time. That became dead code after commit
-7a6b6f515f77 ("DCB: fix kconfig option") which essentially merged
-"tristate config DCB" and "bool config DCBNL" into a single "bool config
-DCB", so net/dcb/dcbnl.c could not be built as a module anymore.
-
-Commit 36b9ad8084bd ("net/dcb: make dcbnl.c explicitly non-modular")
-recognized this and deleted dcbnl_exit() and dcb_flushapp() altogether,
-leaving us with the version we have today.
-
-Since flushing application table entries can and should be done as soon
-as the netdevice disappears, fundamentally the commit that is to blame
-is the one that introduced the design of this API.
-
-Fixes: 9ab933ab2cc8 ("dcbnl: add appliction tlv handlers")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Fixes: 34a081761e4e3 ("net: ipa: request IPA register values be retained")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/dcb/dcbnl.c |   44 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/net/ipa/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -2073,8 +2073,52 @@ u8 dcb_ieee_getapp_default_prio_mask(con
- }
- EXPORT_SYMBOL(dcb_ieee_getapp_default_prio_mask);
- 
-+static void dcbnl_flush_dev(struct net_device *dev)
-+{
-+	struct dcb_app_type *itr, *tmp;
-+
-+	spin_lock(&dcb_lock);
-+
-+	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
-+		if (itr->ifindex == dev->ifindex) {
-+			list_del(&itr->list);
-+			kfree(itr);
-+		}
-+	}
-+
-+	spin_unlock(&dcb_lock);
-+}
-+
-+static int dcbnl_netdevice_event(struct notifier_block *nb,
-+				 unsigned long event, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+
-+	switch (event) {
-+	case NETDEV_UNREGISTER:
-+		if (!dev->dcbnl_ops)
-+			return NOTIFY_DONE;
-+
-+		dcbnl_flush_dev(dev);
-+
-+		return NOTIFY_OK;
-+	default:
-+		return NOTIFY_DONE;
-+	}
-+}
-+
-+static struct notifier_block dcbnl_nb __read_mostly = {
-+	.notifier_call  = dcbnl_netdevice_event,
-+};
-+
- static int __init dcbnl_init(void)
- {
-+	int err;
-+
-+	err = register_netdevice_notifier(&dcbnl_nb);
-+	if (err)
-+		return err;
-+
- 	rtnl_register(PF_UNSPEC, RTM_GETDCB, dcb_doit, NULL, 0);
- 	rtnl_register(PF_UNSPEC, RTM_SETDCB, dcb_doit, NULL, 0);
- 
+--- a/drivers/net/ipa/Kconfig
++++ b/drivers/net/ipa/Kconfig
+@@ -3,6 +3,7 @@ config QCOM_IPA
+ 	depends on NET && QCOM_SMEM
+ 	depends on ARCH_QCOM || COMPILE_TEST
+ 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
++	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
+ 	select QCOM_MDT_LOADER if ARCH_QCOM
+ 	select QCOM_SCM
+ 	select QCOM_QMI_HELPERS
 
 
