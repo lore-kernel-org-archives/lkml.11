@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46227C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5562AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238157AbiCGJra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
+        id S237929AbiCGJrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:47:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238484AbiCGJi3 (ORCPT
+        with ESMTP id S238519AbiCGJib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:29 -0500
+        Mon, 7 Mar 2022 04:38:31 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08D8DEB4;
-        Mon,  7 Mar 2022 01:32:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E059424A4;
+        Mon,  7 Mar 2022 01:32:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DB626116E;
-        Mon,  7 Mar 2022 09:32:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718E7C340F4;
-        Mon,  7 Mar 2022 09:32:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47116611AE;
+        Mon,  7 Mar 2022 09:32:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 458B8C340E9;
+        Mon,  7 Mar 2022 09:32:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645548;
-        bh=fix1Ic/MVIZyCd2ZMrJfuzWmXa+3o2U4zW3oE7H2cfw=;
+        s=korg; t=1646645554;
+        bh=s7RKyKCdoWIbiAKu7tIbVIF6+FyE4HSjQxDrQ1ZCu5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EnBdxbA6RlieUUl2+JNKam/IVYTYYLnmJa5cRIGCedZ8+WMaoPLIo/uuOH9iIKeVY
-         huW7jRLvlQRPFJKqkEZQefiI2jd5NOqBVC+ZfanEN6aqtb5aA4RanfoUm2ApexOw6U
-         MqmNOn656CwE0770SRD/ufSnlu8tRwA9UVn5Eo+8=
+        b=V9TQ1BL6B2S2OlFWu5HiNgINEgdG08Qt0P/H1XDbGz7U4HPyWsrO9VypMpVtUq7eC
+         ZwrxpfWmRdQrc7kgpHXo7F4DzjIUuLkurhLOsBVMffKNTGiEYYHGKfR45dC/zRnbfh
+         kSfzMsyX+yDIqQvnmbBo2hgvM/nJPo9/eIAy5O3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhen Ni <nizhen@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 025/105] ALSA: intel_hdmi: Fix reference to PCM buffer address
-Date:   Mon,  7 Mar 2022 10:18:28 +0100
-Message-Id: <20220307091644.889542619@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.10 027/105] riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
+Date:   Mon,  7 Mar 2022 10:18:30 +0100
+Message-Id: <20220307091644.944399615@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,35 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-commit 0aa6b294b312d9710804679abd2c0c8ca52cc2bc upstream.
+commit a3d328037846d013bb4c7f3777241e190e4c75e1 upstream.
 
-PCM buffers might be allocated dynamically when the buffer
-preallocation failed or a larger buffer is requested, and it's not
-guaranteed that substream->dma_buffer points to the actually used
-buffer.  The driver needs to refer to substream->runtime->dma_addr
-instead for the buffer address.
+In order to get the pfn of a struct page* when sparsemem is enabled
+without vmemmap, the mem_section structures need to be initialized which
+happens in sparse_init.
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220302074241.30469-1-nizhen@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+But kasan_early_init calls pfn_to_page way before sparse_init is called,
+which then tries to dereference a null mem_section pointer.
+
+Fix this by removing the usage of this function in kasan_early_init.
+
+Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/x86/intel_hdmi_audio.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/mm/kasan_init.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/sound/x86/intel_hdmi_audio.c
-+++ b/sound/x86/intel_hdmi_audio.c
-@@ -1276,7 +1276,7 @@ static int had_pcm_mmap(struct snd_pcm_s
- {
- 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
- 	return remap_pfn_range(vma, vma->vm_start,
--			substream->dma_buffer.addr >> PAGE_SHIFT,
-+			substream->runtime->dma_addr >> PAGE_SHIFT,
- 			vma->vm_end - vma->vm_start, vma->vm_page_prot);
- }
+--- a/arch/riscv/mm/kasan_init.c
++++ b/arch/riscv/mm/kasan_init.c
+@@ -21,8 +21,7 @@ asmlinkage void __init kasan_early_init(
  
+ 	for (i = 0; i < PTRS_PER_PTE; ++i)
+ 		set_pte(kasan_early_shadow_pte + i,
+-			mk_pte(virt_to_page(kasan_early_shadow_page),
+-			       PAGE_KERNEL));
++			pfn_pte(virt_to_pfn(kasan_early_shadow_page), PAGE_KERNEL));
+ 
+ 	for (i = 0; i < PTRS_PER_PMD; ++i)
+ 		set_pmd(kasan_early_shadow_pmd + i,
 
 
