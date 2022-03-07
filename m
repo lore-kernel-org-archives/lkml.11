@@ -2,72 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA90C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 23:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 23:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343885AbiCGXDu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 18:03:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
+        id S237725AbiCGXFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 18:05:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234485AbiCGXDq (ORCPT
+        with ESMTP id S235963AbiCGXFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 18:03:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6BE329A6;
-        Mon,  7 Mar 2022 15:02:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86E26611A9;
-        Mon,  7 Mar 2022 23:02:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D472C340E9;
-        Mon,  7 Mar 2022 23:02:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646694170;
-        bh=PZV5P/VX4x5ATn7ldLKm4K3NSamKkdX6+zxYl97iE9o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TSrSJLxqcfNNpg0lY6SXymqhbRDj0o9ABw1HJ5Z49gMjyQ2SJk6dRyKT67r3RDu5l
-         hNUzkB0xs6qKYf/Sz69SnMsyKQaa0wSXBulQDKlUMu/uTGQtAkyN8nExC5Dzf4veiJ
-         xXhrlhA+mvWigoywd7TQBrRcikFAgdIcxV++wU9EbzJN/zzKkfDJtJBe0jX3AEfmrC
-         ceyClnG8N2FOO/zz1GUIMt7D5WqlyRApQHfRsfbfe2Zyu8F4636cUy2MNWl34l6ygz
-         CyUhnDTr7Z38VhEGI1Qqvbif/JT0NJxxcVJxtTtDtabLGfnG705qDSHvxcU7pwlWBL
-         sbyhedPZyJANg==
-Date:   Mon, 7 Mar 2022 15:02:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Signed-off-by missing for commits in the net-next
- tree
-Message-ID: <20220307150248.388314c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220307072248.7435feed@canb.auug.org.au>
-References: <20220307072248.7435feed@canb.auug.org.au>
+        Mon, 7 Mar 2022 18:05:04 -0500
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF5046141;
+        Mon,  7 Mar 2022 15:04:07 -0800 (PST)
+Received: by mail-ot1-f50.google.com with SMTP id w17-20020a056830111100b005b22c584b93so4074407otq.11;
+        Mon, 07 Mar 2022 15:04:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4E9eRweUplMzQvU1VSUF8PEGvHk+pON6U7CEEhUI86Y=;
+        b=miuhwy58r/iMMtno8xjQiTvxTOX6Z4WTIs7ut0eC9cNOxzwbAl3S/jyMAQ9CHoR4cP
+         QPBPFr+x/gEOpnVPLBOSS4LJSuJpxGYLXDwxzg9fbYHkEnocsFENzQYnWuHd77m+QOoP
+         GSwdwvwAnsWlIZSwakpmFdr5/jwUDjQPMNqds2gfTPpmL83wuegSK7vk68+nyKUaE/zQ
+         s39rsQLBk8F5F6QMHEaVwQh31zPM9OZnWoW7Cbf8NLNSEpSeexfYlji25pIHoRwx+B01
+         3BdE+VTxLNoOF1ODhUnauSRuj3nzx9ZJUo5M0tshwXoufoehh7TI8TiwBuuZ8tdBEgi1
+         okJQ==
+X-Gm-Message-State: AOAM5337IPnc+0Dz4uS9OTG3o5aI0PUQ3kmWXqu2tL4fUmrQEnl4wpDO
+        keOUG0K79JCvrY3mgWZOsg==
+X-Google-Smtp-Source: ABdhPJwnRiwH1OmVRJThFCgiwfgEMg7WN043TMcx7tqaSeEny0pEoEWRHNdff7N7BXb71XSzJp4iNg==
+X-Received: by 2002:a9d:462:0:b0:5af:9183:44bd with SMTP id 89-20020a9d0462000000b005af918344bdmr7033688otc.21.1646694247151;
+        Mon, 07 Mar 2022 15:04:07 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q62-20020a4a3341000000b00320f8a179d0sm1480227ooq.30.2022.03.07.15.04.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 15:04:06 -0800 (PST)
+Received: (nullmailer pid 3424006 invoked by uid 1000);
+        Mon, 07 Mar 2022 23:04:04 -0000
+Date:   Mon, 7 Mar 2022 17:04:04 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     linux-mediatek@lists.infradead.org, daniel@ffwll.ch,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        fparent@baylibre.com, robh+dt@kernel.org,
+        yongqiang.niu@mediatek.com, hsinyi@chromium.org,
+        devicetree@vger.kernel.org, chunkuang.hu@kernel.org,
+        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        p.zabel@pengutronix.de, dri-devel@lists.freedesktop.org,
+        airlied@linux.ie, jassisinghbrar@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND V6 1/5] dt-bindings: display: mediatek: add aal binding
+ for MT8183
+Message-ID: <YiaPZGzf5F542nZb@robh.at.kernel.org>
+References: <20220303065725.23384-1-rex-bc.chen@mediatek.com>
+ <20220303065725.23384-2-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303065725.23384-2-rex-bc.chen@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 07:22:48 +1100 Stephen Rothwell wrote:
-> Hi all,
+On Thu, 03 Mar 2022 14:57:21 +0800, Rex-BC Chen wrote:
+> Add aal binding for MT8183.
 > 
-> Commits
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  .../devicetree/bindings/display/mediatek/mediatek,aal.yaml      | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
->   c2b2a1a77f6b ("Bluetooth: Improve skb handling in mgmt_device_connected()")
->   ba17bb62ce41 ("Bluetooth: Fix skb allocation in mgmt_remote_name() & mgmt_device_connected()")
->   a6fbb2bf51ad ("Bluetooth: mgmt: Remove unneeded variable")
->   8cd3c55c629e ("Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()")
->   3a0318140a6f ("Bluetooth: mgmt: Replace zero-length array with flexible-array member")
-> 
-> are missing a Signed-off-by from their committer.
 
-Would it be possible to add bluetooth trees to linux-next?
-
-Marcel, Luiz, Johan, would it help?
+Acked-by: Rob Herring <robh@kernel.org>
