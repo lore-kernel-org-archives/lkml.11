@@ -2,115 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F93C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2699C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234439AbiCGDxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 22:53:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
+        id S234960AbiCGD4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 22:56:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiCGDxg (ORCPT
+        with ESMTP id S230120AbiCGD42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 22:53:36 -0500
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C46C60CE;
-        Sun,  6 Mar 2022 19:52:42 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id C20F658010F;
-        Sun,  6 Mar 2022 22:52:39 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Sun, 06 Mar 2022 22:52:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=turner.link; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=bwDctYCk0Fg/pF78gRaQUi8ymG1aY/DQC+BW/U
-        UN48c=; b=dweBiPbo/ulGMiJYLHMNoYgpNsCzKA9axIatIkN33eaeKPHOcBXt5i
-        AJe0xaZ+JWtAISpeA7rTaISlmZuAHEyGHG+yCvs8SFTy0PuUas/9brKq2dFfR34L
-        ay8fKKKymtuyTY3qUuGthMmrC8lY/Rgl3PzfRtUO6f6HrViEZ3CnMOEChzAWoNDF
-        VUS9QPBPD+yUcghpY09ONyNs2cErywxyPZpN5Sx+X/qPpuYECtU2qru4IGkAzFX1
-        Pv30QjBmuqB596TA5ZZ+OOrfKLZHGoD2qJxp2WJac0cL4YkKUEYzb5PN3j6kGIUl
-        jneXzG2ZVy/4AnQpIQwbUQn8V9QRRuXw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=bwDctYCk0Fg/pF78g
-        RaQUi8ymG1aY/DQC+BW/UUN48c=; b=WfHzcjOoiiCcGMm3x8k7VhFtOPE/fB8By
-        pWIcRF2B5Kr4KBIzRk/3DOVM+ejebImh3v+r8tS1XTd12QVoi6fRquF/5/50wSIP
-        kxG9o+qz/bT2CjqXadDohi+UC//+2Gd/6NPR2WoRpZeJPdS2Na5BVAosy7AnqWyh
-        7mx5ui4a8ez1nvnk7TQ7ULvddigoMWUhg4YEtp4uqlW36nZujqTU7Zo5Je2IH1hL
-        REy2n7ZofkWAz1mJmIEdDnwrUHX5l1atQJwiDODhJyhMvMBjIEG+1cW1DJm+iM0x
-        8qZ/QQQpcG6XVJ9OCAdB3YABTuQetYwZT58v0b4EKOQhU5Swwb3Xw==
-X-ME-Sender: <xms:h4ElYvR3eeo-IrQIsa8Y76T_YeKtDGdWJhIT6keRvchcmNBaiv2xDQ>
-    <xme:h4ElYgxnY2wuHeRmEAhyox32M_a5xB0IObtFHFFCU1ZHXUWtq_INXtn12cHIK4sNK
-    Tb0dYjRAVEYByYsyg>
-X-ME-Received: <xmr:h4ElYk0AWNOzQtOoR0Ec8gDwHlwIB7IeoLiBs1oS0JJlZzAyz1-KXkrejhVuHf7zyfP0BqK0Y0OSvC6Dqpct_GaHW7690JJBfPk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddufedgieefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfhfhvffuffgjkfggtgesthdtredttddttdenucfhrhhomheplfgrmhgvshcu
-    vfhurhhnvghruceolhhinhhugihkvghrnhgvlhdrfhhoshhssegumhgrrhgtqdhnohhnvg
-    drthhurhhnvghrrdhlihhnkheqnecuggftrfgrthhtvghrnheptedvfeduheeiueefgffh
-    vdetiedttdevhfeiteeuhfelveduvedttdffgffggfetnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomheplhhinhhugihkvghrnhgvlhdrfhhoshhs
-    segumhgrrhgtqdhnohhnvgdrthhurhhnvghrrdhlihhnkh
-X-ME-Proxy: <xmx:h4ElYvC6nF4BukqsBJmwN7piJccMseMnus6BFP9Il0PT5ffb8UM-Tg>
-    <xmx:h4ElYoj8MsoE-uua4Uz2ZOLBvND06_HZGTRjAkvPGD3Nc7FIjT3yBg>
-    <xmx:h4ElYjpS3iSJG8SS2kgtPTNg5E4lNoqTakNtzp4OrIJW2lN2W6Jw_w>
-    <xmx:h4ElYnQVgx9m6v7HDDqfeXetNTImZOmqSkI5HoMEf65c8YKEwjpb1g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 6 Mar 2022 22:52:39 -0500 (EST)
-References: <87ee57c8fu.fsf@turner.link>
- <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
- <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
- <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info>
- <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
- <87czkk1pmt.fsf@dmarc-none.turner.link>
- <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
- <87sftfqwlx.fsf@dmarc-none.turner.link>
- <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
- <87ee4wprsx.fsf@turner.link>
- <4b3ed7f6-d2b6-443c-970e-d963066ebfe3@amd.com>
- <87pmo8r6ob.fsf@turner.link>
- <5a68afe4-1e9e-c683-e06d-30afc2156f14@leemhuis.info>
- <CADnq5_MCKTLOfWKWvi94Q9-d5CGdWBoWVxEYL3YXOpMiPnLOyg@mail.gmail.com>
- <87pmnnpmh5.fsf@dmarc-none.turner.link>
- <CADnq5_NG_dQCYwqHM0umjTMg5Uud6zC4=MiscH91Y9v7mW9bJA@mail.gmail.com>
- <092b825a-10ff-e197-18a1-d3e3a097b0e3@leemhuis.info>
-From:   James Turner <linuxkernel.foss@dmarc-none.turner.link>
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     Alex Deucher <alexdeucher@gmail.com>,
-        "Lazar, Lijo" <lijo.lazar@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>
-Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
- PCI-passed-through to Windows VM
-Date:   Sun, 06 Mar 2022 21:12:52 -0500
-In-reply-to: <092b825a-10ff-e197-18a1-d3e3a097b0e3@leemhuis.info>
-Message-ID: <877d96to55.fsf@dmarc-none.turner.link>
+        Sun, 6 Mar 2022 22:56:28 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89D86376;
+        Sun,  6 Mar 2022 19:55:33 -0800 (PST)
+X-UUID: 2c5287f01a0f4632a8214a70db01be8c-20220307
+X-UUID: 2c5287f01a0f4632a8214a70db01be8c-20220307
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1052100488; Mon, 07 Mar 2022 11:55:30 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 7 Mar 2022 11:55:29 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Mar 2022 11:55:28 +0800
+From:   <yf.wang@mediatek.com>
+To:     <robin.murphy@arm.com>
+CC:     <Libo.Kang@mediatek.com>, <Ning.Li@mediatek.com>,
+        <iommu@lists.linux-foundation.org>, <joro@8bytes.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <stable@vger.kernel.org>, <will@kernel.org>,
+        <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>
+Subject: RE: [PATCH] iommu/iova: Free all CPU rcache for retry when iova alloc failure
+Date:   Mon, 7 Mar 2022 11:49:27 +0800
+Message-ID: <20220307034927.23159-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <906a446e-3e25-5813-d380-de699a84b6f4@arm.com>
+References: <906a446e-3e25-5813-d380-de699a84b6f4@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thorsten,
+On Fri, 2022-03-04 at 14:03 +0000, Robin Murphy wrote:
+> 
+> OK, so either there's a mystery bug where IOVAs somehow get freed on 
+> offline CPUs, or the hotplug notifier isn't working correctly, or
+> you've 
+> contrived a situation where alloc_iova_fast() is actually racing
+> against 
+> iova_cpuhp_dead(). In the latter case, the solution is "don't do
+> that".
+> 
+> This change should not be necessary.
+> 
+> Thanks,
+> Robin.
 
-My understanding at this point is that the root problem is probably not
-in the Linux kernel but rather something else (e.g. the machine firmware
-or AMD Windows driver) and that the change in
-f9b7f3703ff9 ("drm/amdgpu/acpi: make ATPX/ATCS structures global (v2)")
-simply exposed the underlying problem.
+Hi Robin,
 
-This week, I'll double-check that this is the case by disabling the
-`amdgpu_atif_pci_probe_handle` function and testing again. I'll post the
-results here.
+You are right, kernel 5.15 already has this patch, but kernel 5.10
+not contain.
 
-James
+Thanks,
+Yunfei.
