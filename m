@@ -2,147 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5863DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235067AbiCGJSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:18:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
+        id S233616AbiCGJTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:19:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiCGJSn (ORCPT
+        with ESMTP id S229489AbiCGJTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:18:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6DAD12AD2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:17:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646644668;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vY49Vru0HbWgozAtnq2rdM5U4yg34ErGp0VSnFqyc8o=;
-        b=NFJgl3uKSpKlozD0G9O9qXwUO9xzy3BnCXDP5qx4B5Ex7KirB/qM2VXM+wRQJkBiOoaWvN
-        fx9AIUDRE15GqFfVHwRfqXT/NxOuRiBlR40S7CBhdBgPfxIErqp15yuhdPLGWXJAfr+3/T
-        GF/0O0sbfqsSZ+yqPpbA/x4UdDQXkZA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-304-Pb65lv85POye5uFYDy4MvA-1; Mon, 07 Mar 2022 04:17:45 -0500
-X-MC-Unique: Pb65lv85POye5uFYDy4MvA-1
-Received: by mail-wm1-f70.google.com with SMTP id 187-20020a1c19c4000000b0037cc0d56524so7620656wmz.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:17:44 -0800 (PST)
+        Mon, 7 Mar 2022 04:19:52 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31F21EEFB
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:18:55 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id j26so11752404wrb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:18:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=aW0p0zs1Z1ISg8Q6VMocuL2pI3OI7Xnu+rh+9BkWcvU=;
+        b=XkMi54+kZh8TYyNDE7ePB8GHqReiPX6zSWu2PEnHtpSC2tbZhe/ImHgzssdsFTbkPd
+         1u97FZFXAnhdHxkugaXfxvjQPsBxafOIMWttkTKKeE08o+DFoCXFYCipXD9TQAAwqD5W
+         wppO5lKrLRFDsox8hpjI+VE1BptkEigRWeWME0pWjpcPI6NkHW5sYuG3Iu1dnq7ZS7vZ
+         GBaATIzzLg4z5DYOszgR47ydBkEta5JT0H6AD2+e/NgvbqHQePT5qg/s7SHGoidEc7Og
+         VUZEggaRyzLcVki0dSRSn5Kky7Z9YxcJOayGn5AFC08sFlwG/CG3YogPsKtfRtL6xgp0
+         vjyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vY49Vru0HbWgozAtnq2rdM5U4yg34ErGp0VSnFqyc8o=;
-        b=Q56lhwV7vR5+hAw4IqfYVuWVxRQtAehC+YBgIn1KswE+oPRh9Ebb1o87v53X/EAy27
-         EwHZb0sfzcugAAIBUB3EVS0nOsDb4Hs5MVxe5xw54nuVPv4EkyhGtXGHOVUbR7A8DHzR
-         QhJuDBM4zbVULe7ocRPY3Usc6xuET1U6yfHit2ilN9Qc8sIhpCgxYugRNWPQ8EpexgoZ
-         /JOAFx/jHzOIIOZgYlKp9lU2RpOlgKx6a46Dfjl55UxyqUxoLFA5k5iMzaitk7QW87fq
-         CS8KpDWhP6PNt1v695YZEMoNsR0Uk38szqRbpooFomVZ4HvmI5PdhfuSej78qa+UlMNg
-         ARDQ==
-X-Gm-Message-State: AOAM530RvgZUe//RMz5SyiKi1xfzmKcXG6ET1gWmj08kQxx0sNU+6krO
-        HnXPKV7nDlZqVFAKtR3amrpVrbQl2UkYWH6mDFIBCe8OPylGjjSzXLE3JZPG0tETiStYHDHt3k8
-        PURuvcyKvEwuV8uCejGWezyr5
-X-Received: by 2002:adf:ed0c:0:b0:1f0:63a5:36aa with SMTP id a12-20020adfed0c000000b001f063a536aamr7530782wro.588.1646644663583;
-        Mon, 07 Mar 2022 01:17:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzjkWlShZGdROoRzC2vb1bnJXyVtMmyUyisUPAVsDRB9TbIj7DBhNlXmZcTW0F6SbGUsfnUKg==
-X-Received: by 2002:adf:ed0c:0:b0:1f0:63a5:36aa with SMTP id a12-20020adfed0c000000b001f063a536aamr7530774wro.588.1646644663374;
-        Mon, 07 Mar 2022 01:17:43 -0800 (PST)
-Received: from redhat.com ([2.55.138.228])
-        by smtp.gmail.com with ESMTPSA id p18-20020adfba92000000b001e4ae791663sm11268952wrg.62.2022.03.07.01.17.41
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=aW0p0zs1Z1ISg8Q6VMocuL2pI3OI7Xnu+rh+9BkWcvU=;
+        b=znyS6gaL2WqGkGvslZzn3aMIXH9+RHCNNRAxMsahbG1YLKTCwCv2ybq/Xk4Mxgjx01
+         JuZOcMVPQHO829tE857fgnN/tANI7y6tb1b0vI7WRtR0GJvcUruxfG/hmxOYyxXqE+qa
+         WvPh1nkdAYBe6VzleSYjMQPhNQWj1yUB589nJZD6Asz4b4L6uX4ca9gHduyx6pckeZBE
+         FlZwrZM1xK9vUDapbfnlA0zNf/HR5jqQB/4bD7mCqJILvmMzRHQUBhB0Jlr7/eMthyHm
+         1WUFFcgEW8ueFug3zmFHYRAjojs+JI+v0qRoibTt4QRlz2P0dMnzPcRBiRRLLukJd5va
+         CSnQ==
+X-Gm-Message-State: AOAM53309O7PHE7XlSP4q+Pp/gNf9nfS5p0cAmGAWeKC3upI01FZkBPU
+        N96pgufYazIMnKBoN3FYfBUyXQ==
+X-Google-Smtp-Source: ABdhPJwjJh3IaiveZrTEJzRL0aeIiET1nrgVql7GDTOmHCb/GyNxfJk1gfLXh3fy7IZBkd14WBbj0g==
+X-Received: by 2002:a05:6000:2a5:b0:1f6:7c28:6b83 with SMTP id l5-20020a05600002a500b001f67c286b83mr892650wry.324.1646644734147;
+        Mon, 07 Mar 2022 01:18:54 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g17-20020adff411000000b001f03426827csm10774220wro.71.2022.03.07.01.18.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:17:42 -0800 (PST)
-Date:   Mon, 7 Mar 2022 04:17:39 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the vhost tree
-Message-ID: <20220307040734-mutt-send-email-mst@kernel.org>
-References: <20220307154011.6d456f28@canb.auug.org.au>
- <1646635600.9436276-1-xuanzhuo@linux.alibaba.com>
+        Mon, 07 Mar 2022 01:18:53 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:18:50 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] regulator: dt-bindings: maxim,max77802: convert
+ to dtschema
+Message-ID: <YiXN+kYsvUDbz3wX@google.com>
+References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+ <20220111175430.224421-2-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1646635600.9436276-1-xuanzhuo@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220111175430.224421-2-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 02:46:40PM +0800, Xuan Zhuo wrote:
-> On Mon, 7 Mar 2022 15:40:11 +1100, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > Hi all,
-> >
-> > After merging the vhost tree, today's linux-next build (arm
-> > multi_v7_defconfig) produced this warning:
-> >
-> > drivers/net/virtio_net.c: In function 'virtnet_rx_vq_reset':
-> > drivers/net/virtio_net.c:1823:63: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'int' [-Wformat=]
-> >  1823 |                    "reset rx reset vq fail: rx queue index: %ld err: %d\n",
-> >       |                                                             ~~^
-> >       |                                                               |
-> >       |                                                               long int
-> >       |                                                             %d
-> >  1824 |                    rq - vi->rq, err);
-> >       |                    ~~~~~~~~~~~
-> >       |                       |
-> >       |                       int
-> > drivers/net/virtio_net.c: In function 'virtnet_tx_vq_reset':
-> > drivers/net/virtio_net.c:1873:63: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'int' [-Wformat=]
-> >  1873 |                    "reset tx reset vq fail: tx queue index: %ld err: %d\n",
-> >       |                                                             ~~^
-> >       |                                                               |
-> >       |                                                               long int
-> >       |                                                             %d
-> >  1874 |                    sq - vi->sq, err);
-> >       |                    ~~~~~~~~~~~
-> >       |                       |
-> >       |                       int
-> >
-> > Introduced by commit
-> >
-> >   920ee0c540a2 ("virtio_net: support rx/tx queue reset")
-> >
-> 
-> 
-> Can you help me test this patch? I don't have an arm environment around me.
-> 
-> Thanks
+On Tue, 11 Jan 2022, Krzysztof Kozlowski wrote:
 
+> Convert the regulators of Maxim MAX77802 PMIC to DT schema format.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/regulator/max77802.txt           | 111 ------------------
+>  .../bindings/regulator/maxim,max77802.yaml    |  97 +++++++++++++++
+>  2 files changed, 97 insertions(+), 111 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/regulator/max77802.txt
+>  create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
 
-You should at least use
-https://mirrors.edge.kernel.org/pub/tools/crosstool/
-to test-build + test on x86.
+Applied, thanks.
 
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 1fa2d632a994..4d629d1ea894 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1820,7 +1820,7 @@ static int virtnet_rx_vq_reset(struct virtnet_info *vi,
-> 
->  err:
->         netdev_err(vi->dev,
-> -                  "reset rx reset vq fail: rx queue index: %ld err: %d\n",
-> +                  "reset rx reset vq fail: rx queue index: %td err: %d\n",
->                    rq - vi->rq, err);
->         virtnet_napi_enable(rq->vq, &rq->napi);
->         return err;
-> @@ -1870,7 +1870,7 @@ static int virtnet_tx_vq_reset(struct virtnet_info *vi,
-> 
->  err:
->         netdev_err(vi->dev,
-> -                  "reset tx reset vq fail: tx queue index: %ld err: %d\n",
-> +                  "reset tx reset vq fail: tx queue index: %td err: %d\n",
->                    sq - vi->sq, err);
->         virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
->         return err;
-> 
-> > --
-> > Cheers,
-> > Stephen Rothwell
-> >
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
