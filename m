@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD9FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240227AbiCGKfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:35:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
+        id S235163AbiCGKfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:35:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236787AbiCGKMH (ORCPT
+        with ESMTP id S237660AbiCGKMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:12:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8B68CDBE;
-        Mon,  7 Mar 2022 01:56:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE028D68A;
+        Mon,  7 Mar 2022 01:56:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81F8360E9A;
-        Mon,  7 Mar 2022 09:56:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD52C340F3;
-        Mon,  7 Mar 2022 09:56:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C170F60E87;
+        Mon,  7 Mar 2022 09:56:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDDACC340E9;
+        Mon,  7 Mar 2022 09:56:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646983;
-        bh=LhBFBwMc99bqAd96HV/wf7b0senOyYNA5bBK+TFNAmM=;
+        s=korg; t=1646646993;
+        bh=PJhclMeZHNqjQ4k7occUJb+52L47Qcey3RRk2AO8MJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VGC/2oeLsOAGThXAgvaQ4C0Qswjsty/1JjG9pewQoObH1rIGtqFdsywU1eACHZoNS
-         LWYDRwjlSDfwUPbwKNEQq7Vv88bPvdfVQDlYhKlEH138zUAXZ4Vkho981nhzTxilS9
-         LyCX3SBrVKUHk/aKBh2Z3REdGwxRxzVUdSoRjki8=
+        b=M410XvYksNKE5j9AlCTGmNSvGXsZUsWtNDlEMD1OfoEjlvvlfOXrtMDRLuh+7XGRF
+         Jm9XPR4iNmGjxUQQcXE5ROIN4n0oSTgxdbI/fHGD4uRTCO7LtelBF9gTdqL1HETZSO
+         trWAyMGsaeNvaQmROvO0fLKz49nPORlHb18cl8o0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 114/186] igc: igc_write_phy_reg_gpy: drop premature return
-Date:   Mon,  7 Mar 2022 10:19:12 +0100
-Message-Id: <20220307091657.266224625@linuxfoundation.org>
+        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 159/186] MIPS: ralink: mt7621: use bitwise NOT instead of logical
+Date:   Mon,  7 Mar 2022 10:19:57 +0100
+Message-Id: <20220307091658.521932492@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -51,39 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 
-commit c4208653a327a09da1e9e7b10299709b6d9b17bf upstream.
+[ Upstream commit 5d8965704fe5662e2e4a7e4424a2cbe53e182670 ]
 
-Similar to "igc_read_phy_reg_gpy: drop premature return" patch.
-igc_write_phy_reg_gpy checks the return value from igc_write_phy_reg_mdic
-and if it's not 0, returns immediately. By doing this, it leaves the HW
-semaphore in the acquired state.
+It was the intention to reverse the bits, not make them all zero by
+using logical NOT operator.
 
-Drop this premature return statement, the function returns after
-releasing the semaphore immediately anyway.
-
-Fixes: 5586838fe9ce ("igc: Add code for PHY support")
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Reported-by: Corinna Vinschen <vinschen@redhat.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cc19db8b312a ("MIPS: ralink: mt7621: do memory detection on KSEG1")
+Suggested-by: Chuanhong Guo <gch981213@gmail.com>
+Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_phy.c |    2 --
- 1 file changed, 2 deletions(-)
+ arch/mips/ralink/mt7621.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -746,8 +746,6 @@ s32 igc_write_phy_reg_gpy(struct igc_hw
- 		if (ret_val)
- 			return ret_val;
- 		ret_val = igc_write_phy_reg_mdic(hw, offset, data);
--		if (ret_val)
--			return ret_val;
- 		hw->phy.ops.release(hw);
- 	} else {
- 		ret_val = igc_write_xmdio_reg(hw, (u16)offset, dev_addr,
+diff --git a/arch/mips/ralink/mt7621.c b/arch/mips/ralink/mt7621.c
+index fd9a872d5713..4c8378661219 100644
+--- a/arch/mips/ralink/mt7621.c
++++ b/arch/mips/ralink/mt7621.c
+@@ -38,7 +38,7 @@ static bool __init mt7621_addr_wraparound_test(phys_addr_t size)
+ 	__raw_writel(MT7621_MEM_TEST_PATTERN, dm);
+ 	if (__raw_readl(dm) != __raw_readl(dm + size))
+ 		return false;
+-	__raw_writel(!MT7621_MEM_TEST_PATTERN, dm);
++	__raw_writel(~MT7621_MEM_TEST_PATTERN, dm);
+ 	return __raw_readl(dm) == __raw_readl(dm + size);
+ }
+ 
+-- 
+2.34.1
+
 
 
