@@ -2,229 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 192F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244666AbiCGSN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:13:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
+        id S244675AbiCGSOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:14:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238310AbiCGSN5 (ORCPT
+        with ESMTP id S244665AbiCGSOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:13:57 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0A24DF68;
-        Mon,  7 Mar 2022 10:13:02 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id t14so14298620pgr.3;
-        Mon, 07 Mar 2022 10:13:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=B6TsA2XdiYCsVCW3zF/aw39LpYtkoWg4fApwKJ6gmVw=;
-        b=NPI9cJpZJGsl1RRJXCbjypAIObWaZrfLdzSTVP4Hl8FLRMVmD8hxJvJveN331QcppE
-         qPQW4nt53HD/7XlOdvP7Wxi74RUHnFCJ5/gWZEp97N8iOKA2kh6WcINEwXJqcjo03jt6
-         g3nH8X5TAifEYgahdO+5cjwPEbnOfcMtE7wKUACGy1hLYJqq7IXBB0O3gLS9YwQVRTV3
-         5PDuMjV/QgR3r0XdnDzs7YZ7VM3bMu2O6lxtmJHubNz5fDqVw/lhAaIGulJQBoFcsh8B
-         5RMuIPLgYcjn0V9iE2h6EvMy/G9I6xtWuYeKXYPY/4jdeMTLpMzD2aXMatk4vKnbao+G
-         PLvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=B6TsA2XdiYCsVCW3zF/aw39LpYtkoWg4fApwKJ6gmVw=;
-        b=zWxVtnMz9E3Y54yKz24P6hvBL/4V3gNbFcd/gvCAM2fCE/5ulzLEuIolbGPGY4lof+
-         6uVz89gFNdtAdkJXK6tEsUxJH/r6sYEFKYFntd7eBPELaMQA5IcwzV9FOYpTKpa3rjEH
-         Ywwcla2w9yst9sUKeBGEGOCRD/rVrCfZUREZKDwbE7NkVYzls0CMzkX5NTaU5lnV6P8v
-         7ihDjaAfrJLP/Odgqv5d0eOPiUj/eGMPdqnxXdAYd7sNeoIJnL8917cEEtGSyb8Z3Cuh
-         DpxXnpyjBdzwXOeyfnS+chsTkaYOks+9/P6hzP4xSI56sgt8ezugeyu4TzOxuTcKKxP1
-         Ec7Q==
-X-Gm-Message-State: AOAM530KolIFZZGmIfXKbY7Fnsv8p/c7gPSnzzC6GtFMtbGtc7S1jX2a
-        DiE+6/67rI2TljGpntWWa4lUBWykz/r0Kux/s8U=
-X-Google-Smtp-Source: ABdhPJwv8Oq73LsXdfaVk3NJmFp9gR6Y6EpdkcLPgyA9p4k18Xc3iMqj44R+bhPSTRJjFK2FsUjccNownQ2eZaZAYG4=
-X-Received: by 2002:a63:c011:0:b0:378:74a6:9c31 with SMTP id
- h17-20020a63c011000000b0037874a69c31mr10811098pgg.585.1646676781529; Mon, 07
- Mar 2022 10:13:01 -0800 (PST)
+        Mon, 7 Mar 2022 13:14:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C62554BA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:13:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6DB361295
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 18:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A541C340EB;
+        Mon,  7 Mar 2022 18:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646676791;
+        bh=rZCSmb5w6EjObQAjA2q/+2HByQVaObBOrVzAVdxTAwI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RbSrrjiCSTm30CYM9iCXRDS++RD2YfGGbAjyd8WXPAHxEF0Hjkus9LXqh3d3dBuiz
+         lsjhtQJRcsOyTONk1i3zmUfMS1jpbvC/nB4lHq44AEU+uukeJxB+anUyLdsRpcw91w
+         01dtSbsmo1qEWYFhoD7jIubEcSGFrSKY2KxiiQEGoFwvypkEAdRnW2b3OD+5CJWzKE
+         GF8CCjNW3JMcq6voBunZWSj0eGbCyWd6ZUy0dah3ur9vveGaUzs1gDJWrE/iRbcArX
+         HYc/dFiKygm2AXXl6E2G34ba+TNRa1Qgho4JckQT/1+VMQMGx/oRnx1ZGtAgUesERY
+         qtMNIRIwrUcdw==
+Date:   Mon, 7 Mar 2022 20:13:03 +0200
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Karolina Drobnik <karolinadrobnik@gmail.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 9/9] memblock tests: Add TODO and README files
+Message-ID: <YiZLL6gVQUd5v+N+@kernel.org>
+References: <cover.1646055639.git.karolinadrobnik@gmail.com>
+ <d5e39b9f7dcef177ebc14282727447bc21e3b38f.1646055639.git.karolinadrobnik@gmail.com>
 MIME-Version: 1.0
-References: <20220301153122.20660-1-cbranchereau@gmail.com>
- <20220301153122.20660-4-cbranchereau@gmail.com> <VM548R.0I9BAN681OS83@crapouillou.net>
-In-Reply-To: <VM548R.0I9BAN681OS83@crapouillou.net>
-From:   Christophe Branchereau <cbranchereau@gmail.com>
-Date:   Mon, 7 Mar 2022 19:12:49 +0100
-Message-ID: <CAFsFa85Wb7HcxCqGCYQoSOHOTLJY9xtUHc85PoxO3XTbr=HN4g@mail.gmail.com>
-Subject: Re: [PATCH v1 3/3] drm/panel : innolux-ej030na and abt-y030xx067a :
- add .enable and .disable
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d5e39b9f7dcef177ebc14282727447bc21e3b38f.1646055639.git.karolinadrobnik@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul, it should in theory, but doesn't work in practice, the
-display doesn't like having that bit set outside of the init sequence.
+On Mon, Feb 28, 2022 at 03:46:51PM +0100, Karolina Drobnik wrote:
+> Add description of the project, its structure and how to run it.
+> List what is left to implement and what the known issues are.
+> 
+> Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
+> ---
+>  tools/testing/memblock/README | 114 ++++++++++++++++++++++++++++++++++
+>  tools/testing/memblock/TODO   |  28 +++++++++
+>  2 files changed, 142 insertions(+)
+>  create mode 100644 tools/testing/memblock/README
+>  create mode 100644 tools/testing/memblock/TODO
+> 
+> diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
+> new file mode 100644
+> index 000000000000..40c0ce50e7c2
+> --- /dev/null
+> +++ b/tools/testing/memblock/README
+> @@ -0,0 +1,114 @@
+> +=========================
+> +   Memblock simulator
+> +=========================
+> +
+> +
+> +Introduction
+> +---------------------
 
-Feel free to experiment if you think you can make it work though, you
-should have that panel on 1 or 2 devices I think.
+Please make shorten the underline to match section title
 
-KR
-CB
+> +Memblock is a boot time memory allocator[1] that manages memory regions before
+> +the actual memory management is initialized. Its APIs allow to register physical
+> +memory regions, mark them as available or reserved, allocate a block of memory
+> +within the requested range and/or in specific NUMA node, and many more.
+> +
+> +Because it is used so early in the booting process, testing and debugging it is
+> +difficult. This test suite, usually referred as memblock simulator, is
+> +an attempt at testing the memblock mechanism. It runs one monolithic test that
+> +consist of a series of checks that exercise both the basic operations and
+> +allocation functionalities of memblock. The main data structure of the boot time
+> +memory allocator is initialized at the build time, so the checks here reuse its
+> +instance throughout the duration of the test. To ensure that tests don't affect
+> +each other, region arrays are reset in between.
+> +
+> +As this project uses the actual memblock code and has to run in user space, some
+> +of the kernel definitions were stubbed in the introductory patch[2]. Most of
 
-On Wed, Mar 2, 2022 at 12:22 PM Paul Cercueil <paul@crapouillou.net> wrote:
->
-> Hi Christophe,
->
-> Le mar., mars 1 2022 at 16:31:22 +0100, Christophe Branchereau
-> <cbranchereau@gmail.com> a =C3=A9crit :
-> > Following the introduction of bridge_atomic_enable in the ingenic
-> > drm driver, the crtc is enabled between .prepare and .enable, if
-> > it exists.
-> >
-> > Add it so the backlight is only enabled after the crtc is, to avoid
-> > graphical issues.
-> >
-> > Signed-off-by: Christophe Branchereau <cbranchereau@gmail.com>
-> > ---
-> >  drivers/gpu/drm/panel/panel-abt-y030xx067a.c  | 23 ++++++++++++--
-> >  drivers/gpu/drm/panel/panel-innolux-ej030na.c | 31
-> > ++++++++++++++++---
-> >  2 files changed, 48 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> > b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> > index f043b484055b..b5736344e3ec 100644
-> > --- a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> > +++ b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-> > @@ -183,8 +183,6 @@ static int y030xx067a_prepare(struct drm_panel
-> > *panel)
-> >               goto err_disable_regulator;
-> >       }
-> >
-> > -     msleep(120);
-> > -
-> >       return 0;
-> >
-> >  err_disable_regulator:
-> > @@ -202,6 +200,25 @@ static int y030xx067a_unprepare(struct drm_panel
-> > *panel)
-> >       return 0;
-> >  }
-> >
-> > +static int y030xx067a_enable(struct drm_panel *panel)
-> > +{
-> > +     if (panel->backlight) {
-> > +             /* Wait for the picture to be ready before enabling backl=
-ight */
-> > +             msleep(120);
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int y030xx067a_disable(struct drm_panel *panel)
-> > +{
-> > +     struct y030xx067a *priv =3D to_y030xx067a(panel);
-> > +
-> > +     regmap_clear_bits(priv->map, 0x06, REG06_XPSAVE);
->
-> Shouldn't that be balanced by a regmap_set_bits() in the .enable()
-> function?
->
-> Cheers,
-> -Paul
->
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static int y030xx067a_get_modes(struct drm_panel *panel,
-> >                               struct drm_connector *connector)
-> >  {
-> > @@ -239,6 +256,8 @@ static int y030xx067a_get_modes(struct drm_panel
-> > *panel,
-> >  static const struct drm_panel_funcs y030xx067a_funcs =3D {
-> >       .prepare        =3D y030xx067a_prepare,
-> >       .unprepare      =3D y030xx067a_unprepare,
-> > +     .enable         =3D y030xx067a_enable,
-> > +     .disable        =3D y030xx067a_disable,
-> >       .get_modes      =3D y030xx067a_get_modes,
-> >  };
-> >
-> > diff --git a/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> > b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> > index c558de3f99be..6de7370185cd 100644
-> > --- a/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> > +++ b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-> > @@ -80,8 +80,6 @@ static const struct reg_sequence
-> > ej030na_init_sequence[] =3D {
-> >       { 0x47, 0x08 },
-> >       { 0x48, 0x0f },
-> >       { 0x49, 0x0f },
-> > -
-> > -     { 0x2b, 0x01 },
-> >  };
-> >
-> >  static int ej030na_prepare(struct drm_panel *panel)
-> > @@ -109,8 +107,6 @@ static int ej030na_prepare(struct drm_panel
-> > *panel)
-> >               goto err_disable_regulator;
-> >       }
-> >
-> > -     msleep(120);
-> > -
-> >       return 0;
-> >
-> >  err_disable_regulator:
-> > @@ -128,6 +124,31 @@ static int ej030na_unprepare(struct drm_panel
-> > *panel)
-> >       return 0;
-> >  }
-> >
-> > +static int ej030na_enable(struct drm_panel *panel)
-> > +{
-> > +     struct ej030na *priv =3D to_ej030na(panel);
-> > +
-> > +     /* standby off */
-> > +     regmap_write(priv->map, 0x2b, 0x01);
-> > +
-> > +     if (panel->backlight) {
-> > +             /* Wait for the picture to be ready before enabling backl=
-ight */
-> > +             msleep(120);
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int ej030na_disable(struct drm_panel *panel)
-> > +{
-> > +     struct ej030na *priv =3D to_ej030na(panel);
-> > +
-> > +     /* standby on */
-> > +     regmap_write(priv->map, 0x2b, 0x00);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static int ej030na_get_modes(struct drm_panel *panel,
-> >                            struct drm_connector *connector)
-> >  {
-> > @@ -165,6 +186,8 @@ static int ej030na_get_modes(struct drm_panel
-> > *panel,
-> >  static const struct drm_panel_funcs ej030na_funcs =3D {
-> >       .prepare        =3D ej030na_prepare,
-> >       .unprepare      =3D ej030na_unprepare,
-> > +     .enable         =3D ej030na_enable,
-> > +     .disable        =3D ej030na_disable,
-> >       .get_modes      =3D ej030na_get_modes,
-> >  };
-> >
-> > --
-> > 2.34.1
-> >
->
->
+The patch commit sha in memblock/for-next is stable, please use that.
+
+> +them don't match the kernel implementation, so one should consult them first
+> +before making any significant changes to the project.
+> +
+> +
+> +Usage
+> +---------------------
+> +
+> +To run the tests, build the main target and run it:
+> +
+> +$ make; ./main
+
+I'd rather use
+
+	make && ./make
+
+> +
+> +A successful run produces no output. It is also possible to override different
+> +configuration parameters. For example, to simulate enabled NUMA, use:
+> +
+> +$ make NUMA=1
+> +
+> +For the full list of options, see `make help`.
+> +
+> +
+> +Project structure
+> +---------------------
+> +
+> +The project has one target, main, which calls a group of checks for basic and
+> +allocation functions. Tests for each group are defined in dedicated files, as it
+> +can be seen here:
+> +
+> +memblock
+> +|-- asm       ------------------,
+> +|-- lib                         |-- implement function and struct stubs
+> +|-- linux     ------------------'
+> +|-- scripts
+> +|    |-- Makefile.include        -- handles `make` parameters
+> +|-- tests
+> +|    |-- alloc_api.(c|h)         -- memblock_alloc tests
+> +|    |-- alloc_helpers_api.(c|h) -- memblock_alloc_from tests
+> +|    |-- alloc_nid_api.(c|h)     -- memblock_alloc_try_nid tests
+> +|    |-- basic_api.(c|h)         -- memblock_add/memblock_reserve/... tests
+> +|    |-- common.(c|h)            -- helper functions for resetting memblock;
+> +|-- main.c        --------------.   dummy physical memory definition
+> +|-- Makefile                     `- test runner
+> +|-- README
+> +|-- TODO
+> +|-- .gitignore
+> +
+> +
+> +Simulating physical memory
+> +--------------------------
+> +
+> +Some allocation functions clear the memory in the process, so it is required for
+> +memblock to track valid memory ranges. To achieve this, the test suite registers
+> +with memblock memory stored by test_memory struct. It is a small wrapper that
+> +points to a block of memory allocated via malloc. For each group of allocation
+> +tests, dummy physical memory is allocated, added to memblock, and then released
+> +at the end of the test run. The structure of a test runner checking allocation
+> +functions is as follows:
+> +
+> +int memblock_alloc_foo_checks(void)
+> +{
+> +	reset_memblock_attributes();     /* data structure reset */
+> +	dummy_physical_memory_init();    /* allocate and register memory */
+> +
+> +	(...allocation checks...)
+> +
+> +	dummy_physical_memory_cleanup(); /* free the memory */
+> +}
+> +
+> +There's no need to explicitly free the dummy memory from memblock via
+> +memblock_free() call. The entry will be erased by reset_memblock_regions(),
+> +called at the beginning of each test.
+> +
+> +
+> +Known issues
+> +---------------------
+> +
+> +1. Requesting a specific NUMA node via memblock_alloc_node() does not work as
+> +   intended. Once the fix is in place, tests for this function can be added.
+> +
+> +2. Tests for memblock_alloc_low() can't be easily implemented. The function uses
+> +   ARCH_LOW_ADDRESS_LIMIT marco, which can't be changed to point at the low
+> +   memory of the memory_block.
+> +
+> +
+> +References
+> +---------------------
+> +
+> +1. Boot time memory management documentation page:
+> +   https://www.kernel.org/doc/html/latest/core-api/boot-time-mm.html
+> +
+> +2. Introduce memblock simulator, lore link:
+> +https://lore.kernel.org/linux-mm/cover.1643796665.git.karolinadrobnik@gmail.com/
+> diff --git a/tools/testing/memblock/TODO b/tools/testing/memblock/TODO
+> new file mode 100644
+> index 000000000000..c25b2fdec45e
+> --- /dev/null
+> +++ b/tools/testing/memblock/TODO
+> @@ -0,0 +1,28 @@
+> +TODO
+> +=====
+> +
+> +1. Add verbose output (e.g., what is being tested and how many tests cases are
+> +   passing)
+> +
+> +2. Add flags to Makefile:
+> +   + verbosity level
+> +   + enable memblock_dbg() messages (i.e. pass "-D CONFIG_DEBUG_MEMORY_INIT"
+> +     flag)
+> +
+> +3. Add tests trying to memblock_add() or memblock_reserve() 129th region.
+
+s/129th/more than INIT_MEMBLOCK_REGIONS/
+
+> +   This will trigger memblock_double_array(), make sure it succeeds.
+> +   *Important:* These tests require valid memory ranges, use dummy physical
+> +                memory block from common.c to implement them. It is also very
+> +                likely that the current MEM_SIZE won't be enough for these
+> +                test cases. Use realloc to adjust the size accordingly.
+> +
+> +4. Add test cases using this functions (implement them for both directions):
+> +   + memblock_alloc_raw()
+> +   + memblock_alloc_exact_nid_raw()
+> +   + memblock_alloc_try_nid_raw()
+> +
+> +5. Add tests for memblock_alloc_node() to check if the correct NUMA node is set
+> +   for the new region
+> +
+> +6. Update comments in tests/basic_api.c to match the style used in
+> +   tests/alloc_*.c
+> --
+> 2.30.2
+> 
+
+-- 
+Sincerely yours,
+Mike.
