@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDC7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B413C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237185AbiCGJg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
+        id S237711AbiCGJhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:37:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237452AbiCGJ2H (ORCPT
+        with ESMTP id S237458AbiCGJ2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:28:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2285AEE7;
-        Mon,  7 Mar 2022 01:25:26 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14125BD2B;
+        Mon,  7 Mar 2022 01:25:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9ED361150;
-        Mon,  7 Mar 2022 09:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3082C340E9;
-        Mon,  7 Mar 2022 09:25:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD9156116E;
+        Mon,  7 Mar 2022 09:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7D89C340E9;
+        Mon,  7 Mar 2022 09:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645124;
-        bh=fWF0zr88aLR5/eYRbmN2pjGVjZ4Y0TtYS7lCtnAOpzQ=;
+        s=korg; t=1646645127;
+        bh=tE+SRykjlDp+0GPDg+fRo4wqoqrwo7iuHomBhDw7ft4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qHt3otFs078D0Iu6xiXns1Fc+TUSmRldOOpQEJ8UNo8C86ExjDV/BwCeQ73KdiZTu
-         Yv21mjqruBRmOrpNZdPgX+y/2qleKLUGCMR1GrGzAVaW+umEGVlc7ILOyLMjaN82/s
-         cQ+Jb/+qeErgOwAQH0uAhVlHggo+8fG+IX60v7FY=
+        b=OlePlp5wehCqcIIYRaPa+NccNIgp3xzCxuY3L1qk09hEcOvqQHExwikB4zrnxhvWr
+         AjvMULkAO059qLWLgxy72BEAFdQT4EBcLf/8AX+ksOrrI3Zbm7FA6EQM+Oa6vOsx7b
+         wwBGEusCqJjRF4hTDlbrBPLatk9QlT+DPDpC6Z1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 28/51] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
-Date:   Mon,  7 Mar 2022 10:19:03 +0100
-Message-Id: <20220307091637.792801662@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 4.19 46/51] Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
+Date:   Mon,  7 Mar 2022 10:19:21 +0100
+Message-Id: <20220307091638.300519420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -48,40 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: D. Wythe <alibuda@linux.alibaba.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 4940a1fdf31c39f0806ac831cde333134862030b upstream.
+commit 04b7762e37c95d9b965d16bb0e18dbd1fa2e2861 upstream.
 
-The problem of SMC_CLC_DECL_ERR_REGRMB on the server is very clear.
-Based on the fact that whether a new SMC connection can be accepted or
-not depends on not only the limit of conn nums, but also the available
-entries of rtoken. Since the rtoken release is trigger by peer, while
-the conn nums is decrease by local, tons of thing can happen in this
-time difference.
+Before these changes elan_suspend() would only disable the regulator
+when device_may_wakeup() returns false; whereas elan_resume() would
+unconditionally enable it, leading to an enable count imbalance when
+device_may_wakeup() returns true.
 
-This only thing that needs to be mentioned is that now all connection
-creations are completely protected by smc_server_lgr_pending lock, it's
-enough to check only the available entries in rtokens_used_mask.
+This triggers the "WARN_ON(regulator->enable_count)" in regulator_put()
+when the elan_i2c driver gets unbound, this happens e.g. with the
+hot-plugable dock with Elan I2C touchpad for the Asus TF103C 2-in-1.
 
-Fixes: cd6851f30386 ("smc: remote memory buffers (RMBs)")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by making the regulator_enable() call also be conditional
+on device_may_wakeup() returning false.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220131135436.29638-2-hdegoede@redhat.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/smc_core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/input/mouse/elan_i2c_core.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -609,7 +609,8 @@ int smc_conn_create(struct smc_sock *smc
- 		    !lgr->sync_err &&
- 		    lgr->vlan_id == vlan_id &&
- 		    (role == SMC_CLNT ||
--		     lgr->conns_num < SMC_RMBS_PER_LGR_MAX)) {
-+		    (lgr->conns_num < SMC_RMBS_PER_LGR_MAX &&
-+		      !bitmap_full(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX)))) {
- 			/* link group found */
- 			local_contact = SMC_REUSE_CONTACT;
- 			conn->lgr = lgr;
+--- a/drivers/input/mouse/elan_i2c_core.c
++++ b/drivers/input/mouse/elan_i2c_core.c
+@@ -1280,17 +1280,17 @@ static int __maybe_unused elan_resume(st
+ 	struct elan_tp_data *data = i2c_get_clientdata(client);
+ 	int error;
+ 
+-	if (device_may_wakeup(dev) && data->irq_wake) {
++	if (!device_may_wakeup(dev)) {
++		error = regulator_enable(data->vcc);
++		if (error) {
++			dev_err(dev, "error %d enabling regulator\n", error);
++			goto err;
++		}
++	} else if (data->irq_wake) {
+ 		disable_irq_wake(client->irq);
+ 		data->irq_wake = false;
+ 	}
+ 
+-	error = regulator_enable(data->vcc);
+-	if (error) {
+-		dev_err(dev, "error %d enabling regulator\n", error);
+-		goto err;
+-	}
+-
+ 	error = elan_set_power(data, true);
+ 	if (error) {
+ 		dev_err(dev, "power up when resuming failed: %d\n", error);
 
 
