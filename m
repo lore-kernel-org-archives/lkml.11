@@ -2,133 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D19FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8336C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236370AbiCGJRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:17:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39794 "EHLO
+        id S236375AbiCGJRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:17:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236338AbiCGJRd (ORCPT
+        with ESMTP id S236369AbiCGJRm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:17:33 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6700A6517A;
-        Mon,  7 Mar 2022 01:16:39 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DDB88201483;
-        Mon,  7 Mar 2022 10:16:37 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9385E200095;
-        Mon,  7 Mar 2022 10:16:37 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 88E2D183AD67;
-        Mon,  7 Mar 2022 17:16:35 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     p.zabel@pengutronix.de, l.stach@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        shawnguo@kernel.org, vkoul@kernel.org,
-        alexander.stein@ew.tq-group.com
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com, Richard Zhu <hongxing.zhu@nxp.com>
-Subject: [PATCH v2 5/7] arm64: dts: imx8mp: add the iMX8MP PCIe support
-Date:   Mon,  7 Mar 2022 17:07:32 +0800
-Message-Id: <1646644054-24421-6-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 7 Mar 2022 04:17:42 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBC1652E4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:16:46 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id 19so8483344wmy.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:16:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uGD0AznMPULr9/ADv56wNfWTzUyQ3OazhFS/p3ygy5E=;
+        b=pwyUaw0ILKRgOjztCGvamksWmJ0ZPFcmF/3c9GBy97o2+lgD0923QsRvpXQni5mcPy
+         xo+u2jlQRKZuue76ppcjOeHvdhkMehK0eNIZx3E5WiklQs5czwaiP1tvwcucHFlKp5aw
+         qXNMSzG40iyGG3+kv8mBaT6wF4tVAm0wDmtMF6NYnBHTtF7DXfW/f6yxGHv2Q11dZNLy
+         ECARApJp6vbJl4ejMR/siE8oA2X0c9tsA4YyxaK5By7GoyIvQ9kHGu38q22Ka4n/pHq+
+         MMFlnNPTVbVDHSip/3iSo3QXgzPVSkpwsBeiBKrVZqS/c7wILZ8QJy8Zz6BoYF6f6aMw
+         a9MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uGD0AznMPULr9/ADv56wNfWTzUyQ3OazhFS/p3ygy5E=;
+        b=rrb22KicBs/0O6GDfh5//Feq2awxO6xuK0XDLCkJWKc49AKDfBn2tq9CAcMZQXz+sP
+         F8GcajVCjt2aYq31YdcooppfMT+UzD6rgFxgVx8Va8uiZxmn2VAWc4D3HJ8yHcXOCaZX
+         6Q/LvceWCQYL35IeWiIsgHoBQ572zKxPvnVOJNi1DHGuynh6FdKVrGbizb249be+0A5Y
+         tJxcCMbpWO4Q8Q0/++8jxgw3kD7mQkQTg4QhGk/mLMCGpcBUz5UDHvDFsv2x0cbQG53L
+         GGdpvQZcSayaE3lT3HaopzkeQjqNNxZn6uDqOMOXUtXfbXW31aLA552MNwCp396u9P4e
+         PPfg==
+X-Gm-Message-State: AOAM530G55xdsTJ0ncfRcBtheRaEmQe7+inZzVQLjjxQ3BlkFKoY6QNS
+        cTTNTZD8o1SVp80s2/CiVvVcUwD3ZZisvQ==
+X-Google-Smtp-Source: ABdhPJyTzicxUG+rkJP2G1eUqPc8CWKy4HBwoZ6UGxDL3nTPbcTk/4aZ4yNREW7ahY2El22rA6OgnA==
+X-Received: by 2002:a05:600c:4fd6:b0:37f:2a37:87a3 with SMTP id o22-20020a05600c4fd600b0037f2a3787a3mr8206865wmq.152.1646644605303;
+        Mon, 07 Mar 2022 01:16:45 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id p22-20020a1c5456000000b00389a558670fsm2199704wmi.11.2022.03.07.01.16.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:16:44 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:16:42 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Chanwoo Choi <cw00.choi@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] MAINTAINERS: mfd: cover MAX77843 by Maxim
+ PMIC/MUIC for Exynos boards entry
+Message-ID: <YiXNejk+Y7DJ3x99@google.com>
+References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
+ <20220111174805.223732-6-krzysztof.kozlowski@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220111174805.223732-6-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the i.MX8MP PCIe support.
+On Tue, 11 Jan 2022, Krzysztof Kozlowski wrote:
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8mp.dtsi | 46 ++++++++++++++++++++++-
- 1 file changed, 45 insertions(+), 1 deletion(-)
+> The MAX77843 is used in Exynos5433-based TM2 boards and shares some
+> parts of code with MAX77693 (regulator and haptic motor drivers).
+> Include all MAX77843 drivers in the entry for Maxim PMIC/MUIC drivers
+> for Exynos boards, so they will receive some dedicated review coverage.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  MAINTAINERS | 2 ++
+>  1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-index b40a5646f205..e7b3d8029e34 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-@@ -5,6 +5,7 @@
- 
- #include <dt-bindings/clock/imx8mp-clock.h>
- #include <dt-bindings/power/imx8mp-power.h>
-+#include <dt-bindings/reset/imx8mp-reset.h>
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-@@ -375,7 +376,8 @@ iomuxc: pinctrl@30330000 {
- 			};
- 
- 			gpr: iomuxc-gpr@30340000 {
--				compatible = "fsl,imx8mp-iomuxc-gpr", "syscon";
-+				compatible = "fsl,imx8mp-iomuxc-gpr",
-+					     "fsl,imx6q-iomuxc-gpr", "syscon";
- 				reg = <0x30340000 0x10000>;
- 			};
- 
-@@ -965,6 +967,17 @@ aips4: bus@32c00000 {
- 			#size-cells = <1>;
- 			ranges;
- 
-+			pcie_phy: pcie-phy@32f00000 {
-+				compatible = "fsl,imx8mp-pcie-phy";
-+				reg = <0x32f00000 0x10000>;
-+				resets = <&src IMX8MP_RESET_PCIEPHY>,
-+					 <&src IMX8MP_RESET_PCIEPHY_PERST>;
-+				reset-names = "pciephy", "perst";
-+				power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE_PHY>;
-+				#phy-cells = <0>;
-+				status = "disabled";
-+			};
-+	
- 			hsio_blk_ctrl: blk-ctrl@32f10000 {
- 				compatible = "fsl,imx8mp-hsio-blk-ctrl", "syscon";
- 				reg = <0x32f10000 0x24>;
-@@ -980,6 +993,37 @@ hsio_blk_ctrl: blk-ctrl@32f10000 {
- 			};
- 		};
- 
-+		pcie: pcie@33800000 {
-+			compatible = "fsl,imx8mp-pcie";
-+			reg = <0x33800000 0x400000>, <0x1ff00000 0x80000>;
-+			reg-names = "dbi", "config";
-+			#address-cells = <3>;
-+			#size-cells = <2>;
-+			device_type = "pci";
-+			bus-range = <0x00 0xff>;
-+			ranges =  <0x81000000 0 0x00000000 0x1ff80000 0 0x00010000 /* downstream I/O 64KB */
-+				   0x82000000 0 0x18000000 0x18000000 0 0x07f00000>; /* non-prefetchable memory */
-+			num-lanes = <1>;
-+			num-viewport = <4>;
-+			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "msi";
-+			#interrupt-cells = <1>;
-+			interrupt-map-mask = <0 0 0 0x7>;
-+			interrupt-map = <0 0 0 1 &gic GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
-+					<0 0 0 2 &gic GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
-+					<0 0 0 3 &gic GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
-+					<0 0 0 4 &gic GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
-+			fsl,max-link-speed = <3>;
-+			linux,pci-domain = <0>;
-+			power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE>;
-+			resets = <&src IMX8MP_RESET_PCIE_CTRL_APPS_EN>,
-+				 <&src IMX8MP_RESET_PCIE_CTRL_APPS_TURNOFF>;
-+			reset-names = "apps", "turnoff";
-+			phys = <&pcie_phy>;
-+			phy-names = "pcie-phy";
-+			status = "disabled";
-+		};
-+
- 		gpu3d: gpu@38000000 {
- 			compatible = "vivante,gc";
- 			reg = <0x38000000 0x8000>;
+Applied, thanks.
+
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
