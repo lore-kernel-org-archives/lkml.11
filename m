@@ -2,225 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 500FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241909AbiCGTOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 14:14:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36672 "EHLO
+        id S236881AbiCGTQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 14:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234144AbiCGTOG (ORCPT
+        with ESMTP id S230143AbiCGTQL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 14:14:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4793338BF;
-        Mon,  7 Mar 2022 11:13:10 -0800 (PST)
+        Mon, 7 Mar 2022 14:16:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9AB7CDCA;
+        Mon,  7 Mar 2022 11:15:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E8B5B81678;
-        Mon,  7 Mar 2022 19:13:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD1DC340F4;
-        Mon,  7 Mar 2022 19:13:07 +0000 (UTC)
-Date:   Mon, 7 Mar 2022 14:13:05 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Cc:     Wolfram Sang <wsa@kernel.org>, "Ingo Molnar" <mingo@redhat.com>,
-        Jamie Iles <quic_jiles@quicinc.com>,
-        Graeme Gregory <quic_ggregory@quicinc.com>,
-        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>
-Subject: Re: [PATCH] i2c: add tracepoints for I2C slave events
-Message-ID: <20220307141305.18f0c20b@gandalf.local.home>
-In-Reply-To: <20220307182049.3790905-1-quic_jaehyoo@quicinc.com>
-References: <20220307182049.3790905-1-quic_jaehyoo@quicinc.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4646B8167A;
+        Mon,  7 Mar 2022 19:15:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42696C340EB;
+        Mon,  7 Mar 2022 19:15:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646680513;
+        bh=td5XA/vasPQzk2dJn/2PdCjukKMBaa8j+bLAS4+mKCk=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=YYUCqr68s2efIf+qL+Ov/nYK3ID7rndO+/BzWZHEFEbH/vNmfXqBlPQ94F70Phi+X
+         6654CSGtwy1huUQfFeTpRK3H2ltjd49oX6wMHzXzyKH9d5bbzSmaSbSziJgYcuqdnC
+         tRdS1fgQ1gXcU9SM+mk/ST/NCrWVw0GiBNhpecYdbMWw5mpSz7EOf6boWRy6SAFaPd
+         Sj0jsy3CNCWdZwVOzPTAl17vnNKeIz16/O0t0Nsaui8A6hftRN+YzUqOmziWBXZSfP
+         /3HCcaPc4DRjQRDq7nP2LfRQgZr9avKOKM+qsBagBFLyKNsguSXtvwDfn7y7l5uTJf
+         0NB/vQGOavZFQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id E44925C0260; Mon,  7 Mar 2022 11:15:12 -0800 (PST)
+Date:   Mon, 7 Mar 2022 11:15:12 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        rcu@vger.kernel.org, bigeasy@linutronix.de
+Subject: Re: [PATCH] rcu: Only boost rcu reader tasks with lower priority
+ than boost kthreads
+Message-ID: <20220307191512.GN4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220304092631.4123188-1-qiang1.zhang@intel.com>
+ <81f69dd4-6ca9-760c-bec5-5cb27afbe788@quicinc.com>
+ <PH0PR11MB5880026EBBE3E195549E2245DA089@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB5880026EBBE3E195549E2245DA089@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 10:20:49 -0800
-Jae Hyun Yoo <quic_jaehyoo@quicinc.com> wrote:
+On Mon, Mar 07, 2022 at 02:03:17AM +0000, Zhang, Qiang1 wrote:
+> On 3/4/2022 2:56 PM, Zqiang wrote:
+> > When RCU_BOOST is enabled, the boost kthreads will boosting readers
+> > who are blocking a given grace period, if the current reader tasks
+> > have a higher priority than boost kthreads(the boost kthreads priority
+> > not always 1, if the kthread_prio is set), boosting is useless, skip
+> > current task and select next task to boosting, reduce the time for a
+> > given grace period.
+> > 
+> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 
-> I2C slave events tracepoints can be enabled by:
+Adding to CC to get more eyes on this.  I am not necessarily opposed to
+it, but I don't do that much RT work myself these days.
+
+							Thanx, Paul
+
+> > ---
+> >   kernel/rcu/tree_plugin.h | 10 +++++++++-
+> >   1 file changed, 9 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+> > index c3d212bc5338..d35b6da66bbd 100644
+> > --- a/kernel/rcu/tree_plugin.h
+> > +++ b/kernel/rcu/tree_plugin.h
+> > @@ -12,6 +12,7 @@
+> >    */
+> >   
+> >   #include "../locking/rtmutex_common.h"
+> > +#include <linux/sched/deadline.h>
+> >   
+> >   static bool rcu_rdp_is_offloaded(struct rcu_data *rdp)
+> >   {
+> > @@ -1065,13 +1066,20 @@ static int rcu_boost(struct rcu_node *rnp)
+> >   	 * section.
+> >   	 */
+> >   	t = container_of(tb, struct task_struct, rcu_node_entry);
+> > +	if (!rnp->exp_tasks && (dl_task(t) || t->prio <= current->prio)) {
+> > +		tb = rcu_next_node_entry(t, rnp);
+> > +		WRITE_ONCE(rnp->boost_tasks, tb);
+> > +		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+> > +		goto end;
+> > +	}
+> > +
+> >   	rt_mutex_init_proxy_locked(&rnp->boost_mtx.rtmutex, t);
+> >   	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+> >   	/* Lock only for side effect: boosts task t's priority. */
+> >   	rt_mutex_lock(&rnp->boost_mtx);
+> >   	rt_mutex_unlock(&rnp->boost_mtx);  /* Then keep lockdep happy. */
+> >   	rnp->n_boosts++;
+> > -
+> > +end:
+> >>
+> >>Nit: maybe rename the label to "skip_boost:" ?
+> >>
+> >>Code looks fine; however, out of curiosity; given that the higher 
+> >>priority tasks, in general, would exit their read side critical section
+> >>quickly and boost the next blocking reader on exiting their read side 
+> >>section; do you see noticeable reduction in grace period timings with 
+> >>the change for certain type of workloads?
 > 
-> 	echo 1 > /sys/kernel/tracing/events/i2c_slave/enable
+> Thanks for feedback ,  In preempt-RT systems, there will be many real-time threads (most
+> of them are created by users themselves ),  their priority is higher or lower than boost kthreads
+> (kthread_prio is set),  for rt tasks  with higher priority than boost kthreads, maybe it will exit
+> read side critical quickly,  maybe not, if it is preempted by a higher priority task,  If try to boost operation, 
+> this increases the boosts kthread waiting time, as a result, the next blkd tasks cannot be
+> boosted in time.  of course, I don't deny it,  there are also reasons that user priority setting is inappropriate.
 > 
-> and logs in /sys/kernel/tracing/trace will look like:
+> Thanks
+> Zqiang
 > 
-> 	... i2c_slave: i2c-0 a=010 WR_REQ []
-> 	... i2c_slave: i2c-0 a=010 WR_RCV [02]
-> 	... i2c_slave: i2c-0 a=010 WR_RCV [0c]
-> 	... i2c_slave: i2c-0 a=010   STOP []
-> 	... i2c_slave: i2c-0 a=010 RD_REQ [04]
-> 	... i2c_slave: i2c-0 a=010 RD_PRO [b4]
-> 	... i2c_slave: i2c-0 a=010   STOP []
+> >>
+> >>
+> >>Thanks
+> >>Neeraj
 > 
-> formatted as:
-> 
-> 	i2c-<adapter-nr>
-> 	a=<addr>
-> 	<event>
-> 	[<data>]
-> 
-> trace printings can be selected by adding a filter like:
-> 
-> 	echo adapter_nr==1 >/sys/kernel/tracing/events/i2c_slave/filter
-> 
-> Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-> ---
->  drivers/i2c/i2c-core-slave.c     | 15 +++++++++
->  include/linux/i2c.h              |  8 ++---
->  include/trace/events/i2c_slave.h | 57 ++++++++++++++++++++++++++++++++
->  3 files changed, 74 insertions(+), 6 deletions(-)
->  create mode 100644 include/trace/events/i2c_slave.h
-> 
-> diff --git a/drivers/i2c/i2c-core-slave.c b/drivers/i2c/i2c-core-slave.c
-> index 1589179d5eb9..4968a17328b3 100644
-> --- a/drivers/i2c/i2c-core-slave.c
-> +++ b/drivers/i2c/i2c-core-slave.c
-> @@ -14,6 +14,9 @@
->  
->  #include "i2c-core.h"
->  
-> +#define CREATE_TRACE_POINTS
-> +#include <trace/events/i2c_slave.h>
-> +
->  int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
->  {
->  	int ret;
-> @@ -79,6 +82,18 @@ int i2c_slave_unregister(struct i2c_client *client)
->  }
->  EXPORT_SYMBOL_GPL(i2c_slave_unregister);
->  
-> +int i2c_slave_event(struct i2c_client *client,
-> +		    enum i2c_slave_event event, u8 *val)
-> +{
-> +	int ret = client->slave_cb(client, event, val);
-> +
-> +	if (!ret)
-
-You can make the above into:
-
-	if (trace_i2c_slave_enabled() && !ret)
-
-to make this conditional compare only happen if the tracepoint is enabled.
-As the trace_i2c_slave_enabled() is a static branch (non-conditional jump).
-
-> +		trace_i2c_slave(client, event, val);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_slave_event);
-> +
->  /**
->   * i2c_detect_slave_mode - detect operation mode
->   * @dev: The device owning the bus
-> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-> index 7d4f52ceb7b5..fbda5ada2afc 100644
-> --- a/include/linux/i2c.h
-> +++ b/include/linux/i2c.h
-> @@ -392,12 +392,8 @@ enum i2c_slave_event {
->  int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb);
->  int i2c_slave_unregister(struct i2c_client *client);
->  bool i2c_detect_slave_mode(struct device *dev);
-> -
-> -static inline int i2c_slave_event(struct i2c_client *client,
-> -				  enum i2c_slave_event event, u8 *val)
-> -{
-> -	return client->slave_cb(client, event, val);
-> -}
-> +int i2c_slave_event(struct i2c_client *client,
-> +		    enum i2c_slave_event event, u8 *val);
->  #else
->  static inline bool i2c_detect_slave_mode(struct device *dev) { return false; }
->  #endif
-> diff --git a/include/trace/events/i2c_slave.h b/include/trace/events/i2c_slave.h
-> new file mode 100644
-> index 000000000000..1f0c1cfbf2ef
-> --- /dev/null
-> +++ b/include/trace/events/i2c_slave.h
-> @@ -0,0 +1,57 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * I2C slave tracepoints
-> + *
-> + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-> + */
-> +#undef TRACE_SYSTEM
-> +#define TRACE_SYSTEM i2c_slave
-> +
-> +#if !defined(_TRACE_I2C_SLAVE_H) || defined(TRACE_HEADER_MULTI_READ)
-> +#define _TRACE_I2C_SLAVE_H
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/tracepoint.h>
-> +
-> +TRACE_EVENT(i2c_slave,
-> +	TP_PROTO(const struct i2c_client *client, enum i2c_slave_event event,
-> +		 __u8 *val),
-> +	TP_ARGS(client, event, val),
-> +	TP_STRUCT__entry(
-> +		__field(int,				adapter_nr	)
-> +		__field(__u16,				addr		)
-> +		__field(enum i2c_slave_event,		event		)
-> +		__field(__u16,				len		)
-
-I would keep the u16 together:
-
-		__field(int,				adapter_nr	)
-		__field(__u16,				addr		)
-		__field(__u16,				len		)
-		__field(enum i2c_slave_event,		event		)
-
-Otherwise you will likely have a hole in the event, which wastes space on
-the ring buffer.
-
-
-> +		__dynamic_array(__u8, buf, 1)				),
-> +
-> +	TP_fast_assign(
-> +		__entry->adapter_nr = client->adapter->nr;
-> +		__entry->addr = client->addr;
-> +		__entry->event = event;
-> +		switch (event) {
-> +		case I2C_SLAVE_READ_REQUESTED:
-> +		case I2C_SLAVE_READ_PROCESSED:
-> +		case I2C_SLAVE_WRITE_RECEIVED:
-> +			__entry->len = 1;
-> +			memcpy(__get_dynamic_array(buf), val, __entry->len);
-
-Why the dynamic event, if it is always the size of 1? Why not make it an
-array. It will save space, as the dynamic meta data has to live on the
-event which is 4 bytes big. Just make it:
-
-		__array(__u8, buf, 1);
-
-It's faster and saves space.
-
--- Steve
-
-> +			break;
-> +		default:
-> +			__entry->len = 0;
-> +			break;
-> +		}
-> +		),
-> +	TP_printk("i2c-%d a=%03x %s [%*phD]",
-> +		__entry->adapter_nr, __entry->addr,
-> +		__print_symbolic(__entry->event,
-> +				 { I2C_SLAVE_READ_REQUESTED,	"RD_REQ" },
-> +				 { I2C_SLAVE_WRITE_REQUESTED,	"WR_REQ" },
-> +				 { I2C_SLAVE_READ_PROCESSED,	"RD_PRO" },
-> +				 { I2C_SLAVE_WRITE_RECEIVED,	"WR_RCV" },
-> +				 { I2C_SLAVE_STOP,		"  STOP" }),
-> +		__entry->len, __get_dynamic_array(buf)
-> +		));
-> +
-> +#endif /* _TRACE_I2C_SLAVE_H */
-> +
-> +/* This part must be outside protection */
-> +#include <trace/define_trace.h>
-
+> >   	return READ_ONCE(rnp->exp_tasks) != NULL ||
+> >   	       READ_ONCE(rnp->boost_tasks) != NULL;
+> >   }
