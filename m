@@ -2,180 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 096F4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234947AbiCGDKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 22:10:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        id S234963AbiCGDUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 22:20:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232049AbiCGDKE (ORCPT
+        with ESMTP id S232516AbiCGDUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 22:10:04 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A5E36151
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 19:09:09 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id n7so4109455oif.5
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 19:09:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NrL2GbvVpGb29Fj3Rihhmr0iZS/oGZ6Whqfe0P71jDo=;
-        b=HoesBsDjd7+aEljMQq6FmZvxEOTUGHpDp9Txbuo/3IREDz2j65Zk/VnVT2GZ4r/JAp
-         vXTCstmbhU0Ko1SGrhRrz90k40tiiknNeMUT9RgwiBYQGCzm21ceF8zoxFlA9MKwZjc1
-         bQFJKk7m+DTTOuTeNlE4lfnzZvD5RL8+ENgB9UiHQUPfZv7bYffRTtDPUgxsPTNpHKS+
-         gwS0KyBFefrVs9BlDf90ZtDYy2s58YFIF77DRb7g5kOvFmydWLvmAODkc790wxbOuwrr
-         sS7/Oe9H3Yt4SGWrKgZDWu1ybef3RG8OUsQTdiDEeLsx4NzY8i27oBrxLImFevcvF4At
-         IgBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NrL2GbvVpGb29Fj3Rihhmr0iZS/oGZ6Whqfe0P71jDo=;
-        b=SRzKgoSVldwE4Jk0DdLLP1Fb+QlN7Ynr3ngCe6yUvxYGMS8PPQrryytX556B0ojh9l
-         POfvEpb5RIMz7u02CgUgqadq8bymn4S8T6mGJ8IgFAm9mfUYjdG5XtajFDm5+PSf1b3j
-         91ZaFdVht9kaaLy0D3TugpsAxmZH59XH+VH2iLrmP0rVN0RnzBllZeKuM7crPMBm4aRj
-         CDlKz4WQMgpQXAbJQiMKHOOXFH2WlWUYLWoJOZ/KxH4TdUsLZM/q2XvY2p8mqi7pw+k0
-         7S4Dt5Jh8izIpELh6lYJ6N9HMdWFizm6vuq6ETPPPwNT04cRMyJWnyKSnCiv/s45JjIp
-         DWTg==
-X-Gm-Message-State: AOAM532S15CFBAQpG1fL7ZlVOn7B7/XjH6IawiUSPRTQI7LCkbhTgF9f
-        cthS4uEnd6CWQeFs9GyxeDLyHBMwTcAwnQ==
-X-Google-Smtp-Source: ABdhPJykY27Dd1c8RLb3BX+lW8QmHS2laZL2r0kyG07XihdxPkqcFcTFKZrOHIGpv09WnhCF3phevA==
-X-Received: by 2002:a05:6808:152c:b0:2d7:58b0:15b9 with SMTP id u44-20020a056808152c00b002d758b015b9mr5727574oiw.81.1646622548343;
-        Sun, 06 Mar 2022 19:09:08 -0800 (PST)
-Received: from yoga ([2600:1700:a0:3dc8:5c39:baff:fe03:898d])
-        by smtp.gmail.com with ESMTPSA id q62-20020a4a3341000000b00320f8a179d0sm439197ooq.30.2022.03.06.19.09.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 19:09:07 -0800 (PST)
-Date:   Sun, 6 Mar 2022 21:09:05 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v3 4/6] typec: mux: Allow multiple mux_devs per mux
-Message-ID: <YiV3UYuXgS0w0IWl@yoga>
-References: <20220303223351.141238-1-bjorn.andersson@linaro.org>
- <20220303223351.141238-4-bjorn.andersson@linaro.org>
- <YiIaK8kSYGtivvhk@smile.fi.intel.com>
+        Sun, 6 Mar 2022 22:20:54 -0500
+X-Greylist: delayed 1783 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Mar 2022 19:19:58 PST
+Received: from SHSQR01.unisoc.com (mx1.unisoc.com [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0FCCE022
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 19:19:58 -0800 (PST)
+Received: from SHSQR01.spreadtrum.com (localhost [127.0.0.2] (may be forged))
+        by SHSQR01.unisoc.com with ESMTP id 2272oEQb033185
+        for <linux-kernel@vger.kernel.org>; Mon, 7 Mar 2022 10:50:14 +0800 (CST)
+        (envelope-from bruce.chen@unisoc.com)
+Received: from SHSend.spreadtrum.com (shmbx04.spreadtrum.com [10.0.1.214])
+        by SHSQR01.spreadtrum.com with ESMTPS id 2272npcb031067
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
+        Mon, 7 Mar 2022 10:49:51 +0800 (CST)
+        (envelope-from bruce.chen@unisoc.com)
+Received: from shmbx05.spreadtrum.com (10.29.1.56) by shmbx04.spreadtrum.com
+ (10.0.1.214) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 7 Mar
+ 2022 10:49:51 +0800
+Received: from shmbx05.spreadtrum.com ([fe80::3169:eec0:7a15:2543]) by
+ shmbx05.spreadtrum.com ([fe80::3169:eec0:7a15:2543%16]) with mapi id
+ 15.00.1497.023; Mon, 7 Mar 2022 10:49:51 +0800
+From:   =?utf-8?B?6ZmI5bu6IChCcnVjZSBDaGVuKQ==?= <bruce.chen@unisoc.com>
+To:     Roger Quadros <rogerq@kernel.org>,
+        Bruce Chen <brucechen251@gmail.com>,
+        "myungjoo.ham@samsung.com" <myungjoo.ham@samsung.com>,
+        "cw00.choi@samsung.com" <cw00.choi@samsung.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Aswath Govindraju" <a-govindraju@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        =?utf-8?B?57+f5LqsIChPcnNvbiBaaGFpKQ==?= <Orson.Zhai@unisoc.com>
+CC:     "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+        "gengcixi@gmail.com" <gengcixi@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggVjFdIGV4dGNvbi91c2I6IFJlbW92ZSBkaXNhYmxl?=
+ =?utf-8?Q?_irq_operation_in_system_sleep.?=
+Thread-Topic: [PATCH V1] extcon/usb: Remove disable irq operation in system
+ sleep.
+Thread-Index: AQHYLtGVK2uDMo5g702ybB2Qryhxfqys3ByAgAZhotA=
+Date:   Mon, 7 Mar 2022 02:49:50 +0000
+Message-ID: <a613cd9f7dcc4e70af0db40e7772084e@shmbx05.spreadtrum.com>
+References: <1646292963-20570-1-git-send-email-brucechen251@gmail.com>
+ <32165383-5ccf-e6a1-92ef-cde14c401eaa@kernel.org>
+In-Reply-To: <32165383-5ccf-e6a1-92ef-cde14c401eaa@kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.29.193.111]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiIaK8kSYGtivvhk@smile.fi.intel.com>
+X-MAIL: SHSQR01.spreadtrum.com 2272npcb031067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 04 Mar 07:54 CST 2022, Andy Shevchenko wrote:
-
-> On Thu, Mar 03, 2022 at 02:33:49PM -0800, Bjorn Andersson wrote:
-> > In the Qualcomm platforms the USB/DP PHY handles muxing and orientation
-> > switching of the SuperSpeed lines, but the SBU lines needs to be
-> > connected and switched by external (to the SoC) hardware.
-> > 
-> > It's therefor necessary to be able to have the TypeC controller operate
-> > multiple TypeC muxes and switches. Use the newly introduced indirection
-> > object to handle this, to avoid having to taint the TypeC controllers
-> > with knowledge about the downstream hardware configuration.
-> > 
-> > The max number of devs per indirection is set to 3, which account for
-> > being able to mux/switch the USB HS, SS and SBU lines, as per defined
-> > defined in the usb-c-connector binding. This number could be grown if
-> > need arrises at a later point in time.
-> 
-> ...
-> 
-> > +	for (i = 0; i < count; i++) {
-> > +		if (IS_ERR(sw_devs[i])) {
-> > +			err = PTR_ERR(sw_devs[i]);
-> > +			goto put_sw_devs;
-> > +		}
-> > +	}
-> >  
-> > -	sw->sw_dev = sw_dev;
-> > +	for (i = 0; i < count; i++) {
-> > +		WARN_ON(!try_module_get(sw_devs[i]->dev.parent->driver->owner));
-> > +		sw->sw_devs[i] = sw_devs[i];
-> > +	}
-> > +
-> > +	sw->num_sw_devs = count;
-> >  
-> >  	return sw;
-> > +
-> > +put_sw_devs:
-> > +	for (i = 0; i < count; i++) {
-> 
-> Shouldn't it be
-> 
-> 	while (i--)
-> 
-> ?
-
-fwnode_connection_find_matches() "returned" count number of sw_devs, we
-need to put_device() them all. So that form could have been
-
-	while (count--)
-
-but as it's not the typical "unrolling" I think the untypical form is
-more useful.
-
-> 
-> > +		if (!IS_ERR(sw_devs[i]))
-> 
-> We may get rid of this check if we guarantee that the device is NULL.
-> 
-
-In the event that the USB Type-C controller probes before some of the
-muxes, this array might contain one or more entries of EPROBE_DEFER.
-
-So we need to either put this conditional here, or we need to loop
-through all entries to turn IS_ERR() into NULL, for the sake of not
-having it here.
-
-So to me this looks cleaner...
-
-Regards,
-Bjorn
-
-> > +			put_device(&sw_devs[i]->dev);
-> > +	}
-> > +
-> > +	kfree(sw);
-> > +
-> > +	return ERR_PTR(err);
-> >  }
-> 
-> ...
-> 
-> > +	for (i = 0; i < count; i++) {
-> > +		if (IS_ERR(mux_devs[i])) {
-> > +			err = PTR_ERR(mux_devs[i]);
-> > +			goto put_mux_devs;
-> > +		}
-> 
-> Ditto.
-> 
-> > +	}
-> 
-> ...
-> 
-> > +put_mux_devs:
-> > +	for (i = 0; i < count; i++) {
-> > +		if (!IS_ERR(mux_devs[i]))
-> > +			put_device(&mux_devs[i]->dev);
-> > +	}
-> 
-> Ditto.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+K29yc29uDQoNCkhpIEFzd2F0aCAmIFZpZ25lc2g6DQpEaWQgeW91IGhlbHAgY29uZmlybSB3aGF0
+IFJvZ2VyIHNhaWQ/IFRoYW5rcy4NCg0KLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0K5Y+R5Lu25Lq6
+OiBSb2dlciBRdWFkcm9zIDxyb2dlcnFAa2VybmVsLm9yZz4NCuWPkemAgeaXtumXtDogMjAyMuW5
+tDPmnIgz5pelIDE3OjIxDQrmlLbku7bkuro6IEJydWNlIENoZW4gPGJydWNlY2hlbjI1MUBnbWFp
+bC5jb20+OyDpmYjlu7ogKEJydWNlIENoZW4pIDxicnVjZS5jaGVuQHVuaXNvYy5jb20+OyBteXVu
+Z2pvby5oYW1Ac2Ftc3VuZy5jb207IGN3MDAuY2hvaUBzYW1zdW5nLmNvbTsgbGludXgta2VybmVs
+QHZnZXIua2VybmVsLm9yZzsgQXN3YXRoIEdvdmluZHJhanUgPGEtZ292aW5kcmFqdUB0aS5jb20+
+OyBWaWduZXNoIFJhZ2hhdmVuZHJhIDx2aWduZXNockB0aS5jb20+DQrmioTpgIE6IG9yc29uemhh
+aUBnbWFpbC5jb207IGdlbmdjaXhpQGdtYWlsLmNvbTsgYmFvbGluLndhbmc3QGdtYWlsLmNvbTsg
+emhhbmcubHlyYUBnbWFpbC5jb20NCuS4u+mimDogUmU6IFtQQVRDSCBWMV0gZXh0Y29uL3VzYjog
+UmVtb3ZlIGRpc2FibGUgaXJxIG9wZXJhdGlvbiBpbiBzeXN0ZW0gc2xlZXAuDQoNCg0K5rOo5oSP
+OiDov5nlsIHpgq7ku7bmnaXoh6rkuo7lpJbpg6jjgILpmaTpnZ7kvaDnoa7lrprpgq7ku7blhoXl
+rrnlronlhajvvIzlkKbliJnkuI3opoHngrnlh7vku7vkvZXpk77mjqXlkozpmYTku7bjgIINCkNB
+VVRJT046IFRoaXMgZW1haWwgb3JpZ2luYXRlZCBmcm9tIG91dHNpZGUgb2YgdGhlIG9yZ2FuaXph
+dGlvbi4gRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBy
+ZWNvZ25pemUgdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLg0KDQoNCg0K
+K1RJIGZvbGtzIEFzd2F0aCAmIFZpZ25lc2guDQoNCkhpIEJydWNlLA0KDQpPbiAwMy8wMy8yMDIy
+IDA5OjM2LCBCcnVjZSBDaGVuIHdyb3RlOg0KPiBGcm9tOiBCcnVjZSBDaGVuIDxicnVjZS5jaGVu
+QHVuaXNvYy5jb20+DQo+DQo+IElmIGRpc2FibGUgdmJ1cy9pZCBpcnEsIGl0IHdpbGwgbGVhZCB0
+byB3YWtldXAgc3lzdGVtIGZhaWwgaW4gdW5pc29jDQo+IHBsYXRmb3JtLiBJbiB1bmlzb2MgcGxh
+dGZvcm0sIElycSBlbmFibGUgYW5kIGlycSB3YWtldXAgYXJlIHRoZSBzYW1lDQo+IGludGVycnVw
+dCBsaW5lLiBTbyByZW1vdmUgZGlzYWJsZSB2YnVzL2lkIGlycSBvcGVyYXRpb24gaXMgYSB3YXkg
+dG8NCj4gc29sdmUgdGhlIGlzc3VlPg0KPiBTaWduZWQtb2ZmLWJ5OiBCcnVjZSBDaGVuIDxicnVj
+ZS5jaGVuQHVuaXNvYy5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9leHRjb24vZXh0Y29uLXVzYi1n
+cGlvLmMgfCAxNSAtLS0tLS0tLS0tLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxNSBkZWxldGlv
+bnMoLSkNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZXh0Y29uL2V4dGNvbi11c2ItZ3Bpby5j
+DQo+IGIvZHJpdmVycy9leHRjb24vZXh0Y29uLXVzYi1ncGlvLmMNCj4gaW5kZXggZjJiNjVkOS4u
+NDBkOTY3YSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9leHRjb24vZXh0Y29uLXVzYi1ncGlvLmMN
+Cj4gKysrIGIvZHJpdmVycy9leHRjb24vZXh0Y29uLXVzYi1ncGlvLmMNCj4gQEAgLTIyNiwxNiAr
+MjI2LDYgQEAgc3RhdGljIGludCB1c2JfZXh0Y29uX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2
+KQ0KPiAgICAgICAgICAgICAgIH0NCj4gICAgICAgfQ0KPg0KPiAtICAgICAvKg0KPiAtICAgICAg
+KiBXZSBkb24ndCB3YW50IHRvIHByb2Nlc3MgYW55IElSUXMgYWZ0ZXIgdGhpcyBwb2ludA0KPiAt
+ICAgICAgKiBhcyBHUElPcyB1c2VkIGJlaGluZCBJMkMgc3Vic3lzdGVtIG1pZ2h0IG5vdCBiZQ0K
+PiAtICAgICAgKiBhY2Nlc3NpYmxlIHVudGlsIHJlc3VtZSBjb21wbGV0ZXMuIFNvIGRpc2FibGUg
+SVJRLg0KPiAtICAgICAgKi8NCg0KSSB0aGluayB0aGUgcmVhc29uIHRoaXMgd2FzIGFkZGVkIHdh
+cyB0aGF0IGlmIFVTQiBjYWJsZSBpcyBwbHVnZ2VkL3VucGx1Z2dlZCB3aGlsZSBzeXN0ZW0gd2Fz
+IHN1c3BlbmRpbmcgaXQgd2FzIGNhdXNpbmcgc29tZSBmYXVsdHMgb24gVEkgRFJBNyBFVk0gYXQg
+dXNiX2lycV9oYW5kbGVyKCkvdXNiX2V4dGNvbl9kZXRlY3RfY2FibGUoKSB3aGVuIGl0IHRyaWVz
+IHRvIHJlYWQgR1BJTyBzdGF0dXMgd2hlbiBJMkMgYmFzZWQgR1BJTyBjb250cm9sbGVyIHdhcyB1
+c2VkIGJ1dCBhbHJlYWR5IHN1c3BlbmRlZC4NCkJ1dCBsb29rcyBsaWtlIGRpc2FibGluZyB0aGUg
+SVJRIGlzIG5vdCB0aGUgcmlnaHQgYXBwcm9hY2ggZWl0aGVyIHNvIHlvdXIgcGF0Y2ggaXMgcmln
+aHQuDQoNCkhvd2V2ZXIgSSdtIG5vdCBzdXJlIGlmIHRoZSBhYm92ZSBpc3N1ZSB3aWxsIHN0aWxs
+IGV4aXN0IG9uIERSQTcgYW5kIG90aGVyIFRJIEVWTVMgdXNpbmcgSUQvVkJVUyBHUElPIG92ZXIg
+STJDIGRldmljZS4NCg0KTGV0J3Mgd2FpdCBmb3IgQXN3YXRoL1ZpZ25lc2ggdG8gY29uZmlybS4g
+SWYgbm8gaXNzdWVzIEknbSBPSyB3aXRoIHRoaXMgcGF0Y2guDQoNCj4gLSAgICAgaWYgKGluZm8t
+PmlkX2dwaW9kKQ0KPiAtICAgICAgICAgICAgIGRpc2FibGVfaXJxKGluZm8tPmlkX2lycSk7DQo+
+IC0gICAgIGlmIChpbmZvLT52YnVzX2dwaW9kKQ0KPiAtICAgICAgICAgICAgIGRpc2FibGVfaXJx
+KGluZm8tPnZidXNfaXJxKTsNCj4gLQ0KPiAgICAgICBpZiAoIWRldmljZV9tYXlfd2FrZXVwKGRl
+dikpDQo+ICAgICAgICAgICAgICAgcGluY3RybF9wbV9zZWxlY3Rfc2xlZXBfc3RhdGUoZGV2KTsN
+Cj4NCj4gQEAgLTI2NywxMSArMjU3LDYgQEAgc3RhdGljIGludCB1c2JfZXh0Y29uX3Jlc3VtZShz
+dHJ1Y3QgZGV2aWNlICpkZXYpDQo+ICAgICAgICAgICAgICAgfQ0KPiAgICAgICB9DQo+DQo+IC0g
+ICAgIGlmIChpbmZvLT5pZF9ncGlvZCkNCj4gLSAgICAgICAgICAgICBlbmFibGVfaXJxKGluZm8t
+PmlkX2lycSk7DQo+IC0gICAgIGlmIChpbmZvLT52YnVzX2dwaW9kKQ0KPiAtICAgICAgICAgICAg
+IGVuYWJsZV9pcnEoaW5mby0+dmJ1c19pcnEpOw0KPiAtDQo+ICAgICAgIHF1ZXVlX2RlbGF5ZWRf
+d29yayhzeXN0ZW1fcG93ZXJfZWZmaWNpZW50X3dxLA0KPiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgJmluZm8tPndxX2RldGNhYmxlLCAwKTsNCj4NCg0KY2hlZXJzLA0KLXJvZ2VyDQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXw0KIFRoaXMgZW1haWwgKGluY2x1ZGluZyBpdHMgYXR0
+YWNobWVudHMpIGlzIGludGVuZGVkIG9ubHkgZm9yIHRoZSBwZXJzb24gb3IgZW50aXR5IHRvIHdo
+aWNoIGl0IGlzIGFkZHJlc3NlZCBhbmQgbWF5IGNvbnRhaW4gaW5mb3JtYXRpb24gdGhhdCBpcyBw
+cml2aWxlZ2VkLCBjb25maWRlbnRpYWwgb3Igb3RoZXJ3aXNlIHByb3RlY3RlZCBmcm9tIGRpc2Ns
+b3N1cmUuIFVuYXV0aG9yaXplZCB1c2UsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiBvciBj
+b3B5aW5nIG9mIHRoaXMgZW1haWwgb3IgdGhlIGluZm9ybWF0aW9uIGhlcmVpbiBvciB0YWtpbmcg
+YW55IGFjdGlvbiBpbiByZWxpYW5jZSBvbiB0aGUgY29udGVudHMgb2YgdGhpcyBlbWFpbCBvciB0
+aGUgaW5mb3JtYXRpb24gaGVyZWluLCBieSBhbnlvbmUgb3RoZXIgdGhhbiB0aGUgaW50ZW5kZWQg
+cmVjaXBpZW50LCBvciBhbiBlbXBsb3llZSBvciBhZ2VudCByZXNwb25zaWJsZSBmb3IgZGVsaXZl
+cmluZyB0aGUgbWVzc2FnZSB0byB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCBpcyBzdHJpY3RseSBw
+cm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCBwbGVhc2Ug
+ZG8gbm90IHJlYWQsIGNvcHksIHVzZSBvciBkaXNjbG9zZSBhbnkgcGFydCBvZiB0aGlzIGUtbWFp
+bCB0byBvdGhlcnMuIFBsZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBhbmQgcGVy
+bWFuZW50bHkgZGVsZXRlIHRoaXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgaWYgeW91IHJl
+Y2VpdmVkIGl0IGluIGVycm9yLiBJbnRlcm5ldCBjb21tdW5pY2F0aW9ucyBjYW5ub3QgYmUgZ3Vh
+cmFudGVlZCB0byBiZSB0aW1lbHksIHNlY3VyZSwgZXJyb3ItZnJlZSBvciB2aXJ1cy1mcmVlLiBU
+aGUgc2VuZGVyIGRvZXMgbm90IGFjY2VwdCBsaWFiaWxpdHkgZm9yIGFueSBlcnJvcnMgb3Igb21p
+c3Npb25zLg0K5pys6YKu5Lu25Y+K5YW26ZmE5Lu25YW35pyJ5L+d5a+G5oCn6LSo77yM5Y+X5rOV
+5b6L5L+d5oqk5LiN5b6X5rOE6Zyy77yM5LuF5Y+R6YCB57uZ5pys6YKu5Lu25omA5oyH54m55a6a
+5pS25Lu25Lq644CC5Lil56aB6Z2e57uP5o6I5p2D5L2/55So44CB5a6j5Lyg44CB5Y+R5biD5oiW
+5aSN5Yi25pys6YKu5Lu25oiW5YW25YaF5a6544CC6Iul6Z2e6K+l54m55a6a5pS25Lu25Lq677yM
+6K+35Yu/6ZiF6K+744CB5aSN5Yi244CBIOS9v+eUqOaIluaKq+mcsuacrOmCruS7tueahOS7u+S9
+leWGheWuueOAguiLpeivr+aUtuacrOmCruS7tu+8jOivt+S7juezu+e7n+S4reawuOS5heaAp+WI
+oOmZpOacrOmCruS7tuWPiuaJgOaciemZhOS7tu+8jOW5tuS7peWbnuWkjemCruS7tueahOaWueW8
+j+WNs+WIu+WRiuefpeWPkeS7tuS6uuOAguaXoOazleS/neivgeS6kuiBlOe9kemAmuS/oeWPiuaX
+tuOAgeWuieWFqOOAgeaXoOivr+aIlumYsuavkuOAguWPkeS7tuS6uuWvueS7u+S9lemUmea8j+Wd
+h+S4jeaJv+aLhei0o+S7u+OAgg0K
