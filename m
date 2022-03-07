@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC04C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03632C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239861AbiCGKH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:07:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
+        id S239051AbiCGKH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238519AbiCGJrz (ORCPT
+        with ESMTP id S239163AbiCGJtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:47:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0EF6BDD8;
-        Mon,  7 Mar 2022 01:42:23 -0800 (PST)
+        Mon, 7 Mar 2022 04:49:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1474E1263E;
+        Mon,  7 Mar 2022 01:42:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B0A61224;
-        Mon,  7 Mar 2022 09:42:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62542C340F3;
-        Mon,  7 Mar 2022 09:42:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1816C612C9;
+        Mon,  7 Mar 2022 09:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0721FC340E9;
+        Mon,  7 Mar 2022 09:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646142;
-        bh=9fZaDAJh9dR/swLNoK3CtyGoe0XhHC15pTb6g6Q59bM=;
+        s=korg; t=1646646162;
+        bh=mIi0ftgoyhG5Jooo5lJFGHFsSsXEAO9j8HzxjxH7GQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RgbxvVv6y0UTCnZWsSemEyNaiGV6zBq4/ycIXVsLphJb6LRt1Te1nRZ4ISkRIfPXX
-         YQ3OMNIydZ/56b4snRaW413RX3POAFmY5qZi9JTE9rbt2frk/ekIxPlm2sCr67VxOC
-         i0BGr44FupSD6XUH2pr9PIKKd2wsM2kWI3c2s6oM=
+        b=w6jDicDu4FTguHhr/WUdp6XLu1cLTKEzVzUHqfbw36aijHg8Ym4t2+95Z/sQS7WrP
+         EUqjNOOM+PEJ0+wJMTUiW4xm+2rkMwxPFaVP0siUElZkYKf5vyU7vADrIW0aBNUZa5
+         FULnNDVLeV/xDJX6RN5IQ21+/RpSIXozAVrOdnfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 129/262] cifs: protect session channel fields with chan_lock
-Date:   Mon,  7 Mar 2022 10:17:53 +0100
-Message-Id: <20220307091706.100978799@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.15 153/262] xfrm: fix MTU regression
+Date:   Mon,  7 Mar 2022 10:18:17 +0100
+Message-Id: <20220307091706.756694448@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,317 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Jiri Bohac <jbohac@suse.cz>
 
-[ Upstream commit 724244cdb3828522109c88e56a0242537aefabe9 ]
+commit 6596a0229541270fb8d38d989f91b78838e5e9da upstream.
 
-Introducing a new spin lock to protect all the channel related
-fields in a cifs_ses struct. This lock should be taken
-whenever dealing with the channel fields, and should be held
-only for very short intervals which will not sleep.
+Commit 749439bfac6e1a2932c582e2699f91d329658196 ("ipv6: fix udpv6
+sendmsg crash caused by too small MTU") breaks PMTU for xfrm.
 
-Currently, all channel related fields in cifs_ses structure
-are protected by session_mutex. However, this mutex is held for
-long periods (sometimes while waiting for a reply from server).
-This makes the codepath quite tricky to change.
+A Packet Too Big ICMPv6 message received in response to an ESP
+packet will prevent all further communication through the tunnel
+if the reported MTU minus the ESP overhead is smaller than 1280.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+E.g. in a case of a tunnel-mode ESP with sha256/aes the overhead
+is 92 bytes. Receiving a PTB with MTU of 1371 or less will result
+in all further packets in the tunnel dropped. A ping through the
+tunnel fails with "ping: sendmsg: Invalid argument".
+
+Apparently the MTU on the xfrm route is smaller than 1280 and
+fails the check inside ip6_setup_cork() added by 749439bf.
+
+We found this by debugging USGv6/ipv6ready failures. Failing
+tests are: "Phase-2 Interoperability Test Scenario IPsec" /
+5.3.11 and 5.4.11 (Tunnel Mode: Fragmentation).
+
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm:
+xfrm_state_mtu should return at least 1280 for ipv6") attempted
+to fix this but caused another regression in TCP MSS calculations
+and had to be reverted.
+
+The patch below fixes the situation by dropping the MTU
+check and instead checking for the underflows described in the
+749439bf commit message.
+
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Fixes: 749439bfac6e ("ipv6: fix udpv6 sendmsg crash caused by too small MTU")
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/cifs_debug.c |  2 ++
- fs/cifs/cifsglob.h   |  5 +++++
- fs/cifs/connect.c    | 25 +++++++++++++++++++---
- fs/cifs/misc.c       |  1 +
- fs/cifs/sess.c       | 50 +++++++++++++++++++++++++++++++++-----------
- fs/cifs/transport.c  |  3 +++
- 6 files changed, 71 insertions(+), 15 deletions(-)
+ net/ipv6/ip6_output.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/fs/cifs/cifs_debug.c b/fs/cifs/cifs_debug.c
-index 905a901f7f80b..248a8f973cf9c 100644
---- a/fs/cifs/cifs_debug.c
-+++ b/fs/cifs/cifs_debug.c
-@@ -414,12 +414,14 @@ static int cifs_debug_data_proc_show(struct seq_file *m, void *v)
- 				   from_kuid(&init_user_ns, ses->linux_uid),
- 				   from_kuid(&init_user_ns, ses->cred_uid));
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1408,8 +1408,6 @@ static int ip6_setup_cork(struct sock *s
+ 		if (np->frag_size)
+ 			mtu = np->frag_size;
+ 	}
+-	if (mtu < IPV6_MIN_MTU)
+-		return -EINVAL;
+ 	cork->base.fragsize = mtu;
+ 	cork->base.gso_size = ipc6->gso_size;
+ 	cork->base.tx_flags = 0;
+@@ -1471,8 +1469,6 @@ static int __ip6_append_data(struct sock
  
-+			spin_lock(&ses->chan_lock);
- 			if (ses->chan_count > 1) {
- 				seq_printf(m, "\n\n\tExtra Channels: %zu ",
- 					   ses->chan_count-1);
- 				for (j = 1; j < ses->chan_count; j++)
- 					cifs_dump_channel(m, j, &ses->chans[j]);
- 			}
-+			spin_unlock(&ses->chan_lock);
+ 	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
+ 			(opt ? opt->opt_nflen : 0);
+-	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
+-		     sizeof(struct frag_hdr);
  
- 			seq_puts(m, "\n\n\tShares: ");
- 			j = 0;
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index 3e5b8e177cfa7..b33835b2943e9 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -934,16 +934,21 @@ struct cifs_ses {
- 	 * iface_lock should be taken when accessing any of these fields
+ 	headersize = sizeof(struct ipv6hdr) +
+ 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
+@@ -1480,6 +1476,13 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
+ 
++	if (mtu < fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++		goto emsgsize;
++
++	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
++		     sizeof(struct frag_hdr);
++
+ 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
+ 	 * the first fragment
  	 */
- 	spinlock_t iface_lock;
-+	/* ========= begin: protected by iface_lock ======== */
- 	struct cifs_server_iface *iface_list;
- 	size_t iface_count;
- 	unsigned long iface_last_update; /* jiffies */
-+	/* ========= end: protected by iface_lock ======== */
- 
-+	spinlock_t chan_lock;
-+	/* ========= begin: protected by chan_lock ======== */
- #define CIFS_MAX_CHANNELS 16
- 	struct cifs_chan chans[CIFS_MAX_CHANNELS];
- 	struct cifs_chan *binding_chan;
- 	size_t chan_count;
- 	size_t chan_max;
- 	atomic_t chan_seq; /* round robin state */
-+	/* ========= end: protected by chan_lock ======== */
- };
- 
- /*
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index 439f02f1886c1..70da1d27be3db 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -1526,8 +1526,12 @@ static int match_session(struct cifs_ses *ses, struct smb3_fs_context *ctx)
- 	 * If an existing session is limited to less channels than
- 	 * requested, it should not be reused
- 	 */
--	if (ses->chan_max < ctx->max_channels)
-+	spin_lock(&ses->chan_lock);
-+	if (ses->chan_max < ctx->max_channels) {
-+		spin_unlock(&ses->chan_lock);
- 		return 0;
-+	}
-+	spin_unlock(&ses->chan_lock);
- 
- 	switch (ses->sectype) {
- 	case Kerberos:
-@@ -1662,6 +1666,7 @@ cifs_find_smb_ses(struct TCP_Server_Info *server, struct smb3_fs_context *ctx)
- void cifs_put_smb_ses(struct cifs_ses *ses)
- {
- 	unsigned int rc, xid;
-+	unsigned int chan_count;
- 	struct TCP_Server_Info *server = ses->server;
- 	cifs_dbg(FYI, "%s: ses_count=%d\n", __func__, ses->ses_count);
- 
-@@ -1703,12 +1708,24 @@ void cifs_put_smb_ses(struct cifs_ses *ses)
- 	list_del_init(&ses->smb_ses_list);
- 	spin_unlock(&cifs_tcp_ses_lock);
- 
-+	spin_lock(&ses->chan_lock);
-+	chan_count = ses->chan_count;
-+	spin_unlock(&ses->chan_lock);
-+
- 	/* close any extra channels */
--	if (ses->chan_count > 1) {
-+	if (chan_count > 1) {
- 		int i;
- 
--		for (i = 1; i < ses->chan_count; i++)
-+		for (i = 1; i < chan_count; i++) {
-+			/*
-+			 * note: for now, we're okay accessing ses->chans
-+			 * without chan_lock. But when chans can go away, we'll
-+			 * need to introduce ref counting to make sure that chan
-+			 * is not freed from under us.
-+			 */
- 			cifs_put_tcp_session(ses->chans[i].server, 0);
-+			ses->chans[i].server = NULL;
-+		}
- 	}
- 
- 	sesInfoFree(ses);
-@@ -1959,9 +1976,11 @@ cifs_get_smb_ses(struct TCP_Server_Info *server, struct smb3_fs_context *ctx)
- 	mutex_lock(&ses->session_mutex);
- 
- 	/* add server as first channel */
-+	spin_lock(&ses->chan_lock);
- 	ses->chans[0].server = server;
- 	ses->chan_count = 1;
- 	ses->chan_max = ctx->multichannel ? ctx->max_channels:1;
-+	spin_unlock(&ses->chan_lock);
- 
- 	rc = cifs_negotiate_protocol(xid, ses);
- 	if (!rc)
-diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
-index bb1185fff8cc4..0a0d0724c4294 100644
---- a/fs/cifs/misc.c
-+++ b/fs/cifs/misc.c
-@@ -75,6 +75,7 @@ sesInfoAlloc(void)
- 		INIT_LIST_HEAD(&ret_buf->tcon_list);
- 		mutex_init(&ret_buf->session_mutex);
- 		spin_lock_init(&ret_buf->iface_lock);
-+		spin_lock_init(&ret_buf->chan_lock);
- 	}
- 	return ret_buf;
- }
-diff --git a/fs/cifs/sess.c b/fs/cifs/sess.c
-index 23e02db7923f6..a1e688113645f 100644
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -54,41 +54,53 @@ bool is_ses_using_iface(struct cifs_ses *ses, struct cifs_server_iface *iface)
- {
- 	int i;
- 
-+	spin_lock(&ses->chan_lock);
- 	for (i = 0; i < ses->chan_count; i++) {
--		if (is_server_using_iface(ses->chans[i].server, iface))
-+		if (is_server_using_iface(ses->chans[i].server, iface)) {
-+			spin_unlock(&ses->chan_lock);
- 			return true;
-+		}
- 	}
-+	spin_unlock(&ses->chan_lock);
- 	return false;
- }
- 
- /* returns number of channels added */
- int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
- {
--	int old_chan_count = ses->chan_count;
--	int left = ses->chan_max - ses->chan_count;
-+	int old_chan_count, new_chan_count;
-+	int left;
- 	int i = 0;
- 	int rc = 0;
- 	int tries = 0;
- 	struct cifs_server_iface *ifaces = NULL;
- 	size_t iface_count;
- 
-+	if (ses->server->dialect < SMB30_PROT_ID) {
-+		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
-+		return 0;
-+	}
-+
-+	spin_lock(&ses->chan_lock);
-+
-+	new_chan_count = old_chan_count = ses->chan_count;
-+	left = ses->chan_max - ses->chan_count;
-+
- 	if (left <= 0) {
- 		cifs_dbg(FYI,
- 			 "ses already at max_channels (%zu), nothing to open\n",
- 			 ses->chan_max);
--		return 0;
--	}
--
--	if (ses->server->dialect < SMB30_PROT_ID) {
--		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
-+		spin_unlock(&ses->chan_lock);
- 		return 0;
- 	}
- 
- 	if (!(ses->server->capabilities & SMB2_GLOBAL_CAP_MULTI_CHANNEL)) {
- 		cifs_dbg(VFS, "server %s does not support multichannel\n", ses->server->hostname);
- 		ses->chan_max = 1;
-+		spin_unlock(&ses->chan_lock);
- 		return 0;
- 	}
-+	spin_unlock(&ses->chan_lock);
- 
- 	/*
- 	 * Make a copy of the iface list at the time and use that
-@@ -142,10 +154,11 @@ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
- 		cifs_dbg(FYI, "successfully opened new channel on iface#%d\n",
- 			 i);
- 		left--;
-+		new_chan_count++;
- 	}
- 
- 	kfree(ifaces);
--	return ses->chan_count - old_chan_count;
-+	return new_chan_count - old_chan_count;
- }
- 
- /*
-@@ -157,10 +170,14 @@ cifs_ses_find_chan(struct cifs_ses *ses, struct TCP_Server_Info *server)
- {
- 	int i;
- 
-+	spin_lock(&ses->chan_lock);
- 	for (i = 0; i < ses->chan_count; i++) {
--		if (ses->chans[i].server == server)
-+		if (ses->chans[i].server == server) {
-+			spin_unlock(&ses->chan_lock);
- 			return &ses->chans[i];
-+		}
- 	}
-+	spin_unlock(&ses->chan_lock);
- 	return NULL;
- }
- 
-@@ -168,6 +185,7 @@ static int
- cifs_ses_add_channel(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses,
- 		     struct cifs_server_iface *iface)
- {
-+	struct TCP_Server_Info *chan_server;
- 	struct cifs_chan *chan;
- 	struct smb3_fs_context ctx = {NULL};
- 	static const char unc_fmt[] = "\\%s\\foo";
-@@ -240,15 +258,20 @@ cifs_ses_add_channel(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses,
- 	       SMB2_CLIENT_GUID_SIZE);
- 	ctx.use_client_guid = true;
- 
--	mutex_lock(&ses->session_mutex);
-+	chan_server = cifs_get_tcp_session(&ctx);
- 
-+	mutex_lock(&ses->session_mutex);
-+	spin_lock(&ses->chan_lock);
- 	chan = ses->binding_chan = &ses->chans[ses->chan_count];
--	chan->server = cifs_get_tcp_session(&ctx);
-+	chan->server = chan_server;
- 	if (IS_ERR(chan->server)) {
- 		rc = PTR_ERR(chan->server);
- 		chan->server = NULL;
-+		spin_unlock(&ses->chan_lock);
- 		goto out;
- 	}
-+	spin_unlock(&ses->chan_lock);
-+
- 	spin_lock(&cifs_tcp_ses_lock);
- 	chan->server->is_channel = true;
- 	spin_unlock(&cifs_tcp_ses_lock);
-@@ -283,8 +306,11 @@ cifs_ses_add_channel(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses,
- 	 * ses to the new server.
- 	 */
- 
-+	spin_lock(&ses->chan_lock);
- 	ses->chan_count++;
- 	atomic_set(&ses->chan_seq, 0);
-+	spin_unlock(&ses->chan_lock);
-+
- out:
- 	ses->binding = false;
- 	ses->binding_chan = NULL;
-diff --git a/fs/cifs/transport.c b/fs/cifs/transport.c
-index b7379329b741c..61ea3d3f95b4a 100644
---- a/fs/cifs/transport.c
-+++ b/fs/cifs/transport.c
-@@ -1044,14 +1044,17 @@ struct TCP_Server_Info *cifs_pick_channel(struct cifs_ses *ses)
- 	if (!ses)
- 		return NULL;
- 
-+	spin_lock(&ses->chan_lock);
- 	if (!ses->binding) {
- 		/* round robin */
- 		if (ses->chan_count > 1) {
- 			index = (uint)atomic_inc_return(&ses->chan_seq);
- 			index %= ses->chan_count;
- 		}
-+		spin_unlock(&ses->chan_lock);
- 		return ses->chans[index].server;
- 	} else {
-+		spin_unlock(&ses->chan_lock);
- 		return cifs_ses_server(ses);
- 	}
- }
--- 
-2.34.1
-
 
 
