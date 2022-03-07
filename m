@@ -2,143 +2,344 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 986D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237525AbiCGJgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        id S237558AbiCGJgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:36:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238016AbiCGJ2j (ORCPT
+        with ESMTP id S238002AbiCGJ2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:39 -0500
+        Mon, 7 Mar 2022 04:28:38 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE146CA4D;
-        Mon,  7 Mar 2022 01:26:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430EB6C949;
+        Mon,  7 Mar 2022 01:26:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED6E8B810B9;
-        Mon,  7 Mar 2022 09:26:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2CC7C340F3;
-        Mon,  7 Mar 2022 09:26:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E711B810B2;
+        Mon,  7 Mar 2022 09:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98781C340E9;
+        Mon,  7 Mar 2022 09:26:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645188;
-        bh=HnprdZ1B1f69P+YuisT7Efm0VsaLqo7XwphOKj5hOSw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s29LugyQoqKWQ6V2YTVBQZJrs4ehMQPY56ig3D9P1ENGacfEgXpOp4WZdnHUbdPyb
-         4/vIwDVJFs1QFmCb7UxTY1CXRftoY9Ah+fiyjcAAWpsyWDQPle9lKkMfPqQfRDabwR
-         oHytWKrx+LfSFhZ9ekaHn0Sw9NYc1K7YXH88L010=
+        s=korg; t=1646645185;
+        bh=E4WVNSBQJsG+isBdww2VLyJNOvnLTAr/RSD1xk0xY64=;
+        h=From:To:Cc:Subject:Date:From;
+        b=e+sXi2g43NTixxkmWLva9RnDhQsjr/nHiBHebCVtKZ/0BTGOIGDXgG5GJhttnd/o6
+         83WJwPocWf9rfkItk64ECdNo9s+0DuhwOG7X3f+hF2mUc5xM/Q4KBcAs84jfPJRvFd
+         DPyjfA9a3AQvWbRGx8SggC7SZ1GdPmPb7cXqgPDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 07/64] cifs: fix double free race when mount fails in cifs_get_root()
-Date:   Mon,  7 Mar 2022 10:18:40 +0100
-Message-Id: <20220307091639.350910668@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.4 00/64] 5.4.183-rc1 review
+Date:   Mon,  7 Mar 2022 10:18:33 +0100
+Message-Id: <20220307091639.136830784@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.183-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.183-rc1
+X-KernelTest-Deadline: 2022-03-09T09:16+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+This is the start of the stable review cycle for the 5.4.183 release.
+There are 64 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit 3d6cc9898efdfb062efb74dc18cfc700e082f5d5 ]
+Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+Anything received after that time might be too late.
 
-When cifs_get_root() fails during cifs_smb3_do_mount() we call
-deactivate_locked_super() which eventually will call delayed_free() which
-will free the context.
-In this situation we should not proceed to enter the out: section in
-cifs_smb3_do_mount() and free the same resources a second time.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.183-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-[Thu Feb 10 12:59:06 2022] BUG: KASAN: use-after-free in rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022] Read of size 8 at addr ffff888364f4d110 by task swapper/1/0
+thanks,
 
-[Thu Feb 10 12:59:06 2022] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE     5.17.0-rc3+ #4
-[Thu Feb 10 12:59:06 2022] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.0 12/17/2019
-[Thu Feb 10 12:59:06 2022] Call Trace:
-[Thu Feb 10 12:59:06 2022]  <IRQ>
-[Thu Feb 10 12:59:06 2022]  dump_stack_lvl+0x5d/0x78
-[Thu Feb 10 12:59:06 2022]  print_address_description.constprop.0+0x24/0x150
-[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  kasan_report.cold+0x7d/0x117
-[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  __asan_load8+0x86/0xa0
-[Thu Feb 10 12:59:06 2022]  rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  rcu_core+0x547/0xca0
-[Thu Feb 10 12:59:06 2022]  ? call_rcu+0x3c0/0x3c0
-[Thu Feb 10 12:59:06 2022]  ? __this_cpu_preempt_check+0x13/0x20
-[Thu Feb 10 12:59:06 2022]  ? lock_is_held_type+0xea/0x140
-[Thu Feb 10 12:59:06 2022]  rcu_core_si+0xe/0x10
-[Thu Feb 10 12:59:06 2022]  __do_softirq+0x1d4/0x67b
-[Thu Feb 10 12:59:06 2022]  __irq_exit_rcu+0x100/0x150
-[Thu Feb 10 12:59:06 2022]  irq_exit_rcu+0xe/0x30
-[Thu Feb 10 12:59:06 2022]  sysvec_hyperv_stimer0+0x9d/0xc0
-...
-[Thu Feb 10 12:59:07 2022] Freed by task 58179:
-[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
-[Thu Feb 10 12:59:07 2022]  kasan_set_track+0x25/0x30
-[Thu Feb 10 12:59:07 2022]  kasan_set_free_info+0x24/0x40
-[Thu Feb 10 12:59:07 2022]  ____kasan_slab_free+0x137/0x170
-[Thu Feb 10 12:59:07 2022]  __kasan_slab_free+0x12/0x20
-[Thu Feb 10 12:59:07 2022]  slab_free_freelist_hook+0xb3/0x1d0
-[Thu Feb 10 12:59:07 2022]  kfree+0xcd/0x520
-[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0x149/0xbe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
-[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
-[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
-[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
-[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
-[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+greg k-h
 
-[Thu Feb 10 12:59:07 2022] Last potentially related work creation:
-[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
-[Thu Feb 10 12:59:07 2022]  __kasan_record_aux_stack+0xb6/0xc0
-[Thu Feb 10 12:59:07 2022]  kasan_record_aux_stack_noalloc+0xb/0x10
-[Thu Feb 10 12:59:07 2022]  call_rcu+0x76/0x3c0
-[Thu Feb 10 12:59:07 2022]  cifs_umount+0xce/0xe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  cifs_kill_sb+0xc8/0xe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  deactivate_locked_super+0x5d/0xd0
-[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0xab9/0xbe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
-[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
-[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
-[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
-[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
-[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+-------------
+Pseudo-Shortlog of commits:
 
-Reported-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/cifs/cifsfs.c | 1 +
- 1 file changed, 1 insertion(+)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.183-rc1
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index 41b3c5fc958c7..f44b6f9d07776 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -855,6 +855,7 @@ cifs_smb3_do_mount(struct file_system_type *fs_type,
- 
- out_super:
- 	deactivate_locked_super(sb);
-+	return root;
- out:
- 	cifs_cleanup_volume_info(volume_info);
- 	return root;
--- 
-2.34.1
+Vladimir Oltean <vladimir.oltean@nxp.com>
+    net: dcb: disable softirqs in dcbnl_flush_dev()
 
+Jiri Bohac <jbohac@suse.cz>
+    Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
+
+Filipe Manana <fdmanana@suse.com>
+    btrfs: add missing run of delayed items after unlink during log replay
+
+Sidong Yang <realwakka@gmail.com>
+    btrfs: qgroup: fix deadlock between rescan worker and remove qgroup
+
+Filipe Manana <fdmanana@suse.com>
+    btrfs: fix lost prealloc extents beyond eof after full fsync
+
+Randy Dunlap <rdunlap@infradead.org>
+    tracing: Fix return value of __setup handlers
+
+Steven Rostedt (Google) <rostedt@goodmis.org>
+    tracing/histogram: Fix sorting on old "cpu" value
+
+William Mahon <wmahon@chromium.org>
+    HID: add mapping for KEY_ALL_APPLICATIONS
+
+William Mahon <wmahon@chromium.org>
+    HID: add mapping for KEY_DICTATE
+
+Hans de Goede <hdegoede@redhat.com>
+    Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
+
+Hans de Goede <hdegoede@redhat.com>
+    Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    nl80211: Handle nla_memdup failures in handle_nan_filter
+
+Jia-Ju Bai <baijiaju1990@gmail.com>
+    net: chelsio: cxgb3: check the return value of pci_find_capability()
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    soc: fsl: qe: Check of ioremap return value
+
+Hugh Dickins <hughd@google.com>
+    memfd: fix F_SEAL_WRITE after shmem huge page allocated
+
+Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+    ibmvnic: free reset-work-item when flushing
+
+Sasha Neftin <sasha.neftin@intel.com>
+    igc: igc_write_phy_reg_gpy: drop premature return
+
+Randy Dunlap <rdunlap@infradead.org>
+    ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: Fix kgdb breakpoint for Thumb2
+
+Corinna Vinschen <vinschen@redhat.com>
+    igc: igc_read_phy_reg_gpy: drop premature return
+
+Brian Norris <briannorris@chromium.org>
+    arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
+
+Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+    can: gs_usb: change active_channels's type from atomic_t to u8
+
+Fabio Estevam <festevam@denx.de>
+    ASoC: cs4265: Fix the duplicated control name
+
+Alyssa Ross <hi@alyssa.is>
+    firmware: arm_scmi: Remove space in MODULE_ALIAS name
+
+Jann Horn <jannh@google.com>
+    efivars: Respect "block" flag in efivar_entry_set_safe()
+
+Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+    ixgbe: xsk: change !netif_carrier_ok() handling in ixgbe_xmit_zc()
+
+Zheyu Ma <zheyuma97@gmail.com>
+    net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+
+Randy Dunlap <rdunlap@infradead.org>
+    net: sxgbe: fix return value of __setup handler
+
+Slawomir Laba <slawomirx.laba@intel.com>
+    iavf: Fix missing check for running netdev
+
+Randy Dunlap <rdunlap@infradead.org>
+    net: stmmac: fix return value of __setup handler
+
+Nicolas Escande <nico.escande@gmail.com>
+    mac80211: fix forwarded mesh frames AC & queue selection
+
+Valentin Schneider <valentin.schneider@arm.com>
+    ia64: ensure proper NUMA distance and possible map initialization
+
+Dietmar Eggemann <dietmar.eggemann@arm.com>
+    sched/topology: Fix sched_domain_topology_level alloc in sched_init_numa()
+
+Valentin Schneider <valentin.schneider@arm.com>
+    sched/topology: Make sched_init_numa() use a set for the deduplicating sort
+
+Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+    xen/netfront: destroy queues before real_num_tx_queues is zeroed
+
+Ye Bin <yebin10@huawei.com>
+    block: Fix fsync always failed if once failed
+
+D. Wythe <alibuda@linux.alibaba.com>
+    net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
+
+D. Wythe <alibuda@linux.alibaba.com>
+    net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error generated by client
+
+Vladimir Oltean <vladimir.oltean@nxp.com>
+    net: dcb: flush lingering app table entries for unregistered devices
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Don't expect inter-netns unique iflink indices
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Request iflink once in batadv_get_real_netdevice
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Request iflink once in batadv-on-batadv check
+
+Florian Westphal <fw@strlen.de>
+    netfilter: nf_queue: fix possible use-after-free
+
+Florian Westphal <fw@strlen.de>
+    netfilter: nf_queue: don't assume sk is full socket
+
+Leon Romanovsky <leonro@nvidia.com>
+    xfrm: enforce validity of offload input flags
+
+Antony Antony <antony.antony@secunet.com>
+    xfrm: fix the if_id check in changelink
+
+Eric Dumazet <edumazet@google.com>
+    netfilter: fix use-after-free in __nf_register_net_hook()
+
+Jiri Bohac <jbohac@suse.cz>
+    xfrm: fix MTU regression
+
+Marek Vasut <marex@denx.de>
+    ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
+
+Zhen Ni <nizhen@uniontech.com>
+    ALSA: intel_hdmi: Fix reference to PCM buffer address
+
+Sergey Shtylyov <s.shtylyov@omp.ru>
+    ata: pata_hpt37x: fix PCI clock detection
+
+Hangyu Hua <hbh25y@gmail.com>
+    usb: gadget: clear related members when goto fail
+
+Hangyu Hua <hbh25y@gmail.com>
+    usb: gadget: don't release an existing dev->buf
+
+Daniele Palmas <dnlplm@gmail.com>
+    net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
+
+Wolfram Sang <wsa@kernel.org>
+    i2c: qup: allow COMPILE_TEST
+
+Wolfram Sang <wsa@kernel.org>
+    i2c: cadence: allow COMPILE_TEST
+
+Yongzhi Liu <lyz_cs@pku.edu.cn>
+    dmaengine: shdma: Fix runtime PM imbalance on error
+
+Ronnie Sahlberg <lsahlber@redhat.com>
+    cifs: fix double free race when mount fails in cifs_get_root()
+
+José Expósito <jose.exposito89@gmail.com>
+    Input: clear BTN_RIGHT/MIDDLE on buttonpads
+
+Kai Vehmanen <kai.vehmanen@linux.intel.com>
+    ASoC: rt5682: do not block workqueue if card is unbound
+
+Kai Vehmanen <kai.vehmanen@linux.intel.com>
+    ASoC: rt5668: do not block workqueue if card is unbound
+
+Eric Anholt <eric@anholt.net>
+    i2c: bcm2835: Avoid clock stretching timeouts
+
+JaeMan Park <jaeman@google.com>
+    mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
+
+Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+    mac80211_hwsim: report NOACK frames in tx_status
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                          |  4 +-
+ arch/arm/kernel/kgdb.c                            | 36 +++++++--
+ arch/arm/mm/mmu.c                                 |  2 +
+ arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi      | 17 ++--
+ arch/ia64/kernel/acpi.c                           |  7 +-
+ block/blk-flush.c                                 |  4 +-
+ drivers/ata/pata_hpt37x.c                         |  4 +-
+ drivers/dma/sh/shdma-base.c                       |  4 +-
+ drivers/firmware/arm_scmi/driver.c                |  2 +-
+ drivers/firmware/efi/vars.c                       |  5 +-
+ drivers/hid/hid-debug.c                           |  5 +-
+ drivers/hid/hid-input.c                           |  3 +
+ drivers/i2c/busses/Kconfig                        |  4 +-
+ drivers/i2c/busses/i2c-bcm2835.c                  | 11 +++
+ drivers/input/input.c                             |  6 ++
+ drivers/input/mouse/elan_i2c_core.c               | 64 ++++++---------
+ drivers/net/arcnet/com20020-pci.c                 |  3 +
+ drivers/net/can/usb/gs_usb.c                      | 10 +--
+ drivers/net/ethernet/chelsio/cxgb3/t3_hw.c        |  2 +
+ drivers/net/ethernet/ibm/ibmvnic.c                |  4 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c       |  7 +-
+ drivers/net/ethernet/intel/igc/igc_phy.c          |  4 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c      |  6 +-
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c   |  6 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  6 +-
+ drivers/net/usb/cdc_mbim.c                        |  5 ++
+ drivers/net/wireless/mac80211_hwsim.c             | 13 +++
+ drivers/net/xen-netfront.c                        | 39 +++++----
+ drivers/soc/fsl/qe/qe_io.c                        |  2 +
+ drivers/usb/gadget/legacy/inode.c                 | 10 ++-
+ fs/btrfs/qgroup.c                                 |  9 ++-
+ fs/btrfs/tree-log.c                               | 61 +++++++++++---
+ fs/cifs/cifsfs.c                                  |  1 +
+ include/linux/topology.h                          |  1 +
+ include/net/netfilter/nf_queue.h                  |  2 +-
+ include/net/xfrm.h                                |  1 -
+ include/uapi/linux/input-event-codes.h            |  4 +-
+ include/uapi/linux/xfrm.h                         |  6 ++
+ kernel/sched/topology.c                           | 99 +++++++++++------------
+ kernel/trace/trace.c                              |  4 +-
+ kernel/trace/trace_events_hist.c                  |  6 +-
+ kernel/trace/trace_kprobe.c                       |  2 +-
+ mm/memfd.c                                        | 40 ++++++---
+ net/batman-adv/hard-interface.c                   | 29 ++++---
+ net/dcb/dcbnl.c                                   | 44 ++++++++++
+ net/ipv4/esp4.c                                   |  2 +-
+ net/ipv6/esp6.c                                   |  2 +-
+ net/ipv6/ip6_output.c                             | 11 ++-
+ net/mac80211/rx.c                                 |  4 +-
+ net/netfilter/core.c                              |  5 +-
+ net/netfilter/nf_queue.c                          | 24 ++++--
+ net/netfilter/nfnetlink_queue.c                   | 12 ++-
+ net/smc/smc_core.c                                |  5 +-
+ net/wireless/nl80211.c                            | 12 +++
+ net/xfrm/xfrm_device.c                            |  6 +-
+ net/xfrm/xfrm_interface.c                         |  2 +-
+ net/xfrm/xfrm_state.c                             | 14 +---
+ sound/soc/codecs/cs4265.c                         |  3 +-
+ sound/soc/codecs/rt5668.c                         | 12 +--
+ sound/soc/codecs/rt5682.c                         | 12 +--
+ sound/soc/soc-ops.c                               |  4 +-
+ sound/x86/intel_hdmi_audio.c                      |  2 +-
+ 62 files changed, 487 insertions(+), 249 deletions(-)
 
 
