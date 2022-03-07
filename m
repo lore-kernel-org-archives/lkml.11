@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A19BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD543C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238964AbiCGTUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 14:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
+        id S245063AbiCGTXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 14:23:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245063AbiCGTUu (ORCPT
+        with ESMTP id S235029AbiCGTXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 14:20:50 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D159580D7;
-        Mon,  7 Mar 2022 11:19:56 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id cx5so14931916pjb.1;
-        Mon, 07 Mar 2022 11:19:56 -0800 (PST)
+        Mon, 7 Mar 2022 14:23:06 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D03C4BFCC;
+        Mon,  7 Mar 2022 11:22:10 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id r22so6429316ljd.4;
+        Mon, 07 Mar 2022 11:22:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=43yabkppNO1PYVoZMxx6aJIsWh5rjZqMAPLH7WugjRk=;
-        b=gAB8T444wB7Mh38B4y1SkZReGMb4ut0xn15c48uhCW0o2oiqj5oLtAPPLgMWJWIfj2
-         pw9CMnhGBZYICeKMka1rYLfdLaYpO5SyQbGSH4FwtgoLOaEf/WfOBqxawsv/76L2rAP5
-         v78oIo00Mjvcvn3FHRAmDPVqerrQS6YFUZzGTNBN+0nmDuIA9Ow6PppXfmnZL2z4rSOe
-         KH0MymGoRBsM3isOGizSiP4CAlYs7M21bhWWOU0bayZBm6UynoNj6ScieCXcktlC6bT7
-         QMtWDLQ8EpohttZoj+azZJLFejmcXUMAsXKdDI01Mxq8uGMeJY90rZbDLlrzg/cMVWWg
-         P+qw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lUWOZNP7lyyv8Bcjt+iUqGnuBs8PmikxrWNouw+FZus=;
+        b=AOYsE/ObWLYMSmn8dvMGUxXOwmOhlnW1pGeXFAuDR/YHfn4EPqP3f6I0QN9ecssieV
+         SlPA70URa6iUo4pQIVCj3Kwgf+6o0lkgfgvCJMMvlQxzMSX8DrkByZvXsIpVg7Yuck0c
+         zVSBhSYiw8Y1lwcOqdr1RRuAfZ06PEC8oS+mTQgTBYpTGxsNaMRl4foHCUvuF8oJ146k
+         OiyT9WDNX9bo6QeRuvAakb8ReCmMO1ANAzead2enXJTwrbJrEqyUE4vwZOAiZ/4LiwMP
+         HxHI3gg0jngqy8IFOVmdIxGlHRLbp2CYUSC0Xe0KNV43eDV+rvs0lGM9pqH+ro5tRIzz
+         QY6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=43yabkppNO1PYVoZMxx6aJIsWh5rjZqMAPLH7WugjRk=;
-        b=Ygl1CgJjzeOTSt+dBjaa0B0GpgtxIMY+ueLgiO39VUuYR2Fmo8OKtHXralU38Aa43f
-         sGgqagvYC85uOd3CFauPpXj44RriwPcBrVPz7bnsCFVrL18zw4mtg3h24UGy2hjyxWcp
-         eQgMm505/KFTkpaOv4joLXmD5dHnBXptpp78aRKZLG61E8ZG/7YY62vmsxNAqI7PmnJs
-         ftXATw3F6QWUx7M8lEIILK3QNyUV3VFU6kpXB9/lok4jFKu5pbCzqX0VqO9hFRXFxnht
-         /wnHHDeQugAyP0FQTVEtFGpoR+Z4cUWUwtd8MoISh9DAFwIhmzWFoEgkhcN4RXsOeKch
-         7PHQ==
-X-Gm-Message-State: AOAM530sunYtFFu79NLB5nfeg85FGSMWkCfBrX9+qW3b7Nx8DnSZmnWs
-        cA0No8BqTpj8xy5iFYCmAUI=
-X-Google-Smtp-Source: ABdhPJxTztg7pSgIOr+O567tI0a6HSEtde66cbpaHl3qywr4SQaWo6uWdOq+i1MwS/Asw5tS0VXZHQ==
-X-Received: by 2002:a17:903:183:b0:151:af32:890d with SMTP id z3-20020a170903018300b00151af32890dmr13740248plg.0.1646680795806;
-        Mon, 07 Mar 2022 11:19:55 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h2-20020a056a00218200b004f66d50f054sm16837209pfi.158.2022.03.07.11.19.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 11:19:55 -0800 (PST)
-Subject: Re: [PATCH 3/3] arm64: dts: stingray: Fix spi clock name
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-Cc:     Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>
-References: <20220307182101.84730-1-singh.kuldeep87k@gmail.com>
- <20220307182101.84730-3-singh.kuldeep87k@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a99fdd2b-96ee-df1a-6c56-632ad7334bc6@gmail.com>
-Date:   Mon, 7 Mar 2022 11:19:52 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        bh=lUWOZNP7lyyv8Bcjt+iUqGnuBs8PmikxrWNouw+FZus=;
+        b=0bQaQX/UwJqqmkDw2zKRUxS/+B+QJnarls6QSjDkfjlExNxRqoFHD4hm2ol8RnoF07
+         tVjCjjpJtDg8DM6HVOFd2IvqyQx840ZdUatPJA5/Fr6LW/42Fqc+0kwF9swxKXzJETeO
+         1JGPvogYEF21rC1W/zHyDqIL2zzke+JxGGcs8dejD1NG1hBVGt0rotofpelTpQEdALgh
+         bgyZxukXB8w/Ubu4FDk+wBUzsZpW2oVUuRLCFp+DKcMXKovrCI1UkpBiYNrBDlZ2qQJ6
+         w/q/wHI73eALx4hOOdtv0oiGeZMwHzz4NYvOoY0RNhJv2d6RpcVb2SQLlqXN6T2m70Ag
+         5f6Q==
+X-Gm-Message-State: AOAM532Rd36lgocp8p4bcemu5/2ANORfufyY9XrpsGDklT+vMhF/qMKM
+        1cdG78Q0slXrfpv57h2JMjxvyIYqFll+uw==
+X-Google-Smtp-Source: ABdhPJw+VVH9nmydJy/e2xOClA+oP2lDtDEHrWsmrzgBIxcbDduv6+O+4K3JdDi8/jkNV0FIJxJnlQ==
+X-Received: by 2002:a05:651c:545:b0:247:b6c3:946f with SMTP id q5-20020a05651c054500b00247b6c3946fmr8567231ljp.424.1646680927907;
+        Mon, 07 Mar 2022 11:22:07 -0800 (PST)
+Received: from localhost.localdomain (adsa4.neoplus.adsl.tpnet.pl. [79.185.186.4])
+        by smtp.gmail.com with ESMTPSA id v12-20020a056512096c00b004437e92a5e8sm2995671lft.105.2022.03.07.11.22.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 11:22:07 -0800 (PST)
+From:   Adam Skladowski <a39.skl@gmail.com>
+To:     phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        Adam Skladowski <a39.skl@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] Add SCM and mailbox support on MSM8976
+Date:   Mon,  7 Mar 2022 20:17:21 +0100
+Message-Id: <20220307191726.10869-1-a39.skl@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220307182101.84730-3-singh.kuldeep87k@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 10:21 AM, Kuldeep Singh wrote:
-> SPI clock name for pl022 is "sspclk" and not "spiclk".
-> Also fix below dtc warning:
-> clock-names:0: 'spiclk' is not one of ['SSPCLK', 'sspclk']
-> 
-> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+This patch series adds support for SCM and mailbox as found on the QCOM
+MSM8976 platform.
 
-Applied to deviceree-arm64/next
+Changes since v1
+================
+1. Fixed formatting of patches(lacking empty line before Sob).
+
+Adam Skladowski (4):
+  dt-bindings: mailbox: Add compatible for the MSM8976
+  mailbox: qcom-apcs-ipc: Add compatible for MSM8976 SoC
+  dt-bindings: firmware: qcom-scm: Document msm8976 bindings
+  firmware: qcom_scm: Add compatible for MSM8976 SoC
+
+ Documentation/devicetree/bindings/firmware/qcom,scm.txt       | 3 ++-
+ .../devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml    | 1 +
+ drivers/firmware/qcom_scm.c                                   | 4 ++++
+ drivers/mailbox/qcom-apcs-ipc-mailbox.c                       | 1 +
+ 4 files changed, 8 insertions(+), 1 deletion(-)
+
 -- 
-Florian
+2.25.1
+
