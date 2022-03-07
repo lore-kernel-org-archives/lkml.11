@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235209AbiCGK0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:26:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        id S234566AbiCGK07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:26:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241500AbiCGKKS (ORCPT
+        with ESMTP id S241571AbiCGKKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D766E32989;
-        Mon,  7 Mar 2022 01:53:15 -0800 (PST)
+        Mon, 7 Mar 2022 05:10:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5138B3586F;
+        Mon,  7 Mar 2022 01:53:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7022260B70;
-        Mon,  7 Mar 2022 09:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63134C340F9;
-        Mon,  7 Mar 2022 09:53:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A95A5B80E70;
+        Mon,  7 Mar 2022 09:53:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118DBC340F3;
+        Mon,  7 Mar 2022 09:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646780;
-        bh=huYpV3kJDyw1NWyRR1gpLkRho9l+6kbGwW5Ybc0vW+E=;
+        s=korg; t=1646646802;
+        bh=ePmz86mPRMXE68iGLQpnwBF9ZBuR5kkBXH804rKDfwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WEeecSoYAGWgs1hts8fwrMF7zke62zmTbCiPIl3cVtbu5CIR3pPucztmfaB+KUcQW
-         D2ifYiK9sJVzngmy3A8os1RRNHohRJpHHfxS7e8luF6BEUjnkHk/SPKaN97hZbpJTa
-         h5XrFoPpUYTPXm2tyzMqXtFCLg8Y+YOZJelnl7is=
+        b=YmE80F11eBoevJ1kyy2kQBhiG+G6LpJpAVtyzRzzF13kXKw6IN9af4Cjtx81DI2oh
+         yTlYhKJOBZLOeAvU88jgbSkGJuDY+SQokEeapf2BNHFiRE5w8PzmB6vMdH6/hEVuy2
+         owdtPAlkQBcKT0xl7hcXMg4PtujWpY4OrLK89liw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jouni Malinen <j@w1.fi>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.16 091/186] mac80211: treat some SAE auth steps as final
-Date:   Mon,  7 Mar 2022 10:18:49 +0100
-Message-Id: <20220307091656.628631329@linuxfoundation.org>
+        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 097/186] iavf: Fix deadlock in iavf_reset_task
+Date:   Mon,  7 Mar 2022 10:18:55 +0100
+Message-Id: <20220307091656.794834906@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,89 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-commit 94d9864cc86f572f881db9b842a78e9d075493ae upstream.
+commit e85ff9c631e1bf109ce8428848dfc8e8b0041f48 upstream.
 
-When we get anti-clogging token required (added by the commit
-mentioned below), or the other status codes added by the later
-commit 4e56cde15f7d ("mac80211: Handle special status codes in
-SAE commit") we currently just pretend (towards the internal
-state machine of authentication) that we didn't receive anything.
+There exists a missing mutex_unlock call on crit_lock in
+iavf_reset_task call path.
 
-This has the undesirable consequence of retransmitting the prior
-frame, which is not expected, because the timer is still armed.
+Unlock the crit_lock before returning from reset task.
 
-If we just disarm the timer at that point, it would result in
-the undesirable side effect of being in this state indefinitely
-if userspace crashes, or so.
-
-So to fix this, reset the timer and set a new auth_data->waiting
-in order to have no more retransmissions, but to have the data
-destroyed when the timer actually fires, which will only happen
-if userspace didn't continue (i.e. crashed or abandoned it.)
-
-Fixes: a4055e74a2ff ("mac80211: Don't destroy auth data in case of anti-clogging")
-Reported-by: Jouni Malinen <j@w1.fi>
-Link: https://lore.kernel.org/r/20220224103932.75964e1d7932.Ia487f91556f29daae734bf61f8181404642e1eec@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 5ac49f3c2702 ("iavf: use mutexes for locking of critical sections")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/ieee80211_i.h |    2 +-
- net/mac80211/mlme.c        |   16 ++++++++++++----
- 2 files changed, 13 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -376,7 +376,7 @@ struct ieee80211_mgd_auth_data {
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2254,6 +2254,7 @@ static void iavf_reset_task(struct work_
+ 			reg_val);
+ 		iavf_disable_vf(adapter);
+ 		mutex_unlock(&adapter->client_lock);
++		mutex_unlock(&adapter->crit_lock);
+ 		return; /* Do not attempt to reinit. It's dead, Jim. */
+ 	}
  
- 	u8 key[WLAN_KEY_LEN_WEP104];
- 	u8 key_len, key_idx;
--	bool done;
-+	bool done, waiting;
- 	bool peer_confirmed;
- 	bool timeout_started;
- 
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -37,6 +37,7 @@
- #define IEEE80211_AUTH_TIMEOUT_SAE	(HZ * 2)
- #define IEEE80211_AUTH_MAX_TRIES	3
- #define IEEE80211_AUTH_WAIT_ASSOC	(HZ * 5)
-+#define IEEE80211_AUTH_WAIT_SAE_RETRY	(HZ * 2)
- #define IEEE80211_ASSOC_TIMEOUT		(HZ / 5)
- #define IEEE80211_ASSOC_TIMEOUT_LONG	(HZ / 2)
- #define IEEE80211_ASSOC_TIMEOUT_SHORT	(HZ / 10)
-@@ -3009,8 +3010,15 @@ static void ieee80211_rx_mgmt_auth(struc
- 		    (status_code == WLAN_STATUS_ANTI_CLOG_REQUIRED ||
- 		     (auth_transaction == 1 &&
- 		      (status_code == WLAN_STATUS_SAE_HASH_TO_ELEMENT ||
--		       status_code == WLAN_STATUS_SAE_PK))))
-+		       status_code == WLAN_STATUS_SAE_PK)))) {
-+			/* waiting for userspace now */
-+			ifmgd->auth_data->waiting = true;
-+			ifmgd->auth_data->timeout =
-+				jiffies + IEEE80211_AUTH_WAIT_SAE_RETRY;
-+			ifmgd->auth_data->timeout_started = true;
-+			run_again(sdata, ifmgd->auth_data->timeout);
- 			goto notify_driver;
-+		}
- 
- 		sdata_info(sdata, "%pM denied authentication (status %d)\n",
- 			   mgmt->sa, status_code);
-@@ -4597,10 +4605,10 @@ void ieee80211_sta_work(struct ieee80211
- 
- 	if (ifmgd->auth_data && ifmgd->auth_data->timeout_started &&
- 	    time_after(jiffies, ifmgd->auth_data->timeout)) {
--		if (ifmgd->auth_data->done) {
-+		if (ifmgd->auth_data->done || ifmgd->auth_data->waiting) {
- 			/*
--			 * ok ... we waited for assoc but userspace didn't,
--			 * so let's just kill the auth data
-+			 * ok ... we waited for assoc or continuation but
-+			 * userspace didn't do it, so kill the auth data
- 			 */
- 			ieee80211_destroy_auth_data(sdata, false);
- 		} else if (ieee80211_auth(sdata)) {
 
 
