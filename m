@@ -2,130 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235048AbiCGKub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:50:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
+        id S235391AbiCGKuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241622AbiCGKr5 (ORCPT
+        with ESMTP id S241665AbiCGKr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:47:57 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB0D275D4;
+        Mon, 7 Mar 2022 05:47:58 -0500
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D1926AFA;
         Mon,  7 Mar 2022 02:07:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646647670; x=1678183670;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oWpZa4wDpTxbtFVVuDNR8V2wNQBxnGeOspbBo3QQn9E=;
-  b=PCwRvkvuIj22TPb+/hPSKbTO4D9vfC5M8OGJNEpNPaQ3UeAv2+CJ3q8F
-   H6tAJWAXKfErV9wah5qOQ9CKQZ3YkjS6BdBVR8pkLyP0TcrNrvUD3oTuN
-   swAmF/PKyzXBEuUPYjdoJxFXXbEirfyXddLBY8HgCaCLQNBHO6RBYoejA
-   Nk1/Ao80jwf5bcSrbA0M3/5BXKS4Ez0bn2KkoScNk+yt2Hxtp+vuo1Xuj
-   8nyJLfefQwOpkkGlCuraMWtTX7VmxGU3nTAcQkAwtwsBWV1oIus+dy8qa
-   BAhJS9Khe+Epo7iDUCVns8QCQw2GlD1OmAVmh0bQkHKcz9a1b7nvtp20P
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
-   d="scan'208";a="88045579"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:06:15 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 03:06:12 -0700
-Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:06:09 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <lars@metafoo.de>, <broonie@kernel.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH v2 5/6] ARM: dts: at91: sama7g5ek: add node for PDMC0
-Date:   Mon, 7 Mar 2022 12:04:27 +0200
-Message-ID: <20220307100428.2227511-6-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
-References: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
+Received: by mail-ej1-f41.google.com with SMTP id kt27so30814400ejb.0;
+        Mon, 07 Mar 2022 02:07:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=G+EB4AFFggnOrILvZ54WrATwjsSqh5U/oFtHwdFDjNI=;
+        b=K9gAwwYl408q54rxkD1td/0UhPqIUuKqcnkmti32Rr8Zkzr9gJcXhh6w0S/Kdx34AD
+         Jn62Y3lq+i/zPAeP4/6hEYfhMQf3Y6vvRcewF31grKVvsUbbQhYurVxAGg9eZqgAZ4jD
+         Gv32MmlMsWN7pG/ktSjsXEFiis3m/Qs7foAKWxl3r5L4hg0q1sGrHdRxX1B9WX9oZ06O
+         ChL8PRujG2+5Lzfiefi2Wo/nHwh5F9vPjjwh0RGBM5RgYdko0tln6tJlu/9b+Lurm5bk
+         bCrgTFyOSjb3ojVrzcpCWVMzyNnvBA9EnP2cmvcXnVjNrTxi5d0pf/ewtDYkAUGE0vRF
+         7EbQ==
+X-Gm-Message-State: AOAM531be3so1qG4lzYrukpUBw/6Mk0MirEoEoTuLDXRwQFNOT+MKyYg
+        WgdJ5fM7UBIxSdeTHpXg5lKA2qE+/w4=
+X-Google-Smtp-Source: ABdhPJxHr9JJBLHk0ehHjtgsScZD3zqslWKk6tyAugnkbdNvtf7SfIi6l8BrB33uqcUBr3UUUQh4Cw==
+X-Received: by 2002:a17:906:314b:b0:6d6:da31:e545 with SMTP id e11-20020a170906314b00b006d6da31e545mr8769492eje.125.1646647626072;
+        Mon, 07 Mar 2022 02:07:06 -0800 (PST)
+Received: from [192.168.0.141] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id lw3-20020a170906bcc300b006db3e2aa7c9sm254733ejb.171.2022.03.07.02.07.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 02:07:05 -0800 (PST)
+Message-ID: <32e72657-a43d-0ae1-1bf2-d15b7426765f@kernel.org>
+Date:   Mon, 7 Mar 2022 11:07:04 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 4/4] usb: host: add xhci-exynos module
+Content-Language: en-US
+To:     Daehwan Jung <dh10.jung@samsung.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+Cc:     "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>,
+        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
+        cpgs@samsung.com, cpgsproxy5@samsung.com
+References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
+ <CGME20220304062618epcas2p2e3c73b5c4ed0c9bc0ca0c02aa658d3fb@epcas2p2.samsung.com>
+ <1027007693.21646375582736.JavaMail.epsvc@epcpadp4>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <1027007693.21646375582736.JavaMail.epsvc@epcpadp4>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SAMA7G5-EK has 4 PDM microphones connected to PDMC0. PDMC0 pinmux is in
-conflict with gmac1, gmac1 being enabled by default.
+On 04/03/2022 07:23, Daehwan Jung wrote:
+> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
----
++Cc Randy,
+I guess here is the rest of the patches.
 
-Changes in v2:
- - replaced included file dt-bindings/sound/mchp,pdmc.h wih
-   dt-bindings/sound/microchip,pdmc.h
+> ---
+>  drivers/usb/host/xhci-exynos.c | 2025 ++++++++++++++++++++++++++++++++
+>  drivers/usb/host/xhci-exynos.h |  150 +++
+>  2 files changed, 2175 insertions(+)
+>  create mode 100644 drivers/usb/host/xhci-exynos.c
+>  create mode 100644 drivers/usb/host/xhci-exynos.h
+> 
+> diff --git a/drivers/usb/host/xhci-exynos.c b/drivers/usb/host/xhci-exynos.c
+> new file mode 100644
+> index 000000000000..3913c48d4b20
+> --- /dev/null
+> +++ b/drivers/usb/host/xhci-exynos.c
+> @@ -0,0 +1,2025 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * xhci-exynos.c - xHCI host controller driver platform Bus Glue for Exynos.
+> + *
+> + * Copyright (C) 2022 Samsung Electronics Incorporated - http://www.samsung.com
+> + * Author: Daehwan Jung <dh10.jung@samsung.com>
+> + *
+> + * A lot of code borrowed from the Linux xHCI driver.
 
- arch/arm/boot/dts/at91-sama7g5ek.dts | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/usb/phy.h>
+> +#include <linux/slab.h>
+> +#include <linux/phy/phy.h>
+> +#include <linux/acpi.h>
+> +#include <linux/usb/of.h>
+> +#ifdef CONFIG_SND_EXYNOS_USB_AUDIO
 
-diff --git a/arch/arm/boot/dts/at91-sama7g5ek.dts b/arch/arm/boot/dts/at91-sama7g5ek.dts
-index ccf9e224da78..a1fb980d3fc1 100644
---- a/arch/arm/boot/dts/at91-sama7g5ek.dts
-+++ b/arch/arm/boot/dts/at91-sama7g5ek.dts
-@@ -14,6 +14,7 @@
- #include <dt-bindings/mfd/atmel-flexcom.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/pinctrl/at91.h>
-+#include <dt-bindings/sound/microchip,pdmc.h>
- 
- / {
- 	model = "Microchip SAMA7G5-EK";
-@@ -439,7 +440,7 @@ &gmac1 {
- 		     &pinctrl_gmac1_mdio_default
- 		     &pinctrl_gmac1_phy_irq>;
- 	phy-mode = "rmii";
--	status = "okay";
-+	status = "okay"; /* Conflict with pdmc0. */
- 
- 	ethernet-phy@0 {
- 		reg = <0x0>;
-@@ -453,6 +454,17 @@ &i2s0 {
- 	pinctrl-0 = <&pinctrl_i2s0_default>;
- };
- 
-+&pdmc0 {
-+	#sound-dai-cells = <0>;
-+	microchip,mic-pos = <MCHP_PDMC_DS0 MCHP_PDMC_CLK_NEGATIVE>, /* MIC 1 */
-+			    <MCHP_PDMC_DS1 MCHP_PDMC_CLK_NEGATIVE>, /* MIC 2 */
-+			    <MCHP_PDMC_DS0 MCHP_PDMC_CLK_POSITIVE>, /* MIC 3 */
-+			    <MCHP_PDMC_DS1 MCHP_PDMC_CLK_POSITIVE>; /* MIC 4 */
-+	status = "disabled"; /* Conflict with gmac1. */
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pdmc0_default>;
-+};
-+
- &pioA {
- 	pinctrl_flx0_default: flx0_default {
- 		pinmux = <PIN_PE3__FLEXCOM0_IO0>,
-@@ -609,6 +621,13 @@ pinctrl_mikrobus1_spi: mikrobus1_spi {
- 		bias-disable;
- 	};
- 
-+	pinctrl_pdmc0_default: pdmc0_default {
-+		pinmux = <PIN_PD23__PDMC0_DS0>,
-+			 <PIN_PD24__PDMC0_DS1>,
-+			 <PIN_PD22__PDMC0_CLK>;
-+		bias_disable;
-+	};
-+
- 	pinctrl_qspi: qspi {
- 		pinmux = <PIN_PB12__QSPI0_IO0>,
- 			 <PIN_PB11__QSPI0_IO1>,
--- 
-2.32.0
+This does not exist.
 
+Please do not add dead code to Linux kernel.
+
+> +#include "../../../sound/usb/exynos_usb_audio.h"
+> +#include <linux/types.h>
+> +#include "xhci-trace.h"
+> +#endif
+> +
+> +#include "../core/hub.h"
+> +#include "../core/phy.h"
+> +#include "xhci.h"
+> +#include "xhci-plat.h"
+> +#include "xhci-mvebu.h"
+> +#include "xhci-rcar.h"
+> +#include "../dwc3/dwc3-exynos.h"
+> +#include "../dwc3/exynos-otg.h"
+
+No, how XHCI is related to dwc3? What if different block provides XHCI,
+not DWC3?
+
+> +#include "xhci-exynos.h"
+> +#include <soc/samsung/exynos-cpupm.h>
+
+This does not exist and does not even compile.
+
+Please do not send code which does not compile... Also, just in case -
+do not send code which compiles but does not work. :)
+
+
+Best regards,
+Krzysztof
