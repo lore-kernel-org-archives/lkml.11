@@ -2,87 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82229C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:21:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244725AbiCGSVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:21:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
+        id S244728AbiCGSWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:22:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244717AbiCGSU7 (ORCPT
+        with ESMTP id S230115AbiCGSWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:20:59 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66248119F
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:20:03 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id r22so6202059ljd.4
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 10:20:03 -0800 (PST)
+        Mon, 7 Mar 2022 13:22:03 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2026D811AC;
+        Mon,  7 Mar 2022 10:21:09 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 132so14308514pga.5;
+        Mon, 07 Mar 2022 10:21:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vXXyEj8lw1pMoMyulFe4jBxk+hmJv9H/jKDUVlikh88=;
-        b=NgKM2T3pYCAEOBcvpoA2GcVi3zuFlQWkJo9upxaHk9VkZCgaf3zZTH5pW6fPVsQciC
-         ehawL3bO12iOFOL+7suAw0EPuSn/RUs2eZeA08NVCE3kfPcUGkRM5J2MU6t6Xuw/WY21
-         /KV3f+00uCpiwaLOexa/qrFNzwCJYbpnE9fr+x7X1gNB3FC6D591nx/ahODIR+2fD78c
-         zwPRzkXq9nxWvK5zVnEfvsVVv0juheCMjMaEY+sNa6iqGzGK9HfCQ5jvHfAg7vLxc3G5
-         GrmzUj3gWmjxLRmQppPzeNNVgYpSVPJAwophgLAMLm3oFaMJzXe37TIejawSeV8oX2MZ
-         R85w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DS2qv/sbCHqoLMCgOnfUdla2dw7bnIePwmkfx7decsw=;
+        b=W9Gg5GyxMVII/LvqUsfW3gjfBZEdfgm8xv8ik/Z9siuo7Pqo4MulN5oQQB8so6ryAN
+         mYtizLZIPZ71DYS2mXy7Dh5KJnIAXBypw/RIUQESQRb/31LCLjwtTPJyGbHKBh6YXmZA
+         mORLiFaCUuG+7VS1Z8/itd8HbhJmQR4xyP+0G878i3pwc2TCVyy+GCMVYZc0rPNwl3EP
+         2Dwzd6322CLGiJSqLjRbqGaWW3mMheT4+HXRfF4HqP+jg14uyoe7OvHUW3K0tdV9kgNw
+         hHxRqlD2FOEl6jAdC2drnovLuGbpB6vGEJcA9K1aCPW6bUng7/La+LKeUPJIDSKM1QjM
+         cs5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vXXyEj8lw1pMoMyulFe4jBxk+hmJv9H/jKDUVlikh88=;
-        b=KrSCDCkCjamVN0KqD3p+yiAajAJuZaVM2ougzF6+CDZ7gYGicnkSUDrbzIctBFFZPz
-         eyj0hMMmt3q3eMfXFVuG5p8IGaUTBAUUvXnCJAPPRx4LNS4GPcn3qcReH143HLd93JNE
-         MqoNTxmKWSHeBIhbuva3Y2r8666tMPwkpiH6Rxvb5Hv0J4E9WkNPVa9i2pvYzNsG+PzN
-         1gSWzOV1h83tiTY6Rti4bYaU8q8tz/o8qN+9pXicGItCef7TipE41mQIpUtSzmxaTCjZ
-         iH9bkPWog4j7RSsdtTaci6qTgBlUAXPZwZvie0Q6w05WGAyWJTs8R+H1Og56SAgVOzGK
-         QX5w==
-X-Gm-Message-State: AOAM532qOkVLQ0Kp4eYpIPMSw2xr/q/U934dLGtBKlr6SndGTyaIVGL0
-        04j1HLFOiF+I/haBmaz6WFeMIUZkUniNahKM4HlhzA==
-X-Google-Smtp-Source: ABdhPJwNtzMHKLjUUBfk19XpEDcQzbXS8PlQMwrcBud8ETqUZ+UgfngYJFCo4WBY6IrzNAan5WoZ8s80eUxFF63jUWs=
-X-Received: by 2002:a2e:bf24:0:b0:246:801e:39d3 with SMTP id
- c36-20020a2ebf24000000b00246801e39d3mr8177705ljr.472.1646677199361; Mon, 07
- Mar 2022 10:19:59 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DS2qv/sbCHqoLMCgOnfUdla2dw7bnIePwmkfx7decsw=;
+        b=f+q0chNf/rRVN/3uM52MKL4ept0XPTTl8jDi4j/1Enm9ejP3xFUnkdhnY38eunQxav
+         wx99+fLZ49ptCeALtDxpmtcIj2Dzfalu6tvkMdPV9rs873MjFw3HApoZ7O/m39PaAgoZ
+         A5GsrSsVKHGBjK10Cz4QsePZrlvF0VbDVYAi7gFM135s5kmad5hKVqLbzuHsFI5k82cD
+         GvtIpsIUOo61V0m9cqNjwFF4A252QraPUqLIPfSM9FNeXkaobsgoMC2veH+Kq0IQ5tJD
+         cJ1BqYyDcHMuJYPiC0jaz7GgWHs1x+N+UzJsIY2LUAHznszWYuCqzJquTrKMgmsZHJyb
+         H8Rw==
+X-Gm-Message-State: AOAM531ihYsgl2Jw/MD9MnradQOBqS7YlxFiDK7sCPhWGW3xlHLwxQVX
+        8/zY55C519Hk6BEASf6h+rk=
+X-Google-Smtp-Source: ABdhPJwuISSrdr2UftD1PKRqdTuR1a5SMMrV6QtwGPZRsPdtrDfRcGN6R2dbmjM4JwA8i/KgK85S6w==
+X-Received: by 2002:a63:445c:0:b0:375:9c0c:c360 with SMTP id t28-20020a63445c000000b003759c0cc360mr10744430pgk.588.1646677268440;
+        Mon, 07 Mar 2022 10:21:08 -0800 (PST)
+Received: from localhost.localdomain ([122.161.53.68])
+        by smtp.gmail.com with ESMTPSA id t190-20020a632dc7000000b003759f87f38csm12245809pgt.17.2022.03.07.10.21.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 10:21:08 -0800 (PST)
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Cc:     Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>
+Subject: [PATCH 1/3] MAINTAINERS: Update git tree for broadcom IPROC boards
+Date:   Mon,  7 Mar 2022 23:50:59 +0530
+Message-Id: <20220307182101.84730-1-singh.kuldeep87k@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220303112321.422525803@infradead.org> <20220303112825.190662703@infradead.org>
- <YiXpv0q88paPHPqF@hirez.programming.kicks-ass.net> <9a58477564a1d86e17bdd2ef959e7f3e@overdrivepizza.com>
-In-Reply-To: <9a58477564a1d86e17bdd2ef959e7f3e@overdrivepizza.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 7 Mar 2022 10:19:47 -0800
-Message-ID: <CAKwvOdkM0F+ajQdLpgUA-WgzhHuV3ydUJskyTeKvY34D62ZRGw@mail.gmail.com>
-Subject: Re: [PATCH v3 04/39] x86/ibt: Base IBT bits
-To:     Joao Moreira <joao@overdrivepizza.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        hjl.tools@gmail.com, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, mhiramat@kernel.org,
-        alexei.starovoitov@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 4:25 AM Joao Moreira <joao@overdrivepizza.com> wrote:
->
-> >
-> > Joao will be submitting GCC and Clang bugreports on this shortly.
-> >
-> Reported both on GCC and Clang:
->
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=104816
-> https://github.com/llvm/llvm-project/issues/54247
->
-> I'm not sure if something should be reported to ClangBuiltLinux, since
-> the kernel will be built with -fno-jump-tables anyways.
+Current git tree for broadcom boards is pretty outdated as it's not
+updated for a long time. Fix the reference.
 
-As long as a bug gets filed; that's what's more important to me.
-Doesn't matter if we track it upstream in LLVM's issue tracker or
-downstream.  Having the record of it in either is what's important to
-me. Thanks for filing!
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..5d627156efd9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3900,7 +3900,7 @@ M:	Scott Branden <sbranden@broadcom.com>
+ M:	bcm-kernel-feedback-list@broadcom.com
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
+-T:	git git://github.com/broadcom/cygnus-linux.git
++T:	git git://github.com/broadcom/stblinux.git
+ F:	arch/arm64/boot/dts/broadcom/northstar2/*
+ F:	arch/arm64/boot/dts/broadcom/stingray/*
+ F:	drivers/clk/bcm/clk-ns*
 -- 
-Thanks,
-~Nick Desaulniers
+2.25.1
+
