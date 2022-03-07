@@ -2,140 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042B5C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240400AbiCGKIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
+        id S239881AbiCGKHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiCGJtj (ORCPT
+        with ESMTP id S239340AbiCGJtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:49:39 -0500
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2124.outbound.protection.outlook.com [40.107.255.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B994F6E782;
-        Mon,  7 Mar 2022 01:43:14 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oReBBcEkae1q1tRJWNlJu7nomlidklUn4FzELS/vZyZeadyt/FXsbShd7J3DlGXXSK0Z1R+QiUnJs1d3EecYLV6xr+gakEN2GA78ILG3u92gbIt2aedMcFv3IquBmgYQL+ofGdPZtYiwKzfVvXdGJ6HORTsYNrfsnx0LN+Z0Fc0isJCvj0FVnYpk7pxPGtSuc8m34Vq69acBvkyTEB/OQs9B9gnNwnT2xcqeqpCymZXgwFPbaC7kFyGeZEM6mAQML65YO2pbfWE8lEiVSJtujxe6x07KPF2opQ2HnebhjWSDy46LNfOON0Aa0ozWwqmqXpKdIUNYv0ub31Y+ggxd4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sHSyRcdp4nLd8tk6RJf3f3HDLO7+7+jsT3clLNE0NLk=;
- b=MbAEg6bK0L4wOUjo4d9PVb/vXpxo4gnvZkYX9oTVCGAk99iGv52c0nwmzGIVP9EJGUe2SclAhQcq3aZ5HhI5eXkcH4x+r4QSzmrVfB6iIAVH6f00NNiL03XL+DdrKGETvbJsdw7rVHTxdTVjRlnBfcHhfNzuJW5RQlznXUEPZmUdRHocaZ2MlqfvZdtDEpUSZdfLvngm4qA9Cex/zIIPPqOzNJviAyQ1RAELdtkaVvsoNGHLeJ44B7mR5rJ0J6YeBYDRjHwck/6BNznLgs6N+NX25hva6WYCZ1BoeOlRiF1Dhlk8p0JOPS3Mnt5dRfcEpfuFAHigcc0+5SUIDTf4VQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sHSyRcdp4nLd8tk6RJf3f3HDLO7+7+jsT3clLNE0NLk=;
- b=Jbthxcxp6NcfMDN4zZW9Jbd7NkYVQthvbz57B7xoBzGEEcpdT1pk1xDDvLaIbu66Yw6n37ksEnL6vGSF44qGpjVCE1V1xaa5qpWuq9PpNMM4aY6FNpMaZhHfstl5ny6mgaZ7z7r/nxtuKly/l2CztjJiTL/aqrv7CjINXDinvKA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- TYZPR06MB4094.apcprd06.prod.outlook.com (2603:1096:400:27::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5038.14; Mon, 7 Mar 2022 09:43:02 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::9d3f:ff3b:1948:d732]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::9d3f:ff3b:1948:d732%4]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
- 09:43:02 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-cxl@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kael_w@qq.com, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] cxl/core/port: fix NULL but dereferenced coccicheck error
-Date:   Mon,  7 Mar 2022 17:41:48 +0800
-Message-Id: <20220307094158.404882-1-wanjiabing@vivo.com>
+        Mon, 7 Mar 2022 04:49:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B619C1D321;
+        Mon,  7 Mar 2022 01:42:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB274B80E70;
+        Mon,  7 Mar 2022 09:42:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2AB6C340F3;
+        Mon,  7 Mar 2022 09:42:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646165;
+        bh=PQnv2p/9jLlnPlV/caiQgOThrifuKFV0ko81jq8bh+k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=M/R6A8PS6QN5qhr7SJOJjq348cTrb2+XokumALBgG2u+P/7eSeElnPUpi/670vM84
+         SLnaMeEZ0aB8lhkSvEN60EltyZB0QAl72bVYGhfTVJTuZv3lTJDH/ofjjlm+BI3LwH
+         88AERS6yW5V9eL37AmCnkNHxe5ojzeZaa3gGpCSM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 154/262] netfilter: fix use-after-free in __nf_register_net_hook()
+Date:   Mon,  7 Mar 2022 10:18:18 +0100
+Message-Id: <20220307091706.783814432@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR06CA0021.apcprd06.prod.outlook.com
- (2603:1096:202:2e::33) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a246a15b-590f-47a8-39a5-08da001edeeb
-X-MS-TrafficTypeDiagnostic: TYZPR06MB4094:EE_
-X-Microsoft-Antispam-PRVS: <TYZPR06MB40941EB3449D865B0467240EAB089@TYZPR06MB4094.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: avhaEd0WR064Vjak9i8lVoh8JytfIHZqVdKuxCknmCGSMcGPCp/7W7klVOSVVeaWOz+1R4ktj/EBnIBAPX9gK0jHwzQL1RNd2gh1Sh3q1bEIZQoye8zPZkYy8/Sv2PrOgOrzZn9fiJycpJCE4yPaYpAPnkmbPmgd7pHJPKifNMYAtWNcCxxiDOrNtmzMzPv51Y3Ga/bXolJkCBsLRHzqhZmG2IiBT8bJQoS0BwNIhBHm5PRAcd0eMWGsHNcI2uvO/F77712jzY8DH0YMhoLtmE7bGdcomfjqJD+NVnIp8vyFtQUarOCio8Yfm99htkcQYVpA5qMBpKNSsv9RVxiDhpKULozQmnZzD0YibSEsfdz49l+qLWwXH/8gAc0hQhq/d2y5tm8aNeLxxHoR5DmV6YzzLItuh2zssewPujxNhX9Q+PsyHtCuojMrTudO/O1YsscNQTkWNRxlmEjhTiKiUXnYHoeozdV8TZ0u20OqwpRaDNWGE30lrsTVrVHwCCbPoMMun3hoUFYdf/csj/+WZ0J+IzFBX6dU/45uYCZqESL24FndqnWHMoLG/+t3qaLAhy0K+YrnGzNtmvfNsUX7kdMu4FE54fbeAOWxKULmtuV2Q31Or5/4MzUMzgNRppTSgJjp0og+fBORwVRX1L8YULvGfZDPA8TSj1MNXqyFGyZgASEapeCDLVM9NdFeblsU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(36756003)(8676002)(4326008)(66476007)(66556008)(83380400001)(86362001)(8936002)(5660300002)(110136005)(38350700002)(38100700002)(6486002)(316002)(508600001)(1076003)(6512007)(107886003)(26005)(186003)(52116002)(6506007)(4744005)(2616005)(6666004)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?To6aVpMwae3Amw4SB/kuE8oY00NY5iN4ag18Pn4vNKXo50J2yvAkkaS5n++0?=
- =?us-ascii?Q?Y/okb9u+2ekeKFEs0c1jY0pmrIUKBDYAPbn4rQ/SLCHFlX42qkXbTkQgJUng?=
- =?us-ascii?Q?8Er070DfxOOkXPceymAIRF0xqMd7e74FVEU3P5ZOHS4vA4iShKK8jTR8i/oO?=
- =?us-ascii?Q?iw0mt2hTig/HkFP2G3r9yBCPYVeWAz6r5dUNrbDET6akDfsYx7YydFP216JL?=
- =?us-ascii?Q?Z6jhMZlP+p/6Q23JVV2CGlaiEo5tRderyiBRqnfVBTjC65dfPyCr6Y1m0rhh?=
- =?us-ascii?Q?6x4R+zYQjw46Kbdx34nukrO9PCnJP4GwGArSPt2JMlkiCJZY8ZKIc3dMG8xT?=
- =?us-ascii?Q?4B6SnqtJE9OtDHX2UVJ6qmBkeyXPJ80Rph83SkTbE/fQwJxgFeYNjEATbDt0?=
- =?us-ascii?Q?g4duNwyXx6CDjPDU3c+9bca4ZNfXiSxBKMUCtleqFLPFwvM3G2Oopo/CNVFq?=
- =?us-ascii?Q?HyJk1+kIkbETWtQRdelz6Huq0fvpp1lOCS7nvCdOhW1RD30zMODW20dkb9fa?=
- =?us-ascii?Q?NcrL49i6/y4QAcF6eQJmzM5pZxhGxSBL5uE3mN5zb7Xp15qGeNSGHSWzQoJd?=
- =?us-ascii?Q?HzvlI1Yf3AyZfIqHHnYOeD/SZVMEo1HzBlHTRgPyssQbWIWF1R/0vS7w6DgH?=
- =?us-ascii?Q?uahw4777HkYgMpsAm+PHAo3zcNxvs8Q4W8aIwj6if2vocvVDWiXDAazjHGA5?=
- =?us-ascii?Q?HWW/dEATexNulZ6um25Twco+/HnUFvxKz1eB8MuptDhd1L285+YQx1SnqnfQ?=
- =?us-ascii?Q?bPL9xVShgOaUHR2wnjEZpPKpOfwkrL9BF5g2quYO0gCzM4BLZ+HsJs//HI4/?=
- =?us-ascii?Q?lAHNnC92rt8ZYVi7/Y8lbejfVbf4PZk3BZ3hrnNKg3rLBopIJpCA3+JzDZaY?=
- =?us-ascii?Q?YSEK3iWkt2GfPrEluO9dpGMezWDlYB8k1bqQ6P4xNy645zFM9XmaH5Lb/8kn?=
- =?us-ascii?Q?RrGWL9xS2MLB44BlK7AnlBvODLXGyk1WaJB6ZUJmeREcsMUviwJ7bs1olZbP?=
- =?us-ascii?Q?XkgcopWHXEIkOwFvrcPEEPwznwIa7nAqOIze213ED8GN0kqvGKH4Flmxrcis?=
- =?us-ascii?Q?8YmFNltjGBZqzbrD9NQnw/VwfhJ+chJz1SBDcOMnCcG6Wnr3xNLvAeYwAqBH?=
- =?us-ascii?Q?Hed84VXWSeJQNhirYdnboTfif5q2LEVJw51trN0U4alfRNULw0o9ZxOzWGLy?=
- =?us-ascii?Q?PYEgVA3/LwdGOaSO5OWa5ZsaLMuR3Ba0J27g9hlf+mpMQoXjNTJdD03j1F/n?=
- =?us-ascii?Q?3uxvL4NqCC69n1sbvQREmyrgOBsQgLkTOHozWxrR1gr+enIXuYSWGcAPOamP?=
- =?us-ascii?Q?tkc+zgF4+QkkBOTmxSY8YmefxELrXyjDD1D8xRsblkXBmOUNB5XQJNOay2Si?=
- =?us-ascii?Q?OKDNzpIVhxlQ/qzB/W3Mb/I/NxpCGxWmpPqL5/HxUlrkzHtpV8BwSSZ8fttW?=
- =?us-ascii?Q?VmBF1D4JJoQyGGWxUbXMx4UsfGXkfafEQE6YC8zN9Uybp6u4jR1gi6Do1Q5x?=
- =?us-ascii?Q?KemcIrMqVFEY7dI+va50Un+nHK8OXSI9cmjxGAwQeJAg8acXrqtAuyAIoAM7?=
- =?us-ascii?Q?8CzV5UER8NfwShtzz3Q3tOAkBeFan7+BnYAZwmHI0F7fp4ePE9pJSMeTqkjR?=
- =?us-ascii?Q?Qk8hJywU7vPEx6QXBFxrTY8=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a246a15b-590f-47a8-39a5-08da001edeeb
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:43:01.9853
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yaJ5QkS73+xrTiX3R+7N2RSk2RwsqBn9/Hwxm4UupQJL26cELkQndHyrmj7OFgEwpowzi5/p+fh/Y8aBiPZqsQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB4094
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
-./drivers/cxl/core/port.c:913:21-24: ERROR: port is NULL but dereferenced.
+From: Eric Dumazet <edumazet@google.com>
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+commit 56763f12b0f02706576a088e85ef856deacc98a0 upstream.
+
+We must not dereference @new_hooks after nf_hook_mutex has been released,
+because other threads might have freed our allocated hooks already.
+
+BUG: KASAN: use-after-free in nf_hook_entries_get_hook_ops include/linux/netfilter.h:130 [inline]
+BUG: KASAN: use-after-free in hooks_validate net/netfilter/core.c:171 [inline]
+BUG: KASAN: use-after-free in __nf_register_net_hook+0x77a/0x820 net/netfilter/core.c:438
+Read of size 2 at addr ffff88801c1a8000 by task syz-executor237/4430
+
+CPU: 1 PID: 4430 Comm: syz-executor237 Not tainted 5.17.0-rc5-syzkaller-00306-g2293be58d6a1 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ nf_hook_entries_get_hook_ops include/linux/netfilter.h:130 [inline]
+ hooks_validate net/netfilter/core.c:171 [inline]
+ __nf_register_net_hook+0x77a/0x820 net/netfilter/core.c:438
+ nf_register_net_hook+0x114/0x170 net/netfilter/core.c:571
+ nf_register_net_hooks+0x59/0xc0 net/netfilter/core.c:587
+ nf_synproxy_ipv6_init+0x85/0xe0 net/netfilter/nf_synproxy_core.c:1218
+ synproxy_tg6_check+0x30d/0x560 net/ipv6/netfilter/ip6t_SYNPROXY.c:81
+ xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1038
+ check_target net/ipv6/netfilter/ip6_tables.c:530 [inline]
+ find_check_entry.constprop.0+0x7f1/0x9e0 net/ipv6/netfilter/ip6_tables.c:573
+ translate_table+0xc8b/0x1750 net/ipv6/netfilter/ip6_tables.c:735
+ do_replace net/ipv6/netfilter/ip6_tables.c:1153 [inline]
+ do_ip6t_set_ctl+0x56e/0xb90 net/ipv6/netfilter/ip6_tables.c:1639
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ipv6_setsockopt+0x122/0x180 net/ipv6/ipv6_sockglue.c:1024
+ rawv6_setsockopt+0xd3/0x6a0 net/ipv6/raw.c:1084
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f65a1ace7d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 71 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f65a1a7f308 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 00007f65a1ace7d9
+RDX: 0000000000000040 RSI: 0000000000000029 RDI: 0000000000000003
+RBP: 00007f65a1b574c8 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000020000000 R11: 0000000000000246 R12: 00007f65a1b55130
+R13: 00007f65a1b574c0 R14: 00007f65a1b24090 R15: 0000000000022000
+ </TASK>
+
+The buggy address belongs to the page:
+page:ffffea0000706a00 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1c1a8
+flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000000 ffffea0001c1b108 ffffea000046dd08 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 2, migratetype Unmovable, gfp_mask 0x52dc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_ZERO), pid 4430, ts 1061781545818, free_ts 1061791488993
+ prep_new_page mm/page_alloc.c:2434 [inline]
+ get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
+ __alloc_pages_node include/linux/gfp.h:572 [inline]
+ alloc_pages_node include/linux/gfp.h:595 [inline]
+ kmalloc_large_node+0x62/0x130 mm/slub.c:4438
+ __kmalloc_node+0x35a/0x4a0 mm/slub.c:4454
+ kmalloc_node include/linux/slab.h:604 [inline]
+ kvmalloc_node+0x97/0x100 mm/util.c:580
+ kvmalloc include/linux/slab.h:731 [inline]
+ kvzalloc include/linux/slab.h:739 [inline]
+ allocate_hook_entries_size net/netfilter/core.c:61 [inline]
+ nf_hook_entries_grow+0x140/0x780 net/netfilter/core.c:128
+ __nf_register_net_hook+0x144/0x820 net/netfilter/core.c:429
+ nf_register_net_hook+0x114/0x170 net/netfilter/core.c:571
+ nf_register_net_hooks+0x59/0xc0 net/netfilter/core.c:587
+ nf_synproxy_ipv6_init+0x85/0xe0 net/netfilter/nf_synproxy_core.c:1218
+ synproxy_tg6_check+0x30d/0x560 net/ipv6/netfilter/ip6t_SYNPROXY.c:81
+ xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1038
+ check_target net/ipv6/netfilter/ip6_tables.c:530 [inline]
+ find_check_entry.constprop.0+0x7f1/0x9e0 net/ipv6/netfilter/ip6_tables.c:573
+ translate_table+0xc8b/0x1750 net/ipv6/netfilter/ip6_tables.c:735
+ do_replace net/ipv6/netfilter/ip6_tables.c:1153 [inline]
+ do_ip6t_set_ctl+0x56e/0xb90 net/ipv6/netfilter/ip6_tables.c:1639
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1352 [inline]
+ free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
+ free_unref_page_prepare mm/page_alloc.c:3325 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3404
+ kvfree+0x42/0x50 mm/util.c:613
+ rcu_do_batch kernel/rcu/tree.c:2527 [inline]
+ rcu_core+0x7b1/0x1820 kernel/rcu/tree.c:2778
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+
+Memory state around the buggy address:
+ ffff88801c1a7f00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88801c1a7f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88801c1a8000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff88801c1a8080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88801c1a8100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+
+Fixes: 2420b79f8c18 ("netfilter: debug: check for sorted array")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Acked-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/cxl/core/port.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/netfilter/core.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cxl/core/port.c b/drivers/cxl/core/port.c
-index d29eb2abdbc2..3349e9f7b89e 100644
---- a/drivers/cxl/core/port.c
-+++ b/drivers/cxl/core/port.c
-@@ -909,7 +909,10 @@ static void cxl_detach_ep(void *data)
- 			break;
+--- a/net/netfilter/core.c
++++ b/net/netfilter/core.c
+@@ -406,14 +406,15 @@ static int __nf_register_net_hook(struct
+ 	p = nf_entry_dereference(*pp);
+ 	new_hooks = nf_hook_entries_grow(p, reg);
  
- 		port = find_cxl_port(dport_dev);
--		if (!port || is_cxl_root(port)) {
-+		if (!port)
-+			continue;
-+
-+		if (is_cxl_root(port)) {
- 			put_device(&port->dev);
- 			continue;
- 		}
--- 
-2.35.1
+-	if (!IS_ERR(new_hooks))
++	if (!IS_ERR(new_hooks)) {
++		hooks_validate(new_hooks);
+ 		rcu_assign_pointer(*pp, new_hooks);
++	}
+ 
+ 	mutex_unlock(&nf_hook_mutex);
+ 	if (IS_ERR(new_hooks))
+ 		return PTR_ERR(new_hooks);
+ 
+-	hooks_validate(new_hooks);
+ #ifdef CONFIG_NETFILTER_INGRESS
+ 	if (nf_ingress_hook(reg, pf))
+ 		net_inc_ingress_queue();
+
 
