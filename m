@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16354C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A88C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239120AbiCGJ6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
+        id S235509AbiCGKCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:02:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239468AbiCGJjp (ORCPT
+        with ESMTP id S240698AbiCGJl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8FC71C9C;
-        Mon,  7 Mar 2022 01:35:46 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78338FD2F;
+        Mon,  7 Mar 2022 01:38:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 889EE60FF6;
-        Mon,  7 Mar 2022 09:35:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8191FC340E9;
-        Mon,  7 Mar 2022 09:35:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CCE4B810D2;
+        Mon,  7 Mar 2022 09:37:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5542C340E9;
+        Mon,  7 Mar 2022 09:37:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645746;
-        bh=iiiU8DN3ENwStLSi/sYPdqOZyIuha6jES6Cbw9b1hww=;
+        s=korg; t=1646645868;
+        bh=VbmKCL72Oen/J1WzvyZ7/8kn5y0mhpkYsLrA1c3G/+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fSed6adwTY113ldscxCHOA0L8b7sctcjmKwwaTYc22nOlHxYY5LwdxFlxqlWNYfcB
-         VnD57arwTfAr24Y1SQu2B/5WmhxWniXtEumS7gFr21TFsX4vD9KQA0DyIDW/wmFJF6
-         F+CV/bV745YkK5VS2mq6SDAR2lhjGG/FdsEizVWw=
+        b=eYwOu194p0/yDL9w2DOtG9/zMYF2gujpjzcY4U3whg0kyvgPtuUtLTeYWENba7r71
+         3CmdCDbjR38IUK3rehHxno9Tqkvow79w3G7s4cVzaH1ui8EpepSUzGSPeIf2fjpH5h
+         b+2/kZ3m5LtMVURlW8DFqD+iOWiEi3sU0jnPaHbQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
+        stable@vger.kernel.org, Boris Brezillon <bbrezillon@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jamie Iles <quic_jiles@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 023/262] i2c: imx: allow COMPILE_TEST
-Date:   Mon,  7 Mar 2022 10:16:07 +0100
-Message-Id: <20220307091703.027193405@linuxfoundation.org>
+Subject: [PATCH 5.15 061/262] i3c: fix incorrect address slot lookup on 64-bit
+Date:   Mon,  7 Mar 2022 10:16:45 +0100
+Message-Id: <20220307091704.230344957@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,33 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa@kernel.org>
+From: Jamie Iles <quic_jiles@quicinc.com>
 
-[ Upstream commit 2ce4462f2724d1b3cedccea441c6d18bb360629a ]
+[ Upstream commit f18f98110f2b179792cb70d85cba697320a3790f ]
 
-Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
-and easier maintenance.
+The address slot bitmap is an array of unsigned long's which are the
+same size as an int on 32-bit platforms but not 64-bit.  Loading the
+bitmap into an int could result in the incorrect status being returned
+for a slot and slots being reported as the wrong status.
 
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Fixes: 3a379bbcea0a ("i3c: Add core I3C infrastructure")
+Cc: Boris Brezillon <bbrezillon@kernel.org>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Jamie Iles <quic_jiles@quicinc.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20210922165600.179394-1-quic_jiles@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i3c/master.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 652b754a66db0..f76aaf9559365 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -677,7 +677,7 @@ config I2C_IMG
+diff --git a/drivers/i3c/master.c b/drivers/i3c/master.c
+index c3b4c677b4429..dfe18dcd008d4 100644
+--- a/drivers/i3c/master.c
++++ b/drivers/i3c/master.c
+@@ -343,7 +343,8 @@ struct bus_type i3c_bus_type = {
+ static enum i3c_addr_slot_status
+ i3c_bus_get_addr_slot_status(struct i3c_bus *bus, u16 addr)
+ {
+-	int status, bitpos = addr * 2;
++	unsigned long status;
++	int bitpos = addr * 2;
  
- config I2C_IMX
- 	tristate "IMX I2C interface"
--	depends on ARCH_MXC || ARCH_LAYERSCAPE || COLDFIRE
-+	depends on ARCH_MXC || ARCH_LAYERSCAPE || COLDFIRE || COMPILE_TEST
- 	select I2C_SLAVE
- 	help
- 	  Say Y here if you want to use the IIC bus controller on
+ 	if (addr > I2C_MAX_ADDR)
+ 		return I3C_ADDR_SLOT_RSVD;
 -- 
 2.34.1
 
