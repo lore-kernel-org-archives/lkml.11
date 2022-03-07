@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C392C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E500C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235672AbiCGJ4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:56:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S232246AbiCGJ4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:56:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238663AbiCGJij (ORCPT
+        with ESMTP id S238334AbiCGJiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293226B081;
-        Mon,  7 Mar 2022 01:33:07 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B972AE4E;
+        Mon,  7 Mar 2022 01:32:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 695896112D;
-        Mon,  7 Mar 2022 09:32:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739FFC340E9;
-        Mon,  7 Mar 2022 09:32:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A63261225;
+        Mon,  7 Mar 2022 09:31:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F31DC340E9;
+        Mon,  7 Mar 2022 09:31:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645575;
-        bh=2Ouh71z9V3h2h5XbRT/kLJZHt1QLCE2kUzamKqtu8aA=;
+        s=korg; t=1646645505;
+        bh=XDc477/3beWxxSmCW2K4WGCl4Y/J3tDQ9d+epshTneI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRSkZH8LqCKfY6PVrnfrsNE2Aj8UJbN7owOJrT7sElapgDlTedDfJPvWKH7pRiFu6
-         4KhAREQqOOYqxh2cbPLcdG8PTJ+eDf6PPobPMjagZzB692YDFEIhBf7NYkeetY4nKn
-         kxdVSBUsb8SxbPjgnTtvrS1B1WxMHNzS8TBk0nYg=
+        b=gH8V8gf91saaT6YLF59aTh1LsNAN+Zz7jX0o9XxdCR6788evzcXJyzOWdqzVoSXIn
+         Ro639+qdtVmbeNhEEkRr9hduqlscjXWeWNsysrd7ZqRly2pXNC4z4Lsq1nrRMBFbc/
+         SM2h4ce9FEy4Ahg5/AzrO56EL35V8eB8ov+W+Je8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 076/105] selftests: mlxsw: tc_police_scale: Make test more robust
-Date:   Mon,  7 Mar 2022 10:19:19 +0100
-Message-Id: <20220307091646.315704743@linuxfoundation.org>
+        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 051/105] net/smc: fix connection leak
+Date:   Mon,  7 Mar 2022 10:18:54 +0100
+Message-Id: <20220307091645.619198431@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -50,60 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: D. Wythe <alibuda@linux.alibaba.com>
 
-commit dc9752075341e7beb653e37c6f4a3723074dc8bc upstream.
+commit 9f1c50cf39167ff71dc5953a3234f3f6eeb8fcb5 upstream.
 
-The test adds tc filters and checks how many of them were offloaded by
-grepping for 'in_hw'.
+There's a potential leak issue under following execution sequence :
 
-iproute2 commit f4cd4f127047 ("tc: add skip_hw and skip_sw to control
-action offload") added offload indication to tc actions, producing the
-following output:
+smc_release  				smc_connect_work
+if (sk->sk_state == SMC_INIT)
+					send_clc_confirim
+	tcp_abort();
+					...
+					sk.sk_state = SMC_ACTIVE
+smc_close_active
+switch(sk->sk_state) {
+...
+case SMC_ACTIVE:
+	smc_close_final()
+	// then wait peer closed
 
- $ tc filter show dev swp2 ingress
- ...
- filter protocol ipv6 pref 1000 flower chain 0 handle 0x7c0
-   eth_type ipv6
-   dst_ip 2001:db8:1::7bf
-   skip_sw
-   in_hw in_hw_count 1
-         action order 1:  police 0x7c0 rate 10Mbit burst 100Kb mtu 2Kb action drop overhead 0b
-         ref 1 bind 1
-         not_in_hw
-         used_hw_stats immediate
+Unfortunately, tcp_abort() may discard CLC CONFIRM messages that are
+still in the tcp send buffer, in which case our connection token cannot
+be delivered to the server side, which means that we cannot get a
+passive close message at all. Therefore, it is impossible for the to be
+disconnected at all.
 
-The current grep expression matches on both 'in_hw' and 'not_in_hw',
-resulting in incorrect results.
+This patch tries a very simple way to avoid this issue, once the state
+has changed to SMC_ACTIVE after tcp_abort(), we can actively abort the
+smc connection, considering that the state is SMC_INIT before
+tcp_abort(), abandoning the complete disconnection process should not
+cause too much problem.
 
-Fix that by using JSON output instead.
+In fact, this problem may exist as long as the CLC CONFIRM message is
+not received by the server. Whether a timer should be added after
+smc_close_final() needs to be discussed in the future. But even so, this
+patch provides a faster release for connection in above case, it should
+also be valuable.
 
-Fixes: 5061e773264b ("selftests: mlxsw: Add scale test for tc-police")
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 39f41f367b08 ("net/smc: common release code for non-accepted sockets")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/smc/af_smc.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
-index 3e3e06ea5703..86e787895f78 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
-@@ -60,7 +60,8 @@ __tc_police_test()
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -180,7 +180,7 @@ static int smc_release(struct socket *so
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct smc_sock *smc;
+-	int rc = 0;
++	int old_state, rc = 0;
  
- 	tc_police_rules_create $count $should_fail
+ 	if (!sk)
+ 		goto out;
+@@ -188,8 +188,10 @@ static int smc_release(struct socket *so
+ 	sock_hold(sk); /* sock_put below */
+ 	smc = smc_sk(sk);
  
--	offload_count=$(tc filter show dev $swp1 ingress | grep in_hw | wc -l)
-+	offload_count=$(tc -j filter show dev $swp1 ingress |
-+			jq "[.[] | select(.options.in_hw == true)] | length")
- 	((offload_count == count))
- 	check_err_fail $should_fail $? "tc police offload count"
- }
--- 
-2.35.1
-
++	old_state = sk->sk_state;
++
+ 	/* cleanup for a dangling non-blocking connect */
+-	if (smc->connect_nonblock && sk->sk_state == SMC_INIT)
++	if (smc->connect_nonblock && old_state == SMC_INIT)
+ 		tcp_abort(smc->clcsock->sk, ECONNABORTED);
+ 
+ 	if (cancel_work_sync(&smc->connect_work))
+@@ -203,6 +205,10 @@ static int smc_release(struct socket *so
+ 	else
+ 		lock_sock(sk);
+ 
++	if (old_state == SMC_INIT && sk->sk_state == SMC_ACTIVE &&
++	    !smc->use_fallback)
++		smc_close_active_abort(smc);
++
+ 	rc = __smc_release(smc);
+ 
+ 	/* detach socket */
 
 
