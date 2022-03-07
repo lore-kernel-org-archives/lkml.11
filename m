@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F26DC47080
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240744AbiCGKTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
+        id S240938AbiCGKTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:19:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240530AbiCGKBF (ORCPT
+        with ESMTP id S240552AbiCGKBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47B826ACD;
-        Mon,  7 Mar 2022 01:50:09 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB18E41327;
+        Mon,  7 Mar 2022 01:50:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 325746077B;
-        Mon,  7 Mar 2022 09:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C970C340F3;
-        Mon,  7 Mar 2022 09:50:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2382060AD4;
+        Mon,  7 Mar 2022 09:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237D0C340F7;
+        Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646608;
-        bh=3w01B+aDGQReWBFuFR03OkguovcF5mLpnwOzWavo+E4=;
+        s=korg; t=1646646623;
+        bh=Zui8ECPQw1oRdjCitPElBm7a/khE+cS65N3yjxUWZyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qzjs+Qqo/Vv3ZwlJmlzhlBp2Q9SJPhZIC8rKYi/sUpGPe1XuiiLH1PDvWxlESRnL5
-         Vrow768q0wL75y549GVBUfmCCfLDNxhtneCEtpN+eD9zNGKHOtB+Fh+hn3EkvYet0+
-         VbdyYkTEV57G03bUKV4nMqZ0PJ+LkCTE6M8fd1x8=
+        b=mq7DsQ3o1lUfLxAcne0VD+VF186wDOdEZDlUK1TxrxZTIHmUM/hvXy/EDoOISSHSD
+         656t8MHtwUGub9mLNfADbK7vu7J66aA3MLkytgcYQxupznZTICEzmnxE4ZQ9kvR+/x
+         LKDHlGadiCFDZiQAPW0H4vPktPcUtqlYjgwI7W+U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 036/186] ext4: drop ineligible txn start stop APIs
-Date:   Mon,  7 Mar 2022 10:17:54 +0100
-Message-Id: <20220307091655.106034497@linuxfoundation.org>
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 040/186] sched/fair: Fix fault in reweight_entity
+Date:   Mon,  7 Mar 2022 10:17:58 +0100
+Message-Id: <20220307091655.217627420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,249 +52,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-[ Upstream commit 7bbbe241ec7ce0def9f71464c878fdbd2b0dcf37 ]
+[ Upstream commit 13765de8148f71fa795e0a6607de37c49ea5915a ]
 
-This patch drops ext4_fc_start_ineligible() and
-ext4_fc_stop_ineligible() APIs. Fast commit ineligible transactions
-should simply call ext4_fc_mark_ineligible() after starting the
-trasaction.
+Syzbot found a GPF in reweight_entity. This has been bisected to
+commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
+sched_task_group")
 
-Signed-off-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/20211223202140.2061101-3-harshads@google.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
+within a thread group that causes a null-ptr-deref in
+reweight_entity() in CFS. The scenario is that the main process spawns
+number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
+wait, and exit.  For each of the new threads the copy_process() gets
+invoked, which adds the new task_struct and calls sched_post_fork()
+for it.
+
+In the above scenario there is a possibility that
+setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
+in the group that is just being created by copy_process(), and for
+which the sched_post_fork() has not been executed yet. This will
+trigger a null pointer dereference in reweight_entity(), as it will
+try to access the run queue pointer, which hasn't been set.
+
+Before the mentioned change the cfs_rq pointer for the task  has been
+set in sched_fork(), which is called much earlier in copy_process(),
+before the new task is added to the thread_group.  Now it is done in
+the sched_post_fork(), which is called after that.  To fix the issue
+the remove the update_load param from the update_load param() function
+and call reweight_task() only if the task flag doesn't have the
+TASK_NEW flag set.
+
+Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ext4.h        |  6 ++--
- fs/ext4/extents.c     |  6 ++--
- fs/ext4/fast_commit.c | 79 ++++++++-----------------------------------
- fs/ext4/ioctl.c       |  3 +-
- fs/ext4/super.c       |  1 -
- 5 files changed, 20 insertions(+), 75 deletions(-)
+ kernel/sched/core.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
-index d248a01132c3b..f80e4de726869 100644
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -1725,9 +1725,9 @@ struct ext4_sb_info {
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index d24823b3c3f9f..35b256b789680 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1203,8 +1203,9 @@ int tg_nop(struct task_group *tg, void *data)
+ }
+ #endif
+ 
+-static void set_load_weight(struct task_struct *p, bool update_load)
++static void set_load_weight(struct task_struct *p)
+ {
++	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
+ 	int prio = p->static_prio - MAX_RT_PRIO;
+ 	struct load_weight *load = &p->se.load;
+ 
+@@ -4392,7 +4393,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+ 			p->static_prio = NICE_TO_PRIO(0);
+ 
+ 		p->prio = p->normal_prio = p->static_prio;
+-		set_load_weight(p, false);
++		set_load_weight(p);
+ 
+ 		/*
+ 		 * We don't need the reset flag anymore after the fork. It has
+@@ -6879,7 +6880,7 @@ void set_user_nice(struct task_struct *p, long nice)
+ 		put_prev_task(rq, p);
+ 
+ 	p->static_prio = NICE_TO_PRIO(nice);
+-	set_load_weight(p, true);
++	set_load_weight(p);
+ 	old_prio = p->prio;
+ 	p->prio = effective_prio(p);
+ 
+@@ -7170,7 +7171,7 @@ static void __setscheduler_params(struct task_struct *p,
  	 */
- 	struct work_struct s_error_work;
- 
--	/* Ext4 fast commit stuff */
-+	/* Ext4 fast commit sub transaction ID */
- 	atomic_t s_fc_subtid;
--	atomic_t s_fc_ineligible_updates;
-+
- 	/*
- 	 * After commit starts, the main queue gets locked, and the further
- 	 * updates get added in the staging queue.
-@@ -2926,8 +2926,6 @@ void __ext4_fc_track_create(handle_t *handle, struct inode *inode,
- void ext4_fc_track_create(handle_t *handle, struct dentry *dentry);
- void ext4_fc_track_inode(handle_t *handle, struct inode *inode);
- void ext4_fc_mark_ineligible(struct super_block *sb, int reason);
--void ext4_fc_start_ineligible(struct super_block *sb, int reason);
--void ext4_fc_stop_ineligible(struct super_block *sb);
- void ext4_fc_start_update(struct inode *inode);
- void ext4_fc_stop_update(struct inode *inode);
- void ext4_fc_del(struct inode *inode);
-diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
-index 9b37d16b24ffd..d3a8d704d8b4f 100644
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -5342,7 +5342,7 @@ static int ext4_collapse_range(struct inode *inode, loff_t offset, loff_t len)
- 		ret = PTR_ERR(handle);
- 		goto out_mmap;
- 	}
--	ext4_fc_start_ineligible(sb, EXT4_FC_REASON_FALLOC_RANGE);
-+	ext4_fc_mark_ineligible(sb, EXT4_FC_REASON_FALLOC_RANGE);
- 
- 	down_write(&EXT4_I(inode)->i_data_sem);
- 	ext4_discard_preallocations(inode, 0);
-@@ -5381,7 +5381,6 @@ static int ext4_collapse_range(struct inode *inode, loff_t offset, loff_t len)
- 
- out_stop:
- 	ext4_journal_stop(handle);
--	ext4_fc_stop_ineligible(sb);
- out_mmap:
- 	filemap_invalidate_unlock(mapping);
- out_mutex:
-@@ -5483,7 +5482,7 @@ static int ext4_insert_range(struct inode *inode, loff_t offset, loff_t len)
- 		ret = PTR_ERR(handle);
- 		goto out_mmap;
- 	}
--	ext4_fc_start_ineligible(sb, EXT4_FC_REASON_FALLOC_RANGE);
-+	ext4_fc_mark_ineligible(sb, EXT4_FC_REASON_FALLOC_RANGE);
- 
- 	/* Expand file to avoid data loss if there is error while shifting */
- 	inode->i_size += len;
-@@ -5558,7 +5557,6 @@ static int ext4_insert_range(struct inode *inode, loff_t offset, loff_t len)
- 
- out_stop:
- 	ext4_journal_stop(handle);
--	ext4_fc_stop_ineligible(sb);
- out_mmap:
- 	filemap_invalidate_unlock(mapping);
- out_mutex:
-diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
-index 3b79fb063c07a..48e522bb7bca4 100644
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -65,21 +65,11 @@
-  *
-  * Fast Commit Ineligibility
-  * -------------------------
-- * Not all operations are supported by fast commits today (e.g extended
-- * attributes). Fast commit ineligibility is marked by calling one of the
-- * two following functions:
-- *
-- * - ext4_fc_mark_ineligible(): This makes next fast commit operation to fall
-- *   back to full commit. This is useful in case of transient errors.
-  *
-- * - ext4_fc_start_ineligible() and ext4_fc_stop_ineligible() - This makes all
-- *   the fast commits happening between ext4_fc_start_ineligible() and
-- *   ext4_fc_stop_ineligible() and one fast commit after the call to
-- *   ext4_fc_stop_ineligible() to fall back to full commits. It is important to
-- *   make one more fast commit to fall back to full commit after stop call so
-- *   that it guaranteed that the fast commit ineligible operation contained
-- *   within ext4_fc_start_ineligible() and ext4_fc_stop_ineligible() is
-- *   followed by at least 1 full commit.
-+ * Not all operations are supported by fast commits today (e.g extended
-+ * attributes). Fast commit ineligibility is marked by calling
-+ * ext4_fc_mark_ineligible(): This makes next fast commit operation to fall back
-+ * to full commit.
-  *
-  * Atomicity of commits
-  * --------------------
-@@ -328,44 +318,6 @@ void ext4_fc_mark_ineligible(struct super_block *sb, int reason)
- 	sbi->s_fc_stats.fc_ineligible_reason_count[reason]++;
+ 	p->rt_priority = attr->sched_priority;
+ 	p->normal_prio = normal_prio(p);
+-	set_load_weight(p, true);
++	set_load_weight(p);
  }
  
--/*
-- * Start a fast commit ineligible update. Any commits that happen while
-- * such an operation is in progress fall back to full commits.
-- */
--void ext4_fc_start_ineligible(struct super_block *sb, int reason)
--{
--	struct ext4_sb_info *sbi = EXT4_SB(sb);
--
--	if (!test_opt2(sb, JOURNAL_FAST_COMMIT) ||
--	    (EXT4_SB(sb)->s_mount_state & EXT4_FC_REPLAY))
--		return;
--
--	WARN_ON(reason >= EXT4_FC_REASON_MAX);
--	sbi->s_fc_stats.fc_ineligible_reason_count[reason]++;
--	atomic_inc(&sbi->s_fc_ineligible_updates);
--}
--
--/*
-- * Stop a fast commit ineligible update. We set EXT4_MF_FC_INELIGIBLE flag here
-- * to ensure that after stopping the ineligible update, at least one full
-- * commit takes place.
-- */
--void ext4_fc_stop_ineligible(struct super_block *sb)
--{
--	if (!test_opt2(sb, JOURNAL_FAST_COMMIT) ||
--	    (EXT4_SB(sb)->s_mount_state & EXT4_FC_REPLAY))
--		return;
--
--	ext4_set_mount_flag(sb, EXT4_MF_FC_INELIGIBLE);
--	atomic_dec(&EXT4_SB(sb)->s_fc_ineligible_updates);
--}
--
--static inline int ext4_fc_is_ineligible(struct super_block *sb)
--{
--	return (ext4_test_mount_flag(sb, EXT4_MF_FC_INELIGIBLE) ||
--		atomic_read(&EXT4_SB(sb)->s_fc_ineligible_updates));
--}
--
  /*
-  * Generic fast commit tracking function. If this is the first time this we are
-  * called after a full commit, we initialize fast commit fields and then call
-@@ -391,7 +343,7 @@ static int ext4_fc_track_template(
- 	    (sbi->s_mount_state & EXT4_FC_REPLAY))
- 		return -EOPNOTSUPP;
- 
--	if (ext4_fc_is_ineligible(inode->i_sb))
-+	if (ext4_test_mount_flag(inode->i_sb, EXT4_MF_FC_INELIGIBLE))
- 		return -EINVAL;
- 
- 	tid = handle->h_transaction->t_tid;
-@@ -1142,11 +1094,8 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 
- 	start_time = ktime_get();
- 
--	if (!test_opt2(sb, JOURNAL_FAST_COMMIT) ||
--		(ext4_fc_is_ineligible(sb))) {
--		reason = EXT4_FC_REASON_INELIGIBLE;
--		goto out;
--	}
-+	if (!test_opt2(sb, JOURNAL_FAST_COMMIT))
-+		return jbd2_complete_transaction(journal, commit_tid);
- 
- restart_fc:
- 	ret = jbd2_fc_begin_commit(journal, commit_tid);
-@@ -1162,6 +1111,14 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 		reason = EXT4_FC_REASON_FC_START_FAILED;
- 		goto out;
+@@ -9409,7 +9410,7 @@ void __init sched_init(void)
+ #endif
  	}
-+	/*
-+	 * After establishing journal barrier via jbd2_fc_begin_commit(), check
-+	 * if we are fast commit ineligible.
-+	 */
-+	if (ext4_test_mount_flag(sb, EXT4_MF_FC_INELIGIBLE)) {
-+		reason = EXT4_FC_REASON_INELIGIBLE;
-+		goto out;
-+	}
  
- 	fc_bufs_before = (sbi->s_fc_bytes + bsize - 1) / bsize;
- 	ret = ext4_fc_perform_commit(journal);
-@@ -1180,12 +1137,6 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 	atomic_inc(&sbi->s_fc_subtid);
- 	jbd2_fc_end_commit(journal);
- out:
--	/* Has any ineligible update happened since we started? */
--	if (reason == EXT4_FC_REASON_OK && ext4_fc_is_ineligible(sb)) {
--		sbi->s_fc_stats.fc_ineligible_reason_count[EXT4_FC_COMMIT_FAILED]++;
--		reason = EXT4_FC_REASON_INELIGIBLE;
--	}
--
- 	spin_lock(&sbi->s_fc_lock);
- 	if (reason != EXT4_FC_REASON_OK &&
- 		reason != EXT4_FC_REASON_ALREADY_COMMITTED) {
-diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
-index 220a4c8178b5e..fd70bebb14370 100644
---- a/fs/ext4/ioctl.c
-+++ b/fs/ext4/ioctl.c
-@@ -169,7 +169,7 @@ static long swap_inode_boot_loader(struct super_block *sb,
- 		err = -EINVAL;
- 		goto err_out;
- 	}
--	ext4_fc_start_ineligible(sb, EXT4_FC_REASON_SWAP_BOOT);
-+	ext4_fc_mark_ineligible(sb, EXT4_FC_REASON_SWAP_BOOT);
+-	set_load_weight(&init_task, false);
++	set_load_weight(&init_task);
  
- 	/* Protect extent tree against block allocations via delalloc */
- 	ext4_double_down_write_data_sem(inode, inode_bl);
-@@ -252,7 +252,6 @@ static long swap_inode_boot_loader(struct super_block *sb,
- 
- err_out1:
- 	ext4_journal_stop(handle);
--	ext4_fc_stop_ineligible(sb);
- 	ext4_double_up_write_data_sem(inode, inode_bl);
- 
- err_out:
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 24a7ad80353b5..d304b72593d76 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4620,7 +4620,6 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 
- 	/* Initialize fast commit stuff */
- 	atomic_set(&sbi->s_fc_subtid, 0);
--	atomic_set(&sbi->s_fc_ineligible_updates, 0);
- 	INIT_LIST_HEAD(&sbi->s_fc_q[FC_Q_MAIN]);
- 	INIT_LIST_HEAD(&sbi->s_fc_q[FC_Q_STAGING]);
- 	INIT_LIST_HEAD(&sbi->s_fc_dentry_q[FC_Q_MAIN]);
+ 	/*
+ 	 * The boot idle thread does lazy MMU switching as well:
 -- 
 2.34.1
 
