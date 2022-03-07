@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D5AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28082C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242417AbiCGMeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:34:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52914 "EHLO
+        id S242422AbiCGMey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:34:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242377AbiCGMeh (ORCPT
+        with ESMTP id S236603AbiCGMe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:34:37 -0500
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFACB3BF83;
-        Mon,  7 Mar 2022 04:33:25 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V6WEin9_1646656401;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V6WEin9_1646656401)
+        Mon, 7 Mar 2022 07:34:27 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3123F303;
+        Mon,  7 Mar 2022 04:33:23 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V6V49nZ_1646656400;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V6V49nZ_1646656400)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Mar 2022 20:33:22 +0800
+          Mon, 07 Mar 2022 20:33:21 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -27,9 +27,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 11/21] erofs: add cookie context helper functions
-Date:   Mon,  7 Mar 2022 20:32:55 +0800
-Message-Id: <20220307123305.79520-12-jefflexu@linux.alibaba.com>
+Subject: [PATCH v4 10/21] erofs: register global fscache volume
+Date:   Mon,  7 Mar 2022 20:32:54 +0800
+Message-Id: <20220307123305.79520-11-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220307123305.79520-1-jefflexu@linux.alibaba.com>
 References: <20220307123305.79520-1-jefflexu@linux.alibaba.com>
@@ -39,138 +39,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce 'struct erofs_cookie_ctx' for managing cookie for backing
-file, and the following introduced API for reading from backing file.
+All erofs instances will share one global fscache volume.
 
-Besides, introduce two helper functions for initializing and cleaning
-up erofs_cookie_ctx.
+In this using scenario, one erofs instance could be mounted from one (or
+multiple) blob files instead of blkdev. The number of blob files that
+each erofs instance could correspond to is limited, since these blob
+files are quite large in size. For example, when used for container
+image distribution, one erofs instance used for container image for
+node.js will correspond to ~20 blob files in total. Thus in densely
+employed environment, there could be as many as hundreds of containers
+and thus thousands of fscache cookies under one fscache volume.
 
-struct erofs_cookie_ctx *
-erofs_fscache_get_ctx(struct super_block *sb, char *path);
-
-void erofs_fscache_put_ctx(struct erofs_cookie_ctx *ctx);
+Then as for cachefiles backend, the hash table managing all cookies
+under one volume contains 32K slots. Thus the hashing functionality shall
+scale well in this case. Besides, cachefiles backend will scatter
+backing files under 256 fan sub-directoris, and thus the scalability of
+looking up backing files shall also not be an issue.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/fscache.c  | 78 +++++++++++++++++++++++++++++++++++++++++++++
- fs/erofs/internal.h |  8 +++++
- 2 files changed, 86 insertions(+)
+ fs/erofs/Makefile   |  3 ++-
+ fs/erofs/fscache.c  | 21 +++++++++++++++++++++
+ fs/erofs/internal.h |  5 +++++
+ fs/erofs/super.c    |  7 +++++++
+ 4 files changed, 35 insertions(+), 1 deletion(-)
+ create mode 100644 fs/erofs/fscache.c
 
+diff --git a/fs/erofs/Makefile b/fs/erofs/Makefile
+index 8a3317e38e5a..21999e8a4728 100644
+--- a/fs/erofs/Makefile
++++ b/fs/erofs/Makefile
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+ obj-$(CONFIG_EROFS_FS) += erofs.o
+-erofs-objs := super.o inode.o data.o namei.o dir.o utils.o pcpubuf.o sysfs.o
++erofs-objs := super.o inode.o data.o namei.o dir.o utils.o pcpubuf.o sysfs.o \
++	      fscache.o
+ erofs-$(CONFIG_EROFS_FS_XATTR) += xattr.o
+ erofs-$(CONFIG_EROFS_FS_ZIP) += decompressor.o zmap.o zdata.o
+ erofs-$(CONFIG_EROFS_FS_ZIP_LZMA) += decompressor_lzma.o
 diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 9c32f42e1056..77d2b46e7ff1 100644
---- a/fs/erofs/fscache.c
+new file mode 100644
+index 000000000000..9c32f42e1056
+--- /dev/null
 +++ b/fs/erofs/fscache.c
-@@ -6,6 +6,84 @@
- 
- static struct fscache_volume *volume;
- 
-+static int erofs_fscache_init_cookie(struct erofs_fscache_context *ctx,
-+				     char *path)
-+{
-+	struct fscache_cookie *cookie;
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2021, Alibaba Cloud
++ */
++#include "internal.h"
 +
-+	/*
-+	 * @object_size shall be non-zero to avoid
-+	 * FSCACHE_COOKIE_NO_DATA_TO_READ.
-+	 */
-+	cookie = fscache_acquire_cookie(volume, FSCACHE_ADV_WANT_CACHE_SIZE,
-+					path, strlen(path),
-+					NULL, 0, 0);
-+	if (!cookie)
++static struct fscache_volume *volume;
++
++int __init erofs_init_fscache(void)
++{
++	volume = fscache_acquire_volume("erofs", NULL, NULL, 0);
++	if (!volume)
 +		return -EINVAL;
 +
-+	fscache_use_cookie(cookie, false);
-+	ctx->cookie = cookie;
 +	return 0;
 +}
 +
-+static inline
-+void erofs_fscache_cleanup_cookie(struct erofs_fscache_context *ctx)
++void erofs_exit_fscache(void)
 +{
-+	struct fscache_cookie *cookie = ctx->cookie;
-+
-+	fscache_unuse_cookie(cookie, NULL, NULL);
-+	fscache_relinquish_cookie(cookie, false);
-+	ctx->cookie = NULL;
++	fscache_relinquish_volume(volume, NULL, false);
 +}
-+
-+static int erofs_fscache_init_ctx(struct erofs_fscache_context *ctx,
-+				  struct super_block *sb, char *path)
-+{
-+	int ret;
-+
-+	ret = erofs_fscache_init_cookie(ctx, path);
-+	if (ret) {
-+		erofs_err(sb, "failed to init cookie");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static inline
-+void erofs_fscache_cleanup_ctx(struct erofs_fscache_context *ctx)
-+{
-+	erofs_fscache_cleanup_cookie(ctx);
-+}
-+
-+struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
-+						char *path)
-+{
-+	struct erofs_fscache_context *ctx;
-+	int ret;
-+
-+	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return ERR_PTR(-ENOMEM);
-+
-+	ret = erofs_fscache_init_ctx(ctx, sb, path);
-+	if (ret) {
-+		kfree(ctx);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return ctx;
-+}
-+
-+void erofs_fscache_put_ctx(struct erofs_fscache_context *ctx)
-+{
-+	if (!ctx)
-+		return;
-+
-+	erofs_fscache_cleanup_ctx(ctx);
-+	kfree(ctx);
-+}
-+
- int __init erofs_init_fscache(void)
- {
- 	volume = fscache_acquire_volume("erofs", NULL, NULL, 0);
 diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index c2608a469107..1f5bc69e8e9f 100644
+index 2b9337d385ce..c2608a469107 100644
 --- a/fs/erofs/internal.h
 +++ b/fs/erofs/internal.h
-@@ -97,6 +97,10 @@ struct erofs_sb_lz4_info {
- 	u16 max_pclusterblks;
- };
+@@ -17,6 +17,7 @@
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ #include <linux/iomap.h>
++#include <linux/fscache.h>
+ #include "erofs_fs.h"
  
-+struct erofs_fscache_context {
-+	struct fscache_cookie *cookie;
-+};
-+
- struct erofs_sb_info {
- 	struct erofs_mount_opts opt;	/* options */
- #ifdef CONFIG_EROFS_FS_ZIP
-@@ -621,6 +625,10 @@ static inline int z_erofs_load_lzma_config(struct super_block *sb,
- int erofs_init_fscache(void);
- void erofs_exit_fscache(void);
+ /* redefine pr_fmt "erofs: " */
+@@ -616,6 +617,10 @@ static inline int z_erofs_load_lzma_config(struct super_block *sb,
+ }
+ #endif	/* !CONFIG_EROFS_FS_ZIP */
  
-+struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
-+						char *path);
-+void erofs_fscache_put_ctx(struct erofs_fscache_context *ctx);
++/* fscache.c */
++int erofs_init_fscache(void);
++void erofs_exit_fscache(void);
 +
  #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
  
  #endif	/* __EROFS_INTERNAL_H */
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 12755217631f..798f0c379e35 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -814,6 +814,10 @@ static int __init erofs_module_init(void)
+ 	if (err)
+ 		goto sysfs_err;
+ 
++	err = erofs_init_fscache();
++	if (err)
++		goto fscache_err;
++
+ 	err = register_filesystem(&erofs_fs_type);
+ 	if (err)
+ 		goto fs_err;
+@@ -821,6 +825,8 @@ static int __init erofs_module_init(void)
+ 	return 0;
+ 
+ fs_err:
++	erofs_exit_fscache();
++fscache_err:
+ 	erofs_exit_sysfs();
+ sysfs_err:
+ 	z_erofs_exit_zip_subsystem();
+@@ -841,6 +847,7 @@ static void __exit erofs_module_exit(void)
+ 	/* Ensure all RCU free inodes / pclusters are safe to be destroyed. */
+ 	rcu_barrier();
+ 
++	erofs_exit_fscache();
+ 	erofs_exit_sysfs();
+ 	z_erofs_exit_zip_subsystem();
+ 	z_erofs_lzma_exit();
 -- 
 2.27.0
 
