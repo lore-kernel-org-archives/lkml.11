@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE79C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B00BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234423AbiCGKNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
+        id S235338AbiCGKN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:13:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238919AbiCGJ5f (ORCPT
+        with ESMTP id S238964AbiCGJ5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:57:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07B97B560;
-        Mon,  7 Mar 2022 01:46:03 -0800 (PST)
+        Mon, 7 Mar 2022 04:57:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1577B575;
+        Mon,  7 Mar 2022 01:46:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2C7A612D2;
-        Mon,  7 Mar 2022 09:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD927C340E9;
-        Mon,  7 Mar 2022 09:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6E92613CA;
+        Mon,  7 Mar 2022 09:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B39C340F3;
+        Mon,  7 Mar 2022 09:45:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646363;
-        bh=vr0+wwaEZAzHQoUwmpetBlQ5szZb4b7r+VodDSiJkzU=;
+        s=korg; t=1646646357;
+        bh=SaOWSdfpn9CGBVS1B4toCBOUU00mGD5nHWoK8cA+Qkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vpj4z3u3VPHrx9PDjV6b5yFH1Mbl6rrBNsIot/e8kjWjw7WfL2XxJV6GehCreSnfk
-         MjsOYt9FF9dYCQkwlG8Q3eFSJfZ0f5lDeUxVOJVVJEC74baI8ME7a1kZCw/SE+rKHj
-         EJTPJud5Px3KRdFz3Yzd0k0w4iItDc4jk8od3occ=
+        b=cHYvmsD7NbHumFWhZoYYAKsLXcjU+zWBh7o2ZQ/PZ3qtj0zmZ3543+Alnj7psJwB7
+         ItldZjsB52kp/xiqxMjpu9St8TdXrv6wIdTvHdcshO06/VPuxDK6+bgTp0ZN/OUSVq
+         oo/fO8Ac/9RFyR4sZ8bjFMtPQIR4MfN6vzPrhCbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 179/262] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
-Date:   Mon,  7 Mar 2022 10:18:43 +0100
-Message-Id: <20220307091707.469022799@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Siva Reddy <siva.kallam@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        Byungho An <bh74.an@samsung.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 177/262] net: sxgbe: fix return value of __setup handler
+Date:   Mon,  7 Mar 2022 10:18:41 +0100
+Message-Id: <20220307091707.414229455@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,49 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit bd6f1fd5d33dfe5d1b4f2502d3694a7cc13f166d upstream.
+commit 50e06ddceeea263f57fe92baa677c638ecd65bb6 upstream.
 
-During driver initialization, the pointer of card info, i.e. the
-variable 'ci' is required. However, the definition of
-'com20020pci_id_table' reveals that this field is empty for some
-devices, which will cause null pointer dereference when initializing
-these devices.
+__setup() handlers should return 1 on success, i.e., the parameter
+has been handled. A return of 0 causes the "option=value" string to be
+added to init's environment strings, polluting it.
 
-The following log reveals it:
-
-[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
-[    3.975181] Call Trace:
-[    3.976208]  local_pci_probe+0x13f/0x210
-[    3.977248]  pci_device_probe+0x34c/0x6d0
-[    3.977255]  ? pci_uevent+0x470/0x470
-[    3.978265]  really_probe+0x24c/0x8d0
-[    3.978273]  __driver_probe_device+0x1b3/0x280
-[    3.979288]  driver_probe_device+0x50/0x370
-
-Fix this by checking whether the 'ci' is a null pointer first.
-
-Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
+Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Siva Reddy <siva.kallam@samsung.com>
+Cc: Girish K S <ks.giri@samsung.com>
+Cc: Byungho An <bh74.an@samsung.com>
+Link: https://lore.kernel.org/r/20220224033528.24640-1-rdunlap@infradead.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/arcnet/com20020-pci.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/arcnet/com20020-pci.c
-+++ b/drivers/net/arcnet/com20020-pci.c
-@@ -138,6 +138,9 @@ static int com20020pci_probe(struct pci_
- 		return -ENOMEM;
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -2282,18 +2282,18 @@ static int __init sxgbe_cmdline_opt(char
+ 	char *opt;
  
- 	ci = (struct com20020_pci_card_info *)id->driver_data;
-+	if (!ci)
-+		return -EINVAL;
-+
- 	priv->ci = ci;
- 	mm = &ci->misc_map;
+ 	if (!str || !*str)
+-		return -EINVAL;
++		return 1;
+ 	while ((opt = strsep(&str, ",")) != NULL) {
+ 		if (!strncmp(opt, "eee_timer:", 10)) {
+ 			if (kstrtoint(opt + 10, 0, &eee_timer))
+ 				goto err;
+ 		}
+ 	}
+-	return 0;
++	return 1;
  
+ err:
+ 	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
+-	return -EINVAL;
++	return 1;
+ }
+ 
+ __setup("sxgbeeth=", sxgbe_cmdline_opt);
 
 
