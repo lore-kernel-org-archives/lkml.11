@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240831AbiCGKlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:41:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
+        id S240873AbiCGKlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241441AbiCGKUd (ORCPT
+        with ESMTP id S241435AbiCGKUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:20:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D65690CC8;
-        Mon,  7 Mar 2022 01:58:15 -0800 (PST)
+        Mon, 7 Mar 2022 05:20:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FF390276;
+        Mon,  7 Mar 2022 01:58:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D3A60919;
-        Mon,  7 Mar 2022 09:58:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04683C340F3;
-        Mon,  7 Mar 2022 09:58:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D01E5B810BC;
+        Mon,  7 Mar 2022 09:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4342EC340E9;
+        Mon,  7 Mar 2022 09:57:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647094;
-        bh=OF4LvnZoUsC5SUr3olPBFDXqhqhZWQIc703tv/w6YmM=;
+        s=korg; t=1646647026;
+        bh=pm2eQsRm0dHoutYaqMsz2oeVVEtjnLYee29c+omqVCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=amjZPljIJIBfBkS7jiNJd4TZ5M9yZPZLAyGXLqbyLq7k5df5Vl+clXfw2k8kW2Bae
-         2qc8H2qefWcJjxtj656Cy9MQ7e2wu20d6xHXIxKSkGy/JIQG1fHz+owCJPgHaN/t9s
-         bPnUTPfvGFH0JcSVblutpEfyBIue+IGTfB2GfgCM=
+        b=lycTkS7OHabVaZg7myQFBB1g7pL+2GLTpjWoq8xIPbQXlyRNHLLclaHQEdbyjdSDH
+         DZJtadGkEyRwDLzUlqnts6hukTfM4AbzqzarSxhy73XXu9SEBw4Y00PCSZEa16AjzY
+         rmNh/jPHnqEp5MT7cIkm1aHT4/pU30aqYhckHEOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 155/186] iavf: Fix __IAVF_RESETTING state usage
-Date:   Mon,  7 Mar 2022 10:19:53 +0100
-Message-Id: <20220307091658.409862483@linuxfoundation.org>
+Subject: [PATCH 5.16 151/186] iavf: Add waiting so the port is initialized in remove
+Date:   Mon,  7 Mar 2022 10:19:49 +0100
+Message-Id: <20220307091658.298082840@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -55,20 +55,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Slawomir Laba <slawomirx.laba@intel.com>
 
-[ Upstream commit 14756b2ae265d526b8356e86729090b01778fdf6 ]
+[ Upstream commit 974578017fc1fdd06cea8afb9dfa32602e8529ed ]
 
-The setup of __IAVF_RESETTING state in watchdog task had no
-effect and could lead to slow resets in the driver as
-the task for __IAVF_RESETTING state only requeues watchdog.
-Till now the __IAVF_RESETTING was interpreted by reset task
-as running state which could lead to errors with allocating
-and resources disposal.
+There exist races when port is being configured and remove is
+triggered.
 
-Make watchdog_task queue the reset task when it's necessary.
-Do not update the state to __IAVF_RESETTING so the reset task
-knows exactly what is the current state of the adapter.
+unregister_netdev is not and can't be called under crit_lock
+mutex since it is calling ndo_stop -> iavf_close which requires
+this lock. Depending on init state the netdev could be still
+unregistered so unregister_netdev never cleans up, when shortly
+after that the device could become registered.
 
-Fixes: 898ef1cb1cb2 ("iavf: Combine init and watchdog state machines")
+Make iavf_remove wait until port finishes initialization.
+All critical state changes are atomic (under crit_lock).
+Crashes that come from iavf_reset_interrupt_capability and
+iavf_free_traffic_irqs should now be solved in a graceful
+manner.
+
+Fixes: 605ca7c5c6707 ("iavf: Fix kernel BUG in free_msi_irqs")
 Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
 Signed-off-by: Phani Burra <phani.r.burra@intel.com>
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
@@ -77,49 +81,61 @@ Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 27 ++++++++++++---------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 9ed02a8ca7a3..138db07bdfa8 100644
+index ab7cce78988a..d5055a49ae12 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1073,8 +1073,7 @@ void iavf_down(struct iavf_adapter *adapter)
- 		rss->state = IAVF_ADV_RSS_DEL_REQUEST;
- 	spin_unlock_bh(&adapter->adv_rss_lock);
+@@ -3981,7 +3981,6 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
+ static void iavf_remove(struct pci_dev *pdev)
+ {
+ 	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
+-	enum iavf_state_t prev_state = adapter->last_state;
+ 	struct net_device *netdev = adapter->netdev;
+ 	struct iavf_fdir_fltr *fdir, *fdirtmp;
+ 	struct iavf_vlan_filter *vlf, *vlftmp;
+@@ -3991,6 +3990,22 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	int err;
  
--	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED) &&
--	    adapter->state != __IAVF_RESETTING) {
-+	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)) {
- 		/* cancel any current operation */
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
- 		/* Schedule operations to close down the HW. Don't wait
-@@ -1992,11 +1991,12 @@ static void iavf_watchdog_task(struct work_struct *work)
- 	if (adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)
- 		iavf_change_state(adapter, __IAVF_COMM_FAILED);
- 
--	if (adapter->flags & IAVF_FLAG_RESET_NEEDED &&
--	    adapter->state != __IAVF_RESETTING) {
--		iavf_change_state(adapter, __IAVF_RESETTING);
-+	if (adapter->flags & IAVF_FLAG_RESET_NEEDED) {
- 		adapter->aq_required = 0;
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
++	/* Wait until port initialization is complete.
++	 * There are flows where register/unregister netdev may race.
++	 */
++	while (1) {
++		mutex_lock(&adapter->crit_lock);
++		if (adapter->state == __IAVF_RUNNING ||
++		    adapter->state == __IAVF_DOWN) {
++			mutex_unlock(&adapter->crit_lock);
++			break;
++		}
++
 +		mutex_unlock(&adapter->crit_lock);
-+		queue_work(iavf_wq, &adapter->reset_task);
-+		return;
- 	}
++		usleep_range(500, 1000);
++	}
++	cancel_delayed_work_sync(&adapter->watchdog_task);
++
+ 	if (adapter->netdev_registered) {
+ 		unregister_netdev(netdev);
+ 		adapter->netdev_registered = false;
+@@ -4028,16 +4043,6 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	iavf_free_all_rx_resources(adapter);
+ 	iavf_free_misc_irq(adapter);
  
- 	switch (adapter->state) {
-@@ -2289,8 +2289,7 @@ static void iavf_reset_task(struct work_struct *work)
- 	 * ndo_open() returning, so we can't assume it means all our open
- 	 * tasks have finished, since we're not holding the rtnl_lock here.
- 	 */
--	running = ((adapter->state == __IAVF_RUNNING) ||
--		   (adapter->state == __IAVF_RESETTING));
-+	running = adapter->state == __IAVF_RUNNING;
+-	/* In case we enter iavf_remove from erroneous state, free traffic irqs
+-	 * here, so as to not cause a kernel crash, when calling
+-	 * iavf_reset_interrupt_capability.
+-	 */
+-	if ((adapter->last_state == __IAVF_RESETTING &&
+-	     prev_state != __IAVF_DOWN) ||
+-	    (adapter->last_state == __IAVF_RUNNING &&
+-	     !(netdev->flags & IFF_UP)))
+-		iavf_free_traffic_irqs(adapter);
+-
+ 	iavf_reset_interrupt_capability(adapter);
+ 	iavf_free_q_vectors(adapter);
  
- 	if (running) {
- 		netdev->flags &= ~IFF_UP;
 -- 
 2.34.1
 
