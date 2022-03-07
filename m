@@ -2,99 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32865C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A703C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240469AbiCGKIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:08:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        id S240681AbiCGKId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:08:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239407AbiCGJtl (ORCPT
+        with ESMTP id S239642AbiCGJuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:49:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C946E7A1;
-        Mon,  7 Mar 2022 01:43:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CB0E612CA;
-        Mon,  7 Mar 2022 09:43:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B303C340E9;
-        Mon,  7 Mar 2022 09:43:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646195;
-        bh=ubYZLPsvSjt4wj0ebdsKZ/CA5idFgv8UFzuCxWiQYVU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=blb/sWwVMKItjSv1synZkqMjO94s6857ckzZ8kzkMWZS1BVEP9ujAt0kX5Gav8CC9
-         OJks9FHIs/97DFyjOPncIDqmpaPYP0wVFmpk5T5lo7qVJr41IfoZXGfguGMbeB3ZBr
-         xnJXYDUZg8m2cVLhsr/DQ3A0L5hlZjM9A8VGEHPI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 5.15 163/262] batman-adv: Request iflink once in batadv-on-batadv check
-Date:   Mon,  7 Mar 2022 10:18:27 +0100
-Message-Id: <20220307091707.031642024@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:50:00 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B002F70CE3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:43:35 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id k24so12762971wrd.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:43:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ugg4XGWVUXpbeAl2y1u2+LRB3knUhhhT929Udmcfnxw=;
+        b=exKdO2J+hIZRUdYN7OrGtFmqY+dgHS3xWv51ANASwLF8TJTAMnj8jWVw4qgA5v59/1
+         zNCirwKKJCmHzZBZWDraq096zx3q40zAilZAK7rDItkZwjePeBZcEBPboCBfhfeQW6Xx
+         e0Z90SvPJ1z+KxpqTs/ftmb1+0D0MkFhmvmRvpGitu6vvaDc5nd+Gs34qjE/kkNmbn0W
+         su0Rd0u3ETvPQ9iutbin2uJHIJvFmXABc32o6XDtEEtiG4WU85DZcGKDxi4GvAN8YPGx
+         UXxfgS+TJjH6g6M+JiZLxZz8yN7WAlIAEiF5hgMdZirOxpbOWwezp1WhfdFMPIS6Rspe
+         dxnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ugg4XGWVUXpbeAl2y1u2+LRB3knUhhhT929Udmcfnxw=;
+        b=Vq7PfudBofdEtst6WVwPRQjlObJpRDdKmQHU/dL01GgJOkZdjBL87H6bKT2tWDT39T
+         5rUJBe6QF0enishKUvON867OkpD+yaO4Va2S4iUqutU3FM8HoJPLnKKb8uzj2+7jjufO
+         ZNuEwRAwuuUWoEzLoMXiSop7oLGLwKFOiZH/6QA1n/jPUbRvVDqw6maOHf3nEsuP1Lm+
+         WVbm/lds0QyQ95KD19AeLXH0XMLtUHnqiaMfLA0/to/qKnfnJgYzjazdnKNYWSHCbpso
+         56Nt4tqdJgHcqqQzO7F1SnY8ZXtlR6ZBoiRwHuknStZJx4sd9Ko9gm1HC+OnWMlMH642
+         2Qtg==
+X-Gm-Message-State: AOAM531k7KGbsUAREucrAVmpZIQfOhfgvMFreJ/ilcX+/YorBgpTwo7G
+        XRYWdULy7MFzA1QuZ1Jv7YCoBA==
+X-Google-Smtp-Source: ABdhPJxpSSMI9U5vy143F1/C37KcqeEO0zVmayvf+I6JKymMnOxargGVQm1psOEOhIGu3cuIa6qEHw==
+X-Received: by 2002:a05:6000:18a4:b0:1f0:5f19:152c with SMTP id b4-20020a05600018a400b001f05f19152cmr7649534wri.414.1646646212304;
+        Mon, 07 Mar 2022 01:43:32 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id s8-20020adfc548000000b001f07639a704sm8087577wrf.7.2022.03.07.01.43.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:43:31 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:43:29 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: Re: [PATCH v3 2/2] dt-bindings: mfd: maxim,max77802: convert to
+ dtschema
+Message-ID: <YiXTwfxILy+V4OVI@google.com>
+References: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
+ <20220215075344.31421-3-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220215075344.31421-3-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+On Tue, 15 Feb 2022, Krzysztof Kozlowski wrote:
 
-commit 690bb6fb64f5dc7437317153902573ecad67593d upstream.
+> Convert the MFD part of Maxim MAX77802 PMIC to DT schema format.  The
+> example DTS was copied from existing DTS (exynos5800-peach-pi.dts), so
+> keep the license as GPL-2.0-only.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+> ---
+>  .../devicetree/bindings/mfd/max77802.txt      |  25 ---
+>  .../bindings/mfd/maxim,max77802.yaml          | 194 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 195 insertions(+), 26 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mfd/max77802.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77802.yaml
 
-There is no need to call dev_get_iflink multiple times for the same
-net_device in batadv_is_on_batman_iface. And since some of the
-.ndo_get_iflink callbacks are dynamic (for example via RCUs like in
-vxcan_get_iflink), it could easily happen that the returned values are not
-stable. The pre-checks before __dev_get_by_index are then of course bogus.
+Applied, thanks.
 
-Fixes: b7eddd0b3950 ("batman-adv: prevent using any virtual device created on batman-adv as hard-interface")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/batman-adv/hard-interface.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -149,22 +149,23 @@ static bool batadv_is_on_batman_iface(co
- 	struct net *net = dev_net(net_dev);
- 	struct net_device *parent_dev;
- 	struct net *parent_net;
-+	int iflink;
- 	bool ret;
- 
- 	/* check if this is a batman-adv mesh interface */
- 	if (batadv_softif_is_valid(net_dev))
- 		return true;
- 
-+	iflink = dev_get_iflink(net_dev);
-+
- 	/* no more parents..stop recursion */
--	if (dev_get_iflink(net_dev) == 0 ||
--	    dev_get_iflink(net_dev) == net_dev->ifindex)
-+	if (iflink == 0 || iflink == net_dev->ifindex)
- 		return false;
- 
- 	parent_net = batadv_getlink_net(net_dev, net);
- 
- 	/* recurse over the parent device */
--	parent_dev = __dev_get_by_index((struct net *)parent_net,
--					dev_get_iflink(net_dev));
-+	parent_dev = __dev_get_by_index((struct net *)parent_net, iflink);
- 	/* if we got a NULL parent_dev there is something broken.. */
- 	if (!parent_dev) {
- 		pr_err("Cannot find parent device\n");
-
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
