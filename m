@@ -2,102 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD270C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 759C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239563AbiCGKkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:40:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S240088AbiCGKkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:40:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240162AbiCGKSO (ORCPT
+        with ESMTP id S240161AbiCGKSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:18:14 -0500
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90F411A1E;
+        Mon, 7 Mar 2022 05:18:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E8811A14;
         Mon,  7 Mar 2022 01:57:53 -0800 (PST)
-Received: by mail-qt1-f175.google.com with SMTP id a1so12712490qta.13;
-        Mon, 07 Mar 2022 01:57:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y5/GrbGP30m/mBAfAcX6vDwX2g44JqlyQq0dC+zaJsw=;
-        b=uk4n6cV8afUzJx3aAeHA3w6oypDyqGgb2j9ShGXZEIBaBxULcOC8vgimaflgjTKM9e
-         KxPT1fG6M24qk7MCuo2xkN5L6ZjoySirS8iqAlMnvYH0/W3+tZDI976GSpy+/uBbd4B+
-         IouTh9Q/BDm7VqlKRcKLL2G8I9YBGmVOI3oTmKlbEkHxm+9v2MoWJPsMw9MZouvmNWir
-         anHK8yYGhmLXhmAPI506M01BzIuFDyl7Oxqe8BMHuc6NzMcHtfTtfARkC6mkXYVMsS9b
-         J5A/KJjTLxeqy0+2juyo0Vgdbeuq3qc1KKOcjlgeeknXrzmfqzC7Ez15NEjsz6+4GitR
-         QOAw==
-X-Gm-Message-State: AOAM530wu+h5aCG0NoiVhcsB+pQXXH8uBbiTK84sjXsqjLoEjJlcsX2Q
-        sEqKk0uDH9qdlZNvOgk/0z1K1ByJZdH64A==
-X-Google-Smtp-Source: ABdhPJySkFDaPuOoH/VjQ5Kd2S4WFv2CR+xSiFUvFBwIIUoaRMZb6uXbpZwnCMtg2a+QDvJ8qjBMXg==
-X-Received: by 2002:a05:622a:1820:b0:2dc:93dd:19f8 with SMTP id t32-20020a05622a182000b002dc93dd19f8mr8784308qtc.301.1646647020574;
-        Mon, 07 Mar 2022 01:57:00 -0800 (PST)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id t2-20020a05622a01c200b002de5098fbaesm8612622qtw.26.2022.03.07.01.57.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 01:57:00 -0800 (PST)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2d6d0cb5da4so156915357b3.10;
-        Mon, 07 Mar 2022 01:57:00 -0800 (PST)
-X-Received: by 2002:a0d:f1c7:0:b0:2db:d2bc:be11 with SMTP id
- a190-20020a0df1c7000000b002dbd2bcbe11mr7687812ywf.62.1646647019946; Mon, 07
- Mar 2022 01:56:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A51EB80F9F;
+        Mon,  7 Mar 2022 09:57:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BAF6C340E9;
+        Mon,  7 Mar 2022 09:57:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646647070;
+        bh=6Xy0AKRL44ozFeTAM65g/vCWA1q1e1weDYiab9eY6vU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=j380FBhdc9FXjYDEtfwx/xoSO4obMolH6vSbZh2Z2p/MlJ/fHpp+j+S+ye0mv39BM
+         BPixKJSJty4GzdSbu9C1lPt63THO0Vifc1RFBPgRIkBKU+lfRptE6das47tKEIgPb2
+         OQY3iD2/yuY4lS2SKU7mXgZwxP0iBGyN7nqhDHGM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.16 181/186] Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
+Date:   Mon,  7 Mar 2022 10:20:19 +0100
+Message-Id: <20220307091659.142180374@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
+References: <20220307091654.092878898@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAHk-=wjkkYX8OvTv60+XvQkAK4Pg0QC0Hn-4+n7Q0t1+QWw7Sw@mail.gmail.com>
- <20220307081540.2716107-1-geert@linux-m68k.org>
-In-Reply-To: <20220307081540.2716107-1-geert@linux-m68k.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 7 Mar 2022 10:56:48 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW=S=BJouptLGw12CbAqeYbBYwnsdrn90C_04n6s4H7bg@mail.gmail.com>
-Message-ID: <CAMuHMdW=S=BJouptLGw12CbAqeYbBYwnsdrn90C_04n6s4H7bg@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.17-rc7
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 10:21 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> JFYI, when comparing v5.17-rc7[1] to v5.17-rc6[3], the summaries are:
->   - build errors: +4/-1
+From: Jiri Bohac <jbohac@suse.cz>
 
-  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit
-declaration of function 'nmi_cpu_backtrace'
-[-Werror=implicit-function-declaration]: 171:2 => 171:9, 171:2
-  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit
-declaration of function 'nmi_trigger_cpumask_backtrace'; did you mean
-'arch_trigger_cpumask_backtrace'?
-[-Werror=implicit-function-declaration]:  => 226:9
+commit a6d95c5a628a09be129f25d5663a7e9db8261f51 upstream.
 
-powerpc-gcc11/skiroot_defconfig (this is a new config)
-Seen before with powerpc-gcc5/skiroot_defconfig.
+This reverts commit b515d2637276a3810d6595e10ab02c13bfd0b63a.
 
-  + /kisskb/src/crypto/blake2b_generic.c: error: the frame size of
-2288 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]:  =>
-109:1
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm: xfrm_state_mtu
+should return at least 1280 for ipv6") in v5.14 breaks the TCP MSS
+calculation in ipsec transport mode, resulting complete stalls of TCP
+connections. This happens when the (P)MTU is 1280 or slighly larger.
 
-sparc64-gcc11/sparc-allmodconfig
+The desired formula for the MSS is:
+MSS = (MTU - ESP_overhead) - IP header - TCP header
 
-  + error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to
-fit: R_PPC64_REL14 (stub) against symbol `machine_check_common'
-defined in .text section in arch/powerpc/kernel/head_64.o:  =>
-(.text+0x3e4)
+However, the above commit clamps the (MTU - ESP_overhead) to a
+minimum of 1280, turning the formula into
+MSS = max(MTU - ESP overhead, 1280) -  IP header - TCP header
 
-powerpc-gcc5/powerpc-allyesconfig
+With the (P)MTU near 1280, the calculated MSS is too large and the
+resulting TCP packets never make it to the destination because they
+are over the actual PMTU.
 
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/ffb217a13a2eaf6d5bd974fc83036a53ca69f1e2/ (all 100 configs)
-> [3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3/ (99 out of 100 configs)
+The above commit also causes suboptimal double fragmentation in
+xfrm tunnel mode, as described in
+https://lore.kernel.org/netdev/20210429202529.codhwpc7w6kbudug@dwarf.suse.cz/
 
-Gr{oetje,eeting}s,
+The original problem the above commit was trying to fix is now fixed
+by commit 6596a0229541270fb8d38d989f91b78838e5e9da ("xfrm: fix MTU
+regression").
 
-                        Geert
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/xfrm.h    |    1 -
+ net/ipv4/esp4.c       |    2 +-
+ net/ipv6/esp6.c       |    2 +-
+ net/xfrm/xfrm_state.c |   14 ++------------
+ 4 files changed, 4 insertions(+), 15 deletions(-)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1567,7 +1567,6 @@ void xfrm_sad_getinfo(struct net *net, s
+ void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
+ u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
+ int xfrm_init_replay(struct xfrm_state *x);
+-u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu);
+ u32 xfrm_state_mtu(struct xfrm_state *x, int mtu);
+ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload);
+ int xfrm_init_state(struct xfrm_state *x);
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -671,7 +671,7 @@ static int esp_output(struct xfrm_state
+ 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
+ 		u32 padto;
+ 
+-		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
++		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
+ 		if (skb->len < padto)
+ 			esp.tfclen = padto - skb->len;
+ 	}
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -708,7 +708,7 @@ static int esp6_output(struct xfrm_state
+ 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
+ 		u32 padto;
+ 
+-		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
++		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
+ 		if (skb->len < padto)
+ 			esp.tfclen = padto - skb->len;
+ 	}
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2571,7 +2571,7 @@ void xfrm_state_delete_tunnel(struct xfr
+ }
+ EXPORT_SYMBOL(xfrm_state_delete_tunnel);
+ 
+-u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu)
++u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
+ {
+ 	const struct xfrm_type *type = READ_ONCE(x->type);
+ 	struct crypto_aead *aead;
+@@ -2602,17 +2602,7 @@ u32 __xfrm_state_mtu(struct xfrm_state *
+ 	return ((mtu - x->props.header_len - crypto_aead_authsize(aead) -
+ 		 net_adj) & ~(blksize - 1)) + net_adj - 2;
+ }
+-EXPORT_SYMBOL_GPL(__xfrm_state_mtu);
+-
+-u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
+-{
+-	mtu = __xfrm_state_mtu(x, mtu);
+-
+-	if (x->props.family == AF_INET6 && mtu < IPV6_MIN_MTU)
+-		return IPV6_MIN_MTU;
+-
+-	return mtu;
+-}
++EXPORT_SYMBOL_GPL(xfrm_state_mtu);
+ 
+ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
+ {
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
