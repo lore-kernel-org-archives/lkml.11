@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEC4C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB89C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241541AbiCGKUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:20:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
+        id S241505AbiCGKUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239785AbiCGKAI (ORCPT
+        with ESMTP id S238784AbiCGJ44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5757CDCF;
-        Mon,  7 Mar 2022 01:46:27 -0800 (PST)
+        Mon, 7 Mar 2022 04:56:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5992D7A997;
+        Mon,  7 Mar 2022 01:45:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4052460FB3;
-        Mon,  7 Mar 2022 09:46:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E12C340E9;
-        Mon,  7 Mar 2022 09:46:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC44661380;
+        Mon,  7 Mar 2022 09:45:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84AFC340E9;
+        Mon,  7 Mar 2022 09:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646381;
-        bh=RfcgCi+OgPHxW8rGPGMHmlN7CGVuKzFFNDwYuTGQzag=;
+        s=korg; t=1646646351;
+        bh=qj+6Zq47nzRvlAhK7B+0w7NYRpn+RlKjgo26dVjP3W4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qTCqYS1l6SnOefVt1dH56bPMXkDYyD/OnpAjND1vqqaZZBK8wYgOKzwTX3fwJOiTa
-         QfYM+tNewIGJSRVRowXlFkyfZ9zXv06VgHFlZssgLS5xBxBuaBxb+OnwP9HeydYOOq
-         Wn4scKOCbce51g/w3Jja40aLUvJp1B7+MhW++RNA=
+        b=DtXiylEk6QyS/JujNylBWHJDwEl7JSlLJfZpHY7YvKZzsjMZMljG3jG5JapdIoTtF
+         LJkJSW5mBndC2TD0v3a4haXmWEezVYgtScQRfSlu/Q9Kt1nSv+KQefAnsWnY39hrkZ
+         2jnGzzote00AecV7t2OcI45qeURF+AmA6HOkPW/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 226/262] iavf: Add trace while removing device
-Date:   Mon,  7 Mar 2022 10:19:30 +0100
-Message-Id: <20220307091709.525351216@linuxfoundation.org>
+Subject: [PATCH 5.15 213/262] netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant
+Date:   Mon,  7 Mar 2022 10:19:17 +0100
+Message-Id: <20220307091708.929533453@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,38 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit bdb9e5c7aec73a7b8b5acab37587b6de1203e68d ]
+[ Upstream commit ae089831ff28a115908b8d796f667c2dadef1637 ]
 
-Add kernel trace that device was removed.
-Currently there is no such information.
-I.e. Host admin removes a PCI device from a VM,
-than on VM shall be info about the event.
+While kfree_rcu(ptr) _is_ supported, it has some limitations.
 
-This patch adds info log to iavf_remove function.
+Given that 99.99% of kfree_rcu() users [1] use the legacy
+two parameters variant, and @catchall objects do have an rcu head,
+simply use it.
 
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Choice of kfree_rcu(ptr) variant was probably not intentional.
+
+[1] including calls from net/netfilter/nf_tables_api.c
+
+Fixes: aaa31047a6d2 ("netfilter: nftables: add catch-all set element support")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nf_tables_api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 7bc8b646e37c..75fab4ea42b6 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3985,6 +3985,7 @@ static void iavf_remove(struct pci_dev *pdev)
- 	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
- 		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index a65b530975f5..2b2e0210a7f9 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -4486,7 +4486,7 @@ static void nft_set_catchall_destroy(const struct nft_ctx *ctx,
+ 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
+ 		list_del_rcu(&catchall->list);
+ 		nft_set_elem_destroy(set, catchall->elem, true);
+-		kfree_rcu(catchall);
++		kfree_rcu(catchall, rcu);
+ 	}
+ }
  
-+	dev_info(&adapter->pdev->dev, "Removing device\n");
- 	/* Shut down all the garbage mashers on the detention level */
- 	iavf_change_state(adapter, __IAVF_REMOVE);
- 	adapter->aq_required = 0;
+@@ -5653,7 +5653,7 @@ static void nft_setelem_catchall_remove(const struct net *net,
+ 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
+ 		if (catchall->elem == elem->priv) {
+ 			list_del_rcu(&catchall->list);
+-			kfree_rcu(catchall);
++			kfree_rcu(catchall, rcu);
+ 			break;
+ 		}
+ 	}
 -- 
 2.34.1
 
