@@ -2,363 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24997C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbiCGU46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
+        id S245450AbiCGU5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:57:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245560AbiCGU4u (ORCPT
+        with ESMTP id S239402AbiCGU5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:56:50 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECEC36308
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:55:44 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nRKM7-0002DJ-5s; Mon, 07 Mar 2022 21:53:23 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>,
-        Wei Wu <lazyparser@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Bill Huffman <huffman@cadence.com>
-Subject: [PATCH v7 11/13] riscv: add RISC-V Svpbmt extension support
-Date:   Mon,  7 Mar 2022 21:53:08 +0100
-Message-Id: <20220307205310.1905628-12-heiko@sntech.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220307205310.1905628-1-heiko@sntech.de>
-References: <20220307205310.1905628-1-heiko@sntech.de>
+        Mon, 7 Mar 2022 15:57:10 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CD433E95;
+        Mon,  7 Mar 2022 12:56:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646686575; x=1678222575;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=65ds+OkJW0qBAc4u3KZtn8jt7NgPxkLOLJOKDOE6hVU=;
+  b=gN/pHsfkL/ttXdGf/sLug7ikNj998vByJhAgMnYpZSNHft3RFbOThwix
+   X3z366dyM7a1uOGfsduaZc8Z0cFdgIgm4oyfQjGqhgl3D46mi1hweIkSb
+   fHWfwcSjh0tFvjdfqIq73qeOEN/2grQ0aCwzwR7G12yrlsBG8Apm184DQ
+   98MdTrDzW+RttfPUvpoGQQ7PANiUu7JkTdtT8FPt2WaUEJSJAuHoVqOD4
+   PfOAEOd5qisz8lHVfxCbBkjmon/ab2MH8rHdzXUtP9doQIJ9bcZokzhkW
+   OrwJM1VT/5TrAfRhZKvySFRbiV339nlD7/g1wDDy+ydOejVr16WvpXS5i
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="234456791"
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="234456791"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 12:56:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="512829866"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga006.jf.intel.com with ESMTP; 07 Mar 2022 12:56:15 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Mar 2022 12:56:14 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Mar 2022 12:56:14 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Mon, 7 Mar 2022 12:56:14 -0800
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.177)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Mon, 7 Mar 2022 12:56:14 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aTbRA9XMaeNSfXOrLbmtxDWLVnBFR/mjBrPRVFsGdBH4NcnIv17yaJLcxSUD6bJgVkptsntoYolkb3b9Z1NNAQ+ajB/nJse5gM+a2BFqxmsOArPwscfrVh8lDLFdYs5Ztz7h8lCejtNAo8JSeZ4PHoO1csRj/nuRoGz1XL3TcBdHEaq0VXBHMhakGykzZ5iZzphBLRpt434OUIoYbqsDTGCU5w0+tt18lo3YgD6Scr+wlHy1PRe9oCWw1ZRK9Q0ozTwp8/rQlh2pnpLkOU0evDaeynJmruud8jMre3Grb5n5QzT6RxJc/eFgnDz62FBwUJxXcHgf4fvwzxPEO6NgoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ybdKkd5t7Kd3eJqnpGWk4m+tHD/9sPNFmiq/DZEDmZU=;
+ b=WktfyjNA4CgqXQPgdBBklmMR2TzsZezpvqdXPzjF03AMWHnAPpoqiVGlrG0zNXqQJbmies3CiL4xi5Hm5FJSIBDUUc2RwyYVjxZmIzBY9GK+k/qfIBoOWWsXiUDgXa5M9x0wbNTUlzfyFPOI6yG93GHlvkE9lOZkGi2ggvLa1JP97enWhmjdKp9Mt7mCfZAdWFe+I+9+77b+oyIDC3y2Em+PZJs02yx0GFcKp+9XzYRodJbg4K1T1oLmcCZccN1UYZVOd4uBJ5EYFS9LfB6EhRLW20iVQoVdBYYOf2vD0WU+jxxYTHCn+F6XlN9YfXB6uc4d0hlxuBqlEvoqRgwkag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BYAPR11MB3768.namprd11.prod.outlook.com (2603:10b6:a03:fa::20)
+ by CY4PR11MB1959.namprd11.prod.outlook.com (2603:10b6:903:122::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.20; Mon, 7 Mar
+ 2022 20:56:12 +0000
+Received: from BYAPR11MB3768.namprd11.prod.outlook.com
+ ([fe80::dc03:366a:dae3:aee]) by BYAPR11MB3768.namprd11.prod.outlook.com
+ ([fe80::dc03:366a:dae3:aee%4]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
+ 20:56:12 +0000
+Message-ID: <eab8177d-eb73-ec64-ec1f-4f2a51be8aee@intel.com>
+Date:   Mon, 7 Mar 2022 12:56:08 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC 08/10] platform/x86/intel/ifs: Add IFS sysfs interface
+Content-Language: en-US
+To:     Dan Williams <dan.j.williams@intel.com>
+CC:     "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>, "bp@alien8.de" <bp@alien8.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <20220301195457.21152-9-jithu.joseph@intel.com>
+ <188492dc80c017375da76d444347b1d00c2031f6.camel@intel.com>
+ <7b9c788e-21dc-eedc-a1b4-9c6877fa48fe@intel.com>
+ <CAPcyv4h=qPFrP+mRqaZhkh5ZmYjuQawsqvf+-R036ZJVKBNK4Q@mail.gmail.com>
+ <33d0e764-86d9-8504-17fa-14b31c87de4e@intel.com>
+ <CAPcyv4g5bq9+u0iLjhpeJw8bkbCREUw60H2z_KfDz4hHCrKdFQ@mail.gmail.com>
+ <7c620f8a-189e-5ac4-30fe-1fa14ba799ea@intel.com>
+ <CAPcyv4iUuZ0aAWckWvwbxJJgt5tDJRpeonfE4DegWS6KPtJq8A@mail.gmail.com>
+From:   "Joseph, Jithu" <jithu.joseph@intel.com>
+In-Reply-To: <CAPcyv4iUuZ0aAWckWvwbxJJgt5tDJRpeonfE4DegWS6KPtJq8A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4PR03CA0219.namprd03.prod.outlook.com
+ (2603:10b6:303:b9::14) To BYAPR11MB3768.namprd11.prod.outlook.com
+ (2603:10b6:a03:fa::20)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2991fbcb-aaa4-4ace-465f-08da007ce978
+X-MS-TrafficTypeDiagnostic: CY4PR11MB1959:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
+X-Microsoft-Antispam-PRVS: <CY4PR11MB1959BE1A0FF049BB2173A29480089@CY4PR11MB1959.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8Rn/CT0a73YdjhvmfJ0zYuGuLHnWh/ReP9MLP1iK1Zv3MzuN6qm19qvrH0xwFqaSvLnzDULO6goCZwKPLBbegKJGnSg1viSt3A6trqhowT87FDA/uaj06k/wlxK9rbKsE3DqVwK1q1yUHH3oJqQUh3m8mdIlj/A9LhpkG109cISprduiiIVi+rNSg3STE070NvnIHtYMXwDQAh0nRnQBbTZTK70SsAUbBMiNxOVS3l78GgXIrCA0iMavaZNPAkJ7bZol9l6UOCCL6c9H63Rg0HNLIlVnaih8PYHCEXtI2KwpR23UV8dPbgDSvJN4nLF8nziBmaL80g3zTkNMJKrIOQctLvXhm/fghCoqXdM6UtxwqlCRkUVACgsczZqzWNWVQxjfzzlzUAo3PF5pxknIxMgusTAh+AeIvFLaATLOt402ew5zovf0bHvEXXWKbjldWvdG1fQ/S+1K9elIUdYS9XHeyxNUDelqw8RqwiAS7HS4Z4waQ6xdP6IxMjt9L2pAyQNacno4m/HbDtUFsSaFeGpCM4vWuGLWxEeQdhhaFer9QxqUaJDkhm1IU38PbfsW/HZrRafFYV/QQEBsZn/nF/1cauuvTlHvqh26bAY+FoXbSspdcxV1pNTaESaSEiVGCo85hAHgGoBIHpZEVSPhA5KJAoLqn08UwKPz1xRo7BnoXQg6qOkPqfd9JLkZ/qaGExpv0z+Umxf1X8Qd/gN2KWXay7di04FMwd/e8e2oC10Wi3wn66Um9YSWertddnSm
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3768.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(82960400001)(2906002)(2616005)(37006003)(7416002)(26005)(5660300002)(186003)(83380400001)(86362001)(508600001)(31696002)(36756003)(66476007)(4744005)(6636002)(6862004)(316002)(54906003)(6512007)(66946007)(66556008)(8936002)(6486002)(8676002)(31686004)(38100700002)(6506007)(53546011)(6666004)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MXZQMzVZMzR3THdBTU9vck9Za0ttdkk1ZFB4eHVYNXdKUFBlZ0NVU2VvYzJi?=
+ =?utf-8?B?OCtRcndHTW1uUTBaNXdkVXRvSVRVbDVHYm5TLzdkNW5RR0tPQWkvL2JueERo?=
+ =?utf-8?B?aXRuUVVVS21oU3pyanU4YlpabEg1TUl6TUUyNGtMd2pDU2ltUENiUVNzR0g4?=
+ =?utf-8?B?VkFWZEZJRHNQSjNJUVpiRkdoQlNmc0xKR05HNnpuQjIzSE5YYWx4YWNEQjE3?=
+ =?utf-8?B?djhXRk5Sd2xIc3FhVW9FSDhqRDd1MUQ3NE9UeGpnendlMGFEY1hOWEVOMGFh?=
+ =?utf-8?B?SXdEaStHZjZmaXJYWG9wRXprTXc3T1AydEUxVWowdXJLVVJxMVVLcFIxWXRy?=
+ =?utf-8?B?MGROMkxZWHo0b3ZQbVhyRkZQVFFrdDFXUGFOaU1DbzUycVZiaS9BSXgrZVMy?=
+ =?utf-8?B?cVNQbWJhaW9zMWFxZ3Q0SVd1QmNGWTJtQnVMbVVjbVpmSDFBZGtsdjh6NEwr?=
+ =?utf-8?B?YjZZS0FOT3JPZ1ZmUU1ycnZRajYrd25wVTQ4aVZadFdnbCtiN0wvd1BlM2Nn?=
+ =?utf-8?B?S202OUk2OTNWUkYvRjI2ZkRPNkFhbmo5TEdIVVErMUxUNXBkVXhjVWprREho?=
+ =?utf-8?B?TGhVKzJ3NGpadWRRSG83ZnpacjVtR1VGVjUvUHpTUzJlakVHaTBESVdWOGIv?=
+ =?utf-8?B?YUwrUGJjRENnWDFOYW5FQkRXMi83bTM3SGNXUllTbk1tQ0cxclM4T2xpKzRw?=
+ =?utf-8?B?ME1YZWhoR0RDZU5EUTJuaVVkS2FISEZYaXN2a25RYmNXNU1SQTZHdWdBYXgr?=
+ =?utf-8?B?MVlOZ2VDR1RZYURzWmMxdzVFa21hMlV6QmwxM0p5VWhnK0JWUlc5R3ZIUDNj?=
+ =?utf-8?B?UUNJTWlTK1pOd1lRRGFhZ29NZGhzQ3U5dFg0bVYwNlFmZkd3anhVS0Qvd2s5?=
+ =?utf-8?B?cWl4MGorNmhEclhzRjZPSGdXemtRNHRCQmpRTzROY3BIQnFPWlQ0RzFLYXJM?=
+ =?utf-8?B?SVFLYk9jbWRiVlRubkNPcVkzQTUza1ArR3FZTm94eG9DS0c4RWNseWlwckpY?=
+ =?utf-8?B?SUg0cmZLbnAvQWFzRmVpZkxkTkgvSHpqeEZqcG1leTZnVXZ1czRaOGhzaVMy?=
+ =?utf-8?B?UEJEOVhVZkpuZEl0Z0kvTTN0WkdIanRTcTd5SlI5V096N29YYzh0ejBSUFVx?=
+ =?utf-8?B?NG5OVGtHVnk4SGRMNUpUM2JDQmFzd1RFemU2cnhJUC9qWnYrZ2YrdVRZTDI2?=
+ =?utf-8?B?MXBlMnNiNTF3c05vaVg2NWM4bDlsemhIbkc4blVTS1pHdkVWZFY0WlRjTFZQ?=
+ =?utf-8?B?dmM3NnMzMVE2OC9xNTZmcDJsTEhCSWxPcDBNQnhMakFxVjZIZ3huSlcySzhi?=
+ =?utf-8?B?NGJDekxVU0x5NlA0ZGg0SGVDSHF2N3FEby9nMTdGbm9MVTViYmtNNEV3NkJV?=
+ =?utf-8?B?VmtLV3pXaFgwUitSaG4rS0hWeUVwMk1GSDhKSlREZDhEaEc3dzZzTTlIOGFJ?=
+ =?utf-8?B?dUZtQm14a044VVlWNkhFSWJDWUgwZTJyRHpDNng1eElNdzR6R2xhNGJWRENt?=
+ =?utf-8?B?Mk1KNGY4UlJPbEV5S05HVUdkNnN0NWdhYjFpVGZMN2F6cVVtSVBkbXNURlRH?=
+ =?utf-8?B?MWhFQkkwa1pFZlRnQno5UVBBNEFUUzZpK2RCYkUrRlRxUnVna3hETE93MWhn?=
+ =?utf-8?B?UjlORmptZWxxaXZoSHNXaVRsbThva0VEVGhMU21sWjU3aUN5d0NibWlCdlF6?=
+ =?utf-8?B?ejMzck5OMWVnUDB4MjhzcktYalpxUlJaUUgrZFhabjc0YjlYUUlYNE5XQ0VH?=
+ =?utf-8?B?R0J6c0VmM1NJZFVBRVZKQXowSUp5dmhLenZWOGxaN1Rib2wwMUZlcWlubnVn?=
+ =?utf-8?B?Mi9ENHhBNDY4ZElJVUxMdlpld1MyVisrNGdYa05LUXZrZms5N1h1Y05hK1pu?=
+ =?utf-8?B?N0FTQ0tTM3cvVFdqckFGY3FGcjNkTlFkNWpYdWFnVjlQeUlrYW0xWG1Tb1VS?=
+ =?utf-8?B?S3JlZXRNYVRnY1NnYUpqbDczSERrek9TdmNHTGRWUXB3M2ZIQXpDRWo3WS84?=
+ =?utf-8?B?TnVxdXRrcm43YXBFMnhwaWFJZ0c4TDcvMExDbFFuK0NNaEJVb3R5SE9nbS9U?=
+ =?utf-8?B?aURDMGgrWU9VaGpiMHhYdCtPdHNRSGNpd0xLaEljNWphZVJoTWhEbndHSVlV?=
+ =?utf-8?B?T1JvMVBFdTZTMHU0c2ZpSWhqNWJhN2FQYmxFUDEyK0RjRW5lZnIrRWhlQUVa?=
+ =?utf-8?Q?A4lBqaDrQ33WRaekrjuCv1s=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2991fbcb-aaa4-4ace-465f-08da007ce978
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3768.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 20:56:12.1920
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ukiGRtEVP9DpLju4NqvJKzzkbKWRgJ/61AG5w8I5EBYuHN5yyKhKBxvOAgxu6jBgv/Cnk9RYt3DTc6Cl9nucZw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1959
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Fu <wefu@redhat.com>
 
-Svpbmt (the S should be capitalized) is the
-"Supervisor-mode: page-based memory types" extension
-that specifies attributes for cacheability, idempotency
-and ordering.
 
-The relevant settings are done in special bits in PTEs:
+On 3/7/2022 12:25 PM, Dan Williams wrote:
 
-Here is the svpbmt PTE format:
-| 63 | 62-61 | 60-8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-  N     MT     RSW    D   A   G   U   X   W   R   V
-        ^
+> 
+> I am speaking of the state of the case where 2 threads are doing
+> run_test and polling for results. Unless you can guarantee that run2
+> does not start before the results of run1 have been collected then
+> they are lost in that scenario. No amount of kernel locking can
+> resolve that race to collect previous result which would not be a
+> problem in the first place if there was an atomic way to log test
+> results.
 
-Of the Reserved bits [63:54] in a leaf PTE, the high bit is already
-allocated (as the N bit), so bits [62:61] are used as the MT (aka
-MemType) field. This field specifies one of three memory types that
-are close equivalents (or equivalent in effect) to the three main x86
-and ARMv8 memory types - as shown in the following table.
 
-RISC-V
-Encoding &
-MemType     RISC-V Description
-----------  ------------------------------------------------
-00 - PMA    Normal Cacheable, No change to implied PMA memory type
-01 - NC     Non-cacheable, idempotent, weakly-ordered Main Memory
-10 - IO     Non-cacheable, non-idempotent, strongly-ordered I/O memory
-11 - Rsvd   Reserved for future standard use
+Yes "status" shows the status of the latest run. You cannot get the status of the previous run.
 
-As the extension will not be present on all implementations use
-alternatives to check its existence at runtime and if needed
-adapt the code to use memory-types.
-
-Signed-off-by: Wei Fu <wefu@redhat.com>
-Co-developed-by: Liu Shaohua <liush@allwinnertech.com>
-Signed-off-by: Liu Shaohua <liush@allwinnertech.com>
-Co-developed-by: Guo Ren <guoren@kernel.org>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-[moved to use the alternatives mechanism]
-Co-developed-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Drew Fustini <drew@beagleboard.org>
-Cc: Wei Fu <wefu@redhat.com>
-Cc: Wei Wu <lazyparser@gmail.com>
-Cc: Chen-Yu Tsai <wens@csie.org>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Daniel Lustig <dlustig@nvidia.com>
-Cc: Greg Favor <gfavor@ventanamicro.com>
-Cc: Andrea Mondelli <andrea.mondelli@huawei.com>
-Cc: Jonathan Behrens <behrensj@mit.edu>
-Cc: Xinhaoqu (Freddie) <xinhaoqu@huawei.com>
-Cc: Bill Huffman <huffman@cadence.com>
-Cc: Nick Kossifidis <mick@ics.forth.gr>
-Cc: Allen Baum <allen.baum@esperantotech.com>
-Cc: Josh Scheid <jscheid@ventanamicro.com>
-Cc: Richard Trauben <rtrauben@gmail.com>
----
- arch/riscv/include/asm/errata_list.h  | 13 +++++++-
- arch/riscv/include/asm/hwcap.h        |  1 +
- arch/riscv/include/asm/pgtable-32.h   |  9 +++++
- arch/riscv/include/asm/pgtable-64.h   | 47 +++++++++++++++++++++++++++
- arch/riscv/include/asm/pgtable-bits.h |  4 ---
- arch/riscv/include/asm/pgtable.h      | 29 ++++++++++++++---
- arch/riscv/kernel/cpu.c               |  1 +
- arch/riscv/kernel/cpufeature.c        | 18 ++++++++++
- 8 files changed, 112 insertions(+), 10 deletions(-)
-
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index 6b95bd9aee82..a4a9b0842922 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -14,7 +14,8 @@
- #define	ERRATA_SIFIVE_NUMBER 2
- #endif
- 
--#define	CPUFEATURE_NUMBER 0
-+#define	CPUFEATURE_SVPBMT 0
-+#define	CPUFEATURE_NUMBER 1
- 
- #ifdef __ASSEMBLY__
- 
-@@ -36,6 +37,16 @@ asm(ALTERNATIVE("sfence.vma %0", "sfence.vma", SIFIVE_VENDOR_ID,	\
- 		ERRATA_SIFIVE_CIP_1200, CONFIG_ERRATA_SIFIVE_CIP_1200)	\
- 		: : "r" (addr) : "memory")
- 
-+/*
-+ * _val is marked as "will be overwritten", so need to set it to 0
-+ * in the default case.
-+ */
-+#define ALT_SVPBMT_SHIFT 61
-+#define ALT_SVPBMT(_val, prot)						\
-+asm(ALTERNATIVE("li %0, 0\t\nnop", "li %0, %1\t\nslli %0,%0,%2", 0,	\
-+		CPUFEATURE_SVPBMT, CONFIG_64BIT)			\
-+		: "=r"(_val) : "I"(prot##_SVPBMT >> ALT_SVPBMT_SHIFT), "I"(ALT_SVPBMT_SHIFT))
-+
- #endif /* __ASSEMBLY__ */
- 
- #endif
-diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
-index 691fc9c8099b..656cd626eb1a 100644
---- a/arch/riscv/include/asm/hwcap.h
-+++ b/arch/riscv/include/asm/hwcap.h
-@@ -51,6 +51,7 @@ extern unsigned long elf_hwcap;
-  * available logical extension id.
-  */
- enum riscv_isa_ext_id {
-+	RISCV_ISA_EXT_SVPBMT = RISCV_ISA_EXT_BASE,
- 	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
- };
- 
-diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
-index e266a4fe7f43..59ba1fbaf784 100644
---- a/arch/riscv/include/asm/pgtable-32.h
-+++ b/arch/riscv/include/asm/pgtable-32.h
-@@ -24,4 +24,13 @@
-  */
- #define _PAGE_PFN_MASK  GENMASK(31, 10)
- 
-+#define _PAGE_NOCACHE		0
-+#define _PAGE_IO		0
-+#define _PAGE_MTMASK		0
-+
-+/* Set of bits to preserve across pte_modify() */
-+#define _PAGE_CHG_MASK  (~(unsigned long)(_PAGE_PRESENT | _PAGE_READ |	\
-+					  _PAGE_WRITE | _PAGE_EXEC |	\
-+					  _PAGE_USER | _PAGE_GLOBAL))
-+
- #endif /* _ASM_RISCV_PGTABLE_32_H */
-diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-index 9412c6157c88..07ba3416cb19 100644
---- a/arch/riscv/include/asm/pgtable-64.h
-+++ b/arch/riscv/include/asm/pgtable-64.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/bits.h>
- #include <linux/const.h>
-+#include <asm/errata_list.h>
- 
- extern bool pgtable_l4_enabled;
- 
-@@ -56,6 +57,52 @@ typedef struct {
-  */
- #define _PAGE_PFN_MASK  GENMASK(53, 10)
- 
-+/*
-+ * [62:61] Svpbmt Memory Type definitions:
-+ *
-+ *  00 - PMA    Normal Cacheable, No change to implied PMA memory type
-+ *  01 - NC     Non-cacheable, idempotent, weakly-ordered Main Memory
-+ *  10 - IO     Non-cacheable, non-idempotent, strongly-ordered I/O memory
-+ *  11 - Rsvd   Reserved for future standard use
-+ */
-+#define _PAGE_NOCACHE_SVPBMT	(1UL << 61)
-+#define _PAGE_IO_SVPBMT		(1UL << 62)
-+#define _PAGE_MTMASK_SVPBMT	(_PAGE_NOCACHE_SVPBMT | _PAGE_IO_SVPBMT)
-+
-+static inline u64 riscv_page_mtmask(void)
-+{
-+	u64 val;
-+
-+	ALT_SVPBMT(val, _PAGE_MTMASK);
-+	return val;
-+}
-+
-+static inline u64 riscv_page_nocache(void)
-+{
-+	u64 val;
-+
-+	ALT_SVPBMT(val, _PAGE_NOCACHE);
-+	return val;
-+}
-+
-+static inline u64 riscv_page_io(void)
-+{
-+	u64 val;
-+
-+	ALT_SVPBMT(val, _PAGE_IO);
-+	return val;
-+}
-+
-+#define _PAGE_NOCACHE		riscv_page_nocache()
-+#define _PAGE_IO		riscv_page_io()
-+#define _PAGE_MTMASK		riscv_page_mtmask()
-+
-+/* Set of bits to preserve across pte_modify() */
-+#define _PAGE_CHG_MASK  (~(unsigned long)(_PAGE_PRESENT | _PAGE_READ |	\
-+					  _PAGE_WRITE | _PAGE_EXEC |	\
-+					  _PAGE_USER | _PAGE_GLOBAL |	\
-+					  _PAGE_MTMASK))
-+
- static inline int pud_present(pud_t pud)
- {
- 	return (pud_val(pud) & _PAGE_PRESENT);
-diff --git a/arch/riscv/include/asm/pgtable-bits.h b/arch/riscv/include/asm/pgtable-bits.h
-index e571fa954afc..b9e13a8fe2b7 100644
---- a/arch/riscv/include/asm/pgtable-bits.h
-+++ b/arch/riscv/include/asm/pgtable-bits.h
-@@ -29,10 +29,6 @@
- 
- #define _PAGE_PFN_SHIFT 10
- 
--/* Set of bits to preserve across pte_modify() */
--#define _PAGE_CHG_MASK  (~(unsigned long)(_PAGE_PRESENT | _PAGE_READ |	\
--					  _PAGE_WRITE | _PAGE_EXEC |	\
--					  _PAGE_USER | _PAGE_GLOBAL))
- /*
-  * when all of R/W/X are zero, the PTE is a pointer to the next level
-  * of the page table; otherwise, it is a leaf PTE.
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index 6d31489818cd..009a17f94b86 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -175,11 +175,8 @@ extern struct pt_alloc_ops pt_ops __initdata;
- 
- #define PAGE_TABLE		__pgprot(_PAGE_TABLE)
- 
--/*
-- * The RISC-V ISA doesn't yet specify how to query or modify PMAs, so we can't
-- * change the properties of memory regions.
-- */
--#define _PAGE_IOREMAP _PAGE_KERNEL
-+#define _PAGE_IOREMAP	((_PAGE_KERNEL & ~_PAGE_MTMASK) | _PAGE_IO)
-+#define PAGE_KERNEL_IO		__pgprot(_PAGE_IOREMAP)
- 
- extern pgd_t swapper_pg_dir[];
- 
-@@ -519,6 +516,28 @@ static inline int ptep_clear_flush_young(struct vm_area_struct *vma,
- 	return ptep_test_and_clear_young(vma, address, ptep);
- }
- 
-+#define pgprot_noncached pgprot_noncached
-+static inline pgprot_t pgprot_noncached(pgprot_t _prot)
-+{
-+	unsigned long prot = pgprot_val(_prot);
-+
-+	prot &= ~_PAGE_MTMASK;
-+	prot |= _PAGE_IO;
-+
-+	return __pgprot(prot);
-+}
-+
-+#define pgprot_writecombine pgprot_writecombine
-+static inline pgprot_t pgprot_writecombine(pgprot_t _prot)
-+{
-+	unsigned long prot = pgprot_val(_prot);
-+
-+	prot &= ~_PAGE_MTMASK;
-+	prot |= _PAGE_NOCACHE;
-+
-+	return __pgprot(prot);
-+}
-+
- /*
-  * THP functions
-  */
-diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-index 031ad15a059f..c582d557e555 100644
---- a/arch/riscv/kernel/cpu.c
-+++ b/arch/riscv/kernel/cpu.c
-@@ -71,6 +71,7 @@ int riscv_of_parent_hartid(struct device_node *node)
- 	}
- 
- static struct riscv_isa_ext_data isa_ext_arr[] = {
-+	__RISCV_ISA_EXT_DATA("svpbmt", RISCV_ISA_EXT_SVPBMT),
- 	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
- };
- 
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index 92d4b4c25d47..1422d9897310 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/bitmap.h>
- #include <linux/ctype.h>
-+#include <linux/libfdt.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <asm/alternative.h>
-@@ -197,6 +198,8 @@ void __init riscv_fill_hwcap(void)
- 			if (!ext_long) {
- 				this_hwcap |= isa2hwcap[(unsigned char)(*ext)];
- 				set_bit(*ext - 'a', this_isa);
-+			} else {
-+				SET_ISA_EXT_MAP("svpbmt", RISCV_ISA_EXT_SVPBMT);
- 			}
- #undef SET_ISA_EXT_MAP
- 		}
-@@ -248,7 +251,22 @@ struct cpufeature_info {
- 	bool (*check_func)(unsigned int stage);
- };
- 
-+static bool __init_or_module cpufeature_svpbmt_check_func(unsigned int stage)
-+{
-+	bool ret = false;
-+
-+#if defined(CONFIG_MMU) && defined(CONFIG_64BIT)
-+	return riscv_isa_extension_available(NULL, SVPBMT);
-+#endif
-+
-+	return ret;
-+}
-+
- static const struct cpufeature_info __initdata_or_module cpufeature_list[CPUFEATURE_NUMBER] = {
-+	{
-+		.name = "svpbmt",
-+		.check_func = cpufeature_svpbmt_check_func
-+	},
- };
- 
- static u32 __init_or_module cpufeature_probe(unsigned int stage)
--- 
-2.30.2
-
+Also some context on test frequency: Hardware has  strict rate limiting of tests.
+Every core can be tested only once in every 30 minutes. So it is pointless to test at high frequency.
