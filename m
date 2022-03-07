@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F31C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B857C35280
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240996AbiCGKJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:09:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        id S241034AbiCGKJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:09:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240471AbiCGJvD (ORCPT
+        with ESMTP id S237660AbiCGJsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:51:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F8275623;
-        Mon,  7 Mar 2022 01:44:42 -0800 (PST)
+        Mon, 7 Mar 2022 04:48:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482CB527EC;
+        Mon,  7 Mar 2022 01:42:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 326DD61375;
-        Mon,  7 Mar 2022 09:44:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D133C340F8;
-        Mon,  7 Mar 2022 09:44:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EC8C61009;
+        Mon,  7 Mar 2022 09:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F12EC36AE7;
+        Mon,  7 Mar 2022 09:42:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646280;
-        bh=KjGoanFe9yX2UdN5dVRQKQaNmaQjJPnPPFDSw4zrYPs=;
+        s=korg; t=1646646148;
+        bh=0XM5ZexUMskW4ZkOyUw7cgz87x2gisU6TaKUIornEEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qBOcn/NmQChDecYdEHrtUEgNmoNjYbqWYDMYa8/+4I8IFigIsRgjsagPQM4w3+wB1
-         z1OsdlAEH1KPyqZdnM819dW/cr1AfRxtH+hotX6T/H6gg3xNJWiDXWUCNXSs5v6So1
-         NpMg/mU/f/4Buab9vcsscFPsfCIsldsIjGwxicGI=
+        b=T3Rkw2wVsqZA9IeVvCVS/2uHCzXUGXZ10KiisEfd3zIU4wHcwTNQMymR+mXn2mBl8
+         MFrd4HptJY7dFc7AtVjqAbFXTCredl2/8aUVgPsx+VjoFJm0wzR2rAQN+b6EoGMdv4
+         gBADw4zo+4KMdRAV2I75F6NwwR/4vpsklcx1gnHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Stezenbach <js@sig21.net>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.15 192/262] ARM: Fix kgdb breakpoint for Thumb2
-Date:   Mon,  7 Mar 2022 10:18:56 +0100
-Message-Id: <20220307091707.961397047@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Cavallari <nicolas.cavallari@green-communications.fr>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 148/262] thermal: core: Fix TZ_GET_TRIP NULL pointer dereference
+Date:   Mon,  7 Mar 2022 10:18:12 +0100
+Message-Id: <20220307091706.619296213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,93 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
 
-commit d920eaa4c4559f59be7b4c2d26fa0a2e1aaa3da9 upstream.
+commit 5838a14832d447990827d85e90afe17e6fb9c175 upstream.
 
-The kgdb code needs to register an undef hook for the Thumb UDF
-instruction that will fault in order to be functional on Thumb2
-platforms.
+Do not call get_trip_hyst() from thermal_genl_cmd_tz_get_trip() if
+the thermal zone does not define one.
 
-Reported-by: Johannes Stezenbach <js@sig21.net>
-Tested-by: Johannes Stezenbach <js@sig21.net>
-Fixes: 5cbad0ebf45c ("kgdb: support for ARCH=arm")
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: 1ce50e7d408e ("thermal: core: genetlink support for events/cmd/sampling")
+Signed-off-by: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+Cc: 5.10+ <stable@vger.kernel.org> # 5.10+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/kgdb.c |   36 ++++++++++++++++++++++++++++--------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ drivers/thermal/thermal_netlink.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/arm/kernel/kgdb.c
-+++ b/arch/arm/kernel/kgdb.c
-@@ -154,22 +154,38 @@ static int kgdb_compiled_brk_fn(struct p
- 	return 0;
- }
+--- a/drivers/thermal/thermal_netlink.c
++++ b/drivers/thermal/thermal_netlink.c
+@@ -418,11 +418,12 @@ static int thermal_genl_cmd_tz_get_trip(
+ 	for (i = 0; i < tz->trips; i++) {
  
--static struct undef_hook kgdb_brkpt_hook = {
-+static struct undef_hook kgdb_brkpt_arm_hook = {
- 	.instr_mask		= 0xffffffff,
- 	.instr_val		= KGDB_BREAKINST,
--	.cpsr_mask		= MODE_MASK,
-+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
- 	.cpsr_val		= SVC_MODE,
- 	.fn			= kgdb_brk_fn
- };
+ 		enum thermal_trip_type type;
+-		int temp, hyst;
++		int temp, hyst = 0;
  
--static struct undef_hook kgdb_compiled_brkpt_hook = {
-+static struct undef_hook kgdb_brkpt_thumb_hook = {
-+	.instr_mask		= 0xffff,
-+	.instr_val		= KGDB_BREAKINST & 0xffff,
-+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
-+	.cpsr_val		= PSR_T_BIT | SVC_MODE,
-+	.fn			= kgdb_brk_fn
-+};
-+
-+static struct undef_hook kgdb_compiled_brkpt_arm_hook = {
- 	.instr_mask		= 0xffffffff,
- 	.instr_val		= KGDB_COMPILED_BREAK,
--	.cpsr_mask		= MODE_MASK,
-+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
- 	.cpsr_val		= SVC_MODE,
- 	.fn			= kgdb_compiled_brk_fn
- };
+ 		tz->ops->get_trip_type(tz, i, &type);
+ 		tz->ops->get_trip_temp(tz, i, &temp);
+-		tz->ops->get_trip_hyst(tz, i, &hyst);
++		if (tz->ops->get_trip_hyst)
++			tz->ops->get_trip_hyst(tz, i, &hyst);
  
-+static struct undef_hook kgdb_compiled_brkpt_thumb_hook = {
-+	.instr_mask		= 0xffff,
-+	.instr_val		= KGDB_COMPILED_BREAK & 0xffff,
-+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
-+	.cpsr_val		= PSR_T_BIT | SVC_MODE,
-+	.fn			= kgdb_compiled_brk_fn
-+};
-+
- static int __kgdb_notify(struct die_args *args, unsigned long cmd)
- {
- 	struct pt_regs *regs = args->regs;
-@@ -210,8 +226,10 @@ int kgdb_arch_init(void)
- 	if (ret != 0)
- 		return ret;
- 
--	register_undef_hook(&kgdb_brkpt_hook);
--	register_undef_hook(&kgdb_compiled_brkpt_hook);
-+	register_undef_hook(&kgdb_brkpt_arm_hook);
-+	register_undef_hook(&kgdb_brkpt_thumb_hook);
-+	register_undef_hook(&kgdb_compiled_brkpt_arm_hook);
-+	register_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
- 
- 	return 0;
- }
-@@ -224,8 +242,10 @@ int kgdb_arch_init(void)
-  */
- void kgdb_arch_exit(void)
- {
--	unregister_undef_hook(&kgdb_brkpt_hook);
--	unregister_undef_hook(&kgdb_compiled_brkpt_hook);
-+	unregister_undef_hook(&kgdb_brkpt_arm_hook);
-+	unregister_undef_hook(&kgdb_brkpt_thumb_hook);
-+	unregister_undef_hook(&kgdb_compiled_brkpt_arm_hook);
-+	unregister_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
- 	unregister_die_notifier(&kgdb_notifier);
- }
- 
+ 		if (nla_put_u32(msg, THERMAL_GENL_ATTR_TZ_TRIP_ID, i) ||
+ 		    nla_put_u32(msg, THERMAL_GENL_ATTR_TZ_TRIP_TYPE, type) ||
 
 
