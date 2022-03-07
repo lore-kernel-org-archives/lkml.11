@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F728C47084
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED47FC388F3
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241391AbiCGKKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51748 "EHLO
+        id S241993AbiCGKLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240018AbiCGJuf (ORCPT
+        with ESMTP id S240281AbiCGJus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B6673057;
-        Mon,  7 Mar 2022 01:44:04 -0800 (PST)
+        Mon, 7 Mar 2022 04:50:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EC974DC3;
+        Mon,  7 Mar 2022 01:44:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAAFE6136F;
-        Mon,  7 Mar 2022 09:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04ED0C340E9;
-        Mon,  7 Mar 2022 09:43:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58C736116E;
+        Mon,  7 Mar 2022 09:44:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 534BFC340E9;
+        Mon,  7 Mar 2022 09:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646231;
-        bh=UBdrsVWMvpEWnpvpGDJX06Kk5StTYHhkGEu8qr1hKtQ=;
+        s=korg; t=1646646262;
+        bh=7op5MFowyiInE3pMmlvDncVgyDPHUsh9zGiv/8ME6CU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fk3fIEW0h7h5DyWu4MgMNNVqqzC/vv9qQMkzEZDQ0Wth6plY5b9dbkG+SHoSAABa3
-         HU7NM2+cdfjBllYxRB4O7GEurfqziwfrtngpcvByeWgX9QQQ3oqxZxFleTvwSm/ZUN
-         r0vYxd9Q8D8p7OR2f96njMjp+BF06X7ROgU360kM=
+        b=JjM2vfxkbuBqLE9yoOy+6FqGTCqVZzQY/C/yWi1Nzed5NcAJasWvQPC218aFCaiwz
+         wq7sUD+nR5lpnpgi5koQKY33kbYli6g5gc44Vs1aBqTUZcceyum6h2ixeRSJELCntO
+         HMEh97MAFP3Jd5ZpBFB8JUHk0uB4FqU8wCWXXSXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 135/262] net: of: fix stub of_net helpers for CONFIG_NET=n
-Date:   Mon,  7 Mar 2022 10:17:59 +0100
-Message-Id: <20220307091706.265997031@linuxfoundation.org>
+        stable@vger.kernel.org, Lars Poeschel <poeschel@lemonage.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Miguel Ojeda <ojeda@kernel.org>
+Subject: [PATCH 5.15 187/262] auxdisplay: lcd2s: Use proper API to free the instance of charlcd object
+Date:   Mon,  7 Mar 2022 10:18:51 +0100
+Message-Id: <20220307091707.746320066@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,45 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 8b017fbe0bbb98dd71fb4850f6b9cc0e136a26b8 ]
+commit 9ed331f8a0fb674f4f06edf05a1687bf755af27b upstream.
 
-Moving the of_net code from drivers/of/ to net/core means we
-no longer stub out the helpers when networking is disabled,
-which leads to a randconfig build failure with at least one
-ARM platform that calls this from non-networking code:
+While it might work, the current approach is fragile in a few ways:
+- whenever members in the structure are shuffled, the pointer will be wrong
+- the resource freeing may include more than covered by kfree()
 
-arm-linux-gnueabi-ld: arch/arm/mach-mvebu/kirkwood.o: in function `kirkwood_dt_eth_fixup':
-kirkwood.c:(.init.text+0x54): undefined reference to `of_get_mac_address'
+Fix this by using charlcd_free() call instead of kfree().
 
-Restore the way this worked before by changing that #ifdef
-check back to testing for both CONFIG_OF and CONFIG_NET.
-
-Fixes: e330fb14590c ("of: net: move of_net under net/")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20211014090055.2058949-1-arnd@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8c9108d014c5 ("auxdisplay: add a driver for lcd2s character display")
+Cc: Lars Poeschel <poeschel@lemonage.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/of_net.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/auxdisplay/lcd2s.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/of_net.h b/include/linux/of_net.h
-index cf31188329b5a..55460ecfa50ad 100644
---- a/include/linux/of_net.h
-+++ b/include/linux/of_net.h
-@@ -8,7 +8,7 @@
+--- a/drivers/auxdisplay/lcd2s.c
++++ b/drivers/auxdisplay/lcd2s.c
+@@ -336,7 +336,7 @@ static int lcd2s_i2c_probe(struct i2c_cl
+ 	return 0;
  
- #include <linux/phy.h>
+ fail1:
+-	kfree(lcd);
++	charlcd_free(lcd2s->charlcd);
+ 	return err;
+ }
  
--#ifdef CONFIG_OF
-+#if defined(CONFIG_OF) && defined(CONFIG_NET)
- #include <linux/of.h>
+@@ -345,7 +345,7 @@ static int lcd2s_i2c_remove(struct i2c_c
+ 	struct lcd2s_data *lcd2s = i2c_get_clientdata(i2c);
  
- struct net_device;
--- 
-2.34.1
-
+ 	charlcd_unregister(lcd2s->charlcd);
+-	kfree(lcd2s->charlcd);
++	charlcd_free(lcd2s->charlcd);
+ 	return 0;
+ }
+ 
 
 
