@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EF0C35278
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6433C46467
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240647AbiCGKTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
+        id S240544AbiCGKS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:18:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240495AbiCGKBE (ORCPT
+        with ESMTP id S240515AbiCGKBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:01:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DFEBC1B;
-        Mon,  7 Mar 2022 01:49:13 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFEE11A3C;
+        Mon,  7 Mar 2022 01:49:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A026560748;
-        Mon,  7 Mar 2022 09:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A8AC340F3;
-        Mon,  7 Mar 2022 09:49:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 506CFB8102B;
+        Mon,  7 Mar 2022 09:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7AB4C340F5;
+        Mon,  7 Mar 2022 09:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646552;
-        bh=dD7/c67Sva+hXnDYcYC8UKHl8uZid1Fjht+X0oqVgiU=;
+        s=korg; t=1646646583;
+        bh=QyhkGm7BZkJ84jEEZ+rA3fD7PUKx2VHnXKxa3YJ+l9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIrOajTTA78UYHN1m8MrW8JY9WAfHAQkvDn0epU5J5vh2y8dxhx6Z+6jK+MHi5Xj4
-         TcEFpyxfC2HvNkXDnm+ulV+DA+xKvaNikN1LQ8xK1GdoFIYqnq1wc0wotGtCrgR/R4
-         g9bBwSxhz2EuGo8vDQ6UA/Y25GtF8Lt35Zbm0R1E=
+        b=InbpUh4AnaG1N6N5JjMKq0Us6LWEGxYP8vu4RZSv6QFOlMw9gf4v/59pVqLjD3l2g
+         EBfOWpYOfA9TV6O/PvsJIj1b4XaMvj3ObWDVAikY5X4Tb6+DVI5I4KQhIkTn8u4xXf
+         A99fxI29i1+OFcEw6qYqn3cXNCnYf9OvBv4eQVSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, JaeMan Park <jaeman@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 002/186] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
-Date:   Mon,  7 Mar 2022 10:17:20 +0100
-Message-Id: <20220307091654.164374657@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 5.16 028/186] usb: gadget: dont release an existing dev->buf
+Date:   Mon,  7 Mar 2022 10:17:46 +0100
+Message-Id: <20220307091654.881614236@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,51 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: JaeMan Park <jaeman@google.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit cacfddf82baf1470e5741edeecb187260868f195 ]
+commit 89f3594d0de58e8a57d92d497dea9fee3d4b9cda upstream.
 
-In mac80211_hwsim, the probe_req frame is created and sent while
-scanning. It is sent with ieee80211_tx_info which is not initialized.
-Uninitialized ieee80211_tx_info can cause problems when using
-mac80211_hwsim with wmediumd. wmediumd checks the tx_rates field of
-ieee80211_tx_info and doesn't relay probe_req frame to other clients
-even if it is a broadcasting message.
+dev->buf does not need to be released if it already exists before
+executing dev_config.
 
-Call ieee80211_tx_prepare_skb() to initialize ieee80211_tx_info for
-the probe_req that is created by hw_scan_work in mac80211_hwsim.
-
-Signed-off-by: JaeMan Park <jaeman@google.com>
-Link: https://lore.kernel.org/r/20220113060235.546107-1-jaeman@google.com
-[fix memory leak]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211231172138.7993-2-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/usb/gadget/legacy/inode.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 20fae2df848fb..f7cfda9192de2 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2336,6 +2336,15 @@ static void hw_scan_work(struct work_struct *work)
- 			if (req->ie_len)
- 				skb_put_data(probe, req->ie, req->ie_len);
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1826,8 +1826,9 @@ dev_config (struct file *fd, const char
+ 	spin_lock_irq (&dev->lock);
+ 	value = -EINVAL;
+ 	if (dev->buf) {
++		spin_unlock_irq(&dev->lock);
+ 		kfree(kbuf);
+-		goto fail;
++		return value;
+ 	}
+ 	dev->buf = kbuf;
  
-+			if (!ieee80211_tx_prepare_skb(hwsim->hw,
-+						      hwsim->hw_scan_vif,
-+						      probe,
-+						      hwsim->tmp_chan->band,
-+						      NULL)) {
-+				kfree_skb(probe);
-+				continue;
-+			}
-+
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
--- 
-2.34.1
-
 
 
