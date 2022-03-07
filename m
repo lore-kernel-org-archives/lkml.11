@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95140C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5FBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239731AbiCGJ76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:59:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
+        id S239752AbiCGKAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240688AbiCGJl2 (ORCPT
+        with ESMTP id S240712AbiCGJla (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7940550440;
-        Mon,  7 Mar 2022 01:38:05 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:30 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCEF2BB2C;
+        Mon,  7 Mar 2022 01:38:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EA4FB810D1;
-        Mon,  7 Mar 2022 09:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B33C340F3;
-        Mon,  7 Mar 2022 09:38:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8EA23CE0B91;
+        Mon,  7 Mar 2022 09:37:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510B0C340E9;
+        Mon,  7 Mar 2022 09:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645884;
-        bh=gR9Qsy0DHrQHAX3LlOQEhO5NH64Tn0o3wJWUrAWaPhQ=;
+        s=korg; t=1646645839;
+        bh=+2VXaBSzPCczrSieBa6Z5FKW8gMdw7eVMp/ZAnh4K0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u8nRTp+xPNNDfo4R15CA9syWxUKEe26fbA1lF2db4S3EOcyPM4lN2KrxpUNMgQ+IN
-         Cn+qaPqtqCPRWf0Zux6fnAbq2tmle8Fe5jAmlJaflU7KIAy8I8rOR5/0AtwgqGei2V
-         HIiFi4IiJUbcyEPQT79NS6F7PM0a8/xQ2u4I2/M8=
+        b=pIXouci0gDacMxoGTWmwQZxrOrFV1PoDd1zvysz5DXQlKrqDYaMigzoLOoTQ1ToRP
+         xanS1EjcKtMZ6W2OXt1RxXdKG60nQQYVY2Q5pwmm27jxuMSRBtzODcvv4Z76tM4jJ+
+         GNq1EY5gpYvUwgZlTRd7KuIDQevQAoy3yf8XtvnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Richard Zhu <hongxing.zhu@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 066/262] PCI: mvebu: Check for errors from pci_bridge_emul_init() call
-Date:   Mon,  7 Mar 2022 10:16:50 +0100
-Message-Id: <20220307091704.367272135@linuxfoundation.org>
+Subject: [PATCH 5.15 053/262] PCI: dwc: Do not remap invalid res
+Date:   Mon,  7 Mar 2022 10:16:37 +0100
+Message-Id: <20220307091704.013388515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,63 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Tim Harvey <tharvey@gateworks.com>
 
-[ Upstream commit 5d18d702e5c9309f4195653475c7a7fdde4ca71f ]
+[ Upstream commit 6e5ebc96ec651b67131f816d7e3bf286c635e749 ]
 
-Function pci_bridge_emul_init() may fail so correctly check for errors.
+On imx6 and perhaps others when pcie probes you get a:
+imx6q-pcie 33800000.pcie: invalid resource
 
-Link: https://lore.kernel.org/r/20211125124605.25915-3-pali@kernel.org
-Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
-Signed-off-by: Pali Rohár <pali@kernel.org>
+This occurs because the atu is not specified in the DT and as such it
+should not be remapped.
+
+Link: https://lore.kernel.org/r/20211101180243.23761-1-tharvey@gateworks.com
+Fixes: 281f1f99cf3a ("PCI: dwc: Detect number of iATU windows")
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
+Cc: Richard Zhu <hongxing.zhu@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 2dc6890dbcaa2..f4971fc72a772 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -570,7 +570,7 @@ static struct pci_bridge_emul_ops mvebu_pci_bridge_emul_ops = {
-  * Initialize the configuration space of the PCI-to-PCI bridge
-  * associated with the given PCIe interface.
-  */
--static void mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
-+static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- {
- 	struct pci_bridge_emul *bridge = &port->bridge;
- 	u32 pcie_cap = mvebu_readl(port, PCIE_CAP_PCIEXP);
-@@ -597,7 +597,7 @@ static void mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 	bridge->data = port;
- 	bridge->ops = &mvebu_pci_bridge_emul_ops;
- 
--	pci_bridge_emul_init(bridge, PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR);
-+	return pci_bridge_emul_init(bridge, PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR);
- }
- 
- static inline struct mvebu_pcie *sys_to_pcie(struct pci_sys_data *sys)
-@@ -1120,9 +1120,18 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
- 			continue;
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index a945f0c0e73dc..3254f60d1713f 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -671,10 +671,11 @@ void dw_pcie_iatu_detect(struct dw_pcie *pci)
+ 		if (!pci->atu_base) {
+ 			struct resource *res =
+ 				platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
+-			if (res)
++			if (res) {
+ 				pci->atu_size = resource_size(res);
+-			pci->atu_base = devm_ioremap_resource(dev, res);
+-			if (IS_ERR(pci->atu_base))
++				pci->atu_base = devm_ioremap_resource(dev, res);
++			}
++			if (!pci->atu_base || IS_ERR(pci->atu_base))
+ 				pci->atu_base = pci->dbi_base + DEFAULT_DBI_ATU_OFFSET;
  		}
  
-+		ret = mvebu_pci_bridge_emul_init(port);
-+		if (ret < 0) {
-+			dev_err(dev, "%s: cannot init emulated bridge\n",
-+				port->name);
-+			devm_iounmap(dev, port->base);
-+			port->base = NULL;
-+			mvebu_pcie_powerdown(port);
-+			continue;
-+		}
-+
- 		mvebu_pcie_setup_hw(port);
- 		mvebu_pcie_set_local_dev_nr(port, 1);
--		mvebu_pci_bridge_emul_init(port);
- 	}
- 
- 	pcie->nports = i;
 -- 
 2.34.1
 
