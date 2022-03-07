@@ -2,45 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABE4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 296B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236709AbiCGJYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:24:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
+        id S235255AbiCGJYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:24:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236599AbiCGJWf (ORCPT
+        with ESMTP id S237385AbiCGJXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:22:35 -0500
+        Mon, 7 Mar 2022 04:23:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7385866C95;
-        Mon,  7 Mar 2022 01:20:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C64654F89;
+        Mon,  7 Mar 2022 01:23:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C0DBB810B2;
-        Mon,  7 Mar 2022 09:20:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B446C340E9;
-        Mon,  7 Mar 2022 09:20:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48749B80E70;
+        Mon,  7 Mar 2022 09:23:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7747BC340E9;
+        Mon,  7 Mar 2022 09:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644843;
-        bh=qQGPmeaAYFXyIjtv0HVDAMGkMn9oVjkstYLU3NOcbuA=;
+        s=korg; t=1646644979;
+        bh=9k9TnfFJxozCmdGaI4LQIZC5djFmfCDCM4ic8RTYkgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YRktDqWTx/ki93fL+PpDRNIMdeM3M/oIV9hq1XTsH4RpqIs9R4U1hqkM9S/KIy8//
-         FJdPoUgtStFo9AfJ4LIExOWayXp5gb2vlg/G7FsHowbS+CoStrqP8whnOle51NX8xB
-         WxrO4m2OXF59FseocAKylroXk142cjJlSV+x4VUs=
+        b=TdmY04xYnW6AyTlJuJHq6eyNKYR9jVYEHG13iLjHc5nZMqMn55R63uCYiu7eF3T1e
+         fiHMhcnAJWQoPDc3uxfspxxLfFTkjVCI7EkcJfCon0VuokGG8O50ro7JdHZPq8cUJj
+         sP52WxhiQ6QvLgF4lYqBtE1a1yRyzrZu6lqjl9m0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 08/32] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
-Date:   Mon,  7 Mar 2022 10:18:34 +0100
-Message-Id: <20220307091634.680134851@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        Zeal Robot <zealci@zte.com.cn>,
+        wangyong <wang.yong12@zte.com.cn>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        CGEL ZTE <cgel.zte@gmail.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Song Liu <songliubraving@fb.com>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 41/42] memfd: fix F_SEAL_WRITE after shmem huge page allocated
+Date:   Mon,  7 Mar 2022 10:19:15 +0100
+Message-Id: <20220307091637.348617653@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
-References: <20220307091634.434478485@linuxfoundation.org>
+In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
+References: <20220307091636.146155347@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +57,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Hugh Dickins <hughd@google.com>
 
-[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
+commit f2b277c4d1c63a85127e8aa2588e9cc3bd21cb99 upstream.
 
-Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
-0x1071 composition in order to avoid bind error.
+Wangyong reports: after enabling tmpfs filesystem to support transparent
+hugepage with the following command:
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
+
+the docker program tries to add F_SEAL_WRITE through the following
+command, but it fails unexpectedly with errno EBUSY:
+
+  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE) = -1.
+
+That is because memfd_tag_pins() and memfd_wait_for_pins() were never
+updated for shmem huge pages: checking page_mapcount() against
+page_count() is hopeless on THP subpages - they need to check
+total_mapcount() against page_count() on THP heads only.
+
+Make memfd_tag_pins() (compared > 1) as strict as memfd_wait_for_pins()
+(compared != 1): either can be justified, but given the non-atomic
+total_mapcount() calculation, it is better now to be strict.  Bear in
+mind that total_mapcount() itself scans all of the THP subpages, when
+choosing to take an XA_CHECK_SCHED latency break.
+
+Also fix the unlikely xa_is_value() case in memfd_wait_for_pins(): if a
+page has been swapped out since memfd_tag_pins(), then its refcount must
+have fallen, and so it can safely be untagged.
+
+Link: https://lkml.kernel.org/r/a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com
+Signed-off-by: Hugh Dickins <hughd@google.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Reported-by: wangyong <wang.yong12@zte.com.cn>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: CGEL ZTE <cgel.zte@gmail.com>
+Cc: Kirill A. Shutemov <kirill@shutemov.name>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yang Yang <yang.yang29@zte.com.cn>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ mm/shmem.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index d86132d41416d..95256765b3887 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -652,6 +652,11 @@ static const struct usb_device_id mbim_devs[] = {
- 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
- 	},
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -2689,7 +2689,8 @@ static void shmem_tag_pins(struct addres
+ 				slot = radix_tree_iter_retry(&iter);
+ 				continue;
+ 			}
+-		} else if (page_count(page) - page_mapcount(page) > 1) {
++		} else if (!PageTail(page) && page_count(page) !=
++			   hpage_nr_pages(page) + total_mapcount(page)) {
+ 			radix_tree_tag_set(&mapping->page_tree, iter.index,
+ 					   SHMEM_TAG_PINNED);
+ 		}
+@@ -2749,8 +2750,8 @@ static int shmem_wait_for_pins(struct ad
+ 				page = NULL;
+ 			}
  
-+	/* Telit FN990 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
-+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
-+	},
-+
- 	/* default entry */
- 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
- 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
--- 
-2.34.1
-
+-			if (page &&
+-			    page_count(page) - page_mapcount(page) != 1) {
++			if (page && page_count(page) !=
++			    hpage_nr_pages(page) + total_mapcount(page)) {
+ 				if (scan < LAST_SCAN)
+ 					goto continue_resched;
+ 
 
 
