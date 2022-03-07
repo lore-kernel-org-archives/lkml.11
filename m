@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 711CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7142C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238756AbiCGJyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        id S231821AbiCGJyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:54:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241119AbiCGJly (ORCPT
+        with ESMTP id S241113AbiCGJlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:54 -0500
+        Mon, 7 Mar 2022 04:41:53 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4DDE19;
-        Mon,  7 Mar 2022 01:40:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F08B4D;
+        Mon,  7 Mar 2022 01:40:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D27ECB810B2;
-        Mon,  7 Mar 2022 09:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28FC1C340E9;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28606B810B2;
         Mon,  7 Mar 2022 09:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B07C340F3;
+        Mon,  7 Mar 2022 09:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646021;
-        bh=Siwz6QpJRTt+Npz05OdW3g5gp8nlvX75Sj1MJGMROlo=;
+        s=korg; t=1646646018;
+        bh=EfXEDqoaenIu8ZmjzzJ9FjIo06SO7hiocNVYack6g20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QcMnvj5oz9y1ARuvLkV7rLXXFrU4lBMdGr3HgpJN0DWPzJriQcRoT1NrEkES+I1Ff
-         gWX5D2O23bG+ybYjNb2XsBgTfT4RlfQIwuYZC3qz68391zdGn/XMrWfFFuXi7Yt94U
-         MfH6LKxVKwVYxr52SUocl2HVA8jABv23TYEAHYLQ=
+        b=NF/Aw27UrpEJ1oMSZAqmWACdgsMAC6pWZEmFbsbgJpGiC3KiQ5yqrsrDpYiKpD14u
+         lr4GNyGcedE8rZNuyskjMHM8Vqmo3/lVe/eRZXDF3nFHCfpTVK/HvhkJeYfZqPk6rG
+         tKN8NObVmI9E7izvT6S1yVS3DifLncwq7hfFr3h4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kiran Kumar K <kirankumark@marvell.com>,
+        stable@vger.kernel.org, Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 108/262] octeontx2-af: Adjust LA pointer for cpt parse header
-Date:   Mon,  7 Mar 2022 10:17:32 +0100
-Message-Id: <20220307091705.522456744@linuxfoundation.org>
+Subject: [PATCH 5.15 107/262] octeontx2-af: cn10k: Use appropriate register for LMAC enable
+Date:   Mon,  7 Mar 2022 10:17:31 +0100
+Message-Id: <20220307091705.495024442@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,315 +51,222 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiran Kumar K <kirankumark@marvell.com>
+From: Geetha sowjanya <gakula@marvell.com>
 
-[ Upstream commit 85212a127e469c5560daf63a9782755ee4b03619 ]
+[ Upstream commit fae80edeafbbba5ef9a0423aa5e5515518626433 ]
 
-In case of ltype NPC_LT_LA_CPT_HDR, LA pointer is pointing to the
-start of cpt parse header. Since cpt parse header has veriable
-length padding, this will be a problem for DMAC extraction. Adding
-KPU profile changes to adjust the LA pointer to start at ether header
-in case of cpt parse header by
-   - Adding ptr advance in pkind 58 to a fixed value 40
-   - Adding variable length offset 7 and mask 7 (pad len in
-     CPT_PARSE_HDR).
-Also added the missing static declaration for npc_set_var_len_offset_pkind
-function.
+CN10K platforms uses RPM(0..2)_MTI_MAC100(0..3)_COMMAND_CONFIG
+register for lmac TX/RX enable whereas CN9xxx platforms use
+CGX_CMRX_CONFIG register. This config change was missed when
+adding support for CN10K RPM.
 
-Signed-off-by: Kiran Kumar K <kirankumark@marvell.com>
+Fixes: 91c6945ea1f9 ("octeontx2-af: cn10k: Add RPM MAC support")
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../marvell/octeontx2/af/npc_profile.h        | 173 ++++++++----------
- .../ethernet/marvell/octeontx2/af/rvu_npc.c   |   2 +-
- 2 files changed, 80 insertions(+), 95 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   |  2 +
+ .../marvell/octeontx2/af/lmac_common.h        |  3 ++
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 39 +++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   |  4 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  1 +
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 14 ++++++-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 10 ++---
+ 7 files changed, 66 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-index 2b7030886daec..fad5ecda4e647 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-@@ -187,6 +187,8 @@ enum npc_kpu_parser_state {
- 	NPC_S_KPU2_PREHEADER,
- 	NPC_S_KPU2_EXDSA,
- 	NPC_S_KPU2_NGIO,
-+	NPC_S_KPU2_CPT_CTAG,
-+	NPC_S_KPU2_CPT_QINQ,
- 	NPC_S_KPU3_CTAG,
- 	NPC_S_KPU3_STAG,
- 	NPC_S_KPU3_QINQ,
-@@ -1004,11 +1006,11 @@ static struct npc_kpu_profile_action ikpu_action_entries[] = {
- 	},
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		40, 54, 58, 0, 0,
--		NPC_S_KPU1_CPT_HDR, 0, 0,
-+		12, 16, 20, 0, 0,
-+		NPC_S_KPU1_CPT_HDR, 40, 0,
- 		NPC_LID_LA, NPC_LT_NA,
- 		0,
--		0, 0, 0, 0,
-+		7, 7, 0, 0,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index d379a35c4618f..6b335139abe7f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -1571,6 +1571,8 @@ static struct mac_ops	cgx_mac_ops    = {
+ 	.mac_enadis_pause_frm =		cgx_lmac_enadis_pause_frm,
+ 	.mac_pause_frm_config =		cgx_lmac_pause_frm_config,
+ 	.mac_enadis_ptp_config =	cgx_lmac_ptp_config,
++	.mac_rx_tx_enable =		cgx_lmac_rx_tx_enable,
++	.mac_tx_enable =		cgx_lmac_tx_enable,
+ };
  
- 	},
- 	{
-@@ -1846,80 +1848,35 @@ static struct npc_kpu_profile_cam kpu1_cam_entries[] = {
- 	},
- 	{
- 		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
- 		NPC_ETYPE_IP,
- 		0xffff,
- 		0x0000,
- 		0x0000,
--	},
--	{
--		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
--		NPC_ETYPE_IP6,
--		0xffff,
- 		0x0000,
- 		0x0000,
- 	},
- 	{
- 		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
--		NPC_ETYPE_CTAG,
--		0xffff,
--		0x0000,
--		0x0000,
--	},
--	{
--		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
--		NPC_ETYPE_QINQ,
-+		NPC_ETYPE_IP6,
- 		0xffff,
- 		0x0000,
- 		0x0000,
--	},
--	{
--		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
- 		0x0000,
- 		0x0000,
--		NPC_ETYPE_IP,
--		0xffff,
- 	},
- 	{
- 		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
-+		NPC_ETYPE_CTAG,
- 		0xffff,
- 		0x0000,
- 		0x0000,
--		NPC_ETYPE_IP6,
--		0xffff,
--	},
--	{
--		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
- 		0x0000,
- 		0x0000,
--		NPC_ETYPE_CTAG,
--		0xffff,
- 	},
- 	{
- 		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0xffff,
--		0x0000,
--		0x0000,
- 		NPC_ETYPE_QINQ,
- 		0xffff,
--	},
--	{
--		NPC_S_KPU1_CPT_HDR, 0xff,
--		0x0000,
--		0x0000,
- 		0x0000,
- 		0x0000,
- 		0x0000,
-@@ -2929,6 +2886,42 @@ static struct npc_kpu_profile_cam kpu2_cam_entries[] = {
- 		0x0000,
- 		0x0000,
- 	},
-+	{
-+		NPC_S_KPU2_CPT_CTAG, 0xff,
-+		NPC_ETYPE_IP,
-+		0xffff,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+	},
-+	{
-+		NPC_S_KPU2_CPT_CTAG, 0xff,
-+		NPC_ETYPE_IP6,
-+		0xffff,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+	},
-+	{
-+		NPC_S_KPU2_CPT_QINQ, 0xff,
-+		NPC_ETYPE_CTAG,
-+		0xffff,
-+		NPC_ETYPE_IP,
-+		0xffff,
-+		0x0000,
-+		0x0000,
-+	},
-+	{
-+		NPC_S_KPU2_CPT_QINQ, 0xff,
-+		NPC_ETYPE_CTAG,
-+		0xffff,
-+		NPC_ETYPE_IP6,
-+		0xffff,
-+		0x0000,
-+		0x0000,
-+	},
- 	{
- 		NPC_S_NA, 0X00,
- 		0x0000,
-@@ -9176,39 +9169,7 @@ static struct npc_kpu_profile_action kpu1_action_entries[] = {
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		8, 0, 6, 3, 0,
--		NPC_S_KPU5_CPT_IP, 56, 1,
--		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
--		0,
--		0, 0, 0, 0,
--	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		6, 0, 0, 3, 0,
--		NPC_S_KPU5_CPT_IP6, 56, 1,
--		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
--		0,
--		0, 0, 0, 0,
--	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		4, 8, 0, 0, 0,
--		NPC_S_KPU2_CTAG, 54, 1,
--		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
--		NPC_F_LA_U_HAS_TAG | NPC_F_LA_L_WITH_VLAN,
--		0, 0, 0, 0,
--	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		4, 8, 0, 0, 0,
--		NPC_S_KPU2_QINQ, 54, 1,
--		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
--		NPC_F_LA_U_HAS_TAG | NPC_F_LA_L_WITH_VLAN,
--		0, 0, 0, 0,
--	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		8, 0, 6, 3, 0,
--		NPC_S_KPU5_CPT_IP, 60, 1,
-+		NPC_S_KPU5_CPT_IP, 14, 1,
- 		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
- 		0,
- 		0, 0, 0, 0,
-@@ -9216,7 +9177,7 @@ static struct npc_kpu_profile_action kpu1_action_entries[] = {
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		6, 0, 0, 3, 0,
--		NPC_S_KPU5_CPT_IP6, 60, 1,
-+		NPC_S_KPU5_CPT_IP6, 14, 1,
- 		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
- 		0,
- 		0, 0, 0, 0,
-@@ -9224,7 +9185,7 @@ static struct npc_kpu_profile_action kpu1_action_entries[] = {
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		4, 8, 0, 0, 0,
--		NPC_S_KPU2_CTAG, 58, 1,
-+		NPC_S_KPU2_CPT_CTAG, 12, 1,
- 		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
- 		NPC_F_LA_U_HAS_TAG | NPC_F_LA_L_WITH_VLAN,
- 		0, 0, 0, 0,
-@@ -9232,19 +9193,11 @@ static struct npc_kpu_profile_action kpu1_action_entries[] = {
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		4, 8, 0, 0, 0,
--		NPC_S_KPU2_QINQ, 58, 1,
-+		NPC_S_KPU2_CPT_QINQ, 12, 1,
- 		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
- 		NPC_F_LA_U_HAS_TAG | NPC_F_LA_L_WITH_VLAN,
- 		0, 0, 0, 0,
- 	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		0, 0, 0, 0, 1,
--		NPC_S_NA, 0, 1,
--		NPC_LID_LA, NPC_LT_LA_CPT_HDR,
--		NPC_F_LA_L_UNK_ETYPE,
--		0, 0, 0, 0,
--	},
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		12, 0, 0, 1, 0,
-@@ -10138,6 +10091,38 @@ static struct npc_kpu_profile_action kpu2_action_entries[] = {
- 		0,
- 		0, 0, 0, 0,
- 	},
-+	{
-+		NPC_ERRLEV_RE, NPC_EC_NOERR,
-+		8, 0, 6, 2, 0,
-+		NPC_S_KPU5_CPT_IP, 6, 1,
-+		NPC_LID_LB, NPC_LT_LB_CTAG,
-+		0,
-+		0, 0, 0, 0,
-+	},
-+	{
-+		NPC_ERRLEV_RE, NPC_EC_NOERR,
-+		6, 0, 0, 2, 0,
-+		NPC_S_KPU5_CPT_IP6, 6, 1,
-+		NPC_LID_LB, NPC_LT_LB_CTAG,
-+		0,
-+		0, 0, 0, 0,
-+	},
-+	{
-+		NPC_ERRLEV_RE, NPC_EC_NOERR,
-+		8, 0, 6, 2, 0,
-+		NPC_S_KPU5_CPT_IP, 10, 1,
-+		NPC_LID_LB, NPC_LT_LB_STAG_QINQ,
-+		NPC_F_LB_U_MORE_TAG | NPC_F_LB_L_WITH_CTAG,
-+		0, 0, 0, 0,
-+	},
-+	{
-+		NPC_ERRLEV_RE, NPC_EC_NOERR,
-+		6, 0, 0, 2, 0,
-+		NPC_S_KPU5_CPT_IP6, 10, 1,
-+		NPC_LID_LB, NPC_LT_LB_STAG_QINQ,
-+		NPC_F_LB_U_MORE_TAG | NPC_F_LB_L_WITH_CTAG,
-+		0, 0, 0, 0,
-+	},
- 	{
- 		NPC_ERRLEV_LB, NPC_EC_L2_K3,
- 		0, 0, 0, 0, 1,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-index 2f347e937f00a..fbb573c40c1ac 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -3183,7 +3183,7 @@ int rvu_mbox_handler_npc_get_kex_cfg(struct rvu *rvu, struct msg_req *req,
- 	return 0;
+ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+index fc6e7423cbd81..b33e7d1d0851c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+@@ -107,6 +107,9 @@ struct mac_ops {
+ 	void			(*mac_enadis_ptp_config)(void  *cgxd,
+ 							 int lmac_id,
+ 							 bool enable);
++
++	int			(*mac_rx_tx_enable)(void *cgxd, int lmac_id, bool enable);
++	int			(*mac_tx_enable)(void *cgxd, int lmac_id, bool enable);
+ };
+ 
+ struct cgx {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index c8f20b36adc89..9ea2f6ac38ec1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -30,6 +30,8 @@ static struct mac_ops	rpm_mac_ops   = {
+ 	.mac_enadis_pause_frm =		rpm_lmac_enadis_pause_frm,
+ 	.mac_pause_frm_config =		rpm_lmac_pause_frm_config,
+ 	.mac_enadis_ptp_config =	rpm_lmac_ptp_config,
++	.mac_rx_tx_enable =		rpm_lmac_rx_tx_enable,
++	.mac_tx_enable =		rpm_lmac_tx_enable,
+ };
+ 
+ struct mac_ops *rpm_get_mac_ops(void)
+@@ -54,6 +56,43 @@ int rpm_get_nr_lmacs(void *rpmd)
+ 	return hweight8(rpm_read(rpm, 0, CGXX_CMRX_RX_LMACS) & 0xFULL);
  }
  
--int
-+static int
- npc_set_var_len_offset_pkind(struct rvu *rvu, u16 pcifunc, u64 pkind,
- 			     u8 var_len_off, u8 var_len_off_mask, u8 shift_dir)
++int rpm_lmac_tx_enable(void *rpmd, int lmac_id, bool enable)
++{
++	rpm_t *rpm = rpmd;
++	u64 cfg, last;
++
++	if (!is_lmac_valid(rpm, lmac_id))
++		return -ENODEV;
++
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	last = cfg;
++	if (enable)
++		cfg |= RPM_TX_EN;
++	else
++		cfg &= ~(RPM_TX_EN);
++
++	if (cfg != last)
++		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
++	return !!(last & RPM_TX_EN);
++}
++
++int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable)
++{
++	rpm_t *rpm = rpmd;
++	u64 cfg;
++
++	if (!is_lmac_valid(rpm, lmac_id))
++		return -ENODEV;
++
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	if (enable)
++		cfg |= RPM_RX_EN | RPM_TX_EN;
++	else
++		cfg &= ~(RPM_RX_EN | RPM_TX_EN);
++	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
++	return 0;
++}
++
+ void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable)
  {
+ 	rpm_t *rpm = rpmd;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+index 57c8a687b488a..ff580311edd03 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+@@ -43,6 +43,8 @@
+ #define RPMX_MTI_STAT_DATA_HI_CDC            0x10038
+ 
+ #define RPM_LMAC_FWI			0xa
++#define RPM_TX_EN			BIT_ULL(0)
++#define RPM_RX_EN			BIT_ULL(1)
+ 
+ /* Function Declarations */
+ int rpm_get_nr_lmacs(void *rpmd);
+@@ -57,4 +59,6 @@ int rpm_lmac_enadis_pause_frm(void *rpmd, int lmac_id, u8 tx_pause,
+ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat);
+ int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat);
+ void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable);
++int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable);
++int rpm_lmac_tx_enable(void *rpmd, int lmac_id, bool enable);
+ #endif /* RPM_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 8f81e468be048..a7213db38804b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -801,6 +801,7 @@ bool is_mac_feature_supported(struct rvu *rvu, int pf, int feature);
+ u32  rvu_cgx_get_fifolen(struct rvu *rvu);
+ void *rvu_first_cgx_pdata(struct rvu *rvu);
+ int cgxlmac_to_pf(struct rvu *rvu, int cgx_id, int lmac_id);
++int rvu_cgx_config_tx(void *cgxd, int lmac_id, bool enable);
+ 
+ int npc_get_nixlf_mcam_index(struct npc_mcam *mcam, u16 pcifunc, int nixlf,
+ 			     int type);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 5bdbc77aa721d..28ff67819566c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -442,16 +442,26 @@ void rvu_cgx_enadis_rx_bp(struct rvu *rvu, int pf, bool enable)
+ int rvu_cgx_config_rxtx(struct rvu *rvu, u16 pcifunc, bool start)
+ {
+ 	int pf = rvu_get_pf(pcifunc);
++	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
++	void *cgxd;
+ 
+ 	if (!is_cgx_config_permitted(rvu, pcifunc))
+ 		return LMAC_AF_ERR_PERM_DENIED;
+ 
+ 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	cgxd = rvu_cgx_pdata(cgx_id, rvu);
++	mac_ops = get_mac_ops(cgxd);
++
++	return mac_ops->mac_rx_tx_enable(cgxd, lmac_id, start);
++}
+ 
+-	cgx_lmac_rx_tx_enable(rvu_cgx_pdata(cgx_id, rvu), lmac_id, start);
++int rvu_cgx_config_tx(void *cgxd, int lmac_id, bool enable)
++{
++	struct mac_ops *mac_ops;
+ 
+-	return 0;
++	mac_ops = get_mac_ops(cgxd);
++	return mac_ops->mac_tx_enable(cgxd, lmac_id, enable);
+ }
+ 
+ void rvu_cgx_disable_dmac_entries(struct rvu *rvu, u16 pcifunc)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 143b554d044bf..603361c94786a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -2068,8 +2068,8 @@ static int nix_smq_flush(struct rvu *rvu, int blkaddr,
+ 	/* enable cgx tx if disabled */
+ 	if (is_pf_cgxmapped(rvu, pf)) {
+ 		rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+-		restore_tx_en = !cgx_lmac_tx_enable(rvu_cgx_pdata(cgx_id, rvu),
+-						    lmac_id, true);
++		restore_tx_en = !rvu_cgx_config_tx(rvu_cgx_pdata(cgx_id, rvu),
++						   lmac_id, true);
+ 	}
+ 
+ 	cfg = rvu_read64(rvu, blkaddr, NIX_AF_SMQX_CFG(smq));
+@@ -2092,7 +2092,7 @@ static int nix_smq_flush(struct rvu *rvu, int blkaddr,
+ 	rvu_cgx_enadis_rx_bp(rvu, pf, true);
+ 	/* restore cgx tx state */
+ 	if (restore_tx_en)
+-		cgx_lmac_tx_enable(rvu_cgx_pdata(cgx_id, rvu), lmac_id, false);
++		rvu_cgx_config_tx(rvu_cgx_pdata(cgx_id, rvu), lmac_id, false);
+ 	return err;
+ }
+ 
+@@ -3878,7 +3878,7 @@ nix_config_link_credits(struct rvu *rvu, int blkaddr, int link,
+ 	/* Enable cgx tx if disabled for credits to be back */
+ 	if (is_pf_cgxmapped(rvu, pf)) {
+ 		rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+-		restore_tx_en = !cgx_lmac_tx_enable(rvu_cgx_pdata(cgx_id, rvu),
++		restore_tx_en = !rvu_cgx_config_tx(rvu_cgx_pdata(cgx_id, rvu),
+ 						    lmac_id, true);
+ 	}
+ 
+@@ -3918,7 +3918,7 @@ nix_config_link_credits(struct rvu *rvu, int blkaddr, int link,
+ 
+ 	/* Restore state of cgx tx */
+ 	if (restore_tx_en)
+-		cgx_lmac_tx_enable(rvu_cgx_pdata(cgx_id, rvu), lmac_id, false);
++		rvu_cgx_config_tx(rvu_cgx_pdata(cgx_id, rvu), lmac_id, false);
+ 
+ 	mutex_unlock(&rvu->rsrc_lock);
+ 	return rc;
 -- 
 2.34.1
 
