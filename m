@@ -2,98 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86FE2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFDCC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:06:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243270AbiCGRFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 12:05:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S244373AbiCGRHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 12:07:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241464AbiCGRFp (ORCPT
+        with ESMTP id S235114AbiCGRHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 12:05:45 -0500
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE3864BC4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:04:50 -0800 (PST)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2dc0364d2ceso171998767b3.7
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 09:04:50 -0800 (PST)
+        Mon, 7 Mar 2022 12:07:15 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFA27C169
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:06:20 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id i8so24355816wrr.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 09:06:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MFytkXFVm+nQKBfdysr1CcxHAqYCnsg45+4U4K+ObQM=;
-        b=4nXPz/240sTZkTNjrrs+YCUsZXJ69EFBHPB4zrzlis4OZy6aLv9xkGR+r5be2fVmfs
-         PEFFMQp6c8hnOFOpwKWExugg1BcQ5/SvRKOOFxDtKUKr8y4pVFwIrFFF+rS9E0Ey6T4X
-         t5b4BFCCWTqKOtckWBbRvAXOnqFn4jyBu2LXY6HMi0VEgnO7IaaQq1PduZfg6mjOnUGK
-         mYXR+KWSp8EEbDu1mkeIaIpCQOzGYzMpYVmjuC2Dyzi8+jKs7p8xWcXzFSQBQ4dZzpKO
-         TdB+ORLfdFIQKKlM1tB7rExkxI4EtpLiVN0raeK2SJKuI146TvS43W4PnTQbc3Rpc3Gw
-         WeQQ==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=sr6hFLYKJ6ZsTgfOYjeBp4uWIne5BXMN/b0HprWBPy4=;
+        b=12DRR/xZnfcwRl5Fq9ydzhNfHtZYiYBxvFitpmWuxkWWA1envSdYXKq9vlEx7X248U
+         tD6c7yGEmP3BmF0BUbY9aSb9Scxmhvhf74qEvzc31aCVBTThjhVprYY/UC1GIQ2RcfUb
+         kohvvhIRfvRA5s/0+oOelEedeyJlZ+d+zH893bztNpYYuGtxQXiQyKnOBhbBto1Ahsbn
+         AZeem6lJjFhMUcVRspEFGE8g4hvIDSksaNyIcxaRkCuOrWNop+6uRvctNpuqOYJnTtSp
+         EkNdwreve0L3GWAV1sU+XyVO7oEflTcr5cad37TY4HN/MVbU/lu3qDcwM7T28lZ5VTA6
+         3jCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MFytkXFVm+nQKBfdysr1CcxHAqYCnsg45+4U4K+ObQM=;
-        b=D4+bxVjgZWsdgosmndmU7KFJ/Xmc3PANZ1pr7OmLQjgbv9OsHfpSMEzyaKJzv53C8K
-         G6VT9NXfzARqGhDxG1LQeNNsLVT4UDqO3OXEvXiCGq4skkLJ8eNFCN5zvKYMDD37EhfI
-         RJJoDMBJFAT5vHuHTXz20zg4lJsNkt31ctkg9yuPR4NeLGqPb+AX5fb8nrK6itcCvdhy
-         HsbjMkh1PIsVHmDUTfWdjqqRKgAatXzapUJiRlJqAEGHVktcVljE67liX5/8EDAZ1wtQ
-         zCN3+B2Jj0m6tJrLLvqHxHKsIiPqkunOWNXd/oS45km08dy4923qoW72nPs/3o6NQkRN
-         FZ7A==
-X-Gm-Message-State: AOAM531FK8cc1uCkMAC2iADe+xMdwnx1ul22MkFLmhrkxUoAsACeunF9
-        GLclpI0c3MxAb/PQyyAvO5BkWudeh7XKwMYoZiNzZw==
-X-Google-Smtp-Source: ABdhPJztR+S2W/s9ItNiWnCahlnxnbCNypLwubklaZAxAS+l5RMXq/fSTQrA9tZ86ojAdf2uRsrxoeq1F/D9AmvN2/0=
-X-Received: by 2002:a0d:e609:0:b0:2d6:b8b0:8608 with SMTP id
- p9-20020a0de609000000b002d6b8b08608mr9223373ywe.31.1646672689245; Mon, 07 Mar
- 2022 09:04:49 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sr6hFLYKJ6ZsTgfOYjeBp4uWIne5BXMN/b0HprWBPy4=;
+        b=IHWkpGUXk7Qn66qUh7yx8/u1qFt5LnWI4of9QKyVS9+0uW68W6MHbNz9876fg2lUlu
+         nBDy9HST+Zel7zc1XraUQPC8BkOUQqJZ3MP9re192sgzppHYi0RVhViXiJwup03SUHZE
+         ulfuSCoTYuy5+qI/LZevsA7wO6LViWj7KxwZwp3YhyXsY+SPDBlvjnVllDJIB4kk9AUJ
+         7lEsdB6ybMmFZ8AlHghzZjt1HJIBeD+xCytd6VZ6bBg8Ci27tKJA6LDqudGiJejp5HFf
+         XU895uhtmG6NAf5Hfuq/7xCEZp8mIbIk5Pv/ze6tTHp/xNPEUJZPWpbM5w5a7SAaxtBm
+         io3A==
+X-Gm-Message-State: AOAM531XIgjmhjdoo3R07Qq5ihjXfHjtvw2zLtmvQzlO8Pg06iX/AC0m
+        QAnS9Z46Nq0gFxRI9YHSsDmaxW1gKodtUj4MA14=
+X-Google-Smtp-Source: ABdhPJws0CTTyXTbkfcrLlHvLeHfV9Sn474JetVyckBI6FLVcWdRLhFnjOg4U7REZmNBNRxJx8QNqw==
+X-Received: by 2002:a05:6000:1a52:b0:1f0:2d62:2bbb with SMTP id t18-20020a0560001a5200b001f02d622bbbmr9022775wry.614.1646672778788;
+        Mon, 07 Mar 2022 09:06:18 -0800 (PST)
+Received: from [192.168.1.8] ([149.86.77.40])
+        by smtp.gmail.com with ESMTPSA id n7-20020a05600c3b8700b00389a6241669sm3088772wms.33.2022.03.07.09.06.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 09:06:18 -0800 (PST)
+Message-ID: <56b9dab5-6a3d-58ff-69c9-7abaabf41d05@isovalent.com>
+Date:   Mon, 7 Mar 2022 17:06:17 +0000
 MIME-Version: 1.0
-References: <20220307130708.58771-1-songmuchun@bytedance.com>
- <20220307130708.58771-2-songmuchun@bytedance.com> <YiY0QkE+efo1hyda@bombadil.infradead.org>
-In-Reply-To: <YiY0QkE+efo1hyda@bombadil.infradead.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 8 Mar 2022 01:03:08 +0800
-Message-ID: <CAMZfGtWHZgvFSE0P1LNprcjt0YAvC5XFAz=aUZw9vJFPGzUTbw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] mm: hugetlb: disable freeing vmemmap pages when
- struct page crosses page boundaries
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        David Hildenbrand <david@redhat.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH bpf-next] bpf: Remove redundant slash
+Content-Language: en-GB
+To:     Yuntao Wang <ytcoode@gmail.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220305161013.361646-1-ytcoode@gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220305161013.361646-1-ytcoode@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 12:35 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> On Mon, Mar 07, 2022 at 09:07:05PM +0800, Muchun Song wrote:
-> > If the size of "struct page" is not the power of two and this
-> > feature is enabled, then the vmemmap pages of HugeTLB will be
-> > corrupted after remapping (panic is about to happen in theory).
->
-> Huh what? If a panic is possible best we prevent this in kconfig
-> all together. I'd instead just put some work into this instead of
-> adding all this run time hacks.
+2022-03-06 00:10 UTC+0800 ~ Yuntao Wang <ytcoode@gmail.com>
+> The trailing slash of LIBBPF_SRCS is redundant, remove it.
+> 
+> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+> ---
+>  kernel/bpf/preload/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
+> index 167534e3b0b4..7b62b3e2bf6d 100644
+> --- a/kernel/bpf/preload/Makefile
+> +++ b/kernel/bpf/preload/Makefile
+> @@ -1,6 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  
+> -LIBBPF_SRCS = $(srctree)/tools/lib/bpf/
+> +LIBBPF_SRCS = $(srctree)/tools/lib/bpf
+>  LIBBPF_INCLUDE = $(LIBBPF_SRCS)/..
+>  
+>  obj-$(CONFIG_BPF_PRELOAD_UMD) += bpf_preload.o
 
-If the size of `struct page` is not power of 2, then those lines added
-by this patch will be optimized away by the compiler, therefore there
-is going to be no extra overhead to detect this.
+Looks good to me, but we could maybe just as well get rid of LIBBPF_SRCS
+in this file?:
 
->
-> Can you try to add kconfig magic to detect if a PAGE_SIZE is PO2?
->
+	LIBBPF_INCLUDE = $(srctree)/tools/lib
 
-I agree with you that it is better if we can move this check
-into Kconfig. I tried this a few months ago. It is not easy to
-do this. How to check if a `struct page size` is PO2 in
-Kconfig? If you have any thoughts please let me know.
-
-Thanks.
+Quentin
