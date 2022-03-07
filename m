@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 277A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243806AbiCGPd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:33:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
+        id S243825AbiCGPgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243812AbiCGPdt (ORCPT
+        with ESMTP id S235983AbiCGPgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:33:49 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07665403D1;
-        Mon,  7 Mar 2022 07:32:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646667173; x=1678203173;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Gsmx9JsR+nCJ1tL1LopmQSPZOhGLxmtw74vFEai5lBE=;
-  b=h5dj0Vv9gfNotDjru9MdDRnenfhEOhcnjSHGQ8pH8HaEICjN3KH5h9de
-   T3Q9lNJbjX84cD6mEAwSOxOXeIo+WzucdhjgAc02RvhXbkvyIThhF3t7A
-   vWTftTVlRAh7QhiVxJ6JoaK39Emy6Hrt5QUZDfC8rAiWeE+clZpkU/nZC
-   Y=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Mar 2022 07:32:52 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 07:32:51 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 7 Mar 2022 07:32:51 -0800
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 7 Mar 2022 07:32:50 -0800
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <corbet@lwn.net>
-CC:     <pekka.paalanen@collabora.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [RESEND PATCH] drm/doc: Clarify what ioctls can be used on render nodes
-Date:   Mon, 7 Mar 2022 08:32:36 -0700
-Message-ID: <1646667156-16366-1-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 7 Mar 2022 10:36:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897BD5C373;
+        Mon,  7 Mar 2022 07:35:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36FD5B815E5;
+        Mon,  7 Mar 2022 15:35:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F40C340E9;
+        Mon,  7 Mar 2022 15:35:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646667347;
+        bh=JbY5diFr5DxLb353nQpEtMPOmLgwWU265WRVU2Sa3gs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TQZVPcmNWFx3KoCVbAtcqbmRxBlREjxRlqgYPDRU+Erw7qGlNkJDbSAgTBy2wzkFq
+         BI/wXu31ar6PvEUzPO442Zbn1oeAelVVtdsnd10dI2AVp8OuqsK+PnRx/FQ216yVDZ
+         LFFnvbvYe4kXQXZbAznh/2RF1rIiA/X4mWHqPJzmHbgiJhQ7K6mp3uVEN3CrMrs+Qc
+         DQJcr7NnRQkK4SD+wblqWNAA8Gphl4orMBRcvlPyUiGc/lsAs9t5IFCBOAevBGiEW2
+         G+oz7dajXVHK9hGSQMdWtgmkUk3ZHtnWIsLpYJp0WpuvECsvUD9DhjTSLDe58mFbVr
+         ok5uLUOmV6gAA==
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     linux-sgx@vger.kernel.org
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] x86/sgx: Enable PROT_EXEC for EAUG'd pages
+Date:   Mon,  7 Mar 2022 17:35:04 +0200
+Message-Id: <20220307153504.198112-1-jarkko@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The documentation for render nodes indicates that only "PRIME-related"
-ioctls are valid on render nodes, but the documentation does not clarify
-what that means.  If the reader is not familiar with PRIME, they may
-beleive this to be only the ioctls with "PRIME" in the name and not other
-ioctls such as set of syncobj ioctls.  Clarify the situation for the
-reader by referencing where the reader will find a current list of valid
-ioctls.
+vm_max_permissions was created to control the pre-initialization content
+that contributes to MRSIGNATURE. It was never meant to be as a limit to
+dynamically added pages.
 
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Acked-by: Pekka Paalanen <pekka.paalanen@collabora.com>
+E.g. static content could be used as a hook for LSM's to decide whether
+certain signature is qualified for EINIT. Dynamic content has nothing to
+do with that. The current mechanisms only add to the complexity on how
+to control PTE and EPCM permissions, and do not add anything else than
+obfuscity to security side of things.
+
+Thus add PROT_EXEC to the permissions assigned by the #PF handler.
+
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 ---
+ arch/x86/kernel/cpu/sgx/encl.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-I was confused by this when reading the documentation.  Now that I have
-figured out what the documentation means, I would like to add a clarification
-for the next reader which would have helped me.
-
- Documentation/gpu/drm-uapi.rst | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/gpu/drm-uapi.rst b/Documentation/gpu/drm-uapi.rst
-index 199afb5..ce47b42 100644
---- a/Documentation/gpu/drm-uapi.rst
-+++ b/Documentation/gpu/drm-uapi.rst
-@@ -148,7 +148,9 @@ clients together with the legacy drmAuth authentication procedure.
- If a driver advertises render node support, DRM core will create a
- separate render node called renderD<num>. There will be one render node
- per device. No ioctls except PRIME-related ioctls will be allowed on
--this node. Especially GEM_OPEN will be explicitly prohibited. Render
-+this node. Especially GEM_OPEN will be explicitly prohibited. For a
-+complete list of driver-independent ioctls that can be used on render
-+nodes, see the ioctls marked DRM_RENDER_ALLOW in drm_ioctl.c  Render
- nodes are designed to avoid the buffer-leaks, which occur if clients
- guess the flink names or mmap offsets on the legacy interface.
- Additionally to this basic interface, drivers must mark their
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 79e39bd99c09..0256918b2c2f 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -160,12 +160,11 @@ static vm_fault_t sgx_encl_eaug_page(struct vm_area_struct *vma,
+ 	encl_page->encl = encl;
+ 
+ 	/*
+-	 * Adding a regular page that is architecturally allowed to only
+-	 * be created with RW permissions.
+-	 * TBD: Interface with user space policy to support max permissions
+-	 * of RWX.
++	 * Dynamic pages do not contribute to MRSIGNATURE, i.e. they are
++	 * controlled only by PTE and EPCM permissions. Thus, the no limit
++	 * is set here.
+ 	 */
+-	prot = PROT_READ | PROT_WRITE;
++	prot = PROT_READ | PROT_WRITE | PROT_EXEC;
+ 	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
+ 	encl_page->vm_max_prot_bits = encl_page->vm_run_prot_bits;
+ 
 -- 
-2.7.4
+2.35.1
 
