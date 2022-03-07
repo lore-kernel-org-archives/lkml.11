@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF22C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9ED6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237452AbiCGKOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
+        id S237889AbiCGKOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239899AbiCGKAZ (ORCPT
+        with ESMTP id S239927AbiCGKA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:25 -0500
+        Mon, 7 Mar 2022 05:00:26 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DAB69484;
-        Mon,  7 Mar 2022 01:46:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8217D023;
+        Mon,  7 Mar 2022 01:46:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 574B461052;
-        Mon,  7 Mar 2022 09:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D833C340E9;
-        Mon,  7 Mar 2022 09:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 727ED61220;
+        Mon,  7 Mar 2022 09:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 769EFC340E9;
+        Mon,  7 Mar 2022 09:46:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646387;
-        bh=CNjjbDsQ8prVbFHV22sMlC4quIRpot1LlEfds24tKLE=;
+        s=korg; t=1646646393;
+        bh=RBIP91LgZUyqhUHzo0CuYJAho8yLrXfh2cIdnSzoUw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fhMYOeEwCAPv6C9pcSF02cws8rMDbL/IVxQHcM2uylX0oct4Znf6TarTRopjvm/hp
-         zwnGfr0TmUAeKBcIVG1dvjbqlOjEHaQHFsh7LJerVCWO8OTH1xV6K+mH0vvFLIoDhV
-         ELte69wEHIYGMdgcjYeYp1LCLt/jtaOi3fUpmFjU=
+        b=RV0cmJxB0YLFEK4RyWyioQQ1SWZyW6+qMGxdAcRQtbgJr5Cm82ljnErcNmfr8gyJ3
+         YTDmU/g3fAJXBgTzbSgg8xnNXWoUE0WRjDUIUClvsucHu4OmqYBP7TmrFzrBsnq/+s
+         cGJFtpY6h2w57fXtzCLy9NRwlesxJZl2YxepcB+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brett Creeley <brett.creeley@intel.com>,
-        Karen Sornek <karen.sornek@intel.com>,
+        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
         Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 228/262] iavf: Add helper function to go from pci_dev to adapter
-Date:   Mon,  7 Mar 2022 10:19:32 +0100
-Message-Id: <20220307091709.615594279@linuxfoundation.org>
+Subject: [PATCH 5.15 230/262] iavf: Add waiting so the port is initialized in remove
+Date:   Mon,  7 Mar 2022 10:19:34 +0100
+Message-Id: <20220307091709.708747963@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,88 +53,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karen Sornek <karen.sornek@intel.com>
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-[ Upstream commit 247aa001b72b6c8a89df9d108a2ec6f274a6b64d ]
+[ Upstream commit 974578017fc1fdd06cea8afb9dfa32602e8529ed ]
 
-Add helper function to go from pci_dev to adapter to make work simple -
-to go from a pci_dev to the adapter structure and make netdev assignment
-instead of having to go to the net_device then the adapter.
+There exist races when port is being configured and remove is
+triggered.
 
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Signed-off-by: Karen Sornek <karen.sornek@intel.com>
+unregister_netdev is not and can't be called under crit_lock
+mutex since it is calling ndo_stop -> iavf_close which requires
+this lock. Depending on init state the netdev could be still
+unregistered so unregister_netdev never cleans up, when shortly
+after that the device could become registered.
+
+Make iavf_remove wait until port finishes initialization.
+All critical state changes are atomic (under crit_lock).
+Crashes that come from iavf_reset_interrupt_capability and
+iavf_free_traffic_irqs should now be solved in a graceful
+manner.
+
+Fixes: 605ca7c5c6707 ("iavf: Fix kernel BUG in free_msi_irqs")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 24 +++++++++++++++------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 27 ++++++++++++---------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 3aa21568686d..33a3dbcf8f2d 100644
+index e97a8dbbbc89..60e6f55c6dc5 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -51,6 +51,15 @@ MODULE_LICENSE("GPL v2");
- static const struct net_device_ops iavf_netdev_ops;
- struct workqueue_struct *iavf_wq;
- 
-+/**
-+ * iavf_pdev_to_adapter - go from pci_dev to adapter
-+ * @pdev: pci_dev pointer
-+ */
-+static struct iavf_adapter *iavf_pdev_to_adapter(struct pci_dev *pdev)
-+{
-+	return netdev_priv(pci_get_drvdata(pdev));
-+}
-+
- /**
-  * iavf_allocate_dma_mem_d - OS specific memory alloc for shared code
-  * @hw:   pointer to the HW structure
-@@ -3739,8 +3748,8 @@ int iavf_process_config(struct iavf_adapter *adapter)
-  **/
- static void iavf_shutdown(struct pci_dev *pdev)
- {
--	struct net_device *netdev = pci_get_drvdata(pdev);
--	struct iavf_adapter *adapter = netdev_priv(netdev);
-+	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
-+	struct net_device *netdev = adapter->netdev;
- 
- 	netif_device_detach(netdev);
- 
-@@ -3923,10 +3932,11 @@ static int __maybe_unused iavf_suspend(struct device *dev_d)
- static int __maybe_unused iavf_resume(struct device *dev_d)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev_d);
--	struct net_device *netdev = pci_get_drvdata(pdev);
--	struct iavf_adapter *adapter = netdev_priv(netdev);
-+	struct iavf_adapter *adapter;
- 	u32 err;
- 
-+	adapter = iavf_pdev_to_adapter(pdev);
-+
- 	pci_set_master(pdev);
- 
- 	rtnl_lock();
-@@ -3945,7 +3955,7 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
- 
- 	queue_work(iavf_wq, &adapter->reset_task);
- 
--	netif_device_attach(netdev);
-+	netif_device_attach(adapter->netdev);
- 
- 	return err;
- }
-@@ -3961,8 +3971,8 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
-  **/
+@@ -3979,7 +3979,6 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
  static void iavf_remove(struct pci_dev *pdev)
  {
--	struct net_device *netdev = pci_get_drvdata(pdev);
--	struct iavf_adapter *adapter = netdev_priv(netdev);
-+	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
-+	struct net_device *netdev = adapter->netdev;
+ 	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
+-	enum iavf_state_t prev_state = adapter->last_state;
+ 	struct net_device *netdev = adapter->netdev;
  	struct iavf_fdir_fltr *fdir, *fdirtmp;
  	struct iavf_vlan_filter *vlf, *vlftmp;
- 	struct iavf_adv_rss *rss, *rsstmp;
+@@ -3989,6 +3988,22 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	int err;
+ 
++	/* Wait until port initialization is complete.
++	 * There are flows where register/unregister netdev may race.
++	 */
++	while (1) {
++		mutex_lock(&adapter->crit_lock);
++		if (adapter->state == __IAVF_RUNNING ||
++		    adapter->state == __IAVF_DOWN) {
++			mutex_unlock(&adapter->crit_lock);
++			break;
++		}
++
++		mutex_unlock(&adapter->crit_lock);
++		usleep_range(500, 1000);
++	}
++	cancel_delayed_work_sync(&adapter->watchdog_task);
++
+ 	if (adapter->netdev_registered) {
+ 		unregister_netdev(netdev);
+ 		adapter->netdev_registered = false;
+@@ -4026,16 +4041,6 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	iavf_free_all_rx_resources(adapter);
+ 	iavf_free_misc_irq(adapter);
+ 
+-	/* In case we enter iavf_remove from erroneous state, free traffic irqs
+-	 * here, so as to not cause a kernel crash, when calling
+-	 * iavf_reset_interrupt_capability.
+-	 */
+-	if ((adapter->last_state == __IAVF_RESETTING &&
+-	     prev_state != __IAVF_DOWN) ||
+-	    (adapter->last_state == __IAVF_RUNNING &&
+-	     !(netdev->flags & IFF_UP)))
+-		iavf_free_traffic_irqs(adapter);
+-
+ 	iavf_reset_interrupt_capability(adapter);
+ 	iavf_free_q_vectors(adapter);
+ 
 -- 
 2.34.1
 
