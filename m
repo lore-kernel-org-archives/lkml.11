@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A596BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C392C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236295AbiCGJ43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:56:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
+        id S235672AbiCGJ4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:56:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238638AbiCGJii (ORCPT
+        with ESMTP id S238663AbiCGJij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:38 -0500
+        Mon, 7 Mar 2022 04:38:39 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138E46AA7B;
-        Mon,  7 Mar 2022 01:33:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293226B081;
+        Mon,  7 Mar 2022 01:33:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C751261217;
-        Mon,  7 Mar 2022 09:33:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C38AAC340F8;
-        Mon,  7 Mar 2022 09:33:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 695896112D;
+        Mon,  7 Mar 2022 09:32:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739FFC340E9;
+        Mon,  7 Mar 2022 09:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645585;
-        bh=XRM2+hjbr2XASz///DP8/hJmbAK3lX79pOK214QhV68=;
+        s=korg; t=1646645575;
+        bh=2Ouh71z9V3h2h5XbRT/kLJZHt1QLCE2kUzamKqtu8aA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2qb3puJeVTwFop6dQ6w7erChZnXQUUN2jQdYnLXawsO1KbSXIHeqr++JYluvzpsRR
-         CxoDpU1XKS3ZK7JLKTe2o9jvOHebc/7MZJ46W+ry29GfH3SEaTLzErDN23a18xZlfD
-         Ox2sza7eYYXTGAB2fklwkeuzPjgegE/cmqyc1Kl4=
+        b=oRSkZH8LqCKfY6PVrnfrsNE2Aj8UJbN7owOJrT7sElapgDlTedDfJPvWKH7pRiFu6
+         4KhAREQqOOYqxh2cbPLcdG8PTJ+eDf6PPobPMjagZzB692YDFEIhBf7NYkeetY4nKn
+         kxdVSBUsb8SxbPjgnTtvrS1B1WxMHNzS8TBk0nYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 079/105] ibmvnic: free reset-work-item when flushing
-Date:   Mon,  7 Mar 2022 10:19:22 +0100
-Message-Id: <20220307091646.400266817@linuxfoundation.org>
+        stable@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 076/105] selftests: mlxsw: tc_police_scale: Make test more robust
+Date:   Mon,  7 Mar 2022 10:19:19 +0100
+Message-Id: <20220307091646.315704743@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,33 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-commit 8d0657f39f487d904fca713e0bc39c2707382553 upstream.
+commit dc9752075341e7beb653e37c6f4a3723074dc8bc upstream.
 
-Fix a tiny memory leak when flushing the reset work queue.
+The test adds tc filters and checks how many of them were offloaded by
+grepping for 'in_hw'.
 
-Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+iproute2 commit f4cd4f127047 ("tc: add skip_hw and skip_sw to control
+action offload") added offload indication to tc actions, producing the
+following output:
+
+ $ tc filter show dev swp2 ingress
+ ...
+ filter protocol ipv6 pref 1000 flower chain 0 handle 0x7c0
+   eth_type ipv6
+   dst_ip 2001:db8:1::7bf
+   skip_sw
+   in_hw in_hw_count 1
+         action order 1:  police 0x7c0 rate 10Mbit burst 100Kb mtu 2Kb action drop overhead 0b
+         ref 1 bind 1
+         not_in_hw
+         used_hw_stats immediate
+
+The current grep expression matches on both 'in_hw' and 'not_in_hw',
+resulting in incorrect results.
+
+Fix that by using JSON output instead.
+
+Fixes: 5061e773264b ("selftests: mlxsw: Add scale test for tc-police")
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2354,8 +2354,10 @@ static int ibmvnic_reset(struct ibmvnic_
- 	 * flush reset queue and process this reset
- 	 */
- 	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
--		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
-+		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
- 			list_del(entry);
-+			kfree(list_entry(entry, struct ibmvnic_rwi, list));
-+		}
- 	}
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
+index 3e3e06ea5703..86e787895f78 100644
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
+@@ -60,7 +60,8 @@ __tc_police_test()
+ 
+ 	tc_police_rules_create $count $should_fail
+ 
+-	offload_count=$(tc filter show dev $swp1 ingress | grep in_hw | wc -l)
++	offload_count=$(tc -j filter show dev $swp1 ingress |
++			jq "[.[] | select(.options.in_hw == true)] | length")
+ 	((offload_count == count))
+ 	check_err_fail $should_fail $? "tc police offload count"
+ }
+-- 
+2.35.1
+
 
 
