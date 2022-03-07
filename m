@@ -2,139 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56433C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240268AbiCGKhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:37:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
+        id S240546AbiCGKhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:37:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242126AbiCGKLP (ORCPT
+        with ESMTP id S242112AbiCGKLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:11:15 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51898879E;
-        Mon,  7 Mar 2022 01:54:29 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id qx21so30577618ejb.13;
-        Mon, 07 Mar 2022 01:54:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=LFdIEDDy0ZaKGYeFQ4O3vTisKLa+lVgmmPHb0pU4IoY=;
-        b=qoygGdB9he2opWGHDYY9XoglRQBeKxqr2galGyGL324N6uwz5pYadRvnCC/qmNoth2
-         SSfIHRN5tIWzfosn3sS8tPkOytRkjeisdeDpM2k0zRYTe/kAsGdQqIyqANiVzAG6P2LH
-         SAdpeHjenJ2OHWABdj13zKU8Psy1bUdE1o5tqvvOETChL5hMz1fNIOWfsXUewp8/wHDB
-         1ve8ceRYlWaZyuxoBXLj1LzDNjKUn/oSswux10YTXCHdGobid0FL5GdG3MYQ13HM5Vat
-         RJgFmQFHC+D1lnfzCKDRY+bOBt0pYxbEdb+n/OuV599iG3vXRILheS1wnPIMPCbFBhbf
-         ObjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=LFdIEDDy0ZaKGYeFQ4O3vTisKLa+lVgmmPHb0pU4IoY=;
-        b=ZSJ6dqaohmaCwsyTuH+7l5R5WCVFbKN11n4pK83+QxxpMbxpfxvL11DEX/Kmra6X6c
-         lhMtQ7zmEErvtU+0Xk6KDe7LjmA2KJg2kn75LnxrSWQPb6ME10HwdkthF9/kDkpLggwf
-         Y9x3Rp0mThP0vFxX2b2HIu9lmA4uEJJBcEi97pgMnfsTKoNYZ0zJjuR7TFqvrUJEU2sO
-         KyWjsMxWSz8XCGJP4COEe7nJjFNqS9HSKxfF4AiJMrP3ne3QwB+pPMPXoaVWnBdldtut
-         uayaGvo7Fs511gIJvKy8pTVB1czTtCYq3Iq4DXFjHd04mllGVUlGaBrn9253McIpgN4k
-         nPHQ==
-X-Gm-Message-State: AOAM532q1BSIxL/r6IAIyR/38gw4a7c2elZJm/yHAXDfIGwSG/QkR/yE
-        Wdb66Dyi60Vkw1Wv9Gzvbzk=
-X-Google-Smtp-Source: ABdhPJzn9/vfO4XyyIBeJkoetqe/kypEJfdHkvj7lvP5sVvs0XW3c1b5gVNgK7dQKvtaEsb5zpkcxw==
-X-Received: by 2002:a17:907:168f:b0:6da:b548:4f9f with SMTP id hc15-20020a170907168f00b006dab5484f9fmr8375270ejc.666.1646646867157;
-        Mon, 07 Mar 2022 01:54:27 -0800 (PST)
-Received: from felia.fritz.box (200116b826f87d009c8e984acb545ab7.dip.versatel-1u1.de. [2001:16b8:26f8:7d00:9c8e:984a:cb54:5ab7])
-        by smtp.gmail.com with ESMTPSA id n3-20020a1709061d0300b006da94efcc7esm4333310ejh.204.2022.03.07.01.54.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:54:26 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        linux-block@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH RESEND] block: remove dead queue_dma_alignment branch from bio_map_user_iov()
-Date:   Mon,  7 Mar 2022 10:54:11 +0100
-Message-Id: <20220307095411.30459-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CB18878F;
+        Mon,  7 Mar 2022 01:54:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D38CEB810AA;
+        Mon,  7 Mar 2022 09:54:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10BA4C340E9;
+        Mon,  7 Mar 2022 09:54:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646865;
+        bh=J2IJqSVavxlY4rZ2bGBmDCSa/4rvdwBbNFQjq4mtJSw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=11lKayyoHupNT5wvR7/jXoyz/JekWaiCExOdtiBvZBaUxlV18dYhp5Iim5VzC7UYJ
+         SzpsaFIYUwz+gNeR0joR3CZaE6Q/HzIIt0FEqKQfBlHoZPXrsV5S9NVzRDFrphtZZL
+         ECtb1ikyrLXc8bhXnYaXd5UOPl5CPw04LsDJUuag=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ilya Leoshkevich <iii@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.16 118/186] s390/extable: fix exception table sorting
+Date:   Mon,  7 Mar 2022 10:19:16 +0100
+Message-Id: <20220307091657.378683319@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
+References: <20220307091654.092878898@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If queue_dma_alignment(rq->q), then blk_rq_map_user_iov() will call
-bio_copy_user_iov() and not bio_map_user_iov(). So, bio_map_user_iov() does
-not need to handle the queue_dma_alignment(rq->q) case in any special way.
+From: Heiko Carstens <hca@linux.ibm.com>
 
-Remove this dead branch from bio_map_user_iov().
+commit c194dad21025dfd043210912653baab823bdff67 upstream.
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+s390 has a swap_ex_entry_fixup function, however it is not being used
+since common code expects a swap_ex_entry_fixup define. If it is not
+defined the default implementation will be used. So fix this by adding
+a proper define.
+However also the implementation of the function must be fixed, since a
+NULL value for handler has a special meaning and must not be adjusted.
+
+Luckily all of this doesn't fix a real bug currently: the main extable
+is correctly sorted during build time, and for runtime sorting there
+is currently no case where the handler field is not NULL.
+
+Fixes: 05a68e892e89 ("s390/kernel: expand exception table logic to allow new handling options")
+Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-still applies on next-20220307
+ arch/s390/include/asm/extable.h |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-added Christoph's Reviewed-by tag from:
-  https://lore.kernel.org/all/20220104124724.GA21670@lst.de/
-
-Jens, this patch must have fell through the cracks...
-please pick this minor non-urgent clean-up patch.
-
-
- block/blk-map.c | 41 ++++++++++++++++++-----------------------
- 1 file changed, 18 insertions(+), 23 deletions(-)
-
-diff --git a/block/blk-map.c b/block/blk-map.c
-index c7f71d83eff1..2a1d7c5f791e 100644
---- a/block/blk-map.c
-+++ b/block/blk-map.c
-@@ -260,31 +260,26 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
+--- a/arch/s390/include/asm/extable.h
++++ b/arch/s390/include/asm/extable.h
+@@ -69,8 +69,13 @@ static inline void swap_ex_entry_fixup(s
+ {
+ 	a->fixup = b->fixup + delta;
+ 	b->fixup = tmp.fixup - delta;
+-	a->handler = b->handler + delta;
+-	b->handler = tmp.handler - delta;
++	a->handler = b->handler;
++	if (a->handler)
++		a->handler += delta;
++	b->handler = tmp.handler;
++	if (b->handler)
++		b->handler -= delta;
+ }
++#define swap_ex_entry_fixup swap_ex_entry_fixup
  
- 		npages = DIV_ROUND_UP(offs + bytes, PAGE_SIZE);
- 
--		if (unlikely(offs & queue_dma_alignment(rq->q))) {
--			ret = -EINVAL;
--			j = 0;
--		} else {
--			for (j = 0; j < npages; j++) {
--				struct page *page = pages[j];
--				unsigned int n = PAGE_SIZE - offs;
--				bool same_page = false;
--
--				if (n > bytes)
--					n = bytes;
--
--				if (!bio_add_hw_page(rq->q, bio, page, n, offs,
--						     max_sectors, &same_page)) {
--					if (same_page)
--						put_page(page);
--					break;
--				}
--
--				added += n;
--				bytes -= n;
--				offs = 0;
-+		for (j = 0; j < npages; j++) {
-+			struct page *page = pages[j];
-+			unsigned int n = PAGE_SIZE - offs;
-+			bool same_page = false;
-+
-+			if (n > bytes)
-+				n = bytes;
-+
-+			if (!bio_add_hw_page(rq->q, bio, page, n, offs,
-+					     max_sectors, &same_page)) {
-+				if (same_page)
-+					put_page(page);
-+				break;
- 			}
--			iov_iter_advance(iter, added);
-+
-+			added += n;
-+			bytes -= n;
-+			offs = 0;
- 		}
-+		iov_iter_advance(iter, added);
- 		/*
- 		 * release the pages we didn't map into the bio, if any
- 		 */
--- 
-2.17.1
+ #endif
+
 
