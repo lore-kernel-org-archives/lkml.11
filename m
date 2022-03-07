@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE96AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C00FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237306AbiCGJaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
+        id S237199AbiCGJa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:30:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237354AbiCGJ2C (ORCPT
+        with ESMTP id S237385AbiCGJ2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C825A5A164;
-        Mon,  7 Mar 2022 01:25:15 -0800 (PST)
+        Mon, 7 Mar 2022 04:28:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEE25BD1E;
+        Mon,  7 Mar 2022 01:25:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 360FFB810C0;
-        Mon,  7 Mar 2022 09:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F56DC340F3;
-        Mon,  7 Mar 2022 09:25:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 077B9B810B2;
+        Mon,  7 Mar 2022 09:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42397C340E9;
+        Mon,  7 Mar 2022 09:25:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645102;
-        bh=CdbhoOIuBsH1DbMzlzA8mShODwOPYYh3vrMPo75ltZc=;
+        s=korg; t=1646645117;
+        bh=ZmDrpSXBxhFbiVSDxHqnr0OkvbLlHZXnWYI54QNgtlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKWRZv86dhGhp1gAUAaL1tN6OiJmHYN9XM1laBFW2hmgw9YAqjZBdHlaBhTzPs+j8
-         +yJa7k792GyxM0bGN5jaOa7wCKDLRKLKeMoYMh1CmagqI0pIZDCYC2p3pC26aGGU1y
-         NWR22vC9aSfhisuJFg9uSEKOJU3yHpy9/58c7KzM=
+        b=rp+a5kW1MLJytD+dllVRHndVDWbxulxqH/UCP6HtElvgN9Ke5Tt1LEnIJJZA6447e
+         dmFZoHvdQd8uhWydT/pLGybm2p0rRXyuE6YcDuUqAE0tIPhhCyyS3Tq4lzLIhgMPYl
+         rJYv4SUbqR5R/J7tyzixx2ZtvI4C4AlVTl8HEIok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 4.19 39/51] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
-Date:   Mon,  7 Mar 2022 10:19:14 +0100
-Message-Id: <20220307091638.104821164@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 44/51] nl80211: Handle nla_memdup failures in handle_nan_filter
+Date:   Mon,  7 Mar 2022 10:19:19 +0100
+Message-Id: <20220307091638.244181307@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -49,67 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit b5fbaf7d779f5f02b7f75b080e7707222573be2a upstream.
+[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
 
-Commit b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
-switched the platform to SPDIF, but we didn't fix up the device tree.
+As there's potential for failure of the nla_memdup(),
+check the return value.
 
-Drop the pinctrl settings, because the 'spdif_bus' pins are either:
- * unused (on kevin, bob), so the settings is ~harmless
- * used by a different function (on scarlet), which causes probe
-   failures (!!)
-
-Fixes: b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Link: https://lore.kernel.org/r/20220114150129.v2.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi |   17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ net/wireless/nl80211.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-@@ -287,7 +287,7 @@
- 
- 	sound: sound {
- 		compatible = "rockchip,rk3399-gru-sound";
--		rockchip,cpu = <&i2s0 &i2s2>;
-+		rockchip,cpu = <&i2s0 &spdif>;
- 	};
- };
- 
-@@ -438,10 +438,6 @@ ap_i2c_audio: &i2c8 {
- 	status = "okay";
- };
- 
--&i2s2 {
--	status = "okay";
--};
--
- &io_domains {
- 	status = "okay";
- 
-@@ -538,6 +534,17 @@ ap_i2c_audio: &i2c8 {
- 	vqmmc-supply = <&ppvar_sd_card_io>;
- };
- 
-+&spdif {
-+	status = "okay";
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 04c4fd376e1d..c5806f46f6c9 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -11791,6 +11791,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	i = 0;
+ 	nla_for_each_nested(attr, attr_filter, rem) {
+ 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
++		if (!filter[i].filter)
++			goto err;
 +
-+	/*
-+	 * SPDIF is routed internally to DP; we either don't use these pins, or
-+	 * mux them to something else.
-+	 */
-+	/delete-property/ pinctrl-0;
-+	/delete-property/ pinctrl-names;
-+};
-+
- &spi1 {
- 	status = "okay";
+ 		filter[i].len = nla_len(attr);
+ 		i++;
+ 	}
+@@ -11803,6 +11806,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	}
  
+ 	return 0;
++
++err:
++	i = 0;
++	nla_for_each_nested(attr, attr_filter, rem) {
++		kfree(filter[i].filter);
++		i++;
++	}
++	kfree(filter);
++	return -ENOMEM;
+ }
+ 
+ static int nl80211_nan_add_func(struct sk_buff *skb,
+-- 
+2.34.1
+
 
 
