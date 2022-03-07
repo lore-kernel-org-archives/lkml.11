@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5562AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3971C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237929AbiCGJrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        id S238132AbiCGJrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238519AbiCGJib (ORCPT
+        with ESMTP id S238508AbiCGJib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:38:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E059424A4;
-        Mon,  7 Mar 2022 01:32:50 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD854249F;
+        Mon,  7 Mar 2022 01:32:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47116611AE;
-        Mon,  7 Mar 2022 09:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 458B8C340E9;
-        Mon,  7 Mar 2022 09:32:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37057B810C0;
+        Mon,  7 Mar 2022 09:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699F1C340F5;
+        Mon,  7 Mar 2022 09:32:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645554;
-        bh=s7RKyKCdoWIbiAKu7tIbVIF6+FyE4HSjQxDrQ1ZCu5o=;
+        s=korg; t=1646645566;
+        bh=zEsng+QabY6S/u4Deg/8fZ5H1jLxZcEmj/N6Lvj1rzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V9TQ1BL6B2S2OlFWu5HiNgINEgdG08Qt0P/H1XDbGz7U4HPyWsrO9VypMpVtUq7eC
-         ZwrxpfWmRdQrc7kgpHXo7F4DzjIUuLkurhLOsBVMffKNTGiEYYHGKfR45dC/zRnbfh
-         kSfzMsyX+yDIqQvnmbBo2hgvM/nJPo9/eIAy5O3g=
+        b=oRFiLNbJKiStHkqdlQ4euEkMmGofoyGoua3wiDMDGK+geEIR7eAbwRredaBwRPYGL
+         IpILAobuYaR8vG3H9oH+zKahiF4xyM1NWnXXWc1GDG5pOKmbXfvzOK61xI/ojML/sj
+         CjZwx9md9o76VQNtr1ERfxlyZ+O+cGHf5hWEGK94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.10 027/105] riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
-Date:   Mon,  7 Mar 2022 10:18:30 +0100
-Message-Id: <20220307091644.944399615@linuxfoundation.org>
+        stable@vger.kernel.org, Corinna Vinschen <vinschen@redhat.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.10 073/105] igc: igc_read_phy_reg_gpy: drop premature return
+Date:   Mon,  7 Mar 2022 10:19:16 +0100
+Message-Id: <20220307091646.231838760@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,39 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+From: Corinna Vinschen <vinschen@redhat.com>
 
-commit a3d328037846d013bb4c7f3777241e190e4c75e1 upstream.
+commit fda2635466cd26ad237e1bc5d3f6a60f97ad09b6 upstream.
 
-In order to get the pfn of a struct page* when sparsemem is enabled
-without vmemmap, the mem_section structures need to be initialized which
-happens in sparse_init.
+igc_read_phy_reg_gpy checks the return value from igc_read_phy_reg_mdic
+and if it's not 0, returns immediately. By doing this, it leaves the HW
+semaphore in the acquired state.
 
-But kasan_early_init calls pfn_to_page way before sparse_init is called,
-which then tries to dereference a null mem_section pointer.
+Drop this premature return statement, the function returns after
+releasing the semaphore immediately anyway.
 
-Fix this by removing the usage of this function in kasan_early_init.
-
-Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 5586838fe9ce ("igc: Add code for PHY support")
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/mm/kasan_init.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_phy.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/arch/riscv/mm/kasan_init.c
-+++ b/arch/riscv/mm/kasan_init.c
-@@ -21,8 +21,7 @@ asmlinkage void __init kasan_early_init(
- 
- 	for (i = 0; i < PTRS_PER_PTE; ++i)
- 		set_pte(kasan_early_shadow_pte + i,
--			mk_pte(virt_to_page(kasan_early_shadow_page),
--			       PAGE_KERNEL));
-+			pfn_pte(virt_to_pfn(kasan_early_shadow_page), PAGE_KERNEL));
- 
- 	for (i = 0; i < PTRS_PER_PMD; ++i)
- 		set_pmd(kasan_early_shadow_pmd + i,
+--- a/drivers/net/ethernet/intel/igc/igc_phy.c
++++ b/drivers/net/ethernet/intel/igc/igc_phy.c
+@@ -781,8 +781,6 @@ s32 igc_read_phy_reg_gpy(struct igc_hw *
+ 		if (ret_val)
+ 			return ret_val;
+ 		ret_val = igc_read_phy_reg_mdic(hw, offset, data);
+-		if (ret_val)
+-			return ret_val;
+ 		hw->phy.ops.release(hw);
+ 	} else {
+ 		ret_val = igc_read_xmdio_reg(hw, (u16)offset, dev_addr,
 
 
