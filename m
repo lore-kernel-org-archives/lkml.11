@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1193C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3514C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237725AbiCGKeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:34:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50738 "EHLO
+        id S233800AbiCGKeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:34:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242906AbiCGKMA (ORCPT
+        with ESMTP id S242946AbiCGKMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:12:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4B38C7DD;
-        Mon,  7 Mar 2022 01:56:12 -0800 (PST)
+        Mon, 7 Mar 2022 05:12:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12D18CD86;
+        Mon,  7 Mar 2022 01:56:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 806BEB8102B;
-        Mon,  7 Mar 2022 09:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9FCFC340E9;
-        Mon,  7 Mar 2022 09:56:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E218C60BB9;
+        Mon,  7 Mar 2022 09:56:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF564C340E9;
+        Mon,  7 Mar 2022 09:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646971;
-        bh=CaKtX6RI701ZDx4Bn/ja5BTKe+943YPz+gM9MRC0pRo=;
+        s=korg; t=1646646974;
+        bh=hYrHolxhejP1P56cX192JntSs5k6cVUspjS5k2gajVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DgFVMygNKQAARiySDYKZufzbXfQm35Ze16rjflPyD7hnm0MA2IZrXmXPVw48nSpWa
-         3FaKxDuM2ULkkCTXQDw94yjjSUq6eioELhzMNU5DmBCLnt9ad1FRzrfh4GA8okJ1IP
-         5CM0tz+Z7XW/7pkqyH7xUq9hoc6NbobyhA54A7nA=
+        b=tMg5EZklbW5NES4Fp3xA230Zl3p0fjPKoVsHnaTbrsXgNsWNvZb+/HycXNnne/HXX
+         9R2VHxgjV254eSo0Vd84t76wY6D3Mq4ZwKtlzXnCDL8ZQKeB1Q1cjgJKIJTVzNEFQ/
+         rGzlxvf5EAwEqQrG7rw4zTqVzmvOSyEdjSJRhJZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.16 110/186] ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
-Date:   Mon,  7 Mar 2022 10:19:08 +0100
-Message-Id: <20220307091657.154452123@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 111/186] mptcp: Correctly set DATA_FIN timeout when number of retransmits is large
+Date:   Mon,  7 Mar 2022 10:19:09 +0100
+Message-Id: <20220307091657.182305927@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,48 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-commit 7b83299e5b9385943a857d59e15cba270df20d7e upstream.
+commit 877d11f0332cd2160e19e3313e262754c321fa36 upstream.
 
-early_param() handlers should return 0 on success.
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 would cause the "option=value" string
-to be added to init's environment strings, polluting it.
+Syzkaller with UBSAN uncovered a scenario where a large number of
+DATA_FIN retransmits caused a shift-out-of-bounds in the DATA_FIN
+timeout calculation:
 
-../arch/arm/mm/mmu.c: In function 'test_early_cachepolicy':
-../arch/arm/mm/mmu.c:215:1: error: no return statement in function returning non-void [-Werror=return-type]
-../arch/arm/mm/mmu.c: In function 'test_noalign_setup':
-../arch/arm/mm/mmu.c:221:1: error: no return statement in function returning non-void [-Werror=return-type]
+================================================================================
+UBSAN: shift-out-of-bounds in net/mptcp/protocol.c:470:29
+shift exponent 32 is too large for 32-bit type 'unsigned int'
+CPU: 1 PID: 13059 Comm: kworker/1:0 Not tainted 5.17.0-rc2-00630-g5fbf21c90c60 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+Workqueue: events mptcp_worker
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:151
+ __ubsan_handle_shift_out_of_bounds.cold+0xb2/0x20e lib/ubsan.c:330
+ mptcp_set_datafin_timeout net/mptcp/protocol.c:470 [inline]
+ __mptcp_retrans.cold+0x72/0x77 net/mptcp/protocol.c:2445
+ mptcp_worker+0x58a/0xa70 net/mptcp/protocol.c:2528
+ process_one_work+0x9df/0x16d0 kernel/workqueue.c:2307
+ worker_thread+0x95/0xe10 kernel/workqueue.c:2454
+ kthread+0x2f4/0x3b0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+================================================================================
 
-Fixes: b849a60e0903 ("ARM: make cr_alignment read-only #ifndef CONFIG_CPU_CP15")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+This change limits the maximum timeout by limiting the size of the
+shift, which keeps all intermediate values in-bounds.
+
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/259
+Fixes: 6477dd39e62c ("mptcp: Retransmit DATA_FIN")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/mmu.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/mptcp/protocol.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/arm/mm/mmu.c
-+++ b/arch/arm/mm/mmu.c
-@@ -212,12 +212,14 @@ early_param("ecc", early_ecc);
- static int __init early_cachepolicy(char *p)
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -464,9 +464,12 @@ static bool mptcp_pending_data_fin(struc
+ static void mptcp_set_datafin_timeout(const struct sock *sk)
  {
- 	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
-+	return 0;
- }
- early_param("cachepolicy", early_cachepolicy);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
++	u32 retransmits;
  
- static int __init noalign_setup(char *__unused)
- {
- 	pr_warn("noalign kernel parameter not supported without cp15\n");
-+	return 1;
+-	mptcp_sk(sk)->timer_ival = min(TCP_RTO_MAX,
+-				       TCP_RTO_MIN << icsk->icsk_retransmits);
++	retransmits = min_t(u32, icsk->icsk_retransmits,
++			    ilog2(TCP_RTO_MAX / TCP_RTO_MIN));
++
++	mptcp_sk(sk)->timer_ival = TCP_RTO_MIN << retransmits;
  }
- __setup("noalign", noalign_setup);
  
+ static void __mptcp_set_timeout(struct sock *sk, long tout)
 
 
