@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA0EC43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED650C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241837AbiCGKdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:33:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        id S238246AbiCGKdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:33:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242279AbiCGKLY (ORCPT
+        with ESMTP id S242099AbiCGKLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:24 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7506188B24;
-        Mon,  7 Mar 2022 01:54:47 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8826F8878C;
+        Mon,  7 Mar 2022 01:54:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 040A7CE0DF4;
-        Mon,  7 Mar 2022 09:54:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D23C1C340F3;
-        Mon,  7 Mar 2022 09:54:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA4D2B80E70;
+        Mon,  7 Mar 2022 09:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44501C340F3;
+        Mon,  7 Mar 2022 09:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646851;
-        bh=3O7SKRQEdlC3yZRHIUkedYLvoKSYVX7m7c9iwfV19E0=;
+        s=korg; t=1646646833;
+        bh=CwRWz1iT0e8U+3QDeSULEs/jxlFAROz4A7uwq2PHYqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hg1wz6NsVC5uM7fzC82T+IhxkDm7b4z+XK6OSKCAw3Gdw3uSAoutNBmsURXlTG9Gf
-         A44nA1hmaky180RnclufvLgsHw+dL/zWskr0jeAdaUu0xirfVejfnknS9OV3UD207e
-         ZUCYbOt9gpa9rRCh3pqRG8/R05qv4zQKWBMEp0CA=
+        b=dwdfiGh/9KGU2yHLDJ1ZiecIoE8n0lxTzSOyS+wgjf6jaBkfuDcNJ2UvvVoccZZMe
+         wRbNxPu3DtGA66A5UsWSiIsBJPPzXTVtfLuROHDNAVUWBFzPTqAefUismbdsCx4F/1
+         6vT4vGTNKxaKXz5K6c5UbvD+iw1mJSjloPb8/gys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 115/186] ibmvnic: free reset-work-item when flushing
-Date:   Mon,  7 Mar 2022 10:19:13 +0100
-Message-Id: <20220307091657.293586677@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 068/186] bpf, sockmap: Do not ignore orig_len parameter
+Date:   Mon,  7 Mar 2022 10:18:26 +0100
+Message-Id: <20220307091655.993706630@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,33 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 8d0657f39f487d904fca713e0bc39c2707382553 upstream.
+commit 60ce37b03917e593d8e5d8bcc7ec820773daf81d upstream.
 
-Fix a tiny memory leak when flushing the reset work queue.
+Currently, sk_psock_verdict_recv() returns skb->len
 
-Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This is problematic because tcp_read_sock() might have
+passed orig_len < skb->len, due to the presence of TCP urgent data.
+
+This causes an infinite loop from tcp_read_sock()
+
+Followup patch will make tcp_read_sock() more robust vs bad actors.
+
+Fixes: ef5659280eb1 ("bpf, sockmap: Allow skipping sk_skb parser program")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/r/20220302161723.3910001-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/skmsg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2780,8 +2780,10 @@ static int ibmvnic_reset(struct ibmvnic_
- 	 * flush reset queue and process this reset
- 	 */
- 	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
--		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
-+		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
- 			list_del(entry);
-+			kfree(list_entry(entry, struct ibmvnic_rwi, list));
-+		}
- 	}
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -1153,7 +1153,7 @@ static int sk_psock_verdict_recv(read_de
+ 	struct sk_psock *psock;
+ 	struct bpf_prog *prog;
+ 	int ret = __SK_DROP;
+-	int len = skb->len;
++	int len = orig_len;
+ 
+ 	/* clone here so sk_eat_skb() in tcp_read_sock does not drop our data */
+ 	skb = skb_clone(skb, GFP_ATOMIC);
 
 
