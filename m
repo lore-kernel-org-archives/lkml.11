@@ -2,130 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F5FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235255AbiCGJYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:24:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
+        id S235866AbiCGJYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237385AbiCGJXz (ORCPT
+        with ESMTP id S236844AbiCGJXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C64654F89;
-        Mon,  7 Mar 2022 01:23:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48749B80E70;
-        Mon,  7 Mar 2022 09:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7747BC340E9;
-        Mon,  7 Mar 2022 09:22:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644979;
-        bh=9k9TnfFJxozCmdGaI4LQIZC5djFmfCDCM4ic8RTYkgs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TdmY04xYnW6AyTlJuJHq6eyNKYR9jVYEHG13iLjHc5nZMqMn55R63uCYiu7eF3T1e
-         fiHMhcnAJWQoPDc3uxfspxxLfFTkjVCI7EkcJfCon0VuokGG8O50ro7JdHZPq8cUJj
-         sP52WxhiQ6QvLgF4lYqBtE1a1yRyzrZu6lqjl9m0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Zeal Robot <zealci@zte.com.cn>,
-        wangyong <wang.yong12@zte.com.cn>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        CGEL ZTE <cgel.zte@gmail.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Song Liu <songliubraving@fb.com>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 41/42] memfd: fix F_SEAL_WRITE after shmem huge page allocated
-Date:   Mon,  7 Mar 2022 10:19:15 +0100
-Message-Id: <20220307091637.348617653@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
-References: <20220307091636.146155347@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:23:01 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF4B65433
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:21:15 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id p9so22117328wra.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:21:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Z++oIgLafXSWYzcuMvzuaJFII2S7/dNacUD+5s9e3lE=;
+        b=hzpRNCmwIRvl2PnTInjpN07IaDzfCRSiYLTekTpM7viCd/oAtBLz8ouI1E1FZY6mzi
+         mQbVv6MwjNZ2DULoEZPEljY3khTdAthfULL+9jzQbOHhw+yDesW2p6yB+bvAiTDM2d42
+         JTdP5Q6cP/6Y9a3kqnFMW2oyknnYJpPZLyLKhUfMBuSKqOOaX9jggDsSIU1XJnQ8WwUo
+         RSyjyStPWatCsod3QHifMR8cGWDmDI5Vhl2Ml3mKxwhW9Zy/fXFe5XEk3tfrOP4ychRY
+         HwORcN7Y2BdKO6bnGag7+ya29Y6SaXwPhVXGslEigp++QFj7ivTAS63NQQVVG+1rDBW5
+         rEdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Z++oIgLafXSWYzcuMvzuaJFII2S7/dNacUD+5s9e3lE=;
+        b=dj0ki+FuBOi35XxgnOkzTnXd6qBiYPwf+jd8fGJwrcPjrXBJOKlnjnMSE0QSUy6rWs
+         AAF8qlyoenY6O0+3LHzPmO0O2RKzqg2SaJ9Tpt5JYmMFfwe3QpOoMoKTrb3aGJvdP8p5
+         CtS6ic267/l6PKK79kiyAgbQgiK+P/njhCrXv0TDQWWlBPrkqGpvOa7a5vyxf9pZoq0d
+         jLDofKk74LwwyNfuCY2HrMhafY0hkS0iFl99/LPVgSmFPDnG/Q50u3nwrMHLt/TvGfYc
+         w4TJU0eKwTCGHnOtEVRaa9fm0UYALiHXbb9/7j9rZd2vgqxLa/igyNWFopqX5JyBWUmG
+         THhw==
+X-Gm-Message-State: AOAM531peq+4fDuUQpYyWi6Azq/j36nHO5zXDw5cQUbgpxQH0tYPKjvG
+        CalkPlSk5iu4at56P2XnfA4yCg==
+X-Google-Smtp-Source: ABdhPJx3m1IKG9MxT8EF/vts7cSLbTdPwiNTjrx0c6TS4KkTZxh1HAKynTCLgkerHctOra4RsLvroA==
+X-Received: by 2002:a5d:59ab:0:b0:1e3:2576:215 with SMTP id p11-20020a5d59ab000000b001e325760215mr7758961wrr.496.1646644874308;
+        Mon, 07 Mar 2022 01:21:14 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id o7-20020a5d6707000000b001f067c7b47fsm15297609wru.27.2022.03.07.01.21.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:21:13 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:21:11 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Pratyush Yadav <p.yadav@ti.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH v6 1/4] spi: dt-bindings: samsung: convert to dtschema
+Message-ID: <YiXOhx+VGyn/koTC@google.com>
+References: <20220124082347.32747-1-krzysztof.kozlowski@canonical.com>
+ <20220124082347.32747-2-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220124082347.32747-2-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+On Mon, 24 Jan 2022, Krzysztof Kozlowski wrote:
 
-commit f2b277c4d1c63a85127e8aa2588e9cc3bd21cb99 upstream.
+> Convert the Samsung SoC (S3C24xx, S3C64xx, S5Pv210, Exynos) SPI
+> controller bindings to DT schema format.
+> 
+> The conversion also drops requirement from providing controller-data and
+> its data for each of SPI peripheral device nodes.  The dtschema cannot
+> express this and the requirement is being relaxed in the driver now.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> Acked-by: Pratyush Yadav <p.yadav@ti.com>
+> ---
+>  .../bindings/soc/samsung/exynos-usi.yaml      |   2 +-
+>  .../spi/samsung,spi-peripheral-props.yaml     |  33 ++++
+>  .../devicetree/bindings/spi/samsung,spi.yaml  | 187 ++++++++++++++++++
+>  .../bindings/spi/spi-peripheral-props.yaml    |   1 +
+>  .../devicetree/bindings/spi/spi-samsung.txt   | 122 ------------
+>  MAINTAINERS                                   |   2 +-
+>  6 files changed, 223 insertions(+), 124 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+>  create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/spi/spi-samsung.txt
 
-Wangyong reports: after enabling tmpfs filesystem to support transparent
-hugepage with the following command:
+Applied, thanks.
 
-  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
-
-the docker program tries to add F_SEAL_WRITE through the following
-command, but it fails unexpectedly with errno EBUSY:
-
-  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE) = -1.
-
-That is because memfd_tag_pins() and memfd_wait_for_pins() were never
-updated for shmem huge pages: checking page_mapcount() against
-page_count() is hopeless on THP subpages - they need to check
-total_mapcount() against page_count() on THP heads only.
-
-Make memfd_tag_pins() (compared > 1) as strict as memfd_wait_for_pins()
-(compared != 1): either can be justified, but given the non-atomic
-total_mapcount() calculation, it is better now to be strict.  Bear in
-mind that total_mapcount() itself scans all of the THP subpages, when
-choosing to take an XA_CHECK_SCHED latency break.
-
-Also fix the unlikely xa_is_value() case in memfd_wait_for_pins(): if a
-page has been swapped out since memfd_tag_pins(), then its refcount must
-have fallen, and so it can safely be untagged.
-
-Link: https://lkml.kernel.org/r/a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Reported-by: wangyong <wang.yong12@zte.com.cn>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: CGEL ZTE <cgel.zte@gmail.com>
-Cc: Kirill A. Shutemov <kirill@shutemov.name>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yang Yang <yang.yang29@zte.com.cn>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/shmem.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -2689,7 +2689,8 @@ static void shmem_tag_pins(struct addres
- 				slot = radix_tree_iter_retry(&iter);
- 				continue;
- 			}
--		} else if (page_count(page) - page_mapcount(page) > 1) {
-+		} else if (!PageTail(page) && page_count(page) !=
-+			   hpage_nr_pages(page) + total_mapcount(page)) {
- 			radix_tree_tag_set(&mapping->page_tree, iter.index,
- 					   SHMEM_TAG_PINNED);
- 		}
-@@ -2749,8 +2750,8 @@ static int shmem_wait_for_pins(struct ad
- 				page = NULL;
- 			}
- 
--			if (page &&
--			    page_count(page) - page_mapcount(page) != 1) {
-+			if (page && page_count(page) !=
-+			    hpage_nr_pages(page) + total_mapcount(page)) {
- 				if (scan < LAST_SCAN)
- 					goto continue_resched;
- 
-
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
