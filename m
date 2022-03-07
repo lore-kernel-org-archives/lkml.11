@@ -2,76 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF89FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E70CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241323AbiCGKrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:47:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        id S238568AbiCGKre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:47:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241066AbiCGKrD (ORCPT
+        with ESMTP id S241257AbiCGKrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:47:03 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2822C7EB3F;
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283CF9EBB9;
         Mon,  7 Mar 2022 02:07:20 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4BA82100014;
-        Mon,  7 Mar 2022 10:05:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646647558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lQQlMA2nuLJLAo0+B3NtqW+DcgylzMgC76dvoXeTZRA=;
-        b=knu6CeM3PC7ksEhlVQu73z7qVuqYJykFGSYiszYLV6B3chz1mpF4biC7xv2M7daFHKM6fk
-        Bp5koFCVR7C5sELfiZyJkW4QWrq9/JJHwSz4ETNuM1GTrBfYMj/f2ios5fNy0SEdCV5Rig
-        iJjsUv35U3HYxS1v8pMVUN+vjjI7B3zbSkABdvbD7+W3OF7SyseDQesjrPUZzak0DtNPBz
-        /BSZjEbi3+sroEx7UXzYpqmL10GAvFIC5qCoOz1Fx6l/uChSSIxivwxQwRmMKBc2DWsF6N
-        LZE9TMjujZy3BMB6Vb/0MCK/a8J1q+oKZfDsv/qGE2mxeir72sxL4NNv6bJkGg==
-Date:   Mon, 7 Mar 2022 11:04:34 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Etienne Carriere <etienne.carriere@linaro.org>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH] rtc: optee: add RTC driver for OP-TEE RTC PTA
-Message-ID: <20220307110434.33fd2f87@fixe.home>
-In-Reply-To: <CAN5uoS9J7P-74Zi-AuiXfTMesFOPEmFSmT2GcO8QmR6ebCXGAw@mail.gmail.com>
-References: <20220302150717.11193-1-clement.leger@bootlin.com>
-        <CAN5uoS9J7P-74Zi-AuiXfTMesFOPEmFSmT2GcO8QmR6ebCXGAw@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646647641; x=1678183641;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g+E2cqWn9Vq/Ut2H92s1dRBvdhhumC0Wle7tlrJx1G8=;
+  b=Pt1N+1YK1sd6WURzSE584reeqpWO5RzrfLjNVPvslZzORjR81gcnj/ps
+   cc5LIMSrN1CuCVt4qyvBh4RP6BKbpC58tAQXm3oIh8mGna/wNKv1vcXCX
+   3zgjtHkpe+8mAn77q2+HLzpYi1opZbCcAdrFyIZC29eVFHSpvxXhzKH3/
+   qMUq+BqMopigmktbR9Q71eLuWHsZ/nrMWdpfygo9SMUFRWxscsiN5L4IV
+   AIK0kynBRbN+M+Wn6D3rQnRgcXkJOulfwZFGcSgB2z9c3jLe3L7zzjvlS
+   hdSq8heIHKLQuozplPTGTU5hISG0YEkFQMAAF0eU06EAJCaS1NJLIzXU9
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
+   d="scan'208";a="88045514"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:06:07 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Mar 2022 03:05:56 -0700
+Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:05:53 -0700
+From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+To:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <lars@metafoo.de>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <robh+dt@kernel.org>,
+        <nicolas.ferre@microchip.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
+Subject: [PATCH v2 0/6] Add driver for SAMA7G5's PDMC
+Date:   Mon, 7 Mar 2022 12:04:22 +0200
+Message-ID: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Sun, 6 Mar 2022 22:08:48 +0100,
-Etienne Carriere <etienne.carriere@linaro.org> a =C3=A9crit :
+This patch series adds support for Pulse Density Microphone Controller
+(PDMC), present on Microchip's SAMA7G5.
+The PDMC interfaces up to 4 digital microphones having Pulse Density
+Modulated (PDM) outputs. It generates a single clock line and samples 1 or
+2 data lines. The signal path includes an audio grade programmable
+decimation filter and outputs 24-bit audio words.
+The source of each channel can be independently defined as PDMC_DS0 or
+PDMC_DS1, sampled at the rising or falling edge of PDMC_CLK.
 
-> Hello Clement,
->=20
-> In the code, rtc-optee driver opens a session with optee and allocates
-> shared memory from probe to remove time.
-> This uses resources in the TEE but RTC is not accessed often by Linux I g=
-uess.
-> Would it be interesting if a session is opened and shared memory
-> allocated only when a RPC command is to be invoked?
+The patch series starts with a fix on the ASoC DMA engine support. Then
+continues with the bindings and the driver of PDMC. It is followed by the
+DT nodes for SAMA7G5 and SAMA7G5-EK. In the end, the drivers for PDMC
+and PDM microphones are enabled in sama7_defconfig.
 
-Hi Etienne, that is an idea that could be added later I guess ?
+Changes in v2:
+ - addressed comments from Krzysztof Kozlowski
 
->=20
-> Minor comments below.
+Codrin Ciubotariu (6):
+  ASoC: dmaengine: do not use a NULL prepare_slave_config() callback
+  ASoC: dt-bindings: Document Microchip's PDMC
+  ASoC: atmel: mchp-pdmc: add PDMC driver
+  ARM: dts: at91: sama7g5: add nodes for PDMC
+  ARM: dts: at91: sama7g5ek: add node for PDMC0
+  ARM: configs: at91: sama7_defconfig: add MCHP PDMC and DMIC drivers
 
-Thanks for the review.
+ .../bindings/sound/microchip,pdmc.yaml        |   99 ++
+ arch/arm/boot/dts/at91-sama7g5ek.dts          |   21 +-
+ arch/arm/boot/dts/sama7g5.dtsi                |   24 +
+ arch/arm/configs/sama7_defconfig              |    2 +
+ include/dt-bindings/sound/microchip,pdmc.h    |   13 +
+ sound/soc/atmel/Kconfig                       |   16 +
+ sound/soc/atmel/Makefile                      |    2 +
+ sound/soc/atmel/mchp-pdmc.c                   | 1084 +++++++++++++++++
+ sound/soc/soc-generic-dmaengine-pcm.c         |    6 +-
+ 9 files changed, 1263 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
+ create mode 100644 include/dt-bindings/sound/microchip,pdmc.h
+ create mode 100644 sound/soc/atmel/mchp-pdmc.c
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+-- 
+2.32.0
+
