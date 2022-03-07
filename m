@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10711C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040E7C35294
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239213AbiCGJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        id S239735AbiCGJuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:50:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239513AbiCGJjr (ORCPT
+        with ESMTP id S240158AbiCGJko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D75471EE4;
-        Mon,  7 Mar 2022 01:35:53 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1468674CA;
+        Mon,  7 Mar 2022 01:37:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60850B80E70;
-        Mon,  7 Mar 2022 09:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E3FC340E9;
-        Mon,  7 Mar 2022 09:35:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 251E6612C9;
+        Mon,  7 Mar 2022 09:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 378A8C340F3;
+        Mon,  7 Mar 2022 09:36:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645724;
-        bh=kS8D6bkfgqqgmMhggKntZnsLULvt63AbdUvRgellOS4=;
+        s=korg; t=1646645775;
+        bh=i/dInXHbqdngtNoBmPgKldeNX01DdNJXkoStjnB2ALM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhvs7o3dW8BRkgWjn3AgKnFQt/2L1AizQoC62Hb/8lZyCek3Rao59C3Lpdx3P7f4K
-         yCy76/7z91VfDPpWW5AmC8qPJIQLumLgj2MXEosfPOeTZAm4RnuNsXAvSiprAcefYE
-         zc5olZbjQUr8RiKThAmx3Y8iClY7sdxpzA1FHeuk=
+        b=rCQMHw280hUm9lWMxhF/jsW8imMrBnre0pvsxvC0RGAs+2+4lrPJw/54jk+D3i4Er
+         L5wuCe1s6KzlyF8e8RUW12br5lg6OnsmWiBVp8HBlXWcZX4KckOJ/qaMJ5T1VPQ7jM
+         DFrmW39AeexzAwiv4p4q9v25EqVFtRQU3DJFXMrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
+        Pingfan Liu <kernelfans@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 017/262] cifs: modefromsids must add an ACE for authenticated users
-Date:   Mon,  7 Mar 2022 10:16:01 +0100
-Message-Id: <20220307091702.861572644@linuxfoundation.org>
+Subject: [PATCH 5.15 031/262] tracing: Add test for user space strings when filtering on string pointers
+Date:   Mon,  7 Mar 2022 10:16:15 +0100
+Message-Id: <20220307091703.246410965@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,53 +53,214 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Steven Rostedt <rostedt@goodmis.org>
 
-[ Upstream commit 0c6f4ebf8835d01866eb686d47578cde80097981 ]
+[ Upstream commit 77360f9bbc7e5e2ab7a2c8b4c0244fbbfcfc6f62 ]
 
-When we create a file with modefromsids we set an ACL that
-has one ACE for the magic modefromsid as well as a second ACE that
-grants full access to all authenticated users.
+Pingfan reported that the following causes a fault:
 
-When later we chante the mode on the file we strip away this, and other,
-ACE for authenticated users in set_chmod_dacl() and then just add back/update
-the modefromsid ACE.
-Thus leaving the file with a single ACE that is for the mode and no ACE
-to grant any user any rights to access the file.
-Fix this by always adding back also the modefromsid ACE so that we do not
-drop the rights to access the file.
+  echo "filename ~ \"cpu\"" > events/syscalls/sys_enter_openat/filter
+  echo 1 > events/syscalls/sys_enter_at/enable
 
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+The reason is that trace event filter treats the user space pointer
+defined by "filename" as a normal pointer to compare against the "cpu"
+string. The following bug happened:
+
+ kvm-03-guest16 login: [72198.026181] BUG: unable to handle page fault for address: 00007fffaae8ef60
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0001) - permissions violation
+ PGD 80000001008b7067 P4D 80000001008b7067 PUD 2393f1067 PMD 2393ec067 PTE 8000000108f47867
+ Oops: 0001 [#1] PREEMPT SMP PTI
+ CPU: 1 PID: 1 Comm: systemd Kdump: loaded Not tainted 5.14.0-32.el9.x86_64 #1
+ Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+ RIP: 0010:strlen+0x0/0x20
+ Code: 48 89 f9 74 09 48 83 c1 01 80 39 00 75 f7 31 d2 44 0f b6 04 16 44 88 04 11
+       48 83 c2 01 45 84 c0 75 ee c3 0f 1f 80 00 00 00 00 <80> 3f 00 74 10 48 89 f8
+       48 83 c0 01 80 38 00 75 f7 48 29 f8 c3 31
+ RSP: 0018:ffffb5b900013e48 EFLAGS: 00010246
+ RAX: 0000000000000018 RBX: ffff8fc1c49ede00 RCX: 0000000000000000
+ RDX: 0000000000000020 RSI: ffff8fc1c02d601c RDI: 00007fffaae8ef60
+ RBP: 00007fffaae8ef60 R08: 0005034f4ddb8ea4 R09: 0000000000000000
+ R10: ffff8fc1c02d601c R11: 0000000000000000 R12: ffff8fc1c8a6e380
+ R13: 0000000000000000 R14: ffff8fc1c02d6010 R15: ffff8fc1c00453c0
+ FS:  00007fa86123db40(0000) GS:ffff8fc2ffd00000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 00007fffaae8ef60 CR3: 0000000102880001 CR4: 00000000007706e0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ PKRU: 55555554
+ Call Trace:
+  filter_pred_pchar+0x18/0x40
+  filter_match_preds+0x31/0x70
+  ftrace_syscall_enter+0x27a/0x2c0
+  syscall_trace_enter.constprop.0+0x1aa/0x1d0
+  do_syscall_64+0x16/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7fa861d88664
+
+The above happened because the kernel tried to access user space directly
+and triggered a "supervisor read access in kernel mode" fault. Worse yet,
+the memory could not even be loaded yet, and a SEGFAULT could happen as
+well. This could be true for kernel space accessing as well.
+
+To be even more robust, test both kernel and user space strings. If the
+string fails to read, then simply have the filter fail.
+
+Note, TASK_SIZE is used to determine if the pointer is user or kernel space
+and the appropriate strncpy_from_kernel/user_nofault() function is used to
+copy the memory. For some architectures, the compare to TASK_SIZE may always
+pick user space or kernel space. If it gets it wrong, the only thing is that
+the filter will fail to match. In the future, this needs to be fixed to have
+the event denote which should be used. But failing a filter is much better
+than panicing the machine, and that can be solved later.
+
+Link: https://lore.kernel.org/all/20220107044951.22080-1-kernelfans@gmail.com/
+Link: https://lkml.kernel.org/r/20220110115532.536088fd@gandalf.local.home
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Reported-by: Pingfan Liu <kernelfans@gmail.com>
+Tested-by: Pingfan Liu <kernelfans@gmail.com>
+Fixes: 87a342f5db69d ("tracing/filters: Support filtering for char * strings")
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsacl.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ Documentation/trace/events.rst     | 10 +++++
+ kernel/trace/trace_events_filter.c | 66 ++++++++++++++++++++++++++++--
+ 2 files changed, 73 insertions(+), 3 deletions(-)
 
-diff --git a/fs/cifs/cifsacl.c b/fs/cifs/cifsacl.c
-index 5df21d63dd04e..bf861fef2f0c3 100644
---- a/fs/cifs/cifsacl.c
-+++ b/fs/cifs/cifsacl.c
-@@ -949,6 +949,9 @@ static void populate_new_aces(char *nacl_base,
- 		pnntace = (struct cifs_ace *) (nacl_base + nsize);
- 		nsize += setup_special_mode_ACE(pnntace, nmode);
- 		num_aces++;
-+		pnntace = (struct cifs_ace *) (nacl_base + nsize);
-+		nsize += setup_authusers_ACE(pnntace);
-+		num_aces++;
- 		goto set_size;
- 	}
+diff --git a/Documentation/trace/events.rst b/Documentation/trace/events.rst
+index 8ddb9b09451c8..45e66a60a816a 100644
+--- a/Documentation/trace/events.rst
++++ b/Documentation/trace/events.rst
+@@ -230,6 +230,16 @@ Currently the caret ('^') for an error always appears at the beginning of
+ the filter string; the error message should still be useful though
+ even without more accurate position info.
  
-@@ -1613,7 +1616,7 @@ id_mode_to_cifs_acl(struct inode *inode, const char *path, __u64 *pnmode,
- 	nsecdesclen = secdesclen;
- 	if (pnmode && *pnmode != NO_CHANGE_64) { /* chmod */
- 		if (mode_from_sid)
--			nsecdesclen += sizeof(struct cifs_ace);
-+			nsecdesclen += 2 * sizeof(struct cifs_ace);
- 		else /* cifsacl */
- 			nsecdesclen += 5 * sizeof(struct cifs_ace);
- 	} else { /* chown */
++5.2.1 Filter limitations
++------------------------
++
++If a filter is placed on a string pointer ``(char *)`` that does not point
++to a string on the ring buffer, but instead points to kernel or user space
++memory, then, for safety reasons, at most 1024 bytes of the content is
++copied onto a temporary buffer to do the compare. If the copy of the memory
++faults (the pointer points to memory that should not be accessed), then the
++string compare will be treated as not matching.
++
+ 5.3 Clearing filters
+ --------------------
+ 
+diff --git a/kernel/trace/trace_events_filter.c b/kernel/trace/trace_events_filter.c
+index c9124038b140f..d3eb3c630f601 100644
+--- a/kernel/trace/trace_events_filter.c
++++ b/kernel/trace/trace_events_filter.c
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2009 Tom Zanussi <tzanussi@gmail.com>
+  */
+ 
++#include <linux/uaccess.h>
+ #include <linux/module.h>
+ #include <linux/ctype.h>
+ #include <linux/mutex.h>
+@@ -654,6 +655,47 @@ DEFINE_EQUALITY_PRED(32);
+ DEFINE_EQUALITY_PRED(16);
+ DEFINE_EQUALITY_PRED(8);
+ 
++/* user space strings temp buffer */
++#define USTRING_BUF_SIZE	1024
++
++struct ustring_buffer {
++	char		buffer[USTRING_BUF_SIZE];
++};
++
++static __percpu struct ustring_buffer *ustring_per_cpu;
++
++static __always_inline char *test_string(char *str)
++{
++	struct ustring_buffer *ubuf;
++	char __user *ustr;
++	char *kstr;
++
++	if (!ustring_per_cpu)
++		return NULL;
++
++	ubuf = this_cpu_ptr(ustring_per_cpu);
++	kstr = ubuf->buffer;
++
++	/*
++	 * We use TASK_SIZE to denote user or kernel space, but this will
++	 * not work for all architectures. If it picks the wrong one, it may
++	 * just fail the filter (but will not bug).
++	 *
++	 * TODO: Have a way to properly denote which one this is for.
++	 */
++	if (likely((unsigned long)str >= TASK_SIZE)) {
++		/* For safety, do not trust the string pointer */
++		if (!strncpy_from_kernel_nofault(kstr, str, USTRING_BUF_SIZE))
++			return NULL;
++	} else {
++		/* user space address? */
++		ustr = (char __user *)str;
++		if (!strncpy_from_user_nofault(kstr, ustr, USTRING_BUF_SIZE))
++			return NULL;
++	}
++	return kstr;
++}
++
+ /* Filter predicate for fixed sized arrays of characters */
+ static int filter_pred_string(struct filter_pred *pred, void *event)
+ {
+@@ -671,10 +713,16 @@ static int filter_pred_string(struct filter_pred *pred, void *event)
+ static int filter_pred_pchar(struct filter_pred *pred, void *event)
+ {
+ 	char **addr = (char **)(event + pred->offset);
++	char *str;
+ 	int cmp, match;
+-	int len = strlen(*addr) + 1;	/* including tailing '\0' */
++	int len;
+ 
+-	cmp = pred->regex.match(*addr, &pred->regex, len);
++	str = test_string(*addr);
++	if (!str)
++		return 0;
++
++	len = strlen(str) + 1;	/* including tailing '\0' */
++	cmp = pred->regex.match(str, &pred->regex, len);
+ 
+ 	match = cmp ^ pred->not;
+ 
+@@ -1320,8 +1368,17 @@ static int parse_pred(const char *str, void *data,
+ 
+ 		} else if (field->filter_type == FILTER_DYN_STRING)
+ 			pred->fn = filter_pred_strloc;
+-		else
++		else {
++
++			if (!ustring_per_cpu) {
++				/* Once allocated, keep it around for good */
++				ustring_per_cpu = alloc_percpu(struct ustring_buffer);
++				if (!ustring_per_cpu)
++					goto err_mem;
++			}
++
+ 			pred->fn = filter_pred_pchar;
++		}
+ 		/* go past the last quote */
+ 		i++;
+ 
+@@ -1387,6 +1444,9 @@ static int parse_pred(const char *str, void *data,
+ err_free:
+ 	kfree(pred);
+ 	return -EINVAL;
++err_mem:
++	kfree(pred);
++	return -ENOMEM;
+ }
+ 
+ enum {
 -- 
 2.34.1
 
