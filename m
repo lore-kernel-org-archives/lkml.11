@@ -2,160 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20489C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A819EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237941AbiCGL0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:26:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
+        id S233890AbiCGL0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:26:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240166AbiCGL0W (ORCPT
+        with ESMTP id S241762AbiCGL0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:26:22 -0500
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C050A7B576;
-        Mon,  7 Mar 2022 02:59:26 -0800 (PST)
-Received: by mail-ej1-f48.google.com with SMTP id d10so30972440eje.10;
-        Mon, 07 Mar 2022 02:59:26 -0800 (PST)
+        Mon, 7 Mar 2022 06:26:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF107F26
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:00:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646650833;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5ifUJrV01iH90m49wDHf0jtuBJp0stIExCqgqIK+KXc=;
+        b=bofJDDr7aaH3/HRkFmtQINALznCWRu7+hp1ETG4RFu8oZKYBTcahQCuBS8o0XcWcv4UWmY
+        ENCIz+/PpXoc9qZcuJaB091998lmFtscGDzGDTzt1SSStgbqU7AIFpSFPpaJXcIccLq5WO
+        4WpGUVtKYAAAFtetIrRqM/3Nzbp//2g=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-185-uokCUeZ9NEKesZxGtF_YYQ-1; Mon, 07 Mar 2022 06:00:32 -0500
+X-MC-Unique: uokCUeZ9NEKesZxGtF_YYQ-1
+Received: by mail-ed1-f72.google.com with SMTP id l24-20020a056402231800b00410f19a3103so8399019eda.5
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 03:00:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=r5VXslgP94xhLV5io8KJ01AqHztBTaI4x6W9LXcGA90=;
-        b=adaCimCEapoeMYpC/ZE2NLgvStFiaW0VcbYV3GwhSoqjEeBraZzqFoRcIjXsjP4gqy
-         cMssg5boVXUWj6spHFArGC0GdpcZ/uTNoHfPrIHUEnTGpFVreJf85nq+j0AknJNJJwE0
-         2gs5xOWbbSbzpTjB/4ekFu/5SrlKgTpiKJO0R+wR9RH23tYealJ46s4tJSSmxbkJhFwF
-         BJDEDc/4o2KS8/BsgatU7cu9bHuO5QUK0ocp/oqp35xzfE0EioyB6y8YtjrMFT27/eij
-         XRNVg76PUimdQXhWRO9YOhQM7Y4BRz7a6HBRZcStpXaEb/y51zDidyCYcW2qImMxOVCz
-         yBVQ==
-X-Gm-Message-State: AOAM532/bynPl6pG+6uDVSMGysauFyf32yoDWhlSCFhBn5MOIwEJQ9Wk
-        owAJjMLNBq3YFWElBxBGj8A=
-X-Google-Smtp-Source: ABdhPJzgorhzP42AxP+JSuvqOu+8dKd4gFe+NvN34jFpSiNFvrBV+ToNj4a4mEKPhuTh+iMqHgGtZA==
-X-Received: by 2002:a17:906:4796:b0:6d6:dd04:147b with SMTP id cw22-20020a170906479600b006d6dd04147bmr8736146ejc.80.1646650765283;
-        Mon, 07 Mar 2022 02:59:25 -0800 (PST)
-Received: from [192.168.0.142] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm4656903ejz.57.2022.03.07.02.59.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 02:59:24 -0800 (PST)
-Message-ID: <ee5ad930-7b48-5b7c-f810-76fe497595f3@kernel.org>
-Date:   Mon, 7 Mar 2022 11:59:23 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5ifUJrV01iH90m49wDHf0jtuBJp0stIExCqgqIK+KXc=;
+        b=j+/460WjypkOmArr58VRQqolC84Mx6L5mgN4qeZzhBWxX7euJ4wZw1CBDGCy7GhxhK
+         K/T+unmtqNzEqp9LSijVXH1y2zkwxi0x0Zwfz4FRzNd/6Zlx1pcakuzwmtCmCuwTfJxv
+         XM+YvczBixoQC7gY7NA5XmsZ1mnHXrkTApBCO+7UCupxcynYv5+pshLrBS1VcUqG6QIL
+         HAriZxLYST/s6bGTwbA412BP8z1yFa6PKBL0sHJFapqdwmMg4xoOpvWkEb5/FkIzKi0t
+         /BDJHhlh8ktrzfRmm1RXJ+Wcw/3xK8Y/Pe6kiK5zomv0MbIbzobgVBSzK8TUGbeSrfwt
+         GOGQ==
+X-Gm-Message-State: AOAM532gD+LfGVVyuzeBrzNF9cfecUeNhfXejoaRKuorBMy3fYmYp6hu
+        2dnkRWQTwQOeWjoJN1CJOjqEvp8O73bewJg3KRJzH/qOue8v8mkk3STXvHvx7M6Pb+2cR6jAgIs
+        YcWYRBBlPSkJ5UTLKeDcroMcQ
+X-Received: by 2002:a17:906:3ac7:b0:6ce:c3a1:3dcf with SMTP id z7-20020a1709063ac700b006cec3a13dcfmr8720432ejd.182.1646650831468;
+        Mon, 07 Mar 2022 03:00:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwR1QfhoZza7jSZTfiooWn9Uk8M32U7CpHBauCfZaIHoHBbUDtSLlSD1IXQAhUKeVJEwmtw/w==
+X-Received: by 2002:a17:906:3ac7:b0:6ce:c3a1:3dcf with SMTP id z7-20020a1709063ac700b006cec3a13dcfmr8720421ejd.182.1646650831276;
+        Mon, 07 Mar 2022 03:00:31 -0800 (PST)
+Received: from redhat.com ([2.55.138.228])
+        by smtp.gmail.com with ESMTPSA id b7-20020a056402350700b00415e035f7c6sm5975934edd.0.2022.03.07.03.00.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 03:00:30 -0800 (PST)
+Date:   Mon, 7 Mar 2022 06:00:27 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the vhost tree
+Message-ID: <20220307060012-mutt-send-email-mst@kernel.org>
+References: <20220307154011.6d456f28@canb.auug.org.au>
+ <1646635600.9436276-1-xuanzhuo@linux.alibaba.com>
+ <20220307211242.59fc0f0e@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 4/4] usb: host: add xhci-exynos module
-Content-Language: en-US
-To:     Jung Daehwan <dh10.jung@samsung.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220304062618epcas2p2e3c73b5c4ed0c9bc0ca0c02aa658d3fb@epcas2p2.samsung.com>
- <1027007693.21646375582736.JavaMail.epsvc@epcpadp4>
- <32e72657-a43d-0ae1-1bf2-d15b7426765f@kernel.org>
- <1983025922.01646649181793.JavaMail.epsvc@epcpadp4>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <1983025922.01646649181793.JavaMail.epsvc@epcpadp4>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307211242.59fc0f0e@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 11:26, Jung Daehwan wrote:
-> On Mon, Mar 07, 2022 at 11:07:04AM +0100, Krzysztof Kozlowski wrote:
->> On 04/03/2022 07:23, Daehwan Jung wrote:
->>> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
->>
->> +Cc Randy,
->> I guess here is the rest of the patches.
->>
->>> ---
->>>  drivers/usb/host/xhci-exynos.c | 2025 ++++++++++++++++++++++++++++++++
->>>  drivers/usb/host/xhci-exynos.h |  150 +++
->>>  2 files changed, 2175 insertions(+)
->>>  create mode 100644 drivers/usb/host/xhci-exynos.c
->>>  create mode 100644 drivers/usb/host/xhci-exynos.h
->>>
->>> diff --git a/drivers/usb/host/xhci-exynos.c b/drivers/usb/host/xhci-exynos.c
->>> new file mode 100644
->>> index 000000000000..3913c48d4b20
->>> --- /dev/null
->>> +++ b/drivers/usb/host/xhci-exynos.c
->>> @@ -0,0 +1,2025 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +/*
->>> + * xhci-exynos.c - xHCI host controller driver platform Bus Glue for Exynos.
->>> + *
->>> + * Copyright (C) 2022 Samsung Electronics Incorporated - http://www.samsung.com
->>> + * Author: Daehwan Jung <dh10.jung@samsung.com>
->>> + *
->>> + * A lot of code borrowed from the Linux xHCI driver.
->>
->>> + */
->>> +
->>> +#include <linux/clk.h>
->>> +#include <linux/dma-mapping.h>
->>> +#include <linux/module.h>
->>> +#include <linux/pci.h>
->>> +#include <linux/of.h>
->>> +#include <linux/of_device.h>
->>> +#include <linux/platform_device.h>
->>> +#include <linux/usb/phy.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/phy/phy.h>
->>> +#include <linux/acpi.h>
->>> +#include <linux/usb/of.h>
->>> +#ifdef CONFIG_SND_EXYNOS_USB_AUDIO
->>
->> This does not exist.
->>
->> Please do not add dead code to Linux kernel.
->>
->>> +#include "../../../sound/usb/exynos_usb_audio.h"
->>> +#include <linux/types.h>
->>> +#include "xhci-trace.h"
->>> +#endif
->>> +
->>> +#include "../core/hub.h"
->>> +#include "../core/phy.h"
->>> +#include "xhci.h"
->>> +#include "xhci-plat.h"
->>> +#include "xhci-mvebu.h"
->>> +#include "xhci-rcar.h"
->>> +#include "../dwc3/dwc3-exynos.h"
->>> +#include "../dwc3/exynos-otg.h"
->>
->> No, how XHCI is related to dwc3? What if different block provides XHCI,
->> not DWC3?
->>
->>> +#include "xhci-exynos.h"
->>> +#include <soc/samsung/exynos-cpupm.h>
->>
->> This does not exist and does not even compile.
->>
->> Please do not send code which does not compile... Also, just in case -
->> do not send code which compiles but does not work. :)
->>
+On Mon, Mar 07, 2022 at 09:12:42PM +1100, Stephen Rothwell wrote:
+> Hi,
 > 
-> Hi Krzysztof
+> On Mon, 7 Mar 2022 14:46:40 +0800 Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > Can you help me test this patch? I don't have an arm environment around me.
+> > 
+> > Thanks
+> > 
+> > 
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 1fa2d632a994..4d629d1ea894 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -1820,7 +1820,7 @@ static int virtnet_rx_vq_reset(struct virtnet_info *vi,
+> > 
+> >  err:
+> >         netdev_err(vi->dev,
+> > -                  "reset rx reset vq fail: rx queue index: %ld err: %d\n",
+> > +                  "reset rx reset vq fail: rx queue index: %td err: %d\n",
+> >                    rq - vi->rq, err);
+> >         virtnet_napi_enable(rq->vq, &rq->napi);
+> >         return err;
+> > @@ -1870,7 +1870,7 @@ static int virtnet_tx_vq_reset(struct virtnet_info *vi,
+> > 
+> >  err:
+> >         netdev_err(vi->dev,
+> > -                  "reset tx reset vq fail: tx queue index: %ld err: %d\n",
+> > +                  "reset tx reset vq fail: tx queue index: %td err: %d\n",
+> >                    sq - vi->sq, err);
+> >         virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
+> >         return err;
 > 
-> I'm sorry to confuse you. But, it's just for reference module to introduce
-> new feature. That's why I just submitted source code and header without
-> makefile. It's not going to compiled at all now.
+> I had to apply that by hand, but it does work.
+> 
+> Tested-by: Stephen Rothwell <sfr@canb.auug.org.au>
 
-Thanks for explanation. Such of tree code must be clearly marked in
-commit title and subject (e.g. RFC). Additionally this out of tree
-module does not solve the problem of lack of users. For all your sound
-hooks you need in-tree user.
+OK, I squashed this into the problematic patch. Thanks a lot!
 
-Best regards,
-Krzysztof
+> -- 
+> Cheers,
+> Stephen Rothwell
+
+
