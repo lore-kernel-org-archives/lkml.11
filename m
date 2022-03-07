@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05652C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236806AbiCGJZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:25:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
+        id S236693AbiCGJZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:25:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237342AbiCGJXr (ORCPT
+        with ESMTP id S237271AbiCGJXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D7752E21;
-        Mon,  7 Mar 2022 01:22:52 -0800 (PST)
+        Mon, 7 Mar 2022 04:23:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E489541AA;
+        Mon,  7 Mar 2022 01:22:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A6A8B810B9;
-        Mon,  7 Mar 2022 09:22:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CA58C340F4;
-        Mon,  7 Mar 2022 09:22:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE31761027;
+        Mon,  7 Mar 2022 09:22:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF13C340F4;
+        Mon,  7 Mar 2022 09:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644970;
-        bh=Wn8ULIxJQkYh/HLpNVlOqhHrSl1FCYL7i/ThgofIHgU=;
+        s=korg; t=1646644936;
+        bh=VKj7xlrRFbcxioWHBRFh2u0Z7Dc86o9b0hoFi2dJGaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mur4AuBql/TJtLMoC4iFp2tws+lkFOHlG1TULNyeDlDiVuzjJjBCBqPwRlOEJ8OYK
-         ls1W0JUi3MRuqrynsFPSGgrznuIGrQLf49kd0f5FC0M9515pg51z5TxonQT5PD32KS
-         V1v6nWgtq6fed9RkQAib28JKVE4OYWmxyakbE4rU=
+        b=pAjnhV4eIOiOt3IQtWfq49BPuSdkOT1RwCfJHcjGjOpKYldtlSzXybwGhNNDmkn1j
+         rMjzXUWrT42lKvM4wxMPS7gET1SPUlzQsVcUEevQX8TVrVgibFizCiwZJAjLVhbtmA
+         MlWmJy+kwDmW+0snbQIbM4tTRoINoo9DdBFUaC/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 4.14 39/42] Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
-Date:   Mon,  7 Mar 2022 10:19:13 +0100
-Message-Id: <20220307091637.291336452@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 09/42] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
+Date:   Mon,  7 Mar 2022 10:18:43 +0100
+Message-Id: <20220307091636.422467160@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -48,56 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-commit 04b7762e37c95d9b965d16bb0e18dbd1fa2e2861 upstream.
+[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
 
-Before these changes elan_suspend() would only disable the regulator
-when device_may_wakeup() returns false; whereas elan_resume() would
-unconditionally enable it, leading to an enable count imbalance when
-device_may_wakeup() returns true.
+Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
+0x1071 composition in order to avoid bind error.
 
-This triggers the "WARN_ON(regulator->enable_count)" in regulator_put()
-when the elan_i2c driver gets unbound, this happens e.g. with the
-hot-plugable dock with Elan I2C touchpad for the Asus TF103C 2-in-1.
-
-Fix this by making the regulator_enable() call also be conditional
-on device_may_wakeup() returning false.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131135436.29638-2-hdegoede@redhat.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/mouse/elan_i2c_core.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/usb/cdc_mbim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/input/mouse/elan_i2c_core.c
-+++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -1195,17 +1195,17 @@ static int __maybe_unused elan_resume(st
- 	struct elan_tp_data *data = i2c_get_clientdata(client);
- 	int error;
+diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
+index cdd1b193fd4fe..41bac861ca99d 100644
+--- a/drivers/net/usb/cdc_mbim.c
++++ b/drivers/net/usb/cdc_mbim.c
+@@ -660,6 +660,11 @@ static const struct usb_device_id mbim_devs[] = {
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
+ 	},
  
--	if (device_may_wakeup(dev) && data->irq_wake) {
-+	if (!device_may_wakeup(dev)) {
-+		error = regulator_enable(data->vcc);
-+		if (error) {
-+			dev_err(dev, "error %d enabling regulator\n", error);
-+			goto err;
-+		}
-+	} else if (data->irq_wake) {
- 		disable_irq_wake(client->irq);
- 		data->irq_wake = false;
- 	}
- 
--	error = regulator_enable(data->vcc);
--	if (error) {
--		dev_err(dev, "error %d enabling regulator\n", error);
--		goto err;
--	}
--
- 	error = elan_set_power(data, true);
- 	if (error) {
- 		dev_err(dev, "power up when resuming failed: %d\n", error);
++	/* Telit FN990 */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
++	},
++
+ 	/* default entry */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
+-- 
+2.34.1
+
 
 
