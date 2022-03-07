@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8136C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 264FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237481AbiCGJfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:35:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
+        id S237491AbiCGJfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:35:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238793AbiCGJ3l (ORCPT
+        with ESMTP id S238790AbiCGJ3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:29:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E28113F3D;
-        Mon,  7 Mar 2022 01:28:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386CB13F6C;
+        Mon,  7 Mar 2022 01:28:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFC0AB810B2;
-        Mon,  7 Mar 2022 09:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38622C340E9;
-        Mon,  7 Mar 2022 09:28:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF574B810B6;
+        Mon,  7 Mar 2022 09:28:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C85C340F4;
+        Mon,  7 Mar 2022 09:28:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645323;
-        bh=WU7VEYy0Xc05GwsC1IyWX6WMTSMSrLs5PDAjEwVz1SQ=;
+        s=korg; t=1646645320;
+        bh=qSVycF8Hlto4OvKR+716Kr/M0LMXsvxE7Nc3xlw8CVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yklWV4ETKmf+PL/28dzMUyygvjiZ0eWdzxplTdWVSWxk2WISLcCUF+s4QQpONbthy
-         TjWWE13mZbbOdiIalhn2+bIsqQ7z5sriEI7d1Wtz+7g7p0TUkfVksViApdc7Ssg+dw
-         jf+MvxnGs1JZoJ0xOiKB4OwpgBsmdJXlZSWBx1cg=
+        b=ka/tRpNMekN+PtDxLObNwR36Z1726DTJNvjNhRrRJKNuvgszM2MxtiPtcu/BKNIDR
+         SrL09wbeSCigRC61bcs52v8s9ziQDEyqw4tjAXAUGHykuluXH0rAHqzEo1Y1cn032+
+         GYM5fYfI08CkXifA8DF7yNMjvbNWtJ71FmhipkuY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 51/64] soc: fsl: qe: Check of ioremap return value
-Date:   Mon,  7 Mar 2022 10:19:24 +0100
-Message-Id: <20220307091640.599507239@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Hutterer <peter.hutterer@who-t.net>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 06/64] Input: clear BTN_RIGHT/MIDDLE on buttonpads
+Date:   Mon,  7 Mar 2022 10:18:39 +0100
+Message-Id: <20220307091639.322486194@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -48,41 +52,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit a222fd8541394b36b13c89d1698d9530afd59a9c ]
+[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
 
-As the possible failure of the ioremap(), the par_io could be NULL.
-Therefore it should be better to check it and return error in order to
-guarantee the success of the initiation.
-But, I also notice that all the caller like mpc85xx_qe_par_io_init() in
-`arch/powerpc/platforms/85xx/common.c` don't check the return value of
-the par_io_init().
-Actually, par_io_init() needs to check to handle the potential error.
-I will submit another patch to fix that.
-Anyway, par_io_init() itsely should be fixed.
+Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
+and the BTN_LEFT key bit.
 
-Fixes: 7aa1aa6ecec2 ("QE: Move QE from arch/powerpc to drivers/soc")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Li Yang <leoyang.li@nxp.com>
+As explained in the specification, where a device has a button type
+value of 0 (click-pad) or 1 (pressure-pad) there should not be
+discrete buttons:
+https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
+
+However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
+though the device is a buttonpad and therefore does not have those
+buttons.
+
+This behavior has forced userspace applications like libinput to
+implement different workarounds and quirks to detect buttonpads and
+offer to the user the right set of features and configuration options.
+For more information:
+https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
+
+In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
+bits when the input device is register if the INPUT_PROP_BUTTONPAD
+property bit is set.
+
+Notice that this change will not affect udev because it does not check
+for buttons. See systemd/src/udev/udev-builtin-input_id.c.
+
+List of known affected hardware:
+
+ - Chuwi AeroBook Plus
+ - Chuwi Gemibook
+ - Framework Laptop
+ - GPD Win Max
+ - Huawei MateBook 2020
+ - Prestigio Smartbook 141 C2
+ - Purism Librem 14v1
+ - StarLite Mk II   - AMI firmware
+ - StarLite Mk II   - Coreboot firmware
+ - StarLite Mk III  - AMI firmware
+ - StarLite Mk III  - Coreboot firmware
+ - StarLabTop Mk IV - AMI firmware
+ - StarLabTop Mk IV - Coreboot firmware
+ - StarBook Mk V
+
+Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Acked-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/fsl/qe/qe_io.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/input/input.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/soc/fsl/qe/qe_io.c b/drivers/soc/fsl/qe/qe_io.c
-index 3657e296a8a2..058c2fec9a4b 100644
---- a/drivers/soc/fsl/qe/qe_io.c
-+++ b/drivers/soc/fsl/qe/qe_io.c
-@@ -37,6 +37,8 @@ int par_io_init(struct device_node *np)
- 	if (ret)
- 		return ret;
- 	par_io = ioremap(res.start, resource_size(&res));
-+	if (!par_io)
-+		return -ENOMEM;
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index e2eb9b9b8363d..f7398b996bacf 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -2181,6 +2181,12 @@ int input_register_device(struct input_dev *dev)
+ 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
+ 	__clear_bit(KEY_RESERVED, dev->keybit);
  
- 	num_ports = of_get_property(np, "num-ports", NULL);
- 	if (num_ports)
++	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
++	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
++		__clear_bit(BTN_RIGHT, dev->keybit);
++		__clear_bit(BTN_MIDDLE, dev->keybit);
++	}
++
+ 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
+ 	input_cleanse_bitmasks(dev);
+ 
 -- 
 2.34.1
 
