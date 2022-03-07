@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE93C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236783AbiCGJ03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:26:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
+        id S232385AbiCGJ0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:26:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236951AbiCGJXP (ORCPT
+        with ESMTP id S237346AbiCGJXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:15 -0500
+        Mon, 7 Mar 2022 04:23:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043CA65D3D;
-        Mon,  7 Mar 2022 01:21:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2530753702;
+        Mon,  7 Mar 2022 01:22:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E0F1610A3;
-        Mon,  7 Mar 2022 09:21:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79A42C340F3;
-        Mon,  7 Mar 2022 09:21:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B40D26112D;
+        Mon,  7 Mar 2022 09:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C186CC340E9;
+        Mon,  7 Mar 2022 09:22:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644888;
-        bh=8r8xQxUYIAElm/cXRBDz/i3qLnpZQ+9y3zYzdXn6jMU=;
+        s=korg; t=1646644973;
+        bh=2hD2Zy8q0u/gvLIiemZem1RJ9k1fcEV26TC5ytos6DE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+t2ldCZwxVAAz3L2s1S6mqsPqmbXt7yYS5/WaYiNAt5Fqony5Yi6PvC5tNfqejQd
-         XtkiutdvoVSGdUGwfadydAKAjzY2SHiZd0Ioa1YDI7zqaSqljmfyeLUB5UAFFNgWs9
-         z48g9c5P1d+8xWE6ONbjTxACDjr7X6x8erHiyt74=
+        b=t8s+1UfFUXPEs9CfGCyN4eh6+UWwIKh6dD3YF6L18CjHVU3fnWNsCoLSQlf4fPLe6
+         vTPmeM1DHCusR50t/8rAfebjPvpLsj5fUZB2Rd2PSyUIt2dz9oz1ZABA+iJ7nTQfa0
+         SUN7uKmBvHowQo3VQ7ddDii03zVzTiahGzWI1KwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 12/42] ata: pata_hpt37x: fix PCI clock detection
-Date:   Mon,  7 Mar 2022 10:18:46 +0100
-Message-Id: <20220307091636.507674209@linuxfoundation.org>
+        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 4.14 40/42] HID: add mapping for KEY_ALL_APPLICATIONS
+Date:   Mon,  7 Mar 2022 10:19:14 +0100
+Message-Id: <20220307091637.319648176@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -49,45 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: William Mahon <wmahon@chromium.org>
 
-[ Upstream commit 5f6b0f2d037c8864f20ff15311c695f65eb09db5 ]
+commit 327b89f0acc4c20a06ed59e4d9af7f6d804dc2e2 upstream.
 
-The f_CNT register (at the PCI config. address 0x78) is 16-bit, not
-8-bit! The bug was there from the very start... :-(
+This patch adds a new key definition for KEY_ALL_APPLICATIONS
+and aliases KEY_DASHBOARD to it.
 
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It also maps the 0x0c/0x2a2 usage code to KEY_ALL_APPLICATIONS.
+
+Signed-off-by: William Mahon <wmahon@chromium.org>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20220303035618.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/pata_hpt37x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/hid-debug.c                |    4 +++-
+ drivers/hid/hid-input.c                |    2 ++
+ include/uapi/linux/input-event-codes.h |    3 ++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ata/pata_hpt37x.c b/drivers/ata/pata_hpt37x.c
-index 821fc1f2324c8..44cc02afaa8bd 100644
---- a/drivers/ata/pata_hpt37x.c
-+++ b/drivers/ata/pata_hpt37x.c
-@@ -964,14 +964,14 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
+--- a/drivers/hid/hid-debug.c
++++ b/drivers/hid/hid-debug.c
+@@ -835,7 +835,9 @@ static const char *keys[KEY_MAX + 1] = {
+ 	[KEY_F22] = "F22",			[KEY_F23] = "F23",
+ 	[KEY_F24] = "F24",			[KEY_PLAYCD] = "PlayCD",
+ 	[KEY_PAUSECD] = "PauseCD",		[KEY_PROG3] = "Prog3",
+-	[KEY_PROG4] = "Prog4",			[KEY_SUSPEND] = "Suspend",
++	[KEY_PROG4] = "Prog4",
++	[KEY_ALL_APPLICATIONS] = "AllApplications",
++	[KEY_SUSPEND] = "Suspend",
+ 	[KEY_CLOSE] = "Close",			[KEY_PLAY] = "Play",
+ 	[KEY_FASTFORWARD] = "FastForward",	[KEY_BASSBOOST] = "BassBoost",
+ 	[KEY_PRINT] = "Print",			[KEY_HP] = "HP",
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1026,6 +1026,8 @@ static void hidinput_configure_usage(str
+ 		case 0x28b: map_key_clear(KEY_FORWARDMAIL);	break;
+ 		case 0x28c: map_key_clear(KEY_SEND);		break;
  
- 	if ((freq >> 12) != 0xABCDE) {
- 		int i;
--		u8 sr;
-+		u16 sr;
- 		u32 total = 0;
- 
- 		pr_warn("BIOS has not set timing clocks\n");
- 
- 		/* This is the process the HPT371 BIOS is reported to use */
- 		for (i = 0; i < 128; i++) {
--			pci_read_config_byte(dev, 0x78, &sr);
-+			pci_read_config_word(dev, 0x78, &sr);
- 			total += sr & 0x1FF;
- 			udelay(15);
- 		}
--- 
-2.34.1
-
++		case 0x2a2: map_key_clear(KEY_ALL_APPLICATIONS);	break;
++
+ 		case 0x2c7: map_key_clear(KEY_KBDINPUTASSIST_PREV);		break;
+ 		case 0x2c8: map_key_clear(KEY_KBDINPUTASSIST_NEXT);		break;
+ 		case 0x2c9: map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);		break;
+--- a/include/uapi/linux/input-event-codes.h
++++ b/include/uapi/linux/input-event-codes.h
+@@ -278,7 +278,8 @@
+ #define KEY_PAUSECD		201
+ #define KEY_PROG3		202
+ #define KEY_PROG4		203
+-#define KEY_DASHBOARD		204	/* AL Dashboard */
++#define KEY_ALL_APPLICATIONS	204	/* AC Desktop Show All Applications */
++#define KEY_DASHBOARD		KEY_ALL_APPLICATIONS
+ #define KEY_SUSPEND		205
+ #define KEY_CLOSE		206	/* AC Close */
+ #define KEY_PLAY		207
 
 
