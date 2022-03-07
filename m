@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA0CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240415AbiCGKlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:41:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        id S240831AbiCGKlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:41:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241429AbiCGKUc (ORCPT
+        with ESMTP id S241441AbiCGKUd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:20:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC7690265;
-        Mon,  7 Mar 2022 01:58:12 -0800 (PST)
+        Mon, 7 Mar 2022 05:20:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D65690CC8;
+        Mon,  7 Mar 2022 01:58:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB255B810B9;
-        Mon,  7 Mar 2022 09:58:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 076B4C340E9;
-        Mon,  7 Mar 2022 09:58:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D3A60919;
+        Mon,  7 Mar 2022 09:58:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04683C340F3;
+        Mon,  7 Mar 2022 09:58:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647088;
-        bh=HVw/17tkybDcgz2QkK32R8n6u01uYDi6gFerfbbn+GE=;
+        s=korg; t=1646647094;
+        bh=OF4LvnZoUsC5SUr3olPBFDXqhqhZWQIc703tv/w6YmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=abfV+141YBYlAGpO43l9HO1wEKFu1vqqzAwez+jUX2sWGFDmgC4O4B608Gk5kQC1v
-         DqLwi0WBFrw9LrLlwz5wHZZEDgXBfKOA+kxff4YqHrwwcTAEW3kxWLgEJBfUK8Jr2f
-         9K5ZR+9Gx6bok+uEXRwZN36qYypq3+aGLrJVsHjw=
+        b=amjZPljIJIBfBkS7jiNJd4TZ5M9yZPZLAyGXLqbyLq7k5df5Vl+clXfw2k8kW2Bae
+         2qc8H2qefWcJjxtj656Cy9MQ7e2wu20d6xHXIxKSkGy/JIQG1fHz+owCJPgHaN/t9s
+         bPnUTPfvGFH0JcSVblutpEfyBIue+IGTfB2GfgCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 153/186] iavf: Fix locking for VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS
-Date:   Mon,  7 Mar 2022 10:19:51 +0100
-Message-Id: <20220307091658.352963419@linuxfoundation.org>
+Subject: [PATCH 5.16 155/186] iavf: Fix __IAVF_RESETTING state usage
+Date:   Mon,  7 Mar 2022 10:19:53 +0100
+Message-Id: <20220307091658.409862483@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -55,34 +55,20 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Slawomir Laba <slawomirx.laba@intel.com>
 
-[ Upstream commit 0579fafd37fb7efe091f0e6c8ccf968864f40f3e ]
+[ Upstream commit 14756b2ae265d526b8356e86729090b01778fdf6 ]
 
-iavf_virtchnl_completion is called under crit_lock but when
-the code for VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS is called,
-this lock is released in order to obtain rtnl_lock to avoid
-ABBA deadlock with unregister_netdev.
+The setup of __IAVF_RESETTING state in watchdog task had no
+effect and could lead to slow resets in the driver as
+the task for __IAVF_RESETTING state only requeues watchdog.
+Till now the __IAVF_RESETTING was interpreted by reset task
+as running state which could lead to errors with allocating
+and resources disposal.
 
-Along with the new way iavf_remove behaves, there exist
-many risks related to the lock release and attmepts to regrab
-it. The driver faces crashes related to races between
-unregister_netdev and netdev_update_features. Yet another
-risk is that the driver could already obtain the crit_lock
-in order to destroy it and iavf_virtchnl_completion could
-crash or block forever.
+Make watchdog_task queue the reset task when it's necessary.
+Do not update the state to __IAVF_RESETTING so the reset task
+knows exactly what is the current state of the adapter.
 
-Make iavf_virtchnl_completion never relock crit_lock in it's
-call paths.
-
-Extract rtnl_lock locking logic to the driver for
-unregister_netdev in order to set the netdev_registered flag
-inside the lock.
-
-Introduce a new flag that will inform adminq_task to perform
-the code from VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS right after
-it finishes processing messages. Guard this code with remove
-flags so it's never called when the driver is in remove state.
-
-Fixes: 5951a2b9812d ("iavf: Fix VLAN feature flags after VFR")
+Fixes: 898ef1cb1cb2 ("iavf: Combine init and watchdog state machines")
 Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
 Signed-off-by: Phani Burra <phani.r.burra@intel.com>
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
@@ -91,83 +77,49 @@ Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h          |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c     | 16 +++++++++++++++-
- drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 14 +-------------
- 3 files changed, 17 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index ffc61993019b..9a122aea6979 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -274,6 +274,7 @@ struct iavf_adapter {
- #define IAVF_FLAG_LEGACY_RX			BIT(15)
- #define IAVF_FLAG_REINIT_ITR_NEEDED		BIT(16)
- #define IAVF_FLAG_QUEUES_DISABLED		BIT(17)
-+#define IAVF_FLAG_SETUP_NETDEV_FEATURES		BIT(18)
- /* duplicates for common code */
- #define IAVF_FLAG_DCB_ENABLED			0
- 	/* flags for admin queue service task */
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 2a9044c8396f..1af3fe427543 100644
+index 9ed02a8ca7a3..138db07bdfa8 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2465,6 +2465,18 @@ static void iavf_adminq_task(struct work_struct *work)
- 	} while (pending);
- 	mutex_unlock(&adapter->crit_lock);
+@@ -1073,8 +1073,7 @@ void iavf_down(struct iavf_adapter *adapter)
+ 		rss->state = IAVF_ADV_RSS_DEL_REQUEST;
+ 	spin_unlock_bh(&adapter->adv_rss_lock);
  
-+	if ((adapter->flags & IAVF_FLAG_SETUP_NETDEV_FEATURES)) {
-+		if (adapter->netdev_registered ||
-+		    !test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section)) {
-+			struct net_device *netdev = adapter->netdev;
-+
-+			rtnl_lock();
-+			netdev_update_features(netdev);
-+			rtnl_unlock();
-+		}
-+
-+		adapter->flags &= ~IAVF_FLAG_SETUP_NETDEV_FEATURES;
-+	}
- 	if ((adapter->flags &
- 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
- 	    adapter->state == __IAVF_RESETTING)
-@@ -4029,8 +4041,10 @@ static void iavf_remove(struct pci_dev *pdev)
- 	cancel_delayed_work_sync(&adapter->watchdog_task);
+-	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED) &&
+-	    adapter->state != __IAVF_RESETTING) {
++	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)) {
+ 		/* cancel any current operation */
+ 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
+ 		/* Schedule operations to close down the HW. Don't wait
+@@ -1992,11 +1991,12 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 	if (adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)
+ 		iavf_change_state(adapter, __IAVF_COMM_FAILED);
  
- 	if (adapter->netdev_registered) {
--		unregister_netdev(netdev);
-+		rtnl_lock();
-+		unregister_netdevice(netdev);
- 		adapter->netdev_registered = false;
-+		rtnl_unlock();
+-	if (adapter->flags & IAVF_FLAG_RESET_NEEDED &&
+-	    adapter->state != __IAVF_RESETTING) {
+-		iavf_change_state(adapter, __IAVF_RESETTING);
++	if (adapter->flags & IAVF_FLAG_RESET_NEEDED) {
+ 		adapter->aq_required = 0;
+ 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
++		mutex_unlock(&adapter->crit_lock);
++		queue_work(iavf_wq, &adapter->reset_task);
++		return;
  	}
- 	if (CLIENT_ALLOWED(adapter)) {
- 		err = iavf_lan_del_device(adapter);
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index d60bf7c21200..d3da65d24bd6 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -1752,19 +1752,7 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
  
- 		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		iavf_process_config(adapter);
--
--		/* unlock crit_lock before acquiring rtnl_lock as other
--		 * processes holding rtnl_lock could be waiting for the same
--		 * crit_lock
--		 */
--		mutex_unlock(&adapter->crit_lock);
--		rtnl_lock();
--		netdev_update_features(adapter->netdev);
--		rtnl_unlock();
--		if (iavf_lock_timeout(&adapter->crit_lock, 10000))
--			dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n",
--				 __FUNCTION__);
--
-+		adapter->flags |= IAVF_FLAG_SETUP_NETDEV_FEATURES;
- 		}
- 		break;
- 	case VIRTCHNL_OP_ENABLE_QUEUES:
+ 	switch (adapter->state) {
+@@ -2289,8 +2289,7 @@ static void iavf_reset_task(struct work_struct *work)
+ 	 * ndo_open() returning, so we can't assume it means all our open
+ 	 * tasks have finished, since we're not holding the rtnl_lock here.
+ 	 */
+-	running = ((adapter->state == __IAVF_RUNNING) ||
+-		   (adapter->state == __IAVF_RESETTING));
++	running = adapter->state == __IAVF_RUNNING;
+ 
+ 	if (running) {
+ 		netdev->flags &= ~IFF_UP;
 -- 
 2.34.1
 
