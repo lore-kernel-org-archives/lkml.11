@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2AA3C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A47C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241560AbiCGKUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:20:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36002 "EHLO
+        id S241522AbiCGKUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239606AbiCGJ7f (ORCPT
+        with ESMTP id S239787AbiCGKAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:59:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171077C7B5;
-        Mon,  7 Mar 2022 01:46:25 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247757CDD1;
+        Mon,  7 Mar 2022 01:46:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 614176116E;
-        Mon,  7 Mar 2022 09:46:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D4AC340E9;
-        Mon,  7 Mar 2022 09:46:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FF10B8102B;
+        Mon,  7 Mar 2022 09:46:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74691C36AE9;
+        Mon,  7 Mar 2022 09:46:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646384;
-        bh=WVezb1xqfO/jUE0GkQ2sDOidjj4zerByrLF7Pq3heH4=;
+        s=korg; t=1646646378;
+        bh=4Irywx2X3tkVd8vaupgjI9ak5hpRtJazXdKtTjI0760=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UCmy6sTDA5ijJQGkbbi86fQFNIT5rWmF6BlRZWgBUKbC61QgTDCaqYwBPaR57JUTL
-         pNi47iUVWHVQxQFXgi2BACJ3x6T1O4BYoxQirC5ZvKXTXEmkkhgYyzLNGM6/OWjZ2s
-         DG7cbuUsvHNEzBudt/s+9NUzIYh90CLwj1nIU4DY=
+        b=dsAOvsZXiOTm04UHyoXRrL96VvYwxhgnggsDvlu397LSoSPEyOzc04gzilNtCILie
+         YyRPBEJP9/27u4sc5n+2AgwAAjPJ6goyaj+cUElmCf8HyTIu7pzOkI9dF/qLoEBPeL
+         ps8O/pHDIZsCZjPcwKZO/l4xEwJpyyQl0VQfJdg8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
+        stable@vger.kernel.org, Jakub Pawlak <jakub.pawlak@intel.com>,
+        Jan Sokolowski <jan.sokolowski@intel.com>,
         Mateusz Palczewski <mateusz.palczewski@intel.com>,
         Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 227/262] iavf: Rework mutexes for better synchronisation
-Date:   Mon,  7 Mar 2022 10:19:31 +0100
-Message-Id: <20220307091709.571487404@linuxfoundation.org>
+Subject: [PATCH 5.15 225/262] iavf: Combine init and watchdog state machines
+Date:   Mon,  7 Mar 2022 10:19:29 +0100
+Message-Id: <20220307091709.475536877@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -53,214 +52,260 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-[ Upstream commit fc2e6b3b132a907378f6af08356b105a4139c4fb ]
+[ Upstream commit 898ef1cb1cb24040c3e89263e02c605af70c776a ]
 
-The driver used to crash in multiple spots when put to stress testing
-of the init, reset and remove paths.
+Use single state machine for driver initialization and for service
+initialized driver. The init state machine implemented in init_task()
+is merged into the watchdog_task(). The init_task() function is
+removed.
 
-The user would experience call traces or hangs when creating,
-resetting, removing VFs. Depending on the machines, the call traces
-are happening in random spots, like reset restoring resources racing
-with driver remove.
-
-Make adapter->crit_lock mutex a mandatory lock for guarding the
-operations performed on all workqueues and functions dealing with
-resource allocation and disposal.
-
-Make __IAVF_REMOVE a final state of the driver respected by
-workqueues that shall not requeue, when they fail to obtain the
-crit_lock.
-
-Make the IRQ handler not to queue the new work for adminq_task
-when the __IAVF_REMOVE state is set.
-
-Fixes: 5ac49f3c2702 ("iavf: use mutexes for locking of critical sections")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Jakub Pawlak <jakub.pawlak@intel.com>
+Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
 Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h      |  1 -
- drivers/net/ethernet/intel/iavf/iavf_main.c | 66 +++++++++++----------
- 2 files changed, 36 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf.h      |   1 -
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 136 ++++++++------------
+ 2 files changed, 57 insertions(+), 80 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 00d1ea313918..997c45f2c542 100644
+index 9eb86c86f454..00d1ea313918 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf.h
 +++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -233,7 +233,6 @@ struct iavf_adapter {
- 	struct list_head mac_filter_list;
- 	struct mutex crit_lock;
- 	struct mutex client_lock;
--	struct mutex remove_lock;
- 	/* Lock to protect accesses to MAC and VLAN lists */
- 	spinlock_t mac_vlan_list_lock;
- 	char misc_vector_name[IFNAMSIZ + 9];
+@@ -227,7 +227,6 @@ struct iavf_adapter {
+ 	struct work_struct reset_task;
+ 	struct work_struct adminq_task;
+ 	struct delayed_work client_task;
+-	struct delayed_work init_task;
+ 	wait_queue_head_t down_waitqueue;
+ 	struct iavf_q_vector *q_vectors;
+ 	struct list_head vlan_filter_list;
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 75fab4ea42b6..3aa21568686d 100644
+index 181d17945bbe..7bc8b646e37c 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -293,8 +293,9 @@ static irqreturn_t iavf_msix_aq(int irq, void *data)
- 	rd32(hw, IAVF_VFINT_ICR01);
- 	rd32(hw, IAVF_VFINT_ICR0_ENA1);
- 
--	/* schedule work on the private workqueue */
--	queue_work(iavf_wq, &adapter->adminq_task);
-+	if (adapter->state != __IAVF_REMOVE)
-+		/* schedule work on the private workqueue */
-+		queue_work(iavf_wq, &adapter->adminq_task);
- 
- 	return IRQ_HANDLED;
- }
-@@ -1972,8 +1973,12 @@ static void iavf_watchdog_task(struct work_struct *work)
- 	struct iavf_hw *hw = &adapter->hw;
- 	u32 reg_val;
- 
--	if (!mutex_trylock(&adapter->crit_lock))
-+	if (!mutex_trylock(&adapter->crit_lock)) {
-+		if (adapter->state == __IAVF_REMOVE)
-+			return;
-+
- 		goto restart_watchdog;
-+	}
- 
+@@ -1978,7 +1978,48 @@ static void iavf_watchdog_task(struct work_struct *work)
  	if (adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)
  		iavf_change_state(adapter, __IAVF_COMM_FAILED);
-@@ -2185,13 +2190,13 @@ static void iavf_reset_task(struct work_struct *work)
- 	/* When device is being removed it doesn't make sense to run the reset
- 	 * task, just return in such a case.
- 	 */
--	if (mutex_is_locked(&adapter->remove_lock))
--		return;
-+	if (!mutex_trylock(&adapter->crit_lock)) {
-+		if (adapter->state != __IAVF_REMOVE)
-+			queue_work(iavf_wq, &adapter->reset_task);
  
--	if (iavf_lock_timeout(&adapter->crit_lock, 200)) {
--		schedule_work(&adapter->reset_task);
- 		return;
- 	}
-+
- 	while (!mutex_trylock(&adapter->client_lock))
- 		usleep_range(500, 1000);
- 	if (CLIENT_ENABLED(adapter)) {
-@@ -2401,13 +2406,19 @@ static void iavf_adminq_task(struct work_struct *work)
- 	if (adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)
- 		goto out;
- 
-+	if (!mutex_trylock(&adapter->crit_lock)) {
-+		if (adapter->state == __IAVF_REMOVE)
-+			return;
-+
-+		queue_work(iavf_wq, &adapter->adminq_task);
-+		goto out;
++	if (adapter->flags & IAVF_FLAG_RESET_NEEDED &&
++	    adapter->state != __IAVF_RESETTING) {
++		iavf_change_state(adapter, __IAVF_RESETTING);
++		adapter->aq_required = 0;
++		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
 +	}
 +
- 	event.buf_len = IAVF_MAX_AQ_BUF_SIZE;
- 	event.msg_buf = kzalloc(event.buf_len, GFP_KERNEL);
- 	if (!event.msg_buf)
- 		goto out;
- 
--	if (iavf_lock_timeout(&adapter->crit_lock, 200))
--		goto freedom;
- 	do {
- 		ret = iavf_clean_arq_element(hw, &event, &pending);
- 		v_op = (enum virtchnl_ops)le32_to_cpu(event.desc.cookie_high);
-@@ -3368,11 +3379,12 @@ static int iavf_close(struct net_device *netdev)
- 	struct iavf_adapter *adapter = netdev_priv(netdev);
- 	int status;
- 
--	if (adapter->state <= __IAVF_DOWN_PENDING)
--		return 0;
-+	mutex_lock(&adapter->crit_lock);
- 
--	while (!mutex_trylock(&adapter->crit_lock))
--		usleep_range(500, 1000);
-+	if (adapter->state <= __IAVF_DOWN_PENDING) {
+ 	switch (adapter->state) {
++	case __IAVF_STARTUP:
++		iavf_startup(adapter);
 +		mutex_unlock(&adapter->crit_lock);
-+		return 0;
-+	}
++		queue_delayed_work(iavf_wq, &adapter->watchdog_task,
++				   msecs_to_jiffies(30));
++		return;
++	case __IAVF_INIT_VERSION_CHECK:
++		iavf_init_version_check(adapter);
++		mutex_unlock(&adapter->crit_lock);
++		queue_delayed_work(iavf_wq, &adapter->watchdog_task,
++				   msecs_to_jiffies(30));
++		return;
++	case __IAVF_INIT_GET_RESOURCES:
++		iavf_init_get_resources(adapter);
++		mutex_unlock(&adapter->crit_lock);
++		queue_delayed_work(iavf_wq, &adapter->watchdog_task,
++				   msecs_to_jiffies(1));
++		return;
++	case __IAVF_INIT_FAILED:
++		if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
++			dev_err(&adapter->pdev->dev,
++				"Failed to communicate with PF; waiting before retry\n");
++			adapter->flags |= IAVF_FLAG_PF_COMMS_FAILED;
++			iavf_shutdown_adminq(hw);
++			mutex_unlock(&adapter->crit_lock);
++			queue_delayed_work(iavf_wq,
++					   &adapter->watchdog_task, (5 * HZ));
++			return;
++		}
++		/* Try again from failed step*/
++		iavf_change_state(adapter, adapter->last_state);
++		mutex_unlock(&adapter->crit_lock);
++		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ);
++		return;
+ 	case __IAVF_COMM_FAILED:
+ 		reg_val = rd32(hw, IAVF_VFGEN_RSTAT) &
+ 			  IAVF_VFGEN_RSTAT_VFR_STATE_MASK;
+@@ -1987,23 +2028,19 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 			/* A chance for redemption! */
+ 			dev_err(&adapter->pdev->dev,
+ 				"Hardware came out of reset. Attempting reinit.\n");
+-			iavf_change_state(adapter, __IAVF_STARTUP);
+-			adapter->flags &= ~IAVF_FLAG_PF_COMMS_FAILED;
+-			queue_delayed_work(iavf_wq, &adapter->init_task, 10);
+-			mutex_unlock(&adapter->crit_lock);
+-			/* Don't reschedule the watchdog, since we've restarted
+-			 * the init task. When init_task contacts the PF and
++			/* When init task contacts the PF and
+ 			 * gets everything set up again, it'll restart the
+ 			 * watchdog for us. Down, boy. Sit. Stay. Woof.
+ 			 */
+-			return;
++			iavf_change_state(adapter, __IAVF_STARTUP);
++			adapter->flags &= ~IAVF_FLAG_PF_COMMS_FAILED;
+ 		}
+ 		adapter->aq_required = 0;
+ 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
+ 		queue_delayed_work(iavf_wq,
+ 				   &adapter->watchdog_task,
+ 				   msecs_to_jiffies(10));
+-		goto watchdog_done;
++		return;
+ 	case __IAVF_RESETTING:
+ 		mutex_unlock(&adapter->crit_lock);
+ 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ * 2);
+@@ -2026,12 +2063,14 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 			    adapter->state == __IAVF_RUNNING)
+ 				iavf_request_stats(adapter);
+ 		}
++		if (adapter->state == __IAVF_RUNNING)
++			iavf_detect_recover_hung(&adapter->vsi);
+ 		break;
+ 	case __IAVF_REMOVE:
+ 		mutex_unlock(&adapter->crit_lock);
+ 		return;
+ 	default:
+-		goto restart_watchdog;
++		return;
+ 	}
  
- 	set_bit(__IAVF_VSI_DOWN, adapter->vsi.state);
- 	if (CLIENT_ENABLED(adapter))
-@@ -3836,7 +3848,6 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 */
- 	mutex_init(&adapter->crit_lock);
- 	mutex_init(&adapter->client_lock);
--	mutex_init(&adapter->remove_lock);
- 	mutex_init(&hw->aq.asq_mutex);
- 	mutex_init(&hw->aq.arq_mutex);
+ 	/* check for hw reset */
+@@ -2043,22 +2082,21 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
+ 		dev_err(&adapter->pdev->dev, "Hardware reset detected\n");
+ 		queue_work(iavf_wq, &adapter->reset_task);
+-		goto watchdog_done;
++		mutex_unlock(&adapter->crit_lock);
++		queue_delayed_work(iavf_wq,
++				   &adapter->watchdog_task, HZ * 2);
++		return;
+ 	}
  
-@@ -3959,11 +3970,7 @@ static void iavf_remove(struct pci_dev *pdev)
- 	struct iavf_cloud_filter *cf, *cftmp;
- 	struct iavf_hw *hw = &adapter->hw;
+ 	schedule_delayed_work(&adapter->client_task, msecs_to_jiffies(5));
+-watchdog_done:
+-	if (adapter->state == __IAVF_RUNNING ||
+-	    adapter->state == __IAVF_COMM_FAILED)
+-		iavf_detect_recover_hung(&adapter->vsi);
+ 	mutex_unlock(&adapter->crit_lock);
+ restart_watchdog:
++	queue_work(iavf_wq, &adapter->adminq_task);
+ 	if (adapter->aq_required)
+ 		queue_delayed_work(iavf_wq, &adapter->watchdog_task,
+ 				   msecs_to_jiffies(20));
+ 	else
+ 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ * 2);
+-	queue_work(iavf_wq, &adapter->adminq_task);
+ }
+ 
+ static void iavf_disable_vf(struct iavf_adapter *adapter)
+@@ -2339,6 +2377,8 @@ static void iavf_reset_task(struct work_struct *work)
+ reset_err:
+ 	mutex_unlock(&adapter->client_lock);
+ 	mutex_unlock(&adapter->crit_lock);
++	if (running)
++		iavf_change_state(adapter, __IAVF_RUNNING);
+ 	dev_err(&adapter->pdev->dev, "failed to allocate resources during reinit\n");
+ 	iavf_close(netdev);
+ }
+@@ -3681,67 +3721,6 @@ int iavf_process_config(struct iavf_adapter *adapter)
+ 	return 0;
+ }
+ 
+-/**
+- * iavf_init_task - worker thread to perform delayed initialization
+- * @work: pointer to work_struct containing our data
+- *
+- * This task completes the work that was begun in probe. Due to the nature
+- * of VF-PF communications, we may need to wait tens of milliseconds to get
+- * responses back from the PF. Rather than busy-wait in probe and bog down the
+- * whole system, we'll do it in a task so we can sleep.
+- * This task only runs during driver init. Once we've established
+- * communications with the PF driver and set up our netdev, the watchdog
+- * takes over.
+- **/
+-static void iavf_init_task(struct work_struct *work)
+-{
+-	struct iavf_adapter *adapter = container_of(work,
+-						    struct iavf_adapter,
+-						    init_task.work);
+-	struct iavf_hw *hw = &adapter->hw;
+-
+-	if (iavf_lock_timeout(&adapter->crit_lock, 5000)) {
+-		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
+-		return;
+-	}
+-	switch (adapter->state) {
+-	case __IAVF_STARTUP:
+-		iavf_startup(adapter);
+-		if (adapter->state == __IAVF_INIT_FAILED)
+-			goto init_failed;
+-		break;
+-	case __IAVF_INIT_VERSION_CHECK:
+-		iavf_init_version_check(adapter);
+-		if (adapter->state == __IAVF_INIT_FAILED)
+-			goto init_failed;
+-		break;
+-	case __IAVF_INIT_GET_RESOURCES:
+-		iavf_init_get_resources(adapter);
+-		if (adapter->state == __IAVF_INIT_FAILED)
+-			goto init_failed;
+-		goto out;
+-	default:
+-		goto init_failed;
+-	}
+-
+-	queue_delayed_work(iavf_wq, &adapter->init_task,
+-			   msecs_to_jiffies(30));
+-	goto out;
+-init_failed:
+-	if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
+-		dev_err(&adapter->pdev->dev,
+-			"Failed to communicate with PF; waiting before retry\n");
+-		adapter->flags |= IAVF_FLAG_PF_COMMS_FAILED;
+-		iavf_shutdown_adminq(hw);
+-		iavf_change_state(adapter, __IAVF_STARTUP);
+-		queue_delayed_work(iavf_wq, &adapter->init_task, HZ * 5);
+-		goto out;
+-	}
+-	queue_delayed_work(iavf_wq, &adapter->init_task, HZ);
+-out:
+-	mutex_unlock(&adapter->crit_lock);
+-}
+-
+ /**
+  * iavf_shutdown - Shutdown the device in preparation for a reboot
+  * @pdev: pci device structure
+@@ -3876,8 +3855,7 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	INIT_WORK(&adapter->adminq_task, iavf_adminq_task);
+ 	INIT_DELAYED_WORK(&adapter->watchdog_task, iavf_watchdog_task);
+ 	INIT_DELAYED_WORK(&adapter->client_task, iavf_client_task);
+-	INIT_DELAYED_WORK(&adapter->init_task, iavf_init_task);
+-	queue_delayed_work(iavf_wq, &adapter->init_task,
++	queue_delayed_work(iavf_wq, &adapter->watchdog_task,
+ 			   msecs_to_jiffies(5 * (pdev->devfn & 0x07)));
+ 
+ 	/* Setup the wait queue for indicating transition to down status */
+@@ -3983,8 +3961,8 @@ static void iavf_remove(struct pci_dev *pdev)
  	int err;
--	/* Indicate we are in remove and not to run reset_task */
--	mutex_lock(&adapter->remove_lock);
--	cancel_work_sync(&adapter->reset_task);
--	cancel_delayed_work_sync(&adapter->watchdog_task);
--	cancel_delayed_work_sync(&adapter->client_task);
-+
+ 	/* Indicate we are in remove and not to run reset_task */
+ 	mutex_lock(&adapter->remove_lock);
+-	cancel_delayed_work_sync(&adapter->init_task);
+ 	cancel_work_sync(&adapter->reset_task);
++	cancel_delayed_work_sync(&adapter->watchdog_task);
+ 	cancel_delayed_work_sync(&adapter->client_task);
  	if (adapter->netdev_registered) {
  		unregister_netdev(netdev);
- 		adapter->netdev_registered = false;
-@@ -3975,6 +3982,10 @@ static void iavf_remove(struct pci_dev *pdev)
- 				 err);
- 	}
- 
-+	mutex_lock(&adapter->crit_lock);
-+	dev_info(&adapter->pdev->dev, "Remove device\n");
-+	iavf_change_state(adapter, __IAVF_REMOVE);
-+
- 	iavf_request_reset(adapter);
- 	msleep(50);
- 	/* If the FW isn't responding, kick it once, but only once. */
-@@ -3982,25 +3993,22 @@ static void iavf_remove(struct pci_dev *pdev)
- 		iavf_request_reset(adapter);
- 		msleep(50);
- 	}
--	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
--		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
- 
--	dev_info(&adapter->pdev->dev, "Removing device\n");
-+	iavf_misc_irq_disable(adapter);
- 	/* Shut down all the garbage mashers on the detention level */
--	iavf_change_state(adapter, __IAVF_REMOVE);
-+	cancel_work_sync(&adapter->reset_task);
-+	cancel_delayed_work_sync(&adapter->watchdog_task);
-+	cancel_work_sync(&adapter->adminq_task);
-+	cancel_delayed_work_sync(&adapter->client_task);
-+
- 	adapter->aq_required = 0;
- 	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
- 	iavf_free_all_tx_resources(adapter);
- 	iavf_free_all_rx_resources(adapter);
--	iavf_misc_irq_disable(adapter);
- 	iavf_free_misc_irq(adapter);
- 	iavf_reset_interrupt_capability(adapter);
- 	iavf_free_q_vectors(adapter);
- 
--	cancel_delayed_work_sync(&adapter->watchdog_task);
--
--	cancel_work_sync(&adapter->adminq_task);
--
- 	iavf_free_rss(adapter);
- 
- 	if (hw->aq.asq.count)
-@@ -4012,8 +4020,6 @@ static void iavf_remove(struct pci_dev *pdev)
- 	mutex_destroy(&adapter->client_lock);
- 	mutex_unlock(&adapter->crit_lock);
- 	mutex_destroy(&adapter->crit_lock);
--	mutex_unlock(&adapter->remove_lock);
--	mutex_destroy(&adapter->remove_lock);
- 
- 	iounmap(hw->hw_addr);
- 	pci_release_regions(pdev);
 -- 
 2.34.1
 
