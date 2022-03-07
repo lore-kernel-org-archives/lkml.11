@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 591ADC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF17C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239375AbiCGJ65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:58:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
+        id S239490AbiCGJ7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:59:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237903AbiCGJhr (ORCPT
+        with ESMTP id S240275AbiCGJkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:37:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E028B6E542;
-        Mon,  7 Mar 2022 01:31:44 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ACC5D67E;
+        Mon,  7 Mar 2022 01:37:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CFAFB810C0;
-        Mon,  7 Mar 2022 09:31:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C459FC340F3;
-        Mon,  7 Mar 2022 09:31:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 207A5611D5;
+        Mon,  7 Mar 2022 09:37:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD63C340F3;
+        Mon,  7 Mar 2022 09:37:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645492;
-        bh=zm7X+mczjZZVjYf1HfHRRL5vRFs3/Yfw66muXvDoBRQ=;
+        s=korg; t=1646645833;
+        bh=fXl+KhFkFNVvhrHdnsaC4Mi8oIwGhOlNMCYqYf9MWAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f06zK8PTgP9FQES9LdIBT51ODyRkLLd8Byykqk9Rmt0GDtGTLX4w3IkVnC5JZxWo2
-         Hg4z4r5z8JgiiVBF5o1E6wTkiCJkrtUeXgIR5hdaKl1cBwlZw16YpOJnhzh2LG8uWQ
-         wj1qyiEN2Uwdx0MjneBEN5eaDcD768R6ctU00KvM=
+        b=YDoYklcHSIDqxQuz5pJHZge9mRrFjmkZy+C/1jUfPamSYjIhO0+YK7UN/9L5L9rgU
+         2JouQ+DviyXEPvzSEBfUtVbnK3i8Omb7zqmqBrHATmvIkF2Hdg3npuVSY4x6yI8HbD
+         zZIevQcbYpOeMdXhFM/ZdSoUhxuN9C4FD3x7wUlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 5.10 048/105] batman-adv: Dont expect inter-netns unique iflink indices
-Date:   Mon,  7 Mar 2022 10:18:51 +0100
-Message-Id: <20220307091645.536552023@linuxfoundation.org>
+        stable@vger.kernel.org, Qizhong Cheng <qizhong.cheng@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 051/262] PCI: mediatek-gen3: Disable DVFSRC voltage request
+Date:   Mon,  7 Mar 2022 10:16:35 +0100
+Message-Id: <20220307091703.958788169@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,95 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Jianjun Wang <jianjun.wang@mediatek.com>
 
-commit 6c1f41afc1dbe59d9d3c8bb0d80b749c119aa334 upstream.
+[ Upstream commit ab344fd43f2958726d17d651c0cb692c67dca382 ]
 
-The ifindex doesn't have to be unique for multiple network namespaces on
-the same machine.
+When the DVFSRC (dynamic voltage and frequency scaling resource collector)
+feature is not implemented, the PCIe hardware will assert a voltage request
+signal when exit from the L1 PM Substates to request a specific Vcore
+voltage, but cannot receive the voltage ready signal, which will cause
+the link to fail to exit the L1 PM Substates.
 
-  $ ip netns add test1
-  $ ip -net test1 link add dummy1 type dummy
-  $ ip netns add test2
-  $ ip -net test2 link add dummy2 type dummy
+Disable DVFSRC voltage request by default, we need to find a common way to
+enable it in the future.
 
-  $ ip -net test1 link show dev dummy1
-  6: dummy1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/ether 96:81:55:1e:dd:85 brd ff:ff:ff:ff:ff:ff
-  $ ip -net test2 link show dev dummy2
-  6: dummy2: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/ether 5a:3c:af:35:07:c3 brd ff:ff:ff:ff:ff:ff
-
-But the batman-adv code to walk through the various layers of virtual
-interfaces uses this assumption because dev_get_iflink handles it
-internally and doesn't return the actual netns of the iflink. And
-dev_get_iflink only documents the situation where ifindex == iflink for
-physical devices.
-
-But only checking for dev->netdev_ops->ndo_get_iflink is also not an option
-because ipoib_get_iflink implements it even when it sometimes returns an
-iflink != ifindex and sometimes iflink == ifindex. The caller must
-therefore make sure itself to check both netns and iflink + ifindex for
-equality. Only when they are equal, a "physical" interface was detected
-which should stop the traversal. On the other hand, vxcan_get_iflink can
-also return 0 in case there was currently no valid peer. In this case, it
-is still necessary to stop.
-
-Fixes: b7eddd0b3950 ("batman-adv: prevent using any virtual device created on batman-adv as hard-interface")
-Fixes: 5ed4a460a1d3 ("batman-adv: additional checks for virtual interfaces on top of WiFi")
-Reported-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20211015063602.29058-1-jianjun.wang@mediatek.com
+Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
+Tested-by: Qizhong Cheng <qizhong.cheng@mediatek.com>
+Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/hard-interface.c |   19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ drivers/pci/controller/pcie-mediatek-gen3.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -159,13 +159,15 @@ static bool batadv_is_on_batman_iface(co
- 		return true;
+diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+index 17c59b0d6978b..21207df680ccf 100644
+--- a/drivers/pci/controller/pcie-mediatek-gen3.c
++++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+@@ -79,6 +79,9 @@
+ #define PCIE_ICMD_PM_REG		0x198
+ #define PCIE_TURN_OFF_LINK		BIT(4)
  
- 	iflink = dev_get_iflink(net_dev);
--
--	/* no more parents..stop recursion */
--	if (iflink == 0 || iflink == net_dev->ifindex)
-+	if (iflink == 0)
- 		return false;
- 
- 	parent_net = batadv_getlink_net(net_dev, net);
- 
-+	/* iflink to itself, most likely physical device */
-+	if (net == parent_net && iflink == net_dev->ifindex)
-+		return false;
++#define PCIE_MISC_CTRL_REG		0x348
++#define PCIE_DISABLE_DVFSRC_VLT_REQ	BIT(1)
 +
- 	/* recurse over the parent device */
- 	parent_dev = __dev_get_by_index((struct net *)parent_net, iflink);
- 	/* if we got a NULL parent_dev there is something broken.. */
-@@ -225,8 +227,7 @@ static struct net_device *batadv_get_rea
- 		return NULL;
+ #define PCIE_TRANS_TABLE_BASE_REG	0x800
+ #define PCIE_ATR_SRC_ADDR_MSB_OFFSET	0x4
+ #define PCIE_ATR_TRSL_ADDR_LSB_OFFSET	0x8
+@@ -297,6 +300,11 @@ static int mtk_pcie_startup_port(struct mtk_pcie_port *port)
+ 	val &= ~PCIE_INTX_ENABLE;
+ 	writel_relaxed(val, port->base + PCIE_INT_ENABLE_REG);
  
- 	iflink = dev_get_iflink(netdev);
--
--	if (netdev->ifindex == iflink) {
-+	if (iflink == 0) {
- 		dev_hold(netdev);
- 		return netdev;
- 	}
-@@ -237,6 +238,14 @@ static struct net_device *batadv_get_rea
- 
- 	net = dev_net(hard_iface->soft_iface);
- 	real_net = batadv_getlink_net(netdev, net);
++	/* Disable DVFSRC voltage request */
++	val = readl_relaxed(port->base + PCIE_MISC_CTRL_REG);
++	val |= PCIE_DISABLE_DVFSRC_VLT_REQ;
++	writel_relaxed(val, port->base + PCIE_MISC_CTRL_REG);
 +
-+	/* iflink to itself, most likely physical device */
-+	if (net == real_net && netdev->ifindex == iflink) {
-+		real_netdev = netdev;
-+		dev_hold(real_netdev);
-+		goto out;
-+	}
-+
- 	real_netdev = dev_get_by_index(real_net, iflink);
- 
- out:
+ 	/* Assert all reset signals */
+ 	val = readl_relaxed(port->base + PCIE_RST_CTRL_REG);
+ 	val |= PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB | PCIE_PE_RSTB;
+-- 
+2.34.1
+
 
 
