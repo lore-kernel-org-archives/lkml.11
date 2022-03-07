@@ -2,139 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD111C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FB7C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244369AbiCGQ7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:59:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
+        id S238634AbiCGRB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 12:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244352AbiCGQ7Q (ORCPT
+        with ESMTP id S232458AbiCGRBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:59:16 -0500
-X-Greylist: delayed 1409 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 08:58:21 PST
-Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D178F2E09F
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:58:21 -0800 (PST)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id AFAAD9C766
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:34:51 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id RGJvn17jkRnrrRGJvnkxsn; Mon, 07 Mar 2022 10:34:51 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=E3pGPPNNo3xRbfhh9om7nduDNuHsQN8qJ8ZnQHI78oM=; b=PKU8IHHYksUu32410/3p7aJtl+
-        TX7XfJiOYCqH49Wd6csXN8FmUZhUhuIEQUfWrCZxi+H2t86BNw0KagraxPR9HEw31Lzf8MvdNOT45
-        gZhMRolX9w9aBIiHjPQi9YbwJWhdVeJVAASwC7tvRglrvJmTkPh6tQ76XI29w0lpkjkcmZKjknb9m
-        adlmDYyv6kCb9TyxO4Cwq40+7wnP8E4SK+lX2P+i+KgBzi40z8XZ4ws7zt+Hpd/UePz6YULvDCmGD
-        aRF3pKd+Wxq3fv9PqaIzI4mH+qmP0QmHZBUvdgFDNFKFBKgXuGiFxKPLFFCUc7NpwC+YSIiqqZa+Q
-        /5KaVYCQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38096)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nRGJu-003jbN-V3; Mon, 07 Mar 2022 16:34:51 +0000
-Message-ID: <e23ebf8b-5227-cc97-d166-797a4e852cd2@roeck-us.net>
-Date:   Mon, 7 Mar 2022 08:34:48 -0800
+        Mon, 7 Mar 2022 12:01:25 -0500
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74376C1C3;
+        Mon,  7 Mar 2022 09:00:30 -0800 (PST)
+Received: by mail-oo1-f45.google.com with SMTP id l24-20020a4a8558000000b00320d5a1f938so5847354ooh.8;
+        Mon, 07 Mar 2022 09:00:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4gIqvsVuKj0bmzWmxEJWkf2QmkNfqBuOw31l6fZNNHA=;
+        b=2UC68IK2XXEkinqs4BQn1bpHN+SbFNqXn3p1mU7Ya2LSCARXF7hePUBEU+8ChxsRZV
+         u8zSDgogHBtdJR8RixWfiB0+N/O0cOL4pLNOqrFTia7fjlU+09xxAC7L3lIJa8BLwhX9
+         il/8fuwEYZY9PbLdsPeBChZq2mb2P15nNDHB2xyYhsk5SQaHvE8wNCwjGT3mIEnEpde1
+         jY76RJQDqQqqiVp8dIMyMp1Xr4z9LPZytOAkfob2D3pN/86WVpKQSjnpDAcHdnXAGdMK
+         n3jj7QJFC7g8fT7o9YIdseUxnqKwkYoR5MbUo52Oam91C4xp+6riqxCqp2mZqZSvkbDT
+         YQTg==
+X-Gm-Message-State: AOAM532sw6WLfRDcxksHIhFPQwkGo3bIsYYKs3LkmaXb+49u3kzXU2Qc
+        poxxlWy+VCfe/vRYDKBe1w==
+X-Google-Smtp-Source: ABdhPJz/GOWVesh7UGjjHVCC0K2DVCJ0vgsEuh3sHrQM74Ly2KtoME4lmaL/B88SNsxEMnD1zzZQvw==
+X-Received: by 2002:a05:6870:e352:b0:d6:e15f:2d40 with SMTP id a18-20020a056870e35200b000d6e15f2d40mr15181748oae.137.1646672429885;
+        Mon, 07 Mar 2022 09:00:29 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 60-20020a9d0f42000000b005ad59a0fe01sm6531777ott.35.2022.03.07.09.00.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 09:00:29 -0800 (PST)
+Received: (nullmailer pid 2757845 invoked by uid 1000);
+        Mon, 07 Mar 2022 17:00:28 -0000
+Date:   Mon, 7 Mar 2022 11:00:28 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kbuild <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH 2/2] dt-bindings: kbuild: Use DTB files for validation
+Message-ID: <YiY6LNfEGhz1hSYg@robh.at.kernel.org>
+References: <20220303224237.2497570-1-robh@kernel.org>
+ <20220303224237.2497570-3-robh@kernel.org>
+ <CAMuHMdUzu2PMN7ZerX=D0KsiqKZFDW5dVe3BY77wR=H-grrPVA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220307091702.378509770@linuxfoundation.org>
- <24c54a05-bb80-a128-d0ba-a78c6d5d101c@roeck-us.net>
- <YiYw3hV2r8DTa7fb@kroah.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
-In-Reply-To: <YiYw3hV2r8DTa7fb@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nRGJu-003jbN-V3
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38096
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 12
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUzu2PMN7ZerX=D0KsiqKZFDW5dVe3BY77wR=H-grrPVA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 08:20, Greg Kroah-Hartman wrote:
-> On Mon, Mar 07, 2022 at 06:36:22AM -0800, Guenter Roeck wrote:
->> On 3/7/22 01:15, Greg Kroah-Hartman wrote:
->>> This is the start of the stable review cycle for the 5.15.27 release.
->>> There are 262 patches in this series, all will be posted as a response
->>> to this one.  If anyone has any issues with these being applied, please
->>> let me know.
->>>
->>> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
->>> Anything received after that time might be too late.
->>>
->>
->> In addition to other reported build errors:
->>
->> Building mips:allmodconfig ... failed
->> --------------
->> Error log:
->> drivers/net/hamradio/mkiss.c:35: error: "END" redefined
+On Mon, Mar 07, 2022 at 01:20:29PM +0100, Geert Uytterhoeven wrote:
+> Hi Rob,
 > 
-> That is odd, I don't see any changes to that driver, nor any MIPS
-> changes that touch "END".
+> On Thu, Mar 3, 2022 at 11:43 PM Rob Herring <robh@kernel.org> wrote:
+> > Switch the DT validation to use DTB files directly instead of a DTS to
+> > YAML conversion.
+> >
+> > The original motivation for supporting validation on DTB files was to
+> > enable running validation on a running system (e.g. 'dt-validate
+> > /sys/firmware/fdt') or other cases where the original source DTS is not
+> > available.
+> >
+> > The YAML format was not without issues. Using DTBs with the schema type
+> > information solves some of those problems. The YAML format relies on the
+> > DTS source level information including bracketing of properties, size
+> > directives, and phandle tags all of which are lost in a DTB file. While
+> > standardizing the bracketing is a good thing, it does cause a lot of
+> > extra warnings and churn to fix them.
+> >
+> > Another issue has been signed types are not validated correctly as sign
+> > information is not propagated to YAML. Using the schema type information
+> > allows for proper handling of signed types. YAML also can't represent
+> > the full range of 64-bit integers as numbers are stored as floats by
+> > most/all parsers.
+> >
+> > The DTB validation works by decoding property values using the type
+> > information in the schemas themselves. The main corner case this does
+> > not work for is matrix types where neither dimension is fixed. For
+> > now, checking the dimensions in these cases are skipped.
+> >
+> > Signed-off-by: Rob Herring <robh@kernel.org>
 > 
-> I don't even see "END" in the diff anywhere.
+> Thanks for your patch!
 > 
-> Any chance you can bisect?
+> While investigating why a newly added device node to DTS was not
+> instantiated as a platform device, I discovered an issue with this
+> patch: "make dtbs" no longer rebuilds DTB files that need a rebuild.
 > 
+> How to reproduce:
+> 
+>     $ git checkout next-20220307
+>     # apply this series and its dependency:
+>     # dt-bindings: kbuild: Support partial matches with DT_SCHEMA_FILES
+>     # dt-bindings: kbuild: Pass DT_SCHEMA_FILES to dt-validate
+>     # dt-bindings: kbuild: Use DTB files for validation
+>     $ make ARCH=arm shmobile_defconfig
+>     $ make ARCH=arm dtbs
+>     $ touch arch/arm/boot/dts/r8a7791.dtsi
+>     $ make ARCH=arm dtbs
+>     # The above command does NOT cause:
+>     # DTC     arch/arm/boot/dts/r8a7791-koelsch.dtb
+>     # DTC     arch/arm/boot/dts/r8a7791-porter.dtb
+> 
+> I don't see anything wrong with this patch at first sight, though.
 
-git bisect start 'HEAD' 'v5.15.26'
-# bad: [20ab3ebe56f306d821cf1c6858cf29f4d2e0075a] drm/amd/display: Fix stream->link_enc unassigned during stream removal
-git bisect bad 20ab3ebe56f306d821cf1c6858cf29f4d2e0075a
-# bad: [2f01eec30992529350bae197f73d71136b35e3b1] Input: ti_am335x_tsc - fix STEPCONFIG setup for Z2
-git bisect bad 2f01eec30992529350bae197f73d71136b35e3b1
-# good: [d369b344b4fb5a6ab9f72bacece674526761b885] arm64: Mark start_backtrace() notrace and NOKPROBE_SYMBOL
-git bisect good d369b344b4fb5a6ab9f72bacece674526761b885
-# good: [46f46f14bd45acdabcfb1d9f3b648f4a27d18c08] bpf, arm64: Use emit_addr_mov_i64() for BPF_PSEUDO_FUNC
-git bisect good 46f46f14bd45acdabcfb1d9f3b648f4a27d18c08
-# bad: [5b0c543b875e976e74c347b2d009c6519a6d2939] KVM: s390: Ensure kvm_arch_no_poll() is read once when blocking vCPU
-git bisect bad 5b0c543b875e976e74c347b2d009c6519a6d2939
-# bad: [58452f46ddb11fbe5b5f31d93a979d57efdad4b1] PCI: rcar: Check if device is runtime suspended instead of __clk_is_enabled()
-git bisect bad 58452f46ddb11fbe5b5f31d93a979d57efdad4b1
-# bad: [d6ab8da0cb6234fbc4fd240b9d7470b4c03d5df9] signal: In get_signal test for signal_group_exit every time through the loop
-git bisect bad d6ab8da0cb6234fbc4fd240b9d7470b4c03d5df9
-# bad: [53863a048566989e87f8bb306e835f940a10ed73] MIPS: fix local_{add,sub}_return on MIPS64
-git bisect bad 53863a048566989e87f8bb306e835f940a10ed73
-# first bad commit: [53863a048566989e87f8bb306e835f940a10ed73] MIPS: fix local_{add,sub}_return on MIPS64
+Was this a clean tree?
 
-The problem is the innocent looking
+I think I reproduced it, but then couldn't... But then after a 'make 
+clean', 'make dtbs' would error out. I think the issue in both cases was 
+processed-schema.json always a dependency when it should be conditional 
+on 'dtbs_check'. The patch below fixes that. Can you give it a try too.
 
-  #include <linux/atomic.h>
-+#include <asm/asm.h>
-  #include <asm/cmpxchg.h>
 
-in that patch. Reverting it fixes the problem. Alternatively, you could apply
-commit 16517829f2e0 ("hamradio: fix macro redefine warning").
-
-Guenter
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 4629af60160b..9d5320a47ef8 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -349,12 +349,12 @@ $(multi-dtb-y): FORCE
+        $(call if_changed,fdtoverlay)
+ $(call multi_depend, $(multi-dtb-y), .dtb, -dtbs)
+ 
++ifneq ($(CHECK_DTBS)$(CHECK_DT_BINDING),)
+ DT_CHECKER ?= dt-validate
+ DT_CHECKER_FLAGS ?= $(if $(DT_SCHEMA_FILES),-l $(DT_SCHEMA_FILES),-m)
+ DT_BINDING_DIR := Documentation/devicetree/bindings
+-DT_TMP_SCHEMA ?= $(objtree)/$(DT_BINDING_DIR)/processed-schema.json
++DT_TMP_SCHEMA := $(objtree)/$(DT_BINDING_DIR)/processed-schema.json
+ 
+-ifneq ($(CHECK_DTBS)$(CHECK_DT_BINDING),)
+ quiet_cmd_dtb_check =  CHECK   $@
+       cmd_dtb_check =  $(DT_CHECKER) $(DT_CHECKER_FLAGS) -u $(srctree)/$(DT_BINDING_DIR) -p $(DT_TMP_SCHEMA) $@ || true
+ endif
