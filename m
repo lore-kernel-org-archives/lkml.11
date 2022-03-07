@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240448AbiCGKgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
+        id S240468AbiCGKgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:36:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242450AbiCGKLe (ORCPT
+        with ESMTP id S242342AbiCGKL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:34 -0500
+        Mon, 7 Mar 2022 05:11:26 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2EB8A313;
-        Mon,  7 Mar 2022 01:55:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2AD38A304;
+        Mon,  7 Mar 2022 01:54:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 381F660A27;
-        Mon,  7 Mar 2022 09:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38222C340E9;
-        Mon,  7 Mar 2022 09:54:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F77B60A23;
+        Mon,  7 Mar 2022 09:54:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C52CC340E9;
+        Mon,  7 Mar 2022 09:54:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646874;
-        bh=7ZaHIqiLhEKHT66BkWo+qr1fJJ6/m4DqN31xrBv38I4=;
+        s=korg; t=1646646896;
+        bh=x+/m0XSob4i8XhaSbKnkLEgxtn13mwwPLD6Br4nANn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lwJu5JvXvyNFvQwyWP/MHiSEAurIbqs8uVAMfbJzmTTxdZxt9xX0pKW284QpHYkM7
-         YW7dQY7M+3EWzfDP4qsJlnX7DDyeh/NzliWaMc9Sx3qJRrbdTKFcAI2ETde7rztztI
-         J/QhavTKXuQzykX1ykL+oWjNM89GYuo4fzhZk4bg=
+        b=gzcLiA7Gc/P1kWMvwxbL6rrB6C4qXdm0L+Jtnj5qCrBdWM7Pt+KoBcY6am/cvIvdB
+         53ISOGtHvVtuhzju+ZDJrYLng9hEIOq8ogbmbCBM1pBaKYSwj7F9xSvEJr2jxhMIFR
+         +IzJcu9qXkPFQjAWiJe5y6A70nX5g4/+84ZT8w7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, Rui Salvaterra <rsalvaterra@gmail.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 121/186] arm64: dts: juno: Remove GICv2m dma-range
-Date:   Mon,  7 Mar 2022 10:19:19 +0100
-Message-Id: <20220307091657.463588854@linuxfoundation.org>
+Subject: [PATCH 5.16 127/186] MIPS: ralink: mt7621: do memory detection on KSEG1
+Date:   Mon,  7 Mar 2022 10:19:25 +0100
+Message-Id: <20220307091657.630682691@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -51,47 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Chuanhong Guo <gch981213@gmail.com>
 
-[ Upstream commit 31eeb6b09f4053f32a30ce9fbcdfca31f713028d ]
+[ Upstream commit cc19db8b312a6c75645645f5cc1b45166b109006 ]
 
-Although it is painstakingly honest to describe all 3 PCI windows in
-"dma-ranges", it misses the the subtle distinction that the window for
-the GICv2m range is normally programmed for Device memory attributes
-rather than Normal Cacheable like the DRAM windows. Since MMU-401 only
-offers stage 2 translation, this means that when the PCI SMMU is
-enabled, accesses through that IPA range unexpectedly lose coherency if
-mapped as cacheable at the SMMU, due to the attribute combining rules.
-Since an extra 256KB is neither here nor there when we still have 10GB
-worth of usable address space, rather than attempting to describe and
-cope with this detail let's just remove the offending range. If the SMMU
-is not used then it makes no difference anyway.
+It's reported that current memory detection code occasionally detects
+larger memory under some bootloaders.
+Current memory detection code tests whether address space wraps around
+on KSEG0, which is unreliable because it's cached.
 
-Link: https://lore.kernel.org/r/856c3f7192c6c3ce545ba67462f2ce9c86ed6b0c.1643046936.git.robin.murphy@arm.com
-Fixes: 4ac4d146cb63 ("arm64: dts: juno: Describe PCI dma-ranges")
-Reported-by: Anders Roxell <anders.roxell@linaro.org>
-Acked-by: Liviu Dudau <liviu.dudau@arm.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Rewrite memory size detection to perform the same test on KSEG1 instead.
+While at it, this patch also does the following two things:
+1. use a fixed pattern instead of a random function pointer as the magic
+   value.
+2. add an additional memory write and a second comparison as part of the
+   test to prevent possible smaller memory detection result due to
+   leftover values in memory.
+
+Fixes: 139c949f7f0a MIPS: ("ralink: mt7621: add memory detection support")
+Reported-by: Rui Salvaterra <rsalvaterra@gmail.com>
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/arm/juno-base.dtsi | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/mips/ralink/mt7621.c | 36 +++++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
-index 6288e104a089..a2635b14da30 100644
---- a/arch/arm64/boot/dts/arm/juno-base.dtsi
-+++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
-@@ -543,8 +543,7 @@
- 			 <0x02000000 0x00 0x50000000 0x00 0x50000000 0x0 0x08000000>,
- 			 <0x42000000 0x40 0x00000000 0x40 0x00000000 0x1 0x00000000>;
- 		/* Standard AXI Translation entries as programmed by EDK2 */
--		dma-ranges = <0x02000000 0x0 0x2c1c0000 0x0 0x2c1c0000 0x0 0x00040000>,
--			     <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
-+		dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
- 			     <0x43000000 0x8 0x00000000 0x8 0x00000000 0x2 0x00000000>;
- 		#interrupt-cells = <1>;
- 		interrupt-map-mask = <0 0 0 7>;
+diff --git a/arch/mips/ralink/mt7621.c b/arch/mips/ralink/mt7621.c
+index bd71f5b14238..fd9a872d5713 100644
+--- a/arch/mips/ralink/mt7621.c
++++ b/arch/mips/ralink/mt7621.c
+@@ -20,31 +20,41 @@
+ 
+ #include "common.h"
+ 
+-static void *detect_magic __initdata = detect_memory_region;
++#define MT7621_MEM_TEST_PATTERN         0xaa5555aa
++
++static u32 detect_magic __initdata;
+ 
+ phys_addr_t mips_cpc_default_phys_base(void)
+ {
+ 	panic("Cannot detect cpc address");
+ }
+ 
++static bool __init mt7621_addr_wraparound_test(phys_addr_t size)
++{
++	void *dm = (void *)KSEG1ADDR(&detect_magic);
++
++	if (CPHYSADDR(dm + size) >= MT7621_LOWMEM_MAX_SIZE)
++		return true;
++	__raw_writel(MT7621_MEM_TEST_PATTERN, dm);
++	if (__raw_readl(dm) != __raw_readl(dm + size))
++		return false;
++	__raw_writel(!MT7621_MEM_TEST_PATTERN, dm);
++	return __raw_readl(dm) == __raw_readl(dm + size);
++}
++
+ static void __init mt7621_memory_detect(void)
+ {
+-	void *dm = &detect_magic;
+ 	phys_addr_t size;
+ 
+-	for (size = 32 * SZ_1M; size < 256 * SZ_1M; size <<= 1) {
+-		if (!__builtin_memcmp(dm, dm + size, sizeof(detect_magic)))
+-			break;
++	for (size = 32 * SZ_1M; size <= 256 * SZ_1M; size <<= 1) {
++		if (mt7621_addr_wraparound_test(size)) {
++			memblock_add(MT7621_LOWMEM_BASE, size);
++			return;
++		}
+ 	}
+ 
+-	if ((size == 256 * SZ_1M) &&
+-	    (CPHYSADDR(dm + size) < MT7621_LOWMEM_MAX_SIZE) &&
+-	    __builtin_memcmp(dm, dm + size, sizeof(detect_magic))) {
+-		memblock_add(MT7621_LOWMEM_BASE, MT7621_LOWMEM_MAX_SIZE);
+-		memblock_add(MT7621_HIGHMEM_BASE, MT7621_HIGHMEM_SIZE);
+-	} else {
+-		memblock_add(MT7621_LOWMEM_BASE, size);
+-	}
++	memblock_add(MT7621_LOWMEM_BASE, MT7621_LOWMEM_MAX_SIZE);
++	memblock_add(MT7621_HIGHMEM_BASE, MT7621_HIGHMEM_SIZE);
+ }
+ 
+ void __init ralink_of_remap(void)
 -- 
 2.34.1
 
