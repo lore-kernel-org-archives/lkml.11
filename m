@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68014C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A184CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241441AbiCGLAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:00:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
+        id S241622AbiCGLAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:00:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241614AbiCGK5l (ORCPT
+        with ESMTP id S231217AbiCGK5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:57:41 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54FCB1884;
-        Mon,  7 Mar 2022 02:18:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71C4B1AB1;
+        Mon,  7 Mar 2022 02:18:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646648290; x=1678184290;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/x9Os74ZVsNOOG2tcGaGL4zfGaT3I0GD1gck2+BW7HA=;
-  b=NRt6i/6UBGMz/TfyB+WqJB6koQ/olf1FT7TYNCAWDVRPBFsuMdU8iDK4
-   yJJhQEVGakkgtoEwetCa79wu5XEdMQhC3r3UoaR7CIpSThUl9MPGEwbKv
-   W4rQFTuYLDJD5hKVNrJVs7RJU/cP20oV5PIqXJNHaHTP2epfxnOyHmfPM
-   pOVn0herg6KRI0j55X9lAt0VUOTQp3OlPWKl33WNLYI9vJYfd5fFVJvas
-   vf3QWVE14lzAmTBNcHsyV8Tjum22ouK0nBXOQu6/ZwkuX1OBxxiU6f8Yu
-   IRuTfOVptpEgE7lxNvRpHRHG0+S0RzInV07xif2y4K7SqG/cJkQ/l3VP8
+  t=1646648308; x=1678184308;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=MF4bSZAjSpcDs7XroNbwBWFR0D4m2/1zQ1gUexWfA9w=;
+  b=Sft0QAgjBDgieXlDDqukQx7M0j/nfCng60Y8jIj9aYYI9mQoU8I/XVE6
+   nnlHTRw09URQxmyQL23fZHmClckEuF/y/IvDWsdJk0Iya9J3tB/giWWla
+   DT6UazX5CvlmI5k3aKj0qvTQziap0SSBFyJDgrGsPareXxvz6flJumFcE
+   oxIcsITrcK/4CCGRfg4eK1V1USTLE8DRtvCv0GN1fpJ27kF0sE+AjR6Hg
+   V+6MlrDv4B6qMNRJ6bx2RzWJqJjG3momgLwpXucILUHPRwFMe3FbmyAse
+   K6X45Y3BXIAJoApVZ840dfpv8YeQEO27e2yC7jVzV/G6vgbhnX34azWBR
    A==;
 X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
-   d="scan'208";a="164755252"
+   d="scan'208";a="155932004"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:18:10 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:18:28 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 03:18:10 -0700
+ 15.1.2375.17; Mon, 7 Mar 2022 03:18:27 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:18:04 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:18:22 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Andrew Lunn <andrew@lunn.ch>,
@@ -47,10 +47,12 @@ CC:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         <UNGLinuxDriver@microchip.com>
-Subject: [RFC PATCH net-next 0/2] net: phy: lan87xx: use genphy_read_master_slave function
-Date:   Mon, 7 Mar 2022 15:47:41 +0530
-Message-ID: <20220307101743.8567-1-arun.ramadoss@microchip.com>
+Subject: [RFC PATCH net-next 2/2] net: phy: lan87xx: use genphy_read_master_slave in read_status
+Date:   Mon, 7 Mar 2022 15:47:43 +0530
+Message-ID: <20220307101743.8567-3-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220307101743.8567-1-arun.ramadoss@microchip.com>
+References: <20220307101743.8567-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -58,27 +60,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LAN87xx T1 Phy has the same register field as gigabit phy for reading the
-master slave configuration. But the genphy_read_master_slave function has a
-check of gigabit phy. So refactored the function in such a way, moved the speed
-check to the genphy_read_status function. Analyzed the nxp-tja11xx function for
-refactoring, but the register for configuring master/slave is nxp specific
-which is not extended phy register.
-And analyzed the reusing genphy_setup_master_slave, but for LAN87xx
-MASTER_ENABLE is always 1 and Preferred state is always 0. So, I didn't try to
-change it.
+To read the master slave configuration of the LAN87xx T1 phy, used the
+generic phy driver genphy_read_master_slave function. Removed the local
+lan87xx_read_master_slave function.
 
-Arun Ramadoss (2):
-  net: phy: exported the genphy_read_master_slave function
-  net: phy: lan87xx: use genphy_read_master_slave in read_status
-
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
  drivers/net/phy/microchip_t1.c | 30 +-----------------------------
- drivers/net/phy/phy_device.c   | 20 ++++++++++----------
- include/linux/phy.h            |  1 +
- 3 files changed, 12 insertions(+), 39 deletions(-)
+ 1 file changed, 1 insertion(+), 29 deletions(-)
 
-
-base-commit: 669b258a793db9f1c3bff29ce2bbd61b810503ad
+diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
+index 8292f7305805..389df3f4293c 100644
+--- a/drivers/net/phy/microchip_t1.c
++++ b/drivers/net/phy/microchip_t1.c
+@@ -674,34 +674,6 @@ static int lan87xx_cable_test_get_status(struct phy_device *phydev,
+ 	return 0;
+ }
+ 
+-static int lan87xx_read_master_slave(struct phy_device *phydev)
+-{
+-	int rc = 0;
+-
+-	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
+-	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
+-
+-	rc = phy_read(phydev, MII_CTRL1000);
+-	if (rc < 0)
+-		return rc;
+-
+-	if (rc & CTL1000_AS_MASTER)
+-		phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
+-	else
+-		phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
+-
+-	rc = phy_read(phydev, MII_STAT1000);
+-	if (rc < 0)
+-		return rc;
+-
+-	if (rc & LPA_1000MSRES)
+-		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
+-	else
+-		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
+-
+-	return rc;
+-}
+-
+ static int lan87xx_read_status(struct phy_device *phydev)
+ {
+ 	int rc = 0;
+@@ -720,7 +692,7 @@ static int lan87xx_read_status(struct phy_device *phydev)
+ 	phydev->pause = 0;
+ 	phydev->asym_pause = 0;
+ 
+-	rc = lan87xx_read_master_slave(phydev);
++	rc = genphy_read_master_slave(phydev);
+ 	if (rc < 0)
+ 		return rc;
+ 
 -- 
 2.33.0
 
