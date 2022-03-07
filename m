@@ -2,251 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD078C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243209AbiCGObq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
+        id S243213AbiCGOc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:32:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234087AbiCGObo (ORCPT
+        with ESMTP id S234087AbiCGOc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:31:44 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0447892E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:30:50 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2278qQiL024110;
-        Mon, 7 Mar 2022 06:30:28 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=wUeQpqXJQ5UQkotA01zIIJyxFuuD7za50yQqRypCnt0=;
- b=QTnhD85H38LYNUkNXe2VM5pGM64V4yrArV8XNav22//fO3mQOa+Rl4PIQrbWeacAAjj2
- gISyXwNWN0AfQWXIcieMabQmi97yJuLmKWzyx69u/BtVwheJ7BLXvQV/ecG6+cijDUBx
- uAnnn9TVZRJrzVAUG6G0HNnUGq4xaPXYHZPxZ1vxuO68U2hM7RHQfTgEWfcvZe2+2d70
- CRli9daxq34js0QlZ4duZkGgQGUOcRgTOdQlijfXts2rcJl+QtEDYieXkTAdu6g6lBcW
- Os8gCoAOSI3XW58V1sdS+Gd5oafPRi2yLeqI8XNId5rc0zURarJ73RR+MSvfWYxf7pyh nQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3em88rf6e1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 07 Mar 2022 06:30:28 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Mar
- 2022 06:30:26 -0800
-Received: from localhost.localdomain (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Mar 2022 06:30:24 -0800
-From:   Linu Cherian <lcherian@marvell.com>
-To:     <maz@kernel.org>, <tglx@linutronix.de>, <catalin.marinas@arm.com>,
-        <will@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linuc.decode@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>
-Subject: [PATCH V3] irqchip/gic-v3: Workaround Marvell erratum 38545 when reading IAR
-Date:   Mon, 7 Mar 2022 20:00:14 +0530
-Message-ID: <20220307143014.22758-1-lcherian@marvell.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 7 Mar 2022 09:32:58 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EC27938F
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:32:03 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id 12so15307663oix.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 06:32:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jAOEfcrHxWTEhg7BxTnoFSoh64ur+frJb+7Etlx9rtQ=;
+        b=GJ/zew/2c/T7gmBh99VfzZLRMIr1lWxgtwiRGpln7n6kXctT05678TBF1YPo8K/nyU
+         xOL/GNqnsexBZCu2VL/N3mTeUDMxf6kTPDvrzocCn/XswBlLdtp+GJzmpSxz7sqo4KXt
+         4wr7xC63ca5frxTj5uJRTgnPWTe6M+mGV6zRZ5vAST0uEDv9m+LWK0h2mFrEPzjBt1Yt
+         /X9IYwbSusvVKxyEyVqgZsa1ageF3DyBQDHldMq/hndd38A4zi/b6Iqeqx6a4+T4eW9U
+         S8DmT71hgMF8+wgDwfhNOqN3TjxkzV0ImuTqjRWVDS5YjPGK9jGaPbiZxzs0TVQ8sY7R
+         7MFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jAOEfcrHxWTEhg7BxTnoFSoh64ur+frJb+7Etlx9rtQ=;
+        b=JJ+ke/EcAgTY7uZQzRdOqQ/9LQ5nxU3XLO8niYqWiSARFuDj9XgGa8k0VWS5zaPioT
+         TJbefLICRtngiO7fMnCtipVR4rPVz+skmnQj/7M8t4DjNzZ9ogI/fAj7cD2LkwBek4+v
+         HRnBVlJPWVGu6OzhVmtH5M0gxxfoL+SGFGzOsUNYRQbaihAi3O3e59SDXEmDCzx3oa6+
+         7wRVdwx/8MsNlqkBORzVy1hZ+3MSrusti3ZsHjSiDpNZV2z2qWsxJ+iU7ahaiLglewce
+         1NnChxY3+WforE2yT2Ls4WA1LCGA57e2Fo5Vo0dzbVZgvHfzcwnPEv549GYUkylVIqu9
+         Ez9w==
+X-Gm-Message-State: AOAM532PwtX3gG9PrsNw0bDudW24q6YXQ4POwEO4IcKdyrz3kle7tGKU
+        5oYFlfengelt16IlZBFrLOuDBw==
+X-Google-Smtp-Source: ABdhPJzqOXx5kooaXG2dVnX2vpjZX9hB4LZw1mzfujLDchjIhcK0otseZB2nycRu3BZ28DFHpurG6A==
+X-Received: by 2002:a05:6808:23ca:b0:2d9:bb42:81e with SMTP id bq10-20020a05680823ca00b002d9bb42081emr5269110oib.141.1646663523111;
+        Mon, 07 Mar 2022 06:32:03 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id o10-20020a0568080f8a00b002d726c76b77sm6442939oiw.15.2022.03.07.06.32.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 06:32:02 -0800 (PST)
+Date:   Mon, 7 Mar 2022 06:33:47 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v4 3/7] usb: typec: mux: Check dev_set_name() return value
+Message-ID: <YiYXywEEz7WZQhfd@ripper>
+References: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
+ <20220307034040.1111107-3-bjorn.andersson@linaro.org>
+ <YiXZkqPQxqQ9I0VH@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: LM-p_-9FdQF_nN_gXxaEomHeLkYCzdlD
-X-Proofpoint-GUID: LM-p_-9FdQF_nN_gXxaEomHeLkYCzdlD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-07_05,2022-03-04_01,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiXZkqPQxqQ9I0VH@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a IAR register read races with a GIC interrupt RELEASE event,
-GIC-CPU interface could wrongly return a valid INTID to the CPU
-for an interrupt that is already released(non activated) instead of 0x3ff.
+On Mon 07 Mar 02:08 PST 2022, Andy Shevchenko wrote:
 
-As a side effect, an interrupt handler could run twice, once with
-interrupt priority and then with idle priority.
+> On Sun, Mar 06, 2022 at 07:40:36PM -0800, Bjorn Andersson wrote:
+> > It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
+> 
+> Thanks!
+> Shouldn't we have a Fixes tag and be sent separately for this cycle?
+> 
 
-As a workaround, gic_read_iar is updated so that it will return a
-valid interrupt ID only if there is a change in the active priority list
-after the IAR read on all the affected Silicons.
+It seems appropriate to add:
 
-Since there are silicon variants where both 23154 and 38545 are applicable,
-workaround for erratum 23154 has been extended to address both of them.
-
-Signed-off-by: Linu Cherian <lcherian@marvell.com>
----
-Changes since V2:
-- Changed masked part number to individual part numbers
-- Added additional comment to clarify on priority groups
+Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
 
 
-Changes since V1:
-- IIDR based quirk management done for 23154 has been reverted
-- Extended existing 23154 errata to address 38545 as well,
-  so that existing static keys are reused. 
-- Added MIDR based support macros to cover all the affected parts
-- Changed the unlikely construct to likely construct in the workaround
-  function.
+If the maintainer would prefer to get this into v5.18, it could either
+be picked ahead of the rest of the series, or I can resubmit it on its
+own. I don't think it's a critical fix though.
 
+> > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> > 
+> > Changes since v3:
+> > - New patch
+> > 
+> >  drivers/usb/typec/mux.c | 14 ++++++++++----
+> >  1 file changed, 10 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
+> > index c8340de0ed49..d2aaf294b649 100644
+> > --- a/drivers/usb/typec/mux.c
+> > +++ b/drivers/usb/typec/mux.c
+> > @@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
+> >  	sw->dev.class = &typec_mux_class;
+> >  	sw->dev.type = &typec_switch_dev_type;
+> >  	sw->dev.driver_data = desc->drvdata;
+> > -	dev_set_name(&sw->dev, "%s-switch",
+> > -		     desc->name ? desc->name : dev_name(parent));
+> > +	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
+> 
+> We may use shorten form of the ternary
+> 
+> 	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ?: dev_name(parent));
+> 
+> at the same time, but it's up to you.
+> 
 
+I looked at it, but felt it was an unrelated change and decided to leave
+it as is.
 
+> Either way code looks good to me,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
 
- Documentation/arm64/silicon-errata.rst |  2 +-
- arch/arm64/Kconfig                     |  8 ++++++--
- arch/arm64/include/asm/arch_gicv3.h    | 23 +++++++++++++++++++++--
- arch/arm64/include/asm/cputype.h       | 13 +++++++++++++
- arch/arm64/kernel/cpu_errata.c         | 20 +++++++++++++++++---
- 5 files changed, 58 insertions(+), 8 deletions(-)
+Thanks,
+Bjorn
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index ea281dd75517..466cb9e89047 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -136,7 +136,7 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Cavium         | ThunderX ITS    | #23144          | CAVIUM_ERRATUM_23144        |
- +----------------+-----------------+-----------------+-----------------------------+
--| Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154        |
-+| Cavium         | ThunderX GICv3  | #23154,38545    | CAVIUM_ERRATUM_23154        |
- +----------------+-----------------+-----------------+-----------------------------+
- | Cavium         | ThunderX GICv3  | #38539          | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 09b885cc4db5..778cc2e22c21 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -891,13 +891,17 @@ config CAVIUM_ERRATUM_23144
- 	  If unsure, say Y.
- 
- config CAVIUM_ERRATUM_23154
--	bool "Cavium erratum 23154: Access to ICC_IAR1_EL1 is not sync'ed"
-+	bool "Cavium errata 23154 and 38545: GICv3 lacks HW synchronisation"
- 	default y
- 	help
--	  The gicv3 of ThunderX requires a modified version for
-+	  The ThunderX GICv3 implementation requires a modified version for
- 	  reading the IAR status to ensure data synchronization
- 	  (access to icc_iar1_el1 is not sync'ed before and after).
- 
-+	  It also suffers from erratum 38545 (also present on Marvell's
-+	  OcteonTX and OcteonTX2), resulting in deactivated interrupts being
-+	  spuriously presented to the CPU interface.
-+
- 	  If unsure, say Y.
- 
- config CAVIUM_ERRATUM_27456
-diff --git a/arch/arm64/include/asm/arch_gicv3.h b/arch/arm64/include/asm/arch_gicv3.h
-index 4ad22c3135db..8bd5afc7b692 100644
---- a/arch/arm64/include/asm/arch_gicv3.h
-+++ b/arch/arm64/include/asm/arch_gicv3.h
-@@ -53,17 +53,36 @@ static inline u64 gic_read_iar_common(void)
-  * The gicv3 of ThunderX requires a modified version for reading the
-  * IAR status to ensure data synchronization (access to icc_iar1_el1
-  * is not sync'ed before and after).
-+ *
-+ * Erratum 38545
-+ *
-+ * When a IAR register read races with a GIC interrupt RELEASE event,
-+ * GIC-CPU interface could wrongly return a valid INTID to the CPU
-+ * for an interrupt that is already released(non activated) instead of 0x3ff.
-+ *
-+ * To workaround this, return a valid interrupt ID only if there is a change
-+ * in the active priority list after the IAR read.
-+ *
-+ * Common function used for both the workarounds since,
-+ * 1. On Thunderx 88xx 1.x both erratas are applicable.
-+ * 2. Having extra nops doesn't add any side effects for Silicons where
-+ *    erratum 23154 is not applicable.
-  */
- static inline u64 gic_read_iar_cavium_thunderx(void)
- {
--	u64 irqstat;
-+	u64 irqstat, apr;
- 
-+	apr = read_sysreg_s(SYS_ICC_AP1R0_EL1);
- 	nops(8);
- 	irqstat = read_sysreg_s(SYS_ICC_IAR1_EL1);
- 	nops(4);
- 	mb();
- 
--	return irqstat;
-+	/* Max priority groups implemented is only 32 */
-+	if (likely(apr != read_sysreg_s(SYS_ICC_AP1R0_EL1)))
-+		return irqstat;
-+
-+	return 0x3ff;
- }
- 
- static inline void gic_write_ctlr(u32 val)
-diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index 999b9149f856..4596e7ca29a3 100644
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -84,6 +84,13 @@
- #define CAVIUM_CPU_PART_THUNDERX_81XX	0x0A2
- #define CAVIUM_CPU_PART_THUNDERX_83XX	0x0A3
- #define CAVIUM_CPU_PART_THUNDERX2	0x0AF
-+/* OcteonTx2 series */
-+#define CAVIUM_CPU_PART_OCTX2_98XX	0x0B1
-+#define CAVIUM_CPU_PART_OCTX2_96XX	0x0B2
-+#define CAVIUM_CPU_PART_OCTX2_95XX	0x0B3
-+#define CAVIUM_CPU_PART_OCTX2_95XXN	0x0B4
-+#define CAVIUM_CPU_PART_OCTX2_95XXMM	0x0B5
-+#define CAVIUM_CPU_PART_OCTX2_95XXO	0x0B6
- 
- #define BRCM_CPU_PART_BRAHMA_B53	0x100
- #define BRCM_CPU_PART_VULCAN		0x516
-@@ -124,6 +131,12 @@
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
-+#define MIDR_OCTX2_98XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_98XX)
-+#define MIDR_OCTX2_96XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_96XX)
-+#define MIDR_OCTX2_95XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XX)
-+#define MIDR_OCTX2_95XXN MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XXN)
-+#define MIDR_OCTX2_95XXMM MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XXMM)
-+#define MIDR_OCTX2_95XXO MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XXO)
- #define MIDR_CAVIUM_THUNDERX2 MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2)
- #define MIDR_BRAHMA_B53 MIDR_CPU_MODEL(ARM_CPU_IMP_BRCM, BRCM_CPU_PART_BRAHMA_B53)
- #define MIDR_BRCM_VULCAN MIDR_CPU_MODEL(ARM_CPU_IMP_BRCM, BRCM_CPU_PART_VULCAN)
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index b217941713a8..510f47055b91 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -214,6 +214,20 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
- };
- #endif
- 
-+#ifdef CONFIG_CAVIUM_ERRATUM_23154
-+const struct midr_range cavium_erratum_23154_cpus[] = {
-+	MIDR_ALL_VERSIONS(MIDR_THUNDERX),
-+	MIDR_ALL_VERSIONS(MIDR_THUNDERX_81XX),
-+	MIDR_ALL_VERSIONS(MIDR_THUNDERX_83XX),
-+	MIDR_ALL_VERSIONS(MIDR_OCTX2_98XX),
-+	MIDR_ALL_VERSIONS(MIDR_OCTX2_96XX),
-+	MIDR_ALL_VERSIONS(MIDR_OCTX2_95XX),
-+	MIDR_ALL_VERSIONS(MIDR_OCTX2_95XXN),
-+	MIDR_ALL_VERSIONS(MIDR_OCTX2_95XXMM),
-+	MIDR_ALL_VERSIONS(MIDR_OCTX2_95XXO),
-+};
-+#endif
-+
- #ifdef CONFIG_CAVIUM_ERRATUM_27456
- const struct midr_range cavium_erratum_27456_cpus[] = {
- 	/* Cavium ThunderX, T88 pass 1.x - 2.1 */
-@@ -425,10 +439,10 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
- #endif
- #ifdef CONFIG_CAVIUM_ERRATUM_23154
- 	{
--	/* Cavium ThunderX, pass 1.x */
--		.desc = "Cavium erratum 23154",
-+		.desc = "Cavium errata 23154 and 38545",
- 		.capability = ARM64_WORKAROUND_CAVIUM_23154,
--		ERRATA_MIDR_REV_RANGE(MIDR_THUNDERX, 0, 0, 1),
-+		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
-+		ERRATA_MIDR_RANGE_LIST(cavium_erratum_23154_cpus),
- 	},
- #endif
- #ifdef CONFIG_CAVIUM_ERRATUM_27456
--- 
-2.31.1
-
+> > +	if (ret) {
+> > +		put_device(&sw->dev);
+> > +		return ERR_PTR(ret);
+> > +	}
+> >  
+> >  	ret = device_add(&sw->dev);
+> >  	if (ret) {
+> > @@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
+> >  	mux->dev.class = &typec_mux_class;
+> >  	mux->dev.type = &typec_mux_dev_type;
+> >  	mux->dev.driver_data = desc->drvdata;
+> > -	dev_set_name(&mux->dev, "%s-mux",
+> > -		     desc->name ? desc->name : dev_name(parent));
+> > +	ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
+> 
+> Ditto.
+> 
+> > +	if (ret) {
+> > +		put_device(&mux->dev);
+> > +		return ERR_PTR(ret);
+> > +	}
+> >  
+> >  	ret = device_add(&mux->dev);
+> >  	if (ret) {
+> > -- 
+> > 2.33.1
+> > 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
