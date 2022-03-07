@@ -2,91 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 235B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 06:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE811C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 06:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235603AbiCGGh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 01:37:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        id S235613AbiCGGjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 01:39:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233804AbiCGGhX (ORCPT
+        with ESMTP id S232301AbiCGGjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 01:37:23 -0500
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AD659A56;
-        Sun,  6 Mar 2022 22:36:29 -0800 (PST)
-Received: by mail-ej1-f46.google.com with SMTP id a8so29594200ejc.8;
-        Sun, 06 Mar 2022 22:36:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9Q9gynFpJyzCLfhH7rD1M3nIchFd0uYBoT2DS2g4prE=;
-        b=dvaH8mLVgeQbAyAKh8R7wuD8VXwO28plTiG1Y/ejJ63USE3PxKdW6n/kXtuCPSsgMM
-         w/fXw34KsmKfDjPJwIvTAFUkt41qS0tSelFwEqImEJuDt4ojNc7wvYMRpeLqk0odAs9I
-         HouW4iMnCj+Woqh4Zno6QN+UHo33/qU/At25oywhpkEZDD5Gh6vPP9NhnD7xzvFKyK7e
-         oTFXoSRJXhzDqFD9dSqeAWC5rKTTeIHxFXVnPmCznB1hKToUnJgMVqNKBnB1POE3otX3
-         Kabef8Gazyy1Dd6wjraMTeUo41c960rfbC7Evil90dnowCegK3gph6XCT44rPaOkOZpT
-         MA9g==
-X-Gm-Message-State: AOAM532e8qT62Cg2r6dBcirPqS1Dlh+lQ/vB0Bpkj+y+So0QKoZDSg+H
-        BazdloARxnw0e/vGQ6+uD+c=
-X-Google-Smtp-Source: ABdhPJycmMq9LDywM4G25QPlA9PQF5v5YnSLQSQBcdwVxV9cGcgmj8sEOJ3Pf6/1+SLhZ76BmIhmNg==
-X-Received: by 2002:a17:906:d555:b0:6da:ac8c:f66b with SMTP id cr21-20020a170906d55500b006daac8cf66bmr7765786ejc.107.1646634988517;
-        Sun, 06 Mar 2022 22:36:28 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id s15-20020a170906c30f00b006da81e2bd21sm4558268ejz.172.2022.03.06.22.36.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Mar 2022 22:36:28 -0800 (PST)
-Message-ID: <25128bad-08a6-83a9-b554-ab32869538e3@kernel.org>
-Date:   Mon, 7 Mar 2022 07:36:27 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 4/7] tty: serial: samsung: constify UART name
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220304080348.218581-1-krzysztof.kozlowski@canonical.com>
- <20220304080348.218581-4-krzysztof.kozlowski@canonical.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220304080348.218581-4-krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 7 Mar 2022 01:39:08 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8B5205FA;
+        Sun,  6 Mar 2022 22:38:14 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4CF4F201416;
+        Mon,  7 Mar 2022 07:38:13 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 026E82020DF;
+        Mon,  7 Mar 2022 07:38:13 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 38390183AD0B;
+        Mon,  7 Mar 2022 14:38:11 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     p.zabel@pengutronix.de, l.stach@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        shawnguo@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v1 0/7] Add the iMX8MP PCIe support
+Date:   Mon,  7 Mar 2022 14:29:09 +0800
+Message-Id: <1646634556-23779-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04. 03. 22, 9:03, Krzysztof Kozlowski wrote:
-> The UART name from driver data holds only string literals.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Based on the i.MX8MP GPC and blk-ctrl patch-set [1] issued by Lucas.
+This series patches add the i.MX8MP PCIe support.
+- i.MX8MP PCIe PHY has two resets refer to the i.MX8MM PCIe PHY.
+  Add one more PHY reset for i.MX8MP PCIe PHY accordingly.
+- Add the i.MX8MP PCIe PHY support in the i.MX8M PCIe PHY driver.
+  And share as much as possible codes with i.MX8MM PCIe PHY.
+- Add the i.MX8MP PCIe support in binding document, DTS files, and PCIe
+  driver.
+Clean up some debug codes, re-send the v1 patch-set.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+[1]:https://patchwork.kernel.org/project/linux-arm-kernel/cover/20220228201731.3330192-1-l.stach@pengutronix.de/
 
-> ---
->   drivers/tty/serial/samsung_tty.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 0b4f40044e87..279c413f2300 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -63,7 +63,7 @@ enum s3c24xx_port_type {
->   };
->   
->   struct s3c24xx_uart_info {
-> -	char			*name;
-> +	const char		*name;
->   	enum s3c24xx_port_type	type;
->   	unsigned int		port_type;
->   	unsigned int		fifosize;
+Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml    |   1 +
+Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml |   4 +-
+arch/arm64/boot/dts/freescale/imx8mp-evk.dts                 |  55 ++++++++++++++++++
+arch/arm64/boot/dts/freescale/imx8mp.dtsi                    |  46 +++++++++++++++-
+drivers/pci/controller/dwc/pci-imx6.c                        |  19 ++++++-
+drivers/phy/freescale/phy-fsl-imx8m-pcie.c                   | 248 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------------
+drivers/reset/reset-imx7.c                                   |   1 +
+7 files changed, 327 insertions(+), 47 deletions(-)
 
+[PATCH v1 1/7] reset: imx7: Add the iMX8MP PCIe PHY PERST support
+[PATCH v1 2/7] dt-binding: phy: Add iMX8MP PCIe PHY binding
+[PATCH v1 3/7] phy: freescale: imx8m-pcie: Add iMX8MP PCIe PHY
+[PATCH v1 4/7] dt-bindings: imx6q-pcie: Add iMX8MP PCIe compatible
+[PATCH v1 5/7] arm64: dts: imx8mp: add the iMX8MP PCIe support
+[PATCH v1 6/7] arm64: dts: imx8mp-evk: Add PCIe support
+[PATCH v1 7/7] PCI: imx6: Add the iMX8MP PCIe support
 
--- 
-js
-suse labs
