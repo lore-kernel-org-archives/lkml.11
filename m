@@ -2,143 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4222EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244400AbiCGUGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:06:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
+        id S245233AbiCGUGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:06:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232081AbiCGUGJ (ORCPT
+        with ESMTP id S241848AbiCGUGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:06:09 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918F8710FF;
-        Mon,  7 Mar 2022 12:05:14 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id x5so21504905edd.11;
-        Mon, 07 Mar 2022 12:05:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2JSic4G9BWhZ4l2LjW4YQThwu0UhN9BignLM2I7ktfA=;
-        b=Jp9lSDPX2x562WF7grbcrhO1bZPRVf302ccbWSRD3okEJpn7s+KYL4FEGj1tnfJDuP
-         g+7aTjENeGusOUCxDXdn2yVpqyFBz4jJoKM4PpTSgQfkIWA/hwFJKaulBbdDbIovCAtP
-         4zH4W7PDpPggblQGsIsOOtWxI56wa/yKUhVIqs5AETkQJ40LQj7BOi66+gBsX+Y5SbPx
-         1MW8q3r358nhXqdBf8jtUBkhvt1gU10WGn3/+BShHM1KkIjaDZXSOjjwS8c97KnflEdr
-         LIeRi428it/REP6tBuhO5maGw/Fat/VALnuz2pC3AETeLd+Rh+KQjQZscDlLOwjWOKP/
-         dgYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2JSic4G9BWhZ4l2LjW4YQThwu0UhN9BignLM2I7ktfA=;
-        b=bMjzOL9UQR8QQZxf1M1L/6SInDkv1ZWQ/jANrdkdKKhR7ffEpoatceb73Vqq071Hks
-         omazlprSxEdxE2bFHv9EMGkUfikimFpJ4WYehlikDlw6hFxNnCtmHqCZe1mrCAEjpk8O
-         cRVJO4vXIy8h831Uxm2xOJgCFhSZWU972/wWJQH8D19cQr4ZQLTcjDw7Ie6UgZU9c4lj
-         WROPXDMHlWzroMB+XvpEIFu1g9sAq52oJO8SZWR38VpFMwYZhbfKEm8lYnLhJHzRXGXz
-         m2KDX0QnlQYIMurhNRHkzaKhgiXQSl0OTTPefkuNPFKRwDVu5168/mdcYfc7quc1/PiO
-         jwhg==
-X-Gm-Message-State: AOAM532TqlkX+d08Hy0YIEsJeaK+/clu8ALEQPW1CilfxsvB3dJgnsCz
-        cezPra7jJOhPIy3gXnt1q7I=
-X-Google-Smtp-Source: ABdhPJw3BCkAVGibC3jnXLkH3b0Ln3luJGH0BZX6ZmrZXeBosz2SwHxyiFwpLqk8u8dkiFpKpyztaA==
-X-Received: by 2002:a50:934b:0:b0:410:befb:cfd0 with SMTP id n11-20020a50934b000000b00410befbcfd0mr12751376eda.27.1646683512640;
-        Mon, 07 Mar 2022 12:05:12 -0800 (PST)
-Received: from osgiliath.lan (201.ip-51-68-45.eu. [51.68.45.201])
-        by smtp.googlemail.com with ESMTPSA id m13-20020a170906234d00b006cf86bb0652sm5055354eja.121.2022.03.07.12.05.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 12:05:12 -0800 (PST)
-From:   Ismael Ferreras Morezuelas <swyterzone@gmail.com>
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hdegoede@redhat.com, pmenzel@molgen.mpg.de, swyterzone@gmail.com
-Subject: [PATCH v4 1/2] Bluetooth: hci_sync: Add a new quirk to skip HCI_FLT_CLEAR_ALL
-Date:   Mon,  7 Mar 2022 21:04:44 +0100
-Message-Id: <20220307200445.5554-1-swyterzone@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 7 Mar 2022 15:06:11 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC013710EF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:05:15 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61740153B;
+        Mon,  7 Mar 2022 12:05:15 -0800 (PST)
+Received: from [10.57.41.254] (unknown [10.57.41.254])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE4783FA35;
+        Mon,  7 Mar 2022 12:05:13 -0800 (PST)
+Message-ID: <9296f97c-f894-001c-53e6-41bbfe36ce71@arm.com>
+Date:   Mon, 7 Mar 2022 20:05:06 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH RFC] arm64: improve display about CPU architecture in
+ cpuinfo
+Content-Language: en-GB
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Rongwei Wang <rongwei.wang@linux.alibaba.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, joey.gouly@arm.com,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220307030417.22974-1-rongwei.wang@linux.alibaba.com>
+ <87h78a178u.wl-maz@kernel.org>
+ <a31431bf-24bb-71ac-8f3c-f9ca19f5c4f0@linux.alibaba.com>
+ <87bkyi0x53.wl-maz@kernel.org> <1b94af8b-a294-5765-4e1e-896f70db621f@arm.com>
+ <CAK8P3a3zA25=iZkVGPc=V+9tqqsWgQjoD9BSS60foGZtDwsujA@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAK8P3a3zA25=iZkVGPc=V+9tqqsWgQjoD9BSS60foGZtDwsujA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some controllers have problems with being sent a command to clear
-all filtering. While the HCI code does not unconditionally
-send a clear-all anymore at BR/EDR setup (after the state machine
-refactor), there might be more ways of hitting these codepaths
-in the future as the kernel develops.
+On 2022-03-07 19:30, Arnd Bergmann wrote:
+> On Mon, Mar 7, 2022 at 5:48 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> 
+>> And arguably it's not even too late, because 10 years ago this *did* say
+>> "AArch64". I don't remember all the exact details behind commit
+>> 44b82b7700d0 ("arm64: Fix up /proc/cpuinfo") - this just tickled enough
+>> of a memory to go and look up the git history - but I don't think we
+>> changed any of those fields without a real reason.
+>>
+> 
+> The patch description does state that this was done for compatibility with
+> 32-bit architectures, which does make some sense. I suppose for similar
+> reasons, the arch/arm/ version of /proc/cpuinfo is now stuck at
+> 'CPU architecture: 7', even for ARMv8 or higher in aarch32 mode.
+> 
+> The part that I find more annoying is how we leave out the one bit
+> of information that people are generally looking for in /proc/cpuinfo:
+> the name of the processor. Even though we already know the
+> exact processor type in order to handle the CPU errata, this is
+> always "model name\t: ARMv7 Processor rev %d (v7l)" on 32-bit,
+> and "model name\t: ARMv8 Processor rev %d (%s)" on 64-bit,
+> with the revision being the least important bit of information here...
 
-Cc: stable@vger.kernel.org
-Cc: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
----
- include/net/bluetooth/hci.h | 10 ++++++++++
- net/bluetooth/hci_sync.c    | 16 ++++++++++++++++
- 2 files changed, 26 insertions(+)
+Eh, it's hardly impossible to recompose a MIDR value from the 
+implementer, part, variant and revision fields if one actually needs to. 
+Maybe we could null-terminate the raw MIDR value and print it as a 
+string of largely-unprintable characters in the "model name" field... I 
+guess that might satisfy the crowd who want parity* with x86 CPUID, at 
+least :)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 35c073d44ec5..5cb095b09a94 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -255,6 +255,16 @@ enum {
- 	 * during the hdev->setup vendor callback.
- 	 */
- 	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
-+
-+	/* When this quirk is set, HCI_OP_SET_EVENT_FLT requests with
-+	 * HCI_FLT_CLEAR_ALL are ignored and event filtering is
-+	 * completely avoided. A subset of the CSR controller
-+	 * clones struggle with this and instantly lock up.
-+	 *
-+	 * Note that devices using this must (separately) disable
-+	 * runtime suspend, because event filtering takes place there.
-+	 */
-+	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
- };
- 
- /* HCI device flags */
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index e31d1150dc71..c3bdaf2de511 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -2812,6 +2812,9 @@ static int hci_set_event_filter_sync(struct hci_dev *hdev, u8 flt_type,
- 	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
- 		return 0;
- 
-+	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
-+		return 0;
-+
- 	memset(&cp, 0, sizeof(cp));
- 	cp.flt_type = flt_type;
- 
-@@ -2832,6 +2835,13 @@ static int hci_clear_event_filter_sync(struct hci_dev *hdev)
- 	if (!hci_dev_test_flag(hdev, HCI_EVENT_FILTER_CONFIGURED))
- 		return 0;
- 
-+	/* In theory the state machine should not reach here unless
-+	 * a hci_set_event_filter_sync() call succeeds, but we do
-+	 * the check both for parity and as a future reminder.
-+	 */
-+	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
-+		return 0;
-+
- 	return hci_set_event_filter_sync(hdev, HCI_FLT_CLEAR_ALL, 0x00,
- 					 BDADDR_ANY, 0x00);
- }
-@@ -4831,6 +4841,12 @@ static int hci_update_event_filter_sync(struct hci_dev *hdev)
- 	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
- 		return 0;
- 
-+	/* Some fake CSR controllers lock up after setting this type of
-+	 * filter, so avoid sending the request altogether.
-+	 */
-+	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
-+		return 0;
-+
- 	/* Always clear event filter when starting */
- 	hci_clear_event_filter_sync(hdev);
- 
--- 
-2.35.1
+Robin.
 
+
+* Of course this is a complete lie, because every time that comes up 
+it's always really about the microarchitecture (which Arm's CPU core 
+marketing names represent), where x86 is perfectly on par with arm64 
+with its equivalently-inscrutable "cpu family" and "model" numbers, 
+rather than cool microarchitecture names like "Sausage Lake" or whatever...
