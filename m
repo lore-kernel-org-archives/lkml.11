@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F869C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0469DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240761AbiCGKhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
+        id S240970AbiCGKiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:38:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241584AbiCGKKW (ORCPT
+        with ESMTP id S241564AbiCGKKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8548F3630A;
-        Mon,  7 Mar 2022 01:53:25 -0800 (PST)
+        Mon, 7 Mar 2022 05:10:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6A434B99;
+        Mon,  7 Mar 2022 01:53:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A369D609D1;
-        Mon,  7 Mar 2022 09:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92FC6C340F3;
-        Mon,  7 Mar 2022 09:53:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D843B810A8;
+        Mon,  7 Mar 2022 09:53:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F9DC340F3;
+        Mon,  7 Mar 2022 09:53:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646790;
-        bh=6M86J2o6M3bRHvKGhRNENY1cai9HlAyy4Bns/PkOgsQ=;
+        s=korg; t=1646646786;
+        bh=Z7BigJV33VDRSubBPp+Oxiv8DS+bW0iXi63kmst+PEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lHXhg9W1s5nlk5PFUGo9CeHg1+YH3vk0hS2ESWmgqKriRL0KoXXErf6ml7PFci5Kh
-         eLd7iNOENZYeY16vZRlArajIvAdOo9ZnIfwssPamxUeY/pUfwYRe7xUXpoGndqXmLS
-         enTOvgE4TjfNWKwaytNrjSefMrsC4duVyNHaCN4U=
+        b=Lg/Q7Ip0lNgGEkcwptB8pB+TgF3Og17B1hF+6o7unTiwGrQTO7Hpj2yAssZ5VMsYL
+         BYdwWBi3uZ1xCL47tJ1WNB3FrXyw4zCesxU7pOH5XtvwV6UHT1L+/WAm2WOWsUj0oY
+         Hk8XcrYUc3nbJ0mSIn3OA8n4nP+WdaIfh39LLxHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Siva Reddy <siva.kallam@samsung.com>,
-        Girish K S <ks.giri@samsung.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 093/186] net: sxgbe: fix return value of __setup handler
-Date:   Mon,  7 Mar 2022 10:18:51 +0100
-Message-Id: <20220307091656.684125600@linuxfoundation.org>
+        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 092/186] iavf: Fix missing check for running netdev
+Date:   Mon,  7 Mar 2022 10:18:50 +0100
+Message-Id: <20220307091656.656614652@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,52 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-commit 50e06ddceeea263f57fe92baa677c638ecd65bb6 upstream.
+commit d2c0f45fcceb0995f208c441d9c9a453623f9ccf upstream.
 
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 causes the "option=value" string to be
-added to init's environment strings, polluting it.
+The driver was queueing reset_task regardless of the netdev
+state.
 
-Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
-Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Siva Reddy <siva.kallam@samsung.com>
-Cc: Girish K S <ks.giri@samsung.com>
-Cc: Byungho An <bh74.an@samsung.com>
-Link: https://lore.kernel.org/r/20220224033528.24640-1-rdunlap@infradead.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Do not queue the reset task in iavf_change_mtu if netdev
+is not running.
+
+Fixes: fdd4044ffdc8 ("iavf: Remove timer for work triggering, use delaying work instead")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-@@ -2285,18 +2285,18 @@ static int __init sxgbe_cmdline_opt(char
- 	char *opt;
- 
- 	if (!str || !*str)
--		return -EINVAL;
-+		return 1;
- 	while ((opt = strsep(&str, ",")) != NULL) {
- 		if (!strncmp(opt, "eee_timer:", 10)) {
- 			if (kstrtoint(opt + 10, 0, &eee_timer))
- 				goto err;
- 		}
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3436,8 +3436,11 @@ static int iavf_change_mtu(struct net_de
+ 		iavf_notify_client_l2_params(&adapter->vsi);
+ 		adapter->flags |= IAVF_FLAG_SERVICE_CLIENT_REQUESTED;
  	}
--	return 0;
-+	return 1;
+-	adapter->flags |= IAVF_FLAG_RESET_NEEDED;
+-	queue_work(iavf_wq, &adapter->reset_task);
++
++	if (netif_running(netdev)) {
++		adapter->flags |= IAVF_FLAG_RESET_NEEDED;
++		queue_work(iavf_wq, &adapter->reset_task);
++	}
  
- err:
- 	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
--	return -EINVAL;
-+	return 1;
+ 	return 0;
  }
- 
- __setup("sxgbeeth=", sxgbe_cmdline_opt);
 
 
