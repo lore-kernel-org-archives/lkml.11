@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20788C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B91C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239139AbiCGKHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
+        id S239577AbiCGKHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239308AbiCGJta (ORCPT
+        with ESMTP id S239310AbiCGJta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:49:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CEC1DA73;
-        Mon,  7 Mar 2022 01:42:57 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E154547AD3;
+        Mon,  7 Mar 2022 01:43:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B9CCB810C3;
-        Mon,  7 Mar 2022 09:42:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66EFC340E9;
-        Mon,  7 Mar 2022 09:42:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAD9AB810D2;
+        Mon,  7 Mar 2022 09:42:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C3AC340F5;
+        Mon,  7 Mar 2022 09:42:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646174;
-        bh=lpTIfqFfuxNnkZVoWmvjaup59vtQTcg03a28fDRHsfM=;
+        s=korg; t=1646646177;
+        bh=Oo8c0T73WwRUB0tlUJ77/gdoT2ejqRUeLYuZyye5QNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kR4BpZJeEKYoamKW+hmTbSir5vJc7fxqiWP22M3mDcN8IWbd8Z7MuYqJGRPjhwqg2
-         v3OvhbZ9sck1XYbgwXiLPiE8WVHYbTVv5+QelQf5JGSPcrUEM7PnmN1tRCdxgGPQr8
-         DB9BAYAihGRSd6w6y3UOoum5RjhMFmsuual0d+Mg=
+        b=jzwhSfkmtMNEBnpG7LHUujw17z3viWwRF6rUYWIx/B78rrFC4v5AFnlrs1G6nyv+o
+         p8DNAvl8eAW9Qco9NXwRHm0nLjSNBgFppLeFzWZ+sx7Cusefv6mFLOK80WbnpYBIO/
+         AvLJzkI+8NDaCH7gsWu1K5kvHBiaHLjl7nVVkfyw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Scarborough <kim@scarborough.kim>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 130/262] cifs: fix confusing unneeded warning message on smb2.1 and earlier
-Date:   Mon,  7 Mar 2022 10:17:54 +0100
-Message-Id: <20220307091706.127954885@linuxfoundation.org>
+        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.15 157/262] xfrm: enforce validity of offload input flags
+Date:   Mon,  7 Mar 2022 10:18:21 +0100
+Message-Id: <20220307091706.866568881@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,58 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit 53923e0fe2098f90f339510aeaa0e1413ae99a16 ]
+commit 7c76ecd9c99b6e9a771d813ab1aa7fa428b3ade1 upstream.
 
-When mounting with SMB2.1 or earlier, even with nomultichannel, we
-log the confusing warning message:
-  "CIFS: VFS: multichannel is not supported on this protocol version, use 3.0 or above"
+struct xfrm_user_offload has flags variable that received user input,
+but kernel didn't check if valid bits were provided. It caused a situation
+where not sanitized input was forwarded directly to the drivers.
 
-Fix this so that we don't log this unless they really are trying
-to mount with multichannel.
+For example, XFRM_OFFLOAD_IPV6 define that was exposed, was used by
+strongswan, but not implemented in the kernel at all.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215608
-Reported-by: Kim Scarborough <kim@scarborough.kim>
-Cc: stable@vger.kernel.org # 5.11+
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+As a solution, check and sanitize input flags to forward
+XFRM_OFFLOAD_INBOUND to the drivers.
+
+Fixes: d77e38e612a0 ("xfrm: Add an IPsec hardware offloading API")
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/sess.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ include/uapi/linux/xfrm.h |    6 ++++++
+ net/xfrm/xfrm_device.c    |    6 +++++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/fs/cifs/sess.c b/fs/cifs/sess.c
-index a1e688113645f..5500ea7837845 100644
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -76,11 +76,6 @@ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
- 	struct cifs_server_iface *ifaces = NULL;
- 	size_t iface_count;
+--- a/include/uapi/linux/xfrm.h
++++ b/include/uapi/linux/xfrm.h
+@@ -511,6 +511,12 @@ struct xfrm_user_offload {
+ 	int				ifindex;
+ 	__u8				flags;
+ };
++/* This flag was exposed without any kernel code that supporting it.
++ * Unfortunately, strongswan has the code that uses sets this flag,
++ * which makes impossible to reuse this bit.
++ *
++ * So leave it here to make sure that it won't be reused by mistake.
++ */
+ #define XFRM_OFFLOAD_IPV6	1
+ #define XFRM_OFFLOAD_INBOUND	2
  
--	if (ses->server->dialect < SMB30_PROT_ID) {
--		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
--		return 0;
--	}
--
- 	spin_lock(&ses->chan_lock);
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -223,6 +223,9 @@ int xfrm_dev_state_add(struct net *net,
+ 	if (x->encap || x->tfcpad)
+ 		return -EINVAL;
  
- 	new_chan_count = old_chan_count = ses->chan_count;
-@@ -94,6 +89,12 @@ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
- 		return 0;
- 	}
- 
-+	if (ses->server->dialect < SMB30_PROT_ID) {
-+		spin_unlock(&ses->chan_lock);
-+		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
-+		return 0;
-+	}
++	if (xuo->flags & ~(XFRM_OFFLOAD_IPV6 | XFRM_OFFLOAD_INBOUND))
++		return -EINVAL;
 +
- 	if (!(ses->server->capabilities & SMB2_GLOBAL_CAP_MULTI_CHANNEL)) {
- 		cifs_dbg(VFS, "server %s does not support multichannel\n", ses->server->hostname);
- 		ses->chan_max = 1;
--- 
-2.34.1
-
+ 	dev = dev_get_by_index(net, xuo->ifindex);
+ 	if (!dev) {
+ 		if (!(xuo->flags & XFRM_OFFLOAD_INBOUND)) {
+@@ -261,7 +264,8 @@ int xfrm_dev_state_add(struct net *net,
+ 	xso->dev = dev;
+ 	xso->real_dev = dev;
+ 	xso->num_exthdrs = 1;
+-	xso->flags = xuo->flags;
++	/* Don't forward bit that is not implemented */
++	xso->flags = xuo->flags & ~XFRM_OFFLOAD_IPV6;
+ 
+ 	err = dev->xfrmdev_ops->xdo_dev_state_add(x);
+ 	if (err) {
 
 
