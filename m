@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B178FC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16DBDC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbiCGJY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:24:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
+        id S236740AbiCGJYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:24:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236625AbiCGJWj (ORCPT
+        with ESMTP id S237297AbiCGJXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:22:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E1752B04;
-        Mon,  7 Mar 2022 01:20:50 -0800 (PST)
+        Mon, 7 Mar 2022 04:23:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85480652DC;
+        Mon,  7 Mar 2022 01:22:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5743260FF6;
-        Mon,  7 Mar 2022 09:20:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E8EDC340E9;
-        Mon,  7 Mar 2022 09:20:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D2F7B810BC;
+        Mon,  7 Mar 2022 09:22:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B4EDC340F3;
+        Mon,  7 Mar 2022 09:22:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644849;
-        bh=xsBz0RqUi2urBvcdghvSVVgEdjdNzS2up+wEosCosYQ=;
+        s=korg; t=1646644938;
+        bh=GKdd4VgpaM5s4qpkvtodSnYGBEaGyfU0kOv+WvU2fOY=;
         h=From:To:Cc:Subject:Date:From;
-        b=ldvqrEBeVLhsEKoH92iaTPk85D+5pjW0x+tX1yfFs3hbjwosJOf0aYlENa0Ijqv0w
-         BJ6UpWkZ97PQdrYHRFxUNuXv+a4ateiwz0zyUeCebew+elhM6cTa142xFX1KJjuWWZ
-         L82LvEZ8k0v9N7SrrFsCInAaTXjD+RZQjGm/pa2c=
+        b=xTk7UKfyfJ37m/7IWXgQhdyftv3egjzuYT8D4goa6Hfcpri4N9zd5KsHxN09VTi+/
+         DFOR+vn4KSCEwuwuEr0UaiQELLYvXtpXY2wYLVtm8smwR7eYfO1FthDWQMO2D7sYNl
+         d6jI2frDOPTYPVZY4Cjqhq8NIsHBCoI/GDDZ06WE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,19 +37,19 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
         jonathanh@nvidia.com, f.fainelli@gmail.com,
         sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 00/32] 4.9.305-rc1 review
-Date:   Mon,  7 Mar 2022 10:18:26 +0100
-Message-Id: <20220307091634.434478485@linuxfoundation.org>
+Subject: [PATCH 4.14 00/42] 4.14.270-rc1 review
+Date:   Mon,  7 Mar 2022 10:18:34 +0100
+Message-Id: <20220307091636.146155347@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.305-rc1.gz
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.270-rc1.gz
 X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Branch: linux-4.14.y
 X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.305-rc1
+X-KernelTest-Version: 4.14.270-rc1
 X-KernelTest-Deadline: 2022-03-09T09:16+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,8 +57,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.305 release.
-There are 32 patches in this series, all will be posted as a response
+This is the start of the stable review cycle for the 4.14.270 release.
+There are 42 patches in this series, all will be posted as a response
 to this one.  If anyone has any issues with these being applied, please
 let me know.
 
@@ -66,9 +66,9 @@ Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
 Anything received after that time might be too late.
 
 The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.305-rc1.gz
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.270-rc1.gz
 or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
 and the diffstat can be found below.
 
 thanks,
@@ -79,7 +79,7 @@ greg k-h
 Pseudo-Shortlog of commits:
 
 Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.305-rc1
+    Linux 4.14.270-rc1
 
 Vladimir Oltean <vladimir.oltean@nxp.com>
     net: dcb: disable softirqs in dcbnl_flush_dev()
@@ -95,6 +95,9 @@ Hans de Goede <hdegoede@redhat.com>
 
 Hans de Goede <hdegoede@redhat.com>
     Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    nl80211: Handle nla_memdup failures in handle_nan_filter
 
 Jia-Ju Bai <baijiaju1990@gmail.com>
     net: chelsio: cxgb3: check the return value of pci_find_capability()
@@ -129,8 +132,23 @@ Johan Hovold <johan@kernel.org>
 Qiushi Wu <wu000273@umn.edu>
     firmware: Fix a reference count leak.
 
+D. Wythe <alibuda@linux.alibaba.com>
+    net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
+
+D. Wythe <alibuda@linux.alibaba.com>
+    net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error generated by client
+
 Vladimir Oltean <vladimir.oltean@nxp.com>
     net: dcb: flush lingering app table entries for unregistered devices
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Don't expect inter-netns unique iflink indices
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Request iflink once in batadv_get_real_netdevice
+
+Sven Eckelmann <sven@narfation.org>
+    batman-adv: Request iflink once in batadv-on-batadv check
 
 Florian Westphal <fw@strlen.de>
     netfilter: nf_queue: fix possible use-after-free
@@ -138,11 +156,20 @@ Florian Westphal <fw@strlen.de>
 Florian Westphal <fw@strlen.de>
     netfilter: nf_queue: don't assume sk is full socket
 
+Leon Romanovsky <leonro@nvidia.com>
+    xfrm: enforce validity of offload input flags
+
+Eric Dumazet <edumazet@google.com>
+    netfilter: fix use-after-free in __nf_register_net_hook()
+
 Jiri Bohac <jbohac@suse.cz>
     xfrm: fix MTU regression
 
 Marek Vasut <marex@denx.de>
     ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
+
+Zhen Ni <nizhen@uniontech.com>
+    ALSA: intel_hdmi: Fix reference to PCM buffer address
 
 Sergey Shtylyov <s.shtylyov@omp.ru>
     ata: pata_hpt37x: fix PCI clock detection
@@ -158,6 +185,9 @@ Daniele Palmas <dnlplm@gmail.com>
 
 Wolfram Sang <wsa@kernel.org>
     i2c: qup: allow COMPILE_TEST
+
+Wolfram Sang <wsa@kernel.org>
+    i2c: cadence: allow COMPILE_TEST
 
 Yongzhi Liu <lyz_cs@pku.edu.cn>
     dmaengine: shdma: Fix runtime PM imbalance on error
@@ -190,7 +220,7 @@ Diffstat:
  drivers/firmware/qemu_fw_cfg.c                    | 10 ++--
  drivers/hid/hid-debug.c                           |  4 +-
  drivers/hid/hid-input.c                           |  2 +
- drivers/i2c/busses/Kconfig                        |  2 +-
+ drivers/i2c/busses/Kconfig                        |  4 +-
  drivers/i2c/busses/i2c-bcm2835.c                  | 11 ++++
  drivers/input/input.c                             |  6 +++
  drivers/input/mouse/elan_i2c_core.c               | 64 ++++++++---------------
@@ -206,13 +236,20 @@ Diffstat:
  fs/cifs/cifsfs.c                                  |  1 +
  include/net/netfilter/nf_queue.h                  |  2 +-
  include/uapi/linux/input-event-codes.h            |  3 +-
+ include/uapi/linux/xfrm.h                         |  6 +++
  mm/shmem.c                                        |  7 +--
+ net/batman-adv/hard-interface.c                   | 29 ++++++----
  net/dcb/dcbnl.c                                   | 44 ++++++++++++++++
  net/ipv6/ip6_output.c                             | 11 ++--
  net/mac80211/rx.c                                 |  4 +-
+ net/netfilter/core.c                              |  5 +-
  net/netfilter/nf_queue.c                          | 23 ++++++--
  net/netfilter/nfnetlink_queue.c                   | 12 +++--
+ net/smc/smc_core.c                                |  5 +-
+ net/wireless/nl80211.c                            | 12 +++++
+ net/xfrm/xfrm_device.c                            |  6 ++-
  sound/soc/soc-ops.c                               |  4 +-
- 31 files changed, 199 insertions(+), 87 deletions(-)
+ sound/x86/intel_hdmi_audio.c                      |  2 +-
+ 38 files changed, 250 insertions(+), 103 deletions(-)
 
 
