@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8213BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4639AC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343521AbiCGVju (ORCPT
+        id S1343562AbiCGVjz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 16:39:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        Mon, 7 Mar 2022 16:39:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343525AbiCGVgn (ORCPT
+        with ESMTP id S1343646AbiCGVhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 16:36:43 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2041.outbound.protection.outlook.com [40.107.96.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BF289CFC;
-        Mon,  7 Mar 2022 13:35:19 -0800 (PST)
+        Mon, 7 Mar 2022 16:37:51 -0500
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2050.outbound.protection.outlook.com [40.107.212.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3B58B6E7;
+        Mon,  7 Mar 2022 13:35:41 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E3LAQgrjUz6jfIm8Dz7eqLjcCHkinuJZUUIhqIxmdkv508C+olH3KIc65ROeF6etqEQmWT/L4xSnSNgp9KmE7MfhtQOwqiNOV+/S4lkcKpcMBGAZ7ZWQxJr3lfsBt2tg+2cOrqcMEJSO430GK8ZWa37MXKv+NiDILQtVqdIZhzjfAJxQUuHugi8eTV4iVdtoY1PseyvCXbFs4nsbGBWKPGAqRRmD4HnPNtFwubotDHq7y3j9NmykrhRIkAXrhmrV0uI9bT4yq0OM7S1GjUEgaV7L4myMOPrzZAJs4nIIgwE2JTcLvbGQatsg6+p0nVzO+y0pvM7TaAvnFI1NMdVhJQ==
+ b=HQIgLg9Dan9rj4YHphLyB0PMVMxYeWVd4AGPE8h4XVNp+avxa5sZn/f/TaZpAaQ4+vnqKdWJhmfo7ztoHxu2kVfy6B/FeitHu0blqXDs53LSlikXRCzWXDrZ+F21kZp+3ktqIgrJ/oMBInND2bKkAC18hjlc3IJ7ARQcgZMHPr1V+sIHB/roShJigtE4orrHyafMgEHrT/HLqSlhBBI5N/gaWhsSd2WOhzjbeMTPFrg39992/NwN/qF4QezTTHaO07KnsxOx3ydwgpPHTFOGD/YQnc4Jp8qQWRYI7scPX9dssfZq6dGwdeCGS65v3jfobvrsCDNOIF5bsxLo6lcDrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H6s1C/Zn/hZRROUmwhJnVXMc2cu/EWhVAXRDi+KITkc=;
- b=hQa1fvvauKphvqU/25YWPYgb4GKrRQGDfTWLGoDtVoaWoVVUYZPTwLRwagpxOKXrf7xjCYUPHLt+57uXV4yleVkLrHf4EcWKpkC6BEmTbzS7KgumFcppuVyAahWgRo8gixSfszDRff13F+QEYANBHy1SFDnvwaZdTzoF/lw4mD+RUYt84T4bymgk25xWn7e386lqBy8w9g30l/3/stZ53Jz9HG9y+gUhFngJThhIHdR3QYXw8hVk0UoQAN+PnJl4G578lHPhkJu0YFH4U5aUIcJ8PjLGzkj/GnzVoscp78GCLJx3lozEa+DsfB7Hct4PrvY0EbKlc6e8l3PWYrVCYw==
+ bh=ONB4YuxHXa++hwuSa4pidiloNkIVh6LyvbA7ZAHShv0=;
+ b=RyLavGtEgXErmXgDPDt5nxqAERg6vZlfAFQgFOmLOlozB6j02UchyXIL0sl4yAPda8MVUEIkgJuOYnIlGJ8GD+jjPuA0LDOUcBnnmLfD02Qdz5PvQk6I3mmkfjI8YJ9wRDQfcPOPorb5y1QLNlU4SYXMBgE9EOoUv80AO52+5dObGgz0jM6tqabQu3+cgTvjj+LSuUeXQYZZid9tZ665Jnx284DsSsf2aZfktww4g1GZcXYPqO3zX1kWx4KUooKyXndCyUEqBEekMgyBetc0BlhjEZ97C5htYtPG+ESAeQYBuzyxaQrl5FEt7ZXu1vMBAW1THT8T7JsS2y7JZf1rhQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H6s1C/Zn/hZRROUmwhJnVXMc2cu/EWhVAXRDi+KITkc=;
- b=Tng3dtiI400SQA52GEoA8YhkDKDos8YHZnrUhDsuccj4mFjl1k6En/Gn8dJFkUOLwXf/HkLwBDBFt1/BDlMBrM1PRD5x4FWTBhseMuWLssEqqQ+FqB4z6bn9OramHcDpm1foGkLUWhWtNNPSEMXZOlcQI+Bt/rIfVFZchjFIgNk=
-Received: from BN9PR03CA0145.namprd03.prod.outlook.com (2603:10b6:408:fe::30)
- by CY4PR12MB1381.namprd12.prod.outlook.com (2603:10b6:903:42::18) with
+ bh=ONB4YuxHXa++hwuSa4pidiloNkIVh6LyvbA7ZAHShv0=;
+ b=w/ZSZvbk5jQy9I7WyJjubNU7FsH7CpuV93g44z1Yg+u1cefu9qno/zuneBBeRq/TMPZ47rOuahO0eERmeIwRyvsP++J9GTCVRkgZxgd6CyZPPH72y6Ti9jqP2dWX1oHQHrCZYtSv304bX+UgsidUcxt6Hf63xFAD0IhgYFMKnbY=
+Received: from BN9PR03CA0096.namprd03.prod.outlook.com (2603:10b6:408:fd::11)
+ by MW4PR12MB5603.namprd12.prod.outlook.com (2603:10b6:303:16a::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.19; Mon, 7 Mar
- 2022 21:35:16 +0000
-Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fe:cafe::f3) by BN9PR03CA0145.outlook.office365.com
- (2603:10b6:408:fe::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Mon, 7 Mar 2022 21:35:16 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Mon, 7 Mar
+ 2022 21:35:25 +0000
+Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:fd:cafe::11) by BN9PR03CA0096.outlook.office365.com
+ (2603:10b6:408:fd::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16 via Frontend
+ Transport; Mon, 7 Mar 2022 21:35:25 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,13 +48,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
+ BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 21:35:15 +0000
+ 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 21:35:24 +0000
 Received: from sbrijesh-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Mar
- 2022 15:35:11 -0600
+ 2022 15:35:20 -0600
 From:   Brijesh Singh <brijesh.singh@amd.com>
 To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
         <kvm@vger.kernel.org>, <linux-efi@vger.kernel.org>,
@@ -83,11 +83,10 @@ CC:     Thomas Gleixner <tglx@linutronix.de>,
         Andi Kleen <ak@linux.intel.com>,
         "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
         <brijesh.ksingh@gmail.com>, <tony.luck@intel.com>,
-        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>
-Subject: [PATCH v12 31/46] x86/sev: Move MSR-based VMGEXITs for CPUID to helper
-Date:   Mon, 7 Mar 2022 15:33:41 -0600
-Message-ID: <20220307213356.2797205-32-brijesh.singh@amd.com>
+        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v12 36/46] x86/compressed: Export and rename add_identity_map()
+Date:   Mon, 7 Mar 2022 15:33:46 -0600
+Message-ID: <20220307213356.2797205-37-brijesh.singh@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220307213356.2797205-1-brijesh.singh@amd.com>
 References: <20220307213356.2797205-1-brijesh.singh@amd.com>
@@ -99,186 +98,111 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 96d1ccc5-acc4-4de4-6877-08da00825e97
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1381:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB13817BD477F4C30B695CFFA2E5089@CY4PR12MB1381.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: c445c3bd-609f-4a8d-295c-08da008263f5
+X-MS-TrafficTypeDiagnostic: MW4PR12MB5603:EE_
+X-Microsoft-Antispam-PRVS: <MW4PR12MB5603FF6C4FCD923B615E41CDE5089@MW4PR12MB5603.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kjecHdwwKIYS1WqG2Es40+lCwhHuEE3kX38solBv3odjlxU+HZ7uxH6yMhqz5RMNKVoSQmUGM/iF410HuByNQVoYeqVGLMBM9ZX8j+0oVdzVlqFQ6fezwThTRh01R4NpHMR/6q8NeStOfALpTWpGBzweHQx+A8dN+KtawC2/6a8PQ5m97iyHLJU+1gVVb2GqdSIH+MmWStAePpdQu+g4x6y3Iss/DRvaOZvLeZn8wP0rl3K9O87cWiSGUMO1hOGz7hd6/sxf8XAbcwiAEsjFdwX4tlFI9ipbWDWSST/ZuSAgGSOMru2cL1WOuFDFZ5h7S9rQJoOsjQ58G3WPE/0fqUE19kBYzahWxlzAf3/Aeab8C9zIXHrscCroEucdo7/1iDUlmK8r7h/XjMxA35t3XTuViqKrm9CfUkooZnQ9HnUzgFC9Pl+RP72HRQc/PdRQ9FSC3I37mOVAN2bVYaYzZgoSZUXKCjJU96LgY7mWt+hxXnURV09B87ctpCpLel1xYYFXsYD21yTvGfPZzWM4wGcRnXXEeay5BuWtqDHuh1J6DzOKJ7JD/JZjUmCciICSexsii16ZmGspqyQMu6hJg7SvxltpWcp7lC9xkQhAZUTibZuvP76BY6afCzIerFMjRROgFTT9bl59Qn9wUbT5xmWVu1tjwdWv8HPCLjOL+upZIfJa5w5sVExyZPGriHgo10jsg4SemtzL22/g9xSxMsqa9xpLrKNYTu7PTIpiij8=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(86362001)(16526019)(186003)(2616005)(1076003)(26005)(81166007)(40460700003)(356005)(83380400001)(426003)(70586007)(336012)(82310400004)(36860700001)(47076005)(8676002)(36756003)(54906003)(70206006)(110136005)(316002)(4326008)(8936002)(2906002)(5660300002)(7416002)(44832011)(7406005)(508600001)(7696005)(6666004)(36900700001)(2101003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 7So/Kju6vIpxxeBZmLlhFQbsW34En/LnmWnZxRcrgnQdtgX1+gthAuD1TceG7QXVyjiZPGTR25BnmthJc6/dLE2tHN6P6HriSlBM+lZ1TXyhppffNAIk8OgJUeptkmiNtzC55Ut2LTCEKBR6SGf35RuuGTc1RokAMrZo3ngNkrFGbGpCQfvZ4vOXrI4uxKhB1hKgcjzNUMm72/+x9l7fPpzdJNUIqRBMWUYbYqMmsXVzWM9uyDwvg4G2Riwq3KIcjoggLVgTevxbuFstfgEXb3r7xrsxGv2WAGB0bEkzqVIkztwW6hj6Px00iX0C0M7oSgNJQ9dwPF6DjeElMcfu89t78ZFoo3fadG54XOl9D63kE9y6Lt0yUXgBsGSwLliPgSTD0ovROx4I6MGEzhmpKJRZG8QmA2Zkyo2SIaVRPfPqZuzvIkRNP+0zB9y8YWb/v1eHovGtkRmtkpY2a7o8vwdRrtY7KZ40jLrXTi15kFG96GgaGN79w+XTeY/C9Sxj2O6FRigXNVzIv3nwJJVy9wpMKX9EbpMuDksOzIVxH2m0CUNCOuYRI/os+AdVPtNVq5fIjPhjy1CU7m3G+G4NhikoCHCSTjx0B/6azZIsUq/TGFRKMYtjQ7cnI/fcTyHunASR9cJjQTSyZygsaA/uTBdNqWkNXuWeWvXpn0cXwmo/w9NumZDzdshBJaMQXYVSvUuNAvaI5BEYt6aYdgE3QCo/Cp9S1j3C079hjprCgbg=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4326008)(70586007)(70206006)(2906002)(8676002)(36756003)(508600001)(7696005)(6666004)(336012)(1076003)(82310400004)(426003)(186003)(26005)(16526019)(36860700001)(2616005)(316002)(54906003)(110136005)(356005)(86362001)(83380400001)(44832011)(81166007)(47076005)(5660300002)(7406005)(40460700003)(8936002)(7416002)(2101003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 21:35:15.8294
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 21:35:24.8325
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96d1ccc5-acc4-4de4-6877-08da00825e97
+X-MS-Exchange-CrossTenant-Network-Message-Id: c445c3bd-609f-4a8d-295c-08da008263f5
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1381
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5603
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Michael Roth <michael.roth@amd.com>
 
-This code will also be used later for SEV-SNP-validated CPUID code in
-some cases, so move it to a common helper.
+SEV-specific code will need to add some additional mappings, but doing
+this within ident_map_64.c requires some SEV-specific helpers to be
+exported and some SEV-specific struct definitions to be pulled into
+ident_map_64.c. Instead, export add_identity_map() so SEV-specific (and
+other subsystem-specific) code can be better contained outside of
+ident_map_64.c.
 
-While here, also add a check to terminate in cases where the CPUID
-function/subfunction is indexed and the subfunction is non-zero, since
-the GHCB MSR protocol does not support non-zero subfunctions.
+While at it, rename the function to kernel_add_identity_map(), similar
+to the kernel_ident_mapping_init() function it relies upon.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
+No functional changes.
+
+Suggested-by: Borislav Petkov <bp@alien8.de>
 Signed-off-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 ---
- arch/x86/boot/compressed/sev.c |  1 +
- arch/x86/kernel/sev-shared.c   | 83 +++++++++++++++++++++++-----------
- arch/x86/kernel/sev.c          |  1 +
- 3 files changed, 59 insertions(+), 26 deletions(-)
+ arch/x86/boot/compressed/ident_map_64.c | 18 +++++++++---------
+ arch/x86/boot/compressed/misc.h         |  1 +
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
-index 485410a182b0..ed717b6dd246 100644
---- a/arch/x86/boot/compressed/sev.c
-+++ b/arch/x86/boot/compressed/sev.c
-@@ -20,6 +20,7 @@
- #include <asm/fpu/xcr.h>
- #include <asm/ptrace.h>
- #include <asm/svm.h>
-+#include <asm/cpuid.h>
- 
- #include "error.h"
- #include "../msr.h"
-diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-index 3aaef1a18ffe..b4d5558c9d0a 100644
---- a/arch/x86/kernel/sev-shared.c
-+++ b/arch/x86/kernel/sev-shared.c
-@@ -14,6 +14,16 @@
- #define has_cpuflag(f)	boot_cpu_has(f)
- #endif
- 
-+/* I/O parameters for CPUID-related helpers */
-+struct cpuid_leaf {
-+	u32 fn;
-+	u32 subfn;
-+	u32 eax;
-+	u32 ebx;
-+	u32 ecx;
-+	u32 edx;
-+};
-+
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index 3d566964b829..7975680f521f 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -90,7 +90,7 @@ static struct x86_mapping_info mapping_info;
  /*
-  * Since feature negotiation related variables are set early in the boot
-  * process they must reside in the .data section so as not to be zeroed
-@@ -194,6 +204,44 @@ enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb, bool set_ghcb_msr,
- 	return verify_exception_info(ghcb, ctxt);
- }
- 
-+static int __sev_cpuid_hv(u32 fn, int reg_idx, u32 *reg)
-+{
-+	u64 val;
-+
-+	sev_es_wr_ghcb_msr(GHCB_CPUID_REQ(fn, reg_idx));
-+	VMGEXIT();
-+	val = sev_es_rd_ghcb_msr();
-+	if (GHCB_RESP_CODE(val) != GHCB_MSR_CPUID_RESP)
-+		return -EIO;
-+
-+	*reg = (val >> 32);
-+
-+	return 0;
-+}
-+
-+static int sev_cpuid_hv(struct cpuid_leaf *leaf)
-+{
-+	int ret;
-+
-+	/*
-+	 * MSR protocol does not support fetching non-zero subfunctions, but is
-+	 * sufficient to handle current early-boot cases. Should that change,
-+	 * make sure to report an error rather than ignoring the index and
-+	 * grabbing random values. If this issue arises in the future, handling
-+	 * can be added here to use GHCB-page protocol for cases that occur late
-+	 * enough in boot that GHCB page is available.
-+	 */
-+	if (cpuid_function_is_indexed(leaf->fn) && leaf->subfn)
-+		return -EINVAL;
-+
-+	ret =         __sev_cpuid_hv(leaf->fn, GHCB_CPUID_REQ_EAX, &leaf->eax);
-+	ret = ret ? : __sev_cpuid_hv(leaf->fn, GHCB_CPUID_REQ_EBX, &leaf->ebx);
-+	ret = ret ? : __sev_cpuid_hv(leaf->fn, GHCB_CPUID_REQ_ECX, &leaf->ecx);
-+	ret = ret ? : __sev_cpuid_hv(leaf->fn, GHCB_CPUID_REQ_EDX, &leaf->edx);
-+
-+	return ret;
-+}
-+
- /*
-  * Boot VC Handler - This is the first VC handler during boot, there is no GHCB
-  * page yet, so it only supports the MSR based communication with the
-@@ -201,40 +249,23 @@ enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb, bool set_ghcb_msr,
+  * Adds the specified range to the identity mappings.
   */
- void __init do_vc_no_ghcb(struct pt_regs *regs, unsigned long exit_code)
+-static void add_identity_map(unsigned long start, unsigned long end)
++void kernel_add_identity_map(unsigned long start, unsigned long end)
  {
-+	unsigned int subfn = lower_bits(regs->cx, 32);
- 	unsigned int fn = lower_bits(regs->ax, 32);
--	unsigned long val;
-+	struct cpuid_leaf leaf;
+ 	int ret;
  
- 	/* Only CPUID is supported via MSR protocol */
- 	if (exit_code != SVM_EXIT_CPUID)
- 		goto fail;
+@@ -157,11 +157,11 @@ void initialize_identity_maps(void *rmode)
+ 	 * explicitly here in case the compressed kernel does not touch them,
+ 	 * or does not touch all the pages covering them.
+ 	 */
+-	add_identity_map((unsigned long)_head, (unsigned long)_end);
++	kernel_add_identity_map((unsigned long)_head, (unsigned long)_end);
+ 	boot_params = rmode;
+-	add_identity_map((unsigned long)boot_params, (unsigned long)(boot_params + 1));
++	kernel_add_identity_map((unsigned long)boot_params, (unsigned long)(boot_params + 1));
+ 	cmdline = get_cmd_line_ptr();
+-	add_identity_map(cmdline, cmdline + COMMAND_LINE_SIZE);
++	kernel_add_identity_map(cmdline, cmdline + COMMAND_LINE_SIZE);
  
--	sev_es_wr_ghcb_msr(GHCB_CPUID_REQ(fn, GHCB_CPUID_REQ_EAX));
--	VMGEXIT();
--	val = sev_es_rd_ghcb_msr();
--	if (GHCB_RESP_CODE(val) != GHCB_MSR_CPUID_RESP)
--		goto fail;
--	regs->ax = val >> 32;
--
--	sev_es_wr_ghcb_msr(GHCB_CPUID_REQ(fn, GHCB_CPUID_REQ_EBX));
--	VMGEXIT();
--	val = sev_es_rd_ghcb_msr();
--	if (GHCB_RESP_CODE(val) != GHCB_MSR_CPUID_RESP)
--		goto fail;
--	regs->bx = val >> 32;
--
--	sev_es_wr_ghcb_msr(GHCB_CPUID_REQ(fn, GHCB_CPUID_REQ_ECX));
--	VMGEXIT();
--	val = sev_es_rd_ghcb_msr();
--	if (GHCB_RESP_CODE(val) != GHCB_MSR_CPUID_RESP)
-+	leaf.fn = fn;
-+	leaf.subfn = subfn;
-+	if (sev_cpuid_hv(&leaf))
- 		goto fail;
--	regs->cx = val >> 32;
+ 	/* Load the new page-table. */
+ 	sev_verify_cbit(top_level_pgt);
+@@ -246,10 +246,10 @@ static int set_clr_page_flags(struct x86_mapping_info *info,
+ 	 * It should already exist, but keep things generic.
+ 	 *
+ 	 * To map the page just read from it and fault it in if there is no
+-	 * mapping yet. add_identity_map() can't be called here because that
+-	 * would unconditionally map the address on PMD level, destroying any
+-	 * PTE-level mappings that might already exist. Use assembly here so
+-	 * the access won't be optimized away.
++	 * mapping yet. kernel_add_identity_map() can't be called here because
++	 * that would unconditionally map the address on PMD level, destroying
++	 * any PTE-level mappings that might already exist. Use assembly here
++	 * so the access won't be optimized away.
+ 	 */
+ 	asm volatile("mov %[address], %%r9"
+ 		     :: [address] "g" (*(unsigned long *)address)
+@@ -363,5 +363,5 @@ void do_boot_page_fault(struct pt_regs *regs, unsigned long error_code)
+ 	 * Error code is sane - now identity map the 2M region around
+ 	 * the faulting address.
+ 	 */
+-	add_identity_map(address, end);
++	kernel_add_identity_map(address, end);
+ }
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index ba538af37e90..aae2722c6e9a 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -156,6 +156,7 @@ static inline int count_immovable_mem_regions(void) { return 0; }
+ #ifdef CONFIG_X86_5LEVEL
+ extern unsigned int __pgtable_l5_enabled, pgdir_shift, ptrs_per_p4d;
+ #endif
++extern void kernel_add_identity_map(unsigned long start, unsigned long end);
  
--	sev_es_wr_ghcb_msr(GHCB_CPUID_REQ(fn, GHCB_CPUID_REQ_EDX));
--	VMGEXIT();
--	val = sev_es_rd_ghcb_msr();
--	if (GHCB_RESP_CODE(val) != GHCB_MSR_CPUID_RESP)
--		goto fail;
--	regs->dx = val >> 32;
-+	regs->ax = leaf.eax;
-+	regs->bx = leaf.ebx;
-+	regs->cx = leaf.ecx;
-+	regs->dx = leaf.edx;
- 
- 	/*
- 	 * This is a VC handler and the #VC is only raised when SEV-ES is
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index bc9bb7e0c04d..97c0aa44ce2d 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -33,6 +33,7 @@
- #include <asm/smp.h>
- #include <asm/cpu.h>
- #include <asm/apic.h>
-+#include <asm/cpuid.h>
- 
- #define DR7_RESET_VALUE        0x400
- 
+ /* Used by PAGE_KERN* macros: */
+ extern pteval_t __default_kernel_pte_mask;
 -- 
 2.25.1
 
