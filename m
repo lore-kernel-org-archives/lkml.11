@@ -2,76 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68014C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241756AbiCGK5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:57:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41298 "EHLO
+        id S241441AbiCGLAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:00:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236188AbiCGK5e (ORCPT
+        with ESMTP id S241614AbiCGK5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:57:34 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6E3655A
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:17:22 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 799CC100002;
-        Mon,  7 Mar 2022 10:17:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646648240;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tutWd4trGKBphGeeWfYnezhoEF7V9uU5s6qavtK4MLY=;
-        b=H4XtxXy/yXX4RbE1L0JLmDp2sJfxQkbW87TLMhNqKpZzBaUPtKR830LOUgdaWDuHbw0HWN
-        +wGy7aeJoZCPLD9RNGZE4lT4Ag0f7chnoA2M/0E5D6IkAA/t8iyNePAQ4tlAynCrpgL4kB
-        1eHduvg9iPb16RgSLAfC3IluRk4ZLdleYP6Qy8/kWrNqJsfnL+Mi5btx6G1i4x6JpIFeVM
-        /2pYGE9Y2wHtKQ+OI7hK9dHVMRfOsV35HHRhtjOjYvM6H3D9i2dG5mmJY6B5eg8EGw4vjX
-        wzfYRBVPzxsagkDJJ5FN440Dtk/7H9wCylzzJXU4qCcy9rYVlpul7P+ejFeRVA==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 0/2] ARM: at91: add support for secure suspend on sama5d2
-Date:   Mon,  7 Mar 2022 11:15:48 +0100
-Message-Id: <20220307101550.95538-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Mar 2022 05:57:41 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54FCB1884;
+        Mon,  7 Mar 2022 02:18:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646648290; x=1678184290;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/x9Os74ZVsNOOG2tcGaGL4zfGaT3I0GD1gck2+BW7HA=;
+  b=NRt6i/6UBGMz/TfyB+WqJB6koQ/olf1FT7TYNCAWDVRPBFsuMdU8iDK4
+   yJJhQEVGakkgtoEwetCa79wu5XEdMQhC3r3UoaR7CIpSThUl9MPGEwbKv
+   W4rQFTuYLDJD5hKVNrJVs7RJU/cP20oV5PIqXJNHaHTP2epfxnOyHmfPM
+   pOVn0herg6KRI0j55X9lAt0VUOTQp3OlPWKl33WNLYI9vJYfd5fFVJvas
+   vf3QWVE14lzAmTBNcHsyV8Tjum22ouK0nBXOQu6/ZwkuX1OBxxiU6f8Yu
+   IRuTfOVptpEgE7lxNvRpHRHG0+S0RzInV07xif2y4K7SqG/cJkQ/l3VP8
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
+   d="scan'208";a="164755252"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:18:10 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Mar 2022 03:18:10 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:18:04 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>
+Subject: [RFC PATCH net-next 0/2] net: phy: lan87xx: use genphy_read_master_slave function
+Date:   Mon, 7 Mar 2022 15:47:41 +0530
+Message-ID: <20220307101743.8567-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that OP-TEE support for sama5d2 is more complete, add support to
-execute SMC calls and to set suspend mode. This series adds new files
-to be able to execute SMC calls targeting OP-TEE secure monitor and
-secure suspend support uses it.
+LAN87xx T1 Phy has the same register field as gigabit phy for reading the
+master slave configuration. But the genphy_read_master_slave function has a
+check of gigabit phy. So refactored the function in such a way, moved the speed
+check to the genphy_read_status function. Analyzed the nxp-tja11xx function for
+refactoring, but the register for configuring master/slave is nxp specific
+which is not extended phy register.
+And analyzed the reusing genphy_setup_master_slave, but for LAN87xx
+MASTER_ENABLE is always 1 and Preferred state is always 0. So, I didn't try to
+change it.
 
----
+Arun Ramadoss (2):
+  net: phy: exported the genphy_read_master_slave function
+  net: phy: lan87xx: use genphy_read_master_slave in read_status
 
-Changes V2:
- - Add suspend mode SMC in already existing secure support
+ drivers/net/phy/microchip_t1.c | 30 +-----------------------------
+ drivers/net/phy/phy_device.c   | 20 ++++++++++----------
+ include/linux/phy.h            |  1 +
+ 3 files changed, 12 insertions(+), 39 deletions(-)
 
-Clément Léger (2):
-  ARM: at91: add code to handle secure calls
-  ARM: at91: pm: add support for sama5d2 secure suspend
 
- arch/arm/mach-at91/Kconfig      | 12 ++++++++-
- arch/arm/mach-at91/Makefile     |  2 +-
- arch/arm/mach-at91/pm.c         | 38 +++++++++++++++++++++++++++
- arch/arm/mach-at91/sam_secure.c | 46 +++++++++++++++++++++++++++++++++
- arch/arm/mach-at91/sam_secure.h | 18 +++++++++++++
- arch/arm/mach-at91/sama5.c      |  2 ++
- 6 files changed, 116 insertions(+), 2 deletions(-)
- create mode 100644 arch/arm/mach-at91/sam_secure.c
- create mode 100644 arch/arm/mach-at91/sam_secure.h
-
+base-commit: 669b258a793db9f1c3bff29ce2bbd61b810503ad
 -- 
-2.34.1
+2.33.0
 
