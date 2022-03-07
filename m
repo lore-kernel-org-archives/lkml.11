@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85677C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE85C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235124AbiCGJd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:33:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
+        id S237377AbiCGJeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:34:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238661AbiCGJ3e (ORCPT
+        with ESMTP id S238724AbiCGJ3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6935882D;
-        Mon,  7 Mar 2022 01:27:48 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221DA5BE4B;
+        Mon,  7 Mar 2022 01:27:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E53A6B810AC;
-        Mon,  7 Mar 2022 09:27:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31DD1C340F3;
-        Mon,  7 Mar 2022 09:27:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00FC661135;
+        Mon,  7 Mar 2022 09:27:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00183C340E9;
+        Mon,  7 Mar 2022 09:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645265;
-        bh=JmT9QfBOyZJcBBwWxnPYAC63NAd5BxcKK3R707o9fKY=;
+        s=korg; t=1646645278;
+        bh=ho+1fk4JbqUuOdumvMPIOqALlMHuN+23rs2JHlchIaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BuW1SVrjp3FIclwMAUPxOx+/eBPQwMoDNRyKyzlbOtHquFdmW4KuDNFa0F1UiKP/X
-         5FtUsTW1boE6WRseD1d+MB9CsPKLXNeGwD3VDcm4FrMbAXRSj2ThIx1jOUWiaeobvo
-         Xrs/XDO3v0ngNXNYeMRitEUVd1Z72ntgGsZIIXiQ=
+        b=uo37i50BtHWiNmZ6gI1XzkfU7bZjhfbmSUDqok1orxumySQ0OY+fqKrD7TfErdfC3
+         IvSpwFNXyo24e70uGOq0xzMe81d6jj1/YolQrgH9ypG/7StJGqZOGQPB4iGZqh+73t
+         MCkNEMXulfEnQJqki2DUubsa+7IWIZtDuLDqTkK0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 38/64] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
-Date:   Mon,  7 Mar 2022 10:19:11 +0100
-Message-Id: <20220307091640.227987269@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 42/64] ASoC: cs4265: Fix the duplicated control name
+Date:   Mon,  7 Mar 2022 10:19:15 +0100
+Message-Id: <20220307091640.341191030@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -48,49 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Fabio Estevam <festevam@denx.de>
 
-commit bd6f1fd5d33dfe5d1b4f2502d3694a7cc13f166d upstream.
+commit c5487b9cdea5c1ede38a7ec94db0fc59963c8e86 upstream.
 
-During driver initialization, the pointer of card info, i.e. the
-variable 'ci' is required. However, the definition of
-'com20020pci_id_table' reveals that this field is empty for some
-devices, which will cause null pointer dereference when initializing
-these devices.
+Currently, the following error messages are seen during boot:
 
-The following log reveals it:
+asoc-simple-card sound: control 2:0:0:SPDIF Switch:0 is already present
+cs4265 1-004f: ASoC: failed to add widget SPDIF dapm kcontrol SPDIF Switch: -16
 
-[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
-[    3.975181] Call Trace:
-[    3.976208]  local_pci_probe+0x13f/0x210
-[    3.977248]  pci_device_probe+0x34c/0x6d0
-[    3.977255]  ? pci_uevent+0x470/0x470
-[    3.978265]  really_probe+0x24c/0x8d0
-[    3.978273]  __driver_probe_device+0x1b3/0x280
-[    3.979288]  driver_probe_device+0x50/0x370
+Quoting Mark Brown:
 
-Fix this by checking whether the 'ci' is a null pointer first.
+"The driver is just plain buggy, it defines both a regular SPIDF Switch
+control and a SND_SOC_DAPM_SWITCH() called SPDIF both of which will
+create an identically named control, it can never have loaded without
+error.  One or both of those has to be renamed or they need to be
+merged into one thing."
 
-Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix the duplicated control name by combining the two SPDIF controls here
+and move the register bits onto the DAPM widget and have DAPM control them.
+
+Fixes: f853d6b3ba34 ("ASoC: cs4265: Add a S/PDIF enable switch")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220215120514.1760628-1-festevam@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/arcnet/com20020-pci.c |    3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/codecs/cs4265.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/net/arcnet/com20020-pci.c
-+++ b/drivers/net/arcnet/com20020-pci.c
-@@ -136,6 +136,9 @@ static int com20020pci_probe(struct pci_
- 		return -ENOMEM;
+--- a/sound/soc/codecs/cs4265.c
++++ b/sound/soc/codecs/cs4265.c
+@@ -150,7 +150,6 @@ static const struct snd_kcontrol_new cs4
+ 	SOC_SINGLE("E to F Buffer Disable Switch", CS4265_SPDIF_CTL1,
+ 				6, 1, 0),
+ 	SOC_ENUM("C Data Access", cam_mode_enum),
+-	SOC_SINGLE("SPDIF Switch", CS4265_SPDIF_CTL2, 5, 1, 1),
+ 	SOC_SINGLE("Validity Bit Control Switch", CS4265_SPDIF_CTL2,
+ 				3, 1, 0),
+ 	SOC_ENUM("SPDIF Mono/Stereo", spdif_mono_stereo_enum),
+@@ -186,7 +185,7 @@ static const struct snd_soc_dapm_widget
  
- 	ci = (struct com20020_pci_card_info *)id->driver_data;
-+	if (!ci)
-+		return -EINVAL;
-+
- 	priv->ci = ci;
- 	mm = &ci->misc_map;
- 
+ 	SND_SOC_DAPM_SWITCH("Loopback", SND_SOC_NOPM, 0, 0,
+ 			&loopback_ctl),
+-	SND_SOC_DAPM_SWITCH("SPDIF", SND_SOC_NOPM, 0, 0,
++	SND_SOC_DAPM_SWITCH("SPDIF", CS4265_SPDIF_CTL2, 5, 1,
+ 			&spdif_switch),
+ 	SND_SOC_DAPM_SWITCH("DAC", CS4265_PWRCTL, 1, 1,
+ 			&dac_switch),
 
 
