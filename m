@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5095BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237378AbiCGJg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
+        id S237393AbiCGJgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238228AbiCGJ26 (ORCPT
+        with ESMTP id S238279AbiCGJ3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:58 -0500
+        Mon, 7 Mar 2022 04:29:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290C566AC3;
-        Mon,  7 Mar 2022 01:27:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72C866AEF;
+        Mon,  7 Mar 2022 01:27:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09315B810C2;
-        Mon,  7 Mar 2022 09:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B32DC340E9;
-        Mon,  7 Mar 2022 09:26:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 196E8B810AC;
+        Mon,  7 Mar 2022 09:27:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE20C340F4;
+        Mon,  7 Mar 2022 09:27:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645216;
-        bh=GJm7fJ8uut8H1LDJ+ADgX5VYZSZ0FaWV/2sJMYkllf0=;
+        s=korg; t=1646645222;
+        bh=mrV6dQUlm23eEo1U+VXCrk3Sau7WDOBqJMKBwzUVdnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gdzZ0Elc9+k2tzpLZSpqZ1Kwrt3OH9gZfx6lB1wkiyfvrcdj1t60e/LlZxs5dVLae
-         9X27z7Pi2ITMsu+l0axxW3i9kqsJvcy0uB8F9bY97jhUqaWUaabe2dwoo3sSrwReQn
-         1umVDE6qmf1dd87pTV2ytlwV4H+gJJUrQneagfXo=
+        b=2JU1V73ZCqOsBCPlg2PxnnFQpnq94eoNyBO5m6YObQj3RxxeGbN9mMrivPYvLdW6K
+         NBz2IyAmwvTXceNI4mhhm6WefjCH4vNUnC4WBB9auNhl8d4y3wWfFU3tWfHIcKl02o
+         oUQEzs88rhHFDsSzsm7Mzlz6hdmE5xSB3iDLlJ+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 5.4 24/64] batman-adv: Request iflink once in batadv_get_real_netdevice
-Date:   Mon,  7 Mar 2022 10:18:57 +0100
-Message-Id: <20220307091639.832079053@linuxfoundation.org>
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 08/64] dmaengine: shdma: Fix runtime PM imbalance on error
+Date:   Mon,  7 Mar 2022 10:18:41 +0100
+Message-Id: <20220307091639.379452870@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -48,55 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-commit 6116ba09423f7d140f0460be6a1644dceaad00da upstream.
+[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
 
-There is no need to call dev_get_iflink multiple times for the same
-net_device in batadv_get_real_netdevice. And since some of the
-ndo_get_iflink callbacks are dynamic (for example via RCUs like in
-vxcan_get_iflink), it could easily happen that the returned values are not
-stable. The pre-checks before __dev_get_by_index are then of course bogus.
+pm_runtime_get_() increments the runtime PM usage counter even
+when it returns an error code, thus a matching decrement is needed on
+the error handling path to keep the counter balanced.
 
-Fixes: 5ed4a460a1d3 ("batman-adv: additional checks for virtual interfaces on top of WiFi")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/hard-interface.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/dma/sh/shdma-base.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -217,14 +217,16 @@ static struct net_device *batadv_get_rea
- 	struct net_device *real_netdev = NULL;
- 	struct net *real_net;
- 	struct net *net;
--	int ifindex;
-+	int iflink;
+diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+index c51de498b5b4b..19eee3d0900b0 100644
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
+ 		ret = pm_runtime_get(schan->dev);
  
- 	ASSERT_RTNL();
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0)
++		if (ret < 0) {
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
++			pm_runtime_put(schan->dev);
++		}
  
- 	if (!netdev)
- 		return NULL;
+ 		pm_runtime_barrier(schan->dev);
  
--	if (netdev->ifindex == dev_get_iflink(netdev)) {
-+	iflink = dev_get_iflink(netdev);
-+
-+	if (netdev->ifindex == iflink) {
- 		dev_hold(netdev);
- 		return netdev;
- 	}
-@@ -234,9 +236,8 @@ static struct net_device *batadv_get_rea
- 		goto out;
- 
- 	net = dev_net(hard_iface->soft_iface);
--	ifindex = dev_get_iflink(netdev);
- 	real_net = batadv_getlink_net(netdev, net);
--	real_netdev = dev_get_by_index(real_net, ifindex);
-+	real_netdev = dev_get_by_index(real_net, iflink);
- 
- out:
- 	if (hard_iface)
+-- 
+2.34.1
+
 
 
