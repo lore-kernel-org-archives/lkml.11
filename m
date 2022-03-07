@@ -2,125 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A19CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235588AbiCGHIP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 02:08:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        id S235729AbiCGHJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 02:09:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232511AbiCGHIL (ORCPT
+        with ESMTP id S232511AbiCGHJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 02:08:11 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91B35F244
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 23:07:16 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KBqGn0dQZzBrc6;
-        Mon,  7 Mar 2022 15:05:21 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Mar 2022 15:07:13 +0800
-Subject: Re: [PATCH 4/4] mm/memory-failure.c: fix potential VM_BUG_ON_PAGE in
- split_huge_page_to_list
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220228140245.24552-1-linmiaohe@huawei.com>
- <20220228140245.24552-5-linmiaohe@huawei.com>
- <20220304082804.GC3778609@hori.linux.bs1.fc.nec.co.jp>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <2311bee4-cc11-93fc-6992-6c327a150e3d@huawei.com>
-Date:   Mon, 7 Mar 2022 15:07:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 7 Mar 2022 02:09:42 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F165371E;
+        Sun,  6 Mar 2022 23:08:46 -0800 (PST)
+Received: from nazgul.tnic (dynamic-002-247-255-022.2.247.pool.telefonica.de [2.247.255.22])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5E8101EC0373;
+        Mon,  7 Mar 2022 08:08:41 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1646636921;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=vyqgArEkzxNbCsOCW92oh86k/eiAr543cFkC1JN0Tx8=;
+        b=EWoRWEeKXPpCbgAaoG7/n98y9fedKZHFeocOCt8g45ea/xmL/IznZVxoPa9JGEZZ2hAqrn
+        e+gbrCqZSed3th7tk0giNAO5AqWwey+58Je7oVbcoNLIbhwJZB2V5g+5lbTqoIpJlmuOM9
+        cZH+Q492OUbYUWg0wERI3RZxoSe6Q3M=
+Date:   Mon, 7 Mar 2022 08:08:46 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Shuai Xue <xueshuai@linux.alibaba.com>
+Cc:     rric@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, ardb@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+Subject: Re: [PATCH v6 2/2] EDAC/ghes: use cper functions to avoid code
+ duplication
+Message-ID: <YiWvZSlAU0wEEFtO@nazgul.tnic>
+References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+ <20220303122626.99740-3-xueshuai@linux.alibaba.com>
+ <YiHm1WHwO6HigCZx@nazgul.tnic>
+ <2005e3f7-ce30-bf36-4787-c503f0e7d6ce@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <20220304082804.GC3778609@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2005e3f7-ce30-bf36-4787-c503f0e7d6ce@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/4 16:28, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Mon, Feb 28, 2022 at 10:02:45PM +0800, Miaohe Lin wrote:
->> The huge zero page could reach here and if we ever try to split it, the
->> VM_BUG_ON_PAGE will be triggered in split_huge_page_to_list(). Also the
->> non-lru compound movable pages could be taken for transhuge pages. Skip
->> these pages by checking PageLRU because huge zero page isn't lru page as
->> non-lru compound movable pages.
-> 
-> It seems that memory_failure() also fails at get_any_page() with "hwpoison:
-> unhandlable page" message.
-> 
->   [16478.203474] page:00000000b6acdbd1 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1810b4
->   [16478.206612] flags: 0x57ffffc0801000(reserved|hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
->   [16478.209411] raw: 0057ffffc0801000 fffff11bc6042d08 fffff11bc6042d08 0000000000000000
->   [16478.211921] raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
->   [16478.214473] page dumped because: hwpoison: unhandlable page
->   [16478.216386] Memory failure: 0x1810b4: recovery action for unknown page: Ignored
-> 
-> We can't handle errors on huge (or normal) zero page, so the current
+On Mon, Mar 07, 2022 at 02:16:42PM +0800, Shuai Xue wrote:
+> Should we add a new patch to remove the 'space' delimiter after the colon?
 
-Sorry for confusing commit log again. I should have a coffee before I make this patch.
-Huge or normal zero page will fail at get_any_page because they're neither HWPoisonHandlable
-nor PageHuge.
+Yeah, it looks like it would be easier to parse this way - both by
+humans and tools.
 
-> behavior seems to me more suitable than "unsplit thp".
-> 
-> Or if you have some producer to reach the following path with huge zero
-> page, could you share it?
-> 
+-- 
+Regards/Gruss,
+    Boris.
 
-What I mean is that non-lru movable compound page can reach here unexpected because __PageMovable(page)
-is handleable now. So get_any_page could succeed to grab the page refcnt. And since it's compound page,
-it will go through the split_huge_page_to_list because PageTransHuge checks PageHead(page) which can also
-be true for compound page. But this type of pages is unexpected for split_huge_page_to_list.
-
-Does this make sense for you? Thanks Naoya.
-
-> Thanks,
-> Naoya Horiguchi
-> 
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> ---
->>  mm/memory-failure.c | 14 ++++++++++++++
->>  1 file changed, 14 insertions(+)
->>
->> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
->> index 23bfd809dc8c..ac6492e36978 100644
->> --- a/mm/memory-failure.c
->> +++ b/mm/memory-failure.c
->> @@ -1792,6 +1792,20 @@ int memory_failure(unsigned long pfn, int flags)
->>  	}
->>  
->>  	if (PageTransHuge(hpage)) {
->> +		/*
->> +		 * The non-lru compound movable pages could be taken for
->> +		 * transhuge pages. Also huge zero page could reach here
->> +		 * and if we ever try to split it, the VM_BUG_ON_PAGE will
->> +		 * be triggered in split_huge_page_to_list(). Skip these
->> +		 * pages by checking PageLRU because huge zero page isn't
->> +		 * lru page as non-lru compound movable pages.
->> +		 */
->> +		if (!PageLRU(hpage)) {
->> +			put_page(p);
->> +			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
->> +			res = -EBUSY;
->> +			goto unlock_mutex;
->> +		}
->>  		/*
->>  		 * The flag must be set after the refcount is bumped
->>  		 * otherwise it may race with THP split.
->> -- 
->> 2.23.0
-
+https://people.kernel.org/tglx/notes-about-netiquette
