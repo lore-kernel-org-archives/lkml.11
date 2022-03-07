@@ -2,75 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7381C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241946AbiCGNCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:02:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        id S238701AbiCGNDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:03:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235527AbiCGNCv (ORCPT
+        with ESMTP id S240089AbiCGND3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:02:51 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15178A32A
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:01:56 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id j17so23230727wrc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:01:56 -0800 (PST)
+        Mon, 7 Mar 2022 08:03:29 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DF2237D7
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:02:35 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id u1so23126942wrg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:02:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=e67SutZxG438sci1TBJeJ7WtZkdVAr0qTy9gsVN3XwY=;
-        b=x+ujloCRfsfVUjD1tD5rOP9jCBUAWKTRgEdz3RtXOAjouh8yHGKYjEERy5ZVtCTQjA
-         vAjYQFg6yZOvnG77Fvw6ztdwzm7jb+nZqf5tPFWRoYoK8C2JWiVj7Q/KIk/EmjLTo8tX
-         c+nH5I9dKsAkJ66wInYvfdxMDzBXmY5cjYKon3s2l9zJf7OLJqMSIDX/kS/iwR0tpqF4
-         rlGp0zDx4dBAEsTnYca9a02lmFEebeGEiq8SYwLu2O4aC5dkugJCwMHcU8ZzZCcyaZk8
-         49bsJTgttC36MOr6YgubjbJlltWBapYUbu+w/PZ3cqdmwwNZqRk1sZWGelokMdB3RhUh
-         5zXA==
+        bh=pSHEpDDbP3cBBq52zYK0sNbU+pR3WMacBq6FSVuCsuM=;
+        b=xaD0uy3OaS2SthEhwpI13bvsD4t81TogWIb7k5vqCrTOSEylRf4LTLpNYM10hqcfIy
+         amhMsB6nmZLjTLtmCRB0du+N12lEviwtRcdS5ul+qPWrVrAPJAV3M4IqsVHt4WbYHjVd
+         OO95ewCkhISPExCZd6cmzRDZqY2y3hM6fp/E1zK4P/Q+6roTZa7WcTTqUpLKZ0cgmesS
+         hQMOvs/QuU+XA3LvDYMr/ZByyzyCR5dN4HcN7MZ/LRQKn6Fxh0vG7ualFmIPX22wyLTR
+         kp+HDgghHM6Db0X76t2sHGLQ7S7CCMHk5cetlJgAtGy65brquPO1TpC9yB+1GoIQLTuW
+         8xLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=e67SutZxG438sci1TBJeJ7WtZkdVAr0qTy9gsVN3XwY=;
-        b=q9yhU0serIddsOY2bM2Ic2LPeFIlyud8AcQMRA573zEucthIZqOTqfld1Mf2NfQgOw
-         2KWwGcUIUpCpGt56ZxSlzaBiRzy6qgjc/1FJFdCXSaY+UBdm2/Us8JOdssPYIlzgktCD
-         MUMDN/lEYEuypjXslAL3CiH6+UkaoCUy7Au0tx9wWg2GvUhDAVEJZdUI7k2C1gU+IK9l
-         yx7cCqABE+BQiQVBp4vFRR0mzKiX4ioWag1tkrhrBtxampj9fHxEUQlbMKpE9tJrDFW0
-         4e54J1x0UbUeJDtlZUlPqaRaBAxMU27xZN9hJmTzNh1Ppzf0GzM5Q8drOdcrUaRk354S
-         A9eQ==
-X-Gm-Message-State: AOAM532J8T76MKEMN0ZoxbhuJB1FnX/l8ZmOFOGEfUBS3ycKFgG439kB
-        eNr37xOk4C1FrtnNJ9nZG+Jrrg==
-X-Google-Smtp-Source: ABdhPJyHJ5P/m6mr2APBp60J06cUWzigQkU9p2bOxINnrtMKSgqEdCUvkQo+S0Ov7CLmNhewHBpPeQ==
-X-Received: by 2002:a5d:4cc1:0:b0:1f0:98e7:6af0 with SMTP id c1-20020a5d4cc1000000b001f098e76af0mr7953333wrt.363.1646658115173;
-        Mon, 07 Mar 2022 05:01:55 -0800 (PST)
+        bh=pSHEpDDbP3cBBq52zYK0sNbU+pR3WMacBq6FSVuCsuM=;
+        b=K1Pl4Hi+k6lqx9xDTdneSCp7ucqDbwe2cml9PLfogqAFlZVc638FYNwLW64R4Nzj9g
+         Ve46KBzQ7KjY2PjD2qhVfbYdTKRpUuZkL/Q8M2qzKmv1Q6K1xCkBcJa1/Tn135EBJS04
+         MPtu8X1MdLmOuFK8f7W/EU9hCKEfy9q5dyEqWr+NLQLJ3NuMzf2CFnllkfFK0DIMf67+
+         sgvMXe4OQ3hsC/BJ3oiq3LT3/JLKkMl9CXb2hZXT1cnyUy+Jg2NSY4jKEZisDEBuKoDF
+         ezRdnZKsOCvuf/wuyGHZRMvjFI4qeGbAyKOoBbBW9eAZE4qYP2LE+I46PdAtzWQorjeo
+         vnlg==
+X-Gm-Message-State: AOAM531WKqctsjNlmrddbfzAedYKQmWcrTcEXTR/2JPw73VhM5gQAivA
+        9aztUoTOTg8+cNaAR1co3Z0vrKcHUgQ+mQ==
+X-Google-Smtp-Source: ABdhPJwFm2cCjjXxy2SN2JW1Q88+o10LH4UWSkDfPpFyumvyJ9d+kwhochV9n4mGtrAnH7VGmZxiwA==
+X-Received: by 2002:adf:e44b:0:b0:1f0:250a:d3ef with SMTP id t11-20020adfe44b000000b001f0250ad3efmr8153721wrm.402.1646658153858;
+        Mon, 07 Mar 2022 05:02:33 -0800 (PST)
 Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05600c26cb00b0037ff53511f2sm18526778wmv.31.2022.03.07.05.01.54
+        by smtp.gmail.com with ESMTPSA id p18-20020adfba92000000b001e4ae791663sm11883954wrg.62.2022.03.07.05.02.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 05:01:54 -0800 (PST)
-Date:   Mon, 7 Mar 2022 13:01:53 +0000
+        Mon, 07 Mar 2022 05:02:33 -0800 (PST)
+Date:   Mon, 7 Mar 2022 13:02:31 +0000
 From:   Lee Jones <lee.jones@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Cc:     Rob Herring <robh+dt@kernel.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sebastian Reichel <sre@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
 Subject: [GIT PULL] Immutable branch between MFD, SPI and DT  due for the
  v5.18 merge window
-Message-ID: <YiYCQdLSuyAY9JKk@google.com>
-References: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
+Message-ID: <YiYCZ31RPv77D2Nr@google.com>
+References: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-
-[correct subject line this time]
 
 Enjoy!
 
