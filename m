@@ -2,88 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68EFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D23FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243693AbiCGPIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:08:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
+        id S243657AbiCGPKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:10:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241606AbiCGPIj (ORCPT
+        with ESMTP id S236493AbiCGPKu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:08:39 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01D32FFC7;
-        Mon,  7 Mar 2022 07:07:44 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id n33-20020a05600c3ba100b003832caf7f3aso71239wms.0;
-        Mon, 07 Mar 2022 07:07:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/KGskNCElFlx9hP2T2sOELL9k2U6uGlQbATzaJwwdo=;
-        b=k80UYM+tUm816dF5wxKmo1tLClMuSsc93kymU/e7vEIS+9XTutUIdalNnLVCV+q6CI
-         zHxQcAXWvyBntZu1oIJGpwV6VUgit72aFs1htSxIWietf4hmhzGZSdBq7JiVkIMjTwW8
-         2Kme7AdBvF67RYrPk4R8ULCv02zRXq6D4ubTURAfSP/jNzAUtUzZ+Enq24O+MFUiyYVS
-         PRxBQl3TbP+k9LmUDSEfY9mNAvOdOrRfPn1oZE8yFjEC0GzpoA4I5/2mYG82QEKDkWlL
-         ow36AXr/xKHEFVYRSL2NK62iqZUFBof0+H3RC60XMf0yjFBjyCdNNtWTY3LFTpT+vfNF
-         f/7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/KGskNCElFlx9hP2T2sOELL9k2U6uGlQbATzaJwwdo=;
-        b=xboaccij19UzN5PB6C5N/3XCwfq3o6w/SJv9y6rVrfR4xsrOgggc8PztifoOuy4oKU
-         25k+jdCb5beZonnCju04cZYVpsqin2MvwgjQaiq/rPoPtryfIIO722wGAfYBB/TvyMSs
-         EsCmEpqpC24nEufr4b7OaOM0X0X1Kh/ZDrQBt+hqNwvtKz/tGWdgmAtIYUrwq4d0CSrW
-         N9QzURh+Dusx4Y81pyZX37sHk5aBa1YNuf+L43MtbR1FCj5U8eoXXOx3nd2NmAdrj8Do
-         +3yejU3znMjARCt4+W2PK3L3XNTEHask444HUPphuWfMTjjIOahWe38QucTKf69vYWey
-         kYtA==
-X-Gm-Message-State: AOAM530i17kUY8D2Vw4WNTQuJEZxFUEwRhJVsdjpnExPGTinF7byV56Y
-        AtS1j+1e8PVVaotphP/pZHbPltXVFmc=
-X-Google-Smtp-Source: ABdhPJy+VPLJ4gytCHsbhvLHzMzxNmYwK+e15gs5Cf90dhSycACJdfehjDEF98JWYsD5UlKHqM1U4w==
-X-Received: by 2002:a05:600c:3486:b0:381:65ec:f8ed with SMTP id a6-20020a05600c348600b0038165ecf8edmr9344371wmq.68.1646665663605;
-        Mon, 07 Mar 2022 07:07:43 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id g11-20020a5d554b000000b001f0326a23ddsm11802127wrw.70.2022.03.07.07.07.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 07:07:43 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     David Sterba <dsterba@suse.com>, linux-fsdevel@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] fs/affs: remove redundant assignment to ch
-Date:   Mon,  7 Mar 2022 15:07:42 +0000
-Message-Id: <20220307150742.137873-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Mon, 7 Mar 2022 10:10:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3FA34BB6;
+        Mon,  7 Mar 2022 07:09:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68F4AB815DD;
+        Mon,  7 Mar 2022 15:09:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C642C340E9;
+        Mon,  7 Mar 2022 15:09:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646665793;
+        bh=nroespDCTfI8GUP+QfMklKnR583dye6R4K9fyDl8frs=;
+        h=Subject:From:To:Date:From;
+        b=kpguhQ9aXByJLq1N2/25s98p7Zh/ak5SbThhkVzZ+oJh6vWQovVFLl6DGq/Z3RHaV
+         CD5tpt5zCblQ2qyYzyfa235c5S0DWPeso/ft5HB7v0iJSY8vG0UXxIzH4UMwZcbyMz
+         ND00oqxmypyZ+WrIjFx8mH+iyQ0n1AIWGwLic3y3z6RdBrXcHMFoDEZ+uX2Ay3SrZI
+         brFf0/b5cXtakbpBYKxwk/Tz7tINtJpcHkg293nzoPqPMSXJGvQh9hZHZXtncPLj82
+         sUM4AsTmSAT+u///aPIKx7zIi3ayGn09iJN9JlyjWj6VOtK99IBtZEk/MGJQjslJB/
+         4/5CPKWu62BaQ==
+Message-ID: <c4f9c937630a72d5a5034cebe7facdbad9866e8b.camel@kernel.org>
+Subject: [ANNOUNCE] 5.4.182-rt70
+From:   Tom Zanussi <zanussi@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Wagner <wagi@monom.org>,
+        Clark Williams <williams@redhat.com>,
+        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
+        Tom Zanussi <zanussi@kernel.org>
+Date:   Mon, 07 Mar 2022 09:09:50 -0600
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The assignment of ch after subtracting ('a' - 'A') is redundant and
-can be removed. Fix this by replacing the -= operator with just -
-to remove the assignment.
+Hello RT Folks!
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- fs/affs/namei.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm pleased to announce the 5.4.182-rt70 stable release.
 
-diff --git a/fs/affs/namei.c b/fs/affs/namei.c
-index bcab18956b4f..a1270deba908 100644
---- a/fs/affs/namei.c
-+++ b/fs/affs/namei.c
-@@ -19,7 +19,7 @@ typedef int (*toupper_t)(int);
- static int
- affs_toupper(int ch)
- {
--	return ch >= 'a' && ch <= 'z' ? ch -= ('a' - 'A') : ch;
-+	return ch >= 'a' && ch <= 'z' ? ch - ('a' - 'A') : ch;
- }
- 
- /* International toupper() for DOS\3 ("international") */
--- 
-2.35.1
+This release is just an update to the new stable 5.4.182
+version and no RT specific changes have been made.
+
+You can get this release via the git tree at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
+
+  branch: v5.4-rt
+  Head SHA1: ffd36f43c2e7b9eb1f1c261b2146c44ccd781936
+
+Or to build 5.4.182-rt70 directly, the following patches should be applied:
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.tar.xz
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.4.182.xz
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.182-rt70.patch.xz
+
+Enjoy!
+
+   Tom
 
