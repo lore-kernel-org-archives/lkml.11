@@ -2,181 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C31FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E96C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243684AbiCGPLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        id S242883AbiCGPMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:12:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243667AbiCGPK6 (ORCPT
+        with ESMTP id S236295AbiCGPMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:10:58 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F4F506C9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:10:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646665803; x=1678201803;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rIZNWu/jDNvC0pIdfE54bHckX5zmXz860wwR0x9gJJ4=;
-  b=hBWb4Q8Hl+jSrT8RV8RlTQAAWvR2RV1wAqzkqWGhOeuESxVw9NNvCk42
-   8O+DZNVUsUH8RLCANRxd85u6b7kwgmcb9f+UgbEjVb8vSDbFkDX90Pl5L
-   levo1lUWFjl9JdFRfM2rq5CtYU4X7TbJhXv781JFHyneOkoAXwzpfnFUf
-   EGtM9thYU0ygFzgYsvn0WxqlSU/j2+kUJ43GObNT1qaQjh/5baD+8evBp
-   efXlbZoph1G6shQfuuyh3QeEHOsRxK8bWdCB9e4cLRun4k9h8WjFiImhs
-   b3NLBOWs0E/R/JnEwQuIhbqSPshvi54KyZxkAGv8QVvVCPuPYCdhWiQAL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254601267"
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="254601267"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 07:10:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="495088052"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 07 Mar 2022 07:10:00 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 227F9wmO005849;
-        Mon, 7 Mar 2022 15:09:59 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH] linux/bits.h: fix -Wtype-limits warnings in GENMASK_INPUT_CHECK()
-Date:   Mon,  7 Mar 2022 16:07:50 +0100
-Message-Id: <20220307150750.1762040-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CAMZ6RqKaq8GiPYMyL4D1ksUtgketAF905oBgwKuGLtk7BmobZw@mail.gmail.com>
-References: <20220304124416.1181029-1-mailhol.vincent@wanadoo.fr> <CAHp75VeT3LbdbSaiwcC2YW40LnA2h8ADtGva-CKU_xh8Edi0nw@mail.gmail.com> <20220307105810.1747024-1-alexandr.lobakin@intel.com> <CAK8P3a07uXLTpNz3t1oMwz_imZOTs+1Fw5hhELjUrJ8Zs=8bpQ@mail.gmail.com> <CAMZ6RqKaq8GiPYMyL4D1ksUtgketAF905oBgwKuGLtk7BmobZw@mail.gmail.com>
+        Mon, 7 Mar 2022 10:12:41 -0500
+X-Greylist: delayed 1360 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 07:11:47 PST
+Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.184.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B3489CC5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:11:47 -0800 (PST)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id EB8D116231
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:49:06 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id REfanWOPpb6UBREfanAC3a; Mon, 07 Mar 2022 08:49:06 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Ffdy6z+jLWtdsYT/cAqK0cKmbp/7CaFfPazFLQ9MlP4=; b=mwhYzltTsMKEaWhoQ519z8wv1I
+        zbpB0D48oE9bMgRLfOFycU/Dc2898RIRKoK1cdDpCzGtK3QxZygcj2gr/OUsmF1cHoTBkb8ckwGRy
+        JtMlijix34aDR6Rw1NrOzdd2Zm+6CQdMGt9UzLuYn5Hon7yylQaIMtLxsWJzufkN3x1dyZkjA8jF0
+        P+2B+bCIqh+5gaixxah86BojuqcHAEUPAdf0p/WXRzzwQeUGCrs5qQOyYPu1AQmt2hbPJqre5vsAt
+        6z1IMAOb45XtS1wBFZr2ZyFfvgGj/5DP+W1ABA3G7HAiDWaA06oH4iTz7rz0Yp/UTRgzpZapvY+Ts
+        +OwNnEUQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38094)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nREfa-002KX7-2w; Mon, 07 Mar 2022 14:49:06 +0000
+Message-ID: <4252cd9d-a761-e064-58cf-eebc3b9d0bb7@roeck-us.net>
+Date:   Mon, 7 Mar 2022 06:49:03 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Xin Ji <xji@analogixsemi.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220307090929.701137-1-xji@analogixsemi.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v7 1/3] usb: typec: tcpci: move tcpci.h to
+ include/linux/usb/ directory
+In-Reply-To: <20220307090929.701137-1-xji@analogixsemi.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nREfa-002KX7-2w
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38094
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 31
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date: Mon, 7 Mar 2022 22:50:56 +0900
-
-> Hi Arnd and Alexander,
+On 3/7/22 01:09, Xin Ji wrote:
+> Move tcpci.h as a global file, better for other USB Type-C driver
+> access.
 > 
-> Thanks for the support!
-> 
-> On Mon. 7 Mar 2022 at 21:15, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Mon, Mar 7, 2022 at 11:58 AM Alexander Lobakin
-> > <alexandr.lobakin@intel.com> wrote:
-> > > From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > > Have you fixed W=1 warnings?
-> > > > Without fixing W=1 (which makes much more sense, when used with
-> > > > WERROR=y && COMPILE_TEST=y) this has no value.
-> > >
-> > > How is this connected?
-> > > When I do `make W=2 path/to/my/code`, I want to see the actual code
-> > > problems, not something that comes from the include files.
-> > > When I do `make W=2 path/to/new/code/from/lkml`, I want to see the
-> > > actual new warnings, not something coming from the includes.
-> > > It's much easier to overlook or miss some real warnings when the
-> > > stderr is being flooded by the warnings from the include files.
-> > > I'm aware there are some scripts to compare before/after, but I
-> > > don't want to use them just because "this has to value".
-> > > I don't want to do `make W=2 KCFLAGS='-Wno-shadow -Wno-type-limits'`
-> > > because then I'm not able to spot the actual shadow or type limit
-> > > problems in my/new code.
-> > > I fixed several `-Wshadow` warnings previously in the include files
-> > > related to networking, and *nobody* said "this has no value" or
-> > > NAKed it. And `-Wshadow` has always been in W=2.
-> >
-> > I agree: if we decide that W=2 warnings are completely useless, we should
-> > either remove the option to build a W=2 kernel or remove some of the warning
-> > flags that go into it. My feeling is that both W=2 in general, and the
-> > Wtype-limits have some value, and that reducing the number of W=2 by
-> > 30% as this patch does is a useful goal by itself.
-> >
-> > A different question is whether this particular patch is the best
-> > workaround for the warnings, or if a nicer alternative can be found,
-> > such as moving -Wtype-limits to W=3,
-> 
-> I disagree with moving it to W=3 for two reasons:
-> 
->   1/ This would just move the issue elsewhere. If I had to
->   compile with W=3 (which I admittedly *almost* never do), the
->   -Wtype-limits spam would still be there.
-> 
->   2/ After this patch, the number of remaining -Wtype-limits
->   drops to only 431 for an allyesconfig (and I guess that there
->   are a fair amount of true positives here). This warning is not
->   *as broken* as people think. W=2 is a good place I think.
 
-Agree, W=2 is the best place for -Wtype-limits to me.
-I've never seen a single useful warning on W=3, but there were
-lots of them on W=2 which revealed some real bugs. That said, it
-makes no sense at all to even try to check all new code from LKML
-for warnings with W=3, but it's actually feasible to make it build
-cleanly with W=2 most of times.
+The idea was to have tcpci compliant drivers in the tcpm/ subdirectory.
+If I recall correctly, the reason for having this driver elsewhere is
+that it doesn't support tcpm. That should be explained here.
+"better for other USB Type-C driver" is not a reason for moving
+a header file.
 
-Re -Wtype-limits in particular, it's not useless at all.
-For example, people tend to make the following mistake:
-
-	unsigned int i;
-
-	for (i = 0; i ...) {
-		ret = setup_something(array[i]);
-		if (ret)
-			goto unroll;
-	}
-
-unroll:
-	while (--i)
-		unroll_something(array[i]);
-
-The loop will never end as `i` was declared as unsigned.
--Wtype-limits catches this.
-
-Not speaking of checking unsigned variables on < 0:
-
-	unsigned int num;
-
-	/* calculate_something() returns the number of something
-	 * or -ERRNO in case of an error
-	 */
-	num = calculate_something();
-	if (num < 0)
-		...
-
-Catches as well.
-
+> Fix compiling error after moving tcpci.h to include/linux/usb/.
 > 
-> That said, moving it to W=3 would still solve the core issue: W=2
-> being spammed. Definitely not my favorite solution, but still an
-> acceptable consensus for me.
-> 
-> > or using an open-coded variant
-> > of __is_constexpr() that includes the comparison in a way that avoids the
-> > warning.
-> 
-> This is easier said than done. This is the __is_constexpr()
-> macro:
-> 
-> | #define __is_constexpr(x) \
-> |     (sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))
-> 
-> Good luck doing an open-coded variant of it!
-> 
-> What I mean here is that there definitely might be a smarter
-> way than my solution to tackle the issue, but I could not see
-> it. If you have any concrete ideas, please do not hesitate to
-> share :)
-> 
-> 
-> Yours sincerely,
-> Vincent Mailhol
+I don't think this should be part of the commit description.
 
-Thanks,
-Al
+Guenter
+
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> ---
+>   drivers/usb/typec/tcpm/tcpci.c                        | 3 +--
+>   drivers/usb/typec/tcpm/tcpci_maxim.c                  | 3 +--
+>   drivers/usb/typec/tcpm/tcpci_mt6360.c                 | 3 +--
+>   drivers/usb/typec/tcpm/tcpci_rt1711h.c                | 2 +-
+>   {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h | 1 +
+>   5 files changed, 5 insertions(+), 7 deletions(-)
+>   rename {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h (99%)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
+> index e07d26a3cd8e..9c907296596f 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.c
+> +++ b/drivers/usb/typec/tcpm/tcpci.c
+> @@ -13,11 +13,10 @@
+>   #include <linux/property.h>
+>   #include <linux/regmap.h>
+>   #include <linux/usb/pd.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   #include <linux/usb/typec.h>
+>   
+> -#include "tcpci.h"
+> -
+>   #define	PD_RETRY_COUNT_DEFAULT			3
+>   #define	PD_RETRY_COUNT_3_0_OR_HIGHER		2
+>   #define	AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV	3500
+> diff --git a/drivers/usb/typec/tcpm/tcpci_maxim.c b/drivers/usb/typec/tcpm/tcpci_maxim.c
+> index df2505570f07..4b6705f3d7b7 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_maxim.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_maxim.c
+> @@ -11,11 +11,10 @@
+>   #include <linux/module.h>
+>   #include <linux/regmap.h>
+>   #include <linux/usb/pd.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   #include <linux/usb/typec.h>
+>   
+> -#include "tcpci.h"
+> -
+>   #define PD_ACTIVITY_TIMEOUT_MS				10000
+>   
+>   #define TCPC_VENDOR_ALERT				0x80
+> diff --git a/drivers/usb/typec/tcpm/tcpci_mt6360.c b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> index f1bd9e09bc87..9e0338bce7ef 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> @@ -11,10 +11,9 @@
+>   #include <linux/of.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/regmap.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   
+> -#include "tcpci.h"
+> -
+>   #define MT6360_REG_VCONNCTRL1	0x8C
+>   #define MT6360_REG_MODECTRL2	0x8F
+>   #define MT6360_REG_SWRESET	0xA0
+> diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> index b56a0880a044..3291ca4948da 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> @@ -10,9 +10,9 @@
+>   #include <linux/i2c.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/gpio/consumer.h>
+> +#include <linux/usb/tcpci.h>
+>   #include <linux/usb/tcpm.h>
+>   #include <linux/regmap.h>
+> -#include "tcpci.h"
+>   
+>   #define RT1711H_VID		0x29CF
+>   #define RT1711H_PID		0x1711
+> diff --git a/drivers/usb/typec/tcpm/tcpci.h b/include/linux/usb/tcpci.h
+> similarity index 99%
+> rename from drivers/usb/typec/tcpm/tcpci.h
+> rename to include/linux/usb/tcpci.h
+> index b2edd45f13c6..20c0bedb8ec8 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.h
+> +++ b/include/linux/usb/tcpci.h
+> @@ -9,6 +9,7 @@
+>   #define __LINUX_USB_TCPCI_H
+>   
+>   #include <linux/usb/typec.h>
+> +#include <linux/usb/tcpm.h>
+>   
+>   #define TCPC_VENDOR_ID			0x0
+>   #define TCPC_PRODUCT_ID			0x2
+
