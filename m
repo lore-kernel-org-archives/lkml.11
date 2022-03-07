@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C09CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F68C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237572AbiCGJf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
+        id S237584AbiCGJfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238820AbiCGJ3s (ORCPT
+        with ESMTP id S237069AbiCGJ1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:48 -0500
+        Mon, 7 Mar 2022 04:27:15 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99574DEF;
-        Mon,  7 Mar 2022 01:28:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D628966C82;
+        Mon,  7 Mar 2022 01:24:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3181C60C00;
-        Mon,  7 Mar 2022 09:28:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23728C340F4;
-        Mon,  7 Mar 2022 09:28:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4797E61141;
+        Mon,  7 Mar 2022 09:24:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50A4FC340E9;
+        Mon,  7 Mar 2022 09:24:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645333;
-        bh=3hTRPYILVHFgwkPuAGP/+yznlxcvOHyMJhbXkvArwJc=;
+        s=korg; t=1646645074;
+        bh=TXqZ+EChSCl0LpdGhIFv0gP/aMj5q1dIexiP5V1RYC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yYubcIeVa2phAcGmbpGU8PpyysMQ1RY5mp3qi3bQtBGWSDx9k8iYxCM815DB3vtpJ
-         8eGo0rlI8t9+GnA2WfP2QXjIuv6aqrXbSLw15oDSuV8fxUay6A69ulP1SixGgCq5x2
-         P690/KiwFC8JUleXkRK5oiKkjC9E6uuPj86CpYUA=
+        b=dz/9B8m7rK4zzQLljQVvL0bucLe65N4pvbYtuDxTaJPGcp9eczBsAN+N74rOgq1iQ
+         uIA8zV1KkcVjcVSTiitivFbC7PjANEdrdYjskCCl62z8aqJ2KwlTokwR830HGPuXtH
+         wpMBEQAfqKw0JCJP7qJyE3LViPgNT4/dypn83FLs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 62/64] btrfs: add missing run of delayed items after unlink during log replay
-Date:   Mon,  7 Mar 2022 10:19:35 +0100
-Message-Id: <20220307091640.909500764@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Hutterer <peter.hutterer@who-t.net>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 06/51] Input: clear BTN_RIGHT/MIDDLE on buttonpads
+Date:   Mon,  7 Mar 2022 10:18:41 +0100
+Message-Id: <20220307091637.175319221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,72 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-commit 4751dc99627e4d1465c5bfa8cb7ab31ed418eff5 upstream.
+[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
 
-During log replay, whenever we need to check if a name (dentry) exists in
-a directory we do searches on the subvolume tree for inode references or
-or directory entries (BTRFS_DIR_INDEX_KEY keys, and BTRFS_DIR_ITEM_KEY
-keys as well, before kernel 5.17). However when during log replay we
-unlink a name, through btrfs_unlink_inode(), we may not delete inode
-references and dir index keys from a subvolume tree and instead just add
-the deletions to the delayed inode's delayed items, which will only be
-run when we commit the transaction used for log replay. This means that
-after an unlink operation during log replay, if we attempt to search for
-the same name during log replay, we will not see that the name was already
-deleted, since the deletion is recorded only on the delayed items.
+Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
+and the BTN_LEFT key bit.
 
-We run delayed items after every unlink operation during log replay,
-except at unlink_old_inode_refs() and at add_inode_ref(). This was due
-to an overlook, as delayed items should be run after evert unlink, for
-the reasons stated above.
+As explained in the specification, where a device has a button type
+value of 0 (click-pad) or 1 (pressure-pad) there should not be
+discrete buttons:
+https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
 
-So fix those two cases.
+However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
+though the device is a buttonpad and therefore does not have those
+buttons.
 
-Fixes: 0d836392cadd5 ("Btrfs: fix mount failure after fsync due to hard link recreation")
-Fixes: 1f250e929a9c9 ("Btrfs: fix log replay failure after unlink and link combination")
-CC: stable@vger.kernel.org # 4.19+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This behavior has forced userspace applications like libinput to
+implement different workarounds and quirks to detect buttonpads and
+offer to the user the right set of features and configuration options.
+For more information:
+https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
+
+In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
+bits when the input device is register if the INPUT_PROP_BUTTONPAD
+property bit is set.
+
+Notice that this change will not affect udev because it does not check
+for buttons. See systemd/src/udev/udev-builtin-input_id.c.
+
+List of known affected hardware:
+
+ - Chuwi AeroBook Plus
+ - Chuwi Gemibook
+ - Framework Laptop
+ - GPD Win Max
+ - Huawei MateBook 2020
+ - Prestigio Smartbook 141 C2
+ - Purism Librem 14v1
+ - StarLite Mk II   - AMI firmware
+ - StarLite Mk II   - Coreboot firmware
+ - StarLite Mk III  - AMI firmware
+ - StarLite Mk III  - Coreboot firmware
+ - StarLabTop Mk IV - AMI firmware
+ - StarLabTop Mk IV - Coreboot firmware
+ - StarBook Mk V
+
+Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Acked-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/tree-log.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/input/input.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1308,6 +1308,15 @@ again:
- 						 inode, name, namelen);
- 			kfree(name);
- 			iput(dir);
-+			/*
-+			 * Whenever we need to check if a name exists or not, we
-+			 * check the subvolume tree. So after an unlink we must
-+			 * run delayed items, so that future checks for a name
-+			 * during log replay see that the name does not exists
-+			 * anymore.
-+			 */
-+			if (!ret)
-+				ret = btrfs_run_delayed_items(trans);
- 			if (ret)
- 				goto out;
- 			goto again;
-@@ -1559,6 +1568,15 @@ static noinline int add_inode_ref(struct
- 				 */
- 				if (!ret && inode->i_nlink == 0)
- 					inc_nlink(inode);
-+				/*
-+				 * Whenever we need to check if a name exists or
-+				 * not, we check the subvolume tree. So after an
-+				 * unlink we must run delayed items, so that future
-+				 * checks for a name during log replay see that the
-+				 * name does not exists anymore.
-+				 */
-+				if (!ret)
-+					ret = btrfs_run_delayed_items(trans);
- 			}
- 			if (ret < 0)
- 				goto out;
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index a0d90022fcf73..b031174c8d7f7 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -2118,6 +2118,12 @@ int input_register_device(struct input_dev *dev)
+ 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
+ 	__clear_bit(KEY_RESERVED, dev->keybit);
+ 
++	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
++	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
++		__clear_bit(BTN_RIGHT, dev->keybit);
++		__clear_bit(BTN_MIDDLE, dev->keybit);
++	}
++
+ 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
+ 	input_cleanse_bitmasks(dev);
+ 
+-- 
+2.34.1
+
 
 
