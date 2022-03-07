@@ -2,204 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4E3C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF84BC3527D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240856AbiCGKJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:09:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54020 "EHLO
+        id S240957AbiCGKJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:09:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239988AbiCGJud (ORCPT
+        with ESMTP id S240380AbiCGJu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:33 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53551723FD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:44:00 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E02C83F5F5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:43:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646646225;
-        bh=iBR4PX+oGP38NiU1odaqND+HsFxr+kkdimwXNBXKUU0=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=n65FgNQ5101qIZGsWMW8O0sr4foc3eeVw6C/mjxQniErzaxq7RbpJ1AL3dTLb0cD7
-         2wt2rwDpTLojT5Ct1okkuk4OJ4R0MDEc2N4g/dIQ73MGMrQKbpeWbO4NVQxRRvBg8P
-         goI6qK6bEz0CKqNxQ/Sdz7hPUzaPXOAO16ytU6v0Mz6KOnanDpetZIsLnjKkOa59rh
-         UmQlajPNg5TIpOpc8Fc381wqzYLkGXJib6fHWdcV3Q5aB2OkQMx4Odn5vsWnC8xcfB
-         dzoLsVBe47RkVXZ49E3NmiCzoly2++52KWg9NcV84GKP96U0rANv22k898TB7vJDZH
-         ad00O1fiG5YHg==
-Received: by mail-ed1-f71.google.com with SMTP id u28-20020a50d51c000000b004159ffb8f24so8308042edi.4
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:43:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iBR4PX+oGP38NiU1odaqND+HsFxr+kkdimwXNBXKUU0=;
-        b=ie4JjvImlqIwDbBKJPR/BXCz0LVXINdM87kRsirOAu266NIddfi8xZY7Pz6qmAhxa3
-         hTxymGJd4PLLGaEoWO1dWf3+akLHh4BEtfFkRywfFEwhluk+jlJJeeoG3XMhlVfETfdo
-         IATCd0t/idqjB3rKLGdIXiHddxCVVWmoPABhbUQoq3cbP2rbI7QN9ncyE/DAA0QTeDpL
-         sor6Q3bkJZZNdgfQo0KoOPZKAUCgFXKFdSVX1reayZeOCy6Ft3BwC4ZRqk7oUuKwO6Ib
-         KdvI5GsA44bCJEJ8xp4SBTrZyR3NpS5OWPhjPOh+6RcIE/ViCgw+sp+QVtV73HawsZaW
-         nxrg==
-X-Gm-Message-State: AOAM531hrFT/J6/gkVfoO50nIOhQ/b4s3VgEh1nuPss5okcdZVjWBRuq
-        vKdCDgEFq6DWkG4MXNvLCSXtykKjvuA+OKbl3QQDLMFzcGBSnRwXH9wOD+ORtGMMQMfrSS5oiFh
-        1PQi8vvBgbg8Pu6l1JKSgxn5JKqrkSLijQCu+pwDCBw==
-X-Received: by 2002:a17:907:3ea3:b0:6da:6f16:bd9b with SMTP id hs35-20020a1709073ea300b006da6f16bd9bmr8484392ejc.308.1646646224516;
-        Mon, 07 Mar 2022 01:43:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzvFkrpQ2abZZeyYkoh/uqZU+SVmzZg0o9SDWnyA32nfxIrSpfTRWoUGqWl5FxqsWOJFmS2Cw==
-X-Received: by 2002:a17:907:3ea3:b0:6da:6f16:bd9b with SMTP id hs35-20020a1709073ea300b006da6f16bd9bmr8484380ejc.308.1646646224286;
-        Mon, 07 Mar 2022 01:43:44 -0800 (PST)
-Received: from [192.168.0.141] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id n9-20020a05640205c900b00415fbbdabbbsm4758620edx.9.2022.03.07.01.43.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 01:43:43 -0800 (PST)
-Message-ID: <71f2c22b-e037-3bb4-e7e1-e226d3243536@canonical.com>
-Date:   Mon, 7 Mar 2022 10:43:42 +0100
+        Mon, 7 Mar 2022 04:50:58 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1E661A3B;
+        Mon,  7 Mar 2022 01:44:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=guLVFBWwsdaV3lNFAMJxo4Aikamhb6ldFeHSTPb5pELOZSRribzytVQ/d+1RvD0O8NJ/8PwF4MKuK+vE1JwvHSwOUK7zOg1VfxM2EVzVypIdqgqDl1Xi3eE/cw7wqkNSm7deoZeJbxsvVkwI6SfUSIgcJjUfgZWHrkHuCss4Nn+XXP31up1CMTcwGzKRYnw6L0rXatUbF+vZypj/tMbjwYsy13EckHplB7JMVOVEKztTUYdSpVbl02X8ufiTsRBTELz89HaiKv2fRyai0UbWNRKN8x5+6XxSs3ZZH1fQvr1Rz8z7X3lbjhzCVhVt85Y+g6qO6/CtCaXqz/aM13MBiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7pow5pQn20Bk40GvH2a4BuZ0BZMAnvGe2VBix6ZWbMs=;
+ b=A2qrigPyJGBsui2zSuBTwArvtHZ388Lhyxu50Grw8BSRw0TNWqe5dz4Fmzqw4FMbJ5CmV/XNyMx1qfFp4822+cALR4ncG9uo8aEqKG9zKIrTZyMIApOL9wtEa2eL/xCsBbPkda8xSrzQXOqYgktMnPbfqZLApPDXQr/Hu0GsEn4orizoH1zzKLD1iAzm2dz6y8Z/HmWKOBIowNNw/lfm0n0vr/6P4Lg79+8a0ASTj5tN398JUzos32ovR3AxOBFO0+nGiFwRVWfm1d90tp3xV9e5edb13gGxJdkMbFh/YVaGv0IGRFi03oIz4jZzaLfAWSKQ4gZZFegp0x3kvYPUTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7pow5pQn20Bk40GvH2a4BuZ0BZMAnvGe2VBix6ZWbMs=;
+ b=bmdFmPA8wGSyFy/AV0J6P4j1/7q0OKQYnSybV1HKmB5J6hKh7SbOEA1ciMgjxwpwFL367IS+LwJjjWfyKf/tT8wZjAIBNUFxMmqCFSvrESiMV2iorMCVdx0rNtT7FMw1T/rEsZkEOANfufcf/GtQTyKcZiMJNXTeOSBKn41A51hObI4OPHEAP/wK9DffqvkSuiZmABgUfb/PGrDV5hw93/DCBqXCkiPTHDUe8L1UyX768zfmg/9wE7AXfmOenF1l9c/b/qk31xaWlZGfoOMdti5PjLsiEy8amxestWMRVzfloY/Bo1pdCuXFMN0VEB1czzlCcme0Sdzr1ltCi8tEtQ==
+Received: from DS7PR05CA0065.namprd05.prod.outlook.com (2603:10b6:8:57::10) by
+ BN7PR12MB2708.namprd12.prod.outlook.com (2603:10b6:408:21::25) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5038.15; Mon, 7 Mar 2022 09:44:21 +0000
+Received: from DM6NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:57:cafe::20) by DS7PR05CA0065.outlook.office365.com
+ (2603:10b6:8:57::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.17 via Frontend
+ Transport; Mon, 7 Mar 2022 09:44:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT005.mail.protection.outlook.com (10.13.172.238) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 09:44:21 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Mar
+ 2022 09:44:18 +0000
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 7 Mar 2022
+ 01:44:14 -0800
+References: <20220305181346.697365-1-trix@redhat.com>
+User-agent: mu4e 1.6.6; emacs 27.2
+From:   Petr Machata <petrm@nvidia.com>
+To:     <trix@redhat.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <nathan@kernel.org>,
+        <ndesaulniers@google.com>, <idosch@nvidia.com>, <petrm@nvidia.com>,
+        <edumazet@google.com>, <avagin@gmail.com>, <yajun.deng@linux.dev>,
+        <johannes.berg@intel.com>, <cong.wang@bytedance.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <llvm@lists.linux.dev>
+Subject: Re: [PATCH] net: rtnetlink: fix error handling in
+ rtnl_fill_statsinfo()
+Date:   Mon, 7 Mar 2022 10:43:28 +0100
+In-Reply-To: <20220305181346.697365-1-trix@redhat.com>
+Message-ID: <87sfru9jwz.fsf@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] clocksource/drivers/exynos_mct: Support using only local
- timer
-Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>, kernel <kernel@axis.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-samsung-soc@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>
-References: <20220307083255.1577365-1-vincent.whitchurch@axis.com>
- <08992f48-6cb6-8dc0-33d2-f18f942d2bee@canonical.com>
- <20220307092437.GA32457@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220307092437.GA32457@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a1c68a1a-30ab-4467-4d72-08da001f0e73
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2708:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR12MB27083BD979E894CD984111B4D6089@BN7PR12MB2708.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fhHb2C3DS4Ccsfv7qQ46y4f61mp3DktlD2TTG9TBjFQPptoegfAJjWRRZBNhxSuliF5YyshYYJRcg//9rZRgMgBg5dig0lPmT60vaNPd6itq+2KAPnmfSdu3EGfoP48FgMa6IodoqVEWDqFWxOFcEOxxIu0R4ssITbtPn/UVIvKNTJbbS+LTwH6SXyt3dEDg++MCPjbdyFnACqNl8MAN+OTBKlsg6oL7SoL4x2voEUWH28noWSZVcGWiZc+yY7Qyn3tSZDmJdQlPAFBBeEVqW5/WZQfyG+plMw0ddzM/orKbUr8ppVieGYK8chFyO9GXA9RvFgRfVPG+bM4BsW5Hg1NxkQd0kHmU0v55d9u0lM26BftobSfuSpz3dZz2jSeNYnVAaXzJtfkRxlpzaK+/kce6g3h9v1SVOWId4Qrl4eiaMCD5ZvETwfNZ3H70WERzdSczg6szxbPzmNM4OijM0PyXbclRu4NMc+W/6Qf/BlZ4pmQ3L1zHnX60uuajkmCKMUgosZfS3CfKHjEFa19SJw9KQ4onfYVUcv2mYCXZW8w+9gb8QBlB//DTEbmnT8AibDt+DxrfxYr5ny80UNzftbHGBRYp2MkEqS4BecPv1NjIyhU9Bnm39eNqtdVQclY3YlyxRnyMWRhHvTVRyxIgWhKyKKfb/QizLI/ICdIej06bzCrT6j5BbhFfKlV9CCQsl0dQ8V0asW4mu6n74T+9sA==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(26005)(186003)(4744005)(36860700001)(54906003)(6916009)(16526019)(508600001)(316002)(47076005)(40460700003)(82310400004)(70586007)(356005)(81166007)(336012)(426003)(8936002)(2616005)(6666004)(83380400001)(86362001)(36756003)(7416002)(4326008)(8676002)(70206006)(5660300002)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:44:21.1207
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1c68a1a-30ab-4467-4d72-08da001f0e73
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2708
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 10:24, Vincent Whitchurch wrote:
-> On Mon, Mar 07, 2022 at 10:06:26AM +0100, Krzysztof Kozlowski wrote:
->> On 07/03/2022 09:32, Vincent Whitchurch wrote:
->>> The ARTPEC-8 SoC has a quad-core Cortex-A53 and a single-core Cortex-A5
->>> which share one MCT with one global and eight local timers.
 
-Please mention that this is a two-OS case (or without cache coherency),
-because usual design is different - two clusters being cache coherent.
+trix@redhat.com writes:
 
->>>
->>> The Cortex-A53 boots first and starts the global FRC and also registers
->>> a clock events device using the global timer.  (This global timer clock
->>> events is usually replaced by arch timer clock events for each of the
->>> cores.)
->>>
->>> When the A5 boots, we should not use the global timer interrupts or
->>> write to the global timer registers.  This is because even if there are
->>> four global comparators, the control bits for all four are in the same
->>> registers, and we would need to synchronize between the cpus.  Instead,
->>> the global timer FRC (already started by the A53) should be used as the
->>> clock source, and one of the local timers which are not used by the A53
->>> can be used for clock events on the A5.
->>>
->>> To support this, add a module param to set the local timer starting
->>> index.  If this parameter is non-zero, the global timer clock events
->>> device is not registered and we don't write to the global FRC if it is
->>> already started.
->>>
->>> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
->>> ---
->>>  drivers/clocksource/exynos_mct.c | 29 ++++++++++++++++++++++++-----
->>>  1 file changed, 24 insertions(+), 5 deletions(-)
->>
->> This should not be send separately from the previous patch.
-> 
-> OK, I will put it in a series.
-> 
->>
->>>
->>> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
->>> index f29c812b70c9..7ea2919b1808 100644
->>> --- a/drivers/clocksource/exynos_mct.c
->>> +++ b/drivers/clocksource/exynos_mct.c
->>> @@ -33,7 +33,7 @@
->>>  #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
->>>  #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
->>>  #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
->>> -#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
->>> +#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
->>>  #define EXYNOS4_MCT_L_MASK		(0xffffff00)
->>>  
->>>  #define MCT_L_TCNTB_OFFSET		(0x00)
->>> @@ -77,6 +77,13 @@ static unsigned long clk_rate;
->>>  static unsigned int mct_int_type;
->>>  static int mct_irqs[MCT_NR_IRQS];
->>>  
->>> +/*
->>> + * First local timer index to use.  If non-zero, global
->>> + * timer is not written to.
->>> + */
->>> +static unsigned int mct_local_idx;
->>> +module_param_named(local_idx, mct_local_idx, int, 0);
->>
->> No, it's a no go. Please use dedicated compatible if you need specific
->> quirks.
-> 
-> I could add a compatible, but please note that the hardware itself does
-> not have any quirks, it's only the usage of the hardware from one of the
-> Linux kernels (see the explanation below) which is different.  Is it
-> correct to use a compatible to distinguish between these kind of
-> software-determined usage differences?
-> 
->>
->>> +
->>>  struct mct_clock_event_device {
->>>  	struct clock_event_device evt;
->>>  	unsigned long base;
->>> @@ -157,6 +164,17 @@ static void exynos4_mct_frc_start(void)
->>>  	u32 reg;
->>>  
->>>  	reg = readl_relaxed(reg_base + EXYNOS4_MCT_G_TCON);
->>> +
->>> +	/*
->>> +	 * If the FRC is already running, we don't need to start it again.  We
->>> +	 * could probably just do this on all systems, but, to avoid any risk
->>> +	 * for regressions, we only do it on systems where it's absolutely
->>> +	 * necessary (i.e., on systems where writes to the global registers
->>> +	 * need to be avoided).
->>> +	 */
->>> +	if (mct_local_idx && (reg & MCT_G_TCON_START))
->>> +		return;
->>
->> I don't get it. exynos4_mct_frc_start() is called exactly only once in
->> the system - during init. Not once per every CPU or cluster (I
->> understood you have two clusters, right?).
-> 
-> Not quite.  The Cortex-A53 and the Cortex-A5 do not have cache-coherency
-> between them, so they are not run in an SMP configuration.  From the
-> Cortex-A53's perspective, the Cortex-A5 looks like any other hardware
-> block.  The Cortex-A5 could just as well have run some other operating
-> system, but I run Linux on it.  So there are two separate, independent
-> Linux kernels running on the SoC.
+> From: Tom Rix <trix@redhat.com>
+>
+> The clang static analyzer reports this issue
+> rtnetlink.c:5481:2: warning: Undefined or garbage
+>   value returned to caller
+>   return err;
+>   ^~~~~~~~~~
+>
+> There is a function level err variable, in the
+> list_for_each_entry_rcu block there is a shadow
+> err.  Remove the shadow.
+>
+> In the same block, the call to nla_nest_start_noflag()
+> can fail without setting an err.  Set the err
+> to -EMSGSIZE.
+>
+> Fixes: 216e690631f5 ("net: rtnetlink: rtnl_fill_statsinfo(): Permit non-EMSGSIZE error returns")
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-I see, thanks for explanation. In such case it might not be a separate
-compatible (programming model is the same) but rather dedicated property
-or properties in DTS to indicate that some parts are shared with other
-system. If property is present, you skip FRC initialization and use
-local timers. You actually might need two properties - one for A53 and
-one for A5. Or some kind of map to assign subset of local interrupts to
-each of the systems.
+Reviewed-by: Petr Machata <petrm@nvidia.com>
 
-I think still that DTS is the right place for it because it is a
-property of hardware and it's too early in system boot to use some
-remote-proc or mailbox...
-
-Best regards,
-Krzysztof
+Thanks!
