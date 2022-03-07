@@ -2,85 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C1FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3091BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236575AbiCGJWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:22:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53022 "EHLO
+        id S236402AbiCGJWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:22:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbiCGJV0 (ORCPT
+        with ESMTP id S236562AbiCGJVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:21:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEAA53E1F;
-        Mon,  7 Mar 2022 01:20:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD97F60FF6;
-        Mon,  7 Mar 2022 09:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1F8BC340F3;
-        Mon,  7 Mar 2022 09:20:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644805;
-        bh=H4TVj+cf/uNrpTzIJj6dLxFemyB75Dl783yOAYEYQhQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j2fnjQILFAm6Fkc0VOun5+rveLpynMFoFr1apE+ogIMGdR3VFu1lOZEE/cSkLS7dw
-         bHxy4NoacDH1xH1V20710CpUHuZ8K4uwz2EuSIovbX0kQfIMVVKJeYPDLYf5vMgZa8
-         gqC2/M36X+G9TB9ls49Fal2Qx+4PSn2BXqstlvDU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 27/32] net: chelsio: cxgb3: check the return value of pci_find_capability()
-Date:   Mon,  7 Mar 2022 10:18:53 +0100
-Message-Id: <20220307091635.210152083@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
-References: <20220307091634.434478485@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:21:40 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4992E541AA;
+        Mon,  7 Mar 2022 01:20:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646644808; x=1678180808;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wGeDKaASQDCyWy0awRd7jeAVQdDX7gR/VgWstKH88gA=;
+  b=bRdsM6TncrMoQcN60/Ak8xegmd7mcKX+Pqa8Kyc82ckHH9l7VZxyrdXi
+   Qy+zUsRJuFFR+cK9tox0P3uCJsH7FSOyacQUOynSSMYX8jASZqHYYEgCZ
+   9PhlRRdkCXmJ8VTHsPYhUnaDmdcaTDEwgx0BAaXraBCGOnDcrhcSpvt9c
+   8FzO/VaNY6odrH64Hv4W0Z+BJXFD381Aa044QfYUSVRYkivDfYpyLTDv6
+   vMK3OYXohgaLAONqF7burNZKksnfgphTb4PUVb/m7BONykTYRvRzDI5l4
+   GOGN528riicFYlgTCZezfw1SQu07sr2hTZcp1Qn/lza2jNgBSw3yfsYE/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254536717"
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="254536717"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:20:07 -0800
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="537042104"
+Received: from rabl-mobl2.ger.corp.intel.com ([10.252.54.114])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:20:04 -0800
+Date:   Mon, 7 Mar 2022 11:19:59 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+cc:     Lukas Wunner <lukas@wunner.de>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+In-Reply-To: <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+Message-ID: <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de> <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1881166460-1646644807=:1677"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-[ Upstream commit 767b9825ed1765894e569a3d698749d40d83762a ]
+--8323329-1881166460-1646644807=:1677
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-The function pci_find_capability() in t3_prep_adapter() can fail, so its
-return value should be checked.
+On Mon, 7 Mar 2022, Andy Shevchenko wrote:
 
-Fixes: 4d22de3e6cc4 ("Add support for the latest 1G/10G Chelsio adapter, T3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/chelsio/cxgb3/t3_hw.c | 2 ++
- 1 file changed, 2 insertions(+)
+> On Mon, Mar 7, 2022 at 12:00 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > On Wed, Mar 02, 2022 at 11:56:00AM +0200, Ilpo Järvinen wrote:
+> 
+> ...
+> 
+> > Does the DesignWare UART use dedicated DE and RE pins instead of
+> > the RTS pin?  That would be quite unusual.
+> 
+> They are muxed with other UART pins on SoC level, but I don't remember
+> by heart which ones. According to the Synopsys datasheet they are
+> separate signals. It might be that I'm missing something, since the
+> last time I looked was last year.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-index a89721fad633..29220141e4e4 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-@@ -3677,6 +3677,8 @@ int t3_prep_adapter(struct adapter *adapter, const struct adapter_info *ai,
- 	    MAC_STATS_ACCUM_SECS : (MAC_STATS_ACCUM_SECS * 10);
- 	adapter->params.pci.vpd_cap_addr =
- 	    pci_find_capability(adapter->pdev, PCI_CAP_ID_VPD);
-+	if (!adapter->params.pci.vpd_cap_addr)
-+		return -ENODEV;
- 	ret = get_vpd_params(adapter, &adapter->params.vpd);
- 	if (ret < 0)
- 		return ret;
+Unusual or not, there is a pin for both DE and RE. DE is muxed with RTS.
+
+> > > +     d->hw_rs485_support = device_property_read_bool(p->dev, "snps,rs485-interface-en");
+> > > +     if (d->hw_rs485_support)
+> > > +             p->rs485_config = dw8250_rs485_config;
+> > > +
+> >
+> > You wrote in the commit message that rs485 support is present from
+> > version 4.0 onward.  Can't we just check the IP version and enable
+> > rs485 support for >= 4.0?  That would seem more appropriate instead
+> > of introducing yet another new property.
+> 
+> AFAIU this is dependent on the IP syntheses. I.o.w. version 4.0+ is a
+> prerequisite, but doesn't automatically mean that there is a support.
+> Unfortunately there is no way to tell this clearly in the IP
+> configuration register.
+
+And the IP synthesis only part of the picture, in general case, it'd
+also matter that there's something connected to that RE (i.e.,
+an RS485 transceiver).
+
+On the board I'm testing with, I can also turn RS485 on/off from BIOS
+which makes the pins (mainly RE) behave differently.
+
+I initially had additional version check here while developing this
+patch series but it seemed to not provide any added value due those
+other factors that need to be considered.
+
+
 -- 
-2.34.1
+ i.
 
-
-
+--8323329-1881166460-1646644807=:1677--
