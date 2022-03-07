@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35871C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235703AbiCGLWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:22:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
+        id S237665AbiCGLXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:23:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238642AbiCGLWY (ORCPT
+        with ESMTP id S239193AbiCGLWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:22:24 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565EE2E0A3;
-        Mon,  7 Mar 2022 02:48:03 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 4D0E31F439A9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646650082;
-        bh=49t+Gh0dKiobgSrRoBPHYN0oflRxS0fy5vammERcD9Y=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ckDLd4+mGZqYjg43wSSNh8ENXccLafofoibRdJ6DUWeBrF/ziCo5rmFWPsOqABo1S
-         c+ctH56yYj8HD6VhDuQKodPGFgvkWBdSOAG/SbAoyunw/6uSj9jJC0N11hHOxuS9xd
-         3CqwPUqZE9DBWz/jFgevf+jJLGWbvcu6Fzomcs2TYrvSorDdHNtmjlHn3NE7s/gZ1Y
-         L40vsM6GEjXt5F+VINR/3kgQfXSdnCtLTJjys/aMxmrlLTJTvpEhnddTecG2n7V1Du
-         qM0kkxmk7zZ0NPoyFiO2549Z4+lU+erGrVaz2smG+y4ldIIeJSpoGFACWBMuboIypM
-         lg7f2zof2HD2Q==
-Message-ID: <f7f49cb7-54c1-895d-320c-1836cb2ff29a@collabora.com>
-Date:   Mon, 7 Mar 2022 11:47:59 +0100
+        Mon, 7 Mar 2022 06:22:25 -0500
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F982F02C
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:48:09 -0800 (PST)
+Received: by mail-il1-f197.google.com with SMTP id l6-20020a056e020dc600b002c627a43bc4so3570366ilj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 02:48:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=mgKhk7NgAb2oDXlFXPWe8Xc07sODDmNpvRz0YdTXBeo=;
+        b=XOeHpFelOAJHiv2pRrqVQd4r8wZI5AKrTQXgUPSeTKwDrH8obndGbeZpEePcHXt5qE
+         aQcXwZLcwniz0hHS1kcxAJvrcTrzbQIVewpIxwfuWcO7tidEx+vuDaIMaKPA523HT4aJ
+         9JsWglfqMSE+hylRL6F/l+WMvpgEZTfzWRxVgt9ILQvGx+C5dbS59CMK1J5JXf+rCNsP
+         FQeV6J7QrvnEDLTYo9fQo+ORyN26olumHbpJM+x+5Vr18rnL6iDfUCKUqlM6NQYRMBvc
+         VV7X1P1RkJ0HOOSThtPKzP4tngZtha0WcuNcpQiqq33BLekQzqIcRDw99ixBT4xWpHl8
+         m0Cg==
+X-Gm-Message-State: AOAM530AqdBu75eTnxWSQih2/Fz6WF1xIYXw47k6lJbX2wiJtfv3NYu1
+        Lp3KniPUBI8IXMteTvLpxfW8+JcVf0J8q87y+5J+tCV1dzef
+X-Google-Smtp-Source: ABdhPJxoDUXiC7ecC99uyPVAsH4t+KASmXgoR4dfVGmxx07TXt3q7cBI8JX4Mw5ixuMrvIbQcPDEeLW6QbVovebXLWgUizCFqq+9
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v1 2/2] i2c: mediatek: Add i2c compatible for Mediatek
- MT8168
-Content-Language: en-US
-To:     Kewei Xu <kewei.xu@mediatek.com>, wsa@the-dreams.de
-Cc:     matthias.bgg@gmail.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        leilk.liu@mediatek.com, qii.wang@mediatek.com,
-        liguo.zhang@mediatek.com, caiyu.chen@mediatek.com,
-        housong.zhang@mediatek.com, yuhan.wei@mediatek.com
-References: <20220307033649.11564-1-kewei.xu@mediatek.com>
- <20220307033649.11564-3-kewei.xu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220307033649.11564-3-kewei.xu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:18cd:b0:2c2:f50c:278 with SMTP id
+ s13-20020a056e0218cd00b002c2f50c0278mr10549727ilu.1.1646650089268; Mon, 07
+ Mar 2022 02:48:09 -0800 (PST)
+Date:   Mon, 07 Mar 2022 02:48:09 -0800
+In-Reply-To: <20220307103434.3310-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a3ec7605d99e99dd@google.com>
+Subject: Re: [syzbot] possible deadlock in snd_timer_interrupt (2)
+From:   syzbot <syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com>
+To:     alsa-devel@alsa-project.org, hdanton@sina.com,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tiwai@suse.com, tiwai@suse.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 07/03/22 04:36, Kewei Xu ha scritto:
-> Add i2c compatible for MT8168. Compare to MT2712 i2c controller,
-> MT8168 need to synchronize signal with dma.
-> 
-> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
+Hello,
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
+Reported-and-tested-by: syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com
 
+Tested on:
+
+commit:         38f80f42 MAINTAINERS: Remove dead patchwork link
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4e9585407e09f75f
+dashboard link: https://syzkaller.appspot.com/bug?extid=1ee0910eca9c94f71f25
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=16c1baa1700000
+
+Note: testing is done by a robot and is best-effort only.
