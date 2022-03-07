@@ -2,118 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A809C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0156C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245499AbiCGVet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 16:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S245524AbiCGVfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 16:35:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243335AbiCGVep (ORCPT
+        with ESMTP id S235250AbiCGVfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 16:34:45 -0500
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CEA50B36;
-        Mon,  7 Mar 2022 13:33:50 -0800 (PST)
-Received: by mail-oi1-f178.google.com with SMTP id n7so7007671oif.5;
-        Mon, 07 Mar 2022 13:33:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xKi3HHKVGpmeKTbiXrMkXO/qpORJuIc2PskVIUh7Ul0=;
-        b=O8aegdWK3BCJSA8bBQo8H3LN+HCz7hI2BOQXXi1FYx0pHe8QngpkxpJqS5U0sLHmFv
-         cpA+EEMvvZkK1H3zktJU+7CCpEqsOJALsd9LADuNBAp7wLVqqYn0MNFj5E47kfu2ZPd3
-         cvbPrusPoIE+1s/wuCfiH77eNh5UNh1Lo/HzqMNqmplj5P0/PQkLWNYYlROfK8FxJkR0
-         XpP52z3r30ve2IpyOSTGjG02rOpZdA3hG8KMrSjULxV9TuhR7x1tuvlTgG1YxOrScGV/
-         o+eU5UrKivtKm/0k/nFhwyhiLv5ab90UXglvkr3hOWOp7FpxuuaZa+RjMTaaZiM1WMsa
-         /2wg==
-X-Gm-Message-State: AOAM531BubLfNQQl4M9ci3ud+nQEmgbApyiaxcPFEI+oUKVfXh0lXoMI
-        YiLxNAjs/pT5xZoe7PCYp2epYnryhA==
-X-Google-Smtp-Source: ABdhPJyHk1wozNhDsnc/eHiJaIyeWDdPzrh66zQ5MVd7xtFTOvAmcAjd/8AMsWAwi96QsdyLTm8wjA==
-X-Received: by 2002:a05:6808:1983:b0:2d7:7fc:9e9b with SMTP id bj3-20020a056808198300b002d707fc9e9bmr649909oib.133.1646688829667;
-        Mon, 07 Mar 2022 13:33:49 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p14-20020a056830304e00b005b246b673f2sm811780otr.71.2022.03.07.13.33.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 13:33:48 -0800 (PST)
-Received: (nullmailer pid 3270524 invoked by uid 1000);
-        Mon, 07 Mar 2022 21:33:47 -0000
-Date:   Mon, 7 Mar 2022 15:33:47 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Divya Koppera <Divya.Koppera@microchip.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        devicetree@vger.kernel.org, richardcochran@gmail.com,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        madhuri.sripada@microchip.com, manohar.puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <YiZ6O2GeLIVEqgvY@robh.at.kernel.org>
-References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
- <20220304093418.31645-3-Divya.Koppera@microchip.com>
+        Mon, 7 Mar 2022 16:35:19 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2040.outbound.protection.outlook.com [40.107.223.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB986D952;
+        Mon,  7 Mar 2022 13:34:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UCNVBhT29fMmngy+uvG7FjMtUHwiB+ZIEyZBokGMBNZQ621dUvNgXzcMDXAe4zVsS3zVaa+y5F25AxymKCucB8t1k4e5ybyugu8zOsB1hZmy4ys52oQpUKtQzkSccXr2HIN8X+VkJ7wnbEHhl9iutXGVQ2xrcagN6tyRMQkrkb2urh0vmPayaSapJIZiq6R0om4TsyumQWImjYE8BNl47eKdPXG5bQjZ0M6x/8wPQp6I+pBCg+OwwVxxaqevBTHqWr4069KBVdNj35w+d+gx+aLDDZCi2nPEgUBhtIvpW8mRwPYy3oC57Y6tWE9jTJBUIY//PERxrkfii1v5Fp7jpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zzMGXQUBI5kqNpqQYV8JzSAxqABXO60VgfPmaqML3Cc=;
+ b=lp/FBuo/UmlYBnCtef845cHd7szimOSY+YSIBFQEnC3lBdzJ4WxNYAyRYs9ahBuOSPF/Ru7qX57HKmasCit6dx9/TKcybaSuJbeqWUrx7O7gnzOXUwG6GEdJE5cm3BwJQel6S3rPFh12UclFsiUmZ2yJAE0yt5OWqe4fM2tEAuSmXdh5VCGp0x1TzkITfoz5TCtzVqffhlx2oez+EXPjklHv/4a3m0QtDciI5pT6HsV8t/tL3QEHttRhPLueMsXM5aKCOL4Ikcl79Z5/KRz9pstrMGk1zE7CpQ4/ew3Qr4ToLlEWitV7U0Ra+Q72M/W+2KB4WFy/PYBPeb7k31lSkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zzMGXQUBI5kqNpqQYV8JzSAxqABXO60VgfPmaqML3Cc=;
+ b=mcJA+WPg1nlLitdlqRd7p6koxygcuQHmzBM9ANUOIOvEh7bvNdibgWcXpSMuWfgqFjZMK21Em4J/1fhtSWEifPxhk2MLGztC3bHsM10MfUmkiTMnnH4qVGxE5Ufo5ux2UaxmWiUGhqaE2zKqIj7yyjW8oVOMU6onWeKkHEkrWDE=
+Received: from BN9PR03CA0259.namprd03.prod.outlook.com (2603:10b6:408:ff::24)
+ by DM6PR12MB4451.namprd12.prod.outlook.com (2603:10b6:5:2ab::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Mon, 7 Mar
+ 2022 21:34:21 +0000
+Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ff:cafe::da) by BN9PR03CA0259.outlook.office365.com
+ (2603:10b6:408:ff::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
+ Transport; Mon, 7 Mar 2022 21:34:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 21:34:20 +0000
+Received: from sbrijesh-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Mar
+ 2022 15:34:18 -0600
+From:   Brijesh Singh <brijesh.singh@amd.com>
+To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kvm@vger.kernel.org>, <linux-efi@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>,
+        <linux-coco@lists.linux.dev>, <linux-mm@kvack.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        <brijesh.ksingh@gmail.com>, <tony.luck@intel.com>,
+        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Venu Busireddy <venu.busireddy@oracle.com>
+Subject: [PATCH v12 01/46] KVM: SVM: Define sev_features and vmpl field in the VMSA
+Date:   Mon, 7 Mar 2022 15:33:11 -0600
+Message-ID: <20220307213356.2797205-2-brijesh.singh@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220307213356.2797205-1-brijesh.singh@amd.com>
+References: <20220307213356.2797205-1-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304093418.31645-3-Divya.Koppera@microchip.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 714cea4e-6488-4e95-ee72-08da00823dc8
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4451:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB44511E64CEA119A55D29860BE5089@DM6PR12MB4451.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PoTARZzT0BZUArf3VaqK6pDlf3Ch4hnFpx4g59TpEdIiiHc6GrzI7aTUS1ruPNZ72Yc5Dkb0rxMif7KBya8HOUSZuevF7jpSt0NMax/0h450pjexSYRX+CwXt1vdDdY0BeKzMOVyGLhNaMWbGVd+3dm742eMQ3z5ovXM4zUJzJmoNLBwuEdaYcnLPppzAfB6Pbwwfk4TytZN4hMbYnLQBDbt+Z+MGIyjzJeCnZOl+WOlgvTHOiXVi8Vxs2Egc3n1ShURaBwut+F/jDthlyET5hs93qdSAeXXHO1034epwWF1HbxBvBZdC7Y8z3ASrt4cdWuDV3GDZZITvEGb5q8Tv6Ooo97wGKlUcuI+PzbztUf6oIlr46x7WzuQYegUNdYQaPzCl7ZSZyTLu5K26wfbhrF6C0OnrWq/EeIelFX9EqWjzD83yCxHm5XA5oxsiJ+PKrrTrNp5z76SF7Ck+4qVKylSE0M3Pn1ugAhqcpTpaqxBHFEC9xWOfTa1SJYyd/C4K+CcgjLysc32ZlMyWlijkrGq89POOuo0hIJa8zzJPkzExci+yktl+D+ShznWD9Ba+Z9jrhZbuXquUeuMktRg8tPJ+Z3SPqhFg8PwLuudnmapELRnznoXv2OWS34CmLRD1St2/2dQBkTcbMGjG3/jiP+zoQDsp42yK1zBYuOlyD325jz5jo9ucY1PXucfJAoD68tNF9YSvzWKEe0Mut0taeofoAOaEBD7VpBgENYrYYk=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(4326008)(2906002)(40460700003)(86362001)(186003)(16526019)(426003)(336012)(8676002)(83380400001)(7696005)(47076005)(70586007)(70206006)(1076003)(316002)(36756003)(54906003)(8936002)(2616005)(508600001)(110136005)(26005)(36860700001)(6666004)(356005)(81166007)(82310400004)(5660300002)(7416002)(7406005)(44832011)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 21:34:20.8048
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 714cea4e-6488-4e95-ee72-08da00823dc8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4451
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 03:04:17PM +0530, Divya Koppera wrote:
-> Supports configuring latency values and also adds
-> check for phy timestamping feature.
-> 
-> Signed-off-by: Divya Koppera<Divya.Koppera@microchip.com>
+The hypervisor uses the sev_features field (offset 3B0h) in the Save State
+Area to control the SEV-SNP guest features such as SNPActive, vTOM,
+ReflectVC etc. An SEV-SNP guest can read the SEV_FEATURES fields through
+the SEV_STATUS MSR.
 
-should be a space here:       ^
+While at it, update the dump_vmcb() to log the VMPL level.
 
-> ---
->  .../devicetree/bindings/net/micrel.txt          | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+See APM2 Table 15-34 and B-4 for more details.
 
-Please convert this to DT schema.
+Reviewed-by: Venu Busireddy <venu.busireddy@oracle.com>
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+---
+ arch/x86/include/asm/svm.h | 6 ++++--
+ arch/x86/kvm/svm/svm.c     | 4 ++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-> 
-> diff --git a/Documentation/devicetree/bindings/net/micrel.txt b/Documentation/devicetree/bindings/net/micrel.txt
-> index 8d157f0295a5..c5ab62c39133 100644
-> --- a/Documentation/devicetree/bindings/net/micrel.txt
-> +++ b/Documentation/devicetree/bindings/net/micrel.txt
-> @@ -45,3 +45,20 @@ Optional properties:
->  
->  	In fiber mode, auto-negotiation is disabled and the PHY can only work in
->  	100base-fx (full and half duplex) modes.
-> +
-> + - lan8814,ignore-ts: If present the PHY will not support timestamping.
+diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+index bb2fb78523ce..b25b4e5ae6f9 100644
+--- a/arch/x86/include/asm/svm.h
++++ b/arch/x86/include/asm/svm.h
+@@ -274,7 +274,8 @@ struct vmcb_save_area {
+ 	struct vmcb_seg ldtr;
+ 	struct vmcb_seg idtr;
+ 	struct vmcb_seg tr;
+-	u8 reserved_1[43];
++	u8 reserved_1[42];
++	u8 vmpl;
+ 	u8 cpl;
+ 	u8 reserved_2[4];
+ 	u64 efer;
+@@ -339,7 +340,8 @@ struct vmcb_save_area {
+ 	u64 sw_exit_info_1;
+ 	u64 sw_exit_info_2;
+ 	u64 sw_scratch;
+-	u8 reserved_11[56];
++	u64 sev_features;
++	u8 reserved_11[48];
+ 	u64 xcr0;
+ 	u8 valid_bitmap[16];
+ 	u64 x87_state_gpa;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index fd3a00c892c7..fd92af40c280 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3118,8 +3118,8 @@ static void dump_vmcb(struct kvm_vcpu *vcpu)
+ 	       "tr:",
+ 	       save01->tr.selector, save01->tr.attrib,
+ 	       save01->tr.limit, save01->tr.base);
+-	pr_err("cpl:            %d                efer:         %016llx\n",
+-		save->cpl, save->efer);
++	pr_err("vmpl: %d   cpl:  %d               efer:          %016llx\n",
++	       save->vmpl, save->cpl, save->efer);
+ 	pr_err("%-15s %016llx %-13s %016llx\n",
+ 	       "cr0:", save->cr0, "cr2:", save->cr2);
+ 	pr_err("%-15s %016llx %-13s %016llx\n",
+-- 
+2.25.1
 
-'lan8814' is not a vendor and the format for properties is 
-<vendor>,<propname>.
-
-Is this configuration or lack of h/w feature? IOW, instead of 'will 
-not', 'does not' or 'timestamping is disabled.'. As configuration, that 
-seems like common property. For (lack of) h/w features, that should be 
-implied by the compatible or VID/PID.
-
-> +	This option acts as check whether Timestamping is supported by
-> +	hardware or not. LAN8814 phy support hardware tmestamping.
-> +
-> + - lan8814,latency_rx_10: Configures Latency value of phy in ingress at 10 Mbps.
-
-s/_/-/
-
-What are the units here? Is this a common feature of PHYs?
-
-> +
-> + - lan8814,latency_tx_10: Configures Latency value of phy in egress at 10 Mbps.
-> +
-> + - lan8814,latency_rx_100: Configures Latency value of phy in ingress at 100 Mbps.
-> +
-> + - lan8814,latency_tx_100: Configures Latency value of phy in egress at 100 Mbps.
-> +
-> + - lan8814,latency_rx_1000: Configures Latency value of phy in ingress at 1000 Mbps.
-> +
-> + - lan8814,latency_tx_1000: Configures Latency value of phy in egress at 1000 Mbps.
-> -- 
-> 2.17.1
-> 
-> 
