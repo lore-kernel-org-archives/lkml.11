@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 344C4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FDDC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238853AbiCGKCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:02:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
+        id S238956AbiCGKCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:02:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240873AbiCGJli (ORCPT
+        with ESMTP id S240957AbiCGJlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17406B094;
-        Mon,  7 Mar 2022 01:38:29 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397B96CA4C;
+        Mon,  7 Mar 2022 01:38:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EEB8B810CF;
-        Mon,  7 Mar 2022 09:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62041C340E9;
-        Mon,  7 Mar 2022 09:38:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEA9AB810BD;
+        Mon,  7 Mar 2022 09:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB86C340F3;
+        Mon,  7 Mar 2022 09:38:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645906;
-        bh=ZTvWv+f7xdGh/iyHa1ekwbqb+LeXwVZZsUofm01tb8Q=;
+        s=korg; t=1646645925;
+        bh=ifDCbOlvlfDMlQSljIfCesPKWuSzZT3V2906vyaUncs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jnH9c6Z+Apu7pGLtAlDVMhfCxPowYmk5NtzKHJsFowkro7hqAnJ+AGrEI5eT8wkyd
-         K93PQ/qKEM4ep4yiOnfcJgdmlKz8MXWNS/mjoXuCM0hSMDUzo6Cyb5RhdmpazcaL1z
-         DuJOObzEBD/TxvQ7MKpotTx5Yw52nWq/DqmxmsLo=
+        b=S+MYAYI+/zPJ55gjXUZVxKKrOrsipUSMFQacs9b7mbhDyHs/LRqSmF687m+zkHAzP
+         EU5gtox9U3PaPpBy/0NLo/NA3uT6Nb97MIbe3v8uae5AEwnng5U4g4EuCZPvp8AU9i
+         h0dYbPF+Ae0kDOltf60Tp2ObqUdD74msROTmh4uA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/262] PCI: mvebu: Fix support for PCI_EXP_DEVCTL on emulated bridge
-Date:   Mon,  7 Mar 2022 10:16:56 +0100
-Message-Id: <20220307091704.530226403@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 078/262] x86/hyperv: Properly deal with empty cpumasks in hyperv_flush_tlb_multi()
+Date:   Mon,  7 Mar 2022 10:17:02 +0100
+Message-Id: <20220307091704.692711717@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,52 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit ecae073e393e65ee7be7ebf3fdd5258ab99f1636 ]
+[ Upstream commit 51500b71d500f251037ed339047a4d9e7d7e295b ]
 
-Comment in Armada 370 functional specification is misleading.
-PCI_EXP_DEVCTL_*RE bits are supported and configures receiving of error
-interrupts.
+KASAN detected the following issue:
 
-Link: https://lore.kernel.org/r/20211125124605.25915-14-pali@kernel.org
-Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+ BUG: KASAN: slab-out-of-bounds in hyperv_flush_tlb_multi+0xf88/0x1060
+ Read of size 4 at addr ffff8880011ccbc0 by task kcompactd0/33
+
+ CPU: 1 PID: 33 Comm: kcompactd0 Not tainted 5.14.0-39.el9.x86_64+debug #1
+ Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine,
+     BIOS Hyper-V UEFI Release v4.0 12/17/2019
+ Call Trace:
+  dump_stack_lvl+0x57/0x7d
+  print_address_description.constprop.0+0x1f/0x140
+  ? hyperv_flush_tlb_multi+0xf88/0x1060
+  __kasan_report.cold+0x7f/0x11e
+  ? hyperv_flush_tlb_multi+0xf88/0x1060
+  kasan_report+0x38/0x50
+  hyperv_flush_tlb_multi+0xf88/0x1060
+  flush_tlb_mm_range+0x1b1/0x200
+  ptep_clear_flush+0x10e/0x150
+...
+ Allocated by task 0:
+  kasan_save_stack+0x1b/0x40
+  __kasan_kmalloc+0x7c/0x90
+  hv_common_init+0xae/0x115
+  hyperv_init+0x97/0x501
+  apic_intr_mode_init+0xb3/0x1e0
+  x86_late_time_init+0x92/0xa2
+  start_kernel+0x338/0x3eb
+  secondary_startup_64_no_verify+0xc2/0xcb
+
+ The buggy address belongs to the object at ffff8880011cc800
+  which belongs to the cache kmalloc-1k of size 1024
+ The buggy address is located 960 bytes inside of
+  1024-byte region [ffff8880011cc800, ffff8880011ccc00)
+
+'hyperv_flush_tlb_multi+0xf88/0x1060' points to
+hv_cpu_number_to_vp_number() and '960 bytes' means we're trying to get
+VP_INDEX for CPU#240. 'nr_cpus' here is exactly 240 so we're trying to
+access past hv_vp_index's last element. This can (and will) happen
+when 'cpus' mask is empty and cpumask_last() will return '>=nr_cpus'.
+
+Commit ad0a6bad4475 ("x86/hyperv: check cpu mask after interrupt has
+been disabled") tried to deal with empty cpumask situation but
+apparently didn't fully fix the issue.
+
+'cpus' cpumask which is passed to hyperv_flush_tlb_multi() is
+'mm_cpumask(mm)' (which is '&mm->cpu_bitmap'). This mask changes every
+time the particular mm is scheduled/unscheduled on some CPU (see
+switch_mm_irqs_off()), disabling IRQs on the CPU which is performing remote
+TLB flush has zero influence on whether the particular process can get
+scheduled/unscheduled on _other_ CPUs so e.g. in the case where the mm was
+scheduled on one other CPU and got unscheduled during
+hyperv_flush_tlb_multi()'s execution will lead to cpumask becoming empty.
+
+It doesn't seem that there's a good way to protect 'mm_cpumask(mm)'
+from changing during hyperv_flush_tlb_multi()'s execution. It would be
+possible to copy it in the very beginning of the function but this is a
+waste. It seems we can deal with changing cpumask just fine.
+
+When 'cpus' cpumask changes during hyperv_flush_tlb_multi()'s
+execution, there are two possible issues:
+- 'Under-flushing': we will not flush TLB on a CPU which got added to
+the mask while hyperv_flush_tlb_multi() was already running. This is
+not a problem as this is equal to mm getting scheduled on that CPU
+right after TLB flush.
+- 'Over-flushing': we may flush TLB on a CPU which is already cleared
+from the mask. First, extra TLB flush preserves correctness. Second,
+Hyper-V's TLB flush hypercall takes 'mm->pgd' argument so Hyper-V may
+avoid the flush if CR3 doesn't match.
+
+Fix the immediate issue with cpumask_last()/hv_cpu_number_to_vp_number()
+and remove the pointless cpumask_empty() check from the beginning of the
+function as it really doesn't protect anything. Also, avoid the hypercall
+altogether when 'flush->processor_mask' ends up being empty.
+
+Fixes: ad0a6bad4475 ("x86/hyperv: check cpu mask after interrupt has been disabled")
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220106094611.1404218-1-vkuznets@redhat.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ arch/x86/hyperv/mmu.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 3563301e772ae..6100608e6413e 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -498,9 +498,7 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
- 		break;
+diff --git a/arch/x86/hyperv/mmu.c b/arch/x86/hyperv/mmu.c
+index bd13736d0c054..0ad2378fe6ad7 100644
+--- a/arch/x86/hyperv/mmu.c
++++ b/arch/x86/hyperv/mmu.c
+@@ -68,15 +68,6 @@ static void hyperv_flush_tlb_multi(const struct cpumask *cpus,
  
- 	case PCI_EXP_DEVCTL:
--		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL) &
--				 ~(PCI_EXP_DEVCTL_URRE | PCI_EXP_DEVCTL_FERE |
--				   PCI_EXP_DEVCTL_NFERE | PCI_EXP_DEVCTL_CERE);
-+		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL);
- 		break;
+ 	local_irq_save(flags);
  
- 	case PCI_EXP_LNKCAP:
-@@ -590,13 +588,6 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
- 
- 	switch (reg) {
- 	case PCI_EXP_DEVCTL:
--		/*
--		 * Armada370 data says these bits must always
--		 * be zero when in root complex mode.
--		 */
--		new &= ~(PCI_EXP_DEVCTL_URRE | PCI_EXP_DEVCTL_FERE |
--			 PCI_EXP_DEVCTL_NFERE | PCI_EXP_DEVCTL_CERE);
+-	/*
+-	 * Only check the mask _after_ interrupt has been disabled to avoid the
+-	 * mask changing under our feet.
+-	 */
+-	if (cpumask_empty(cpus)) {
+-		local_irq_restore(flags);
+-		return;
+-	}
 -
- 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL);
- 		break;
+ 	flush_pcpu = (struct hv_tlb_flush **)
+ 		     this_cpu_ptr(hyperv_pcpu_input_arg);
  
+@@ -115,7 +106,9 @@ static void hyperv_flush_tlb_multi(const struct cpumask *cpus,
+ 		 * must. We will also check all VP numbers when walking the
+ 		 * supplied CPU set to remain correct in all cases.
+ 		 */
+-		if (hv_cpu_number_to_vp_number(cpumask_last(cpus)) >= 64)
++		cpu = cpumask_last(cpus);
++
++		if (cpu < nr_cpumask_bits && hv_cpu_number_to_vp_number(cpu) >= 64)
+ 			goto do_ex_hypercall;
+ 
+ 		for_each_cpu(cpu, cpus) {
+@@ -131,6 +124,12 @@ static void hyperv_flush_tlb_multi(const struct cpumask *cpus,
+ 			__set_bit(vcpu, (unsigned long *)
+ 				  &flush->processor_mask);
+ 		}
++
++		/* nothing to flush if 'processor_mask' ends up being empty */
++		if (!flush->processor_mask) {
++			local_irq_restore(flags);
++			return;
++		}
+ 	}
+ 
+ 	/*
 -- 
 2.34.1
 
