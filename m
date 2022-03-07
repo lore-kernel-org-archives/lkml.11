@@ -2,296 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFDAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243937AbiCGRiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 12:38:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S244440AbiCGRiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 12:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237800AbiCGRiG (ORCPT
+        with ESMTP id S235575AbiCGRiU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 12:38:06 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319808F9AD;
-        Mon,  7 Mar 2022 09:37:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1646674626; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3VPg7tVTG05IVaRuXCwoMmbPC0+mZEfleGOuxTVt05Y=;
-        b=Na7NNibdC0c9uW7eYGWqOvj4PxyVc428EVT7lTAxooru/aikh/BqEWfQ3KoUjJW6Qjomnc
-        MqBvJoM6QJKK5d6BwfiMGNoupypbCyS9n2T3Ch2wKRKN+Z9CFb+wl16XndliCIOTHy7KQv
-        ulZ3caZG8mgChvbd6UayiyslfhBaPwk=
-Date:   Mon, 07 Mar 2022 17:35:45 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2] pinctrl: ingenic: Fix regmap on X series SoCs
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     linus.walleij@linaro.org, linux-mips@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <L7YD8R.AHQE1WAT7PG92@crapouillou.net>
-In-Reply-To: <20220224145821.518835-1-aidanmacdonald.0x0@gmail.com>
-References: <20220224145821.518835-1-aidanmacdonald.0x0@gmail.com>
+        Mon, 7 Mar 2022 12:38:20 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8A22FD;
+        Mon,  7 Mar 2022 09:37:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646674645; x=1678210645;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lV2x/2s+fOd4zHljiq3dDgPjP4RKopRFUfPExzjgZo8=;
+  b=K1qhfZQUg3/n6NA9P94epNlN/Jea4gRifhMCpVkz8qxgaWrvAXpdFg40
+   LLCBw7coXzE/+xEZmxcdZJgoy1VEtUa2Zt+0jN3t+5ioADVy/JTRF+gPN
+   xJRe5x4tG4rRfUKwxItO+F9beQf+W1QWkthQw+P6NY/IN1f61qxtOSQXb
+   R0es0HxePutdXvFvedV7/D4OxbSTBffpK/CBAy1Wa6US2d9dZVtM5qRNZ
+   rcJr/3wlSSFe8ZEelIF7ik5wcgUt09Dpta6JfXPDbXSXFx5AxWJ5Dm3Dg
+   JeQYUtSknpWhCLj46y3O+x3XqYdDL3ErkDpa2f3Z5NL6N95kweDM2hbem
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="315168407"
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="315168407"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 09:37:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="512766688"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 07 Mar 2022 09:37:23 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 54AE91D6; Mon,  7 Mar 2022 19:37:41 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Wang Qing <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH v1 1/1] spi: topcliff-pch: Prevent usage of potentially stale DMA device
+Date:   Mon,  7 Mar 2022 19:37:40 +0200
+Message-Id: <20220307173740.80996-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aidan,
+DMA device is expected to be available while SPI transfer is ongoing.
 
-Le jeu., f=E9vr. 24 2022 at 14:58:22 +0000, Aidan MacDonald=20
-<aidanmacdonald.0x0@gmail.com> a =E9crit :
-> The X series Ingenic SoCs have a shadow GPIO group which is at a=20
-> higher
-> offset than the other groups, and is used for all GPIO configuration.
-> The regmap did not take this offset into account and set max_register
-> too low, so the regmap API blocked writes to the shadow group, which
-> made the pinctrl driver unable to configure any pins.
->=20
-> Fix this by adding regmap access tables to the chip info.
->=20
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> ---
-> v1:=20
-> https://lore.kernel.org/linux-mips/20220209230452.19535-1-aidanmacdonald.=
-0x0@gmail.com/
->=20
->  drivers/pinctrl/pinctrl-ingenic.c | 53=20
-> ++++++++++++++++++++++++++++++-
->  1 file changed, 52 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/pinctrl/pinctrl-ingenic.c=20
-> b/drivers/pinctrl/pinctrl-ingenic.c
-> index 2712f51eb238..074c94edd90b 100644
-> --- a/drivers/pinctrl/pinctrl-ingenic.c
-> +++ b/drivers/pinctrl/pinctrl-ingenic.c
-> @@ -119,6 +119,9 @@ struct ingenic_chip_info {
->  	unsigned int num_functions;
->=20
->  	const u32 *pull_ups, *pull_downs;
-> +
-> +	unsigned int max_register;
-> +	const struct regmap_access_table* access_table;
->  };
->=20
->  struct ingenic_pinctrl {
-> @@ -228,6 +231,7 @@ static const struct ingenic_chip_info=20
-> jz4730_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4730_functions),
->  	.pull_ups =3D jz4730_pull_ups,
->  	.pull_downs =3D jz4730_pull_downs,
-> +	.max_register =3D 4 * 0x30 - 4,
->  };
->=20
->  static const u32 jz4740_pull_ups[4] =3D {
-> @@ -337,6 +341,7 @@ static const struct ingenic_chip_info=20
-> jz4740_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4740_functions),
->  	.pull_ups =3D jz4740_pull_ups,
->  	.pull_downs =3D jz4740_pull_downs,
-> +	.max_register =3D 4 * 0x100 - 4,
->  };
->=20
->  static int jz4725b_mmc0_1bit_pins[] =3D { 0x48, 0x49, 0x5c, };
-> @@ -439,6 +444,7 @@ static const struct ingenic_chip_info=20
-> jz4725b_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4725b_functions),
->  	.pull_ups =3D jz4740_pull_ups,
->  	.pull_downs =3D jz4740_pull_downs,
-> +	.max_register =3D 4 * 0x100 - 4,
->  };
->=20
->  static const u32 jz4750_pull_ups[6] =3D {
-> @@ -576,6 +582,7 @@ static const struct ingenic_chip_info=20
-> jz4750_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4750_functions),
->  	.pull_ups =3D jz4750_pull_ups,
->  	.pull_downs =3D jz4750_pull_downs,
-> +	.max_register =3D 6 * 0x100 - 4,
->  };
->=20
->  static const u32 jz4755_pull_ups[6] =3D {
-> @@ -741,6 +748,7 @@ static const struct ingenic_chip_info=20
-> jz4755_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4755_functions),
->  	.pull_ups =3D jz4755_pull_ups,
->  	.pull_downs =3D jz4755_pull_downs,
-> +	.max_register =3D 6 * 0x100 - 4,
->  };
->=20
->  static const u32 jz4760_pull_ups[6] =3D {
-> @@ -1089,6 +1097,7 @@ static const struct ingenic_chip_info=20
-> jz4760_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4760_functions),
->  	.pull_ups =3D jz4760_pull_ups,
->  	.pull_downs =3D jz4760_pull_downs,
-> +	.max_register =3D 6 * 0x100 - 4,
->  };
->=20
->  static const u32 jz4770_pull_ups[6] =3D {
-> @@ -1429,6 +1438,7 @@ static const struct ingenic_chip_info=20
-> jz4770_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4770_functions),
->  	.pull_ups =3D jz4770_pull_ups,
->  	.pull_downs =3D jz4770_pull_downs,
-> +	.max_register =3D 6 * 0x100 - 4,
->  };
->=20
->  static const u32 jz4775_pull_ups[7] =3D {
-> @@ -1702,6 +1712,7 @@ static const struct ingenic_chip_info=20
-> jz4775_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4775_functions),
->  	.pull_ups =3D jz4775_pull_ups,
->  	.pull_downs =3D jz4775_pull_downs,
-> +	.max_register =3D 7 * 0x100 - 4,
->  };
->=20
->  static const u32 jz4780_pull_ups[6] =3D {
-> @@ -1966,6 +1977,7 @@ static const struct ingenic_chip_info=20
-> jz4780_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(jz4780_functions),
->  	.pull_ups =3D jz4780_pull_ups,
->  	.pull_downs =3D jz4780_pull_downs,
-> +	.max_register =3D 6 * 0x100 - 4,
->  };
->=20
->  static const u32 x1000_pull_ups[4] =3D {
-> @@ -2179,6 +2191,17 @@ static const struct function_desc=20
-> x1000_functions[] =3D {
->  	{ "mac", x1000_mac_groups, ARRAY_SIZE(x1000_mac_groups), },
->  };
->=20
-> +static const struct regmap_range x1000_access_ranges[] =3D {
-> +	regmap_reg_range(0x000, 0x400 - 4),
-> +	regmap_reg_range(0x700, 0x800 - 4),
-> +};
-> +
-> +/* shared with X1500 */
-> +static const struct regmap_access_table x1000_access_table =3D {
-> +	.yes_ranges =3D x1000_access_ranges,
-> +	.n_yes_ranges =3D ARRAY_SIZE(x1000_access_ranges),
-> +};
-> +
->  static const struct ingenic_chip_info x1000_chip_info =3D {
->  	.num_chips =3D 4,
->  	.reg_offset =3D 0x100,
-> @@ -2189,6 +2212,7 @@ static const struct ingenic_chip_info=20
-> x1000_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(x1000_functions),
->  	.pull_ups =3D x1000_pull_ups,
->  	.pull_downs =3D x1000_pull_downs,
-> +	.access_table =3D &x1000_access_table,
->  };
->=20
->  static int x1500_uart0_data_pins[] =3D { 0x4a, 0x4b, };
-> @@ -2300,6 +2324,7 @@ static const struct ingenic_chip_info=20
-> x1500_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(x1500_functions),
->  	.pull_ups =3D x1000_pull_ups,
->  	.pull_downs =3D x1000_pull_downs,
-> +	.access_table =3D &x1000_access_table,
->  };
->=20
->  static const u32 x1830_pull_ups[4] =3D {
-> @@ -2506,6 +2531,16 @@ static const struct function_desc=20
-> x1830_functions[] =3D {
->  	{ "mac", x1830_mac_groups, ARRAY_SIZE(x1830_mac_groups), },
->  };
->=20
-> +static const struct regmap_range x1830_access_ranges[] =3D {
-> +	regmap_reg_range(0x0000, 0x4000 - 4),
-> +	regmap_reg_range(0x7000, 0x8000 - 4),
-> +};
-> +
-> +static const struct regmap_access_table x1830_access_table =3D {
-> +	.yes_ranges =3D x1830_access_ranges,
-> +	.n_yes_ranges =3D ARRAY_SIZE(x1830_access_ranges),
-> +};
-> +
->  static const struct ingenic_chip_info x1830_chip_info =3D {
->  	.num_chips =3D 4,
->  	.reg_offset =3D 0x1000,
-> @@ -2516,6 +2551,7 @@ static const struct ingenic_chip_info=20
-> x1830_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(x1830_functions),
->  	.pull_ups =3D x1830_pull_ups,
->  	.pull_downs =3D x1830_pull_downs,
-> +	.access_table =3D &x1830_access_table,
->  };
->=20
->  static const u32 x2000_pull_ups[5] =3D {
-> @@ -2969,6 +3005,17 @@ static const struct function_desc=20
-> x2000_functions[] =3D {
->  	{ "otg", x2000_otg_groups, ARRAY_SIZE(x2000_otg_groups), },
->  };
->=20
-> +static const struct regmap_range x2000_access_ranges[] =3D {
-> +	regmap_reg_range(0x000, 0x500 - 4),
-> +	regmap_reg_range(0x700, 0x800 - 4),
-> +};
-> +
-> +/* shared with X2100 */
-> +static const struct regmap_access_table x2000_access_table =3D {
-> +	.yes_ranges =3D x2000_access_ranges,
-> +	.n_yes_ranges =3D ARRAY_SIZE(x2000_access_ranges),
-> +};
-> +
->  static const struct ingenic_chip_info x2000_chip_info =3D {
->  	.num_chips =3D 5,
->  	.reg_offset =3D 0x100,
-> @@ -2979,6 +3026,7 @@ static const struct ingenic_chip_info=20
-> x2000_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(x2000_functions),
->  	.pull_ups =3D x2000_pull_ups,
->  	.pull_downs =3D x2000_pull_downs,
-> +	.access_table =3D &x2000_access_table,
->  };
->=20
->  static const u32 x2100_pull_ups[5] =3D {
-> @@ -3189,6 +3237,7 @@ static const struct ingenic_chip_info=20
-> x2100_chip_info =3D {
->  	.num_functions =3D ARRAY_SIZE(x2100_functions),
->  	.pull_ups =3D x2100_pull_ups,
->  	.pull_downs =3D x2100_pull_downs,
-> +	.access_table =3D &x2000_access_table,
->  };
->=20
->  static u32 ingenic_gpio_read_reg(struct ingenic_gpio_chip *jzgc, u8=20
-> reg)
-> @@ -4168,7 +4217,9 @@ static int __init ingenic_pinctrl_probe(struct=20
-> platform_device *pdev)
->  		return PTR_ERR(base);
->=20
->  	regmap_config =3D ingenic_pinctrl_regmap_config;
-> -	regmap_config.max_register =3D chip_info->num_chips *=20
-> chip_info->reg_offset;
-> +	regmap_config.rd_table =3D chip_info->access_table;
-> +	regmap_config.wr_table =3D chip_info->access_table;
-> +	regmap_config.max_register =3D chip_info->max_register;
+Prevent usage of potentially stale DMA device by keeping reference
+count till the end of the transfer.
 
-You could do something like this:
-if (chip_info->access_table) {
-    regmap_config.rd_table =3D chip_info->access_table;
-    regmap_config.wr_table =3D chip_info->access_table;
-} else {
-    regmap_config.max_register =3D chip_info->num_chips *=20
-chip_info->reg_offset;
-}
+Fixes: 4d986ffa036a ("spi: add missing pci_dev_put() before return")
+Reported-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/spi/spi-topcliff-pch.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Then you wouldn't need to add a .max_register field for every other SoC.
-
-Cheers,
--Paul
-
->=20
->  	jzpc->map =3D devm_regmap_init_mmio(dev, base, &regmap_config);
->  	if (IS_ERR(jzpc->map)) {
-> --
-> 2.34.1
->=20
-
+diff --git a/drivers/spi/spi-topcliff-pch.c b/drivers/spi/spi-topcliff-pch.c
+index 8e1cc345810a..dfaa1d79a78b 100644
+--- a/drivers/spi/spi-topcliff-pch.c
++++ b/drivers/spi/spi-topcliff-pch.c
+@@ -103,6 +103,7 @@
+ static int use_dma = 1;
+ 
+ struct pch_spi_dma_ctrl {
++	struct pci_dev		*dma_dev;
+ 	struct dma_async_tx_descriptor	*desc_tx;
+ 	struct dma_async_tx_descriptor	*desc_rx;
+ 	struct pch_dma_slave		param_tx;
+@@ -876,7 +877,6 @@ static void pch_spi_request_dma(struct pch_spi_data *data, int bpw)
+ 	if (!chan) {
+ 		dev_err(&data->master->dev,
+ 			"ERROR: dma_request_channel FAILS(Tx)\n");
+-		data->use_dma = 0;
+ 		goto out;
+ 	}
+ 	dma->chan_tx = chan;
+@@ -893,13 +893,15 @@ static void pch_spi_request_dma(struct pch_spi_data *data, int bpw)
+ 			"ERROR: dma_request_channel FAILS(Rx)\n");
+ 		dma_release_channel(dma->chan_tx);
+ 		dma->chan_tx = NULL;
+-		data->use_dma = 0;
+ 		goto out;
+ 	}
+ 	dma->chan_rx = chan;
+ 
++	dma->dma_dev = dma_dev;
++	return;
+ out:
+ 	pci_dev_put(dma_dev);
++	data->use_dma = 0;
+ }
+ 
+ static void pch_spi_release_dma(struct pch_spi_data *data)
+@@ -915,6 +917,8 @@ static void pch_spi_release_dma(struct pch_spi_data *data)
+ 		dma_release_channel(dma->chan_rx);
+ 		dma->chan_rx = NULL;
+ 	}
++
++	pci_dev_put(dma->dma_dev);
+ }
+ 
+ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
+-- 
+2.34.1
 
