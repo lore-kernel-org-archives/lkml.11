@@ -2,121 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240377AbiCGKHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:07:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        id S236815AbiCGKHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238941AbiCGJsx (ORCPT
+        with ESMTP id S238894AbiCGJsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:48:53 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FCD6E4CD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:42:45 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id l1-20020a05600c4f0100b00389645443d2so6051858wmq.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:42:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=/ZxQ6z5PZGHQq9JKGs5BndICctE34zGD7U+mK09Uits=;
-        b=mV7uGh1AN3uU8R4KM0f4CaUkiQE7W3yax2HST5RXofwB3zd6VsTxHERt01MHByu81r
-         NZx/A7wJ1LJ9HXqr24yLhBbLmyQO5Bem3UCWozIMhLCvrLiLJdEwA/6uGgQTXZYdbA00
-         PTlUngJR8dWdmaAOQCYDvx74WmwoWUMlmsIiEsomdcobzf/Lo+/bEEI2smHRL4UNaKAy
-         r1c1d0285zVj36Gvwq4O7tWF460rdLhXJ6UCFL/38LVftsoyzIIkRYbfMU+8Q8k0AoGb
-         ktHHabe0wbt5ShJIYMc6Zc8JSRLpKvG9L6D0drTWTgP0cPAVJzUCdBp57IRjMN1aLsRM
-         Iq+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=/ZxQ6z5PZGHQq9JKGs5BndICctE34zGD7U+mK09Uits=;
-        b=y6G1v5KR6g0a7ypGDpK5BIz/tFSZ1MwYhca5vBLLNGT1QyLoX/6QBJBlPiqEgwPcVr
-         3qzUK2Q4ZcItB6hEzhVhuX4PrQR43nJ9xDc3ehGzJpK01RLwIpPbpeU0wrxpkyrXISto
-         Ch8jj1JI52+dVEAPgmAW4gJ3WKDFdJIxIhFNHrO5/7OHEipXGpzZrkVXqI8JvPdahtG7
-         jow2gXSAsGKEqIGQ7xPCo3N1/vZ03sDIoA9Ym2J9f3mwckMqcMV7xI5d/+kgGBIxR5um
-         m+gGPCbc2rpBCAMnxlAhmhAVS/Z8W5YAB0ZrftwT89cHzG4YQhKQEmce8nadKVHkWBqU
-         aTJw==
-X-Gm-Message-State: AOAM532sUWpcw8agYEjea3WDoaeUI5phukhcrpzBD+N9EevwvNKlCZK2
-        yH5RmyGH+bISX+FGSAXmrtrl5A==
-X-Google-Smtp-Source: ABdhPJwHQeN0MgKhNErx7gl+9mJHuTeeNqxKmMx0vFXKVgA5RRBGOXqtFt55oleSuIQG/9RsBt4H2g==
-X-Received: by 2002:a05:600c:3ac3:b0:389:adb4:e7a1 with SMTP id d3-20020a05600c3ac300b00389adb4e7a1mr1693655wms.136.1646646151709;
-        Mon, 07 Mar 2022 01:42:31 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id b7-20020adfe647000000b001f1d614b8besm6997606wrn.112.2022.03.07.01.42.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:42:31 -0800 (PST)
-Date:   Mon, 7 Mar 2022 09:42:29 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] regulator/mfd: dt-bindings: maxim,max77802:
- convert to dtschema
-Message-ID: <YiXThUFuzTQmtrCJ@google.com>
-References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+        Mon, 7 Mar 2022 04:48:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539786E341;
+        Mon,  7 Mar 2022 01:42:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CEC861312;
+        Mon,  7 Mar 2022 09:42:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89014C340F6;
+        Mon,  7 Mar 2022 09:42:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646150;
+        bh=6gcCmo2niaY1ICfThriAwiWMgJuKdrDVjhBfnsf86Ks=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RJrA5lWB+DEBy2TtmSMrYmAQ6rweIGVaeqhtaqDb0drh/MZDJZ7Y78YZl6EBxST6O
+         7pD5sOdG9Bg2zSOvVpszpu9DbZK3qoI+U02tfiIy6idrIiLVLv+EmNz1U1H4VVcVn0
+         Re2Gv09CubP+rV6rRgPC3T6ZlTl+Hf+10sAy6bJQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Deren Wu <deren.wu@mediatek.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.15 149/262] mac80211: fix EAPoL rekey fail in 802.3 rx path
+Date:   Mon,  7 Mar 2022 10:18:13 +0100
+Message-Id: <20220307091706.647053440@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022, Krzysztof Kozlowski wrote:
+From: Deren Wu <deren.wu@mediatek.com>
 
-> Hi,
-> 
-> Changes since v1
-> ================
-> 1. MFD: Use absolute path to schemas.
-> 2. Regulator: skip properties.
+commit 610d086d6df0b15c3732a7b4a5b0f1c3e1b84d4c upstream.
 
-Ah, this is v2.
+mac80211 set capability NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211
+to upper layer by default. That means we should pass EAPoL packets through
+nl80211 path only, and should not send the EAPoL skb to netdevice diretly.
+At the meanwhile, wpa_supplicant would not register sock to listen EAPoL
+skb on the netdevice.
 
-Un-applying this and heading to apply v3 instead.
+However, there is no control_port_protocol handler in mac80211 for 802.3 RX
+packets, mac80211 driver would pass up the EAPoL rekey frame to netdevice
+and wpa_supplicant would be never interactive with this kind of packets,
+if SUPPORTS_RX_DECAP_OFFLOAD is enabled. This causes STA always rekey fail
+if EAPoL frame go through 802.3 path.
 
-> Dependencies
-> ============
-> 1. DTS patch: nothing depends on it, sending here so Rob's automatic
->    checker won't complain about DTS.
->    I will take it via Samsung SoC tree.
-> 
-> 2. Final MFD patch depends on regulator, so the two last patches could
->    go via Rob's, Mark's or Lee's trees.
-> 
-> Best regards,
-> Krzysztof
-> 
-> Krzysztof Kozlowski (3):
->   regulator: dt-bindings: maxim,max77802: convert to dtschema
->   dt-bindings: mfd: maxim,max77802: convert to dtschema
->   dt-bindings: leds: common: fix unit address in max77693 example
-> 
->  .../devicetree/bindings/leds/common.yaml      |   9 +-
->  .../devicetree/bindings/mfd/max77802.txt      |  25 ---
->  .../bindings/mfd/maxim,max77802.yaml          | 194 ++++++++++++++++++
->  .../bindings/regulator/max77802.txt           | 111 ----------
->  .../bindings/regulator/maxim,max77802.yaml    |  97 +++++++++
->  MAINTAINERS                                   |   2 +-
->  6 files changed, 299 insertions(+), 139 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mfd/max77802.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77802.yaml
->  delete mode 100644 Documentation/devicetree/bindings/regulator/max77802.txt
->  create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-> 
+To avoid this problem, align the same process as 802.11 type to handle
+this frame before put it into network stack.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+This also addresses a potential security issue in 802.3 RX mode that was
+previously fixed in commit a8c4d76a8dd4 ("mac80211: do not accept/forward
+invalid EAPOL frames").
+
+Cc: stable@vger.kernel.org # 5.12+
+Fixes: 80a915ec4427 ("mac80211: add rx decapsulation offload support")
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Link: https://lore.kernel.org/r/6889c9fced5859ebb088564035f84fd0fa792a49.1644680751.git.deren.wu@mediatek.com
+[fix typos, update comment and add note about security issue]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/mac80211/rx.c |   10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2602,7 +2602,8 @@ static void ieee80211_deliver_skb_to_loc
+ 		 * address, so that the authenticator (e.g. hostapd) will see
+ 		 * the frame, but bridge won't forward it anywhere else. Note
+ 		 * that due to earlier filtering, the only other address can
+-		 * be the PAE group address.
++		 * be the PAE group address, unless the hardware allowed them
++		 * through in 802.3 offloaded mode.
+ 		 */
+ 		if (unlikely(skb->protocol == sdata->control_port_protocol &&
+ 			     !ether_addr_equal(ehdr->h_dest, sdata->vif.addr)))
+@@ -4518,12 +4519,7 @@ static void ieee80211_rx_8023(struct iee
+ 
+ 	/* deliver to local stack */
+ 	skb->protocol = eth_type_trans(skb, fast_rx->dev);
+-	memset(skb->cb, 0, sizeof(skb->cb));
+-	if (rx->list)
+-		list_add_tail(&skb->list, rx->list);
+-	else
+-		netif_receive_skb(skb);
+-
++	ieee80211_deliver_skb_to_local_stack(skb, rx);
+ }
+ 
+ static bool ieee80211_invoke_fast_rx(struct ieee80211_rx_data *rx,
+
+
