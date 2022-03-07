@@ -2,113 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D55DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245011AbiCGTQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 14:16:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
+        id S245025AbiCGTRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 14:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245038AbiCGTQj (ORCPT
+        with ESMTP id S240733AbiCGTRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 14:16:39 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279527CDF9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 11:15:40 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id bn33so21951442ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 11:15:39 -0800 (PST)
+        Mon, 7 Mar 2022 14:17:21 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAAB7D015;
+        Mon,  7 Mar 2022 11:16:27 -0800 (PST)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 227ITDnv010006;
+        Mon, 7 Mar 2022 19:15:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=jPorPDVnw+OFvD9g2hwRU9exR6wJK5CVWOOa7OF+5Mc=;
+ b=i/X1KbY2bvx7sQId8mFPFZ5YknwPOyc8KxMgHSsufF840Bym58XDpWyIZkFmZgepsc2g
+ GevtVI3Ty+GnsVjGz43ZXnKWd8qDU+4BznvQTgGvZgdmatl+xoc0wNzx7e4/oc67QhEI
+ 82R+ra6fuMoMMqCAYp+OTOPXCfaf1hz26l8cv6nM5JCzG/KVLf9+Ri/eAoRSIPWNeJYd
+ gldohndrvbxL6QMROBDf51HbruNAve40FdZTDQbMsQiR6ryaBww2LbupOo7nwwg7yjZ9
+ sfa+z8m8EWaC2xT3vYBXJDLMxfGd5WYBglzlRCP5pOujPyg8p7q1Y1ZiK8Myz5YVkarn 8g== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3em0dtvwrh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 07 Mar 2022 19:15:48 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 227J0KJG157674;
+        Mon, 7 Mar 2022 19:15:47 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2176.outbound.protection.outlook.com [104.47.57.176])
+        by userp3030.oracle.com with ESMTP id 3ekvytu08n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 07 Mar 2022 19:15:46 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZInXW18icu/Z0RtpRpaen3A2oHJGxwDWs9W0bLXXdFpe2r24VKWm7bKtS611uNJNXidkRfJP2ZhA7ch36mWAP/gvIHw/CIrjf+EqVxzP4Fc1Oq7EhGGXTCPwIDeucvUA1NhrRYsHU+9qNi36sk26O7gnUXVV4ikmrmaWwLS0CXKthtQQagXUqn66gLeHcFKrpRiW9HUIcDodu5DjAIQe/dJmsRdiIe7KUqdE6RH/gS0+l+848mD++xstfZD62XBnIJ1Ys0fQls/Fmd6fpMI2UMAo8LcmUJ+hNWgjMHmCNMkQKjrwPb2yluJkYlbqSulVtZF5L83h8+7hYDBkOKVE8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jPorPDVnw+OFvD9g2hwRU9exR6wJK5CVWOOa7OF+5Mc=;
+ b=YbekMpCylfl6Q7V1GSM6D6xzDe/Ys9bfbMKhJVAfruW5NriD9ixigtow5fJ/ABgqoR1O92ClvE8f3lzjiE0hQgrrFZSY1S4lTsva28eT6F1Edut2VvjUo2j2T86j2f3blEUGsPK14fIY2TaPpDgJU3uAsUfNVhbXGH5ZThWkJQcgGcYqCSpJWj7zJkjOazYs4R7zn6id+Z+VCg4jwbdltQEQvAU3IITvZT4eLtftvpnf00XNMSeeg7Sx3xCpamJgK7yFQVMZgJi1W5zWMChkVmAYNte+inDhfIWSdQeG1pT51ujhnqnAvuZtrsbERprwOr1WTI3idYvUVWOKX8B+2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TwTcsRMn5VZVrmgXZDV1J6sFeJgAdw8S2EoV6iZ5xnc=;
-        b=dlpUNu5q4CyzmXtBLA/gOu0GC/00SF7ttDAollAbHZtk5bw2xAtIqb7CwTopnt8lf3
-         AbfnSVPq9xulj/tw8AvoPmKfCZDzXeZNEVEEDbHlLhh/I5bp+zk8upvRu1BNSASuquhE
-         pUQrRqiHujQApoBOt9qnNksqqhPlFfAR59MXs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TwTcsRMn5VZVrmgXZDV1J6sFeJgAdw8S2EoV6iZ5xnc=;
-        b=CtsiwRjIj5w6N4+QZxjFAe4Ct58sHt7MhbscnizbDaqncdMABUHJh7/Zk2BGws09MZ
-         H/2MG25ylnNf2NAYum3Bm0MI7dXd1LC9Bd0T4CPdEGIBauYQ/M7G/fHubWeHfE7H0/J7
-         1LFn0kRF6i+GpfQmeR90wSbXkzeba6cC+acDP3d4Q7NJw1QVzkBYYyWNMWOdoWqf70rl
-         0o73zAfmqSppNcr3SS7dYCueS3QNH44ejsgbhTjefmLk+QH+R4Lm9BhyttPKV1Bj+HEe
-         q9WAXVPzqm8z2iheQE6JS05WFSm0GzgX4sLhHug5EozWFrfNANgoMFt4vRpx1Hgxzjpw
-         h4pg==
-X-Gm-Message-State: AOAM531vWGZEIrdjKkussEuW9D0nF0lpaQyQV7DwOFZSL/y0+vm0Je3Z
-        0/s3hk4ADmg6awF7xUJZGMiYhWOazAtrjwhdVbA=
-X-Google-Smtp-Source: ABdhPJz45EfGv+Kzy28FY0mnsMPFsBLlWPDT862n6r2+qARtdNVHBc+zDsUa1DqugFQN+kTocTqODw==
-X-Received: by 2002:a2e:9147:0:b0:246:1379:2cd4 with SMTP id q7-20020a2e9147000000b0024613792cd4mr8555170ljg.418.1646680536986;
-        Mon, 07 Mar 2022 11:15:36 -0800 (PST)
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
-        by smtp.gmail.com with ESMTPSA id n13-20020a056512388d00b00443ecf806c5sm3000780lft.104.2022.03.07.11.15.35
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 11:15:36 -0800 (PST)
-Received: by mail-lf1-f46.google.com with SMTP id n19so6914982lfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 11:15:35 -0800 (PST)
-X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
- i19-20020a05651c121300b00247e2d9cddamr5310350lja.443.1646680524503; Mon, 07
- Mar 2022 11:15:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220307150037.GD3293@kadam> <f7ffd78aa68340e1ade6af15fa2f06d8@AcuMS.aculab.com>
-In-Reply-To: <f7ffd78aa68340e1ade6af15fa2f06d8@AcuMS.aculab.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 7 Mar 2022 11:15:07 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjnsmmGdh-SZzaPD=e1rKhoBkQAF3JeVhGvpa=Gax--7g@mail.gmail.com>
-Message-ID: <CAHk-=wjnsmmGdh-SZzaPD=e1rKhoBkQAF3JeVhGvpa=Gax--7g@mail.gmail.com>
-Subject: Re: [PATCH 0/6] Remove usage of list iterator past the loop body
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jason Gunthorpe <jgg@ziepe.ca>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jPorPDVnw+OFvD9g2hwRU9exR6wJK5CVWOOa7OF+5Mc=;
+ b=TBLXjX1EYU2p+ysDZH3WpkDxzcFEfhKFcSjp4wJd7AoaZ0zYhsE5HBt7dkLRENkEddC1ku1R4wmTj1G53GrloHz0qqW3tUE4hIcTMs0Assvtrzr62N7nMTMQXNG2oYdGAjLQXBipsLHK7XTVXULi9ZlLmTczJQgjA5L5KhxBv+I=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by SJ0PR10MB5535.namprd10.prod.outlook.com (2603:10b6:a03:3fe::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Mon, 7 Mar
+ 2022 19:15:44 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::8df4:1db9:57f2:a96a]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::8df4:1db9:57f2:a96a%3]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
+ 19:15:44 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+CC:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Juxin Gao <gaojuxin@loongson.cn>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        "lkft-triage@lists.linaro.org" <lkft-triage@lists.linaro.org>,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [next] mips-mt.c:233:19: error: conflicting types for 'mt_init'
+Thread-Topic: [next] mips-mt.c:233:19: error: conflicting types for 'mt_init'
+Thread-Index: AQHYKha0Qt9GfER96ESS/Fsj96HNTqyxxjwAgAKVCoA=
+Date:   Mon, 7 Mar 2022 19:15:44 +0000
+Message-ID: <20220307191537.jz6rho2vikdybpam@revolver>
+References: <CA+G9fYtEx=k9TM7c7EihbO3U0qxZLbKX26NWJ1L=jjEOuy7cHQ@mail.gmail.com>
+ <4c8f31d0-d51c-bb8c-acae-da1f1b1ada51@infradead.org>
+In-Reply-To: <4c8f31d0-d51c-bb8c-acae-da1f1b1ada51@infradead.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 99d764ce-c1f3-4183-191d-08da006ee111
+x-ms-traffictypediagnostic: SJ0PR10MB5535:EE_
+x-microsoft-antispam-prvs: <SJ0PR10MB55353C93D6E792D03B2331F1FD089@SJ0PR10MB5535.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: B8AcvbiF3xprRnJRtLmjQLME2eEhDEs5nIEYq7d0YxUf1dl9/aII4bH0hbsVq7TAr+LisybrVDvM0SY+5FeNX0s32hNfF5qBwTZbQ7qfkeVbYxB0MOSBFDYNt3PBnEOdb1tzu5Oq8+xdUpzkacRL/GLDS1HCPbPBmLxR6C/ZHUxAm+drnKuaY4fY10tt9y5kQE1XvGmHSMuvkr77M5bWWx9S9hEIBvPKBdeHk9gUWp/o4py62OwKgpxa0obsb2kopXDAwFgS7CzOuOra4BaY8yHBshlPa6QzzZu2BiHftKltmVALI0TyI7vatxvy80G9mvfqimpx9DEHBoAZuYSY6YbQTgM2st7GyBMoaSWuytdA0X8cCr7EiGdCsKWEgvZtA3aMwED3gX7uWgCcwdKx+bnhOqHbZJ62rpOFrCfpLs0B1yivGFZbhiB/y8HqtRI4TXRpyeE8OXIrU3KBePH3SqSY6lYy9IPxTAEOrBEPRAtCcxERzaujWes18diD92zTyV/rTSW+KhBsPw33yX9Am+pv1GANzlxmWHo0oq72nz6L54ywDho7M5ZZTALt0VfpIT9JlAKEBh4KG3Bxo9lpJ+zUO/2FTiaw9sukaV1uzfmWb3qKGc69g9kmQuFMwlFM2cB03cJFbFNBTPqOJQCtSGrgUf9wJaLQzYuafcu8fZn9NknAmqh4z3Mllo5lfjQ7MWvp0Nonp60lp7LDO8XP0AXhgxVkPKNwpO0w+XbYxhfWgChiyRHcmu+MtijwuudbWs9emMXlXF0srIf/CVaATRT1d5CS9DNSkZ461gDhxVBjJgQqCDLNzG6jQ/rsb0d2CMTFe9zobWMv+bEwt8JA0Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(1076003)(7416002)(38100700002)(8936002)(26005)(186003)(86362001)(2906002)(6506007)(53546011)(508600001)(6512007)(44832011)(54906003)(122000001)(66946007)(76116006)(91956017)(66446008)(66476007)(6916009)(64756008)(316002)(66556008)(966005)(38070700005)(6486002)(8676002)(83380400001)(33716001)(4326008)(71200400001)(5660300002)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?afOd55UiecogkbKiB/z66/Xx1BRkpWvioezgMoxn1I6rZUHaf9Bh4GOvVFbn?=
+ =?us-ascii?Q?FOvKaVkN/xKEnD6EZJQhMkf/RyVMtSJtPdk80h7uBeUx0RKoIZ6k7mAnG6Hv?=
+ =?us-ascii?Q?0HJj2bJzrAUBG2It9t2stMYyYdJW0bWqoN25zEa6bcebAjp+peF31QU1uWWK?=
+ =?us-ascii?Q?SSgZkC1IWm9BjuXKIHRZ0WLvbQw47DQ6KEnyB874m1F5iOWcQEyDkBVCuznA?=
+ =?us-ascii?Q?2d0gpsq8GAxXMvnT8SUWALa3E4dkQh9eQWW0GKgTkCYfGCJvUAMnJHgJhD3R?=
+ =?us-ascii?Q?JRSHb3WMCoETIlOyh0Pv11tarGWuAkTTbM1BFRLjQPAJgBQVh2ZCfdf7rk/h?=
+ =?us-ascii?Q?CjsbV/Jy6zb+N3Rp3+CbYOT2iWV7y3DIAZOzPgAdLJ+QNU6Z1APCUuSSk9p7?=
+ =?us-ascii?Q?CTbDKhpZaSVXqfnWdYVcFuomUFNhaWUI2u0xV6vpUBuo62fqbQY+1woNavi/?=
+ =?us-ascii?Q?Sv2+9nOLAim/KEW+OSXdYbrA2Kki1VJA1XyYyEpNBxY1J5oQZgorzVmG4zMF?=
+ =?us-ascii?Q?H2doy/FkSbqknAOQQghId8y54rDtwiXX5DvfGUJQt7DMRCvxmlOykW4z4mt/?=
+ =?us-ascii?Q?qu8gdGLCHSjDUQQaSqQ6oLHpzgdd9EUfUUz2H0i5Qm9Bu1Yy8bGd8W3/osaf?=
+ =?us-ascii?Q?M2EF3I/vgVkzFpEQazbiNLACgzPYWJ1/RLMZnXHXbVpjC5I0T+Pf+vBHWRzi?=
+ =?us-ascii?Q?2R0cJcBFaqhGKf6Q9q4fU99DeOpope8BzH8UEN8r0xYy0Hm+sLTgfuyiFSyr?=
+ =?us-ascii?Q?fUPxsEBymwb/uKNPtKU0xwvYDAVIC+U6TLTZA9fB4d0X6/cs2NBxUpmaHKKJ?=
+ =?us-ascii?Q?g4kJKWnKWrLBnEkhdSxUeRYfGP8YCtoJi8Od/dXcYfWTizRvwECc2eCGSbfH?=
+ =?us-ascii?Q?VES4+48ALvrhObNf9pmMW7yc7MKyW8+wf417Q7WxczBNSPkuuw32qIW0TD+v?=
+ =?us-ascii?Q?0VSguBkGkcCW5oQSBS5/EnfZCzmZd/0QcqF1FXVrFJtraIdj6WAxg3h9fD19?=
+ =?us-ascii?Q?TgQJ7stkvX4hp0tuKaAwuKFIx0yuG5X+XXZdgna2phmRCtzDl4XwWF3++Xav?=
+ =?us-ascii?Q?6ZepNdoLZtkvBpQVH2FTFgXg5K9A9qDZMwTFwetYFcduYDf5u9f7by4lh9f6?=
+ =?us-ascii?Q?f5EV//Hv7SGrwITBj0JLVpguVnm/mE6t1B+74aIK52rdsMXcEC34PdqBCt0d?=
+ =?us-ascii?Q?dMBA1WKjveqZ9FzaNsbtOI/a+hORPOmqcDe9+NwoAEMQixQot81Ww2T7g/RK?=
+ =?us-ascii?Q?FUsAde+3jtvKXpQ7suzykdlzJ6kaYP/V2+f4WCro3z6we6I8w6cbtC9keIWZ?=
+ =?us-ascii?Q?3kWTqIgNmYzrY5Y8USSd9ssyNGmq8OfNVGyFNSTqqfzxmNoiQghWBHULsRdN?=
+ =?us-ascii?Q?QQOIS5hGpeDVn4zZBwPSIll7iHpFEmpxfp5oM0ODgjKNDI3ToZ0UEI3caEaE?=
+ =?us-ascii?Q?xRNQkvwbQzkTH8iyI4KHAKQWifXncWsQcD+3UFFtig3lPvjcpUUpaQO2NaDB?=
+ =?us-ascii?Q?rru/F0rqfRduo2x81jz7y0TNVm1UdU9z71z9B8BA4lvPF+L+H5ukD92KH50Q?=
+ =?us-ascii?Q?o4lTkFl/n1KwQjz0IAwp1TRzDiYA4R6jzoU89/RB7UtRBLRV+Pr7cKoq2BHn?=
+ =?us-ascii?Q?udMKRn5ZdUSpGzoplL2DTOM=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2FB5442B1FCBB9408CFA64B6157C7A9D@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99d764ce-c1f3-4183-191d-08da006ee111
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2022 19:15:44.7649
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: J4+KuVefU+UcyHR4GprxxuZiy2gH3x3+Fy3umIxxA95JYoboefNkRfTHMWKXliIw9Wsq1Oh5hzk79vD2duHAaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5535
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10279 signatures=690470
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
+ suspectscore=0 bulkscore=0 mlxlogscore=999 adultscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203070106
+X-Proofpoint-ORIG-GUID: 11n-UxnRaYdmhBwGOsgqrKDwzdvk0i0G
+X-Proofpoint-GUID: 11n-UxnRaYdmhBwGOsgqrKDwzdvk0i0G
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 7:26 AM David Laight <David.Laight@aculab.com> wrote:
->
-> I'd write the following new defines (but I might be using
-> the old names here):
+Hello Randy,
 
-See my email at
+I did address this when it occurred on the 24th [1].  I had looked at
+this and was thinking I would rename the maple tree function, but
+Matthew suggested renaming the mips function instead.  I looked into the
+conflict and the arch/mips/kernel/mips-mt.c uses the mips_ prefix for
+almost all of the functions. So I generated a patch on my tree for
+next-20220225 which fixes the issue by renaming the mips side of things.
+Please see 51e773764d11 for the very small rename.
 
-  https://lore.kernel.org/all/CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com/
+[1]
+https://lore.kernel.org/linux-mm/202202241817.MXoE0NcM-lkp@intel.com/
 
-for what I think is the way forward if we want to do new defines and
-clean up the situation.
+Thanks,
+Liam
 
-It's really just an example (and converts two list cases and one
-single file that uses them), so it's not in any way complete.
-
-I also has that "-std=gnu11" in the patch so that you can use the
-loop-declared variables - but without the other small fixups for some
-of the things that exposed.
-
-I'll merge the proper version of the "update C standard version" from
-Arnd early in the 5.18 merge window, but for testing that one file
-example change I sent out the patch like that.
-
-          Linus
+* Randy Dunlap <rdunlap@infradead.org> [220305 22:50]:
+> Hi Liam,
+>=20
+> Would you consider renaming maple tree's "mt_init()" function to
+> maple_tree_init() or mtree_init() or something that does not
+> conflict with the mt_init() function in arch/mips/ so that
+> these build errors don't happen?
+>=20
+> thanks.
+>=20
+> On 2/24/22 23:09, Naresh Kamboju wrote:
+> > [Please ignore this email if it is already reported]
+> >=20
+> > Linux next-20220224 arch mips build errors / warnings noticed [1].
+> >=20
+> > Build configs:
+> >   -  mips-gcc-8-malta_defconfig
+> >   -  mips-gcc-10-malta_defconfig
+> >   -  mips-gcc-8-defconfig
+> >   -  mips-gcc-10-defconfig
+> >=20
+> > metadata:
+> >     git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+> >     git_sha: 44948bd49d878dad6c9707e34f4a06df73c3a800
+> >     git_short_log: 44948bd49d87 (\Add linux-next specific files for 202=
+20224\)
+> >     kconfig: defconfig
+> >     target_arch: mips
+> >     toolchain: gcc-10
+> >=20
+> >=20
+> > Build errors / warnings:
+> >=20
+> > arch/mips/kernel/mips-mt.c:233:19: error: conflicting types for 'mt_ini=
+t'
+> >   233 | static int __init mt_init(void)
+> >       |                   ^~~~~~~
+> > In file included from include/linux/mm_types.h:12,
+> >                  from include/linux/mmzone.h:21,
+> >                  from include/linux/gfp.h:6,
+> >                  from include/linux/radix-tree.h:12,
+> >                  from include/linux/idr.h:15,
+> >                  from include/linux/kernfs.h:12,
+> >                  from include/linux/sysfs.h:16,
+> >                  from include/linux/kobject.h:20,
+> >                  from include/linux/energy_model.h:7,
+> >                  from include/linux/device.h:16,
+> >                  from arch/mips/kernel/mips-mt.c:7:
+> > include/linux/maple_tree.h:589:20: note: previous definition of
+> > 'mt_init' was here
+> >   589 | static inline void mt_init(struct maple_tree *mt)
+> >       |                    ^~~~~~~
+> > make[3]: *** [scripts/Makefile.build:288: arch/mips/kernel/mips-mt.o] E=
+rror 1
+> >=20
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >=20
+> > Steps to reproduce:
+> > ------------------
+> > # To install tuxmake on your system globally:
+> > # sudo pip3 install -U tuxmake
+> >=20
+> > tuxmake --runtime podman --target-arch mips --toolchain gcc-10
+> > --kconfig defconfig
+> >=20
+> > --
+> >=20
+> > [1] https://builds.tuxbuild.com/25aFF2X7uoyebURaYzNHW9FVEmN/
+>=20
+> --=20
+> ~Randy=
