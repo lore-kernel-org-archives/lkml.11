@@ -2,263 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC523C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB86BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241784AbiCGLEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        id S239014AbiCGLIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:08:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239843AbiCGLDp (ORCPT
+        with ESMTP id S236726AbiCGLHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:03:45 -0500
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26F4BB57B;
-        Mon,  7 Mar 2022 02:25:21 -0800 (PST)
-Received: by mail-ed1-f53.google.com with SMTP id g20so19174594edw.6;
-        Mon, 07 Mar 2022 02:25:21 -0800 (PST)
+        Mon, 7 Mar 2022 06:07:51 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EC1B1AA5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:29:09 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9A8743F5FD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:28:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646648914;
+        bh=n4LldnGelhoblkd1zTeAcrQUBsJGtchc+UnMsYoKCgg=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=LvrHybSk+9Npw4GvcsX63AebRCSrJLA/K8IcCJ/gqoj+BSMzGBtDxBdEgGgHBCZQf
+         gOc4qmG/iv8hgjRDBF7dztVEeIIDkOJ10Sy+rwdfAtDv7bwUxotAuAscSwqRsMo1Xc
+         OKqmz8tl5qghqCen9+dB17K2WfHGDmJtcf+/tmv5fma/4PufSvCWV3WbOfrwjHElBz
+         rIA7LDLoIyZtjcGITlgK23EApYx0XDTPlD8/S58b/IZ5AsxYHN84WkUHqMVROeRJwy
+         6pk5CcJGaql09pr93OIFAy3Xsr0s4yL29RVgmLtRWBGJcnpafD7ylWnlPhYQYCgG7k
+         xKKYgdUNtXUow==
+Received: by mail-ed1-f69.google.com with SMTP id bd4-20020a056402206400b004162b6d8618so2596275edb.19
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 02:28:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=9BEIE4LEowvxQSSTz3f1Y8ar8ZR223l9KKCc1D8mpx0=;
-        b=b9aZBfH56V+XBTe7CPuU/cUIDBU1GRaRExLqYO+6wYwTnNXlQGuJf3W5JoK5qDSmnX
-         OrH+LD8zv8k40XPUZufA2YofFNmtrIGYQfV1Z9YUZ/WLYIyBVu8X9+Zo5rxQREYd6MUd
-         6pGSW4ovlVv3mXJZaZdjWuFobuIHOxsjcZpkSg9b9Z6QwdorBfzdDY+gULuJB57aKjNm
-         JsEq7qDafiS1JVDN5bkUHIRvUw53UGYSNamLJO6/G82xK3ChiaVNq4+n2OGRi/V/NcVh
-         hymH3dc3PDvKKSVmUoGx62bW/2vSwRsWSAzcGqqUlFRRvudjxJEwC/rMnuCkmY5unEtQ
-         skCA==
-X-Gm-Message-State: AOAM532aYumjGI926lmJkL7XW8JAooVEqq9vqcShxFv5CXXoiR+UAy1s
-        oQDKjSP/KOkv6T3e6kTE0l0=
-X-Google-Smtp-Source: ABdhPJwIkS5RGTudyYpPKaC8uoCHh20OFgMnawdAASKR32kUeYvdzWByRI3rumxyl4AavNo2ImHiRw==
-X-Received: by 2002:a05:6402:3712:b0:416:13bf:4fc5 with SMTP id ek18-20020a056402371200b0041613bf4fc5mr10687450edb.115.1646648710572;
-        Mon, 07 Mar 2022 02:25:10 -0800 (PST)
+        bh=n4LldnGelhoblkd1zTeAcrQUBsJGtchc+UnMsYoKCgg=;
+        b=VjWEdSgPWRj0gdS7ecjjd54N69kEL9A1UGdr5nyoFeNJQ8ggjR6POpKsMVn92SoGbi
+         jFm8sLNVOtCAswyGUmgbns6Q/9UD22RfnpJ7LBnkftNbTC03FpPH9/VEzGgAglvvmarh
+         vktuRdZkgP/bEt8LaAMVidk98f6Vca4vfEqs5ImSJ43vOJdXz+5UBgYsHU0dQYIjsr+Y
+         NWaTKI5iyztxl9Xurn+u5XSRAqF+yJTHeDlgUin2Ydpwo7XMhTztiwd2Pna44vRpKpO4
+         CVdMWFvwXcz3u0KhY+uIKQXIZqrSe5sraZDMhX+CdWqIo1N7B37SEI8yQPMNtyiUq6j3
+         rKPA==
+X-Gm-Message-State: AOAM533hDJSjbdIlZfGgB63mRx4Q6Qz2d3nNcmR2oIBIjdM8DmUrXWOa
+        TJe3ZGzxffqahteyt3OZm6q8Il4le52pSlGmQ0FnnSR1kUsGSF57nhKJRkHE7WQv20jU1gvJaS4
+        CfAtJSt6EGJSrIHnTxgSkTlxkYWM42JxFp6XswGg4+Q==
+X-Received: by 2002:a17:907:7815:b0:6ce:5242:1280 with SMTP id la21-20020a170907781500b006ce52421280mr8358574ejc.217.1646648914048;
+        Mon, 07 Mar 2022 02:28:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwgVGHw806iLNc31AIobcdf7SovFCeUFaY2HECf3Fa28ex2JcevW04haDjZiWoqSaBkFMAV0Q==
+X-Received: by 2002:a17:907:7815:b0:6ce:5242:1280 with SMTP id la21-20020a170907781500b006ce52421280mr8358545ejc.217.1646648913829;
+        Mon, 07 Mar 2022 02:28:33 -0800 (PST)
 Received: from [192.168.0.141] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.googlemail.com with ESMTPSA id rh13-20020a17090720ed00b006da69254082sm4558682ejb.135.2022.03.07.02.25.09
+        by smtp.gmail.com with ESMTPSA id q9-20020a170906770900b006d20acf7e2bsm4618438ejm.200.2022.03.07.02.28.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 02:25:10 -0800 (PST)
-Message-ID: <2669852c-5bb6-1edf-bf58-ea815f54d50f@kernel.org>
-Date:   Mon, 7 Mar 2022 11:25:09 +0100
+        Mon, 07 Mar 2022 02:28:33 -0800 (PST)
+Message-ID: <0b516030-cb4d-106e-57cc-06767702724e@canonical.com>
+Date:   Mon, 7 Mar 2022 11:28:32 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH 3/3] arm64: dts: nuvoton: Add initial support for MA35D1
+Subject: Re: [PATCH v7 1/3] dt-bindings: dma-engine: sifive,fu540: Add
+ dma-channels property and modify compatible
 Content-Language: en-US
-To:     Jacky Huang <ychuang3@nuvoton.com>, robh+dt@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, arnd@arndb.de,
-        olof@lixom.net
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220307091923.9909-1-ychuang3@nuvoton.com>
- <20220307091923.9909-4-ychuang3@nuvoton.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220307091923.9909-4-ychuang3@nuvoton.com>
+To:     Zong Li <zong.li@sifive.com>, robh+dt@kernel.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, conor.dooley@microchip.com,
+        geert@linux-m68k.org, bin.meng@windriver.com, green.wan@sifive.com,
+        vkoul@kernel.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>, Rob Herring <robh@kernel.org>
+References: <cover.1646631717.git.zong.li@sifive.com>
+ <1e75ad35b7d1fb6156781bf9c545e1f084c43a1e.1646631717.git.zong.li@sifive.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1e75ad35b7d1fb6156781bf9c545e1f084c43a1e.1646631717.git.zong.li@sifive.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 10:19, Jacky Huang wrote:
-> Add the initial device tree files for Nuvoton MA35D1 Soc.
+On 07/03/2022 06:44, Zong Li wrote:
+> Add dma-channels property, then we can determine how many channels there
+> by device tree, rather than statically defining it in PDMA driver.
+> In addition, we also modify the compatible for PDMA versioning scheme.
 > 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> Suggested-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 > ---
->  arch/arm64/boot/dts/Makefile               |   1 +
->  arch/arm64/boot/dts/nuvoton/Makefile       |   2 +
->  arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts |  23 +++++
->  arch/arm64/boot/dts/nuvoton/ma35d1.dtsi    | 106 +++++++++++++++++++++
->  4 files changed, 132 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
->  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
->  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+>  .../bindings/dma/sifive,fu540-c000-pdma.yaml  | 19 +++++++++++++++++--
+>  1 file changed, 17 insertions(+), 2 deletions(-)
 > 
-> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
-> index 639e01a4d855..28e01442094f 100644
-> --- a/arch/arm64/boot/dts/Makefile
-> +++ b/arch/arm64/boot/dts/Makefile
-> @@ -30,3 +30,4 @@ subdir-y += synaptics
->  subdir-y += ti
->  subdir-y += toshiba
->  subdir-y += xilinx
-> +subdir-y += nuvoton
-> diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
-> new file mode 100644
-> index 000000000000..e1e0c466bf5e
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/Makefile
-> @@ -0,0 +1,2 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +dtb-$(CONFIG_ARCH_NUVOTON) += ma35d1-evb.dtb
-
-ARCH_NUVOTON does not exist.
-
-> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
-> new file mode 100644
-> index 000000000000..38e4f734da0f
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
-> @@ -0,0 +1,23 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Device Tree Source for MA35D1 Evaluation Board (EVB)
-> + *
-> + * Copyright (C) 2021 Nuvoton Technology Corp.
-> + */
-> +
-> +/dts-v1/;
-> +#include "ma35d1.dtsi"
-> +
-> +/ {
-> +       model = "Nuvoton MA35D1-EVB";
-> +
-> +       chosen {
-> +               bootargs = "console=ttyS0,115200n8";
-
-No bootargs. "chosen", please.
-
-> +       };
-
-You need compatible and bindings.
-
-> +
-> +       memory@80000000 {
-> +               device_type = "memory";
-> +               reg = <0x00000000 0x80000000 0 0x10000000>;
-> +       };
-> +};
-> +
-> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
-> new file mode 100644
-> index 000000000000..27adac4975c3
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
-> @@ -0,0 +1,106 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2022 Nuvoton Technology Corp.
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/input/input.h>
-> +#include <dt-bindings/gpio/gpio.h>
-> +#include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
-> +
-> +/ {
-> +       compatible = "nuvoton,ma35d1";
-
-Please run checkpatch. This compatible looks undocumented.
-
-> +       interrupt-parent = <&gic>;
-> +       #address-cells = <2>;
-> +       #size-cells = <2>;
-> +
-> +       cpus {
-> +               #address-cells = <2>;
-> +               #size-cells = <0>;
-> +               cpu-map {
-> +                       cluster0 {
-> +                               core0 {
-> +                                       cpu = <&cpu0>;
-> +                               };
-> +                               core1 {
-> +                                       cpu = <&cpu1>;
-> +                               };
-> +                       };
-> +               };
-
-Line break between each nodes, here and below.
-
-> +               cpu0: cpu@0 {
-> +                       device_type = "cpu";
-> +                       compatible = "arm,cortex-a35";
-> +                       reg = <0x0 0x0>;
-> +                       enable-method = "psci";
-> +                       next-level-cache = <&L2_0>;
-> +               };
-> +               cpu1: cpu@1 {
-> +                       device_type = "cpu";
-> +                       compatible = "arm,cortex-a35";
-> +                       reg = <0x0 0x1>;
-> +                       enable-method = "psci";
-> +                       next-level-cache = <&L2_0>;
-> +               };
-> +               L2_0: l2-cache0 {
-> +                       compatible = "cache";
-> +                       cache-level = <2>;
-> +               };
-> +       };
-> +
-> +       psci {
-> +               compatible = "arm,psci-0.2";
-> +               method = "smc";
-> +       };
-> +
-> +       timer {
-> +               compatible = "arm,armv8-timer";
-> +               interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
-> +                                         IRQ_TYPE_LEVEL_LOW)>,
-> +                            <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) |
-> +                                         IRQ_TYPE_LEVEL_LOW)>,
-> +                            <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) |
-> +                                         IRQ_TYPE_LEVEL_LOW)>,
-> +                            <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
-> +                                         IRQ_TYPE_LEVEL_LOW)>;
-> +               clock-frequency = <12000000>;
-> +       };
-> +
-> +       sys: system-controller@40460000 {
-> +               compatible = "nuvoton,ma35d1-sys", "syscon", "simple-mfd";
-> +               reg = <0x0 0x40460000 0x0 0x200>;
-> +       };
-> +
-> +       reset: reset-controller {
-> +               compatible = "nuvoton,ma35d1-reset";
-> +               nuvoton,ma35d1-sys = <&sys>;
-> +               #reset-cells = <1>;
-> +       };
-> +
-> +       clk: clock-controller@40460200 {
-> +               compatible = "nuvoton,ma35d1-clk";
-> +               reg = <0x00000000 0x40460200 0x0 0x100>;
-> +               #clock-cells = <1>;
-> +               assigned-clocks = <&clk DDRPLL>,
-> +                                 <&clk APLL>,
-> +                                 <&clk EPLL>,
-> +                                 <&clk VPLL>;
-> +               assigned-clock-rates = <266000000>,
-> +                                      <180000000>,
-> +                                      <500000000>,
-> +                                      <102000000>;
-> +               clock-pll-mode = <1>, <0>, <0>, <0>;
-> +       };
-> +
-> +       gic: interrupt-controller@50800000 {
-> +               compatible = "arm,gic-400";
-> +               #interrupt-cells = <3>;
-> +               interrupt-parent = <&gic>;
-> +               interrupt-controller;
-> +               reg = <0x0 0x50801000 0 0x1000>,
-> +                     <0x0 0x50802000 0 0x2000>,
-> +                     <0x0 0x50804000 0 0x2000>,
-> +                     <0x0 0x50806000 0 0x2000>;
-> +               interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
-> +                                        IRQ_TYPE_LEVEL_HIGH)>;
-> +       };
-> +};
-> --
-> 2.17.1
-> 
-> ________________________________
-> ________________________________
->  The privileged confidential information contained in this email is intended for use only by the addressees as indicated by the original sender of this email. If you are not the addressee indicated in this email or are not responsible for delivery of the email to such a person, please kindly reply to the sender indicating this fact and delete all copies of it from your computer and network server immediately.
 
 
-> Your cooperation is highly appreciated...
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Cooperation seems futile... :)
 
 Best regards,
 Krzysztof
