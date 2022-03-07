@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A62C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5909C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243084AbiCGKdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:33:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
+        id S235106AbiCGKeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:34:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242751AbiCGKLv (ORCPT
+        with ESMTP id S242883AbiCGKL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E43078924;
-        Mon,  7 Mar 2022 01:55:52 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5064D8C7CA;
+        Mon,  7 Mar 2022 01:56:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DFB4B8102B;
-        Mon,  7 Mar 2022 09:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C603CC340E9;
-        Mon,  7 Mar 2022 09:55:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E2E4B810BC;
+        Mon,  7 Mar 2022 09:56:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC365C340E9;
+        Mon,  7 Mar 2022 09:56:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646950;
-        bh=RFy/TVB0mDsKcCoPgg6F2kYx+5aw6gItLBwf3kzzL4o=;
+        s=korg; t=1646646962;
+        bh=1PVQDhR9eTXhrMwf4PaZbVLncmwPCIg354sNYaoMFs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jtg04GneeXD9MuZxO/c5yZihoEB/ekyboocEA5Yaen6PA1O2tvno61VwH2un4D3Le
-         7iMJKPvnRSfd3WmxOZ3ZLGnD3Ro6mr2Nt9aJJFcl/Fwo9Wg/1pa0abCcHHeVjFpPnx
-         F2fFlKoMNP9HRYRLVpyg2AZgzpHpI2vK0JyDkAVI=
+        b=VUnGOZn1BwjNCa0vxDzRlasg1RYEhUi3pPPYUs+hf9yfe4fs+f1drPXhe0qeKPMbN
+         NLdK+p6t0gQPMAxonXRMZq8BqekhBr2UInmzwnj7REUqDKcgutAX9YhdtDReOBs0DW
+         qDpxXMmja3PjtNxaKhow9FbCLbcJRvWAvgbMQPx0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacob Root <otis@otisroot.com>,
-        Dany Madden <drt@linux.ibm.com>,
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 143/186] ibmvnic: Update driver return codes
-Date:   Mon,  7 Mar 2022 10:19:41 +0100
-Message-Id: <20220307091658.075456511@linuxfoundation.org>
+Subject: [PATCH 5.16 146/186] ibmvnic: Allow queueing resets during probe
+Date:   Mon,  7 Mar 2022 10:19:44 +0100
+Message-Id: <20220307091658.158332264@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,266 +50,272 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dany Madden <drt@linux.ibm.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit b6ee566cf3940883d67c0d142fae8d410e975f47 ]
+[ Upstream commit fd98693cb0721317f27341951593712c580c36a1 ]
 
-Update return codes to be more informative.
+We currently don't allow queuing resets when adapter is in VNIC_PROBING
+state - instead we throw away the reset and return EBUSY. The reasoning
+is probably that during ibmvnic_probe() the ibmvnic_adapter itself is
+being initialized so performing a reset during this time can lead us to
+accessing fields in the ibmvnic_adapter that are not fully initialized.
+A review of the code shows that all the adapter state neede to process a
+reset is initialized before registering the CRQ so that should no longer
+be a concern.
 
-Signed-off-by: Jacob Root <otis@otisroot.com>
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
+Further the expectation is that if we do get a reset (transport event)
+during probe, the do..while() loop in ibmvnic_probe() will handle this
+by reinitializing the CRQ.
+
+While that is true to some extent, it is possible that the reset might
+occur _after_ the CRQ is registered and CRQ_INIT message was exchanged
+but _before_ the adapter state is set to VNIC_PROBED. As mentioned above,
+such a reset will be thrown away. While the client assumes that the
+adapter is functional, the vnic server will wait for the client to reinit
+the adapter. This disconnect between the two leaves the adapter down
+needing manual intervention.
+
+Because ibmvnic_probe() has other work to do after initializing the CRQ
+(such as registering the netdev at a minimum) and because the reset event
+can occur at any instant after the CRQ is initialized, there will always
+be a window between initializing the CRQ and considering the adapter
+ready for resets (ie state == PROBED).
+
+So rather than discarding resets during this window, allow queueing them
+- but only process them after the adapter is fully initialized.
+
+To do this, introduce a new completion state ->probe_done and have the
+reset worker thread wait on this before processing resets.
+
+This change brings up two new situations in or just after ibmvnic_probe().
+First after one or more resets were queued, we encounter an error and
+decide to retry the initialization.  At that point the queued resets are
+no longer relevant since we could be talking to a new vnic server. So we
+must purge/flush the queued resets before restarting the initialization.
+As a side note, since we are still in the probing stage and we have not
+registered the netdev, it will not be CHANGE_PARAM reset.
+
+Second this change opens up a potential race between the worker thread
+in __ibmvnic_reset(), the tasklet and the ibmvnic_open() due to the
+following sequence of events:
+
+	1. Register CRQ
+	2. Get transport event before CRQ_INIT completes.
+	3. Tasklet schedules reset:
+		a) add rwi to list
+		b) schedule_work() to start worker thread which runs
+		   and waits for ->probe_done.
+	4. ibmvnic_probe() decides to retry, purges rwi_list
+	5. Re-register crq and this time rest of probe succeeds - register
+	   netdev and complete(->probe_done).
+	6. Worker thread resumes in __ibmvnic_reset() from 3b.
+	7. Worker thread sets ->resetting bit
+	8. ibmvnic_open() comes in, notices ->resetting bit, sets state
+	   to IBMVNIC_OPEN and returns early expecting worker thread to
+	   finish the open.
+	9. Worker thread finds rwi_list empty and returns without
+	   opening the interface.
+
+If this happens, the ->ndo_open() call is effectively lost and the
+interface remains down. To address this, ensure that ->rwi_list is
+not empty before setting the ->resetting  bit. See also comments in
+__ibmvnic_reset().
+
+Fixes: 6a2fb0e99f9c ("ibmvnic: driver initialization for kdump/kexec")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 64 ++++++++++++++++--------------
- 1 file changed, 34 insertions(+), 30 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 107 ++++++++++++++++++++++++++---
+ drivers/net/ethernet/ibm/ibmvnic.h |   1 +
+ 2 files changed, 98 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 16e772f80ec5..7bd0ad590898 100644
+index 679257d3a3c6..a8b65c072f64 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -309,7 +309,7 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 	if (adapter->fw_done_rc) {
- 		dev_err(dev, "Couldn't map LTB, rc = %d\n",
- 			adapter->fw_done_rc);
--		rc = -1;
-+		rc = -EIO;
- 		goto out;
- 	}
- 	rc = 0;
-@@ -541,13 +541,15 @@ static int init_stats_token(struct ibmvnic_adapter *adapter)
+@@ -2618,23 +2618,82 @@ static int do_passive_init(struct ibmvnic_adapter *adapter)
+ static void __ibmvnic_reset(struct work_struct *work)
  {
- 	struct device *dev = &adapter->vdev->dev;
- 	dma_addr_t stok;
-+	int rc;
+ 	struct ibmvnic_adapter *adapter;
+-	bool saved_state = false;
++	unsigned int timeout = 5000;
+ 	struct ibmvnic_rwi *tmprwi;
++	bool saved_state = false;
+ 	struct ibmvnic_rwi *rwi;
+ 	unsigned long flags;
+-	u32 reset_state;
++	struct device *dev;
++	bool need_reset;
+ 	int num_fails = 0;
++	u32 reset_state;
+ 	int rc = 0;
  
- 	stok = dma_map_single(dev, &adapter->stats,
- 			      sizeof(struct ibmvnic_statistics),
- 			      DMA_FROM_DEVICE);
--	if (dma_mapping_error(dev, stok)) {
--		dev_err(dev, "Couldn't map stats buffer\n");
--		return -1;
-+	rc = dma_mapping_error(dev, stok);
-+	if (rc) {
-+		dev_err(dev, "Couldn't map stats buffer, rc = %d\n", rc);
-+		return rc;
+ 	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
++		dev = &adapter->vdev->dev;
+ 
+-	if (test_and_set_bit_lock(0, &adapter->resetting)) {
++	/* Wait for ibmvnic_probe() to complete. If probe is taking too long
++	 * or if another reset is in progress, defer work for now. If probe
++	 * eventually fails it will flush and terminate our work.
++	 *
++	 * Three possibilities here:
++	 * 1. Adpater being removed  - just return
++	 * 2. Timed out on probe or another reset in progress - delay the work
++	 * 3. Completed probe - perform any resets in queue
++	 */
++	if (adapter->state == VNIC_PROBING &&
++	    !wait_for_completion_timeout(&adapter->probe_done, timeout)) {
++		dev_err(dev, "Reset thread timed out on probe");
+ 		queue_delayed_work(system_long_wq,
+ 				   &adapter->ibmvnic_delayed_reset,
+ 				   IBMVNIC_RESET_DELAY);
+ 		return;
  	}
  
- 	adapter->stats_token = stok;
-@@ -656,7 +658,7 @@ static int init_rx_pools(struct net_device *netdev)
- 	u64 num_pools;
- 	u64 pool_size;		/* # of buffers in one pool */
- 	u64 buff_size;
--	int i, j;
-+	int i, j, rc;
- 
- 	pool_size = adapter->req_rx_add_entries_per_subcrq;
- 	num_pools = adapter->req_rx_queues;
-@@ -675,7 +677,7 @@ static int init_rx_pools(struct net_device *netdev)
- 				   GFP_KERNEL);
- 	if (!adapter->rx_pool) {
- 		dev_err(dev, "Failed to allocate rx pools\n");
--		return -1;
-+		return -ENOMEM;
++	/* adapter is done with probe (i.e state is never VNIC_PROBING now) */
++	if (adapter->state == VNIC_REMOVING)
++		return;
++
++	/* ->rwi_list is stable now (no one else is removing entries) */
++
++	/* ibmvnic_probe() may have purged the reset queue after we were
++	 * scheduled to process a reset so there maybe no resets to process.
++	 * Before setting the ->resetting bit though, we have to make sure
++	 * that there is infact a reset to process. Otherwise we may race
++	 * with ibmvnic_open() and end up leaving the vnic down:
++	 *
++	 *	__ibmvnic_reset()	    ibmvnic_open()
++	 *	-----------------	    --------------
++	 *
++	 *  set ->resetting bit
++	 *  				find ->resetting bit is set
++	 *  				set ->state to IBMVNIC_OPEN (i.e
++	 *  				assume reset will open device)
++	 *  				return
++	 *  find reset queue empty
++	 *  return
++	 *
++	 *  	Neither performed vnic login/open and vnic stays down
++	 *
++	 * If we hold the lock and conditionally set the bit, either we
++	 * or ibmvnic_open() will complete the open.
++	 */
++	need_reset = false;
++	spin_lock(&adapter->rwi_lock);
++	if (!list_empty(&adapter->rwi_list)) {
++		if (test_and_set_bit_lock(0, &adapter->resetting)) {
++			queue_delayed_work(system_long_wq,
++					   &adapter->ibmvnic_delayed_reset,
++					   IBMVNIC_RESET_DELAY);
++		} else {
++			need_reset = true;
++		}
++	}
++	spin_unlock(&adapter->rwi_lock);
++
++	if (!need_reset)
++		return;
++
+ 	rwi = get_next_rwi(adapter);
+ 	while (rwi) {
+ 		spin_lock_irqsave(&adapter->state_lock, flags);
+@@ -2786,13 +2845,6 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
+ 		goto err;
  	}
  
- 	/* Set num_active_rx_pools early. If we fail below after partial
-@@ -698,6 +700,7 @@ static int init_rx_pools(struct net_device *netdev)
- 					    GFP_KERNEL);
- 		if (!rx_pool->free_map) {
- 			dev_err(dev, "Couldn't alloc free_map %d\n", i);
-+			rc = -ENOMEM;
- 			goto out_release;
- 		}
+-	if (adapter->state == VNIC_PROBING) {
+-		netdev_warn(netdev, "Adapter reset during probe\n");
+-		adapter->init_done_rc = -EAGAIN;
+-		ret = EAGAIN;
+-		goto err;
+-	}
+-
+ 	list_for_each_entry(tmp, &adapter->rwi_list, list) {
+ 		if (tmp->reset_reason == reason) {
+ 			netdev_dbg(netdev, "Skipping matching reset, reason=%s\n",
+@@ -5761,6 +5813,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	struct ibmvnic_adapter *adapter;
+ 	struct net_device *netdev;
+ 	unsigned char *mac_addr_p;
++	unsigned long flags;
+ 	bool init_success;
+ 	int rc;
  
-@@ -706,6 +709,7 @@ static int init_rx_pools(struct net_device *netdev)
- 					   GFP_KERNEL);
- 		if (!rx_pool->rx_buff) {
- 			dev_err(dev, "Couldn't alloc rx buffers\n");
-+			rc = -ENOMEM;
- 			goto out_release;
- 		}
+@@ -5805,6 +5858,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	spin_lock_init(&adapter->rwi_lock);
+ 	spin_lock_init(&adapter->state_lock);
+ 	mutex_init(&adapter->fw_lock);
++	init_completion(&adapter->probe_done);
+ 	init_completion(&adapter->init_done);
+ 	init_completion(&adapter->fw_done);
+ 	init_completion(&adapter->reset_done);
+@@ -5822,6 +5876,26 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 		 */
+ 		adapter->failover_pending = false;
+ 
++		/* If we had already initialized CRQ, we may have one or
++		 * more resets queued already. Discard those and release
++		 * the CRQ before initializing the CRQ again.
++		 */
++		release_crq_queue(adapter);
++
++		/* Since we are still in PROBING state, __ibmvnic_reset()
++		 * will not access the ->rwi_list and since we released CRQ,
++		 * we won't get _new_ transport events. But there maybe an
++		 * ongoing ibmvnic_reset() call. So serialize access to
++		 * rwi_list. If we win the race, ibvmnic_reset() could add
++		 * a reset after we purged but thats ok - we just may end
++		 * up with an extra reset (i.e similar to having two or more
++		 * resets in the queue at once).
++		 * CHECK.
++		 */
++		spin_lock_irqsave(&adapter->rwi_lock, flags);
++		flush_reset_queue(adapter);
++		spin_unlock_irqrestore(&adapter->rwi_lock, flags);
++
+ 		rc = init_crq_queue(adapter);
+ 		if (rc) {
+ 			dev_err(&dev->dev, "Couldn't initialize crq. rc=%d\n",
+@@ -5873,6 +5947,8 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
  	}
-@@ -719,8 +723,9 @@ static int init_rx_pools(struct net_device *netdev)
- 		dev_dbg(dev, "Updating LTB for rx pool %d [%d, %d]\n",
- 			i, rx_pool->size, rx_pool->buff_size);
+ 	dev_info(&dev->dev, "ibmvnic registered\n");
  
--		if (alloc_long_term_buff(adapter, &rx_pool->long_term_buff,
--					 rx_pool->size * rx_pool->buff_size))
-+		rc = alloc_long_term_buff(adapter, &rx_pool->long_term_buff,
-+					  rx_pool->size * rx_pool->buff_size);
-+		if (rc)
- 			goto out;
++	complete(&adapter->probe_done);
++
+ 	return 0;
  
- 		for (j = 0; j < rx_pool->size; ++j) {
-@@ -757,7 +762,7 @@ static int init_rx_pools(struct net_device *netdev)
- 	/* We failed to allocate one or more LTBs or map them on the VIOS.
- 	 * Hold onto the pools and any LTBs that we did allocate/map.
- 	 */
--	return -1;
-+	return rc;
- }
+ ibmvnic_register_fail:
+@@ -5887,6 +5963,17 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ ibmvnic_init_fail:
+ 	release_sub_crqs(adapter, 1);
+ 	release_crq_queue(adapter);
++
++	/* cleanup worker thread after releasing CRQ so we don't get
++	 * transport events (i.e new work items for the worker thread).
++	 */
++	adapter->state = VNIC_REMOVING;
++	complete(&adapter->probe_done);
++	flush_work(&adapter->ibmvnic_reset);
++	flush_delayed_work(&adapter->ibmvnic_delayed_reset);
++
++	flush_reset_queue(adapter);
++
+ 	mutex_destroy(&adapter->fw_lock);
+ 	free_netdev(netdev);
  
- static void release_vpd_data(struct ibmvnic_adapter *adapter)
-@@ -818,13 +823,13 @@ static int init_one_tx_pool(struct net_device *netdev,
- 				   sizeof(struct ibmvnic_tx_buff),
- 				   GFP_KERNEL);
- 	if (!tx_pool->tx_buff)
--		return -1;
-+		return -ENOMEM;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index b8e42f67d897..549a9b7b1a70 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -933,6 +933,7 @@ struct ibmvnic_adapter {
  
- 	tx_pool->free_map = kcalloc(pool_size, sizeof(int), GFP_KERNEL);
- 	if (!tx_pool->free_map) {
- 		kfree(tx_pool->tx_buff);
- 		tx_pool->tx_buff = NULL;
--		return -1;
-+		return -ENOMEM;
- 	}
+ 	struct ibmvnic_tx_pool *tx_pool;
+ 	struct ibmvnic_tx_pool *tso_pool;
++	struct completion probe_done;
+ 	struct completion init_done;
+ 	int init_done_rc;
  
- 	for (i = 0; i < pool_size; i++)
-@@ -915,7 +920,7 @@ static int init_tx_pools(struct net_device *netdev)
- 	adapter->tx_pool = kcalloc(num_pools,
- 				   sizeof(struct ibmvnic_tx_pool), GFP_KERNEL);
- 	if (!adapter->tx_pool)
--		return -1;
-+		return -ENOMEM;
- 
- 	adapter->tso_pool = kcalloc(num_pools,
- 				    sizeof(struct ibmvnic_tx_pool), GFP_KERNEL);
-@@ -925,7 +930,7 @@ static int init_tx_pools(struct net_device *netdev)
- 	if (!adapter->tso_pool) {
- 		kfree(adapter->tx_pool);
- 		adapter->tx_pool = NULL;
--		return -1;
-+		return -ENOMEM;
- 	}
- 
- 	/* Set num_active_tx_pools early. If we fail below after partial
-@@ -1114,7 +1119,7 @@ static int ibmvnic_login(struct net_device *netdev)
- 		retry = false;
- 		if (retry_count > retries) {
- 			netdev_warn(netdev, "Login attempts exceeded\n");
--			return -1;
-+			return -EACCES;
- 		}
- 
- 		adapter->init_done_rc = 0;
-@@ -1155,25 +1160,26 @@ static int ibmvnic_login(struct net_device *netdev)
- 							 timeout)) {
- 				netdev_warn(netdev,
- 					    "Capabilities query timed out\n");
--				return -1;
-+				return -ETIMEDOUT;
- 			}
- 
- 			rc = init_sub_crqs(adapter);
- 			if (rc) {
- 				netdev_warn(netdev,
- 					    "SCRQ initialization failed\n");
--				return -1;
-+				return rc;
- 			}
- 
- 			rc = init_sub_crq_irqs(adapter);
- 			if (rc) {
- 				netdev_warn(netdev,
- 					    "SCRQ irq initialization failed\n");
--				return -1;
-+				return rc;
- 			}
- 		} else if (adapter->init_done_rc) {
--			netdev_warn(netdev, "Adapter login failed\n");
--			return -1;
-+			netdev_warn(netdev, "Adapter login failed, init_done_rc = %d\n",
-+				    adapter->init_done_rc);
-+			return -EIO;
- 		}
- 	} while (retry);
- 
-@@ -1232,7 +1238,7 @@ static int set_link_state(struct ibmvnic_adapter *adapter, u8 link_state)
- 		if (!wait_for_completion_timeout(&adapter->init_done,
- 						 timeout)) {
- 			netdev_err(netdev, "timeout setting link state\n");
--			return -1;
-+			return -ETIMEDOUT;
- 		}
- 
- 		if (adapter->init_done_rc == PARTIALSUCCESS) {
-@@ -2293,7 +2299,7 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 				/* If someone else changed the adapter state
- 				 * when we dropped the rtnl, fail the reset
- 				 */
--				rc = -1;
-+				rc = -EAGAIN;
- 				goto out;
- 			}
- 			adapter->state = VNIC_CLOSED;
-@@ -2335,10 +2341,8 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		}
- 
- 		rc = ibmvnic_reset_init(adapter, true);
--		if (rc) {
--			rc = IBMVNIC_INIT_FAILED;
-+		if (rc)
- 			goto out;
--		}
- 
- 		/* If the adapter was in PROBE or DOWN state prior to the reset,
- 		 * exit here.
-@@ -3787,7 +3791,7 @@ static int init_sub_crqs(struct ibmvnic_adapter *adapter)
- 
- 	allqueues = kcalloc(total_queues, sizeof(*allqueues), GFP_KERNEL);
- 	if (!allqueues)
--		return -1;
-+		return -ENOMEM;
- 
- 	for (i = 0; i < total_queues; i++) {
- 		allqueues[i] = init_sub_crq_queue(adapter);
-@@ -3856,7 +3860,7 @@ static int init_sub_crqs(struct ibmvnic_adapter *adapter)
- 	for (i = 0; i < registered_queues; i++)
- 		release_sub_crq_queue(adapter, allqueues[i], 1);
- 	kfree(allqueues);
--	return -1;
-+	return -ENOMEM;
- }
- 
- static void send_request_cap(struct ibmvnic_adapter *adapter, int retry)
-@@ -4235,7 +4239,7 @@ static int send_login(struct ibmvnic_adapter *adapter)
- 	if (!adapter->tx_scrq || !adapter->rx_scrq) {
- 		netdev_err(adapter->netdev,
- 			   "RX or TX queues are not allocated, device login failed\n");
--		return -1;
-+		return -ENOMEM;
- 	}
- 
- 	release_login_buffer(adapter);
-@@ -4355,7 +4359,7 @@ static int send_login(struct ibmvnic_adapter *adapter)
- 	kfree(login_buffer);
- 	adapter->login_buf = NULL;
- buf_alloc_failed:
--	return -1;
-+	return -ENOMEM;
- }
- 
- static int send_request_map(struct ibmvnic_adapter *adapter, dma_addr_t addr,
-@@ -5693,7 +5697,7 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
- 
- 	if (!wait_for_completion_timeout(&adapter->init_done, timeout)) {
- 		dev_err(dev, "Initialization sequence timed out\n");
--		return -1;
-+		return -ETIMEDOUT;
- 	}
- 
- 	if (adapter->init_done_rc) {
-@@ -5704,7 +5708,7 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
- 	if (adapter->from_passive_init) {
- 		adapter->state = VNIC_OPEN;
- 		adapter->from_passive_init = false;
--		return -1;
-+		return -EINVAL;
- 	}
- 
- 	if (reset &&
 -- 
 2.34.1
 
