@@ -2,156 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A11EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234928AbiCGHXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 02:23:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56718 "EHLO
+        id S235798AbiCGH3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 02:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiCGHXm (ORCPT
+        with ESMTP id S234444AbiCGH3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 02:23:42 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A155FAC;
-        Sun,  6 Mar 2022 23:22:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646637769; x=1678173769;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bU6exYqGnTwB5vvdEZLW2SQGHSrLLH83oJPg1oIJrr0=;
-  b=Dx5b9UK7JBTv+zJ8QskfeJqhrEH8dJnT/yq/xdGNsGg2AZk2bKSSwrd9
-   6zse010L/X+bm9RIOswuEWnLgwXjRd7jCRE6UvfLRsuS70B41VtTpBbpW
-   fm6zSigS46XYvJ2DUNfzTk4QYlgc7050uD8ELRR21OIcerKBbDbsoI7YF
-   snI0hn2Krhao2PIE1Cza6BAHc1c31JUUfNmZpraWqOUKdRWyoqWDhTivo
-   SaLP4e5RYevD8sWtW5L4iKsecwhxEuYCXVJtjIMpeyceotpcRYBJ8N3eL
-   tCmVCEkXqCR6Oib0lfuCiuHlWaohmqLE1yBRqp82yILWIpJCrwylha8HL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="241753779"
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="241753779"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 23:22:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="537004537"
-Received: from zxingrtx.sh.intel.com ([10.239.159.110])
-  by orsmga007.jf.intel.com with ESMTP; 06 Mar 2022 23:22:45 -0800
-From:   zhengjun.xing@linux.intel.com
-To:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        irogers@google.com, adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com, zhengjun.xing@linux.intel.com
-Subject: [PATCH] perf parse: Fix event parser error for hybrid systems
-Date:   Mon,  7 Mar 2022 23:16:27 +0800
-Message-Id: <20220307151627.30049-1-zhengjun.xing@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 7 Mar 2022 02:29:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EE420F5B;
+        Sun,  6 Mar 2022 23:28:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67673B80F88;
+        Mon,  7 Mar 2022 07:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E9EAC340EF;
+        Mon,  7 Mar 2022 07:28:35 +0000 (UTC)
+Message-ID: <818eb53d-0ca5-d0dc-4a06-37615a5c4c3b@xs4all.nl>
+Date:   Mon, 7 Mar 2022 08:28:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] media: av7110: av7110_av: Fix Switch and Case Same Indent
+ Style Error
+Content-Language: en-US
+To:     Husni Faiz <ahamedhusni73@gmail.com>, mchehab@kernel.org,
+        gregkh@linuxfoundation.org
+Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220225155622.585621-1-ahamedhusni73@gmail.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220225155622.585621-1-ahamedhusni73@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+Hi Husni,
 
-This bug happened on hybrid systems when both cpu_core and cpu_atom
-have the same event name such as "UOPS_RETIRED.MS" while their event
-terms are different, then during perf stat, the event for cpu_atom
-will parse fail and then no output for cpu_atom.
+Thank you for the patch.
 
-UOPS_RETIRED.MS -> cpu_core/period=0x1e8483,umask=0x4,event=0xc2,frontend=0x8/
-UOPS_RETIRED.MS -> cpu_atom/period=0x1e8483,umask=0x1,event=0xc2/
+The Subject line needs some work: either name the source ('av7110_av.c:') or
+driver ('av7110:'), but not both. Also just stick to lower case, so:
+"media: av7110_av.c: fix switch indentation"
 
-It is because event terms in the "head" of parse_events_multi_pmu_add
-will be changed to event terms for cpu_core after parsing UOPS_RETIRED.MS
-for cpu_core, then when parsing the same event for cpu_atom, it still
-uses the event terms for cpu_core, but event terms for cpu_atom are
-different with cpu_core, the event parses for cpu_atom will fail. This
-patch fixes it, the event terms should be parsed from the original
-event.
+That gives all the relevant information, and is a lot shorter.
 
-This patch can work for the hybrid systems that have the same event
-in more than 2 PMUs. It also can work in non-hybrid systems.
+On 2/25/22 16:56, Husni Faiz wrote:
+> This patch fixes "switch and case should be at the same indent"
+> checkpatch error.
+> 
+> Signed-off-by: Husni Faiz <ahamedhusni73@gmail.com>
+> ---
+>  drivers/staging/media/av7110/av7110_av.c | 30 ++++++++++++------------
+>  1 file changed, 15 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/staging/media/av7110/av7110_av.c b/drivers/staging/media/av7110/av7110_av.c
+> index 91f4866c7e59..1d42862e9669 100644
+> --- a/drivers/staging/media/av7110/av7110_av.c
+> +++ b/drivers/staging/media/av7110/av7110_av.c
+> @@ -770,22 +770,22 @@ static void p_to_t(u8 const *buf, long int length, u16 pid, u8 *counter,
+>  	if (length > 3 &&
+>  	     buf[0] == 0x00 && buf[1] == 0x00 && buf[2] == 0x01)
+>  		switch (buf[3]) {
+> -			case PROG_STREAM_MAP:
+> -			case PRIVATE_STREAM2:
+> -			case PROG_STREAM_DIR:
+> -			case ECM_STREAM     :
+> -			case EMM_STREAM     :
+> -			case PADDING_STREAM :
+> -			case DSM_CC_STREAM  :
+> -			case ISO13522_STREAM:
+> -			case PRIVATE_STREAM1:
+> -			case AUDIO_STREAM_S ... AUDIO_STREAM_E:
+> -			case VIDEO_STREAM_S ... VIDEO_STREAM_E:
+> -				pes_start = 1;
+> -				break;
+> +		case PROG_STREAM_MAP:
+> +		case PRIVATE_STREAM2:
+> +		case PROG_STREAM_DIR:
+> +		case ECM_STREAM     :
+> +		case EMM_STREAM     :
+> +		case PADDING_STREAM :
+> +		case DSM_CC_STREAM  :
+> +		case ISO13522_STREAM:
+> +		case PRIVATE_STREAM1:
+> +		case AUDIO_STREAM_S ... AUDIO_STREAM_E:
+> +		case VIDEO_STREAM_S ... VIDEO_STREAM_E:
+> +			pes_start = 1;
+> +			break;
+>  
+> -			default:
+> -				break;
+> +		default:
+> +			break;
+>  		}
+>  
+>  	while (c < length) {
 
-Before:
+Running checkpatch.pl over this patch give me:
 
- #perf stat -v  -e  UOPS_RETIRED.MS  -a sleep 1
+ERROR: space prohibited before that ':' (ctx:WxE)
+#40: FILE: drivers/staging/media/av7110/av7110_av.c:776:
++               case ECM_STREAM     :
+                                    ^
 
-Using CPUID GenuineIntel-6-97-1
-UOPS_RETIRED.MS -> cpu_core/period=0x1e8483,umask=0x4,event=0xc2,frontend=0x8/
-Control descriptor is not initialized
-UOPS_RETIRED.MS: 2737845 16068518485 16068518485
+ERROR: space prohibited before that ':' (ctx:WxE)
+#41: FILE: drivers/staging/media/av7110/av7110_av.c:777:
++               case EMM_STREAM     :
+                                    ^
 
- Performance counter stats for 'system wide':
+ERROR: space prohibited before that ':' (ctx:WxE)
+#42: FILE: drivers/staging/media/av7110/av7110_av.c:778:
++               case PADDING_STREAM :
+                                    ^
 
-         2,737,845      cpu_core/UOPS_RETIRED.MS/
+ERROR: space prohibited before that ':' (ctx:WxE)
+#43: FILE: drivers/staging/media/av7110/av7110_av.c:779:
++               case DSM_CC_STREAM  :
+                                    ^
+Can you fix that as well in a v2 of this patch?
 
-       1.002553850 seconds time elapsed
+Thanks!
 
-After:
-
- #perf stat -v  -e  UOPS_RETIRED.MS  -a sleep 1
-
-Using CPUID GenuineIntel-6-97-1
-UOPS_RETIRED.MS -> cpu_core/period=0x1e8483,umask=0x4,event=0xc2,frontend=0x8/
-UOPS_RETIRED.MS -> cpu_atom/period=0x1e8483,umask=0x1,event=0xc2/
-Control descriptor is not initialized
-UOPS_RETIRED.MS: 1977555 16076950711 16076950711
-UOPS_RETIRED.MS: 568684 8038694234 8038694234
-
- Performance counter stats for 'system wide':
-
-         1,977,555      cpu_core/UOPS_RETIRED.MS/
-           568,684      cpu_atom/UOPS_RETIRED.MS/
-
-       1.004758259 seconds time elapsed
-
-Fixes: fb0811535e92c6c1 ("perf parse-events: Allow config on kernel PMU events")
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
----
- tools/perf/util/parse-events.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 9739b05b999e..8bf7f914ea0e 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1648,6 +1648,7 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- {
- 	struct parse_events_term *term;
- 	struct list_head *list = NULL;
-+	struct list_head *orig_head = NULL;
- 	struct perf_pmu *pmu = NULL;
- 	int ok = 0;
- 	char *config;
-@@ -1674,7 +1675,6 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- 	}
- 	list_add_tail(&term->list, head);
- 
--
- 	/* Add it for all PMUs that support the alias */
- 	list = malloc(sizeof(struct list_head));
- 	if (!list)
-@@ -1687,13 +1687,15 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- 
- 		list_for_each_entry(alias, &pmu->aliases, list) {
- 			if (!strcasecmp(alias->name, str)) {
-+				parse_events_copy_term_list(head, &orig_head);
- 				if (!parse_events_add_pmu(parse_state, list,
--							  pmu->name, head,
-+							  pmu->name, orig_head,
- 							  true, true)) {
- 					pr_debug("%s -> %s/%s/\n", str,
- 						 pmu->name, alias->str);
- 					ok++;
- 				}
-+				parse_events_terms__delete(orig_head);
- 			}
- 		}
- 	}
--- 
-2.25.1
-
+	Hans
