@@ -2,310 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E95C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237255AbiCGJbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        id S237312AbiCGJbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:31:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237635AbiCGJ2R (ORCPT
+        with ESMTP id S237701AbiCGJ2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:17 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD9D5C37F;
-        Mon,  7 Mar 2022 01:25:46 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 23E491F438AA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646645145;
-        bh=y4VLgbWo6XZNz149OzPNBE58Dgjk4Sa5/Ss0oJHGQfI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bJWICC2BD4Rcn+qe80ItLN1vEk4qtCS1B4XxXh4ix5Um2H3z9W1/DXSEqcU8NQFWv
-         PQcj19AT+tydDQL47aj/bcS6epfc2f4Z0acCU0hnHKS8T9kskEtLh1vBmWCzceeL/c
-         FnADwgUdVPSPhL+LdiYx62O4EOr/xbkLwtrC9ooyKmLpUr938myipbR3JVjNBAyp1D
-         tcNhXBTz+dJlVla/93FBInRttQrM/Fl4DjMLFwVEDMsLOZ4VgUiCzMyw8hpyQC4lrW
-         WaG/RSs28E0BGRMHOAAhF2YlNuoQB8nf74OyVbzwtdH3TyIetE2VQclla6qjW8421I
-         DttsYK1EfB6mg==
-Message-ID: <371b25e0-73c8-e17a-ee55-fe1cf2ad5a61@collabora.com>
-Date:   Mon, 7 Mar 2022 10:25:41 +0100
+        Mon, 7 Mar 2022 04:28:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9054B583AA;
+        Mon,  7 Mar 2022 01:25:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A69F61009;
+        Mon,  7 Mar 2022 09:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2577DC340E9;
+        Mon,  7 Mar 2022 09:25:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645151;
+        bh=QrzGRV5ov+H0CFsYoi6k8q+UmXpbTx7kJbbT5qT+TNE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZHzdsWPPrmFr5eZMHF/VeROWCh2PfLkkkbuC8GXeq9Q9+Vf3w09EUpeceRmOJnLks
+         7G99bpa0Q9oPY4aSJ29PzP10v0LsszHq9oI6sBX4puR7NQv1L+7FXCM+dlgljt485g
+         vKFZafRPwFmdqYnHNCHgZ3Rf+4wHJWYESzNZHkXc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 31/51] xen/netfront: destroy queues before real_num_tx_queues is zeroed
+Date:   Mon,  7 Mar 2022 10:19:06 +0100
+Message-Id: <20220307091637.877773725@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [v2 03/17] ASoC: mediatek: mt8186: support adda in platform
- driver
-Content-Language: en-US
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org
-Cc:     lgirdwood@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
-        matthias.bgg@gmail.com, perex@perex.cz, p.zabel@pengutronix.de,
-        geert+renesas@glider.be, trevor.wu@mediatek.com,
-        tzungbi@google.com, aaronyu@google.com, zhangqilong3@huawei.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
- <20220217134205.15400-4-jiaxin.yu@mediatek.com>
- <0e633e93-566d-0a91-f5e3-f3e3131fcb43@collabora.com>
- <5aca64866e5441d21aaf0293a1e48286acfdd978.camel@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <5aca64866e5441d21aaf0293a1e48286acfdd978.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 05/03/22 11:49, Jiaxin Yu ha scritto:
-> On Fri, 2022-02-18 at 15:54 +0100, AngeloGioacchino Del Regno wrote:
->> Il 17/02/22 14:41, Jiaxin Yu ha scritto:
->>> This patch adds mt8186 adda dai driver
->>>
->>> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
->>> ---
->>>    sound/soc/mediatek/mt8186/mt8186-dai-adda.c | 891
->>> ++++++++++++++++++++
->>>    1 file changed, 891 insertions(+)
->>>    create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-adda.c
->>>
->>> diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-adda.c
->>> b/sound/soc/mediatek/mt8186/mt8186-dai-adda.c
->>> new file mode 100644
->>> index 000000000000..6d7dd1533da0
->>> --- /dev/null
->>> +++ b/sound/soc/mediatek/mt8186/mt8186-dai-adda.c
->>> @@ -0,0 +1,891 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +//
->>> +// MediaTek ALSA SoC Audio DAI ADDA Control
->>> +//
->>> +// Copyright (c) 2022 MediaTek Inc.
->>> +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
->>> +
->>> +#include <linux/regmap.h>
->>> +#include <linux/delay.h>
->>> +#include "mt8186-afe-clk.h"
->>> +#include "mt8186-afe-common.h"
->>> +#include "mt8186-afe-gpio.h"
->>> +#include "mt8186-interconnection.h"
->>> +
-> ...snip...
->>>
->>> +/* dai ops */
->>> +static int mtk_dai_adda_hw_params(struct snd_pcm_substream
->>> *substream,
->>> +				  struct snd_pcm_hw_params *params,
->>> +				  struct snd_soc_dai *dai)
->>> +{
->>> +	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
->>> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
->>> +	unsigned int rate = params_rate(params);
->>> +	int id = dai->id;
->>> +	struct mtk_afe_adda_priv *adda_priv = afe_priv->dai_priv[id];
->>> +
->>> +	dev_info(afe->dev, "%s(), id %d, stream %d, rate %d\n",
->>> +		 __func__,
->>> +		 id,
->>> +		 substream->stream,
->>> +		 rate);
->>> +
->>> +	if (!adda_priv) {
->>> +		dev_info(afe->dev, "%s(), adda_priv == NULL",
->>> __func__);
->>> +		return -EINVAL;
->>> +	}
->>> +
->>> +	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
->>> +		unsigned int dl_src2_con0 = 0;
->>> +		unsigned int dl_src2_con1 = 0;
->>
->> This initialization is redundant: you're never using these variables
->> before initializing them later, so initializing them to zero is not
->> needed here.
-> Yes, got it. Thank you.
->>
->>> +
->>> +		adda_priv->dl_rate = rate;
->>> +
->>> +		/* set sampling rate */
->>> +		dl_src2_con0 = adda_dl_rate_transform(afe, rate) <<
->>> +			       DL_2_INPUT_MODE_CTL_SFT;
->>> +
->>> +		/* set output mode, UP_SAMPLING_RATE_X8 */
->>> +		dl_src2_con0 |= (0x3 << DL_2_OUTPUT_SEL_CTL_SFT);
->>> +
->>> +		/* turn off mute function */
->>> +		dl_src2_con0 |= (0x01 <<
->>> DL_2_MUTE_CH2_OFF_CTL_PRE_SFT);
->>
->> BIT() macro, please
->>
->>> +		dl_src2_con0 |= (0x01 <<
->>> DL_2_MUTE_CH1_OFF_CTL_PRE_SFT);
->>> +
->>> +		/* set voice input data if input sample rate is 8k or
->>> 16k */
->>> +		if (rate == 8000 || rate == 16000)
->>> +			dl_src2_con0 |= 0x01 <<
->>> DL_2_VOICE_MODE_CTL_PRE_SFT;
->>> +
->>> +		/* SA suggest apply -0.3db to audio/speech path */
->>> +		dl_src2_con1 = MTK_AFE_ADDA_DL_GAIN_NORMAL <<
->>> +			       DL_2_GAIN_CTL_PRE_SFT;
->>> +
->>> +		/* turn on down-link gain */
->>> +		dl_src2_con0 |= (0x01 << DL_2_GAIN_ON_CTL_PRE_SFT);
->>> +
->>> +		if (id == MT8186_DAI_ADDA) {
->>> +			/* clean predistortion */
->>> +			regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON0,
->>> 0);
->>> +			regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON1,
->>> 0);
->>> +
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_DL_SRC2_CON0,
->>> dl_src2_con0);
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_DL_SRC2_CON1,
->>> dl_src2_con1);
->>> +
->>> +			/* set sdm gain */
->>> +			regmap_update_bits(afe->regmap,
->>> +					   AFE_ADDA_DL_SDM_DCCOMP_CON,
->>> +					   ATTGAIN_CTL_MASK_SFT,
->>> +					   AUDIO_SDM_LEVEL_NORMAL <<
->>> +					   ATTGAIN_CTL_SFT);
->>> +
->>> +			/* Use new 2nd sdm */
->>> +			regmap_update_bits(afe->regmap,
->>> +					   AFE_ADDA_DL_SDM_DITHER_CON,
->>> +					   AFE_DL_SDM_DITHER_64TAP_EN_M
->>> ASK_SFT,
->>> +					   0x1 <<
->>> AFE_DL_SDM_DITHER_64TAP_EN_SFT);
->>
->> BIT(AFE_DL_SDM_DITHER_64TAP_EN_SFT)
->>
->>> +			regmap_update_bits(afe->regmap,
->>> +					   AFE_ADDA_DL_SDM_AUTO_RESET_C
->>> ON,
->>> +					   AFE_DL_USE_NEW_2ND_SDM_MASK_
->>> SFT,
->>> +					   0x1 <<
->>> AFE_DL_USE_NEW_2ND_SDM_SFT);
->>
->> BIT(AFE_DL_USE_NEW_2ND_SDM_SFT)
->>
->>> +			regmap_update_bits(afe->regmap,
->>> +					   AFE_ADDA_DL_SDM_DCCOMP_CON,
->>> +					   USE_3RD_SDM_MASK_SFT,
->>> +					   AUDIO_SDM_2ND <<
->>> USE_3RD_SDM_SFT);
->>> +
->>> +			/* sdm auto reset */
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_DL_SDM_AUTO_RESET_CON,
->>> +				     SDM_AUTO_RESET_THRESHOLD);
->>> +			regmap_update_bits(afe->regmap,
->>> +					   AFE_ADDA_DL_SDM_AUTO_RESET_C
->>> ON,
->>> +					   SDM_AUTO_RESET_TEST_ON_MASK_
->>> SFT,
->>> +					   0x1 <<
->>> SDM_AUTO_RESET_TEST_ON_SFT);
->>
->> BIT(SDM_AUTO_RESET_TEST_ON_SFT)
->>
->>> +		}
->>> +	} else {
->>> +		unsigned int voice_mode = 0;
->>
->> what about...
->> 		unsigned int ul_src_con0 = 0; /* default value */
->> 		unsigned int voice_mode =  adda_ul_rate_transform(afe,
->> rate);
-> Agree with you.
-> 
->>> +		unsigned int ul_src_con0 = 0;	/* default value */
->>> +
->>> +		adda_priv->ul_rate = rate;
->>> +
->>> +		voice_mode = adda_ul_rate_transform(afe, rate);
->>> +
->>> +		ul_src_con0 |= (voice_mode << 17) & (0x7 << 17);
->>> +
->>> +		/* enable iir */
->>> +		ul_src_con0 |= (1 << UL_IIR_ON_TMP_CTL_SFT) &
->>> +			       UL_IIR_ON_TMP_CTL_MASK_SFT;
->>> +		ul_src_con0 |= (UL_IIR_SW << UL_IIRMODE_CTL_SFT) &
->>> +			       UL_IIRMODE_CTL_MASK_SFT;
->>> +		switch (id) {
->>> +		case MT8186_DAI_ADDA:
->>> +		case MT8186_DAI_AP_DMIC:
->>> +			/* 35Hz @ 48k */
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_IIR_COEF_02_01,
->>> 0x00000000);
->>
->> Please drop leading zeroes:
->>
->> regmap_write(afe->regmap, AFE_ADDA_IIR_COEF_02_01, 0);
->>
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_IIR_COEF_04_03,
->>> 0x00003FB8);
->>
->> ... and also please write hex in lower-case:
->>
-> Got it.
->> regmap_write(afe->regmap,
->> 	     AFE_ADDA_IIR_COEF_04_03, 0x03fb8);
->>
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_IIR_COEF_06_05,
->>> 0x3FB80000);
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_IIR_COEF_08_07,
->>> 0x3FB80000);
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_IIR_COEF_10_09,
->>> 0x0000C048);
->>> +
->>> +			regmap_write(afe->regmap,
->>> +				     AFE_ADDA_UL_SRC_CON0,
->>> ul_src_con0);
->>> +
->>> +			/* Using Internal ADC */
->>> +			regmap_update_bits(afe->regmap,
->>> +					   AFE_ADDA_TOP_CON0,
->>> +					   0x1 << 0,
->>> +					   0x0 << 0);
->>
->> Please use the BIT() macro:
->>
->> regmap_update_bits(afe->regmap, AFE_ADDA_TOP_CON0, BIT(0), 0);
->>
->> P.S.: 87 columns is ok
-> 
-> How can I judge whether it can exceed 80 lines?
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-https://www.kernel.org/doc/html/latest/process/coding-style.html
+commit dcf4ff7a48e7598e6b10126cc02177abb8ae4f3f upstream.
 
-Besides, the 80 columns rule was made for old terminals (like VT100 and such)
-that supported displaying a maximum of 80 cols... in the modern era, that's
-not the case anymore.
-It's somewhat preferred if something can fit in 80 columns, but if it does
-impact on readability, then you can go over that, up to 100 columns.
+xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
+delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
+("net-sysfs: update the queue counts in the unregistration path"),
+unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
+facts together means, that xennet_destroy_queues() called from
+xennet_remove() cannot do its job, because it's called after
+unregister_netdev(). This results in kfree-ing queues that are still
+linked in napi, which ultimately crashes:
 
-scripts/checkpatch.pl was also changed to complain about 100 columns and not
-80 anymore...
+    BUG: kernel NULL pointer dereference, address: 0000000000000000
+    #PF: supervisor read access in kernel mode
+    #PF: error_code(0x0000) - not-present page
+    PGD 0 P4D 0
+    Oops: 0000 [#1] PREEMPT SMP PTI
+    CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-1.32.fc32.qubes.x86_64+ #226
+    RIP: 0010:free_netdev+0xa3/0x1a0
+    Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 85 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
+    RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
+    RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
+    RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
+    RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
+    R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
+    R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
+    FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:0000000000000000
+    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
+    Call Trace:
+     <TASK>
+     xennet_remove+0x13d/0x300 [xen_netfront]
+     xenbus_dev_remove+0x6d/0xf0
+     __device_release_driver+0x17a/0x240
+     device_release_driver+0x24/0x30
+     bus_remove_device+0xd8/0x140
+     device_del+0x18b/0x410
+     ? _raw_spin_unlock+0x16/0x30
+     ? klist_iter_exit+0x14/0x20
+     ? xenbus_dev_request_and_reply+0x80/0x80
+     device_unregister+0x13/0x60
+     xenbus_dev_changed+0x18e/0x1f0
+     xenwatch_thread+0xc0/0x1a0
+     ? do_wait_intr_irq+0xa0/0xa0
+     kthread+0x16b/0x190
+     ? set_kthread_struct+0x40/0x40
+     ret_from_fork+0x22/0x30
+     </TASK>
 
-my $max_line_length = 100;
+Fix this by calling xennet_destroy_queues() from xennet_uninit(),
+when real_num_tx_queues is still available. This ensures that queues are
+destroyed when real_num_tx_queues is set to 0, regardless of how
+unregister_netdev() was called.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/scripts/checkpatch.pl?h=v5.17-rc7#n59
+Originally reported at
+https://github.com/QubesOS/qubes-issues/issues/7257
 
-Cheers,
-Angelo
+Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the unregistration path")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/xen-netfront.c |   39 +++++++++++++++++++++++----------------
+ 1 file changed, 23 insertions(+), 16 deletions(-)
+
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -764,6 +764,28 @@ static int xennet_close(struct net_devic
+ 	return 0;
+ }
+ 
++static void xennet_destroy_queues(struct netfront_info *info)
++{
++	unsigned int i;
++
++	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
++		struct netfront_queue *queue = &info->queues[i];
++
++		if (netif_running(info->netdev))
++			napi_disable(&queue->napi);
++		netif_napi_del(&queue->napi);
++	}
++
++	kfree(info->queues);
++	info->queues = NULL;
++}
++
++static void xennet_uninit(struct net_device *dev)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	xennet_destroy_queues(np);
++}
++
+ static void xennet_set_rx_rsp_cons(struct netfront_queue *queue, RING_IDX val)
+ {
+ 	unsigned long flags;
+@@ -1376,6 +1398,7 @@ static void xennet_poll_controller(struc
+ #endif
+ 
+ static const struct net_device_ops xennet_netdev_ops = {
++	.ndo_uninit          = xennet_uninit,
+ 	.ndo_open            = xennet_open,
+ 	.ndo_stop            = xennet_close,
+ 	.ndo_start_xmit      = xennet_start_xmit,
+@@ -1863,22 +1886,6 @@ error:
+ 	return err;
+ }
+ 
+-static void xennet_destroy_queues(struct netfront_info *info)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
+-		struct netfront_queue *queue = &info->queues[i];
+-
+-		if (netif_running(info->netdev))
+-			napi_disable(&queue->napi);
+-		netif_napi_del(&queue->napi);
+-	}
+-
+-	kfree(info->queues);
+-	info->queues = NULL;
+-}
+-
+ static int xennet_create_queues(struct netfront_info *info,
+ 				unsigned int *num_queues)
+ {
+
 
