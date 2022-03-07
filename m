@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D635BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D36C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239968AbiCGKFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:05:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
+        id S239977AbiCGKFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:05:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234934AbiCGJmH (ORCPT
+        with ESMTP id S236349AbiCGJmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:42:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCEEDED7;
-        Mon,  7 Mar 2022 01:41:12 -0800 (PST)
+        Mon, 7 Mar 2022 04:42:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA9B2617;
+        Mon,  7 Mar 2022 01:41:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C6CF61354;
-        Mon,  7 Mar 2022 09:41:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 108EDC340FF;
-        Mon,  7 Mar 2022 09:41:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 979BAB8102B;
+        Mon,  7 Mar 2022 09:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4DB6C340E9;
+        Mon,  7 Mar 2022 09:41:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646071;
-        bh=kRf2+Neh77iSMJt5sEjQ41gXstfFY7Iu39R7lcfHym4=;
+        s=korg; t=1646646068;
+        bh=fbeLY+CHCzdXGQgG50LPchB8OedOkqqonlZol/wh2iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eRSO8yPNB8e5XTqrtWExOIShYPSl/8PN1tOuo/kqrqIiLymL5p6pIsIWeSw5ZiT0q
-         eGiu2eyaTGbDFexQiclnwfG0t5cUcXFnhgTuu2nYS+mBoS0Qa4Zz0nj8SPy+5o6lui
-         zbUjrHyHz7c/f6RVvNQJEPqSvntW/W7T5bEC1VVQ=
+        b=T2uWPHhqmrHI1tTmAa39yKSid4l8IROTdftQmjJipqYXMo0j/8v4/kqYvcjhgwRp4
+         7SDn98aTQhO3QfydQIUCIaxflMUvvo+JUpCEXmm3fKkWw19R3mIB6kC8X+ZZoN455k
+         Tl7r/xZepRBvSGw0hfETYD2w4cnejPlXx21jQmQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org,
+        Colin Foster <colin.foster@in-advantage.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 123/262] net: dsa: seville: register the mdiobus under devres
-Date:   Mon,  7 Mar 2022 10:17:47 +0100
-Message-Id: <20220307091705.932468911@linuxfoundation.org>
+Subject: [PATCH 5.15 122/262] net: dsa: ocelot: seville: utilize of_mdiobus_register
+Date:   Mon,  7 Mar 2022 10:17:46 +0100
+Message-Id: <20220307091705.905040960@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,73 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Colin Foster <colin.foster@in-advantage.com>
 
-[ Upstream commit bd488afc3b39e045ba71aab472233f2a78726e7b ]
+[ Upstream commit 5186c4a05b9713138b762a49467a8ab9753cdb36 ]
 
-As explained in commits:
-74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+Switch seville to use of_mdiobus_register(bus, NULL) instead of just
+mdiobus_register. This code is about to be pulled into a separate module
+that can optionally define ports by the device_node.
 
-mdiobus_free() will panic when called from devm_mdiobus_free() <-
-devres_release_all() <- __device_release_driver(), and that mdiobus was
-not previously unregistered.
-
-The Seville VSC9959 switch is a platform device, so the initial set of
-constraints that I thought would cause this (I2C or SPI buses which call
-->remove on ->shutdown) do not apply. But there is one more which
-applies here.
-
-If the DSA master itself is on a bus that calls ->remove from ->shutdown
-(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-between the switch and the DSA master, and device_links_unbind_consumers()
-will unbind the seville switch driver on shutdown.
-
-So the same treatment must be applied to all DSA switch drivers, which
-is: either use devres for both the mdiobus allocation and registration,
-or don't use devres at all.
-
-The seville driver has a code structure that could accommodate both the
-mdiobus_unregister and mdiobus_free calls, but it has an external
-dependency upon mscc_miim_setup() from mdio-mscc-miim.c, which calls
-devm_mdiobus_alloc_size() on its behalf. So rather than restructuring
-that, and exporting yet one more symbol mscc_miim_teardown(), let's work
-with devres and replace of_mdiobus_register with the devres variant.
-When we use all-devres, we can ensure that devres doesn't free a
-still-registered bus (it either runs both callbacks, or none).
-
-Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/seville_vsc9953.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index ca8c003b99bc5..05e4e75c01076 100644
+index de1d34a1f1e47..ca8c003b99bc5 100644
 --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
 +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1111,7 +1111,7 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+@@ -10,6 +10,7 @@
+ #include <linux/pcs-lynx.h>
+ #include <linux/dsa/ocelot.h>
+ #include <linux/iopoll.h>
++#include <linux/of_mdio.h>
+ #include "felix.h"
+ 
+ #define MSCC_MIIM_CMD_OPR_WRITE			BIT(1)
+@@ -1110,7 +1111,7 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
  	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
  
  	/* Needed in order to initialize the bus mutex lock */
--	rc = of_mdiobus_register(bus, NULL);
-+	rc = devm_of_mdiobus_register(dev, bus, NULL);
+-	rc = mdiobus_register(bus);
++	rc = of_mdiobus_register(bus, NULL);
  	if (rc < 0) {
  		dev_err(dev, "failed to register MDIO bus\n");
  		return rc;
-@@ -1163,7 +1163,8 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
- 		mdio_device_free(pcs->mdio);
- 		lynx_pcs_destroy(pcs);
- 	}
--	mdiobus_unregister(felix->imdio);
-+
-+	/* mdiobus_unregister and mdiobus_free handled by devres */
- }
- 
- static const struct felix_info seville_info_vsc9953 = {
 -- 
 2.34.1
 
