@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FB9C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0468DC47080
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239510AbiCGJtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        id S240019AbiCGJuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:50:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240040AbiCGJkd (ORCPT
+        with ESMTP id S240511AbiCGJlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF16776657;
-        Mon,  7 Mar 2022 01:36:55 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE31DFC7;
+        Mon,  7 Mar 2022 01:37:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8466F6116E;
-        Mon,  7 Mar 2022 09:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD37C340F3;
-        Mon,  7 Mar 2022 09:36:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 452CA6116E;
+        Mon,  7 Mar 2022 09:37:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B716C340F7;
+        Mon,  7 Mar 2022 09:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645788;
-        bh=iIPEpz/CBBrLzoyfUIZWekUXSfppdsfqcZtxS9xKWy8=;
+        s=korg; t=1646645855;
+        bh=BCiFTI1+xuXNxubvOt6Xtivf8YgM8q/uu4hh6OT7LUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHuSdnLkzQNLeK4xe7pdp7Q+vCMm9YbDqxirPOuL1LncywfbspXw0vLTkTQ0pvXfu
-         b/bKuf9lnZZx40BFzoWnw5hiy8or4XFIFSEpEcyP0nuLCG9l3UMcWr6vc6NAuYzHsW
-         029WYvMX91Ol0Cg83Sp0Etz7uQiuugMFOCxuhbGo=
+        b=kj8kFhk3DyEhPFdjN4mU0hQ0e2DbYvUB9ny2LWCAXf05LG9/sHKRC67T+JUzlkQJr
+         sNA3iFF8hDGj7Gcx+cR5/ZYVbyWLt+aQjhMd/50HvXIJ6Sy9HwnqlC/iNmd8zEjWFm
+         FmwmN4Lqb3v5gSzXcmDkQkicCIEteeqekezIwd3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/262] ext4: simplify updating of fast commit stats
-Date:   Mon,  7 Mar 2022 10:16:19 +0100
-Message-Id: <20220307091703.516234643@linuxfoundation.org>
+        stable@vger.kernel.org, Lai Jiangshan <laijs@linux.alibaba.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 058/262] KVM: X86: Ensure that dirty PDPTRs are loaded
+Date:   Mon,  7 Mar 2022 10:16:42 +0100
+Message-Id: <20220307091704.149043890@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,235 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+From: Lai Jiangshan <laijs@linux.alibaba.com>
 
-[ Upstream commit 0915e464cb274648e1ef1663e1356e53ff400983 ]
+[ Upstream commit 2c5653caecc4807b8abfe9c41880ac38417be7bf ]
 
-Move fast commit stats updating logic to a separate function from
-ext4_fc_commit(). This significantly improves readability of
-ext4_fc_commit().
+For VMX with EPT, dirty PDPTRs need to be loaded before the next vmentry
+via vmx_load_mmu_pgd()
 
-Signed-off-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/20211223202140.2061101-4-harshads@google.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+But not all paths that call load_pdptrs() will cause vmx_load_mmu_pgd()
+to be invoked.  Normally, kvm_mmu_reset_context() is used to cause
+KVM_REQ_LOAD_MMU_PGD, but sometimes it is skipped:
+
+* commit d81135a57aa6("KVM: x86: do not reset mmu if CR0.CD and
+CR0.NW are changed") skips kvm_mmu_reset_context() after load_pdptrs()
+when changing CR0.CD and CR0.NW.
+
+* commit 21823fbda552("KVM: x86: Invalidate all PGDs for the current
+PCID on MOV CR3 w/ flush") skips KVM_REQ_LOAD_MMU_PGD after
+load_pdptrs() when rewriting the CR3 with the same value.
+
+* commit a91a7c709600("KVM: X86: Don't reset mmu context when
+toggling X86_CR4_PGE") skips kvm_mmu_reset_context() after
+load_pdptrs() when changing CR4.PGE.
+
+Fixes: d81135a57aa6 ("KVM: x86: do not reset mmu if CR0.CD and CR0.NW are changed")
+Fixes: 21823fbda552 ("KVM: x86: Invalidate all PGDs for the current PCID on MOV CR3 w/ flush")
+Fixes: a91a7c709600 ("KVM: X86: Don't reset mmu context when toggling X86_CR4_PGE")
+Signed-off-by: Lai Jiangshan <laijs@linux.alibaba.com>
+Message-Id: <20211108124407.12187-2-jiangshanlai@gmail.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ext4.h        |  1 -
- fs/ext4/fast_commit.c | 99 +++++++++++++++++++++++--------------------
- fs/ext4/fast_commit.h | 27 ++++++------
- 3 files changed, 68 insertions(+), 59 deletions(-)
+ arch/x86/kvm/x86.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
-index 58829af68fed1..7448e24cd5459 100644
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -1746,7 +1746,6 @@ struct ext4_sb_info {
- 	spinlock_t s_fc_lock;
- 	struct buffer_head *s_fc_bh;
- 	struct ext4_fc_stats s_fc_stats;
--	u64 s_fc_avg_commit_time;
- #ifdef CONFIG_EXT4_DEBUG
- 	int s_fc_debug_max_replay;
- #endif
-diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
-index 43da096d9b85e..f8915dff82eee 100644
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -1073,6 +1073,32 @@ static int ext4_fc_perform_commit(journal_t *journal)
- 	return ret;
- }
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 33cb065181248..33457b27e220b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -848,6 +848,7 @@ int load_pdptrs(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu, unsigned long cr3)
  
-+static void ext4_fc_update_stats(struct super_block *sb, int status,
-+				 u64 commit_time, int nblks)
-+{
-+	struct ext4_fc_stats *stats = &EXT4_SB(sb)->s_fc_stats;
-+
-+	jbd_debug(1, "Fast commit ended with status = %d", status);
-+	if (status == EXT4_FC_STATUS_OK) {
-+		stats->fc_num_commits++;
-+		stats->fc_numblks += nblks;
-+		if (likely(stats->s_fc_avg_commit_time))
-+			stats->s_fc_avg_commit_time =
-+				(commit_time +
-+				 stats->s_fc_avg_commit_time * 3) / 4;
-+		else
-+			stats->s_fc_avg_commit_time = commit_time;
-+	} else if (status == EXT4_FC_STATUS_FAILED ||
-+		   status == EXT4_FC_STATUS_INELIGIBLE) {
-+		if (status == EXT4_FC_STATUS_FAILED)
-+			stats->fc_failed_commits++;
-+		stats->fc_ineligible_commits++;
-+	} else {
-+		stats->fc_skipped_commits++;
-+	}
-+	trace_ext4_fc_commit_stop(sb, nblks, status);
-+}
-+
- /*
-  * The main commit entry point. Performs a fast commit for transaction
-  * commit_tid if needed. If it's not possible to perform a fast commit
-@@ -1085,7 +1111,7 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 	struct ext4_sb_info *sbi = EXT4_SB(sb);
- 	int nblks = 0, ret, bsize = journal->j_blocksize;
- 	int subtid = atomic_read(&sbi->s_fc_subtid);
--	int reason = EXT4_FC_REASON_OK, fc_bufs_before = 0;
-+	int status = EXT4_FC_STATUS_OK, fc_bufs_before = 0;
- 	ktime_t start_time, commit_time;
+ 	memcpy(mmu->pdptrs, pdpte, sizeof(mmu->pdptrs));
+ 	kvm_register_mark_dirty(vcpu, VCPU_EXREG_PDPTR);
++	kvm_make_request(KVM_REQ_LOAD_MMU_PGD, vcpu);
+ 	vcpu->arch.pdptrs_from_userspace = false;
  
- 	trace_ext4_fc_commit_start(sb);
-@@ -1102,69 +1128,52 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 		if (atomic_read(&sbi->s_fc_subtid) <= subtid &&
- 			commit_tid > journal->j_commit_sequence)
- 			goto restart_fc;
--		reason = EXT4_FC_REASON_ALREADY_COMMITTED;
--		goto out;
-+		ext4_fc_update_stats(sb, EXT4_FC_STATUS_SKIPPED, 0, 0);
-+		return 0;
- 	} else if (ret) {
--		sbi->s_fc_stats.fc_ineligible_reason_count[EXT4_FC_COMMIT_FAILED]++;
--		reason = EXT4_FC_REASON_FC_START_FAILED;
--		goto out;
-+		/*
-+		 * Commit couldn't start. Just update stats and perform a
-+		 * full commit.
-+		 */
-+		ext4_fc_update_stats(sb, EXT4_FC_STATUS_FAILED, 0, 0);
-+		return jbd2_complete_transaction(journal, commit_tid);
- 	}
-+
- 	/*
- 	 * After establishing journal barrier via jbd2_fc_begin_commit(), check
- 	 * if we are fast commit ineligible.
- 	 */
- 	if (ext4_test_mount_flag(sb, EXT4_MF_FC_INELIGIBLE)) {
--		reason = EXT4_FC_REASON_INELIGIBLE;
--		goto out;
-+		status = EXT4_FC_STATUS_INELIGIBLE;
-+		goto fallback;
- 	}
- 
- 	fc_bufs_before = (sbi->s_fc_bytes + bsize - 1) / bsize;
- 	ret = ext4_fc_perform_commit(journal);
- 	if (ret < 0) {
--		sbi->s_fc_stats.fc_ineligible_reason_count[EXT4_FC_COMMIT_FAILED]++;
--		reason = EXT4_FC_REASON_FC_FAILED;
--		goto out;
-+		status = EXT4_FC_STATUS_FAILED;
-+		goto fallback;
- 	}
- 	nblks = (sbi->s_fc_bytes + bsize - 1) / bsize - fc_bufs_before;
- 	ret = jbd2_fc_wait_bufs(journal, nblks);
- 	if (ret < 0) {
--		sbi->s_fc_stats.fc_ineligible_reason_count[EXT4_FC_COMMIT_FAILED]++;
--		reason = EXT4_FC_REASON_FC_FAILED;
--		goto out;
-+		status = EXT4_FC_STATUS_FAILED;
-+		goto fallback;
- 	}
- 	atomic_inc(&sbi->s_fc_subtid);
--	jbd2_fc_end_commit(journal);
--out:
--	spin_lock(&sbi->s_fc_lock);
--	if (reason != EXT4_FC_REASON_OK &&
--		reason != EXT4_FC_REASON_ALREADY_COMMITTED) {
--		sbi->s_fc_stats.fc_ineligible_commits++;
--	} else {
--		sbi->s_fc_stats.fc_num_commits++;
--		sbi->s_fc_stats.fc_numblks += nblks;
--	}
--	spin_unlock(&sbi->s_fc_lock);
--	nblks = (reason == EXT4_FC_REASON_OK) ? nblks : 0;
--	trace_ext4_fc_commit_stop(sb, nblks, reason);
--	commit_time = ktime_to_ns(ktime_sub(ktime_get(), start_time));
-+	ret = jbd2_fc_end_commit(journal);
- 	/*
--	 * weight the commit time higher than the average time so we don't
--	 * react too strongly to vast changes in the commit time
-+	 * weight the commit time higher than the average time so we
-+	 * don't react too strongly to vast changes in the commit time
- 	 */
--	if (likely(sbi->s_fc_avg_commit_time))
--		sbi->s_fc_avg_commit_time = (commit_time +
--				sbi->s_fc_avg_commit_time * 3) / 4;
--	else
--		sbi->s_fc_avg_commit_time = commit_time;
--	jbd_debug(1,
--		"Fast commit ended with blks = %d, reason = %d, subtid - %d",
--		nblks, reason, subtid);
--	if (reason == EXT4_FC_REASON_FC_FAILED)
--		return jbd2_fc_end_commit_fallback(journal);
--	if (reason == EXT4_FC_REASON_FC_START_FAILED ||
--		reason == EXT4_FC_REASON_INELIGIBLE)
--		return jbd2_complete_transaction(journal, commit_tid);
--	return 0;
-+	commit_time = ktime_to_ns(ktime_sub(ktime_get(), start_time));
-+	ext4_fc_update_stats(sb, status, commit_time, nblks);
-+	return ret;
-+
-+fallback:
-+	ret = jbd2_fc_end_commit_fallback(journal);
-+	ext4_fc_update_stats(sb, status, 0, 0);
-+	return ret;
- }
- 
- /*
-@@ -2125,7 +2134,7 @@ int ext4_fc_info_show(struct seq_file *seq, void *v)
- 		"fc stats:\n%ld commits\n%ld ineligible\n%ld numblks\n%lluus avg_commit_time\n",
- 		   stats->fc_num_commits, stats->fc_ineligible_commits,
- 		   stats->fc_numblks,
--		   div_u64(sbi->s_fc_avg_commit_time, 1000));
-+		   div_u64(stats->s_fc_avg_commit_time, 1000));
- 	seq_puts(seq, "Ineligible reasons:\n");
- 	for (i = 0; i < EXT4_FC_REASON_MAX; i++)
- 		seq_printf(seq, "\"%s\":\t%d\n", fc_ineligible_reasons[i],
-diff --git a/fs/ext4/fast_commit.h b/fs/ext4/fast_commit.h
-index 937c381b4c85e..083ad1cb705a7 100644
---- a/fs/ext4/fast_commit.h
-+++ b/fs/ext4/fast_commit.h
-@@ -71,21 +71,19 @@ struct ext4_fc_tail {
- };
- 
- /*
-- * Fast commit reason codes
-+ * Fast commit status codes
-+ */
-+enum {
-+	EXT4_FC_STATUS_OK = 0,
-+	EXT4_FC_STATUS_INELIGIBLE,
-+	EXT4_FC_STATUS_SKIPPED,
-+	EXT4_FC_STATUS_FAILED,
-+};
-+
-+/*
-+ * Fast commit ineligiblity reasons:
-  */
- enum {
--	/*
--	 * Commit status codes:
--	 */
--	EXT4_FC_REASON_OK = 0,
--	EXT4_FC_REASON_INELIGIBLE,
--	EXT4_FC_REASON_ALREADY_COMMITTED,
--	EXT4_FC_REASON_FC_START_FAILED,
--	EXT4_FC_REASON_FC_FAILED,
--
--	/*
--	 * Fast commit ineligiblity reasons:
--	 */
- 	EXT4_FC_REASON_XATTR = 0,
- 	EXT4_FC_REASON_CROSS_RENAME,
- 	EXT4_FC_REASON_JOURNAL_FLAG_CHANGE,
-@@ -117,7 +115,10 @@ struct ext4_fc_stats {
- 	unsigned int fc_ineligible_reason_count[EXT4_FC_REASON_MAX];
- 	unsigned long fc_num_commits;
- 	unsigned long fc_ineligible_commits;
-+	unsigned long fc_failed_commits;
-+	unsigned long fc_skipped_commits;
- 	unsigned long fc_numblks;
-+	u64 s_fc_avg_commit_time;
- };
- 
- #define EXT4_FC_REPLAY_REALLOC_INCREMENT	4
+ out:
 -- 
 2.34.1
 
