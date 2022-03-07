@@ -2,106 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 525A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E3F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233433AbiCGIsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 03:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
+        id S233459AbiCGIsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 03:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiCGIr5 (ORCPT
+        with ESMTP id S233385AbiCGIso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 03:47:57 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B97E63538
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 00:47:04 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 524E43F5F9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:47:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646642821;
-        bh=cTVS5wZOGaAoIcz1M4Y4sLTFfhLOC06ze/gaw6hqXNw=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=SS+2a6ideT8YDbS371Foym8KXdJxQC/R/mxCiUblsH07rj2xiJIhg3O1KFwChQb+p
-         jsVgTssmW8zFH68V3ZKC468/xfdOqKDZgcTYh2zP6VtMIsrZm6ZjZGapTC4DxZmbm7
-         Xu5oEuU0s+os9w4hpu0h3heEs0R6+152SqmH17vqMnSgmDozsC/2YuRjZC8/9IGDx1
-         hsPU/pr7NyOHYMAI+3q9es3IWu8eI+lKsfzqVvDvRJhAv/Hs9nwpdNTrgNPsJ9p6wS
-         tqkxqr1POFZimngoT1MQ/bliQWuSVtb7QdQQjAKp2XhvbspJXjMjQfAhjKNs0lO/RJ
-         C/pOrpJk5rvmQ==
-Received: by mail-ed1-f72.google.com with SMTP id i17-20020aa7c711000000b00415ecaefd07so5844153edq.21
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 00:47:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cTVS5wZOGaAoIcz1M4Y4sLTFfhLOC06ze/gaw6hqXNw=;
-        b=1D7KlRXu2xXZzYlyRAZs1RVuq9MbT8nFUHwnOXkGS51l2iBHTJGMS/Cvi2M7wR1Or5
-         mNA31X4kozwg27nKp8ltnTkXoD7Ma1gu4wjIMrLEnOfJxooAHC5QhGHY7LVK2Grk4r7c
-         gvAu/iUrRobfpynRX1YvPYFqRKi0CgWG5D8Aip7DO+J45zxMg0fp9e3dtX0ZDf4NuFX9
-         eF0z+iiXKDQ9b+8uw9n469Pir3y5rk09KiSoNebPOT2j5DdkIBR3tuzDxT6EpE7VFFsD
-         wl8WPO8pONuGljhcQ6OfVS5S16oKH1bSdD9HTlOdsdaWxOj25OskPb8USQP00naxcUJs
-         slXw==
-X-Gm-Message-State: AOAM532J1joD36Eg7pr0Z/TgShCcXoxuGzcpdFTYyjRW9/mWJkFfEjJo
-        ESnhTUz5dT29qRASm1MPk0l9ofqyEorxS2ePDZYTMq/6dpYkqhbshC895cHj3Hj2f+sIl1GIi7Q
-        aT4lbsE1aUv2czzj27kyvfHZgLt8wYB79H82C3aQUvg==
-X-Received: by 2002:a05:6402:2754:b0:416:55c4:c883 with SMTP id z20-20020a056402275400b0041655c4c883mr1452292edd.285.1646642820901;
-        Mon, 07 Mar 2022 00:47:00 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwlcygC1225VRsCfRH7PGhqlqVVmwDsWlgFrgal65RixQmIDsY1lehMdFc//YJEm1fs3ijWuQ==
-X-Received: by 2002:a05:6402:2754:b0:416:55c4:c883 with SMTP id z20-20020a056402275400b0041655c4c883mr1452278edd.285.1646642820720;
-        Mon, 07 Mar 2022 00:47:00 -0800 (PST)
-Received: from [192.168.0.140] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id h20-20020a1709060f5400b006d6d54b9203sm4474446ejj.38.2022.03.07.00.46.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 00:46:59 -0800 (PST)
-Message-ID: <e021ee5d-1d4d-61ea-8eb4-51ca87820b2f@canonical.com>
-Date:   Mon, 7 Mar 2022 09:46:59 +0100
+        Mon, 7 Mar 2022 03:48:44 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24BEE0A;
+        Mon,  7 Mar 2022 00:47:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646642869; x=1678178869;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=xt/3R0lQEI5gTKOyK1+eaIjn7pr4giAio4UXAW6KfRk=;
+  b=Iot3qmYni8Y0TZbUMQSi7hJoNUxGueUGdgF8FO94rpK1oDDEDAvzcYkJ
+   5T2DiZGm/hEvBvnofcRyjKz0FYPc6gpT/DVPO00GHkJYNBoLMDJNzd+xH
+   0eDVZyazqH5/xsxu19BgEUxiPXEDrBAPx3xHs5iWWxJSsMJs69DU9nebU
+   YghUzAv1QzxSo3Y7/x93CnNxCLGWrCYi9f02Dh0hJZWI1lGTbRL2eo1n8
+   rZQyJ33hXByaWNMh7N1S3bLQjMXje1yGUINIo5lcdIe5PUw9ICyQlEezL
+   YCAuuGq8xX263zFJ8qZVbniz+/zDio6taQWQnJ+8BStB2KlYcrt3uBJwM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="317571629"
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="317571629"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 00:47:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="577527667"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 07 Mar 2022 00:47:41 -0800
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Martin Kepplinger <martin.kepplinger@puri.sm>
+Cc:     mathias.nyman@intel.com, kernel@puri.sm, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220304113057.1477958-1-martin.kepplinger@puri.sm>
+ <YiIfZFPl9ZqPBKvj@kroah.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH] usb: xhci: make XHCI_STOP_EP_CMD_TIMEOUT a module
+ parameter
+Message-ID: <835b3990-43a6-a985-81b4-b86bddfe951f@linux.intel.com>
+Date:   Mon, 7 Mar 2022 10:49:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] clocksource/drivers/exynos_mct: Enable building on ARTPEC
+In-Reply-To: <YiIfZFPl9ZqPBKvj@kroah.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     kernel@axis.com, alim.akhtar@samsung.com,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220307083744.1592533-1-vincent.whitchurch@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220307083744.1592533-1-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 09:37, Vincent Whitchurch wrote:
-> This timer block is used on ARTPEC-8.
+On 4.3.2022 16.17, Greg KH wrote:
+> On Fri, Mar 04, 2022 at 12:30:57PM +0100, Martin Kepplinger wrote:
+>> On the Librem 5 imx8mq system we've seen the stop endpoint command
+>> time out regularly which results in the hub dying.
+>>
+>> While on the one hand we see "Port resume timed out, port 1-1: 0xfe3"
+>> before this and on the other hand driver-comments suggest that the driver
+>> might be able to recover instead of dying here, Sarah seemed to have a
+>> workaround for this particulator problem in mind already:
+>>
+>> Make it a module parameter. So while it might not be the root cause for
+>> the problem, do this to give users a workaround.
 > 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
->  drivers/clocksource/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This is not the 1990's, sorry, please do not add new module parameters.
+> They modify code, when you want to modify an individual device.
 > 
-> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-> index ae95d06a4a8f..2ea981ef23af 100644
-> --- a/drivers/clocksource/Kconfig
-> +++ b/drivers/clocksource/Kconfig
-> @@ -419,7 +419,7 @@ config ATMEL_TCB_CLKSRC
->  config CLKSRC_EXYNOS_MCT
->  	bool "Exynos multi core timer driver" if COMPILE_TEST
->  	depends on ARM || ARM64
-> -	depends on ARCH_EXYNOS || COMPILE_TEST
-> +	depends on ARCH_ARTPEC || ARCH_EXYNOS || COMPILE_TEST
 
-This looks ok, but please also provide compatible in the bindings (if
-driver stays the same) on top of my patches specifying number of interrupts:
-https://github.com/krzk/linux/commits/n/dt-bindings-exynos-mct-v2
+Agree, I think we really need to find the rootcause here.
 
-Best regards,
-Krzysztof
+There's a known problem with this stop endpoint timeout timer.
+
+For all other commands we start the timer when the controller starts processing the
+command, but the stop endpoint timer is started immediately when command is queued.
+So it might timeout if some other commend before it failed.
+
+I have a patchseries for this. It's still work in progress but should be testable.
+Pushed to a branch named stop_endpoint_fixes
+
+git://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git stop_endpoint_fixes
+https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=stop_endpoint_fixes
+
+Can you try it out and see if it helps?
+
+Thanks
+-Mathias
