@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E6CC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEC4C41535
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241169AbiCGKT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:19:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
+        id S241541AbiCGKUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240663AbiCGKBL (ORCPT
+        with ESMTP id S239785AbiCGKAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B225A163;
-        Mon,  7 Mar 2022 01:50:35 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5757CDCF;
+        Mon,  7 Mar 2022 01:46:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18047B810CC;
-        Mon,  7 Mar 2022 09:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F20CC340F4;
-        Mon,  7 Mar 2022 09:50:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4052460FB3;
+        Mon,  7 Mar 2022 09:46:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E12C340E9;
+        Mon,  7 Mar 2022 09:46:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646632;
-        bh=GyEuMCNQ4L6NB0aZi9hNpsr/Wf4fWPaOzs3DFWjUXpg=;
+        s=korg; t=1646646381;
+        bh=RfcgCi+OgPHxW8rGPGMHmlN7CGVuKzFFNDwYuTGQzag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWXStzqoiNot5rYkIC3UnDvgGQNMPjENI9xuhRJeN1mXMlTB8y6e4qoG88Bj85CEL
-         k+etUFnJSxNUTvIB0RxomcWKmo4MC3rqHUSoAjx1c6SXreCWxmARhYWAgFfw4gjjLR
-         hw451ZQSaYynm3KO7QWorqV0Mx84tX+ERLJsS8KM=
+        b=qTCqYS1l6SnOefVt1dH56bPMXkDYyD/OnpAjND1vqqaZZBK8wYgOKzwTX3fwJOiTa
+         QfYM+tNewIGJSRVRowXlFkyfZ9zXv06VgHFlZssgLS5xBxBuaBxb+OnwP9HeydYOOq
+         Wn4scKOCbce51g/w3Jja40aLUvJp1B7+MhW++RNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Qiang Yu <qiang.yu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 043/186] drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
-Date:   Mon,  7 Mar 2022 10:18:01 +0100
-Message-Id: <20220307091655.300518160@linuxfoundation.org>
+Subject: [PATCH 5.15 226/262] iavf: Add trace while removing device
+Date:   Mon,  7 Mar 2022 10:19:30 +0100
+Message-Id: <20220307091709.525351216@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
-References: <20220307091654.092878898@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,78 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiang Yu <qiang.yu@amd.com>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-[ Upstream commit c1a66c3bc425ff93774fb2f6eefa67b83170dd7e ]
+[ Upstream commit bdb9e5c7aec73a7b8b5acab37587b6de1203e68d ]
 
-Workstation application ANSA/META v21.1.4 get this error dmesg when
-running CI test suite provided by ANSA/META:
-[drm:amdgpu_gem_va_ioctl [amdgpu]] *ERROR* Couldn't update BO_VA (-16)
+Add kernel trace that device was removed.
+Currently there is no such information.
+I.e. Host admin removes a PCI device from a VM,
+than on VM shall be info about the event.
 
-This is caused by:
-1. create a 256MB buffer in invisible VRAM
-2. CPU map the buffer and access it causes vm_fault and try to move
-   it to visible VRAM
-3. force visible VRAM space and traverse all VRAM bos to check if
-   evicting this bo is valuable
-4. when checking a VM bo (in invisible VRAM), amdgpu_vm_evictable()
-   will set amdgpu_vm->evicting, but latter due to not in visible
-   VRAM, won't really evict it so not add it to amdgpu_vm->evicted
-5. before next CS to clear the amdgpu_vm->evicting, user VM ops
-   ioctl will pass amdgpu_vm_ready() (check amdgpu_vm->evicted)
-   but fail in amdgpu_vm_bo_update_mapping() (check
-   amdgpu_vm->evicting) and get this error log
+This patch adds info log to iavf_remove function.
 
-This error won't affect functionality as next CS will finish the
-waiting VM ops. But we'd better clear the error log by checking
-the amdgpu_vm->evicting flag in amdgpu_vm_ready() to stop calling
-amdgpu_vm_bo_update_mapping() later.
-
-Another reason is amdgpu_vm->evicted list holds all BOs (both
-user buffer and page table), but only page table BOs' eviction
-prevent VM ops. amdgpu_vm->evicting flag is set only for page
-table BOs, so we should use evicting flag instead of evicted list
-in amdgpu_vm_ready().
-
-The side effect of this change is: previously blocked VM op (user
-buffer in "evicted" list but no page table in it) gets done
-immediately.
-
-v2: update commit comments.
-
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Qiang Yu <qiang.yu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-index 0e7dc23f78e7f..bc8d83698880c 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-@@ -768,11 +768,16 @@ int amdgpu_vm_validate_pt_bos(struct amdgpu_device *adev, struct amdgpu_vm *vm,
-  * Check if all VM PDs/PTs are ready for updates
-  *
-  * Returns:
-- * True if eviction list is empty.
-+ * True if VM is not evicting.
-  */
- bool amdgpu_vm_ready(struct amdgpu_vm *vm)
- {
--	return list_empty(&vm->evicted);
-+	bool ret;
-+
-+	amdgpu_vm_eviction_lock(vm);
-+	ret = !vm->evicting;
-+	amdgpu_vm_eviction_unlock(vm);
-+	return ret;
- }
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 7bc8b646e37c..75fab4ea42b6 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3985,6 +3985,7 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
+ 		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
  
- /**
++	dev_info(&adapter->pdev->dev, "Removing device\n");
+ 	/* Shut down all the garbage mashers on the detention level */
+ 	iavf_change_state(adapter, __IAVF_REMOVE);
+ 	adapter->aq_required = 0;
 -- 
 2.34.1
 
