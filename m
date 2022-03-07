@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81064C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:16:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbiCGKRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:17:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
+        id S239484AbiCGKRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:17:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240407AbiCGKBA (ORCPT
+        with ESMTP id S240425AbiCGKBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5ADDEB4;
-        Mon,  7 Mar 2022 01:47:57 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101931EAD2;
+        Mon,  7 Mar 2022 01:48:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE7B0B810AA;
-        Mon,  7 Mar 2022 09:47:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3C9C340E9;
-        Mon,  7 Mar 2022 09:47:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C16C8B80F9F;
+        Mon,  7 Mar 2022 09:48:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E40C340E9;
+        Mon,  7 Mar 2022 09:48:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646474;
-        bh=I5u6IfSANuhAMwea1cGIDxXBM8bn7OdydXst9KFSiNs=;
+        s=korg; t=1646646483;
+        bh=iLgFKGPyCUaUOPyEtZCffVvNczVgl5sRpU+cMyQbkSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RENGWEInU5qbyc1IHWOK9PggLM8CN9f8ClyG+Hzf/z9BT6Eufjj5olhvnn/qQodjK
-         on46/TqA+OQOPRhKaqa2SHzHmE8f+ASAV0h5tk7w7HxKMF85g9LAfo684r8B4+VuYu
-         GUzYgLWb1DsOx/0TGUtO6y4Xo7slpCeb9+EDal+c=
+        b=Y8OjQuJkFmdPVVEPUwd0tIZPyAZU+EZti2a2BwX4hAyvDviyR7c0td2Q7MP0KixcV
+         qkbK/tL1SxYXQIUp8aRVvI6wBJQrpMamQWBEdhQgOjYThRHB7FwSSFPCUTHO05738/
+         +zCh91Qxtv2YTvLLQa++w7jg5Q8B2xce1CVhS7Is=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 218/262] ibmvnic: initialize rc before completing wait
-Date:   Mon,  7 Mar 2022 10:19:22 +0100
-Message-Id: <20220307091709.157309871@linuxfoundation.org>
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 256/262] btrfs: do not WARN_ON() if we have PageError set
+Date:   Mon,  7 Mar 2022 10:20:00 +0100
+Message-Id: <20220307091710.935323059@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,39 +48,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 765559b10ce514eb1576595834f23cdc92125fee ]
+commit a50e1fcbc9b85fd4e95b89a75c0884cb032a3e06 upstream.
 
-We should initialize ->init_done_rc before calling complete(). Otherwise
-the waiting thread may see ->init_done_rc as 0 before we have updated it
-and may assume that the CRQ was successful.
+Whenever we do any extent buffer operations we call
+assert_eb_page_uptodate() to complain loudly if we're operating on an
+non-uptodate page.  Our overnight tests caught this warning earlier this
+week
 
-Fixes: 6b278c0cb378 ("ibmvnic delay complete()")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  WARNING: CPU: 1 PID: 553508 at fs/btrfs/extent_io.c:6849 assert_eb_page_uptodate+0x3f/0x50
+  CPU: 1 PID: 553508 Comm: kworker/u4:13 Tainted: G        W         5.17.0-rc3+ #564
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-2.fc32 04/01/2014
+  Workqueue: btrfs-cache btrfs_work_helper
+  RIP: 0010:assert_eb_page_uptodate+0x3f/0x50
+  RSP: 0018:ffffa961440a7c68 EFLAGS: 00010246
+  RAX: 0017ffffc0002112 RBX: ffffe6e74453f9c0 RCX: 0000000000001000
+  RDX: ffffe6e74467c887 RSI: ffffe6e74453f9c0 RDI: ffff8d4c5efc2fc0
+  RBP: 0000000000000d56 R08: ffff8d4d4a224000 R09: 0000000000000000
+  R10: 00015817fa9d1ef0 R11: 000000000000000c R12: 00000000000007b1
+  R13: ffff8d4c5efc2fc0 R14: 0000000001500000 R15: 0000000001cb1000
+  FS:  0000000000000000(0000) GS:ffff8d4dbbd00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007ff31d3448d8 CR3: 0000000118be8004 CR4: 0000000000370ee0
+  Call Trace:
+
+   extent_buffer_test_bit+0x3f/0x70
+   free_space_test_bit+0xa6/0xc0
+   load_free_space_tree+0x1f6/0x470
+   caching_thread+0x454/0x630
+   ? rcu_read_lock_sched_held+0x12/0x60
+   ? rcu_read_lock_sched_held+0x12/0x60
+   ? rcu_read_lock_sched_held+0x12/0x60
+   ? lock_release+0x1f0/0x2d0
+   btrfs_work_helper+0xf2/0x3e0
+   ? lock_release+0x1f0/0x2d0
+   ? finish_task_switch.isra.0+0xf9/0x3a0
+   process_one_work+0x26d/0x580
+   ? process_one_work+0x580/0x580
+   worker_thread+0x55/0x3b0
+   ? process_one_work+0x580/0x580
+   kthread+0xf0/0x120
+   ? kthread_complete_and_exit+0x20/0x20
+   ret_from_fork+0x1f/0x30
+
+This was partially fixed by c2e39305299f01 ("btrfs: clear extent buffer
+uptodate when we fail to write it"), however all that fix did was keep
+us from finding extent buffers after a failed writeout.  It didn't keep
+us from continuing to use a buffer that we already had found.
+
+In this case we're searching the commit root to cache the block group,
+so we can start committing the transaction and switch the commit root
+and then start writing.  After the switch we can look up an extent
+buffer that hasn't been written yet and start processing that block
+group.  Then we fail to write that block out and clear Uptodate on the
+page, and then we start spewing these errors.
+
+Normally we're protected by the tree lock to a certain degree here.  If
+we read a block we have that block read locked, and we block the writer
+from locking the block before we submit it for the write.  However this
+isn't necessarily fool proof because the read could happen before we do
+the submit_bio and after we locked and unlocked the extent buffer.
+
+Also in this particular case we have path->skip_locking set, so that
+won't save us here.  We'll simply get a block that was valid when we
+read it, but became invalid while we were using it.
+
+What we really want is to catch the case where we've "read" a block but
+it's not marked Uptodate.  On read we ClearPageError(), so if we're
+!Uptodate and !Error we know we didn't do the right thing for reading
+the page.
+
+Fix this by checking !Uptodate && !Error, this way we will not complain
+if our buffer gets invalidated while we're using it, and we'll maintain
+the spirit of the check which is to make sure we have a fully in-cache
+block while we're messing with it.
+
+CC: stable@vger.kernel.org # 5.4+
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/extent_io.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 52eb6629328c..e98f7d3f935d 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5145,9 +5145,9 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
- 			}
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -6801,14 +6801,24 @@ static void assert_eb_page_uptodate(cons
+ {
+ 	struct btrfs_fs_info *fs_info = eb->fs_info;
  
- 			if (!completion_done(&adapter->init_done)) {
--				complete(&adapter->init_done);
- 				if (!adapter->init_done_rc)
- 					adapter->init_done_rc = -EAGAIN;
-+				complete(&adapter->init_done);
- 			}
++	/*
++	 * If we are using the commit root we could potentially clear a page
++	 * Uptodate while we're using the extent buffer that we've previously
++	 * looked up.  We don't want to complain in this case, as the page was
++	 * valid before, we just didn't write it out.  Instead we want to catch
++	 * the case where we didn't actually read the block properly, which
++	 * would have !PageUptodate && !PageError, as we clear PageError before
++	 * reading.
++	 */
+ 	if (fs_info->sectorsize < PAGE_SIZE) {
+-		bool uptodate;
++		bool uptodate, error;
  
- 			break;
--- 
-2.34.1
-
+ 		uptodate = btrfs_subpage_test_uptodate(fs_info, page,
+ 						       eb->start, eb->len);
+-		WARN_ON(!uptodate);
++		error = btrfs_subpage_test_error(fs_info, page, eb->start, eb->len);
++		WARN_ON(!uptodate && !error);
+ 	} else {
+-		WARN_ON(!PageUptodate(page));
++		WARN_ON(!PageUptodate(page) && !PageError(page));
+ 	}
+ }
+ 
 
 
