@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE28DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbiCGJeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51370 "EHLO
+        id S237426AbiCGJeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:34:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238756AbiCGJ3k (ORCPT
+        with ESMTP id S238757AbiCGJ3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:29:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E635A085;
-        Mon,  7 Mar 2022 01:28:23 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22E660D8;
+        Mon,  7 Mar 2022 01:28:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F04FD61119;
-        Mon,  7 Mar 2022 09:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E447EC340E9;
-        Mon,  7 Mar 2022 09:28:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94FFCB80F9F;
+        Mon,  7 Mar 2022 09:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1410C340E9;
+        Mon,  7 Mar 2022 09:28:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645302;
-        bh=5vDZ1x7prQVgCXDE0HHM4Rg/E42DNApOD7pEDUZAzDQ=;
+        s=korg; t=1646645308;
+        bh=GU1qZ8dbEsL6J9ZZT5ufr9ok5ZV+KF9ztqFDg6yIkCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fa0mDfLxMwBop4t9tWltgX3srzOVdbN2MBzAruHzuJuTE8HyTpXx/45ioIk5jk9Kg
-         JOVeFfPytlvMd70eHYHLbrOfwbgzA8XNvTRqCekutG5h4cYPTR0DhKFLm6sXGSLI/O
-         0Z3CxKSz2+Vxla9x1h6rnv+y0seJFD1sr1o7MinA=
+        b=W0K2cNbrbuUlcS3HUMSABkdjzk3ApRDWAVnC2di/IxwmLNQ3S4OPl7O7VTQxW+Joh
+         7ES6ALK+QPLUEflbQ+r6/vdIktPbQd5KTXfa5+9xDer2s0lWY/5G8z6JncqHc/bIDH
+         KUA88WOCUfWi9a7A85vimwqv6dv96kwGB/MMjVL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 49/64] ibmvnic: free reset-work-item when flushing
-Date:   Mon,  7 Mar 2022 10:19:22 +0100
-Message-Id: <20220307091640.542339286@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 5.4 12/64] usb: gadget: dont release an existing dev->buf
+Date:   Mon,  7 Mar 2022 10:18:45 +0100
+Message-Id: <20220307091639.492236845@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -49,33 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 8d0657f39f487d904fca713e0bc39c2707382553 upstream.
+commit 89f3594d0de58e8a57d92d497dea9fee3d4b9cda upstream.
 
-Fix a tiny memory leak when flushing the reset work queue.
+dev->buf does not need to be released if it already exists before
+executing dev_config.
 
-Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211231172138.7993-2-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/gadget/legacy/inode.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2248,8 +2248,10 @@ static int ibmvnic_reset(struct ibmvnic_
- 	 * flush reset queue and process this reset
- 	 */
- 	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
--		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
-+		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
- 			list_del(entry);
-+			kfree(list_entry(entry, struct ibmvnic_rwi, list));
-+		}
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1829,8 +1829,9 @@ dev_config (struct file *fd, const char
+ 	spin_lock_irq (&dev->lock);
+ 	value = -EINVAL;
+ 	if (dev->buf) {
++		spin_unlock_irq(&dev->lock);
+ 		kfree(kbuf);
+-		goto fail;
++		return value;
  	}
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
+ 	dev->buf = kbuf;
+ 
 
 
