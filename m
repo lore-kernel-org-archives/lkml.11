@@ -2,142 +2,583 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B27C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90749C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236289AbiCGJO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
+        id S236284AbiCGJPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:15:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236269AbiCGJOT (ORCPT
+        with ESMTP id S233442AbiCGJP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:14:19 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7079D45536
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:13:23 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id w4so16368597edc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:13:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w6o3CiUuUnMz0HnogpVCxbmqNwkYaC8XOsfIDIjyN14=;
-        b=TxOZWmSdsLVRK5BjTbMRMvYcpIjhv4FDpcBHiEQLOTjQwqCYWTSjVnMOIWiqth3r97
-         RedCbmJEbeGHq5VgJ3VmvWY6F4zhb+dq9mNhyc7+XfgZ3C+EzT44T656o1zTa1sAg5Gh
-         RAp051bsZo+yg69F+8INouYW5QF0yrv2i3qROAa3faIc07DaCtuy2vtxE6+jxf70iK39
-         /Z5wDs6s7xDpl1Ba8tEd2rI3R1OmPR0RpRpvY4lgZk55uhZH5psKVXavi5JgCLaX8VYG
-         0sv6XkH9701y0H58fvfEsHFc1Ot0NNgtbPpXgFbR5wKZj3KCjeZ91WhHF1kQfi9SEicE
-         LJUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w6o3CiUuUnMz0HnogpVCxbmqNwkYaC8XOsfIDIjyN14=;
-        b=UYLx3FgjNnfIGQqR/5kNFFe5/H9+f0jGyHX/0NFH2ZmQ+lPUvc8uGFFoVknZ2dtzBh
-         9sKuSKOr2LsZ1iWypUspfWpCaXEnJ+zewtbL0sALPrvcHbguRW+Edcr7kfP+P5myt9xa
-         ltQMxaY47Lrm9OffOt91k20NPdIsRz5WKPdzs8/5AnT1haRTzIzP0CxScJVYV0qd3zhN
-         Pgmb596izhVLhBvF0HqT9PiUxQ91yrDGtZe7aNm5Wxz1jXLRlXGAm+GmyAS8z4bXKZtG
-         TfsFOxzrzQzbX6gaLuvMGwB5XOkwr9BNOqI1fgSiPcyVQPbSLP4ooRRwfchcZl7NsxDf
-         QZtg==
-X-Gm-Message-State: AOAM533H4S/++K59oFliaWY/xnzQ6UlUqIPxKD7KCnlEmfieFhwwsVbd
-        MYxTlAnszeJSSzDtiBKNnwfherAv4n1P+J2SZrz6bA==
-X-Google-Smtp-Source: ABdhPJyMQTolfgBB3byDQUjuRxUwV3m5DtZO69+ewybZEOA0pse92b6VD/6dlSgoKgkLW6TptKyus3Z0HiHyQUkH+9I=
-X-Received: by 2002:a05:6402:d0d:b0:416:1d69:f23b with SMTP id
- eb13-20020a0564020d0d00b004161d69f23bmr10064731edb.141.1646644401992; Mon, 07
- Mar 2022 01:13:21 -0800 (PST)
+        Mon, 7 Mar 2022 04:15:28 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A634D253;
+        Mon,  7 Mar 2022 01:14:34 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id B7D491F4389A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646644472;
+        bh=y5wFZOPrJguTiNiuQsXjBDEDLhAkspRoJiXXu3PVstE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MYbjOMHYmoAWo7oFbRCePEeWHJPVbHQQwjBApkqDzU9Vs2TRKf2H5i2L8vjnmEVoM
+         nw6DNmeQg8G6NMZFtwgaXpa2G/Jr1EnSdhNDvHdR7W1UnHLkLF3JJSit+W6q7e3jXy
+         iaXwe48D4ZfwFL5eHGbhDThOZxqYJymFUAfHFCZsFUujgD71G3VhlPkh78U8zKCPr+
+         CWBMp/dNd1eWl10rgCz5u34MBWGV4UAPqjKPdAn20u1PJDIvoN6oA4OYEK8aQO2n7V
+         R193lQcCBrvxueC8BO9OjlY5X2TXKL4YysXPog1NEIEdxAWXefjNWQfiBBOcChvu10
+         RE6M23I+Q23Dw==
+Message-ID: <88a15ed7-6457-9529-954b-08e845bf00d3@collabora.com>
+Date:   Mon, 7 Mar 2022 10:14:29 +0100
 MIME-Version: 1.0
-References: <20220304221517.30213-1-kris@embeddedTS.com>
-In-Reply-To: <20220304221517.30213-1-kris@embeddedTS.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Mon, 7 Mar 2022 10:13:11 +0100
-Message-ID: <CAMRc=MeHT4pX1ZRbOz0owDDec5rv+FE84rp464ugffbH5PuS5w@mail.gmail.com>
-Subject: Re: [PATCH] gpio: ts4900: Do not set DAT and OE together
-To:     Kris Bahnsen <kris@embeddedts.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Featherston <mark@embeddedts.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [v2 14/17] ASoC: mediatek: mt8186: add machine driver with
+ mt6366, da7219 and max98357
+Content-Language: en-US
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org
+Cc:     lgirdwood@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
+        matthias.bgg@gmail.com, perex@perex.cz, p.zabel@pengutronix.de,
+        geert+renesas@glider.be, trevor.wu@mediatek.com,
+        tzungbi@google.com, aaronyu@google.com, zhangqilong3@huawei.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
+ <20220217134205.15400-15-jiaxin.yu@mediatek.com>
+ <70147e6f-a008-ab1a-eb07-dbb1236849b0@collabora.com>
+ <4aa814cdac002dde73fe01054c642e90b043429a.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <4aa814cdac002dde73fe01054c642e90b043429a.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 11:15 PM Kris Bahnsen <kris@embeddedts.com> wrote:
->
-> From: Mark Featherston <mark@embeddedTS.com>
->
-> This works around an issue with the hardware where both OE and
-> DAT are exposed in the same register. If both are updated
-> simultaneously, the harware makes no guarantees that OE or DAT
-> will actually change in any given order and may result in a
-> glitch of a few ns on a GPIO pin when changing direction and value
-> in a single write.
->
-> Setting direction to input now only affects OE bit. Setting
-> direction to output updates DAT first, then OE.
->
-> Signed-off-by: Mark Featherston <mark@embeddedTS.com>
-> Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-> ---
->  drivers/gpio/gpio-ts4900.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
-> index d885032cf814..fbabfca030c0 100644
-> --- a/drivers/gpio/gpio-ts4900.c
-> +++ b/drivers/gpio/gpio-ts4900.c
-> @@ -1,7 +1,8 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Digital I/O driver for Technologic Systems I2C FPGA Core
->   *
-> - * Copyright (C) 2015 Technologic Systems
-> + * Copyright (C) 2015-2018 Technologic Systems
->   * Copyright (C) 2016 Savoir-Faire Linux
->   *
->   * This program is free software; you can redistribute it and/or
-> @@ -55,19 +56,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
->  {
->         struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
->
-> -       /*
-> -        * This will clear the output enable bit, the other bits are
-> -        * dontcare when this is cleared
-> +       /* Only clear the OE bit here, requires a RMW. Prevents potential issue
-> +        * with OE and data getting to the physical pin at different times.
->          */
-> -       return regmap_write(priv->regmap, offset, 0);
-> +       return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
->  }
->
->  static int ts4900_gpio_direction_output(struct gpio_chip *chip,
->                                         unsigned int offset, int value)
->  {
->         struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
-> +       unsigned int reg;
->         int ret;
->
-> +       /* If changing from an input to an output, we need to first set the
-> +        * proper data bit to what is requested and then set OE bit. This
-> +        * prevents a glitch that can occur on the IO line
-> +        */
-> +       regmap_read(priv->regmap, offset, &reg);
-> +       if (!(reg & TS4900_GPIO_OE)) {
-> +               if (value)
-> +                       reg = TS4900_GPIO_OUT;
-> +               else
-> +                       reg &= ~TS4900_GPIO_OUT;
-> +
-> +               regmap_write(priv->regmap, offset, reg);
-> +       }
-> +
->         if (value)
->                 ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
->                                                          TS4900_GPIO_OUT);
-> --
-> 2.11.0
->
+Il 05/03/22 09:58, Jiaxin Yu ha scritto:
+> On Fri, 2022-02-18 at 15:54 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 17/02/22 14:42, Jiaxin Yu ha scritto:
+>>> This patch adds support for mt8186 board with mt6366, da7219 and
+>>> max98357.
+>>>
+>>> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+>>> ---
+>>>    .../mt8186/mt8186-mt6366-da7219-max98357.c    | 910
+>>> ++++++++++++++++++
+>>>    1 file changed, 910 insertions(+)
+>>>    create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-
+>>> da7219-max98357.c
+>>>
+>>> diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-
+>>> max98357.c b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-
+>>> max98357.c
+>>> new file mode 100644
+>>> index 000000000000..6ba53b8d1e46
+>>> --- /dev/null
+>>> +++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+>>> @@ -0,0 +1,910 @@
+>>> +// SPDX-License-Identifier: GPL-2.0
+>>> +//
+>>> +// mt8186-mt6366-da7219-max98357.c
+>>> +//	--  MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine driver
+>>> +//
+>>> +// Copyright (c) 2022 MediaTek Inc.
+>>> +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+>>> +//
+>>> +
+>>> +#include <linux/input.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/pm_runtime.h>
+>>> +#include <sound/pcm_params.h>
+>>> +#include <sound/soc.h>
+>>> +
+>>> +#include "../../codecs/da7219-aad.h"
+>>> +#include "../../codecs/da7219.h"
+>>> +#include "../../codecs/mt6358.h"
+>>> +#include "../common/mtk-afe-platform-driver.h"
+>>> +#include "mt8186-afe-common.h"
+>>> +#include "mt8186-afe-clk.h"
+>>> +#include "mt8186-afe-gpio.h"
+>>> +
+>>> +#define DA7219_CODEC_DAI "da7219-hifi"
+>>> +#define DA7219_DEV_NAME "da7219.5-001a"
+>>> +
+>>> +struct mt8186_mt6366_da7219_max98357_priv {
+>>> +	struct snd_soc_jack headset_jack, hdmi_jack;
+>>> +};
+>>> +
+>>> +static struct snd_soc_codec_conf mt6366_codec_conf[] = {
+>>> +	{
+>>> +		.dlc = COMP_CODEC_CONF("mt6358-sound"),
+>>> +		.name_prefix = "Mt6366",
+>>> +	},
+>>> +};
+>>> +
+>>> +static int mt8186_da7219_init(struct snd_soc_pcm_runtime *rtd)
+>>> +{
+>>> +	struct mt8186_mt6366_da7219_max98357_priv *priv =
+>>> +		snd_soc_card_get_drvdata(rtd->card);
+>>> +	struct snd_soc_jack *jack = &priv->headset_jack;
+>>> +	struct snd_soc_component *cmpnt_codec =
+>>> +		asoc_rtd_to_codec(rtd, 0)->component;
+>>> +	int ret;
+>>> +
+>>> +	/* Enable Headset and 4 Buttons Jack detection */
+>>> +	ret = snd_soc_card_jack_new(rtd->card, "Headset Jack",
+>>> +				    SND_JACK_HEADSET | SND_JACK_BTN_0 |
+>>> +				    SND_JACK_BTN_1 | SND_JACK_BTN_2 |
+>>> +				    SND_JACK_BTN_3 | SND_JACK_LINEOUT,
+>>> +				    jack, NULL, 0);
+>>> +	if (ret) {
+>>> +		dev_err(rtd->dev, "Headset Jack creation failed: %d\n",
+>>> ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	snd_jack_set_key(jack->jack, SND_JACK_BTN_0, KEY_PLAYPAUSE);
+>>> +	snd_jack_set_key(jack->jack, SND_JACK_BTN_1, KEY_VOLUMEUP);
+>>> +	snd_jack_set_key(jack->jack, SND_JACK_BTN_2, KEY_VOLUMEDOWN);
+>>> +	snd_jack_set_key(jack->jack, SND_JACK_BTN_3, KEY_VOICECOMMAND);
+>>> +
+>>> +	da7219_aad_jack_det(cmpnt_codec, &priv->headset_jack);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int mt8186_da7219_i2s_hw_params(struct snd_pcm_substream
+>>> *substream,
+>>> +				       struct snd_pcm_hw_params
+>>> *params)
+>>> +{
+>>> +	struct snd_soc_pcm_runtime *rtd =
+>>> asoc_substream_to_rtd(substream);
+>>> +	struct snd_soc_dai *codec_dai;
+>>> +	unsigned int rate = params_rate(params);
+>>> +	unsigned int mclk_fs_ratio = 256;
+>>> +	unsigned int mclk_fs = rate * mclk_fs_ratio;
+>>> +	unsigned int freq;
+>>> +	int ret = 0, j;
+>>> +
+>>> +	ret = snd_soc_dai_set_sysclk(asoc_rtd_to_cpu(rtd, 0), 0,
+>>> +				     mclk_fs, SND_SOC_CLOCK_OUT);
+>>> +	if (ret < 0)
+>>> +		dev_err(rtd->dev, "failed to set cpu dai sysclk\n");
+>>
+>> Does it really make sense to go on after this failure?
+>>
+>>> +
+>>> +	for_each_rtd_codec_dais(rtd, j, codec_dai) {
+>>> +		if (!strcmp(codec_dai->component->name,
+>>> DA7219_DEV_NAME)) {
+>>> +			ret = snd_soc_dai_set_sysclk(codec_dai,
+>>> +						     DA7219_CLKSRC_MCLK
+>>> ,
+>>> +						     mclk_fs,
+>>> +						     SND_SOC_CLOCK_IN);
+>>> +			if (ret < 0)
+>>> +				dev_err(rtd->dev, "failed to set
+>>> sysclk\n");
+>>> +
+>>
+>> I think that going on past this wouldn't make sense as well, as it
+>> may result
+>> in unexpected behavior... just return a failure here
+> 
+> Yes, it is.
+>>
+>>> +			if ((rate % 8000) == 0)
+>>> +				freq = DA7219_PLL_FREQ_OUT_98304;
+>>> +			else
+>>> +				freq = DA7219_PLL_FREQ_OUT_90316;
+>>> +
+>>> +			ret = snd_soc_dai_set_pll(codec_dai, 0,
+>>> +						  DA7219_SYSCLK_PLL_SRM
+>>> ,
+>>> +						  0, freq);
+>>> +			if (ret)
+>>> +				dev_err(rtd->dev, "failed to start PLL:
+>>> %d\n",
+>>> +					ret);
+>>
+>> and here
+> Yes, you are right.
+> 
+>>
+>>> +		}
+>>> +	}
+>>> +
+>>
+>> So, you've covered all failure cases already, for which, you can
+>> simply
+>> return 0 here.
+> Yes, it is.
+> 
+>>
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int mt8186_da7219_i2s_hw_free(struct snd_pcm_substream
+>>> *substream)
+>>> +{
+>>> +	struct snd_soc_pcm_runtime *rtd =
+>>> asoc_substream_to_rtd(substream);
+>>> +	struct snd_soc_dai *codec_dai;
+>>> +	int ret = 0, j;
+>>> +
+>>> +	for_each_rtd_codec_dais(rtd, j, codec_dai) {
+>>> +		if (!strcmp(codec_dai->component->name,
+>>> DA7219_DEV_NAME)) {
+>>> +			ret = snd_soc_dai_set_pll(codec_dai,
+>>> +						  0,
+>>> DA7219_SYSCLK_MCLK, 0, 0);
+>>> +			if (ret < 0) {
+>>> +				dev_err(rtd->dev, "failed to stop PLL:
+>>> %d\n",
+>>> +					ret);
+>>> +				break;
+>>> +			}
+>>> +		}
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static const struct snd_soc_ops mt8186_da7219_i2s_ops = {
+>>> +	.hw_params = mt8186_da7219_i2s_hw_params,
+>>> +	.hw_free = mt8186_da7219_i2s_hw_free,
+>>> +};
+>>> +
+>>> +static int mt8186_mt6366_hdmi_init(struct snd_soc_pcm_runtime
+>>> *rtd)
+>>> +{
+>>> +	struct snd_soc_component *cmpnt_codec =
+>>> +		asoc_rtd_to_codec(rtd, 0)->component;
+>>> +	struct mt8186_mt6366_da7219_max98357_priv *priv =
+>>> +		snd_soc_card_get_drvdata(rtd->card);
+>>> +	int ret;
+>>> +
+>>> +	ret = snd_soc_card_jack_new(rtd->card, "HDMI Jack",
+>>> SND_JACK_LINEOUT,
+>>> +				    &priv->hdmi_jack, NULL, 0);
+>>> +	if (ret) {
+>>> +		dev_err(rtd->dev, "HDMI Jack creation failed: %d\n",
+>>> ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	return snd_soc_component_set_jack(cmpnt_codec, &priv-
+>>>> hdmi_jack, NULL);
+>>> +}
+>>> +
+>>> +static int mt8186_mt6366_init(struct snd_soc_pcm_runtime *rtd)
+>>> +{
+>>> +	struct snd_soc_component *cmpnt_afe =
+>>> +		snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
+>>> +	struct snd_soc_component *cmpnt_codec =
+>>> +		asoc_rtd_to_codec(rtd, 0)->component;
+>>> +	struct mtk_base_afe *afe =
+>>> snd_soc_component_get_drvdata(cmpnt_afe);
+>>> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
+>>> +	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+>>> +	int ret;
+>>> +
+>>> +	/* set mtkaif protocol */
+>>> +	mt6358_set_mtkaif_protocol(cmpnt_codec,
+>>> +				   MT6358_MTKAIF_PROTOCOL_1);
+>>> +	afe_priv->mtkaif_protocol = MT6358_MTKAIF_PROTOCOL_1;
+>>> +
+>>> +	ret = snd_soc_dapm_sync(dapm);
+>>> +	if (ret) {
+>>> +		dev_info(rtd->dev, "failed to snd_soc_dapm_sync\n");
+>>
+>> dev_err()
+>>
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int mt8186_i2s_hw_params_fixup(struct snd_soc_pcm_runtime
+>>> *rtd,
+>>> +				      struct snd_pcm_hw_params *params)
+>>> +{
+>>> +	struct snd_interval *channels = hw_param_interval(params,
+>>> +		SNDRV_PCM_HW_PARAM_CHANNELS);
+>>> +	dev_info(rtd->dev, "%s(), fix format to 32bit\n", __func__);
+>>> +
+>>
+>> dev_dbg()
+>>
+>>> +	/* fix BE i2s channel to 2 channel */
+>>> +	channels->min = 2;
+>>> +	channels->max = 2;
+>>> +
+>>> +	/* fix BE i2s format to S32_LE, clean param mask first */
+>>> +	snd_mask_reset_range(hw_param_mask(params,
+>>> SNDRV_PCM_HW_PARAM_FORMAT),
+>>> +			     0, (__force unsigned
+>>> int)SNDRV_PCM_FORMAT_LAST);
+>>> +
+>>> +	params_set_format(params, SNDRV_PCM_FORMAT_S32_LE);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int mt8186_hdmi_i2s_hw_params_fixup(struct
+>>> snd_soc_pcm_runtime *rtd,
+>>> +					   struct snd_pcm_hw_params
+>>> *params)
+>>> +{
+>>> +	struct snd_interval *channels = hw_param_interval(params,
+>>> +		SNDRV_PCM_HW_PARAM_CHANNELS);
+>>> +	dev_info(rtd->dev, "%s(), fix format to 32bit\n", __func__);
+>>> +
+>>
+>> dev_dbg()
+>>
+>>> +	/* fix BE i2s channel to 2 channel */
+>>> +	channels->min = 2;
+>>> +	channels->max = 2;
+>>> +
+>>> +	/* fix BE i2s format to S24_LE, clean param mask first */
+>>> +	snd_mask_reset_range(hw_param_mask(params,
+>>> SNDRV_PCM_HW_PARAM_FORMAT),
+>>> +			     0, (__force unsigned
+>>> int)SNDRV_PCM_FORMAT_LAST);
+>>> +
+>>> +	params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
+>>> +
+>>> +	return 0;
+>>> +}
+>>
+> 
+> Ok, I will use this code which is really more concise.
+> 
+>> Besides, I would do the following instead:
+>>
+>> static int mt8186_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+>>
+>> 				  struct snd_pcm_hw_params *params,
+>>
+>> 				  snd_pcm_format_t fmt)
+>>
+>> {
+>>
+>> 	struct snd_interval *channels = hw_param_interval(params,
+>>
+>> 		SNDRV_PCM_HW_PARAM_CHANNELS);
+>>
+>> 	dev_dbg(rtd->dev, "%s(), fix format to 32bit\n", __func__);
+>>
+>>
+>>
+>> 	/* fix BE i2s channel to 2 channel */
+>>
+>> 	channels->min = 2;
+>>
+>> 	channels->max = 2;
+>>
+>>
+>>
+>> 	/* fix BE i2s format to S32_LE, clean param mask first */
+>>
+>> 	snd_mask_reset_range(hw_param_mask(params,
+>> SNDRV_PCM_HW_PARAM_FORMAT),
+>>
+>> 			     0, (__force unsigned
+>> int)SNDRV_PCM_FORMAT_LAST);
+>>
+>>
+>>
+>> 	params_set_format(params, fmt);
+>>
+>>
+>>
+>> 	return 0;
+>>
+>> }
+>>
+>>
+>>
+>> static int mt8186_i2s_hw_params_fixup(struct snd_soc_pcm_runtime
+>> *rtd,
+>>
+>> 				      struct snd_pcm_hw_params *params)
+>>
+>> {
+>>
+>> 	return mt8186_hw_params_fixup(rtd, params,
+>> SNDRV_PCM_FORMAT_S32_LE);
+>>
+>> }
+>>
+>>
+>>
+>> static int mt8186_hdmi_i2s_hw_params_fixup(struct snd_soc_pcm_runtime
+>> *rtd,
+>>
+>> 					   struct snd_pcm_hw_params
+>> *params)
+>>
+>> {
+>>
+>> 	return mt8186_hw_params_fixup(rtd, params,
+>> SNDRV_PCM_FORMAT_S24_LE);
+>>
+>> }
+>>
+>> ... this reduces code duplication!
+>>
+>>> +
+>>> +/* FE */
+>>> +SND_SOC_DAILINK_DEFS(playback1,
+>>> +		     DAILINK_COMP_ARRAY(COMP_CPU("DL1")),
+>>> +		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
+>>> +		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+>>
+>>
+>> ..snip..
+>>
+>>> +static int mt8186_mt6366_da7219_max98357_dev_probe(struct
+>>> platform_device *pdev)
+>>> +{
+>>> +	struct snd_soc_card *card =
+>>> &mt8186_mt6366_da7219_max98357_soc_card;
+>>> +	struct snd_soc_dai_link *dai_link;
+>>> +	struct mt8186_mt6366_da7219_max98357_priv *priv;
+>>> +	struct device_node *platform_node, *hdmi_codec;
+>>> +	int ret, i;
+>>> +
+>>> +	dev_info(&pdev->dev, "%s(), ++\n", __func__);
+>>> +
+>>> +	card->dev = &pdev->dev;
+>>> +
+>>> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+>>> +	if (!priv)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	platform_node = of_parse_phandle(pdev->dev.of_node,
+>>> +					 "mediatek,platform", 0);
+>>> +	if (!platform_node) {
+>>> +		dev_info(&pdev->dev,
+>>> +			 "Property 'platform' missing or invalid\n");
+>>
+>> 	if (!platform_node)
+>> 		return dev_err_probe(&pdev->dev, -EINVAL,
+>> 				    "mediatek,platform missing or
+>> invalid\n");
+>>
+>>> +		return -EINVAL;
+> got err_platform_node;
+>>> +	}
+>>> +
+>>> +	hdmi_codec = of_parse_phandle(pdev->dev.of_node,
+>>> +				      "mediatek,hdmi-codec", 0);
+>>> +	if (!hdmi_codec) {
+>>> +		dev_info(&pdev->dev,
+>>> +			 "Property 'hdmi' missing or invalid\n");
+>>
+>> dev_err()
+>>
+>>> +		return -EINVAL;
+>>> +	}
+> Should I of_node_put(platform_node) befor return?
+> 
+> goto err_hdmi_node;
+> 
 
-This looks like a fix, can you add a Fixes tag?
+of_node_put() has to be called only when of_parse_phandle() succeeds,
+otherwise there is nothing to put.
 
-Bart
+> 
+>>> +
+>>> +	for_each_card_prelinks(card, i, dai_link) {
+>>> +		if (dai_link->platforms->name)
+>>> +			continue;
+>>> +
+>>> +		if (hdmi_codec && strcmp(dai_link->name, "I2S3") == 0)
+>>> {
+>>> +			dai_link->codecs->of_node = hdmi_codec;
+>>> +			dai_link->ignore = 0;
+>>> +		}
+>>> +
+>>> +		dai_link->platforms->of_node = platform_node;
+>>> +	}
+>>> +
+>>> +	snd_soc_card_set_drvdata(card, priv);
+>>> +
+>>> +	/* init gpio */
+>>> +	ret = mt8186_afe_gpio_init(&pdev->dev);
+>>> +	if (ret)
+>>> +		dev_info(&pdev->dev, "init gpio error\n");
+>>
+>> dev_err() and goto end;
+> Yes, goto err_init_gpio and of_node_put for hdmi_codec and
+> platform_node.
+
+Yes, agreed.
+
+
+Regards,
+Angelo
+
+>>
+>>> +
+>>> +	dev_info(&pdev->dev, "%s(), devm_snd_soc_register_card\n",
+>>> __func__);
+>>> +	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>> +	if (ret)
+>>> +		dev_info(&pdev->dev, "%s snd_soc_register_card fail
+>>> %d\n",
+>>> +			 __func__, ret);
+>>
+>> dev_err_probe()
+>>
+>> end:
+>>
+> err_init_gpio:
+>>> +	of_node_put(hdmi_codec);
+> err_hdmi_node:
+>>> +	of_node_put(platform_node);
+>>> +
+> err_platform_node:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +#if IS_ENABLED(CONFIG_OF)
+>>> +static const struct of_device_id
+>>> mt8186_mt6366_da7219_max98357_dt_match[] = {
+>>> +	{.compatible =
+>>> "mediatek,mt8186_mt6366_da7219_max98357_sound",},
+>>> +	{}
+>>> +};
+>>> +#endif
+>>> +
+>>> +static struct platform_driver mt8186_mt6366_da7219_max98357_driver
+>>> = {
+>>> +	.driver = {
+>>> +		.name = "mt8186_mt6366_da7219_max98357",
+>>> +#if IS_ENABLED(CONFIG_OF)
+>>> +		.of_match_table =
+>>> mt8186_mt6366_da7219_max98357_dt_match,
+>>> +#endif
+>>> +		.pm = &snd_soc_pm_ops,
+>>> +	},
+>>> +	.probe = mt8186_mt6366_da7219_max98357_dev_probe,
+>>> +};
+>>> +
+>>> +module_platform_driver(mt8186_mt6366_da7219_max98357_driver);
+>>> +
+>>> +/* Module information */
+>>> +MODULE_DESCRIPTION("MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine
+>>> driver");
+>>> +MODULE_AUTHOR("Jiaxin Yu <jiaxin.yu@mediatek.com>");
+>>> +MODULE_LICENSE("GPL v2");
+>>> +MODULE_ALIAS("mt8186_mt6366_da7219_max98357 soc card");
+>>
+>>
+> 
+
