@@ -2,108 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245502AbiCGUzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S245511AbiCGUzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:55:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245410AbiCGUzF (ORCPT
+        with ESMTP id S245411AbiCGUzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 15:55:05 -0500
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AF8340FC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:53:35 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6100:2d37:4115:c358])
-        by albert.telenet-ops.be with bizsmtp
-        id 3YtW2700F1Yj8bA06YtWdo; Mon, 07 Mar 2022 21:53:34 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nRKLY-0036Qd-Sw; Mon, 07 Mar 2022 21:52:48 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nRKLX-0034hG-ST; Mon, 07 Mar 2022 21:52:47 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 01/10] drm/fourcc: Add drm_format_info_bpp() helper
-Date:   Mon,  7 Mar 2022 21:52:36 +0100
-Message-Id: <eab1fe866c0ffd4ac097e66ff48725dd39893105.1646683502.git.geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1646683502.git.geert@linux-m68k.org>
-References: <cover.1646683502.git.geert@linux-m68k.org>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB4F34656;
+        Mon,  7 Mar 2022 12:53:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646686419; x=1678222419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JcJUkTKZL/93UJ5Ywi8SfyzOjahp0gYVOJlYJUbzoxM=;
+  b=H9vHSXVtD8zhoRFzkluKhtqE2Pf6hey6O8TRXIaDNT8qwt8N5kjPOxxO
+   1Ak0gEtMYkXZ6qLwc2ZUVohQIf3wYSBS7Jfbnl4//TFhFTUIeL4S2ZUpZ
+   maLksrMtsMaUQpoMD2alzuEylHD5nzsW6cuRCWP/2lVOP2htCBbkqY62g
+   MPHpmGv0jFieqklTwnNyUZqEmkcnvk//eksasLUlE/EgEOnbzL/0xazjT
+   Y2mmGEF4f5wxL2x+ip7RPM9AhuFRJo4wsmGD8VINUkgZd4Jknccqo8g+0
+   RoJbsSSCPrJR1XVOM5wQj0uiQFJSPfI3f50wksX1vZIP9j1xvPRRBsirE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="234456350"
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="234456350"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 12:53:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="509844026"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga002.jf.intel.com with ESMTP; 07 Mar 2022 12:53:36 -0800
+Date:   Mon, 7 Mar 2022 21:53:35 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        kuba@kernel.org, magnus.karlsson@intel.com
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <YiZwz+6nRwl9YekK@boxer>
+References: <20220307213659.47658125@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307213659.47658125@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to retrieve the actual number of bits per pixel for a
-plane, taking into account the number of characters and pixels per
-block for tiled formats.
+On Mon, Mar 07, 2022 at 09:36:59PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the net-next tree, today's linux-next build (arm64
+> allmodconfig) failed like this:
+> 
+> drivers/net/ethernet/intel/ice/ice_xsk.c: In function 'ice_xmit_pkt_batch':
+> drivers/net/ethernet/intel/ice/ice_xsk.c:801:0: error: ignoring #pragma GCC unroll [-Werror=unknown-pragmas]
+>   loop_unrolled_for(i = 0; i < PKTS_PER_BATCH; i++) {
+>  ^
+> cc1: all warnings being treated as errors
+> 
+> Caused by commit
+> 
+>   126cdfe1007a ("ice: xsk: Improve AF_XDP ZC Tx and use batching API")
+> 
+> This build was done with gcc v5.4.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-v2:
-  - Move up.
----
- drivers/gpu/drm/drm_fourcc.c | 19 +++++++++++++++++++
- include/drm/drm_fourcc.h     |  1 +
- 2 files changed, 20 insertions(+)
+Hey Stephen, thanks for a report, I'll send a fix to net-next immediately.
+Maciej
 
-diff --git a/drivers/gpu/drm/drm_fourcc.c b/drivers/gpu/drm/drm_fourcc.c
-index 07741b678798b0f1..cf48ea0b2cb70ba8 100644
---- a/drivers/gpu/drm/drm_fourcc.c
-+++ b/drivers/gpu/drm/drm_fourcc.c
-@@ -370,6 +370,25 @@ unsigned int drm_format_info_block_height(const struct drm_format_info *info,
- }
- EXPORT_SYMBOL(drm_format_info_block_height);
- 
-+/**
-+ * drm_format_info_bpp - number of bits per pixel
-+ * @info: pixel format info
-+ * @plane: plane index
-+ *
-+ * Returns:
-+ * The actual number of bits per pixel, depending on the plane index.
-+ */
-+unsigned int drm_format_info_bpp(const struct drm_format_info *info, int plane)
-+{
-+	if (!info || plane < 0 || plane >= info->num_planes)
-+		return 0;
-+
-+	return info->char_per_block[plane] * 8 /
-+	       (drm_format_info_block_width(info, plane) *
-+		drm_format_info_block_height(info, plane));
-+}
-+EXPORT_SYMBOL(drm_format_info_bpp);
-+
- /**
-  * drm_format_info_min_pitch - computes the minimum required pitch in bytes
-  * @info: pixel format info
-diff --git a/include/drm/drm_fourcc.h b/include/drm/drm_fourcc.h
-index 22aa64d07c7905e2..3800a7ad7f0cda7a 100644
---- a/include/drm/drm_fourcc.h
-+++ b/include/drm/drm_fourcc.h
-@@ -313,6 +313,7 @@ unsigned int drm_format_info_block_width(const struct drm_format_info *info,
- 					 int plane);
- unsigned int drm_format_info_block_height(const struct drm_format_info *info,
- 					  int plane);
-+unsigned int drm_format_info_bpp(const struct drm_format_info *info, int plane);
- uint64_t drm_format_info_min_pitch(const struct drm_format_info *info,
- 				   int plane, unsigned int buffer_width);
- 
--- 
-2.25.1
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+
 
