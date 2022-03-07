@@ -2,254 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D54AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D77BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbiCGMxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:53:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        id S242397AbiCGMxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:53:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiCGMxG (ORCPT
+        with ESMTP id S234390AbiCGMxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:53:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7194DF6A;
-        Mon,  7 Mar 2022 04:52:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E14CB80EEC;
-        Mon,  7 Mar 2022 12:52:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04270C340F4;
-        Mon,  7 Mar 2022 12:52:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646657529;
-        bh=ogehxHJO6mtTQpVQ6EvyPZ+p1hU+58H54TWrYxT0eCU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vE/MmPgPshuXZgGAuBwuXJkKteoieok460bQ4LudgGaJMYDdEBgStVti5bA0QusZA
-         yLVJadJeHS/WELe8v1dUNJMPD70V+PMR85CbTB+pvPWHEcW9Po0+NNI3pr5kzZ0zui
-         u+MZyStM+qA7+gwlP7xwFdJmRIqRQiIyJIAOBv47lcGvgTvaiEP3OdK0he5Md97m7J
-         nkKKuUUXBurjoLXlinfjemtEs3VgUz1x3S4SuhjdbqvCgJOBQdG2m22vy/2cyhiISi
-         pK4rKqNS+XNliSO0sA6mhOBJ3V4UYyEWUpxt8YmjEwDS9zN1rJrEpA7Rmq2zJ+5002
-         FPUjaxluS2w1w==
-Date:   Mon, 7 Mar 2022 14:51:28 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Nayna Jain <nayna@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        dhowells@redhat.com, zohar@linux.ibm.com,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, rnsastry@linux.ibm.com
-Subject: Re: [PATCH v10 3/3] integrity: support including firmware
- ".platform" keys at build time
-Message-ID: <YiX/0F0/ebVO538u@iki.fi>
-References: <20220306205100.651878-1-nayna@linux.ibm.com>
- <20220306205100.651878-4-nayna@linux.ibm.com>
- <YiX/NHETfqLT8ZAz@iki.fi>
+        Mon, 7 Mar 2022 07:53:45 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009A650E14
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 04:52:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646657571; x=1678193571;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version;
+  bh=mvzrwB/XSImGMTjzUWiiTDg5Wq92MazFYdVhuNKqGj4=;
+  b=XCO96cPBmzUe/JWlz6jQ5ln9V79+5QF8BRc390zlCjSCd3b6dT8IreRh
+   fiRBpDAmJo+3r0Fqs0DthvMX22MZspSz9F8350+Nj5gsAaZi0vglnMJX5
+   XWSM8bcVNa+tQJi7oJW8+RPZ6/VQ4B97T2+V/vSp84xA08wj8IZhlwL/C
+   tguKSvtlmmP9RGxGLVoYEz0YBWs+1rVmbQiEfc1T3bEodFS4twiSCAwp3
+   tgimASJOWfGtW6BQKreOmNKHCwGElDQaIPgJVhjDoTqLjd7euF2/H4JFR
+   M5k3p9T3q+7Z8uGQE8aj5Ic37c1QybksUE9a4LgC3mduvmgXaz6IOzc5V
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
+   d="scan'208";a="155491135"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 05:52:50 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Mar 2022 05:52:49 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 05:52:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G+HaU7+wAtHu/kL921Ge5exk9BwTPji+k07WOvgVAIJep4fYh4emvo6+eD9DRZZOW/KXbeHTKGqnBpoRS/5o01Oum9EJxcPSI15LB8qvWhKLYjTLqPWRzKZu2VxHVxiYSk4EwaeVA2Q52diNN5OsPLLOYC+nCKVKtIcY1B/PSmCzIQo/QeMqP41b4JHPnykFp6yKNGrlRGuqEDZWDjKXjevMuKJxQTgwBrLocpaAFCL940S9ZW4qo0DCvjD7es2B7/klUtBMAaOVFk1cS3De1JslLkL/wobNX45xN+f2xHMVPFRKCCjsfp12OaSbmKVc2SrpuyJ34Q5MtjIujVR8xQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mvzrwB/XSImGMTjzUWiiTDg5Wq92MazFYdVhuNKqGj4=;
+ b=Av9QgdFW1EXbkKYcKH5uk10oYMQQVLqDILD6n0Pb1vh+uOmndOjf4FV4tfXkbUeTm/+YzC1AoqAA0KRKAvVMB8miOiTRbsi3M9yjpjevvokPAI9pXa23GKgTkXtOD58vc6/mDTRmtQdYKXRMhb5peX8TAB6btQGXuhHEqGPjDVGtBVugepWZP3VboZ6oUxLaxK5EJ5Jqghf4tCot/m0iK/jAG9F/7UCNKmBQQ39lVDloecdPxgQANBktBCfWr0iQIfuDlwOsgm4nVpvk+jpHDjv3cPWYSFGiHLlwZplGokRmZzwYXAZXKCPhENiNmdb/nlRAeDUs+BzIv6wtNgKo0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mvzrwB/XSImGMTjzUWiiTDg5Wq92MazFYdVhuNKqGj4=;
+ b=LYOHTCotUOEVbCc7iFO5A70AmAtQXjCM/Grjqu/NChqgWcewofEb1phXsu8xJS8fnDHYFh0wfxEER6ZX58kPIExFfXCzhG54GCaZfUQsAdGcXjnvgyuj/I+48WPmoGdeHt5gz7u3qMrS58h5SdGQhullwIAS6YhndkBLkSwT2Xg=
+Received: from DM8PR11MB5687.namprd11.prod.outlook.com (2603:10b6:8:22::7) by
+ BN7PR11MB2643.namprd11.prod.outlook.com (2603:10b6:406:b2::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5038.17; Mon, 7 Mar 2022 12:52:44 +0000
+Received: from DM8PR11MB5687.namprd11.prod.outlook.com
+ ([fe80::fc32:96a4:933f:194f]) by DM8PR11MB5687.namprd11.prod.outlook.com
+ ([fe80::fc32:96a4:933f:194f%4]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
+ 12:52:44 +0000
+From:   <Codrin.Ciubotariu@microchip.com>
+To:     <linmq006@gmail.com>, <lgirdwood@gmail.com>, <broonie@kernel.org>,
+        <perex@perex.cz>, <tiwai@suse.com>, <Nicolas.Ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <Claudiu.Beznea@microchip.com>,
+        <voice.shen@atmel.com>, <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: atmel: Add missing of_node_put() in
+ at91sam9g20ek_audio_probe
+Thread-Topic: [PATCH] ASoC: atmel: Add missing of_node_put() in
+ at91sam9g20ek_audio_probe
+Thread-Index: AQHYMiFGnHDr8jokZE+KSzG/KZeztayz4DcA
+Date:   Mon, 7 Mar 2022 12:52:44 +0000
+Message-ID: <97283dd6-bdb3-6222-ee39-5c1b57b9e548@microchip.com>
+References: <20220307124539.1743-1-linmq006@gmail.com>
+In-Reply-To: <20220307124539.1743-1-linmq006@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 72205af9-ee8f-4d69-6a10-08da00395fa2
+x-ms-traffictypediagnostic: BN7PR11MB2643:EE_
+x-microsoft-antispam-prvs: <BN7PR11MB2643F1A034B7F558B875CBBCE7089@BN7PR11MB2643.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: cYWN+/0e6VsacuiELxseB1xFtyBaO3jf4HOMJup2xqynQYFT05tqL9x9hBxR1dsu7lUl27ik7GthcXr2E5logdLUp+DcROtdLnqbcdUT82HWCO6zKwyYg9Pjpw+HxDgDPQl5lVjYrf1LNJQkk/QPRoHuGFT1vjXaifVC+SDidlv5qdRzMUFxloOuON/H/CybzyJI4exEKW7oJoE8gtYkKx8egqC9R9mDt1wVXCZ/qtfmdFdwA5PEFxIdduhM+EA87EB17xvO93FGzvVutVP8o8zj7DhmqrMITX6yc3zKe8rUiar+DUJNH1olMz+/HMtkzV4fOLrXBrZLqbUnk+9HtoQHO5sHyS1k6mf+l3ScZRbKpLeHtZw+rbFF+oochUbC8LbokNfpkhw+VlOTDwBgUEoupSmzhghtSKPZOTFuundfkoRr19qUOTMDXy4F28TA6evUjLG4EhkKx98FIuuwzdcO6VTpGZsBaTHRBbCa0rC1bq5H0J0QjkP5MILUbrtYAXnab4a3MkeB+Kv+nLB6qxeLn0VKv3+sAVYzCJ59gLEGz4oCNtyaQ5ZGdsadrq4SHqeKs3jH/xupyvdm7ITowdSSG8oF8n/NvFdWAxa0t/b8MYQq5qa5EzAD1VhRbXjHlY8obg3KWEb6KHRyIRefqLTDyvR1R9HPSPNr7G+5NqUD+bstB3xRs38ZDkPDNlte9eIv5iN9ekJAjJPWcFmhOkqcGgLprXK8TOcCwhamcVxUmcFhfvAdnNd6tPj4er75H4VxrbmPFuUgNiTkxW7JgI9ajzDd+aCLioQe5k7n738=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5687.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(31696002)(86362001)(38100700002)(38070700005)(921005)(122000001)(316002)(91956017)(6486002)(110136005)(5660300002)(4744005)(7416002)(8936002)(64756008)(66446008)(66476007)(76116006)(66556008)(66946007)(8676002)(2906002)(6512007)(6506007)(508600001)(71200400001)(2616005)(186003)(26005)(53546011)(31686004)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SW94WnJnZCs0R3VHM0lkTTIveEJlTFZ3SHk4d21EeURnTldzTEdCdmp0eHl4?=
+ =?utf-8?B?UlZJVHRaQS9BMGdBSGRyb05UQk1BVUhHYUtyd1AyMWN5RG95UGhCNVNEaFlF?=
+ =?utf-8?B?c3hPeGFSRlBkcC92MTE2ZDV3empBV1hpdE5qdUJXVWdoVEFtdE9VY2RlMkt1?=
+ =?utf-8?B?QTZ4cGlBazdtWkZHb3hIOUJraUJ1Y2RhQUlIUkR4V1dpRWZ6cm5ManZXMGVD?=
+ =?utf-8?B?ZkJPcFRBSTR3QzRjdkJOdUxjVHVPRVRFaC90SkN0VXBTT2hOMC9nVVFWNXJG?=
+ =?utf-8?B?aHU2OWRjY3JBNnorWkhCbU9kUmlXVWgrRjg1UjRvd240NXN6Y1hkbWk4aC9k?=
+ =?utf-8?B?b3JaQlVuR0J6RStTcGtPTXYrUlAraUJlUlAvWFRGVFh4RUd5ZGtZVENDbG9Y?=
+ =?utf-8?B?SStrSTZwb21kQ0dZbTZXY3ZuVklXNGUxRnRzbWlmYUJoRFZTN1pGbGllU0VT?=
+ =?utf-8?B?YUh3eERiTnBEMWNwRmVETGpVWWhPcUVENzdickdBcUhqYjVoeXdxZkJBNng2?=
+ =?utf-8?B?QUFWUXRUK3F6U1dCUnBHaTBqRkdLUnpxcm1qV1lMNW03SldPNXdVMFphSGts?=
+ =?utf-8?B?cDBNc25DbWs1WHpGbm1PNFlVWW5wR0g5RHlKY1NpakYrZ1lCMzFtUTVveExB?=
+ =?utf-8?B?Z2l6SnpwYTdjTFV1RTJ2TFVlcXRQWVFYdk5XWEhoN1cvZG04Nld5c0NsM3R1?=
+ =?utf-8?B?b0FFRDhUbEZRdGpQUUtnUDE1R1VBUEFCSkRYNUJGNHRpdVFrNC9Rc2xkbFF5?=
+ =?utf-8?B?K0ZMaUtGM3ZSVFFabThxclBMVlNTeXZ1UmtlV0RsYVRvdmlTT09HZ1lDaFhm?=
+ =?utf-8?B?SzFOQWsrRGxqdkJOREFWYzBZVkpqRGI1UnNlQ1duaFU2Wk5JRytQRk1tTHNP?=
+ =?utf-8?B?RlBZMVBhSFZhUlo4REpham5iQXdWZmdiUkk0S3dyREdwNE9LRTMwd3hybFBr?=
+ =?utf-8?B?Y2lRSHZZbE1BVnA3STA4cU9BRkxBUDBFbHZCMVdEZXdsMzV5ZHFpNVJnWXN0?=
+ =?utf-8?B?U2ZKcmhoWDhLY3lGSnk1QVJ5WENTVEhIS3ZRbUM0WTRKTklIZ1FwZUJ0UGJ1?=
+ =?utf-8?B?dllLZ0NVYWlNS2RYSlFjM3dKeHgrNHJLazE1UG56YWxlczlnVXliUVRhZzBv?=
+ =?utf-8?B?R0E4SkgrcU9STHlENVU4cnhRYVR0RWlNWGxhNzQwdmQ1dTJhWHlHZXdHMGlz?=
+ =?utf-8?B?ZndsZzBOL0Z2MHRJMmxuZmZtdkVZZDZMNW1mbjE2ZlBMWVVlajJwMFE3clRl?=
+ =?utf-8?B?MSs3b0dNQ1VKQmRuNE1ERmdRQXFSZkVKazE2VE5ndkVKc3ppQWlJQlVCa2Jn?=
+ =?utf-8?B?Z2VjSmNJNmFnMVVUM2xXaEVlb2J3UHozSHo5OVhJMHk4RzJxdnVkR1R3bXdv?=
+ =?utf-8?B?S0N1cjZ6L2xVZmUrRjlDWXZteSsyNTlnMHhFclRjeHdjdzdqUm1OQ2J0bFBE?=
+ =?utf-8?B?TTl2ekU4QjBoaCtQK1NTVk81cU9hYWgxdHkyblBNalVOT2VSNkRXQjN5cFBk?=
+ =?utf-8?B?cHViOVNWZzNIbTl6QndZM0NzQ1licjV1Wm13N2pwd2Ywa2tqMU84UGJSQ0Nz?=
+ =?utf-8?B?TGtYZVZZYlB4MjhvSGpzQ01PMUcyemVTMm1TdEQwNE5Zd0FsMWY5cW9wOW43?=
+ =?utf-8?B?eVNJakJzNUM1V0FwSDZYSlQ0WHc0R3lGZ1Rxc0Q1bG9IQllSVy9GVEpvcng1?=
+ =?utf-8?B?bmF5RWNhVEZjTmRHVktCSlFMTUVUbGpEZkVHVjZLaFhBSWVOTmg4Uml6Qi9K?=
+ =?utf-8?B?M0loOFFmd3hJSWQ5YVY1WWw2ZUNNTlVTeUhzc3BNbUFJeURZK1BYOGluU052?=
+ =?utf-8?B?T3BwcEFIY2xnUXU2WUFhTHRLclhPZE5oVVhKelMybkJhbUN5MVRTZ3FhRzJO?=
+ =?utf-8?B?cm1ia2tzb3dxQ1JUNEQ3dEtEQmZWb1VZKzBLREhsQzdJdkhZeG5FUFdjYlFl?=
+ =?utf-8?B?bGxLU0ZOWld1eGNjRWFKdlBOSk5iaGpjOFpYZS8wOTJ5Zmd4NGw2TG9XeHYx?=
+ =?utf-8?B?cE1PNlMvOFRPTEtsZnAvN0lhZXBscVpjVW1LNGkxQ1hYbFp0U3N0VEZ3RWJw?=
+ =?utf-8?B?U2RXdGpiWGFrNERkTnlTYnplUnpYSEVIV1RoUXlxU0FzT0Y4ck1wUS8rSjNt?=
+ =?utf-8?B?Q2JFdm1ReCtoREVKNDBXNzM5SEt2VHZub3pXMXBCK0Z0MzRYczRFQjVKWFJ5?=
+ =?utf-8?B?NTRESGpkVGNpa3QvZEJVQVRnOTVRYWtneUw1VWM2NzV4V0VaODcrL3hMZ0tp?=
+ =?utf-8?B?WmQ4SGtPQ3FzS2RhL2swc1RwMzRRPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3AFFBED602520645B1A98A1ECB22AB8A@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiX/NHETfqLT8ZAz@iki.fi>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5687.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72205af9-ee8f-4d69-6a10-08da00395fa2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2022 12:52:44.3024
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: M5IJ2oC7Ijz3KMJ2ukTl0aZFeHC8w/TmFe1/dexHrJ0i8CojWEa9EDOYUxlrOf6Revzd7P6eSiHp8V/e3Z6kPYIoPenDDcaG0yo6VpP0yZ4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2643
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 02:48:52PM +0200, Jarkko Sakkinen wrote:
-> On Sun, Mar 06, 2022 at 03:51:00PM -0500, Nayna Jain wrote:
-> > Allow firmware keys to be embedded in the Linux kernel and loaded onto
-> > the ".platform" keyring on boot.
-> > 
-> > The firmware keys can be specified in a file as a list of PEM encoded
-> > certificates using new config INTEGRITY_PLATFORM_KEYS. The certificates
-> > are embedded in the image by converting the PEM-formatted certificates
-> > into DER(binary) and generating
-> > security/integrity/platform_certs/platform_certificate_list file at
-> > build time. On boot, the embedded certs from the image are loaded onto
-> > the ".platform" keyring at late_initcall(), ensuring the platform keyring
-> > exists before loading the keys.
-> > 
-> > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-> > Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
-> > ---
-> >  security/integrity/Kconfig                    | 10 ++++++++
-> >  security/integrity/Makefile                   | 15 +++++++++++-
-> >  security/integrity/integrity.h                |  3 +++
-> >  .../integrity/platform_certs/platform_cert.S  | 23 +++++++++++++++++++
-> >  .../platform_certs/platform_keyring.c         | 23 +++++++++++++++++++
-> >  5 files changed, 73 insertions(+), 1 deletion(-)
-> >  create mode 100644 security/integrity/platform_certs/platform_cert.S
-> > 
-> > diff --git a/security/integrity/Kconfig b/security/integrity/Kconfig
-> > index 599429f99f99..77b2c22c0e1b 100644
-> > --- a/security/integrity/Kconfig
-> > +++ b/security/integrity/Kconfig
-> > @@ -62,6 +62,16 @@ config INTEGRITY_PLATFORM_KEYRING
-> >           provided by the platform for verifying the kexec'ed kerned image
-> >           and, possibly, the initramfs signature.
-> >  
-> > +config INTEGRITY_PLATFORM_KEYS
-> > +        string "Builtin X.509 keys for .platform keyring"
-> > +        depends on KEYS
-> > +        depends on ASYMMETRIC_KEY_TYPE
-> > +        depends on INTEGRITY_PLATFORM_KEYRING
-> > +        help
-> > +          If set, this option should be the filename of a PEM-formatted file
-> > +          containing X.509 certificates to be loaded onto the ".platform"
-> > +          keyring.
-> > +
-> >  config INTEGRITY_MACHINE_KEYRING
-> >  	bool "Provide a keyring to which Machine Owner Keys may be added"
-> >  	depends on SECONDARY_TRUSTED_KEYRING
-> > diff --git a/security/integrity/Makefile b/security/integrity/Makefile
-> > index d0ffe37dc1d6..65bd93301a3a 100644
-> > --- a/security/integrity/Makefile
-> > +++ b/security/integrity/Makefile
-> > @@ -3,13 +3,17 @@
-> >  # Makefile for caching inode integrity data (iint)
-> >  #
-> >  
-> > +quiet_cmd_extract_certs  = CERT  $@
-> > +      cmd_extract_certs  = certs/extract-cert $(2) $@
-> > +
-> >  obj-$(CONFIG_INTEGRITY) += integrity.o
-> >  
-> >  integrity-y := iint.o
-> >  integrity-$(CONFIG_INTEGRITY_AUDIT) += integrity_audit.o
-> >  integrity-$(CONFIG_INTEGRITY_SIGNATURE) += digsig.o
-> >  integrity-$(CONFIG_INTEGRITY_ASYMMETRIC_KEYS) += digsig_asymmetric.o
-> > -integrity-$(CONFIG_INTEGRITY_PLATFORM_KEYRING) += platform_certs/platform_keyring.o
-> > +integrity-$(CONFIG_INTEGRITY_PLATFORM_KEYRING) += platform_certs/platform_keyring.o \
-> > +						  platform_certs/platform_cert.o
-> >  integrity-$(CONFIG_INTEGRITY_MACHINE_KEYRING) += platform_certs/machine_keyring.o
-> >  integrity-$(CONFIG_LOAD_UEFI_KEYS) += platform_certs/efi_parser.o \
-> >  				      platform_certs/load_uefi.o \
-> > @@ -20,3 +24,12 @@ integrity-$(CONFIG_LOAD_PPC_KEYS) += platform_certs/efi_parser.o \
-> >                                       platform_certs/keyring_handler.o
-> >  obj-$(CONFIG_IMA)			+= ima/
-> >  obj-$(CONFIG_EVM)			+= evm/
-> > +
-> > +$(obj)/platform_certs/platform_cert.o: $(obj)/platform_certs/platform_certificate_list
-> > +
-> > +targets += platform_certificate_list
-> > +
-> > +$(obj)/platform_certs/platform_certificate_list: $(CONFIG_INTEGRITY_PLATFORM_KEYS) certs/extract-cert FORCE
-> > +	$(call if_changed,extract_certs,$(if $(CONFIG_INTEGRITY_PLATFORM_KEYS),$<,""))
-> > +
-> > +clean-files := platform_certs/platform_certificate_list
-> > diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
-> > index 76e9a9515f99..219da29fecf7 100644
-> > --- a/security/integrity/integrity.h
-> > +++ b/security/integrity/integrity.h
-> > @@ -282,6 +282,9 @@ integrity_audit_log_start(struct audit_context *ctx, gfp_t gfp_mask, int type)
-> >  #endif
-> >  
-> >  #ifdef CONFIG_INTEGRITY_PLATFORM_KEYRING
-> > +extern __initconst const u8 platform_certificate_list[];
-> > +extern __initconst const unsigned long platform_certificate_list_size;
-> > +
-> >  void __init add_to_platform_keyring(const char *source, const void *data,
-> >  				    size_t len);
-> >  #else
-> > diff --git a/security/integrity/platform_certs/platform_cert.S b/security/integrity/platform_certs/platform_cert.S
-> > new file mode 100644
-> > index 000000000000..20bccce5dc5a
-> > --- /dev/null
-> > +++ b/security/integrity/platform_certs/platform_cert.S
-> > @@ -0,0 +1,23 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +#include <linux/export.h>
-> > +#include <linux/init.h>
-> > +
-> > +	__INITRODATA
-> > +
-> > +	.align 8
-> > +#ifdef CONFIG_INTEGRITY_PLATFORM_KEYRING
-> > +	.globl platform_certificate_list
-> > +platform_certificate_list:
-> > +__cert_list_start:
-> > +	.incbin "security/integrity/platform_certs/platform_certificate_list"
-> > +__cert_list_end:
-> > +#endif
-> > +
-> > +	.align 8
-> > +	.globl platform_certificate_list_size
-> > +platform_certificate_list_size:
-> > +#ifdef CONFIG_64BIT
-> > +	.quad __cert_list_end - __cert_list_start
-> > +#else
-> > +	.long __cert_list_end - __cert_list_start
-> > +#endif
-> > diff --git a/security/integrity/platform_certs/platform_keyring.c b/security/integrity/platform_certs/platform_keyring.c
-> > index bcafd7387729..c2368912fd1b 100644
-> > --- a/security/integrity/platform_certs/platform_keyring.c
-> > +++ b/security/integrity/platform_certs/platform_keyring.c
-> > @@ -12,6 +12,7 @@
-> >  #include <linux/cred.h>
-> >  #include <linux/err.h>
-> >  #include <linux/slab.h>
-> > +#include <keys/system_keyring.h>
-> >  #include "../integrity.h"
-> >  
-> >  /**
-> > @@ -37,6 +38,28 @@ void __init add_to_platform_keyring(const char *source, const void *data,
-> >  		pr_info("Error adding keys to platform keyring %s\n", source);
-> >  }
-> >  
-> > +static __init int load_platform_certificate_list(void)
-> > +{
-> > +	const u8 *p;
-> > +	unsigned long size;
-> > +	int rc;
-> > +	struct key *keyring;
-> > +
-> > +	p = platform_certificate_list;
-> > +	size = platform_certificate_list_size;
-> > +
-> > +	keyring = integrity_keyring_from_id(INTEGRITY_KEYRING_PLATFORM);
-> > +	if (IS_ERR(keyring))
-> > +		return PTR_ERR(keyring);
-> > +
-> > +	rc = load_certificate_list(p, size, keyring);
-> > +	if (rc)
-> > +		pr_info("Error adding keys to platform keyring %d\n", rc);
-> > +
-> > +	return rc;
-> > +}
-> > +late_initcall(load_platform_certificate_list);
-> > +
-> >  /*
-> >   * Create the trusted keyrings.
-> >   */
-> > -- 
-> > 2.27.0
-> > 
-> 
-> There's zero tested-by's for this, i.e. cannot be applied before someone
-> has tested this. Mimi, do not mean to be rude, but I don't frankly
-> understand why you ask to pick a patch set that is *untested*.
-> 
-> So I generated a self-signed certificate:
-> 
-> openssl req -x509 -out localhost.crt -keyout localhost.key \
->   -newkey rsa:2048 -nodes -sha256 \
->   -subj '/CN=localhost' -extensions EXT -config <( \
->    printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
-> 
-> (by courtesy of letsencrypt: https://letsencrypt.org/docs/certificates-for-localhost/)
-> 
-> openssl x509 -in localhost.crt -out localhost.pem -outform PEM
-> 
-> And starting with tinyconfig I added minimal options to enable this
-> feature. The config is attached.
-> 
-> The end result is:
-> 
-> make[2]: *** No rule to make target 'certs/extract-cert', needed by 'security/integrity/platform_certs/platform_certificate_list'.  Stop.
-> make[1]: *** [scripts/Makefile.build:550: security/integrity] Error 2
-> make: *** [Makefile:1831: security] Error 2
-> 
-> BR, Jarkko
-
-At least for the next PR, I'm not including this, sorry.
-
-BR, Jarkko
+T24gMDcuMDMuMjAyMiAxNDo0NSwgTWlhb3FpYW4gTGluIHdyb3RlOg0KPiBUaGlzIG5vZGUgcG9p
+bnRlciBpcyByZXR1cm5lZCBieSBvZl9wYXJzZV9waGFuZGxlKCkgd2l0aCByZWZjb3VudA0KPiBp
+bmNyZW1lbnRlZCBpbiB0aGlzIGZ1bmN0aW9uLg0KPiBDYWxsaW5nIG9mX25vZGVfcHV0KCkgdG8g
+YXZvaWQgdGhlIHJlZmNvdW50IGxlYWsuDQo+IA0KPiBGaXhlczogNTMxZjY3ZTQxZGNkICgiQVNv
+QzogYXQ5MXNhbTlnMjBlay13bTg3MzE6IGNvbnZlcnQgdG8gZHQgc3VwcG9ydCIpDQo+IFNpZ25l
+ZC1vZmYtYnk6IE1pYW9xaWFuIExpbiA8bGlubXEwMDZAZ21haWwuY29tPg0KDQpSZXZpZXdlZC1i
+eTogQ29kcmluIENpdWJvdGFyaXUgPGNvZHJpbi5jaXVib3Rhcml1QG1pY3JvY2hpcC5jb20+DQoN
+ClRoYW5rcyENCg==
