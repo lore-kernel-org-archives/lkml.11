@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B51C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08824C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236056AbiCGJhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:37:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
+        id S237845AbiCGJhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:37:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238595AbiCGJ3Y (ORCPT
+        with ESMTP id S238587AbiCGJ3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:29:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA7F3DDD0;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EA4403FE;
         Mon,  7 Mar 2022 01:27:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10BF861052;
-        Mon,  7 Mar 2022 09:27:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE482C340F3;
-        Mon,  7 Mar 2022 09:27:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD703B810C0;
+        Mon,  7 Mar 2022 09:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD47C340E9;
+        Mon,  7 Mar 2022 09:27:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645238;
-        bh=rlsri2O7GSgLXQGV2UF9SAx9JRtiiCn2kAkummQmuxc=;
+        s=korg; t=1646645256;
+        bh=4Zek1ADwo7OcWm8ziM0C/gyY0rWG7TG2aclFo9XHMtE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kV6fpbv2xeGE7l/aV+EDfNojW28ckadm2Urhq3j+jmzR+nG5ugGI+SxMbedxqQXQb
-         yXAw7TlpY7JeYuye92SEwtXdtqvILvro3U3YLbO2tXZH9nlQQcAowcw409YrdEKlLr
-         aHlyHwuAF3SEeUx5q7+HOiFU9wdCEJJ1RAgASZwg=
+        b=shoLanCqLqV2ILHWAL0ZBYvQ6urEgXElpr1SxZtB+LZaU3NwZFCxXUdR8YFrwTff3
+         66EV1Ct539mkLDJc7sbmQUpOQWBEbrz0Q3hmAxhXgaWgddQIDiNTrfCywI6wsxPML2
+         F83W8zol/TG6yYw6RdSE3uDRkj1z0Ey6y1xEdWCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 30/64] xen/netfront: destroy queues before real_num_tx_queues is zeroed
-Date:   Mon,  7 Mar 2022 10:19:03 +0100
-Message-Id: <20220307091639.999424035@linuxfoundation.org>
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 09/64] i2c: cadence: allow COMPILE_TEST
+Date:   Mon,  7 Mar 2022 10:18:42 +0100
+Message-Id: <20220307091639.408332988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -50,134 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: Wolfram Sang <wsa@kernel.org>
 
-commit dcf4ff7a48e7598e6b10126cc02177abb8ae4f3f upstream.
+[ Upstream commit 0b0dcb3882c8f08bdeafa03adb4487e104d26050 ]
 
-xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
-delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
-("net-sysfs: update the queue counts in the unregistration path"),
-unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
-facts together means, that xennet_destroy_queues() called from
-xennet_remove() cannot do its job, because it's called after
-unregister_netdev(). This results in kfree-ing queues that are still
-linked in napi, which ultimately crashes:
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-    BUG: kernel NULL pointer dereference, address: 0000000000000000
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    PGD 0 P4D 0
-    Oops: 0000 [#1] PREEMPT SMP PTI
-    CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-1.32.fc32.qubes.x86_64+ #226
-    RIP: 0010:free_netdev+0xa3/0x1a0
-    Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 85 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
-    RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
-    RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
-    RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
-    RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
-    R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
-    R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
-    FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:0000000000000000
-    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-    CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
-    Call Trace:
-     <TASK>
-     xennet_remove+0x13d/0x300 [xen_netfront]
-     xenbus_dev_remove+0x6d/0xf0
-     __device_release_driver+0x17a/0x240
-     device_release_driver+0x24/0x30
-     bus_remove_device+0xd8/0x140
-     device_del+0x18b/0x410
-     ? _raw_spin_unlock+0x16/0x30
-     ? klist_iter_exit+0x14/0x20
-     ? xenbus_dev_request_and_reply+0x80/0x80
-     device_unregister+0x13/0x60
-     xenbus_dev_changed+0x18e/0x1f0
-     xenwatch_thread+0xc0/0x1a0
-     ? do_wait_intr_irq+0xa0/0xa0
-     kthread+0x16b/0x190
-     ? set_kthread_struct+0x40/0x40
-     ret_from_fork+0x22/0x30
-     </TASK>
-
-Fix this by calling xennet_destroy_queues() from xennet_uninit(),
-when real_num_tx_queues is still available. This ensures that queues are
-destroyed when real_num_tx_queues is set to 0, regardless of how
-unregister_netdev() was called.
-
-Originally reported at
-https://github.com/QubesOS/qubes-issues/issues/7257
-
-Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the unregistration path")
-Cc: stable@vger.kernel.org
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netfront.c |   39 +++++++++++++++++++++++----------------
- 1 file changed, 23 insertions(+), 16 deletions(-)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -761,6 +761,28 @@ static int xennet_close(struct net_devic
- 	return 0;
- }
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 2d08a8719506c..94c78329f841c 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -483,7 +483,7 @@ config I2C_BRCMSTB
  
-+static void xennet_destroy_queues(struct netfront_info *info)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
-+		struct netfront_queue *queue = &info->queues[i];
-+
-+		if (netif_running(info->netdev))
-+			napi_disable(&queue->napi);
-+		netif_napi_del(&queue->napi);
-+	}
-+
-+	kfree(info->queues);
-+	info->queues = NULL;
-+}
-+
-+static void xennet_uninit(struct net_device *dev)
-+{
-+	struct netfront_info *np = netdev_priv(dev);
-+	xennet_destroy_queues(np);
-+}
-+
- static void xennet_set_rx_rsp_cons(struct netfront_queue *queue, RING_IDX val)
- {
- 	unsigned long flags;
-@@ -1373,6 +1395,7 @@ static void xennet_poll_controller(struc
- #endif
- 
- static const struct net_device_ops xennet_netdev_ops = {
-+	.ndo_uninit          = xennet_uninit,
- 	.ndo_open            = xennet_open,
- 	.ndo_stop            = xennet_close,
- 	.ndo_start_xmit      = xennet_start_xmit,
-@@ -1860,22 +1883,6 @@ error:
- 	return err;
- }
- 
--static void xennet_destroy_queues(struct netfront_info *info)
--{
--	unsigned int i;
--
--	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
--		struct netfront_queue *queue = &info->queues[i];
--
--		if (netif_running(info->netdev))
--			napi_disable(&queue->napi);
--		netif_napi_del(&queue->napi);
--	}
--
--	kfree(info->queues);
--	info->queues = NULL;
--}
--
- static int xennet_create_queues(struct netfront_info *info,
- 				unsigned int *num_queues)
- {
+ config I2C_CADENCE
+ 	tristate "Cadence I2C Controller"
+-	depends on ARCH_ZYNQ || ARM64 || XTENSA
++	depends on ARCH_ZYNQ || ARM64 || XTENSA || COMPILE_TEST
+ 	help
+ 	  Say yes here to select Cadence I2C Host Controller. This controller is
+ 	  e.g. used by Xilinx Zynq.
+-- 
+2.34.1
+
 
 
