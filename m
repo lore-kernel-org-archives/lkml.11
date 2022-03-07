@@ -2,53 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE7EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCBBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237877AbiCGJmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:42:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
+        id S237964AbiCGJm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:42:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237330AbiCGJcR (ORCPT
+        with ESMTP id S237466AbiCGJcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:32:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371A96A02D;
-        Mon,  7 Mar 2022 01:29:43 -0800 (PST)
+        Mon, 7 Mar 2022 04:32:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCE95DE4C;
+        Mon,  7 Mar 2022 01:29:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F809611AE;
-        Mon,  7 Mar 2022 09:29:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF4CBC340E9;
-        Mon,  7 Mar 2022 09:29:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FC4EB810B2;
+        Mon,  7 Mar 2022 09:29:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 191F0C340E9;
+        Mon,  7 Mar 2022 09:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645367;
-        bh=jZhJUgnC00Oi4NxwevCHNXIQrXbw0XYFCaL4YrnILQw=;
+        s=korg; t=1646645373;
+        bh=Xs82X3vYzB+vo4Y5ziej9+mfchUN9IptXOlbGV1QJdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dLTlT340lbegTADa5lyhZ72tH4nV1YblzfT39fysNGyf6PpmWK+YirA1rEEXKySdy
-         9KOanimxJNOPPk//DmP0qjIhjTb2m5iKdYL76GmEwW7kQXS5V8l1LRpborHWq/HPM3
-         USTf1KjMND3UZkZL7hCnO6345SnMymCze/6D5tEg=
+        b=mQIqhdug/HiMi5lWNgj7sIUCx0X3SX4oon6KllTHotIQZkZLbEzVEDy9251Ua6NH5
+         N3XkTwAxNiAyxnQXNsMimvZa+Pa4oqzAiy/sPyfmjIxMzKKIpNLmWNCPqb3lYNotPo
+         uiCfqGahgTl400JvgDb/so3KLpR9gSkyrsSsy76o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Zeal Robot <zealci@zte.com.cn>,
-        wangyong <wang.yong12@zte.com.cn>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        CGEL ZTE <cgel.zte@gmail.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Song Liu <songliubraving@fb.com>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 50/64] memfd: fix F_SEAL_WRITE after shmem huge page allocated
-Date:   Mon,  7 Mar 2022 10:19:23 +0100
-Message-Id: <20220307091640.570876708@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 010/105] cifs: fix double free race when mount fails in cifs_get_root()
+Date:   Mon,  7 Mar 2022 10:18:13 +0100
+Message-Id: <20220307091644.473806523@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,131 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-commit f2b277c4d1c63a85127e8aa2588e9cc3bd21cb99 upstream.
+[ Upstream commit 3d6cc9898efdfb062efb74dc18cfc700e082f5d5 ]
 
-Wangyong reports: after enabling tmpfs filesystem to support transparent
-hugepage with the following command:
+When cifs_get_root() fails during cifs_smb3_do_mount() we call
+deactivate_locked_super() which eventually will call delayed_free() which
+will free the context.
+In this situation we should not proceed to enter the out: section in
+cifs_smb3_do_mount() and free the same resources a second time.
 
-  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
+[Thu Feb 10 12:59:06 2022] BUG: KASAN: use-after-free in rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022] Read of size 8 at addr ffff888364f4d110 by task swapper/1/0
 
-the docker program tries to add F_SEAL_WRITE through the following
-command, but it fails unexpectedly with errno EBUSY:
+[Thu Feb 10 12:59:06 2022] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE     5.17.0-rc3+ #4
+[Thu Feb 10 12:59:06 2022] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.0 12/17/2019
+[Thu Feb 10 12:59:06 2022] Call Trace:
+[Thu Feb 10 12:59:06 2022]  <IRQ>
+[Thu Feb 10 12:59:06 2022]  dump_stack_lvl+0x5d/0x78
+[Thu Feb 10 12:59:06 2022]  print_address_description.constprop.0+0x24/0x150
+[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022]  kasan_report.cold+0x7d/0x117
+[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022]  __asan_load8+0x86/0xa0
+[Thu Feb 10 12:59:06 2022]  rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022]  rcu_core+0x547/0xca0
+[Thu Feb 10 12:59:06 2022]  ? call_rcu+0x3c0/0x3c0
+[Thu Feb 10 12:59:06 2022]  ? __this_cpu_preempt_check+0x13/0x20
+[Thu Feb 10 12:59:06 2022]  ? lock_is_held_type+0xea/0x140
+[Thu Feb 10 12:59:06 2022]  rcu_core_si+0xe/0x10
+[Thu Feb 10 12:59:06 2022]  __do_softirq+0x1d4/0x67b
+[Thu Feb 10 12:59:06 2022]  __irq_exit_rcu+0x100/0x150
+[Thu Feb 10 12:59:06 2022]  irq_exit_rcu+0xe/0x30
+[Thu Feb 10 12:59:06 2022]  sysvec_hyperv_stimer0+0x9d/0xc0
+...
+[Thu Feb 10 12:59:07 2022] Freed by task 58179:
+[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
+[Thu Feb 10 12:59:07 2022]  kasan_set_track+0x25/0x30
+[Thu Feb 10 12:59:07 2022]  kasan_set_free_info+0x24/0x40
+[Thu Feb 10 12:59:07 2022]  ____kasan_slab_free+0x137/0x170
+[Thu Feb 10 12:59:07 2022]  __kasan_slab_free+0x12/0x20
+[Thu Feb 10 12:59:07 2022]  slab_free_freelist_hook+0xb3/0x1d0
+[Thu Feb 10 12:59:07 2022]  kfree+0xcd/0x520
+[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0x149/0xbe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
+[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
+[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
+[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
+[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
+[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE) = -1.
+[Thu Feb 10 12:59:07 2022] Last potentially related work creation:
+[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
+[Thu Feb 10 12:59:07 2022]  __kasan_record_aux_stack+0xb6/0xc0
+[Thu Feb 10 12:59:07 2022]  kasan_record_aux_stack_noalloc+0xb/0x10
+[Thu Feb 10 12:59:07 2022]  call_rcu+0x76/0x3c0
+[Thu Feb 10 12:59:07 2022]  cifs_umount+0xce/0xe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  cifs_kill_sb+0xc8/0xe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  deactivate_locked_super+0x5d/0xd0
+[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0xab9/0xbe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
+[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
+[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
+[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
+[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
+[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-That is because memfd_tag_pins() and memfd_wait_for_pins() were never
-updated for shmem huge pages: checking page_mapcount() against
-page_count() is hopeless on THP subpages - they need to check
-total_mapcount() against page_count() on THP heads only.
-
-Make memfd_tag_pins() (compared > 1) as strict as memfd_wait_for_pins()
-(compared != 1): either can be justified, but given the non-atomic
-total_mapcount() calculation, it is better now to be strict.  Bear in
-mind that total_mapcount() itself scans all of the THP subpages, when
-choosing to take an XA_CHECK_SCHED latency break.
-
-Also fix the unlikely xa_is_value() case in memfd_wait_for_pins(): if a
-page has been swapped out since memfd_tag_pins(), then its refcount must
-have fallen, and so it can safely be untagged.
-
-Link: https://lkml.kernel.org/r/a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Reported-by: wangyong <wang.yong12@zte.com.cn>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: CGEL ZTE <cgel.zte@gmail.com>
-Cc: Kirill A. Shutemov <kirill@shutemov.name>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yang Yang <yang.yang29@zte.com.cn>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Shyam Prasad N <sprasad@microsoft.com>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memfd.c |   40 ++++++++++++++++++++++++++++------------
- 1 file changed, 28 insertions(+), 12 deletions(-)
+ fs/cifs/cifsfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/mm/memfd.c
-+++ b/mm/memfd.c
-@@ -31,20 +31,28 @@
- static void memfd_tag_pins(struct xa_state *xas)
- {
- 	struct page *page;
--	unsigned int tagged = 0;
-+	int latency = 0;
-+	int cache_count;
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index f0ed29a9a6f11..aa5a4d759ca23 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -864,6 +864,7 @@ cifs_smb3_do_mount(struct file_system_type *fs_type,
  
- 	lru_add_drain();
- 
- 	xas_lock_irq(xas);
- 	xas_for_each(xas, page, ULONG_MAX) {
--		if (xa_is_value(page))
--			continue;
--		page = find_subpage(page, xas->xa_index);
--		if (page_count(page) - page_mapcount(page) > 1)
-+		cache_count = 1;
-+		if (!xa_is_value(page) &&
-+		    PageTransHuge(page) && !PageHuge(page))
-+			cache_count = HPAGE_PMD_NR;
-+
-+		if (!xa_is_value(page) &&
-+		    page_count(page) - total_mapcount(page) != cache_count)
- 			xas_set_mark(xas, MEMFD_TAG_PINNED);
-+		if (cache_count != 1)
-+			xas_set(xas, page->index + cache_count);
- 
--		if (++tagged % XA_CHECK_SCHED)
-+		latency += cache_count;
-+		if (latency < XA_CHECK_SCHED)
- 			continue;
-+		latency = 0;
- 
- 		xas_pause(xas);
- 		xas_unlock_irq(xas);
-@@ -73,7 +81,8 @@ static int memfd_wait_for_pins(struct ad
- 
- 	error = 0;
- 	for (scan = 0; scan <= LAST_SCAN; scan++) {
--		unsigned int tagged = 0;
-+		int latency = 0;
-+		int cache_count;
- 
- 		if (!xas_marked(&xas, MEMFD_TAG_PINNED))
- 			break;
-@@ -87,10 +96,14 @@ static int memfd_wait_for_pins(struct ad
- 		xas_lock_irq(&xas);
- 		xas_for_each_marked(&xas, page, ULONG_MAX, MEMFD_TAG_PINNED) {
- 			bool clear = true;
--			if (xa_is_value(page))
--				continue;
--			page = find_subpage(page, xas.xa_index);
--			if (page_count(page) - page_mapcount(page) != 1) {
-+
-+			cache_count = 1;
-+			if (!xa_is_value(page) &&
-+			    PageTransHuge(page) && !PageHuge(page))
-+				cache_count = HPAGE_PMD_NR;
-+
-+			if (!xa_is_value(page) && cache_count !=
-+			    page_count(page) - total_mapcount(page)) {
- 				/*
- 				 * On the last scan, we clean up all those tags
- 				 * we inserted; but make a note that we still
-@@ -103,8 +116,11 @@ static int memfd_wait_for_pins(struct ad
- 			}
- 			if (clear)
- 				xas_clear_mark(&xas, MEMFD_TAG_PINNED);
--			if (++tagged % XA_CHECK_SCHED)
-+
-+			latency += cache_count;
-+			if (latency < XA_CHECK_SCHED)
- 				continue;
-+			latency = 0;
- 
- 			xas_pause(&xas);
- 			xas_unlock_irq(&xas);
+ out_super:
+ 	deactivate_locked_super(sb);
++	return root;
+ out:
+ 	cifs_cleanup_volume_info(volume_info);
+ 	return root;
+-- 
+2.34.1
+
 
 
