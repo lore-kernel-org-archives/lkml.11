@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A5FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A08C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241978AbiCGKVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:21:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        id S241857AbiCGKVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:21:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240441AbiCGKBC (ORCPT
+        with ESMTP id S240460AbiCGKBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A952DD;
-        Mon,  7 Mar 2022 01:48:10 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612BB640A;
+        Mon,  7 Mar 2022 01:48:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32E536066C;
-        Mon,  7 Mar 2022 09:48:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E6B4C340E9;
-        Mon,  7 Mar 2022 09:48:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2271EB80E70;
+        Mon,  7 Mar 2022 09:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FD8C340F3;
+        Mon,  7 Mar 2022 09:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646489;
-        bh=mgAMrKNurZEf0/kgPYTJkkqOiR24zy7cuzq1QRlKIL8=;
+        s=korg; t=1646646495;
+        bh=sSJ9MijLg3SmfJjvNlTQGY06f23cm8eCzf4ShJiXGRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HV7H0rOQ6pNzmGagQkTsgGdmNq6YghFDRuaGFINBk6C+v8YNDgOhlyC+uwSVnYeIT
-         zPa2vawXh95rZgw20TnI+SvFH+M0N8lNSYNNjlJUCvEyiVtvxmgLmEQdFPeqklaufm
-         aGZreZ4ctJRlhu0ID+dxQTN/FiSvoWVYHlkeT4DM=
+        b=QiapoyeBfKYVJGUiq4XJXHEky7yBoTdJ53wrfAagr5XZhAoZ3EHeGrwolGPCgZcqS
+         kntT0vz/Q1AK9EEgvgZtDJVPNG9U2vZpENPGT1m/0kwjTewlhw4W56ea6o6uXZO80c
+         jZSujqje3zrZZGXQD8q4njWfb/1VIh7lHk0/jAbA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 219/262] ibmvnic: define flush_reset_queue helper
-Date:   Mon,  7 Mar 2022 10:19:23 +0100
-Message-Id: <20220307091709.204168248@linuxfoundation.org>
+Subject: [PATCH 5.15 221/262] net: chelsio: cxgb3: check the return value of pci_find_capability()
+Date:   Mon,  7 Mar 2022 10:19:25 +0100
+Message-Id: <20220307091709.292534725@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,66 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 83da53f7e4bd86dca4b2edc1e2bb324fb3c033a1 ]
+[ Upstream commit 767b9825ed1765894e569a3d698749d40d83762a ]
 
-Define and use a helper to flush the reset queue.
+The function pci_find_capability() in t3_prep_adapter() can fail, so its
+return value should be checked.
 
-Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Fixes: 4d22de3e6cc4 ("Add support for the latest 1G/10G Chelsio adapter, T3")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb3/t3_hw.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index e98f7d3f935d..088c764fe3cd 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2557,12 +2557,23 @@ static void __ibmvnic_delayed_reset(struct work_struct *work)
- 	__ibmvnic_reset(&adapter->ibmvnic_reset);
- }
- 
-+static void flush_reset_queue(struct ibmvnic_adapter *adapter)
-+{
-+	struct list_head *entry, *tmp_entry;
-+
-+	if (!list_empty(&adapter->rwi_list)) {
-+		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
-+			list_del(entry);
-+			kfree(list_entry(entry, struct ibmvnic_rwi, list));
-+		}
-+	}
-+}
-+
- static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 			 enum ibmvnic_reset_reason reason)
- {
--	struct list_head *entry, *tmp_entry;
--	struct ibmvnic_rwi *rwi, *tmp;
- 	struct net_device *netdev = adapter->netdev;
-+	struct ibmvnic_rwi *rwi, *tmp;
- 	unsigned long flags;
- 	int ret;
- 
-@@ -2605,12 +2616,9 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 	/* if we just received a transport event,
- 	 * flush reset queue and process this reset
- 	 */
--	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
--		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
--			list_del(entry);
--			kfree(list_entry(entry, struct ibmvnic_rwi, list));
--		}
--	}
-+	if (adapter->force_reset_recovery)
-+		flush_reset_queue(adapter);
-+
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
- 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %s)\n",
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
+index 7ff31d1026fb..e0d34e64fc6c 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
+@@ -3678,6 +3678,8 @@ int t3_prep_adapter(struct adapter *adapter, const struct adapter_info *ai,
+ 	    MAC_STATS_ACCUM_SECS : (MAC_STATS_ACCUM_SECS * 10);
+ 	adapter->params.pci.vpd_cap_addr =
+ 	    pci_find_capability(adapter->pdev, PCI_CAP_ID_VPD);
++	if (!adapter->params.pci.vpd_cap_addr)
++		return -ENODEV;
+ 	ret = get_vpd_params(adapter, &adapter->params.vpd);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.34.1
 
