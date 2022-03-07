@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C46F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D90C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233076AbiCGKMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:12:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44382 "EHLO
+        id S239698AbiCGKNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:13:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238752AbiCGJzy (ORCPT
+        with ESMTP id S238970AbiCGJ4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:55:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19D479394;
-        Mon,  7 Mar 2022 01:45:37 -0800 (PST)
+        Mon, 7 Mar 2022 04:56:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EC378931;
+        Mon,  7 Mar 2022 01:45:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACE9861374;
-        Mon,  7 Mar 2022 09:45:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB05FC36AF9;
-        Mon,  7 Mar 2022 09:45:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EA41B8102B;
+        Mon,  7 Mar 2022 09:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3E6C340E9;
+        Mon,  7 Mar 2022 09:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646336;
-        bh=vlwTNAYAgE8F9s04cHSroX9szAOlz5Ksx8YUDyM/b/A=;
+        s=korg; t=1646646339;
+        bh=sk02j0fMZ+KjwipNO3fLASesLisB+hWzw3XWFB/DLG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EYrrIcXwid/no8KQUyKfBbrYIdaykNagHV9mIIQSVwLmuNmXQ3vhsDu95XWpViYz/
-         RXVVvGkSzErNgroWuNd2z/X6MlXf8spCKFFfDbn/qgoQ9OcWUQl6WBv92Ofu9k3u4a
-         /kQ3FDuCBo02nQMnTS/CEpHJYCeJTO3sA/8HlrBQ=
+        b=mIcrETy9410ysxHQQ6MTl/Jq82nd54vTbf/ey4aXz85ocAQzSGHkFwMQcK12X2dmc
+         VEbPq+2C7sdg8yVa4RE5jPIVrVHXX6AyFHis89YWKc1mGVTC4tT3Ju3L7X7OfJGOF7
+         J9xx08zFpFw3Y8cYJFXGgzmxO8pspyelZIM6qero=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anthoine Bourgeois <anthoine.bourgeois@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 209/262] ARM: dts: Use 32KiHz oscillator on devkit8000
-Date:   Mon,  7 Mar 2022 10:19:13 +0100
-Message-Id: <20220307091708.739826971@linuxfoundation.org>
+        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 210/262] soc: fsl: guts: Revert commit 3c0d64e867ed
+Date:   Mon,  7 Mar 2022 10:19:14 +0100
+Message-Id: <20220307091708.789658810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,86 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 8840f5460a23759403f1f2860429dcbcc2f04a65 ]
+[ Upstream commit b113737cf12964a20cc3ba1ddabe6229099661c6 ]
 
-Devkit8000 board seems to always used 32k_counter as clocksource.
-Restore this behavior.
+This reverts commit 3c0d64e867ed
+("soc: fsl: guts: reuse machine name from device tree").
 
-If clocksource is back to 32k_counter, timer12 is now the clockevent
-source (as before) and timer2 is not longer needed here.
+A following patch will fix the missing memory allocation failure check
+instead.
 
-This commit fixes the same issue observed with commit 23885389dbbb
-("ARM: dts: Fix timer regression for beagleboard revision c") when sleep
-is blocked until hitting keys over serial console.
-
-Fixes: aba1ad05da08 ("clocksource/drivers/timer-ti-dm: Add clockevent and clocksource support")
-Fixes: e428e250fde6 ("ARM: dts: Configure system timers for omap3")
-Signed-off-by: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Suggested-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-devkit8000-common.dtsi | 17 +----------------
- drivers/clocksource/timer-ti-dm-systimer.c     |  3 +--
- 2 files changed, 2 insertions(+), 18 deletions(-)
+ drivers/soc/fsl/guts.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
-index 0df2b1dd07f6..6883ccb45600 100644
---- a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
-+++ b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
-@@ -158,11 +158,6 @@
- 	status = "disabled";
- };
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index d5e9a5f2c087..67b079fc0c8e 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -28,7 +28,6 @@ struct fsl_soc_die_attr {
+ static struct guts *guts;
+ static struct soc_device_attribute soc_dev_attr;
+ static struct soc_device *soc_dev;
+-static struct device_node *root;
  
--/* Unusable as clocksource because of unreliable oscillator */
--&counter32k {
--	status = "disabled";
--};
--
- /* Unusable as clockevent because if unreliable oscillator, allow to idle */
- &timer1_target {
- 	/delete-property/ti,no-reset-on-init;
-@@ -172,7 +167,7 @@
- 	};
- };
  
--/* Preferred always-on timer for clocksource */
-+/* Preferred timer for clockevent */
- &timer12_target {
- 	ti,no-reset-on-init;
- 	ti,no-idle;
-@@ -181,16 +176,6 @@
- 	};
- };
+ /* SoC die attribute definition for QorIQ platform */
+@@ -138,7 +137,7 @@ static u32 fsl_guts_get_svr(void)
  
--/* Preferred timer for clockevent */
--&timer2_target {
--	ti,no-reset-on-init;
--	ti,no-idle;
--	timer@0 {
--		assigned-clocks = <&gpt2_fck>;
--		assigned-clock-parents = <&sys_ck>;
--	};
--};
--
- &twl_gpio {
- 	ti,use-leds;
- 	/*
-diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
-index 5c40ca1d4740..1fccb457fcc5 100644
---- a/drivers/clocksource/timer-ti-dm-systimer.c
-+++ b/drivers/clocksource/timer-ti-dm-systimer.c
-@@ -241,8 +241,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
- 	bool quirk_unreliable_oscillator = false;
+ static int fsl_guts_probe(struct platform_device *pdev)
+ {
+-	struct device_node *np = pdev->dev.of_node;
++	struct device_node *root, *np = pdev->dev.of_node;
+ 	struct device *dev = &pdev->dev;
+ 	struct resource *res;
+ 	const struct fsl_soc_die_attr *soc_die;
+@@ -161,8 +160,9 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	root = of_find_node_by_path("/");
+ 	if (of_property_read_string(root, "model", &machine))
+ 		of_property_read_string_index(root, "compatible", 0, &machine);
++	of_node_put(root);
+ 	if (machine)
+-		soc_dev_attr.machine = machine;
++		soc_dev_attr.machine = devm_kstrdup(dev, machine, GFP_KERNEL);
  
- 	/* Quirk unreliable 32 KiHz oscillator with incomplete dts */
--	if (of_machine_is_compatible("ti,omap3-beagle-ab4") ||
--	    of_machine_is_compatible("timll,omap3-devkit8000")) {
-+	if (of_machine_is_compatible("ti,omap3-beagle-ab4")) {
- 		quirk_unreliable_oscillator = true;
- 		counter_32k = -ENODEV;
- 	}
+ 	svr = fsl_guts_get_svr();
+ 	soc_die = fsl_soc_die_match(svr, fsl_soc_die);
+@@ -197,7 +197,6 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ static int fsl_guts_remove(struct platform_device *dev)
+ {
+ 	soc_device_unregister(soc_dev);
+-	of_node_put(root);
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
