@@ -2,95 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12731C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244185AbiCGQkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:40:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
+        id S244259AbiCGQky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:40:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231786AbiCGQki (ORCPT
+        with ESMTP id S244253AbiCGQku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:40:38 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D40D34B9B;
-        Mon,  7 Mar 2022 08:39:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646671183; x=1678207183;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8/WhdRqYVGV6xgIgJtdfTvyUo9gS8a8NYiC/+LyePM0=;
-  b=jMnFnzZU+tD8fY2tSDk0QLUkA03RuUtc5ccXZZqJVrnbS0LG9j+tn6ly
-   0DepUG5cNeZU8aVHVBwbZwz79TAf50SygLiXpy4td656VygRPu9V9IilU
-   KcXzYaPtQOPtqPN98p5B/D8Ue6R+oydSFu2YLPp4rn2+fO7nO9JGiqztO
-   FamBzIvOAlDjT1CbO9pjf+hXMwE3iT8ohPfFEsalQW2CuuG+LMPtgT63n
-   k6qrclsevO0vy7VkDpyJ1BxeTxi31TQaMFy+xfiBfHkj8xSngSzmrd4xx
-   RE5dpo68EMd6QODMH7DDLZKKBKlos0iN0murpBjZoTWWErjshyHYNK3Hi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="315152933"
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="315152933"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 08:39:39 -0800
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="711172367"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 08:39:36 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRGNo-00CrsT-5g;
-        Mon, 07 Mar 2022 18:38:52 +0200
-Date:   Mon, 7 Mar 2022 18:38:51 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: Re: [PATCH v1 1/1] gpiolib: acpi: Convert ACPI value of debounce to
- microseconds
-Message-ID: <YiY1GwLPREl0OGeM@smile.fi.intel.com>
-References: <20220307115623.37492-1-andriy.shevchenko@linux.intel.com>
- <CAMRc=Md3_W49Wq5-zaxdNzELW87OogEN5wW6XQnF9aMpZrRvBA@mail.gmail.com>
- <YiYNPhUoXH8XakKO@smile.fi.intel.com>
- <CAMRc=Mcp5YeVYJn1FCK+0=72HhJ2haTU02wd9MK7O7fxgXyj4Q@mail.gmail.com>
+        Mon, 7 Mar 2022 11:40:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B89D52B08;
+        Mon,  7 Mar 2022 08:39:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29630610A3;
+        Mon,  7 Mar 2022 16:39:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 521C3C340EB;
+        Mon,  7 Mar 2022 16:39:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646671194;
+        bh=CR3H+PJ5LIHoZfHg5BxqH2Z0JF+bZ+Y8Zs1kn0/J9aE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DcHkb6q0B5fScFbjad4R1HhhdrOUswR1p4UPLjOVRwyGrUYm5HQEkgagTPrYWiUJ2
+         gMoLHedwj1S/SADqicNmtAMS5t59ap/fOSDd71auy288Ju+16EyMOqUUGSoy0IDvpQ
+         ++OoE4oNrhuEZamrT+s3RiJIMekFXbQRdPZYDW0X3VyirmvVsLIq3Ul4qJFZ4citzU
+         yXSX4outrAL24CIG5thqyS6Fdz111qy63793pHyNTJYsst1PXjTuLxSeZPc5pDqJpe
+         ly5bh4YolEqsnzTHmoHUQMhfJwM81XwyL3X6ZHI83IU97/LK+e2c1B5SG/RD+PJB/9
+         MJq+Y0NmEW5MQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id E619B403C8; Mon,  7 Mar 2022 13:39:50 -0300 (-03)
+Date:   Mon, 7 Mar 2022 13:39:50 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>, zhengjun.xing@linux.intel.com
+Cc:     peterz@infradead.org, mingo@redhat.com,
+        alexander.shishkin@intel.com, jolsa@redhat.com,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        adrian.hunter@intel.com, ak@linux.intel.com,
+        kan.liang@linux.intel.com
+Subject: Re: [PATCH] perf parse: Fix event parser error for hybrid systems
+Message-ID: <YiY1VnHi4VnLMaCi@kernel.org>
+References: <20220307151627.30049-1-zhengjun.xing@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMRc=Mcp5YeVYJn1FCK+0=72HhJ2haTU02wd9MK7O7fxgXyj4Q@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220307151627.30049-1-zhengjun.xing@linux.intel.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 03:33:43PM +0100, Bartosz Golaszewski wrote:
-> On Mon, Mar 7, 2022 at 2:49 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Mon, Mar 07, 2022 at 01:48:10PM +0100, Bartosz Golaszewski wrote:
-> > > On Mon, Mar 7, 2022 at 12:56 PM Andy Shevchenko
-> > > <andriy.shevchenko@linux.intel.com> wrote:
+Em Mon, Mar 07, 2022 at 11:16:27PM +0800, zhengjun.xing@linux.intel.com escreveu:
+> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+> 
+> This bug happened on hybrid systems when both cpu_core and cpu_atom
+> have the same event name such as "UOPS_RETIRED.MS" while their event
+> terms are different, then during perf stat, the event for cpu_atom
+> will parse fail and then no output for cpu_atom.
 
-...
+Ian,
 
-> > > Do you have some more stuff coming up for fixes
-> >
-> > I don't think so.
+	since this patch fixes a patch from you, can you take a look?
 
-Hmm... As a matter of fact, one small fix is on its way since I noticed during
-compilation test of the above.
-
-...
-
-> Applied, thanks!
-
-Thank you!
+- Arnaldo
+ 
+> UOPS_RETIRED.MS -> cpu_core/period=0x1e8483,umask=0x4,event=0xc2,frontend=0x8/
+> UOPS_RETIRED.MS -> cpu_atom/period=0x1e8483,umask=0x1,event=0xc2/
+> 
+> It is because event terms in the "head" of parse_events_multi_pmu_add
+> will be changed to event terms for cpu_core after parsing UOPS_RETIRED.MS
+> for cpu_core, then when parsing the same event for cpu_atom, it still
+> uses the event terms for cpu_core, but event terms for cpu_atom are
+> different with cpu_core, the event parses for cpu_atom will fail. This
+> patch fixes it, the event terms should be parsed from the original
+> event.
+> 
+> This patch can work for the hybrid systems that have the same event
+> in more than 2 PMUs. It also can work in non-hybrid systems.
+> 
+> Before:
+> 
+>  #perf stat -v  -e  UOPS_RETIRED.MS  -a sleep 1
+> 
+> Using CPUID GenuineIntel-6-97-1
+> UOPS_RETIRED.MS -> cpu_core/period=0x1e8483,umask=0x4,event=0xc2,frontend=0x8/
+> Control descriptor is not initialized
+> UOPS_RETIRED.MS: 2737845 16068518485 16068518485
+> 
+>  Performance counter stats for 'system wide':
+> 
+>          2,737,845      cpu_core/UOPS_RETIRED.MS/
+> 
+>        1.002553850 seconds time elapsed
+> 
+> After:
+> 
+>  #perf stat -v  -e  UOPS_RETIRED.MS  -a sleep 1
+> 
+> Using CPUID GenuineIntel-6-97-1
+> UOPS_RETIRED.MS -> cpu_core/period=0x1e8483,umask=0x4,event=0xc2,frontend=0x8/
+> UOPS_RETIRED.MS -> cpu_atom/period=0x1e8483,umask=0x1,event=0xc2/
+> Control descriptor is not initialized
+> UOPS_RETIRED.MS: 1977555 16076950711 16076950711
+> UOPS_RETIRED.MS: 568684 8038694234 8038694234
+> 
+>  Performance counter stats for 'system wide':
+> 
+>          1,977,555      cpu_core/UOPS_RETIRED.MS/
+>            568,684      cpu_atom/UOPS_RETIRED.MS/
+> 
+>        1.004758259 seconds time elapsed
+> 
+> Fixes: fb0811535e92c6c1 ("perf parse-events: Allow config on kernel PMU events")
+> Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+> ---
+>  tools/perf/util/parse-events.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
+> index 9739b05b999e..8bf7f914ea0e 100644
+> --- a/tools/perf/util/parse-events.c
+> +++ b/tools/perf/util/parse-events.c
+> @@ -1648,6 +1648,7 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
+>  {
+>  	struct parse_events_term *term;
+>  	struct list_head *list = NULL;
+> +	struct list_head *orig_head = NULL;
+>  	struct perf_pmu *pmu = NULL;
+>  	int ok = 0;
+>  	char *config;
+> @@ -1674,7 +1675,6 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
+>  	}
+>  	list_add_tail(&term->list, head);
+>  
+> -
+>  	/* Add it for all PMUs that support the alias */
+>  	list = malloc(sizeof(struct list_head));
+>  	if (!list)
+> @@ -1687,13 +1687,15 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
+>  
+>  		list_for_each_entry(alias, &pmu->aliases, list) {
+>  			if (!strcasecmp(alias->name, str)) {
+> +				parse_events_copy_term_list(head, &orig_head);
+>  				if (!parse_events_add_pmu(parse_state, list,
+> -							  pmu->name, head,
+> +							  pmu->name, orig_head,
+>  							  true, true)) {
+>  					pr_debug("%s -> %s/%s/\n", str,
+>  						 pmu->name, alias->str);
+>  					ok++;
+>  				}
+> +				parse_events_terms__delete(orig_head);
+>  			}
+>  		}
+>  	}
+> -- 
+> 2.25.1
 
 -- 
-With Best Regards,
-Andy Shevchenko
 
-
+- Arnaldo
