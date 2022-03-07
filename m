@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC840C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7516C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235271AbiCGJxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:53:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
+        id S237951AbiCGJxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:53:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241066AbiCGJls (ORCPT
+        with ESMTP id S241060AbiCGJls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E05D6D96D;
-        Mon,  7 Mar 2022 01:39:51 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989916D973;
+        Mon,  7 Mar 2022 01:39:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59D65B8102B;
-        Mon,  7 Mar 2022 09:39:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F894C340E9;
-        Mon,  7 Mar 2022 09:39:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38F65611D5;
+        Mon,  7 Mar 2022 09:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C0CFC340F4;
+        Mon,  7 Mar 2022 09:39:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645988;
-        bh=15NCdDwgdan47lX7Z/DQ3J3B52NIddNo5T2bsAMTDkw=;
+        s=korg; t=1646645984;
+        bh=SNmdDb/KWY/UBhJnHPu+wPZKAzGOM7GjBTFAMw0j1cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mSwnqSs94/zA9j2BOTzD1vxQPnJDZkaWxlt7kTst+FQuiNNdSCarCtZ/v/AvYO+wA
-         jFw0IB/pM8PnUQhZ/cjGGV64wAfE4UdJu7iZ0R1Fuyha2q60zfWyzzf+6FriNNvGCx
-         7rxrldDI9wXrrifyID+JVUPR4+3FwSwsEMA7zSWs=
+        b=WvmQHur5GBZsOinvyhJfznJnzrqtiEehXDNQWs95uzQEC+yZmmuItouGJTUf2UatP
+         EufewXn1aiYXxfrDydXYwe5LiyQel8ZYu+XBrEnWPPjXzTvzpRHMbGnAv8F6OnVrcf
+         HX2bb3R6MraU+KLGU6Acb9wVPKGOwkclOyWBrMjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Hersen Wu <hersenxs.wu@amd.com>,
-        Anson Jacob <Anson.Jacob@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
+        stable@vger.kernel.org, Zhan Liu <zhan.liu@amd.com>,
         Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Agustin Gutierrez <agustin.gutierrez@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Nikola Cornij <nikola.cornij@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/262] drm/amd/display: move FPU associated DSC code to DML folder
-Date:   Mon,  7 Mar 2022 10:17:24 +0100
-Message-Id: <20220307091705.301226097@linuxfoundation.org>
+Subject: [PATCH 5.15 099/262] drm/amd/display: Use adjusted DCN301 watermarks
+Date:   Mon,  7 Mar 2022 10:17:23 +0100
+Message-Id: <20220307091705.274209090@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -57,856 +51,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qingqing Zhuo <qingqing.zhuo@amd.com>
+From: Nikola Cornij <nikola.cornij@amd.com>
 
-[ Upstream commit d738db6883df3e3c513f9e777c842262693f951b ]
+[ Upstream commit 808643ea56a2f96a42873d5e11c399957d6493aa ]
 
-[Why & How]
-As part of the FPU isolation work documented in
-https://patchwork.freedesktop.org/series/93042/, isolate code that uses
-FPU in DSC to DML, where all FPU code should locate.
+[why]
+If DCN30 watermark calc is used for DCN301, the calculated values are
+wrong due to the data structure mismatch between DCN30 and DCN301.
+However, using the original DCN301 watermark values causes underflow.
 
-This change does not refactor any functions but move code around.
+[how]
+- Add DCN21-style watermark calculations
+- Adjust DCN301 watermark values to remove the underflow
 
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Hersen Wu <hersenxs.wu@amd.com>
-Cc: Anson Jacob <Anson.Jacob@amd.com>
-Cc: Harry Wentland <harry.wentland@amd.com>
-Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Acked-by: Agustin Gutierrez <agustin.gutierrez@amd.com>
-Tested-by: Anson Jacob <Anson.Jacob@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Zhan Liu <zhan.liu@amd.com>
+Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Signed-off-by: Nikola Cornij <nikola.cornij@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dml/Makefile   |   3 +
- .../amd/display/dc/{ => dml}/dsc/qp_tables.h  |   0
- .../drm/amd/display/dc/dml/dsc/rc_calc_fpu.c  | 291 ++++++++++++++++++
- .../drm/amd/display/dc/dml/dsc/rc_calc_fpu.h  |  94 ++++++
- drivers/gpu/drm/amd/display/dc/dsc/Makefile   |  29 --
- drivers/gpu/drm/amd/display/dc/dsc/rc_calc.c  | 259 ----------------
- drivers/gpu/drm/amd/display/dc/dsc/rc_calc.h  |  50 +--
- .../gpu/drm/amd/display/dc/dsc/rc_calc_dpi.c  |   1 -
- 8 files changed, 389 insertions(+), 338 deletions(-)
- rename drivers/gpu/drm/amd/display/dc/{ => dml}/dsc/qp_tables.h (100%)
- create mode 100644 drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c
- create mode 100644 drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.h
+ .../display/dc/clk_mgr/dcn301/vg_clk_mgr.c    |  4 +-
+ .../amd/display/dc/dcn301/dcn301_resource.c   | 96 ++++++++++++++++++-
+ 2 files changed, 97 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/Makefile b/drivers/gpu/drm/amd/display/dc/dml/Makefile
-index 56055df2e8d2e..9009b92490f34 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dml/Makefile
-@@ -70,6 +70,7 @@ CFLAGS_$(AMDDALPATH)/dc/dml/dcn30/display_mode_vba_30.o := $(dml_ccflags) $(fram
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn30/display_rq_dlg_calc_30.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn31/display_mode_vba_31.o := $(dml_ccflags) $(frame_warn_flag)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn31/display_rq_dlg_calc_31.o := $(dml_ccflags)
-+CFLAGS_$(AMDDALPATH)/dc/dml/dsc/rc_calc_fpu.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/display_mode_lib.o := $(dml_ccflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/display_mode_vba.o := $(dml_rcflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn2x/dcn2x.o := $(dml_rcflags)
-@@ -84,6 +85,7 @@ CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn30/display_rq_dlg_calc_30.o := $(dml_rcfla
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn31/display_mode_vba_31.o := $(dml_rcflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn31/display_rq_dlg_calc_31.o := $(dml_rcflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/display_mode_lib.o := $(dml_rcflags)
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dsc/rc_calc_fpu.o  := $(dml_rcflags)
- endif
- CFLAGS_$(AMDDALPATH)/dc/dml/dml1_display_rq_dlg_calc.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/display_rq_dlg_helpers.o := $(dml_ccflags)
-@@ -99,6 +101,7 @@ DML += dcn20/display_rq_dlg_calc_20v2.o dcn20/display_mode_vba_20v2.o
- DML += dcn21/display_rq_dlg_calc_21.o dcn21/display_mode_vba_21.o
- DML += dcn30/display_mode_vba_30.o dcn30/display_rq_dlg_calc_30.o
- DML += dcn31/display_mode_vba_31.o dcn31/display_rq_dlg_calc_31.o
-+DML += dsc/rc_calc_fpu.o
- endif
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
+index 7046da14bb2a5..3eee32faa208c 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
+@@ -582,8 +582,8 @@ static struct wm_table lpddr5_wm_table = {
+ 			.wm_inst = WM_A,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.65333,
+-			.sr_exit_time_us = 5.32,
+-			.sr_enter_plus_exit_time_us = 6.38,
++			.sr_exit_time_us = 7.95,
++			.sr_enter_plus_exit_time_us = 9,
+ 			.valid = true,
+ 		},
+ 		{
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
+index 26ebe00a55f67..dea358b01791c 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
+@@ -1622,12 +1622,106 @@ static void dcn301_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *b
+ 	dml_init_instance(&dc->dml, &dcn3_01_soc, &dcn3_01_ip, DML_PROJECT_DCN30);
+ }
  
- AMD_DAL_DML = $(addprefix $(AMDDALPATH)/dc/dml/,$(DML))
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/qp_tables.h b/drivers/gpu/drm/amd/display/dc/dml/dsc/qp_tables.h
-similarity index 100%
-rename from drivers/gpu/drm/amd/display/dc/dsc/qp_tables.h
-rename to drivers/gpu/drm/amd/display/dc/dml/dsc/qp_tables.h
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c
-new file mode 100644
-index 0000000000000..3ee858f311d12
---- /dev/null
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c
-@@ -0,0 +1,291 @@
-+/*
-+ * Copyright 2021 Advanced Micro Devices, Inc.
-+ *
-+ * Permission is hereby granted, free of charge, to any person obtaining a
-+ * copy of this software and associated documentation files (the "Software"),
-+ * to deal in the Software without restriction, including without limitation
-+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-+ * and/or sell copies of the Software, and to permit persons to whom the
-+ * Software is furnished to do so, subject to the following conditions:
-+ *
-+ * The above copyright notice and this permission notice shall be included in
-+ * all copies or substantial portions of the Software.
-+ *
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
-+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ * OTHER DEALINGS IN THE SOFTWARE.
-+ *
-+ * Authors: AMD
-+ *
-+ */
-+
-+#include "rc_calc_fpu.h"
-+
-+#include "qp_tables.h"
-+#include "amdgpu_dm/dc_fpu.h"
-+
-+#define table_hash(mode, bpc, max_min) ((mode << 16) | (bpc << 8) | max_min)
-+
-+#define MODE_SELECT(val444, val422, val420) \
-+	(cm == CM_444 || cm == CM_RGB) ? (val444) : (cm == CM_422 ? (val422) : (val420))
-+
-+
-+#define TABLE_CASE(mode, bpc, max)   case (table_hash(mode, BPC_##bpc, max)): \
-+	table = qp_table_##mode##_##bpc##bpc_##max; \
-+	table_size = sizeof(qp_table_##mode##_##bpc##bpc_##max)/sizeof(*qp_table_##mode##_##bpc##bpc_##max); \
-+	break
-+
-+static int median3(int a, int b, int c)
++static void calculate_wm_set_for_vlevel(
++		int vlevel,
++		struct wm_range_table_entry *table_entry,
++		struct dcn_watermarks *wm_set,
++		struct display_mode_lib *dml,
++		display_e2e_pipe_params_st *pipes,
++		int pipe_cnt)
 +{
-+	if (a > b)
-+		swap(a, b);
-+	if (b > c)
-+		swap(b, c);
-+	if (a > b)
-+		swap(b, c);
++	double dram_clock_change_latency_cached = dml->soc.dram_clock_change_latency_us;
 +
-+	return b;
++	ASSERT(vlevel < dml->soc.num_states);
++	/* only pipe 0 is read for voltage and dcf/soc clocks */
++	pipes[0].clks_cfg.voltage = vlevel;
++	pipes[0].clks_cfg.dcfclk_mhz = dml->soc.clock_limits[vlevel].dcfclk_mhz;
++	pipes[0].clks_cfg.socclk_mhz = dml->soc.clock_limits[vlevel].socclk_mhz;
++
++	dml->soc.dram_clock_change_latency_us = table_entry->pstate_latency_us;
++	dml->soc.sr_exit_time_us = table_entry->sr_exit_time_us;
++	dml->soc.sr_enter_plus_exit_time_us = table_entry->sr_enter_plus_exit_time_us;
++
++	wm_set->urgent_ns = get_wm_urgent(dml, pipes, pipe_cnt) * 1000;
++	wm_set->cstate_pstate.cstate_enter_plus_exit_ns = get_wm_stutter_enter_exit(dml, pipes, pipe_cnt) * 1000;
++	wm_set->cstate_pstate.cstate_exit_ns = get_wm_stutter_exit(dml, pipes, pipe_cnt) * 1000;
++	wm_set->cstate_pstate.pstate_change_ns = get_wm_dram_clock_change(dml, pipes, pipe_cnt) * 1000;
++	wm_set->pte_meta_urgent_ns = get_wm_memory_trip(dml, pipes, pipe_cnt) * 1000;
++	wm_set->frac_urg_bw_nom = get_fraction_of_urgent_bandwidth(dml, pipes, pipe_cnt) * 1000;
++	wm_set->frac_urg_bw_flip = get_fraction_of_urgent_bandwidth_imm_flip(dml, pipes, pipe_cnt) * 1000;
++	wm_set->urgent_latency_ns = get_urgent_latency(dml, pipes, pipe_cnt) * 1000;
++	dml->soc.dram_clock_change_latency_us = dram_clock_change_latency_cached;
++
 +}
 +
-+static double dsc_roundf(double num)
++static void dcn301_calculate_wm_and_dlg(
++		struct dc *dc, struct dc_state *context,
++		display_e2e_pipe_params_st *pipes,
++		int pipe_cnt,
++		int vlevel_req)
 +{
-+	if (num < 0.0)
-+		num = num - 0.5;
++	int i, pipe_idx;
++	int vlevel, vlevel_max;
++	struct wm_range_table_entry *table_entry;
++	struct clk_bw_params *bw_params = dc->clk_mgr->bw_params;
++
++	ASSERT(bw_params);
++
++	vlevel_max = bw_params->clk_table.num_entries - 1;
++
++	/* WM Set D */
++	table_entry = &bw_params->wm_table.entries[WM_D];
++	if (table_entry->wm_type == WM_TYPE_RETRAINING)
++		vlevel = 0;
 +	else
-+		num = num + 0.5;
++		vlevel = vlevel_max;
++	calculate_wm_set_for_vlevel(vlevel, table_entry, &context->bw_ctx.bw.dcn.watermarks.d,
++						&context->bw_ctx.dml, pipes, pipe_cnt);
++	/* WM Set C */
++	table_entry = &bw_params->wm_table.entries[WM_C];
++	vlevel = min(max(vlevel_req, 2), vlevel_max);
++	calculate_wm_set_for_vlevel(vlevel, table_entry, &context->bw_ctx.bw.dcn.watermarks.c,
++						&context->bw_ctx.dml, pipes, pipe_cnt);
++	/* WM Set B */
++	table_entry = &bw_params->wm_table.entries[WM_B];
++	vlevel = min(max(vlevel_req, 1), vlevel_max);
++	calculate_wm_set_for_vlevel(vlevel, table_entry, &context->bw_ctx.bw.dcn.watermarks.b,
++						&context->bw_ctx.dml, pipes, pipe_cnt);
 +
-+	return (int)(num);
-+}
++	/* WM Set A */
++	table_entry = &bw_params->wm_table.entries[WM_A];
++	vlevel = min(vlevel_req, vlevel_max);
++	calculate_wm_set_for_vlevel(vlevel, table_entry, &context->bw_ctx.bw.dcn.watermarks.a,
++						&context->bw_ctx.dml, pipes, pipe_cnt);
 +
-+static double dsc_ceil(double num)
-+{
-+	double retval = (int)num;
++	for (i = 0, pipe_idx = 0; i < dc->res_pool->pipe_count; i++) {
++		if (!context->res_ctx.pipe_ctx[i].stream)
++			continue;
 +
-+	if (retval != num && num > 0)
-+		retval = num + 1;
++		pipes[pipe_idx].clks_cfg.dispclk_mhz = get_dispclk_calculated(&context->bw_ctx.dml, pipes, pipe_cnt);
++		pipes[pipe_idx].clks_cfg.dppclk_mhz = get_dppclk_calculated(&context->bw_ctx.dml, pipes, pipe_cnt, pipe_idx);
 +
-+	return (int)retval;
-+}
-+
-+static void get_qp_set(qp_set qps, enum colour_mode cm, enum bits_per_comp bpc,
-+		       enum max_min max_min, float bpp)
-+{
-+	int mode = MODE_SELECT(444, 422, 420);
-+	int sel = table_hash(mode, bpc, max_min);
-+	int table_size = 0;
-+	int index;
-+	const struct qp_entry *table = 0L;
-+
-+	// alias enum
-+	enum { min = DAL_MM_MIN, max = DAL_MM_MAX };
-+	switch (sel) {
-+		TABLE_CASE(444,  8, max);
-+		TABLE_CASE(444,  8, min);
-+		TABLE_CASE(444, 10, max);
-+		TABLE_CASE(444, 10, min);
-+		TABLE_CASE(444, 12, max);
-+		TABLE_CASE(444, 12, min);
-+		TABLE_CASE(422,  8, max);
-+		TABLE_CASE(422,  8, min);
-+		TABLE_CASE(422, 10, max);
-+		TABLE_CASE(422, 10, min);
-+		TABLE_CASE(422, 12, max);
-+		TABLE_CASE(422, 12, min);
-+		TABLE_CASE(420,  8, max);
-+		TABLE_CASE(420,  8, min);
-+		TABLE_CASE(420, 10, max);
-+		TABLE_CASE(420, 10, min);
-+		TABLE_CASE(420, 12, max);
-+		TABLE_CASE(420, 12, min);
-+	}
-+
-+	if (table == 0)
-+		return;
-+
-+	index = (bpp - table[0].bpp) * 2;
-+
-+	/* requested size is bigger than the table */
-+	if (index >= table_size) {
-+		dm_error("ERROR: Requested rc_calc to find a bpp entry that exceeds the table size\n");
-+		return;
-+	}
-+
-+	memcpy(qps, table[index].qps, sizeof(qp_set));
-+}
-+
-+static void get_ofs_set(qp_set ofs, enum colour_mode mode, float bpp)
-+{
-+	int   *p = ofs;
-+
-+	if (mode == CM_444 || mode == CM_RGB) {
-+		*p++ = (bpp <=  6) ? (0) : ((((bpp >=  8) && (bpp <= 12))) ? (2) : ((bpp >= 15) ? (10) : ((((bpp > 6) && (bpp < 8))) ? (0 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (2 + dsc_roundf((bpp - 12) * (8 / 3.0))))));
-+		*p++ = (bpp <=  6) ? (-2) : ((((bpp >=  8) && (bpp <= 12))) ? (0) : ((bpp >= 15) ? (8) : ((((bpp > 6) && (bpp < 8))) ? (-2 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (0 + dsc_roundf((bpp - 12) * (8 / 3.0))))));
-+		*p++ = (bpp <=  6) ? (-2) : ((((bpp >=  8) && (bpp <= 12))) ? (0) : ((bpp >= 15) ? (6) : ((((bpp > 6) && (bpp < 8))) ? (-2 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (0 + dsc_roundf((bpp - 12) * (6 / 3.0))))));
-+		*p++ = (bpp <=  6) ? (-4) : ((((bpp >=  8) && (bpp <= 12))) ? (-2) : ((bpp >= 15) ? (4) : ((((bpp > 6) && (bpp < 8))) ? (-4 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (-2 + dsc_roundf((bpp - 12) * (6 / 3.0))))));
-+		*p++ = (bpp <=  6) ? (-6) : ((((bpp >=  8) && (bpp <= 12))) ? (-4) : ((bpp >= 15) ? (2) : ((((bpp > 6) && (bpp < 8))) ? (-6 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (-4 + dsc_roundf((bpp - 12) * (6 / 3.0))))));
-+		*p++ = (bpp <= 12) ? (-6) : ((bpp >= 15) ? (0) : (-6 + dsc_roundf((bpp - 12) * (6 / 3.0))));
-+		*p++ = (bpp <= 12) ? (-8) : ((bpp >= 15) ? (-2) : (-8 + dsc_roundf((bpp - 12) * (6 / 3.0))));
-+		*p++ = (bpp <= 12) ? (-8) : ((bpp >= 15) ? (-4) : (-8 + dsc_roundf((bpp - 12) * (4 / 3.0))));
-+		*p++ = (bpp <= 12) ? (-8) : ((bpp >= 15) ? (-6) : (-8 + dsc_roundf((bpp - 12) * (2 / 3.0))));
-+		*p++ = (bpp <= 12) ? (-10) : ((bpp >= 15) ? (-8) : (-10 + dsc_roundf((bpp - 12) * (2 / 3.0))));
-+		*p++ = -10;
-+		*p++ = (bpp <=  6) ? (-12) : ((bpp >=  8) ? (-10) : (-12 + dsc_roundf((bpp -  6) * (2 / 2.0))));
-+		*p++ = -12;
-+		*p++ = -12;
-+		*p++ = -12;
-+	} else if (mode == CM_422) {
-+		*p++ = (bpp <=  8) ? (2) : ((bpp >= 10) ? (10) : (2 + dsc_roundf((bpp -  8) * (8 / 2.0))));
-+		*p++ = (bpp <=  8) ? (0) : ((bpp >= 10) ? (8) : (0 + dsc_roundf((bpp -  8) * (8 / 2.0))));
-+		*p++ = (bpp <=  8) ? (0) : ((bpp >= 10) ? (6) : (0 + dsc_roundf((bpp -  8) * (6 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-2) : ((bpp >= 10) ? (4) : (-2 + dsc_roundf((bpp -  8) * (6 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-4) : ((bpp >= 10) ? (2) : (-4 + dsc_roundf((bpp -  8) * (6 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-6) : ((bpp >= 10) ? (0) : (-6 + dsc_roundf((bpp -  8) * (6 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-8) : ((bpp >= 10) ? (-2) : (-8 + dsc_roundf((bpp -  8) * (6 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-8) : ((bpp >= 10) ? (-4) : (-8 + dsc_roundf((bpp -  8) * (4 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-8) : ((bpp >= 10) ? (-6) : (-8 + dsc_roundf((bpp -  8) * (2 / 2.0))));
-+		*p++ = (bpp <=  8) ? (-10) : ((bpp >= 10) ? (-8) : (-10 + dsc_roundf((bpp -  8) * (2 / 2.0))));
-+		*p++ = -10;
-+		*p++ = (bpp <=  6) ? (-12) : ((bpp >= 7) ? (-10) : (-12 + dsc_roundf((bpp -  6) * (2.0 / 1))));
-+		*p++ = -12;
-+		*p++ = -12;
-+		*p++ = -12;
-+	} else {
-+		*p++ = (bpp <=  6) ? (2) : ((bpp >=  8) ? (10) : (2 + dsc_roundf((bpp -  6) * (8 / 2.0))));
-+		*p++ = (bpp <=  6) ? (0) : ((bpp >=  8) ? (8) : (0 + dsc_roundf((bpp -  6) * (8 / 2.0))));
-+		*p++ = (bpp <=  6) ? (0) : ((bpp >=  8) ? (6) : (0 + dsc_roundf((bpp -  6) * (6 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-2) : ((bpp >=  8) ? (4) : (-2 + dsc_roundf((bpp -  6) * (6 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-4) : ((bpp >=  8) ? (2) : (-4 + dsc_roundf((bpp -  6) * (6 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-6) : ((bpp >=  8) ? (0) : (-6 + dsc_roundf((bpp -  6) * (6 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-8) : ((bpp >=  8) ? (-2) : (-8 + dsc_roundf((bpp -  6) * (6 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-8) : ((bpp >=  8) ? (-4) : (-8 + dsc_roundf((bpp -  6) * (4 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-8) : ((bpp >=  8) ? (-6) : (-8 + dsc_roundf((bpp -  6) * (2 / 2.0))));
-+		*p++ = (bpp <=  6) ? (-10) : ((bpp >=  8) ? (-8) : (-10 + dsc_roundf((bpp -  6) * (2 / 2.0))));
-+		*p++ = -10;
-+		*p++ = (bpp <=  4) ? (-12) : ((bpp >=  5) ? (-10) : (-12 + dsc_roundf((bpp -  4) * (2 / 1.0))));
-+		*p++ = -12;
-+		*p++ = -12;
-+		*p++ = -12;
-+	}
-+}
-+
-+void _do_calc_rc_params(struct rc_params *rc,
-+		enum colour_mode cm,
-+		enum bits_per_comp bpc,
-+		u16 drm_bpp,
-+		bool is_navite_422_or_420,
-+		int slice_width,
-+		int slice_height,
-+		int minor_version)
-+{
-+	float bpp;
-+	float bpp_group;
-+	float initial_xmit_delay_factor;
-+	int padding_pixels;
-+	int i;
-+
-+	dc_assert_fp_enabled();
-+
-+	bpp = ((float)drm_bpp / 16.0);
-+	/* in native_422 or native_420 modes, the bits_per_pixel is double the
-+	 * target bpp (the latter is what calc_rc_params expects)
-+	 */
-+	if (is_navite_422_or_420)
-+		bpp /= 2.0;
-+
-+	rc->rc_quant_incr_limit0 = ((bpc == BPC_8) ? 11 : (bpc == BPC_10 ? 15 : 19)) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
-+	rc->rc_quant_incr_limit1 = ((bpc == BPC_8) ? 11 : (bpc == BPC_10 ? 15 : 19)) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
-+
-+	bpp_group = MODE_SELECT(bpp, bpp * 2.0, bpp * 2.0);
-+
-+	switch (cm) {
-+	case CM_420:
-+		rc->initial_fullness_offset = (bpp >=  6) ? (2048) : ((bpp <=  4) ? (6144) : ((((bpp >  4) && (bpp <=  5))) ? (6144 - dsc_roundf((bpp - 4) * (512))) : (5632 - dsc_roundf((bpp -  5) * (3584)))));
-+		rc->first_line_bpg_offset   = median3(0, (12 + (int) (0.09 *  min(34, slice_height - 8))), (int)((3 * bpc * 3) - (3 * bpp_group)));
-+		rc->second_line_bpg_offset  = median3(0, 12, (int)((3 * bpc * 3) - (3 * bpp_group)));
-+		break;
-+	case CM_422:
-+		rc->initial_fullness_offset = (bpp >=  8) ? (2048) : ((bpp <=  7) ? (5632) : (5632 - dsc_roundf((bpp - 7) * (3584))));
-+		rc->first_line_bpg_offset   = median3(0, (12 + (int) (0.09 *  min(34, slice_height - 8))), (int)((3 * bpc * 4) - (3 * bpp_group)));
-+		rc->second_line_bpg_offset  = 0;
-+		break;
-+	case CM_444:
-+	case CM_RGB:
-+		rc->initial_fullness_offset = (bpp >= 12) ? (2048) : ((bpp <=  8) ? (6144) : ((((bpp >  8) && (bpp <= 10))) ? (6144 - dsc_roundf((bpp - 8) * (512 / 2))) : (5632 - dsc_roundf((bpp - 10) * (3584 / 2)))));
-+		rc->first_line_bpg_offset   = median3(0, (12 + (int) (0.09 *  min(34, slice_height - 8))), (int)(((3 * bpc + (cm == CM_444 ? 0 : 2)) * 3) - (3 * bpp_group)));
-+		rc->second_line_bpg_offset  = 0;
-+		break;
-+	}
-+
-+	initial_xmit_delay_factor = (cm == CM_444 || cm == CM_RGB) ? 1.0 : 2.0;
-+	rc->initial_xmit_delay = dsc_roundf(8192.0/2.0/bpp/initial_xmit_delay_factor);
-+
-+	if (cm == CM_422 || cm == CM_420)
-+		slice_width /= 2;
-+
-+	padding_pixels = ((slice_width % 3) != 0) ? (3 - (slice_width % 3)) * (rc->initial_xmit_delay / slice_width) : 0;
-+	if (3 * bpp_group >= (((rc->initial_xmit_delay + 2) / 3) * (3 + (cm == CM_422)))) {
-+		if ((rc->initial_xmit_delay + padding_pixels) % 3 == 1)
-+			rc->initial_xmit_delay++;
-+	}
-+
-+	rc->flatness_min_qp     = ((bpc == BPC_8) ?  (3) : ((bpc == BPC_10) ? (7)  : (11))) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
-+	rc->flatness_max_qp     = ((bpc == BPC_8) ? (12) : ((bpc == BPC_10) ? (16) : (20))) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
-+	rc->flatness_det_thresh = 2 << (bpc - 8);
-+
-+	get_qp_set(rc->qp_min, cm, bpc, DAL_MM_MIN, bpp);
-+	get_qp_set(rc->qp_max, cm, bpc, DAL_MM_MAX, bpp);
-+	if (cm == CM_444 && minor_version == 1) {
-+		for (i = 0; i < QP_SET_SIZE; ++i) {
-+			rc->qp_min[i] = rc->qp_min[i] > 0 ? rc->qp_min[i] - 1 : 0;
-+			rc->qp_max[i] = rc->qp_max[i] > 0 ? rc->qp_max[i] - 1 : 0;
++		if (dc->config.forced_clocks) {
++			pipes[pipe_idx].clks_cfg.dispclk_mhz = context->bw_ctx.dml.soc.clock_limits[0].dispclk_mhz;
++			pipes[pipe_idx].clks_cfg.dppclk_mhz = context->bw_ctx.dml.soc.clock_limits[0].dppclk_mhz;
 +		}
++		if (dc->debug.min_disp_clk_khz > pipes[pipe_idx].clks_cfg.dispclk_mhz * 1000)
++			pipes[pipe_idx].clks_cfg.dispclk_mhz = dc->debug.min_disp_clk_khz / 1000.0;
++		if (dc->debug.min_dpp_clk_khz > pipes[pipe_idx].clks_cfg.dppclk_mhz * 1000)
++			pipes[pipe_idx].clks_cfg.dppclk_mhz = dc->debug.min_dpp_clk_khz / 1000.0;
++
++		pipe_idx++;
 +	}
-+	get_ofs_set(rc->ofs, cm, bpp);
 +
-+	/* fixed parameters */
-+	rc->rc_model_size    = 8192;
-+	rc->rc_edge_factor   = 6;
-+	rc->rc_tgt_offset_hi = 3;
-+	rc->rc_tgt_offset_lo = 3;
-+
-+	rc->rc_buf_thresh[0] = 896;
-+	rc->rc_buf_thresh[1] = 1792;
-+	rc->rc_buf_thresh[2] = 2688;
-+	rc->rc_buf_thresh[3] = 3584;
-+	rc->rc_buf_thresh[4] = 4480;
-+	rc->rc_buf_thresh[5] = 5376;
-+	rc->rc_buf_thresh[6] = 6272;
-+	rc->rc_buf_thresh[7] = 6720;
-+	rc->rc_buf_thresh[8] = 7168;
-+	rc->rc_buf_thresh[9] = 7616;
-+	rc->rc_buf_thresh[10] = 7744;
-+	rc->rc_buf_thresh[11] = 7872;
-+	rc->rc_buf_thresh[12] = 8000;
-+	rc->rc_buf_thresh[13] = 8064;
++	dcn20_calculate_dlg_params(dc, context, pipes, pipe_cnt, vlevel);
 +}
 +
-+u32 _do_bytes_per_pixel_calc(int slice_width,
-+		u16 drm_bpp,
-+		bool is_navite_422_or_420)
-+{
-+	float bpp;
-+	u32 bytes_per_pixel;
-+	double d_bytes_per_pixel;
-+
-+	dc_assert_fp_enabled();
-+
-+	bpp = ((float)drm_bpp / 16.0);
-+	d_bytes_per_pixel = dsc_ceil(bpp * slice_width / 8.0) / slice_width;
-+	// TODO: Make sure the formula for calculating this is precise (ceiling
-+	// vs. floor, and at what point they should be applied)
-+	if (is_navite_422_or_420)
-+		d_bytes_per_pixel /= 2;
-+
-+	bytes_per_pixel = (u32)dsc_ceil(d_bytes_per_pixel * 0x10000000);
-+
-+	return bytes_per_pixel;
-+}
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.h b/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.h
-new file mode 100644
-index 0000000000000..b93b95409fbe2
---- /dev/null
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.h
-@@ -0,0 +1,94 @@
-+/*
-+ * Copyright 2021 Advanced Micro Devices, Inc.
-+ *
-+ * Permission is hereby granted, free of charge, to any person obtaining a
-+ * copy of this software and associated documentation files (the "Software"),
-+ * to deal in the Software without restriction, including without limitation
-+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-+ * and/or sell copies of the Software, and to permit persons to whom the
-+ * Software is furnished to do so, subject to the following conditions:
-+ *
-+ * The above copyright notice and this permission notice shall be included in
-+ * all copies or substantial portions of the Software.
-+ *
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
-+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ * OTHER DEALINGS IN THE SOFTWARE.
-+ *
-+ * Authors: AMD
-+ *
-+ */
-+
-+#ifndef __RC_CALC_FPU_H__
-+#define __RC_CALC_FPU_H__
-+
-+#include "os_types.h"
-+#include <drm/drm_dsc.h>
-+
-+#define QP_SET_SIZE 15
-+
-+typedef int qp_set[QP_SET_SIZE];
-+
-+struct rc_params {
-+	int      rc_quant_incr_limit0;
-+	int      rc_quant_incr_limit1;
-+	int      initial_fullness_offset;
-+	int      initial_xmit_delay;
-+	int      first_line_bpg_offset;
-+	int      second_line_bpg_offset;
-+	int      flatness_min_qp;
-+	int      flatness_max_qp;
-+	int      flatness_det_thresh;
-+	qp_set   qp_min;
-+	qp_set   qp_max;
-+	qp_set   ofs;
-+	int      rc_model_size;
-+	int      rc_edge_factor;
-+	int      rc_tgt_offset_hi;
-+	int      rc_tgt_offset_lo;
-+	int      rc_buf_thresh[QP_SET_SIZE - 1];
-+};
-+
-+enum colour_mode {
-+	CM_RGB,   /* 444 RGB */
-+	CM_444,   /* 444 YUV or simple 422 */
-+	CM_422,   /* native 422 */
-+	CM_420    /* native 420 */
-+};
-+
-+enum bits_per_comp {
-+	BPC_8  =  8,
-+	BPC_10 = 10,
-+	BPC_12 = 12
-+};
-+
-+enum max_min {
-+	DAL_MM_MIN = 0,
-+	DAL_MM_MAX = 1
-+};
-+
-+struct qp_entry {
-+	float         bpp;
-+	const qp_set  qps;
-+};
-+
-+typedef struct qp_entry qp_table[];
-+
-+u32 _do_bytes_per_pixel_calc(int slice_width,
-+		u16 drm_bpp,
-+		bool is_navite_422_or_420);
-+
-+void _do_calc_rc_params(struct rc_params *rc,
-+		enum colour_mode cm,
-+		enum bits_per_comp bpc,
-+		u16 drm_bpp,
-+		bool is_navite_422_or_420,
-+		int slice_width,
-+		int slice_height,
-+		int minor_version);
-+
-+#endif
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/Makefile b/drivers/gpu/drm/amd/display/dc/dsc/Makefile
-index 8d31eb75c6a6e..a2537229ee88b 100644
---- a/drivers/gpu/drm/amd/display/dc/dsc/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dsc/Makefile
-@@ -1,35 +1,6 @@
- # SPDX-License-Identifier: MIT
- #
- # Makefile for the 'dsc' sub-component of DAL.
--
--ifdef CONFIG_X86
--dsc_ccflags := -mhard-float -msse
--endif
--
--ifdef CONFIG_PPC64
--dsc_ccflags := -mhard-float -maltivec
--endif
--
--ifdef CONFIG_CC_IS_GCC
--ifeq ($(call cc-ifversion, -lt, 0701, y), y)
--IS_OLD_GCC = 1
--endif
--endif
--
--ifdef CONFIG_X86
--ifdef IS_OLD_GCC
--# Stack alignment mismatch, proceed with caution.
--# GCC < 7.1 cannot compile code using `double` and -mpreferred-stack-boundary=3
--# (8B stack alignment).
--dsc_ccflags += -mpreferred-stack-boundary=4
--else
--dsc_ccflags += -msse2
--endif
--endif
--
--CFLAGS_$(AMDDALPATH)/dc/dsc/rc_calc.o := $(dsc_ccflags)
--CFLAGS_REMOVE_$(AMDDALPATH)/dc/dsc/rc_calc.o := $(dsc_rcflags)
--
- DSC = dc_dsc.o rc_calc.o rc_calc_dpi.o
- 
- AMD_DAL_DSC = $(addprefix $(AMDDALPATH)/dc/dsc/,$(DSC))
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.c b/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.c
-index 7b294f637881a..b19d3aeb5962c 100644
---- a/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.c
-@@ -23,266 +23,7 @@
-  * Authors: AMD
-  *
-  */
--#include <drm/drm_dsc.h>
--
--#include "os_types.h"
- #include "rc_calc.h"
--#include "qp_tables.h"
--
--#define table_hash(mode, bpc, max_min) ((mode << 16) | (bpc << 8) | max_min)
--
--#define MODE_SELECT(val444, val422, val420) \
--	(cm == CM_444 || cm == CM_RGB) ? (val444) : (cm == CM_422 ? (val422) : (val420))
--
--
--#define TABLE_CASE(mode, bpc, max)   case (table_hash(mode, BPC_##bpc, max)): \
--	table = qp_table_##mode##_##bpc##bpc_##max; \
--	table_size = sizeof(qp_table_##mode##_##bpc##bpc_##max)/sizeof(*qp_table_##mode##_##bpc##bpc_##max); \
--	break
--
--
--static void get_qp_set(qp_set qps, enum colour_mode cm, enum bits_per_comp bpc,
--		       enum max_min max_min, float bpp)
--{
--	int mode = MODE_SELECT(444, 422, 420);
--	int sel = table_hash(mode, bpc, max_min);
--	int table_size = 0;
--	int index;
--	const struct qp_entry *table = 0L;
--
--	// alias enum
--	enum { min = DAL_MM_MIN, max = DAL_MM_MAX };
--	switch (sel) {
--		TABLE_CASE(444,  8, max);
--		TABLE_CASE(444,  8, min);
--		TABLE_CASE(444, 10, max);
--		TABLE_CASE(444, 10, min);
--		TABLE_CASE(444, 12, max);
--		TABLE_CASE(444, 12, min);
--		TABLE_CASE(422,  8, max);
--		TABLE_CASE(422,  8, min);
--		TABLE_CASE(422, 10, max);
--		TABLE_CASE(422, 10, min);
--		TABLE_CASE(422, 12, max);
--		TABLE_CASE(422, 12, min);
--		TABLE_CASE(420,  8, max);
--		TABLE_CASE(420,  8, min);
--		TABLE_CASE(420, 10, max);
--		TABLE_CASE(420, 10, min);
--		TABLE_CASE(420, 12, max);
--		TABLE_CASE(420, 12, min);
--	}
--
--	if (table == 0)
--		return;
--
--	index = (bpp - table[0].bpp) * 2;
--
--	/* requested size is bigger than the table */
--	if (index >= table_size) {
--		dm_error("ERROR: Requested rc_calc to find a bpp entry that exceeds the table size\n");
--		return;
--	}
--
--	memcpy(qps, table[index].qps, sizeof(qp_set));
--}
--
--static double dsc_roundf(double num)
--{
--	if (num < 0.0)
--		num = num - 0.5;
--	else
--		num = num + 0.5;
--
--	return (int)(num);
--}
--
--static double dsc_ceil(double num)
--{
--	double retval = (int)num;
--
--	if (retval != num && num > 0)
--		retval = num + 1;
--
--	return (int)retval;
--}
--
--static void get_ofs_set(qp_set ofs, enum colour_mode mode, float bpp)
--{
--	int   *p = ofs;
--
--	if (mode == CM_444 || mode == CM_RGB) {
--		*p++ = (bpp <=  6) ? (0) : ((((bpp >=  8) && (bpp <= 12))) ? (2) : ((bpp >= 15) ? (10) : ((((bpp > 6) && (bpp < 8))) ? (0 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (2 + dsc_roundf((bpp - 12) * (8 / 3.0))))));
--		*p++ = (bpp <=  6) ? (-2) : ((((bpp >=  8) && (bpp <= 12))) ? (0) : ((bpp >= 15) ? (8) : ((((bpp > 6) && (bpp < 8))) ? (-2 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (0 + dsc_roundf((bpp - 12) * (8 / 3.0))))));
--		*p++ = (bpp <=  6) ? (-2) : ((((bpp >=  8) && (bpp <= 12))) ? (0) : ((bpp >= 15) ? (6) : ((((bpp > 6) && (bpp < 8))) ? (-2 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (0 + dsc_roundf((bpp - 12) * (6 / 3.0))))));
--		*p++ = (bpp <=  6) ? (-4) : ((((bpp >=  8) && (bpp <= 12))) ? (-2) : ((bpp >= 15) ? (4) : ((((bpp > 6) && (bpp < 8))) ? (-4 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (-2 + dsc_roundf((bpp - 12) * (6 / 3.0))))));
--		*p++ = (bpp <=  6) ? (-6) : ((((bpp >=  8) && (bpp <= 12))) ? (-4) : ((bpp >= 15) ? (2) : ((((bpp > 6) && (bpp < 8))) ? (-6 + dsc_roundf((bpp -  6) * (2 / 2.0))) : (-4 + dsc_roundf((bpp - 12) * (6 / 3.0))))));
--		*p++ = (bpp <= 12) ? (-6) : ((bpp >= 15) ? (0) : (-6 + dsc_roundf((bpp - 12) * (6 / 3.0))));
--		*p++ = (bpp <= 12) ? (-8) : ((bpp >= 15) ? (-2) : (-8 + dsc_roundf((bpp - 12) * (6 / 3.0))));
--		*p++ = (bpp <= 12) ? (-8) : ((bpp >= 15) ? (-4) : (-8 + dsc_roundf((bpp - 12) * (4 / 3.0))));
--		*p++ = (bpp <= 12) ? (-8) : ((bpp >= 15) ? (-6) : (-8 + dsc_roundf((bpp - 12) * (2 / 3.0))));
--		*p++ = (bpp <= 12) ? (-10) : ((bpp >= 15) ? (-8) : (-10 + dsc_roundf((bpp - 12) * (2 / 3.0))));
--		*p++ = -10;
--		*p++ = (bpp <=  6) ? (-12) : ((bpp >=  8) ? (-10) : (-12 + dsc_roundf((bpp -  6) * (2 / 2.0))));
--		*p++ = -12;
--		*p++ = -12;
--		*p++ = -12;
--	} else if (mode == CM_422) {
--		*p++ = (bpp <=  8) ? (2) : ((bpp >= 10) ? (10) : (2 + dsc_roundf((bpp -  8) * (8 / 2.0))));
--		*p++ = (bpp <=  8) ? (0) : ((bpp >= 10) ? (8) : (0 + dsc_roundf((bpp -  8) * (8 / 2.0))));
--		*p++ = (bpp <=  8) ? (0) : ((bpp >= 10) ? (6) : (0 + dsc_roundf((bpp -  8) * (6 / 2.0))));
--		*p++ = (bpp <=  8) ? (-2) : ((bpp >= 10) ? (4) : (-2 + dsc_roundf((bpp -  8) * (6 / 2.0))));
--		*p++ = (bpp <=  8) ? (-4) : ((bpp >= 10) ? (2) : (-4 + dsc_roundf((bpp -  8) * (6 / 2.0))));
--		*p++ = (bpp <=  8) ? (-6) : ((bpp >= 10) ? (0) : (-6 + dsc_roundf((bpp -  8) * (6 / 2.0))));
--		*p++ = (bpp <=  8) ? (-8) : ((bpp >= 10) ? (-2) : (-8 + dsc_roundf((bpp -  8) * (6 / 2.0))));
--		*p++ = (bpp <=  8) ? (-8) : ((bpp >= 10) ? (-4) : (-8 + dsc_roundf((bpp -  8) * (4 / 2.0))));
--		*p++ = (bpp <=  8) ? (-8) : ((bpp >= 10) ? (-6) : (-8 + dsc_roundf((bpp -  8) * (2 / 2.0))));
--		*p++ = (bpp <=  8) ? (-10) : ((bpp >= 10) ? (-8) : (-10 + dsc_roundf((bpp -  8) * (2 / 2.0))));
--		*p++ = -10;
--		*p++ = (bpp <=  6) ? (-12) : ((bpp >= 7) ? (-10) : (-12 + dsc_roundf((bpp -  6) * (2.0 / 1))));
--		*p++ = -12;
--		*p++ = -12;
--		*p++ = -12;
--	} else {
--		*p++ = (bpp <=  6) ? (2) : ((bpp >=  8) ? (10) : (2 + dsc_roundf((bpp -  6) * (8 / 2.0))));
--		*p++ = (bpp <=  6) ? (0) : ((bpp >=  8) ? (8) : (0 + dsc_roundf((bpp -  6) * (8 / 2.0))));
--		*p++ = (bpp <=  6) ? (0) : ((bpp >=  8) ? (6) : (0 + dsc_roundf((bpp -  6) * (6 / 2.0))));
--		*p++ = (bpp <=  6) ? (-2) : ((bpp >=  8) ? (4) : (-2 + dsc_roundf((bpp -  6) * (6 / 2.0))));
--		*p++ = (bpp <=  6) ? (-4) : ((bpp >=  8) ? (2) : (-4 + dsc_roundf((bpp -  6) * (6 / 2.0))));
--		*p++ = (bpp <=  6) ? (-6) : ((bpp >=  8) ? (0) : (-6 + dsc_roundf((bpp -  6) * (6 / 2.0))));
--		*p++ = (bpp <=  6) ? (-8) : ((bpp >=  8) ? (-2) : (-8 + dsc_roundf((bpp -  6) * (6 / 2.0))));
--		*p++ = (bpp <=  6) ? (-8) : ((bpp >=  8) ? (-4) : (-8 + dsc_roundf((bpp -  6) * (4 / 2.0))));
--		*p++ = (bpp <=  6) ? (-8) : ((bpp >=  8) ? (-6) : (-8 + dsc_roundf((bpp -  6) * (2 / 2.0))));
--		*p++ = (bpp <=  6) ? (-10) : ((bpp >=  8) ? (-8) : (-10 + dsc_roundf((bpp -  6) * (2 / 2.0))));
--		*p++ = -10;
--		*p++ = (bpp <=  4) ? (-12) : ((bpp >=  5) ? (-10) : (-12 + dsc_roundf((bpp -  4) * (2 / 1.0))));
--		*p++ = -12;
--		*p++ = -12;
--		*p++ = -12;
--	}
--}
--
--static int median3(int a, int b, int c)
--{
--	if (a > b)
--		swap(a, b);
--	if (b > c)
--		swap(b, c);
--	if (a > b)
--		swap(b, c);
--
--	return b;
--}
--
--static void _do_calc_rc_params(struct rc_params *rc, enum colour_mode cm,
--			       enum bits_per_comp bpc, u16 drm_bpp,
--			       bool is_navite_422_or_420,
--			       int slice_width, int slice_height,
--			       int minor_version)
--{
--	float bpp;
--	float bpp_group;
--	float initial_xmit_delay_factor;
--	int padding_pixels;
--	int i;
--
--	bpp = ((float)drm_bpp / 16.0);
--	/* in native_422 or native_420 modes, the bits_per_pixel is double the
--	 * target bpp (the latter is what calc_rc_params expects)
--	 */
--	if (is_navite_422_or_420)
--		bpp /= 2.0;
--
--	rc->rc_quant_incr_limit0 = ((bpc == BPC_8) ? 11 : (bpc == BPC_10 ? 15 : 19)) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
--	rc->rc_quant_incr_limit1 = ((bpc == BPC_8) ? 11 : (bpc == BPC_10 ? 15 : 19)) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
--
--	bpp_group = MODE_SELECT(bpp, bpp * 2.0, bpp * 2.0);
--
--	switch (cm) {
--	case CM_420:
--		rc->initial_fullness_offset = (bpp >=  6) ? (2048) : ((bpp <=  4) ? (6144) : ((((bpp >  4) && (bpp <=  5))) ? (6144 - dsc_roundf((bpp - 4) * (512))) : (5632 - dsc_roundf((bpp -  5) * (3584)))));
--		rc->first_line_bpg_offset   = median3(0, (12 + (int) (0.09 *  min(34, slice_height - 8))), (int)((3 * bpc * 3) - (3 * bpp_group)));
--		rc->second_line_bpg_offset  = median3(0, 12, (int)((3 * bpc * 3) - (3 * bpp_group)));
--		break;
--	case CM_422:
--		rc->initial_fullness_offset = (bpp >=  8) ? (2048) : ((bpp <=  7) ? (5632) : (5632 - dsc_roundf((bpp - 7) * (3584))));
--		rc->first_line_bpg_offset   = median3(0, (12 + (int) (0.09 *  min(34, slice_height - 8))), (int)((3 * bpc * 4) - (3 * bpp_group)));
--		rc->second_line_bpg_offset  = 0;
--		break;
--	case CM_444:
--	case CM_RGB:
--		rc->initial_fullness_offset = (bpp >= 12) ? (2048) : ((bpp <=  8) ? (6144) : ((((bpp >  8) && (bpp <= 10))) ? (6144 - dsc_roundf((bpp - 8) * (512 / 2))) : (5632 - dsc_roundf((bpp - 10) * (3584 / 2)))));
--		rc->first_line_bpg_offset   = median3(0, (12 + (int) (0.09 *  min(34, slice_height - 8))), (int)(((3 * bpc + (cm == CM_444 ? 0 : 2)) * 3) - (3 * bpp_group)));
--		rc->second_line_bpg_offset  = 0;
--		break;
--	}
--
--	initial_xmit_delay_factor = (cm == CM_444 || cm == CM_RGB) ? 1.0 : 2.0;
--	rc->initial_xmit_delay = dsc_roundf(8192.0/2.0/bpp/initial_xmit_delay_factor);
--
--	if (cm == CM_422 || cm == CM_420)
--		slice_width /= 2;
--
--	padding_pixels = ((slice_width % 3) != 0) ? (3 - (slice_width % 3)) * (rc->initial_xmit_delay / slice_width) : 0;
--	if (3 * bpp_group >= (((rc->initial_xmit_delay + 2) / 3) * (3 + (cm == CM_422)))) {
--		if ((rc->initial_xmit_delay + padding_pixels) % 3 == 1)
--			rc->initial_xmit_delay++;
--	}
--
--	rc->flatness_min_qp     = ((bpc == BPC_8) ?  (3) : ((bpc == BPC_10) ? (7)  : (11))) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
--	rc->flatness_max_qp     = ((bpc == BPC_8) ? (12) : ((bpc == BPC_10) ? (16) : (20))) - ((minor_version == 1 && cm == CM_444) ? 1 : 0);
--	rc->flatness_det_thresh = 2 << (bpc - 8);
--
--	get_qp_set(rc->qp_min, cm, bpc, DAL_MM_MIN, bpp);
--	get_qp_set(rc->qp_max, cm, bpc, DAL_MM_MAX, bpp);
--	if (cm == CM_444 && minor_version == 1) {
--		for (i = 0; i < QP_SET_SIZE; ++i) {
--			rc->qp_min[i] = rc->qp_min[i] > 0 ? rc->qp_min[i] - 1 : 0;
--			rc->qp_max[i] = rc->qp_max[i] > 0 ? rc->qp_max[i] - 1 : 0;
--		}
--	}
--	get_ofs_set(rc->ofs, cm, bpp);
--
--	/* fixed parameters */
--	rc->rc_model_size    = 8192;
--	rc->rc_edge_factor   = 6;
--	rc->rc_tgt_offset_hi = 3;
--	rc->rc_tgt_offset_lo = 3;
--
--	rc->rc_buf_thresh[0] = 896;
--	rc->rc_buf_thresh[1] = 1792;
--	rc->rc_buf_thresh[2] = 2688;
--	rc->rc_buf_thresh[3] = 3584;
--	rc->rc_buf_thresh[4] = 4480;
--	rc->rc_buf_thresh[5] = 5376;
--	rc->rc_buf_thresh[6] = 6272;
--	rc->rc_buf_thresh[7] = 6720;
--	rc->rc_buf_thresh[8] = 7168;
--	rc->rc_buf_thresh[9] = 7616;
--	rc->rc_buf_thresh[10] = 7744;
--	rc->rc_buf_thresh[11] = 7872;
--	rc->rc_buf_thresh[12] = 8000;
--	rc->rc_buf_thresh[13] = 8064;
--}
--
--static u32 _do_bytes_per_pixel_calc(int slice_width, u16 drm_bpp,
--				    bool is_navite_422_or_420)
--{
--	float bpp;
--	u32 bytes_per_pixel;
--	double d_bytes_per_pixel;
--
--	bpp = ((float)drm_bpp / 16.0);
--	d_bytes_per_pixel = dsc_ceil(bpp * slice_width / 8.0) / slice_width;
--	// TODO: Make sure the formula for calculating this is precise (ceiling
--	// vs. floor, and at what point they should be applied)
--	if (is_navite_422_or_420)
--		d_bytes_per_pixel /= 2;
--
--	bytes_per_pixel = (u32)dsc_ceil(d_bytes_per_pixel * 0x10000000);
--
--	return bytes_per_pixel;
--}
- 
- /**
-  * calc_rc_params - reads the user's cmdline mode
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.h b/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.h
-index 262f06afcbf95..c2340e001b578 100644
---- a/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.h
-+++ b/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.h
-@@ -27,55 +27,7 @@
- #ifndef __RC_CALC_H__
- #define __RC_CALC_H__
- 
--
--#define QP_SET_SIZE 15
--
--typedef int qp_set[QP_SET_SIZE];
--
--struct rc_params {
--	int      rc_quant_incr_limit0;
--	int      rc_quant_incr_limit1;
--	int      initial_fullness_offset;
--	int      initial_xmit_delay;
--	int      first_line_bpg_offset;
--	int      second_line_bpg_offset;
--	int      flatness_min_qp;
--	int      flatness_max_qp;
--	int      flatness_det_thresh;
--	qp_set   qp_min;
--	qp_set   qp_max;
--	qp_set   ofs;
--	int      rc_model_size;
--	int      rc_edge_factor;
--	int      rc_tgt_offset_hi;
--	int      rc_tgt_offset_lo;
--	int      rc_buf_thresh[QP_SET_SIZE - 1];
--};
--
--enum colour_mode {
--	CM_RGB,   /* 444 RGB */
--	CM_444,   /* 444 YUV or simple 422 */
--	CM_422,   /* native 422 */
--	CM_420    /* native 420 */
--};
--
--enum bits_per_comp {
--	BPC_8  =  8,
--	BPC_10 = 10,
--	BPC_12 = 12
--};
--
--enum max_min {
--	DAL_MM_MIN = 0,
--	DAL_MM_MAX = 1
--};
--
--struct qp_entry {
--	float         bpp;
--	const qp_set  qps;
--};
--
--typedef struct qp_entry qp_table[];
-+#include "dml/dsc/rc_calc_fpu.h"
- 
- void calc_rc_params(struct rc_params *rc, const struct drm_dsc_config *pps);
- u32 calc_dsc_bytes_per_pixel(const struct drm_dsc_config *pps);
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/rc_calc_dpi.c b/drivers/gpu/drm/amd/display/dc/dsc/rc_calc_dpi.c
-index ef830aded5b1c..1e19dd674e5a2 100644
---- a/drivers/gpu/drm/amd/display/dc/dsc/rc_calc_dpi.c
-+++ b/drivers/gpu/drm/amd/display/dc/dsc/rc_calc_dpi.c
-@@ -22,7 +22,6 @@
-  * Authors: AMD
-  *
-  */
--#include "os_types.h"
- #include <drm/drm_dsc.h>
- #include "dscc_types.h"
- #include "rc_calc.h"
+ static struct resource_funcs dcn301_res_pool_funcs = {
+ 	.destroy = dcn301_destroy_resource_pool,
+ 	.link_enc_create = dcn301_link_encoder_create,
+ 	.panel_cntl_create = dcn301_panel_cntl_create,
+ 	.validate_bandwidth = dcn30_validate_bandwidth,
+-	.calculate_wm_and_dlg = dcn30_calculate_wm_and_dlg,
++	.calculate_wm_and_dlg = dcn301_calculate_wm_and_dlg,
+ 	.update_soc_for_wm_a = dcn30_update_soc_for_wm_a,
+ 	.populate_dml_pipes = dcn30_populate_dml_pipes_from_context,
+ 	.acquire_idle_pipe_for_layer = dcn20_acquire_idle_pipe_for_layer,
 -- 
 2.34.1
 
