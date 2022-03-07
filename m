@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19189C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242927AbiCGKMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:12:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
+        id S242891AbiCGKL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238783AbiCGJxJ (ORCPT
+        with ESMTP id S238656AbiCGJxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:53:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443FC7667B;
-        Mon,  7 Mar 2022 01:45:20 -0800 (PST)
+        Mon, 7 Mar 2022 04:53:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F200775E78;
+        Mon,  7 Mar 2022 01:45:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0435FB8102B;
-        Mon,  7 Mar 2022 09:45:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52611C36AE2;
-        Mon,  7 Mar 2022 09:45:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A37B6128D;
+        Mon,  7 Mar 2022 09:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79EFFC36AE9;
+        Mon,  7 Mar 2022 09:45:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646317;
-        bh=7ZaHIqiLhEKHT66BkWo+qr1fJJ6/m4DqN31xrBv38I4=;
+        s=korg; t=1646646314;
+        bh=SBHf2a7yUd4WUNercWNRH7elJmG5bff6672ToURpKNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S7AOMUR6/1XjyxwE1jqeUEa09Sln7w82pKtF3hqE/PbjUtwyWCQxolAAWCOWPQTUc
-         0V1ANbLce7zs9ywQmjBMivj28t+kjEmOaNh7COgFvqngruE+rSDtkZuDhLGGpplPk7
-         0YkF3diGo29iSI7llysg9h3NxaWr0kKKvlgeOe/s=
+        b=KHCqr+XGDZBRuhnhGHdkaRL6is3bvdvO9809Conve2iLRxV3TOXrSCYMelfxPP39e
+         cKD/G3D8qAjvjNIHFC0H08wqs2jLceZf6oZCR22pE0w8jDma+VtMGfILuydRN13wDb
+         LZkmp47XIDUdOXfGcJTpXm0zT/dwe2ro/VavO4tE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 203/262] arm64: dts: juno: Remove GICv2m dma-range
-Date:   Mon,  7 Mar 2022 10:19:07 +0100
-Message-Id: <20220307091708.458004860@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+Subject: [PATCH 5.15 202/262] sched: Fix yet more sched_fork() races
+Date:   Mon,  7 Mar 2022 10:19:06 +0100
+Message-Id: <20220307091708.413231876@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,49 +52,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 31eeb6b09f4053f32a30ce9fbcdfca31f713028d ]
+commit b1e8206582f9d680cff7d04828708c8b6ab32957 upstream.
 
-Although it is painstakingly honest to describe all 3 PCI windows in
-"dma-ranges", it misses the the subtle distinction that the window for
-the GICv2m range is normally programmed for Device memory attributes
-rather than Normal Cacheable like the DRAM windows. Since MMU-401 only
-offers stage 2 translation, this means that when the PCI SMMU is
-enabled, accesses through that IPA range unexpectedly lose coherency if
-mapped as cacheable at the SMMU, due to the attribute combining rules.
-Since an extra 256KB is neither here nor there when we still have 10GB
-worth of usable address space, rather than attempting to describe and
-cope with this detail let's just remove the offending range. If the SMMU
-is not used then it makes no difference anyway.
+Where commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an
+invalid sched_task_group") fixed a fork race vs cgroup, it opened up a
+race vs syscalls by not placing the task on the runqueue before it
+gets exposed through the pidhash.
 
-Link: https://lore.kernel.org/r/856c3f7192c6c3ce545ba67462f2ce9c86ed6b0c.1643046936.git.robin.murphy@arm.com
-Fixes: 4ac4d146cb63 ("arm64: dts: juno: Describe PCI dma-ranges")
-Reported-by: Anders Roxell <anders.roxell@linaro.org>
-Acked-by: Liviu Dudau <liviu.dudau@arm.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Commit 13765de8148f ("sched/fair: Fix fault in reweight_entity") is
+trying to fix a single instance of this, instead fix the whole class
+of issues, effectively reverting this commit.
+
+Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lkml.kernel.org/r/YgoeCbwj5mbCR0qA@hirez.programming.kicks-ass.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/arm/juno-base.dtsi | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/linux/sched/task.h |    4 ++--
+ kernel/fork.c              |   13 ++++++++++++-
+ kernel/sched/core.c        |   34 +++++++++++++++++++++-------------
+ 3 files changed, 35 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
-index 6288e104a089..a2635b14da30 100644
---- a/arch/arm64/boot/dts/arm/juno-base.dtsi
-+++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
-@@ -543,8 +543,7 @@
- 			 <0x02000000 0x00 0x50000000 0x00 0x50000000 0x0 0x08000000>,
- 			 <0x42000000 0x40 0x00000000 0x40 0x00000000 0x1 0x00000000>;
- 		/* Standard AXI Translation entries as programmed by EDK2 */
--		dma-ranges = <0x02000000 0x0 0x2c1c0000 0x0 0x2c1c0000 0x0 0x00040000>,
--			     <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
-+		dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
- 			     <0x43000000 0x8 0x00000000 0x8 0x00000000 0x2 0x00000000>;
- 		#interrupt-cells = <1>;
- 		interrupt-map-mask = <0 0 0 7>;
--- 
-2.34.1
-
+--- a/include/linux/sched/task.h
++++ b/include/linux/sched/task.h
+@@ -54,8 +54,8 @@ extern asmlinkage void schedule_tail(str
+ extern void init_idle(struct task_struct *idle, int cpu);
+ 
+ extern int sched_fork(unsigned long clone_flags, struct task_struct *p);
+-extern void sched_post_fork(struct task_struct *p,
+-			    struct kernel_clone_args *kargs);
++extern void sched_cgroup_fork(struct task_struct *p, struct kernel_clone_args *kargs);
++extern void sched_post_fork(struct task_struct *p);
+ extern void sched_dead(struct task_struct *p);
+ 
+ void __noreturn do_task_dead(void);
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2297,6 +2297,17 @@ static __latent_entropy struct task_stru
+ 		goto bad_fork_put_pidfd;
+ 
+ 	/*
++	 * Now that the cgroups are pinned, re-clone the parent cgroup and put
++	 * the new task on the correct runqueue. All this *before* the task
++	 * becomes visible.
++	 *
++	 * This isn't part of ->can_fork() because while the re-cloning is
++	 * cgroup specific, it unconditionally needs to place the task on a
++	 * runqueue.
++	 */
++	sched_cgroup_fork(p, args);
++
++	/*
+ 	 * From this point on we must avoid any synchronous user-space
+ 	 * communication until we take the tasklist-lock. In particular, we do
+ 	 * not want user-space to be able to predict the process start-time by
+@@ -2405,7 +2416,7 @@ static __latent_entropy struct task_stru
+ 		fd_install(pidfd, pidfile);
+ 
+ 	proc_fork_connector(p);
+-	sched_post_fork(p, args);
++	sched_post_fork(p);
+ 	cgroup_post_fork(p, args);
+ 	perf_event_fork(p);
+ 
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1199,9 +1199,8 @@ int tg_nop(struct task_group *tg, void *
+ }
+ #endif
+ 
+-static void set_load_weight(struct task_struct *p)
++static void set_load_weight(struct task_struct *p, bool update_load)
+ {
+-	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
+ 	int prio = p->static_prio - MAX_RT_PRIO;
+ 	struct load_weight *load = &p->se.load;
+ 
+@@ -4359,7 +4358,7 @@ int sched_fork(unsigned long clone_flags
+ 			p->static_prio = NICE_TO_PRIO(0);
+ 
+ 		p->prio = p->normal_prio = p->static_prio;
+-		set_load_weight(p);
++		set_load_weight(p, false);
+ 
+ 		/*
+ 		 * We don't need the reset flag anymore after the fork. It has
+@@ -4377,6 +4376,7 @@ int sched_fork(unsigned long clone_flags
+ 
+ 	init_entity_runnable_average(&p->se);
+ 
++
+ #ifdef CONFIG_SCHED_INFO
+ 	if (likely(sched_info_on()))
+ 		memset(&p->sched_info, 0, sizeof(p->sched_info));
+@@ -4392,18 +4392,23 @@ int sched_fork(unsigned long clone_flags
+ 	return 0;
+ }
+ 
+-void sched_post_fork(struct task_struct *p, struct kernel_clone_args *kargs)
++void sched_cgroup_fork(struct task_struct *p, struct kernel_clone_args *kargs)
+ {
+ 	unsigned long flags;
+-#ifdef CONFIG_CGROUP_SCHED
+-	struct task_group *tg;
+-#endif
+ 
++	/*
++	 * Because we're not yet on the pid-hash, p->pi_lock isn't strictly
++	 * required yet, but lockdep gets upset if rules are violated.
++	 */
+ 	raw_spin_lock_irqsave(&p->pi_lock, flags);
+ #ifdef CONFIG_CGROUP_SCHED
+-	tg = container_of(kargs->cset->subsys[cpu_cgrp_id],
+-			  struct task_group, css);
+-	p->sched_task_group = autogroup_task_group(p, tg);
++	if (1) {
++		struct task_group *tg;
++		tg = container_of(kargs->cset->subsys[cpu_cgrp_id],
++				  struct task_group, css);
++		tg = autogroup_task_group(p, tg);
++		p->sched_task_group = tg;
++	}
+ #endif
+ 	rseq_migrate(p);
+ 	/*
+@@ -4414,7 +4419,10 @@ void sched_post_fork(struct task_struct
+ 	if (p->sched_class->task_fork)
+ 		p->sched_class->task_fork(p);
+ 	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
++}
+ 
++void sched_post_fork(struct task_struct *p)
++{
+ 	uclamp_post_fork(p);
+ }
+ 
+@@ -6903,7 +6911,7 @@ void set_user_nice(struct task_struct *p
+ 		put_prev_task(rq, p);
+ 
+ 	p->static_prio = NICE_TO_PRIO(nice);
+-	set_load_weight(p);
++	set_load_weight(p, true);
+ 	old_prio = p->prio;
+ 	p->prio = effective_prio(p);
+ 
+@@ -7194,7 +7202,7 @@ static void __setscheduler_params(struct
+ 	 */
+ 	p->rt_priority = attr->sched_priority;
+ 	p->normal_prio = normal_prio(p);
+-	set_load_weight(p);
++	set_load_weight(p, true);
+ }
+ 
+ /*
+@@ -9432,7 +9440,7 @@ void __init sched_init(void)
+ #endif
+ 	}
+ 
+-	set_load_weight(&init_task);
++	set_load_weight(&init_task, false);
+ 
+ 	/*
+ 	 * The boot idle thread does lazy MMU switching as well:
 
 
