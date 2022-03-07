@@ -2,164 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 814E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D218C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbiCGJH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:07:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
+        id S234018AbiCGJIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbiCGJHX (ORCPT
+        with ESMTP id S233162AbiCGJIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:07:23 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B8E60D9E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:06:30 -0800 (PST)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 050433F60B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:06:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646643989;
-        bh=G51+HVosbAlITb0w/6sHZUM0ANYY++zOL8WxDgsCYfY=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=BmXG8bZOWlwrTC9pwSogufCz4Bp0DgYlIB0o6EkbeHT9KdHetT3T3TXsf0zpz1cEn
-         /uGAGpsOiinWUuiVvCRH2dGl6AvtItVsfSY/1cl5MD9ngyPzlXgDxVvyk0wAQzNM5x
-         aHqnNGQOvu8tn3epf+e6rcR2QfKG8s0l5xfa7ZYj8hKrYccVBkRu6/EEZn48gksWGR
-         /SaWu9b/o6ZQgVIFnXRxB0eejyBJ+sthLiz/iCrcXuh1Zy4fO+6Ftec1d35ZsUDgUr
-         U746Z0+lMn368VajdHFwId7L0Yq2Ov/3Ua1LS6ZPkq8Ry+9Te+3EhiZIaIOd1B7PQK
-         xwze9p0E4P6Ig==
-Received: by mail-ej1-f72.google.com with SMTP id m4-20020a170906160400b006be3f85906eso6688993ejd.23
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:06:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G51+HVosbAlITb0w/6sHZUM0ANYY++zOL8WxDgsCYfY=;
-        b=oELLT9cpMkAN6ysGHJRINB2o5E6U7hlS2OqOrGChqn3I+bneLhd0NqD34jkjc9Z60k
-         Ag8GPTr8E4FZ2il9+3clQ852Ej+CnboqPD0nfY1SV48v2eocYGz2PQeChcZo9jKj32o1
-         sHiPhi9QLUAIfDnsiXf22tA0sl0ilTivYnJfxFISv89hHPAuEfULhwedOG7j9fToI3vm
-         nIdX0ACtkOsSpXSC2aFis8WPVsAQNjdTviNMx0M3Hot88KFqynP7WsCkRe+iUglQMOsh
-         CrbewzmmUAUYrIBL6AnZEjgGIHuix2CGqspckGBLX2ve2TLAk7iAoIYDthX0JftIeuCH
-         jT7g==
-X-Gm-Message-State: AOAM530y5w644u7ujBZc/j0sgKlKiPF+bFYR6N0clhiI6tX+Bq0gtdkN
-        etND3+NY5ScmiuRJJNnfMGe6VH3H9EPnX2sap+gdyA9PMW1uqkaNT4VTjj/J3C6AZaVM1wDCJu9
-        IKCMsl/Nk9lCLaVQRqLAuS04mLZ6ipmY2iS/eg2uAqA==
-X-Received: by 2002:a17:907:2a53:b0:6ce:e4fe:3f92 with SMTP id fe19-20020a1709072a5300b006cee4fe3f92mr8082883ejc.389.1646643988272;
-        Mon, 07 Mar 2022 01:06:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxi1G8DMQgsmoK6atV2WQRzLw7W9EhtbGU1zQQMO5T3xle7xKCpGd4S3PplzpSJImoDfIfUbQ==
-X-Received: by 2002:a17:907:2a53:b0:6ce:e4fe:3f92 with SMTP id fe19-20020a1709072a5300b006cee4fe3f92mr8082873ejc.389.1646643988071;
-        Mon, 07 Mar 2022 01:06:28 -0800 (PST)
-Received: from [192.168.0.141] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id p14-20020aa7cc8e000000b0040f13865fa9sm5909820edt.3.2022.03.07.01.06.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 01:06:27 -0800 (PST)
-Message-ID: <08992f48-6cb6-8dc0-33d2-f18f942d2bee@canonical.com>
-Date:   Mon, 7 Mar 2022 10:06:26 +0100
+        Mon, 7 Mar 2022 04:08:45 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4D6DF55;
+        Mon,  7 Mar 2022 01:07:50 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 2631B1F43859
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646644069;
+        bh=mKuKc24peBTHJq96oPXVMVEPFG1UMKdTfUdLfSGxtH0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=S+nr6l6ud+gdKu5ahDRDne/nb8H6YRD77OPWBF4KsxIFPSWoe0DszZrrWihtjWXaT
+         KIcAbqgmYkYHkpqe6Z6JIVmXD00hmusob2Umsc2496UYcKdboInRXDfzCggoz19RLR
+         yUcKjJLTR5n9L4ijWAvo0cXjEp1LFJ2idl8PREEPXlHFCtEDOHQS3xaoyiRnW2c6Is
+         Tx6TPN7W1wrUrHC8GJH3UPzLbd3U+G4/vlXNJyg0fofeJG/E+3SOzatheWUZxcRDZa
+         SK2WUgGituRC1LNkpgBKcCC0WJyGTNKbC2Oj4PfAu+ykatmh19xUR76VCfEYLa1aZ8
+         g2zwcLTBmrPYA==
+Message-ID: <e2299a96-9f91-0ca3-1617-18029b3940d2@collabora.com>
+Date:   Mon, 7 Mar 2022 10:07:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] clocksource/drivers/exynos_mct: Support using only local
- timer
+ Thunderbird/91.5.1
+Subject: Re: [v2 01/17] ASoC: mediatek: mt6366: add codec driver
 Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     kernel@axis.com, Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-References: <20220307083255.1577365-1-vincent.whitchurch@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220307083255.1577365-1-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org
+Cc:     lgirdwood@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
+        matthias.bgg@gmail.com, perex@perex.cz, p.zabel@pengutronix.de,
+        geert+renesas@glider.be, trevor.wu@mediatek.com,
+        tzungbi@google.com, aaronyu@google.com, zhangqilong3@huawei.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
+ <20220217134205.15400-2-jiaxin.yu@mediatek.com>
+ <b22976ee-6426-cabf-f153-fbe093611e97@collabora.com>
+ <6555d89deb9087825f865b9d4265f07465e7ae09.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <6555d89deb9087825f865b9d4265f07465e7ae09.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 09:32, Vincent Whitchurch wrote:
-> The ARTPEC-8 SoC has a quad-core Cortex-A53 and a single-core Cortex-A5
-> which share one MCT with one global and eight local timers.
+Il 05/03/22 05:24, Jiaxin Yu ha scritto:
+> On Fri, 2022-02-18 at 15:54 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 17/02/22 14:41, Jiaxin Yu ha scritto:
+>>> Mt6366 is a new version of mt6358, and they are same about audio
+>>> part.
+>>> So we can reuse the driver of mt6358.
+>>>
+>>> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+>>
+>> Hello Jiaxin,
+>> I'm sorry but this commit makes very little sense.
+>>
+>> If you want to advertise MT6366 support, please write a note and/or
+>> a new compatible string inside of the mt6358 driver (and dt-
+>> bindings),
+>> then, please drop this commit.
+>>
 > 
-> The Cortex-A53 boots first and starts the global FRC and also registers
-> a clock events device using the global timer.  (This global timer clock
-> events is usually replaced by arch timer clock events for each of the
-> cores.)
+> Hello angelogioacchino,
 > 
-> When the A5 boots, we should not use the global timer interrupts or
-> write to the global timer registers.  This is because even if there are
-> four global comparators, the control bits for all four are in the same
-> registers, and we would need to synchronize between the cpus.  Instead,
-> the global timer FRC (already started by the A53) should be used as the
-> clock source, and one of the local timers which are not used by the A53
-> can be used for clock events on the A5.
+> Thank you for your advice.
 > 
-> To support this, add a module param to set the local timer starting
-> index.  If this parameter is non-zero, the global timer clock events
-> device is not registered and we don't write to the global FRC if it is
-> already started.
+> If I add a new compatible string inside of the mt6358 driver and dt-
+> bindings, then the machine driver which want to use mt6366 should
+> select SND_SOC_MT6358.
 > 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
->  drivers/clocksource/exynos_mct.c | 29 ++++++++++++++++++++++++-----
->  1 file changed, 24 insertions(+), 5 deletions(-)
-
-This should not be send separately from the previous patch.
-
+> like below:
 > 
-> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-> index f29c812b70c9..7ea2919b1808 100644
-> --- a/drivers/clocksource/exynos_mct.c
-> +++ b/drivers/clocksource/exynos_mct.c
-> @@ -33,7 +33,7 @@
->  #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
->  #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
->  #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
-> -#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
-> +#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
->  #define EXYNOS4_MCT_L_MASK		(0xffffff00)
->  
->  #define MCT_L_TCNTB_OFFSET		(0x00)
-> @@ -77,6 +77,13 @@ static unsigned long clk_rate;
->  static unsigned int mct_int_type;
->  static int mct_irqs[MCT_NR_IRQS];
->  
-> +/*
-> + * First local timer index to use.  If non-zero, global
-> + * timer is not written to.
-> + */
-> +static unsigned int mct_local_idx;
-> +module_param_named(local_idx, mct_local_idx, int, 0);
+> config SND_SOC_MT8186_MT6366_DA7219_MAX98357
+> 	tristate "ASoC Audio driver for MT8186 with DA7219 MAX98357A
+> codec"
+>   	depends on I2C && GPIOLIB
+>   	depends on SND_SOC_MT8186 && MTK_PMIC_WRAP
+>   	select SND_SOC_MT6366   ==> SND_SOC_MT6358
+> 	...
+> 
+> I just doubt it's enough to make sense. I originally wanted to put this
+> relationship in the sound/soc/codecs layer. So that this relationship
+> is not perceived by users(machine driver).
+> However, if the general practice is like this, I will adopt your
+> suggestion. Thank you again.
+> 
 
-No, it's a no go. Please use dedicated compatible if you need specific
-quirks.
+Yes this is acceptable, please do it like that.
 
-> +
->  struct mct_clock_event_device {
->  	struct clock_event_device evt;
->  	unsigned long base;
-> @@ -157,6 +164,17 @@ static void exynos4_mct_frc_start(void)
->  	u32 reg;
->  
->  	reg = readl_relaxed(reg_base + EXYNOS4_MCT_G_TCON);
-> +
-> +	/*
-> +	 * If the FRC is already running, we don't need to start it again.  We
-> +	 * could probably just do this on all systems, but, to avoid any risk
-> +	 * for regressions, we only do it on systems where it's absolutely
-> +	 * necessary (i.e., on systems where writes to the global registers
-> +	 * need to be avoided).
-> +	 */
-> +	if (mct_local_idx && (reg & MCT_G_TCON_START))
-> +		return;
+Thanks,
+Angelo
 
-I don't get it. exynos4_mct_frc_start() is called exactly only once in
-the system - during init. Not once per every CPU or cluster (I
-understood you have two clusters, right?).
+>>
+>>> ---
+>>>    sound/soc/codecs/Kconfig  | 8 ++++++++
+>>>    sound/soc/codecs/Makefile | 1 +
+>>>    2 files changed, 9 insertions(+)
+>>>
+>>> diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+>>> index 8fa24783ce01..6631094678f5 100644
+>>> --- a/sound/soc/codecs/Kconfig
+>>> +++ b/sound/soc/codecs/Kconfig
+>>> @@ -132,6 +132,7 @@ config SND_SOC_ALL_CODECS
+>>>    	imply SND_SOC_MT6351
+>>>    	imply SND_SOC_MT6358
+>>>    	imply SND_SOC_MT6359
+>>> +	imply SND_SOC_MT6366
+>>>    	imply SND_SOC_MT6660
+>>>    	imply SND_SOC_NAU8315
+>>>    	imply SND_SOC_NAU8540
+>>> @@ -1888,6 +1889,13 @@ config SND_SOC_MT6359_ACCDET
+>>>    	  for ASoC codec soc-jack detection mechanism.
+>>>    	  Select N if you don't have jack on board.
+>>>    
+>>> +config SND_SOC_MT6366
+>>> +	tristate "MediaTek MT6366 Codec"
+>>> +	depends on MTK_PMIC_WRAP
+>>> +	help
+>>> +	  Enable support for the platform which uses MT6366 as
+>>> +	  external codec device.
+>>> +
+>>>    config SND_SOC_MT6660
+>>>    	tristate "Mediatek MT6660 Speaker Amplifier"
+>>>    	depends on I2C
+>>> diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+>>> index 42d00aa4ee46..1279684feaf0 100644
+>>> --- a/sound/soc/codecs/Makefile
+>>> +++ b/sound/soc/codecs/Makefile
+>>> @@ -465,6 +465,7 @@ obj-$(CONFIG_SND_SOC_MT6351)	+= snd-soc-
+>>> mt6351.o
+>>>    obj-$(CONFIG_SND_SOC_MT6358)	+= snd-soc-mt6358.o
+>>>    obj-$(CONFIG_SND_SOC_MT6359)	+= snd-soc-mt6359.o
+>>>    obj-$(CONFIG_SND_SOC_MT6359_ACCDET) += mt6359-accdet.o
+>>> +obj-$(CONFIG_SND_SOC_MT6366)	+= snd-soc-mt6358.o
+>>>    obj-$(CONFIG_SND_SOC_MT6660)	+= snd-soc-mt6660.o
+>>>    obj-$(CONFIG_SND_SOC_NAU8315)   += snd-soc-nau8315.o
+>>>    obj-$(CONFIG_SND_SOC_NAU8540)   += snd-soc-nau8540.o
+>>
+>>
+> 
 
-Best regards,
-Krzysztof
