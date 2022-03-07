@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B52C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241580AbiCGKUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:20:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S241600AbiCGKUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239914AbiCGKA0 (ORCPT
+        with ESMTP id S240217AbiCGKAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516A37D01A;
-        Mon,  7 Mar 2022 01:46:34 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9517CDD6;
+        Mon,  7 Mar 2022 01:47:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AFF3B810AA;
-        Mon,  7 Mar 2022 09:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8561AC340E9;
-        Mon,  7 Mar 2022 09:46:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE69D612D2;
+        Mon,  7 Mar 2022 09:47:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8569DC340E9;
+        Mon,  7 Mar 2022 09:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646391;
-        bh=fNbghsphnqjd+aQ1YEnnQU2LeC4m4Eg5nLJWZLd4RgY=;
+        s=korg; t=1646646425;
+        bh=h9h2o3jdKB0EJC63XRK6TMLdRJFf75P1eATU6GsJJcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nb5G82RHt/LiQyNfC+didCelyD/om50w2rogYEc469ZfX1uvO2oNj4FX59dNDAT+s
-         hHz0mz0DKDYL1x+jlXEBEE1cMnTYMTpshs+k1nz9oX3hWilg+e94OPEIzrAjyCl8cB
-         WpfAwKrWRlUn4MJYp3EfjyhXbtD0WxW5zJwUyhFE=
+        b=oKoaipIi0joZvNL84ResHLDTAf8zq17U/vz/uWOwaj6Gljbol5T/JYr2mmFwP7cf2
+         U7dHqey6qeK3Gdg3VlBWdhEY42gOEnAbIZl4B06uIZlXlwM+vAnrcQmn+DuwW418fp
+         utgQnWMc5lwncH7Llnq09H7c0rt4zh1IcBRoAIHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 229/262] iavf: Fix kernel BUG in free_msi_irqs
-Date:   Mon,  7 Mar 2022 10:19:33 +0100
-Message-Id: <20220307091709.659839241@linuxfoundation.org>
+Subject: [PATCH 5.15 239/262] nl80211: Handle nla_memdup failures in handle_nan_filter
+Date:   Mon,  7 Mar 2022 10:19:43 +0100
+Message-Id: <20220307091710.139690829@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,164 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 605ca7c5c670762e36ccb475cfa089d7ad0698e0 ]
+[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
 
-Fix driver not freeing VF's traffic irqs, prior to calling
-pci_disable_msix in iavf_remove.
-There were possible 2 erroneous states in which, iavf_close would
-not be called.
-One erroneous state is fixed by allowing netdev to register, when state
-is already running. It was possible for VF adapter to enter state loop
-from running to resetting, where iavf_open would subsequently fail.
-If user would then unload driver/remove VF pci, iavf_close would not be
-called, as the netdev was not registered, leaving traffic pcis still
-allocated.
-Fixed this by breaking loop, allowing netdev to open device when adapter
-state is __IAVF_RUNNING and it is not explicitily downed.
-Other possiblity is entering to iavf_remove from __IAVF_RESETTING state,
-where iavf_close would not free irqs, but just return 0.
-Fixed this by checking for last adapter state and then removing irqs.
+As there's potential for failure of the nla_memdup(),
+check the return value.
 
-Kernel panic:
-[ 2773.628585] kernel BUG at drivers/pci/msi.c:375!
-...
-[ 2773.631567] RIP: 0010:free_msi_irqs+0x180/0x1b0
-...
-[ 2773.640939] Call Trace:
-[ 2773.641572]  pci_disable_msix+0xf7/0x120
-[ 2773.642224]  iavf_reset_interrupt_capability.part.41+0x15/0x30 [iavf]
-[ 2773.642897]  iavf_remove+0x12e/0x500 [iavf]
-[ 2773.643578]  pci_device_remove+0x3b/0xc0
-[ 2773.644266]  device_release_driver_internal+0x103/0x1f0
-[ 2773.644948]  pci_stop_bus_device+0x69/0x90
-[ 2773.645576]  pci_stop_and_remove_bus_device+0xe/0x20
-[ 2773.646215]  pci_iov_remove_virtfn+0xba/0x120
-[ 2773.646862]  sriov_disable+0x2f/0xe0
-[ 2773.647531]  ice_free_vfs+0x2f8/0x350 [ice]
-[ 2773.648207]  ice_sriov_configure+0x94/0x960 [ice]
-[ 2773.648883]  ? _kstrtoull+0x3b/0x90
-[ 2773.649560]  sriov_numvfs_store+0x10a/0x190
-[ 2773.650249]  kernfs_fop_write+0x116/0x190
-[ 2773.650948]  vfs_write+0xa5/0x1a0
-[ 2773.651651]  ksys_write+0x4f/0xb0
-[ 2773.652358]  do_syscall_64+0x5b/0x1a0
-[ 2773.653075]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-
-Fixes: 22ead37f8af8 ("i40evf: Add longer wait after remove module")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h      | 36 +++++++++++++++++++++
- drivers/net/ethernet/intel/iavf/iavf_main.c | 20 ++++++++++++
- 2 files changed, 56 insertions(+)
+ net/wireless/nl80211.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 997c45f2c542..21e0f3361560 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -395,6 +395,38 @@ struct iavf_device {
- extern char iavf_driver_name[];
- extern struct workqueue_struct *iavf_wq;
- 
-+static inline const char *iavf_state_str(enum iavf_state_t state)
-+{
-+	switch (state) {
-+	case __IAVF_STARTUP:
-+		return "__IAVF_STARTUP";
-+	case __IAVF_REMOVE:
-+		return "__IAVF_REMOVE";
-+	case __IAVF_INIT_VERSION_CHECK:
-+		return "__IAVF_INIT_VERSION_CHECK";
-+	case __IAVF_INIT_GET_RESOURCES:
-+		return "__IAVF_INIT_GET_RESOURCES";
-+	case __IAVF_INIT_SW:
-+		return "__IAVF_INIT_SW";
-+	case __IAVF_INIT_FAILED:
-+		return "__IAVF_INIT_FAILED";
-+	case __IAVF_RESETTING:
-+		return "__IAVF_RESETTING";
-+	case __IAVF_COMM_FAILED:
-+		return "__IAVF_COMM_FAILED";
-+	case __IAVF_DOWN:
-+		return "__IAVF_DOWN";
-+	case __IAVF_DOWN_PENDING:
-+		return "__IAVF_DOWN_PENDING";
-+	case __IAVF_TESTING:
-+		return "__IAVF_TESTING";
-+	case __IAVF_RUNNING:
-+		return "__IAVF_RUNNING";
-+	default:
-+		return "__IAVF_UNKNOWN_STATE";
-+	}
-+}
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 16b3d0cc0bdb..99564db14aa1 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -13177,6 +13177,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	i = 0;
+ 	nla_for_each_nested(attr, attr_filter, rem) {
+ 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
++		if (!filter[i].filter)
++			goto err;
 +
- static inline void iavf_change_state(struct iavf_adapter *adapter,
- 				     enum iavf_state_t state)
- {
-@@ -402,6 +434,10 @@ static inline void iavf_change_state(struct iavf_adapter *adapter,
- 		adapter->last_state = adapter->state;
- 		adapter->state = state;
+ 		filter[i].len = nla_len(attr);
+ 		i++;
  	}
-+	dev_dbg(&adapter->pdev->dev,
-+		"state transition from:%s to:%s\n",
-+		iavf_state_str(adapter->last_state),
-+		iavf_state_str(adapter->state));
+@@ -13189,6 +13192,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	}
+ 
+ 	return 0;
++
++err:
++	i = 0;
++	nla_for_each_nested(attr, attr_filter, rem) {
++		kfree(filter[i].filter);
++		i++;
++	}
++	kfree(filter);
++	return -ENOMEM;
  }
  
- int iavf_up(struct iavf_adapter *adapter);
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 33a3dbcf8f2d..e97a8dbbbc89 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3325,6 +3325,13 @@ static int iavf_open(struct net_device *netdev)
- 		goto err_unlock;
- 	}
- 
-+	if (adapter->state == __IAVF_RUNNING &&
-+	    !test_bit(__IAVF_VSI_DOWN, adapter->vsi.state)) {
-+		dev_dbg(&adapter->pdev->dev, "VF is already open.\n");
-+		err = 0;
-+		goto err_unlock;
-+	}
-+
- 	/* allocate transmit descriptors */
- 	err = iavf_setup_all_tx_resources(adapter);
- 	if (err)
-@@ -3972,6 +3979,7 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
- static void iavf_remove(struct pci_dev *pdev)
- {
- 	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
-+	enum iavf_state_t prev_state = adapter->last_state;
- 	struct net_device *netdev = adapter->netdev;
- 	struct iavf_fdir_fltr *fdir, *fdirtmp;
- 	struct iavf_vlan_filter *vlf, *vlftmp;
-@@ -4013,9 +4021,21 @@ static void iavf_remove(struct pci_dev *pdev)
- 
- 	adapter->aq_required = 0;
- 	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
-+
- 	iavf_free_all_tx_resources(adapter);
- 	iavf_free_all_rx_resources(adapter);
- 	iavf_free_misc_irq(adapter);
-+
-+	/* In case we enter iavf_remove from erroneous state, free traffic irqs
-+	 * here, so as to not cause a kernel crash, when calling
-+	 * iavf_reset_interrupt_capability.
-+	 */
-+	if ((adapter->last_state == __IAVF_RESETTING &&
-+	     prev_state != __IAVF_DOWN) ||
-+	    (adapter->last_state == __IAVF_RUNNING &&
-+	     !(netdev->flags & IFF_UP)))
-+		iavf_free_traffic_irqs(adapter);
-+
- 	iavf_reset_interrupt_capability(adapter);
- 	iavf_free_q_vectors(adapter);
- 
+ static int nl80211_nan_add_func(struct sk_buff *skb,
 -- 
 2.34.1
 
