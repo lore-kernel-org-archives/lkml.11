@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92665C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0DEC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239157AbiCGJ6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:58:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        id S239229AbiCGJ61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:58:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239567AbiCGJjv (ORCPT
+        with ESMTP id S239744AbiCGJkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB305723E2;
-        Mon,  7 Mar 2022 01:35:58 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891227486F;
+        Mon,  7 Mar 2022 01:36:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB13C612D3;
-        Mon,  7 Mar 2022 09:35:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D44F7C36AF3;
-        Mon,  7 Mar 2022 09:35:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 423B8B810BD;
+        Mon,  7 Mar 2022 09:35:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79FE2C36AE2;
+        Mon,  7 Mar 2022 09:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645730;
-        bh=4elDJmekbpHSuGzdCGnNgGITkMRxnGVlgc0WvZ0hlY4=;
+        s=korg; t=1646645749;
+        bh=KFjAbm0DbIrJYdiTFFJY1+Id3/hhVIdMaWYvBSCbkok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gviEJugfmMFEZvIYJ7+1JuurM4uB1pJgbD4TBn/Ym5SRqoN9ZzWLftTT/Z0OJsPU8
-         us2wzJywoFL6V9jsMAOlGwgvv58GSDlpYUpI7dsOqmptNGoT8wQ6aJsrHOCE1D4UF6
-         1J1/7DfCe5nMWz2RC+qMuBGae7T6TnTKFGjmMyPw=
+        b=jPmlqS63BG6ITv+D6jjZXpnytIR4TyZanA42vl9qwpXKzNsjQaijq/FCT9BDjmEPC
+         CmSiNsoPBkwXpC2KsldYaGQTUAOkjCED4RUPyFk1i/AYmNltBxpzyILmhM4sM2NUK8
+         ZFlMII/bNOXiAswi3pTuzhABy8CsnClpAS60lSJg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 019/262] drm/amd/pm: correct UMD pstate clocks for Dimgrey Cavefish and Beige Goby
-Date:   Mon,  7 Mar 2022 10:16:03 +0100
-Message-Id: <20220307091702.916393646@linuxfoundation.org>
+Subject: [PATCH 5.15 024/262] i2c: qup: allow COMPILE_TEST
+Date:   Mon,  7 Mar 2022 10:16:08 +0100
+Message-Id: <20220307091703.054130062@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,88 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Wolfram Sang <wsa@kernel.org>
 
-[ Upstream commit 0136f5844b006e2286f873457c3fcba8c45a3735 ]
+[ Upstream commit 5de717974005fcad2502281e9f82e139ca91f4bb ]
 
-Correct the UMD pstate profiling clocks for Dimgrey Cavefish and Beige
-Goby.
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.c   | 26 +++++++++++++++----
- .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.h   |  8 ++++++
- 2 files changed, 29 insertions(+), 5 deletions(-)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-index b8896882b6f01..574a9d7f7a5e7 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -1308,21 +1308,37 @@ static int sienna_cichlid_populate_umd_state_clk(struct smu_context *smu)
- 				&dpm_context->dpm_tables.soc_table;
- 	struct smu_umd_pstate_table *pstate_table =
- 				&smu->pstate_table;
-+	struct amdgpu_device *adev = smu->adev;
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index f76aaf9559365..fea403431f228 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -921,7 +921,7 @@ config I2C_QCOM_GENI
  
- 	pstate_table->gfxclk_pstate.min = gfx_table->min;
- 	pstate_table->gfxclk_pstate.peak = gfx_table->max;
--	if (gfx_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK)
--		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
- 
- 	pstate_table->uclk_pstate.min = mem_table->min;
- 	pstate_table->uclk_pstate.peak = mem_table->max;
--	if (mem_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK)
--		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
- 
- 	pstate_table->socclk_pstate.min = soc_table->min;
- 	pstate_table->socclk_pstate.peak = soc_table->max;
--	if (soc_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK)
-+
-+	switch (adev->asic_type) {
-+	case CHIP_SIENNA_CICHLID:
-+	case CHIP_NAVY_FLOUNDER:
-+		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
-+		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
- 		pstate_table->socclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK;
-+		break;
-+	case CHIP_DIMGREY_CAVEFISH:
-+		pstate_table->gfxclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK;
-+		pstate_table->uclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK;
-+		pstate_table->socclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK;
-+		break;
-+	case CHIP_BEIGE_GOBY:
-+		pstate_table->gfxclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK;
-+		pstate_table->uclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK;
-+		pstate_table->socclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK;
-+		break;
-+	default:
-+		break;
-+	}
- 
- 	return 0;
- }
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
-index 38cd0ece24f6b..42f705c7a36f8 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
-@@ -33,6 +33,14 @@ typedef enum {
- #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK    960
- #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK    1000
- 
-+#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK 1950
-+#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK 960
-+#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK 676
-+
-+#define BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK 2200
-+#define BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK 960
-+#define BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK 1000
-+
- extern void sienna_cichlid_set_ppt_funcs(struct smu_context *smu);
- 
- #endif
+ config I2C_QUP
+ 	tristate "Qualcomm QUP based I2C controller"
+-	depends on ARCH_QCOM
++	depends on ARCH_QCOM || COMPILE_TEST
+ 	help
+ 	  If you say yes to this option, support will be included for the
+ 	  built-in I2C interface on the Qualcomm SoCs.
 -- 
 2.34.1
 
