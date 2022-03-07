@@ -2,93 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49CEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FF1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 06:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235437AbiCGGAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 01:00:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
+        id S234385AbiCGGKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 01:10:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiCGGAS (ORCPT
+        with ESMTP id S232119AbiCGGKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 01:00:18 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84785D65B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:59:24 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R631e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0V6Qe..f_1646632757;
-Received: from 30.97.48.83(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V6Qe..f_1646632757)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Mar 2022 13:59:19 +0800
-Message-ID: <6c65c8b7-9a62-c027-e2b9-7d1531e43dfa@linux.alibaba.com>
-Date:   Mon, 7 Mar 2022 14:00:20 +0800
+        Mon, 7 Mar 2022 01:10:38 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796401CFFA;
+        Sun,  6 Mar 2022 22:09:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646633384; x=1678169384;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vTvCJC12tOY0Rg3fomaST4NiFG83EXsDZ5ajgyCHhlQ=;
+  b=bm2Lmrpk9+HVgLWrDSr5b4vrQpjFBpfqNzDFEUrb+p2y9jDmuJOem56h
+   ZYXdicKIniKcDuJSdODy8JtD82UlQz1YkNQCYunBoF1F+8zzCwyZCF6Bb
+   VuRxPPaeUoOp4Nh2TFhIEQBiGEWdbT12AYCJyC7l8psSquNM0unUwGti0
+   xFJ0ZZhUWDnfGkbLzQzRa/ZwxDbzUvW3z/SfdgoGMZmWVj2s1xMz5cgUs
+   lzQy5lYAe3t9pCfhOqMSUIWamzrIdTVLiNnavOG4riTxDnkzGCJnl5nf8
+   xUTJhrzlOK/FKDdVK93NmH+71anBig4GgHBwxR/4D+sHEOebZuwTIgWxo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="251886040"
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="251886040"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 22:09:44 -0800
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="536981981"
+Received: from cqiang-mobl.ccr.corp.intel.com (HELO [10.249.173.92]) ([10.249.173.92])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 22:09:40 -0800
+Message-ID: <ca4a728c-6ec0-afab-935c-b45d73f6fc9c@intel.com>
+Date:   Mon, 7 Mar 2022 14:09:34 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 12/16] mm/migration: fix potential page refcounts leak in
- migrate_pages
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
-        mike.kravetz@oracle.com, shy828301@gmail.com, willy@infradead.org,
-        ziy@nvidia.com, minchan@kernel.org, apopple@nvidia.com,
-        dave.hansen@linux.intel.com, o451686892@gmail.com,
-        almasrymina@google.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
-        peterx@redhat.com, naoya.horiguchi@nec.com, mhocko@suse.com,
-        riel@redhat.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220304093409.25829-1-linmiaohe@huawei.com>
- <20220304093409.25829-13-linmiaohe@huawei.com>
- <20f47ec9-3b5b-5326-b1c3-4b1a0c38ef46@linux.alibaba.com>
- <87mti25p98.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <87mti25p98.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ Firefox/91.0 Thunderbird/91.6.1
+Subject: Re: [PATCH v6 0/7] KVM: PKS Virtualization support
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220221080840.7369-1-chenyi.qiang@intel.com>
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+In-Reply-To: <20220221080840.7369-1-chenyi.qiang@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Kindly ping for comments.
 
-
-On 3/7/2022 1:02 PM, Huang, Ying wrote:
-> Baolin Wang <baolin.wang@linux.alibaba.com> writes:
+On 2/21/2022 4:08 PM, Chenyi Qiang wrote:
+> This patch series is based on top of v8 PKS core support kernel patchset:
+> https://lore.kernel.org/lkml/20220127175505.851391-1-ira.weiny@intel.com/
 > 
->> Hi Miaohe,
->>
->> On 3/4/2022 5:34 PM, Miaohe Lin wrote:
->>> In -ENOMEM case, there might be some subpages of fail-to-migrate THPs
->>> left in thp_split_pages list. We should move them back to migration
->>> list so that they could be put back to the right list by the caller
->>> otherwise the page refcnt will be leaked here. Also adjust nr_failed
->>> and nr_thp_failed accordingly to make vm events account more accurate.
->>> Fixes: b5bade978e9b ("mm: migrate: fix the return value of
->>> migrate_pages()")
->>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>> ---
->>>    mm/migrate.c | 9 +++++++++
->>>    1 file changed, 9 insertions(+)
->>> diff --git a/mm/migrate.c b/mm/migrate.c
->>> index e0db06927f02..6c2dfed2ddb8 100644
->>> --- a/mm/migrate.c
->>> +++ b/mm/migrate.c
->>> @@ -1422,6 +1422,15 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->>>    				}
->>>      				nr_failed_pages += nr_subpages;
->>> +				/*
->>> +				 * There might be some subpages of fail-to-migrate THPs
->>> +				 * left in thp_split_pages list. Move them back to migration
->>> +				 * list so that they could be put back to the right list by
->>> +				 * the caller otherwise the page refcnt will be leaked.
->>> +				 */
->>> +				list_splice_init(&thp_split_pages, from);
->>> +				nr_failed += retry;
->>> +				nr_thp_failed += thp_retry;
->>
->> Yes, I think we missed this case before, and your patch looks
->> right. But we should also update the 'rc' to return the correct number
->> of pages that were not migrated, right?
+> Note: If you read the SDM section 4.6.1 and has some confusion about the
+> statement of Data writes to supervisor-mode address:
 > 
-> Per my understanding, -ENOMEM should be returned to indicate an fatal
-> error.
+>    If CR0.WP = 0, data may be written to any supervisor-mode address with
+>    a protection key for which write access is permitted.
 > 
-
-Ah, right. Sorry for noise.
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Which may seems a little conflict with 4.6.2:
+> 
+>    if WDi = 1, write accesses are not permitted if CR0.WP = 1. (If CR0.WP
+>    = 0, IA32_PKRS.WDi does not affect write accesses to supervisor-mode
+>    address with protection key i.)
+> 
+> In fact, the statement in 4.6.1 doesn't say "a protection key with the
+> appropriate WDi bit set." The reader should instead refer to Section
+> 4.6.2 to find the definition of what that means. We will follow up
+> this with someone internally to make it more clear in SDM.
+> 
+> ---
+> 
+> Protection Keys for Supervisor Pages(PKS) is a feature that extends the
+> Protection Keys architecture to support thread-specific permission
+> restrictions on supervisor pages.
+> 
+> PKS works similar to an existing feature named PKU(protecting user pages).
+> They both perform an additional check after normal paging permission
+> checks are done. Access or Writes can be disabled via a MSR update
+> without TLB flushes when permissions changes. If violating this
+> addional check, #PF occurs and PFEC.PK bit will be set.
+> 
+> PKS introduces MSR IA32_PKRS to manage supervisor protection key
+> rights. The MSR contains 16 pairs of ADi and WDi bits. Each pair
+> advertises on a group of pages with the same key which is set in the
+> leaf paging-structure entries(bits[62:59]). Currently, IA32_PKRS is not
+> supported by XSAVES architecture.
+> 
+> This patchset aims to add the virtualization of PKS in KVM. It
+> implemented PKS CPUID enumeration, vmentry/vmexit configuration, MSR
+> exposure, nested supported etc. Currently, PKS is not yet supported for
+> shadow paging.
+> 
+> Detailed information about PKS can be found in the latest Intel 64 and
+> IA-32 Architectures Software Developer's Manual.
+> 
+> ---
+> 
+> Changelogs:
+> 
+> v5->v6
+> - PKRS is preserved on INIT. Add the PKRS reset operation in kvm_vcpu_reset.
+>    (Sean)
+> - Track the pkrs as u32. Add the code WARN on bits 64:32 being set in VMCS field.
+>    (Sean)
+> - Adjust the MSR intercept and entry/exit control in VMCS according to
+>    guest CPUID. This resolve the issue when userspace re-enable this feature.
+>    (Sean)
+> - Split VMX restriction on PKS support(entry/exit load controls) out of
+>    common x86. And put tdp restriction together with PKU in common x86.
+>    (Sean)
+> - Thanks for Sean to revise the comments in mmu.c related to
+>    update_pkr_bitmap, which make it more clear for pkr bitmask cache usage.
+> - v5: https://lore.kernel.org/lkml/20210811101126.8973-1-chenyi.qiang@intel.com/
+> 
+> v4->v5
+> - Make setting of MSR intercept/vmcs control bits not dependent on guest.CR4.PKS.
+>    And set them if PKS is exposed to guest. (Suggested by Sean)
+> - Add pkrs to standard register caching mechanism to help update
+>    vcpu->arch.pkrs on demand. Add related helper functions. (Suggested by Sean)
+> - Do the real pkrs update in VMCS field in vmx_vcpu_reset and
+>    vmx_sync_vmcs_host_state(). (Sean)
+> - Add a new mmu_role cr4_pks instead of smushing PKU and PKS together.
+>    (Sean & Paolo)
+> - v4: https://lore.kernel.org/lkml/20210205083706.14146-1-chenyi.qiang@intel.com/
+> 
+> v3->v4
+> - Make the MSR intercept and load-controls setting depend on CR4.PKS value
+> - shadow the guest pkrs and make it usable in PKS emultion
+> - add the cr4_pke and cr4_pks check in pkr_mask update
+> - squash PATCH 2 and PATCH 5 to make the dependencies read more clear
+> - v3: https://lore.kernel.org/lkml/20201105081805.5674-1-chenyi.qiang@intel.com/
+> 
+> v2->v3:
+> - No function changes since last submit
+> - rebase on the latest PKS kernel support:
+>    https://lore.kernel.org/lkml/20201102205320.1458656-1-ira.weiny@intel.com/
+> - add MSR_IA32_PKRS to the vmx_possible_passthrough_msrs[]
+> - RFC v2: https://lore.kernel.org/lkml/20201014021157.18022-1-chenyi.qiang@intel.com/
+> 
+> v1->v2:
+> - rebase on the latest PKS kernel support:
+>    https://github.com/weiny2/linux-kernel/tree/pks-rfc-v3
+> - add a kvm-unit-tests for PKS
+> - add the check in kvm_init_msr_list for PKRS
+> - place the X86_CR4_PKS in mmu_role_bits in kvm_set_cr4
+> - add the support to expose VM_{ENTRY, EXIT}_LOAD_IA32_PKRS in nested
+>    VMX MSR
+> - RFC v1: https://lore.kernel.org/lkml/20200807084841.7112-1-chenyi.qiang@intel.com/
+> 
+> ---
+> 
+> Chenyi Qiang (7):
+>    KVM: VMX: Introduce PKS VMCS fields
+>    KVM: VMX: Add proper cache tracking for PKRS
+>    KVM: X86: Expose IA32_PKRS MSR
+>    KVM: MMU: Rename the pkru to pkr
+>    KVM: MMU: Add support for PKS emulation
+>    KVM: VMX: Expose PKS to guest
+>    KVM: VMX: Enable PKS for nested VM
+> 
+>   arch/x86/include/asm/kvm_host.h |  17 ++++--
+>   arch/x86/include/asm/vmx.h      |   6 ++
+>   arch/x86/kvm/cpuid.c            |  13 ++--
+>   arch/x86/kvm/kvm_cache_regs.h   |   7 +++
+>   arch/x86/kvm/mmu.h              |  27 +++++----
+>   arch/x86/kvm/mmu/mmu.c          | 101 ++++++++++++++++++++------------
+>   arch/x86/kvm/vmx/capabilities.h |   6 ++
+>   arch/x86/kvm/vmx/nested.c       |  38 +++++++++++-
+>   arch/x86/kvm/vmx/vmcs.h         |   1 +
+>   arch/x86/kvm/vmx/vmcs12.c       |   2 +
+>   arch/x86/kvm/vmx/vmcs12.h       |   4 ++
+>   arch/x86/kvm/vmx/vmx.c          |  92 ++++++++++++++++++++++++++---
+>   arch/x86/kvm/vmx/vmx.h          |   7 ++-
+>   arch/x86/kvm/x86.c              |  10 +++-
+>   arch/x86/kvm/x86.h              |   8 +++
+>   arch/x86/mm/pkeys.c             |   6 ++
+>   include/linux/pkeys.h           |   6 ++
+>   17 files changed, 280 insertions(+), 71 deletions(-)
+> 
