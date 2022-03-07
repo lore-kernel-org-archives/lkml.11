@@ -2,95 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22518C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4804DC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240438AbiCGKIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
+        id S240579AbiCGKIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:08:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239386AbiCGJtj (ORCPT
+        with ESMTP id S239401AbiCGJtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:49:39 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6B06E568
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:43:12 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id v2-20020a7bcb42000000b0037b9d960079so10978669wmj.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:43:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=jUnpa9JbqR6HAnUfa1Lcq9v1yG1shY5AgIzMl2mBcFE=;
-        b=t9Wtlo+r0Pn5tPQdeD022pbjZvaPxMQo0hdjv8++mgad+O2gXdBf/i85tX9TWq3kTG
-         RtfnUhGKxlTTSWAXEI2eZb23JU29B9mIjEXGCdLBWM496P11Rr9XYDAG9roenwZghBRq
-         FsHWGBojuuXWSgs2/WNgQZeaZahkUJNI2eoLatAsGNS/9BbooHQvHhsV0GLnBmpmU9bq
-         HrizOTTs5T7N1kefnHSmfz9iW75HjNkOUujNqb9U1TwwL+l1qbiOgSg8OiGHTG2EM1zL
-         PlR75pXbszJIkTCeDAHgBpZHliJQgSiPNTXmvh48AGbOfSug17BixFbXF9RI8TNMM9be
-         WEyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=jUnpa9JbqR6HAnUfa1Lcq9v1yG1shY5AgIzMl2mBcFE=;
-        b=wiFZ2ij5Tm6yLvObMrWmpDwRqB05s5CE15HeNMyDRtGd8d5z9TFEvSOC6LxCSlqqIX
-         yElM7JurKHZOd1pt501pDvfKw5zjpSMZ9jC73Jfj1My/8UUVpSQSaHLr+4+KIFRr3jft
-         3iDSkJSEsMPOBzfI5tSdqPbG1llsS+6DGvd3T1XA3hmbsO4m2Bdg+OrIDsdUqTn7DEDj
-         hyN+OjuXelxxxdg9+Ei7kGnrvz/lSXhrv//li59nAfJYCl3+Chyz3ZrdnspB5JSNACgf
-         Bc5MUj8BbPWjbzlMwniv5Fzi5TxbfKG5xBOi86i/pM+k1wkPgJTcCwdHO1VYtOdLIdUM
-         C4Qw==
-X-Gm-Message-State: AOAM531xougrY2qPWoseq2sowodQt2QFR0Q8quo7TtkfhVXGddSaoLuD
-        YDiVefnsdnj47LInQxbkhE3mHA==
-X-Google-Smtp-Source: ABdhPJxMwUg9F7Yyw/Mvr1bBZ99wmak82idN666DkfF2sR4hkKMm/3BdId5wfHRxVmDD6jFd6t/xxQ==
-X-Received: by 2002:a05:600c:4f55:b0:381:7386:ed68 with SMTP id m21-20020a05600c4f5500b003817386ed68mr17571401wmq.36.1646646189308;
-        Mon, 07 Mar 2022 01:43:09 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id a10-20020a7bc1ca000000b00389bc87db45sm576607wmj.7.2022.03.07.01.43.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:43:08 -0800 (PST)
-Date:   Mon, 7 Mar 2022 09:43:07 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: Re: [PATCH v3 1/2] regulator: dt-bindings: maxim,max77802: convert
- to dtschema
-Message-ID: <YiXTq6QojkzqvgHB@google.com>
-References: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
- <20220215075344.31421-2-krzysztof.kozlowski@canonical.com>
+        Mon, 7 Mar 2022 04:49:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9026E570;
+        Mon,  7 Mar 2022 01:43:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC082B810B9;
+        Mon,  7 Mar 2022 09:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ACE0C36AE7;
+        Mon,  7 Mar 2022 09:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646189;
+        bh=w/ntj/P8FjG0egwwy9HfVWJPl4ZMUNQq0IVluBcr0ME=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WadR+2slMiEsH4rp8GFQUyL4nHMOjrdalrw+8zUjbdnqYS+VVC3lNiaNY9PQAW32z
+         wLZRt1t56kio0lOwsgymyjTi8c+TttgVekDVgYsbx1EkfsNn4WMqhp1dzcXnGkhq2Q
+         1+MBkVIHijRYiQJeXbTaIiUJQlNS5Szi0HmpA36w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH 5.15 161/262] netfilter: nf_queue: fix possible use-after-free
+Date:   Mon,  7 Mar 2022 10:18:25 +0100
+Message-Id: <20220307091706.975653645@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215075344.31421-2-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Feb 2022, Krzysztof Kozlowski wrote:
+From: Florian Westphal <fw@strlen.de>
 
-> Convert the regulators of Maxim MAX77802 PMIC to DT schema format.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-> Acked-by: Mark Brown <broonie@kernel.org>
-> ---
->  .../bindings/regulator/max77802.txt           | 111 ------------------
->  .../bindings/regulator/maxim,max77802.yaml    |  85 ++++++++++++++
->  2 files changed, 85 insertions(+), 111 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/regulator/max77802.txt
->  create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
+commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
 
-Applied, thanks.
+Eric Dumazet says:
+  The sock_hold() side seems suspect, because there is no guarantee
+  that sk_refcnt is not already 0.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+On failure, we cannot queue the packet and need to indicate an
+error.  The packet will be dropped by the caller.
+
+v2: split skb prefetch hunk into separate change
+
+Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/netfilter/nf_queue.h |    2 +-
+ net/netfilter/nf_queue.c         |   13 +++++++++----
+ net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
+ 3 files changed, 19 insertions(+), 8 deletions(-)
+
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -37,7 +37,7 @@ void nf_register_queue_handler(const str
+ void nf_unregister_queue_handler(void);
+ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
+ 
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ void nf_queue_entry_free(struct nf_queue_entry *entry);
+ 
+ static inline void init_hashrandom(u32 *jhash_initval)
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -96,19 +96,21 @@ static void __nf_queue_entry_init_physde
+ }
+ 
+ /* Bump dev refs so they don't vanish while packet is out */
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
+ {
+ 	struct nf_hook_state *state = &entry->state;
+ 
++	if (state->sk && !refcount_inc_not_zero(&state->sk->sk_refcnt))
++		return false;
++
+ 	dev_hold(state->in);
+ 	dev_hold(state->out);
+-	if (state->sk)
+-		sock_hold(state->sk);
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ 	dev_hold(entry->physin);
+ 	dev_hold(entry->physout);
+ #endif
++	return true;
+ }
+ EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
+ 
+@@ -196,7 +198,10 @@ static int __nf_queue(struct sk_buff *sk
+ 
+ 	__nf_queue_entry_init_physdevs(entry);
+ 
+-	nf_queue_entry_get_refs(entry);
++	if (!nf_queue_entry_get_refs(entry)) {
++		kfree(entry);
++		return -ENOTCONN;
++	}
+ 
+ 	switch (entry->state.pf) {
+ 	case AF_INET:
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -710,9 +710,15 @@ static struct nf_queue_entry *
+ nf_queue_entry_dup(struct nf_queue_entry *e)
+ {
+ 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
+-	if (entry)
+-		nf_queue_entry_get_refs(entry);
+-	return entry;
++
++	if (!entry)
++		return NULL;
++
++	if (nf_queue_entry_get_refs(entry))
++		return entry;
++
++	kfree(entry);
++	return NULL;
+ }
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+
+
