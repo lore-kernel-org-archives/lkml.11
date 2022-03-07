@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237035AbiCGJ1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:27:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
+        id S237102AbiCGJ1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236691AbiCGJY0 (ORCPT
+        with ESMTP id S236715AbiCGJYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:24:26 -0500
+        Mon, 7 Mar 2022 04:24:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FC4593BF;
-        Mon,  7 Mar 2022 01:23:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C4A58E63;
+        Mon,  7 Mar 2022 01:23:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B9861132;
-        Mon,  7 Mar 2022 09:23:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A3CC340F5;
-        Mon,  7 Mar 2022 09:23:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 880F66113A;
+        Mon,  7 Mar 2022 09:23:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93F6BC340E9;
+        Mon,  7 Mar 2022 09:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645010;
-        bh=17QqH72kUFnUkJZ4j1HejBtx6GgW1dduu5IUz82at2E=;
+        s=korg; t=1646645007;
+        bh=DIaHoi5DTOYTWJey/z9WUzcDdY/AoO2Svz+OcqnU0/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gqj8SYi8Jbs/OSZsb6IST3Uvlx2lDMFKsG2Hugscir5+XncR1y8CLvbHPw3bpL0f0
-         jpuSYLsaGeu1bL8BtVs6gN8MPSLyEsFdNyqEnYmlVUjZ8aR1T8IOsHj7EMRH5bzyRr
-         yCdJFJAKWXzTYwxDfU257zr0gCh3jDbrziL+3Ozw=
+        b=UQTKCXhpRWE6LjSFLxzeWVZ9FvL2PwFC1fz4lbD7H0b1yIUbmLlhftNh1ZAZX8kTL
+         z+UvUs/lBQlI7Gzi+FTq6SbRehEH3D9qrlaegyaut58PKOoPxKesJOwAElbD1oq9aP
+         qe+PxoWtJPPCV13Xp1v+nBamBWXQEPtmUnQP1IEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 01/51] mac80211_hwsim: report NOACK frames in tx_status
-Date:   Mon,  7 Mar 2022 10:18:36 +0100
-Message-Id: <20220307091637.032868130@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>
+Subject: [PATCH 4.14 21/42] batman-adv: Request iflink once in batadv_get_real_netdevice
+Date:   Mon,  7 Mar 2022 10:18:55 +0100
+Message-Id: <20220307091636.766654593@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-References: <20220307091636.988950823@linuxfoundation.org>
+In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
+References: <20220307091636.146155347@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,38 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 42a79960ffa50bfe9e0bf5d6280be89bf563a5dd ]
+commit 6116ba09423f7d140f0460be6a1644dceaad00da upstream.
 
-Add IEEE80211_TX_STAT_NOACK_TRANSMITTED to tx_status flags to have proper
-statistics for non-acked frames.
+There is no need to call dev_get_iflink multiple times for the same
+net_device in batadv_get_real_netdevice. And since some of the
+ndo_get_iflink callbacks are dynamic (for example via RCUs like in
+vxcan_get_iflink), it could easily happen that the returned values are not
+stable. The pre-checks before __dev_get_by_index are then of course bogus.
 
-Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
-Link: https://lore.kernel.org/r/20220111221327.1499881-1-benjamin.beichler@uni-rostock.de
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5ed4a460a1d3 ("batman-adv: additional checks for virtual interfaces on top of WiFi")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/batman-adv/hard-interface.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 3564f5869b444..6cd9a8b610107 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -3176,6 +3176,10 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
- 		}
- 		txi->flags |= IEEE80211_TX_STAT_ACK;
+--- a/net/batman-adv/hard-interface.c
++++ b/net/batman-adv/hard-interface.c
+@@ -221,14 +221,16 @@ static struct net_device *batadv_get_rea
+ 	struct net_device *real_netdev = NULL;
+ 	struct net *real_net;
+ 	struct net *net;
+-	int ifindex;
++	int iflink;
+ 
+ 	ASSERT_RTNL();
+ 
+ 	if (!netdev)
+ 		return NULL;
+ 
+-	if (netdev->ifindex == dev_get_iflink(netdev)) {
++	iflink = dev_get_iflink(netdev);
++
++	if (netdev->ifindex == iflink) {
+ 		dev_hold(netdev);
+ 		return netdev;
  	}
-+
-+	if (hwsim_flags & HWSIM_TX_CTL_NO_ACK)
-+		txi->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
-+
- 	ieee80211_tx_status_irqsafe(data2->hw, skb);
- 	return 0;
+@@ -238,9 +240,8 @@ static struct net_device *batadv_get_rea
+ 		goto out;
+ 
+ 	net = dev_net(hard_iface->soft_iface);
+-	ifindex = dev_get_iflink(netdev);
+ 	real_net = batadv_getlink_net(netdev, net);
+-	real_netdev = dev_get_by_index(real_net, ifindex);
++	real_netdev = dev_get_by_index(real_net, iflink);
+ 
  out:
--- 
-2.34.1
-
+ 	if (hard_iface)
 
 
