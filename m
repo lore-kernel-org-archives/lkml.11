@@ -2,92 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DC4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243355AbiCGOrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:47:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
+        id S243364AbiCGOrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235849AbiCGOrA (ORCPT
+        with ESMTP id S243340AbiCGOri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:47:00 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3847B7D024;
-        Mon,  7 Mar 2022 06:46:06 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id k24so14213935wrd.7;
-        Mon, 07 Mar 2022 06:46:06 -0800 (PST)
+        Mon, 7 Mar 2022 09:47:38 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7E07DA82
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:46:43 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so17948598oos.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 06:46:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TnuayJqqO6PRDmzyTvn21h8f65mMIJndsojjx882OXc=;
-        b=QNJugbyqzySDgHdDdGqu0c/SNKPry3EZ5Un0ef5kLO5A2MINUwhlw6rmfuY1bg/qDo
-         lrIAPvEDtP3dTn8wAyounn60fEcS2VELUVmfrj5hehBxPbEvuXYKnAHEy8tZTldMon/4
-         TgjpyZUEGFfUzp8x0pZrL4H5oNcmoO5fD76FRaam7XvG8GMZqA8zwAkLESXgHEpLAH0e
-         R+uSXhekTZWguXSvr4MCnhV4aSK6JYAIpQCx1pBpI2IBjfsc+VN4/o9n7gm9wEzqzbEH
-         aLWiyxkxYyOCqDzsNGAEXm3lXP53wZIFxJzOkbZS8ibEFbSB9y5I1Gg2R1kl5bRDMkhq
-         1vhg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KDUUimts6AqirSdFxQZxJc3Z8d63h2WyuY2dc6ec1xM=;
+        b=v0oPXHKPdG97ZiajP9+g855l62P2OtPqchjCprouvcANCLm0sAYzyhvtfEfDaaeEtp
+         I2gUVvRRRwamr5QX5UJyVLMUgDAhMUV/qDPOlCzdrYNNGhwUWxMYQ0knBtln9ryIMznJ
+         jNv8zmgV+lQHtlyUKb0y0JBPZXFmklYBfvsg2FKsq82eiRS28yQ/FPkyz5b3Vqy3WEdQ
+         y/zc9at6u/VIFLL7SKT/q06kDEukdWXcudtgPXiSnb2oF9ZVWClc192CSJ2M1Ztsz1By
+         5CpKGCxpckbpGiN6cSbWNnOzfKRiHMLR2BaPrR+fpsR9zOZD80vuUUCjymTbAi/yRdaZ
+         v0PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TnuayJqqO6PRDmzyTvn21h8f65mMIJndsojjx882OXc=;
-        b=7vinU83qY1yl0VrQpIIjlzJGgxI/gag4lYaUTB1yg7nbalYmpsrP8RBDMa+UMpNYda
-         ZNLO9f4KJlSwOJD9mfcTzYA5FbalOUIIh7FlOrj0hBkNfgYJbbuCqWwlMD9ZHrV/afKU
-         cpszKFXJB/DX+yJrB6gJ4dos7lERnRmsWaZpQN0i23MDRKFJrFqDtCgzbMQi8PgAb00f
-         Nw1SlTAwOKv4igJePKe/SrsBgFcCe/xITFmU0Tt+qH/+k6tX22eNftzwrxzJppTKyy+l
-         QcaWTAaPvIGw4kny2pvWKo5llc6J7/n0/hv6WAzm5J2PGalROf6L/YzPJsOVVLpjlhMI
-         9eJg==
-X-Gm-Message-State: AOAM5317N33V0dY12b0r+TqLk+5k1THeyVlGNsvz/3ZeyfdiXbQqUT0m
-        tBm21EBTGgdICltJ+k//mmgwsr4uttg=
-X-Google-Smtp-Source: ABdhPJwwXWeujosxzRqNzzOHBuqrta0lQ8JNylmK2wr7FxCzx7SadlOqXdGe4d6U7mz2dam3O5GbeQ==
-X-Received: by 2002:a05:6000:1d8f:b0:1e3:319d:519e with SMTP id bk15-20020a0560001d8f00b001e3319d519emr8626895wrb.548.1646664364669;
-        Mon, 07 Mar 2022 06:46:04 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05600c191100b00389a1a68b95sm11218160wmq.27.2022.03.07.06.46.04
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KDUUimts6AqirSdFxQZxJc3Z8d63h2WyuY2dc6ec1xM=;
+        b=ogTsXRdsgZj6xoeQRvH+529o9gOBCg2GlJTyKu3mqdM8qiBeDSqkDs3PFJZlSmDHJQ
+         guCvOFASXAfFiVrp5pD3VdgUNL3RJqm6R576xYYHh6ZtQoI/hOXP10e0nNLg3w+rptXu
+         pxwidBndXJpqSWnvTer8TLoRdEDDQ0TrkH4N8BqhEcFjqBsaNqY4YPKwjIGM9AXBL6US
+         EpPtYY2Tcgs9jkO+bzhFY80usvd5f5nzfzuBd9zeSM0JqXKpQpyPrXmUB8IO+sWh+mYT
+         kNd42occT5lJB/sU7eIzSAWIDA9hYiWiy4g9vpHCvgBvYwLrd36NGWK8M2A5Fv8bmrjH
+         SE8A==
+X-Gm-Message-State: AOAM5305+u16TMURw1pAt/NDSR0t5agfEbW1KmjVoP+pmBB/62NKsmWa
+        bIh1m5sCYCleghQZVoPh+qBDNg==
+X-Google-Smtp-Source: ABdhPJyhwg8VQ2NoQPu24oSN1H1Xsf1l7yrTZwrLXKHeFCrr/teOAsQ82MtY6y4LP4tvH/pSaxsJfA==
+X-Received: by 2002:a05:6870:d250:b0:da:b3f:2b29 with SMTP id h16-20020a056870d25000b000da0b3f2b29mr5976338oac.200.1646664402377;
+        Mon, 07 Mar 2022 06:46:42 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id s62-20020aca4541000000b002d7823c8328sm6465095oia.4.2022.03.07.06.46.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 06:46:04 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: gdm724x: remove redundant assignment of pointer w
-Date:   Mon,  7 Mar 2022 14:46:03 +0000
-Message-Id: <20220307144603.136846-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 07 Mar 2022 06:46:41 -0800 (PST)
+Date:   Mon, 7 Mar 2022 06:48:25 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v4 7/7] usb: typec: mux: Add On Semi fsa4480 driver
+Message-ID: <YiYbOQpX4+fP8S1W@ripper>
+References: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
+ <20220307034040.1111107-7-bjorn.andersson@linaro.org>
+ <YiXbg4QwgIgLh3LW@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiXbg4QwgIgLh3LW@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pointer w is being assigned a value that is never read, it is
-being re-assigned a new value later. The assignment is redundant
-and can be removed.
+On Mon 07 Mar 02:16 PST 2022, Andy Shevchenko wrote:
 
-Cleans up clan scan build warning:
-drivers/staging/gdm724x/gdm_lte.c:198:2: warning: Value stored to 'w'
-is never read [deadcode.DeadStores]
+> On Sun, Mar 06, 2022 at 07:40:40PM -0800, Bjorn Andersson wrote:
+> > The ON Semiconductor FSA4480 is a USB Type-C port multimedia switch with
+> > support for analog audio headsets. It allows sharing a common USB Type-C
+> > port to pass USB2.0 signal, analog audio, sideband use wires and analog
+> > microphone signal.
+> > 
+> > Due to lacking upstream audio support for testing, the audio muxing is
+> > left untouched, but implementation of muxing the SBU lines is provided
+> > as a pair of Type-C mux and switch devices. This provides the necessary
+> > support for enabling the DisplayPort altmode on devices with this
+> > circuit.
+> 
+> ...
+> 
+> > +static const struct regmap_config fsa4480_regmap_config = {
+> > +	.reg_bits = 8,
+> > +	.val_bits = 8,
+> > +	.max_register = FSA4480_MAX_REGISTER,
+> > +};
+> 
+> You are using mutex for accessing hardware. Do you still need a regmap lock?
+> If so, add a comment to explain why.
+> 
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/staging/gdm724x/gdm_lte.c | 1 -
- 1 file changed, 1 deletion(-)
+I've not considered that before, but you're right, there doesn't seem to
+be any reason to keep the locking in the regmap.
 
-diff --git a/drivers/staging/gdm724x/gdm_lte.c b/drivers/staging/gdm724x/gdm_lte.c
-index 0d8d8fed283d..d5bec53b0194 100644
---- a/drivers/staging/gdm724x/gdm_lte.c
-+++ b/drivers/staging/gdm724x/gdm_lte.c
-@@ -195,7 +195,6 @@ static __sum16 icmp6_checksum(struct ipv6hdr *ipv6, u16 *ptr, int len)
- 	pseudo_header.ph.ph_len = be16_to_cpu(ipv6->payload_len);
- 	pseudo_header.ph.ph_nxt = ipv6->nexthdr;
- 
--	w = (u16 *)&pseudo_header;
- 	for (i = 0; i < ARRAY_SIZE(pseudo_header.pa); i++) {
- 		pa = pseudo_header.pa[i];
- 		sum = csum_add(sum, csum_unfold((__force __sum16)pa));
--- 
-2.35.1
+> ...
+> 
+> > +		/* 15us to allow the SBU switch to turn off */
+> > +		usleep_range(15, 1000);
+> 
+> This is quite unusual range.
+> 
+> If you are fine with the long delay, why to stress the system on it?
+> Otherwise the use of 1000 is unclear.
+> 
+> That said, I would expect one of the below:
+> 
+> 		usleep_range(15, 30);
+> 		usleep_range(500, 1000);
+> 
 
+Glad you asked about that, as you say the typical form is to keep the
+range within 2x of the lower value, or perhaps lower + 5.
+
+But if the purpose is to specify a minimum time and then give a max to
+give the system some flexibility in it's decision of when to wake up.
+And in situations such as this, we're talking about someone connecting a
+cable, so we're in "no rush" and I picked the completely arbitrary 1ms
+as the max.
+
+Do you see any drawback of this much higher number? (Other than it
+looking "wrong")
+
+> ...
+> 
+> > +	sw_desc.fwnode = dev->fwnode;
+> 
+> Please, don't dereference for fwnode explicitly. Use dev_fwnode().
+> 
+
+Okay, will update accordingly.
+
+Thanks,
+Bjorn
+
+> ...
+> 
+> > +	mux_desc.fwnode = dev->fwnode;
+> 
+> Ditto.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
