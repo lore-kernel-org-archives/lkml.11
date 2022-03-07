@@ -2,240 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47246C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD33DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244712AbiCGSU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        id S244716AbiCGSU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:20:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244593AbiCGSU0 (ORCPT
+        with ESMTP id S236074AbiCGSUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:20:26 -0500
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D626180918;
-        Mon,  7 Mar 2022 10:19:30 -0800 (PST)
-Received: by mail-yb1-f170.google.com with SMTP id b35so32663559ybi.13;
-        Mon, 07 Mar 2022 10:19:30 -0800 (PST)
+        Mon, 7 Mar 2022 13:20:53 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D8D80914;
+        Mon,  7 Mar 2022 10:19:58 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id s42so2204230pfg.0;
+        Mon, 07 Mar 2022 10:19:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yakVhLqjFy3lUwFMd2yqBjeuHf9I8U2hlEbrIg5muCo=;
+        b=ZMuN2j8tF+DTwZvzyNwsFCi+RFYVVEQxHp7NbvBtvb11JBODhK1YmO3dLCczyXEQB9
+         GPG6qYFCQkAJ/+2Oo+OsWecmA451HVY+GfRFEK+2cHbU2CCs2WD8hoUWU22uOeAna5wk
+         YeOH5hZWMg7gsfeKB26yZhv6uY0ocUpR2oTY24V/ytggknOmHiI+vQifSN7UVcULVMNm
+         zolTlvGyjQREdyCu+4F2LU0O4GcAgrYK7LD3l/+wCF4y/yFSXk5M5WWsQDRV3718ZpiR
+         MK3NZoaW4Hgy5cjSpda4xbidlj/WUxrK6oNksfjbnBHnqDSHHkZKS6R6ntriihe94ghx
+         JxMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JgPFBkbztEBtMJP0LHD1YxBIa8nGPhe2QaYONr9BDe4=;
-        b=N1sByrSgmydVDzCrX6MVf1CUtJnVh2k5ns74hjT4mjKGuoMlPvgKTR/YIAfzwPtskI
-         R9mhWM3y4O5EgIfAyPbQn7gVcrf27abHmq+YNhbhVrOtkIxBdp8EGaW6IkkKyZQVIeBh
-         kFbX5UFnGAiWcCQ6/ERXDeoIBtQYqPUYkCalzn0pcfT9KvRs59xGLEg6V0MUxEtoAivE
-         4/Bj/p+StAVWgjlTMuaXyHKYV1vReO1W9phtXqW4wwi42f2tuG6R+RdEVastCB1sA19b
-         20EiuuzrLMfAP6UuPgzkVF0jwpZwgXKKOFjU1iaFSm6hqeFNO8Fx1TADV7rXea0ajiEH
-         NGsw==
-X-Gm-Message-State: AOAM531G2gVFni9/fVvgU4ZuPspv5un3laYjogFsg99rMaKCxGoQLSg3
-        NSTzIA9BjV6+hffcsDf139LNbpIY0pQx355dHjh1+v/m
-X-Google-Smtp-Source: ABdhPJwogE1aj2YG96J07EcXnP1zJdXUogLKnATGGthibnkbBDYrk8GRjd/ozgW/+hSunZzbBGvnRVxRx22XWjDGNuM=
-X-Received: by 2002:a25:d7c2:0:b0:628:9d06:457b with SMTP id
- o185-20020a25d7c2000000b006289d06457bmr8997916ybg.137.1646677170081; Mon, 07
- Mar 2022 10:19:30 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yakVhLqjFy3lUwFMd2yqBjeuHf9I8U2hlEbrIg5muCo=;
+        b=1EMsbakZgiyxioLauh0739uMgPX06WtTKjw4lv9LCrpgyeBEm84YT+1ChjYP7ak39D
+         Ys/MMN5eWYDxTJ5A1CMDtXi6vnIxaybubTQCUvdt/CCaLCZTGXAviVmEvZZGEhoQocdM
+         yLkQs6Uai5NwbXRFsN2C7xn/Iy2JtRFXXhPkMJI23JbzfHkMsuALY/LUWjvS5C42hzJR
+         d8BbE//Sskqd3PDVeQOQydgHpam/ARmRIqnYYeCkJj402crV+EmFZJMLy9F4ZgsZbFmB
+         3lNJCpHqUW3QTkf/g7klgpypwvLlzkSlVKJ4Rk+lDjC0rk5z9sZ7YwHuS2ikd39fLiKH
+         YBrw==
+X-Gm-Message-State: AOAM530djHSl35hil3j4mdSQONTmUTZxwlvfhUurfeUXgzRXEaqrUVFS
+        3QbLQxshOSKo8VM15vSL4ShkrAkCbMY=
+X-Google-Smtp-Source: ABdhPJy7ZKwMDGxwJp2ni4xmEUO/Sy7LbZKEH9wHfEEWmbnwsnv++PJMMzRv1Pesovq4pE2YVa+d3Q==
+X-Received: by 2002:a05:6a00:984:b0:4e1:5e1b:1e9b with SMTP id u4-20020a056a00098400b004e15e1b1e9bmr13914417pfg.71.1646677197835;
+        Mon, 07 Mar 2022 10:19:57 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id r1-20020a17090a560100b001bf72b5af97sm56904pjf.13.2022.03.07.10.19.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 10:19:57 -0800 (PST)
+Subject: Re: [PATCH 4.9 00/32] 4.9.305-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220307091634.434478485@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <1c025bdf-301f-630d-8a72-36656a29c407@gmail.com>
+Date:   Mon, 7 Mar 2022 10:19:52 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220306021250.64315-1-zhanglianjie@uniontech.com>
-In-Reply-To: <20220306021250.64315-1-zhanglianjie@uniontech.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 7 Mar 2022 19:19:19 +0100
-Message-ID: <CAJZ5v0iEc59fge6bDbwFV6gVDKp8dqf7zwL_fL=WkME5qoMgtw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] cpufreq: unify the show() and store() styles of attr
-To:     zhanglianjie <zhanglianjie@uniontech.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 6, 2022 at 3:13 AM zhanglianjie <zhanglianjie@uniontech.com> wrote:
->
-> Unify the show() and store() styles of attr,
-> change show_xxx(), store_xxx() to xxx_show(), xxx_store().
+On 3/7/22 1:18 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.305 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.305-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-You need to say something about motivation too.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-> Signed-off-by: zhanglianjie <zhanglianjie@uniontech.com>
->
-> diff --git a/drivers/cpufreq/cpufreq_conservative.c b/drivers/cpufreq/cpufreq_conservative.c
-> index 08515f7e515f..b6bd0ff35323 100644
-> --- a/drivers/cpufreq/cpufreq_conservative.c
-> +++ b/drivers/cpufreq/cpufreq_conservative.c
-> @@ -146,7 +146,7 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
->
->  /************************** sysfs interface ************************/
->
-> -static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
-> +static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
->                                           const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -161,7 +161,7 @@ static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
-> +static ssize_t up_threshold_store(struct gov_attr_set *attr_set,
->                                   const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -177,7 +177,7 @@ static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
-> +static ssize_t down_threshold_store(struct gov_attr_set *attr_set,
->                                     const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -195,7 +195,7 @@ static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
-> +static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
->                                       const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -220,7 +220,7 @@ static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_freq_step(struct gov_attr_set *attr_set, const char *buf,
-> +static ssize_t freq_step_store(struct gov_attr_set *attr_set, const char *buf,
->                                size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> diff --git a/drivers/cpufreq/cpufreq_governor.c b/drivers/cpufreq/cpufreq_governor.c
-> index 63f7c219062b..0d42cf8b88d8 100644
-> --- a/drivers/cpufreq/cpufreq_governor.c
-> +++ b/drivers/cpufreq/cpufreq_governor.c
-> @@ -27,7 +27,7 @@ static DEFINE_MUTEX(gov_dbs_data_mutex);
->
->  /* Common sysfs tunables */
->  /*
-> - * store_sampling_rate - update sampling rate effective immediately if needed.
-> + * sampling_rate_store - update sampling rate effective immediately if needed.
->   *
->   * If new rate is smaller than the old, simply updating
->   * dbs.sampling_rate might not be appropriate. For example, if the
-> @@ -41,7 +41,7 @@ static DEFINE_MUTEX(gov_dbs_data_mutex);
->   * This must be called with dbs_data->mutex held, otherwise traversing
->   * policy_dbs_list isn't safe.
->   */
-> -ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
-> +ssize_t sampling_rate_store(struct gov_attr_set *attr_set, const char *buf,
->                             size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -80,7 +80,7 @@ ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
->
->         return count;
->  }
-> -EXPORT_SYMBOL_GPL(store_sampling_rate);
-> +EXPORT_SYMBOL_GPL(sampling_rate_store);
->
->  /**
->   * gov_update_cpu_data - Update CPU load data.
-> diff --git a/drivers/cpufreq/cpufreq_governor.h b/drivers/cpufreq/cpufreq_governor.h
-> index bab8e6140377..65ecf32ba4f8 100644
-> --- a/drivers/cpufreq/cpufreq_governor.h
-> +++ b/drivers/cpufreq/cpufreq_governor.h
-> @@ -51,7 +51,7 @@ static inline struct dbs_data *to_dbs_data(struct gov_attr_set *attr_set)
->  }
->
->  #define gov_show_one(_gov, file_name)                                  \
-> -static ssize_t show_##file_name                                                \
-> +static ssize_t file_name##_show                                                \
->  (struct gov_attr_set *attr_set, char *buf)                             \
->  {                                                                      \
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);              \
-> @@ -60,7 +60,7 @@ static ssize_t show_##file_name                                               \
->  }
->
->  #define gov_show_one_common(file_name)                                 \
-> -static ssize_t show_##file_name                                                \
-> +static ssize_t file_name##_show                                                \
->  (struct gov_attr_set *attr_set, char *buf)                             \
->  {                                                                      \
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);              \
-> @@ -69,11 +69,11 @@ static ssize_t show_##file_name                                             \
->
->  #define gov_attr_ro(_name)                                             \
->  static struct governor_attr _name =                                    \
-> -__ATTR(_name, 0444, show_##_name, NULL)
-> +__ATTR(_name, 0444, _name##_show, NULL)
->
->  #define gov_attr_rw(_name)                                             \
->  static struct governor_attr _name =                                    \
-> -__ATTR(_name, 0644, show_##_name, store_##_name)
-> +__ATTR(_name, 0644, _name##_show, _name##_store)
->
->  /* Common to all CPUs of a policy */
->  struct policy_dbs_info {
-> @@ -176,7 +176,7 @@ void od_register_powersave_bias_handler(unsigned int (*f)
->                 (struct cpufreq_policy *, unsigned int, unsigned int),
->                 unsigned int powersave_bias);
->  void od_unregister_powersave_bias_handler(void);
-> -ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
-> +ssize_t sampling_rate_store(struct gov_attr_set *attr_set, const char *buf,
->                             size_t count);
->  void gov_update_cpu_data(struct dbs_data *dbs_data);
->  #endif /* _CPUFREQ_GOVERNOR_H */
-> diff --git a/drivers/cpufreq/cpufreq_ondemand.c b/drivers/cpufreq/cpufreq_ondemand.c
-> index 6a41ea4729b8..e8fbf970ff07 100644
-> --- a/drivers/cpufreq/cpufreq_ondemand.c
-> +++ b/drivers/cpufreq/cpufreq_ondemand.c
-> @@ -202,7 +202,7 @@ static unsigned int od_dbs_update(struct cpufreq_policy *policy)
->  /************************** sysfs interface ************************/
->  static struct dbs_governor od_dbs_gov;
->
-> -static ssize_t store_io_is_busy(struct gov_attr_set *attr_set, const char *buf,
-> +static ssize_t io_is_busy_store(struct gov_attr_set *attr_set, const char *buf,
->                                 size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -220,7 +220,7 @@ static ssize_t store_io_is_busy(struct gov_attr_set *attr_set, const char *buf,
->         return count;
->  }
->
-> -static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
-> +static ssize_t up_threshold_store(struct gov_attr_set *attr_set,
->                                   const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -237,7 +237,7 @@ static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
-> +static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
->                                           const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -265,7 +265,7 @@ static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
-> +static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
->                                       const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> @@ -290,7 +290,7 @@ static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
->         return count;
->  }
->
-> -static ssize_t store_powersave_bias(struct gov_attr_set *attr_set,
-> +static ssize_t powersave_bias_store(struct gov_attr_set *attr_set,
->                                     const char *buf, size_t count)
->  {
->         struct dbs_data *dbs_data = to_dbs_data(attr_set);
-> --
-> 2.20.1
->
->
->
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
