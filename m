@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238660AbiCGJ5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
+        id S238819AbiCGJ5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:57:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239057AbiCGJjL (ORCPT
+        with ESMTP id S239150AbiCGJjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819227090B;
-        Mon,  7 Mar 2022 01:34:22 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351766D399;
+        Mon,  7 Mar 2022 01:34:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC7AAB80F9F;
-        Mon,  7 Mar 2022 09:34:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F0D5C340F4;
-        Mon,  7 Mar 2022 09:34:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3DF9B810D9;
+        Mon,  7 Mar 2022 09:34:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 432AFC340F3;
+        Mon,  7 Mar 2022 09:34:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645660;
-        bh=yLMggVWrw2CvWPwrPuMOkNZreJCpGwnFTi/CCPfek6Q=;
+        s=korg; t=1646645675;
+        bh=R8uY/zTXdHSzjpLIxZlJhb0hQIo+MzsaqToLbh99yeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h6pyDIvNeDYvMkr022DWeu88A3Y69JdlE5Y3ZsoLIGQSAMi22/opPzmtQt6c7mz53
-         OLYSlX8Vb1vzyZl768BvUq6HeLdkEXUQkeRJmlPZqnNI7gdBNgzdO5WBz96KWk3gs8
-         nmCpS/7M9lEL98QLjXe+wqrCne9Uc2rHMg4BV0T8=
+        b=WNUeL62bvIll1gPeiubB7Bo8thH0/PA3r1y+FyI3mCPQJ9thGDqrqsSKDsm4s1fkU
+         Ri43i+pvXU4x79wF60mQp4bzWZTJyIHibeTUUoBTLkJ82kuOtgrbOrFSlL1Q36MMqm
+         FPquGPHR3B10sw0b+/I2IBu3KjnFD7CYPMRlNFxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 102/105] btrfs: fix lost prealloc extents beyond eof after full fsync
-Date:   Mon,  7 Mar 2022 10:19:45 +0100
-Message-Id: <20220307091647.045618197@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 5.10 068/105] efivars: Respect "block" flag in efivar_entry_set_safe()
+Date:   Mon,  7 Mar 2022 10:19:11 +0100
+Message-Id: <20220307091646.090969071@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,175 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Jann Horn <jannh@google.com>
 
-commit d99478874355d3a7b9d86dfb5d7590d5b1754b1f upstream.
+commit 258dd902022cb10c83671176688074879517fd21 upstream.
 
-When doing a full fsync, if we have prealloc extents beyond (or at) eof,
-and the leaves that contain them were not modified in the current
-transaction, we end up not logging them. This results in losing those
-extents when we replay the log after a power failure, since the inode is
-truncated to the current value of the logged i_size.
+When the "block" flag is false, the old code would sometimes still call
+check_var_size(), which wrongly tells ->query_variable_store() that it can
+block.
 
-Just like for the fast fsync path, we need to always log all prealloc
-extents starting at or beyond i_size. The fast fsync case was fixed in
-commit 471d557afed155 ("Btrfs: fix loss of prealloc extents past i_size
-after fsync log replay") but it missed the full fsync path. The problem
-exists since the very early days, when the log tree was added by
-commit e02119d5a7b439 ("Btrfs: Add a write ahead tree log to optimize
-synchronous operations").
+As far as I can tell, this can't really materialize as a bug at the moment,
+because ->query_variable_store only does something on X86 with generic EFI,
+and in that configuration we always take the efivar_entry_set_nonblocking()
+path.
 
-Example reproducer:
-
-  $ mkfs.btrfs -f /dev/sdc
-  $ mount /dev/sdc /mnt
-
-  # Create our test file with many file extent items, so that they span
-  # several leaves of metadata, even if the node/page size is 64K. Use
-  # direct IO and not fsync/O_SYNC because it's both faster and it avoids
-  # clearing the full sync flag from the inode - we want the fsync below
-  # to trigger the slow full sync code path.
-  $ xfs_io -f -d -c "pwrite -b 4K 0 16M" /mnt/foo
-
-  # Now add two preallocated extents to our file without extending the
-  # file's size. One right at i_size, and another further beyond, leaving
-  # a gap between the two prealloc extents.
-  $ xfs_io -c "falloc -k 16M 1M" /mnt/foo
-  $ xfs_io -c "falloc -k 20M 1M" /mnt/foo
-
-  # Make sure everything is durably persisted and the transaction is
-  # committed. This makes all created extents to have a generation lower
-  # than the generation of the transaction used by the next write and
-  # fsync.
-  sync
-
-  # Now overwrite only the first extent, which will result in modifying
-  # only the first leaf of metadata for our inode. Then fsync it. This
-  # fsync will use the slow code path (inode full sync bit is set) because
-  # it's the first fsync since the inode was created/loaded.
-  $ xfs_io -c "pwrite 0 4K" -c "fsync" /mnt/foo
-
-  # Extent list before power failure.
-  $ xfs_io -c "fiemap -v" /mnt/foo
-  /mnt/foo:
-   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-     0: [0..7]:          2178048..2178055     8   0x0
-     1: [8..16383]:      26632..43007     16376   0x0
-     2: [16384..32767]:  2156544..2172927 16384   0x0
-     3: [32768..34815]:  2172928..2174975  2048 0x800
-     4: [34816..40959]:  hole              6144
-     5: [40960..43007]:  2174976..2177023  2048 0x801
-
-  <power fail>
-
-  # Mount fs again, trigger log replay.
-  $ mount /dev/sdc /mnt
-
-  # Extent list after power failure and log replay.
-  $ xfs_io -c "fiemap -v" /mnt/foo
-  /mnt/foo:
-   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-     0: [0..7]:          2178048..2178055     8   0x0
-     1: [8..16383]:      26632..43007     16376   0x0
-     2: [16384..32767]:  2156544..2172927 16384   0x1
-
-  # The prealloc extents at file offsets 16M and 20M are missing.
-
-So fix this by calling btrfs_log_prealloc_extents() when we are doing a
-full fsync, so that we always log all prealloc extents beyond eof.
-
-A test case for fstests will follow soon.
-
-CC: stable@vger.kernel.org # 4.19+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: ca0e30dcaa53 ("efi: Add nonblocking option to efi_query_variable_store()")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220218180559.1432559-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |   43 +++++++++++++++++++++++++++++++------------
- 1 file changed, 31 insertions(+), 12 deletions(-)
+ drivers/firmware/efi/vars.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -4297,7 +4297,7 @@ static int log_one_extent(struct btrfs_t
- 
- /*
-  * Log all prealloc extents beyond the inode's i_size to make sure we do not
-- * lose them after doing a fast fsync and replaying the log. We scan the
-+ * lose them after doing a full/fast fsync and replaying the log. We scan the
-  * subvolume's root instead of iterating the inode's extent map tree because
-  * otherwise we can log incorrect extent items based on extent map conversion.
-  * That can happen due to the fact that extent maps are merged when they
-@@ -5084,6 +5084,7 @@ static int copy_inode_items_to_log(struc
- 				   struct btrfs_log_ctx *ctx,
- 				   bool *need_log_inode_item)
+--- a/drivers/firmware/efi/vars.c
++++ b/drivers/firmware/efi/vars.c
+@@ -742,6 +742,7 @@ int efivar_entry_set_safe(efi_char16_t *
  {
-+	const u64 i_size = i_size_read(&inode->vfs_inode);
- 	struct btrfs_root *root = inode->root;
- 	int ins_start_slot = 0;
- 	int ins_nr = 0;
-@@ -5104,13 +5105,21 @@ again:
- 		if (min_key->type > max_key->type)
- 			break;
+ 	const struct efivar_operations *ops;
+ 	efi_status_t status;
++	unsigned long varsize;
  
--		if (min_key->type == BTRFS_INODE_ITEM_KEY)
-+		if (min_key->type == BTRFS_INODE_ITEM_KEY) {
- 			*need_log_inode_item = false;
--
--		if ((min_key->type == BTRFS_INODE_REF_KEY ||
--		     min_key->type == BTRFS_INODE_EXTREF_KEY) &&
--		    inode->generation == trans->transid &&
--		    !recursive_logging) {
-+		} else if (min_key->type == BTRFS_EXTENT_DATA_KEY &&
-+			   min_key->offset >= i_size) {
-+			/*
-+			 * Extents at and beyond eof are logged with
-+			 * btrfs_log_prealloc_extents().
-+			 * Only regular files have BTRFS_EXTENT_DATA_KEY keys,
-+			 * and no keys greater than that, so bail out.
-+			 */
-+			break;
-+		} else if ((min_key->type == BTRFS_INODE_REF_KEY ||
-+			    min_key->type == BTRFS_INODE_EXTREF_KEY) &&
-+			   inode->generation == trans->transid &&
-+			   !recursive_logging) {
- 			u64 other_ino = 0;
- 			u64 other_parent = 0;
+ 	if (!__efivars)
+ 		return -EINVAL;
+@@ -764,15 +765,17 @@ int efivar_entry_set_safe(efi_char16_t *
+ 		return efivar_entry_set_nonblocking(name, vendor, attributes,
+ 						    size, data);
  
-@@ -5141,10 +5150,8 @@ again:
- 				btrfs_release_path(path);
- 				goto next_key;
- 			}
--		}
--
--		/* Skip xattrs, we log them later with btrfs_log_all_xattrs() */
--		if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
-+		} else if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
-+			/* Skip xattrs, logged later with btrfs_log_all_xattrs() */
- 			if (ins_nr == 0)
- 				goto next_slot;
- 			ret = copy_items(trans, inode, dst_path, path,
-@@ -5197,9 +5204,21 @@ next_key:
- 			break;
- 		}
++	varsize = size + ucs2_strsize(name, 1024);
+ 	if (!block) {
+ 		if (down_trylock(&efivars_lock))
+ 			return -EBUSY;
++		status = check_var_size_nonblocking(attributes, varsize);
+ 	} else {
+ 		if (down_interruptible(&efivars_lock))
+ 			return -EINTR;
++		status = check_var_size(attributes, varsize);
  	}
--	if (ins_nr)
-+	if (ins_nr) {
- 		ret = copy_items(trans, inode, dst_path, path, ins_start_slot,
- 				 ins_nr, inode_only, logged_isize);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (inode_only == LOG_INODE_ALL && S_ISREG(inode->vfs_inode.i_mode)) {
-+		/*
-+		 * Release the path because otherwise we might attempt to double
-+		 * lock the same leaf with btrfs_log_prealloc_extents() below.
-+		 */
-+		btrfs_release_path(path);
-+		ret = btrfs_log_prealloc_extents(trans, inode, dst_path);
-+	}
  
- 	return ret;
- }
+-	status = check_var_size(attributes, size + ucs2_strsize(name, 1024));
+ 	if (status != EFI_SUCCESS) {
+ 		up(&efivars_lock);
+ 		return -ENOSPC;
 
 
