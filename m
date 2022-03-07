@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D30C47084
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B50C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238883AbiCGJsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
+        id S240105AbiCGJuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:50:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239094AbiCGJjM (ORCPT
+        with ESMTP id S240538AbiCGJlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3BD6D191;
-        Mon,  7 Mar 2022 01:34:31 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46742273D;
+        Mon,  7 Mar 2022 01:37:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9488B80E70;
-        Mon,  7 Mar 2022 09:33:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13ED6C340E9;
-        Mon,  7 Mar 2022 09:33:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70CCB6128E;
+        Mon,  7 Mar 2022 09:37:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88B50C340E9;
+        Mon,  7 Mar 2022 09:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645615;
-        bh=HPXmOkP3wrkQiz6RZ2g/fuX9WBPu5Ha+Bz20V8cASm8=;
+        s=korg; t=1646645842;
+        bh=r8Ao5v/dnH/vW+0w9rwvC1D8D+2q8aKGa6MHCS65ao0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0dalyef/PLb7PFq9H7ETh+Zfm36Kpu1yV14cy3Yijme9E6ElND06nxpl44hf3zyp
-         Du9cEqE/whLl2YuHd3YkqnbnwXFuPV+PbhV2Uh/fivUmj6W42i1Vmz9jM6mBaSOuNG
-         m6mjmRaGyas2rci3ndrApLVkI0cW9QW7KC/HtjZ0=
+        b=M2rSomsNqZ3KF3N153HPViLt3E4JlxJ2CmKXonjsv9Ff2bh1NfAqCP8/ATtpbCPCt
+         yH703DOP4kMSV1Pjn+43cQ1VDmW118xYFuQg6lh32Vuw2XTEjhCg66sAmtunP/9A0m
+         aQK+lkPFk/ExOVKBVCFnjJCiuk6Znu56KcR50AR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 088/105] ibmvnic: define flush_reset_queue helper
-Date:   Mon,  7 Mar 2022 10:19:31 +0100
-Message-Id: <20220307091646.654996804@linuxfoundation.org>
+Subject: [PATCH 5.15 054/262] PCI: aardvark: Fix checking for MEM resource type
+Date:   Mon,  7 Mar 2022 10:16:38 +0100
+Message-Id: <20220307091704.040305642@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,66 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 83da53f7e4bd86dca4b2edc1e2bb324fb3c033a1 ]
+[ Upstream commit 2070b2ddea89f5b604fac3d27ade5cb6d19a5706 ]
 
-Define and use a helper to flush the reset queue.
+IORESOURCE_MEM_64 is not a resource type but a type flag.
 
-Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Remove incorrect check for type IORESOURCE_MEM_64.
+
+Link: https://lore.kernel.org/r/20211125160148.26029-2-kabel@kernel.org
+Fixes: 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from 'ranges' DT property")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/pci/controller/pci-aardvark.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index de58824f4c18..f07468316656 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2304,12 +2304,23 @@ static void __ibmvnic_delayed_reset(struct work_struct *work)
- 	__ibmvnic_reset(&adapter->ibmvnic_reset);
- }
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index 85323cbc4888a..b2217e2b3efde 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1537,8 +1537,7 @@ static int advk_pcie_probe(struct platform_device *pdev)
+ 		 * only PIO for issuing configuration transfers which does
+ 		 * not use PCIe window configuration.
+ 		 */
+-		if (type != IORESOURCE_MEM && type != IORESOURCE_MEM_64 &&
+-		    type != IORESOURCE_IO)
++		if (type != IORESOURCE_MEM && type != IORESOURCE_IO)
+ 			continue;
  
-+static void flush_reset_queue(struct ibmvnic_adapter *adapter)
-+{
-+	struct list_head *entry, *tmp_entry;
-+
-+	if (!list_empty(&adapter->rwi_list)) {
-+		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
-+			list_del(entry);
-+			kfree(list_entry(entry, struct ibmvnic_rwi, list));
-+		}
-+	}
-+}
-+
- static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 			 enum ibmvnic_reset_reason reason)
- {
--	struct list_head *entry, *tmp_entry;
--	struct ibmvnic_rwi *rwi, *tmp;
- 	struct net_device *netdev = adapter->netdev;
-+	struct ibmvnic_rwi *rwi, *tmp;
- 	unsigned long flags;
- 	int ret;
+ 		/*
+@@ -1546,8 +1545,7 @@ static int advk_pcie_probe(struct platform_device *pdev)
+ 		 * configuration is set to transparent memory access so it
+ 		 * does not need window configuration.
+ 		 */
+-		if ((type == IORESOURCE_MEM || type == IORESOURCE_MEM_64) &&
+-		    entry->offset == 0)
++		if (type == IORESOURCE_MEM && entry->offset == 0)
+ 			continue;
  
-@@ -2353,12 +2364,9 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 	/* if we just received a transport event,
- 	 * flush reset queue and process this reset
- 	 */
--	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
--		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
--			list_del(entry);
--			kfree(list_entry(entry, struct ibmvnic_rwi, list));
--		}
--	}
-+	if (adapter->force_reset_recovery)
-+		flush_reset_queue(adapter);
-+
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
- 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %d)\n", reason);
+ 		/*
 -- 
 2.34.1
 
