@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 725CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239484AbiCGKRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:17:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
+        id S239345AbiCGKRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240425AbiCGKBB (ORCPT
+        with ESMTP id S240427AbiCGKBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:01:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101931EAD2;
-        Mon,  7 Mar 2022 01:48:06 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAF21EAD3;
+        Mon,  7 Mar 2022 01:48:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C16C8B80F9F;
-        Mon,  7 Mar 2022 09:48:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E40C340E9;
-        Mon,  7 Mar 2022 09:48:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C68960010;
+        Mon,  7 Mar 2022 09:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56163C340E9;
+        Mon,  7 Mar 2022 09:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646483;
-        bh=iLgFKGPyCUaUOPyEtZCffVvNczVgl5sRpU+cMyQbkSs=;
+        s=korg; t=1646646486;
+        bh=z60zXuYXptNBGJ0tBVZp3+fhv8bqkROWAvgb8COEoY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y8OjQuJkFmdPVVEPUwd0tIZPyAZU+EZti2a2BwX4hAyvDviyR7c0td2Q7MP0KixcV
-         qkbK/tL1SxYXQIUp8aRVvI6wBJQrpMamQWBEdhQgOjYThRHB7FwSSFPCUTHO05738/
-         +zCh91Qxtv2YTvLLQa++w7jg5Q8B2xce1CVhS7Is=
+        b=hPpGKoeChhaf4157b3zbDeGN6wRypAODuqgk+Rl3wm0UEFtZfCc/yXKkyTA281LXr
+         5D62YWNTHa4uCuwO2CmtS/YASjahU6Wpyh7S3/ndXpXqbXfdSW/mK7qpbd3d6C4PtT
+         XqBGyN8iNIjZI39T1AxevRc+LaMmEvc9ACRWkLW4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+        Sidong Yang <realwakka@gmail.com>,
         David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 256/262] btrfs: do not WARN_ON() if we have PageError set
-Date:   Mon,  7 Mar 2022 10:20:00 +0100
-Message-Id: <20220307091710.935323059@linuxfoundation.org>
+Subject: [PATCH 5.15 257/262] btrfs: qgroup: fix deadlock between rescan worker and remove qgroup
+Date:   Mon,  7 Mar 2022 10:20:01 +0100
+Message-Id: <20220307091710.984548696@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,119 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Sidong Yang <realwakka@gmail.com>
 
-commit a50e1fcbc9b85fd4e95b89a75c0884cb032a3e06 upstream.
+commit d4aef1e122d8bbdc15ce3bd0bc813d6b44a7d63a upstream.
 
-Whenever we do any extent buffer operations we call
-assert_eb_page_uptodate() to complain loudly if we're operating on an
-non-uptodate page.  Our overnight tests caught this warning earlier this
-week
+The commit e804861bd4e6 ("btrfs: fix deadlock between quota disable and
+qgroup rescan worker") by Kawasaki resolves deadlock between quota
+disable and qgroup rescan worker. But also there is a deadlock case like
+it. It's about enabling or disabling quota and creating or removing
+qgroup. It can be reproduced in simple script below.
 
-  WARNING: CPU: 1 PID: 553508 at fs/btrfs/extent_io.c:6849 assert_eb_page_uptodate+0x3f/0x50
-  CPU: 1 PID: 553508 Comm: kworker/u4:13 Tainted: G        W         5.17.0-rc3+ #564
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-2.fc32 04/01/2014
-  Workqueue: btrfs-cache btrfs_work_helper
-  RIP: 0010:assert_eb_page_uptodate+0x3f/0x50
-  RSP: 0018:ffffa961440a7c68 EFLAGS: 00010246
-  RAX: 0017ffffc0002112 RBX: ffffe6e74453f9c0 RCX: 0000000000001000
-  RDX: ffffe6e74467c887 RSI: ffffe6e74453f9c0 RDI: ffff8d4c5efc2fc0
-  RBP: 0000000000000d56 R08: ffff8d4d4a224000 R09: 0000000000000000
-  R10: 00015817fa9d1ef0 R11: 000000000000000c R12: 00000000000007b1
-  R13: ffff8d4c5efc2fc0 R14: 0000000001500000 R15: 0000000001cb1000
-  FS:  0000000000000000(0000) GS:ffff8d4dbbd00000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 00007ff31d3448d8 CR3: 0000000118be8004 CR4: 0000000000370ee0
-  Call Trace:
+for i in {1..100}
+do
+    btrfs quota enable /mnt &
+    btrfs qgroup create 1/0 /mnt &
+    btrfs qgroup destroy 1/0 /mnt &
+    btrfs quota disable /mnt &
+done
 
-   extent_buffer_test_bit+0x3f/0x70
-   free_space_test_bit+0xa6/0xc0
-   load_free_space_tree+0x1f6/0x470
-   caching_thread+0x454/0x630
-   ? rcu_read_lock_sched_held+0x12/0x60
-   ? rcu_read_lock_sched_held+0x12/0x60
-   ? rcu_read_lock_sched_held+0x12/0x60
-   ? lock_release+0x1f0/0x2d0
-   btrfs_work_helper+0xf2/0x3e0
-   ? lock_release+0x1f0/0x2d0
-   ? finish_task_switch.isra.0+0xf9/0x3a0
-   process_one_work+0x26d/0x580
-   ? process_one_work+0x580/0x580
-   worker_thread+0x55/0x3b0
-   ? process_one_work+0x580/0x580
-   kthread+0xf0/0x120
-   ? kthread_complete_and_exit+0x20/0x20
-   ret_from_fork+0x1f/0x30
+Here's why the deadlock happens:
 
-This was partially fixed by c2e39305299f01 ("btrfs: clear extent buffer
-uptodate when we fail to write it"), however all that fix did was keep
-us from finding extent buffers after a failed writeout.  It didn't keep
-us from continuing to use a buffer that we already had found.
+1) The quota rescan task is running.
 
-In this case we're searching the commit root to cache the block group,
-so we can start committing the transaction and switch the commit root
-and then start writing.  After the switch we can look up an extent
-buffer that hasn't been written yet and start processing that block
-group.  Then we fail to write that block out and clear Uptodate on the
-page, and then we start spewing these errors.
+2) Task A calls btrfs_quota_disable(), locks the qgroup_ioctl_lock
+   mutex, and then calls btrfs_qgroup_wait_for_completion(), to wait for
+   the quota rescan task to complete.
 
-Normally we're protected by the tree lock to a certain degree here.  If
-we read a block we have that block read locked, and we block the writer
-from locking the block before we submit it for the write.  However this
-isn't necessarily fool proof because the read could happen before we do
-the submit_bio and after we locked and unlocked the extent buffer.
+3) Task B calls btrfs_remove_qgroup() and it blocks when trying to lock
+   the qgroup_ioctl_lock mutex, because it's being held by task A. At that
+   point task B is holding a transaction handle for the current transaction.
 
-Also in this particular case we have path->skip_locking set, so that
-won't save us here.  We'll simply get a block that was valid when we
-read it, but became invalid while we were using it.
+4) The quota rescan task calls btrfs_commit_transaction(). This results
+   in it waiting for all other tasks to release their handles on the
+   transaction, but task B is blocked on the qgroup_ioctl_lock mutex
+   while holding a handle on the transaction, and that mutex is being held
+   by task A, which is waiting for the quota rescan task to complete,
+   resulting in a deadlock between these 3 tasks.
 
-What we really want is to catch the case where we've "read" a block but
-it's not marked Uptodate.  On read we ClearPageError(), so if we're
-!Uptodate and !Error we know we didn't do the right thing for reading
-the page.
+To resolve this issue, the thread disabling quota should unlock
+qgroup_ioctl_lock before waiting rescan completion. Move
+btrfs_qgroup_wait_for_completion() after unlock of qgroup_ioctl_lock.
 
-Fix this by checking !Uptodate && !Error, this way we will not complain
-if our buffer gets invalidated while we're using it, and we'll maintain
-the spirit of the check which is to make sure we have a fully in-cache
-block while we're messing with it.
-
+Fixes: e804861bd4e6 ("btrfs: fix deadlock between quota disable and qgroup rescan worker")
 CC: stable@vger.kernel.org # 5.4+
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Signed-off-by: Sidong Yang <realwakka@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ fs/btrfs/qgroup.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -6801,14 +6801,24 @@ static void assert_eb_page_uptodate(cons
- {
- 	struct btrfs_fs_info *fs_info = eb->fs_info;
+--- a/fs/btrfs/qgroup.c
++++ b/fs/btrfs/qgroup.c
+@@ -1197,13 +1197,20 @@ int btrfs_quota_disable(struct btrfs_fs_
+ 		goto out;
  
-+	/*
-+	 * If we are using the commit root we could potentially clear a page
-+	 * Uptodate while we're using the extent buffer that we've previously
-+	 * looked up.  We don't want to complain in this case, as the page was
-+	 * valid before, we just didn't write it out.  Instead we want to catch
-+	 * the case where we didn't actually read the block properly, which
-+	 * would have !PageUptodate && !PageError, as we clear PageError before
-+	 * reading.
+ 	/*
++	 * Unlock the qgroup_ioctl_lock mutex before waiting for the rescan worker to
++	 * complete. Otherwise we can deadlock because btrfs_remove_qgroup() needs
++	 * to lock that mutex while holding a transaction handle and the rescan
++	 * worker needs to commit a transaction.
 +	 */
- 	if (fs_info->sectorsize < PAGE_SIZE) {
--		bool uptodate;
-+		bool uptodate, error;
++	mutex_unlock(&fs_info->qgroup_ioctl_lock);
++
++	/*
+ 	 * Request qgroup rescan worker to complete and wait for it. This wait
+ 	 * must be done before transaction start for quota disable since it may
+ 	 * deadlock with transaction by the qgroup rescan worker.
+ 	 */
+ 	clear_bit(BTRFS_FS_QUOTA_ENABLED, &fs_info->flags);
+ 	btrfs_qgroup_wait_for_completion(fs_info, false);
+-	mutex_unlock(&fs_info->qgroup_ioctl_lock);
  
- 		uptodate = btrfs_subpage_test_uptodate(fs_info, page,
- 						       eb->start, eb->len);
--		WARN_ON(!uptodate);
-+		error = btrfs_subpage_test_error(fs_info, page, eb->start, eb->len);
-+		WARN_ON(!uptodate && !error);
- 	} else {
--		WARN_ON(!PageUptodate(page));
-+		WARN_ON(!PageUptodate(page) && !PageError(page));
- 	}
- }
- 
+ 	/*
+ 	 * 1 For the root item
 
 
