@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3909C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237290AbiCGJbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:31:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        id S237297AbiCGJcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237958AbiCGJ2f (ORCPT
+        with ESMTP id S237984AbiCGJ2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9AD6582A;
-        Mon,  7 Mar 2022 01:26:23 -0800 (PST)
+        Mon, 7 Mar 2022 04:28:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573486C928;
+        Mon,  7 Mar 2022 01:26:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49FCCB810C0;
-        Mon,  7 Mar 2022 09:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70C73C340E9;
-        Mon,  7 Mar 2022 09:26:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0932961147;
+        Mon,  7 Mar 2022 09:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82DDC340E9;
+        Mon,  7 Mar 2022 09:26:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645182;
-        bh=S685cRqpnTKwPhd6Y+2lTRRBg99X0zoYvQMqbsI5vmw=;
+        s=korg; t=1646645163;
+        bh=JmT9QfBOyZJcBBwWxnPYAC63NAd5BxcKK3R707o9fKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xK741Fj7MxlgS90Wbjosfx1riIvxyUMzUD/6jnmUvy+M7rInzYI0qdaW8hn/PMqJp
-         bV+MooxepKJEZQQ5Ploa9Z2nLzz/DA8URU5IAUfzuTDMx7d1wLX56J4qX3BTFnAF2F
-         uaQf6vv8egdVvJv2RMWTPqlTCTbAM9Ut3uuhm5Ew=
+        b=bGXuMun5KxJaPfGmXtfsrh4Tlc5crgYFsulI8sChD034FpBeQy5bqRCjST7D4Ryt0
+         1vl78rqd5lY9NCSWRb9aiHWhaKh6tSK8lxzdT7HrAvH1CslHm8E8fFXG7vwHFTX4Jv
+         D19j2u2fX8sdMgA0dUxqXaK69ZZ9gvhD1pdz1yns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 05/64] ASoC: rt5682: do not block workqueue if card is unbound
-Date:   Mon,  7 Mar 2022 10:18:38 +0100
-Message-Id: <20220307091639.294566125@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 35/51] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+Date:   Mon,  7 Mar 2022 10:19:10 +0100
+Message-Id: <20220307091637.991047322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,63 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 4c33de0673ced9c7c37b3bbd9bfe0fda72340b2a ]
+commit bd6f1fd5d33dfe5d1b4f2502d3694a7cc13f166d upstream.
 
-The current rt5682_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+During driver initialization, the pointer of card info, i.e. the
+variable 'ci' is required. However, the definition of
+'com20020pci_id_table' reveals that this field is empty for some
+devices, which will cause null pointer dereference when initializing
+these devices.
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
+The following log reveals it:
 
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
+[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
+[    3.975181] Call Trace:
+[    3.976208]  local_pci_probe+0x13f/0x210
+[    3.977248]  pci_device_probe+0x34c/0x6d0
+[    3.977255]  ? pci_uevent+0x470/0x470
+[    3.978265]  really_probe+0x24c/0x8d0
+[    3.978273]  __driver_probe_device+0x1b3/0x280
+[    3.979288]  driver_probe_device+0x50/0x370
 
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-3-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by checking whether the 'ci' is a null pointer first.
+
+Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/rt5682.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/arcnet/com20020-pci.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index 05e883a65d7a7..a8cf4c7451304 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -1052,11 +1052,13 @@ static void rt5682_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5682_priv, jack_detect_work.work);
- 	int val, btn_type;
+--- a/drivers/net/arcnet/com20020-pci.c
++++ b/drivers/net/arcnet/com20020-pci.c
+@@ -136,6 +136,9 @@ static int com20020pci_probe(struct pci_
+ 		return -ENOMEM;
  
--	while (!rt5682->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5682->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5682->component || !rt5682->component->card ||
-+	    !rt5682->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5682->jack_detect_work, msecs_to_jiffies(15));
-+		return;
-+	}
+ 	ci = (struct com20020_pci_card_info *)id->driver_data;
++	if (!ci)
++		return -EINVAL;
++
+ 	priv->ci = ci;
+ 	mm = &ci->misc_map;
  
- 	mutex_lock(&rt5682->calibrate_mutex);
- 
--- 
-2.34.1
-
 
 
