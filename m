@@ -2,196 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D5C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28925C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244679AbiCGSOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:14:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51846 "EHLO
+        id S241260AbiCGSR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:17:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239563AbiCGSOR (ORCPT
+        with ESMTP id S241357AbiCGSRT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:14:17 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10662554BA;
-        Mon,  7 Mar 2022 10:13:21 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 227HFZ1r028771;
-        Mon, 7 Mar 2022 18:13:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=YVuF6NP1VQBl8yY3XGh33qon/WRSsnISKMnsSgcczy4=;
- b=Qi4nPDUh7/fNnMmfJTjcR5VJ1ib5MEz+RD4/IAD+IGZa/bZnxHEn9F4op7iwZ6dEO8ft
- 5POlqItD7YC9Wit9YnJtPYZYH0Cqq3x77YKfUm1HPe5UzOhe2ZTKYRceYZMKoRjNdOfH
- /zZq1Ny8HYZN4YdvjaFL+EklwOeV2jV6+OM5TTbpxEL/xiBH/ynm/vilFUNNVjNAtXt3
- wiOerVEQZvow3Le8loiZyyIUxfKfJRxXRjOKcXKLh/g79N35NiAnal+G8msr/BtjqxZt
- vnPc8wg1TTm79sdIQoFY6ApKFQtay47VnmJ66KfxiwwVEbbV9nfuxquY89gmy0I8iM/j IQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ekyfscn2r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 07 Mar 2022 18:13:06 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 227IB7L6192341;
-        Mon, 7 Mar 2022 18:13:06 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
-        by aserp3020.oracle.com with ESMTP id 3ekyp1c6y2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 07 Mar 2022 18:13:05 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ATQzX7Pn9HteX18dv9DF+Drq3Jj6uCGQV+T+oFwYR2m36N4k0imrPAoF4PSaSKA4BfjEONF874VMZEIzhLcgOHt7Pl2qdfMfLnVCwYXzAxjFcOYW4BM55ytf+thTbYBAlRdyuq+XQXW4T7xkMtT7Lo3rRhJN8sSP+ow6P75O1GSsOOqxHnisElh5DSJTiSTfcylhuNgmHXJhdgRShGEAkdlO8hGRp/v7egkcczdc05LD8i8S0nKxbZl0GL1Pc4MzRmpiWHbhvdwR5KVQ6jUzPgyouwBiIdymUViLRfRmdK/3LAsAADGsuhcGKTlfchGGAHIZ1BxsjLi1CG6o2ea2Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YVuF6NP1VQBl8yY3XGh33qon/WRSsnISKMnsSgcczy4=;
- b=VvLR/hPcMwof/wMjYAkAe+jv6qNQ19KXZQvH0Cuyl6PE0i5kytqOhaUyRMQikyYKoeT1UAqJUpFnbCQ1pjsmjmZGsjn8bQKwiFsS9GFCESHCakqIgq9f0mYMIXniLP+NwjDaLC1D5OCEa9z6NWF0sFqWlveNG5mbSs9/4pVAjaHU4mOHY9vCPv5ljU/BDNUMrP0yxMdN7s5kdf7g0UG9z/72zMUe98cd5wL96rWiGPGP8pyY385RtsR6vb7LdI1gZR7J6P4CGfaSaEz/oIjBCLZf3fL3qLVGrtupl+yn4aBaHYaL0/DM7+jXftcTVw4NnheAOsdyYIFDxYZ1DU7t1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YVuF6NP1VQBl8yY3XGh33qon/WRSsnISKMnsSgcczy4=;
- b=yO1cNg9ozyg/oMI/3sHnjq7eq5XxvqmvsFQX0RDg8Kv6jDAmoLc3hWcucxpmhtOI9kFzbtuT6OAkk8SGANtz2vB2lpCy3sSNlnp9dWWtGvlZDgms09/gZVZTv1CbfZbVNddsVls37aLluA0qZi8YvwvrKhVfD9sLt+RkYnAOIn8=
-Received: from CH2PR10MB4150.namprd10.prod.outlook.com (2603:10b6:610:ac::13)
- by MN2PR10MB3134.namprd10.prod.outlook.com (2603:10b6:208:128::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.21; Mon, 7 Mar
- 2022 18:13:02 +0000
-Received: from CH2PR10MB4150.namprd10.prod.outlook.com
- ([fe80::a8c4:c418:5d49:fe1a]) by CH2PR10MB4150.namprd10.prod.outlook.com
- ([fe80::a8c4:c418:5d49:fe1a%7]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
- 18:13:02 +0000
-From:   Eric Snowberg <eric.snowberg@oracle.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>
-CC:     Mimi Zohar <zohar@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        "dwmw2@infradead.org" <dwmw2@infradead.org>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "nayna@linux.ibm.com" <nayna@linux.ibm.com>,
-        "mic@linux.microsoft.com" <mic@linux.microsoft.com>,
-        Konrad Wilk <konrad.wilk@oracle.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH 4/4] integrity: CA enforcement in machine keyring
-Thread-Topic: [PATCH 4/4] integrity: CA enforcement in machine keyring
-Thread-Index: AQHYLZNB/4y9NCkFlkOR37jouCPamKyv4ZWAgARhOoA=
-Date:   Mon, 7 Mar 2022 18:13:02 +0000
-Message-ID: <64A87331-C97E-4565-B222-9BF7208E5010@oracle.com>
-References: <20220301173651.3435350-1-eric.snowberg@oracle.com>
- <20220301173651.3435350-5-eric.snowberg@oracle.com>
- <59f08890-f3f9-43fe-e1cc-6648071e33e0@linux.ibm.com>
-In-Reply-To: <59f08890-f3f9-43fe-e1cc-6648071e33e0@linux.ibm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.7)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 722456bb-8102-413b-a12a-08da00661e80
-x-ms-traffictypediagnostic: MN2PR10MB3134:EE_
-x-microsoft-antispam-prvs: <MN2PR10MB3134C36AE93EEF5B6811AA5B87089@MN2PR10MB3134.namprd10.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4tATGp+BHw6tsGjP0noqPf0Z+zjzFUAfvvxvRYkVyxnGUQehU4/I032iDHIsFpqUCt91/bjFhTdLkfLYf5FLhH84WXhe8rIaoHdmOk4vztOkqAXxbpSI/m5AFaz5JHf8ExfIl3b917mhClSXM+3F61atCl88QIA227mKNFcA5JUPZXCFtEe8QOPrRnN34KSJsvpbwVxulHfEvUNiMAcQXRDxXNwBQlWkO1tBjZkxBYpFvQWOK8OHeFN6StFzQZabtf8HjF+SY/6NA+RWyslYRdEOe9HQQdxMiO+R0uBTqjav0jTLlCTDv8Xwn8U/ml7g7HJcxqhm46q2svaEtiF+SWz1tADUhPnABjeXV2wiytxpIXg/kBQw2S3uu/MeinU9lU76JSgpY+F3LMrkHEWARgi4mA0SJFgNpl9A/2eCSbY3D3ALuOFBXM8MY9zsv5Z8SzFclYaphSuWKHCiDgnGaKYVNoxMeaHNmVvVjMOYBL3tNR8xi4Hs8iOWkW/oGz3kswsIzJyOUmGaQ5DgWEC+p6/ImP0HnndMiSSTwUfn6uUGQTzS4vWMWGXW1BBFCTvlfbbv6YBcXnL5y+66joPRw74oD/oiD0AmPW0HFVZyXS+Q8OtJNQfMbWd1a3QN6BVo8bce+H4KcGSakaNHJK25GW/tHB3XKckNWokD52odHbkuC0sVagSER33uhn4n/hii1y/uV/QPrjUGZTogwPiMq+B3iG6Hjp7xCDXaRiB68b5auxiXs5ufb8s4w6iNB09jfeKTS/BTIzPc9T1N7i7ddhRYoKJa0joFiRt4B1rGYqXidaZhLUIeeGRf02zOI4dqnhOSzL9VPiueejFq6cfCNeRScOvwvan0rohZ9ay8REU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4150.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(38070700005)(122000001)(38100700002)(83380400001)(2616005)(186003)(26005)(86362001)(316002)(8936002)(6916009)(36756003)(33656002)(66476007)(54906003)(76116006)(91956017)(4326008)(8676002)(66446008)(64756008)(66556008)(66946007)(966005)(7416002)(44832011)(53546011)(508600001)(6506007)(2906002)(6486002)(71200400001)(5660300002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?W29ut7bpVXWnbOD376MnmPkUvgHicLebMCJHzUa4RFtgbDbL+tQhXJCg9MFx?=
- =?us-ascii?Q?M4Blgac8CVkD70tix8ofZs7xZFGg+QSgK3HZl8YviibBC0pYc6IZn0f8Prpp?=
- =?us-ascii?Q?r/G9Y5KrH8SVpi13fOldNfqPCS/CvcfFQwy5OiJew/mbRnWrkYfYdrp3Jpil?=
- =?us-ascii?Q?05sHz/iKakYa6+eekMjnrzV6xmeI65Rf/Et5ytaff/lomkxXGHXx+NpaOn3q?=
- =?us-ascii?Q?z5sT40MpESEPnvf+nDDm0b1/tAUQfLgnAFuB4OzO51ltgIchIwwFcn0eMOfO?=
- =?us-ascii?Q?dtFGuxT/+6zkMF7ZJafHuD6iNPet6f3G1holNQHVwm7hZkTCn+U36sWP4qNP?=
- =?us-ascii?Q?ZmXeLnjzfnGpGHCzeZyVCigb51TqXzaF4TU5X+Sc1NiUQDxDJUMweOTVp+Lg?=
- =?us-ascii?Q?qOI+b2Ogf3I8kqIf96uQn1AtfE+r+V40wtZ+PD9uFbeEAiyNG0q2ACN53s+a?=
- =?us-ascii?Q?zAO3U5Ng5x/8s9zYvMObD7IaNuSTpl1SQTJdHqx9E7S5NcNL+Gal8aI0C68A?=
- =?us-ascii?Q?w5a9RHcMK+B+CEIUE+FPIqM1KdpAxiMe6cI/36maSeFuDKKlF8+QpEbOlQXJ?=
- =?us-ascii?Q?kyy+fOHsmECI0mijBwF5x5iU2HLq/RraK+R+PsCPvjHMEAXWN86rEFnABSBR?=
- =?us-ascii?Q?8UNTVxq1r2ltNgw7YBWdYaCaihH4uBnuByu9mFpIm1o8KYosuJZ/eIjhK3KI?=
- =?us-ascii?Q?zboyKYpW/WzMg7agBfVu1qLZeJuermfqfEAHWkGSZN9HiPz4r3fLU40pRLE3?=
- =?us-ascii?Q?giKZckJoX8IizFXseUq+r0n/giD1SzTraWE8UmXGHek0SywvxbcCRoZtnc5G?=
- =?us-ascii?Q?agJzxaotPoWWXKUH5Iu5GFLbZSDEp7sFWVFTrw+72mebaHOVrmvKyyVNisM9?=
- =?us-ascii?Q?ptCYzqWxjdeg41qKlk37tbmbh9Feiyq4Z0YqWl7NQDKAl5NZ+9FI8KwkpqIS?=
- =?us-ascii?Q?5ieQ6X5VqC8B384/Ao2glWM+zICNg6G7LpSMW4dJXtoRYhP5vZC+Sd9RzTaE?=
- =?us-ascii?Q?ueultCLVy/Gj4LXq8BDC0AyqGBcfm6EzWaXIu4KHq+R2dpOHBB/BqiMpnboB?=
- =?us-ascii?Q?yq+ih/QggZF9IDF/G+6oFWZBMiuiDMK0McOLw/Ug5gtoE4D8Fp60PxpYGWJj?=
- =?us-ascii?Q?JJXoPbuXH3CDjuL5tLbWxx6R/4cOUj4q5LJZjpSCPi5k2W1uHEx9886GXzF1?=
- =?us-ascii?Q?ZYuY2soO0D1Dn/pVAq4u7eEnUZC0iHbw+E33MWT15qJ9I7YOxgWCeAJNrXU2?=
- =?us-ascii?Q?bZ6GbnQyjlg7wbWUBQ7tMAjTT4ugPMRkwGBC+pWDrZ8QQl2QLhotzwiKiPpl?=
- =?us-ascii?Q?5knBvjFZAswqXw/2UMUM8v4A8aUf2Fo8dF6ixZghfmm87hiJCJh7Op6vjWfX?=
- =?us-ascii?Q?QIkZiTeB1ptmIHBVwumje/jk1To08ZAYmbi+CoBK+novwt1b1rJNx3vm10/b?=
- =?us-ascii?Q?g2vnj62/SYadk0hwCCEYHY1zZMcqFn23B9O5k7Aoh8lZK56ol+iG0/HBpIRt?=
- =?us-ascii?Q?N785iiqzOQ4jtaZoHZ1k2fjVEODY2EP0yrJ/h6vu6aAnAV63ppA4olQ53UqX?=
- =?us-ascii?Q?/lm9+qwPUF5nabAELkK9slZnbIg3kdKnAaeiKV7XS4Oe1UeYBGxDOI/5aJyX?=
- =?us-ascii?Q?DR5uTY7fKQul7hZ1PmAzitp5GaMXuRl8PmkYHwKp3M0+oA7yPieH479SyFOO?=
- =?us-ascii?Q?nZc6/HLoYKFqph8PGLag7cZ6TWc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0D418E1AE413274DAEF05D2EAE0E9AA6@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Mon, 7 Mar 2022 13:17:19 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7549F75E69
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:16:22 -0800 (PST)
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220307181616epoutp01e3bca416dde6cb17c0719f5d95a651c4~aK-xQgEZf0767007670epoutp01D
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 18:16:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220307181616epoutp01e3bca416dde6cb17c0719f5d95a651c4~aK-xQgEZf0767007670epoutp01D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646676976;
+        bh=+DoYqIP57CK30qeEszS0FSuPgQHsdE9AmjYT9fqaiY8=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=VUtydj3bNltVpXLs+6lpqVbi1uFYaA6EYA//vyrvac2hVd2m+9ni801l2KipbLcU+
+         hDz0jLG9WALzMtaYG1/6/cdMmxDXoHGQ2AsSq/ZkS87t6YCUb5lPyaVIEx/Ap7gjAP
+         8sZLX1lNDjzSPnvYw+MmxqueIgNJSXu4BFxTdqEs=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20220307181615epcas5p342477b57f086c1d54502b559c5b55440~aK-wr4shN0547805478epcas5p36;
+        Mon,  7 Mar 2022 18:16:15 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.176]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4KC68p3h7kz4x9Pq; Mon,  7 Mar
+        2022 18:16:10 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E5.BC.46822.93946226; Tue,  8 Mar 2022 03:04:41 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220307181609epcas5p1dee884f7f426b64ee5915f507c1fb696~aK-qjlWmv0140301403epcas5p1b;
+        Mon,  7 Mar 2022 18:16:09 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220307181609epsmtrp2c90c3afdfefa8eedbdb3c0d001bd3d0e~aK-qix9hX3020530205epsmtrp2z;
+        Mon,  7 Mar 2022 18:16:09 +0000 (GMT)
+X-AuditID: b6c32a4a-de5ff7000000b6e6-fa-6226493981c0
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        9F.C1.29871.9EB46226; Tue,  8 Mar 2022 03:16:09 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220307181607epsmtip150e77f72df12ff26f43123b50e3d891b~aK-pYRZNs2332523325epsmtip19;
+        Mon,  7 Mar 2022 18:16:07 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
+        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
+        "'Jiri Slaby'" <jirislaby@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
+Subject: RE: [PATCH v2 7/7] tty: serial: samsung: simplify getting OF match
+ data
+Date:   Mon, 7 Mar 2022 23:46:06 +0530
+Message-ID: <000001d8324f$6b2c9a40$4185cec0$@samsung.com>
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4150.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 722456bb-8102-413b-a12a-08da00661e80
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2022 18:13:02.4444
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: l7td9EGqZWew771+qsIOvWdCwqz5tt8n9QsjcE3iCBwee5KFj/BFz14oD0mGufDgM+ct+EaKO8BInLqU9LzcvUpz51sZVBgrN+At5QyoX1A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3134
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10279 signatures=690470
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0 mlxscore=0
- bulkscore=0 mlxlogscore=999 spamscore=0 adultscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203070103
-X-Proofpoint-GUID: 90ONRFY6JsGy1QrUisfAY8JVPaM6MFpt
-X-Proofpoint-ORIG-GUID: 90ONRFY6JsGy1QrUisfAY8JVPaM6MFpt
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQGoAYk8Q04rU2h+MYSS22x/2RnCswLpcBE3AkLWjums6zlaEA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJJsWRmVeSWpSXmKPExsWy7bCmhq6lp1qSQX87t0Xz4vVsFu/mylhs
+        fPuDyWLT42usFpd3zWGzmHF+H5PFmcW97A7sHrMaetk8Nq3qZPPYP3cNu8fmJfUenzfJBbBG
+        ZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAB2hpFCW
+        mFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwKdArTswtLs1L18tLLbEyNDAwMgUqTMjO
+        WP98MUvBLb6K6av/sDUwPuHpYuTkkBAwkTi4cR1LFyMXh5DAbkaJi8t3MEE4nxglFq18zQjh
+        fGOU2HrgORNMy/Pj69ghEnsZJS5s/QLlvGSUaJn2hg2kik1AV2LH4jY2kISIwAYmiUv3poK1
+        cwq4SzS0bmAEsYUFgiR2Nj9jAbFZBFQkvu08xg5i8wpYSry8cJcFwhaUODnzCZjNLCAvsf3t
+        HGaIMxQkfj5dxgpiiwg4Sdz8eZEZokZc4uXRI2AXSQi0ckhcX/iXFaLBReJc+y6oH4QlXh3f
+        wg5hS0l8frcX6FIOIDtbomeXMUS4RmLpvGMsELa9xIErc1hASpgFNCXW79KHWMUn0fv7CRNE
+        J69ER5sQRLWqRPO7q1Cd0hITu7tZIUo8JH7c0YME1XVGie6Ln5knMCrMQvLkLCRPzkLyzCyE
+        xQsYWVYxSqYWFOempxabFhjlpZbDIzw5P3cTIziNanntYHz44IPeIUYmDsZDjBIczEoivPfP
+        qyQJ8aYkVlalFuXHF5XmpBYfYjQFhvxEZinR5HxgIs8riTc0sTQwMTMzM7E0NjNUEuc9nb4h
+        UUggPbEkNTs1tSC1CKaPiYNTqoFJddPuxMVnpT43KyzN6Di1t8XPsiJNeX26sKFUifhSjUuX
+        pv4Kel0mJvFyt91nrZ9Lz7PdPbX2vKHitbf13mK2E2MEp316fTtRMikuw2nGPYWNDP+r6hae
+        WFkpcej5CdUL3D+Psyt9Ee7TEVyScOZHeEyeyiXOGZvyj729w6Tz2EVQwy8jZv2uqesPCr9g
+        4k5t2e4easW/aa7JznKm1smm/oaqf58t/PQ+/e8tHo/E+QHtLcpTpS75NnlURP4pslP18uY9
+        9v5/wY+uaUdjnz3T9Nm5qpq/zfnv9QvbnarSl8bznjH1+rVgv+i0RrE0Waenz1RPczYviLBw
+        uX2fyV5E4e6fTxG13wTO1z5eqP9XiaU4I9FQi7moOBEA+elMTywEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrCLMWRmVeSWpSXmKPExsWy7bCSnO5Lb7UkgzmbWS2aF69ns3g3V8Zi
+        49sfTBabHl9jtbi8aw6bxYzz+5gszizuZXdg95jV0MvmsWlVJ5vH/rlr2D02L6n3+LxJLoA1
+        issmJTUnsyy1SN8ugStj/fPFLAW3+Cqmr/7D1sD4hKeLkZNDQsBE4vnxdexdjFwcQgK7GSX6
+        nixghEhIS1zfOIEdwhaWWPnvOVTRc0aJ1ytegCXYBHQldixuYwOxRQS2MEks+hYHUXSZUWJd
+        wysWkASngLtEQ+sGsKnCAgESs86sA2tmEVCR+LbzGJjNK2Ap8fLCXRYIW1Di5MwnQDYHB7OA
+        nkTbRrBWZgF5ie1v5zBDHKQg8fPpMlaIvU4SN39eZIaoEZd4efQI+wRGoVlIJs1CmDQLyaRZ
+        SDoWMLKsYpRMLSjOTc8tNiwwzEst1ytOzC0uzUvXS87P3cQIjhgtzR2M21d90DvEyMTBeIhR
+        goNZSYT3/nmVJCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeWpGanphakFsFkmTg4
+        pRqYqlncAvdu7Q6Yxyt7qF7CiaHYz+d+0qZHLzNFE2qKjrI+rt2z/2+eS/HGrZW1u2vV1ZfP
+        2XXZb9u9eqe4XW7ddS57W0X5pqcefLrMI3Cqfan9X7m0pYqRd9UOZPAvuq9w7/d6p2t+/7pO
+        LPqXyDLriUZQi0hIDfvHm2tmlfzddPtZ00dGvS8J85Tcdy3bu6appvi7XIHuMzOG3Fep079b
+        57585ihV2nxr6Y/XkWtfXbO58vi7dI/2Dv+8WSrSL8r0WOa0v1si77mpuedOm2ZUxyLVg979
+        XT8f2lu8X/74mePCPR8/CNQtlDfxk1/OeDv3ntF2XznRNxv5jI6tOLjIvXYbm/N66ytvLjKI
+        3jlmrcRSnJFoqMVcVJwIAEZVzAcHAwAA
+X-CMS-MailID: 20220307181609epcas5p1dee884f7f426b64ee5915f507c1fb696
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220307080948epcas5p2cfb6ad93e628461366b03203a884e0e6
+References: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
+        <CGME20220307080948epcas5p2cfb6ad93e628461366b03203a884e0e6@epcas5p2.samsung.com>
+        <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-> On Mar 4, 2022, at 4:19 PM, Stefan Berger <stefanb@linux.ibm.com> wrote:
->=20
->=20
-> On 3/1/22 12:36, Eric Snowberg wrote:
->> When INTEGRITY_MACHINE_KEYRING is set, all Machine Owner Keys (MOK)
->> are loaded into the machine keyring.  Add a new
->> INTEGRITY_MACHINE_KEYRING_CA_ENFORCED option where only MOK CA keys are
->> added.
->>=20
->> Set the restriction check to restrict_link_by_ca.  This will only allow
->> CA keys into the machine keyring. Unlike when INTEGRITY_MACHINE_KEYRING
->> is enabled, IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY may
->> also be enabled, allowing IMA to use keys in the machine keyring as
->> another trust anchor.
->=20
-> I tried to test this but could only do it by disabling the MokListTrusted=
-RT variable check and then also the check for secure boot. It did load the =
-expected keys onto the .machine keyring, enforcing the x509 indicating a se=
-lf-signed CA if the compile time option CONFIG_INTEGRITY_MACHINE_KEYRING_CA=
-_ENFORCED=3Dy was set, loading all keys in the case of CONFIG_INTEGRITY_MAC=
-HINE_KEYRING=3Dy.
->=20
-> I tried with this branch here from mokutils https://github.com/esnowberg/=
-mokutil/tree/trust-mok but this seems to create an EFI variable with a diff=
-erent name. I guess this is the wrong branch?
+>-----Original Message-----
+>From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
+>Sent: Monday, March 7, 2022 1:39 PM
+>To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>; Alim Akhtar
+><alim.akhtar@samsung.com>; Greg Kroah-Hartman
+><gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
+>kernel@lists.infradead.org; linux-samsung-soc@vger.kernel.org; linux-
+>serial@vger.kernel.org; linux-kernel@vger.kernel.org
+>Subject: [PATCH v2 7/7] tty: serial: samsung: simplify getting OF match
+data
+>
+>Simplify the code with of_device_get_match_data().
+>
+>Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>---
 
-Thanks for testing.  During the shim review, Peter requested an EFI variabl=
-e name
-change. This did not impact anything in the kernel.  However it did impact =
-mokutil.=20
-The necessary mokutil changes are available in this pull request:
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-https://github.com/lcp/mokutil/pull/49
+
+> drivers/tty/serial/samsung_tty.c | 13 +++----------
+> 1 file changed, 3 insertions(+), 10 deletions(-)
+>
+>diff --git a/drivers/tty/serial/samsung_tty.c
+>b/drivers/tty/serial/samsung_tty.c
+>index 3ffae912217c..61c530bb377f 100644
+>--- a/drivers/tty/serial/samsung_tty.c
+>+++ b/drivers/tty/serial/samsung_tty.c
+>@@ -2150,23 +2150,16 @@ static int s3c24xx_serial_init_port(struct
+>s3c24xx_uart_port *ourport,
+>
+> /* Device driver serial port probe */
+>
+>-#ifdef CONFIG_OF
+>-static const struct of_device_id s3c24xx_uart_dt_match[]; -#endif
+>-
+> static int probe_index;
+>
+> static inline const struct s3c24xx_serial_drv_data *
+>s3c24xx_get_driver_data(struct platform_device *pdev)  {  #ifdef CONFIG_OF
+>-	if (pdev->dev.of_node) {
+>-		const struct of_device_id *match;
+>-
+>-		match = of_match_node(s3c24xx_uart_dt_match, pdev-
+>>dev.of_node);
+>-		return (struct s3c24xx_serial_drv_data *)match->data;
+>-	}
+>+	if (pdev->dev.of_node)
+>+		return of_device_get_match_data(&pdev->dev);
+> #endif
+>+
+> 	return (struct s3c24xx_serial_drv_data *)
+> 			platform_get_device_id(pdev)->driver_data;
+> }
+>--
+>2.32.0
+
 
