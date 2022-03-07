@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6603FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236184AbiCGKec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:34:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
+        id S237800AbiCGKeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:34:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242809AbiCGKLy (ORCPT
+        with ESMTP id S242728AbiCGKLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:54 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10758BF5D;
-        Mon,  7 Mar 2022 01:55:59 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3CC1166;
+        Mon,  7 Mar 2022 01:55:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 05633CE0E4A;
-        Mon,  7 Mar 2022 09:55:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE630C340E9;
-        Mon,  7 Mar 2022 09:55:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B4F660919;
+        Mon,  7 Mar 2022 09:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F5DC340E9;
+        Mon,  7 Mar 2022 09:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646956;
-        bh=gW6078TtMBc0nG9JtxZimbvAuZygoi9s6gkAltK/iRA=;
+        s=korg; t=1646646916;
+        bh=BXkF893AK//02PTnqTW+Wt3VCglY/7097F7ZAFnpV7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OISmabbhWSVTtTw3XSFf/2W4KTpBCPZ+RYmZZX5ypsIvUWfMOzyrEm0EUGnTu3DNa
-         Qv+l8N82fMjT5uLNeJ+QqVtLfYJVMin4D4nqmFvNEwY0gOtOsmpYm++Z53PHMNCCZQ
-         XMYHxreUEzOdyP6MI2AaOMAX6rpgoOwFpNQuLRDU=
+        b=u24a4DrOzNy97kC81BL8RLc09e00fHLIEsgoTgCLvRjEbPjfk/5tmzQnzEfdxNyKS
+         ACa09UySLAmuEnHTlCS1zT8mFd3Oa7m8UXvmTv8dwmgSS2QdLe83qlZLU1jkrpwI1s
+         SJ/8CWljfsl4WIepkADsWF87L8xUZIXaxLTkADps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org
-Subject: [PATCH 5.16 109/186] mips: setup: fix setnocoherentio() boolean setting
-Date:   Mon,  7 Mar 2022 10:19:07 +0100
-Message-Id: <20220307091657.125939337@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 133/186] soc: imx: gpcv2: Fix clock disabling imbalance in error path
+Date:   Mon,  7 Mar 2022 10:19:31 +0100
+Message-Id: <20220307091657.797628189@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,35 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-commit 1e6ae0e46e32749b130f1823da30cea9aa2a59a0 upstream.
+[ Upstream commit fa231bef3b34f1670b240409c11e59a3ce095e6d ]
 
-Correct a typo/pasto: setnocoherentio() should set
-dma_default_coherent to false, not true.
+The imx_pgc_power_down() starts by enabling the domain clocks, and thus
+disables them in the error path. Commit 18c98573a4cf ("soc: imx: gpcv2:
+add domain option to keep domain clocks enabled") made the clock enable
+conditional, but forgot to add the same condition to the error path.
+This can result in a clock enable/disable imbalance. Fix it.
 
-Fixes: 14ac09a65e19 ("MIPS: refactor the runtime coherent vs noncoherent DMA indicators")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 18c98573a4cf ("soc: imx: gpcv2: add domain option to keep domain clocks enabled")
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/setup.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/imx/gpcv2.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/mips/kernel/setup.c
-+++ b/arch/mips/kernel/setup.c
-@@ -803,7 +803,7 @@ early_param("coherentio", setcoherentio)
- 
- static int __init setnocoherentio(char *str)
- {
--	dma_default_coherent = true;
-+	dma_default_coherent = false;
- 	pr_info("Software DMA cache coherency (command line)\n");
+diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+index 8176380b02e6..4415f07e1fa9 100644
+--- a/drivers/soc/imx/gpcv2.c
++++ b/drivers/soc/imx/gpcv2.c
+@@ -382,7 +382,8 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
  	return 0;
+ 
+ out_clk_disable:
+-	clk_bulk_disable_unprepare(domain->num_clks, domain->clks);
++	if (!domain->keep_clocks)
++		clk_bulk_disable_unprepare(domain->num_clks, domain->clks);
+ 
+ 	return ret;
  }
+-- 
+2.34.1
+
 
 
