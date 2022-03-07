@@ -2,158 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D30C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbiCGL3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:29:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
+        id S236082AbiCGL3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:29:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242973AbiCGL3O (ORCPT
+        with ESMTP id S242098AbiCGL15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:29:14 -0500
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DEA57146;
-        Mon,  7 Mar 2022 03:10:45 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E1EA1FF80E;
-        Mon,  7 Mar 2022 11:10:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646651440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=va6hgBVRbtr10BKiH5oDCOu0VwLfnjed/wWRNnb7DUY=;
-        b=gC3ndSWkdul0/O5Y4jHV6jR7MkWuyj436eSHmu6S2Z9kuJJDSUV/+c8Xr4gqjTTzXxPi+e
-        yn8Lz317xPszLkKWTUlDMBkooNHSefTzJUtscXF5RjZ4EQIcZHO31ulyM+57oIEl/H6Mqu
-        iY3E52NJNZNdzNUFaXXfRfr0nTlvpgUqBqlckY7VlUqJ+Lvem3NbcSekMU1w4LIhNRBzkE
-        /jRyqod+8XYQiPJml0/297HhrIfs4htUqbz8dfBWo0IkqRf7CsYNFbOI5wPGWxeF3wa+0e
-        i/yxXJGB8jMuo5CbkqTpqa/UBaJxO4JnO9AnsMj4QhLR6S9cDwXfWzfy1dPIFQ==
-Date:   Mon, 7 Mar 2022 12:10:33 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ryan Barnett <ryan.barnett@collins.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>
-Subject: Re: [PATCH v6 14/48] mfd: ti_am335x_tscadc: Don't search the tree
- for our clock
-Message-ID: <20220307121033.5630fee7@xps13>
-In-Reply-To: <7336E356-57E3-4BC5-B098-0A791C2CB360@goldelico.com>
-References: <20211015081506.933180-1-miquel.raynal@bootlin.com>
-        <20211015081506.933180-15-miquel.raynal@bootlin.com>
-        <7336E356-57E3-4BC5-B098-0A791C2CB360@goldelico.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 7 Mar 2022 06:27:57 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADB824F3E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:06:39 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id v28so19812940ljv.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 03:06:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=WifnMpfCywQgn9v4uMmELkW8tbTMccZxaKxLll5l1aQ=;
+        b=eAnQsrE7cV3O7z0DfiC9M6ePQ7R6Wf/NTn5yUiSvOOMRMEVAWu1841E+H9xmJgYPrg
+         tN2F6ST9n6LKoA9AdoZq0J5wpjIVEfWp3vnZTc/UrhuyKQ2vU7Akwg+8dUTszWGoFo3Q
+         u6Iv51ux37VgNJ9yli65JXJxItOuPM+mZ/sSaxmiUBEhMe8tt50kgxpAW7we+GJM85Z5
+         3sugu20i0n6gsNifr+SyQ2EMmIHwA6hSkAuIkqJHlQQDWEHF763LAYsBeanN/XaPcaOz
+         V9WF8LEUFSw3IkKo8nwFBNzDspCYMH8X9I5uuG5OYg+5+h1vZeQB2BrwKa8zWf27kFtb
+         gl6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=WifnMpfCywQgn9v4uMmELkW8tbTMccZxaKxLll5l1aQ=;
+        b=DUxLejxnIFsLrDU6GH6PQKF+XKSBVJCXif/OfNsLwkO8Dt477Y947OE1NTTpfDHoka
+         G4O/4l69xzlzAunCngYaiV6BXxPpBuPeJsEBBK8Zuiz6ec25/wdlho4XHBRK5pZQAW9s
+         We6wduDrNC/3xxelRJ7wu84YcuNy/M9na+CNqroXTvoSGp/q033QvdTDUJYgEZ5MI5UW
+         4CYNSTYsxjBaEWWRFaBUa5R0494pGh99brQjxAluM3I9kqE3+szl2bt/6oIQVsnYynBa
+         4qeUwS5RGfWr4Y+o2MSZZTEdEvMXSkTPcD042soEQfCr0gAOEqx9IonIod2fhJZQsRzg
+         bzBw==
+X-Gm-Message-State: AOAM532NnOBCgg8/yEsY26/GIFdETjpKMJL4QuDd/03YMw34j3DYHQ8v
+        uMNqWd0ETafaudqgzj7eb9YVCg==
+X-Google-Smtp-Source: ABdhPJys6R6uyln+J9vxt+xgmUASyxV+ZscA/tTaibo7IdkPflGPTlBL6k5RdlSFPyBwtDa+ZGzI+g==
+X-Received: by 2002:a2e:9f0e:0:b0:244:ddb5:8685 with SMTP id u14-20020a2e9f0e000000b00244ddb58685mr7474369ljk.151.1646651197442;
+        Mon, 07 Mar 2022 03:06:37 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id u17-20020a056512095100b0044381f00805sm2793765lft.139.2022.03.07.03.06.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 03:06:36 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: dsa: tag_dsa: Fix tx from VLAN uppers on non-filtering bridges
+Date:   Mon,  7 Mar 2022 12:05:48 +0100
+Message-Id: <20220307110548.812455-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nikolaus,
+In this situation (VLAN filtering disabled on br0):
 
-hns@goldelico.com wrote on Fri, 4 Mar 2022 23:38:25 +0100:
+    br0.10
+     /
+   br0
+   / \
+swp0 swp1
 
-> Hi Miquel,
-> I recently found that our BeagleBoneBlack with external touch screen stop=
-ped
-> to find it.
->=20
-> A git bisect revealed this patch (merged into v5.16-rc1) as the first bad:
->=20
-> > Am 15.10.2021 um 10:14 schrieb Miquel Raynal <miquel.raynal@bootlin.com=
->:
-> >=20
-> > There is a single clock available in our node, which is named
-> > "fck". The clock handler then points to adc_tsc_fck but no need to point
-> > directly to it and do a full tree search.
-> >=20
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> > drivers/mfd/ti_am335x_tscadc.c | 2 +-
-> > 1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tsc=
-adc.c
-> > index e2c4416f192d..8af44c08d925 100644
-> > --- a/drivers/mfd/ti_am335x_tscadc.c
-> > +++ b/drivers/mfd/ti_am335x_tscadc.c
-> > @@ -206,7 +206,7 @@ static	int ti_tscadc_probe(struct platform_device *=
-pdev)
-> > 	 * This frequency is valid since TSC_ADC_SS controller design
-> > 	 * assumes the OCP clock is at least 6x faster than the ADC clock.
-> > 	 */
-> > -	clk =3D devm_clk_get(&pdev->dev, "adc_tsc_fck");
-> > +	clk =3D devm_clk_get(&pdev->dev, NULL);
-> > 	if (IS_ERR(clk)) {
-> > 		dev_err(&pdev->dev, "failed to get TSC fck\n");
-> > 		err =3D PTR_ERR(clk);
-> > --=20
-> > 2.27.0
-> >  =20
->=20
-> While I understand the reasons for this change there seems to be something
-> missing now in the device tree because the clock isn't found any more.
->=20
-> After knowing about the problem I could also locate the log entry:
->=20
-> [    4.456680] ti_am3359-tscadc 44e0d000.tscadc: failed to get TSC fck
->=20
-> Reverting your patch makes it work again.
+When a frame is transmitted from the VLAN upper, the bridge will send
+it down to one of the switch ports with forward offloading
+enabled. This will cause tag_dsa to generate a FORWARD tag. Before
+this change, that tag would have it's VID set to 10, even though VID
+10 is not loaded in the VTU.
 
-Sorry for the wrong behavior on your side and thanks for the
-investigation.
+Before the blamed commit, the frame would trigger a VTU miss and be
+forwarded according to the PVT configuration. Now that all fabric
+ports are in 802.1Q secure mode, the frame is dropped instead.
 
-> Is there missing a change in the am335x-boneblack or am335x DTS?
+Therefore, restrict the condition under which we rewrite an 802.1Q tag
+to a DSA tag. On standalone port's, reuse is always safe since we will
+always generate FROM_CPU tags in that case. For bridged ports though,
+we must ensure that VLAN filtering is enabled, which in turn
+guarantees that the VID in question is loaded into the VTU.
 
-I've looked at the code and indeed the am33xx-clock.dtsi file defines
-the touchscreen clock, but unfortunately the am33xx-l4.dtsi file which
-defines the touchscreen node does not reference the clock. The bindings
-clearly require the clocks to be referenced but I believe this was not
-noticed until now because the clock exist and clk_get() did a lookup
-across the tree.
+Fixes: d352b20f4174 ("net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ net/dsa/tag_dsa.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-On my side I tested it with an am437x SoC which uses another base
-device tree, which properly references the touchscreen clock where it's
-needed.
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index c8b4bbd46191..e4b6e3f2a3db 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -127,6 +127,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+ 				   u8 extra)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct net_device *br_dev;
+ 	u8 tag_dev, tag_port;
+ 	enum dsa_cmd cmd;
+ 	u8 *dsa_header;
+@@ -149,7 +150,16 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+ 		tag_port = dp->index;
+ 	}
+ 
+-	if (skb->protocol == htons(ETH_P_8021Q)) {
++	br_dev = dsa_port_bridge_dev_get(dp);
++
++	/* If frame is already 802.1Q tagged, we can convert it to a DSA
++	 * tag (avoiding a memmove), but only if the port is standalone
++	 * (in which case we always send FROM_CPU) or if the port's
++	 * bridge has VLAN filtering enabled (in which case the CPU port
++	 * will be a member of the VLAN).
++	 */
++	if (skb->protocol == htons(ETH_P_8021Q) &&
++	    (!br_dev || br_vlan_enabled(br_dev))) {
+ 		if (extra) {
+ 			skb_push(skb, extra);
+ 			dsa_alloc_etype_header(skb, extra);
+@@ -166,10 +176,9 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+ 			dsa_header[2] &= ~0x10;
+ 		}
+ 	} else {
+-		struct net_device *br = dsa_port_bridge_dev_get(dp);
+ 		u16 vid;
+ 
+-		vid = br ? MV88E6XXX_VID_BRIDGED : MV88E6XXX_VID_STANDALONE;
++		vid = br_dev ? MV88E6XXX_VID_BRIDGED : MV88E6XXX_VID_STANDALONE;
+ 
+ 		skb_push(skb, DSA_HLEN + extra);
+ 		dsa_alloc_etype_header(skb, DSA_HLEN + extra);
+-- 
+2.25.1
 
-I will send a patch (untested), can you give it a try and report if it
-fixes your issue?
-
->=20
-> Our (private) DTS looks like this, i.e. we don't play with clocks inherit=
-ed
-> from mainline tree:
->=20
-> #include "am335x-boneblack.dts"
->=20
-> ...
->=20
-> &tscadc {
->         status =3D "okay";
->=20
->         tsc {
->                 ti,wires =3D <4>;
->                 ti,x-plate-resistance =3D <600>;
->                 ti,coordinate-readouts =3D <5>;
->                 ti,wire-config =3D <0x00 0x11 0x22 0x33>;
->         };
->=20
->         adc {
->                 ti,adc-channels =3D <4 5 6 7>;
->         };
-> };
->=20
-> BR and thanks,
-> Nikolaus
-
-Thanks,
-Miqu=C3=A8l
