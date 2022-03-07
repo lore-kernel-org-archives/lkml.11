@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEEFC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73652C35280
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241237AbiCGKUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:20:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
+        id S241360AbiCGKUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240747AbiCGKBP (ORCPT
+        with ESMTP id S241187AbiCGKBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693366AA5E;
-        Mon,  7 Mar 2022 01:50:46 -0800 (PST)
+        Mon, 7 Mar 2022 05:01:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D0271C94;
+        Mon,  7 Mar 2022 01:51:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAF7B60AEC;
-        Mon,  7 Mar 2022 09:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B05C340F3;
-        Mon,  7 Mar 2022 09:50:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C4C260929;
+        Mon,  7 Mar 2022 09:51:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28E0CC340F3;
+        Mon,  7 Mar 2022 09:51:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646645;
-        bh=cCvGd8yQ8lD4nHtyqMot3EfWFxRQlXARj6mKIkcVBjg=;
+        s=korg; t=1646646687;
+        bh=2kbntivt/U8rpmz5zh4XeBcxUOVSFlPKZj62j90goC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j9sPXUJ/ooi2GQJDBFCzxmCtvqF390SCFTMaERcPKAbb867XiQcs4PVB06A+3smxq
-         nE+pJriXaMWfm7smk+xB7Gch4/1LaxgcqEjs94SAoXFOy0cZDae0DrhRL1iPLsGXlN
-         gUjMHUmkVDi0faMryrVfTdGVAdHM8vBN5t38EaGk=
+        b=SGKGsH5f2PkeHPUAZTUB2pKr1Pvx/zPFenj93YpA9YKYjgQ59RufRvEEYtjmSN6hj
+         cH0zgvlwct69MZaZfhbIGxX2GszfHn5nyWk+Knm3hdsmmwh8q0evJ3drwgQKnAhPaU
+         1tUg0VNkd66s4MHXVXhMCOCx3uyziPQ9dgCS94Hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 047/186] btrfs: defrag: dont use merged extent map for their generation check
-Date:   Mon,  7 Mar 2022 10:18:05 +0100
-Message-Id: <20220307091655.411079917@linuxfoundation.org>
+        stable@vger.kernel.org, "Leo (Hanghong) Ma" <hanghong.ma@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.16 059/186] drm/amd/display: Reduce dmesg error to a debug print
+Date:   Mon,  7 Mar 2022 10:18:17 +0100
+Message-Id: <20220307091655.742586091@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,110 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Leo (Hanghong) Ma <hanghong.ma@amd.com>
 
-commit 199257a78bb01341c3ba6e85bdcf3a2e6e452c6d upstream.
+commit 1d925758ba1a5d2716a847903e2fd04efcbd9862 upstream.
 
-For extent maps, if they are not compressed extents and are adjacent by
-logical addresses and file offsets, they can be merged into one larger
-extent map.
+[Why & How]
+Dmesg errors are found on dcn3.1 during reset test, but it's not
+a really failure. So reduce it to a debug print.
 
-Such merged extent map will have the higher generation of all the
-original ones.
-
-But this brings a problem for autodefrag, as it relies on accurate
-extent_map::generation to determine if one extent should be defragged.
-
-For merged extent maps, their higher generation can mark some older
-extents to be defragged while the original extent map doesn't meet the
-minimal generation threshold.
-
-Thus this will cause extra IO.
-
-So solve the problem, here we introduce a new flag, EXTENT_FLAG_MERGED,
-to indicate if the extent map is merged from one or more ems.
-
-And for autodefrag, if we find a merged extent map, and its generation
-meets the generation requirement, we just don't use this one, and go
-back to defrag_get_extent() to read extent maps from subvolume trees.
-
-This could cause more read IO, but should result less defrag data write,
-so in the long run it should be a win for autodefrag.
-
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Leo (Hanghong) Ma <hanghong.ma@amd.com>
+Reviewed-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: Mario Limonciello <mario.limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_map.c |    2 ++
- fs/btrfs/extent_map.h |    8 ++++++++
- fs/btrfs/ioctl.c      |   14 ++++++++++++++
- 3 files changed, 24 insertions(+)
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/extent_map.c
-+++ b/fs/btrfs/extent_map.c
-@@ -261,6 +261,7 @@ static void try_merge_map(struct extent_
- 			em->mod_len = (em->mod_len + em->mod_start) - merge->mod_start;
- 			em->mod_start = merge->mod_start;
- 			em->generation = max(em->generation, merge->generation);
-+			set_bit(EXTENT_FLAG_MERGED, &em->flags);
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -4454,7 +4454,9 @@ bool dp_retrieve_lttpr_cap(struct dc_lin
+ 				lttpr_dpcd_data,
+ 				sizeof(lttpr_dpcd_data));
+ 		if (status != DC_OK) {
+-			dm_error("%s: Read LTTPR caps data failed.\n", __func__);
++#if defined(CONFIG_DRM_AMD_DC_DCN)
++			DC_LOG_DP2("%s: Read LTTPR caps data failed.\n", __func__);
++#endif
+ 			return false;
+ 		}
  
- 			rb_erase_cached(&merge->rb_node, &tree->map);
- 			RB_CLEAR_NODE(&merge->rb_node);
-@@ -278,6 +279,7 @@ static void try_merge_map(struct extent_
- 		RB_CLEAR_NODE(&merge->rb_node);
- 		em->mod_len = (merge->mod_start + merge->mod_len) - em->mod_start;
- 		em->generation = max(em->generation, merge->generation);
-+		set_bit(EXTENT_FLAG_MERGED, &em->flags);
- 		free_extent_map(merge);
- 	}
- }
---- a/fs/btrfs/extent_map.h
-+++ b/fs/btrfs/extent_map.h
-@@ -25,6 +25,8 @@ enum {
- 	EXTENT_FLAG_FILLING,
- 	/* filesystem extent mapping type */
- 	EXTENT_FLAG_FS_MAPPING,
-+	/* This em is merged from two or more physically adjacent ems */
-+	EXTENT_FLAG_MERGED,
- };
- 
- struct extent_map {
-@@ -40,6 +42,12 @@ struct extent_map {
- 	u64 ram_bytes;
- 	u64 block_start;
- 	u64 block_len;
-+
-+	/*
-+	 * Generation of the extent map, for merged em it's the highest
-+	 * generation of all merged ems.
-+	 * For non-merged extents, it's from btrfs_file_extent_item::generation.
-+	 */
- 	u64 generation;
- 	unsigned long flags;
- 	/* Used for chunk mappings, flag EXTENT_FLAG_FS_MAPPING must be set */
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1149,6 +1149,20 @@ static struct extent_map *defrag_lookup_
- 	em = lookup_extent_mapping(em_tree, start, sectorsize);
- 	read_unlock(&em_tree->lock);
- 
-+	/*
-+	 * We can get a merged extent, in that case, we need to re-search
-+	 * tree to get the original em for defrag.
-+	 *
-+	 * If @newer_than is 0 or em::generation < newer_than, we can trust
-+	 * this em, as either we don't care about the generation, or the
-+	 * merged extent map will be rejected anyway.
-+	 */
-+	if (em && test_bit(EXTENT_FLAG_MERGED, &em->flags) &&
-+	    newer_than && em->generation >= newer_than) {
-+		free_extent_map(em);
-+		em = NULL;
-+	}
-+
- 	if (!em) {
- 		struct extent_state *cached = NULL;
- 		u64 end = start + sectorsize - 1;
 
 
