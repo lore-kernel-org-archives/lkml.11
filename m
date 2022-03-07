@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A4FC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848EAC352A8
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240303AbiCGJuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:50:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46114 "EHLO
+        id S240450AbiCGJvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240583AbiCGJlK (ORCPT
+        with ESMTP id S240672AbiCGJl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DEA15A0C;
-        Mon,  7 Mar 2022 01:37:54 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933536622F;
+        Mon,  7 Mar 2022 01:38:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2209B8102B;
-        Mon,  7 Mar 2022 09:37:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D84C340E9;
-        Mon,  7 Mar 2022 09:37:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28AB761052;
+        Mon,  7 Mar 2022 09:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B98C340F3;
+        Mon,  7 Mar 2022 09:37:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645871;
-        bh=C1j676FUP8iWuGVMyB82H13nsJjOvitU5NC+K+waxcc=;
+        s=korg; t=1646645836;
+        bh=4pr7UGilxZNytlmkhrPKXqgNFt/dZXUg+ThhVt8OKo0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tvzc7kQOeAPcNzkkKWj3+aijpADHdN0SZ3qBb+0qDqQYs9i9r+HojgC1K/x2utLRj
-         80mr1WXhSYEPqSOIqnxk9OrfI3BB2kzrqvLPyqCBEi0W6Q9Czu+YZJab6Ld1zu3yI5
-         c03zoI0WPkp4ZYgXvXTc1SaOCAhvZgz+hdUUnfZ4=
+        b=qU3m8IX9muLwSPjcQJBoYd6IdGuAkv8ZoON6tXdqcKRxKGLE3rRk5PWSaKNUvsR3S
+         VpmwXeQO9Cvb9fDHU8fQQQsg4tNDLxTXk24yrx9ELo8TcHNb1wyMvHUubMqbWJ9sM/
+         jsolx9+IWEg+BMPu7uCQMJh76AaR8Ox5a1y2ff5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Nicolas Pitre <npitre@baylibre.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 062/262] i3c/master/mipi-i3c-hci: Fix a potentially infinite loop in hci_dat_v1_get_index()
-Date:   Mon,  7 Mar 2022 10:16:46 +0100
-Message-Id: <20220307091704.258121933@linuxfoundation.org>
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-renesas-soc@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 052/262] PCI: rcar: Check if device is runtime suspended instead of __clk_is_enabled()
+Date:   Mon,  7 Mar 2022 10:16:36 +0100
+Message-Id: <20220307091703.985954255@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,45 +57,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Marek Vasut <marek.vasut+renesas@gmail.com>
 
-[ Upstream commit 3f43926f271287fb1744c9ac9ae1122497f2b0c2 ]
+[ Upstream commit d2a14b54989e9ccea8401895fdfbc213bd1f56af ]
 
-The code in 'hci_dat_v1_get_index()' really looks like a hand coded version
-of 'for_each_set_bit()', except that a +1 is missing when searching for the
-next set bit.
+Replace __clk_is_enabled() with pm_runtime_suspended(),
+as __clk_is_enabled() was checking the wrong bus clock
+and caused the following build error too:
+  arm-linux-gnueabi-ld: drivers/pci/controller/pcie-rcar-host.o: in function `rcar_pcie_aarch32_abort_handler':
+  pcie-rcar-host.c:(.text+0xdd0): undefined reference to `__clk_is_enabled'
 
-This really looks odd and it seems that it will loop until 'dat_w0_read()'
-returns the expected result.
-
-So use 'for_each_set_bit()' instead. It is less verbose and should be more
-correct.
-
-Fixes: 9ad9a52cce28 ("i3c/master: introduce the mipi-i3c-hci driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Nicolas Pitre <npitre@baylibre.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/0cdf3cb10293ead1acd271fdb8a70369c298c082.1637186628.git.christophe.jaillet@wanadoo.fr
+Link: https://lore.kernel.org/r/20211115204641.12941-1-marek.vasut@gmail.com
+Fixes: a115b1bd3af0 ("PCI: rcar: Add L1 link state fix into data abort hook")
+Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-renesas-soc@vger.kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i3c/master/mipi-i3c-hci/dat_v1.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/pci/controller/pcie-rcar-host.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/i3c/master/mipi-i3c-hci/dat_v1.c b/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
-index 783e551a2c85a..97bb49ff5b53b 100644
---- a/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
-+++ b/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
-@@ -160,9 +160,7 @@ static int hci_dat_v1_get_index(struct i3c_hci *hci, u8 dev_addr)
- 	unsigned int dat_idx;
- 	u32 dat_w0;
+diff --git a/drivers/pci/controller/pcie-rcar-host.c b/drivers/pci/controller/pcie-rcar-host.c
+index 8f3131844e777..bfb13f358d073 100644
+--- a/drivers/pci/controller/pcie-rcar-host.c
++++ b/drivers/pci/controller/pcie-rcar-host.c
+@@ -52,10 +52,10 @@ struct rcar_msi {
+  */
+ static void __iomem *pcie_base;
+ /*
+- * Static copy of bus clock pointer, so we can check whether the clock
+- * is enabled or not.
++ * Static copy of PCIe device pointer, so we can check whether the
++ * device is runtime suspended or not.
+  */
+-static struct clk *pcie_bus_clk;
++static struct device *pcie_dev;
+ #endif
  
--	for (dat_idx = find_first_bit(hci->DAT_data, hci->DAT_entries);
--	     dat_idx < hci->DAT_entries;
--	     dat_idx = find_next_bit(hci->DAT_data, hci->DAT_entries, dat_idx)) {
-+	for_each_set_bit(dat_idx, hci->DAT_data, hci->DAT_entries) {
- 		dat_w0 = dat_w0_read(dat_idx);
- 		if (FIELD_GET(DAT_0_DYNAMIC_ADDRESS, dat_w0) == dev_addr)
- 			return dat_idx;
+ /* Structure representing the PCIe interface */
+@@ -794,7 +794,7 @@ static int rcar_pcie_get_resources(struct rcar_pcie_host *host)
+ #ifdef CONFIG_ARM
+ 	/* Cache static copy for L1 link state fixup hook on aarch32 */
+ 	pcie_base = pcie->base;
+-	pcie_bus_clk = host->bus_clk;
++	pcie_dev = pcie->dev;
+ #endif
+ 
+ 	return 0;
+@@ -1064,7 +1064,7 @@ static int rcar_pcie_aarch32_abort_handler(unsigned long addr,
+ 
+ 	spin_lock_irqsave(&pmsr_lock, flags);
+ 
+-	if (!pcie_base || !__clk_is_enabled(pcie_bus_clk)) {
++	if (!pcie_base || pm_runtime_suspended(pcie_dev)) {
+ 		ret = 1;
+ 		goto unlock_exit;
+ 	}
 -- 
 2.34.1
 
