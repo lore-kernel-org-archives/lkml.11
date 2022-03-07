@@ -2,100 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E5AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBED9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243924AbiCGPtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:49:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        id S243944AbiCGPtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:49:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbiCGPtB (ORCPT
+        with ESMTP id S243908AbiCGPtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:49:01 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1834D3A5EE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:48:06 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id bu29so27070169lfb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 07:48:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LgEES4/rPa8CVMjAOxZ+enRD8k6L+QVpRqkn7PoSOSU=;
-        b=RSZc176zZ2z6DKzBAW0/0ma/pjDQ2eWWeThHXLuAHZ6NG1gQGBWxhvwoseB0qIHs2I
-         xtwJvLWK3Zvprycj7zHLJJfUxOS0Vo0Apl2CgCbiZT/PXiMhkFAEMpIeCU+rzPDoXfNx
-         qTpt2XqrONNnqoyPxCYe9G4ydQhC8Skt4XznS1sD3gVW/30VXmUCRK48X0ve36+tm3qV
-         1Lus/aBB0wDJYDvec0+TWFvMi6U8QAqvKJloePoTJkKITaikbNczASLAASzyhAFjLjoO
-         hbv0Ov0PZwCva7hFrYnK9id86QWkC2WzEx+XLhxhXDmC//r2kwXnHXuHPeDw/1LNKP9X
-         Q/ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LgEES4/rPa8CVMjAOxZ+enRD8k6L+QVpRqkn7PoSOSU=;
-        b=YxP71ZmxBV6t6PEt3vbhcR8qbxMDySqoC0T8GNl/SS9k8aeusd5YHQyTMMXRpgAMfO
-         XQE4fOcxsPGQQ7/LrJHyv4gTdlR+Iwf7b9ycYvTMOCbSqjnpJTlpUjuBrhSbsgqP79K3
-         iBu0G/TIAynAfD4Zfuz1Cv2YVrGpEVwojRvKIJIek07XdKihFaXIdwrLhgGELTeiG0YQ
-         6jv/RG06TpwALcpjpRhCjlYmZjhje8rG5PII8Uzl3Hp/DvDg9xSiXZuRnwr+u85LbvBc
-         tbIMjp98xt17jk7gtwwclCVH+s/ScyL8IZlIgKX7os5ChK0GU5HBqVUU8Hh2Wi0xO/bL
-         d/NQ==
-X-Gm-Message-State: AOAM533Xh0oc6oWZLSrVoGnbXvv3sCHVvQSg5LeWUSjTkRlG8aVOn5g8
-        ryTDD+4Im0VSwmoCUMfYtuP0QpPEiSYYmA==
-X-Google-Smtp-Source: ABdhPJz5+MA6btAr7UFrQUtyNqVwC20nVSI0t0VnU+K02P5BiAvwNVFHWtOwh+IQ4NSMbkMrvAOaog==
-X-Received: by 2002:a05:6512:1287:b0:447:5c8a:c9e2 with SMTP id u7-20020a056512128700b004475c8ac9e2mr8227893lfs.64.1646668081667;
-        Mon, 07 Mar 2022 07:48:01 -0800 (PST)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id k3-20020a05651239c300b00443c5f9175bsm2909978lfu.46.2022.03.07.07.48.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 07:48:01 -0800 (PST)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Mon, 7 Mar 2022 16:47:59 +0100
-To:     Bang Li <libang.linuxer@gmail.com>
-Cc:     akpm@linux-foundation.org, urezki@gmail.com, lpf.vector@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/vmalloc: fix comments about vmap_area struct
-Message-ID: <YiYpL3I/OrPJPWXo@pc638.lan>
-References: <20220305011510.33596-1-libang.linuxer@gmail.com>
+        Mon, 7 Mar 2022 10:49:06 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099463DA58;
+        Mon,  7 Mar 2022 07:48:09 -0800 (PST)
+X-UUID: 52f0d7a55a9844a0b4277a908456edf4-20220307
+X-UUID: 52f0d7a55a9844a0b4277a908456edf4-20220307
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1241223397; Mon, 07 Mar 2022 23:48:03 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 7 Mar 2022 23:48:02 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Mar
+ 2022 23:48:02 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Mar 2022 23:48:01 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <lecopzer.chen@mediatek.com>, <acme@kernel.org>,
+        <akpm@linux-foundation.org>, <alexander.shishkin@linux.intel.com>,
+        <catalin.marinas@arm.com>, <davem@davemloft.net>,
+        <jolsa@redhat.com>, <jthierry@redhat.com>, <keescook@chromium.org>,
+        <kernelfans@gmail.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <pmladek@suse.com>, <sparclinux@vger.kernel.org>,
+        <sumit.garg@linaro.org>, <wangqing@vivo.com>, <will@kernel.org>,
+        <yj.chiang@mediatek.com>
+Subject: [PATCH v2 2/5] kernel/watchdog: change watchdog_nmi_enable() to void
+Date:   Mon, 7 Mar 2022 23:47:26 +0800
+Message-ID: <20220307154729.13477-3-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220307154729.13477-1-lecopzer.chen@mediatek.com>
+References: <20220307154729.13477-1-lecopzer.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220305011510.33596-1-libang.linuxer@gmail.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 09:15:10AM +0800, Bang Li wrote:
-> the vmap_area_root should be in the "busy" tree and the free_vmap_area_root
-> should be in the "free" tree.
-> 
-> Fixes: 688fcbfc06e4 ("mm/vmalloc: modify struct vmap_area to reduce its size")
-> Signed-off-by: Bang Li <libang.linuxer@gmail.com>
-> ---
->  include/linux/vmalloc.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-> index 880227b9f044..05065915edd7 100644
-> --- a/include/linux/vmalloc.h
-> +++ b/include/linux/vmalloc.h
-> @@ -80,8 +80,8 @@ struct vmap_area {
->  	/*
->  	 * The following two variables can be packed, because
->  	 * a vmap_area object can be either:
-> -	 *    1) in "free" tree (root is vmap_area_root)
-> -	 *    2) or "busy" tree (root is free_vmap_area_root)
-> +	 *    1) in "free" tree (root is free_vmap_area_root)
-> +	 *    2) or "busy" tree (root is vmap_area_root)
->  	 */
->  	union {
->  		unsigned long subtree_max_size; /* in "free" tree */
-> -- 
-> 2.25.1
-> 
-Agree, those comments were messed up. 
+Nobody cares about the return value of watchdog_nmi_enable(),
+changing its prototype to void.
 
-Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+ arch/sparc/kernel/nmi.c | 8 +++-----
+ include/linux/nmi.h     | 2 +-
+ kernel/watchdog.c       | 3 +--
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
---
-Vlad Rezki
+diff --git a/arch/sparc/kernel/nmi.c b/arch/sparc/kernel/nmi.c
+index 060fff95a305..5dcf31f7e81f 100644
+--- a/arch/sparc/kernel/nmi.c
++++ b/arch/sparc/kernel/nmi.c
+@@ -282,11 +282,11 @@ __setup("nmi_watchdog=", setup_nmi_watchdog);
+  * sparc specific NMI watchdog enable function.
+  * Enables watchdog if it is not enabled already.
+  */
+-int watchdog_nmi_enable(unsigned int cpu)
++void watchdog_nmi_enable(unsigned int cpu)
+ {
+ 	if (atomic_read(&nmi_active) == -1) {
+ 		pr_warn("NMI watchdog cannot be enabled or disabled\n");
+-		return -1;
++		return;
+ 	}
+ 
+ 	/*
+@@ -295,11 +295,9 @@ int watchdog_nmi_enable(unsigned int cpu)
+ 	 * process first.
+ 	 */
+ 	if (!nmi_init_done)
+-		return 0;
++		return;
+ 
+ 	smp_call_function_single(cpu, start_nmi_watchdog, NULL, 1);
+-
+-	return 0;
+ }
+ /*
+  * sparc specific NMI watchdog disable function.
+diff --git a/include/linux/nmi.h b/include/linux/nmi.h
+index 750c7f395ca9..b7bcd63c36b4 100644
+--- a/include/linux/nmi.h
++++ b/include/linux/nmi.h
+@@ -119,7 +119,7 @@ static inline int hardlockup_detector_perf_init(void) { return 0; }
+ void watchdog_nmi_stop(void);
+ void watchdog_nmi_start(void);
+ int watchdog_nmi_probe(void);
+-int watchdog_nmi_enable(unsigned int cpu);
++void watchdog_nmi_enable(unsigned int cpu);
+ void watchdog_nmi_disable(unsigned int cpu);
+ 
+ /**
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index db451e943a04..b71d434cf648 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -93,10 +93,9 @@ __setup("nmi_watchdog=", hardlockup_panic_setup);
+  * softlockup watchdog start and stop. The arch must select the
+  * SOFTLOCKUP_DETECTOR Kconfig.
+  */
+-int __weak watchdog_nmi_enable(unsigned int cpu)
++void __weak watchdog_nmi_enable(unsigned int cpu)
+ {
+ 	hardlockup_detector_perf_enable();
+-	return 0;
+ }
+ 
+ void __weak watchdog_nmi_disable(unsigned int cpu)
+-- 
+2.25.1
+
