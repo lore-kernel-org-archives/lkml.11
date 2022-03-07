@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A60CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D42C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbiCGJ5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:57:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54314 "EHLO
+        id S238953AbiCGJ5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:57:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239261AbiCGJjd (ORCPT
+        with ESMTP id S239305AbiCGJjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:33 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B849970CD7;
-        Mon,  7 Mar 2022 01:35:15 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EC96D4DF;
+        Mon,  7 Mar 2022 01:35:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 68DEECE0B91;
-        Mon,  7 Mar 2022 09:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CFCEC340E9;
-        Mon,  7 Mar 2022 09:34:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A313B810B9;
+        Mon,  7 Mar 2022 09:35:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01C71C340E9;
+        Mon,  7 Mar 2022 09:34:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645663;
-        bh=6crrs/elwQ8b0hU87CPZNpOETc1cgMCnScdjzdtuKdo=;
+        s=korg; t=1646645699;
+        bh=OKUJ1VFByJYAVz6NAr0y42oP8C8o9h3GY4OVSvu1guQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wXPn/1GFjd8dI/jAkTirUWu2IxnYl8k3jk46VTlI51An4B1kE9pz82y9dwr3gv9AC
-         sX4QgVZlkWAPTGLgY2lG3nzD9yu4XAz4dgCNKq5f6jhxbl2JK1t1OO34on0DK4OeoG
-         pfaP1NdSPgp+KS3WSxEnkYaayQUJefLpovaHI7KQ=
+        b=W2abqdSvSTmAkkF76E+V+wY6hZR7zLlWI9mAC4sQ+5RvwHUCI0QRgTvxW/0TsgWtM
+         kmYm7DqLRKzkSEgJZBKGpvpKOfjAfJMzF3UCbLZuPZv8M5uAk8Vt84jOw06tnP706Y
+         /FGbIGtZTDCemN+N9+6rj+5il9dR22xo9EnGi69I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Maurice Baijens <maurice.baijens@ellips.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 067/105] ixgbe: xsk: change !netif_carrier_ok() handling in ixgbe_xmit_zc()
-Date:   Mon,  7 Mar 2022 10:19:10 +0100
-Message-Id: <20220307091646.062759142@linuxfoundation.org>
+        Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 001/262] mac80211_hwsim: report NOACK frames in tx_status
+Date:   Mon,  7 Mar 2022 10:15:45 +0100
+Message-Id: <20220307091702.423093657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,50 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
 
-commit 6c7273a266759d9d36f7c862149f248bcdeddc0f upstream.
+[ Upstream commit 42a79960ffa50bfe9e0bf5d6280be89bf563a5dd ]
 
-Commit c685c69fba71 ("ixgbe: don't do any AF_XDP zero-copy transmit if
-netif is not OK") addressed the ring transient state when
-MEM_TYPE_XSK_BUFF_POOL was being configured which in turn caused the
-interface to through down/up. Maurice reported that when carrier is not
-ok and xsk_pool is present on ring pair, ksoftirqd will consume 100% CPU
-cycles due to the constant NAPI rescheduling as ixgbe_poll() states that
-there is still some work to be done.
+Add IEEE80211_TX_STAT_NOACK_TRANSMITTED to tx_status flags to have proper
+statistics for non-acked frames.
 
-To fix this, do not set work_done to false for a !netif_carrier_ok().
-
-Fixes: c685c69fba71 ("ixgbe: don't do any AF_XDP zero-copy transmit if netif is not OK")
-Reported-by: Maurice Baijens <maurice.baijens@ellips.com>
-Tested-by: Maurice Baijens <maurice.baijens@ellips.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+Link: https://lore.kernel.org/r/20220111221327.1499881-1-benjamin.beichler@uni-rostock.de
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mac80211_hwsim.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -391,12 +391,14 @@ static bool ixgbe_xmit_zc(struct ixgbe_r
- 	u32 cmd_type;
- 
- 	while (budget-- > 0) {
--		if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
--		    !netif_carrier_ok(xdp_ring->netdev)) {
-+		if (unlikely(!ixgbe_desc_unused(xdp_ring))) {
- 			work_done = false;
- 			break;
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 0adae76eb8df1..52f13afb7cba2 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -3641,6 +3641,10 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
  		}
- 
-+		if (!netif_carrier_ok(xdp_ring->netdev))
-+			break;
+ 		txi->flags |= IEEE80211_TX_STAT_ACK;
+ 	}
 +
- 		if (!xsk_tx_peek_desc(pool, &desc))
- 			break;
- 
++	if (hwsim_flags & HWSIM_TX_CTL_NO_ACK)
++		txi->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
++
+ 	ieee80211_tx_status_irqsafe(data2->hw, skb);
+ 	return 0;
+ out:
+-- 
+2.34.1
+
 
 
