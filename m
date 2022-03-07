@@ -2,83 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC49C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243508AbiCGOyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:54:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
+        id S243530AbiCGOyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243709AbiCGOw5 (ORCPT
+        with ESMTP id S243551AbiCGOxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:52:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C8A48A6DC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:51:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646664684;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3smDROMP8QMSLDecB2DTW8XgUBKKv8Df2PL4vzKcmzw=;
-        b=EbP4OA25ODB4gIF/eUvJGien1o66XiP3Q0QYJVvzXVTq6GP+LVbgBdFa8KUlba2cNGnCTV
-        QCXZgXrYngXBUbrWnJJDJLIupboNrjhqBMlH0z8cWxIAG+sHHKLsa3SooeHC9+qxHzQErA
-        qbSvWLb1J40EsN80BdNBQ6h5aj+Qzd4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-456-IbXWloJJNCO6R6dPZ7MaZA-1; Mon, 07 Mar 2022 09:51:21 -0500
-X-MC-Unique: IbXWloJJNCO6R6dPZ7MaZA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 44BEF1854E27;
-        Mon,  7 Mar 2022 14:51:20 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.193.244])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 176A07FFEF;
-        Mon,  7 Mar 2022 14:51:17 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 19/19] KVM: x86: Expose Hyper-V Direct TLB flush feature
-Date:   Mon,  7 Mar 2022 15:50:23 +0100
-Message-Id: <20220307145023.1913205-20-vkuznets@redhat.com>
-In-Reply-To: <20220307145023.1913205-1-vkuznets@redhat.com>
-References: <20220307145023.1913205-1-vkuznets@redhat.com>
+        Mon, 7 Mar 2022 09:53:48 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DED35DED;
+        Mon,  7 Mar 2022 06:52:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646664773; x=1678200773;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=d/3k4mHvlZwTsHccmScqQ+aEtnwgFzJWdq9diAD46iw=;
+  b=EW+xC8wu/RN1SOmZiDloMXefskH/qZxfu2Fk1duvFJQIA2UOupxz29aW
+   faXtvtArfoWkdspdYTIbRU58P/mlJQunIdPsm4/gqKoNhth8vM8jJp0WG
+   MjdBSEQ/K/KQ6jwT2skTgk7cPPiQNN+Gs+ywuHCDV07bHWzCuwW8o47Mq
+   U6GmI0fiSk/M4SAG9s0WXgo61/J1lXtATwZKBYDkZ48HJrnVN/aYgTJW5
+   vHZrPjl+240/A45NGd5h2iJiFW60iTXNbm83zpZ5acloPbvaLAx2z/K+4
+   RkEM17MhfKaWIcUYF82+Mrhf7QvoAKsTk7gRNDVDdhTHHiG2NjKi3Bg28
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254136272"
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="254136272"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 06:52:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="687559044"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 07 Mar 2022 06:52:46 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 07 Mar 2022 16:52:45 +0200
+Date:   Mon, 7 Mar 2022 16:52:45 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v4 3/7] usb: typec: mux: Check dev_set_name() return value
+Message-ID: <YiYcPa2XE2MlKVQU@kuha.fi.intel.com>
+References: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
+ <20220307034040.1111107-3-bjorn.andersson@linaro.org>
+ <YiXZkqPQxqQ9I0VH@smile.fi.intel.com>
+ <YiYXywEEz7WZQhfd@ripper>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiYXywEEz7WZQhfd@ripper>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With both nSVM and nVMX implementations in place, KVM can export
-Hyper-V Direct TLB flush feature to userspace.
+On Mon, Mar 07, 2022 at 06:33:47AM -0800, Bjorn Andersson wrote:
+> On Mon 07 Mar 02:08 PST 2022, Andy Shevchenko wrote:
+> 
+> > On Sun, Mar 06, 2022 at 07:40:36PM -0800, Bjorn Andersson wrote:
+> > > It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
+> > 
+> > Thanks!
+> > Shouldn't we have a Fixes tag and be sent separately for this cycle?
+> > 
+> 
+> It seems appropriate to add:
+> 
+> Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
+> 
+> 
+> If the maintainer would prefer to get this into v5.18, it could either
+> be picked ahead of the rest of the series, or I can resubmit it on its
+> own. I don't think it's a critical fix though.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/hyperv.c | 1 +
- 1 file changed, 1 insertion(+)
+Me neither.
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 31acc08a6b23..d52de033ce36 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -2815,6 +2815,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 
- 		case HYPERV_CPUID_NESTED_FEATURES:
- 			ent->eax = evmcs_ver;
-+			ent->eax |= HV_X64_NESTED_DIRECT_FLUSH;
- 			ent->eax |= HV_X64_NESTED_MSR_BITMAP;
- 
- 			break;
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+> > > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > ---
+> > > 
+> > > Changes since v3:
+> > > - New patch
+> > > 
+> > >  drivers/usb/typec/mux.c | 14 ++++++++++----
+> > >  1 file changed, 10 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
+> > > index c8340de0ed49..d2aaf294b649 100644
+> > > --- a/drivers/usb/typec/mux.c
+> > > +++ b/drivers/usb/typec/mux.c
+> > > @@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
+> > >  	sw->dev.class = &typec_mux_class;
+> > >  	sw->dev.type = &typec_switch_dev_type;
+> > >  	sw->dev.driver_data = desc->drvdata;
+> > > -	dev_set_name(&sw->dev, "%s-switch",
+> > > -		     desc->name ? desc->name : dev_name(parent));
+> > > +	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
+> > 
+> > We may use shorten form of the ternary
+> > 
+> > 	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ?: dev_name(parent));
+> > 
+> > at the same time, but it's up to you.
+> > 
+> 
+> I looked at it, but felt it was an unrelated change and decided to leave
+> it as is.
+> 
+> > Either way code looks good to me,
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > 
+> 
+> Thanks,
+> Bjorn
+> 
+> > > +	if (ret) {
+> > > +		put_device(&sw->dev);
+> > > +		return ERR_PTR(ret);
+> > > +	}
+> > >  
+> > >  	ret = device_add(&sw->dev);
+> > >  	if (ret) {
+> > > @@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
+> > >  	mux->dev.class = &typec_mux_class;
+> > >  	mux->dev.type = &typec_mux_dev_type;
+> > >  	mux->dev.driver_data = desc->drvdata;
+> > > -	dev_set_name(&mux->dev, "%s-mux",
+> > > -		     desc->name ? desc->name : dev_name(parent));
+> > > +	ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
+> > 
+> > Ditto.
+> > 
+> > > +	if (ret) {
+> > > +		put_device(&mux->dev);
+> > > +		return ERR_PTR(ret);
+> > > +	}
+> > >  
+> > >  	ret = device_add(&mux->dev);
+> > >  	if (ret) {
+> > > -- 
+> > > 2.33.1
+> > > 
+> > 
+> > -- 
+> > With Best Regards,
+> > Andy Shevchenko
+> > 
+> > 
+
 -- 
-2.35.1
-
+heikki
