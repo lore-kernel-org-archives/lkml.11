@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54294C46467
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239180AbiCGJtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
+        id S239471AbiCGJtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239355AbiCGJji (ORCPT
+        with ESMTP id S240003AbiCGJkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84C46D85B;
-        Mon,  7 Mar 2022 01:35:33 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5C76E298;
+        Mon,  7 Mar 2022 01:36:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00956612B2;
-        Mon,  7 Mar 2022 09:35:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D70FC36AE2;
-        Mon,  7 Mar 2022 09:35:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF1B3B810C2;
+        Mon,  7 Mar 2022 09:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10875C340F3;
+        Mon,  7 Mar 2022 09:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645705;
-        bh=+oaw10vcsziuPG1r4+KJScrE4s0dXjQd4Jd7dTVsJvg=;
+        s=korg; t=1646645781;
+        bh=79BBtJCvrd7O12tzZuDbSN/2vkImyTVHbL+QeoTs2V8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=joxgDVKSG9zig1Q/6oALOFaE0nEHn7VtOfMx5BX1b+nyVLO+DNIZgARvTF8zxc3Ag
-         pFDqB3d9SkpwAJ9wrta3yLVrfaLdpApjiGSb/GVcl5viGRQuqBu0OmKnm+BbbkTzyl
-         ExUprCp9eOfgtv6U6F1NNd0miBFskO7Y60U2ciLI=
+        b=t0Lgt0yKoww3hL5giEpKoVLlMnzqqxl/mOcmstb5ScZoxG36dmT8iMYfoBCmAz9gr
+         6V7TWrCeejI4FpAegJ/MP1xByGoVJ2+R/TqFSqqtng4lHkXlXzk3NoP25LL5XO3jLt
+         CJi1K+YGWsoSltF0Dswr6upAq0uVn9o+dWpi5VIk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Valentin Caron <valentin.caron@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 011/262] tipc: fix a bit overflow in tipc_crypto_key_rcv()
-Date:   Mon,  7 Mar 2022 10:15:55 +0100
-Message-Id: <20220307091702.697205977@linuxfoundation.org>
+Subject: [PATCH 5.15 033/262] serial: stm32: prevent TDR register overwrite when sending x_char
+Date:   Mon,  7 Mar 2022 10:16:17 +0100
+Message-Id: <20220307091703.301925709@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,33 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Valentin Caron <valentin.caron@foss.st.com>
 
-[ Upstream commit 143de8d97d79316590475dc2a84513c63c863ddf ]
+[ Upstream commit d3d079bde07e1b7deaeb57506dc0b86010121d17 ]
 
-msg_data_sz return a 32bit value, but size is 16bit. This may lead to a
-bit overflow.
+When sending x_char in stm32_usart_transmit_chars(), driver can overwrite
+the value of TDR register by the value of x_char. If this happens, the
+previous value that was present in TDR register will not be sent through
+uart.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This code checks if the previous value in TDR register is sent before
+writing the x_char value into register.
+
+Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+Link: https://lore.kernel.org/r/20220111164441.6178-2-valentin.caron@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/crypto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/stm32-usart.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index d293614d5fc65..b5074957e8812 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -2287,7 +2287,7 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
- 	struct tipc_crypto *tx = tipc_net(rx->net)->crypto_tx;
- 	struct tipc_aead_key *skey = NULL;
- 	u16 key_gen = msg_key_gen(hdr);
--	u16 size = msg_data_sz(hdr);
-+	u32 size = msg_data_sz(hdr);
- 	u8 *data = msg_data(hdr);
- 	unsigned int keylen;
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 200cd293d14d5..810a1b0b65203 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -421,10 +421,22 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	struct circ_buf *xmit = &port->state->xmit;
++	u32 isr;
++	int ret;
  
+ 	if (port->x_char) {
+ 		if (stm32_port->tx_dma_busy)
+ 			stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
++
++		/* Check that TDR is empty before filling FIFO */
++		ret =
++		readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
++						  isr,
++						  (isr & USART_SR_TXE),
++						  10, 1000);
++		if (ret)
++			dev_warn(port->dev, "1 character may be erased\n");
++
+ 		writel_relaxed(port->x_char, port->membase + ofs->tdr);
+ 		port->x_char = 0;
+ 		port->icount.tx++;
 -- 
 2.34.1
 
