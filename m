@@ -2,122 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0764C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7612CC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241950AbiCGKLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
+        id S241889AbiCGKKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240295AbiCGJus (ORCPT
+        with ESMTP id S240458AbiCGJvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB6E74DDC;
-        Mon,  7 Mar 2022 01:44:26 -0800 (PST)
+        Mon, 7 Mar 2022 04:51:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF26975619
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:44:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D7360F62;
-        Mon,  7 Mar 2022 09:44:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4688AC36AE5;
-        Mon,  7 Mar 2022 09:44:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646259;
-        bh=VfEIdLUz6bH6L/JeAHwklQGWBPhkXIBpMuMn3x4wokQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8ZABe0ZSzjE5t86wqkCZ1jLSorT47nHhXUwzEU75X6oWMYeA+/SrtGM3VAf7BuCo
-         4Pwq8Q7jW5cisRumP3r/MaDlTp0NF1VmplHdvISDF6HmkaAFf+qWMBpylFsI3ScfUS
-         BFC0NvlHlOz0AUlnI0RECduZ04yLCIsPKokE087Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars Poeschel <poeschel@lemonage.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>
-Subject: [PATCH 5.15 186/262] auxdisplay: lcd2s: Fix memory leak in ->remove()
-Date:   Mon,  7 Mar 2022 10:18:50 +0100
-Message-Id: <20220307091707.695840636@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3364260F62
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:44:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD5B9C340E9;
+        Mon,  7 Mar 2022 09:44:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646646279;
+        bh=4Ce73zt7zXRoK9sW1AFtNqsQJwip8P7mDWs2GukeN7s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sjj5xXr2QM1NbShQxKCx298UuTbjDwKzReLHYtgU11HP1KWDJa+Tt6fHatJm/UV6g
+         FFIVuIWkcb3bAxHxqTg6Fq8O+Pr9i9f6qlzR5yfq9v7yHjeKjlCVFj4v8YxyK4TJS0
+         QaRdiaA4w0hP68RsHGQzzNrgdj89lO51o1fZkuQWV6M0UDvH72K+EitH51QHrndpkx
+         +nge2eXjIJ45LNWAub8rNOmsUl5TKfv7QG4mHvgZ/hH+L7hW9KEEthnxfRVnTZ52DT
+         8GfG8DbKs5n+nnSgeZjOBCBCIu0sqWMhzCwbyrCdQcslEvRczioHscf2KGnVdDLZik
+         s2OtOHMn+qQBw==
+Date:   Mon, 7 Mar 2022 18:44:34 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
+        keescook@chromium.org, samitolvanen@google.com,
+        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
+        rostedt@goodmis.org, mhiramat@kernel.org,
+        alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v3 19/39] x86/ibt,kprobes: Cure sym+0 equals fentry woes
+Message-Id: <20220307184434.4b7e5d83c9d16a983adedce5@kernel.org>
+In-Reply-To: <20220303112826.104222438@infradead.org>
+References: <20220303112321.422525803@infradead.org>
+        <20220303112826.104222438@infradead.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Thu, 03 Mar 2022 12:23:40 +0100
+Peter Zijlstra <peterz@infradead.org> wrote:
 
-commit 898c0a15425a5bcaa8d44bd436eae5afd2483796 upstream.
+> Rework _kprobe_addr() to only ever do 2 kallsyms calls and require
+> only a single architecture/weak function -- although currently powerpc
+> still uses 2.
 
-Once allocated the struct lcd2s_data is never freed.
-Fix the memory leak by switching to devm_kzalloc().
+OK, and we need to note here that if the kernel enables this
+X86_KERNEL_IBT, the kprobe address is possible to be sym+4 because
+kprobes will skip the ENDBR.
 
-Fixes: 8c9108d014c5 ("auxdisplay: add a driver for lcd2s character display")
-Cc: Lars Poeschel <poeschel@lemonage.de>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/auxdisplay/lcd2s.c |   18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+Others looks good to me.
 
---- a/drivers/auxdisplay/lcd2s.c
-+++ b/drivers/auxdisplay/lcd2s.c
-@@ -298,6 +298,10 @@ static int lcd2s_i2c_probe(struct i2c_cl
- 			I2C_FUNC_SMBUS_WRITE_BLOCK_DATA))
- 		return -EIO;
- 
-+	lcd2s = devm_kzalloc(&i2c->dev, sizeof(*lcd2s), GFP_KERNEL);
-+	if (!lcd2s)
-+		return -ENOMEM;
-+
- 	/* Test, if the display is responding */
- 	err = lcd2s_i2c_smbus_write_byte(i2c, LCD2S_CMD_DISPLAY_OFF);
- 	if (err < 0)
-@@ -307,12 +311,6 @@ static int lcd2s_i2c_probe(struct i2c_cl
- 	if (!lcd)
- 		return -ENOMEM;
- 
--	lcd2s = kzalloc(sizeof(struct lcd2s_data), GFP_KERNEL);
--	if (!lcd2s) {
--		err = -ENOMEM;
--		goto fail1;
--	}
--
- 	lcd->drvdata = lcd2s;
- 	lcd2s->i2c = i2c;
- 	lcd2s->charlcd = lcd;
-@@ -321,24 +319,22 @@ static int lcd2s_i2c_probe(struct i2c_cl
- 	err = device_property_read_u32(&i2c->dev, "display-height-chars",
- 			&lcd->height);
- 	if (err)
--		goto fail2;
-+		goto fail1;
- 
- 	err = device_property_read_u32(&i2c->dev, "display-width-chars",
- 			&lcd->width);
- 	if (err)
--		goto fail2;
-+		goto fail1;
- 
- 	lcd->ops = &lcd2s_ops;
- 
- 	err = charlcd_register(lcd2s->charlcd);
- 	if (err)
--		goto fail2;
-+		goto fail1;
- 
- 	i2c_set_clientdata(i2c, lcd2s);
- 	return 0;
- 
--fail2:
--	kfree(lcd2s);
- fail1:
- 	kfree(lcd);
- 	return err;
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+
+Thank you,
+
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/powerpc/kernel/kprobes.c  |   34 +++++++++++++--------
+>  arch/x86/kernel/kprobes/core.c |   28 ++++++++++++++---
+>  include/linux/kprobes.h        |    3 +
+>  kernel/kprobes.c               |   66 ++++++++++++++++++++++++++++++++---------
+>  4 files changed, 98 insertions(+), 33 deletions(-)
+> 
+> --- a/arch/powerpc/kernel/kprobes.c
+> +++ b/arch/powerpc/kernel/kprobes.c
+> @@ -105,6 +105,27 @@ kprobe_opcode_t *kprobe_lookup_name(cons
+>  	return addr;
+>  }
+>  
+> +static bool arch_kprobe_on_func_entry(unsigned long offset)
+> +{
+> +#ifdef PPC64_ELF_ABI_v2
+> +#ifdef CONFIG_KPROBES_ON_FTRACE
+> +	return offset <= 16;
+> +#else
+> +	return offset <= 8;
+> +#endif
+> +#else
+> +	return !offset;
+> +#endif
+> +}
+> +
+> +/* XXX try and fold the magic of kprobe_lookup_name() in this */
+> +kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset,
+> +					 bool *on_func_entry)
+> +{
+> +	*on_func_entry = arch_kprobe_on_func_entry(offset);
+> +	return (kprobe_opcode_t *)(addr + offset);
+
+Just for make sure, 
+
+> +}
+> +
+>  void *alloc_insn_page(void)
+>  {
+>  	void *page;
+> @@ -218,19 +239,6 @@ static nokprobe_inline void set_current_
+>  	kcb->kprobe_saved_msr = regs->msr;
+>  }
+>  
+> -bool arch_kprobe_on_func_entry(unsigned long offset)
+> -{
+> -#ifdef PPC64_ELF_ABI_v2
+> -#ifdef CONFIG_KPROBES_ON_FTRACE
+> -	return offset <= 16;
+> -#else
+> -	return offset <= 8;
+> -#endif
+> -#else
+> -	return !offset;
+> -#endif
+> -}
+> -
+>  void arch_prepare_kretprobe(struct kretprobe_instance *ri, struct pt_regs *regs)
+>  {
+>  	ri->ret_addr = (kprobe_opcode_t *)regs->link;
+> --- a/arch/x86/kernel/kprobes/core.c
+> +++ b/arch/x86/kernel/kprobes/core.c
+> @@ -52,6 +52,7 @@
+>  #include <asm/insn.h>
+>  #include <asm/debugreg.h>
+>  #include <asm/set_memory.h>
+> +#include <asm/ibt.h>
+>  
+>  #include "common.h"
+>  
+> @@ -197,13 +198,14 @@ __recover_probed_insn(kprobe_opcode_t *b
+>  
+>  	kp = get_kprobe((void *)addr);
+>  	faddr = ftrace_location(addr);
+> +
+>  	/*
+> -	 * Addresses inside the ftrace location are refused by
+> -	 * arch_check_ftrace_location(). Something went terribly wrong
+> -	 * if such an address is checked here.
+> +	 * In case addr maps to sym+0 ftrace_location() might return something
+> +	 * other than addr. In that case consider it the same as !faddr.
+>  	 */
+> -	if (WARN_ON(faddr && faddr != addr))
+> -		return 0UL;
+> +	if (faddr && faddr != addr)
+> +		faddr = 0;
+> +
+>  	/*
+>  	 * Use the current code if it is not modified by Kprobe
+>  	 * and it cannot be modified by ftrace.
+> @@ -301,6 +303,22 @@ static int can_probe(unsigned long paddr
+>  	return (addr == paddr);
+>  }
+>  
+> +/* If the x86 support IBT (ENDBR) it must be skipped. */
+> +kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset,
+> +					 bool *on_func_entry)
+> +{
+> +	if (is_endbr(*(u32 *)addr)) {
+> +		*on_func_entry = !offset || offset == 4;
+> +		if (*on_func_entry)
+> +			offset = 4;
+> +
+> +	} else {
+> +		*on_func_entry = !offset;
+> +	}
+> +
+> +	return (kprobe_opcode_t *)(addr + offset);
+> +}
+> +
+>  /*
+>   * Copy an instruction with recovering modified instruction by kprobes
+>   * and adjust the displacement if the instruction uses the %rip-relative
+> --- a/include/linux/kprobes.h
+> +++ b/include/linux/kprobes.h
+> @@ -265,7 +265,6 @@ extern int arch_init_kprobes(void);
+>  extern void kprobes_inc_nmissed_count(struct kprobe *p);
+>  extern bool arch_within_kprobe_blacklist(unsigned long addr);
+>  extern int arch_populate_kprobe_blacklist(void);
+> -extern bool arch_kprobe_on_func_entry(unsigned long offset);
+>  extern int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset);
+>  
+>  extern bool within_kprobe_blacklist(unsigned long addr);
+> @@ -384,6 +383,8 @@ static inline struct kprobe_ctlblk *get_
+>  }
+>  
+>  kprobe_opcode_t *kprobe_lookup_name(const char *name, unsigned int offset);
+> +kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset, bool *on_func_entry);
+> +
+>  int register_kprobe(struct kprobe *p);
+>  void unregister_kprobe(struct kprobe *p);
+>  int register_kprobes(struct kprobe **kps, int num);
+> --- a/kernel/kprobes.c
+> +++ b/kernel/kprobes.c
+> @@ -1489,24 +1489,68 @@ bool within_kprobe_blacklist(unsigned lo
+>  }
+>  
+>  /*
+> + * arch_adjust_kprobe_addr - adjust the address
+> + * @addr: symbol base address
+> + * @offset: offset within the symbol
+> + * @on_func_entry: was this @addr+@offset on the function entry
+> + *
+> + * Typically returns @addr + @offset, except for special cases where the
+> + * function might be prefixed by a CFI landing pad, in that case any offset
+> + * inside the landing pad is mapped to the first 'real' instruction of the
+> + * symbol.
+> + *
+> + * Specifically, for things like IBT/BTI, skip the resp. ENDBR/BTI.C
+> + * instruction at +0.
+> + */
+> +kprobe_opcode_t *__weak arch_adjust_kprobe_addr(unsigned long addr,
+> +						unsigned long offset,
+> +						bool *on_func_entry)
+> +{
+> +	*on_func_entry = !offset;
+> +	return (kprobe_opcode_t *)(addr + offset);
+> +}
+> +
+> +/*
+>   * If 'symbol_name' is specified, look it up and add the 'offset'
+>   * to it. This way, we can specify a relative address to a symbol.
+>   * This returns encoded errors if it fails to look up symbol or invalid
+>   * combination of parameters.
+>   */
+> -static kprobe_opcode_t *_kprobe_addr(kprobe_opcode_t *addr,
+> -			const char *symbol_name, unsigned int offset)
+> +static kprobe_opcode_t *
+> +_kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
+> +	     unsigned long offset, bool *on_func_entry)
+>  {
+>  	if ((symbol_name && addr) || (!symbol_name && !addr))
+>  		goto invalid;
+>  
+>  	if (symbol_name) {
+> +		/*
+> +		 * Input: @sym + @offset
+> +		 * Output: @addr + @offset
+> +		 *
+> +		 * NOTE: kprobe_lookup_name() does *NOT* fold the offset
+> +		 *       argument into it's output!
+> +		 */
+>  		addr = kprobe_lookup_name(symbol_name, offset);
+>  		if (!addr)
+>  			return ERR_PTR(-ENOENT);
+>  	}
+>  
+> -	addr = (kprobe_opcode_t *)(((char *)addr) + offset);
+> +	/*
+> +	 * So here we have @addr + @offset, displace it into a new
+> +	 * @addr' + @offset' where @addr' is the symbol start address.
+> +	 */
+> +	addr = (void *)addr + offset;
+> +	if (!kallsyms_lookup_size_offset((unsigned long)addr, NULL, &offset))
+> +		return ERR_PTR(-ENOENT);
+> +	addr = (void *)addr - offset;
+> +
+> +	/*
+> +	 * Then ask the architecture to re-combine them, taking care of
+> +	 * magical function entry details while telling us if this was indeed
+> +	 * at the start of the function.
+> +	 */
+> +	addr = arch_adjust_kprobe_addr((unsigned long)addr, offset, on_func_entry);
+>  	if (addr)
+>  		return addr;
+>  
+> @@ -1516,7 +1560,8 @@ static kprobe_opcode_t *_kprobe_addr(kpr
+>  
+>  static kprobe_opcode_t *kprobe_addr(struct kprobe *p)
+>  {
+> -	return _kprobe_addr(p->addr, p->symbol_name, p->offset);
+> +	bool on_func_entry;
+> +	return _kprobe_addr(p->addr, p->symbol_name, p->offset, &on_func_entry);
+>  }
+>  
+>  /*
+> @@ -2047,11 +2092,6 @@ static int pre_handler_kretprobe(struct
+>  }
+>  NOKPROBE_SYMBOL(pre_handler_kretprobe);
+>  
+> -bool __weak arch_kprobe_on_func_entry(unsigned long offset)
+> -{
+> -	return !offset;
+> -}
+> -
+>  /**
+>   * kprobe_on_func_entry() -- check whether given address is function entry
+>   * @addr: Target address
+> @@ -2067,15 +2107,13 @@ bool __weak arch_kprobe_on_func_entry(un
+>   */
+>  int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset)
+>  {
+> -	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset);
+> +	bool on_func_entry;
+> +	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset, &on_func_entry);
+>  
+>  	if (IS_ERR(kp_addr))
+>  		return PTR_ERR(kp_addr);
+>  
+> -	if (!kallsyms_lookup_size_offset((unsigned long)kp_addr, NULL, &offset))
+> -		return -ENOENT;
+> -
+> -	if (!arch_kprobe_on_func_entry(offset))
+> +	if (!on_func_entry)
+>  		return -EINVAL;
+>  
+>  	return 0;
+> 
+> 
 
 
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
