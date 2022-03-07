@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC78C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD311C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238332AbiCGJrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
+        id S238428AbiCGJrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:47:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238586AbiCGJig (ORCPT
+        with ESMTP id S238652AbiCGJij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC164A3CF;
-        Mon,  7 Mar 2022 01:33:00 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2955B6B082;
+        Mon,  7 Mar 2022 01:33:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3985560C7D;
-        Mon,  7 Mar 2022 09:32:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4530BC340F3;
-        Mon,  7 Mar 2022 09:32:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 641CA61119;
+        Mon,  7 Mar 2022 09:32:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF3EC340E9;
+        Mon,  7 Mar 2022 09:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645563;
-        bh=SaOWSdfpn9CGBVS1B4toCBOUU00mGD5nHWoK8cA+Qkk=;
+        s=korg; t=1646645578;
+        bh=K7m3Sfc/qWJ0tybqDLT00RD7TUonF20rm7LwRCpNImo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wrxA2oKIpxcZQlmDpb/rZwO6Xsvb+oCN1G39Mm2Jw56M4TKZLJh3UxNXeHFBv/pX+
-         1wWIBp7P/twooS0jOUTdBTLSTiLfEdF8TxBe52NnUuuyDIVWENWwKGgkZCLNMlTupa
-         z9uVueJJiwol3S0dvB5wcNYVOXb/wrc8umVVtDXY=
+        b=czYr39C14lsaKYKTMANsvWoZU3x/FCr3jiSZL8h02qWBHoPJ869GGiwUkjsPy2j1c
+         WSqzgpTox5Al5hmOK3KdrZkygSj/RCECxTsBt6PjMmSS22Ub7EFirlkBCcuHppchEt
+         VbLYP4LDdQXzXC+L5WBlHcAhTtEcHeDsHZjRE6g0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Siva Reddy <siva.kallam@samsung.com>,
-        Girish K S <ks.giri@samsung.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 064/105] net: sxgbe: fix return value of __setup handler
-Date:   Mon,  7 Mar 2022 10:19:07 +0100
-Message-Id: <20220307091645.980440650@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.10 077/105] pinctrl: sunxi: Use unique lockdep classes for IRQs
+Date:   Mon,  7 Mar 2022 10:19:20 +0100
+Message-Id: <20220307091646.343867452@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -52,52 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 50e06ddceeea263f57fe92baa677c638ecd65bb6 upstream.
+commit bac129dbc6560dfeb634c03f0c08b78024e71915 upstream.
 
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 causes the "option=value" string to be
-added to init's environment strings, polluting it.
+This driver, like several others, uses a chained IRQ for each GPIO bank,
+and forwards .irq_set_wake to the GPIO bank's upstream IRQ. As a result,
+a call to irq_set_irq_wake() needs to lock both the upstream and
+downstream irq_desc's. Lockdep considers this to be a possible deadlock
+when the irq_desc's share lockdep classes, which they do by default:
 
-Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
-Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Siva Reddy <siva.kallam@samsung.com>
-Cc: Girish K S <ks.giri@samsung.com>
-Cc: Byungho An <bh74.an@samsung.com>
-Link: https://lore.kernel.org/r/20220224033528.24640-1-rdunlap@infradead.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ ============================================
+ WARNING: possible recursive locking detected
+ 5.17.0-rc3-00394-gc849047c2473 #1 Not tainted
+ --------------------------------------------
+ init/307 is trying to acquire lock:
+ c2dfe27c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
+
+ but task is already holding lock:
+ c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
+
+ other info that might help us debug this:
+  Possible unsafe locking scenario:
+
+        CPU0
+        ----
+   lock(&irq_desc_lock_class);
+   lock(&irq_desc_lock_class);
+
+  *** DEADLOCK ***
+
+  May be due to missing lock nesting notation
+
+ 4 locks held by init/307:
+  #0: c1f29f18 (system_transition_mutex){+.+.}-{3:3}, at: __do_sys_reboot+0x90/0x23c
+  #1: c20f7760 (&dev->mutex){....}-{3:3}, at: device_shutdown+0xf4/0x224
+  #2: c2e804d8 (&dev->mutex){....}-{3:3}, at: device_shutdown+0x104/0x224
+  #3: c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
+
+ stack backtrace:
+ CPU: 0 PID: 307 Comm: init Not tainted 5.17.0-rc3-00394-gc849047c2473 #1
+ Hardware name: Allwinner sun8i Family
+  unwind_backtrace from show_stack+0x10/0x14
+  show_stack from dump_stack_lvl+0x68/0x90
+  dump_stack_lvl from __lock_acquire+0x1680/0x31a0
+  __lock_acquire from lock_acquire+0x148/0x3dc
+  lock_acquire from _raw_spin_lock_irqsave+0x50/0x6c
+  _raw_spin_lock_irqsave from __irq_get_desc_lock+0x58/0xa0
+  __irq_get_desc_lock from irq_set_irq_wake+0x2c/0x19c
+  irq_set_irq_wake from irq_set_irq_wake+0x13c/0x19c
+    [tail call from sunxi_pinctrl_irq_set_wake]
+  irq_set_irq_wake from gpio_keys_suspend+0x80/0x1a4
+  gpio_keys_suspend from gpio_keys_shutdown+0x10/0x2c
+  gpio_keys_shutdown from device_shutdown+0x180/0x224
+  device_shutdown from __do_sys_reboot+0x134/0x23c
+  __do_sys_reboot from ret_fast_syscall+0x0/0x1c
+
+However, this can never deadlock because the upstream and downstream
+IRQs are never the same (nor do they even involve the same irqchip).
+
+Silence this erroneous lockdep splat by applying what appears to be the
+usual fix of moving the GPIO IRQs to separate lockdep classes.
+
+Fixes: a59c99d9eaf9 ("pinctrl: sunxi: Forward calls to irq_set_irq_wake")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220216040037.22730-1-samuel@sholland.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-@@ -2282,18 +2282,18 @@ static int __init sxgbe_cmdline_opt(char
- 	char *opt;
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -36,6 +36,13 @@
+ #include "../core.h"
+ #include "pinctrl-sunxi.h"
  
- 	if (!str || !*str)
--		return -EINVAL;
-+		return 1;
- 	while ((opt = strsep(&str, ",")) != NULL) {
- 		if (!strncmp(opt, "eee_timer:", 10)) {
- 			if (kstrtoint(opt + 10, 0, &eee_timer))
- 				goto err;
- 		}
- 	}
--	return 0;
-+	return 1;
++/*
++ * These lock classes tell lockdep that GPIO IRQs are in a different
++ * category than their parents, so it won't report false recursion.
++ */
++static struct lock_class_key sunxi_pinctrl_irq_lock_class;
++static struct lock_class_key sunxi_pinctrl_irq_request_class;
++
+ static struct irq_chip sunxi_pinctrl_edge_irq_chip;
+ static struct irq_chip sunxi_pinctrl_level_irq_chip;
  
- err:
- 	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
--	return -EINVAL;
-+	return 1;
- }
+@@ -1552,6 +1559,8 @@ int sunxi_pinctrl_init_with_variant(stru
+ 	for (i = 0; i < (pctl->desc->irq_banks * IRQ_PER_BANK); i++) {
+ 		int irqno = irq_create_mapping(pctl->domain, i);
  
- __setup("sxgbeeth=", sxgbe_cmdline_opt);
++		irq_set_lockdep_class(irqno, &sunxi_pinctrl_irq_lock_class,
++				      &sunxi_pinctrl_irq_request_class);
+ 		irq_set_chip_and_handler(irqno, &sunxi_pinctrl_edge_irq_chip,
+ 					 handle_edge_irq);
+ 		irq_set_chip_data(irqno, pctl);
 
 
