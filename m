@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11460C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238374AbiCGJpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        id S229902AbiCGJpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:45:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237682AbiCGJf4 (ORCPT
+        with ESMTP id S237660AbiCGJfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:35:56 -0500
+        Mon, 7 Mar 2022 04:35:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AB56D947;
-        Mon,  7 Mar 2022 01:31:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848BE59A4B;
+        Mon,  7 Mar 2022 01:31:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2855B810BF;
-        Mon,  7 Mar 2022 09:30:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D45C340E9;
-        Mon,  7 Mar 2022 09:30:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52E71B810D6;
+        Mon,  7 Mar 2022 09:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E480C340E9;
+        Mon,  7 Mar 2022 09:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645427;
-        bh=B+jz2umv/r7AEtZbU1LQQ5sCnfJ7C0YIUSLZanMZaBQ=;
+        s=korg; t=1646645455;
+        bh=PQnv2p/9jLlnPlV/caiQgOThrifuKFV0ko81jq8bh+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oiet8OtWrRSAFj6PoWzot6kWxfZFNBaUFW9yNcdIPh7Lyx4Io8yw0MoNA5ESmltSp
-         y8CaUq9j6VV5EbBtsi4otva88bkbWbEs13ed2DrLeKfJScFINlPiwpBS5+auVdzgFJ
-         D9xfCKaXgpgTSFVpdmGvqKA1a94dN791bawhQ+MU=
+        b=hNlKH0jXt2kWXhKaVsov+1g5Ol46vmZymSjxSPi6aqkFk7ZULjXXL/USrGJX4GfKn
+         3YKABEXCH7y3IDZlU1LKuQCvuGhV8HJQBBdC1PXy1WVaWDWWENaeHaxe8WfkX8QYKp
+         lw5FV1YLuIa47CBzMFj/MuSaY3Kfuranrw6t3x+4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Pingfan Liu <kernelfans@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 020/105] tracing: Add test for user space strings when filtering on string pointers
-Date:   Mon,  7 Mar 2022 10:18:23 +0100
-Message-Id: <20220307091644.752647568@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.10 037/105] netfilter: fix use-after-free in __nf_register_net_hook()
+Date:   Mon,  7 Mar 2022 10:18:40 +0100
+Message-Id: <20220307091645.229986363@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -53,216 +50,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 77360f9bbc7e5e2ab7a2c8b4c0244fbbfcfc6f62 ]
+commit 56763f12b0f02706576a088e85ef856deacc98a0 upstream.
 
-Pingfan reported that the following causes a fault:
+We must not dereference @new_hooks after nf_hook_mutex has been released,
+because other threads might have freed our allocated hooks already.
 
-  echo "filename ~ \"cpu\"" > events/syscalls/sys_enter_openat/filter
-  echo 1 > events/syscalls/sys_enter_at/enable
+BUG: KASAN: use-after-free in nf_hook_entries_get_hook_ops include/linux/netfilter.h:130 [inline]
+BUG: KASAN: use-after-free in hooks_validate net/netfilter/core.c:171 [inline]
+BUG: KASAN: use-after-free in __nf_register_net_hook+0x77a/0x820 net/netfilter/core.c:438
+Read of size 2 at addr ffff88801c1a8000 by task syz-executor237/4430
 
-The reason is that trace event filter treats the user space pointer
-defined by "filename" as a normal pointer to compare against the "cpu"
-string. The following bug happened:
+CPU: 1 PID: 4430 Comm: syz-executor237 Not tainted 5.17.0-rc5-syzkaller-00306-g2293be58d6a1 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ nf_hook_entries_get_hook_ops include/linux/netfilter.h:130 [inline]
+ hooks_validate net/netfilter/core.c:171 [inline]
+ __nf_register_net_hook+0x77a/0x820 net/netfilter/core.c:438
+ nf_register_net_hook+0x114/0x170 net/netfilter/core.c:571
+ nf_register_net_hooks+0x59/0xc0 net/netfilter/core.c:587
+ nf_synproxy_ipv6_init+0x85/0xe0 net/netfilter/nf_synproxy_core.c:1218
+ synproxy_tg6_check+0x30d/0x560 net/ipv6/netfilter/ip6t_SYNPROXY.c:81
+ xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1038
+ check_target net/ipv6/netfilter/ip6_tables.c:530 [inline]
+ find_check_entry.constprop.0+0x7f1/0x9e0 net/ipv6/netfilter/ip6_tables.c:573
+ translate_table+0xc8b/0x1750 net/ipv6/netfilter/ip6_tables.c:735
+ do_replace net/ipv6/netfilter/ip6_tables.c:1153 [inline]
+ do_ip6t_set_ctl+0x56e/0xb90 net/ipv6/netfilter/ip6_tables.c:1639
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ipv6_setsockopt+0x122/0x180 net/ipv6/ipv6_sockglue.c:1024
+ rawv6_setsockopt+0xd3/0x6a0 net/ipv6/raw.c:1084
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f65a1ace7d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 71 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f65a1a7f308 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 00007f65a1ace7d9
+RDX: 0000000000000040 RSI: 0000000000000029 RDI: 0000000000000003
+RBP: 00007f65a1b574c8 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000020000000 R11: 0000000000000246 R12: 00007f65a1b55130
+R13: 00007f65a1b574c0 R14: 00007f65a1b24090 R15: 0000000000022000
+ </TASK>
 
- kvm-03-guest16 login: [72198.026181] BUG: unable to handle page fault for address: 00007fffaae8ef60
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0001) - permissions violation
- PGD 80000001008b7067 P4D 80000001008b7067 PUD 2393f1067 PMD 2393ec067 PTE 8000000108f47867
- Oops: 0001 [#1] PREEMPT SMP PTI
- CPU: 1 PID: 1 Comm: systemd Kdump: loaded Not tainted 5.14.0-32.el9.x86_64 #1
- Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
- RIP: 0010:strlen+0x0/0x20
- Code: 48 89 f9 74 09 48 83 c1 01 80 39 00 75 f7 31 d2 44 0f b6 04 16 44 88 04 11
-       48 83 c2 01 45 84 c0 75 ee c3 0f 1f 80 00 00 00 00 <80> 3f 00 74 10 48 89 f8
-       48 83 c0 01 80 38 00 75 f7 48 29 f8 c3 31
- RSP: 0018:ffffb5b900013e48 EFLAGS: 00010246
- RAX: 0000000000000018 RBX: ffff8fc1c49ede00 RCX: 0000000000000000
- RDX: 0000000000000020 RSI: ffff8fc1c02d601c RDI: 00007fffaae8ef60
- RBP: 00007fffaae8ef60 R08: 0005034f4ddb8ea4 R09: 0000000000000000
- R10: ffff8fc1c02d601c R11: 0000000000000000 R12: ffff8fc1c8a6e380
- R13: 0000000000000000 R14: ffff8fc1c02d6010 R15: ffff8fc1c00453c0
- FS:  00007fa86123db40(0000) GS:ffff8fc2ffd00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00007fffaae8ef60 CR3: 0000000102880001 CR4: 00000000007706e0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- PKRU: 55555554
- Call Trace:
-  filter_pred_pchar+0x18/0x40
-  filter_match_preds+0x31/0x70
-  ftrace_syscall_enter+0x27a/0x2c0
-  syscall_trace_enter.constprop.0+0x1aa/0x1d0
-  do_syscall_64+0x16/0x90
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7fa861d88664
+The buggy address belongs to the page:
+page:ffffea0000706a00 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1c1a8
+flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000000 ffffea0001c1b108 ffffea000046dd08 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 2, migratetype Unmovable, gfp_mask 0x52dc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_ZERO), pid 4430, ts 1061781545818, free_ts 1061791488993
+ prep_new_page mm/page_alloc.c:2434 [inline]
+ get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
+ __alloc_pages_node include/linux/gfp.h:572 [inline]
+ alloc_pages_node include/linux/gfp.h:595 [inline]
+ kmalloc_large_node+0x62/0x130 mm/slub.c:4438
+ __kmalloc_node+0x35a/0x4a0 mm/slub.c:4454
+ kmalloc_node include/linux/slab.h:604 [inline]
+ kvmalloc_node+0x97/0x100 mm/util.c:580
+ kvmalloc include/linux/slab.h:731 [inline]
+ kvzalloc include/linux/slab.h:739 [inline]
+ allocate_hook_entries_size net/netfilter/core.c:61 [inline]
+ nf_hook_entries_grow+0x140/0x780 net/netfilter/core.c:128
+ __nf_register_net_hook+0x144/0x820 net/netfilter/core.c:429
+ nf_register_net_hook+0x114/0x170 net/netfilter/core.c:571
+ nf_register_net_hooks+0x59/0xc0 net/netfilter/core.c:587
+ nf_synproxy_ipv6_init+0x85/0xe0 net/netfilter/nf_synproxy_core.c:1218
+ synproxy_tg6_check+0x30d/0x560 net/ipv6/netfilter/ip6t_SYNPROXY.c:81
+ xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1038
+ check_target net/ipv6/netfilter/ip6_tables.c:530 [inline]
+ find_check_entry.constprop.0+0x7f1/0x9e0 net/ipv6/netfilter/ip6_tables.c:573
+ translate_table+0xc8b/0x1750 net/ipv6/netfilter/ip6_tables.c:735
+ do_replace net/ipv6/netfilter/ip6_tables.c:1153 [inline]
+ do_ip6t_set_ctl+0x56e/0xb90 net/ipv6/netfilter/ip6_tables.c:1639
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1352 [inline]
+ free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
+ free_unref_page_prepare mm/page_alloc.c:3325 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3404
+ kvfree+0x42/0x50 mm/util.c:613
+ rcu_do_batch kernel/rcu/tree.c:2527 [inline]
+ rcu_core+0x7b1/0x1820 kernel/rcu/tree.c:2778
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
 
-The above happened because the kernel tried to access user space directly
-and triggered a "supervisor read access in kernel mode" fault. Worse yet,
-the memory could not even be loaded yet, and a SEGFAULT could happen as
-well. This could be true for kernel space accessing as well.
+Memory state around the buggy address:
+ ffff88801c1a7f00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88801c1a7f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88801c1a8000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff88801c1a8080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88801c1a8100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
 
-To be even more robust, test both kernel and user space strings. If the
-string fails to read, then simply have the filter fail.
-
-Note, TASK_SIZE is used to determine if the pointer is user or kernel space
-and the appropriate strncpy_from_kernel/user_nofault() function is used to
-copy the memory. For some architectures, the compare to TASK_SIZE may always
-pick user space or kernel space. If it gets it wrong, the only thing is that
-the filter will fail to match. In the future, this needs to be fixed to have
-the event denote which should be used. But failing a filter is much better
-than panicing the machine, and that can be solved later.
-
-Link: https://lore.kernel.org/all/20220107044951.22080-1-kernelfans@gmail.com/
-Link: https://lkml.kernel.org/r/20220110115532.536088fd@gandalf.local.home
-
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Reported-by: Pingfan Liu <kernelfans@gmail.com>
-Tested-by: Pingfan Liu <kernelfans@gmail.com>
-Fixes: 87a342f5db69d ("tracing/filters: Support filtering for char * strings")
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2420b79f8c18 ("netfilter: debug: check for sorted array")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Acked-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/trace/events.rst     | 10 +++++
- kernel/trace/trace_events_filter.c | 66 ++++++++++++++++++++++++++++--
- 2 files changed, 73 insertions(+), 3 deletions(-)
+ net/netfilter/core.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/trace/events.rst b/Documentation/trace/events.rst
-index 2a5aa48eff6c7..58a471b690e07 100644
---- a/Documentation/trace/events.rst
-+++ b/Documentation/trace/events.rst
-@@ -230,6 +230,16 @@ Currently the caret ('^') for an error always appears at the beginning of
- the filter string; the error message should still be useful though
- even without more accurate position info.
+--- a/net/netfilter/core.c
++++ b/net/netfilter/core.c
+@@ -406,14 +406,15 @@ static int __nf_register_net_hook(struct
+ 	p = nf_entry_dereference(*pp);
+ 	new_hooks = nf_hook_entries_grow(p, reg);
  
-+5.2.1 Filter limitations
-+------------------------
-+
-+If a filter is placed on a string pointer ``(char *)`` that does not point
-+to a string on the ring buffer, but instead points to kernel or user space
-+memory, then, for safety reasons, at most 1024 bytes of the content is
-+copied onto a temporary buffer to do the compare. If the copy of the memory
-+faults (the pointer points to memory that should not be accessed), then the
-+string compare will be treated as not matching.
-+
- 5.3 Clearing filters
- --------------------
- 
-diff --git a/kernel/trace/trace_events_filter.c b/kernel/trace/trace_events_filter.c
-index 78a678eeb1409..7b1fb811cb0ab 100644
---- a/kernel/trace/trace_events_filter.c
-+++ b/kernel/trace/trace_events_filter.c
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2009 Tom Zanussi <tzanussi@gmail.com>
-  */
- 
-+#include <linux/uaccess.h>
- #include <linux/module.h>
- #include <linux/ctype.h>
- #include <linux/mutex.h>
-@@ -654,6 +655,47 @@ DEFINE_EQUALITY_PRED(32);
- DEFINE_EQUALITY_PRED(16);
- DEFINE_EQUALITY_PRED(8);
- 
-+/* user space strings temp buffer */
-+#define USTRING_BUF_SIZE	1024
-+
-+struct ustring_buffer {
-+	char		buffer[USTRING_BUF_SIZE];
-+};
-+
-+static __percpu struct ustring_buffer *ustring_per_cpu;
-+
-+static __always_inline char *test_string(char *str)
-+{
-+	struct ustring_buffer *ubuf;
-+	char __user *ustr;
-+	char *kstr;
-+
-+	if (!ustring_per_cpu)
-+		return NULL;
-+
-+	ubuf = this_cpu_ptr(ustring_per_cpu);
-+	kstr = ubuf->buffer;
-+
-+	/*
-+	 * We use TASK_SIZE to denote user or kernel space, but this will
-+	 * not work for all architectures. If it picks the wrong one, it may
-+	 * just fail the filter (but will not bug).
-+	 *
-+	 * TODO: Have a way to properly denote which one this is for.
-+	 */
-+	if (likely((unsigned long)str >= TASK_SIZE)) {
-+		/* For safety, do not trust the string pointer */
-+		if (!strncpy_from_kernel_nofault(kstr, str, USTRING_BUF_SIZE))
-+			return NULL;
-+	} else {
-+		/* user space address? */
-+		ustr = (char __user *)str;
-+		if (!strncpy_from_user_nofault(kstr, ustr, USTRING_BUF_SIZE))
-+			return NULL;
+-	if (!IS_ERR(new_hooks))
++	if (!IS_ERR(new_hooks)) {
++		hooks_validate(new_hooks);
+ 		rcu_assign_pointer(*pp, new_hooks);
 +	}
-+	return kstr;
-+}
-+
- /* Filter predicate for fixed sized arrays of characters */
- static int filter_pred_string(struct filter_pred *pred, void *event)
- {
-@@ -671,10 +713,16 @@ static int filter_pred_string(struct filter_pred *pred, void *event)
- static int filter_pred_pchar(struct filter_pred *pred, void *event)
- {
- 	char **addr = (char **)(event + pred->offset);
-+	char *str;
- 	int cmp, match;
--	int len = strlen(*addr) + 1;	/* including tailing '\0' */
-+	int len;
  
--	cmp = pred->regex.match(*addr, &pred->regex, len);
-+	str = test_string(*addr);
-+	if (!str)
-+		return 0;
-+
-+	len = strlen(str) + 1;	/* including tailing '\0' */
-+	cmp = pred->regex.match(str, &pred->regex, len);
+ 	mutex_unlock(&nf_hook_mutex);
+ 	if (IS_ERR(new_hooks))
+ 		return PTR_ERR(new_hooks);
  
- 	match = cmp ^ pred->not;
- 
-@@ -1320,8 +1368,17 @@ static int parse_pred(const char *str, void *data,
- 
- 		} else if (field->filter_type == FILTER_DYN_STRING)
- 			pred->fn = filter_pred_strloc;
--		else
-+		else {
-+
-+			if (!ustring_per_cpu) {
-+				/* Once allocated, keep it around for good */
-+				ustring_per_cpu = alloc_percpu(struct ustring_buffer);
-+				if (!ustring_per_cpu)
-+					goto err_mem;
-+			}
-+
- 			pred->fn = filter_pred_pchar;
-+		}
- 		/* go past the last quote */
- 		i++;
- 
-@@ -1387,6 +1444,9 @@ static int parse_pred(const char *str, void *data,
- err_free:
- 	kfree(pred);
- 	return -EINVAL;
-+err_mem:
-+	kfree(pred);
-+	return -ENOMEM;
- }
- 
- enum {
--- 
-2.34.1
-
+-	hooks_validate(new_hooks);
+ #ifdef CONFIG_NETFILTER_INGRESS
+ 	if (nf_ingress_hook(reg, pf))
+ 		net_inc_ingress_queue();
 
 
