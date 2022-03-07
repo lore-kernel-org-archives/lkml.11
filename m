@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E135C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234221AbiCGHDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 02:03:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S235588AbiCGHEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 02:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiCGHDr (ORCPT
+        with ESMTP id S230121AbiCGHEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 02:03:47 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B5F54F89
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 23:02:53 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2dbc48104beso152752217b3.5
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 23:02:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=geOY0BIdj9dQeQr7DqDH3p1hC5fsVdyguZbly+zPwEA=;
-        b=eoKBFkv0FaSw/htLzF49O05SJL61SrM2q6muI4X/eTCvVopJwjVnZy/U6ieybXM2yS
-         cgAubMZzSziznc4i6TrZSbZq1vhhRi6NyTLgn3s7NGmMRDqE5jyuYrxleF1bz2UuxhTA
-         zxwnLHHecgF/150OvTd6MONyyWMGYOJEw8wnXC/daertskkGHEqorUfOlHxri3ZQhmkI
-         bc2oDsJpzKVkBRkJU1YBKjncfbAcEKguvIUs6mnQNUWSUzRQySaOy64Mx7JGC0egtyQ7
-         Rg13CPlGODHwEJQJWa61iHITNjjMtMWPbXbNCHj1B3HLezJlqw1HDGPhn9yjMGaGQ/OV
-         AHmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=geOY0BIdj9dQeQr7DqDH3p1hC5fsVdyguZbly+zPwEA=;
-        b=hMnR8/inTroGRsiSbVYtoBYtzVMF3Am2DqpL6SAzKUJk6AKql8YBnVPEkwTuFmS6K7
-         mqKJQqz4UcW5jXH8htmxr2RfcA6ZTmwxvlj6FR2cNlPi2Pwzdg76txv43lMim4XjC5ZY
-         f8k8A8O+c4YAmISZK8vgt6GuepXHMs13V49/rc2V7txuFK7lufFV/GJaEPnXRCtS7ayZ
-         cmHzfDIIam3SObGIk+NOd3KRh1jFYr4EGGNZd4RB9FsgUYTWrC+61LkIvIrh1fSyM3xh
-         RP93VY61l9kB8Iz7mp/b9WhJNov2aNscA/t69ugWy2Lo3aIuxKFLBDrZIK9QRtSIS7RO
-         fpiA==
-X-Gm-Message-State: AOAM5320m0uhB1cHAlg/pRwloiYjhuhvCmVHP7t3BgIKK49y3BTFa9Kf
-        O3V1jOBtAnDuvKEgYO3YXLgFzWR8xZAdbyoUgqgfiw==
-X-Google-Smtp-Source: ABdhPJyY0qfIRpVo0WQFwnKf7xkXXwTlFOCupODWGFK0/ryR8UoK13fwckAiCay7cW3UMCqPiVTVg510FSrE7UVS4f4=
-X-Received: by 2002:a0d:cec2:0:b0:2dc:a4d3:4528 with SMTP id
- q185-20020a0dcec2000000b002dca4d34528mr5361083ywd.35.1646636572768; Sun, 06
- Mar 2022 23:02:52 -0800 (PST)
+        Mon, 7 Mar 2022 02:04:51 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73765A084
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 23:03:56 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0V6QeAlb_1646636630;
+Received: from 30.97.48.83(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V6QeAlb_1646636630)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Mar 2022 15:03:51 +0800
+Message-ID: <0e74a360-6a72-4edf-47bb-8358a3f1d883@linux.alibaba.com>
+Date:   Mon, 7 Mar 2022 15:04:52 +0800
 MIME-Version: 1.0
-References: <20220304093409.25829-1-linmiaohe@huawei.com> <20220304093409.25829-16-linmiaohe@huawei.com>
- <875yoq5od4.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <875yoq5od4.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Mon, 7 Mar 2022 15:01:12 +0800
-Message-ID: <CAMZfGtXKa73ZVLtJeE5O40rOgn7oZkxP5CB+q5t--ihUerfKew@mail.gmail.com>
-Subject: Re: [PATCH 15/16] mm/migration: fix possible do_pages_stat_array
- racing with memory offline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 14/16] mm/migration: fix potential invalid node access for
+ reclaim-based migration
 To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>, Zi Yan <ziy@nvidia.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
+Cc:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
+        mike.kravetz@oracle.com, shy828301@gmail.com, willy@infradead.org,
+        ziy@nvidia.com, minchan@kernel.org, apopple@nvidia.com,
         ave.hansen@linux.intel.com, o451686892@gmail.com,
-        Mina Almasry <almasrymina@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Peter Xu <peterx@redhat.com>,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>, Michal Hocko <mhocko@suse.com>,
-        riel@redhat.com, Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        almasrymina@google.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
+        peterx@redhat.com, naoya.horiguchi@nec.com, mhocko@suse.com,
+        riel@redhat.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+ <20220304093409.25829-15-linmiaohe@huawei.com>
+ <aa367733-a1e7-10c7-6355-5ed9e502e4c9@linux.alibaba.com>
+ <87ee3e5opu.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <87ee3e5opu.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 1:22 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Miaohe Lin <linmiaohe@huawei.com> writes:
->
-> > When follow_page peeks a page, the page could be reclaimed under heavy
-> > memory pressure
->
-> I don't think that memory pressure and reclaiming will be an issue.
 
-I think he means a page first to be reclaimed then to be offline
-could encounter this issue and reclaiming is a precondition.
 
-Thanks.
+On 3/7/2022 1:14 PM, Huang, Ying wrote:
+> Baolin Wang <baolin.wang@linux.alibaba.com> writes:
+> 
+>> On 3/4/2022 5:34 PM, Miaohe Lin wrote:
+>>> If we failed to setup hotplug state callbacks for mm/demotion:online in
+>>> some corner cases, node_demotion will be left uninitialized. Invalid node
+>>> might be returned from the next_demotion_node() when doing reclaim-based
+>>> migration. Use kcalloc to allocate node_demotion to fix the issue.
+>>> Fixes: ac16ec835314 ("mm: migrate: support multiple target nodes
+>>> demotion")
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> ---
+>>>    mm/migrate.c | 6 +++---
+>>>    1 file changed, 3 insertions(+), 3 deletions(-)
+>>> diff --git a/mm/migrate.c b/mm/migrate.c
+>>> index 279940c0c064..7b1c0b988234 100644
+>>> --- a/mm/migrate.c
+>>> +++ b/mm/migrate.c
+>>> @@ -2516,9 +2516,9 @@ static int __init migrate_on_reclaim_init(void)
+>>>    {
+>>>    	int ret;
+>>>    -	node_demotion = kmalloc_array(nr_node_ids,
+>>> -				      sizeof(struct demotion_nodes),
+>>> -				      GFP_KERNEL);
+>>> +	node_demotion = kcalloc(nr_node_ids,
+>>> +				sizeof(struct demotion_nodes),
+>>> +				GFP_KERNEL);
+>>
+>> Nit: not sure if this is worthy of this rare corner case, but I think
+>> the target demotion nodes' default value should be NUMA_NO_NODE
+>> instead of 0.
+> 
+> The "nr" field of "struct demotion_nodes" should be initialized as 0.  I
+> think that is checked before "nodes[]" field.
 
->
-> > and thus be offlined while it's still being used by the
-> > do_pages_stat_array().
->
-> "offline" seems a possible problem.
+Right, but it will be confusing that if nr = 0, while the nodes[] still 
+contains valid node id 0. While we are at this, why not initialize the 
+node_demotion structure with a clear default value? Anyway, no strong 
+opinion on this :)
