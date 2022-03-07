@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88654C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236815AbiCGJZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        id S236821AbiCGJZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237071AbiCGJXX (ORCPT
+        with ESMTP id S237331AbiCGJXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:23 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBE366639
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:21:46 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id i8so22109964wrr.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:21:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=FEjD5UnY3g+LJSLtm81A4hBh6vcWY851fxWX9klidBY=;
-        b=S7UDc4e5bGd9CFcmgYIIsHJSuiXGjtH5EdyDFEEpI1ILcpNuKoVaSebz8vvnCfklhA
-         Q3ZhwpthHRwsoyg1QRPPpReHy/Hkk4DNuZNfye2Y9ubNuPFN1VFTTzeu+tT88/6yEglK
-         +g91WFyJRb4sfb0ET90aImvI8rW6kdLZ5NKTqLen4mOzqfwFbFrBm3fUuBkXsZqYRHeL
-         CpALospQSfVtoSpsR5KbRfjwsDBfm+uss1lpYi8vYG9iyTNu9AxBmC+1/WpZprY7DYN5
-         A2t/svZ1+oe1/9KkKFmiN1nwoYbUwcBs9Xd6xmfxXEa1s6uilZUFxBTRygnTSNQIyXea
-         46tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=FEjD5UnY3g+LJSLtm81A4hBh6vcWY851fxWX9klidBY=;
-        b=z2B5mwkAv0BTIEz3/HCVzljnx894TFJ0/pjmakEUqw/8t5WssbFoqXso8Sm3zpAQxq
-         rUNSoI6EoahrJfzw/s7zgW46TVzfKsj+zhYMVMcSm79iK7BF7I5LUIwyokEGAIF8J/3r
-         egU4b2x1DnEiX8eE0xpt79hV0dA/WUuXjrJhDzIp16dV14ByBCtBf2GeGMMjOYL8DTH9
-         WJ0b5t9+IcvZbYyl0AwegEX1fu1ljOarzGmOL5G/iMfJSHzo/W4MjGHPtzQ2VozKZ+Yi
-         FB45dQYZL5HZaIm8LWR3slh4gvyCKHgdRZs7Bi5k8f6tHKxRdAojRkO5kEPjhWOOXxJt
-         xW+Q==
-X-Gm-Message-State: AOAM5322Jq381/bVvJrgGGbJYCNCAx/gUa2RYlf+SXfsv8Vpb9lECji6
-        oG+kx2jfD44nL69w7PPs3ODHLA==
-X-Google-Smtp-Source: ABdhPJxNUOpnh3+aVjnLQhhuXGLFg25COoG20HVZw9DPDpFrcABTTJyv32aW4ES/yVz79d/Hwc0WPQ==
-X-Received: by 2002:a5d:4487:0:b0:1f1:232b:794f with SMTP id j7-20020a5d4487000000b001f1232b794fmr7769355wrq.715.1646644905072;
-        Mon, 07 Mar 2022 01:21:45 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id ay23-20020a5d6f17000000b001ea79f73fbcsm10517130wrb.25.2022.03.07.01.21.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:21:44 -0800 (PST)
-Date:   Mon, 7 Mar 2022 09:21:42 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Pratyush Yadav <p.yadav@ti.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH v6 2/4] mfd: dt-bindings: google,cros-ec: reference
- Samsung SPI bindings
-Message-ID: <YiXOph97XObDB2X4@google.com>
-References: <20220124082347.32747-1-krzysztof.kozlowski@canonical.com>
- <20220124082347.32747-3-krzysztof.kozlowski@canonical.com>
+        Mon, 7 Mar 2022 04:23:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D252B41F9D;
+        Mon,  7 Mar 2022 01:22:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BF196112D;
+        Mon,  7 Mar 2022 09:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77235C340F3;
+        Mon,  7 Mar 2022 09:22:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646644963;
+        bh=21DyHoJWypXmQyJ2NJWEq5dGsoSvsOayLI1yONg1z8Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=m1m6OR+sVgJ6O1u9FISdd4AjMFO8o+JZZ/Jw3oXU9urE2AidLJSaNR55N2lu/b5hJ
+         6SrpXtFX9kASdvUIuQ8t+fkJqL8KaYEg7iNhUe0NuHTj3G/YyJlDfGy8K7h6bQPzAV
+         9kW4YEE7uw85gnwevKz0EhEdibcQWqf+GF5H2lfg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 37/42] nl80211: Handle nla_memdup failures in handle_nan_filter
+Date:   Mon,  7 Mar 2022 10:19:11 +0100
+Message-Id: <20220307091637.232978926@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
+References: <20220307091636.146155347@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220124082347.32747-3-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022, Krzysztof Kozlowski wrote:
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-> The ChromeOS Embedded Controller appears on boards with Samsung Exynos
-> SoC, where Exynos SPI bindings expect controller-data node.  Reference
-> SPI peripheral bindings which include now Samsung SPI peripheral parts.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
->  .../bindings/mfd/google,cros-ec.yaml          | 29 ++++++++++---------
->  1 file changed, 16 insertions(+), 13 deletions(-)
+[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
 
-Applied, thanks.
+As there's potential for failure of the nla_memdup(),
+check the return value.
 
+Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/wireless/nl80211.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index f630fa2e3164..bbc3c876a5d8 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -11257,6 +11257,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	i = 0;
+ 	nla_for_each_nested(attr, attr_filter, rem) {
+ 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
++		if (!filter[i].filter)
++			goto err;
++
+ 		filter[i].len = nla_len(attr);
+ 		i++;
+ 	}
+@@ -11269,6 +11272,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	}
+ 
+ 	return 0;
++
++err:
++	i = 0;
++	nla_for_each_nested(attr, attr_filter, rem) {
++		kfree(filter[i].filter);
++		i++;
++	}
++	kfree(filter);
++	return -ENOMEM;
+ }
+ 
+ static int nl80211_nan_add_func(struct sk_buff *skb,
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.34.1
+
+
+
