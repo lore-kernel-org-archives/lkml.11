@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB772C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2657C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238683AbiCGKEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:04:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51220 "EHLO
+        id S240005AbiCGKE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:04:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241151AbiCGJl4 (ORCPT
+        with ESMTP id S241148AbiCGJl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206466392;
-        Mon,  7 Mar 2022 01:40:55 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCCC60FC;
+        Mon,  7 Mar 2022 01:40:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDCBDB810B9;
-        Mon,  7 Mar 2022 09:40:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D985C340F3;
-        Mon,  7 Mar 2022 09:40:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3884B810B2;
+        Mon,  7 Mar 2022 09:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AA07C340F3;
+        Mon,  7 Mar 2022 09:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646052;
-        bh=4yB1WueRXrnEYauJd4KT8rCFKjgpOh9M/xBmzREYX8Q=;
+        s=korg; t=1646646046;
+        bh=vvaTcHyj7TRMBBCsqCwDzydb6UBT3bjKyJ+9yqUkG6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TW++v8YhMpJvMXgLJ640u3ffqA4/qb8ZY36aGlB4DRVCP5EkutgyLpkUrwYSj4IQU
-         Uui0Tlg5UnCmwl/AZ/uM3VJIksA9/ZafraQsDg2jtFHBpvhGClrisdZrFaJ7WzGc5o
-         q+Fk+H25+lZgYWwwG/nsh19c9AfLn4GfY9t3lWrA=
+        b=ZJ2KFavxBczo9sQxqZs2tP4v7BXG9fbTC/+rTnPgiUM4eAbSzaAlQ/jlptqVzDmA4
+         45Be+l5K3i242fPcUZzwjR7L2cYbzyWYG/xfjO8v6Hktwth/8/JmWhKkAPq0DgicQt
+         BvdCrErU5aU6w7i5I4vLdUQwF/O88MkRT3L9WC1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Myrtle Shah <gatecat@ds0.me>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 117/262] riscv/mm: Add XIP_FIXUP for phys_ram_base
-Date:   Mon,  7 Mar 2022 10:17:41 +0100
-Message-Id: <20220307091705.768399587@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Kepplinger <martink@posteo.de>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Stefan Agner <stefan@agner.ch>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 115/262] drm: mxsfb: Set fallback bus format when the bridge doesnt provide one
+Date:   Mon,  7 Mar 2022 10:17:39 +0100
+Message-Id: <20220307091705.713819381@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,34 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+From: Guido Günther <agx@sigxcpu.org>
 
-[ Upstream commit 4b1c70aa8ed8249608bb991380cb8ff423edf49e ]
+[ Upstream commit 1db060509903b29d63fe2e39c14fd0f99c4a447e ]
 
-This manifests as a crash early in boot on VexRiscv.
+If a bridge doesn't do any bus format handling MEDIA_BUS_FMT_FIXED is
+returned. Fallback to a reasonable default (MEDIA_BUS_FMT_RGB888_1X24) in
+that case.
 
-Signed-off-by: Myrtle Shah <gatecat@ds0.me>
-[Palmer: split commit]
-Fixes: 6d7f91d914bc ("riscv: Get rid of CONFIG_PHYS_RAM_BASE in kernel physical address conversion")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+This unbreaks e.g. using mxsfb with the nwl bridge and mipi dsi panels.
+
+Reported-by: Martin Kepplinger <martink@posteo.de>
+Signed-off-by: Guido Günther <agx@sigxcpu.org>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+Acked-by: Stefan Agner <stefan@agner.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/781f0352052cc50c823c199ef5f53c84902d0580.1633959458.git.agx@sigxcpu.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/mm/init.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/mxsfb/mxsfb_kms.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 5e7decd875258..3de593b26850e 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -451,6 +451,7 @@ static uintptr_t __init best_map_size(phys_addr_t base, phys_addr_t size)
- }
+diff --git a/drivers/gpu/drm/mxsfb/mxsfb_kms.c b/drivers/gpu/drm/mxsfb/mxsfb_kms.c
+index 89dd618d78f31..b96ba348c68d9 100644
+--- a/drivers/gpu/drm/mxsfb/mxsfb_kms.c
++++ b/drivers/gpu/drm/mxsfb/mxsfb_kms.c
+@@ -362,6 +362,12 @@ static void mxsfb_crtc_atomic_enable(struct drm_crtc *crtc,
+ 			drm_atomic_get_new_bridge_state(state,
+ 							mxsfb->bridge);
+ 		bus_format = bridge_state->input_bus_cfg.format;
++		if (bus_format == MEDIA_BUS_FMT_FIXED) {
++			dev_warn_once(drm->dev,
++				      "Bridge does not provide bus format, assuming MEDIA_BUS_FMT_RGB888_1X24.\n"
++				      "Please fix bridge driver by handling atomic_get_input_bus_fmts.\n");
++			bus_format = MEDIA_BUS_FMT_RGB888_1X24;
++		}
+ 	}
  
- #ifdef CONFIG_XIP_KERNEL
-+#define phys_ram_base  (*(phys_addr_t *)XIP_FIXUP(&phys_ram_base))
- /* called from head.S with MMU off */
- asmlinkage void __init __copy_data(void)
- {
+ 	/* If there is no bridge, use bus format from connector */
 -- 
 2.34.1
 
