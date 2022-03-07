@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE93C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236656AbiCGJWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:22:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
+        id S235940AbiCGJWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:22:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236600AbiCGJVp (ORCPT
+        with ESMTP id S236615AbiCGJVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:21:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3358F6578F;
-        Mon,  7 Mar 2022 01:20:17 -0800 (PST)
+        Mon, 7 Mar 2022 04:21:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B02265831;
+        Mon,  7 Mar 2022 01:20:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9149761015;
-        Mon,  7 Mar 2022 09:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAA2C340F3;
-        Mon,  7 Mar 2022 09:20:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D159E6103D;
+        Mon,  7 Mar 2022 09:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C064EC340F3;
+        Mon,  7 Mar 2022 09:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644816;
-        bh=aEuGtaH+pzgMEYr/ie4R5dIEbmvkR7gT5wVusq4ep4s=;
+        s=korg; t=1646644819;
+        bh=0J4jcFKw6gaKR0MPzB8D3qoZdK16pSHJvlNpqL7WFAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NXArMbF1Z9RiA1jhiyoGaPavHsmxsZN7eEl4Yk48ymODQ/yAZxPJQ8fOvKovynVeW
-         eIw3zMh5bOCW0oLipjFblfNl75PiHn5Fh6ooggk8QVidOSlS84AgLi/KVknjCKJdTH
-         a6sDISuebQE3M/PAcuWkDHNGY4kEN1lqaoX4PRW0=
+        b=Mmxh1ZaXtS1Lzy8ZhMTd3Yd4m6+ueo3CBOLMzP2ugjuG1pLSWiSvvy/H5AAyxIjwO
+         9Oa+girRJxZWKyG4p2JMHWI0WAE8nTPoVSE6CpppNnUkx4b7mMB8j4XeVqSBwcVWFi
+         xOXt3c+P9mbjqgvyOpCsyPYvpzbWGmNgHpqPSgHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 4.9 29/32] Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
-Date:   Mon,  7 Mar 2022 10:18:55 +0100
-Message-Id: <20220307091635.265451948@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 03/32] i2c: bcm2835: Avoid clock stretching timeouts
+Date:   Mon,  7 Mar 2022 10:18:29 +0100
+Message-Id: <20220307091634.536040265@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
 References: <20220307091634.434478485@linuxfoundation.org>
@@ -48,56 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Eric Anholt <eric@anholt.net>
 
-commit 04b7762e37c95d9b965d16bb0e18dbd1fa2e2861 upstream.
+[ Upstream commit 9495b9b31abe525ebd93da58de2c88b9f66d3a0e ]
 
-Before these changes elan_suspend() would only disable the regulator
-when device_may_wakeup() returns false; whereas elan_resume() would
-unconditionally enable it, leading to an enable count imbalance when
-device_may_wakeup() returns true.
+The CLKT register contains at poweron 0x40, which at our typical 100kHz
+bus rate means .64ms. But there is no specified limit to how long devices
+should be able to stretch the clocks, so just disable the timeout. We
+still have a timeout wrapping the entire transfer.
 
-This triggers the "WARN_ON(regulator->enable_count)" in regulator_put()
-when the elan_i2c driver gets unbound, this happens e.g. with the
-hot-plugable dock with Elan I2C touchpad for the Asus TF103C 2-in-1.
-
-Fix this by making the regulator_enable() call also be conditional
-on device_may_wakeup() returning false.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131135436.29638-2-hdegoede@redhat.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+BugLink: https://github.com/raspberrypi/linux/issues/3064
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/mouse/elan_i2c_core.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/i2c/busses/i2c-bcm2835.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/input/mouse/elan_i2c_core.c
-+++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -1184,17 +1184,17 @@ static int __maybe_unused elan_resume(st
- 	struct elan_tp_data *data = i2c_get_clientdata(client);
- 	int error;
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index 7ed09865cb4b9..4729c14b75017 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -28,6 +28,11 @@
+ #define BCM2835_I2C_FIFO	0x10
+ #define BCM2835_I2C_DIV		0x14
+ #define BCM2835_I2C_DEL		0x18
++/*
++ * 16-bit field for the number of SCL cycles to wait after rising SCL
++ * before deciding the slave is not responding. 0 disables the
++ * timeout detection.
++ */
+ #define BCM2835_I2C_CLKT	0x1c
  
--	if (device_may_wakeup(dev) && data->irq_wake) {
-+	if (!device_may_wakeup(dev)) {
-+		error = regulator_enable(data->vcc);
-+		if (error) {
-+			dev_err(dev, "error %d enabling regulator\n", error);
-+			goto err;
-+		}
-+	} else if (data->irq_wake) {
- 		disable_irq_wake(client->irq);
- 		data->irq_wake = false;
- 	}
+ #define BCM2835_I2C_C_READ	BIT(0)
+@@ -313,6 +318,12 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 	adap->dev.of_node = pdev->dev.of_node;
+ 	adap->quirks = &bcm2835_i2c_quirks;
  
--	error = regulator_enable(data->vcc);
--	if (error) {
--		dev_err(dev, "error %d enabling regulator\n", error);
--		goto err;
--	}
--
- 	error = elan_set_power(data, true);
- 	if (error) {
- 		dev_err(dev, "power up when resuming failed: %d\n", error);
++	/*
++	 * Disable the hardware clock stretching timeout. SMBUS
++	 * specifies a limit for how long the device can stretch the
++	 * clock, but core I2C doesn't.
++	 */
++	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_CLKT, 0);
+ 	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_C, 0);
+ 
+ 	ret = i2c_add_adapter(adap);
+-- 
+2.34.1
+
 
 
