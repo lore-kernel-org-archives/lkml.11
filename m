@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 623E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233280AbiCGJ5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:57:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        id S235218AbiCGJ5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238972AbiCGJjF (ORCPT
+        with ESMTP id S239067AbiCGJjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FFD6FA21;
-        Mon,  7 Mar 2022 01:34:03 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9BC6FA0F;
+        Mon,  7 Mar 2022 01:34:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AA5B61242;
-        Mon,  7 Mar 2022 09:34:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46447C340E9;
-        Mon,  7 Mar 2022 09:34:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE042B810B9;
+        Mon,  7 Mar 2022 09:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B7FCC340E9;
+        Mon,  7 Mar 2022 09:33:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645642;
-        bh=LydUzxEddffRdPdzyFHDey7x8ww+fSYm6ME5m9que+I=;
+        s=korg; t=1646645621;
+        bh=sSJ9MijLg3SmfJjvNlTQGY06f23cm8eCzf4ShJiXGRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DsnVLi1OVXRYyLGWIWODbiXqOrIVATScmGz9NkfU7tFgLphJze/ueEW/BGGLApaDu
-         9dltOYwOxaospz+EZwAMAMqR2PKWIQwNplfoANm2C84R4ihAvVRV6u9p/Drl7Jc3k1
-         15Uk7T3eJKEejm8K8z/2lHKVjuNdQSi4do/344g4=
+        b=XXLJhIdQ8K/9moA04oG84IZtV2XiIQ0TPxAZAP6TdNl+Qtc7CIbWXb9TtUoVn5MRo
+         K+cqLskgISmTaQ6qFCpntZf5ha5hEJQeplGQ/featwKUcjVI9GCorQnFMRv7CxvqnR
+         Fg7+P5YsTegeAwUBx4K+EUN8DRx7G0SaokCJ57VE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.10 096/105] Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
-Date:   Mon,  7 Mar 2022 10:19:39 +0100
-Message-Id: <20220307091646.878594982@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 090/105] net: chelsio: cxgb3: check the return value of pci_find_capability()
+Date:   Mon,  7 Mar 2022 10:19:33 +0100
+Message-Id: <20220307091646.710951545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,56 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-commit 04b7762e37c95d9b965d16bb0e18dbd1fa2e2861 upstream.
+[ Upstream commit 767b9825ed1765894e569a3d698749d40d83762a ]
 
-Before these changes elan_suspend() would only disable the regulator
-when device_may_wakeup() returns false; whereas elan_resume() would
-unconditionally enable it, leading to an enable count imbalance when
-device_may_wakeup() returns true.
+The function pci_find_capability() in t3_prep_adapter() can fail, so its
+return value should be checked.
 
-This triggers the "WARN_ON(regulator->enable_count)" in regulator_put()
-when the elan_i2c driver gets unbound, this happens e.g. with the
-hot-plugable dock with Elan I2C touchpad for the Asus TF103C 2-in-1.
-
-Fix this by making the regulator_enable() call also be conditional
-on device_may_wakeup() returning false.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131135436.29638-2-hdegoede@redhat.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4d22de3e6cc4 ("Add support for the latest 1G/10G Chelsio adapter, T3")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/mouse/elan_i2c_core.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb3/t3_hw.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/input/mouse/elan_i2c_core.c
-+++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -1350,17 +1350,17 @@ static int __maybe_unused elan_resume(st
- 	struct elan_tp_data *data = i2c_get_clientdata(client);
- 	int error;
- 
--	if (device_may_wakeup(dev) && data->irq_wake) {
-+	if (!device_may_wakeup(dev)) {
-+		error = regulator_enable(data->vcc);
-+		if (error) {
-+			dev_err(dev, "error %d enabling regulator\n", error);
-+			goto err;
-+		}
-+	} else if (data->irq_wake) {
- 		disable_irq_wake(client->irq);
- 		data->irq_wake = false;
- 	}
- 
--	error = regulator_enable(data->vcc);
--	if (error) {
--		dev_err(dev, "error %d enabling regulator\n", error);
--		goto err;
--	}
--
- 	error = elan_set_power(data, true);
- 	if (error) {
- 		dev_err(dev, "power up when resuming failed: %d\n", error);
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
+index 7ff31d1026fb..e0d34e64fc6c 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
+@@ -3678,6 +3678,8 @@ int t3_prep_adapter(struct adapter *adapter, const struct adapter_info *ai,
+ 	    MAC_STATS_ACCUM_SECS : (MAC_STATS_ACCUM_SECS * 10);
+ 	adapter->params.pci.vpd_cap_addr =
+ 	    pci_find_capability(adapter->pdev, PCI_CAP_ID_VPD);
++	if (!adapter->params.pci.vpd_cap_addr)
++		return -ENODEV;
+ 	ret = get_vpd_params(adapter, &adapter->params.vpd);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.34.1
+
 
 
