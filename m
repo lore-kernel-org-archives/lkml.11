@@ -2,122 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A24C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B39C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231577AbiCGMft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:35:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        id S232750AbiCGMhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242436AbiCGMfC (ORCPT
+        with ESMTP id S238124AbiCGMh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:35:02 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F4B42A00;
-        Mon,  7 Mar 2022 04:33:36 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R221e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V6WFbGz_1646656412;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V6WFbGz_1646656412)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Mar 2022 20:33:33 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 18/21] erofs: register cookie context for data blobs
-Date:   Mon,  7 Mar 2022 20:33:02 +0800
-Message-Id: <20220307123305.79520-19-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220307123305.79520-1-jefflexu@linux.alibaba.com>
-References: <20220307123305.79520-1-jefflexu@linux.alibaba.com>
+        Mon, 7 Mar 2022 07:37:26 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B8E240A2B;
+        Mon,  7 Mar 2022 04:35:59 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 360A81FB;
+        Mon,  7 Mar 2022 04:35:59 -0800 (PST)
+Received: from [10.57.39.47] (unknown [10.57.39.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D2CE03F766;
+        Mon,  7 Mar 2022 04:35:57 -0800 (PST)
+Message-ID: <6cf91f43-df23-3ac9-e9b5-958d99d37422@arm.com>
+Date:   Mon, 7 Mar 2022 12:35:51 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [BUG] crypto: ccree: driver does not handle case where cryptlen =
+ authsize =0
+Content-Language: en-GB
+To:     Gilad Ben-Yossef <gilad@benyossef.com>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christoph Hellwig <hch@lst.de>, m.szyprowski@samsung.com,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        iommu@lists.linux-foundation.org
+References: <CAOtvUMeoYcVm7OQdqXd1V5iPSXW_BkVxx6TA6nF7zTLVeHe0Ww@mail.gmail.com>
+ <CAOtvUMfy1fF35B2sfbOMui8n9Q4iCke9rgn5TiYMUMjd8gqHsA@mail.gmail.com>
+ <YhKV55t90HWm6bhv@Red>
+ <CAOtvUMdRU4wnRCXsC+U5XBDp+b+u8w7W7JCUKW2+ohuJz3PVhQ@mail.gmail.com>
+ <YhOcEQEjIKBrbMIZ@Red>
+ <CAOtvUMfN8U4+eG-TEVW4bSE6kOzuOSsJE4dOYGXYuWQKNzv7wQ@mail.gmail.com>
+ <CAOtvUMeRb=j=NDrc88x8aB-3=D1mxZ_-aA1d4FfvJmj7Jrbi4w@mail.gmail.com>
+ <YiIUXtxd44ut5uzV@Red> <YiUsWosH+MKMF7DQ@gondor.apana.org.au>
+ <CAOtvUMcudG3ySU+VeE7hfneDVWGLKFTnws-xjhq4hgFYSj0qOg@mail.gmail.com>
+ <YiXjCcXXk0f18FDL@Red> <aca4117c-b7a5-f7eb-eb03-4e1f1a93a730@arm.com>
+ <CAOtvUMePFR4e2jgHZKOvs3J3Xt4NzRbzD_=vr_49Qgs5HTrvHw@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAOtvUMePFR4e2jgHZKOvs3J3Xt4NzRbzD_=vr_49Qgs5HTrvHw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the multi device mode, erofs could be mounted from multiple
-blob files (one bootstrap blob file and optional multiple data blob
-files). In this case, each device slot contains the path of
-corresponding data blob file.
+On 2022-03-07 12:17, Gilad Ben-Yossef wrote:
+> On Mon, Mar 7, 2022 at 1:14 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> 
+>> The "overlap" is in the sense of having more than one mapping within the
+>> same cacheline:
+>>
+>> [  142.458120] DMA-API: add_dma_entry start P=ba79f200 N=ba79f
+>> D=ba79f200 L=10 DMA_FROM_DEVICE attrs=0
+>> [  142.458156] DMA-API: add_dma_entry start P=445dc010 N=445dc
+>> D=445dc010 L=10 DMA_TO_DEVICE attrs=0
+>> [  142.458178] sun8i-ss 1c15000.crypto: SRC 0/1/1 445dc000 len=16 bi=0
+>> [  142.458215] sun8i-ss 1c15000.crypto: DST 0/1/1 ba79f200 len=16 bi=0
+>> [  142.458234] DMA-API: add_dma_entry start P=ba79f210 N=ba79f
+>> D=ba79f210 L=10 DMA_FROM_DEVICE attrs=0
+>>
+>> This actually illustrates exactly the reason why this is unsupportable.
+>> ba79f200 is mapped for DMA_FROM_DEVICE, therefore subsequently mapping
+>> ba79f210 for DMA_TO_DEVICE may cause the cacheline covering the range
+>> ba79f200-ba79f23f to be written back over the top of data that the
+>> device has already started to write to memory. Hello data corruption.
+>>
+>> Separate DMA mappings should be from separate memory allocations,
+>> respecting ARCH_DMA_MINALIGN.
+> 
+> hmm... I know I'm missing something here, but how does this align with
+> the following from active_cacheline_insert() in kernel/dma/debug.c ?
+> 
+>          /* If the device is not writing memory then we don't have any
+>           * concerns about the cpu consuming stale data.  This mitigates
+>           * legitimate usages of overlapping mappings.
+>           */
+>          if (entry->direction == DMA_TO_DEVICE)
+>                  return 0;
 
-This patch registers corresponding cookie context for each data blob
-file.
+It's OK to have multiple mappings that are *all* DMA_TO_DEVICE, which 
+looks to be the case that this check was intended to allow. However I 
+think you're right that it should still actually check for conflicting 
+directions between the new entry and any existing ones, otherwise it 
+ends up a bit too lenient.
 
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
----
- fs/erofs/internal.h |  1 +
- fs/erofs/super.c    | 27 +++++++++++++++++++--------
- 2 files changed, 20 insertions(+), 8 deletions(-)
-
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 548f928b0ded..5d514c7b73cc 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -53,6 +53,7 @@ struct erofs_device_info {
- 	struct block_device *bdev;
- 	struct dax_device *dax_dev;
- 	u64 dax_part_off;
-+	struct erofs_fscache_context *ctx;
- 
- 	u32 blocks;
- 	u32 mapped_blkaddr;
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 8c5783c6f71f..f058a04a00c7 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -250,6 +250,7 @@ static int erofs_init_devices(struct super_block *sb,
- 	down_read(&sbi->devs->rwsem);
- 	idr_for_each_entry(&sbi->devs->tree, dif, id) {
- 		struct block_device *bdev;
-+		struct erofs_fscache_context *ctx;
- 
- 		ptr = erofs_read_metabuf(&buf, sb, erofs_blknr(pos),
- 					 EROFS_KMAP);
-@@ -259,15 +260,24 @@ static int erofs_init_devices(struct super_block *sb,
- 		}
- 		dis = ptr + erofs_blkoff(pos);
- 
--		bdev = blkdev_get_by_path(dif->path,
--					  FMODE_READ | FMODE_EXCL,
--					  sb->s_type);
--		if (IS_ERR(bdev)) {
--			err = PTR_ERR(bdev);
--			break;
-+		if (erofs_bdev_mode(sb)) {
-+			bdev = blkdev_get_by_path(dif->path,
-+						  FMODE_READ | FMODE_EXCL,
-+						  sb->s_type);
-+			if (IS_ERR(bdev)) {
-+				err = PTR_ERR(bdev);
-+				break;
-+			}
-+			dif->bdev = bdev;
-+			dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
-+		} else {
-+			ctx = erofs_fscache_get_ctx(sb, dif->path, false);
-+			if (IS_ERR(ctx)) {
-+				err = PTR_ERR(ctx);
-+				break;
-+			}
-+			dif->ctx = ctx;
- 		}
--		dif->bdev = bdev;
--		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
- 		dif->blocks = le32_to_cpu(dis->blocks);
- 		dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
- 		sbi->total_blocks += dif->blocks;
-@@ -694,6 +704,7 @@ static int erofs_release_device_info(int id, void *ptr, void *data)
- {
- 	struct erofs_device_info *dif = ptr;
- 
-+	erofs_fscache_put_ctx(dif->ctx);
- 	fs_put_dax(dif->dax_dev);
- 	if (dif->bdev)
- 		blkdev_put(dif->bdev, FMODE_READ | FMODE_EXCL);
--- 
-2.27.0
-
+Cheers,
+Robin.
