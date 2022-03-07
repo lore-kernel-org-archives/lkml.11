@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277CCC41535
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4E6C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238791AbiCGJso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        id S239268AbiCGJtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239054AbiCGJjL (ORCPT
+        with ESMTP id S239336AbiCGJjh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DE970906;
-        Mon,  7 Mar 2022 01:34:21 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BFF6D84E;
+        Mon,  7 Mar 2022 01:35:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B8C561256;
-        Mon,  7 Mar 2022 09:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 570DAC340F8;
-        Mon,  7 Mar 2022 09:34:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA445B810CF;
+        Mon,  7 Mar 2022 09:35:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 364B3C340E9;
+        Mon,  7 Mar 2022 09:35:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645648;
-        bh=v0mhPLi2aLsr/GqtGnRVGGrhS+JfUPZXyYIEqPQ6pS8=;
+        s=korg; t=1646645702;
+        bh=rW27RDIxb4zRm6FShjRgjJye5PiLNdSUc2enKTspRag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=INxb7qSWufW1dhfelAoAoUpLO8vxRT3KgM4n2wkj9KEh+tvEilMTzlYsXe2m8cPr6
-         YlYMw9kFD35RCco/lj3c1+SAJ7j/udkK7PvB42iggcIzfGNBl7CwPK18CbtIza0pMg
-         G17AaTS9OT24ujvWDwy3GUY8s/Feedl1S3Kp9T/8=
+        b=Zyr9OPbpyEPPoTTdBZjQEm6LgcZYRC2day2ou8r5B4CmWT8jZxpVo9eGlekpjcEV1
+         PhL63/uHSS3+okyM6nGtrWJi7WTK659iXAA0bV8tXx2iQNle4WOW/Ia6VbuHJ98XJF
+         34u5AnfLlDZ5rS8H3S6QX8bl+OdNcEzDVUzTWCRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.10 098/105] HID: add mapping for KEY_DICTATE
-Date:   Mon,  7 Mar 2022 10:19:41 +0100
-Message-Id: <20220307091646.934685451@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Pei Zhang <pezhang@redhat.com>, Ming Lei <ming.lei@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 010/262] block: loop:use kstatfs.f_bsize of backing file to set discard granularity
+Date:   Mon,  7 Mar 2022 10:15:54 +0100
+Message-Id: <20220307091702.668709970@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,57 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Mahon <wmahon@chromium.org>
+From: Ming Lei <ming.lei@redhat.com>
 
-commit bfa26ba343c727e055223be04e08f2ebdd43c293 upstream.
+[ Upstream commit 06582bc86d7f48d35cd044098ca1e246e8c7c52e ]
 
-Numerous keyboards are adding dictate keys which allows for text
-messages to be dictated by a microphone.
+If backing file's filesystem has implemented ->fallocate(), we think the
+loop device can support discard, then pass sb->s_blocksize as
+discard_granularity. However, some underlying FS, such as overlayfs,
+doesn't set sb->s_blocksize, and causes discard_granularity to be set as
+zero, then the warning in __blkdev_issue_discard() is triggered.
 
-This patch adds a new key definition KEY_DICTATE and maps 0x0c/0x0d8
-usage code to this new keycode. Additionally hid-debug is adjusted to
-recognize this new usage code as well.
+Christoph suggested to pass kstatfs.f_bsize as discard granularity, and
+this way is fine because kstatfs.f_bsize means 'Optimal transfer block
+size', which still matches with definition of discard granularity.
 
-Signed-off-by: William Mahon <wmahon@chromium.org>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/20220303021501.1.I5dbf50eb1a7a6734ee727bda4a8573358c6d3ec0@changeid
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So fix the issue by setting discard_granularity as kstatfs.f_bsize if it
+is available, otherwise claims discard isn't supported.
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Vivek Goyal <vgoyal@redhat.com>
+Reported-by: Pei Zhang <pezhang@redhat.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220126035830.296465-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-debug.c                |    1 +
- drivers/hid/hid-input.c                |    1 +
- include/uapi/linux/input-event-codes.h |    1 +
- 3 files changed, 3 insertions(+)
+ drivers/block/loop.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/hid/hid-debug.c
-+++ b/drivers/hid/hid-debug.c
-@@ -930,6 +930,7 @@ static const char *keys[KEY_MAX + 1] = {
- 	[KEY_SCREENSAVER] = "ScreenSaver",
- 	[KEY_VOICECOMMAND] = "VoiceCommand",
- 	[KEY_EMOJI_PICKER] = "EmojiPicker",
-+	[KEY_DICTATE] = "Dictate",
- 	[KEY_BRIGHTNESS_MIN] = "BrightnessMin",
- 	[KEY_BRIGHTNESS_MAX] = "BrightnessMax",
- 	[KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -956,6 +956,7 @@ static void hidinput_configure_usage(str
- 		case 0x0cd: map_key_clear(KEY_PLAYPAUSE);	break;
- 		case 0x0cf: map_key_clear(KEY_VOICECOMMAND);	break;
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index c00ae30fde89e..92f9d32bfae5e 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -79,6 +79,7 @@
+ #include <linux/ioprio.h>
+ #include <linux/blk-cgroup.h>
+ #include <linux/sched/mm.h>
++#include <linux/statfs.h>
  
-+		case 0x0d8: map_key_clear(KEY_DICTATE);		break;
- 		case 0x0d9: map_key_clear(KEY_EMOJI_PICKER);	break;
+ #include "loop.h"
  
- 		case 0x0e0: map_abs_clear(ABS_VOLUME);		break;
---- a/include/uapi/linux/input-event-codes.h
-+++ b/include/uapi/linux/input-event-codes.h
-@@ -612,6 +612,7 @@
- #define KEY_ASSISTANT		0x247	/* AL Context-aware desktop assistant */
- #define KEY_KBD_LAYOUT_NEXT	0x248	/* AC Next Keyboard Layout Select */
- #define KEY_EMOJI_PICKER	0x249	/* Show/hide emoji picker (HUTRR101) */
-+#define KEY_DICTATE		0x24a	/* Start or Stop Voice Dictation Session (HUTRR99) */
+@@ -939,8 +940,13 @@ static void loop_config_discard(struct loop_device *lo)
+ 		granularity = 0;
  
- #define KEY_BRIGHTNESS_MIN		0x250	/* Set Brightness to Minimum */
- #define KEY_BRIGHTNESS_MAX		0x251	/* Set Brightness to Maximum */
+ 	} else {
++		struct kstatfs sbuf;
++
+ 		max_discard_sectors = UINT_MAX >> 9;
+-		granularity = inode->i_sb->s_blocksize;
++		if (!vfs_statfs(&file->f_path, &sbuf))
++			granularity = sbuf.f_bsize;
++		else
++			max_discard_sectors = 0;
+ 	}
+ 
+ 	if (max_discard_sectors) {
+-- 
+2.34.1
+
 
 
