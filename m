@@ -2,411 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE570C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:36:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237824AbiCGJh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:37:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        id S236056AbiCGJhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:37:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238545AbiCGJ3S (ORCPT
+        with ESMTP id S238595AbiCGJ3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:18 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1E013DC9;
-        Mon,  7 Mar 2022 01:27:35 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2278tPG8021320;
-        Mon, 7 Mar 2022 01:26:52 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Pf+ejItSEH6tATxhQTe8KSCZcJ5xNbDJmEM/Eizzn3g=;
- b=PnGtAOeAzX2q0g20SxwiwVUo/t6U68X360LCOM4ZzxXL0JMKWiXjcB7dgM1E7nBJX9De
- kHER6ouxZ96Hyp5Cj2IDMWGzgMlMTGKj+PObQMXgRpASnzbQ8/eCJj8ukJpCQUCW/YaN
- eZcOrRQDKq+XKW13aYbc2KCLK8MHwVFGKal6jmBpsGiUzVIyk8/29EEO2rd0xztos+DF
- nCPzfDhhdtUhdsk9FgzZu3v1iiepS18De7xq/zVUJNBoXxyREfiFnYjDYpMleR3lN66U
- ZxI4W1bZ2btP01ALqKYzrzKSud0YKqch0HDT7QrtjdZGVsSqEGQkNom9ayiCQK42JI7U HQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3em63sxck7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 07 Mar 2022 01:26:51 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Mar
- 2022 01:26:50 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Mar 2022 01:26:50 -0800
-Received: from sburla-PowerEdge-T630.caveonetworks.com (unknown [10.106.27.217])
-        by maili.marvell.com (Postfix) with ESMTP id 14C2F3F7040;
-        Mon,  7 Mar 2022 01:26:50 -0800 (PST)
-From:   Veerasenareddy Burru <vburru@marvell.com>
-To:     <vburru@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <corbet@lwn.net>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Abhijit Ayarekar <aayarekar@marvell.com>,
-        Satananda Burla <sburla@marvell.com>
-Subject: [PATCH v3 3/7] octeon_ep: Add mailbox for control commands
-Date:   Mon, 7 Mar 2022 01:26:42 -0800
-Message-ID: <20220307092646.17156-4-vburru@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220307092646.17156-1-vburru@marvell.com>
-References: <20220307092646.17156-1-vburru@marvell.com>
+        Mon, 7 Mar 2022 04:29:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA7F3DDD0;
+        Mon,  7 Mar 2022 01:27:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10BF861052;
+        Mon,  7 Mar 2022 09:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE482C340F3;
+        Mon,  7 Mar 2022 09:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645238;
+        bh=rlsri2O7GSgLXQGV2UF9SAx9JRtiiCn2kAkummQmuxc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kV6fpbv2xeGE7l/aV+EDfNojW28ckadm2Urhq3j+jmzR+nG5ugGI+SxMbedxqQXQb
+         yXAw7TlpY7JeYuye92SEwtXdtqvILvro3U3YLbO2tXZH9nlQQcAowcw409YrdEKlLr
+         aHlyHwuAF3SEeUx5q7+HOiFU9wdCEJJ1RAgASZwg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 30/64] xen/netfront: destroy queues before real_num_tx_queues is zeroed
+Date:   Mon,  7 Mar 2022 10:19:03 +0100
+Message-Id: <20220307091639.999424035@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
+References: <20220307091639.136830784@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: quT1oek9jX3GxtxUPuxrVAKk5b9meN2-
-X-Proofpoint-GUID: quT1oek9jX3GxtxUPuxrVAKk5b9meN2-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-07_01,2022-03-04_01,2022-02-23_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mailbox between host and NIC to send control commands from host to
-NIC and receive responses and notifications from NIC to host driver,
-like link status update.
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
-Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
-Signed-off-by: Satananda Burla <sburla@marvell.com>
+commit dcf4ff7a48e7598e6b10126cc02177abb8ae4f3f upstream.
+
+xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
+delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
+("net-sysfs: update the queue counts in the unregistration path"),
+unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
+facts together means, that xennet_destroy_queues() called from
+xennet_remove() cannot do its job, because it's called after
+unregister_netdev(). This results in kfree-ing queues that are still
+linked in napi, which ultimately crashes:
+
+    BUG: kernel NULL pointer dereference, address: 0000000000000000
+    #PF: supervisor read access in kernel mode
+    #PF: error_code(0x0000) - not-present page
+    PGD 0 P4D 0
+    Oops: 0000 [#1] PREEMPT SMP PTI
+    CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-1.32.fc32.qubes.x86_64+ #226
+    RIP: 0010:free_netdev+0xa3/0x1a0
+    Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 85 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
+    RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
+    RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
+    RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
+    RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
+    R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
+    R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
+    FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:0000000000000000
+    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
+    Call Trace:
+     <TASK>
+     xennet_remove+0x13d/0x300 [xen_netfront]
+     xenbus_dev_remove+0x6d/0xf0
+     __device_release_driver+0x17a/0x240
+     device_release_driver+0x24/0x30
+     bus_remove_device+0xd8/0x140
+     device_del+0x18b/0x410
+     ? _raw_spin_unlock+0x16/0x30
+     ? klist_iter_exit+0x14/0x20
+     ? xenbus_dev_request_and_reply+0x80/0x80
+     device_unregister+0x13/0x60
+     xenbus_dev_changed+0x18e/0x1f0
+     xenwatch_thread+0xc0/0x1a0
+     ? do_wait_intr_irq+0xa0/0xa0
+     kthread+0x16b/0x190
+     ? set_kthread_struct+0x40/0x40
+     ret_from_fork+0x22/0x30
+     </TASK>
+
+Fix this by calling xennet_destroy_queues() from xennet_uninit(),
+when real_num_tx_queues is still available. This ensures that queues are
+destroyed when real_num_tx_queues is set to 0, regardless of how
+unregister_netdev() was called.
+
+Originally reported at
+https://github.com/QubesOS/qubes-issues/issues/7257
+
+Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the unregistration path")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-V2 -> V3: no change.
+ drivers/net/xen-netfront.c |   39 +++++++++++++++++++++++----------------
+ 1 file changed, 23 insertions(+), 16 deletions(-)
 
-V1 -> V2:
-  - created by dividing PATCH 1/4 of original patch series.
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -761,6 +761,28 @@ static int xennet_close(struct net_devic
+ 	return 0;
+ }
+ 
++static void xennet_destroy_queues(struct netfront_info *info)
++{
++	unsigned int i;
++
++	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
++		struct netfront_queue *queue = &info->queues[i];
++
++		if (netif_running(info->netdev))
++			napi_disable(&queue->napi);
++		netif_napi_del(&queue->napi);
++	}
++
++	kfree(info->queues);
++	info->queues = NULL;
++}
++
++static void xennet_uninit(struct net_device *dev)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	xennet_destroy_queues(np);
++}
++
+ static void xennet_set_rx_rsp_cons(struct netfront_queue *queue, RING_IDX val)
+ {
+ 	unsigned long flags;
+@@ -1373,6 +1395,7 @@ static void xennet_poll_controller(struc
+ #endif
+ 
+ static const struct net_device_ops xennet_netdev_ops = {
++	.ndo_uninit          = xennet_uninit,
+ 	.ndo_open            = xennet_open,
+ 	.ndo_stop            = xennet_close,
+ 	.ndo_start_xmit      = xennet_start_xmit,
+@@ -1860,22 +1883,6 @@ error:
+ 	return err;
+ }
+ 
+-static void xennet_destroy_queues(struct netfront_info *info)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
+-		struct netfront_queue *queue = &info->queues[i];
+-
+-		if (netif_running(info->netdev))
+-			napi_disable(&queue->napi);
+-		netif_napi_del(&queue->napi);
+-	}
+-
+-	kfree(info->queues);
+-	info->queues = NULL;
+-}
+-
+ static int xennet_create_queues(struct netfront_info *info,
+ 				unsigned int *num_queues)
+ {
 
- .../marvell/octeon_ep/octep_ctrl_mbox.c       | 178 +++++++++++++++++-
- .../marvell/octeon_ep/octep_ctrl_net.c        | 100 +++++++++-
- 2 files changed, 270 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-index 72a60c2a3cf0..f2101b9f2532 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-@@ -65,20 +65,190 @@ static inline u32 octep_ctrl_mbox_circq_depth(u32 pi, u32 ci, u32 mask)
- 
- int octep_ctrl_mbox_init(struct octep_ctrl_mbox *mbox)
- {
--	return -EINVAL;
-+	u64 version, magic_num, status;
-+
-+	if (!mbox)
-+		return -EINVAL;
-+
-+	if (!mbox->barmem) {
-+		pr_info("octep_ctrl_mbox : Invalid barmem %p\n", mbox->barmem);
-+		return -EINVAL;
-+	}
-+
-+	magic_num = readq(OCTEP_CTRL_MBOX_INFO_MAGIC_NUM_OFFSET(mbox->barmem));
-+	if (magic_num != OCTEP_CTRL_MBOX_MAGIC_NUMBER) {
-+		pr_info("octep_ctrl_mbox : Invalid magic number %llx\n", magic_num);
-+		return -EINVAL;
-+	}
-+
-+	version = readq(OCTEP_CTRL_MBOX_INFO_FW_VERSION_OFFSET(mbox->barmem));
-+	if (version != OCTEP_DRV_VERSION) {
-+		pr_info("octep_ctrl_mbox : Firmware version mismatch %llx != %x\n",
-+			version, OCTEP_DRV_VERSION);
-+		return -EINVAL;
-+	}
-+
-+	status = readq(OCTEP_CTRL_MBOX_INFO_FW_STATUS_OFFSET(mbox->barmem));
-+	if (status != OCTEP_CTRL_MBOX_STATUS_READY) {
-+		pr_info("octep_ctrl_mbox : Firmware is not ready.\n");
-+		return -EINVAL;
-+	}
-+
-+	mbox->barmem_sz = readl(OCTEP_CTRL_MBOX_INFO_BARMEM_SZ_OFFSET(mbox->barmem));
-+
-+	writeq(mbox->version, OCTEP_CTRL_MBOX_INFO_HOST_VERSION_OFFSET(mbox->barmem));
-+	writeq(OCTEP_CTRL_MBOX_STATUS_INIT, OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+
-+	mbox->h2fq.elem_cnt = readl(OCTEP_CTRL_MBOX_H2FQ_ELEM_CNT_OFFSET(mbox->barmem));
-+	mbox->h2fq.elem_sz = readl(OCTEP_CTRL_MBOX_H2FQ_ELEM_SZ_OFFSET(mbox->barmem));
-+	mbox->h2fq.mask = (mbox->h2fq.elem_cnt - 1);
-+	mutex_init(&mbox->h2fq_lock);
-+
-+	mbox->f2hq.elem_cnt = readl(OCTEP_CTRL_MBOX_F2HQ_ELEM_CNT_OFFSET(mbox->barmem));
-+	mbox->f2hq.elem_sz = readl(OCTEP_CTRL_MBOX_F2HQ_ELEM_SZ_OFFSET(mbox->barmem));
-+	mbox->f2hq.mask = (mbox->f2hq.elem_cnt - 1);
-+	mutex_init(&mbox->f2hq_lock);
-+
-+	mbox->h2fq.hw_prod = OCTEP_CTRL_MBOX_H2FQ_PROD_OFFSET(mbox->barmem);
-+	mbox->h2fq.hw_cons = OCTEP_CTRL_MBOX_H2FQ_CONS_OFFSET(mbox->barmem);
-+	mbox->h2fq.hw_q = mbox->barmem +
-+			  OCTEP_CTRL_MBOX_INFO_SZ +
-+			  OCTEP_CTRL_MBOX_H2FQ_INFO_SZ +
-+			  OCTEP_CTRL_MBOX_F2HQ_INFO_SZ;
-+
-+	mbox->f2hq.hw_prod = OCTEP_CTRL_MBOX_F2HQ_PROD_OFFSET(mbox->barmem);
-+	mbox->f2hq.hw_cons = OCTEP_CTRL_MBOX_F2HQ_CONS_OFFSET(mbox->barmem);
-+	mbox->f2hq.hw_q = mbox->h2fq.hw_q +
-+			  ((mbox->h2fq.elem_sz + sizeof(union octep_ctrl_mbox_msg_hdr)) *
-+			   mbox->h2fq.elem_cnt);
-+
-+	/* ensure ready state is seen after everything is initialized */
-+	wmb();
-+	writeq(OCTEP_CTRL_MBOX_STATUS_READY, OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+
-+	pr_info("Octep ctrl mbox : Init successful.\n");
-+
-+	return 0;
- }
- 
- int octep_ctrl_mbox_send(struct octep_ctrl_mbox *mbox, struct octep_ctrl_mbox_msg *msg)
- {
--	return -EINVAL;
-+	unsigned long timeout = msecs_to_jiffies(OCTEP_CTRL_MBOX_MSG_TIMEOUT_MS);
-+	unsigned long period = msecs_to_jiffies(OCTEP_CTRL_MBOX_MSG_WAIT_MS);
-+	unsigned long expire;
-+	struct octep_ctrl_mbox_q *q;
-+	u16 pi, ci;
-+	u64 *mbuf, *qidx, *word0;
-+	int i;
-+
-+	if (!mbox || !msg)
-+		return -EINVAL;
-+
-+	q = &mbox->h2fq;
-+	pi = readl(q->hw_prod);
-+	ci = readl(q->hw_cons);
-+
-+	if (!octep_ctrl_mbox_circq_space(pi, ci, q->mask))
-+		return -ENOMEM;
-+
-+	qidx = OCTEP_CTRL_MBOX_Q_OFFSET(q->hw_q, pi);
-+	mbuf = (u64 *)msg->msg;
-+	word0 = &msg->hdr.word0;
-+
-+	mutex_lock(&mbox->h2fq_lock);
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		writeq(*mbuf++, (qidx + i));
-+
-+	writeq(*word0, qidx);
-+
-+	pi = octep_ctrl_mbox_circq_inc(pi, q->mask);
-+	writel(pi, q->hw_prod);
-+	mutex_unlock(&mbox->h2fq_lock);
-+
-+	/* don't check for notification response */
-+	if (msg->hdr.flags & OCTEP_CTRL_MBOX_MSG_HDR_FLAG_NOTIFY)
-+		return 0;
-+
-+	expire = jiffies + timeout;
-+	while (true) {
-+		*word0 = readq(qidx);
-+		if (msg->hdr.flags == OCTEP_CTRL_MBOX_MSG_HDR_FLAG_RESP)
-+			break;
-+		schedule_timeout_interruptible(period);
-+		if (signal_pending(current) || time_after(jiffies, expire)) {
-+			pr_info("octep_ctrl_mbox: Timed out\n");
-+			return -EBUSY;
-+		}
-+	}
-+	mbuf = (u64 *)msg->msg;
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		*mbuf++ = readq(qidx + i);
-+
-+	return 0;
- }
- 
- int octep_ctrl_mbox_recv(struct octep_ctrl_mbox *mbox, struct octep_ctrl_mbox_msg *msg)
- {
--	return -EINVAL;
-+	struct octep_ctrl_mbox_q *q;
-+	u32 count, pi, ci;
-+	u64 *qidx, *mbuf;
-+	int i;
-+
-+	if (!mbox || !msg)
-+		return -EINVAL;
-+
-+	q = &mbox->f2hq;
-+	pi = readl(q->hw_prod);
-+	ci = readl(q->hw_cons);
-+	count = octep_ctrl_mbox_circq_depth(pi, ci, q->mask);
-+	if (!count)
-+		return -EAGAIN;
-+
-+	qidx = OCTEP_CTRL_MBOX_Q_OFFSET(q->hw_q, ci);
-+	mbuf = (u64 *)msg->msg;
-+
-+	mutex_lock(&mbox->f2hq_lock);
-+
-+	msg->hdr.word0 = readq(qidx);
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		*mbuf++ = readq(qidx + i);
-+
-+	ci = octep_ctrl_mbox_circq_inc(ci, q->mask);
-+	writel(ci, q->hw_cons);
-+
-+	mutex_unlock(&mbox->f2hq_lock);
-+
-+	if (msg->hdr.flags != OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ || !mbox->process_req)
-+		return 0;
-+
-+	mbox->process_req(mbox->user_ctx, msg);
-+	mbuf = (u64 *)msg->msg;
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		writeq(*mbuf++, (qidx + i));
-+
-+	writeq(msg->hdr.word0, qidx);
-+
-+	return 0;
- }
- 
- int octep_ctrl_mbox_uninit(struct octep_ctrl_mbox *mbox)
- {
--	return -EINVAL;
-+	if (!mbox)
-+		return -EINVAL;
-+
-+	writeq(OCTEP_CTRL_MBOX_STATUS_UNINIT,
-+	       OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+	/* ensure uninit state is written before uninitialization */
-+	wmb();
-+
-+	mutex_destroy(&mbox->h2fq_lock);
-+	mutex_destroy(&mbox->f2hq_lock);
-+
-+	writeq(OCTEP_CTRL_MBOX_STATUS_INVALID,
-+	       OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+	writeq(0, OCTEP_CTRL_MBOX_INFO_HOST_VERSION_OFFSET(mbox->barmem));
-+
-+	pr_info("Octep ctrl mbox : Uninit successful.\n");
-+
-+	return 0;
- }
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-index 021f888d8f6d..c3aca7b2775b 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-@@ -15,28 +15,120 @@
- 
- int octep_get_link_status(struct octep_device *oct)
- {
--	return 0;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_net_h2f_resp *resp;
-+	struct octep_ctrl_mbox_msg msg = {};
-+	int err;
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_STATUS;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_GET;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_STATE_REQ_SZW;
-+	msg.msg = &req;
-+	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-+	if (err)
-+		return err;
-+
-+	resp = (struct octep_ctrl_net_h2f_resp *)&req;
-+	return resp->link.state;
- }
- 
- void octep_set_link_status(struct octep_device *oct, bool up)
- {
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_mbox_msg msg = {};
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_STATUS;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_SET;
-+	req.link.state = (up) ? OCTEP_CTRL_NET_STATE_UP : OCTEP_CTRL_NET_STATE_DOWN;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_STATE_REQ_SZW;
-+	msg.msg = &req;
-+	octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
- }
- 
- void octep_set_rx_state(struct octep_device *oct, bool up)
- {
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_mbox_msg msg = {};
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_RX_STATE;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_SET;
-+	req.link.state = (up) ? OCTEP_CTRL_NET_STATE_UP : OCTEP_CTRL_NET_STATE_DOWN;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_STATE_REQ_SZW;
-+	msg.msg = &req;
-+	octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
- }
- 
- int octep_get_mac_addr(struct octep_device *oct, u8 *addr)
- {
--	return -1;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_net_h2f_resp *resp;
-+	struct octep_ctrl_mbox_msg msg = {};
-+	int err;
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_MAC;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_GET;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_MAC_REQ_SZW;
-+	msg.msg = &req;
-+	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-+	if (err)
-+		return err;
-+
-+	resp = (struct octep_ctrl_net_h2f_resp *)&req;
-+	memcpy(addr, resp->mac.addr, ETH_ALEN);
-+
-+	return err;
- }
- 
- int octep_get_link_info(struct octep_device *oct)
- {
--	return -1;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_net_h2f_resp *resp;
-+	struct octep_ctrl_mbox_msg msg = {};
-+	int err;
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_INFO;
-+	req.mac.cmd = OCTEP_CTRL_NET_CMD_GET;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_LINK_INFO_REQ_SZW;
-+	msg.msg = &req;
-+	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-+	if (err)
-+		return err;
-+
-+	resp = (struct octep_ctrl_net_h2f_resp *)&req;
-+	oct->link_info.supported_modes = resp->link_info.supported_modes;
-+	oct->link_info.advertised_modes = resp->link_info.advertised_modes;
-+	oct->link_info.autoneg = resp->link_info.autoneg;
-+	oct->link_info.pause = resp->link_info.pause;
-+	oct->link_info.speed = resp->link_info.speed;
-+
-+	return err;
- }
- 
- int octep_set_link_info(struct octep_device *oct, struct octep_iface_link_info *link_info)
- {
--	return -1;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_mbox_msg msg = {};
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_INFO;
-+	req.link_info.cmd = OCTEP_CTRL_NET_CMD_SET;
-+	req.link_info.info.advertised_modes = link_info->advertised_modes;
-+	req.link_info.info.autoneg = link_info->autoneg;
-+	req.link_info.info.pause = link_info->pause;
-+	req.link_info.info.speed = link_info->speed;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_LINK_INFO_REQ_SZW;
-+	msg.msg = &req;
-+
-+	return octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
- }
--- 
-2.17.1
 
