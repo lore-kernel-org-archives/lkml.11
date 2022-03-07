@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC87C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239841AbiCGKgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:36:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
+        id S239976AbiCGKgv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:36:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242318AbiCGKLZ (ORCPT
+        with ESMTP id S242218AbiCGKLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7353989CD8;
-        Mon,  7 Mar 2022 01:54:54 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9893A888F1;
+        Mon,  7 Mar 2022 01:54:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5421B60B6F;
-        Mon,  7 Mar 2022 09:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E5CC340E9;
-        Mon,  7 Mar 2022 09:54:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D152360919;
+        Mon,  7 Mar 2022 09:54:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCFF9C340F3;
+        Mon,  7 Mar 2022 09:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646893;
-        bh=6eaBAaiTx6z1KDKJ9qfmaLGoCODvGB//OB2/h1VZiFI=;
+        s=korg; t=1646646848;
+        bh=q+N6qQHHbewH0S9LAj4Ur73Dl++E5J0JYWwl7aZW/7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RFNg7jewZZkHlnx238aQE5RJrzie7cNc0fXU/oMhJHps3KrZxoQ+oWSfr15H9SOjx
-         NNqtcPNsK+OG3VNk59rufE22Zn5jOGeVO8tIOhPLA+NKNFq2UJC8NiMSHFeqcgZgrU
-         7XgOk2/KjyBbPtK++0R2csFrpU0g8gXHmoeA9IG8=
+        b=iNVqbw/uKeapB8KgM0P7ek4sdvPqM2A98RyG5ZtPqzxSt5NuWDLW9xIBGTo2vuptl
+         RgFGO4OLWBBhsexyLplGfhfigu3sHuBdPX/GyFv+SyuXX4dBJF/gWnGHA3gGo3K1sn
+         hK75J/ruH+DYSmz4QAug3xDPLBXcb0+7/qS826P0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 126/186] iommu/amd: Fix I/O page table memory leak
-Date:   Mon,  7 Mar 2022 10:19:24 +0100
-Message-Id: <20220307091657.603212231@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.16 106/186] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
+Date:   Mon,  7 Mar 2022 10:19:04 +0100
+Message-Id: <20220307091657.042822329@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,61 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 6b0b2d9a6a308bcd9300c2d83000a82812c56cea ]
+commit b5fbaf7d779f5f02b7f75b080e7707222573be2a upstream.
 
-The current logic updates the I/O page table mode for the domain
-before calling the logic to free memory used for the page table.
-This results in IOMMU page table memory leak, and can be observed
-when launching VM w/ pass-through devices.
+Commit b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
+switched the platform to SPDIF, but we didn't fix up the device tree.
 
-Fix by freeing the memory used for page table before updating the mode.
+Drop the pinctrl settings, because the 'spdif_bus' pins are either:
+ * unused (on kevin, bob), so the settings is ~harmless
+ * used by a different function (on scarlet), which causes probe
+   failures (!!)
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Reported-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-Tested-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Fixes: e42ba0633064 ("iommu/amd: Restructure code for freeing page table")
-Link: https://lore.kernel.org/all/20220118194720.urjgi73b7c3tq2o6@oracle.com/
-Link: https://lore.kernel.org/r/20220210154745.11524-1-suravee.suthikulpanit@amd.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Link: https://lore.kernel.org/r/20220114150129.v2.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/amd/io_pgtable.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi |   17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-index b1bf4125b0f7..6608d1717574 100644
---- a/drivers/iommu/amd/io_pgtable.c
-+++ b/drivers/iommu/amd/io_pgtable.c
-@@ -492,18 +492,18 @@ static void v1_free_pgtable(struct io_pgtable *iop)
+--- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+@@ -286,7 +286,7 @@
  
- 	dom = container_of(pgtable, struct protection_domain, iop);
+ 	sound: sound {
+ 		compatible = "rockchip,rk3399-gru-sound";
+-		rockchip,cpu = <&i2s0 &i2s2>;
++		rockchip,cpu = <&i2s0 &spdif>;
+ 	};
+ };
  
--	/* Update data structure */
--	amd_iommu_domain_clr_pt_root(dom);
+@@ -437,10 +437,6 @@ ap_i2c_audio: &i2c8 {
+ 	status = "okay";
+ };
+ 
+-&i2s2 {
+-	status = "okay";
+-};
 -
--	/* Make changes visible to IOMMUs */
--	amd_iommu_domain_update(dom);
--
- 	/* Page-table is not visible to IOMMU anymore, so free it */
- 	BUG_ON(pgtable->mode < PAGE_MODE_NONE ||
- 	       pgtable->mode > PAGE_MODE_6_LEVEL);
+ &io_domains {
+ 	status = "okay";
  
- 	free_sub_pt(pgtable->root, pgtable->mode, &freelist);
+@@ -537,6 +533,17 @@ ap_i2c_audio: &i2c8 {
+ 	vqmmc-supply = <&ppvar_sd_card_io>;
+ };
  
-+	/* Update data structure */
-+	amd_iommu_domain_clr_pt_root(dom);
++&spdif {
++	status = "okay";
 +
-+	/* Make changes visible to IOMMUs */
-+	amd_iommu_domain_update(dom);
++	/*
++	 * SPDIF is routed internally to DP; we either don't use these pins, or
++	 * mux them to something else.
++	 */
++	/delete-property/ pinctrl-0;
++	/delete-property/ pinctrl-names;
++};
 +
- 	put_pages_list(&freelist);
- }
+ &spi1 {
+ 	status = "okay";
  
--- 
-2.34.1
-
 
 
