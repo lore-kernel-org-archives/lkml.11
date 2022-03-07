@@ -2,127 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF84BC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D850DC35295
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240957AbiCGKJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:09:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54056 "EHLO
+        id S241130AbiCGKJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:09:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240380AbiCGJu6 (ORCPT
+        with ESMTP id S239106AbiCGJtI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:58 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1E661A3B;
-        Mon,  7 Mar 2022 01:44:31 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=guLVFBWwsdaV3lNFAMJxo4Aikamhb6ldFeHSTPb5pELOZSRribzytVQ/d+1RvD0O8NJ/8PwF4MKuK+vE1JwvHSwOUK7zOg1VfxM2EVzVypIdqgqDl1Xi3eE/cw7wqkNSm7deoZeJbxsvVkwI6SfUSIgcJjUfgZWHrkHuCss4Nn+XXP31up1CMTcwGzKRYnw6L0rXatUbF+vZypj/tMbjwYsy13EckHplB7JMVOVEKztTUYdSpVbl02X8ufiTsRBTELz89HaiKv2fRyai0UbWNRKN8x5+6XxSs3ZZH1fQvr1Rz8z7X3lbjhzCVhVt85Y+g6qO6/CtCaXqz/aM13MBiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7pow5pQn20Bk40GvH2a4BuZ0BZMAnvGe2VBix6ZWbMs=;
- b=A2qrigPyJGBsui2zSuBTwArvtHZ388Lhyxu50Grw8BSRw0TNWqe5dz4Fmzqw4FMbJ5CmV/XNyMx1qfFp4822+cALR4ncG9uo8aEqKG9zKIrTZyMIApOL9wtEa2eL/xCsBbPkda8xSrzQXOqYgktMnPbfqZLApPDXQr/Hu0GsEn4orizoH1zzKLD1iAzm2dz6y8Z/HmWKOBIowNNw/lfm0n0vr/6P4Lg79+8a0ASTj5tN398JUzos32ovR3AxOBFO0+nGiFwRVWfm1d90tp3xV9e5edb13gGxJdkMbFh/YVaGv0IGRFi03oIz4jZzaLfAWSKQ4gZZFegp0x3kvYPUTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7pow5pQn20Bk40GvH2a4BuZ0BZMAnvGe2VBix6ZWbMs=;
- b=bmdFmPA8wGSyFy/AV0J6P4j1/7q0OKQYnSybV1HKmB5J6hKh7SbOEA1ciMgjxwpwFL367IS+LwJjjWfyKf/tT8wZjAIBNUFxMmqCFSvrESiMV2iorMCVdx0rNtT7FMw1T/rEsZkEOANfufcf/GtQTyKcZiMJNXTeOSBKn41A51hObI4OPHEAP/wK9DffqvkSuiZmABgUfb/PGrDV5hw93/DCBqXCkiPTHDUe8L1UyX768zfmg/9wE7AXfmOenF1l9c/b/qk31xaWlZGfoOMdti5PjLsiEy8amxestWMRVzfloY/Bo1pdCuXFMN0VEB1czzlCcme0Sdzr1ltCi8tEtQ==
-Received: from DS7PR05CA0065.namprd05.prod.outlook.com (2603:10b6:8:57::10) by
- BN7PR12MB2708.namprd12.prod.outlook.com (2603:10b6:408:21::25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5038.15; Mon, 7 Mar 2022 09:44:21 +0000
-Received: from DM6NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:57:cafe::20) by DS7PR05CA0065.outlook.office365.com
- (2603:10b6:8:57::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.17 via Frontend
- Transport; Mon, 7 Mar 2022 09:44:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT005.mail.protection.outlook.com (10.13.172.238) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5038.14 via Frontend Transport; Mon, 7 Mar 2022 09:44:21 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Mar
- 2022 09:44:18 +0000
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 7 Mar 2022
- 01:44:14 -0800
-References: <20220305181346.697365-1-trix@redhat.com>
-User-agent: mu4e 1.6.6; emacs 27.2
-From:   Petr Machata <petrm@nvidia.com>
-To:     <trix@redhat.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <nathan@kernel.org>,
-        <ndesaulniers@google.com>, <idosch@nvidia.com>, <petrm@nvidia.com>,
-        <edumazet@google.com>, <avagin@gmail.com>, <yajun.deng@linux.dev>,
-        <johannes.berg@intel.com>, <cong.wang@bytedance.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <llvm@lists.linux.dev>
-Subject: Re: [PATCH] net: rtnetlink: fix error handling in
- rtnl_fill_statsinfo()
-Date:   Mon, 7 Mar 2022 10:43:28 +0100
-In-Reply-To: <20220305181346.697365-1-trix@redhat.com>
-Message-ID: <87sfru9jwz.fsf@nvidia.com>
+        Mon, 7 Mar 2022 04:49:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE9B10FEE;
+        Mon,  7 Mar 2022 01:42:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD272B810BF;
+        Mon,  7 Mar 2022 09:42:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07289C340E9;
+        Mon,  7 Mar 2022 09:42:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646159;
+        bh=jL18z2hE6xJ6jALu7cW0FPYndfKRVk1ejDkLHHhGj0o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sRuAYlB+g6yNUQSaMENQcUwbzzN2RWMTBrqm0E894pfmoxEkaJaVns0fK1vLuQBIm
+         pmE6IdynNSl2QSoTNJ8x0tmYq+l8FwXa5YxxedRcUZCiKCm+zxPXWcNhKgILMID+I4
+         EwQsARWmYqFgpYETU0lB/rhscKspXLGhDhZpklJ4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Willy Tarreau <w@1wt.eu>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Michal Hocko <mhocko@suse.com>
+Subject: [PATCH 5.15 152/262] mm: Consider __GFP_NOWARN flag for oversized kvmalloc() calls
+Date:   Mon,  7 Mar 2022 10:18:16 +0100
+Message-Id: <20220307091706.728892880@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a1c68a1a-30ab-4467-4d72-08da001f0e73
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2708:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB27083BD979E894CD984111B4D6089@BN7PR12MB2708.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fhHb2C3DS4Ccsfv7qQ46y4f61mp3DktlD2TTG9TBjFQPptoegfAJjWRRZBNhxSuliF5YyshYYJRcg//9rZRgMgBg5dig0lPmT60vaNPd6itq+2KAPnmfSdu3EGfoP48FgMa6IodoqVEWDqFWxOFcEOxxIu0R4ssITbtPn/UVIvKNTJbbS+LTwH6SXyt3dEDg++MCPjbdyFnACqNl8MAN+OTBKlsg6oL7SoL4x2voEUWH28noWSZVcGWiZc+yY7Qyn3tSZDmJdQlPAFBBeEVqW5/WZQfyG+plMw0ddzM/orKbUr8ppVieGYK8chFyO9GXA9RvFgRfVPG+bM4BsW5Hg1NxkQd0kHmU0v55d9u0lM26BftobSfuSpz3dZz2jSeNYnVAaXzJtfkRxlpzaK+/kce6g3h9v1SVOWId4Qrl4eiaMCD5ZvETwfNZ3H70WERzdSczg6szxbPzmNM4OijM0PyXbclRu4NMc+W/6Qf/BlZ4pmQ3L1zHnX60uuajkmCKMUgosZfS3CfKHjEFa19SJw9KQ4onfYVUcv2mYCXZW8w+9gb8QBlB//DTEbmnT8AibDt+DxrfxYr5ny80UNzftbHGBRYp2MkEqS4BecPv1NjIyhU9Bnm39eNqtdVQclY3YlyxRnyMWRhHvTVRyxIgWhKyKKfb/QizLI/ICdIej06bzCrT6j5BbhFfKlV9CCQsl0dQ8V0asW4mu6n74T+9sA==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(26005)(186003)(4744005)(36860700001)(54906003)(6916009)(16526019)(508600001)(316002)(47076005)(40460700003)(82310400004)(70586007)(356005)(81166007)(336012)(426003)(8936002)(2616005)(6666004)(83380400001)(86362001)(36756003)(7416002)(4326008)(8676002)(70206006)(5660300002)(2906002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:44:21.1207
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1c68a1a-30ab-4467-4d72-08da001f0e73
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT005.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2708
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-trix@redhat.com writes:
+commit 0708a0afe291bdfe1386d74d5ec1f0c27e8b9168 upstream.
 
-> From: Tom Rix <trix@redhat.com>
->
-> The clang static analyzer reports this issue
-> rtnetlink.c:5481:2: warning: Undefined or garbage
->   value returned to caller
->   return err;
->   ^~~~~~~~~~
->
-> There is a function level err variable, in the
-> list_for_each_entry_rcu block there is a shadow
-> err.  Remove the shadow.
->
-> In the same block, the call to nla_nest_start_noflag()
-> can fail without setting an err.  Set the err
-> to -EMSGSIZE.
->
-> Fixes: 216e690631f5 ("net: rtnetlink: rtnl_fill_statsinfo(): Permit non-EMSGSIZE error returns")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+syzkaller was recently triggering an oversized kvmalloc() warning via
+xdp_umem_create().
 
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+The triggered warning was added back in 7661809d493b ("mm: don't allow
+oversized kvmalloc() calls"). The rationale for the warning for huge
+kvmalloc sizes was as a reaction to a security bug where the size was
+more than UINT_MAX but not everything was prepared to handle unsigned
+long sizes.
 
-Thanks!
+Anyway, the AF_XDP related call trace from this syzkaller report was:
+
+  kvmalloc include/linux/mm.h:806 [inline]
+  kvmalloc_array include/linux/mm.h:824 [inline]
+  kvcalloc include/linux/mm.h:829 [inline]
+  xdp_umem_pin_pages net/xdp/xdp_umem.c:102 [inline]
+  xdp_umem_reg net/xdp/xdp_umem.c:219 [inline]
+  xdp_umem_create+0x6a5/0xf00 net/xdp/xdp_umem.c:252
+  xsk_setsockopt+0x604/0x790 net/xdp/xsk.c:1068
+  __sys_setsockopt+0x1fd/0x4e0 net/socket.c:2176
+  __do_sys_setsockopt net/socket.c:2187 [inline]
+  __se_sys_setsockopt net/socket.c:2184 [inline]
+  __x64_sys_setsockopt+0xb5/0x150 net/socket.c:2184
+  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Björn mentioned that requests for >2GB allocation can still be valid:
+
+  The structure that is being allocated is the page-pinning accounting.
+  AF_XDP has an internal limit of U32_MAX pages, which is *a lot*, but
+  still fewer than what memcg allows (PAGE_COUNTER_MAX is a LONG_MAX/
+  PAGE_SIZE on 64 bit systems). [...]
+
+  I could just change from U32_MAX to INT_MAX, but as I stated earlier
+  that has a hacky feeling to it. [...] From my perspective, the code
+  isn't broken, with the memcg limits in consideration. [...]
+
+Linus says:
+
+  [...] Pretty much every time this has come up, the kernel warning has
+  shown that yes, the code was broken and there really wasn't a reason
+  for doing allocations that big.
+
+  Of course, some people would be perfectly fine with the allocation
+  failing, they just don't want the warning. I didn't want __GFP_NOWARN
+  to shut it up originally because I wanted people to see all those
+  cases, but these days I think we can just say "yeah, people can shut
+  it up explicitly by saying 'go ahead and fail this allocation, don't
+  warn about it'".
+
+  So enough time has passed that by now I'd certainly be ok with [it].
+
+Thus allow call-sites to silence such userspace triggered splats if the
+allocation requests have __GFP_NOWARN. For xdp_umem_pin_pages()'s call
+to kvcalloc() this is already the case, so nothing else needed there.
+
+Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
+Reported-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Tested-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
+Cc: Björn Töpel <bjorn@kernel.org>
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Cc: Willy Tarreau <w@1wt.eu>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/bpf/CAJ+HfNhyfsT5cS_U9EC213ducHs9k9zNxX9+abqC0kTrPbQ0gg@mail.gmail.com
+Link: https://lore.kernel.org/bpf/20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Ackd-by: Michal Hocko <mhocko@suse.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/util.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -594,8 +594,10 @@ void *kvmalloc_node(size_t size, gfp_t f
+ 		return ret;
+ 
+ 	/* Don't even allow crazy sizes */
+-	if (WARN_ON_ONCE(size > INT_MAX))
++	if (unlikely(size > INT_MAX)) {
++		WARN_ON_ONCE(!(flags & __GFP_NOWARN));
+ 		return NULL;
++	}
+ 
+ 	return __vmalloc_node(size, 1, flags, node,
+ 			__builtin_return_address(0));
+
+
