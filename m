@@ -2,93 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF59FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF46C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243982AbiCGP7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:59:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        id S243989AbiCGQAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:00:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234875AbiCGP7n (ORCPT
+        with ESMTP id S234875AbiCGQAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:59:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA46338AB;
-        Mon,  7 Mar 2022 07:58:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76B06B81627;
-        Mon,  7 Mar 2022 15:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A52D7C340E9;
-        Mon,  7 Mar 2022 15:58:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646668726;
-        bh=W5kqratoVSRl9NEd4VE6Iu3BSqv9ulKVQPHP1qdhNvw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aurmVE6NZjU7sOJJ+E50h+AIed6RxvrashOmy+xb2DcYubmVUquVyy5I9fekqFNX5
-         Cj+DSIerBr9haVVQWprk2CNueZQDWhPWsYbjZnFm5soSe9mGKZABgiP7UB87yme/N4
-         6EPfyNphy7nkrwusx8woJNJVhhRtzd+KdAwnPwTkOb1R7gnVSFeh7a2JW9/ViytEVh
-         Q601UbynX2V3G3LMpsywSlFS/RXL1A8v1EyttbFgnIXyJHWxWdXHy8L4t6dm0RnGNZ
-         1nhf2OPJo2RASPa3NwFjwplBGb8ddISaD7ZUdDcGoU3Lc8nvMUP2jl9oHK4F7hlT1g
-         hFXST0Agp0K8w==
-Date:   Mon, 7 Mar 2022 17:58:05 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-sgx@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Thomas =?iso-8859-1?Q?Hellstr=F6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Chris Wilson <chris@chris-wilson.co.uk>, G@iki.fi,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        zhangyiru <zhangyiru3@huawei.com>,
-        Alexey Gladkov <legion@kernel.org>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        linux-mips@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, codalist@coda.cs.cmu.edu,
-        linux-unionfs@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH RFC 0/3] MAP_POPULATE for device memory
-Message-ID: <YiYrjRW/Qmoq8c+L@iki.fi>
-References: <20220306053211.135762-1-jarkko@kernel.org>
- <YiSb7tsUEBRGS+HA@casper.infradead.org>
- <YiW4yurDXSifTYUt@infradead.org>
- <YiYIv9guOgClLKT8@iki.fi>
- <YiYrRWMp1akXY8Vb@infradead.org>
+        Mon, 7 Mar 2022 11:00:12 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132C88118C
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:59:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646668758; x=1678204758;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UIQ205em1WrlnAoEopCeQjugklgipYmQxrXTFmaWBqc=;
+  b=htnSgzl3NtHF6CBXLT07Q6v4jrlWThhCt+E8KEs0aaKv1ww2Ao+/4b+4
+   S0EgnGj/JMHED1TzEWFmRzc2khtlUsMh4vYUbh2sKZis3twHQ4Ex2yjdB
+   1ZYCjsHyN73WLfLstHSev8lK/2c9SkGhKsSnwbXQgLyGbFG8oArbnp2rV
+   VdfJz//8sknHsRid9M+Od1C914PslmQmMeg5qhFU5gNm1Zr1BEhXsAuLm
+   AhVe6FVy2P82XIRVC3WWwpPcAqZf9HuToZWBT2VyCvabA18NUbjY1CWfs
+   BwY7GC5T+7vW2o5+kvAdTqiQgNLtsx0SWaIIfnbE9CX31hqPDd/yJlksE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="279128044"
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="279128044"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 07:59:17 -0800
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="643292226"
+Received: from rhack-mobl1.amr.corp.intel.com (HELO [10.209.14.71]) ([10.209.14.71])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 07:59:17 -0800
+Message-ID: <def6807f-5d5d-5d08-7705-70c907b23805@linux.intel.com>
+Date:   Mon, 7 Mar 2022 09:24:03 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiYrRWMp1akXY8Vb@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH -next] soundwire: stream: Fix error return code in
+ do_bank_switch()
+Content-Language: en-US
+To:     Wang Wensheng <wangwensheng4@huawei.com>, vkoul@kernel.org,
+        yung-chuan.liao@linux.intel.com, sanyog.r.kale@intel.com,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc:     xuqiang36@huawei.com
+References: <20220307074039.117488-1-wangwensheng4@huawei.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220307074039.117488-1-wangwensheng4@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 07:56:53AM -0800, Christoph Hellwig wrote:
-> On Mon, Mar 07, 2022 at 03:29:35PM +0200, Jarkko Sakkinen wrote:
-> > So what would you suggest to sort out the issue? I'm happy to go with
-> > ioctl if nothing else is acceptable.
+
+
+On 3/7/22 01:40, Wang Wensheng wrote:
+> Fix to return a negative error code from the error handling case instead
+> of 0, as done elsewhere in this function.
 > 
-> PLenty of drivers treat all mmaps as if MAP_POPULATE was specified,
-> typically by using (io_)remap_pfn_range.  If there any reason to only
-> optionally have the pre-fault semantics for sgx?  If not this should
-> be really simple.  And if we have a real need for it to be optional
-> we'll just need to find a sane way to pass that information to ->mmap.
+> Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
 
-Dave, what if mmap() would just unconditionally EAUG after initialization?
+Thanks for the patch, sounds good to me.
 
-It's an option, yes.
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-BR, Jarkko
+> ---
+>   drivers/soundwire/stream.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/soundwire/stream.c b/drivers/soundwire/stream.c
+> index 980f26d49b66..553131597af6 100644
+> --- a/drivers/soundwire/stream.c
+> +++ b/drivers/soundwire/stream.c
+> @@ -822,6 +822,7 @@ static int do_bank_switch(struct sdw_stream_runtime *stream)
+>   		} else if (multi_link) {
+>   			dev_err(bus->dev,
+>   				"Post bank switch ops not implemented\n");
+> +			ret = -EINVAL;
+>   			goto error;
+>   		}
+>   
