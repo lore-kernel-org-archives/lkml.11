@@ -2,111 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237652AbiCGJgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
+        id S237567AbiCGJgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238399AbiCGJ3J (ORCPT
+        with ESMTP id S238395AbiCGJ3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:29:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882AE66F87;
-        Mon,  7 Mar 2022 01:27:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C80AB810AC;
-        Mon,  7 Mar 2022 09:27:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E9EC340F3;
-        Mon,  7 Mar 2022 09:27:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645235;
-        bh=6IjUGTiW8p4e+fU2RmYZBwhQ+7d4bpZmupWB9zHQXDQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nu410yVuTdIQTHyVP1dX08A8WZXfMB8ZySEJkeTuLTZq/k/dRRbcLhFISCRnPKWc1
-         496AV3d/w+BWjm/ofZd6H2/ajmauwvR9HIX+8BSa0cep3ydK8TiWF4E9gVQh6PqlGh
-         HFc1MkzBfSwoBKLyNtiZtmCF+9qFZJnnvWceRVsU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 29/64] block: Fix fsync always failed if once failed
-Date:   Mon,  7 Mar 2022 10:19:02 +0100
-Message-Id: <20220307091639.971939559@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFA066F81;
+        Mon,  7 Mar 2022 01:27:17 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2278qQAm024110;
+        Mon, 7 Mar 2022 01:26:53 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=d1EP32SI2OiLwwJaiUyoux/fOrr7XKSsqDXZ++sMI9Q=;
+ b=DndFII+OrgQcFnUxFm0ubHuyw2TNdaCbhNdBGWz7tNXkFxyWdWI0vCa+vBwGVfBGSxWz
+ lLg0qOsN+msWrcwz1j9iDqdXEXeed5ipTQaFLeCluEXKIv7SL5CtTDwP6/nNEHI42wjg
+ aznknbg/8JntGxTojfXZTs1yQJDaDYdZvNvCa1zbhT37rTXCohtd2ZAngMBhc/ROrF7W
+ 5Uq56G3yVRf9mPnMpCbI6Kq7iHxnucfR3YLIKfnhaGn0EBnEycaYMD3dpzYQdTEXZCBG
+ eS6cO6+QxRiPa8hzBnjPtNwyi7mu8o+6KN4WDJ9C4ppWif0pGjniVxnJeWmItEUHZqbf eQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3em88re1h5-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 07 Mar 2022 01:26:53 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Mar
+ 2022 01:26:51 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Mon, 7 Mar 2022 01:26:50 -0800
+Received: from sburla-PowerEdge-T630.caveonetworks.com (unknown [10.106.27.217])
+        by maili.marvell.com (Postfix) with ESMTP id AFD3F3F7050;
+        Mon,  7 Mar 2022 01:26:50 -0800 (PST)
+From:   Veerasenareddy Burru <vburru@marvell.com>
+To:     <vburru@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <corbet@lwn.net>, <netdev@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Abhijit Ayarekar <aayarekar@marvell.com>,
+        Satananda Burla <sburla@marvell.com>
+Subject: [PATCH v3 5/7] octeon_ep: add support for ndo ops
+Date:   Mon, 7 Mar 2022 01:26:44 -0800
+Message-ID: <20220307092646.17156-6-vburru@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220307092646.17156-1-vburru@marvell.com>
+References: <20220307092646.17156-1-vburru@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: 4-zlxFxfbH6-tHB95jhTeY78u8BdsXfR
+X-Proofpoint-GUID: 4-zlxFxfbH6-tHB95jhTeY78u8BdsXfR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-07_01,2022-03-04_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+Add support for ndo ops to set MAC address, change MTU, get stats.
+Add control path support to set MAC address, change MTU, get stats,
+set speed, get and set link mode.
 
-commit 8a7518931baa8ea023700987f3db31cb0a80610b upstream.
-
-We do test with inject error fault base on v4.19, after test some time we found
-sync /dev/sda always failed.
-[root@localhost] sync /dev/sda
-sync: error syncing '/dev/sda': Input/output error
-
-scsi log as follows:
-[19069.812296] sd 0:0:0:0: [sda] tag#64 Send: scmd 0x00000000d03a0b6b
-[19069.812302] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
-[19069.812533] sd 0:0:0:0: [sda] tag#64 Done: SUCCESS Result: hostbyte=DID_OK driverbyte=DRIVER_OK
-[19069.812536] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
-[19069.812539] sd 0:0:0:0: [sda] tag#64 scsi host busy 1 failed 0
-[19069.812542] sd 0:0:0:0: Notifying upper driver of completion (result 0)
-[19069.812546] sd 0:0:0:0: [sda] tag#64 sd_done: completed 0 of 0 bytes
-[19069.812549] sd 0:0:0:0: [sda] tag#64 0 sectors total, 0 bytes done.
-[19069.812564] print_req_error: I/O error, dev sda, sector 0
-
-ftrace log as follows:
- rep-306069 [007] .... 19654.923315: block_bio_queue: 8,0 FWS 0 + 0 [rep]
- rep-306069 [007] .... 19654.923333: block_getrq: 8,0 FWS 0 + 0 [rep]
- kworker/7:1H-250   [007] .... 19654.923352: block_rq_issue: 8,0 FF 0 () 0 + 0 [kworker/7:1H]
- <idle>-0     [007] ..s. 19654.923562: block_rq_complete: 8,0 FF () 18446744073709551615 + 0 [0]
- <idle>-0     [007] d.s. 19654.923576: block_rq_complete: 8,0 WS () 0 + 0 [-5]
-
-As 8d6996630c03 introduce 'fq->rq_status', this data only update when 'flush_rq'
-reference count isn't zero. If flush request once failed and record error code
-in 'fq->rq_status'. If there is no chance to update 'fq->rq_status',then do fsync
-will always failed.
-To address this issue reset 'fq->rq_status' after return error code to upper layer.
-
-Fixes: 8d6996630c03("block: fix null pointer dereference in blk_mq_rq_timed_out()")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20211129012659.1553733-1-yebin10@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
+Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
+Signed-off-by: Satananda Burla <sburla@marvell.com>
 ---
- block/blk-flush.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+V2 -> V3: no change.
 
---- a/block/blk-flush.c
-+++ b/block/blk-flush.c
-@@ -222,8 +222,10 @@ static void flush_end_io(struct request
- 		return;
- 	}
+V1 -> V2:
+  - Address review comments:
+      - declare variables in reversed Christmas tree, in all functions.
+      - Replace {0} with {} to zero initialize a structure.
+      - use success oriented approach when returning on error; Replace
+            err = foo(..);
+            if (!err) {
+              /* Scucess */
+              ....
+            }
+            return err;
+
+                  with
+
+            err = foo(..);
+            if (err)
+              return err;
+            /* Success */
+            ....
+  - fix build errors observed with clang and "make W=1 C=1".
+
+ .../marvell/octeon_ep/octep_ctrl_net.c        | 63 +++++++++++++++
+ .../ethernet/marvell/octeon_ep/octep_main.c   | 78 +++++++++++++++++++
+ 2 files changed, 141 insertions(+)
+
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
+index c3aca7b2775b..c5df3cf4f8f7 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
+@@ -87,6 +87,69 @@ int octep_get_mac_addr(struct octep_device *oct, u8 *addr)
+ 	return err;
+ }
  
--	if (fq->rq_status != BLK_STS_OK)
-+	if (fq->rq_status != BLK_STS_OK) {
- 		error = fq->rq_status;
-+		fq->rq_status = BLK_STS_OK;
++int octep_set_mac_addr(struct octep_device *oct, u8 *addr)
++{
++	struct octep_ctrl_net_h2f_req req = {};
++	struct octep_ctrl_mbox_msg msg = {};
++
++	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_MAC;
++	req.mac.cmd = OCTEP_CTRL_NET_CMD_SET;
++	memcpy(&req.mac.addr, addr, ETH_ALEN);
++
++	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
++	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_MAC_REQ_SZW;
++	msg.msg = &req;
++
++	return octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
++}
++
++int octep_set_mtu(struct octep_device *oct, int mtu)
++{
++	struct octep_ctrl_net_h2f_req req = {};
++	struct octep_ctrl_mbox_msg msg = {};
++
++	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_MTU;
++	req.mtu.cmd = OCTEP_CTRL_NET_CMD_SET;
++	req.mtu.val = mtu;
++
++	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
++	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_MTU_REQ_SZW;
++	msg.msg = &req;
++
++	return octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
++}
++
++int octep_get_if_stats(struct octep_device *oct)
++{
++	struct octep_iface_rx_stats *iface_rx_stats;
++	struct octep_iface_tx_stats *iface_tx_stats;
++	struct octep_ctrl_net_h2f_req req = {};
++	struct octep_ctrl_mbox_msg msg = {};
++	int err;
++
++	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_GET_IF_STATS;
++	req.mac.cmd = OCTEP_CTRL_NET_CMD_GET;
++	req.get_stats.offset = oct->ctrl_mbox_ifstats_offset;
++
++	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
++	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_GET_STATS_REQ_SZW;
++	msg.msg = &req;
++	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
++	if (err)
++		return err;
++
++	iface_rx_stats = (struct octep_iface_rx_stats *)(oct->ctrl_mbox.barmem +
++							 oct->ctrl_mbox_ifstats_offset);
++	iface_tx_stats = (struct octep_iface_tx_stats *)(oct->ctrl_mbox.barmem +
++							 oct->ctrl_mbox_ifstats_offset +
++							 sizeof(struct octep_iface_rx_stats)
++							);
++	memcpy(&oct->iface_rx_stats, iface_rx_stats, sizeof(struct octep_iface_rx_stats));
++	memcpy(&oct->iface_tx_stats, iface_tx_stats, sizeof(struct octep_iface_tx_stats));
++
++	return err;
++}
++
+ int octep_get_link_info(struct octep_device *oct)
+ {
+ 	struct octep_ctrl_net_h2f_req req = {};
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+index fc142a5f500b..68123cc45067 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+@@ -152,6 +152,43 @@ static netdev_tx_t octep_start_xmit(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
++/**
++ * octep_get_stats64() - Get Octeon network device statistics.
++ *
++ * @netdev: kernel network device.
++ * @stats: pointer to stats structure to be filled in.
++ */
++static void octep_get_stats64(struct net_device *netdev,
++			      struct rtnl_link_stats64 *stats)
++{
++	u64 tx_packets, tx_bytes, rx_packets, rx_bytes;
++	struct octep_device *oct = netdev_priv(netdev);
++	int q;
++
++	octep_get_if_stats(oct);
++	tx_packets = 0;
++	tx_bytes = 0;
++	rx_packets = 0;
++	rx_bytes = 0;
++	for (q = 0; q < oct->num_oqs; q++) {
++		struct octep_iq *iq = oct->iq[q];
++		struct octep_oq *oq = oct->oq[q];
++
++		tx_packets += iq->stats.instr_completed;
++		tx_bytes += iq->stats.bytes_sent;
++		rx_packets += oq->stats.packets;
++		rx_bytes += oq->stats.bytes;
 +	}
++	stats->tx_packets = tx_packets;
++	stats->tx_bytes = tx_bytes;
++	stats->rx_packets = rx_packets;
++	stats->rx_bytes = rx_bytes;
++	stats->multicast = oct->iface_rx_stats.mcast_pkts;
++	stats->rx_errors = oct->iface_rx_stats.err_pkts;
++	stats->collisions = oct->iface_tx_stats.xscol;
++	stats->tx_fifo_errors = oct->iface_tx_stats.undflw;
++}
++
+ /**
+  * octep_tx_timeout_task - work queue task to Handle Tx queue timeout.
+  *
+@@ -190,11 +227,52 @@ static void octep_tx_timeout(struct net_device *netdev, unsigned int txqueue)
+ 	queue_work(octep_wq, &oct->tx_timeout_task);
+ }
  
- 	hctx = flush_rq->mq_hctx;
- 	if (!q->elevator) {
-
++static int octep_set_mac(struct net_device *netdev, void *p)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	struct sockaddr *addr = (struct sockaddr *)p;
++	int err;
++
++	if (!is_valid_ether_addr(addr->sa_data))
++		return -EADDRNOTAVAIL;
++
++	err = octep_set_mac_addr(oct, addr->sa_data);
++	if (err)
++		return err;
++
++	memcpy(oct->mac_addr, addr->sa_data, ETH_ALEN);
++	eth_hw_addr_set(netdev, addr->sa_data);
++
++	return 0;
++}
++
++static int octep_change_mtu(struct net_device *netdev, int new_mtu)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	struct octep_iface_link_info *link_info;
++	int err = 0;
++
++	link_info = &oct->link_info;
++	if (link_info->mtu == new_mtu)
++		return 0;
++
++	err = octep_set_mtu(oct, new_mtu);
++	if (!err) {
++		oct->link_info.mtu = new_mtu;
++		netdev->mtu = new_mtu;
++	}
++
++	return err;
++}
++
+ static const struct net_device_ops octep_netdev_ops = {
+ 	.ndo_open                = octep_open,
+ 	.ndo_stop                = octep_stop,
+ 	.ndo_start_xmit          = octep_start_xmit,
++	.ndo_get_stats64         = octep_get_stats64,
+ 	.ndo_tx_timeout          = octep_tx_timeout,
++	.ndo_set_mac_address     = octep_set_mac,
++	.ndo_change_mtu          = octep_change_mtu,
+ };
+ 
+ /**
+-- 
+2.17.1
 
