@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2FFC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC88FC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239046AbiCGJ6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:58:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
+        id S239278AbiCGJ6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:58:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239476AbiCGJjp (ORCPT
+        with ESMTP id S239930AbiCGJkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D671CA5;
-        Mon,  7 Mar 2022 01:35:47 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7EC75C18;
+        Mon,  7 Mar 2022 01:36:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 833BF612A1;
-        Mon,  7 Mar 2022 09:34:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE16C36AF4;
-        Mon,  7 Mar 2022 09:34:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA1CB810BD;
+        Mon,  7 Mar 2022 09:36:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC41EC340F3;
+        Mon,  7 Mar 2022 09:36:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645689;
-        bh=E0sv/+ymdpW1t95+oxHtrZQOeK+K6NNFlNKrGTzqv20=;
+        s=korg; t=1646645801;
+        bh=4nV0Rt1hVSFqqgPnAUQQsOzvV1i7xstj0KiqKOkxUws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RSZSB4UYttSU/mKsP4fzR2+b8V8Q/wzzTLT9Z6KUbTnu430CY15iytJw0Niz6YUnM
-         ZVgvY9/ALG9ylr2k2Oq2Wi/hcGniYp9jMjLSENwCQfnHT3RRIIvTGTiQeGdWHx9dPj
-         5jaIBd//r37PLRHaNZjeQpBpUA6EjPRnsVO4btTQ=
+        b=ZnoGJU+4hIiQTErbqokR29qtOlO58B23QLZFnOTTZHtK7UqALkLRqv/EH9f88KZPZ
+         2y+fOVkMkmoX27M1oQSvSHVRUdOo9Qb4p/vy0GZWQtR33pwFUAct58JyqPd+AH9mw2
+         4Uctk1dVjJ5DOp4C248zfTgjugv4yBGQM4ESkAD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 071/105] can: gs_usb: change active_channelss type from atomic_t to u8
-Date:   Mon,  7 Mar 2022 10:19:14 +0100
-Message-Id: <20220307091646.175077940@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 039/262] ata: pata_hpt37x: fix PCI clock detection
+Date:   Mon,  7 Mar 2022 10:16:23 +0100
+Message-Id: <20220307091703.628670051@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,79 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 035b0fcf02707d3c9c2890dc1484b11aa5335eb1 upstream.
+[ Upstream commit 5f6b0f2d037c8864f20ff15311c695f65eb09db5 ]
 
-The driver uses an atomic_t variable: gs_usb:active_channels to keep
-track of the number of opened channels in order to only allocate
-memory for the URBs when this count changes from zero to one.
+The f_CNT register (at the PCI config. address 0x78) is 16-bit, not
+8-bit! The bug was there from the very start... :-(
 
-However, the driver does not decrement the counter when an error
-occurs in gs_can_open(). This issue is fixed by changing the type from
-atomic_t to u8 and by simplifying the logic accordingly.
-
-It is safe to use an u8 here because the network stack big kernel lock
-(a.k.a. rtnl_mutex) is being hold. For details, please refer to [1].
-
-[1] https://lore.kernel.org/linux-can/CAMZ6Rq+sHpiw34ijPsmp7vbUpDtJwvVtdV7CvRZJsLixjAFfrg@mail.gmail.com/T/#t
-
-Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
-Link: https://lore.kernel.org/all/20220214234814.1321599-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/gs_usb.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/ata/pata_hpt37x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -190,8 +190,8 @@ struct gs_can {
- struct gs_usb {
- 	struct gs_can *canch[GS_MAX_INTF];
- 	struct usb_anchor rx_submitted;
--	atomic_t active_channels;
- 	struct usb_device *udev;
-+	u8 active_channels;
- };
+diff --git a/drivers/ata/pata_hpt37x.c b/drivers/ata/pata_hpt37x.c
+index ae8375e9d2681..9d371859e81ed 100644
+--- a/drivers/ata/pata_hpt37x.c
++++ b/drivers/ata/pata_hpt37x.c
+@@ -964,14 +964,14 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
  
- /* 'allocate' a tx context.
-@@ -588,7 +588,7 @@ static int gs_can_open(struct net_device
- 	if (rc)
- 		return rc;
+ 	if ((freq >> 12) != 0xABCDE) {
+ 		int i;
+-		u8 sr;
++		u16 sr;
+ 		u32 total = 0;
  
--	if (atomic_add_return(1, &parent->active_channels) == 1) {
-+	if (!parent->active_channels) {
- 		for (i = 0; i < GS_MAX_RX_URBS; i++) {
- 			struct urb *urb;
- 			u8 *buf;
-@@ -689,6 +689,7 @@ static int gs_can_open(struct net_device
+ 		pr_warn("BIOS has not set timing clocks\n");
  
- 	dev->can.state = CAN_STATE_ERROR_ACTIVE;
- 
-+	parent->active_channels++;
- 	if (!(dev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
- 		netif_start_queue(netdev);
- 
-@@ -704,7 +705,8 @@ static int gs_can_close(struct net_devic
- 	netif_stop_queue(netdev);
- 
- 	/* Stop polling */
--	if (atomic_dec_and_test(&parent->active_channels))
-+	parent->active_channels--;
-+	if (!parent->active_channels)
- 		usb_kill_anchored_urbs(&parent->rx_submitted);
- 
- 	/* Stop sending URBs */
-@@ -983,8 +985,6 @@ static int gs_usb_probe(struct usb_inter
- 
- 	init_usb_anchor(&dev->rx_submitted);
- 
--	atomic_set(&dev->active_channels, 0);
--
- 	usb_set_intfdata(intf, dev);
- 	dev->udev = interface_to_usbdev(intf);
- 
+ 		/* This is the process the HPT371 BIOS is reported to use */
+ 		for (i = 0; i < 128; i++) {
+-			pci_read_config_byte(dev, 0x78, &sr);
++			pci_read_config_word(dev, 0x78, &sr);
+ 			total += sr & 0x1FF;
+ 			udelay(15);
+ 		}
+-- 
+2.34.1
+
 
 
