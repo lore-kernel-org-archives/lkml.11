@@ -2,157 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E28DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237656AbiCGKn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:43:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
+        id S240764AbiCGKoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:44:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242986AbiCGKcr (ORCPT
+        with ESMTP id S237112AbiCGKdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:32:47 -0500
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B89D75600
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:04:31 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 55757C0013;
-        Mon,  7 Mar 2022 10:03:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646647439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b4uHhj1CCnWZRfuCOfp7/fI/39ufjP0eZTALccVmhWQ=;
-        b=MztK9YvLBUH4+wVXdxK6nOXMPfVOI20sAv/B6KNgGuEOTfdLW9NgvtQM8s7PQWRlTvzd0s
-        9msa//FvEya7xsl4NTWSr8mCJBXIbHjgXT7aStZHE9YkwDvdyLy8XVv9uyyU23o0Gf0+9l
-        jzU6l6IClC8p6RZVHmHjIokpclErEf7hGHPkGv3SmEfIVAPCJxWl8nBFTFJAJda7KwVpX/
-        y3xydcno1zLCl4rURCaEEvmM/gd0T495TJRRiRltSsf2AEahBeBqYVm7vG+XDNyxSctMwq
-        RHBl2KE1ilMCzugA0wGKUF1v/rzplhGC1CzeQf0XCcuHUudzKE+E/qxyiWX0iw==
-Date:   Mon, 7 Mar 2022 11:03:57 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Roger Quadros <rogerq@kernel.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        krzysztof.kozlowski@canonical.com, vigneshr@ti.com, nm@ti.com,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mtd: rawnand: omap2: Actually prevent invalid
- configuration and build error
-Message-ID: <20220307110357.20d50176@xps13>
-In-Reply-To: <6c09de15-1ab2-5ca8-7003-69ff3f7c4dc5@kernel.org>
-References: <20220220004415.GA1519274@roeck-us.net>
-        <4bbe337e-8cd8-a4d6-303d-d5aa21bee2e0@infradead.org>
-        <20220304165451.0129012e@xps13>
-        <6c09de15-1ab2-5ca8-7003-69ff3f7c4dc5@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 7 Mar 2022 05:33:05 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C45795A0C;
+        Mon,  7 Mar 2022 02:04:34 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 0F2221F438C9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646647464;
+        bh=akkWSIz129iQdVE9EdcCfmhbLkwDOC2Ls9BA6Lqns8o=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=JHetwUEXVVtlHNdaWkTB6iB5i+xvG7UClAYqgaw9WdExhIDZIL/E7/GZBs6uYKzb8
+         O69agPkVKq/6eYLCL/eVhcAYxVT5Ol9LWHCP5AvHgP8LEFnRWkC/MXFYqt+cEBzM93
+         D5zNh5ScTN6moPOIBfv9DS05SiyAFwlHXFbbHc0a7ofBxr/tKjxK+HfJtYqlrisfee
+         irpfEhr43HUsMsbdcrnidtxcF5VDUDZEzL8vbucRIvJT5tu4cWOJ8ybloHnXOpSUvw
+         YityDllj4q2LS8vtuZpcb0kPWd9z4Bmo3zr2+qLuRS11zFunvn5OyoDYaUM/gDtxQc
+         /gHtBgCu+agwA==
+Message-ID: <1abbd1bc-58b7-ee30-76e4-e60a842de433@collabora.com>
+Date:   Mon, 7 Mar 2022 11:04:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v16 1/8] dt-bindings: soc: mediatek: move out common
+ module from display folder
+Content-Language: en-US
+To:     "jason-jh.lin" <jason-jh.lin@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        hsinyi@chromium.org, fshao@chromium.org, moudy.ho@mediatek.com,
+        roy-cw.yeh@mediatek.com, CK Hu <ck.hu@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>, nancy.lin@mediatek.com,
+        singo.chang@mediatek.com, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        jason-jh lin <jason-jh.lin@mediatek.corp-partner.google.com>
+References: <20220307032859.3275-1-jason-jh.lin@mediatek.com>
+ <20220307032859.3275-2-jason-jh.lin@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220307032859.3275-2-jason-jh.lin@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Roger,
+Il 07/03/22 04:28, jason-jh.lin ha scritto:
+> From: jason-jh lin <jason-jh.lin@mediatek.corp-partner.google.com>
+> 
+> AAL, COLOR, CCORR, MUTEX, WDMA could be used by other modules,
+> such as MDP, so move their binding document into the common folder.
+> 
+> Signed-off-by: jason-jh lin <jason-jh.lin@mediatek.corp-partner.google.com>
 
-rogerq@kernel.org wrote on Sat, 5 Mar 2022 00:50:14 +0200:
+Hello jason-jh,
 
-> Hi Miquel,
->=20
-> On 04/03/2022 17:54, Miquel Raynal wrote:
-> > Hi Guenter, Roger,
-> >=20
-> > rdunlap@infradead.org wrote on Sat, 26 Feb 2022 22:55:28 -0800:
-> >  =20
-> >> On 2/19/22 16:44, Guenter Roeck wrote: =20
-> >>> On Sat, Feb 19, 2022 at 09:36:00PM +0200, Roger Quadros wrote:   =20
-> >>>> The root of the problem is that we are selecting symbols that have
-> >>>> dependencies. This can cause random configurations that can fail.
-> >>>> The cleanest solution is to avoid using select.
-> >>>>
-> >>>> This driver uses interfaces from the OMAP_GPMC driver so we have to
-> >>>> depend on it instead.
-> >>>>
-> >>>> Fixes: 4cd335dae3cf ("mtd: rawnand: omap2: Prevent invalid configura=
-tion and build error")
-> >>>> Signed-off-by: Roger Quadros <rogerq@kernel.org>   =20
-> >>>
-> >>> Tested-by: Guenter Roeck <linux@roeck-us.net>   =20
-> >>
-> >> Tested-by: Randy Dunlap <rdunlap@infradead.org> =20
-> >=20
-> > Sorry for noticing that just now, but there is still a problem with
-> > this patch: we now always compile-in the OMAP_GPMC driver whenever we
-> > need the NAND controller, even though it is not needed. This grows the
-> > kernel for no reason. =20
->=20
-> Sorry, I did not understand what you meant.
->=20
-> We no longer explicitly enable OMAP_GPMC since we dropped the "select".
-> This fixes all build issues that were reported recently.
->=20
-> MTD_NAND_OMAP2 will not be enabled if OMAP_GPMC is not since we added
-> the "depends on". This fixes the original build issue that we started to
-> fix with select initially.
+I understand that these dt-bindings can eventually be reused by MDP3, and
+this change is welcome, as duplication wouldn't be sane, however, this is
+not the right series for that to happen.
 
-Yes, this side is fine.
+If you want to move these bindings around, you should do that in the patch
+series that actually also adds the compatibles for MDP3 in these modules.
 
-In the initial commit, you proposed:
+If there's no MDP3-specific compatible for these modules, then you should
+not move them from display, as this is documentation for mediatek-drm and
+it's (currently) the only provider of these.
 
---- a/drivers/mtd/nand/raw/Kconfig
-+++ b/drivers/mtd/nand/raw/Kconfig
-@@ -42,7 +42,8 @@ config MTD_NAND_OMAP2
-        tristate "OMAP2, OMAP3, OMAP4 and Keystone NAND controller"
-        depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TE=
-ST
-        depends on HAS_IOMEM
-+       select OMAP_GPMC if ARCH_K3
+Please remove this patch from the vdosys0 series for MT8195 because it is
+not adding any compatible that justifies moving these YAML around.
 
-Which creates a dependency over OMAP_GPMC only for a single
-architecture. Which means that other OMAP platforms do not necessarily
-need OMAP_GPMC for the NAND controller to work. Now, you propose:
+Regards,
+Angelo
 
---- a/drivers/mtd/nand/raw/Kconfig
-+++ b/drivers/mtd/nand/raw/Kconfig
-@@ -42,8 +42,7 @@ config MTD_NAND_OMAP2
- 	tristate "OMAP2, OMAP3, OMAP4 and Keystone NAND controller"
- 	depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
- 	depends on HAS_IOMEM
-	depends on OMAP_GPMC
+> ---
+>   .../{display => soc}/mediatek/mediatek,aal.yaml     | 13 ++++---------
+>   .../{display => soc}/mediatek/mediatek,ccorr.yaml   | 13 ++++---------
+>   .../{display => soc}/mediatek/mediatek,color.yaml   | 13 ++++---------
+>   .../{display => soc}/mediatek/mediatek,mutex.yaml   | 12 +++---------
+>   .../{display => soc}/mediatek/mediatek,wdma.yaml    |  9 ++-------
+>   5 files changed, 17 insertions(+), 43 deletions(-)
+>   rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,aal.yaml (81%)
+>   rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,ccorr.yaml (80%)
+>   rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,color.yaml (83%)
+>   rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,mutex.yaml (82%)
+>   rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,wdma.yaml (85%)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,aal.yaml
+> similarity index 81%
+> rename from Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+> rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,aal.yaml
+> index 4fdc9b3283b0..08934b10b54e 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,aal.yaml
+> @@ -1,22 +1,17 @@
+>   # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   %YAML 1.2
+>   ---
+> -$id: http://devicetree.org/schemas/display/mediatek/mediatek,aal.yaml#
+> +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,aal.yaml#
+>   $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   
+> -title: Mediatek display adaptive ambient light processor
+> +title: Mediatek adaptive ambient light processor
+>   
+>   maintainers:
+> -  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> -  - Philipp Zabel <p.zabel@pengutronix.de>
+> +  - Matthias Brugger <matthias.bgg@gmail.com>
+>   
+>   description: |
+> -  Mediatek display adaptive ambient light processor, namely AAL,
+> +  Mediatek adaptive ambient light processor, namely AAL,
+>     is responsible for backlight power saving and sunlight visibility improving.
+> -  AAL device node must be siblings to the central MMSYS_CONFIG node.
+> -  For a description of the MMSYS_CONFIG binding, see
+> -  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> -  for details.
+>   
+>   properties:
+>     compatible:
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+> similarity index 80%
+> rename from Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+> rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+> index 0ed53b6238f0..bf52b7b53475 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+> @@ -1,22 +1,17 @@
+>   # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   %YAML 1.2
+>   ---
+> -$id: http://devicetree.org/schemas/display/mediatek/mediatek,ccorr.yaml#
+> +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,ccorr.yaml#
+>   $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   
+> -title: Mediatek display color correction
+> +title: Mediatek color correction
+>   
+>   maintainers:
+> -  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> -  - Philipp Zabel <p.zabel@pengutronix.de>
+> +  - Matthias Brugger <matthias.bgg@gmail.com>
+>   
+>   description: |
+> -  Mediatek display color correction, namely CCORR, reproduces correct color
+> +  Mediatek color correction, namely CCORR, reproduces correct color
+>     on panels with different color gamut.
+> -  CCORR device node must be siblings to the central MMSYS_CONFIG node.
+> -  For a description of the MMSYS_CONFIG binding, see
+> -  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> -  for details.
+>   
+>   properties:
+>     compatible:
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,color.yaml
+> similarity index 83%
+> rename from Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+> rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,color.yaml
+> index 3ad842eb5668..91ff2adcf390 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,color.yaml
+> @@ -1,23 +1,18 @@
+>   # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   %YAML 1.2
+>   ---
+> -$id: http://devicetree.org/schemas/display/mediatek/mediatek,color.yaml#
+> +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,color.yaml#
+>   $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   
+> -title: Mediatek display color processor
+> +title: Mediatek color processor
+>   
+>   maintainers:
+> -  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> -  - Philipp Zabel <p.zabel@pengutronix.de>
+> +  - Matthias Brugger <matthias.bgg@gmail.com>
+>   
+>   description: |
+> -  Mediatek display color processor, namely COLOR, provides hue, luma and
+> +  Mediatek color processor, namely COLOR, provides hue, luma and
+>     saturation adjustments to get better picture quality and to have one panel
+>     resemble the other in their output characteristics.
+> -  COLOR device node must be siblings to the central MMSYS_CONFIG node.
+> -  For a description of the MMSYS_CONFIG binding, see
+> -  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> -  for details.
+>   
+>   properties:
+>     compatible:
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
+> similarity index 82%
+> rename from Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+> rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
+> index 00e6a1041a9b..d334050105db 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
+> @@ -1,25 +1,19 @@
+>   # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   %YAML 1.2
+>   ---
+> -$id: http://devicetree.org/schemas/display/mediatek/mediatek,mutex.yaml#
+> +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mutex.yaml#
+>   $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   
+>   title: Mediatek mutex
+>   
+>   maintainers:
+> -  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> -  - Philipp Zabel <p.zabel@pengutronix.de>
+> +  - Matthias Brugger <matthias.bgg@gmail.com>
+>   
+>   description: |
+>     Mediatek mutex, namely MUTEX, is used to send the triggers signals called
+> -  Start Of Frame (SOF) / End Of Frame (EOF) to each sub-modules on the display
+> -  data path or MDP data path.
+> +  Start Of Frame(SOF) / End Of Frame(EOF) to each sub-modules on the data path.
+>     In some SoC, such as mt2701, MUTEX could be a hardware mutex which protects
+>     the shadow register.
+> -  MUTEX device node must be siblings to the central MMSYS_CONFIG node.
+> -  For a description of the MMSYS_CONFIG binding, see
+> -  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> -  for details.
+>   
+>   properties:
+>     compatible:
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+> similarity index 85%
+> rename from Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml
+> rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+> index 7d7cc1ab526b..a6f9e1b3268d 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+> @@ -1,22 +1,17 @@
+>   # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   %YAML 1.2
+>   ---
+> -$id: http://devicetree.org/schemas/display/mediatek/mediatek,wdma.yaml#
+> +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,wdma.yaml#
+>   $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   
+>   title: Mediatek Write Direct Memory Access
+>   
+>   maintainers:
+> -  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> -  - Philipp Zabel <p.zabel@pengutronix.de>
+> +  - Matthias Brugger <matthias.bgg@gmail.com>
+>   
+>   description: |
+>     Mediatek Write Direct Memory Access(WDMA) component used to write
+>     the data into DMA.
+> -  WDMA device node must be siblings to the central MMSYS_CONFIG node.
+> -  For a description of the MMSYS_CONFIG binding, see
+> -  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+> -  for details.
+>   
+>   properties:
+>     compatible:
 
-This means any of the other OMAP architectures will compile the GPMC
-driver even though they might not need it, which would unnecessarily
-increase the kernel size.
-
-Am I missing something?
-
-> > In fact, Roger once said:
-> >=20
-> > 	"We will figure out how to enable OMAP_GPMC for K3 architecture
-> > 	some other way."
-> >=20
-> > It turns out this is not what was finally proposed. Could we try yet
-> > another solution? =20
->=20
-> This issue is still present i.e. we cannot enable MTD_NAND_OMAP2 driver on
-> K3 platform since OMAP_GPMC config is hidden and not select-able
-> by user or defconfig file.
->=20
-> But it is not yet a deal breaker since NAND on K3 is not yet enabled upst=
-ream.
->=20
-> For this I think OMAP_GPMC has to be a visible config entry and select-ab=
-le
-> from a defconfig file as I had done initially [1].
->=20
-> Now we have a lot of explanation to write as to why we need to do it ;)
-
-We certainly do :)
-
-> [1] - https://lore.kernel.org/lkml/20211123102607.13002-3-rogerq@kernel.o=
-rg/
->=20
-
-Thanks,
-Miqu=C3=A8l
