@@ -2,113 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 749A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF16AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244045AbiCGQPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:15:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
+        id S244050AbiCGQQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244028AbiCGQPU (ORCPT
+        with ESMTP id S231273AbiCGQQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:15:20 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364193BF9C;
-        Mon,  7 Mar 2022 08:14:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646669666; x=1678205666;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9lxkY6esalBBvJEOAscFPgv2UXaiF/EqM4Jnw+GpDxE=;
-  b=d0ZK+Pr78qIyWV/NwaqPufVWLgofrGExRWNszCkAiDMIAWJUyfdxEIP8
-   nos+onjXTN0/lz6k2tgI0DXOktpyD9Nd2lGMLKI/BnxqanysLpkGsMn6+
-   wXPqVW9JhWUn6XQDM6Zj+pTrJUoKgRFjJEEWqHvVV/BmrNTmV+3yJ2XgT
-   e10p1FZPyzKcUcFKmVYwJXRkJZnvpT6AJWu44xf0ua5PJUVK1pf4maFMc
-   IdMLl1dvzY1ETzPuZztcJ/8oRXhkgT5j02RNV8cl+guA+D7mzKGkIkqLj
-   U6SkQuim9XSbMt3VxE5QDEYW5WCzB5kvw/uaZ8Q21rOI6dcfS7p1DHu+m
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="340861379"
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="340861379"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 08:14:25 -0800
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="643298544"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 08:14:22 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRFzN-00CrBy-PE;
-        Mon, 07 Mar 2022 18:13:37 +0200
-Date:   Mon, 7 Mar 2022 18:13:37 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v4 7/7] usb: typec: mux: Add On Semi fsa4480 driver
-Message-ID: <YiYvMf5X+S0WZ9lO@smile.fi.intel.com>
-References: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
- <20220307034040.1111107-7-bjorn.andersson@linaro.org>
- <YiXbg4QwgIgLh3LW@smile.fi.intel.com>
- <YiYbOQpX4+fP8S1W@ripper>
+        Mon, 7 Mar 2022 11:16:21 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E66C4199C;
+        Mon,  7 Mar 2022 08:15:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646669726; x=1678205726;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1tgZ7PNrCUFybKd/JLjq33KO6voyiECva9usYrk8k+g=;
+  b=QSKcwE0aJyUjvrX+Vj6/bHTxMka3rOqUsMXZrVBVBqo9sr0lgIFvli0d
+   dcLX89udbqu/VPyyo5qTbEhGD8bjrRzD6C85nBZfPbJPo5DS4DIRsCI7j
+   bDynEB1jP54eT1k/hS4Esn19z92x2jZcgMZDKzwuc4Hzn6vWcpCACWSnn
+   /H4Yq4+k8R67VoKZrELo5projiKjyJA15wMsIc09Va2hu29pNldGZe18T
+   Qo1Tn2asfniSDjnAaNc1N65+z+uTNsOoUPnQgXnTyI+ZuF4vKdzYaOdGx
+   q5JIKYiHsRY2+Ed31wcyalglYYiNFoHEy0/OHuQVprRSoWArWACKPOhuO
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
+   d="scan'208";a="164796989"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 09:15:26 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Mar 2022 09:15:26 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 09:15:22 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>
+Subject: [PATCH net-next 0/2] net: phy: lan87xx: use genphy_read_master_slave function
+Date:   Mon, 7 Mar 2022 21:45:13 +0530
+Message-ID: <20220307161515.14970-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiYbOQpX4+fP8S1W@ripper>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 06:48:25AM -0800, Bjorn Andersson wrote:
-> On Mon 07 Mar 02:16 PST 2022, Andy Shevchenko wrote:
-> > On Sun, Mar 06, 2022 at 07:40:40PM -0800, Bjorn Andersson wrote:
+LAN87xx T1 Phy has the same register field as gigabit phy for reading the
+master slave configuration. But the genphy_read_master_slave function has a
+check of gigabit phy. So refactored the function in such a way, moved the speed
+check to the genphy_read_status function. Analyzed the nxp-tja11xx function for
+refactoring, but the register for configuring master/slave is nxp specific
+which is not extended phy register.
+And analyzed the reusing genphy_setup_master_slave, but for LAN87xx
+MASTER_ENABLE is always 1 and Preferred state is always 0. So, I didn't try to
+change it.
 
-...
+Arun Ramadoss (2):
+  net: phy: exported the genphy_read_master_slave function
+  net: phy: lan87xx: use genphy_read_master_slave in read_status
 
-> > > +		/* 15us to allow the SBU switch to turn off */
-> > > +		usleep_range(15, 1000);
-> > 
-> > This is quite unusual range.
-> > 
-> > If you are fine with the long delay, why to stress the system on it?
-> > Otherwise the use of 1000 is unclear.
-> > 
-> > That said, I would expect one of the below:
-> > 
-> > 		usleep_range(15, 30);
-> > 		usleep_range(500, 1000);
-> 
-> Glad you asked about that, as you say the typical form is to keep the
-> range within 2x of the lower value, or perhaps lower + 5.
-> 
-> But if the purpose is to specify a minimum time and then give a max to
-> give the system some flexibility in it's decision of when to wake up.
-> And in situations such as this, we're talking about someone connecting a
-> cable, so we're in "no rush" and I picked the completely arbitrary 1ms
-> as the max.
-> 
-> Do you see any drawback of this much higher number? (Other than it
-> looking "wrong")
+ drivers/net/phy/microchip_t1.c | 30 +-----------------------------
+ drivers/net/phy/phy_device.c   | 19 +++++++++----------
+ include/linux/phy.h            |  1 +
+ 3 files changed, 11 insertions(+), 39 deletions(-)
 
-I see the drawback of low number. The 1000 makes not much sense to me with
-the minimum 66x times less. If there is no rush, use some reasonable values,
-what about
 
-		usleep_range(100, 1000);
-
-? 10x is way better than 66x.
-
+base-commit: 57d29a2935c9aab0aaef6264bf6a58aad3859e7c
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.33.0
 
