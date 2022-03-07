@@ -2,173 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A33C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 087B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244423AbiCGU5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:57:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
+        id S236545AbiCGU60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:58:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245475AbiCGU5n (ORCPT
+        with ESMTP id S237444AbiCGU5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:57:43 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F36C37029
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:56:47 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nRKM6-0002DJ-9K; Mon, 07 Mar 2022 21:53:22 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v7 10/13] riscv: add cpufeature handling via alternatives
-Date:   Mon,  7 Mar 2022 21:53:07 +0100
-Message-Id: <20220307205310.1905628-11-heiko@sntech.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220307205310.1905628-1-heiko@sntech.de>
-References: <20220307205310.1905628-1-heiko@sntech.de>
+        Mon, 7 Mar 2022 15:57:45 -0500
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A5F2C12C;
+        Mon,  7 Mar 2022 12:56:50 -0800 (PST)
+Received: by mail-oi1-f176.google.com with SMTP id z8so13291574oix.3;
+        Mon, 07 Mar 2022 12:56:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N3tlFPBMHtWcn0iYUzj3qnhmmykFEumeuwZz6QLguzw=;
+        b=ERF5/HkofH5dCafGcarj8X6AHVhWkZLsyWg2aTHsHyN0jW6Vy/+xJ7d6noPPa+JHbw
+         7lq0bLLczc4pjiO4+xIRK7X9VCW5w4gaMTiEr0K69ol+IJW+EOqemQUUQHAE+t43Nhn0
+         Msx3Yfv4RwTpbacOK5xo9LmXNcv7tX63dkwp8uIxMYCCNe/RRY4iqcfo3kE3JvZZ0lFL
+         Le41/P6JkD4aD3Huh+AtSbrnqJTtlvHsB28ebKrPcV+LyUQ14KGzp127a4ys7qyj4y4i
+         oMldDo56FaSG5fngNneoA8kUBbbP+3ByCXv6gkCKVDdhJQYu/gmurObK05S/YnUuAP8V
+         dM1A==
+X-Gm-Message-State: AOAM531XyIYteqGIp5E3BmkLRcppMrSEvMjCjTQu9d68tNweRMyEDIm3
+        pBAN5kWW0MaNBqqvelHSnQ==
+X-Google-Smtp-Source: ABdhPJzDLCgdPyR34NOXygDObosWM9xRC5QKLx/VwasrcQ1zel824ZI6Ao1CL/ffw63L2Rx5CojpFQ==
+X-Received: by 2002:a05:6808:159d:b0:2d9:a9a8:f896 with SMTP id t29-20020a056808159d00b002d9a9a8f896mr562260oiw.171.1646686609939;
+        Mon, 07 Mar 2022 12:56:49 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05687036c700b000da4bcdae42sm1892045oak.13.2022.03.07.12.56.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 12:56:49 -0800 (PST)
+Received: (nullmailer pid 3208776 invoked by uid 1000);
+        Mon, 07 Mar 2022 20:56:48 -0000
+Date:   Mon, 7 Mar 2022 14:56:48 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: dt-bindings: update Krzysztof Kozlowski's
+ email
+Message-ID: <YiZxkKrngFonoXH5@robh.at.kernel.org>
+References: <20220307172901.156929-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307172901.156929-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some cpufeatures should be handled via the alternatives mechanism
-to not incur penalties on unsupporting variants.
+On Mon, 07 Mar 2022 18:29:01 +0100, Krzysztof Kozlowski wrote:
+> Use Krzysztof Kozlowski's @kernel.org account in dt-bindings maintainer
+> entry.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> 
+> ---
+> 
+> Hi Rob,
+> 
+> Could you take this one directly (optionally squash with the patch
+> adding me as maintainer)?
+> 
+> My email address also appears in the bindings. For now mailmap will
+> handle it (see my other commit). I will change it after merge window,
+> because some of the bindings are in separate for-next branches.
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-So add a mechanism to handle these similar to cpu erratas.
-
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
- arch/riscv/include/asm/alternative.h |  3 ++
- arch/riscv/include/asm/errata_list.h |  2 +
- arch/riscv/kernel/alternative.c      |  2 +
- arch/riscv/kernel/cpufeature.c       | 57 +++++++++++++++++++++++++++-
- 4 files changed, 63 insertions(+), 1 deletion(-)
-
-diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
-index f0657b1b3174..cf3b22173834 100644
---- a/arch/riscv/include/asm/alternative.h
-+++ b/arch/riscv/include/asm/alternative.h
-@@ -39,5 +39,8 @@ struct errata_checkfunc_id {
- void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
- 			      unsigned long archid, unsigned long impid,
- 			      unsigned int stage);
-+
-+void riscv_cpufeature_patch_func(struct alt_entry *begin, struct alt_entry *end,
-+				 unsigned int stage);
- #endif
- #endif
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index 5f1046e82d9f..6b95bd9aee82 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -14,6 +14,8 @@
- #define	ERRATA_SIFIVE_NUMBER 2
- #endif
- 
-+#define	CPUFEATURE_NUMBER 0
-+
- #ifdef __ASSEMBLY__
- 
- #define ALT_INSN_FAULT(x)						\
-diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
-index 223770b3945c..e6c9de9f9ba6 100644
---- a/arch/riscv/kernel/alternative.c
-+++ b/arch/riscv/kernel/alternative.c
-@@ -63,6 +63,8 @@ static void __init_or_module _apply_alternatives(struct alt_entry *begin,
- 						 struct alt_entry *end,
- 						 unsigned int stage)
- {
-+	riscv_cpufeature_patch_func(begin, end, stage);
-+
- 	if (!vendor_patch_func)
- 		return;
- 
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index f3a4b0619aa0..92d4b4c25d47 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -8,9 +8,14 @@
- 
- #include <linux/bitmap.h>
- #include <linux/ctype.h>
-+#include <linux/module.h>
- #include <linux/of.h>
--#include <asm/processor.h>
-+#include <asm/alternative.h>
-+#include <asm/errata_list.h>
- #include <asm/hwcap.h>
-+#include <asm/patch.h>
-+#include <asm/pgtable.h>
-+#include <asm/processor.h>
- #include <asm/smp.h>
- #include <asm/switch_to.h>
- 
-@@ -237,3 +242,53 @@ void __init riscv_fill_hwcap(void)
- 		static_branch_enable(&cpu_hwcap_fpu);
- #endif
- }
-+
-+struct cpufeature_info {
-+	char name[ERRATA_STRING_LENGTH_MAX];
-+	bool (*check_func)(unsigned int stage);
-+};
-+
-+static const struct cpufeature_info __initdata_or_module cpufeature_list[CPUFEATURE_NUMBER] = {
-+};
-+
-+static u32 __init_or_module cpufeature_probe(unsigned int stage)
-+{
-+	const struct cpufeature_info *info;
-+	u32 cpu_req_feature = 0;
-+	int idx;
-+
-+	for (idx = 0; idx < CPUFEATURE_NUMBER; idx++) {
-+		info = &cpufeature_list[idx];
-+
-+		if (info->check_func(stage))
-+			cpu_req_feature |= (1U << idx);
-+	}
-+
-+	return cpu_req_feature;
-+}
-+
-+void __init_or_module riscv_cpufeature_patch_func(struct alt_entry *begin,
-+						  struct alt_entry *end,
-+						  unsigned int stage)
-+{
-+	u32 cpu_req_feature = cpufeature_probe(stage);
-+	u32 cpu_apply_feature = 0;
-+	struct alt_entry *alt;
-+	u32 tmp;
-+
-+	for (alt = begin; alt < end; alt++) {
-+		if (alt->vendor_id != 0)
-+			continue;
-+		if (alt->errata_id >= CPUFEATURE_NUMBER) {
-+			WARN(1, "This feature id:%d is not in kernel cpufeature list",
-+				alt->errata_id);
-+			continue;
-+		}
-+
-+		tmp = (1U << alt->errata_id);
-+		if (cpu_req_feature & tmp) {
-+			patch_text_nosync(alt->old_ptr, alt->alt_ptr, alt->alt_len);
-+			cpu_apply_feature |= tmp;
-+		}
-+	}
-+}
--- 
-2.30.2
-
+Applied, thanks!
