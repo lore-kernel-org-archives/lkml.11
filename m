@@ -2,210 +2,577 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E680DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A29C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237956AbiCGKvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:51:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
+        id S241553AbiCGKvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241206AbiCGKrQ (ORCPT
+        with ESMTP id S242309AbiCGKtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:47:16 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C9125DB;
-        Mon,  7 Mar 2022 02:07:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646647655; x=1678183655;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9sVz8A6/3pKzsSyKWMfc35MVS+ww7R2A8G94llrGlNU=;
-  b=nbeELro5Oddf2n7a/b+GXTDV5/ZDmH02D3X+DFYyiwI4g/BjJL7DJ/7b
-   Ov4yJTtyRg3T26SE6btne9FO4sIjx3uo73jwjQlIYxq0wTbpOCt1OZcil
-   RxPYan2TygvVvDCr8k4F9LnJVKB9PAWQGkbJqDP+i+GDRYDm0d5DFl1nj
-   fcD3pDSrlAJaXL8f4jEfHY9RaX5Sts70EV0Tyt5RuvR+k3IfY0Y+yZLhw
-   wULo8Z733UQLIxZjxxu7DmJrgk8U9rCb93S6EyyNmAIcY01p2zvXWWuZY
-   Yz8vIfW8AXwK3n6oA2t8D+Icbnmoxj6omDNHLNQtVxFw6fPcu8+FwXe+O
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
-   d="scan'208";a="88045533"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:06:11 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 03:06:02 -0700
-Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:05:59 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <lars@metafoo.de>, <broonie@kernel.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH v2 2/6] ASoC: dt-bindings: Document Microchip's PDMC
-Date:   Mon, 7 Mar 2022 12:04:24 +0200
-Message-ID: <20220307100428.2227511-3-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
-References: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Mon, 7 Mar 2022 05:49:00 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B91369D1;
+        Mon,  7 Mar 2022 02:08:39 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id 6so8606158pgg.0;
+        Mon, 07 Mar 2022 02:08:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=ufetOI9Ly8/LGJGPsU1o7i/HJNenI68BeElXdehsn3I=;
+        b=LWCcEDjG5GLQEsdEXzjNoNjD83EEud8J0pHymZc/S6CfYmSOMxf+6pvrZgX/jSg/2H
+         Ox1LozeLvDWfELNH3VO04RUjeWX1oJAqagHfrcgztz3yo2TEBq5rE7zeOXMRdrKZ22ze
+         MvyuIuBqFBKU8fGtq7CrSJGdMtpobc5OeO5hlClC3gBZPu/JMjOICdgxUJjzjl5GJCuR
+         vvQoBb6blfdwmTcLPW9lUoU/Xwl0xeoar/E58SmdoctEpGbdgpta5owdBEzU2z0Gb7cS
+         +kQoKPS9kQxAO+0HhDnM8VzZGbzo5J3a8s7/bqXHzfDqqxLEndwhRZ7NbBaI4jVlpPDT
+         fSPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=ufetOI9Ly8/LGJGPsU1o7i/HJNenI68BeElXdehsn3I=;
+        b=jbszltqOadiM4Z439NCGXmjJit/gCHax6/+e9Rrygb5O4whut4/FK4G6MrlxYgegov
+         Lm7BTGWeWQ+EMZ42j+Nj+eAT1BB+ZO6aq6HmP2XWgYGTucqp6KXuPmy75iMLgmtZ8I0p
+         dWX2U5iHaOJL1eJ6Ks0nKBYbRhOslvYbsZdpqp4r5yGHGvSd7FfgGCh6a7KVg5EWHK8w
+         BWiPaWXKvQGhW2q02KmhLWL58rDPiUGMGAq8f8ryWEZtDmrZnh4oxGEvegd4ZUWyx2q0
+         yRbOcFrw4EsXH6cjK5Qe2FbFLhfEoMhK+xCtmVRzkCUIXlO7GTRVNGnIxahb8EmeB7l7
+         tmtQ==
+X-Gm-Message-State: AOAM530VphwiCAuEyHqjPoSHZuuG9xjSZmqQgG7I7Jd+mZe3krm0v/Pk
+        /eFEf4KIQ1oFNlWE7uZkAHA=
+X-Google-Smtp-Source: ABdhPJzwX4PkQ7iD/njumM/d9vLcuLuNeSKIaJLngu3r6eOcTwi7EnTYbW3qqiLvrnxrPmCjtgkt1g==
+X-Received: by 2002:a63:491b:0:b0:373:cf6d:51c8 with SMTP id w27-20020a63491b000000b00373cf6d51c8mr9165804pga.250.1646647718968;
+        Mon, 07 Mar 2022 02:08:38 -0800 (PST)
+Received: from localhost.localdomain ([2402:7500:486:4335:5d3f:ee29:17d3:65af])
+        by smtp.gmail.com with ESMTPSA id n22-20020a056a0007d600b004f3ba7c23e2sm15140125pfu.37.2022.03.07.02.08.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Mar 2022 02:08:38 -0800 (PST)
+From:   cy_huang <u0084500@gmail.com>
+To:     broonie@kernel.org, robh+dt@kernel.org
+Cc:     lgirdwood@gmail.com, cy_huang@richtek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 2/2] regulator: rt5190a: Add support for Richtek RT5190A PMIC
+Date:   Mon,  7 Mar 2022 18:08:24 +0800
+Message-Id: <1646647704-2331-3-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1646647704-2331-1-git-send-email-u0084500@gmail.com>
+References: <1646647704-2331-1-git-send-email-u0084500@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for the new Microchip PDMC embedded in sama7g5 SoCs.
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Add support for Richtek RT5190A PMIC.
+
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
 ---
+ drivers/regulator/Kconfig             |  10 +
+ drivers/regulator/Makefile            |   1 +
+ drivers/regulator/rt5190a-regulator.c | 461 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 472 insertions(+)
+ create mode 100644 drivers/regulator/rt5190a-regulator.c
 
-Changes in v2:
- - renamed patch from 'ASoC: add DT bindings for Microchip PDMC' to
-   'ASoC: dt-bindings: Document Microchip's PDMC';
- - renamed yaml file from 'mchp,pdmc.yaml' to 'microchip,pdmc.yaml';
- - used imperative mode in commit description;
- - renamed mchp,pdmc.h to microchip,pdmc.h;
- - fixed 'title' to represent HW;
- - made 'compatible' first property;
- - s/microhpone/microphone;
- - none name in example set to 'sound';
-
- .../bindings/sound/microchip,pdmc.yaml        | 99 +++++++++++++++++++
- include/dt-bindings/sound/microchip,pdmc.h    | 13 +++
- 2 files changed, 112 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
- create mode 100644 include/dt-bindings/sound/microchip,pdmc.h
-
-diff --git a/Documentation/devicetree/bindings/sound/microchip,pdmc.yaml b/Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index 1c35fed2..850e954 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -1046,6 +1046,16 @@ config REGULATOR_RT5033
+ 	  RT5033 PMIC. The device supports multiple regulators like
+ 	  current source, LDO and Buck.
+ 
++config REGULATOR_RT5190A
++	tristate "Richtek RT5190A PMIC"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	  This adds support for voltage regulator in Richtek RT5190A PMIC.
++	  It integratas 1 channel buck controller, 3 channels high efficiency
++	  buck converters, 1 LDO, mute AC OFF depop function, with the general
++	  I2C control interface.
++
+ config REGULATOR_RT6160
+ 	tristate "Richtek RT6160 BuckBoost voltage regulator"
+ 	depends on I2C
+diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
+index 2e1b087..28d816a9 100644
+--- a/drivers/regulator/Makefile
++++ b/drivers/regulator/Makefile
+@@ -126,6 +126,7 @@ obj-$(CONFIG_REGULATOR_ROHM)	+= rohm-regulator.o
+ obj-$(CONFIG_REGULATOR_RT4801)	+= rt4801-regulator.o
+ obj-$(CONFIG_REGULATOR_RT4831)	+= rt4831-regulator.o
+ obj-$(CONFIG_REGULATOR_RT5033)	+= rt5033-regulator.o
++obj-$(CONFIG_REGULATOR_RT5190A) += rt5190a-regulator.o
+ obj-$(CONFIG_REGULATOR_RT6160)	+= rt6160-regulator.o
+ obj-$(CONFIG_REGULATOR_RT6245)	+= rt6245-regulator.o
+ obj-$(CONFIG_REGULATOR_RTMV20)	+= rtmv20-regulator.o
+diff --git a/drivers/regulator/rt5190a-regulator.c b/drivers/regulator/rt5190a-regulator.c
 new file mode 100644
-index 000000000000..edfa3cbd318e
+index 00000000..2ac5e37
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
-@@ -0,0 +1,99 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/microchip,pdmc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/regulator/rt5190a-regulator.c
+@@ -0,0 +1,461 @@
++// SPDX-License-Identifier: GPL-2.0+
 +
-+title: Microchip Pulse Density Microphone Controller
++#include <linux/bits.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/property.h>
++#include <linux/regmap.h>
++#include <linux/regulator/driver.h>
 +
-+maintainers:
-+  - Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
++#define RT5190A_REG_MANUFACTURE		0x00
++#define RT5190A_REG_BUCK2VSEL		0x04
++#define RT5190A_REG_BUCK3VSEL		0x05
++#define RT5190A_REG_DCDCCNTL		0x06
++#define RT5190A_REG_ENABLE		0x07
++#define RT5190A_REG_DISCHARGE		0x09
++#define RT5190A_REG_PROTMODE		0x0A
++#define RT5190A_REG_MUTECNTL		0x0B
++#define RT5190A_REG_PGSTAT		0x0F
++#define RT5190A_REG_OVINT		0x10
++#define RT5190A_REG_HOTDIEMASK		0x17
 +
-+description:
-+  The Microchip Pulse Density Microphone Controller (PDMC) interfaces up to 4 digital microphones
-+  having Pulse Density Modulated (PDM) outputs.
++#define RT5190A_VSEL_MASK		GENMASK(6, 0)
++#define RT5190A_RID_BITMASK(rid)	BIT(rid + 1)
++#define RT5190A_BUCK1_DISCHG_MASK	GENMASK(1, 0)
++#define RT5190A_BUCK1_DISCHG_ONVAL	0x01
++#define RT5190A_OVERVOLT_MASK		GENMASK(7, 0)
++#define RT5190A_UNDERVOLT_MASK		GENMASK(15, 8)
++#define RT5190A_CH234OT_MASK		BIT(29)
++#define RT5190A_CHIPOT_MASK		BIT(28)
 +
-+properties:
-+  compatible:
-+    const: microchip,sama7g5-pdmc
++#define RT5190A_BUCK23_MINUV		600000
++#define RT5190A_BUCK23_MAXUV		1400000
++#define RT5190A_BUCK23_STEPUV		10000
++#define RT5190A_BUCK23_STEPNUM		((1400000 - 600000) / 10000 + 1)
 +
-+  "#sound-dai-cells":
-+    const: 0
++enum {
++	RT5190A_IDX_BUCK1 = 0,
++	RT5190A_IDX_BUCK2,
++	RT5190A_IDX_BUCK3,
++	RT5190A_IDX_BUCK4,
++	RT5190A_IDX_LDO,
++	RT5190A_MAX_IDX
++};
 +
-+  reg:
-+    maxItems: 1
++struct rt5190a_priv {
++	struct device *dev;
++	struct regmap *regmap;
++	struct regulator_desc rdesc[RT5190A_MAX_IDX];
++	struct regulator_dev *rdev[RT5190A_MAX_IDX];
++	unsigned int buck1_fixed_uV;
++	unsigned int buck4_fixed_uV;
++	unsigned int ldo_fixed_uV;
++	bool mute_enable;
++};
 +
-+  interrupts:
-+    maxItems: 1
++static int rt5190a_get_error_flags(struct regulator_dev *rdev,
++				   unsigned int *flags)
++{
++	struct regmap *regmap = rdev_get_regmap(rdev);
++	int rid = rdev_get_id(rdev);
++	unsigned int pgood_stat;
++	int ret;
 +
-+  clocks:
-+    items:
-+      - description: Peripheral Bus Clock
-+      - description: Generic Clock
++	ret = regmap_read(regmap, RT5190A_REG_PGSTAT, &pgood_stat);
++	if (ret)
++		return ret;
 +
-+  clock-names:
-+    items:
-+      - const: pclk
-+      - const: gclk
++	if (!(pgood_stat & RT5190A_RID_BITMASK(rid)))
++		*flags = REGULATOR_ERROR_FAIL;
++	else
++		*flags = 0;
 +
-+  dmas:
-+    description: RX DMA Channel
-+    maxItems: 1
++	return 0;
++}
 +
-+  dma-names:
-+    const: rx
++static int rt5190a_fixed_buck_set_mode(struct regulator_dev *rdev,
++				       unsigned int mode)
++{
++	struct regmap *regmap = rdev_get_regmap(rdev);
++	int rid = rdev_get_id(rdev);
++	unsigned int mask = RT5190A_RID_BITMASK(rid), val;
 +
-+  microchip,mic-pos:
-+    description: |
-+      Position of PDM microphones on the DS line and the sampling edge (rising or falling) of the
-+      CLK line. A microphone is represented as a pair of DS line and the sampling edge. The first
-+      microphone is mapped to channel 0, the second to channel 1, etc.
-+    $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+    items:
-+      items:
-+        - description: value for DS line
-+        - description: value for sampling edge
-+      anyOf:
-+        - enum:
-+            - [0, 0]
-+            - [0, 1]
-+            - [1, 0]
-+            - [1, 1]
-+    minItems: 1
-+    maxItems: 4
-+    uniqueItems: true
++	switch (mode) {
++	case REGULATOR_MODE_FAST:
++		val = mask;
++		break;
++	case REGULATOR_MODE_NORMAL:
++		val = 0;
++		break;
++	default:
++		return -EINVAL;
++	}
 +
-+required:
-+  - compatible
-+  - "#sound-dai-cells"
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - dmas
-+  - dma-names
-+  - microchip,mic-pos
++	return regmap_update_bits(regmap, RT5190A_REG_DCDCCNTL, mask, val);
++}
 +
-+additionalProperties: false
++static unsigned int rt5190a_fixed_buck_get_mode(struct regulator_dev *rdev)
++{
++	struct regmap *regmap = rdev_get_regmap(rdev);
++	int rid = rdev_get_id(rdev);
++	unsigned int val;
++	int ret;
 +
-+examples:
-+  - |
-+    #include <dt-bindings/clock/at91.h>
-+    #include <dt-bindings/dma/at91.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/sound/microchip,pdmc.h>
++	ret = regmap_read(regmap, RT5190A_REG_DCDCCNTL, &val);
++	if (ret) {
++		dev_err(&rdev->dev, "Failed to get mode [%d]\n", ret);
++		return ret;
++	}
 +
-+    pdmc: sound@e1608000 {
-+        compatible = "microchip,sama7g5-pdmc";
-+        #sound-dai-cells = <0>;
-+        reg = <0xe1608000 0x4000>;
-+        interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
-+        dmas = <&dma0 AT91_XDMAC_DT_PERID(37)>;
-+        dma-names = "rx";
-+        clocks = <&pmc PMC_TYPE_PERIPHERAL 68>, <&pmc PMC_TYPE_GCK 68>;
-+        clock-names = "pclk", "gclk";
-+        microchip,mic-pos = <MCHP_PDMC_DS0 MCHP_PDMC_CLK_POSITIVE>,
-+                            <MCHP_PDMC_DS0 MCHP_PDMC_CLK_NEGATIVE>,
-+                            <MCHP_PDMC_DS1 MCHP_PDMC_CLK_POSITIVE>,
-+                            <MCHP_PDMC_DS1 MCHP_PDMC_CLK_NEGATIVE>;
-+    };
-diff --git a/include/dt-bindings/sound/microchip,pdmc.h b/include/dt-bindings/sound/microchip,pdmc.h
-new file mode 100644
-index 000000000000..96cde94ce74f
---- /dev/null
-+++ b/include/dt-bindings/sound/microchip,pdmc.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __DT_BINDINGS_MICROCHIP_PDMC_H__
-+#define __DT_BINDINGS_MICROCHIP_PDMC_H__
++	if (val & RT5190A_RID_BITMASK(rid))
++		return REGULATOR_MODE_FAST;
 +
-+/* PDM microphone's pin placement */
-+#define MCHP_PDMC_DS0 0
-+#define MCHP_PDMC_DS1 1
++	return REGULATOR_MODE_NORMAL;
++}
 +
-+/* PDM microphone clock edge sampling */
-+#define MCHP_PDMC_CLK_POSITIVE 0
-+#define MCHP_PDMC_CLK_NEGATIVE 1
++static const struct regulator_ops rt5190a_ranged_buck_ops = {
++	.enable	= regulator_enable_regmap,
++	.disable = regulator_disable_regmap,
++	.is_enabled = regulator_is_enabled_regmap,
++	.set_voltage_sel = regulator_set_voltage_sel_regmap,
++	.get_voltage_sel = regulator_get_voltage_sel_regmap,
++	.list_voltage = regulator_list_voltage_linear,
++	.set_active_discharge = regulator_set_active_discharge_regmap,
++	.get_error_flags = rt5190a_get_error_flags,
++};
 +
-+#endif /* __DT_BINDINGS_MICROCHIP_PDMC_H__ */
++static const struct regulator_ops rt5190a_fixed_buck_ops = {
++	.enable	= regulator_enable_regmap,
++	.disable = regulator_disable_regmap,
++	.is_enabled = regulator_is_enabled_regmap,
++	.set_active_discharge = regulator_set_active_discharge_regmap,
++	.set_mode = rt5190a_fixed_buck_set_mode,
++	.get_mode = rt5190a_fixed_buck_get_mode,
++	.get_error_flags = rt5190a_get_error_flags,
++};
++
++static const struct regulator_ops rt5190a_fixed_ldo_ops = {
++	.enable	= regulator_enable_regmap,
++	.disable = regulator_disable_regmap,
++	.is_enabled = regulator_is_enabled_regmap,
++	.set_active_discharge = regulator_set_active_discharge_regmap,
++	.get_error_flags = rt5190a_get_error_flags,
++};
++
++static irqreturn_t rt5190a_irq_handler(int irq, void *data)
++{
++	struct rt5190a_priv *priv = data;
++	__le32 raws;
++	unsigned int events, fields;
++	static const struct {
++		unsigned int bitmask;
++		unsigned int report;
++	} event_tbl[] = {
++		{ RT5190A_OVERVOLT_MASK, REGULATOR_ERROR_REGULATION_OUT },
++		{ RT5190A_UNDERVOLT_MASK, REGULATOR_ERROR_UNDER_VOLTAGE }
++	};
++	int i, j, ret;
++
++	ret = regmap_raw_read(priv->regmap, RT5190A_REG_OVINT, &raws,
++			      sizeof(raws));
++	if (ret) {
++		dev_err(priv->dev, "Failed to read events\n");
++		return IRQ_NONE;
++	}
++
++	events = le32_to_cpu(raws);
++
++	/* Handle OV,UV events */
++	for (i = 0; i < ARRAY_SIZE(event_tbl); i++) {
++		fields = events & event_tbl[i].bitmask;
++		fields >>= ffs(event_tbl[i].bitmask) - 1;
++
++		for (j = 0; j < RT5190A_MAX_IDX; j++) {
++			if (!(fields & RT5190A_RID_BITMASK(j)))
++				continue;
++
++			regulator_notifier_call_chain(priv->rdev[j],
++						      event_tbl[i].report,
++						      NULL);
++		}
++	}
++
++	/* Handle CH234 OT event */
++	if (events & RT5190A_CH234OT_MASK) {
++		for (j = RT5190A_IDX_BUCK2; j < RT5190A_IDX_LDO; j++) {
++			regulator_notifier_call_chain(priv->rdev[j],
++						      REGULATOR_ERROR_OVER_TEMP,
++						      NULL);
++		}
++	}
++
++	/* Warning if CHIP OT occur */
++	if (events & RT5190A_CHIPOT_MASK)
++		dev_warn(priv->dev, "CHIP overheat\n");
++
++	ret = regmap_raw_write(priv->regmap, RT5190A_REG_OVINT, &raws,
++			       sizeof(raws));
++	if (ret)
++		dev_err(priv->dev, "Failed to write-clear events\n");
++
++	return IRQ_HANDLED;
++}
++
++static unsigned int rt5190a_of_map_mode(unsigned int mode)
++{
++	switch (mode) {
++	case 0:
++		return REGULATOR_MODE_NORMAL;
++	case 1:
++		return REGULATOR_MODE_FAST;
++	default:
++		return REGULATOR_MODE_INVALID;
++	}
++}
++
++static int rt5190a_of_parse_cb(struct device_node *np,
++			       const struct regulator_desc *desc,
++			       struct regulator_config *cfg)
++{
++	bool latchup_enable;
++	unsigned int mask = RT5190A_RID_BITMASK(desc->id), val;
++
++	latchup_enable = of_property_read_bool(np, "richtek,latchup-enable");
++
++	/* latchup: 0, default hiccup: 1 */
++	val = !latchup_enable ? mask : 0;
++
++	return regmap_update_bits(cfg->regmap, RT5190A_REG_PROTMODE, mask, val);
++}
++
++static void rt5190a_fillin_regulator_desc(struct rt5190a_priv *priv, int rid)
++{
++	static const char *regu_name[] = { "buck1", "buck2", "buck3", "buck4",
++					   "ldo" };
++	static const char *supply[]= { NULL, "vin2", "vin3", "vin4", "vinldo" };
++	struct regulator_desc *desc = priv->rdesc + rid;
++
++	desc->name = desc->of_match = regu_name[rid];
++	desc->supply_name = supply[rid];
++	desc->regulators_node = "regulators";
++	desc->owner = THIS_MODULE;
++	desc->type = REGULATOR_VOLTAGE;
++	desc->id = rid;
++	desc->enable_reg = RT5190A_REG_ENABLE;
++	desc->enable_mask = RT5190A_RID_BITMASK(rid);
++	desc->active_discharge_reg = RT5190A_REG_DISCHARGE;
++	desc->active_discharge_mask = RT5190A_RID_BITMASK(rid);
++	desc->active_discharge_on = RT5190A_RID_BITMASK(rid);
++	desc->of_parse_cb = rt5190a_of_parse_cb;
++
++	switch (rid) {
++	case RT5190A_IDX_BUCK1:
++		desc->active_discharge_mask = RT5190A_BUCK1_DISCHG_MASK;
++		desc->active_discharge_on = RT5190A_BUCK1_DISCHG_ONVAL;
++		desc->fixed_uV = priv->buck1_fixed_uV;
++		desc->n_voltages = 1;
++		desc->ops = &rt5190a_fixed_buck_ops;
++		desc->of_map_mode = rt5190a_of_map_mode;
++		break;
++	case RT5190A_IDX_BUCK2:
++		desc->vsel_reg = RT5190A_REG_BUCK2VSEL;
++		desc->vsel_mask = RT5190A_VSEL_MASK;
++		desc->min_uV = RT5190A_BUCK23_MINUV;
++		desc->uV_step = RT5190A_BUCK23_STEPUV;
++		desc->n_voltages = RT5190A_BUCK23_STEPNUM;
++		desc->ops = &rt5190a_ranged_buck_ops;
++		break;
++	case RT5190A_IDX_BUCK3:
++		desc->vsel_reg = RT5190A_REG_BUCK3VSEL;
++		desc->vsel_mask = RT5190A_VSEL_MASK;
++		desc->min_uV = RT5190A_BUCK23_MINUV;
++		desc->uV_step = RT5190A_BUCK23_STEPUV;
++		desc->n_voltages = RT5190A_BUCK23_STEPNUM;
++		desc->ops = &rt5190a_ranged_buck_ops;
++		break;
++	case RT5190A_IDX_BUCK4:
++		desc->fixed_uV = priv->buck4_fixed_uV;
++		desc->n_voltages = 1;
++		desc->ops = &rt5190a_fixed_buck_ops;
++		desc->of_map_mode = rt5190a_of_map_mode;
++		break;
++	case RT5190A_IDX_LDO:
++		desc->fixed_uV = priv->ldo_fixed_uV;
++		desc->n_voltages = 1;
++		desc->ops = &rt5190a_fixed_ldo_ops;
++		break;
++	}
++}
++
++static const struct reg_sequence rt5190a_init_patch[] = {
++	{ 0x09, 0x3d, },
++	{ 0x0a, 0x3e, },
++	{ 0x0b, 0x01, },
++	{ 0x10, 0xff, },
++	{ 0x11, 0xff, },
++	{ 0x12, 0xff, },
++	{ 0x13, 0xff, },
++	{ 0x14, 0, },
++	{ 0x15, 0, },
++	{ 0x16, 0x3e, },
++	{ 0x17, 0, }
++};
++
++static int rt5190a_device_initialize(struct rt5190a_priv *priv)
++{
++	int ret;
++
++	ret = regmap_register_patch(priv->regmap, rt5190a_init_patch,
++				    ARRAY_SIZE(rt5190a_init_patch));
++	if (ret) {
++		dev_err(priv->dev, "Failed to do register patch\n");
++		return ret;
++	}
++
++	if (priv->mute_enable) {
++		ret = regmap_write(priv->regmap, RT5190A_REG_MUTECNTL, 0x00);
++		if (ret) {
++			dev_err(priv->dev, "Failed to enable mute function\n");
++			return ret;
++		}
++	}
++
++	return 0;
++}
++
++static int rt5190a_parse_device_config(struct rt5190a_priv *priv)
++{
++	struct device *dev = priv->dev;
++	int ret;
++
++	ret = device_property_read_u32(dev, "richtek,buck1-fixed-microvolt",
++				       &priv->buck1_fixed_uV);
++	if (ret)
++		return ret;
++
++	ret = device_property_read_u32(dev, "richtek,buck4-fixed-microvolt",
++				       &priv->buck4_fixed_uV);
++	if (ret)
++		return ret;
++
++	ret = device_property_read_u32(dev, "richtek,ldo-fixed-microvolt",
++				       &priv->ldo_fixed_uV);
++	if (ret)
++		return ret;
++
++	priv->mute_enable = device_property_read_bool(dev,
++						      "richtek,mute-enable");
++
++	return 0;
++}
++
++static int rt5190a_device_check(struct rt5190a_priv *priv)
++{
++	u16 devid;
++	int ret;
++
++	ret = regmap_raw_read(priv->regmap, RT5190A_REG_MANUFACTURE, &devid,
++			      sizeof(devid));
++	if (ret)
++		return ret;
++
++	if (devid) {
++		dev_err(priv->dev, "Incorrect device id 0x%04x\n", devid);
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static const struct regmap_config rt5190a_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = RT5190A_REG_HOTDIEMASK,
++};
++
++static int rt5190a_probe(struct i2c_client *i2c)
++{
++	struct rt5190a_priv *priv;
++	struct regulator_config cfg = {};
++	int i, ret;
++
++	priv = devm_kzalloc(&i2c->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->dev = &i2c->dev;
++
++	priv->regmap = devm_regmap_init_i2c(i2c, &rt5190a_regmap_config);
++	if (IS_ERR(priv->regmap)) {
++		dev_err(&i2c->dev, "Failed to allocate regmap\n");
++		return PTR_ERR(priv->regmap);
++	}
++
++	ret = rt5190a_device_check(priv);
++	if (ret) {
++		dev_err(&i2c->dev, "Failed to check device %d\n", ret);
++		return ret;
++	}
++
++	ret = rt5190a_parse_device_config(priv);
++	if (ret) {
++		dev_err(&i2c->dev, "Failed to parse device config\n");
++		return ret;
++	}
++
++	ret = rt5190a_device_initialize(priv);
++	if (ret) {
++		dev_err(&i2c->dev, "Failed to initialize the device\n");
++		return ret;
++	}
++
++	cfg.dev = &i2c->dev;
++	cfg.regmap = priv->regmap;
++
++	for (i = 0; i < RT5190A_MAX_IDX; i++) {
++		struct regulator_desc *desc = priv->rdesc + i;
++
++		rt5190a_fillin_regulator_desc(priv, i);
++		priv->rdev[i] = devm_regulator_register(&i2c->dev, desc, &cfg);
++		if (IS_ERR(priv->rdev[i])) {
++			dev_err(&i2c->dev, "Failed to register regulator %s\n",
++				desc->name);
++			return PTR_ERR(priv->rdev[i]);
++		}
++	}
++
++	if (i2c->irq) {
++		ret = devm_request_threaded_irq(&i2c->dev, i2c->irq, NULL,
++						rt5190a_irq_handler,
++						IRQF_ONESHOT,
++						dev_name(&i2c->dev), priv);
++		if (ret) {
++			dev_err(&i2c->dev, "Failed to register interrupt\n");
++			return ret;
++		}
++	}
++
++	return 0;
++}
++
++static const struct of_device_id __maybe_unused rt5190a_device_table[] = {
++	{ .compatible = "richtek,rt5190a", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, rt5190a_device_table);
++
++static struct i2c_driver rt5190a_driver = {
++	.driver = {
++		.name = "rt5190a",
++		.of_match_table = rt5190a_device_table,
++	},
++	.probe_new = rt5190a_probe,
++};
++module_i2c_driver(rt5190a_driver);
++
++MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
++MODULE_DESCRIPTION("Richtek RT5190A Regulator Driver");
++MODULE_LICENSE("GPL v2");
 -- 
-2.32.0
+2.7.4
 
