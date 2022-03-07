@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBA7C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32887C38162
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240507AbiCGJvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:51:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
+        id S239342AbiCGJtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240769AbiCGJld (ORCPT
+        with ESMTP id S239671AbiCGJkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157E666AD7;
-        Mon,  7 Mar 2022 01:38:12 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D44474616;
+        Mon,  7 Mar 2022 01:36:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F660B810CF;
-        Mon,  7 Mar 2022 09:38:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8201C340E9;
-        Mon,  7 Mar 2022 09:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E10B61185;
+        Mon,  7 Mar 2022 09:35:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 790CEC340F4;
+        Mon,  7 Mar 2022 09:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645887;
-        bh=Eh2WeKqTavGzTnH3f6/Gs+4fsRnL4WgUk8uScgtTKnU=;
+        s=korg; t=1646645739;
+        bh=3Q6HfLvnyk20c5KteC9b+hLzCTbQ2st3hb44bFNMDzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XagP2rc4YP4NphB6xYcQBiOXM/XokaitXh/Gbaga0U0+D+bbtLO+uOSuJ/j2g4m77
-         mr1JyO9o5HLaRFQPUxriUkAGME+Z2Eq6sT8YTDsT7shDTvuwEHha6cUPeFz+XBVWLY
-         2EAjyVOn/KQz1yhumARGuvJBFn/7FyBgk37zV0HY=
+        b=iExzYQpolPWYmeHG/Y2iqg+cTXQ1LrVDUvRXZ4ztpS/W349Ec5gvec+pmVewLPmEw
+         ipSOVWcZJiPNfVEBN1C64VCWg49kn6V1ZriCXJkPgQCV6z1A6xYj72G5VWoLP8BiWY
+         k4+g1Jk2h3u1S5Hs8UD9DGW+vTNqPpKE6LhONR7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/262] PCI: mvebu: Do not modify PCI IO type bits in conf_write
-Date:   Mon,  7 Mar 2022 10:16:51 +0100
-Message-Id: <20220307091704.394222002@linuxfoundation.org>
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 021/262] dmaengine: shdma: Fix runtime PM imbalance on error
+Date:   Mon,  7 Mar 2022 10:16:05 +0100
+Message-Id: <20220307091702.972709358@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,45 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit 2cf150216e5b5619d7c25180ccf2cc8ac7bebc13 ]
+[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
 
-PCI IO type bits are already initialized in mvebu_pci_bridge_emul_init()
-function and only when IO support is enabled. These type bits are read-only
-and pci-bridge-emul.c code already does not allow to modify them from upper
-layers.
+pm_runtime_get_() increments the runtime PM usage counter even
+when it returns an error code, thus a matching decrement is needed on
+the error handling path to keep the counter balanced.
 
-When IO support is disabled then all IO registers should be read-only and
-return zeros. Therefore do not modify PCI IO type bits in
-mvebu_pci_bridge_emul_base_conf_write() callback.
-
-Link: https://lore.kernel.org/r/20211125124605.25915-8-pali@kernel.org
-Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 7 -------
- 1 file changed, 7 deletions(-)
+ drivers/dma/sh/shdma-base.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index f4971fc72a772..5d5f23b1d355b 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -497,13 +497,6 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
- 	}
+diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+index 7f72b3f4cd1ae..19ac95c0098f0 100644
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
+ 		ret = pm_runtime_get(schan->dev);
  
- 	case PCI_IO_BASE:
--		/*
--		 * We keep bit 1 set, it is a read-only bit that
--		 * indicates we support 32 bits addressing for the
--		 * I/O
--		 */
--		conf->iobase |= PCI_IO_RANGE_TYPE_32;
--		conf->iolimit |= PCI_IO_RANGE_TYPE_32;
- 		mvebu_pcie_handle_iobase_change(port);
- 		break;
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0)
++		if (ret < 0) {
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
++			pm_runtime_put(schan->dev);
++		}
+ 
+ 		pm_runtime_barrier(schan->dev);
  
 -- 
 2.34.1
