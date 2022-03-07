@@ -2,80 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F83C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 624FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243315AbiCGOi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:38:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
+        id S243316AbiCGOjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240410AbiCGOiz (ORCPT
+        with ESMTP id S234931AbiCGOjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:38:55 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430A31A837;
-        Mon,  7 Mar 2022 06:38:00 -0800 (PST)
+        Mon, 7 Mar 2022 09:39:52 -0500
+X-Greylist: delayed 1402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 06:38:58 PST
+Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D76238D94
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:38:58 -0800 (PST)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 345EE321A6C
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:15:06 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id RE8fnB6kN22u3RE8gnz4Xr; Mon, 07 Mar 2022 08:15:06 -0600
+X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=NW9RpFh+hvH2B+kdkMZrrBGYcByfxt2ECpS3XLUg5ic=; b=tJW4g9xzh7Hr7eTiR6n30j60WO
-        IYwXR9LZ0duAlYTPi8RrvkjPPngfb7+5UiJ9/ZQDEmqZxuVEE7Qbp6lMMYytUbktkhxgCkWSDTHz/
-        1HZ0/A46EkR5RhOL/6a/GA/m7T0Xdl7GYI14I9F+ekXEYTzuywuHs6g05qrRgYv8hr/bztXDiu2e+
-        NN0Vkgbei6YVv2EJhvRxLOhyg0NOBGLz0ad8LGOORcltIsEZCfhwsdgFVWe1FyuU/IK3Nyj+5fUwi
-        f50yHXIse9zePYwFp7mtZTHd3yptwZqau6qA/Lwjq3Ry8EyNIJpG+QOGy9Q7M8mbbEBcnSDA3dMvA
-        /ZHTriAA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nREUe-00FIYz-EZ; Mon, 07 Mar 2022 14:37:48 +0000
-Date:   Mon, 7 Mar 2022 14:37:48 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        linux-sgx@vger.kernel.org, jaharkes@cs.cmu.edu,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        codalist@telemann.coda.cs.cmu.edu, linux-unionfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH RFC v2] mm: Add f_ops->populate()
-Message-ID: <YiYYvAWYgC+PKEx0@casper.infradead.org>
-References: <20220306032655.97863-1-jarkko@kernel.org>
- <20220306152456.2649b1c56da2a4ce4f487be4@linux-foundation.org>
- <c3083144-bfc1-3260-164c-e59b2d110df8@intel.com>
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mExfza9Swq8QkIJylEbCbdZzmqYa/N9/7AiymPbUTCM=; b=rYNQMX+01131Q8XdRFTD87aLuD
+        mQZXzvMFnaxxvYTfvBLW+3zKJ601cNRfA4eME2mcxX3PnBhUamllQ0190VDcGE9Mo3JcH767LOBSX
+        xqcGlbUytabfC9WPxJWzEeZ6IOeZ5apKh6C0RnSUqityirORLyr+zV3DVUff2iQ9KxvOgDr1PidcX
+        mPdl0BIU8SMRQdHJuHY7YbTH1JZAGDByoLKNUkLTXFdZt/vRj8nTKwhIvX0ppXAUiTOLeqLAQgg4p
+        pxu6eYuefCBHujZaeoqFzP9O2hJES+nsnPQ8W0rYQLrryM1kPz8bRbcdgo56fsezxuza/eiZiyLEQ
+        yB2N+C1A==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38090)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRE8f-001zAT-7h; Mon, 07 Mar 2022 14:15:05 +0000
+Message-ID: <d71d84d2-5aa2-7d72-9fdb-a0ac203cefb2@roeck-us.net>
+Date:   Mon, 7 Mar 2022 06:15:02 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c3083144-bfc1-3260-164c-e59b2d110df8@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.10 000/105] 5.10.104-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220307091644.179885033@linuxfoundation.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRE8f-001zAT-7h
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38090
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 12
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 06, 2022 at 03:41:54PM -0800, Dave Hansen wrote:
-> In short: page faults stink.  The core kernel has lots of ways of
-> avoiding page faults like madvise(MADV_WILLNEED) or mmap(MAP_POPULATE).
->  But, those only work on normal RAM that the core mm manages.
+On 3/7/22 01:18, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.104 release.
+> There are 105 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> SGX is weird.  SGX memory is managed outside the core mm.  It doesn't
-> have a 'struct page' and get_user_pages() doesn't work on it.  Its VMAs
-> are marked with VM_IO.  So, none of the existing methods for avoiding
-> page faults work on SGX memory.
+> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+> Anything received after that time might be too late.
 > 
-> This essentially helps extend existing "normal RAM" kernel ABIs to work
-> for avoiding faults for SGX too.  SGX users want to enjoy all of the
-> benefits of a delayed allocation policy (better resource use,
-> overcommit, NUMA affinity) but without the cost of millions of faults.
 
-We have a mechanism for dynamically reducing the number of page faults
-already; it's just buried in the page cache code.  You have vma->vm_file,
-which contains a file_ra_state.  You can use this to track where
-recent faults have been and grow the size of the region you fault in
-per page fault.  You don't have to (indeed probably don't want to) use
-the same algorithm as the page cache, but the _principle_ is the same --
-were recent speculative faults actually used; should we grow the number
-of pages actually faulted in, or is this a random sparse workload where
-we want to allocate individual pages.
 
-Don't rely on the user to ask.  They don't know.
+Building powerpc:allmodconfig ... failed
+
+In file included from include/linux/module.h:12,
+                  from drivers/net/ethernet/ibm/ibmvnic.c:35:
+drivers/net/ethernet/ibm/ibmvnic.c: In function 'ibmvnic_reset':
+drivers/net/ethernet/ibm/ibmvnic.c:2349:23: error: 'entry' undeclared
