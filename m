@@ -2,163 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8751CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234998AbiCGD0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 22:26:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
+        id S235001AbiCGD26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 22:28:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233660AbiCGD0v (ORCPT
+        with ESMTP id S233896AbiCGD25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 22:26:51 -0500
-X-Greylist: delayed 518 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Mar 2022 19:25:58 PST
-Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914F95D5F3
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 19:25:58 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.west.internal (Postfix) with ESMTP id 85BCB2B0024D;
-        Sun,  6 Mar 2022 22:17:17 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Sun, 06 Mar 2022 22:17:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yotsuba.nl; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; bh=LC0j3/G2hKvPK3P9v7Jsob3YP1xJDOoZkhPu00702s4=; b=QPTYc
-        E4lBWiR740zuP/i60F10qhDc1am8plxYD/7WQYz4BBt6pBGPt/etw7bjGqy4lmOG
-        EDfAmZ9dIPUNTuklrE/XHnt6Ag1xaIXQ+geGFsvWjgSjM/XOrYe5ehzGWKdE4Twt
-        cTsJ5lM3fQX5BBD/vq+nfW3pLMBNt3VCWwept2TbZnHqO9zKE2bkh6AsFD6+Of88
-        88WP6T4cdByGqBu/YvQ1MDrFeK3RohU5mXdhtB8r7IRu9bU1bcpnjq9/WNw1rYjG
-        qdzFAeA88S1ITo3R8Kx/qzz8C8PNcuvofgo9B1WjI9noZiAoofr39xWB4rlvmBE1
-        zR6tgi7ihpOJs8+aw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm2; bh=LC0j3/G2hKvPK3P9v7Jsob3YP1xJD
-        OoZkhPu00702s4=; b=Yay/FmVJlDDIGi6wv7Px8BgByxqqqwxrkj621ZIewzHx0
-        IkrM4mw57T/tB3idZ0M2hddtZnrZW8fAnnNN36GQ5gAeXoMydQ/VZLevMCeRXSe6
-        H2HgdPgFIR9ZxDsTmWCIA/WIyYujZ+G3s+uVidum00Sb4rEz0VWtIiwXcQSsz9O9
-        2B9vp3eCFYn4rZyIc079GTfMfhdG6bC4AfcrGQ8mNff/LtJC4utBWqraSE8Dnv+C
-        VA1gEMQYnb//k1TCDYqbDMhHFRgRu4DYBhQiZeKxo8wnphnvf51HiPsPax294CJy
-        GIR+G4R8wbDC+8K8apQ/s3fmQl4S3Izk7WsBzTjZQ==
-X-ME-Sender: <xms:PHklYjmfgLPrTInusPVVgSfgrAeLbJbFfV40JHVmHNwNBM1S3vIdhQ>
-    <xme:PHklYm0dU3vtRde3yjyuxBNRyfkM2NGiPQCv9-QM6q8MDH5-HobavezShP_vJzj_q
-    D3Z82HCn0GOWsCpefU>
-X-ME-Received: <xmr:PHklYprNr8x0hqaqkaLWcNboLh-KGSpzRyvV9RoJs7KzY4KOLEPGmEUwD4lJ4okyPavw_q4UxvViWWejGqFT-jzIzlikevuFDaNI-Zfd2bZHCU6TjLYzdmQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddufedgheeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeforghrkhcuvehi
-    lhhishhsvghnuceomhgrrhhkseihohhtshhusggrrdhnlheqnecuggftrfgrthhtvghrnh
-    epheduveehtdelfeekgfejudevhffghfehvdetffehgfelteelheelgefftdffudehnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrrhhkse
-    ihohhtshhusggrrdhnlh
-X-ME-Proxy: <xmx:PHklYrlSbnQ0QCQUfLr4PM7wIgUeYbfnPMhmQ7C6YatxRiWdgVoQsw>
-    <xmx:PHklYh0zG54sMTjDBj5i4K9evQStg5FtktS-hDoZHPG_MW_2Y-I7oA>
-    <xmx:PHklYqttI4cFfwGHDxoRK-nYZF9L36XkyB3kkQLjLnr5xLAcO5g8jg>
-    <xmx:PXklYitB7KbLgauQHVjOnBsmkd7TMGJ-ZLLgqkFc6eo1S5paXw2qZv_u7ys>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 6 Mar 2022 22:17:14 -0500 (EST)
-From:   Mark Cilissen <mark@yotsuba.nl>
-To:     linux-acpi@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Mark Cilissen <mark@yotsuba.nl>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v3] ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-Date:   Mon,  7 Mar 2022 04:16:58 +0100
-Message-Id: <20220307031658.81285-1-mark@yotsuba.nl>
-X-Mailer: git-send-email 2.28.0
+        Sun, 6 Mar 2022 22:28:57 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5C8B0D
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 19:28:03 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R441e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V6P0CTe_1646623680;
+Received: from 30.97.48.243(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0V6P0CTe_1646623680)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Mar 2022 11:28:00 +0800
+Message-ID: <44ba7c68-d2a5-5bc1-b8e1-1a9dc6619369@linux.alibaba.com>
+Date:   Mon, 7 Mar 2022 11:27:59 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v2 2/2] kfence: Alloc kfence_pool after system startup
+Content-Language: en-US
+From:   Tianchen Ding <dtcccc@linux.alibaba.com>
+To:     Marco Elver <elver@google.com>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220305144858.17040-1-dtcccc@linux.alibaba.com>
+ <20220305144858.17040-3-dtcccc@linux.alibaba.com>
+ <CANpmjNM+47dfjLyyuQwUWZyJgsr1Uxd72VPe9Vva3Qr2oiXRHA@mail.gmail.com>
+ <fab45904-585b-0c59-a426-9ebecbd9d26f@linux.alibaba.com>
+In-Reply-To: <fab45904-585b-0c59-a426-9ebecbd9d26f@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On this board the ACPI RSDP structure points to both a RSDT and an XSDT,
-but the XSDT points to a truncated FADT. This causes all sorts of trouble
-and usually a complete failure to boot after the following error occurs:
+On 2022/3/7 10:23, Tianchen Ding wrote:
+> On 2022/3/7 07:52, Marco Elver wrote:
+>> On Sat, 5 Mar 2022 at 15:49, Tianchen Ding <dtcccc@linux.alibaba.com> 
+>> wrote:
+>> [...]
+>>> +static int kfence_init_late(void)
+>>> +{
+>>> +       const unsigned long nr_pages = KFENCE_POOL_SIZE / PAGE_SIZE;
+>>> +       struct page *pages;
+>>> +
+>>> +       pages = alloc_contig_pages(nr_pages, GFP_KERNEL, 
+>>> first_online_node, NULL);
+>>
+>>> mm/kfence/core.c:836:17: error: implicit declaration of function 
+>>> ‘alloc_contig_pages’ [-Werror=implicit-function-declaration]
+>>
+>> This doesn't build without CMA. See ifdef CONFIG_CONTIG_ALLOC in
+>> gfp.h, which declares alloc_contig_pages.
+>>
+>> Will alloc_pages() work as you expect? If so, perhaps only use
+>> alloc_contig_pages() #ifdef CONFIG_CONTIG_ALLOC.
+>>
+> 
+> alloc_pages() will be fine. We could free "tail" pages after inited.
+> Will send v3 soon.
+> 
 
-  ACPI Error: Unsupported address space: 0x20 (*/hwregs-*)
-  ACPI Error: AE_SUPPORT, Unable to initialize fixed events (*/evevent-*)
-  ACPI: Unable to start ACPI Interpreter
+Oh, I remember why we use alloc_contig_pages()...
+alloc_pages() (or alloc_pages_exact()) only support pages less than 
+MAX_ORDER (default 11). The alloc would fail when KFENCE_NUM_OBJECTS >= 512.
 
-This leaves the ACPI implementation in such a broken state that subsequent
-kernel subsystem initialisations go wrong, resulting in among others
-mismapped PCI memory, SATA and USB enumeration failures, and freezes.
+So the design would be:
+ifndef CONFIG_CONTIG_ALLOC and KFENCE_NUM_OBJECTS exceeds MAX_ORDER, we 
+do not support alloc KFENCE pool after system startup.
 
-As this is an older embedded platform that will likely never see any BIOS
-updates to address this issue and its default shipping OS only complies to
-ACPI 1.0, work around this by forcing `acpi=rsdt`. This patch, applied on
-top of Linux 5.10.102, was confirmed on real hardware to fix the issue.
-
-Signed-off-by: Mark Cilissen <mark@yotsuba.nl>
-Cc: stable@vger.kernel.org
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
----
-v3:
-- Change DMI matching criteria as per Hans's suggestion
-
-v2:
-- Reduce DMI match count to 4 to not overflow dmi_system_id structure
-Reported-by: kernel test robot <lkp@intel.com>
-- Change board ident to correct name
-- Fix small style issue
-- Fix up subject as per Rafael's changes
----
- arch/x86/kernel/acpi/boot.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
-
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 5b6d1a95776f..0d01e7f5078c 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -1328,6 +1328,17 @@ static int __init disable_acpi_pci(const struct dmi_system_id *d)
- 	return 0;
- }
- 
-+static int __init disable_acpi_xsdt(const struct dmi_system_id *d)
-+{
-+	if (!acpi_force) {
-+		pr_notice("%s detected: force use of acpi=rsdt\n", d->ident);
-+		acpi_gbl_do_not_use_xsdt = TRUE;
-+	} else {
-+		pr_notice("Warning: DMI blacklist says broken, but acpi XSDT forced\n");
-+	}
-+	return 0;
-+}
-+
- static int __init dmi_disable_acpi(const struct dmi_system_id *d)
- {
- 	if (!acpi_force) {
-@@ -1451,6 +1462,19 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
- 		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
- 		     },
- 	 },
-+	/*
-+	 * Boxes that need ACPI XSDT use disabled due to corrupted tables
-+	 */
-+	{
-+	 .callback = disable_acpi_xsdt,
-+	 .ident = "Advantech DAC-BJ01",
-+	 .matches = {
-+		     DMI_MATCH(DMI_SYS_VENDOR, "NEC"),
-+		     DMI_MATCH(DMI_PRODUCT_NAME, "Bearlake CRB Board"),
-+		     DMI_MATCH(DMI_BIOS_VERSION, "V1.12"),
-+		     DMI_MATCH(DMI_BIOS_DATE, "02/01/2011"),
-+		     },
-+	 },
- 	{}
- };
- 
-
-base-commit: 038101e6b2cd5c55f888f85db42ea2ad3aecb4b6
--- 
-2.28.0
+>> Thanks,
+>> -- Marco
+> 
 
