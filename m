@@ -2,152 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F712C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343780AbiCHOF0 (ORCPT
+        id S1347269AbiCHOF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:05:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
+        Tue, 8 Mar 2022 09:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232904AbiCHOFX (ORCPT
+        with ESMTP id S232904AbiCHOF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:05:23 -0500
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330EA4739C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:04:26 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 467F240009;
-        Tue,  8 Mar 2022 14:04:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646748264;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yuYwohkIYiGH/9okVyXKYblvtBex44dmao1aksjVe+k=;
-        b=cJlZk9OPgQphu+B04jgaVO5ECdl+6BhXYtB6vd9FuBFEqEdyL3gwwGOh1jdGHPUdiwPt43
-        l6h8PuvmJoSRcPREHvpV9WH4eWq9BmJ7naf4g9Or4SyAUnzREp1LuNAYBnF1JSFxdkeDA0
-        ETv5G6Y+hYv3mPt9ddi3urhD2DGaWlIz04ShPFKh8ojR1y6suIi1jf15ZlhFcWop3GyKrX
-        DvwVCTNnFSwmsOfOM90tD0Dy8Y2rG76uCBViTymOVyUl3QXsa37+Nsn4bx3rwmv27Gatha
-        OD7M2nKENoiK85jfxXntqVgjo6Op3BcXglIfcJWYEUY+sNllkXmB0mMioDwQzQ==
-Date:   Tue, 8 Mar 2022 15:03:00 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     <Claudiu.Beznea@microchip.com>
-Cc:     <linux@armlinux.org.uk>, <Nicolas.Ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <Ludovic.Desroches@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 2/2] ARM: at91: pm: add support for sama5d2 secure
- suspend
-Message-ID: <20220308150300.099696a6@fixe.home>
-In-Reply-To: <2177abd0-f25d-c82a-ec5a-7f2654352d25@microchip.com>
-References: <20220307101550.95538-1-clement.leger@bootlin.com>
-        <20220307101550.95538-3-clement.leger@bootlin.com>
-        <2177abd0-f25d-c82a-ec5a-7f2654352d25@microchip.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Tue, 8 Mar 2022 09:05:56 -0500
+X-Greylist: delayed 61730 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 06:04:56 PST
+Received: from zkmu.kz (unknown [185.234.114.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA99F49F35
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:04:56 -0800 (PST)
+Received: from zkgmu by zkmu.kz with local (Exim 4.94.2)
+        (envelope-from <test@test.kz>)
+        id 1nRKOh-00BIVm-19
+        for linux-kernel@vger.kernel.org; Tue, 08 Mar 2022 02:56:03 +0600
+To:     linux-kernel@vger.kernel.org
+Subject: =?utf-8?B?8J+NkyBTaGVpbGEgd2FudCB0byBtZWV0IHlvdSEgQ2xpY2s=?=  =?utf-8?B?IGhlcmU6IGh0dHA6Ly9pbngubHYvMDRwUT9zeHhoYiA=?=  =?utf-8?B?8J+NkyDSr9GI0ZbQvSDQnNC10LTQuNC6INCz0LDQt9C10YLRliDRgdCw0Lk=?=  =?utf-8?B?0YLRi9C90LTQsNKT0Ysg0YLRltGA0LrQtdGDINC20LDQt9Cx0LDRgdGL0L0=?=  =?utf-8?B?0YvSoyDQv9Cw0YDQsNC80LXRgtGA0LvQtdGA0ZY=?=
+X-PHP-Originating-Script: 1001:phpmailer.php
+Date:   Tue, 8 Mar 2022 02:56:03 +0600
+From:   =?utf-8?B?0KHQvtC30LDSmyDSr9C90ZY=?= <test@test.kz>
+Reply-to: =?utf-8?B?0KHQvtC30LDSmyDSr9C90ZY=?= <test@test.kz>
+Message-ID: <438b4be4276bfcaef7b1256882dc0d73@medic.zkgmu.kz>
+X-Priority: 3
+X-Mailer: PHPMailer 5.2 (http://code.google.com/a/apache-extras.org/p/phpmailer/)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 8 Mar 2022 08:21:01 +0000,
-<Claudiu.Beznea@microchip.com> a =C3=A9crit :
-[...]
+Сәлеметсіз бе, 🍓 Sheila want to meet you! Click here: http://inx.lv/04pQ?sxxhb 🍓,
 
-> >  static const struct of_device_id atmel_shdwc_ids[] =3D {
-> >         { .compatible =3D "atmel,sama5d2-shdwc" },
-> >         { .compatible =3D "microchip,sam9x60-shdwc" },
-> > @@ -1188,6 +1218,11 @@ void __init sama5d2_pm_init(void)
-> >         if (!IS_ENABLED(CONFIG_SOC_SAMA5D2))
-> >                 return;
-> >=20
-> > +       if (IS_ENABLED(CONFIG_ATMEL_SECURE_PM)) {
-> > +               at91_pm_secure_init();
-> > +               return;
-> > +       }
-> > +
-> >         at91_pm_modes_validate(modes, ARRAY_SIZE(modes));
-> >         at91_pm_modes_init(iomaps, ARRAY_SIZE(iomaps));
-> >         ret =3D at91_dt_ramc(false);
-> > @@ -1262,6 +1297,9 @@ static int __init at91_pm_modes_select(char *str)
-> >         soc_pm.data.standby_mode =3D standby;
-> >         soc_pm.data.suspend_mode =3D suspend;
-> >=20
-> > +       if (IS_ENABLED(CONFIG_ATMEL_SECURE_PM))
-> > +               pr_warn("AT91: Secure PM: ignoring standby mode\n"); =20
->=20
-> What happens with soc_pm.data.standby_mode? Can Linux still suspend to it?
+ «Медик газеті» сайтында тіркелгеніңіз үшін рақмет. Сіздің тіркелу жазбаңыз сайтта тіркелді, бірақ та оны қолдану үшін белсенді ету қажет.
+Тіркелу жазбасын белсенді ету үшін төмендегі сілтеме бойынша өтіңіз немесе оны браузердің мекен-жай жолына көшіріп қойыңыз:
+http://medic.zkgmu.kz/index.php?option=com_users&task=registration.activate&token=38a9ccca95cf6b938bdafe8de5683a68 
 
-Unfortunately, no. PSCI suspend support only allows one mode
-(SUSPEND_MEM, cf psci_suspend_ops) which should be the deepest suspend
-mode supported by the platform. Since the sama5 family support more
-than one suspend mode, we added this mechanism to keep the existing
-support for atmel,pm_modes support.
+Тіркелу жазбасы белсенді болғаннан кейін сіз «http://medic.zkgmu.kz/» сайтына төмендегі логин мен құпия сөзді қолдану арқылы кіре алатын боласыз:
 
-We could potentially add a suspend support for sama5d2 that call the
-SMC to set the suspend mode and then enters PSCI system suspend by
-calling psci_system_suspend_enter(). But I'm not sure it is the idea
-behind the PSCI system suspend call.
+Логин: n1q0hr6
+Құпия сөз: bjeOuHCsT2jU
 
-> If that's the case then the proper data for standby mode is not initializ=
-ed
-> as sama5d2_pm_init() returns if CONFIG_ATMEL_SECURE_PM is enabled, thus
-> system may hang in such a case. Is this intended?
-
-Since the platform_suspend_ops won't be registered, there should be no
-call to enter sama5d2 suspend (either mem or standby) from this code.
-
->=20
-> Otherwise, maybe this pr_warn() could be moved in sama5d2_pm_init() as
-> sama5d2 is the only user at the moment.
-
-Ok, I will move the print.
-
-Thanks,
-
-Cl=C3=A9ment
-
->=20
-> Thank you,
-> Claudiu Beznea
->=20
-> > +
-> >         return 0;
-> >  }
-> >  early_param("atmel.pm_modes", at91_pm_modes_select);
-> > diff --git a/arch/arm/mach-at91/sam_secure.h b/arch/arm/mach-at91/sam_s=
-ecure.h
-> > index 360036672f52..1e7d8b20ba1e 100644
-> > --- a/arch/arm/mach-at91/sam_secure.h
-> > +++ b/arch/arm/mach-at91/sam_secure.h
-> > @@ -8,6 +8,10 @@
-> >=20
-> >  #include <linux/arm-smccc.h>
-> >=20
-> > +/* Secure Monitor mode APIs */
-> > +#define SAMA5_SMC_SIP_SET_SUSPEND_MODE 0x400
-> > +#define SAMA5_SMC_SIP_GET_SUSPEND_MODE 0x401
-> > +
-> >  void __init sam_secure_init(void);
-> >  struct arm_smccc_res sam_smccc_call(u32 fn, u32 arg0, u32 arg1);
-> >=20
-> > --
-> > 2.34.1
-> >=20
-> >=20
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel =20
->=20
-
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
