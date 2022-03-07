@@ -2,99 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 768CDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08FCDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235772AbiCGRDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 12:03:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
+        id S242339AbiCGRFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 12:05:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244396AbiCGRDA (ORCPT
+        with ESMTP id S238330AbiCGRFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 12:03:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A1B6CA56;
-        Mon,  7 Mar 2022 09:02:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 7 Mar 2022 12:05:43 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3971664BC5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:04:48 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id E1365210EF;
+        Mon,  7 Mar 2022 17:04:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646672686; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wS6Ue02k7hebk/Mgz2MF8d/Kcu7OchpiW9RtZ99n1Tk=;
+        b=h/KHreq1aZibiQdnyTkaKYnSAiIewWKzL98qQei2xPe5fc++FeoxnTlennRxorxjCBkG8E
+        qU/VQcHwTsKYY92NJCHgJiZtajusWWDiEbF/ynBNVGjDB42z9zrpLCc4EedxDiitQ7xWuK
+        ekphZJHyi1XjrHagrf0AtbVKScVsDj0=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16055B81654;
-        Mon,  7 Mar 2022 17:02:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B20BC340E9;
-        Mon,  7 Mar 2022 17:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646672523;
-        bh=1P5v9F/mZnKMXAuqZg5b/RWXG24Id5fBXMZ4MlFif3A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nrBOBqNLjVfZ248m0etVeiFG940Kglk0T9zUitjXk46vR9Ngwgeg/kTx7/xq5a4bE
-         SSXHkApH5/UcdvNZv66Fwp7TQgnbj1z1DY2kRNI/z3q+bek9EyQMfo9bXdV/nsTPe0
-         icDq+BBRGi2F+BtJiL+7mRcxgAQ3XkpXeTyhp9epmR1o34D34pGizYCIfERVPnLXnE
-         o5WGk+Zq/ThzQHsgKPRpCZAJx2LlH2ONGF9IL+VYA0HfpVwGh3BW9JhGIEvP4yJb3q
-         LYmwPouLIKOO2GCf+BRyQPkpimAjytJ1w2ZfNgJArOp1drCybDjLXRfSlmLkqDTOgV
-         NbSg4iWGhInbw==
-Date:   Mon, 7 Mar 2022 17:01:57 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
- args to unwind()
-Message-ID: <YiY6hecX0pVWowQ7@sirena.org.uk>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220117145608.6781-1-madvenka@linux.microsoft.com>
- <20220117145608.6781-7-madvenka@linux.microsoft.com>
- <YgutJKqYe8ss8LLd@FVFF77S0Q05N>
- <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
+        by relay2.suse.de (Postfix) with ESMTPS id B10DAA3B83;
+        Mon,  7 Mar 2022 17:04:46 +0000 (UTC)
+Date:   Mon, 7 Mar 2022 18:04:43 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, pmladek@suse.com,
+        peterz@infradead.org, guro@fb.com, shakeelb@google.com,
+        minchan@kernel.org, timmurray@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kernel-team@android.com
+Subject: Re: [RFC 1/1] mm: page_alloc: replace mm_percpu_wq with kthreads in
+ drain_all_pages
+Message-ID: <YiY7K4ftAI3t6km8@dhcp22.suse.cz>
+References: <20220225012819.1807147-1-surenb@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ixglzDwA9geSqnO0"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
-X-Cookie: Whatever became of eternal truth?
+In-Reply-To: <20220225012819.1807147-1-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu 24-02-22 17:28:19, Suren Baghdasaryan wrote:
+> Sending as an RFC to confirm if this is the right direction and to
+> clarify if other tasks currently executed on mm_percpu_wq should be
+> also moved to kthreads. The patch seems stable in testing but I want
+> to collect more performance data before submitting a non-RFC version.
+> 
+> 
+> Currently drain_all_pages uses mm_percpu_wq to drain pages from pcp
+> list during direct reclaim. The tasks on a workqueue can be delayed
+> by other tasks in the workqueues using the same per-cpu worker pool.
+> This results in sizable delays in drain_all_pages when cpus are highly
+> contended.
 
---ixglzDwA9geSqnO0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is not about cpus being highly contended. It is about too much work
+on the WQ context.
 
-On Mon, Mar 07, 2022 at 10:51:38AM -0600, Madhavan T. Venkataraman wrote:
-> Hey Mark Rutland, Mark Brown,
->=20
-> Could you please review the rest of the patches in the series when you ca=
-n?
->=20
+> Memory management operations designed to relieve memory pressure should
+> not be allowed to block by other tasks, especially if the task in direct
+> reclaim has higher priority than the blocking tasks.
 
-Please don't send content free pings.  As far as I remember I'd reviewed
-or was expecting changes based on review or dependent patches for
-everything that you'd sent.
+Agreed here.
 
-> Also, many of the patches have received a Reviewed-By from you both. So, =
-after I send the next version out, can we upstream those ones?
+> Replace the usage of mm_percpu_wq with per-cpu low priority FIFO
+> kthreads to execute draining tasks.
 
-That's more a question for Catalin and Will.  If myself and Mark have
-reviewed patches then we're saying we think those patches are good to
-go.
+This looks like a natural thing to do when WQ context is not suitable
+but I am not sure the additional resources is really justified. Large
+machines with a lot of cpus would create a lot of kernel threads. Can we
+do better than that?
 
---ixglzDwA9geSqnO0
-Content-Type: application/pgp-signature; name="signature.asc"
+Would it be possible to have fewer workers (e.g. 1 or one per numa node)
+and it would perform the work on a dedicated cpu by changing its
+affinity? Or would that introduce an unacceptable overhead?
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmImOoQACgkQJNaLcl1U
-h9DW4Af/fUxJE80JR9yUH25qzBX7Hf16++AL6o3U3dW8Iiw8JBCFQhS/m/063PvM
-OzG1hKZdDpW97rwicBDT6jRZednkDj9tgzrI2iuR10wldWLNmIR/ok3nOa1IZ+ZI
-ZcHvDcGmVZeQdIY6EB2lLeFaNHIQlFx9Hzxn/lolgX51EOBDBofVgbqnndE3tZNC
-1oLWd5ZrBUePi3g7hrVbqikU2zPIlykyS5MgMquBfqB1ybIgTXkpQyjbUnahOnrE
-lWy54hhIHEuu0aPuy/m6bNC+EF86b0sF43dlzMueZKLW42Je+HRgvMKi9dI38zGC
-bM+8tW+PNivVEE5waHX30nKhnpI8qg==
-=+oMv
------END PGP SIGNATURE-----
-
---ixglzDwA9geSqnO0--
+Or would it be possible to update the existing WQ code to use rescuer
+well before the WQ is completely clogged?
+-- 
+Michal Hocko
+SUSE Labs
