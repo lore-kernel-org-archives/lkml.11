@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9200C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DFDC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237855AbiCGJdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:33:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S237916AbiCGJdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:33:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238511AbiCGJ3Q (ORCPT
+        with ESMTP id S238494AbiCGJ3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4871CFCE;
-        Mon,  7 Mar 2022 01:27:33 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7D1DFEB;
+        Mon,  7 Mar 2022 01:27:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F06A5B810C5;
-        Mon,  7 Mar 2022 09:27:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13EDDC340F6;
-        Mon,  7 Mar 2022 09:27:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FCC5B810C2;
+        Mon,  7 Mar 2022 09:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFEBC340F3;
+        Mon,  7 Mar 2022 09:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645244;
-        bh=PFk4EjdLYTAF6sqo7VwPI2C4Bb9XL2OGpcAbpcDAZZM=;
+        s=korg; t=1646645225;
+        bh=i/rdGyW6fSrYnsb71QPxSkriOn3JnYMA/1oexnxwVhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUtVuLCooLDIs6v1QP/7dclzuOcPK8gdXANmLJ47w/nrfSrzq5nIG0EVrcE4JEZEP
-         0YEYuS2e5e0DeWl+25Ain0BtQu0+UfIJr7aepLEO0WysBsBekAQ8UUjtXua6M2MxCN
-         FUAQ9/VdUt6d2Ard2/gpzaFIpt/7vqe0jwRBmdcw=
+        b=O9Cv2ANwMo7w55ziBV0moK00X8L+n5nAOWXUVBVJ+wh9slEZEb9nMTr50J59j6e7A
+         beh5sVf1MqEAcItUEX+9qvrb+CRDkLxczEbBsEqnVOdbwKpoiPtk5gIfFlKs/3Unzd
+         XrQDtyZZjCZqx4kltSZhmOXzO0K69FSj1GA3yPrU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 5.4 32/64] sched/topology: Fix sched_domain_topology_level alloc in sched_init_numa()
-Date:   Mon,  7 Mar 2022 10:19:05 +0100
-Message-Id: <20220307091640.056331062@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 26/64] net: dcb: flush lingering app table entries for unregistered devices
+Date:   Mon,  7 Mar 2022 10:18:59 +0100
+Message-Id: <20220307091639.887992052@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -53,49 +48,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 71e5f6644fb2f3304fcb310145ded234a37e7cc1 upstream.
+commit 91b0383fef06f20b847fa9e4f0e3054ead0b1a1b upstream.
 
-Commit "sched/topology: Make sched_init_numa() use a set for the
-deduplicating sort" allocates 'i + nr_levels (level)' instead of
-'i + nr_levels + 1' sched_domain_topology_level.
+If I'm not mistaken (and I don't think I am), the way in which the
+dcbnl_ops work is that drivers call dcb_ieee_setapp() and this populates
+the application table with dynamically allocated struct dcb_app_type
+entries that are kept in the module-global dcb_app_list.
 
-This led to an Oops (on Arm64 juno with CONFIG_SCHED_DEBUG):
+However, nobody keeps exact track of these entries, and although
+dcb_ieee_delapp() is supposed to remove them, nobody does so when the
+interface goes away (example: driver unbinds from device). So the
+dcb_app_list will contain lingering entries with an ifindex that no
+longer matches any device in dcb_app_lookup().
 
-sched_init_domains
-  build_sched_domains()
-    __free_domain_allocs()
-      __sdt_free() {
-	...
-        for_each_sd_topology(tl)
-	  ...
-          sd = *per_cpu_ptr(sdd->sd, j); <--
-	  ...
-      }
+Reclaim the lost memory by listening for the NETDEV_UNREGISTER event and
+flushing the app table entries of interfaces that are now gone.
 
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Tested-by: Vincent Guittot <vincent.guittot@linaro.org>
-Tested-by: Barry Song <song.bao.hua@hisilicon.com>
-Link: https://lkml.kernel.org/r/6000e39e-7d28-c360-9cd6-8798fd22a9bf@arm.com
-Signed-off-by: dann frazier <dann.frazier@canonical.com>
+In fact something like this used to be done as part of the initial
+commit (blamed below), but it was done in dcbnl_exit() -> dcb_flushapp(),
+essentially at module_exit time. That became dead code after commit
+7a6b6f515f77 ("DCB: fix kconfig option") which essentially merged
+"tristate config DCB" and "bool config DCBNL" into a single "bool config
+DCB", so net/dcb/dcbnl.c could not be built as a module anymore.
+
+Commit 36b9ad8084bd ("net/dcb: make dcbnl.c explicitly non-modular")
+recognized this and deleted dcbnl_exit() and dcb_flushapp() altogether,
+leaving us with the version we have today.
+
+Since flushing application table entries can and should be done as soon
+as the netdevice disappears, fundamentally the commit that is to blame
+is the one that introduced the design of this API.
+
+Fixes: 9ab933ab2cc8 ("dcbnl: add appliction tlv handlers")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/topology.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dcb/dcbnl.c |   44 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1658,7 +1658,7 @@ void sched_init_numa(void)
- 	/* Compute default topology size */
- 	for (i = 0; sched_domain_topology[i].mask; i++);
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -2063,10 +2063,54 @@ u8 dcb_ieee_getapp_default_prio_mask(con
+ }
+ EXPORT_SYMBOL(dcb_ieee_getapp_default_prio_mask);
  
--	tl = kzalloc((i + nr_levels) *
-+	tl = kzalloc((i + nr_levels + 1) *
- 			sizeof(struct sched_domain_topology_level), GFP_KERNEL);
- 	if (!tl)
- 		return;
++static void dcbnl_flush_dev(struct net_device *dev)
++{
++	struct dcb_app_type *itr, *tmp;
++
++	spin_lock(&dcb_lock);
++
++	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
++		if (itr->ifindex == dev->ifindex) {
++			list_del(&itr->list);
++			kfree(itr);
++		}
++	}
++
++	spin_unlock(&dcb_lock);
++}
++
++static int dcbnl_netdevice_event(struct notifier_block *nb,
++				 unsigned long event, void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++
++	switch (event) {
++	case NETDEV_UNREGISTER:
++		if (!dev->dcbnl_ops)
++			return NOTIFY_DONE;
++
++		dcbnl_flush_dev(dev);
++
++		return NOTIFY_OK;
++	default:
++		return NOTIFY_DONE;
++	}
++}
++
++static struct notifier_block dcbnl_nb __read_mostly = {
++	.notifier_call  = dcbnl_netdevice_event,
++};
++
+ static int __init dcbnl_init(void)
+ {
++	int err;
++
+ 	INIT_LIST_HEAD(&dcb_app_list);
+ 
++	err = register_netdevice_notifier(&dcbnl_nb);
++	if (err)
++		return err;
++
+ 	rtnl_register(PF_UNSPEC, RTM_GETDCB, dcb_doit, NULL, 0);
+ 	rtnl_register(PF_UNSPEC, RTM_SETDCB, dcb_doit, NULL, 0);
+ 
 
 
