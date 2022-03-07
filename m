@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD47C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240501AbiCGKmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
+        id S240498AbiCGKmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:42:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242007AbiCGKVg (ORCPT
+        with ESMTP id S241772AbiCGKVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:21:36 -0500
+        Mon, 7 Mar 2022 05:21:14 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD58290FF8;
-        Mon,  7 Mar 2022 01:58:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF10290FD7;
+        Mon,  7 Mar 2022 01:58:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C568B80E70;
-        Mon,  7 Mar 2022 09:58:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B452FC340E9;
-        Mon,  7 Mar 2022 09:58:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45D04B810B2;
+        Mon,  7 Mar 2022 09:58:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E6A2C340F3;
+        Mon,  7 Mar 2022 09:58:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647107;
-        bh=HCZQOoGRn4DtMQg9lFdPkGCgGX0eb4zGvQTDiXAj+MY=;
+        s=korg; t=1646647101;
+        bh=J76EK4Gg0zKonoDusSRUDGSGYSXcFIUSgfL51l/8jB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uewEWSPheBLLyqGLrHRxSpeM8ad+ZbPBpVY7qE5dVITqt2pfVTy2NOQY4jRqX5NxB
-         4iBTeGAjXeq2sMmrwZbybH/FykukghAAK7RyOM4dBYHFE2Q29cIiHpa5jIg9PnN0py
-         gKy8/x5DvTHcBtMJ7s3PMf2LIgd4p8uhSRyu3qos=
+        b=pvp47+Iz8QYbW/v6ZkKYc58Fc0RU0+be0f7x1y6fEj2GyX99u2hbIsS7MH/V6F1yE
+         m9oHegh2U5d16ao3cRV18ELnXWF3NI24g8ZIyN/G+KP4IPZ6eFBmUhiUAgMjhMCiyr
+         QMq/6kOsxn+mRjfscYyJ5YM+dCmboG69GacYpQ1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 149/186] iavf: Add trace while removing device
-Date:   Mon,  7 Mar 2022 10:19:47 +0100
-Message-Id: <20220307091658.242060505@linuxfoundation.org>
+Subject: [PATCH 5.16 157/186] drm/bridge: ti-sn65dsi86: Properly undo autosuspend
+Date:   Mon,  7 Mar 2022 10:19:55 +0100
+Message-Id: <20220307091658.466374511@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,38 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Douglas Anderson <dianders@chromium.org>
 
-[ Upstream commit bdb9e5c7aec73a7b8b5acab37587b6de1203e68d ]
+[ Upstream commit 26d3474348293dc752c55fe6d41282199f73714c ]
 
-Add kernel trace that device was removed.
-Currently there is no such information.
-I.e. Host admin removes a PCI device from a VM,
-than on VM shall be info about the event.
+The PM Runtime docs say:
+  Drivers in ->remove() callback should undo the runtime PM changes done
+  in ->probe(). Usually this means calling pm_runtime_disable(),
+  pm_runtime_dont_use_autosuspend() etc.
 
-This patch adds info log to iavf_remove function.
+We weren't doing that for autosuspend. Let's do it.
 
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 9bede63127c6 ("drm/bridge: ti-sn65dsi86: Use pm_runtime autosuspend")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220222141838.1.If784ba19e875e8ded4ec4931601ce6d255845245@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 5ff6d0de654e..fff9e9c7f76e 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -4005,6 +4005,7 @@ static void iavf_remove(struct pci_dev *pdev)
- 	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
- 		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index 83d06c16d4d7..b7f74c146dee 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -1474,6 +1474,7 @@ static inline void ti_sn_gpio_unregister(void) {}
  
-+	dev_info(&adapter->pdev->dev, "Removing device\n");
- 	/* Shut down all the garbage mashers on the detention level */
- 	iavf_change_state(adapter, __IAVF_REMOVE);
- 	adapter->aq_required = 0;
+ static void ti_sn65dsi86_runtime_disable(void *data)
+ {
++	pm_runtime_dont_use_autosuspend(data);
+ 	pm_runtime_disable(data);
+ }
+ 
+@@ -1533,11 +1534,11 @@ static int ti_sn65dsi86_probe(struct i2c_client *client,
+ 				     "failed to get reference clock\n");
+ 
+ 	pm_runtime_enable(dev);
++	pm_runtime_set_autosuspend_delay(pdata->dev, 500);
++	pm_runtime_use_autosuspend(pdata->dev);
+ 	ret = devm_add_action_or_reset(dev, ti_sn65dsi86_runtime_disable, dev);
+ 	if (ret)
+ 		return ret;
+-	pm_runtime_set_autosuspend_delay(pdata->dev, 500);
+-	pm_runtime_use_autosuspend(pdata->dev);
+ 
+ 	ti_sn65dsi86_debugfs_init(pdata);
+ 
 -- 
 2.34.1
 
