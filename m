@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F438C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C178C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237928AbiCGJhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:37:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
+        id S238295AbiCGJiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:38:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238754AbiCGJ3k (ORCPT
+        with ESMTP id S238833AbiCGJ3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61BC593A0;
-        Mon,  7 Mar 2022 01:28:21 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A702BDEF;
+        Mon,  7 Mar 2022 01:28:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51480B810B2;
-        Mon,  7 Mar 2022 09:28:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1081C340E9;
-        Mon,  7 Mar 2022 09:28:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40DBA60C00;
+        Mon,  7 Mar 2022 09:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525DAC340E9;
+        Mon,  7 Mar 2022 09:28:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645299;
-        bh=4bogtauP+dXN3w5q+VDJQ5ObyCFM+VUzcU91RdfMZ3M=;
+        s=korg; t=1646645336;
+        bh=6ZBj3r1Avvm002zaEoE/iDo0vTxoL/2Zm5ACvtb4eeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S4wWdwth0m92ieS7rafU5ksoI867sUDpZGrx9kr9GN5i1Tr5jNzUBET7hV9JbpthG
-         ByAobG2vPFWCjGRNX61SlExhwo/OlnH3+1F0SbZn9D0IRDQ5ifYho6vsSoU35vNhRB
-         UzgftUAuhRGnWpAhggkmCEq/qvjkJGrsGZ1paMxE=
+        b=KOktFm8ae/wWv0PVx4yPs4CaMNjXjSHLUGzPG68XkEW9o+rn6I43bOypOHN4JDdgm
+         +P6vK8NvmaGcaT+iyJIlUtqBb14KPe/oq8sChQi9wL66M9YiHaVjSmmb+RQSqMoiZf
+         ELClfBhAfVGWPfS1wbq2awKd+3wWm3+uPddlxvaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 48/64] igc: igc_write_phy_reg_gpy: drop premature return
-Date:   Mon,  7 Mar 2022 10:19:21 +0100
-Message-Id: <20220307091640.514491865@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.4 63/64] Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
+Date:   Mon,  7 Mar 2022 10:19:36 +0100
+Message-Id: <20220307091640.937915287@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -51,39 +48,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Jiri Bohac <jbohac@suse.cz>
 
-commit c4208653a327a09da1e9e7b10299709b6d9b17bf upstream.
+commit a6d95c5a628a09be129f25d5663a7e9db8261f51 upstream.
 
-Similar to "igc_read_phy_reg_gpy: drop premature return" patch.
-igc_write_phy_reg_gpy checks the return value from igc_write_phy_reg_mdic
-and if it's not 0, returns immediately. By doing this, it leaves the HW
-semaphore in the acquired state.
+This reverts commit b515d2637276a3810d6595e10ab02c13bfd0b63a.
 
-Drop this premature return statement, the function returns after
-releasing the semaphore immediately anyway.
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm: xfrm_state_mtu
+should return at least 1280 for ipv6") in v5.14 breaks the TCP MSS
+calculation in ipsec transport mode, resulting complete stalls of TCP
+connections. This happens when the (P)MTU is 1280 or slighly larger.
 
-Fixes: 5586838fe9ce ("igc: Add code for PHY support")
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Reported-by: Corinna Vinschen <vinschen@redhat.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+The desired formula for the MSS is:
+MSS = (MTU - ESP_overhead) - IP header - TCP header
+
+However, the above commit clamps the (MTU - ESP_overhead) to a
+minimum of 1280, turning the formula into
+MSS = max(MTU - ESP overhead, 1280) -  IP header - TCP header
+
+With the (P)MTU near 1280, the calculated MSS is too large and the
+resulting TCP packets never make it to the destination because they
+are over the actual PMTU.
+
+The above commit also causes suboptimal double fragmentation in
+xfrm tunnel mode, as described in
+https://lore.kernel.org/netdev/20210429202529.codhwpc7w6kbudug@dwarf.suse.cz/
+
+The original problem the above commit was trying to fix is now fixed
+by commit 6596a0229541270fb8d38d989f91b78838e5e9da ("xfrm: fix MTU
+regression").
+
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_phy.c |    2 --
- 1 file changed, 2 deletions(-)
+ include/net/xfrm.h    |    1 -
+ net/ipv4/esp4.c       |    2 +-
+ net/ipv6/esp6.c       |    2 +-
+ net/xfrm/xfrm_state.c |   14 ++------------
+ 4 files changed, 4 insertions(+), 15 deletions(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -734,8 +734,6 @@ s32 igc_write_phy_reg_gpy(struct igc_hw
- 		if (ret_val)
- 			return ret_val;
- 		ret_val = igc_write_phy_reg_mdic(hw, offset, data);
--		if (ret_val)
--			return ret_val;
- 		hw->phy.ops.release(hw);
- 	} else {
- 		ret_val = igc_write_xmdio_reg(hw, (u16)offset, dev_addr,
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1543,7 +1543,6 @@ void xfrm_sad_getinfo(struct net *net, s
+ void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
+ u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
+ int xfrm_init_replay(struct xfrm_state *x);
+-u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu);
+ u32 xfrm_state_mtu(struct xfrm_state *x, int mtu);
+ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload);
+ int xfrm_init_state(struct xfrm_state *x);
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -499,7 +499,7 @@ static int esp_output(struct xfrm_state
+ 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
+ 		u32 padto;
+ 
+-		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
++		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
+ 		if (skb->len < padto)
+ 			esp.tfclen = padto - skb->len;
+ 	}
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -440,7 +440,7 @@ static int esp6_output(struct xfrm_state
+ 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
+ 		u32 padto;
+ 
+-		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
++		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
+ 		if (skb->len < padto)
+ 			esp.tfclen = padto - skb->len;
+ 	}
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2440,7 +2440,7 @@ void xfrm_state_delete_tunnel(struct xfr
+ }
+ EXPORT_SYMBOL(xfrm_state_delete_tunnel);
+ 
+-u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu)
++u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
+ {
+ 	const struct xfrm_type *type = READ_ONCE(x->type);
+ 	struct crypto_aead *aead;
+@@ -2471,17 +2471,7 @@ u32 __xfrm_state_mtu(struct xfrm_state *
+ 	return ((mtu - x->props.header_len - crypto_aead_authsize(aead) -
+ 		 net_adj) & ~(blksize - 1)) + net_adj - 2;
+ }
+-EXPORT_SYMBOL_GPL(__xfrm_state_mtu);
+-
+-u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
+-{
+-	mtu = __xfrm_state_mtu(x, mtu);
+-
+-	if (x->props.family == AF_INET6 && mtu < IPV6_MIN_MTU)
+-		return IPV6_MIN_MTU;
+-
+-	return mtu;
+-}
++EXPORT_SYMBOL_GPL(xfrm_state_mtu);
+ 
+ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
+ {
 
 
