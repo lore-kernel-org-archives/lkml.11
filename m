@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8A8C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63845C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239643AbiCGJ7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:59:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
+        id S239696AbiCGJ7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:59:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237492AbiCGJgg (ORCPT
+        with ESMTP id S240602AbiCGJlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:36:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337236E341;
-        Mon,  7 Mar 2022 01:31:35 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F644B43A;
+        Mon,  7 Mar 2022 01:37:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C710261119;
-        Mon,  7 Mar 2022 09:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B9A5C340E9;
-        Mon,  7 Mar 2022 09:31:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADBBD60FF6;
+        Mon,  7 Mar 2022 09:37:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51AF6C340F4;
+        Mon,  7 Mar 2022 09:37:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645483;
-        bh=8XZ+BPtqFWNxqj7jFe97w03KpviOdTmNni0N36TjqxM=;
+        s=korg; t=1646645865;
+        bh=tgNigy6iluIbCmY3PIKN2TAhpdqPD7xQ2/sANhsu4tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qiZmvLPqbuhwFvL+xnlY0Xi6iWBSusUbDRoG9JnzeAbaMZ0FeVfOUoaAF0vPFlIU0
-         S5a12T+qbZQERAPv4kw9g7CDoQlMpRHT++CRbX6dQzAmL0pLaIT9l8QmJb0bn7pK6s
-         Z0tbAfYqzu5qbPAB73pvqjF/j3vY86w4OxaJ+lMM=
+        b=junW8Bo3SGds9qNJ9VJ7cDRCCxYuhF+puwRfzUFivJgxhLfCrDb1qenJoG8Osyxl9
+         TKoH+FpiqDAzcD+bq/Ju832KVlODnod5uGG2R/VXKh6i4Kn0MTK9cht/lEpM4HQABx
+         +ywZtvxRi7EiGUIRgEueSjVFmSRgH/VLg8WRuCqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Stringer <joe@cilium.io>,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH 5.10 045/105] netfilter: nf_queue: handle socket prefetch
-Date:   Mon,  7 Mar 2022 10:18:48 +0100
-Message-Id: <20220307091645.453234294@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Hou Wenlong <houwenlong93@linux.alibaba.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 060/262] KVM: x86: Exit to userspace if emulation prepared a completion callback
+Date:   Mon,  7 Mar 2022 10:16:44 +0100
+Message-Id: <20220307091704.203349969@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,53 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Hou Wenlong <houwenlong93@linux.alibaba.com>
 
-commit 3b836da4081fa585cf6c392f62557496f2cb0efe upstream.
+[ Upstream commit adbfb12d4c4517a8adde23a7fc46538953d56eea ]
 
-In case someone combines bpf socket assign and nf_queue, then we will
-queue an skb who references a struct sock that did not have its
-reference count incremented.
+em_rdmsr() and em_wrmsr() return X86EMUL_IO_NEEDED if MSR accesses
+required an exit to userspace. However, x86_emulate_insn() doesn't return
+X86EMUL_*, so x86_emulate_instruction() doesn't directly act on
+X86EMUL_IO_NEEDED; instead, it looks for other signals to differentiate
+between PIO, MMIO, etc. causing RDMSR/WRMSR emulation not to
+exit to userspace now.
 
-As we leave rcu protection, there is no guarantee that skb->sk is still
-valid.
+Nevertheless, if the userspace_msr_exit_test testcase in selftests
+is changed to test RDMSR/WRMSR with a forced emulation prefix,
+the test passes.  What happens is that first userspace exit
+information is filled but the userspace exit does not happen.
+Because x86_emulate_instruction() returns 1, the guest retries
+the instruction---but this time RIP has already been adjusted
+past the forced emulation prefix, so the guest executes RDMSR/WRMSR
+and the userspace exit finally happens.
 
-For refcount-less skb->sk case, try to increment the reference count
-and then override the destructor.
+Since the X86EMUL_IO_NEEDED path has provided a complete_userspace_io
+callback, x86_emulate_instruction() can just return 0 if the
+callback is not NULL. Then RDMSR/WRMSR instruction emulation will
+exit to userspace directly, without the RDMSR/WRMSR vmexit.
 
-In case of failure we have two choices: orphan the skb and 'delete'
-preselect or let nf_queue() drop the packet.
-
-Do the latter, it should not happen during normal operation.
-
-Fixes: cf7fbe660f2d ("bpf: Add socket assign support")
-Acked-by: Joe Stringer <joe@cilium.io>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1ae099540e8c7 ("KVM: x86: Allow deflecting unknown MSR accesses to user space")
+Signed-off-by: Hou Wenlong <houwenlong93@linux.alibaba.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Message-Id: <56f9df2ee5c05a81155e2be366c9dc1f7adc8817.1635842679.git.houwenlong93@linux.alibaba.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_queue.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/x86/kvm/x86.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/netfilter/nf_queue.c
-+++ b/net/netfilter/nf_queue.c
-@@ -189,6 +189,18 @@ static int __nf_queue(struct sk_buff *sk
- 		break;
- 	}
- 
-+	if (skb_sk_is_prefetched(skb)) {
-+		struct sock *sk = skb->sk;
-+
-+		if (!sk_is_refcounted(sk)) {
-+			if (!refcount_inc_not_zero(&sk->sk_refcnt))
-+				return -ENOTCONN;
-+
-+			/* drop refcount on skb_orphan */
-+			skb->destructor = sock_edemux;
-+		}
-+	}
-+
- 	entry = kmalloc(sizeof(*entry) + route_key_size, GFP_ATOMIC);
- 	if (!entry)
- 		return -ENOMEM;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 6b76486702ded..8213f7fb71a7b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8068,6 +8068,9 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 			writeback = false;
+ 		r = 0;
+ 		vcpu->arch.complete_userspace_io = complete_emulated_mmio;
++	} else if (vcpu->arch.complete_userspace_io) {
++		writeback = false;
++		r = 0;
+ 	} else if (r == EMULATION_RESTART)
+ 		goto restart;
+ 	else
+-- 
+2.34.1
+
 
 
