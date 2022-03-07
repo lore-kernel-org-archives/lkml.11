@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF80C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240775AbiCGKkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:40:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
+        id S240816AbiCGKkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:40:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240860AbiCGKTb (ORCPT
+        with ESMTP id S240865AbiCGKTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:19:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2582C7307D;
-        Mon,  7 Mar 2022 01:58:02 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68527B56F;
+        Mon,  7 Mar 2022 01:58:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFA5160F34;
-        Mon,  7 Mar 2022 09:58:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC6A9C340E9;
-        Mon,  7 Mar 2022 09:58:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2E3260E83;
+        Mon,  7 Mar 2022 09:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E26C340F4;
+        Mon,  7 Mar 2022 09:57:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647082;
-        bh=hrAY67R9IIspm1ak8n4aPSsN/xkw0dD50DbrjpAhmb0=;
+        s=korg; t=1646647051;
+        bh=GMjtI4o3C/+yQc3rUwS91tppMtuj+jFkJ7zfAjL6jxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MGt1xkTXuMpEz2QfU5d8OO3nNJM7xxwJsLWOYdk9ya18xsghGrcjETCzPHk0iS0Fx
-         ejOf5Nhqj8pUiheqYKOeUL6Cs6SBcibTvF9bY9P53h2xTvcjCh+c76NJRb/cgQyqb5
-         raXnDvir1VDg6xPpPzjq664SYbakDQoH5Geg2rqU=
+        b=LTW6a9Lu9jbfDs4IWWd8axgSRa9DPDcnYI0TYusK0q9+72nlhVwGNT47bCrE81GUW
+         24aUR/84HZYTw+ePG8mHfMUGWlfCV8KuAzvR3XJBmgiYRld6cPhjgyPF9O1ssGpdj1
+         MLRqcydaGhD/7Wamspx5bMoQN0uBAzDdOztH/+zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.16 185/186] s390/ftrace: fix ftrace_caller/ftrace_regs_caller generation
-Date:   Mon,  7 Mar 2022 10:20:23 +0100
-Message-Id: <20220307091659.254220474@linuxfoundation.org>
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 176/186] btrfs: do not WARN_ON() if we have PageError set
+Date:   Mon,  7 Mar 2022 10:20:14 +0100
+Message-Id: <20220307091658.999259158@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,86 +48,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-commit 9fa881f7e3c74ce6626d166bca9397e5d925937f upstream.
+commit a50e1fcbc9b85fd4e95b89a75c0884cb032a3e06 upstream.
 
-ftrace_caller was used for both ftrace_caller and ftrace_regs_caller,
-which means that the target address of the hotpatch trampoline was
-never updated.
+Whenever we do any extent buffer operations we call
+assert_eb_page_uptodate() to complain loudly if we're operating on an
+non-uptodate page.  Our overnight tests caught this warning earlier this
+week
 
-With commit 894979689d3a ("s390/ftrace: provide separate
-ftrace_caller/ftrace_regs_caller implementations") a separate
-ftrace_regs_caller entry point was implemeted, however it was
-forgotten to implement the necessary changes for ftrace_modify_call
-and ftrace_make_call, where the branch target has to be modified
-accordingly.
+  WARNING: CPU: 1 PID: 553508 at fs/btrfs/extent_io.c:6849 assert_eb_page_uptodate+0x3f/0x50
+  CPU: 1 PID: 553508 Comm: kworker/u4:13 Tainted: G        W         5.17.0-rc3+ #564
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-2.fc32 04/01/2014
+  Workqueue: btrfs-cache btrfs_work_helper
+  RIP: 0010:assert_eb_page_uptodate+0x3f/0x50
+  RSP: 0018:ffffa961440a7c68 EFLAGS: 00010246
+  RAX: 0017ffffc0002112 RBX: ffffe6e74453f9c0 RCX: 0000000000001000
+  RDX: ffffe6e74467c887 RSI: ffffe6e74453f9c0 RDI: ffff8d4c5efc2fc0
+  RBP: 0000000000000d56 R08: ffff8d4d4a224000 R09: 0000000000000000
+  R10: 00015817fa9d1ef0 R11: 000000000000000c R12: 00000000000007b1
+  R13: ffff8d4c5efc2fc0 R14: 0000000001500000 R15: 0000000001cb1000
+  FS:  0000000000000000(0000) GS:ffff8d4dbbd00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007ff31d3448d8 CR3: 0000000118be8004 CR4: 0000000000370ee0
+  Call Trace:
 
-Therefore add the missing code now.
+   extent_buffer_test_bit+0x3f/0x70
+   free_space_test_bit+0xa6/0xc0
+   load_free_space_tree+0x1f6/0x470
+   caching_thread+0x454/0x630
+   ? rcu_read_lock_sched_held+0x12/0x60
+   ? rcu_read_lock_sched_held+0x12/0x60
+   ? rcu_read_lock_sched_held+0x12/0x60
+   ? lock_release+0x1f0/0x2d0
+   btrfs_work_helper+0xf2/0x3e0
+   ? lock_release+0x1f0/0x2d0
+   ? finish_task_switch.isra.0+0xf9/0x3a0
+   process_one_work+0x26d/0x580
+   ? process_one_work+0x580/0x580
+   worker_thread+0x55/0x3b0
+   ? process_one_work+0x580/0x580
+   kthread+0xf0/0x120
+   ? kthread_complete_and_exit+0x20/0x20
+   ret_from_fork+0x1f/0x30
 
-Fixes: 894979689d3a ("s390/ftrace: provide separate ftrace_caller/ftrace_regs_caller implementations")
-Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
-Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+This was partially fixed by c2e39305299f01 ("btrfs: clear extent buffer
+uptodate when we fail to write it"), however all that fix did was keep
+us from finding extent buffers after a failed writeout.  It didn't keep
+us from continuing to use a buffer that we already had found.
+
+In this case we're searching the commit root to cache the block group,
+so we can start committing the transaction and switch the commit root
+and then start writing.  After the switch we can look up an extent
+buffer that hasn't been written yet and start processing that block
+group.  Then we fail to write that block out and clear Uptodate on the
+page, and then we start spewing these errors.
+
+Normally we're protected by the tree lock to a certain degree here.  If
+we read a block we have that block read locked, and we block the writer
+from locking the block before we submit it for the write.  However this
+isn't necessarily fool proof because the read could happen before we do
+the submit_bio and after we locked and unlocked the extent buffer.
+
+Also in this particular case we have path->skip_locking set, so that
+won't save us here.  We'll simply get a block that was valid when we
+read it, but became invalid while we were using it.
+
+What we really want is to catch the case where we've "read" a block but
+it's not marked Uptodate.  On read we ClearPageError(), so if we're
+!Uptodate and !Error we know we didn't do the right thing for reading
+the page.
+
+Fix this by checking !Uptodate && !Error, this way we will not complain
+if our buffer gets invalidated while we're using it, and we'll maintain
+the spirit of the check which is to make sure we have a fully in-cache
+block while we're messing with it.
+
+CC: stable@vger.kernel.org # 5.4+
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kernel/ftrace.c |   35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ fs/btrfs/extent_io.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
---- a/arch/s390/kernel/ftrace.c
-+++ b/arch/s390/kernel/ftrace.c
-@@ -159,9 +159,38 @@ int ftrace_init_nop(struct module *mod,
- 	return 0;
- }
- 
-+static struct ftrace_hotpatch_trampoline *ftrace_get_trampoline(struct dyn_ftrace *rec)
-+{
-+	struct ftrace_hotpatch_trampoline *trampoline;
-+	struct ftrace_insn insn;
-+	s64 disp;
-+	u16 opc;
-+
-+	if (copy_from_kernel_nofault(&insn, (void *)rec->ip, sizeof(insn)))
-+		return ERR_PTR(-EFAULT);
-+	disp = (s64)insn.disp * 2;
-+	trampoline = (void *)(rec->ip + disp);
-+	if (get_kernel_nofault(opc, &trampoline->brasl_opc))
-+		return ERR_PTR(-EFAULT);
-+	if (opc != 0xc015)
-+		return ERR_PTR(-EINVAL);
-+	return trampoline;
-+}
-+
- int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
- 		       unsigned long addr)
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -6865,14 +6865,24 @@ static void assert_eb_page_uptodate(cons
  {
-+	struct ftrace_hotpatch_trampoline *trampoline;
-+	u64 old;
-+
-+	trampoline = ftrace_get_trampoline(rec);
-+	if (IS_ERR(trampoline))
-+		return PTR_ERR(trampoline);
-+	if (get_kernel_nofault(old, &trampoline->interceptor))
-+		return -EFAULT;
-+	if (old != old_addr)
-+		return -EINVAL;
-+	s390_kernel_write(&trampoline->interceptor, &addr, sizeof(addr));
- 	return 0;
+ 	struct btrfs_fs_info *fs_info = eb->fs_info;
+ 
++	/*
++	 * If we are using the commit root we could potentially clear a page
++	 * Uptodate while we're using the extent buffer that we've previously
++	 * looked up.  We don't want to complain in this case, as the page was
++	 * valid before, we just didn't write it out.  Instead we want to catch
++	 * the case where we didn't actually read the block properly, which
++	 * would have !PageUptodate && !PageError, as we clear PageError before
++	 * reading.
++	 */
+ 	if (fs_info->sectorsize < PAGE_SIZE) {
+-		bool uptodate;
++		bool uptodate, error;
+ 
+ 		uptodate = btrfs_subpage_test_uptodate(fs_info, page,
+ 						       eb->start, eb->len);
+-		WARN_ON(!uptodate);
++		error = btrfs_subpage_test_error(fs_info, page, eb->start, eb->len);
++		WARN_ON(!uptodate && !error);
+ 	} else {
+-		WARN_ON(!PageUptodate(page));
++		WARN_ON(!PageUptodate(page) && !PageError(page));
+ 	}
  }
  
-@@ -188,6 +217,12 @@ static void brcl_enable(void *brcl)
- 
- int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- {
-+	struct ftrace_hotpatch_trampoline *trampoline;
-+
-+	trampoline = ftrace_get_trampoline(rec);
-+	if (IS_ERR(trampoline))
-+		return PTR_ERR(trampoline);
-+	s390_kernel_write(&trampoline->interceptor, &addr, sizeof(addr));
- 	brcl_enable((void *)rec->ip);
- 	return 0;
- }
 
 
