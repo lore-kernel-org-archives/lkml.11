@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14ABAC38A06
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CFDC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242776AbiCGKLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        id S242339AbiCGKL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238353AbiCGJwE (ORCPT
+        with ESMTP id S239978AbiCGJu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:52:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B73476E1B;
-        Mon,  7 Mar 2022 01:45:11 -0800 (PST)
+        Mon, 7 Mar 2022 04:50:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD956723EE;
+        Mon,  7 Mar 2022 01:43:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 003D8B810DC;
-        Mon,  7 Mar 2022 09:45:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A51AC340F3;
-        Mon,  7 Mar 2022 09:45:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D77616128D;
+        Mon,  7 Mar 2022 09:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EA0C340E9;
+        Mon,  7 Mar 2022 09:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646308;
-        bh=Ze5YpmdfbkD+ctYC9WHtwTW/hAo0ubYIkD6RkbQ0swI=;
+        s=korg; t=1646646237;
+        bh=AaSQdNddQqXP9BLD0YECfLSKujsXjMpmANtH8HAYALQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dSgCavVse7Aad/1WE4fxUBaY27s6j8KVmLpEVVKDcQSeq1SGVy93dENQl5hfcCNDZ
-         Niz9aYJzTSdyhuqdjKtv8v1D7AI+bk6Y2nGV54OL3pAppstfyrsoYXzhdAkI5bnG4J
-         M00PPivC+1LboWbwjtCxb4R1LBTIow88ECrgfbgU=
+        b=MnTH+S7ktJmFHWLfawW/5cmGzyE625MBLLTC0JUfvsRO+RiZx+cn0QeLW4f7VJdW2
+         pG4dqq8ROJMXIZaxAileCNyxr6xU3AtQcy9qHOtGDsX3/Ua1uBowa4QvyWsC+I0LaW
+         kkvte2CftcxrfDFfWiq/4keuPLV1VNZUH8a3s+d4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 174/262] net: stmmac: fix return value of __setup handler
-Date:   Mon,  7 Mar 2022 10:18:38 +0100
-Message-Id: <20220307091707.331847241@linuxfoundation.org>
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 127/262] drm/mediatek: mtk_dsi: Reset the dsi0 hardware
+Date:   Mon,  7 Mar 2022 10:17:51 +0100
+Message-Id: <20220307091706.041051902@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,53 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-commit e01b042e580f1fbf4fd8da467442451da00c7a90 upstream.
+[ Upstream commit 605c83753d97946aab176735020a33ebfb0b4615 ]
 
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 causes the "option=value" string to be
-added to init's environment strings, polluting it.
+Reset dsi0 HW to default when power on. This prevents to have different
+settingis between the bootloader and the kernel.
 
-Fixes: 47dd7a540b8a ("net: add support for STMicroelectronics Ethernet controllers.")
-Fixes: f3240e2811f0 ("stmmac: remove warning when compile as built-in (V2)")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Link: https://lore.kernel.org/r/20220224033536.25056-1-rdunlap@infradead.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As not all Mediatek boards have the reset consumer configured in their
+board description, also is not needed on all of them, the reset is optional,
+so the change is compatible with all boards.
+
+Cc: Jitao Shi <jitao.shi@mediatek.com>
+Suggested-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20210930103105.v4.7.Idbb4727ddf00ba2fe796b630906baff10d994d89@changeid
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7336,7 +7336,7 @@ static int __init stmmac_cmdline_opt(cha
- 	char *opt;
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 93b40c245f007..5d90d2eb00193 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -11,6 +11,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/phy/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/reset.h>
  
- 	if (!str || !*str)
--		return -EINVAL;
-+		return 1;
- 	while ((opt = strsep(&str, ",")) != NULL) {
- 		if (!strncmp(opt, "debug:", 6)) {
- 			if (kstrtoint(opt + 6, 0, &debug))
-@@ -7367,11 +7367,11 @@ static int __init stmmac_cmdline_opt(cha
- 				goto err;
- 		}
- 	}
--	return 0;
-+	return 1;
+ #include <video/mipi_display.h>
+ #include <video/videomode.h>
+@@ -980,8 +981,10 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+ 	struct mtk_dsi *dsi = dev_get_drvdata(dev);
  
- err:
- 	pr_err("%s: ERROR broken module parameter conversion", __func__);
--	return -EINVAL;
-+	return 1;
+ 	ret = mtk_dsi_encoder_init(drm, dsi);
++	if (ret)
++		return ret;
+ 
+-	return ret;
++	return device_reset_optional(dev);
  }
  
- __setup("stmmaceth=", stmmac_cmdline_opt);
+ static void mtk_dsi_unbind(struct device *dev, struct device *master,
+-- 
+2.34.1
+
 
 
