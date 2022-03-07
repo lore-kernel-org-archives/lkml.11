@@ -2,91 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18882C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243825AbiCGPgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:36:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
+        id S243832AbiCGPiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:38:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235983AbiCGPgo (ORCPT
+        with ESMTP id S240008AbiCGPiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:36:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897BD5C373;
-        Mon,  7 Mar 2022 07:35:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36FD5B815E5;
-        Mon,  7 Mar 2022 15:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F40C340E9;
-        Mon,  7 Mar 2022 15:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646667347;
-        bh=JbY5diFr5DxLb353nQpEtMPOmLgwWU265WRVU2Sa3gs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TQZVPcmNWFx3KoCVbAtcqbmRxBlREjxRlqgYPDRU+Erw7qGlNkJDbSAgTBy2wzkFq
-         BI/wXu31ar6PvEUzPO442Zbn1oeAelVVtdsnd10dI2AVp8OuqsK+PnRx/FQ216yVDZ
-         LFFnvbvYe4kXQXZbAznh/2RF1rIiA/X4mWHqPJzmHbgiJhQ7K6mp3uVEN3CrMrs+Qc
-         DQJcr7NnRQkK4SD+wblqWNAA8Gphl4orMBRcvlPyUiGc/lsAs9t5IFCBOAevBGiEW2
-         G+oz7dajXVHK9hGSQMdWtgmkUk3ZHtnWIsLpYJp0WpuvECsvUD9DhjTSLDe58mFbVr
-         ok5uLUOmV6gAA==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-sgx@vger.kernel.org
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] x86/sgx: Enable PROT_EXEC for EAUG'd pages
-Date:   Mon,  7 Mar 2022 17:35:04 +0200
-Message-Id: <20220307153504.198112-1-jarkko@kernel.org>
+        Mon, 7 Mar 2022 10:38:15 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C448791AFC;
+        Mon,  7 Mar 2022 07:37:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646667440; x=1678203440;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HqBJCaUgOl4ABA5A2mBxWwr43jmzmLhKACc11IzWAck=;
+  b=aZFLeAZnQ+X0PpmHYWyXWDTrM5qqhBO9MN9hnSm0g17geNqD+mHd+dC9
+   /5ZoTa5+AQhSVup5ArQfaBq9RjOlNOeOtFr7fqId33hJH3+4DQpQt/YA3
+   2ZLr+5tA3Ch0lIhyGq3gLFo9grA7P5Z8qrYB6MfajtQw6CFTwY0whRVdX
+   gEczAVqOcowci00NkmN+Yp3kcwfjEjOeVR/qUliFWhvTyb7Dgrbq0NKZz
+   1i2xPkRz8f06biodwzMmd9SY/kmLT9Roy5ZDiqRGN8HBSvLXbOEbOtp24
+   YiKKGU9CkHFKnypqFRX4kyh3nU4sSX/abj9+CNJA7I36nqgM9dFbj5wgQ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
+   d="scan'208";a="148340403"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 08:37:19 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Mar 2022 08:37:19 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 7 Mar 2022 08:37:18 -0700
+From:   <conor.dooley@microchip.com>
+To:     <mpm@selenic.com>, <herbert@gondor.apana.org.au>
+CC:     <lewis.hanly@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        "Conor Dooley" <conor.dooley@microchip.com>
+Subject: [PATCH 0/2] Add support for hwrng on PolarFire SoC
+Date:   Mon, 7 Mar 2022 15:40:22 +0000
+Message-ID: <20220307154023.813158-1-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vm_max_permissions was created to control the pre-initialization content
-that contributes to MRSIGNATURE. It was never meant to be as a limit to
-dynamically added pages.
+From: Conor Dooley <conor.dooley@microchip.com>
 
-E.g. static content could be used as a hook for LSM's to decide whether
-certain signature is qualified for EINIT. Dynamic content has nothing to
-do with that. The current mechanisms only add to the complexity on how
-to control PTE and EPCM permissions, and do not add anything else than
-obfuscity to security side of things.
+As it says on the tin, add support for the hardware rng on PolarFire
+SoC, which is accessed via the system controller. While we're at it,
+add the rng driver to the list of files included as part of the SoC
+support in MAINTAINERS.
 
-Thus add PROT_EXEC to the permissions assigned by the #PF handler.
+Base commit is in arm/soc branch of the soc tree as the hwrng driver
+depends on the system controller, which is to be introduced via that
+tree in 5.18
 
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
----
- arch/x86/kernel/cpu/sgx/encl.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Conor Dooley (2):
+  hwrng: mpfs - add polarfire soc hwrng support
+  MAINTAINERS: update PolarFire SoC support
 
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 79e39bd99c09..0256918b2c2f 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -160,12 +160,11 @@ static vm_fault_t sgx_encl_eaug_page(struct vm_area_struct *vma,
- 	encl_page->encl = encl;
- 
- 	/*
--	 * Adding a regular page that is architecturally allowed to only
--	 * be created with RW permissions.
--	 * TBD: Interface with user space policy to support max permissions
--	 * of RWX.
-+	 * Dynamic pages do not contribute to MRSIGNATURE, i.e. they are
-+	 * controlled only by PTE and EPCM permissions. Thus, the no limit
-+	 * is set here.
- 	 */
--	prot = PROT_READ | PROT_WRITE;
-+	prot = PROT_READ | PROT_WRITE | PROT_EXEC;
- 	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
- 	encl_page->vm_max_prot_bits = encl_page->vm_run_prot_bits;
- 
+ MAINTAINERS                       |   1 +
+ drivers/char/hw_random/Kconfig    |  13 ++++
+ drivers/char/hw_random/Makefile   |   1 +
+ drivers/char/hw_random/mpfs-rng.c | 103 ++++++++++++++++++++++++++++++
+ 4 files changed, 118 insertions(+)
+ create mode 100644 drivers/char/hw_random/mpfs-rng.c
+
+
+base-commit: a483b1b232e616d0095a59b987ffc739bc1b56bc
 -- 
 2.35.1
 
