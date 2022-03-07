@@ -2,112 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A60CEC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8E0C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240626AbiCGJvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
+        id S239862AbiCGJuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:50:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240794AbiCGJle (ORCPT
+        with ESMTP id S240239AbiCGJku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 160B666FA1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:38:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646645890;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2hRKjru0jaANdaMFZ+K70lfTDMO4iHRVAfY2BeEn/4o=;
-        b=N42A3i3pxO9M6cKBKYsoatl4B9rd65zp+uuCLEAPI/JTL4CCFSBWmlNJm4jHdi0rfU6J6/
-        J5W3l7EziBREKA+XtqDpC31oO1Mzcp8XvlC4/rQNB+pU1o5uPVJHL2haStV32CT4ZvA2CU
-        zKBUHRGl5uHSjjMJnPGuwkcmbSvD+TE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-462-R9YZlNOKMf6ZO3lB2FBNFQ-1; Mon, 07 Mar 2022 04:38:08 -0500
-X-MC-Unique: R9YZlNOKMf6ZO3lB2FBNFQ-1
-Received: by mail-wm1-f69.google.com with SMTP id d8-20020a05600c34c800b0037e3cd6225eso5052580wmq.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:38:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2hRKjru0jaANdaMFZ+K70lfTDMO4iHRVAfY2BeEn/4o=;
-        b=dDL5oKxnVe3CdkjngNT1RB4iYW/kOxecO8cya2ti3+yK4Rl/pwfuGIs/g+60LkRWs9
-         QT8GO3cHonWUdp92dghHqJyMCDm4f/OR4M6YWiCl1FYZqy50gsftIJDcPYupjupqVArz
-         kCtodigFEYd8rH16gakQqKBBx6NOEo8hNoGLUTVwiaVnr5cMDBJbielVo9luB8jrEDNA
-         Nu/66PgYyHj8GtkyDBiv4CYdDCghPLtGpatYycWRtDrafjRiBTIWfFeJVEiJXwjd/Yhz
-         Ypy9poNFCvRUVhy1EFqezI0EOZ9zTHtOkO8KzRyuhsNm2sGMRJVjEz4Qbar62SPzSQdX
-         GwXA==
-X-Gm-Message-State: AOAM5302urYCqZ81D4sFvTioFOi338+iGEHiCph5HxWOlO4T18xXqLiz
-        PJcibIHkPE8j1w6ENnzpIfKP6QgHzHntWoNWb5D2hLBoVn9FfH6lQTb06Ga9vGhH5VRTFuh+UMs
-        R/xsR2fqOUh3wEpeD5iHBsa0=
-X-Received: by 2002:a5d:69c7:0:b0:1f0:61f3:642b with SMTP id s7-20020a5d69c7000000b001f061f3642bmr7650076wrw.632.1646645887134;
-        Mon, 07 Mar 2022 01:38:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxYgPmZBFCYVwYlVuJ55u4vArcYAHv9y3dFz+eZ23t3tabZPf1FdajgzMXADgtlXevyUTT86g==
-X-Received: by 2002:a5d:69c7:0:b0:1f0:61f3:642b with SMTP id s7-20020a5d69c7000000b001f061f3642bmr7650058wrw.632.1646645886967;
-        Mon, 07 Mar 2022 01:38:06 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id b12-20020a05600003cc00b001f34d8c5baesm918078wrg.78.2022.03.07.01.38.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:38:06 -0800 (PST)
-Date:   Mon, 7 Mar 2022 09:38:04 +0000
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     christophe.leroy@csgroup.eu, mcgrof@kernel.org
-Cc:     "cl@linux.com" <cl@linux.com>, "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "void@manifault.com" <void@manifault.com>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>,
-        "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
-        "pmladek@suse.com" <pmladek@suse.com>
-Subject: Re: [PATCH v9 07/14] module: Move extra signature support out of
- core code
-Message-ID: <20220307093804.eor4dn5gp2dwn5jk@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220228234322.2073104-1-atomlin@redhat.com>
- <20220228234322.2073104-8-atomlin@redhat.com>
- <c03fa2bb-1b0e-62c7-53fe-33e44d20b564@csgroup.eu>
- <20220305203756.jc5ayzboea6ixm4a@ava.usersys.com>
- <4b00cc1c-0fc9-7348-28ee-b06de0fef3c7@csgroup.eu>
+        Mon, 7 Mar 2022 04:40:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C006E565;
+        Mon,  7 Mar 2022 01:37:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD759B810DE;
+        Mon,  7 Mar 2022 09:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28CDDC340E9;
+        Mon,  7 Mar 2022 09:36:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645766;
+        bh=PxzTc57IQdrmDgTvi0EtjhOekh9QUtO7TK6zL07Nh+g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=POhx8CJ5ps5AZMwNsD/qCvlnPPI9nMPgovkoxx3/5W9eJGcMRkY6WLRU+OGc2dpB8
+         ET4SHBSfT08MRy5jLPPEnGvHvbVZXvc+U9wDncnUKdIZg16JS7LptruSwqOr3FVLN5
+         eyg76EHI66A2DPMCIoMTCivcdf/tPSwoDvNPzmEs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 029/262] exfat: reuse exfat_inode_info variable instead of calling EXFAT_I()
+Date:   Mon,  7 Mar 2022 10:16:13 +0100
+Message-Id: <20220307091703.191142889@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4b00cc1c-0fc9-7348-28ee-b06de0fef3c7@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 2022-03-06 17:46 +0000, Christophe Leroy wrote:
-> 2/ CONFIG_MODULES=y, CONFIG_MODULE_SIG=n
+From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
 
-Christophe,
+[ Upstream commit 7dee6f57d7f22a89dd214518c778aec448270d4c ]
 
-I see, I did not notice that the above is even possible.
+Also add a local "struct exfat_inode_info *ei" variable to
+exfat_truncate() to simplify the code.
 
-> Case 2/, is_module_sig_enforced() is nowhere.
+Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/exfat/file.c  | 14 +++++++-------
+ fs/exfat/inode.c |  9 ++++-----
+ fs/exfat/namei.c |  6 +++---
+ fs/exfat/super.c |  6 +++---
+ 4 files changed, 17 insertions(+), 18 deletions(-)
 
-Understood.
-
-
-Luis,
-
-I'll send a v10 later today.
-
-
-Kind regards,
-
+diff --git a/fs/exfat/file.c b/fs/exfat/file.c
+index 6af0191b648f1..848166d6d5e9d 100644
+--- a/fs/exfat/file.c
++++ b/fs/exfat/file.c
+@@ -110,8 +110,7 @@ int __exfat_truncate(struct inode *inode, loff_t new_size)
+ 	exfat_set_volume_dirty(sb);
+ 
+ 	num_clusters_new = EXFAT_B_TO_CLU_ROUND_UP(i_size_read(inode), sbi);
+-	num_clusters_phys =
+-		EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk, sbi);
++	num_clusters_phys = EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
+ 
+ 	exfat_chain_set(&clu, ei->start_clu, num_clusters_phys, ei->flags);
+ 
+@@ -228,12 +227,13 @@ void exfat_truncate(struct inode *inode, loff_t size)
+ {
+ 	struct super_block *sb = inode->i_sb;
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
++	struct exfat_inode_info *ei = EXFAT_I(inode);
+ 	unsigned int blocksize = i_blocksize(inode);
+ 	loff_t aligned_size;
+ 	int err;
+ 
+ 	mutex_lock(&sbi->s_lock);
+-	if (EXFAT_I(inode)->start_clu == 0) {
++	if (ei->start_clu == 0) {
+ 		/*
+ 		 * Empty start_clu != ~0 (not allocated)
+ 		 */
+@@ -260,11 +260,11 @@ void exfat_truncate(struct inode *inode, loff_t size)
+ 		aligned_size++;
+ 	}
+ 
+-	if (EXFAT_I(inode)->i_size_ondisk > i_size_read(inode))
+-		EXFAT_I(inode)->i_size_ondisk = aligned_size;
++	if (ei->i_size_ondisk > i_size_read(inode))
++		ei->i_size_ondisk = aligned_size;
+ 
+-	if (EXFAT_I(inode)->i_size_aligned > i_size_read(inode))
+-		EXFAT_I(inode)->i_size_aligned = aligned_size;
++	if (ei->i_size_aligned > i_size_read(inode))
++		ei->i_size_aligned = aligned_size;
+ 	mutex_unlock(&sbi->s_lock);
+ }
+ 
+diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
+index 1c7aa1ea4724c..aca2e64d045b6 100644
+--- a/fs/exfat/inode.c
++++ b/fs/exfat/inode.c
+@@ -114,10 +114,9 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
+ 	unsigned int local_clu_offset = clu_offset;
+ 	unsigned int num_to_be_allocated = 0, num_clusters = 0;
+ 
+-	if (EXFAT_I(inode)->i_size_ondisk > 0)
++	if (ei->i_size_ondisk > 0)
+ 		num_clusters =
+-			EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk,
+-			sbi);
++			EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
+ 
+ 	if (clu_offset >= num_clusters)
+ 		num_to_be_allocated = clu_offset - num_clusters + 1;
+@@ -416,10 +415,10 @@ static int exfat_write_end(struct file *file, struct address_space *mapping,
+ 
+ 	err = generic_write_end(file, mapping, pos, len, copied, pagep, fsdata);
+ 
+-	if (EXFAT_I(inode)->i_size_aligned < i_size_read(inode)) {
++	if (ei->i_size_aligned < i_size_read(inode)) {
+ 		exfat_fs_error(inode->i_sb,
+ 			"invalid size(size(%llu) > aligned(%llu)\n",
+-			i_size_read(inode), EXFAT_I(inode)->i_size_aligned);
++			i_size_read(inode), ei->i_size_aligned);
+ 		return -EIO;
+ 	}
+ 
+diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
+index 24b41103d1cc0..9d8ada781250b 100644
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -395,9 +395,9 @@ static int exfat_find_empty_entry(struct inode *inode,
+ 
+ 		/* directory inode should be updated in here */
+ 		i_size_write(inode, size);
+-		EXFAT_I(inode)->i_size_ondisk += sbi->cluster_size;
+-		EXFAT_I(inode)->i_size_aligned += sbi->cluster_size;
+-		EXFAT_I(inode)->flags = p_dir->flags;
++		ei->i_size_ondisk += sbi->cluster_size;
++		ei->i_size_aligned += sbi->cluster_size;
++		ei->flags = p_dir->flags;
+ 		inode->i_blocks += 1 << sbi->sect_per_clus_bits;
+ 	}
+ 
+diff --git a/fs/exfat/super.c b/fs/exfat/super.c
+index 5539ffc20d164..1a2115d73a48a 100644
+--- a/fs/exfat/super.c
++++ b/fs/exfat/super.c
+@@ -366,9 +366,9 @@ static int exfat_read_root(struct inode *inode)
+ 
+ 	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
+ 			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
+-	EXFAT_I(inode)->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
+-	EXFAT_I(inode)->i_size_aligned = i_size_read(inode);
+-	EXFAT_I(inode)->i_size_ondisk = i_size_read(inode);
++	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
++	ei->i_size_aligned = i_size_read(inode);
++	ei->i_size_ondisk = i_size_read(inode);
+ 
+ 	exfat_save_attr(inode, ATTR_SUBDIR);
+ 	inode->i_mtime = inode->i_atime = inode->i_ctime = ei->i_crtime =
 -- 
-Aaron Tomlin
+2.34.1
+
+
 
