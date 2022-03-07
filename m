@@ -2,138 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD426C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244793AbiCGSYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:24:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        id S241458AbiCGS1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:27:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234218AbiCGSYo (ORCPT
+        with ESMTP id S234218AbiCGS1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:24:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F91085BC2;
-        Mon,  7 Mar 2022 10:23:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCB86132C;
-        Mon,  7 Mar 2022 18:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62EF2C340F9;
-        Mon,  7 Mar 2022 18:23:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646677428;
-        bh=CS4P4e6QC0dUdnxHehPTl5+rFZM2fucKmx3loJHj/iE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ffv6OZy6+JZpPO3lSvUF9pq/MQsS36/mvR8gcmuk+Ax4+sCL5HmbZFpbeRplVobaX
-         uNTGVxZOSfFpDStLOkY2Gv4T2Og868F09ZW8vaNG0fH0uhJouLy8S/HelBl0W8oUGs
-         r6XwpPfS1g+jBbHLeTKArSQVbyO2/6A60X5PU+LaLw+/mjfjb4jGJk5Uos3OWR2bng
-         9oUinZZFXg0NcSNqwfSXu5+b9gaG3rQTnkt6ohrSeuJ3VDWbRceUgqFFYsu03CEvFO
-         DSK5KHhbnhu/en6xNHrRONQunStl7B/7GAW2sXKhZy90b11FYLG3CaYSUMHfqYfzO4
-         9askWT4WfvERw==
-Received: by mail-yb1-f182.google.com with SMTP id h126so32787865ybc.1;
-        Mon, 07 Mar 2022 10:23:48 -0800 (PST)
-X-Gm-Message-State: AOAM532YvSPIA2K9oIBByh/vonX+E2v2/yma5GiUyuAMNa8C897fbrIc
-        K9DeWFnBFPkAzTe6Le/MattYA4+JQSRsnzFoslY=
-X-Google-Smtp-Source: ABdhPJxqtMkZ9saT/BmU+QIFTsB5APsQLwF9DsDqE1wKcE1TLJ7FHJGyrSsR8flj+fzTBul5Tbm/TOxw6GV9a74dEDk=
-X-Received: by 2002:a05:6902:1ca:b0:624:e2a1:2856 with SMTP id
- u10-20020a05690201ca00b00624e2a12856mr8958927ybh.389.1646677427301; Mon, 07
- Mar 2022 10:23:47 -0800 (PST)
+        Mon, 7 Mar 2022 13:27:09 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5D3939A8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:26:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646677574; x=1678213574;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5qzlM+F2KLwaOV5DOusddqPgYoFFoImJzYDRDku6N50=;
+  b=nzMqpy0QBf7aC2utAcDtfOzFhdYJtnU9dmXWPDqnjveplOtFoo/5TOwl
+   4ptA1PE3/g5OxLvWOg5hUhlJ95wAoZ75Pv5to+EydidflviXiie7pXEmH
+   sSXaMKsrf2Bqm8gnRwmrBa10YP7ghVF/19k6IExKNhu6LySwhTfcLmbPa
+   oRhO4GItumOE6UDDvQnFoLmzZeEgKeXjkh/nPFafrlPMYK5svePjeWjRu
+   gd/nwLwwntrZwMhXU1YPsrtjq/0+Plqd1DH7s1feZFR5PGfKjjQPfzBMX
+   i2aWGhljp36WIKGJZVn3vqKv+4kXiEJlnNaCcDANrbFj8xllw/Mk8TyJ3
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254404728"
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="254404728"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 10:26:13 -0800
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="641428749"
+Received: from sonalsha-mobl.amr.corp.intel.com (HELO localhost) ([10.212.67.25])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 10:26:13 -0800
+Date:   Mon, 7 Mar 2022 10:26:12 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pkeys: Make pkey unsigned in arch_set_user_pkey_access()
+Message-ID: <YiZORNusRg4UTv45@iweiny-desk3>
+References: <20220304210543.3490880-1-ira.weiny@intel.com>
+ <878rtmtfgs.fsf@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-2-benjamin.tissoires@redhat.com> <CAPhsuW4otgwwDN6+xcjPXmZyUDiynEKFtXjaFb-=kjz7HzUmZw@mail.gmail.com>
- <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com>
-In-Reply-To: <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 7 Mar 2022 10:23:36 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4wnsd0oQ3a_OqNVw4-0+fJyZm1f+nA1QRBW-pByKDPYg@mail.gmail.com>
-Message-ID: <CAPhsuW4wnsd0oQ3a_OqNVw4-0+fJyZm1f+nA1QRBW-pByKDPYg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 01/28] bpf: add new is_sys_admin_prog_type() helper
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org, Sean Young <sean@mess.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <878rtmtfgs.fsf@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 5, 2022 at 2:07 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> On Sat, Mar 5, 2022 at 12:12 AM Song Liu <song@kernel.org> wrote:
+On Mon, Mar 07, 2022 at 12:30:03PM +0530, Aneesh Kumar K.V wrote:
+> ira.weiny@intel.com writes:
+> 
+> > From: Ira Weiny <ira.weiny@intel.com>
 > >
-> > On Fri, Mar 4, 2022 at 9:30 AM Benjamin Tissoires
-> > <benjamin.tissoires@redhat.com> wrote:
-> > >
-> > > LIRC_MODE2 does not really need net_admin capability, but only sys_admin.
-> > >
-> > > Extract a new helper for it, it will be also used for the HID bpf
-> > > implementation.
-> > >
-> > > Cc: Sean Young <sean@mess.org>
-> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> > >
-> > > ---
-> > >
-> > > new in v2
-> > > ---
-> > >  kernel/bpf/syscall.c | 14 +++++++++++++-
-> > >  1 file changed, 13 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > > index db402ebc5570..cc570891322b 100644
-> > > --- a/kernel/bpf/syscall.c
-> > > +++ b/kernel/bpf/syscall.c
-> > > @@ -2165,7 +2165,6 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
-> > >         case BPF_PROG_TYPE_LWT_SEG6LOCAL:
-> > >         case BPF_PROG_TYPE_SK_SKB:
-> > >         case BPF_PROG_TYPE_SK_MSG:
-> > > -       case BPF_PROG_TYPE_LIRC_MODE2:
-> > >         case BPF_PROG_TYPE_FLOW_DISSECTOR:
-> > >         case BPF_PROG_TYPE_CGROUP_DEVICE:
-> > >         case BPF_PROG_TYPE_CGROUP_SOCK:
-> > > @@ -2202,6 +2201,17 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
-> > >         }
-> > >  }
-> > >
-> > > +static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
-> > > +{
-> > > +       switch (prog_type) {
-> > > +       case BPF_PROG_TYPE_LIRC_MODE2:
-> > > +       case BPF_PROG_TYPE_EXT: /* extends any prog */
-> > > +               return true;
-> > > +       default:
-> > > +               return false;
-> > > +       }
-> > > +}
+> > The WARN_ON check in arch_set_user_pkey_access() in the x86 architecture
+> > fails to check for an invalid negative value.
 > >
-> > I am not sure whether we should do this. This is a behavior change, that may
-> > break some user space. Also, BPF_PROG_TYPE_EXT is checked in
-> > is_perfmon_prog_type(), and this change will make that case useless.
->
-> Sure, I can drop it from v3 and make this function appear for HID only.
->
-> Regarding BPF_PROG_TYPE_EXT, it was already in both
-> is_net_admin_prog_type() and is_perfmon_prog_type(), so I duplicated
-> it here, but I agree, given that it's already in the first function
-> there, CPA_SYS_ADMIN is already checked.
+> > A simple check for less than 0 would fix this issue however, in the call
+> > stack below arch_set_user_pkey_access() the pkey should never be
+> > negative on any architecture.  It is always best to use correct types
+> > when possible.  x86 only supports 16 keys while ppc supports 32, u8 is
+> > therefore large enough for all current architectures and likely those in
+> > the future.
+> 
+> Should we do that as a separate patch? ie, now convert the variable to
+> unsigned int and later switch all the variables to u8?
 
-I think with current code, a user with CAP_BPF, CAP_NET_ADMIN, and
-CAP_PERFMON (but not CAP_SYS_ADMIN) can load programs of type
-BPF_PROG_TYPE_EXT. But after the patch, the same user will not be
-able to do it. Did I misread it? It is not a common case though.
+Maybe.
+
+> because what we
+> now have is confusing.
+> 
+> static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
+> 		unsigned long pkey)
+> static inline u64 pkey_to_vmflag_bits(u16 pkey)
+> 
+
+This looks like a good cleanup as well.  Why not convert
+arch_calc_vm_prot_bits() and pkey_to_vmflag_bits() to u8?  (In another patch.)
+
+This is all a result of this PKS conversation:
+
+https://lore.kernel.org/lkml/Yg8C6UkgfBmQlPSq@iweiny-desk3/
+
+That started me down the path of trying to figure out why 'int' was used for
+PKRU and I realized that negative values had meaning there which did not apply
+to me with PKS.  So at some point a conversion needs to be made between a
+'conceptual pkey' (int) and a real pkey (unsigned) IHMO.
+
+It's no bit deal to split this patch into one which converts to unsigned and
+then another to u8 (or u16 if there is some arch which may need it that big).
+
+However, digging more:
+
+Is there a reason u16 was used in pkey_to_vmflag_bits()?  How about in
+__pkru_allows_read() in the x86 code?  If possible I think u8 should be
+standardized but I'm ok with u16 if that is preferred.
+
+Also, am I missing something in init_amr() and init_iamr()?  I think I could
+have gone farther and changed init_amr() and init_iamr() right?
+
+From what I can see the argument to use unsigned long vs u8 (or u16) is some
+expectation that pkeys will grow beyond 256 in number.  From what I can see I
+don't think that is going to happen.
+
+So do we need to do this in two steps?
+
+Ira
+
+> 
+> >
+> > Change the type of the pkey passed to arch_set_user_pkey_access() to u8.
+> >
+> > To: Dave Hansen <dave.hansen@linux.intel.com>
+> > To: Michael Ellerman <mpe@ellerman.id.au>
+> > Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> > ---
+> >  arch/powerpc/include/asm/pkeys.h | 4 ++--
+> >  arch/powerpc/mm/book3s64/pkeys.c | 2 +-
+> >  arch/x86/include/asm/pkeys.h     | 4 ++--
+> >  arch/x86/kernel/fpu/xstate.c     | 2 +-
+> >  include/linux/pkeys.h            | 2 +-
+> >  5 files changed, 7 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/arch/powerpc/include/asm/pkeys.h b/arch/powerpc/include/asm/pkeys.h
+> > index 59a2c7dbc78f..e70615a1da9b 100644
+> > --- a/arch/powerpc/include/asm/pkeys.h
+> > +++ b/arch/powerpc/include/asm/pkeys.h
+> > @@ -143,9 +143,9 @@ static inline int arch_override_mprotect_pkey(struct vm_area_struct *vma,
+> >  	return __arch_override_mprotect_pkey(vma, prot, pkey);
+> >  }
+> >  
+> > -extern int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +extern int __arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  				       unsigned long init_val);
+> 
+> 
+> > -static inline int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +static inline int arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  					    unsigned long init_val)
+> >  {
+> >  	if (!mmu_has_feature(MMU_FTR_PKEY))
+> > diff --git a/arch/powerpc/mm/book3s64/pkeys.c b/arch/powerpc/mm/book3s64/pkeys.c
+> > index 753e62ba67af..c048467669df 100644
+> > --- a/arch/powerpc/mm/book3s64/pkeys.c
+> > +++ b/arch/powerpc/mm/book3s64/pkeys.c
+> > @@ -333,7 +333,7 @@ static inline void init_iamr(int pkey, u8 init_bits)
+> >   * Set the access rights in AMR IAMR and UAMOR registers for @pkey to that
+> >   * specified in @init_val.
+> >   */
+> > -int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +int __arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  				unsigned long init_val)
+> >  {
+> >  	u64 new_amr_bits = 0x0ul;
+> > diff --git a/arch/x86/include/asm/pkeys.h b/arch/x86/include/asm/pkeys.h
+> > index 5292e6dfe2a7..48efb81f6cc6 100644
+> > --- a/arch/x86/include/asm/pkeys.h
+> > +++ b/arch/x86/include/asm/pkeys.h
+> > @@ -9,7 +9,7 @@
+> >   */
+> >  #define arch_max_pkey() (cpu_feature_enabled(X86_FEATURE_OSPKE) ? 16 : 1)
+> >  
+> > -extern int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +extern int arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  		unsigned long init_val);
+> >  
+> >  static inline bool arch_pkeys_enabled(void)
+> > @@ -115,7 +115,7 @@ int mm_pkey_free(struct mm_struct *mm, int pkey)
+> >  	return 0;
+> >  }
+> >  
+> > -extern int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +extern int arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  		unsigned long init_val);
+> >  
+> >  static inline int vma_pkey(struct vm_area_struct *vma)
+> > diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+> > index 7c7824ae7862..db511bec57e5 100644
+> > --- a/arch/x86/kernel/fpu/xstate.c
+> > +++ b/arch/x86/kernel/fpu/xstate.c
+> > @@ -1068,7 +1068,7 @@ void *get_xsave_addr(struct xregs_state *xsave, int xfeature_nr)
+> >   * This will go out and modify PKRU register to set the access
+> >   * rights for @pkey to @init_val.
+> >   */
+> > -int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +int arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  			      unsigned long init_val)
+> >  {
+> >  	u32 old_pkru, new_pkru_bits = 0;
+> > diff --git a/include/linux/pkeys.h b/include/linux/pkeys.h
+> > index 86be8bf27b41..aa40ed2fb0fc 100644
+> > --- a/include/linux/pkeys.h
+> > +++ b/include/linux/pkeys.h
+> > @@ -35,7 +35,7 @@ static inline int mm_pkey_free(struct mm_struct *mm, int pkey)
+> >  	return -EINVAL;
+> >  }
+> >  
+> > -static inline int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+> > +static inline int arch_set_user_pkey_access(struct task_struct *tsk, u8 pkey,
+> >  			unsigned long init_val)
+> >  {
+> >  	return 0;
+> > -- 
+> > 2.35.1
