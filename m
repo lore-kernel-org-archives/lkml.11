@@ -2,94 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 514BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB095C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244305AbiCGQuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:50:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
+        id S244315AbiCGQvC convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240721AbiCGQuJ (ORCPT
+        with ESMTP id S232809AbiCGQvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:50:09 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6E4824590
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:49:14 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E206153B;
-        Mon,  7 Mar 2022 08:49:14 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4247B3FA45;
-        Mon,  7 Mar 2022 08:49:13 -0800 (PST)
-Message-ID: <1b94af8b-a294-5765-4e1e-896f70db621f@arm.com>
-Date:   Mon, 7 Mar 2022 16:48:51 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RFC] arm64: improve display about CPU architecture in
- cpuinfo
-Content-Language: en-GB
-To:     Marc Zyngier <maz@kernel.org>,
-        Rongwei Wang <rongwei.wang@linux.alibaba.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, joey.gouly@arm.com,
-        mark.rutland@arm.com, akpm@linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220307030417.22974-1-rongwei.wang@linux.alibaba.com>
- <87h78a178u.wl-maz@kernel.org>
- <a31431bf-24bb-71ac-8f3c-f9ca19f5c4f0@linux.alibaba.com>
- <87bkyi0x53.wl-maz@kernel.org>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <87bkyi0x53.wl-maz@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 7 Mar 2022 11:51:00 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC4E522BF1;
+        Mon,  7 Mar 2022 08:50:03 -0800 (PST)
+Received: from smtpclient.apple (p5b3d2910.dip0.t-ipconnect.de [91.61.41.16])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 765DCCED19;
+        Mon,  7 Mar 2022 17:50:02 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH] Bluetooth: mgmt: remove redundant assignment to variable
+ cur_len
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220307155338.140860-1-colin.i.king@gmail.com>
+Date:   Mon, 7 Mar 2022 17:50:01 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Content-Transfer-Encoding: 8BIT
+Message-Id: <4B2F2958-85E4-42F6-9F45-1D7DA6396CB1@holtmann.org>
+References: <20220307155338.140860-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 12:23 pm, Marc Zyngier wrote:
-> On Mon, 07 Mar 2022 12:13:50 +0000,
-> Rongwei Wang <rongwei.wang@linux.alibaba.com> wrote:
->>
->>
->>
->> On 3/7/22 4:45 PM, Marc Zyngier wrote:
->>> On Mon, 07 Mar 2022 03:04:17 +0000,
->>> Rongwei Wang <rongwei.wang@linux.alibaba.com> wrote:
->>>>
->>>> Now, it is unsuitable for both ARMv8 and ARMv9 to show a
->>>> fixed string "CPU architecture: 8" in /proc/cpuinfo.
->>>
->>> Please read the various threads that have been going on over the past
->>> 10+ years about *why* we don't allow this sort of change (TL;DR: it
->>> breaks userspace, and we don't do that).
->>>
->>> Also, there is no material difference between v8 and v9 that would be
->>> observable from userspace outside of the "Features:" line. And if that
->>> doesn't convince you, just think of '8' as the number of bytes
->>> used by
-> 
->> I got your point. It seems that we can regard '8' as the number of
->> bytes. But what make me do this is that 'CPU architecture: 8' is
->> confusing, especially those responsible for testing.
->> And I believe that most people regard this '8' as ARMv8, maybe not.
-> 
-> That was the original intention. But given that there is no userspace
-> visible difference between v8, v9 and  whatever comes after it, this
-> is a pointless change. My comment about the size of a VA was just a
-> joke, and not something to be taken seriously.
-> 
->> In fact, I'm not sure it has potential ABI implications, so seek your
->> advice.
-> 
-> Plenty of userspace programs parse /proc/cpuinfo. If you replace '8'
-> with anything else, they will fail. Which is why although your patch
-> makes sense, it comes 10 years too late, and we can't change this
-> anymore.
+Hi Colin,
 
-And arguably it's not even too late, because 10 years ago this *did* say 
-"AArch64". I don't remember all the exact details behind commit 
-44b82b7700d0 ("arm64: Fix up /proc/cpuinfo") - this just tickled enough 
-of a memory to go and look up the git history - but I don't think we 
-changed any of those fields without a real reason.
+> Variable cur_len is being ininitialized with a value in the start of
+> a for-loop but this is never read, it is being re-assigned a new value
+> on the first statement in the for-loop.  The initialization is redundant
+> and can be removed.
+> 
+> Cleans up clang scan build warning:
+> net/bluetooth/mgmt.c:7958:14: warning: Although the value stored to 'cur_len'
+> is used in the enclosing expression, the value is never actually read
+> from 'cur_len' [deadcode.DeadStores]
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+> net/bluetooth/mgmt.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Robin.
+patch has been applied to bluetooth-next tree.
+
+Regards
+
+Marcel
+
