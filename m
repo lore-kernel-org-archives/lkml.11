@@ -2,190 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 596BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D54F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235415AbiCGF4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
+        id S235430AbiCGF7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:59:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiCGF4J (ORCPT
+        with ESMTP id S234713AbiCGF7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:56:09 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF03E5BD0C;
-        Sun,  6 Mar 2022 21:55:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646632513; x=1678168513;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=6wrzzSjJRORNGnQX4tuXLggICGZwcW8Dt9+2tM03uX0=;
-  b=JILmdawpGU9oPYM4nZHDV+5SGIPIPWEC3soZMO3KaLeyOzY7DxgK9FdX
-   SeMFd5Z48kQPynBsRk1PuedUYMKOcJzaSmY7U511tXYlyhEUTMJT063PT
-   6WhOmmCr/YdPfSB7pdyzuPXc1MUYwKVD5d9U/4UEpt1X0Q/tZWAHGq6t4
-   GJ/MMl/vYlC5KLifoFU0BdbgbQQj/Om2Njx2Uww8OZTIw9yGz6lFLydRf
-   dxRO9hojcRABofwyYSF1UdJe88ibbyLMGbV5PFSYg/l0qthU6SBjmqUts
-   pVd8CHqK9FXZuwMiQOBw3b7xunX6luB+YEa7utthhlkVfbhFrI95b98wA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="241740790"
-X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
-   d="scan'208";a="241740790"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:51:59 -0800
-X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
-   d="scan'208";a="536975848"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:51:57 -0800
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Qian Cai <quic_qiancai@quicinc.com>
-Cc:     <linux-kernel@vger.kernel.org>,
-        <linux-tip-commits@vger.kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, <x86@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [tip: sched/core] sched/numa: Avoid migrating task to CPU-less
- node
-References: <20220214121553.582248-2-ying.huang@intel.com>
-        <164512421264.16921.689831789198253265.tip-bot2@tip-bot2>
-        <Yh6H8SPSqpjv1dl7@qian>
-        <87v8wx1850.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Date:   Mon, 07 Mar 2022 13:51:55 +0800
-In-Reply-To: <87v8wx1850.fsf@yhuang6-desk2.ccr.corp.intel.com> (Ying Huang's
-        message of "Wed, 02 Mar 2022 08:59:55 +0800")
-Message-ID: <87wnh648ec.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 7 Mar 2022 00:59:41 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2111.outbound.protection.outlook.com [40.107.223.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7844A50063;
+        Sun,  6 Mar 2022 21:58:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YMZsFUMw+RFQvSDuj2yYlhF10BMf1JSZho7jOh9IF6NxIM3o5kX5ZQduPg/5NlM5K74KFJTRz9wJJYxJztpneKtIo8IiBT8MD8YIxORo/Bqi9+2TI7R+BCgVMgfU++4MKRLmGyk8PI8ByWleMdQ4WHv0ruOwRW7wEzwjgqEkhbwD0bmDNwRmXWLpEri2fHMWwjOTP6oMQrHxV5SV8maAYFgSlSIkBV7Rwi3Oq+VUxK3M9nELdWxhCKwmdmHaSsUeXEEn0McBb9FDpqc/9Ooh/WTQm5I7YvlUn4itYP1aWPhIAw8+SS5z+oSd05T3MAXlRWKEygQ9UolOLY9m2QUW6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K50aV1pr4oK1b3L/8sGPRxO5qZTrvTy7DG/KdXbj6ks=;
+ b=jS2sWu2w6Gb9m0Nhot1ZgkGojcdMLQCdZrapf02BhE8gViVyyXUtHhmNHbg6dUOBIe+HNme5XurAvTzCRkGkedLXn4zypvp4RmYFVq0EWfBfzORNj1p0yzFLwmo9DwC8owlCX1osb7r7/RP/zRayOPxgL6lXjpzuoDn0PIt/MT4dIXJteu3W6QfDROyaqM4G+ek7lwwmahtgb0SmqMVsarPy/lI57OiP3JJkZ9TIV21g3qO4cTtSWZc+Tq/HvBVrhMMckEO3eqDpE2YVFoaHVUUE/VXHYMBck3fz7iulu/jA0p07CHmLY/JNUCyZiRWhDngtfX5tvAD26Y/flmJi7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K50aV1pr4oK1b3L/8sGPRxO5qZTrvTy7DG/KdXbj6ks=;
+ b=FX0+EoB8r9eg1XuI8MiWrcYOt4caZ23FAh/qNuyk6AENFQmkIQWL8w3Xx9HnXvuEv5n7jF750zj505PxjLR+hS2ZA1bTxNbwBnce3sWYqeRi7iUUN/LTcx0HaNwS1ZNlDCY/X1E4gRUowe2PmCJkaK5/4oxxj0oKesfLS3HwR6k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from CH2PR04MB6741.namprd04.prod.outlook.com (2603:10b6:610:96::19)
+ by SN6PR04MB3966.namprd04.prod.outlook.com (2603:10b6:805:48::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Mon, 7 Mar
+ 2022 05:58:43 +0000
+Received: from CH2PR04MB6741.namprd04.prod.outlook.com
+ ([fe80::ddb7:9604:5e6d:af43]) by CH2PR04MB6741.namprd04.prod.outlook.com
+ ([fe80::ddb7:9604:5e6d:af43%5]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
+ 05:58:43 +0000
+Date:   Mon, 7 Mar 2022 13:58:32 +0800
+From:   Xin Ji <xji@analogixsemi.com>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] usb: typec: anx7411: Add Analogix PD ANX7411
+ support
+Message-ID: <20220307055832.GB4174271@anxtwsw-Precision-3640-Tower>
+References: <20220223102353.3833578-1-xji@analogixsemi.com>
+ <20220223102353.3833578-2-xji@analogixsemi.com>
+ <Yh9dBlrWm3OicQWa@kuha.fi.intel.com>
+ <20220303024757.GA4159259@anxtwsw-Precision-3640-Tower>
+ <YiC+/ccRvR/+mAkT@kuha.fi.intel.com>
+ <20220304022936.GA4164495@anxtwsw-Precision-3640-Tower>
+ <YiIF+PpuIeJMY+/T@kuha.fi.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiIF+PpuIeJMY+/T@kuha.fi.intel.com>
+X-ClientProxiedBy: SGAP274CA0020.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::32)
+ To CH2PR04MB6741.namprd04.prod.outlook.com (2603:10b6:610:96::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 809b8882-4e46-47a7-62f2-08d9ffff8935
+X-MS-TrafficTypeDiagnostic: SN6PR04MB3966:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR04MB396652F456B7AD83938C10B4C7089@SN6PR04MB3966.namprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: icBz3in/ZgIN2xJJ/haR+fL8ASbQ5kw6BVCasv8+Si/F1REI4mqgecq6qSVtFRKuTB7iT/ubERUP4G8H9CulfdQYxRVRShERfBzw2CpgCUF1YHemzzOSL+pUC5EamLMKW/7HiEu4EWQ6aZB6Ui7Ekj01QQ5A/LKndTHl4NS8c7v1aTyBMXxOVPUIGZVQWmXkYenznF9n0ONH75ApTHU91yqOlB8GnDs8RHZj8bmt6DfIehiRgkJ0qY1otKFH86kxMvRfuQjhkcywV8SKJBTwjFybB7WJd8laYiYbeft7eiBrwKlIElipsuVnmXIjBPvrEXzGFo8mMsNmQd5SePo78byfdRz9Iv2hbBDMJXl+lvlkPootIc6jNfVVvxoVcg/oCv3DmX/BxsrTPWbOcG0jn4zv0DNRd/rVcZ5Pgrc+6HKF2+C/bGHARj7MJOqvBmVYg56ccwe38Ur1TMMo5bjgV3Vv6nahI4v0stJrs34SaflV3a95yVMSD42nvwi/uTfMKS3GvBUPGROyKOhixp9THm/Yygz9jEfqXObOQ8pZqjP7MmfWIvef64nubA42j/lJnh9S1U1/JXJUdyRKGNKKTDoG9gWSgHAwF7nzDK4B3v1kYS6wNzlN8zGTxt52JmWSo5lUXPVTfzeFD6kcVGmAqvvMqBMnoj4OKS1ujy1/VZYwuvUu5GAgklujOGO/erAa58CAz1qGJn0udKgJqjBdww==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR04MB6741.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6916009)(498600001)(33716001)(86362001)(186003)(1076003)(33656002)(26005)(38100700002)(38350700002)(9686003)(6512007)(55236004)(2906002)(6666004)(52116002)(6506007)(6486002)(8936002)(5660300002)(4326008)(66946007)(66476007)(8676002)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EglJmQjZTyJDVVVnDrNFBf8WgwLNFQyx0vlqV64gJbgwwWaS/AdaVNdbVv7V?=
+ =?us-ascii?Q?joYLLd1tXPZo6Q3pknnNTmWYo9nE/TGJsSxLrkvF0yEbwE5kIpl6CyIdJbpv?=
+ =?us-ascii?Q?4LwS31GUFJXGYYzYFdhMII9mlgLxr2aUauVrLmfdva+rsns/68lfVVbkpiMN?=
+ =?us-ascii?Q?mcNwMZM0plHRs72SKiylZIMFpwp4/qDbI3pp/DXLhNlmS6Jd7EAE1L2lVs/G?=
+ =?us-ascii?Q?HQkEL237RXaknAaDAeCqBnmcvxHThVs2MfQsV86rr21hjaCGCiPP8l9TZgqy?=
+ =?us-ascii?Q?CetsGtXxR8AOWDIebNPv1wVg9Ut2Zy+HN+5iY3LlhUhN2WK/9WcZ9RwiUdxR?=
+ =?us-ascii?Q?1mAzhB3rzjU3JP2smloRzDQJjiLsfsj6DtWx4ad8weg5qmwLnaqBBzTloaH2?=
+ =?us-ascii?Q?zb2LsK3+Tg0OQdpH7r/Cz8ownqAew2DmVGAZufniIhxkel+6PXUlHPH6beds?=
+ =?us-ascii?Q?kLob6z+F3WWT+jfIq2jomZ+HnKp0jlZ80HiEB9rO2y7AjEcwBsdEOie0z+FH?=
+ =?us-ascii?Q?Q4OrTtEQOu04d6mEgRKRbh3tfrKsPHPg0kAmk2FXSABcfWNOjPcDcOWI0/U2?=
+ =?us-ascii?Q?H+zAiR6MRrOoNvvhd5BLtOQBgYxA2Mf0S5cLCgSXxt26HrfvQzkspWzzJ7Tr?=
+ =?us-ascii?Q?4sFjAZC02SmjgyhkS6boqAewY99H7L0AoeTzc5o/WH9bsb/UjkCjaJ6tGgcG?=
+ =?us-ascii?Q?OO8t65HngvWp9WneiTk8I7aEQlani90uHISRx15xN8Mre3JyOXd8Im8f6e+q?=
+ =?us-ascii?Q?dP1+kfwTiYCWgCZrUj1NVPe9ABJu/92ixErOJpqC4+q+wSWlPhpraxN0grRg?=
+ =?us-ascii?Q?jRYT5Lhkpeom+bQBOplZBZPyz7gXCw3/4EZ8KIC21V6cUk6K2P+sS0mrzw9Z?=
+ =?us-ascii?Q?ddcfO3u9XehI/VpCyuqoytjt6buxFYUB+n8goTCaVHC/k0UONIBmJlq5ppbk?=
+ =?us-ascii?Q?Y2M7BWz1JfWQ/IgQmm203eB7XVE7SRjUrFJgzKVDsr4H/l6uJpgYjZN/exMg?=
+ =?us-ascii?Q?OipoOS6g2IHme1z1Vf9Nn3RqN9Ldv9oYTUDOHDjMAi3YWNcMDKy9+veW1bqz?=
+ =?us-ascii?Q?20BZUnEd8jxfr2wFBloeXnhxQ3NybK10iI3MJFWvULjKcOlRF78qCG2atNaV?=
+ =?us-ascii?Q?uJ9RB9XvihpTUzk6kcw7nuRRbvXVrvrRmP6dqowogAUz0z4QYSOrA6G1W4X3?=
+ =?us-ascii?Q?DSTiugEfyDNlByFgIhQCPb9pd6uutxGu39/xppJnT5WRFwZVp0q31WI1B2Q6?=
+ =?us-ascii?Q?PLMgn1elMr1E3rPOZcN+6zoKQ2hr8h+4/IPzF0y8TSBOmtYXAwL6yU6cUF07?=
+ =?us-ascii?Q?rumhlZwY9EbEPgazPheSoKx11AufgQUr+NkT26PMr7yxsr2514MiRJKJ/kvo?=
+ =?us-ascii?Q?xS5ilgezMkL5ojaTcYl0f/L4U750lWaca6VRRI9Knu5OGu6oujVyYNCQgg/i?=
+ =?us-ascii?Q?zRuLoi+yT7/CNL1vjdxCsvNlu9B91uyXxHadxrdlqt068orjxMvejAXkHkrW?=
+ =?us-ascii?Q?rZYeSfOza/zon5D5+sU/JLXxf4t3YSPnSc+UgpW+5E4SJmb7hDm2jk95tH4j?=
+ =?us-ascii?Q?/7NVuTqcuwepcyEidjEqJOoiKGwrDpOcqnewogkx72YP6h5OuKdh77Rm/3oM?=
+ =?us-ascii?Q?qNHLyTBaEDSQzb/r4BhCEfU=3D?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 809b8882-4e46-47a7-62f2-08d9ffff8935
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR04MB6741.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 05:58:43.7983
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5dO6k2jqrwX/r12NbfJfKo3YB7gA/lDjev1nwLvUoVkTnP3DsHLgovBg7Zv0H7Opkypm8yH24L5uSQdJYJLW3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR04MB3966
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Qian,
+On Fri, Mar 04, 2022 at 02:28:40PM +0200, Heikki Krogerus wrote:
+> On Fri, Mar 04, 2022 at 10:29:36AM +0800, Xin Ji wrote:
+> > On Thu, Mar 03, 2022 at 03:13:33PM +0200, Heikki Krogerus wrote:
+> > > On Thu, Mar 03, 2022 at 10:47:57AM +0800, Xin Ji wrote:
+> > > > On Wed, Mar 02, 2022 at 02:03:18PM +0200, Heikki Krogerus wrote:
+> > > > > Hi,
+> > > > > 
+> > > > > This does not apply on top of Greg's latest usb-next branch. You need
+> > > > > to rebase this. There are also a few more nitpicks below.
+> > > > 
+> > > > Hi, I didn't found tcpci.h in include/linux/usb/
+> > > 
+> > > I'm asking you to create the file.
+> > > 
+> > > So create a separate patch where you move the register definitions and
+> > > command definitions from drivers/usb/typec/tcpm/tcpci.h to
+> > > include/linux/usb/tcpci.h
+> > Hi heikki, I'm confused, do you mean move total tcpci.h to
+> > include/linux/usb/ directory or just move our driver patch used register
+> > definitions and command to "include/linux/usb/tcpci.h"?
+> > 
+> > And I think the other way is, our driver patch just include
+> > "tcpm/tcpci.h" is better(no need to create new file). What do you think?
+> 
+> I would prefer that you just introduce the global header for them.
+Hi heikki, I'll try to move the tcpci.h as global header.
 
-"Huang, Ying" <ying.huang@intel.com> writes:
-
-> Qian Cai <quic_qiancai@quicinc.com> writes:
->
->> On Thu, Feb 17, 2022 at 06:56:52PM -0000, tip-bot2 for Huang Ying wrote:
->>> The following commit has been merged into the sched/core branch of tip:
->>> 
->>> Commit-ID:     5c7b1aaf139dab5072311853bacc40fc3457d1f9
->>> Gitweb:        https://git.kernel.org/tip/5c7b1aaf139dab5072311853bacc40fc3457d1f9
->>> Author:        Huang Ying <ying.huang@intel.com>
->>> AuthorDate:    Mon, 14 Feb 2022 20:15:53 +08:00
->>> Committer:     Peter Zijlstra <peterz@infradead.org>
->>> CommitterDate: Wed, 16 Feb 2022 15:57:53 +01:00
->>> 
->>> sched/numa: Avoid migrating task to CPU-less node
->>> 
->>> In a typical memory tiering system, there's no CPU in slow (PMEM) NUMA
->>> nodes.  But if the number of the hint page faults on a PMEM node is
->>> the max for a task, The current NUMA balancing policy may try to place
->>> the task on the PMEM node instead of DRAM node.  This is unreasonable,
->>> because there's no CPU in PMEM NUMA nodes.  To fix this, CPU-less
->>> nodes are ignored when searching the migration target node for a task
->>> in this patch.
->>> 
->>> To test the patch, we run a workload that accesses more memory in PMEM
->>> node than memory in DRAM node.  Without the patch, the PMEM node will
->>> be chosen as preferred node in task_numa_placement().  While the DRAM
->>> node will be chosen instead with the patch.
->>> 
->>> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
->>> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
->>> Link: https://lkml.kernel.org/r/20220214121553.582248-2-ying.huang@intel.com
->>
->> Reverting this commit on the top of today's linux-next fixed a boot crash
->> on arm64 NUMA systems.
->>
->>  Unable to handle kernel paging request at virtual address ffff7a6601694aec
->>  KASAN: maybe wild-memory-access in range [0xffffd3300b4a5760-0xffffd3300b4a5767]
->>  Mem abort info:
->>    ESR = 0x96000005
->>    EC = 0x25: DABT (current EL), IL = 32 bits
->>  mlx5_core 0007:02:00.0: enabling device (0100 -> 0102)
->>    SET = 0, FnV = 0
->>    EA = 0, S1PTW = 0
->>    FSC = 0x05: level 1 translation fault
->>  Data abort info:
->>    ISV = 0, ISS = 0x00000005
->>    CM = 0, WnR = 0
->>  swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000400b3d6c6000
->>  [ffff7a6601694aec] pgd=0000403fc007f003, p4d=0000403fc007f003, pud=0000000000000000
->>  Internal error: Oops: 96000005 [#1] PREEMPT SMP
->>  Modules linked in: nouveau(+) drm_ttm_helper ttm nvme(+) drm_dp_helper drm_kms_helper mlx5_core(+) mpt3sas(+) xhci_pci(+) nvme_core raid_class xhci_pci_renesas drm
->>  CPU: 85 PID: 1308 Comm: udevadm Not tainted 5.17.0-rc6-next-20220301 #1
->>  pstate: 40400009 (nZcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>  pc : task_numa_placement
->>  lr : task_numa_placement
->>  sp : ffff800031047760
->>  x29: ffff800031047760 x28: ffff3fffab916c00 x27: 0000000000000020
->>  x26: 0000000000000001 x25: 0000000000000000 x24: 0000000000000000
->>
->>  x23: ffff07ffe5289a80 x22: ffffd3300b4a5760 x21: 000000000000003f
->>  x20: ffffd32feb4a5768 x19: 0000000000000000 x18: ffff07ffe528ad88
->>  x17: ffffd32fe5693a1c x16: 0000000000000000 x15: ffff8000310478e0
->>
->>  x14: ffff07ffe528ad90 x13: 0000000000000002 x12: dfff80000000000d
->>  x11: 0000000000000001 x10: 000000000000b6be x9 : 0000000000000000
->>  x8 : 00000000ffffffff x7 : ffffd32feb4a5780 x6 : 0000000000000000
->>  x5 : 0000000000000000 x4 : 0000000000000000 x3 : 1ffffa6601694aec
->>  x2 : 0000000000000000 x1 : dfff800000000000 x0 : 000000001ffffff8
->>  Call trace:
->>   task_numa_placement
->>   arch_test_bit at include/asm-generic/bitops/non-atomic.h:118
->>   (inlined by) node_state at include/linux/nodemask.h:416
->>   (inlined by) task_numa_placement at kernel/sched/fair.c:2439
->>   task_numa_fault
->>   do_numa_page
->>   handle_pte_fault
->>   __handle_mm_fault
->>   handle_mm_fault
->>   do_page_fault
->>   do_translation_fault
->>   do_mem_abort
->>   el0_da
->>   el0t_64_sync_handler
->>   el0t_64_sync
->>  Code: 8b000296 d2d00001 f2fbffe1 d343fec3 (38e16861)
->>  ---[ end trace 0000000000000000 ]---
->>  Kernel panic - not syncing: Oops: Fatal exception
->>  SMP: stopping secondary CPUs
->>  Kernel Offset: 0x532fdcf70000 from 0xffff800008000000
->>  PHYS_OFFSET: 0x80000000
->>  CPU features: 0x00,00042c0c,19801c82
->>  Memory Limit: none
->>  ---[ end Kernel panic - not syncing: Oops: Fatal exception ]---
->
-> Thanks for reporting!  Can you try whether the following debug patch can fix the issue?
->
-> Best Regards,
-> Huang, Ying
->
-> ----------------------------8<-------------------------------------------
-> From 176d185426730111e763eb386d0210561f021dbc Mon Sep 17 00:00:00 2001
-> From: Huang Ying <ying.huang@intel.com>
-> Date: Wed, 2 Mar 2022 08:54:01 +0800
-> Subject: [PATCH] dbg KASAN error
->
-> ---
->  kernel/sched/fair.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index a3f0ea216ccb..1fe7a4510cca 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -2405,7 +2405,7 @@ static void task_numa_placement(struct task_struct *p)
->  	}
->  
->  	/* Cannot migrate task to CPU-less node */
-> -	if (!node_state(max_nid, N_CPU)) {
-> +	if (max_nid != NUMA_NO_NODE && !node_state(max_nid, N_CPU)) {
->  		int near_nid = max_nid;
->  		int distance, near_distance = INT_MAX;
-
-Do you have time to give this patch a try?
-
-Best Regards,
-Huang, Ying
+Thanks,
+Xin
+> 
+> thanks,
+> 
+> -- 
+> heikki
