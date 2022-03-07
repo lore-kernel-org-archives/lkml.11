@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C959C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DEEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236096AbiCGIK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 03:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45926 "EHLO
+        id S236107AbiCGIKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 03:10:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236082AbiCGIKX (ORCPT
+        with ESMTP id S236095AbiCGIK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 03:10:23 -0500
+        Mon, 7 Mar 2022 03:10:26 -0500
 Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8234968B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 00:09:29 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F3F4B1C2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 00:09:33 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 260A53F1E6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:09:28 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 154223F1E6
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646640568;
-        bh=Hr6l7tR8wCFPpDLdPVRbiwm0w/8EJx3zWKyr1VFg4Q4=;
+        s=20210705; t=1646640571;
+        bh=4HAGUFdmLrEMxU9EFzkJe4Ux3HcmnFK/yDcsBQCmOjM=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=VFDZZetJDBZau1NmMUCvSxLHT0eviZWktWgjEPXu0LN6trKjHRXBNM9FuYPyeJ+4h
-         WoVazzxc9u6838sLO84mUe4mu3WYLjiFYtOBYP711MyGqlBl8ByGpmZfvjmKzm68Oh
-         9AnKd6fPKY71puJSnDtDfSijkWZDTgLRhKSy/jnWu7My25YdoM8lRtbw0MCo/2Df+Y
-         b7ffC07nhDjeRkXeGcT6fgM0niQKvR4EEAsmG7NL+/qTms5Cd2/6mdNo0gyf7mAERb
-         +4U7YT0Mz+Rtb3StZq019z9UznjEP/IhjNoBOvIZPpsOpZREDHb/SV0wBbUpy5DX43
-         VZEwGvV93jp2A==
-Received: by mail-ed1-f72.google.com with SMTP id e10-20020a056402190a00b00410f20467abso8141010edz.14
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 00:09:28 -0800 (PST)
+        b=ar7fL9ueWOkRzUtFITgzBX2E5qX8D4HHFnO0EhcVYoKY2xzlzhEnCJwswfxASZ+eK
+         GF78AwOEvxtIbPS3jVwi7DyDd9m/7wRLKuyUgPLqlv5rGkl6yB4FnWQNWETmLaIq9o
+         WXYa0hUHZ/YELlvXrSOcICQjLU2TydVoUWXL5IeUmLesykOzbLK4NwkO786BZahSue
+         PG4PTemQUUTyTGE0JRMGqBsa+cpI0Uny97us1EtoYbUjL+RLdOO91l8NSXlr97yZU1
+         C+Dq/Rxf3Usc/fxk067AMiHAeXBAsCIdhqHMDm6e7b8rj4NnqyFp3gW8Fg0Ak7+MgS
+         JZYcw465OHyfg==
+Received: by mail-ed1-f70.google.com with SMTP id e10-20020a056402190a00b00410f20467abso8141083edz.14
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 00:09:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Hr6l7tR8wCFPpDLdPVRbiwm0w/8EJx3zWKyr1VFg4Q4=;
-        b=Q5WTKDu50WxSZX2W5qLpnfqRrnAff7/7+M35yHvJ8n/zhxJJRXrODtolw8YeqarOae
-         +8ycNTRhECPav0oij5Qw/qng+C/7GopyafnoaWY/iXI+2IlvtWs0umK56iwvhOFU1czA
-         VMXBV+anrTlD+eq45QwiJS7yhmUvqhcwXQSm91g2cIX/iaHHqZ9voRfEAYBqjkT0BjgA
-         hm1miFldYJ9PUorT/HSS+6Ktt7/KXKvvhyfe8u8xM0MLty1uNFXs83WuXS0qeXC7myHC
-         3xQN7eY/j5c3xMn5x2rHyeJ4kx/0R/hJYzkvSdhTuaK09vufxheb2mev3EGwxR9k94jF
-         vafQ==
-X-Gm-Message-State: AOAM530DlJ5mdZH5mhu1t1ucmxjMCq/tJEynxKE0EQH7pQO1NdV4GCR6
-        y0LCj04po2NPQ+wTYw8I31zuS9JAwin3rnUL9wnGjc1Ehfh6n7Th2+gvheSz8UyBwisHdjfBYBw
-        NOWxojXxioIBoXId1qQ4FM8WhoWo4naFrcQIDEaWuPA==
-X-Received: by 2002:aa7:db07:0:b0:415:d33e:a8ea with SMTP id t7-20020aa7db07000000b00415d33ea8eamr9897827eds.342.1646640567893;
-        Mon, 07 Mar 2022 00:09:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyNaH7lGnyROX1lQxu8WqlZ1+w74vQK+Ouvk0dc1jxOnopJEO9Ambl+7Snfxcdo3gz4WsL+eg==
-X-Received: by 2002:aa7:db07:0:b0:415:d33e:a8ea with SMTP id t7-20020aa7db07000000b00415d33ea8eamr9897806eds.342.1646640567675;
-        Mon, 07 Mar 2022 00:09:27 -0800 (PST)
+        bh=4HAGUFdmLrEMxU9EFzkJe4Ux3HcmnFK/yDcsBQCmOjM=;
+        b=IwsamsJmAuu2JLQJUtP+G/2dTg8N4w7tgJho1GYtfh1e/ABgm5JEXV7HapadTMoJkT
+         CVEqlL44Lg/wdMGGx7sHjSxjTDrdAm4P8EBhkTF3bXruij64mdUQRu+MtWiBfGtpR1mC
+         TchQcjoHH2RftbKXDaEabUz8W7pixXG+SxB8lvt0ZjjGJQU2fLwJ9Z2rpJVuA1xsrlOe
+         yQ2cMkrpAMvpNvpZcaPw+SeRqAgsvuMgeCpS3rdR6vp7HB7J6oQ/lXt5a3y1XXzZjLLF
+         7eWaMtZvpEdR+x1vHWqeajSv3kQ6e4AhKuqEWo3iFRw6stLlJ02Vx2ci0b7sie6BWJsd
+         NqYA==
+X-Gm-Message-State: AOAM532DVZATZVv5uW87WUqTPlLREJITX+1zPVYF/Wdj+xqbdfkuc6Ec
+        UOrqzncc81SbSO2A48lOry0ErHm+QO0TDelBmFMmpLL9Nbu/uJrdMwFIrSl4nIDtYv0iSMBP7gZ
+        O/mii80dmxyfQUN0JhAp0tltnHdjZqERXhd3AVNLBBw==
+X-Received: by 2002:a05:6402:18:b0:410:86cd:9dce with SMTP id d24-20020a056402001800b0041086cd9dcemr9810252edu.70.1646640570856;
+        Mon, 07 Mar 2022 00:09:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwgU+c7KFSylijaRWQXv0cNRe/wpPkgSFLwallIr6sdnzfiO44fulIE699j1F9ifcnE8L0KOA==
+X-Received: by 2002:a05:6402:18:b0:410:86cd:9dce with SMTP id d24-20020a056402001800b0041086cd9dcemr9810243edu.70.1646640570665;
+        Mon, 07 Mar 2022 00:09:30 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id fq14-20020a1709069d8e00b006da650af5a9sm4472594ejc.3.2022.03.07.00.09.26
+        by smtp.gmail.com with ESMTPSA id fq14-20020a1709069d8e00b006da650af5a9sm4472594ejc.3.2022.03.07.00.09.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 00:09:27 -0800 (PST)
+        Mon, 07 Mar 2022 00:09:29 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
@@ -65,9 +65,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/7] tty: serial: samsung: embed s3c2410_uartcfg in parent structure
-Date:   Mon,  7 Mar 2022 09:09:20 +0100
-Message-Id: <20220307080925.54131-1-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 4/7] tty: serial: samsung: constify UART name
+Date:   Mon,  7 Mar 2022 09:09:22 +0100
+Message-Id: <20220307080925.54131-3-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
 References: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
@@ -77,102 +77,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Embed "struct s3c2410_uartcfg" directly as a member of "struct
-s3c24xx_serial_drv_data" instead of keeping it as a pointer.  This makes
-the code clearer (obvious ownership of "s3c2410_uartcfg
-s3c24xx_serial_drv_data") and saves one pointer.
+The UART name from driver data holds only string literals.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 ---
- drivers/tty/serial/samsung_tty.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index aa5678d03704..a9a75b5b9705 100644
+index c4b13f2d6e26..7025306f76b7 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -86,7 +86,7 @@ struct s3c24xx_uart_info {
- 
- struct s3c24xx_serial_drv_data {
- 	struct s3c24xx_uart_info	info;
--	struct s3c2410_uartcfg		*def_cfg;
-+	struct s3c2410_uartcfg		def_cfg;
- 	unsigned int			fifosize[CONFIG_SERIAL_SAMSUNG_UARTS];
+@@ -63,7 +63,7 @@ enum s3c24xx_port_type {
  };
  
-@@ -2200,7 +2200,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	ourport->info = &ourport->drv_data->info;
- 	ourport->cfg = (dev_get_platdata(&pdev->dev)) ?
- 			dev_get_platdata(&pdev->dev) :
--			ourport->drv_data->def_cfg;
-+			&ourport->drv_data->def_cfg;
- 
- 	switch (ourport->info->type) {
- 	case TYPE_S3C24XX:
-@@ -2632,7 +2632,7 @@ static struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
- 		.clksel_mask	= S3C2410_UCON_CLKMASK,
- 		.clksel_shift	= S3C2410_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2661,7 +2661,7 @@ static struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
- 		.clksel_mask	= S3C2412_UCON_CLKMASK,
- 		.clksel_shift	= S3C2412_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2692,7 +2692,7 @@ static struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
- 		.clksel_shift	= S3C2412_UCON_CLKSHIFT,
- 		.ucon_mask	= S3C2440_UCON0_DIVMASK,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2721,7 +2721,7 @@ static struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
- 		.clksel_mask	= S3C6400_UCON_CLKMASK,
- 		.clksel_shift	= S3C6400_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2749,7 +2749,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.clksel_mask	= S5PV210_UCON_CLKMASK,
- 		.clksel_shift	= S5PV210_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S5PV210_UCON_DEFAULT,
- 		.ufcon		= S5PV210_UFCON_DEFAULT,
- 	},
-@@ -2778,7 +2778,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.clksel_mask	= 0,				\
- 		.clksel_shift	= 0,				\
- 	},							\
--	.def_cfg = &(struct s3c2410_uartcfg) {			\
-+	.def_cfg = {						\
- 		.ucon		= S5PV210_UCON_DEFAULT,		\
- 		.ufcon		= S5PV210_UFCON_DEFAULT,	\
- 		.has_fracval	= 1,				\
-@@ -2827,7 +2827,7 @@ static struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
- 		.clksel_mask	= 0,
- 		.clksel_shift	= 0,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= APPLE_S5L_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
+ struct s3c24xx_uart_info {
+-	char			*name;
++	const char		*name;
+ 	enum s3c24xx_port_type	type;
+ 	unsigned int		port_type;
+ 	unsigned int		fifosize;
 -- 
 2.32.0
 
