@@ -2,101 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4CDC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB33DC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238666AbiCGJsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
+        id S238705AbiCGJs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238939AbiCGJjB (ORCPT
+        with ESMTP id S238986AbiCGJjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33FB6F497;
-        Mon,  7 Mar 2022 01:33:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4930A6112D;
-        Mon,  7 Mar 2022 09:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5203AC340E9;
-        Mon,  7 Mar 2022 09:33:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645627;
-        bh=/JrGYYlRVSlwF13yn3rkv1ymypqZju2Z3HICRek2zkM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DW7TS+lb17pGqn+Rv4epf9TFdq3Essz4ppie/u69y4wQ4hEnbIL7rqUg05lphcjPj
-         LsX6OSC02uCsPJKwvLdLD9BJUMc1+6R2Jp/wYiRlq+aGCmf8NacYH/6uCCzIktGK4K
-         2HGIidv9YPyHvqgFATVte79Hhn6sAl4JCQUwv57o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 092/105] nl80211: Handle nla_memdup failures in handle_nan_filter
-Date:   Mon,  7 Mar 2022 10:19:35 +0100
-Message-Id: <20220307091646.766274785@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:39:06 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2525B6FA28
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:34:05 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id q17so18982638edd.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:34:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T4pAYxTpYPVm5BTKv0KTFLGCqSqO8rP0B5DSOXBwIIg=;
+        b=XOVQYs5hOi5/QArBQXFroja0peQ2uhcvbl0ymGXyBrZz7jqc1l1e7nq9dqLl4KBskz
+         HTpJYa4D4L4D1Ny38BmIdtiTGV5Rmzb47jmY6rHFEhK+3ZnqwtoEu9ZW8C7TiFq5YxRh
+         cMwQjrWZ0xMPEW1P9VbUQA3AE8fCATUhNhLkkSYTWpNN6Xq4gKLRlXMEzsyWqI4/1PdA
+         dV1tHE4mxBLY1iEoEbvoxZp8PUUJaUyUg6lhWpQ54LCW28Nh8a2rc8NNYuGLPvbOb7lY
+         qbZXa7rxKXLMvcpvlUlP1uVrSHXZPJTF96M8bpcSmKbW1XJa4362k2PaotiKn+weMN7F
+         xWGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T4pAYxTpYPVm5BTKv0KTFLGCqSqO8rP0B5DSOXBwIIg=;
+        b=JVF/NKcDvm/eYYwnevaakonEZ7OSySj3swMoN1SFJeDnb7zjmTRKpELrDdv7PCJOVn
+         AnesA9nQYDuBj0ANSO/NdfEQDuUTSRhy0l3U6iMc5JhXYxnF3cKP1PBLRcDoc/ddGQMV
+         Dt30CXfqtlnK1HplgKcjrBr8jJfBuaXaXi/zVE0yNmnYd5YPdvIp0LA7I0EYqm/DYXkm
+         dgVbwwdM7zsOJYG1A/Pww3QumqJubeVqzCwHn0kCUvfX/p8tiIBWa99CwOjno0IS7iq7
+         /v70ZF034Gp5F1XtN2RWlxMuV3gIjTYaVmKimQc0x++VAI7sBoRBTIG1MvEavZbh3afF
+         OQ7A==
+X-Gm-Message-State: AOAM531fONxCiUJjp56ECztK7k5f4B0Uh8aVokBNNJ/8sBc9V3UZEp9h
+        3unXGJXsErjBpxv1p77B5+RCPwJ3QOP0pngZJLy1Tg==
+X-Google-Smtp-Source: ABdhPJzs6obQQ+IS68pyTHcyaWrxMiTQtAkSpPqurNqsXqJhCMR3bBC/qScebmZHHGDDCuou6y5dsamkrWzHkgOr8oU=
+X-Received: by 2002:a05:6402:d0d:b0:416:1d69:f23b with SMTP id
+ eb13-20020a0564020d0d00b004161d69f23bmr10131225edb.141.1646645637315; Mon, 07
+ Mar 2022 01:33:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220228153405.49981-1-akhilrajeev@nvidia.com>
+In-Reply-To: <20220228153405.49981-1-akhilrajeev@nvidia.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Mon, 7 Mar 2022 10:33:46 +0100
+Message-ID: <CAMRc=McbkMjg2Qku8XdC_GK3KPt_GFwi15PK4Yt-rRMKNs0rYw@mail.gmail.com>
+Subject: Re: [PATCH v2] gpio: tegra186: Add IRQ per bank for Tegra241
+To:     Akhil R <akhilrajeev@nvidia.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+On Mon, Feb 28, 2022 at 4:34 PM Akhil R <akhilrajeev@nvidia.com> wrote:
+>
+> Add the number of interrupts per bank for Tegra241 (Grace) to
+> fix the probe failure.
+>
+> Fixes: d1056b771ddb ("gpio: tegra186: Add support for Tegra241")
+> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+> ---
+> v1->v2: Add 'Fixes' tag in the commit message
+>
+>  drivers/gpio/gpio-tegra186.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/gpio/gpio-tegra186.c b/drivers/gpio/gpio-tegra186.c
+> index 8d298beffd86..031fe105b58e 100644
+> --- a/drivers/gpio/gpio-tegra186.c
+> +++ b/drivers/gpio/gpio-tegra186.c
+> @@ -1075,6 +1075,7 @@ static const struct tegra_gpio_soc tegra241_main_soc = {
+>         .ports = tegra241_main_ports,
+>         .name = "tegra241-gpio",
+>         .instance = 0,
+> +       .num_irqs_per_bank = 8,
+>  };
+>
+>  #define TEGRA241_AON_GPIO_PORT(_name, _bank, _port, _pins)     \
+> @@ -1095,6 +1096,7 @@ static const struct tegra_gpio_soc tegra241_aon_soc = {
+>         .ports = tegra241_aon_ports,
+>         .name = "tegra241-gpio-aon",
+>         .instance = 1,
+> +       .num_irqs_per_bank = 8,
+>  };
+>
+>  static const struct of_device_id tegra186_gpio_of_match[] = {
+> --
+> 2.17.1
+>
 
-[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
+Queued for fixes, thanks!
 
-As there's potential for failure of the nla_memdup(),
-check the return value.
-
-Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/wireless/nl80211.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 8fb0478888fb..07bd7b00b56d 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -12930,6 +12930,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	i = 0;
- 	nla_for_each_nested(attr, attr_filter, rem) {
- 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
-+		if (!filter[i].filter)
-+			goto err;
-+
- 		filter[i].len = nla_len(attr);
- 		i++;
- 	}
-@@ -12942,6 +12945,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	}
- 
- 	return 0;
-+
-+err:
-+	i = 0;
-+	nla_for_each_nested(attr, attr_filter, rem) {
-+		kfree(filter[i].filter);
-+		i++;
-+	}
-+	kfree(filter);
-+	return -ENOMEM;
- }
- 
- static int nl80211_nan_add_func(struct sk_buff *skb,
--- 
-2.34.1
-
-
-
+Bart
