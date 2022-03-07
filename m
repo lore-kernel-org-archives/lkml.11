@@ -2,128 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244099AbiCGQUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:20:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
+        id S244110AbiCGQVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239693AbiCGQUu (ORCPT
+        with ESMTP id S239693AbiCGQVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:20:50 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309E24D9C4;
-        Mon,  7 Mar 2022 08:19:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646669995; x=1678205995;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=nCdJ9kv9kF9+cM2VoJw0GpTu/gzqvrLvVOduS7j3Scc=;
-  b=CQnyZ6uKeXx+2VdZoFPbzHVP6x4A19dlH6gtmodZooPLgDtxfy9Ef6tQ
-   RrnG9bSiU4XxO88sHs1im9ZaciIN+bebuCbb0M7bOtq0++KfIZaOyDWJB
-   ZIUIE+nmZeWtsjTPX6aRnP4LtBhI1zXMkLrK5OmZdmwL1NMSm7Xmulsz3
-   PYteMph+DQILcVMwmC7I4hz+aJvhQJC8FrUteYZAz0xOGkBbj+hav0P33
-   L+DPlCpQ7bWHy1gXcEUA9ufvBMZeVDRsRraZQzsOZCEoUZTB3l13Ag1TJ
-   JivhwQBiVT5fjjweMIbIXfRKwPT11BiZnDYDcEOsxSlycGfEIC5fyr2h0
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="241865103"
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="241865103"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 08:18:39 -0800
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="711162057"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 08:18:36 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRG3T-00CrIo-NM;
-        Mon, 07 Mar 2022 18:17:51 +0200
-Date:   Mon, 7 Mar 2022 18:17:51 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH v2 1/1] device property: Allow error pointer to be passed
- to fwnode APIs
-Message-ID: <YiYwL7gCprl69A2c@smile.fi.intel.com>
-References: <20220304173256.39059-1-andriy.shevchenko@linux.intel.com>
- <PH0PR03MB67863963179FBA901E649C7599089@PH0PR03MB6786.namprd03.prod.outlook.com>
+        Mon, 7 Mar 2022 11:21:12 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429754C414
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:20:18 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id p8so14281110pfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 08:20:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=+wV1FY8U0FWB4VAPUiegJjEIq4RD3FNiqaa9wr6HZiU=;
+        b=HHxBwJWvb+zcfYI6s9N+7pQZWwRNUv3GxQ6D78pso72TORyjd7Eoi7G9ZoGfaTtuvT
+         +YGxjcgJNHZWubIdOEwRzBEmMlMeCxU6xnn1f9XqzuOOKCKZEE3tpPK3j+ID10hUCguZ
+         mHOATnIR8CkGYTCe6H27Px6VUPMR5+JMrlpyHxw6vMj1MNjuazGNc5Y0F/PmAqBvVlTI
+         Kv4UnmBTAxOAH+YXealbXzJMmAmoTZKL+68os0S0/EPJle5tuR0W5FsA7Nfgcc2pexey
+         IDSK+9jDYCZdtn5MbsEssOwC2ebqPhbqCYaGzp158jtWQVu2VuUfq++MJyoHi2rzXy3d
+         zzGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=+wV1FY8U0FWB4VAPUiegJjEIq4RD3FNiqaa9wr6HZiU=;
+        b=dXicTlr/Dc+GRS2xcostFTaheiQvIsQa9uIJiMMhwG7mxY2CYNXYKmj7oO7/ebixa2
+         Yn3QPKFj0on7Bv/q1Ft1HvL+85kKBM8/S9axiygAnan07ejIQ94NOvrRbm9gAnFAzx3x
+         WdaPIFeWAVnOUE94mqMixxfdss6cH/h9zzahi1earf1atlAmxYx+hyfr+TpECmnrJ2ap
+         ahHaU0MtLHnxPxqD+0cxJQI54uFudL1ZqRV9x17RRNPcn3jguliIvKpOIKrwunBBRgDU
+         fGb32GrOiOQFgpunrY6pt9DnTiGL7DUHLLxiVMxgvaab9fKu13rGRbRY7B+/4Iq2UHsC
+         w52Q==
+X-Gm-Message-State: AOAM532nRB0jjtQTXhNqjA2mZiQXVqBYjNr/SpUSWmRIfzX+wZ3Eq4it
+        pJsY6ujGG1kzGVc6cNIlQJalhAXwm6Z1yKNbOE98rg==
+X-Google-Smtp-Source: ABdhPJx/V3uLVWBI8/E8KCOJyzUgUR2RjgCZBR6Hgu1VcR0R4QgDq/3T8EiSucOBT+/CPouLZFgIw7Ts/R5qlhZ+a60=
+X-Received: by 2002:a05:6a00:24c5:b0:4d1:65bf:1fe0 with SMTP id
+ d5-20020a056a0024c500b004d165bf1fe0mr13441313pfv.0.1646670017759; Mon, 07 Mar
+ 2022 08:20:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <PH0PR03MB67863963179FBA901E649C7599089@PH0PR03MB6786.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220307154558.2505734-1-robert.foss@linaro.org> <20220307154558.2505734-3-robert.foss@linaro.org>
+In-Reply-To: <20220307154558.2505734-3-robert.foss@linaro.org>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 7 Mar 2022 17:20:06 +0100
+Message-ID: <CAG3jFytGV3NNfkEPqx_rZX9O9aZjTjzo2tpeSK8mFimOrYt9zw@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] Revert "arm64: dts: mt8183: jacuzzi: Fix bus
+ properties in anx's DSI endpoint"
+To:     airlied@linux.ie, daniel@ffwll.ch, robh+dt@kernel.org,
+        matthias.bgg@gmail.com, robert.foss@linaro.org,
+        xji@analogixsemi.com, hsinyi@chromium.org,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Chen-Yu Tsai <wenst@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 04:15:23PM +0000, Sa, Nuno wrote:
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Sent: Friday, March 4, 2022 6:33 PM
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
 
-...
-
-> > Some of the fwnode APIs might return an error pointer instead of
-> > NULL
-> > or valid fwnode handle. The result of such API call may be considered
-> > optional and hence the test for it is usually done in a form of
-> > 
-> > 	fwnode = fwnode_find_reference(...);
-> > 	if (IS_ERR_OR_NULL(fwnode))
-> > 		...error handling...
-> > 
-> > Nevertheless the resulting fwnode may have bumped reference count
-> > and
-> > hence caller of the above API is obliged to call fwnode_handle_put().
-> > Since fwnode may be not valid either as NULL or error pointer the
-> > check
-> > has to be performed there. This approach uglifies the code and adds
-> > a point of making a mistake, i.e. forgetting about error point case.
-> > 
-> > To prevent this allow error pointer to be passed to the fwnode APIs.
-
-...
-
-> > v2: adjusted the entire fwnode API (Sakari)
-> > 
-> > Nuno, can you test this with the ltc2983 series, including the
-> > IS_ERR_OR_NULL()
-> > fix to it?
-> 
-> Hi Andy,
-> 
-> Just tested this patch with the ltc2983 series and now 
-> fwnode_handle_put() does not crash when fwnode is an
-> error pointer. I think this usecase does not cover all
-> of the patch so I'm not sure if a tested by tag here is
-> meaningful...
-
-I believe it still makes sense because we understand what you have tested.
-And at least it has some kind of BAT:
-- compile testing
-- testing (some of the) branches
-
-> If it is, go ahead:
-> 
-> Tested-by: Nuno Sá <nuno.sa@analog.com>
-
-Thank you!
-
-I'll send v3 because I want to amend the commit message.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+On Mon, 7 Mar 2022 at 16:46, Robert Foss <robert.foss@linaro.org> wrote:
+>
+> This reverts commit 32568ae37596b529628ac09b875f4874e614f63f.
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> index e8f133dc96b95..8f7bf33f607da 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> @@ -171,8 +171,6 @@ port@0 {
+>
+>                         anx7625_in: endpoint {
+>                                 remote-endpoint = <&dsi_out>;
+> -                               bus-type = <5>;
+> -                               data-lanes = <0 1 2 3>;
+>                         };
+>                 };
+>
+> --
+> 2.32.0
+>
