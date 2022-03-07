@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D30C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D7BC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241188AbiCGKiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:38:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
+        id S241150AbiCGKil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:38:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241305AbiCGKKG (ORCPT
+        with ESMTP id S241354AbiCGKKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:06 -0500
+        Mon, 7 Mar 2022 05:10:08 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE7929CAC;
-        Mon,  7 Mar 2022 01:52:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB0E2BB09;
+        Mon,  7 Mar 2022 01:53:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71D1A60A25;
-        Mon,  7 Mar 2022 09:52:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D7BAC340F3;
-        Mon,  7 Mar 2022 09:52:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1228260A28;
+        Mon,  7 Mar 2022 09:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1048BC340F3;
+        Mon,  7 Mar 2022 09:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646752;
-        bh=FjR30AB8M1wluAjKILJJaXCGejpbEBNh6lLDeYPU04c=;
+        s=korg; t=1646646762;
+        bh=UfCYSZXoVnRIB8H8VvbyXpKv1i03FqE5R0QtrAk+uj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=te9weEX9zYqeGTrWbD6zTpCYOKqxi2eF3rXhKMrSUkXN2tQIt4TXnxpBrNER8htd0
-         d81NJrZ+0TtoGKlPyuQ8u5vghpv+7GMHJJdape8lKGZFM073vygRlu144Tyy15a1O5
-         5Ig9uLyYZRZD8WCreaJ4QbD5gdxvBingYo49Xx5Q=
+        b=evN6I1iFRADj9+NpO+OD7ewwE73FnQ4c35lbSfesV5JZOi1h00hH2WcsTfFQoHEQK
+         NCud95bH5qSfgAUDaZkP8ORapWdIcLxTdHk7H55+RwIfJFBI/vQDK1MI4FlkNp9owz
+         cX2kvRYWBLQ4xYU58xGpED99PQ6GyMCqacngI1DU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alex Elder <elder@linaro.org>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 082/186] net: ipa: add an interconnect dependency
-Date:   Mon,  7 Mar 2022 10:18:40 +0100
-Message-Id: <20220307091656.380149513@linuxfoundation.org>
+        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 085/186] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
+Date:   Mon,  7 Mar 2022 10:18:43 +0100
+Message-Id: <20220307091656.462621250@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,36 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: D. Wythe <alibuda@linux.alibaba.com>
 
-commit 1dba41c9d2e2dc94b543394974f63d55aa195bfe upstream.
+commit 4940a1fdf31c39f0806ac831cde333134862030b upstream.
 
-In order to function, the IPA driver very clearly requires the
-interconnect framework to be enabled in the kernel configuration.
-State that dependency in the Kconfig file.
+The problem of SMC_CLC_DECL_ERR_REGRMB on the server is very clear.
+Based on the fact that whether a new SMC connection can be accepted or
+not depends on not only the limit of conn nums, but also the available
+entries of rtoken. Since the rtoken release is trigger by peer, while
+the conn nums is decrease by local, tons of thing can happen in this
+time difference.
 
-This became a problem when CONFIG_COMPILE_TEST support was added.
-Non-Qualcomm platforms won't necessarily enable CONFIG_INTERCONNECT.
+This only thing that needs to be mentioned is that now all connection
+creations are completely protected by smc_server_lgr_pending lock, it's
+enough to check only the available entries in rtokens_used_mask.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 38a4066f593c5 ("net: ipa: support COMPILE_TEST")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Link: https://lore.kernel.org/r/20220301113440.257916-1-elder@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cd6851f30386 ("smc: remote memory buffers (RMBs)")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ net/smc/smc_core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -2,6 +2,7 @@ config QCOM_IPA
- 	tristate "Qualcomm IPA support"
- 	depends on NET && QCOM_SMEM
- 	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on INTERCONNECT
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
- 	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select QCOM_MDT_LOADER if ARCH_QCOM
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1783,7 +1783,8 @@ int smc_conn_create(struct smc_sock *smc
+ 		    (ini->smcd_version == SMC_V2 ||
+ 		     lgr->vlan_id == ini->vlan_id) &&
+ 		    (role == SMC_CLNT || ini->is_smcd ||
+-		     lgr->conns_num < SMC_RMBS_PER_LGR_MAX)) {
++		    (lgr->conns_num < SMC_RMBS_PER_LGR_MAX &&
++		      !bitmap_full(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX)))) {
+ 			/* link group found */
+ 			ini->first_contact_local = 0;
+ 			conn->lgr = lgr;
 
 
