@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59771C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70413C35274
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237852AbiCGJmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:42:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
+        id S238164AbiCGJmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:42:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237704AbiCGJdH (ORCPT
+        with ESMTP id S237745AbiCGJdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:33:07 -0500
+        Mon, 7 Mar 2022 04:33:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF136AA4E;
-        Mon,  7 Mar 2022 01:30:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A506AA5F;
+        Mon,  7 Mar 2022 01:30:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2460611EC;
-        Mon,  7 Mar 2022 09:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC059C340F5;
-        Mon,  7 Mar 2022 09:29:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1106A611AE;
+        Mon,  7 Mar 2022 09:30:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134A0C36AEA;
+        Mon,  7 Mar 2022 09:30:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645397;
-        bh=OPairPbhUOTqUDIxGFauf9QTL0KPMO5IQu105xh9w0g=;
+        s=korg; t=1646645403;
+        bh=YfYYgfEG/tUw+RF/Z5+2ChlPUubhZWSVdHx6WExWyhs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A+cZKjLrWQXgx+D7/m2AHkWpdw09IUgakyDDEr58+bOxHuetvohps+CyhB5o/hMQk
-         hdZIV70MRvH6a9MyZSFT3JV+jRQvKg0GtRTidNknqXXm/OvR1cEcJZp/y5b93bwuLg
-         bPDMIT7+/gxkLKK2z0pxXIQQSDURwNpwkSSqH200=
+        b=JVEgo96yKndjS/sfmfBMPb/TI7N4tMucpxfUBV01OzqdKLFhoaqWmegbzZG3CuGro
+         mcYdCMyaTpNCiRzID8b1UkeoIrosBfp7BqZJ99u/ieoSrNIZzpnOl07a/qmxh3kTKz
+         cQ1uqG7xgCeap44A+bC68e73+lKULNWHG7IGSixU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 018/105] exfat: reuse exfat_inode_info variable instead of calling EXFAT_I()
-Date:   Mon,  7 Mar 2022 10:18:21 +0100
-Message-Id: <20220307091644.696426921@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 003/105] i2c: bcm2835: Avoid clock stretching timeouts
+Date:   Mon,  7 Mar 2022 10:18:06 +0100
+Message-Id: <20220307091644.279301619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -50,132 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+From: Eric Anholt <eric@anholt.net>
 
-[ Upstream commit 7dee6f57d7f22a89dd214518c778aec448270d4c ]
+[ Upstream commit 9495b9b31abe525ebd93da58de2c88b9f66d3a0e ]
 
-Also add a local "struct exfat_inode_info *ei" variable to
-exfat_truncate() to simplify the code.
+The CLKT register contains at poweron 0x40, which at our typical 100kHz
+bus rate means .64ms. But there is no specified limit to how long devices
+should be able to stretch the clocks, so just disable the timeout. We
+still have a timeout wrapping the entire transfer.
 
-Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+BugLink: https://github.com/raspberrypi/linux/issues/3064
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/exfat/file.c  | 14 +++++++-------
- fs/exfat/inode.c |  9 ++++-----
- fs/exfat/namei.c |  6 +++---
- fs/exfat/super.c |  6 +++---
- 4 files changed, 17 insertions(+), 18 deletions(-)
+ drivers/i2c/busses/i2c-bcm2835.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/fs/exfat/file.c b/fs/exfat/file.c
-index a92478eabfa4e..6258c5da3060b 100644
---- a/fs/exfat/file.c
-+++ b/fs/exfat/file.c
-@@ -109,8 +109,7 @@ int __exfat_truncate(struct inode *inode, loff_t new_size)
- 	exfat_set_volume_dirty(sb);
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index 37443edbf7546..ad3b124a2e376 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -23,6 +23,11 @@
+ #define BCM2835_I2C_FIFO	0x10
+ #define BCM2835_I2C_DIV		0x14
+ #define BCM2835_I2C_DEL		0x18
++/*
++ * 16-bit field for the number of SCL cycles to wait after rising SCL
++ * before deciding the slave is not responding. 0 disables the
++ * timeout detection.
++ */
+ #define BCM2835_I2C_CLKT	0x1c
  
- 	num_clusters_new = EXFAT_B_TO_CLU_ROUND_UP(i_size_read(inode), sbi);
--	num_clusters_phys =
--		EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk, sbi);
-+	num_clusters_phys = EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
+ #define BCM2835_I2C_C_READ	BIT(0)
+@@ -477,6 +482,12 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 	adap->dev.of_node = pdev->dev.of_node;
+ 	adap->quirks = of_device_get_match_data(&pdev->dev);
  
- 	exfat_chain_set(&clu, ei->start_clu, num_clusters_phys, ei->flags);
++	/*
++	 * Disable the hardware clock stretching timeout. SMBUS
++	 * specifies a limit for how long the device can stretch the
++	 * clock, but core I2C doesn't.
++	 */
++	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_CLKT, 0);
+ 	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_C, 0);
  
-@@ -227,12 +226,13 @@ void exfat_truncate(struct inode *inode, loff_t size)
- {
- 	struct super_block *sb = inode->i_sb;
- 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
-+	struct exfat_inode_info *ei = EXFAT_I(inode);
- 	unsigned int blocksize = i_blocksize(inode);
- 	loff_t aligned_size;
- 	int err;
- 
- 	mutex_lock(&sbi->s_lock);
--	if (EXFAT_I(inode)->start_clu == 0) {
-+	if (ei->start_clu == 0) {
- 		/*
- 		 * Empty start_clu != ~0 (not allocated)
- 		 */
-@@ -259,11 +259,11 @@ void exfat_truncate(struct inode *inode, loff_t size)
- 		aligned_size++;
- 	}
- 
--	if (EXFAT_I(inode)->i_size_ondisk > i_size_read(inode))
--		EXFAT_I(inode)->i_size_ondisk = aligned_size;
-+	if (ei->i_size_ondisk > i_size_read(inode))
-+		ei->i_size_ondisk = aligned_size;
- 
--	if (EXFAT_I(inode)->i_size_aligned > i_size_read(inode))
--		EXFAT_I(inode)->i_size_aligned = aligned_size;
-+	if (ei->i_size_aligned > i_size_read(inode))
-+		ei->i_size_aligned = aligned_size;
- 	mutex_unlock(&sbi->s_lock);
- }
- 
-diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
-index 8b0288f70e93d..d7f11b7ab46c5 100644
---- a/fs/exfat/inode.c
-+++ b/fs/exfat/inode.c
-@@ -114,10 +114,9 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
- 	unsigned int local_clu_offset = clu_offset;
- 	unsigned int num_to_be_allocated = 0, num_clusters = 0;
- 
--	if (EXFAT_I(inode)->i_size_ondisk > 0)
-+	if (ei->i_size_ondisk > 0)
- 		num_clusters =
--			EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk,
--			sbi);
-+			EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
- 
- 	if (clu_offset >= num_clusters)
- 		num_to_be_allocated = clu_offset - num_clusters + 1;
-@@ -415,10 +414,10 @@ static int exfat_write_end(struct file *file, struct address_space *mapping,
- 
- 	err = generic_write_end(file, mapping, pos, len, copied, pagep, fsdata);
- 
--	if (EXFAT_I(inode)->i_size_aligned < i_size_read(inode)) {
-+	if (ei->i_size_aligned < i_size_read(inode)) {
- 		exfat_fs_error(inode->i_sb,
- 			"invalid size(size(%llu) > aligned(%llu)\n",
--			i_size_read(inode), EXFAT_I(inode)->i_size_aligned);
-+			i_size_read(inode), ei->i_size_aligned);
- 		return -EIO;
- 	}
- 
-diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
-index 2932b23a3b6c3..935f600509009 100644
---- a/fs/exfat/namei.c
-+++ b/fs/exfat/namei.c
-@@ -395,9 +395,9 @@ static int exfat_find_empty_entry(struct inode *inode,
- 
- 		/* directory inode should be updated in here */
- 		i_size_write(inode, size);
--		EXFAT_I(inode)->i_size_ondisk += sbi->cluster_size;
--		EXFAT_I(inode)->i_size_aligned += sbi->cluster_size;
--		EXFAT_I(inode)->flags = p_dir->flags;
-+		ei->i_size_ondisk += sbi->cluster_size;
-+		ei->i_size_aligned += sbi->cluster_size;
-+		ei->flags = p_dir->flags;
- 		inode->i_blocks += 1 << sbi->sect_per_clus_bits;
- 	}
- 
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index c6d8d2e534865..7b91214a4110e 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -366,9 +366,9 @@ static int exfat_read_root(struct inode *inode)
- 
- 	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
- 			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
--	EXFAT_I(inode)->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
--	EXFAT_I(inode)->i_size_aligned = i_size_read(inode);
--	EXFAT_I(inode)->i_size_ondisk = i_size_read(inode);
-+	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
-+	ei->i_size_aligned = i_size_read(inode);
-+	ei->i_size_ondisk = i_size_read(inode);
- 
- 	exfat_save_attr(inode, ATTR_SUBDIR);
- 	inode->i_mtime = inode->i_atime = inode->i_ctime = ei->i_crtime =
+ 	ret = i2c_add_adapter(adap);
 -- 
 2.34.1
 
