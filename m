@@ -2,249 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235208AbiCGJJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:09:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46710 "EHLO
+        id S235443AbiCGJKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:10:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232755AbiCGJJk (ORCPT
+        with ESMTP id S232692AbiCGJKu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:09:40 -0500
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF2E60DA2;
-        Mon,  7 Mar 2022 01:08:45 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3B5FB5C031E;
-        Mon,  7 Mar 2022 04:08:43 -0500 (EST)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Mon, 07 Mar 2022 04:08:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; bh=CuD+6UMoHVIR6oldfnrYz19HAfESfe
-        N1v5yLvdZkpkI=; b=HNlRkQNBATVq9XbYKl09SZsmzqhv+DgzkzTZfACXeadb1r
-        jJp5ggogTaKrs5JuQKLV4+QUqRcScoJlo0nPYYz07y+/khiNQHVC0EUyOVEWOzt0
-        FX1HspPIUl+5rjAu4hMZsJqsT2uTgQTbcEfdORQd7pqVJPdm6JxF4YDNS8mRktyE
-        TSITmdatD5x1/jhepkiF/WMt80YtiT5URmjape1KP/T5Xen1iHrtc6iujVyg4seS
-        AgkSYfj2I4m3I8isqSUHOs8lBnKnkw529+XdwN6TeojYKkijX/qZHVnAUIggmaAa
-        WUUj0gUNtc/4QA7VnfhLA7bOfh4MWSiiY/FVJIxw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CuD+6UMoHVIR6oldf
-        nrYz19HAfESfeN1v5yLvdZkpkI=; b=GbHVdYZl+iMeTFOcCbuo6ObLlJ22l2DtF
-        HxDi+aedjFK4qRHNg+W7RNvauDjN5/uCyEJBsXuQ07CZM/KXpOfpxek/2036uJLM
-        K9Jhf6iG7shFa3WxjfjhAiuzSjN8E4Q/tVLJvSM7VnGp94ebxBu0D65VoE1uF8tm
-        4R6cLP9xMXYzsTOXe1i0PDDKTCbzM/tw/sGk+Z2b9EHXAHpduoFXmJO8MUkrQxNV
-        VydUNmnjhWPlOuTcXsj+mi8OuqgP+FVqTW5RWe/2DwUiymty06ZK3xZPcMK+EC4y
-        HGZK6V0qPJU37O8GZ97a/e+agEUMo2W1wnAqksAfOCENUkUPOuu9w==
-X-ME-Sender: <xms:msslYh52gPkbK5YEtZ5JrLSvL1th7V6kq459B5ojuK0uNEQFzgNd0A>
-    <xme:msslYu5ab9X0T-Vn2Tyi7Odi-6zO3itNjpiCXoull8h0SP9Fg4QSLvEaEYBIngXEo
-    9IBuGtfWg7uJrwc3bg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddufedguddvkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
-    vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
-    grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
-    vdefkeffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:msslYofj4xrqh8ZaRu7d60UWeZH_FOHMKArpzF35MvKpAsvc5gKGWA>
-    <xmx:msslYqKWykj34tZPi26Qu8pudENb6uTNb56LHWIPS-6TxsKvjbNS1A>
-    <xmx:msslYlJzM5f5dxuJkdb9J8nxTuxXq5_sARtKWjoyUFjYr_34ejdr3Q>
-    <xmx:m8slYqp8PXZePl3TkiLI7NvHgN5mJwJSjQ4MelMp1XreknWvYwZC7g>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id ACC0A2740108; Mon,  7 Mar 2022 04:08:42 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4778-g14fba9972e-fm-20220217.001-g14fba997
-Mime-Version: 1.0
-Message-Id: <9f43d5db-1476-4505-a9de-b862fbaf2685@www.fastmail.com>
-In-Reply-To: <ab2c0a8d-d27b-0c93-c7bc-2c8bf8ee1036@canonical.com>
-References: <20220306121816.70537-1-sven@svenpeter.dev>
- <20220306121816.70537-2-sven@svenpeter.dev>
- <ab2c0a8d-d27b-0c93-c7bc-2c8bf8ee1036@canonical.com>
-Date:   Mon, 07 Mar 2022 10:08:22 +0100
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
-        "Srinivas Kandagatla" <srinivas.kandagatla@linaro.org>
-Cc:     "Rob Herring" <robh+dt@kernel.org>,
-        "Joey Gouly" <joey.gouly@arm.com>,
-        "Hector Martin" <marcan@marcan.st>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Mark Kettenis" <kettenis@openbsd.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] nvmem: Add Apple eFuse driver
+        Mon, 7 Mar 2022 04:10:50 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2132.outbound.protection.outlook.com [40.107.223.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA6E2180D;
+        Mon,  7 Mar 2022 01:09:56 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WYAptrAT3xQszkx8u0Ul7GDXIV23tgi10/SHm13AJxZdWiNpTv2eVEiT6nJA1vTQnAI6Xmn4D+VSGkxSbcXagzIuCj5X9oaEgMIGH26qw80r/Am/4fAxd39GTRsenk4U8XgQQm9EdX0KR7+OvBBe8kS9ttFIlCNr5aPXn2V6G0nwJMoWXGfLyWUg6W3ozHuriqSFYNO5e/hGCCUzjSOZtFoAXepjb94761ctOyrDngl41b0ybxKFDSKBjlXy4GazeORW+UTNmQ3IKLWKX+QDSp6SmMnmUGUy/BZ6OYj8yP8VjYSX5DyrmGuR2RKD8bL8LPevD8EuY8qyt7s/42fBxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jdcf4eTpe1oL9d/yo3AuI1OmEljX/2vXFNg4Vm3U7Eo=;
+ b=XXY2Lhd97TIleKxfEZ8SlmvKNdzOX3hC271L8qLxUi+GpPb7uFRaWFEFkywqjO0wGXPFZUdvxjr7uJxS0sQURAPegbv4nXV9HjnhYi0y/3JmXNfvPPTotdIbicvwLaLRg6gTERK/1l8p8ut7a47DZ4ggnMb1nvajHgQHWn/yt67S/dX1Ydik9YEotS3GWgKxZxsk3Mf58aK7E6wQAixVTMHEqHYmuLG5NW6sjKVRBP97hAe25Xizma14EdkTUYqFthLTs77bYTxVwch0BLCDKiqPXOxfV0mWxDm5YRJVBnhTFefZU/LKEXRIibvPnCN85LJEPfP0mWz0iHlXAqME4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jdcf4eTpe1oL9d/yo3AuI1OmEljX/2vXFNg4Vm3U7Eo=;
+ b=0zHBBg0JFB41DF+RAqF50u7Js2P36brTJtW/d3Ig6RmkhGUY6i07mPq72JClkxJBRwZnUMAvv80ThA24POWlrNNrUejTPU9Gnikrde/bWXpXRGlSFF4Qt8z7hp3zbGQ5miIHpUD+l/LkS2nKvTYDOMjyz9duzmCWGXGtoh7zZSU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+ by DM5PR04MB0173.namprd04.prod.outlook.com (2603:10b6:3:75::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Mon, 7 Mar
+ 2022 09:09:53 +0000
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::a865:6d10:c4a9:1142]) by BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::a865:6d10:c4a9:1142%9]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
+ 09:09:53 +0000
+From:   Xin Ji <xji@analogixsemi.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, Xin Ji <xji@analogixsemi.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v7 1/3] usb: typec: tcpci: move tcpci.h to include/linux/usb/ directory
+Date:   Mon,  7 Mar 2022 17:09:26 +0800
+Message-Id: <20220307090929.701137-1-xji@analogixsemi.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ClientProxiedBy: SG2PR03CA0114.apcprd03.prod.outlook.com
+ (2603:1096:4:91::18) To BY5PR04MB6739.namprd04.prod.outlook.com
+ (2603:10b6:a03:229::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 368efba6-b5bc-4da2-540e-08da001a3d56
+X-MS-TrafficTypeDiagnostic: DM5PR04MB0173:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR04MB01730F5DA1D3F2433F19A4B5C7089@DM5PR04MB0173.namprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TB+4iDWCtWsqwt0xVLE4RhYZrifpkCZljOpn3LmDOjYCvedkjiItv8qlS7Un+E9QW/t9eTo0VIGT7kdaLLsyrtAlbXTpNBqh9AAJYIyj2AqiJMFLYW+m68bq5Xd+m4p1+LfwyV1m+ttsnYfFsqMxgMvC6Ko/Dh/Z0e9sf6z0HW3SGVTgmwtBBy/NBXCycZeEJFOAjA7y90WaJU0czp5gj7DR34o+WLlPbluAWDca4KiAxIG04QKJr5707v85uIh55j9PvHy48HjFQWDxjrHS4B4UgSiacgWcSz6JwDCxfdEN4yJxKFypjfP+dSSNsD04MN4vo1+TDscapWG1YxlfopBcEbU/aW/2lzZI7nD4XsLejca76arcqiNYrlHOcNW6wogvEqA3g4/qeKema+lX07T6bNQhdrz6jsMFZ8epUfXSQmqk2T1Vgs+sxEya0B4yAa62LaxJX0dCHI9dKawT+dXNugmvArSvV/gRl6rWqMrU2GkpIh3MVYQahIafWCnJHn0FHBOuUz2S9lbe+8hQrivNzgCjxUpDeoag5XiZCDWqJB5Be5PRz/PD6kLKJC1pik8Q7NRHtYuOgbKWX2mIaOZKf4IgHps2zosDysN0ZxdWAauTfEbxE9/Q6IKPqGWn1zN+VWHJjM39OL/eZTVorAgdeLDOVrAzc5H69qUYPBmMGkWqfgRG1ltMWLqOaj74kI084BEjUJzh+7GDXXEboQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(110136005)(26005)(6506007)(6512007)(55236004)(52116002)(8936002)(66946007)(6486002)(2616005)(38350700002)(38100700002)(6666004)(83380400001)(86362001)(1076003)(36756003)(498600001)(4326008)(8676002)(5660300002)(66476007)(66556008)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Gd0zzXdA5X92K8G6f7YWeRXNs9N38GhRBRk4evgXP1V3tgAwV16FL5ZSMs+q?=
+ =?us-ascii?Q?nj5TEsQ3+g8H0zvFCsSoN9rtfjCt703/sxlznTDwTPrfQm+57sF+hQ2Ra3Dz?=
+ =?us-ascii?Q?r+zMQE8OQATOGY0NbC/tRP/30A83EK8sLo4Ffq5EQH1PpyH8lYBPkMJxTbeG?=
+ =?us-ascii?Q?msfY1qVY5EDWJIeClIQwERPNpyHoWgBtbVuRvP2IKEVHskHlcpAGJaPYdQLR?=
+ =?us-ascii?Q?juOS8T5ZUmfmsGsiWe9A8CDHCP0Ub9ZqCjiI8QpIjHHc/mPk+fcoozQh+HKg?=
+ =?us-ascii?Q?OFOGv7UfMVVXVWG11aZ3SVaFr2uHjodT86QTl2HVbbjlLjWWVEINXLuhgO7D?=
+ =?us-ascii?Q?gJIwu1B4JRXJ2jhoVNCymLdnzgEH/vCQufTRDf2PW6CXRuPYrnHv4mFNoLup?=
+ =?us-ascii?Q?vcUZENgpGHtXy8FU/Z+cUm186CiGPcwljn8KlMfiHyCl+gE4RxVnMwpUivjv?=
+ =?us-ascii?Q?iqPe6U3zvWUoO2S1YnMUoG1VLUlMG3H1PiZRumC3IWzwTGG6w/RfmkQtIEeg?=
+ =?us-ascii?Q?jjV6gHUA0auFOi7CAoB3c+lOda/DJJZ+nU3HqpZ/0Yim+OVjDxOnlQQ14CZX?=
+ =?us-ascii?Q?IjyGGQCK8vOKZUS6+5um3E/uy3XMxj4rNkRDvHnttPn9hbQuGgxy87Cgt1Ag?=
+ =?us-ascii?Q?+STu0evvKvxUvhqbhdSWXMq+54q02XKDj9uTcZTkDrLF8J5jJJqkqN8LZAJX?=
+ =?us-ascii?Q?4qW19/+HPvKgJuoa5jM8Gikhdy+63G+dTDGiWKpLUdu1Rqc8q2/Z9ePAHrBd?=
+ =?us-ascii?Q?P9h0+pQb9ijgquFtST4vgO+kga3pHfR5TlCw5INvkeKS5Mr68Mo2dCtkB7QW?=
+ =?us-ascii?Q?fLzuAHs88BWyWtSwQSouEuVbI3SdJHAZ1b0qMhrKM6mjkWwYqfP1Slb8ldgn?=
+ =?us-ascii?Q?9KMXeC7EWekHoPfV+a3c5rGJxGQgjaqMz0f6IcMgLFOtNJcqKxfWsxpX3AcS?=
+ =?us-ascii?Q?5mFShYKzkNMRJD189BMUZSzTV59rUqspU6h9EwnihEi7OERpMZK8vrjhQcIe?=
+ =?us-ascii?Q?hPGsCMSQu5oo93rHZ7WcqEuF2MQNXUHI7U8LTT3HdJwLcRUWLSgQoDAG3fJK?=
+ =?us-ascii?Q?enxqCcmhVggGyjQWkSRLRPZODwvkLoTMfgPXs1q6xuGYaHI6XtaFRWlscYou?=
+ =?us-ascii?Q?cAThX0d/9A7/CApMlwVbBLn0T/xW69SZqHvP/mvR3S5LEsYVCuemUDvWZAIw?=
+ =?us-ascii?Q?NJ+OvRpnCpeGjbBjcb4PZb6x88hX0n7vqfzOoQ5z5Yj/+aVNJshdZbfqHqDr?=
+ =?us-ascii?Q?z/DouL9VmAO9KsxgKuYE72yX69w4psMn2MP/xgFFbbPg9EXILMhKNpFwde/R?=
+ =?us-ascii?Q?ImtzYbXjYiy7uAnJRaP/i1+9IITWQjhSMoSJU1Z+LtjRIYpdBYSvPsoESZYQ?=
+ =?us-ascii?Q?oBr+OYZm5mgGOwsrR96aMXe6219gvaBMAuayDHW6qgvLgIcx6Al8rkU8wWxW?=
+ =?us-ascii?Q?qjAXcgmhVMYAFc6wCjb4Cffmz7XaiiG+U/O5EkvQaJQxKiXN++buxv+rcnpr?=
+ =?us-ascii?Q?iOgUkHpjuD3wunSHOhayp0FsyABUaeR6/U93GYQcwte6le7DG8ZJcj7qqsHV?=
+ =?us-ascii?Q?5eoM0fn5yssCCbKnDFfcfmfokjzehOQUmeKxAEbNYw7XmwK6hle8pbiHsu26?=
+ =?us-ascii?Q?lNmj3ClhKG00N80giCfqtxQ=3D?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 368efba6-b5bc-4da2-540e-08da001a3d56
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:09:52.7998
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IqiD3ZEudjHZSFpkol8T36tSRBKFjV+ikuoSoQM25VrKnhYHPITOYb9W+gdZoX+HqxbPq48Tl6XATun1KLNiCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR04MB0173
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Move tcpci.h as a global file, better for other USB Type-C driver
+access.
 
+Fix compiling error after moving tcpci.h to include/linux/usb/.
 
-On Sun, Mar 6, 2022, at 13:25, Krzysztof Kozlowski wrote:
-> On 06/03/2022 13:18, Sven Peter wrote:
->> Apple SoCs contain eFuses used to store factory-programmed data such
->> as calibration values for the PCIe or the Type-C PHY. They are organized
->> as 32bit values exposed as MMIO.
->> 
->> Signed-off-by: Sven Peter <sven@svenpeter.dev>
->> ---
->> v1 -> v2:
->>   - fixed sparse warning about __iomem by introducing
->>     struct apple_efuses_priv as done in other nvmem drivers
->>   - make sure the driver actually works as a module by
->>     setting .owner to THIS_MODULE and adding MODULE_DEVICE_TABLE
->>     pointed out by Joey Gouly
->> 
->>  MAINTAINERS                  |  1 +
->>  drivers/nvmem/Kconfig        | 12 ++++++
->>  drivers/nvmem/Makefile       |  2 +
->>  drivers/nvmem/apple-efuses.c | 82 ++++++++++++++++++++++++++++++++++++
->>  4 files changed, 97 insertions(+)
->>  create mode 100644 drivers/nvmem/apple-efuses.c
->> 
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index f70d8525cbd4..e3e973a3f651 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -1781,6 +1781,7 @@ F:	drivers/i2c/busses/i2c-pasemi-core.c
->>  F:	drivers/i2c/busses/i2c-pasemi-platform.c
->>  F:	drivers/irqchip/irq-apple-aic.c
->>  F:	drivers/mailbox/apple-mailbox.c
->> +F:	drivers/nvmem/apple-efuses.c
->>  F:	drivers/pinctrl/pinctrl-apple-gpio.c
->>  F:	drivers/soc/apple/*
->>  F:	drivers/watchdog/apple_wdt.c
->> diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
->> index da414617a54d..bba29d1aec96 100644
->> --- a/drivers/nvmem/Kconfig
->> +++ b/drivers/nvmem/Kconfig
->> @@ -300,4 +300,16 @@ config NVMEM_BRCM_NVRAM
->>  	  This driver provides support for Broadcom's NVRAM that can be accessed
->>  	  using I/O mapping.
->>  
->> +config NVMEM_APPLE_EFUSES
->> +	tristate "Apple eFuse support"
->> +	depends on ARCH_APPLE || COMPILE_TEST
->> +	default ARCH_APPLE
->> +	help
->> +	  Say y here to enable support for reading eFuses on Apple SoCs
->> +	  such as the M1. These are e.g. used to store factory programmed
->> +	  calibration data required for the PCIe or the USB-C PHY.
->> +
->> +	  This driver can also be built as a module. If so, the module will
->> +	  be called nvmem-apple-efuses.
->> +
->>  endif
->> diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
->> index dcbbde35b6a8..1a8e54691d3e 100644
->> --- a/drivers/nvmem/Makefile
->> +++ b/drivers/nvmem/Makefile
->> @@ -61,3 +61,5 @@ obj-$(CONFIG_NVMEM_RMEM) 	+= nvmem-rmem.o
->>  nvmem-rmem-y			:= rmem.o
->>  obj-$(CONFIG_NVMEM_BRCM_NVRAM)	+= nvmem_brcm_nvram.o
->>  nvmem_brcm_nvram-y		:= brcm_nvram.o
->> +obj-$(CONFIG_NVMEM_APPLE_EFUSES)	+= nvmem-apple-efuses.o
->> +nvmem-apple-efuses-y 		:= apple-efuses.o
->> diff --git a/drivers/nvmem/apple-efuses.c b/drivers/nvmem/apple-efuses.c
->> new file mode 100644
->> index 000000000000..dd5576ec5408
->> --- /dev/null
->> +++ b/drivers/nvmem/apple-efuses.c
->> @@ -0,0 +1,82 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Apple SoC eFuse driver
->> + *
->> + * Copyright (C) The Asahi Linux Contributors
->> + */
->> +
->> +#include <linux/io.h>
->> +#include <linux/mod_devicetable.h>
->> +#include <linux/module.h>
->> +#include <linux/nvmem-provider.h>
->> +#include <linux/platform_device.h>
->> +
->> +struct apple_efuses_priv {
->> +	void __iomem *fuses;
->> +};
->> +
->> +static int apple_efuses_read(void *context, unsigned int offset, void *val,
->> +			     size_t bytes)
->> +{
->> +	struct apple_efuses_priv *priv = context;
->> +	u32 *dst = val;
->> +
->> +	while (bytes >= sizeof(u32)) {
->> +		*dst++ = readl_relaxed(priv->fuses + offset);
->> +		bytes -= sizeof(u32);
->> +		offset += sizeof(u32);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int apple_efuses_probe(struct platform_device *pdev)
->> +{
->> +	struct apple_efuses_priv *priv;
->> +	struct resource *res;
->> +	struct nvmem_config config = {
->> +		.dev = &pdev->dev,
->> +		.read_only = true,
->> +		.reg_read = apple_efuses_read,
->> +		.stride = sizeof(u32),
->> +		.word_size = sizeof(u32),
->> +		.name = "apple_efuses_nvmem",
->> +		.id = NVMEM_DEVID_AUTO,
->> +		.owner = THIS_MODULE,
->> +		.root_only = true,
->> +	};
->> +
->> +	priv = devm_kzalloc(config.dev, sizeof(*priv), GFP_KERNEL);
->> +	if (!priv)
->> +		return -ENOMEM;
->> +
->> +	priv->fuses = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
->> +	if (IS_ERR(priv->fuses))
->> +		return PTR_ERR(priv->fuses);
->> +
->> +	config.priv = priv;
->> +	config.size = resource_size(res);
->> +
->> +	return PTR_ERR_OR_ZERO(devm_nvmem_register(config.dev, &config));
->> +}
->> +
->> +static const struct of_device_id apple_efuses_of_match[] = {
->> +	{ .compatible = "apple,efuses", },
->> +	{}
->> +};
->> +
->> +MODULE_DEVICE_TABLE(of, apple_efuses_of_match);
->> +
->> +static struct platform_driver apple_efuses_driver = {
->> +	.driver = {
->> +		.name = "apple_efuses",
->> +		.of_match_table = apple_efuses_of_match,
->> +		.owner = THIS_MODULE,
->
-> You wrote it also in changelog, but why do you need it? Doesn't core set
-> it? Coccinelle should complain about this as well.
->
+Signed-off-by: Xin Ji <xji@analogixsemi.com>
+---
+ drivers/usb/typec/tcpm/tcpci.c                        | 3 +--
+ drivers/usb/typec/tcpm/tcpci_maxim.c                  | 3 +--
+ drivers/usb/typec/tcpm/tcpci_mt6360.c                 | 3 +--
+ drivers/usb/typec/tcpm/tcpci_rt1711h.c                | 2 +-
+ {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h | 1 +
+ 5 files changed, 5 insertions(+), 7 deletions(-)
+ rename {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h (99%)
 
-yeah, you're right. I shouldn't have just blindly followed what Hector and Joey
-had to do for another subsystem to make reference counting work there.
+diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
+index e07d26a3cd8e..9c907296596f 100644
+--- a/drivers/usb/typec/tcpm/tcpci.c
++++ b/drivers/usb/typec/tcpm/tcpci.c
+@@ -13,11 +13,10 @@
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/usb/pd.h>
++#include <linux/usb/tcpci.h>
+ #include <linux/usb/tcpm.h>
+ #include <linux/usb/typec.h>
+ 
+-#include "tcpci.h"
+-
+ #define	PD_RETRY_COUNT_DEFAULT			3
+ #define	PD_RETRY_COUNT_3_0_OR_HIGHER		2
+ #define	AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV	3500
+diff --git a/drivers/usb/typec/tcpm/tcpci_maxim.c b/drivers/usb/typec/tcpm/tcpci_maxim.c
+index df2505570f07..4b6705f3d7b7 100644
+--- a/drivers/usb/typec/tcpm/tcpci_maxim.c
++++ b/drivers/usb/typec/tcpm/tcpci_maxim.c
+@@ -11,11 +11,10 @@
+ #include <linux/module.h>
+ #include <linux/regmap.h>
+ #include <linux/usb/pd.h>
++#include <linux/usb/tcpci.h>
+ #include <linux/usb/tcpm.h>
+ #include <linux/usb/typec.h>
+ 
+-#include "tcpci.h"
+-
+ #define PD_ACTIVITY_TIMEOUT_MS				10000
+ 
+ #define TCPC_VENDOR_ALERT				0x80
+diff --git a/drivers/usb/typec/tcpm/tcpci_mt6360.c b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+index f1bd9e09bc87..9e0338bce7ef 100644
+--- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
++++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+@@ -11,10 +11,9 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
++#include <linux/usb/tcpci.h>
+ #include <linux/usb/tcpm.h>
+ 
+-#include "tcpci.h"
+-
+ #define MT6360_REG_VCONNCTRL1	0x8C
+ #define MT6360_REG_MODECTRL2	0x8F
+ #define MT6360_REG_SWRESET	0xA0
+diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+index b56a0880a044..3291ca4948da 100644
+--- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
++++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+@@ -10,9 +10,9 @@
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/usb/tcpci.h>
+ #include <linux/usb/tcpm.h>
+ #include <linux/regmap.h>
+-#include "tcpci.h"
+ 
+ #define RT1711H_VID		0x29CF
+ #define RT1711H_PID		0x1711
+diff --git a/drivers/usb/typec/tcpm/tcpci.h b/include/linux/usb/tcpci.h
+similarity index 99%
+rename from drivers/usb/typec/tcpm/tcpci.h
+rename to include/linux/usb/tcpci.h
+index b2edd45f13c6..20c0bedb8ec8 100644
+--- a/drivers/usb/typec/tcpm/tcpci.h
++++ b/include/linux/usb/tcpci.h
+@@ -9,6 +9,7 @@
+ #define __LINUX_USB_TCPCI_H
+ 
+ #include <linux/usb/typec.h>
++#include <linux/usb/tcpm.h>
+ 
+ #define TCPC_VENDOR_ID			0x0
+ #define TCPC_PRODUCT_ID			0x2
+-- 
+2.25.1
 
-I just checked again and it's neither required here not in struct nvmem_config
-because module_platform_driver -> platform_driver_register ->
-__platform_driver_register will set it in struct platform_driver and the
-nvmem core will take it from there and set it inside nvmem_config.
-
-
-thanks,
-
-
-Sven
