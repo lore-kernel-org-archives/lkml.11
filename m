@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435F2C3527C
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239443AbiCGJtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        id S239180AbiCGJtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239852AbiCGJkT (ORCPT
+        with ESMTP id S239355AbiCGJji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:19 -0500
+        Mon, 7 Mar 2022 04:39:38 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC23875608;
-        Mon,  7 Mar 2022 01:36:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84C46D85B;
+        Mon,  7 Mar 2022 01:35:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEB3A612A1;
-        Mon,  7 Mar 2022 09:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A631C340E9;
-        Mon,  7 Mar 2022 09:35:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00956612B2;
+        Mon,  7 Mar 2022 09:35:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D70FC36AE2;
+        Mon,  7 Mar 2022 09:35:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645760;
-        bh=GU1qZ8dbEsL6J9ZZT5ufr9ok5ZV+KF9ztqFDg6yIkCg=;
+        s=korg; t=1646645705;
+        bh=+oaw10vcsziuPG1r4+KJScrE4s0dXjQd4Jd7dTVsJvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKEAVa6Y52Ayc4E4yjsvm+UL71ewIi5HwxouM69qvpJ9dFPZgjzc0EVkNs6xIIiJN
-         1JiNDTI00VlHQHBWwPSLiBm3vm66pPCjANWIkjv2rhf/xpe5+ZqCyU4Q3GJD/4KNaj
-         qc1xdLHCaELWiskXYK8hvgrt/+y74XITRQ70Obrg=
+        b=joxgDVKSG9zig1Q/6oALOFaE0nEHn7VtOfMx5BX1b+nyVLO+DNIZgARvTF8zxc3Ag
+         pFDqB3d9SkpwAJ9wrta3yLVrfaLdpApjiGSb/GVcl5viGRQuqBu0OmKnm+BbbkTzyl
+         ExUprCp9eOfgtv6U6F1NNd0miBFskO7Y60U2ciLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH 5.15 027/262] usb: gadget: dont release an existing dev->buf
-Date:   Mon,  7 Mar 2022 10:16:11 +0100
-Message-Id: <20220307091703.136302286@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 011/262] tipc: fix a bit overflow in tipc_crypto_key_rcv()
+Date:   Mon,  7 Mar 2022 10:15:55 +0100
+Message-Id: <20220307091702.697205977@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,31 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 89f3594d0de58e8a57d92d497dea9fee3d4b9cda upstream.
+[ Upstream commit 143de8d97d79316590475dc2a84513c63c863ddf ]
 
-dev->buf does not need to be released if it already exists before
-executing dev_config.
+msg_data_sz return a 32bit value, but size is 16bit. This may lead to a
+bit overflow.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
 Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20211231172138.7993-2-hbh25y@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/inode.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/tipc/crypto.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1829,8 +1829,9 @@ dev_config (struct file *fd, const char
- 	spin_lock_irq (&dev->lock);
- 	value = -EINVAL;
- 	if (dev->buf) {
-+		spin_unlock_irq(&dev->lock);
- 		kfree(kbuf);
--		goto fail;
-+		return value;
- 	}
- 	dev->buf = kbuf;
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index d293614d5fc65..b5074957e8812 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -2287,7 +2287,7 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
+ 	struct tipc_crypto *tx = tipc_net(rx->net)->crypto_tx;
+ 	struct tipc_aead_key *skey = NULL;
+ 	u16 key_gen = msg_key_gen(hdr);
+-	u16 size = msg_data_sz(hdr);
++	u32 size = msg_data_sz(hdr);
+ 	u8 *data = msg_data(hdr);
+ 	unsigned int keylen;
  
+-- 
+2.34.1
+
 
 
