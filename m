@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00385C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237114AbiCGJ1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:27:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
+        id S237149AbiCGJ1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236757AbiCGJYd (ORCPT
+        with ESMTP id S236824AbiCGJZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:24:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2AC58E48;
-        Mon,  7 Mar 2022 01:23:36 -0800 (PST)
+        Mon, 7 Mar 2022 04:25:14 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC4559A79;
+        Mon,  7 Mar 2022 01:23:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1CCEB810B2;
-        Mon,  7 Mar 2022 09:23:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10954C340F3;
-        Mon,  7 Mar 2022 09:23:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8E19ECE0E97;
+        Mon,  7 Mar 2022 09:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E27C36AE5;
+        Mon,  7 Mar 2022 09:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645013;
-        bh=faKb8S+dj0AamNTJtP4wWkYFDzropf0AlV3qAJECMQ4=;
+        s=korg; t=1646645019;
+        bh=qq75YEDYGUbl4suePRv+CRtPt1pAz6xhGh3Tvm2ubJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W66L1/vr0HmmNMk96Wv1jROofeIrM04Vppqw5b7882thS0oK6kos2QeZbasj2m9GE
-         2mltYoiXB5kbq9p0+PLuhp67p5ukj2R/l3eKvgv3vQfE+2cr3JGVG8J5XcR8mJ3M19
-         85GTVmKI99OXKzzslSUai+jlnDETUD6OB3pwVLck=
+        b=u1gjI1HvyN4XMyjxji9Vi+iefJ0XGu9vKEVCQuv1xI3CtjFgHt2MRHUarTn/tTuGa
+         KnwEgpdnrj6eq2a40bbMKcLUlpbouzIVrsfChTkIosQWSnFiisGEFhI3qwDkj/9Cpu
+         eN0Wck1lOOc2D5sTZMq9ivu8mhlDQPDL+we0qErE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 10/51] i2c: qup: allow COMPILE_TEST
-Date:   Mon,  7 Mar 2022 10:18:45 +0100
-Message-Id: <20220307091637.287414355@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 4.19 12/51] usb: gadget: dont release an existing dev->buf
+Date:   Mon,  7 Mar 2022 10:18:47 +0100
+Message-Id: <20220307091637.343320282@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -48,34 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa@kernel.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 5de717974005fcad2502281e9f82e139ca91f4bb ]
+commit 89f3594d0de58e8a57d92d497dea9fee3d4b9cda upstream.
 
-Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
-and easier maintenance.
+dev->buf does not need to be released if it already exists before
+executing dev_config.
 
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211231172138.7993-2-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/legacy/inode.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 3a2f85d811f75..165c112bc5b9a 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -849,7 +849,7 @@ config I2C_QCOM_GENI
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1828,8 +1828,9 @@ dev_config (struct file *fd, const char
+ 	spin_lock_irq (&dev->lock);
+ 	value = -EINVAL;
+ 	if (dev->buf) {
++		spin_unlock_irq(&dev->lock);
+ 		kfree(kbuf);
+-		goto fail;
++		return value;
+ 	}
+ 	dev->buf = kbuf;
  
- config I2C_QUP
- 	tristate "Qualcomm QUP based I2C controller"
--	depends on ARCH_QCOM
-+	depends on ARCH_QCOM || COMPILE_TEST
- 	help
- 	  If you say yes to this option, support will be included for the
- 	  built-in I2C interface on the Qualcomm SoCs.
--- 
-2.34.1
-
 
 
