@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB14C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbiCGJ1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:27:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
+        id S237523AbiCGJ2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:28:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236788AbiCGJZE (ORCPT
+        with ESMTP id S236911AbiCGJZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:25:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45962583A4;
-        Mon,  7 Mar 2022 01:23:39 -0800 (PST)
+        Mon, 7 Mar 2022 04:25:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBC55B8A1;
+        Mon,  7 Mar 2022 01:23:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04F48B810AC;
-        Mon,  7 Mar 2022 09:23:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D11C340F3;
-        Mon,  7 Mar 2022 09:23:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1FA3B810B9;
+        Mon,  7 Mar 2022 09:23:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B251C340E9;
+        Mon,  7 Mar 2022 09:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645016;
-        bh=VKj7xlrRFbcxioWHBRFh2u0Z7Dc86o9b0hoFi2dJGaI=;
+        s=korg; t=1646645034;
+        bh=EZIKephx41aSwgXMxQQVEEJe8KcjQAFUcCqvEtTI/lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jpa+/y2KNwtMeGkVZZNCY4UqMWytI2bidJh/MImq1f9dynBV/IGKcv/ZwhaXjm8wI
-         tBIX6kCe8Vv3N0iHY/lzXwrVqVLjr6eGd8U7+bYtCWnwTfqrIUfbd4bZbUf5Oo1ZCn
-         htEozMmWjfATbnQbXkj8C7XZLSN5OdXbi2IAbgwU=
+        b=se9e7kcPUAW92S95UjajotSn+ESsxbsdhOfA5i8+qO4YwHQAA5sf8FyqPi+GZEB77
+         JZYS5eb9zXvBLTUbkVnLKDp/lacN1cH95gpaHoh1mivYjKGQfIcuyKAjiGqotZOJ1Y
+         QeOAj/CGqCnABv5ddHErcgirhXIzuoVD2l4hAxdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 11/51] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
-Date:   Mon,  7 Mar 2022 10:18:46 +0100
-Message-Id: <20220307091637.315420493@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 4.19 17/51] xfrm: fix MTU regression
+Date:   Mon,  7 Mar 2022 10:18:52 +0100
+Message-Id: <20220307091637.481589859@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -49,38 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Jiri Bohac <jbohac@suse.cz>
 
-[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
+commit 6596a0229541270fb8d38d989f91b78838e5e9da upstream.
 
-Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
-0x1071 composition in order to avoid bind error.
+Commit 749439bfac6e1a2932c582e2699f91d329658196 ("ipv6: fix udpv6
+sendmsg crash caused by too small MTU") breaks PMTU for xfrm.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+A Packet Too Big ICMPv6 message received in response to an ESP
+packet will prevent all further communication through the tunnel
+if the reported MTU minus the ESP overhead is smaller than 1280.
+
+E.g. in a case of a tunnel-mode ESP with sha256/aes the overhead
+is 92 bytes. Receiving a PTB with MTU of 1371 or less will result
+in all further packets in the tunnel dropped. A ping through the
+tunnel fails with "ping: sendmsg: Invalid argument".
+
+Apparently the MTU on the xfrm route is smaller than 1280 and
+fails the check inside ip6_setup_cork() added by 749439bf.
+
+We found this by debugging USGv6/ipv6ready failures. Failing
+tests are: "Phase-2 Interoperability Test Scenario IPsec" /
+5.3.11 and 5.4.11 (Tunnel Mode: Fragmentation).
+
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm:
+xfrm_state_mtu should return at least 1280 for ipv6") attempted
+to fix this but caused another regression in TCP MSS calculations
+and had to be reverted.
+
+The patch below fixes the situation by dropping the MTU
+check and instead checking for the underflows described in the
+749439bf commit message.
+
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Fixes: 749439bfac6e ("ipv6: fix udpv6 sendmsg crash caused by too small MTU")
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/ipv6/ip6_output.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index cdd1b193fd4fe..41bac861ca99d 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -660,6 +660,11 @@ static const struct usb_device_id mbim_devs[] = {
- 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
- 	},
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1259,8 +1259,6 @@ static int ip6_setup_cork(struct sock *s
+ 		if (np->frag_size)
+ 			mtu = np->frag_size;
+ 	}
+-	if (mtu < IPV6_MIN_MTU)
+-		return -EINVAL;
+ 	cork->base.fragsize = mtu;
+ 	cork->base.gso_size = ipc6->gso_size;
+ 	cork->base.tx_flags = 0;
+@@ -1320,8 +1318,6 @@ static int __ip6_append_data(struct sock
  
-+	/* Telit FN990 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
-+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
-+	},
+ 	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
+ 			(opt ? opt->opt_nflen : 0);
+-	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
+-		     sizeof(struct frag_hdr);
+ 
+ 	headersize = sizeof(struct ipv6hdr) +
+ 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
+@@ -1329,6 +1325,13 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
+ 
++	if (mtu < fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++		goto emsgsize;
 +
- 	/* default entry */
- 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
- 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
--- 
-2.34.1
-
++	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
++		     sizeof(struct frag_hdr);
++
+ 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
+ 	 * the first fragment
+ 	 */
 
 
