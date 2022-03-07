@@ -2,160 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D65C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235347AbiCGFh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:37:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        id S235353AbiCGFid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:38:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiCGFhZ (ORCPT
+        with ESMTP id S235257AbiCGFib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:37:25 -0500
-Received: from mx04.melco.co.jp (mx04.melco.co.jp [192.218.140.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B5F5E774;
-        Sun,  6 Mar 2022 21:36:31 -0800 (PST)
-Received: from mr06.melco.co.jp (mr06 [133.141.98.164])
-        by mx04.melco.co.jp (Postfix) with ESMTP id 4KBnJG1ytvzMw0BB;
-        Mon,  7 Mar 2022 14:36:30 +0900 (JST)
-Received: from mr06.melco.co.jp (unknown [127.0.0.1])
-        by mr06.imss (Postfix) with ESMTP id 4KBnJG1Wv5zNBhHS;
-        Mon,  7 Mar 2022 14:36:30 +0900 (JST)
-Received: from mf03_second.melco.co.jp (unknown [192.168.20.183])
-        by mr06.melco.co.jp (Postfix) with ESMTP id 4KBnJG1ChZzNBhHH;
-        Mon,  7 Mar 2022 14:36:30 +0900 (JST)
-Received: from mf03.melco.co.jp (unknown [133.141.98.183])
-        by mf03_second.melco.co.jp (Postfix) with ESMTP id 4KBnJG19p4z6thS;
-        Mon,  7 Mar 2022 14:36:30 +0900 (JST)
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (unknown [104.47.23.170])
-        by mf03.melco.co.jp (Postfix) with ESMTP id 4KBnJG10TFzMqf1C;
-        Mon,  7 Mar 2022 14:36:30 +0900 (JST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jYjLle6Rxt/Tiz5VbiLqk5sjC9PVpHq5fIXUPnIuapimY0A+3eOyfD3+1sfZUj+C944NhvMAGyrp18SaS8g91KT61FnPOY5zJ8PudQKQtMN4zp1zoiYxYAhh/bBmpuqS3nYoWeWOtWF1AliN4yB1BpdWitbbXbH4XGNCaVhY/rr+ZEwGKb8/otBB4Cs8OAIDvkKY2XDRM8IUc6/2MsqpiRMm8VjV+LSOUF0sj/UAaoKLRNnSpfGD9+tpS/7zWMuhnYEM3Cuo7WQ7MDhQrBWIE6HoQtbBI/OBG9DpsQQO7p/Lpf0vCa7+w1FgnAmnM3m1ZwdIJyDFHPxPmCZdrsOHNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z23WoYwekR1511MEaMAJ2B1ZdnXdEHDv3D6+9geENjc=;
- b=jkMgvcTXg/TEtUlqGyGMqHu573f75IsLjh1hoKc0lTjdyLeLOLR6TpNYavmlQFO8pn4WRLdZ89pvWp6r3FsghyIisJ2hIKHUNcaLr6BIFepECe6wxfXuLFVGJHHUkcpd7cwSvVe6vHW/Q3zlc2N7xnsZqa2oXlUaGRoKDfX9fy7Kp7M5OyUdto1tryVkp0eOrRYnv9ARezRMZj535VaY9aDT6OjZXjKUpiZ4QOgpxoR0h0YAZQgiZdhYrjNu+z2lCgEI8BoUoNayKb/lr5xtJvrJbqz6CFUns1V9CPkI5vz4EY4IpUrM4Uzsj1swqfYxAabYKXyQlcNdIYoI/AgHhQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dc.mitsubishielectric.co.jp; dmarc=pass action=none
- header.from=dc.mitsubishielectric.co.jp; dkim=pass
- header.d=dc.mitsubishielectric.co.jp; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mitsubishielectricgroup.onmicrosoft.com;
- s=selector2-mitsubishielectricgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z23WoYwekR1511MEaMAJ2B1ZdnXdEHDv3D6+9geENjc=;
- b=DhWUC78p8gsPr4Twtx9hrF//eTENxLRThVYTG+x8dBsSu4i3RN62Hj+Ga+Zwd0Ix2bRPaH3NZjTGtglCS8nCr0b+rI4ZgFRoDU0RJhZsf6NdZaXMzDjxg/WinBITCo5IodpPFCnCuTuL5zwc92tSXXeqqRdxABwzmMAPTq7JQRI=
-Received: from TYAPR01MB5353.jpnprd01.prod.outlook.com (2603:1096:404:803d::8)
- by OS3PR01MB8444.jpnprd01.prod.outlook.com (2603:1096:604:197::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Mon, 7 Mar
- 2022 05:36:28 +0000
-Received: from TYAPR01MB5353.jpnprd01.prod.outlook.com
- ([fe80::cd6:cd27:1fe8:818]) by TYAPR01MB5353.jpnprd01.prod.outlook.com
- ([fe80::cd6:cd27:1fe8:818%7]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
- 05:36:28 +0000
-From:   "Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp" 
-        <Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp>
-CC:     "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>
-Subject: RE: [PATCH] exfat: do not clear VolumeDirty in writeback
-Thread-Topic: [PATCH] exfat: do not clear VolumeDirty in writeback
-Thread-Index: AQHYHKozeVmted1T5UKvjQCq+AaGCayoqY+AgAA/KGCAAw0zD4ABYXsAgAYuVrA=
-Date:   Mon, 7 Mar 2022 05:34:17 +0000
-Deferred-Delivery: Mon, 7 Mar 2022 05:36:00 +0000
-Message-ID: <TYAPR01MB53536D7149FDB6A9ABBD8F5090089@TYAPR01MB5353.jpnprd01.prod.outlook.com>
-References: <HK2PR04MB38914869B1FEE326CFE11779812D9@HK2PR04MB3891.apcprd04.prod.outlook.com>
- <TYAPR01MB5353E089F4843C6CE6A0BA1E90019@TYAPR01MB5353.jpnprd01.prod.outlook.com>
- <HK2PR04MB3891B4F1C2BC707582E81C0C81019@HK2PR04MB3891.apcprd04.prod.outlook.com>
- <TYAPR01MB53531DB8B19324F7D60EE9AA90039@TYAPR01MB5353.jpnprd01.prod.outlook.com>
- <HK2PR04MB38913077A55A6E7124A41A4281049@HK2PR04MB3891.apcprd04.prod.outlook.com>
-In-Reply-To: <HK2PR04MB38913077A55A6E7124A41A4281049@HK2PR04MB3891.apcprd04.prod.outlook.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-melpop: 1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dc.MitsubishiElectric.co.jp;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 625c159d-edb3-4d91-4e0b-08d9fffc6db5
-x-ms-traffictypediagnostic: OS3PR01MB8444:EE_
-x-microsoft-antispam-prvs: <OS3PR01MB8444982CE41D10A5876EA6F290089@OS3PR01MB8444.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: s0pFJYHNmauv5qNUi3tE4cgZxaEh71EFn2drm03EESGhdisVX1jePI+pISnectrlptmm4OvSEGQ8iwJbHCLtKY+9KFNR9+r+ZkLDKonnod0wouuxWJX0/EFaHzUFGaeYxvuHLQEi1+7kwO/6aXjUfyepT4FX8oVCY0MmHTjpZ4EZCXgZ8rz2Sh1d4ew8QPSbUm3GwjrffABptyfm6I7DRvHNmJu5c1yG2v9oia29EdA54f6XMyWsBbsRFwL1aRrmz2w8RoswhjRg9dejNq+5xEMnwGALdRiumANwn7wOJd6adTt915v6LZ+TJb1m0+57o9AYifbluYweD2cxD1HkJzTDq5w3H/eUKQv6QS9ZGlv2u+zwehJON0qXnYYnCZqK7mIPdkuXQCOzpAAVuDLuXqQ73SnDW+/EhlvrRebFJCrc9rBFr7JFQlFZuop6m2dplalp9j9nX9bx3pSY6+SiauOELJVePLhM4cAO214pFWGWmEKMlTNn+UCu3feovEVZ4Yn6OSMZOuwTbcpl3gEy4oaY10nMKW+1l9JAtz3Pz7YkaLZ4hFYndVZT1dRZwVzvEwY3MbLnKocaRxTpdOsJsMpByG5t5Sysvj8R8kpjwrnDN+G5Uu6vX3VUoaFKfHpgYvenzrdBtAA6hAOApt2xoQIIzHXGwVJNZ1vmLsssJtGBnRz3VEFFONQMl/sQWnANLHtCRGX7yI52zi0gxsWg8A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB5353.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38070700005)(33656002)(71200400001)(52536014)(4326008)(186003)(26005)(38100700002)(508600001)(9686003)(7696005)(5660300002)(6666004)(6506007)(86362001)(2906002)(4744005)(8936002)(122000001)(66446008)(8676002)(64756008)(66476007)(54906003)(66556008)(83380400001)(76116006)(66946007)(55016003)(316002)(109986005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WTZjTzBvcUxuMHlINi9TTW5sMUNmeS9kQmNTNW9uTE5sVVk4enJscWZ0cTNZ?=
- =?utf-8?B?MlBYN1FoYzAySE9RRzZTbHNtK1J3L1Z1Vjk4ckVYaS9Ld3o4WktlMlB2WWls?=
- =?utf-8?B?UFVIbmxReVdIK2tvblFBM3NSdGFhTTIxNGVtWk5nbEFEZjRHV1gyTTNDdkY3?=
- =?utf-8?B?NVdEeHgxWVBYYVJFU1Z4Y1hJcHJsNmREWjdUL2NYYm1mVG1LVzhWdldYNVE1?=
- =?utf-8?B?UjdHRjdRZThhY0EvN05mWld5Q3dDNHgyaWZxa2xITUlQK3p0aUhzTThGdlQy?=
- =?utf-8?B?V0R1ZTBYOEl2WDB3ZWdCRk1IRUUyVTFpYWN5TGNkVU1NLzJHZzByVkRzVmtP?=
- =?utf-8?B?WE5EazYyK1NGZmpQWm5yM2ljSXh6c0twbFRlSkY4NmRnWTBTbEtYKzJRdzJX?=
- =?utf-8?B?L0I5U2NLcDR6dngvaDF4K3NVRXA2YTdKcDlNYU9OZTM4UStUdmtDc1g5VENH?=
- =?utf-8?B?MjdXMmtZSEtQa0R4cWRTSDlFbUZNeVF5WWZOcWgzaytBUDZjOGxLZFFaTGZk?=
- =?utf-8?B?ZDVVVXdPV1hmWEFCbXpiQnhGTlhQQ1J2U3lUcWVtWnd5MUJwbW9ZbFYwV1pP?=
- =?utf-8?B?VTVvOUxUUXIvZ3JnKyswbmlZYTFZTW1oR1dqcEV2bU9QN3VFanFZdmNWTlNz?=
- =?utf-8?B?cmh0VmJJUUMvNTZMS2Z5aDMwKzV3VGtXL3Fqc1NqODVEVFE0bWlvSVBUK21j?=
- =?utf-8?B?ODVpdkFKV2hoUVg2RzFzQkVOKzFaeHJrdHpyYnkraC9YUjB2NmVCOVo3Ukt4?=
- =?utf-8?B?dWhGSWVyNXpoV2tHYzZEK0g2NG5pRnNPUmVpbDVtNzJReFVUZXJ4U1BNZjRl?=
- =?utf-8?B?U3QwSlVmODBsNjFYcWVkYjZSUXNWYVZsRnZ6YXdUcmNJbjhyL01MeW5rMWdo?=
- =?utf-8?B?WUlGOGdPS3lwSGJvdm1UK2xBNmJFc0JHckpqRVdUN0JicnlQVXFuaWw0aXNO?=
- =?utf-8?B?OVpHbDZGZVJ5NVl0eXFRcjBHamVOS2lIMnB2YzJGdzhEWmhCQlFVWW9CZmRl?=
- =?utf-8?B?SzlqMDlJV2tmeXdnTmZWK0VtbC9iQmdDc08vbEplUU9mRnh0UzhLb2VKam9E?=
- =?utf-8?B?YVpDZmZYZkNTTDVYWktWV3ZGamN3Umw3NUJxRFc3TGZrL1dpYjVRaW5zVGJZ?=
- =?utf-8?B?RzBKZzJhY2NiTEc2QUdzdkZETFFOZ1c5RGJoNTY2S1Q2am1jMW41ZnMzc2M4?=
- =?utf-8?B?Z3UrOEYwbGE0WEw5U29MdmpvSFNpeU0xRjcxMHlab0JqTlhFa3Vac3llQ3Rj?=
- =?utf-8?B?MUtheDFmd3pIZElmeXJMWnFhWG5ONmhXUVZBaWVMMUN6QnpjTDNleU11TnVG?=
- =?utf-8?B?Z2lVWEFESTl6QzV2ZVQybVRCQnJoNkhqaWlNUzBjWGNILzdrUnN2UkhsekxB?=
- =?utf-8?B?RmpWUHRWSE5OcXl2VUhqUGhGanNzdTV3T2JPSGY2bGt6WGE2UnBiSGs1aDB3?=
- =?utf-8?B?ZTNKUnJHaHJwQUVRVjdxQ25NaUE0R1E3eElnalM2cHUybzh1MGd6Yk4wUEtv?=
- =?utf-8?B?anY1NmFBWXhNNjV0a1V3RFR6SG5xYTJYTVg5VHZLWm1pdUIySXFub2pHUnFR?=
- =?utf-8?B?ZkRtT0FCSHN4Z2hHZENacmcvRklPWllFUGg4VEg2azRtM3F1ME5rZFJFdTJH?=
- =?utf-8?B?Y1J4cnZDaWtqZlBTYVZlN2ZjZlk3TkpPY2UrQjNiUUdnQ2wxb3ZjMkFoRUVN?=
- =?utf-8?B?VHpCWkx2VkJRYjhhM241S3NSM2lHV2pQc2dicFIxUXhQQzZkV20wTVErVXNr?=
- =?utf-8?B?SEw3aEF2TkIrUHNEaEkzWFBlYVE5bCtXVEpTMjY2ODNoV05IbytHNUZ1RGtv?=
- =?utf-8?B?QSs0REF2c3ZWSHVLdGllMTRaWlNPWlZMakZJK1dxMUxnMzYrUnNjVm1FcGJB?=
- =?utf-8?B?VG9HV1RxcFprT2l1ejBWZ2M1MUJGc1lkZlFCN2t3aGl0R2FJRTdWcE9aelBl?=
- =?utf-8?B?RDljWS91eTFabER5ZTRrenZxTElaQ202Tmlrak4ySFNpSlFNN0l0ZVFGUHAz?=
- =?utf-8?B?RUNQRGZJT3lRUjh2TDFTRlIxL3pNOW9SSTZyRFB4VE9rZE5nWXh6WWRPUjRL?=
- =?utf-8?B?WlU0TVFqekV1K29Qa0taa3c3dEJ5KzNsZFNZQTJvbURsZ1Vjc05rV3JrSG1F?=
- =?utf-8?B?K3ZoeFBFMGlwNTdqUmkrd25TSCtQWTJabWZPdVUyZGJmOFhGT0R6dkF0L3Bu?=
- =?utf-8?Q?EG7SHm90TTnpjEVGH3Rgfbg=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 7 Mar 2022 00:38:31 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF3A264A
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:37:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646631455; x=1678167455;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=1VpTGXNwnM/AWZLhUV+8N2p5eC8CeurvB7RKSU7xQ0Q=;
+  b=WaXFajWbZx8BB2gBN4sTUYd6ESM32b0QbhU58Z3lwWLff2TgVytGvSVI
+   6Rg8XLFXF+rEjm9uoT3QtjtzCI3mOmHTYvn25WGxwfsVS/cqcPb//jcQI
+   ZahlYIia+ztgQVdN3SqnCEFwrORNKpID2wEJ2EEMWXLbA6YLxLzWBf1m3
+   1+Yist9JqXCUIvg/0fmRly6yaufpBe6lk2fi6qsRnIUdlCeYYM30QqhPK
+   MsiVfY2QC6Izik4Q7P1/wp+Hd30KVZ0iml0ni9/8FcfxNTM6fNYBti4I7
+   Zom6FWhdJlpaC65LxWd/vsfiTaPakneHXu0U1oOxO60yFMDXHqwYYZM8+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="340735084"
+X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
+   d="scan'208";a="340735084"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:37:35 -0800
+X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
+   d="scan'208";a="536970093"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:37:30 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
+        <minchan@kernel.org>, <apopple@nvidia.com>,
+        <ave.hansen@linux.intel.com>, <o451686892@gmail.com>,
+        <almasrymina@google.com>, <jhubbard@nvidia.com>,
+        <rcampbell@nvidia.com>, <peterx@redhat.com>,
+        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 16/16] mm/migration: fix potential pte_unmap on an not
+ mapped pte
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+        <20220304093409.25829-17-linmiaohe@huawei.com>
+Date:   Mon, 07 Mar 2022 13:37:28 +0800
+In-Reply-To: <20220304093409.25829-17-linmiaohe@huawei.com> (Miaohe Lin's
+        message of "Fri, 4 Mar 2022 17:34:09 +0800")
+Message-ID: <871qze5nmv.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: dc.MitsubishiElectric.co.jp
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYAPR01MB5353.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 625c159d-edb3-4d91-4e0b-08d9fffc6db5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2022 05:36:28.5982
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c5a75b62-4bff-4c96-a720-6621ce9978e5
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6xXUlk6NDLP/HcfJtYbixC33tpSVirzteAF2/5w5pn3iMd9pcdqdBE0BM3A4NtpmJs6GWMObZNuS8UuGnX4auw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB8444
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGksIFl1ZXpoYW5nLE1vDQoNCj4gPiA+KFBTOiBUaGUgb3JpZ2luYWwgbG9naWMgaXMgdG8gY2xl
-YXIgVm9sdW1lRGlydHkgYWZ0ZXIgQml0TWFwLCBGQVQgYW5kIGRpcmVjdG9yeQ0KPiA+IGVudHJp
-ZXMgYXJlIHVwZGF0ZWQuKQ0KPiA+DQo+ID4gSG93ZXZlciwgdGhlIHdyaXRpbmcgb3JkZXIgd2Fz
-IG5vdCBndWFyYW50ZWVkLg0KPiA+IE1vcmUgc3luY2hyb25vdXMgd3JpdGVzIGFyZSBuZWVkZWQg
-dG8gZ3VhcmFudGVlIHRoZSB3cml0ZSBvcmRlci4NCj4gDQo+IElmICJkaXJzeW5jIiBvciAic3lu
-YyIgaXMgZW5hYmxlZCwgQml0TWFwLCBGQVQgYW5kIGRpcmVjdG9yeSBlbnRyaWVzIGFyZSBndWFy
-YW50ZWVkIHRvIGJlIHdyaXR0ZW4gaW4gb3JkZXIuDQo+IFRoaXMgaXMgdGhlIHJlYXNvbiB0byBr
-ZWVwIGNsZWFyaW5nIFZvbHVtZURpcnR5Lg0KDQpTQl9ESVJTWU5DIHJlcXVlc3RzIHN5bmNocm9u
-aXphdGlvbiBvZiB0aGUgaW5vZGUgb2YgdGhlIGN1cnJlbnQgZmlsZS9kaXIuDQpUaGUgZXhmYXQg
-aW1wbGVtZW50YXRpb24gdXBkYXRlcyBhbmQgc3luY3MgdGhlIGRpci1lbnRyaWVzIG9mIHRoZSBj
-dXJyZW50IGZpbGUvZGlyLg0KSWYgb25seSBTQl9ESVJTWU5DIGlzIHNldCBhbmQgU0JfU1lOQyBp
-cyBub3Qgc2V0LCBpdCBjYW5ub3QgYmUgZ3VhcmFudGVlZCB0aGF0IEZBVC9taXJyb3JGQVQgaXMg
-c3luY2hyb25pemVkLg0KDQpCUg0KVCAuS29oYWRhDQo=
+Miaohe Lin <linmiaohe@huawei.com> writes:
+
+> __migration_entry_wait and migration_entry_wait_on_locked assume pte is
+> always mapped from caller. But this is not the case when it's called from
+> migration_entry_wait_huge and follow_huge_pmd. And a parameter unmap to
+> indicate whether pte needs to be unmapped to fix this issue.
+
+This seems a possible issue.
+
+Have you tested it?  It appears that it's possible to trigger the
+issue.  If so, you can paste the error log here.
+
+BTW: have you tested the other functionality issues in your patchset?
+
+Best Regards,
+Huang, Ying
+
+> Fixes: 30dad30922cc ("mm: migration: add migrate_entry_wait_huge()")
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  include/linux/migrate.h |  2 +-
+>  include/linux/swapops.h |  4 ++--
+>  mm/filemap.c            | 10 +++++-----
+>  mm/hugetlb.c            |  2 +-
+>  mm/migrate.c            | 14 ++++++++------
+>  5 files changed, 17 insertions(+), 15 deletions(-)
+>
+> diff --git a/include/linux/migrate.h b/include/linux/migrate.h
+> index 66a34eae8cb6..3ef4ff699bef 100644
+> --- a/include/linux/migrate.h
+> +++ b/include/linux/migrate.h
+> @@ -41,7 +41,7 @@ extern int migrate_huge_page_move_mapping(struct address_space *mapping,
+>  extern int migrate_page_move_mapping(struct address_space *mapping,
+>  		struct page *newpage, struct page *page, int extra_count);
+>  void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
+> -				spinlock_t *ptl);
+> +				spinlock_t *ptl, bool unmap);
+>  void folio_migrate_flags(struct folio *newfolio, struct folio *folio);
+>  void folio_migrate_copy(struct folio *newfolio, struct folio *folio);
+>  int folio_migrate_mapping(struct address_space *mapping,
+> diff --git a/include/linux/swapops.h b/include/linux/swapops.h
+> index d356ab4047f7..d66556875d7d 100644
+> --- a/include/linux/swapops.h
+> +++ b/include/linux/swapops.h
+> @@ -213,7 +213,7 @@ static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
+>  }
+>  
+>  extern void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+> -					spinlock_t *ptl);
+> +					spinlock_t *ptl, bool unmap);
+>  extern void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>  					unsigned long address);
+>  extern void migration_entry_wait_huge(struct vm_area_struct *vma,
+> @@ -235,7 +235,7 @@ static inline int is_migration_entry(swp_entry_t swp)
+>  }
+>  
+>  static inline void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+> -					spinlock_t *ptl) { }
+> +					spinlock_t *ptl, bool unmap) { }
+>  static inline void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>  					 unsigned long address) { }
+>  static inline void migration_entry_wait_huge(struct vm_area_struct *vma,
+> diff --git a/mm/filemap.c b/mm/filemap.c
+> index 8f7e6088ee2a..18c353d52aae 100644
+> --- a/mm/filemap.c
+> +++ b/mm/filemap.c
+> @@ -1389,6 +1389,7 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
+>   * @ptep: mapped pte pointer. Will return with the ptep unmapped. Only required
+>   *        for pte entries, pass NULL for pmd entries.
+>   * @ptl: already locked ptl. This function will drop the lock.
+> + * @unmap: indicating whether ptep need to be unmapped.
+>   *
+>   * Wait for a migration entry referencing the given page to be removed. This is
+>   * equivalent to put_and_wait_on_page_locked(page, TASK_UNINTERRUPTIBLE) except
+> @@ -1402,7 +1403,7 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
+>   * there.
+>   */
+>  void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
+> -				spinlock_t *ptl)
+> +				spinlock_t *ptl, bool unmap)
+>  {
+>  	struct wait_page_queue wait_page;
+>  	wait_queue_entry_t *wait = &wait_page.wait;
+> @@ -1439,10 +1440,9 @@ void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
+>  	 * a valid reference to the page, and it must take the ptl to remove the
+>  	 * migration entry. So the page is valid until the ptl is dropped.
+>  	 */
+> -	if (ptep)
+> -		pte_unmap_unlock(ptep, ptl);
+> -	else
+> -		spin_unlock(ptl);
+> +	spin_unlock(ptl);
+> +	if (unmap && ptep)
+> +		pte_unmap(ptep);
+>  
+>  	for (;;) {
+>  		unsigned int flags;
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index 07668781c246..8088128c25db 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -6713,7 +6713,7 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+>  	} else {
+>  		if (is_hugetlb_entry_migration(pte)) {
+>  			spin_unlock(ptl);
+> -			__migration_entry_wait(mm, (pte_t *)pmd, ptl);
+> +			__migration_entry_wait(mm, (pte_t *)pmd, ptl, false);
+>  			goto retry;
+>  		}
+>  		/*
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 98a968e6f465..5519261f54fe 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -281,7 +281,7 @@ void remove_migration_ptes(struct folio *src, struct folio *dst, bool locked)
+>   * When we return from this function the fault will be retried.
+>   */
+>  void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+> -				spinlock_t *ptl)
+> +				spinlock_t *ptl, bool unmap)
+>  {
+>  	pte_t pte;
+>  	swp_entry_t entry;
+> @@ -295,10 +295,12 @@ void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+>  	if (!is_migration_entry(entry))
+>  		goto out;
+>  
+> -	migration_entry_wait_on_locked(entry, ptep, ptl);
+> +	migration_entry_wait_on_locked(entry, ptep, ptl, unmap);
+>  	return;
+>  out:
+> -	pte_unmap_unlock(ptep, ptl);
+> +	spin_unlock(ptl);
+> +	if (unmap)
+> +		pte_unmap(ptep);
+>  }
+>  
+>  void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+> @@ -306,14 +308,14 @@ void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>  {
+>  	spinlock_t *ptl = pte_lockptr(mm, pmd);
+>  	pte_t *ptep = pte_offset_map(pmd, address);
+> -	__migration_entry_wait(mm, ptep, ptl);
+> +	__migration_entry_wait(mm, ptep, ptl, true);
+>  }
+>  
+>  void migration_entry_wait_huge(struct vm_area_struct *vma,
+>  		struct mm_struct *mm, pte_t *pte)
+>  {
+>  	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), mm, pte);
+> -	__migration_entry_wait(mm, pte, ptl);
+> +	__migration_entry_wait(mm, pte, ptl, false);
+>  }
+>  
+>  #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+> @@ -324,7 +326,7 @@ void pmd_migration_entry_wait(struct mm_struct *mm, pmd_t *pmd)
+>  	ptl = pmd_lock(mm, pmd);
+>  	if (!is_pmd_migration_entry(*pmd))
+>  		goto unlock;
+> -	migration_entry_wait_on_locked(pmd_to_swp_entry(*pmd), NULL, ptl);
+> +	migration_entry_wait_on_locked(pmd_to_swp_entry(*pmd), NULL, ptl, false);
+>  	return;
+>  unlock:
+>  	spin_unlock(ptl);
