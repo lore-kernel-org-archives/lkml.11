@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5095BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CAC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237393AbiCGJgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
+        id S237568AbiCGJgj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:36:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238279AbiCGJ3C (ORCPT
+        with ESMTP id S237647AbiCGJ2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:02 -0500
+        Mon, 7 Mar 2022 04:28:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72C866AEF;
-        Mon,  7 Mar 2022 01:27:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEA26AA63;
+        Mon,  7 Mar 2022 01:25:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 196E8B810AC;
-        Mon,  7 Mar 2022 09:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE20C340F4;
-        Mon,  7 Mar 2022 09:27:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B65E2B810B9;
+        Mon,  7 Mar 2022 09:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF12C340F3;
+        Mon,  7 Mar 2022 09:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645222;
-        bh=mrV6dQUlm23eEo1U+VXCrk3Sau7WDOBqJMKBwzUVdnY=;
+        s=korg; t=1646645145;
+        bh=l/hF19ts1pVffdE2/W6xqEpFVxjmTbWSdZr2grIVloI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2JU1V73ZCqOsBCPlg2PxnnFQpnq94eoNyBO5m6YObQj3RxxeGbN9mMrivPYvLdW6K
-         NBz2IyAmwvTXceNI4mhhm6WefjCH4vNUnC4WBB9auNhl8d4y3wWfFU3tWfHIcKl02o
-         oUQEzs88rhHFDsSzsm7Mzlz6hdmE5xSB3iDLlJ+M=
+        b=uEmlSwFoQ7CtG7dSTmRXKxYuR6sn5h+vmspFCJZ1eEs118uUW8DdCkyfBH2KkmuvB
+         QOn0XsvQ4UCFa5zvP4s1mv8mlgEOo8SHAD35D42WzIbtgQDLss2qtxnXyB3NDAp1mp
+         jW36X1CPxi+a9KP4COXhhwqmX9U6yptQ3finjUSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 08/64] dmaengine: shdma: Fix runtime PM imbalance on error
-Date:   Mon,  7 Mar 2022 10:18:41 +0100
-Message-Id: <20220307091639.379452870@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.19 29/51] block: Fix fsync always failed if once failed
+Date:   Mon,  7 Mar 2022 10:19:04 +0100
+Message-Id: <20220307091637.820937128@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,40 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
+commit 8a7518931baa8ea023700987f3db31cb0a80610b upstream.
 
-pm_runtime_get_() increments the runtime PM usage counter even
-when it returns an error code, thus a matching decrement is needed on
-the error handling path to keep the counter balanced.
+We do test with inject error fault base on v4.19, after test some time we found
+sync /dev/sda always failed.
+[root@localhost] sync /dev/sda
+sync: error syncing '/dev/sda': Input/output error
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+scsi log as follows:
+[19069.812296] sd 0:0:0:0: [sda] tag#64 Send: scmd 0x00000000d03a0b6b
+[19069.812302] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
+[19069.812533] sd 0:0:0:0: [sda] tag#64 Done: SUCCESS Result: hostbyte=DID_OK driverbyte=DRIVER_OK
+[19069.812536] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
+[19069.812539] sd 0:0:0:0: [sda] tag#64 scsi host busy 1 failed 0
+[19069.812542] sd 0:0:0:0: Notifying upper driver of completion (result 0)
+[19069.812546] sd 0:0:0:0: [sda] tag#64 sd_done: completed 0 of 0 bytes
+[19069.812549] sd 0:0:0:0: [sda] tag#64 0 sectors total, 0 bytes done.
+[19069.812564] print_req_error: I/O error, dev sda, sector 0
+
+ftrace log as follows:
+ rep-306069 [007] .... 19654.923315: block_bio_queue: 8,0 FWS 0 + 0 [rep]
+ rep-306069 [007] .... 19654.923333: block_getrq: 8,0 FWS 0 + 0 [rep]
+ kworker/7:1H-250   [007] .... 19654.923352: block_rq_issue: 8,0 FF 0 () 0 + 0 [kworker/7:1H]
+ <idle>-0     [007] ..s. 19654.923562: block_rq_complete: 8,0 FF () 18446744073709551615 + 0 [0]
+ <idle>-0     [007] d.s. 19654.923576: block_rq_complete: 8,0 WS () 0 + 0 [-5]
+
+As 8d6996630c03 introduce 'fq->rq_status', this data only update when 'flush_rq'
+reference count isn't zero. If flush request once failed and record error code
+in 'fq->rq_status'. If there is no chance to update 'fq->rq_status',then do fsync
+will always failed.
+To address this issue reset 'fq->rq_status' after return error code to upper layer.
+
+Fixes: 8d6996630c03("block: fix null pointer dereference in blk_mq_rq_timed_out()")
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20211129012659.1553733-1-yebin10@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/sh/shdma-base.c | 4 +++-
+ block/blk-flush.c |    4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index c51de498b5b4b..19eee3d0900b0 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
- 		ret = pm_runtime_get(schan->dev);
+--- a/block/blk-flush.c
++++ b/block/blk-flush.c
+@@ -239,8 +239,10 @@ static void flush_end_io(struct request
+ 			return;
+ 		}
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
-+		if (ret < 0) {
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
-+			pm_runtime_put(schan->dev);
+-		if (fq->rq_status != BLK_STS_OK)
++		if (fq->rq_status != BLK_STS_OK) {
+ 			error = fq->rq_status;
++			fq->rq_status = BLK_STS_OK;
 +		}
  
- 		pm_runtime_barrier(schan->dev);
- 
--- 
-2.34.1
-
+ 		hctx = blk_mq_map_queue(q, flush_rq->mq_ctx->cpu);
+ 		if (!q->elevator) {
 
 
