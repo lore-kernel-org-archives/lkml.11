@@ -2,116 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE749C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A809C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 21:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245291AbiCGVeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 16:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
+        id S245499AbiCGVet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 16:34:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232501AbiCGVen (ORCPT
+        with ESMTP id S243335AbiCGVep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 16:34:43 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0547450457;
-        Mon,  7 Mar 2022 13:33:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646688829; x=1678224829;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=P7fA5VAziyLx4eErnIxNtk976YKxMu7dfIcAeyiLxV0=;
-  b=CtRBnAEk995hrpSLj8dkq0b8//iZBcS4hN5Heu9La8xxk/4tW+uY62er
-   rmIKDt1Grhv+JE/SjhNmGNdOe00YefpNdEQeKVaSl7g4+6ijBu2q1k9Si
-   lLOlVaVFvSgo7+0UGNW/RASGE6LjBoMxSLM8iqu3iYEWHNes7O0Z6wDQQ
-   LDPLKsBMMRoB/p3j1sYwuT0tExMXkeVMip3u7KhxoPml5v4t8P4bwfkqM
-   vfwZ2qvPVvstaS0gLKbGdsvI5rlwNLjdhN1qo7P82nK7Ht5K2t6UuoGkx
-   ouLRXhCrYATESwtgw/vuFvf61qEjrfqD0R3GmnD74NU+ICjrxOomzEQ03
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="317743362"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="317743362"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 13:33:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="687687259"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Mar 2022 13:33:48 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Mar 2022 13:33:47 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Mar 2022 13:33:46 -0800
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.021;
- Mon, 7 Mar 2022 13:33:46 -0800
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Joseph, Jithu" <jithu.joseph@intel.com>
-CC:     "Williams, Dan J" <dan.j.williams@intel.com>,
-        "hdegoede@redhat.com" <hdegoede@redhat.com>,
-        "markgross@kernel.org" <markgross@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>, "bp@alien8.de" <bp@alien8.de>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: RE: [RFC 08/10] platform/x86/intel/ifs: Add IFS sysfs interface
-Thread-Topic: [RFC 08/10] platform/x86/intel/ifs: Add IFS sysfs interface
-Thread-Index: AQHYLaZd5d+yEBuhdEqmhIRDOkET6qyu6T6AgAFSX4CABIOMgIAAGXcAgAABjACAAAs3AIAACG0AgAAIiACAAAmQgP//ejMg
-Date:   Mon, 7 Mar 2022 21:33:46 +0000
-Message-ID: <5129ec667d734f3da4043ce1b7df0439@intel.com>
-References: <20220301195457.21152-1-jithu.joseph@intel.com>
- <20220301195457.21152-9-jithu.joseph@intel.com>
- <188492dc80c017375da76d444347b1d00c2031f6.camel@intel.com>
- <7b9c788e-21dc-eedc-a1b4-9c6877fa48fe@intel.com>
- <CAPcyv4h=qPFrP+mRqaZhkh5ZmYjuQawsqvf+-R036ZJVKBNK4Q@mail.gmail.com>
- <33d0e764-86d9-8504-17fa-14b31c87de4e@intel.com>
- <CAPcyv4g5bq9+u0iLjhpeJw8bkbCREUw60H2z_KfDz4hHCrKdFQ@mail.gmail.com>
- <7c620f8a-189e-5ac4-30fe-1fa14ba799ea@intel.com>
- <CAPcyv4iUuZ0aAWckWvwbxJJgt5tDJRpeonfE4DegWS6KPtJq8A@mail.gmail.com>
- <eab8177d-eb73-ec64-ec1f-4f2a51be8aee@intel.com> <YiZ5bYPvssUFYGZj@kroah.com>
-In-Reply-To: <YiZ5bYPvssUFYGZj@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 7 Mar 2022 16:34:45 -0500
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CEA50B36;
+        Mon,  7 Mar 2022 13:33:50 -0800 (PST)
+Received: by mail-oi1-f178.google.com with SMTP id n7so7007671oif.5;
+        Mon, 07 Mar 2022 13:33:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xKi3HHKVGpmeKTbiXrMkXO/qpORJuIc2PskVIUh7Ul0=;
+        b=O8aegdWK3BCJSA8bBQo8H3LN+HCz7hI2BOQXXi1FYx0pHe8QngpkxpJqS5U0sLHmFv
+         cpA+EEMvvZkK1H3zktJU+7CCpEqsOJALsd9LADuNBAp7wLVqqYn0MNFj5E47kfu2ZPd3
+         cvbPrusPoIE+1s/wuCfiH77eNh5UNh1Lo/HzqMNqmplj5P0/PQkLWNYYlROfK8FxJkR0
+         XpP52z3r30ve2IpyOSTGjG02rOpZdA3hG8KMrSjULxV9TuhR7x1tuvlTgG1YxOrScGV/
+         o+eU5UrKivtKm/0k/nFhwyhiLv5ab90UXglvkr3hOWOp7FpxuuaZa+RjMTaaZiM1WMsa
+         /2wg==
+X-Gm-Message-State: AOAM531BubLfNQQl4M9ci3ud+nQEmgbApyiaxcPFEI+oUKVfXh0lXoMI
+        YiLxNAjs/pT5xZoe7PCYp2epYnryhA==
+X-Google-Smtp-Source: ABdhPJyHk1wozNhDsnc/eHiJaIyeWDdPzrh66zQ5MVd7xtFTOvAmcAjd/8AMsWAwi96QsdyLTm8wjA==
+X-Received: by 2002:a05:6808:1983:b0:2d7:7fc:9e9b with SMTP id bj3-20020a056808198300b002d707fc9e9bmr649909oib.133.1646688829667;
+        Mon, 07 Mar 2022 13:33:49 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p14-20020a056830304e00b005b246b673f2sm811780otr.71.2022.03.07.13.33.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 13:33:48 -0800 (PST)
+Received: (nullmailer pid 3270524 invoked by uid 1000);
+        Mon, 07 Mar 2022 21:33:47 -0000
+Date:   Mon, 7 Mar 2022 15:33:47 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Divya Koppera <Divya.Koppera@microchip.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        devicetree@vger.kernel.org, richardcochran@gmail.com,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        madhuri.sripada@microchip.com, manohar.puri@microchip.com
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <YiZ6O2GeLIVEqgvY@robh.at.kernel.org>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <20220304093418.31645-3-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304093418.31645-3-Divya.Koppera@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > Also some context on test frequency: Hardware has  strict rate limiting=
- of tests.
-> > Every core can be tested only once in every 30 minutes. So it is pointl=
-ess to test at high frequency.
->
-> What limits this, the kernel?
+On Fri, Mar 04, 2022 at 03:04:17PM +0530, Divya Koppera wrote:
+> Supports configuring latency values and also adds
+> check for phy timestamping feature.
+> 
+> Signed-off-by: Divya Koppera<Divya.Koppera@microchip.com>
 
-Microcode enforces the per-core repeat rate on the first implementation.
+should be a space here:       ^
 
-But this limit isn't architectural. Future implementations may not have
-the same, or perhaps any, limit.
+> ---
+>  .../devicetree/bindings/net/micrel.txt          | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
 
--Tony
+Please convert this to DT schema.
+
+> 
+> diff --git a/Documentation/devicetree/bindings/net/micrel.txt b/Documentation/devicetree/bindings/net/micrel.txt
+> index 8d157f0295a5..c5ab62c39133 100644
+> --- a/Documentation/devicetree/bindings/net/micrel.txt
+> +++ b/Documentation/devicetree/bindings/net/micrel.txt
+> @@ -45,3 +45,20 @@ Optional properties:
+>  
+>  	In fiber mode, auto-negotiation is disabled and the PHY can only work in
+>  	100base-fx (full and half duplex) modes.
+> +
+> + - lan8814,ignore-ts: If present the PHY will not support timestamping.
+
+'lan8814' is not a vendor and the format for properties is 
+<vendor>,<propname>.
+
+Is this configuration or lack of h/w feature? IOW, instead of 'will 
+not', 'does not' or 'timestamping is disabled.'. As configuration, that 
+seems like common property. For (lack of) h/w features, that should be 
+implied by the compatible or VID/PID.
+
+> +	This option acts as check whether Timestamping is supported by
+> +	hardware or not. LAN8814 phy support hardware tmestamping.
+> +
+> + - lan8814,latency_rx_10: Configures Latency value of phy in ingress at 10 Mbps.
+
+s/_/-/
+
+What are the units here? Is this a common feature of PHYs?
+
+> +
+> + - lan8814,latency_tx_10: Configures Latency value of phy in egress at 10 Mbps.
+> +
+> + - lan8814,latency_rx_100: Configures Latency value of phy in ingress at 100 Mbps.
+> +
+> + - lan8814,latency_tx_100: Configures Latency value of phy in egress at 100 Mbps.
+> +
+> + - lan8814,latency_rx_1000: Configures Latency value of phy in ingress at 1000 Mbps.
+> +
+> + - lan8814,latency_tx_1000: Configures Latency value of phy in egress at 1000 Mbps.
+> -- 
+> 2.17.1
+> 
+> 
