@@ -2,94 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbiCGLXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        id S234487AbiCGLXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:23:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237654AbiCGLWl (ORCPT
+        with ESMTP id S242020AbiCGLWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:22:41 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF8A33379;
-        Mon,  7 Mar 2022 02:48:56 -0800 (PST)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KBwC93sP0zdfml;
-        Mon,  7 Mar 2022 18:47:33 +0800 (CST)
-Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
- (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Mar
- 2022 18:48:54 +0800
-From:   GUO Zihua <guozihua@huawei.com>
-To:     <linux-integrity@vger.kernel.org>
-CC:     <wangweiyang2@huawei.com>, <xiujianfeng@huawei.com>,
-        <weiyongjun1@huawei.com>, <peterhuewe@gmx.de>, <jarkko@kernel.org>,
-        <jgg@ziepe.ca>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] tpm: Fix memory leak in tpmm_chip_alloc
-Date:   Mon, 7 Mar 2022 18:48:27 +0800
-Message-ID: <20220307104827.40843-1-guozihua@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 7 Mar 2022 06:22:52 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D028B36318;
+        Mon,  7 Mar 2022 02:49:22 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 93BCB1F439B4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646650161;
+        bh=xcHrA688gBPqRiYshhBRs/w3XKYVKzPjdXoPUfWuwIE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=L13Iyh+MGBgvI0+tRh+GV1faYYieScGpgDewVXwECjJOGs0Be9EP46wJ9pTu2C+Vf
+         jE2+08RPH668Jm6/nzpThsMw64DRj7rerCOm/d11db6g9CN+nQj5/osNf4gM7UcHGk
+         IbjFT9Nikm0rMTBALl3aQuXam4cON5Zfu9R1U60H/rtTGR0gjx8mTb12WVe2y4sfN0
+         wuKA3cctlK1YphfdNOiye9xiUMo+cxTci5x+4vaPURnX3OB8weYV90R84cT6iI/zTe
+         TUXxFmRp96zvCBLJnIoI0bpGuuNG8Cblen2IMjDTUNt3V1u3n0tVF0no4rty11xpqd
+         oGEmac2YETZaA==
+Message-ID: <60248c8a-89a4-6f87-71f7-0732c3826e0b@collabora.com>
+Date:   Mon, 7 Mar 2022 11:49:18 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.31]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v1 1/2] dt-bindings: i2c: update bindings for MT8168 SoC
+Content-Language: en-US
+To:     Kewei Xu <kewei.xu@mediatek.com>, wsa@the-dreams.de
+Cc:     matthias.bgg@gmail.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        leilk.liu@mediatek.com, qii.wang@mediatek.com,
+        liguo.zhang@mediatek.com, caiyu.chen@mediatek.com,
+        housong.zhang@mediatek.com, yuhan.wei@mediatek.com
+References: <20220307033649.11564-1-kewei.xu@mediatek.com>
+ <20220307033649.11564-2-kewei.xu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220307033649.11564-2-kewei.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a memory leak in tpmm_chip_alloc. devm_add_action_or_reset would
-call put_device on error, while tpm->devs is left untouched. Call
-put_device on tpm->devs as well if devm_add_action_or_reset returns an
-error.
+Il 07/03/22 04:36, Kewei Xu ha scritto:
+> Add a DT binding documentation for the MT8168 soc.
+> 
+> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
 
-Fixes: fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm")
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
----
- drivers/char/tpm/tpm-chip.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+A conversion to dt-binding (yaml) would be very appreciated... however there
+is nothing wrong with this addition, so:
 
-diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index b009e7479b70..0a92334e8c40 100644
---- a/drivers/char/tpm/tpm-chip.c
-+++ b/drivers/char/tpm/tpm-chip.c
-@@ -308,6 +308,12 @@ static int tpm_class_shutdown(struct device *dev)
- 	return 0;
- }
- 
-+static void tpm_chip_free(struct tpm_chip *chip)
-+{
-+	put_device(&chip->devs);
-+	put_device(&chip->dev);
-+}
-+
- /**
-  * tpm_chip_alloc() - allocate a new struct tpm_chip instance
-  * @pdev: device to which the chip is associated
-@@ -396,8 +402,7 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
- 	return chip;
- 
- out:
--	put_device(&chip->devs);
--	put_device(&chip->dev);
-+	tpm_chip_free(chip);
- 	return ERR_PTR(rc);
- }
- EXPORT_SYMBOL_GPL(tpm_chip_alloc);
-@@ -420,8 +425,8 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
- 		return chip;
- 
- 	rc = devm_add_action_or_reset(pdev,
--				      (void (*)(void *)) put_device,
--				      &chip->dev);
-+				      (void (*)(void *)) tpm_chip_free,
-+				      chip);
- 	if (rc)
- 		return ERR_PTR(rc);
- 
--- 
-2.17.1
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+> ---
+>   Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> index 88f74a3c81ec..026985b8f61a 100644
+> --- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> +++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
+> @@ -12,6 +12,7 @@ Required properties:
+>         "mediatek,mt7622-i2c": for MediaTek MT7622
+>         "mediatek,mt7623-i2c", "mediatek,mt6577-i2c": for MediaTek MT7623
+>         "mediatek,mt7629-i2c", "mediatek,mt2712-i2c": for MediaTek MT7629
+> +      "mediatek,mt8168-i2c": for MediaTek MT8168
+>         "mediatek,mt8173-i2c": for MediaTek MT8173
+>         "mediatek,mt8183-i2c": for MediaTek MT8183
+>         "mediatek,mt8186-i2c": for MediaTek MT8186
+
 
