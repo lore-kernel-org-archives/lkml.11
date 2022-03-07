@@ -2,162 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BECDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244884AbiCGSzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:55:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
+        id S244886AbiCGS43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:56:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241544AbiCGSzd (ORCPT
+        with ESMTP id S230517AbiCGS40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:55:33 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9FA70CF9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:54:38 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id b11-20020a5b008b000000b00624ea481d55so14294801ybp.19
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 10:54:38 -0800 (PST)
+        Mon, 7 Mar 2022 13:56:26 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C7491354;
+        Mon,  7 Mar 2022 10:55:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=5MawQ8g6R2i10b51W0z02NV7yDlOvfHZu22ScLFX8rE=;
-        b=KkokMzrhcRsY2qzoTWuOOklP96NxRoolRvtK9KPJY9QJ83TLPW1WnAtmCnfEaDZgi0
-         YMGiVTkVwy8tknBUp4z0R5onqX5eSzgvtDlnX2CkBZLaNPSxvqMd0b46QKlfyD9tZGTN
-         VYIb8vXneeKJaKFmFMke1HAmrhbijc32etv1W1OwaFqo6VI/glMfqo0bACziWtvlRIwm
-         ylVudKrgfBzJWCY4bpNPdjtxxIsQ6NvzTVH3uIUnEVPB4Z3Obo/9FZuYKOZqaCHRpUBp
-         JHenofaBd0kbSanvAbp2NuJxX4GqFhjo8vxtAqXW9HaB1rhG8NwpRhdCrygsB65igMSS
-         toeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=5MawQ8g6R2i10b51W0z02NV7yDlOvfHZu22ScLFX8rE=;
-        b=N1AdDCA+nZbKezsABNOV79woRqk7Lhrf/b4zneDzvdMKAFEmEunayS+hPfwqC6RCM6
-         npowzKrQ/iUZSJ06OqkwTKc5MkIVd178Kccy8vFykmYx/6++VItOUL0uFkleUSTy9zVn
-         LXqPjzhNY+YzpYKkTTCADkZcAHk267gMfcWmI6AUhrarJA+jWIaMMpfAmfYTeVPCGXJ2
-         ay8jyFL6+0S6DpF9O9O5bUIuZBcuOArvrqspNqOBBhF/fG32JHXXHSSSY227H/zy7bi5
-         8KvV91dKI1C9VxkyHARD914V1g82XVu0jDJ/kz5sRIQqUf3dH1js8H1xaF+MbHYNOpci
-         ZJhw==
-X-Gm-Message-State: AOAM530whYiwVK215jm8RA8Z9Ju1YV80BV+G2yGDDkqTelVY/FXtmEp/
-        lRUgKNqDbgpde0LXfxaJWW5y+myCjEUT2fzRqw==
-X-Google-Smtp-Source: ABdhPJzM7vN8xhO/vDTteEgRgqDMEMBQIjp4uJ9oN/GV7rPMNTtXmSQqGvrwN5Vtw5btnqJLalgjqDyWQ0sR/nErGQ==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:dd66:1e7d:1858:4587])
- (user=kaleshsingh job=sendgmr) by 2002:a25:8d07:0:b0:61d:b996:44b3 with SMTP
- id n7-20020a258d07000000b0061db99644b3mr8806866ybl.111.1646679278060; Mon, 07
- Mar 2022 10:54:38 -0800 (PST)
-Date:   Mon,  7 Mar 2022 10:49:06 -0800
-In-Reply-To: <20220307184935.1704614-1-kaleshsingh@google.com>
-Message-Id: <20220307184935.1704614-9-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220307184935.1704614-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [PATCH v5 8/8] KVM: arm64: Symbolize the nVHE HYP backtrace
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646679331; x=1678215331;
+  h=from:to:cc:subject:date:message-id;
+  bh=TkJ7vVlFe3NJoDlij4wI9aVqzEmAv226UcUTPIW6LAk=;
+  b=XEz+ROND6Y201SLiV0Q5rXQNlacqYi0x4sDjLvvvERWFXVGnoGJ4mHcF
+   DdrrV3l8xn4XgW4e+DzqBmjwUu0H1mLQJMOOQgMfxO2NaA+LrkgahZqiV
+   XIPablwQXNq2Op6+7m3zG1xcPF7U10QqAiLC5AqJp8KDhLUCmqnnDZyIc
+   w=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 07 Mar 2022 10:55:31 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Mar 2022 10:55:29 -0800
+X-QCInternal: smtphost
+Received: from pmaliset-linux.qualcomm.com ([10.206.64.233])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 08 Mar 2022 00:25:10 +0530
+Received: by pmaliset-linux.qualcomm.com (Postfix, from userid 3848298)
+        id 98BDF21422; Tue,  8 Mar 2022 00:25:08 +0530 (IST)
+From:   Prasad Malisetty <quic_pmaliset@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rajatja@google.com, refactormyself@gmail.com
+Cc:     quic_vbadigan@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>
+Subject: [PATCH v4] PCI: qcom: Add system PM support
+Date:   Tue,  8 Mar 2022 00:25:06 +0530
+Message-Id: <1646679306-4768-1-git-send-email-quic_pmaliset@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reintroduce the __kvm_nvhe_ symbols in kallsyms, ignoring the local
-symbols in this namespace. The local symbols are not informative and
-can cause aliasing issues when symbolizing the addresses.
+Add suspend_noirq and resume_noirq callbacks to handle
+system suspend and resume in dwc PCIe controller driver.
 
-With the necessary symbols now in kallsyms we can symbolize nVHE
-stacktrace addresses using the %pB print format specifier.
+When system suspends, send PME turnoff message to enter
+link into L2 state. Along with powerdown the PHY, disable
+pipe clock, switch gcc_pcie_1_pipe_clk_src to XO if mux is
+supported and disable the pcie clocks, regulators.
 
-Example call trace:
+When system resumes, PCIe link will be re-established and
+setup rc settings.
 
-[   98.916444][  T426] kvm [426]: nVHE hyp panic at: [<ffffffc0096156fc>] __kvm_nvhe_overflow_stack+0x8/0x34!
-[   98.918360][  T426] nVHE HYP call trace:
-[   98.918692][  T426] kvm [426]: [<ffffffc009615aac>] __kvm_nvhe_cpu_prepare_nvhe_panic_info+0x4c/0x68
-[   98.919545][  T426] kvm [426]: [<ffffffc0096159a4>] __kvm_nvhe_hyp_panic+0x2c/0xe8
-[   98.920107][  T426] kvm [426]: [<ffffffc009615ad8>] __kvm_nvhe_hyp_panic_bad_stack+0x10/0x10
-[   98.920665][  T426] kvm [426]: [<ffffffc009610a4c>] __kvm_nvhe___kvm_hyp_host_vector+0x24c/0x794
-[   98.921292][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
-. . .
+Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
 
-[   98.973382][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
-[   98.973816][  T426] kvm [426]: [<ffffffc0096152f4>] __kvm_nvhe___kvm_vcpu_run+0x38/0x438
-[   98.974255][  T426] kvm [426]: [<ffffffc009616f80>] __kvm_nvhe_handle___kvm_vcpu_run+0x1c4/0x364
-[   98.974719][  T426] kvm [426]: [<ffffffc009616928>] __kvm_nvhe_handle_trap+0xa8/0x130
-[   98.975152][  T426] kvm [426]: [<ffffffc009610064>] __kvm_nvhe___host_exit+0x64/0x64
-[   98.975588][  T426] ---- end of nVHE HYP call trace ----
-
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
 ---
+Changes since v3:
+	- Replaced noirq hooks with normal suspend/resume hooks.
+	- Removed local variable and placed in function itself.
 
-Changes in v2:
-  - Fix printk warnings - %p expects (void *)
+Changes since v2:
+	- Removed unnecessary variable initializations and comments.
+	- Removed platform specific variables declarations.
+	- Added MACRO names for the BIT shiftings.
 
+Changes since v1:
+	- Removed unnecessary logs and modified log level suggested by Manivannan.
+	- Removed platform specific callbacks as PM support is generic.
+---
+ drivers/pci/controller/dwc/pcie-qcom.c | 97 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
 
- arch/arm64/kvm/handle_exit.c | 13 +++++--------
- scripts/kallsyms.c           |  2 +-
- 2 files changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-index ff69dff33700..3a5c32017c6b 100644
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -296,13 +296,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 	u64 elr_in_kimg = __phys_to_kimg(elr_phys);
- 	u64 hyp_offset = elr_in_kimg - kaslr_offset() - elr_virt;
- 	u64 mode = spsr & PSR_MODE_MASK;
-+	u64 panic_addr = elr_virt + hyp_offset;
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 6ab9089..4d29c80 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -48,6 +48,7 @@
+ #define PCIE20_PARF_PHY_REFCLK			0x4C
+ #define PHY_REFCLK_SSP_EN			BIT(16)
+ #define PHY_REFCLK_USE_PAD			BIT(12)
++#define PHY_POWER_DOWN				0x1
  
--	/*
--	 * The nVHE hyp symbols are not included by kallsyms to avoid issues
--	 * with aliasing. That means that the symbols cannot be printed with the
--	 * "%pS" format specifier, so fall back to the vmlinux address if
--	 * there's no better option.
--	 */
- 	if (mode != PSR_MODE_EL2t && mode != PSR_MODE_EL2h) {
- 		kvm_err("Invalid host exception to nVHE hyp!\n");
- 	} else if (ESR_ELx_EC(esr) == ESR_ELx_EC_BRK64 &&
-@@ -322,9 +317,11 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 		if (file)
- 			kvm_err("nVHE hyp BUG at: %s:%u!\n", file, line);
- 		else
--			kvm_err("nVHE hyp BUG at: %016llx!\n", elr_virt + hyp_offset);
-+			kvm_err("nVHE hyp BUG at: [<%016llx>] %pB!\n", panic_addr,
-+					(void *)panic_addr);
- 	} else {
--		kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
-+		kvm_err("nVHE hyp panic at: [<%016llx>] %pB!\n", panic_addr,
-+				(void *)panic_addr);
- 	}
+ #define PCIE20_PARF_DBI_BASE_ADDR		0x168
+ #define PCIE20_PARF_SLV_ADDR_SPACE_SIZE		0x16C
+@@ -62,6 +63,8 @@
  
- 	kvm_nvhe_dump_backtrace(hyp_offset);
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 54ad86d13784..19aba43d9da4 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -111,7 +111,7 @@ static bool is_ignored_symbol(const char *name, char type)
- 		".LASANPC",		/* s390 kasan local symbols */
- 		"__crc_",		/* modversions */
- 		"__efistub_",		/* arm64 EFI stub namespace */
--		"__kvm_nvhe_",		/* arm64 non-VHE KVM namespace */
-+		"__kvm_nvhe_$",		/* arm64 local symbols in non-VHE KVM namespace */
- 		"__AArch64ADRPThunk_",	/* arm64 lld */
- 		"__ARMV5PILongThunk_",	/* arm lld */
- 		"__ARMV7PILongThunk_",
+ #define PCIE20_ELBI_SYS_CTRL			0x04
+ #define PCIE20_ELBI_SYS_CTRL_LT_ENABLE		BIT(0)
++#define PCIE_PME_TURNOFF_MSG			BIT(4)
++#define PCIE_PM_LINKST_IN_L2			BIT(5)
+ 
+ #define PCIE20_AXI_MSTR_RESP_COMP_CTRL0		0x818
+ #define CFG_REMOTE_RD_REQ_BRIDGE_SIZE_2K	0x4
+@@ -73,6 +76,8 @@
+ 
+ #define PCIE20_PARF_Q2A_FLUSH			0x1AC
+ 
++#define PCIE20_PARF_PM_STTS			0x24
++
+ #define PCIE20_MISC_CONTROL_1_REG		0x8BC
+ #define DBI_RO_WR_EN				1
+ 
+@@ -1645,6 +1650,97 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++static int qcom_pcie_send_pme_turnoff_msg(struct qcom_pcie *pcie)
++{
++	int ret;
++	u32 val, poll_val;
++	struct dw_pcie *pci = pcie->pci;
++	struct device *dev = pci->dev;
++
++	val = readl(pcie->elbi + PCIE20_ELBI_SYS_CTRL);
++	val |= PCIE_PME_TURNOFF_MSG;
++	writel(val, pcie->elbi + PCIE20_ELBI_SYS_CTRL);
++
++	ret = readl_poll_timeout((pcie->parf + PCIE20_PARF_PM_STTS), poll_val,
++			(poll_val & PCIE_PM_LINKST_IN_L2),
++			10000, 100000);
++	if (!ret)
++		dev_dbg(dev, "Device entered L23_Ready state\n");
++	else
++		dev_err(dev, "Device failed to enter L23_Ready. PM_STTS 0x%x\n",
++			readl_relaxed(pcie->parf + PCIE20_PARF_PM_STTS));
++
++	return ret;
++}
++
++static void qcom_pcie_host_disable(struct qcom_pcie *pcie)
++{
++	qcom_ep_reset_assert(pcie);
++
++	/* Put PHY into POWER DOWN state */
++	phy_power_off(pcie->phy);
++
++	writel(PHY_POWER_DOWN, pcie->parf + PCIE20_PARF_PHY_CTRL);
++
++	if (pcie->cfg->ops->post_deinit)
++		pcie->cfg->ops->post_deinit(pcie);
++
++	/* Disable PCIe clocks and regulators */
++	pcie->cfg->ops->deinit(pcie);
++}
++
++static int __maybe_unused qcom_pcie_pm_suspend(struct device *dev)
++{
++	int ret;
++	struct qcom_pcie *pcie = dev_get_drvdata(dev);
++	struct dw_pcie *pci = pcie->pci;
++
++	if (!dw_pcie_link_up(pci)) {
++		dev_dbg(dev, "Power has been turned off already\n");
++		return 0;
++	}
++
++	ret = qcom_pcie_send_pme_turnoff_msg(pcie);
++	if (ret)
++		return ret;
++
++	/* Power down the PHY, disable clock and regulators */
++	qcom_pcie_host_disable(pcie);
++
++	return 0;
++}
++
++/* Resume the PCIe link */
++static int __maybe_unused qcom_pcie_pm_resume(struct device *dev)
++{
++	int ret;
++	struct qcom_pcie *pcie = dev_get_drvdata(dev);
++	struct dw_pcie *pci = pcie->pci;
++	struct pcie_port *pp = &pci->pp;
++
++	ret = qcom_pcie_host_init(pp);
++	if (ret) {
++		dev_err(dev, "cannot initialize host\n");
++		return ret;
++	}
++
++	dw_pcie_setup_rc(pp);
++
++	qcom_pcie_start_link(pci);
++
++	ret = dw_pcie_wait_for_link(pci);
++	if (ret) {
++		dev_err(dev, "Link never came up, Resume failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct dev_pm_ops qcom_pcie_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(qcom_pcie_pm_suspend, qcom_pcie_pm_resume)
++};
++
+ static const struct of_device_id qcom_pcie_match[] = {
+ 	{ .compatible = "qcom,pcie-apq8084", .data = &apq8084_cfg },
+ 	{ .compatible = "qcom,pcie-ipq8064", .data = &ipq8064_cfg },
+@@ -1679,6 +1775,7 @@ static struct platform_driver qcom_pcie_driver = {
+ 	.probe = qcom_pcie_probe,
+ 	.driver = {
+ 		.name = "qcom-pcie",
++		.pm = &qcom_pcie_pm_ops,
+ 		.suppress_bind_attrs = true,
+ 		.of_match_table = qcom_pcie_match,
+ 	},
 -- 
-2.35.1.616.g0bdcbb4464-goog
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
 
