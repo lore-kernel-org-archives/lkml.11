@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F728C47084
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242103AbiCGKLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54020 "EHLO
+        id S241391AbiCGKKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:10:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240581AbiCGJvL (ORCPT
+        with ESMTP id S240018AbiCGJuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:51:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4D475C32;
-        Mon,  7 Mar 2022 01:44:54 -0800 (PST)
+        Mon, 7 Mar 2022 04:50:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B6673057;
+        Mon,  7 Mar 2022 01:44:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B34ACB80E70;
-        Mon,  7 Mar 2022 09:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1533FC36AE7;
-        Mon,  7 Mar 2022 09:44:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAAFE6136F;
+        Mon,  7 Mar 2022 09:43:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04ED0C340E9;
+        Mon,  7 Mar 2022 09:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646289;
-        bh=CuVv0srCJLASUG7O3QLyufLAvEapLieoDVMlDzAxUHk=;
+        s=korg; t=1646646231;
+        bh=UBdrsVWMvpEWnpvpGDJX06Kk5StTYHhkGEu8qr1hKtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCQCqnuBWzP7+a+JvrmRlcQuF2b89CnKcUZDDK7/l+MFRLBdPY7HU5t4jjZHLfwl2
-         97cSFPcsCimdvRuTNI+Oj269jG0nA1nsJC6N9BbcpFH5ioaODUlk0NO22tXsUU1yrN
-         cgMr96K4J4LKGv9+CkoDSoqYxwof1AejGGj1WuAc=
+        b=Fk3fIEW0h7h5DyWu4MgMNNVqqzC/vv9qQMkzEZDQ0Wth6plY5b9dbkG+SHoSAABa3
+         HU7NM2+cdfjBllYxRB4O7GEurfqziwfrtngpcvByeWgX9QQQ3oqxZxFleTvwSm/ZUN
+         r0vYxd9Q8D8p7OR2f96njMjp+BF06X7ROgU360kM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 195/262] mptcp: Correctly set DATA_FIN timeout when number of retransmits is large
-Date:   Mon,  7 Mar 2022 10:18:59 +0100
-Message-Id: <20220307091708.093390682@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 135/262] net: of: fix stub of_net helpers for CONFIG_NET=n
+Date:   Mon,  7 Mar 2022 10:17:59 +0100
+Message-Id: <20220307091706.265997031@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,65 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mat Martineau <mathew.j.martineau@linux.intel.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit 877d11f0332cd2160e19e3313e262754c321fa36 upstream.
+[ Upstream commit 8b017fbe0bbb98dd71fb4850f6b9cc0e136a26b8 ]
 
-Syzkaller with UBSAN uncovered a scenario where a large number of
-DATA_FIN retransmits caused a shift-out-of-bounds in the DATA_FIN
-timeout calculation:
+Moving the of_net code from drivers/of/ to net/core means we
+no longer stub out the helpers when networking is disabled,
+which leads to a randconfig build failure with at least one
+ARM platform that calls this from non-networking code:
 
-================================================================================
-UBSAN: shift-out-of-bounds in net/mptcp/protocol.c:470:29
-shift exponent 32 is too large for 32-bit type 'unsigned int'
-CPU: 1 PID: 13059 Comm: kworker/1:0 Not tainted 5.17.0-rc2-00630-g5fbf21c90c60 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-Workqueue: events mptcp_worker
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:151
- __ubsan_handle_shift_out_of_bounds.cold+0xb2/0x20e lib/ubsan.c:330
- mptcp_set_datafin_timeout net/mptcp/protocol.c:470 [inline]
- __mptcp_retrans.cold+0x72/0x77 net/mptcp/protocol.c:2445
- mptcp_worker+0x58a/0xa70 net/mptcp/protocol.c:2528
- process_one_work+0x9df/0x16d0 kernel/workqueue.c:2307
- worker_thread+0x95/0xe10 kernel/workqueue.c:2454
- kthread+0x2f4/0x3b0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-================================================================================
+arm-linux-gnueabi-ld: arch/arm/mach-mvebu/kirkwood.o: in function `kirkwood_dt_eth_fixup':
+kirkwood.c:(.init.text+0x54): undefined reference to `of_get_mac_address'
 
-This change limits the maximum timeout by limiting the size of the
-shift, which keeps all intermediate values in-bounds.
+Restore the way this worked before by changing that #ifdef
+check back to testing for both CONFIG_OF and CONFIG_NET.
 
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/259
-Fixes: 6477dd39e62c ("mptcp: Retransmit DATA_FIN")
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Fixes: e330fb14590c ("of: net: move of_net under net/")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20211014090055.2058949-1-arnd@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/protocol.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ include/linux/of_net.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -406,9 +406,12 @@ static bool mptcp_pending_data_fin(struc
- static void mptcp_set_datafin_timeout(const struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-+	u32 retransmits;
+diff --git a/include/linux/of_net.h b/include/linux/of_net.h
+index cf31188329b5a..55460ecfa50ad 100644
+--- a/include/linux/of_net.h
++++ b/include/linux/of_net.h
+@@ -8,7 +8,7 @@
  
--	mptcp_sk(sk)->timer_ival = min(TCP_RTO_MAX,
--				       TCP_RTO_MIN << icsk->icsk_retransmits);
-+	retransmits = min_t(u32, icsk->icsk_retransmits,
-+			    ilog2(TCP_RTO_MAX / TCP_RTO_MIN));
-+
-+	mptcp_sk(sk)->timer_ival = TCP_RTO_MIN << retransmits;
- }
+ #include <linux/phy.h>
  
- static void __mptcp_set_timeout(struct sock *sk, long tout)
+-#ifdef CONFIG_OF
++#if defined(CONFIG_OF) && defined(CONFIG_NET)
+ #include <linux/of.h>
+ 
+ struct net_device;
+-- 
+2.34.1
+
 
 
