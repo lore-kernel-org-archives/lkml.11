@@ -2,88 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232501AbiCGKuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:50:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        id S241479AbiCGKu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242173AbiCGKsn (ORCPT
+        with ESMTP id S242287AbiCGKs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:48:43 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B451344E5;
-        Mon,  7 Mar 2022 02:08:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646647703; x=1678183703;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Kq5xDzu5rUqchBeOZqlyFeo3FlKSAv+x/053mDkH74c=;
-  b=EKkWHiZpgqTDVY+pvM9I9T48llDAmCRcZMdTO30d47N8iXvVMDhCWvqE
-   xLrrdj/tQp+kOkQtDpHNhTz+eWWfAishNJLOtXIeNqHXuC99RJ6wu/2mh
-   kiO0WxmD8Aih5bB9zDHho9Gg1eZEV9mVrYZYinmonlJNO9QETCueSPK2Y
-   au7dNBCK9otzlnaiXrrIDh/n8L7Lcq7WyjOFCs5ppNDjQt+gX0XIbb8Bz
-   O/+JiP1rP6tK2qA9fVfA2RjUR6U9iIftRrALMxkTa36oZ6HVmt3/2vTjT
-   /8l95pLNR6if2gaiTEbCQwzSR561ixq9ffje/yWmXYWjFdl4u6+HEW+Vu
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
-   d="scan'208";a="155475226"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:06:16 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 03:06:15 -0700
-Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:06:12 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <lars@metafoo.de>, <broonie@kernel.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH v2 6/6] ARM: configs: at91: sama7_defconfig: add MCHP PDMC and DMIC drivers
-Date:   Mon, 7 Mar 2022 12:04:28 +0200
-Message-ID: <20220307100428.2227511-7-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
-References: <20220307100428.2227511-1-codrin.ciubotariu@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Mon, 7 Mar 2022 05:48:59 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C8934647;
+        Mon,  7 Mar 2022 02:08:32 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso12781494pjb.0;
+        Mon, 07 Mar 2022 02:08:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=O2coRuhEIrl0a7CkbyCAavU37hnx143W043Ona7gE3w=;
+        b=GXrnHnawlWP/2IB3kP7j/wJD+F+XvE65om3okd0Z2FpN1TG8TyAswl9yUjABqHuESe
+         b1xMjCN5AgSGRvWugCfdrR/a/F/ms3Q+Z4E052GdrC6eYb0WaN/LK2EjKhtQTRXMS9RB
+         4SRPuyuoRl7UGfTlhkFckGCfKAQ8QEJY9w1+Fc+1hyGbNjL1imYSD/3BlbRkx8NIqlkP
+         zDU8e2mBUsU0tOE/G4H+1GgQAimEY5tFqAJFY/+I5Sb8ClgoeyRDlI7ln8SbGLpX59QD
+         6rDFFhR5g+dK69JRgMoYhJjggQw6OczVC/hBYCq6TX3ugt4Ph4LxkT6R2NbkiIBeooVe
+         Se9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=O2coRuhEIrl0a7CkbyCAavU37hnx143W043Ona7gE3w=;
+        b=vjbAYgSCIzej6T2uMlG6+rTgMhSdUagdRQcLXLbqCjCiPTMSbQwdDuqIf3yg1CaYis
+         sZ3l5LO57d02Pb+EPwrQasDX/GrqS9pupFlSYRC/qjE9WpUFe4Lye7CMoz44+xF7o4Bt
+         kt12BYONTIIDwIsFk8rFLYJFHz0bsJEboUoUWEuoctoHwavisL/ZEwk2KBzt2QjhzrvK
+         UjDDZ1FAXhUE6Fx3OEU9EJFZ5pjhgOqldWjt5Z8P0IwFY5TV1MMxIn2iJbyYhD96bVCq
+         NuP4eQ1dAAyymKLWAhVL3dTyJSuUvIC7at1eQw1LSxv4oZO59+xyDXg8/pss1I3yATms
+         yV3A==
+X-Gm-Message-State: AOAM532abK8fMKWBCHLXEwT52bHNmOnAY+U7wh/YBxnyYEsvasYrgWmt
+        49NdvRjBK+ZFOpm8z8VnjdL417yteYA=
+X-Google-Smtp-Source: ABdhPJyevKlg4CVtaU+0dy/Cu2n8fMu1C7KlHxl9ZkPtSNK5oKd9XCUQa/Yhf1vYz1hTeOY9M9eh0g==
+X-Received: by 2002:a17:90a:528b:b0:1bc:c5f9:82a with SMTP id w11-20020a17090a528b00b001bcc5f9082amr24174248pjh.210.1646647712204;
+        Mon, 07 Mar 2022 02:08:32 -0800 (PST)
+Received: from localhost.localdomain ([2402:7500:486:4335:5d3f:ee29:17d3:65af])
+        by smtp.gmail.com with ESMTPSA id n22-20020a056a0007d600b004f3ba7c23e2sm15140125pfu.37.2022.03.07.02.08.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Mar 2022 02:08:31 -0800 (PST)
+From:   cy_huang <u0084500@gmail.com>
+To:     broonie@kernel.org, robh+dt@kernel.org
+Cc:     lgirdwood@gmail.com, cy_huang@richtek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 0/2] Add Richtek RT5190A PMIC support
+Date:   Mon,  7 Mar 2022 18:08:22 +0800
+Message-Id: <1646647704-2331-1-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable drivers needed for Microchip's PDMC and PDM microphones.
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
----
+This patch series add Richtek RT5190A PMIC support.
 
-Changes in v2:
- - none;
+ChiYuan Huang (2):
+  dt-bindings: regulator: Add bindings for Richtek RT5190A PMIC
+  regulator: rt5190a: Add support for Richtek RT5190A PMIC
 
- arch/arm/configs/sama7_defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ .../regulator/richtek,rt5190a-regulator.yaml       | 138 ++++++
+ drivers/regulator/Kconfig                          |  10 +
+ drivers/regulator/Makefile                         |   1 +
+ drivers/regulator/rt5190a-regulator.c              | 461 +++++++++++++++++++++
+ 4 files changed, 610 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/richtek,rt5190a-regulator.yaml
+ create mode 100644 drivers/regulator/rt5190a-regulator.c
 
-diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
-index 0368068e04d9..bc29badab890 100644
---- a/arch/arm/configs/sama7_defconfig
-+++ b/arch/arm/configs/sama7_defconfig
-@@ -138,6 +138,8 @@ CONFIG_SND_SOC_MIKROE_PROTO=m
- CONFIG_SND_MCHP_SOC_I2S_MCC=y
- CONFIG_SND_MCHP_SOC_SPDIFTX=y
- CONFIG_SND_MCHP_SOC_SPDIFRX=y
-+CONFIG_SND_MCHP_SOC_PDMC=y
-+CONFIG_SND_SOC_DMIC=y
- CONFIG_SND_SOC_PCM5102A=y
- CONFIG_SND_SOC_SPDIF=y
- CONFIG_SND_SIMPLE_CARD=y
 -- 
-2.32.0
+2.7.4
 
