@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A420C38A05
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB150C41535
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242447AbiCGKLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
+        id S242736AbiCGKLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240652AbiCGJvN (ORCPT
+        with ESMTP id S239908AbiCGJuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:51:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E52875E71;
-        Mon,  7 Mar 2022 01:45:01 -0800 (PST)
+        Mon, 7 Mar 2022 04:50:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1136F723C1;
+        Mon,  7 Mar 2022 01:43:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92C82B810AA;
-        Mon,  7 Mar 2022 09:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF0BC340E9;
-        Mon,  7 Mar 2022 09:44:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1504261224;
+        Mon,  7 Mar 2022 09:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 108DBC340F3;
+        Mon,  7 Mar 2022 09:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646299;
-        bh=LhBFBwMc99bqAd96HV/wf7b0senOyYNA5bBK+TFNAmM=;
+        s=korg; t=1646646228;
+        bh=pTjuL6BPXjGQj8a+GNkF6+8a01Bmr4IZIrwdI89SEF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N6zG5aB86NCjoSFnN5FtIMNN1P4Wx2vdiP5oe4dlZ0LLajVLglKBhmbvPtaCEJ28h
-         sQIFvck6SChJ/ZdI1m9qWBZCSxoSijyLst/0W1e8Xm5jIKz83AjcYcVope9I7uNe9X
-         wkpRwN/HzTFUajRfRWXwrOmAk43DRsSx/UeQtxnk=
+        b=t5uKPs/vtW6zDMPrTwRhyige+UeLoQ5Wi8iDKtlB0lr2OTkd0wwJDJA2rFYj62yub
+         KUNSf4oio0Sw0ecPkZiAN1HjT65DtQ3HlnaMDbc823huVNACNkg1wqaGz5V/TNYJ3U
+         dbjCN/r/NSnt3NDPxIvdpXBTzvGK1SfoyY4pqfhA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 198/262] igc: igc_write_phy_reg_gpy: drop premature return
-Date:   Mon,  7 Mar 2022 10:19:02 +0100
-Message-Id: <20220307091708.233964236@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Palus <jpalus@fastmail.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 134/262] PCI: mvebu: Fix device enumeration regression
+Date:   Mon,  7 Mar 2022 10:17:58 +0100
+Message-Id: <20220307091706.238853666@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,39 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit c4208653a327a09da1e9e7b10299709b6d9b17bf upstream.
+[ Upstream commit c49ae619905eebd3f54598a84e4cd2bd58ba8fe9 ]
 
-Similar to "igc_read_phy_reg_gpy: drop premature return" patch.
-igc_write_phy_reg_gpy checks the return value from igc_write_phy_reg_mdic
-and if it's not 0, returns immediately. By doing this, it leaves the HW
-semaphore in the acquired state.
+Jan reported that on Turris Omnia (Armada 385), no PCIe devices were
+detected after upgrading from v5.16.1 to v5.16.3 and identified the cause
+as the backport of 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus
+of PCIe Root Port via emulated bridge"), which appeared in v5.17-rc1.
 
-Drop this premature return statement, the function returns after
-releasing the semaphore immediately anyway.
+91a8d79fc797 was incorrectly applied from mailing list patch [1] to the
+linux git repository [2] probably due to resolving merge conflicts
+incorrectly. Fix it now.
 
-Fixes: 5586838fe9ce ("igc: Add code for PHY support")
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Reported-by: Corinna Vinschen <vinschen@redhat.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[1] https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
+[2] https://git.kernel.org/linus/91a8d79fc797
+
+[bhelgaas: commit log]
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
+Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
+Link: https://lore.kernel.org/r/20220214110228.25825-1-pali@kernel.org
+Link: https://lore.kernel.org/r/20220127234917.GA150851@bhelgaas
+Reported-by: Jan Palus <jpalus@fastmail.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_phy.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/pci/controller/pci-mvebu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -746,8 +746,6 @@ s32 igc_write_phy_reg_gpy(struct igc_hw
- 		if (ret_val)
- 			return ret_val;
- 		ret_val = igc_write_phy_reg_mdic(hw, offset, data);
--		if (ret_val)
--			return ret_val;
- 		hw->phy.ops.release(hw);
- 	} else {
- 		ret_val = igc_write_xmdio_reg(hw, (u16)offset, dev_addr,
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index 357e9a293edf7..2a3bf82aa4e26 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -1288,7 +1288,8 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+ 		 * indirectly via kernel emulated PCI bridge driver.
+ 		 */
+ 		mvebu_pcie_setup_hw(port);
+-		mvebu_pcie_set_local_dev_nr(port, 0);
++		mvebu_pcie_set_local_dev_nr(port, 1);
++		mvebu_pcie_set_local_bus_nr(port, 0);
+ 	}
+ 
+ 	pcie->nports = i;
+-- 
+2.34.1
+
 
 
