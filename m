@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B41EC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF7FC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238649AbiCGJsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
+        id S238622AbiCGJsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238928AbiCGJjB (ORCPT
+        with ESMTP id S238889AbiCGJjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9FB6F49A;
-        Mon,  7 Mar 2022 01:33:50 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4526EB27;
+        Mon,  7 Mar 2022 01:33:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB7B60FF6;
-        Mon,  7 Mar 2022 09:33:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE577C36AE5;
-        Mon,  7 Mar 2022 09:33:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4D7D611AE;
+        Mon,  7 Mar 2022 09:33:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD2AFC340F3;
+        Mon,  7 Mar 2022 09:33:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645597;
-        bh=70FazzljlNlduRTWOkMcv6aw843eOYsSOelHFwwLpLU=;
+        s=korg; t=1646645609;
+        bh=u3X29v/8K7CXWib5SX/nk55QIRYWklnGlbHjNCbh0w8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=thxbDtiWVAHvXEoi1ryR/w4xj9soCEJQCt59fO6yZobTonXJu9c1l/DnYqXSRqzBO
-         zCGvhWR0Ik/FDTlCusRRRAG0Dfgw+toW7jhkHZpFvTjcDifj8oCkthCySF53jJ6xdU
-         dZwUQIaHdQo5MfznpMKFqG8RsigJ878wjxIXGdy0=
+        b=XIz3K1Bw+uwxmCjFr7tllAF5FmvZQhvNLTH03dlmv3xVX+kntHrBMmMBvGKsU3D2J
+         1ntpkTm0SlUa3e7OaegRHdVmWXUrPIhAmcvsIGLJUxc/hOFlOBM4kChQDRX11SJ9Fx
+         KrKFJQknYRzWnqnoDBlZwZ25oerqoBBrnMwNSJjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 065/105] ibmvnic: register netdev after init of adapter
-Date:   Mon,  7 Mar 2022 10:19:08 +0100
-Message-Id: <20220307091646.008120724@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 086/105] soc: fsl: qe: Check of ioremap return value
+Date:   Mon,  7 Mar 2022 10:19:29 +0100
+Message-Id: <20220307091646.599032933@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,46 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 570425f8c7c18b14fa8a2a58a0adb431968ad118 upstream.
+[ Upstream commit a222fd8541394b36b13c89d1698d9530afd59a9c ]
 
-Finish initializing the adapter before registering netdev so state
-is consistent.
+As the possible failure of the ioremap(), the par_io could be NULL.
+Therefore it should be better to check it and return error in order to
+guarantee the success of the initiation.
+But, I also notice that all the caller like mpc85xx_qe_par_io_init() in
+`arch/powerpc/platforms/85xx/common.c` don't check the return value of
+the par_io_init().
+Actually, par_io_init() needs to check to handle the potential error.
+I will submit another patch to fix that.
+Anyway, par_io_init() itsely should be fixed.
 
-Fixes: c26eba03e407 ("ibmvnic: Update reset infrastructure to support tunable parameters")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7aa1aa6ecec2 ("QE: Move QE from arch/powerpc to drivers/soc")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/soc/fsl/qe/qe_io.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5383,6 +5383,12 @@ static int ibmvnic_probe(struct vio_dev
- 		goto ibmvnic_dev_file_err;
+diff --git a/drivers/soc/fsl/qe/qe_io.c b/drivers/soc/fsl/qe/qe_io.c
+index 11ea08e97db7..1bb46d955d52 100644
+--- a/drivers/soc/fsl/qe/qe_io.c
++++ b/drivers/soc/fsl/qe/qe_io.c
+@@ -35,6 +35,8 @@ int par_io_init(struct device_node *np)
+ 	if (ret)
+ 		return ret;
+ 	par_io = ioremap(res.start, resource_size(&res));
++	if (!par_io)
++		return -ENOMEM;
  
- 	netif_carrier_off(netdev);
-+
-+	adapter->state = VNIC_PROBED;
-+
-+	adapter->wait_for_reset = false;
-+	adapter->last_reset_time = jiffies;
-+
- 	rc = register_netdev(netdev);
- 	if (rc) {
- 		dev_err(&dev->dev, "failed to register netdev rc=%d\n", rc);
-@@ -5390,10 +5396,6 @@ static int ibmvnic_probe(struct vio_dev
- 	}
- 	dev_info(&dev->dev, "ibmvnic registered\n");
- 
--	adapter->state = VNIC_PROBED;
--
--	adapter->wait_for_reset = false;
--	adapter->last_reset_time = jiffies;
- 	return 0;
- 
- ibmvnic_register_fail:
+ 	if (!of_property_read_u32(np, "num-ports", &num_ports))
+ 		num_par_io_ports = num_ports;
+-- 
+2.34.1
+
 
 
