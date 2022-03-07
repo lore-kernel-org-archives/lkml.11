@@ -2,68 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70198C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237541AbiCGLUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
+        id S236993AbiCGLUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:20:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235956AbiCGLUI (ORCPT
+        with ESMTP id S237682AbiCGLUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:20:08 -0500
-Received: from mail.itouring.de (mail.itouring.de [IPv6:2a01:4f8:a0:4463::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240F49A9B6;
-        Mon,  7 Mar 2022 02:44:34 -0800 (PST)
-Received: from tux.applied-asynchrony.com (p5ddd7616.dip0.t-ipconnect.de [93.221.118.22])
-        by mail.itouring.de (Postfix) with ESMTPSA id DEF9011DD40;
-        Mon,  7 Mar 2022 11:44:32 +0100 (CET)
-Received: from [192.168.100.221] (hho.applied-asynchrony.com [192.168.100.221])
-        by tux.applied-asynchrony.com (Postfix) with ESMTP id 94D4FF01604;
-        Mon,  7 Mar 2022 11:44:32 +0100 (CET)
-Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-Organization: Applied Asynchrony, Inc.
-Message-ID: <fe8b46f5-6c24-d749-668f-29ea51fa5d58@applied-asynchrony.com>
-Date:   Mon, 7 Mar 2022 11:44:32 +0100
+        Mon, 7 Mar 2022 06:20:15 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5BB9D061;
+        Mon,  7 Mar 2022 02:45:42 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KBw901XDFz4y2M;
+        Mon,  7 Mar 2022 21:45:40 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646649940;
+        bh=ylm8kxs+Wxdholtq0NrEb/HlCbp9bOD6c2ez6/kzWqI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=E8eh6Dq2zgcEYBtb2791b+hWGe8PfPkZS22K5Fdjiik/PCVmjAKv84X3DQjhwRbgZ
+         11ZTsePMhtQ516SHQgDeQ2kcUt5Z+D4e2N4Cr0yNHBRqbwak4thIqF+dl8FXi6HYvW
+         rQBmrvmY9pdEePJGeCzaSoCdTPikpru95+nKjAAFaBR2CbamgCneX836cSajyNedZO
+         jJSiJOzHM3pqY45UISPYHUgq3qEahNEAoknqf4NsJu04rzUSUFDCshQYv5XAQJVQ4K
+         tBVF9vW8tB7OYGChwW4uwFBDAVJD7yDaILfXLwGl+NIsQlw8/umklGPPnDdmquJ7Dr
+         DiFxXzDXrq5EA==
+Date:   Mon, 7 Mar 2022 21:45:39 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Dimitris Michailidis <d.michailidis@fungible.com>,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20220307214539.473d7563@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/tlUlvxIR639oW_1FuUEHh.n";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-07 10:15, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.27 release.
-> There are 262 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+--Sig_/tlUlvxIR639oW_1FuUEHh.n
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-CC [M]  drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.o
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c:30:10: fatal error: dml/dcn20/dcn20_fpu.h: No such file or directory
-    30 | #include "dml/dcn20/dcn20_fpu.h"
-       |          ^~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
+Hi all,
 
-Culprit is "drm-amd-display-move-fpu-associated-dcn301-code-to-d.patch"
+After merging the net-next tree, today's linux-next build (powerpc
+allmodconfig) failed like this:
 
-Looking over the git history of the dml/dnc20 directory I think the correct fix would
-be to also apply upstream commit ee37341199c61558b73113659695c90bf4736eb2 aka
-"drm/amd/display: Re-arrange FPU code structure for dcn2x"
+ERROR: modpost: ".local_memory_node" [drivers/net/ethernet/fungible/funeth/=
+funeth.ko] undefined!
 
-CC'ing Qingqing Zhuo for confirmation.
+Caused by commits
 
-cheers
-Holger
+  ee6373ddf3a9 ("net/funeth: probing and netdev ops")
+  db37bc177dae ("net/funeth: add the data path")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/tlUlvxIR639oW_1FuUEHh.n
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIl4lMACgkQAVBC80lX
+0Gw1Fgf/eJ/Ve/3kKEP4hsKIF/wYHNTYuKFpdENejq3tLgBVjGEL1Uf5aGAymolG
+E+v9JZ8v1xR/2rWbJDMIxUm4D5u/386SbO4978zHCE6ctYCSoME2X9/mXN2t73Ts
+TZDf5VWBUA2lSkShgNSQso9wPzk83rMrTDJnwXmxmWPoUpuKE2nLYncso6+fKwRe
+KapyqiK28rLmCQWTI5rtCPMnvnaCwNdgUeja0OZzdQk/bwsyMOoVUcmTWguwK+l5
+Y2s1WmGFAawQb1JGvcB129JMTxr2zgBVgC9QJQh6jb6xpXm+knyYVozQ/LaBg0YP
+Kxb3e/nJDDNQfHID7B/r0Cbg6fkUgw==
+=6f9j
+-----END PGP SIGNATURE-----
+
+--Sig_/tlUlvxIR639oW_1FuUEHh.n--
