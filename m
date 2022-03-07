@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE15C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233988AbiCGJcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:32:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S237219AbiCGJcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:32:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238048AbiCGJ2l (ORCPT
+        with ESMTP id S237761AbiCGJ2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:41 -0500
+        Mon, 7 Mar 2022 04:28:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE056CA64;
-        Mon,  7 Mar 2022 01:26:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E040D6BDC0;
+        Mon,  7 Mar 2022 01:26:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3750CB810CB;
-        Mon,  7 Mar 2022 09:26:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75FB5C340E9;
-        Mon,  7 Mar 2022 09:26:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82002B810C3;
+        Mon,  7 Mar 2022 09:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E54B9C340E9;
+        Mon,  7 Mar 2022 09:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645191;
-        bh=tozq4ciK0IC+DMbSMOvqSOpHdPePfpNxa67dMJWlD/Y=;
+        s=korg; t=1646645160;
+        bh=CK3eEObTQCzihqYXNzqQI6yEEk1qfx3bNrLoHVUmXRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SvlW3OqhTV+URHdkKgyrU1DUajTn9I7S/gOJUbdUG4TPhLTWSFLuy+jWpb3xmr8yi
-         s4X54b/6SBZPJlX+HSIW6rc8CUyVMZWf/n8RNVqYTLbKxQ+4DuU+RRt+7SQeXjakNg
-         BUk+ncTv3m+c5kxLXFBxKP5auI+ra5Z+DH0SArsE=
+        b=K2eQ83MKVdGUCs9n+qTVS7Td06OrRgPV0niHnb5nkLskQX2q+4a8o5nc3xWtHlwwl
+         4vo5jN23BnP7KZcV2Ov8OIEJ5uiwPKrwPVakL0x6xbIcfwNnSPZKNE9kdmFSj8v8/j
+         cdz30sbHQpfvfQmmLuCfXc9kdBNLm2BvKyvh5pSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 16/64] ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
-Date:   Mon,  7 Mar 2022 10:18:49 +0100
-Message-Id: <20220307091639.605718032@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Siva Reddy <siva.kallam@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        Byungho An <bh74.an@samsung.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 34/51] net: sxgbe: fix return value of __setup handler
+Date:   Mon,  7 Mar 2022 10:19:09 +0100
+Message-Id: <20220307091637.962751138@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,45 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 9bdd10d57a8807dba0003af0325191f3cec0f11c upstream.
+commit 50e06ddceeea263f57fe92baa677c638ecd65bb6 upstream.
 
-While the $val/$val2 values passed in from userspace are always >= 0
-integers, the limits of the control can be signed integers and the $min
-can be non-zero and less than zero. To correctly validate $val/$val2
-against platform_max, add the $min offset to val first.
+__setup() handlers should return 1 on success, i.e., the parameter
+has been handled. A return of 0 causes the "option=value" string to be
+added to init's environment strings, polluting it.
 
-Fixes: 817f7c9335ec0 ("ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220215130645.164025-1-marex@denx.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
+Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Siva Reddy <siva.kallam@samsung.com>
+Cc: Girish K S <ks.giri@samsung.com>
+Cc: Byungho An <bh74.an@samsung.com>
+Link: https://lore.kernel.org/r/20220224033528.24640-1-rdunlap@infradead.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -323,7 +323,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 		mask = BIT(sign_bit + 1) - 1;
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -2280,18 +2280,18 @@ static int __init sxgbe_cmdline_opt(char
+ 	char *opt;
  
- 	val = ucontrol->value.integer.value[0];
--	if (mc->platform_max && val > mc->platform_max)
-+	if (mc->platform_max && ((int)val + min) > mc->platform_max)
- 		return -EINVAL;
- 	if (val > max - min)
- 		return -EINVAL;
-@@ -336,7 +336,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 	val = val << shift;
- 	if (snd_soc_volsw_is_stereo(mc)) {
- 		val2 = ucontrol->value.integer.value[1];
--		if (mc->platform_max && val2 > mc->platform_max)
-+		if (mc->platform_max && ((int)val2 + min) > mc->platform_max)
- 			return -EINVAL;
- 		if (val2 > max - min)
- 			return -EINVAL;
+ 	if (!str || !*str)
+-		return -EINVAL;
++		return 1;
+ 	while ((opt = strsep(&str, ",")) != NULL) {
+ 		if (!strncmp(opt, "eee_timer:", 10)) {
+ 			if (kstrtoint(opt + 10, 0, &eee_timer))
+ 				goto err;
+ 		}
+ 	}
+-	return 0;
++	return 1;
+ 
+ err:
+ 	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
+-	return -EINVAL;
++	return 1;
+ }
+ 
+ __setup("sxgbeeth=", sxgbe_cmdline_opt);
 
 
