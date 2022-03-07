@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72674C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81325C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235256AbiCGKGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
+        id S237190AbiCGKGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238373AbiCGJpq (ORCPT
+        with ESMTP id S238195AbiCGJqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:45:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFE3673DD;
-        Mon,  7 Mar 2022 01:42:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CA5DB810B2;
-        Mon,  7 Mar 2022 09:42:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C686C340E9;
-        Mon,  7 Mar 2022 09:42:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646121;
-        bh=Qv3CsfTqHITeNsEUEDuHNtUcskJy/YkGKsJ6nmZsq8s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0u7/ifEPGJJfeNUagnXroGYmSyHr0XDQp1zN9FFy6/RhImIl8mEjY8982eiNRP+N
-         4IL0bo9J2YBxQyHU31guV/1ph0J9yZ9L1kLvx5aT52L8BYNnDjZB4MaXEcqJx0gBRO
-         iVqnBN2IsaZY/TrGmrlabAO8s0kdDttUDpYhZAWw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.15 141/262] iwlwifi: mvm: check debugfs_dir ptr before use
-Date:   Mon,  7 Mar 2022 10:18:05 +0100
-Message-Id: <20220307091706.428077733@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:46:39 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546D65D655;
+        Mon,  7 Mar 2022 01:42:11 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id C101B24000D;
+        Mon,  7 Mar 2022 09:42:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646646127;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4uVdyC7wKT9DcCjcizvefwoc+QWb44l6/kFM2a6eP3Y=;
+        b=nfbBJ86Um+OnS2414F6HlGrwoikA6w2EvAL63bW3l2QGETXk6Scn7rkTy6VBahtzixE+eE
+        2kuticgr1RDmXtVZfGjk5DYSA8R3feWY5s53IvYf7hJy9LAwz87Y4wtBw+EPIesZyOJvrt
+        xorcFpi7cVtz9yARAuITEmdsFlaVoZPODFes8+sqFeUKteokFv1sNeeXgM1rCwAoi7ywMe
+        +SOzgzyysFaedr5/0+1fYsR1/pTJyvosbPUmTBlKmfrlAk3TAGkLHt1f66bLSKHfqk2meS
+        5VP2ljIPcZ4NsUkNtOQf5RiOnGzYUHPO//E2cIMdG04GLKbOMlXqcvwnWF4x6w==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org,
+        linux-rtc@vger.kernel.org,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Etienne Carriere <etienne.carriere@linaro.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+Subject: [PATCH v2] rtc: optee: add RTC driver for OP-TEE RTC PTA
+Date:   Mon,  7 Mar 2022 10:40:42 +0100
+Message-Id: <20220307094042.48446-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,118 +49,473 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+This drivers allows to communicate with a RTC PTA handled by OP-TEE [1].
+This PTA allows to query RTC information, set/get time and set/get
+offset depending on the supported features.
 
-commit 5a6248c0a22352f09ea041665d3bd3e18f6f872c upstream.
+[1] https://github.com/OP-TEE/optee_os/pull/5179
 
-When "debugfs=off" is used on the kernel command line, iwiwifi's
-mvm module uses an invalid/unchecked debugfs_dir pointer and causes
-a BUG:
-
- BUG: kernel NULL pointer dereference, address: 000000000000004f
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP
- CPU: 1 PID: 503 Comm: modprobe Tainted: G        W         5.17.0-rc5 #7
- Hardware name: Dell Inc. Inspiron 15 5510/076F7Y, BIOS 2.4.1 11/05/2021
- RIP: 0010:iwl_mvm_dbgfs_register+0x692/0x700 [iwlmvm]
- Code: 69 a0 be 80 01 00 00 48 c7 c7 50 73 6a a0 e8 95 cf ee e0 48 8b 83 b0 1e 00 00 48 c7 c2 54 73 6a a0 be 64 00 00 00 48 8d 7d 8c <48> 8b 48 50 e8 15 22 07 e1 48 8b 43 28 48 8d 55 8c 48 c7 c7 5f 73
- RSP: 0018:ffffc90000a0ba68 EFLAGS: 00010246
- RAX: ffffffffffffffff RBX: ffff88817d6e3328 RCX: ffff88817d6e3328
- RDX: ffffffffa06a7354 RSI: 0000000000000064 RDI: ffffc90000a0ba6c
- RBP: ffffc90000a0bae0 R08: ffffffff824e4880 R09: ffffffffa069d620
- R10: ffffc90000a0ba00 R11: ffffffffffffffff R12: 0000000000000000
- R13: ffffc90000a0bb28 R14: ffff88817d6e3328 R15: ffff88817d6e3320
- FS:  00007f64dd92d740(0000) GS:ffff88847f640000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 000000000000004f CR3: 000000016fc79001 CR4: 0000000000770ee0
- PKRU: 55555554
- Call Trace:
-  <TASK>
-  ? iwl_mvm_mac_setup_register+0xbdc/0xda0 [iwlmvm]
-  iwl_mvm_start_post_nvm+0x71/0x100 [iwlmvm]
-  iwl_op_mode_mvm_start+0xab8/0xb30 [iwlmvm]
-  _iwl_op_mode_start+0x6f/0xd0 [iwlwifi]
-  iwl_opmode_register+0x6a/0xe0 [iwlwifi]
-  ? 0xffffffffa0231000
-  iwl_mvm_init+0x35/0x1000 [iwlmvm]
-  ? 0xffffffffa0231000
-  do_one_initcall+0x5a/0x1b0
-  ? kmem_cache_alloc+0x1e5/0x2f0
-  ? do_init_module+0x1e/0x220
-  do_init_module+0x48/0x220
-  load_module+0x2602/0x2bc0
-  ? __kernel_read+0x145/0x2e0
-  ? kernel_read_file+0x229/0x290
-  __do_sys_finit_module+0xc5/0x130
-  ? __do_sys_finit_module+0xc5/0x130
-  __x64_sys_finit_module+0x13/0x20
-  do_syscall_64+0x38/0x90
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f64dda564dd
- Code: 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1b 29 0f 00 f7 d8 64 89 01 48
- RSP: 002b:00007ffdba393f88 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
- RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f64dda564dd
- RDX: 0000000000000000 RSI: 00005575399e2ab2 RDI: 0000000000000001
- RBP: 000055753a91c5e0 R08: 0000000000000000 R09: 0000000000000002
- R10: 0000000000000001 R11: 0000000000000246 R12: 00005575399e2ab2
- R13: 000055753a91ceb0 R14: 0000000000000000 R15: 000055753a923018
-  </TASK>
- Modules linked in: btintel(+) btmtk bluetooth vfat snd_hda_codec_hdmi fat snd_hda_codec_realtek snd_hda_codec_generic iwlmvm(+) snd_sof_pci_intel_tgl mac80211 snd_sof_intel_hda_common soundwire_intel soundwire_generic_allocation soundwire_cadence soundwire_bus snd_sof_intel_hda snd_sof_pci snd_sof snd_sof_xtensa_dsp snd_soc_hdac_hda snd_hda_ext_core snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core btrfs snd_compress snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi snd_hda_codec raid6_pq iwlwifi snd_hda_core snd_pcm snd_timer snd soundcore cfg80211 intel_ish_ipc(+) thunderbolt rfkill intel_ishtp ucsi_acpi wmi i2c_hid_acpi i2c_hid evdev
- CR2: 000000000000004f
- ---[ end trace 0000000000000000 ]---
-
-Check the debugfs_dir pointer for an error before using it.
-
-Fixes: 8c082a99edb9 ("iwlwifi: mvm: simplify iwl_mvm_dbgfs_register")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Luca Coelho <luciano.coelho@intel.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220223030630.23241-1-rdunlap@infradead.org
-[change to make both conditional]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2016-2017 Intel Deutschland GmbH
-  */
- #include <linux/vmalloc.h>
-+#include <linux/err.h>
- #include <linux/ieee80211.h>
- #include <linux/netdevice.h>
+Changes in v2:
+ - Rebased over tee-shm-for-v5.18
+ - Switch to tee_shm_alloc_kernel_buf()
+ - Use export_uuid() to copy uuid
+ - Fix warnings reported by checkpatch
+ - Free SHM in error exit path
+ - Fix error messages to include ret value and fix wrong IOCTL names
+ - Use 100 columns char limit
+
+ MAINTAINERS             |   6 +
+ drivers/rtc/Kconfig     |  10 ++
+ drivers/rtc/Makefile    |   1 +
+ drivers/rtc/rtc-optee.c | 386 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 403 insertions(+)
+ create mode 100644 drivers/rtc/rtc-optee.c
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f41088418aae..b21375ad73d2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14361,6 +14361,12 @@ L:	op-tee@lists.trustedfirmware.org
+ S:	Maintained
+ F:	drivers/char/hw_random/optee-rng.c
  
-@@ -2044,7 +2045,6 @@ void iwl_mvm_sta_add_debugfs(struct ieee
- void iwl_mvm_dbgfs_register(struct iwl_mvm *mvm)
- {
- 	struct dentry *bcast_dir __maybe_unused;
--	char buf[100];
- 
- 	spin_lock_init(&mvm->drv_stats_lock);
- 
-@@ -2140,6 +2140,11 @@ void iwl_mvm_dbgfs_register(struct iwl_m
- 	 * Create a symlink with mac80211. It will be removed when mac80211
- 	 * exists (before the opmode exists which removes the target.)
- 	 */
--	snprintf(buf, 100, "../../%pd2", mvm->debugfs_dir->d_parent);
--	debugfs_create_symlink("iwlwifi", mvm->hw->wiphy->debugfsdir, buf);
-+	if (!IS_ERR(mvm->debugfs_dir)) {
-+		char buf[100];
++OP-TEE RTC DRIVER
++M:	Clément Léger <clement.leger@bootlin.com>
++L:	linux-rtc@vger.kernel.org
++S:	Maintained
++F:	drivers/rtc/rtc-optee.c
 +
-+		snprintf(buf, 100, "../../%pd2", mvm->debugfs_dir->d_parent);
-+		debugfs_create_symlink("iwlwifi", mvm->hw->wiphy->debugfsdir,
-+				       buf);
+ OPA-VNIC DRIVER
+ M:	Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+ M:	Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
+index d85a3c31347c..cba5427f79b3 100644
+--- a/drivers/rtc/Kconfig
++++ b/drivers/rtc/Kconfig
+@@ -1293,6 +1293,16 @@ config RTC_DRV_OPAL
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called rtc-opal.
+ 
++config RTC_DRV_OPTEE
++	tristate "OP-TEE based RTC driver"
++	depends on OPTEE
++	help
++	  Select this to get support for OP-TEE based RTC control on SoCs where
++	  RTC are not accessible to the normal world (Linux).
++
++	  This driver can also be built as a module. If so, the module
++	  will be called rtc-optee.
++
+ config RTC_DRV_ZYNQMP
+ 	tristate "Xilinx Zynq Ultrascale+ MPSoC RTC"
+ 	depends on OF && HAS_IOMEM
+diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
+index e92f3e943245..2d827d8261d5 100644
+--- a/drivers/rtc/Makefile
++++ b/drivers/rtc/Makefile
+@@ -115,6 +115,7 @@ obj-$(CONFIG_RTC_DRV_GAMECUBE)	+= rtc-gamecube.o
+ obj-$(CONFIG_RTC_DRV_NTXEC)	+= rtc-ntxec.o
+ obj-$(CONFIG_RTC_DRV_OMAP)	+= rtc-omap.o
+ obj-$(CONFIG_RTC_DRV_OPAL)	+= rtc-opal.o
++obj-$(CONFIG_RTC_DRV_OPTEE)	+= rtc-optee.o
+ obj-$(CONFIG_RTC_DRV_PALMAS)	+= rtc-palmas.o
+ obj-$(CONFIG_RTC_DRV_PCAP)	+= rtc-pcap.o
+ obj-$(CONFIG_RTC_DRV_PCF2123)	+= rtc-pcf2123.o
+diff --git a/drivers/rtc/rtc-optee.c b/drivers/rtc/rtc-optee.c
+new file mode 100644
+index 000000000000..a2865ed17cfc
+--- /dev/null
++++ b/drivers/rtc/rtc-optee.c
+@@ -0,0 +1,386 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022 Microchip.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/rtc.h>
++#include <linux/tee_drv.h>
++
++#define RTC_INFO_VERSION	0x1
++
++#define TA_CMD_RTC_GET_INFO		0x0
++#define TA_CMD_RTC_GET_TIME		0x1
++#define TA_CMD_RTC_SET_TIME		0x2
++#define TA_CMD_RTC_GET_OFFSET		0x3
++#define TA_CMD_RTC_SET_OFFSET		0x4
++
++#define TA_RTC_FEATURE_CORRECTION	BIT(0)
++
++struct optee_rtc_time {
++	u32 tm_sec;
++	u32 tm_min;
++	u32 tm_hour;
++	u32 tm_mday;
++	u32 tm_mon;
++	u32 tm_year;
++	u32 tm_wday;
++};
++
++struct optee_rtc_info {
++	u64 version;
++	u64 features;
++	struct optee_rtc_time range_min;
++	struct optee_rtc_time range_max;
++};
++
++/**
++ * struct optee_rtc - OP-TEE RTC private data
++ * @dev:		OP-TEE based RTC device.
++ * @ctx:		OP-TEE context handler.
++ * @session_id:		RTC TA session identifier.
++ * @shm:		Memory pool shared with RTC device.
++ * @features:		Bitfield of RTC features
++ */
++struct optee_rtc {
++	struct device *dev;
++	struct tee_context *ctx;
++	u32 session_id;
++	struct tee_shm *shm;
++	u64 features;
++};
++
++static int optee_rtc_readtime(struct device *dev, struct rtc_time *tm)
++{
++	struct optee_rtc *priv = dev_get_drvdata(dev);
++	struct tee_ioctl_invoke_arg inv_arg = {0};
++	struct optee_rtc_time *optee_tm;
++	struct tee_param param[4] = {0};
++	int ret;
++
++	inv_arg.func = TA_CMD_RTC_GET_TIME;
++	inv_arg.session = priv->session_id;
++	inv_arg.num_params = 4;
++
++	/* Fill invoke cmd params */
++	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
++	param[0].u.memref.shm = priv->shm;
++	param[0].u.memref.size = sizeof(struct optee_rtc_time);
++
++	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
++	if (ret < 0 || inv_arg.ret != 0) {
++		dev_err(dev, "TA_CMD_RTC_GET_TIME invoke ret: %d, tee ret: %x\n", ret, inv_arg.ret);
++		return ret ? ret : -EPROTO;
 +	}
- }
-
++
++	optee_tm = tee_shm_get_va(priv->shm, 0);
++	if (IS_ERR(optee_tm)) {
++		dev_err(dev, "tee_shm_get_va failed\n");
++		return PTR_ERR(optee_tm);
++	}
++
++	if (param[0].u.memref.size != sizeof(*optee_tm)) {
++		dev_err(dev, "Invalid read size from OPTEE\n");
++		return -EPROTO;
++	}
++
++	tm->tm_sec = optee_tm->tm_sec;
++	tm->tm_min = optee_tm->tm_min;
++	tm->tm_hour = optee_tm->tm_hour;
++	tm->tm_mday = optee_tm->tm_mday;
++	tm->tm_mon = optee_tm->tm_mon;
++	tm->tm_year = optee_tm->tm_year - 1900;
++	tm->tm_wday = optee_tm->tm_wday;
++	tm->tm_yday = rtc_year_days(tm->tm_mday, tm->tm_mon, tm->tm_year);
++
++	return 0;
++}
++
++static int optee_rtc_settime(struct device *dev, struct rtc_time *tm)
++{
++	struct optee_rtc *priv = dev_get_drvdata(dev);
++	struct tee_ioctl_invoke_arg inv_arg = {0};
++	struct tee_param param[4] = {0};
++	struct optee_rtc_time optee_tm;
++	void *rtc_data;
++	int ret;
++
++	optee_tm.tm_sec = tm->tm_sec;
++	optee_tm.tm_min = tm->tm_min;
++	optee_tm.tm_hour = tm->tm_hour;
++	optee_tm.tm_mday = tm->tm_mday;
++	optee_tm.tm_mon = tm->tm_mon;
++	optee_tm.tm_year = tm->tm_year + 1900;
++	optee_tm.tm_wday = tm->tm_wday;
++
++	inv_arg.func = TA_CMD_RTC_SET_TIME;
++	inv_arg.session = priv->session_id;
++	inv_arg.num_params = 4;
++
++	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INPUT;
++	param[0].u.memref.shm = priv->shm;
++	param[0].u.memref.size = sizeof(struct optee_rtc_time);
++
++	rtc_data = tee_shm_get_va(priv->shm, 0);
++	if (IS_ERR(rtc_data)) {
++		dev_err(dev, "tee_shm_get_va failed\n");
++		return PTR_ERR(rtc_data);
++	}
++
++	memcpy(rtc_data, &optee_tm, sizeof(struct optee_rtc_time));
++
++	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
++	if (ret < 0 || inv_arg.ret != 0) {
++		dev_err(dev, "TA_CMD_RTC_SET_TIME invoke ret: %d, tee ret: %x\n", ret, inv_arg.ret);
++		return ret ? ret : -EPROTO;
++	}
++
++	return 0;
++}
++
++static int optee_rtc_readoffset(struct device *dev, long *offset)
++{
++	struct optee_rtc *priv = dev_get_drvdata(dev);
++	struct tee_ioctl_invoke_arg inv_arg = {0};
++	struct tee_param param[4] = {0};
++	int ret;
++
++	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
++		return -EOPNOTSUPP;
++
++	inv_arg.func = TA_CMD_RTC_GET_OFFSET;
++	inv_arg.session = priv->session_id;
++	inv_arg.num_params = 4;
++
++	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_OUTPUT;
++
++	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
++	if (ret < 0 || inv_arg.ret != 0) {
++		dev_err(dev, "TA_CMD_RTC_GET_OFFSET invoke ret: %d, tee ret: %x\n", ret,
++			inv_arg.ret);
++		return ret ? ret : -EPROTO;
++	}
++
++	*offset = param[0].u.value.a;
++
++	return 0;
++}
++
++static int optee_rtc_setoffset(struct device *dev, long offset)
++{
++	struct optee_rtc *priv = dev_get_drvdata(dev);
++	struct tee_ioctl_invoke_arg inv_arg = {0};
++	struct tee_param param[4] = {0};
++	int ret;
++
++	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
++		return -EOPNOTSUPP;
++
++	inv_arg.func = TA_CMD_RTC_SET_OFFSET;
++	inv_arg.session = priv->session_id;
++	inv_arg.num_params = 4;
++
++	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT;
++	param[0].u.value.a = offset;
++
++	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
++	if (ret < 0 || inv_arg.ret != 0) {
++		dev_err(dev, "TA_CMD_RTC_SET_OFFSET invoke ret: %d, tee ret: %x\n", ret,
++			inv_arg.ret);
++		return ret ? ret : -EPROTO;
++	}
++
++	return 0;
++}
++
++static const struct rtc_class_ops optee_rtc_ops = {
++	.read_time	= optee_rtc_readtime,
++	.set_time	= optee_rtc_settime,
++	.set_offset	= optee_rtc_setoffset,
++	.read_offset	= optee_rtc_readoffset,
++};
++
++static int optee_rtc_read_info(struct device *dev, struct rtc_device *rtc,
++			       u64 *features)
++{
++	struct optee_rtc *priv = dev_get_drvdata(dev);
++	struct tee_ioctl_invoke_arg inv_arg = {0};
++	struct tee_param param[4] = {0};
++	struct optee_rtc_info *info;
++	struct optee_rtc_time *tm;
++	int ret;
++
++	inv_arg.func = TA_CMD_RTC_GET_INFO;
++	inv_arg.session = priv->session_id;
++	inv_arg.num_params = 4;
++
++	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
++	param[0].u.memref.shm = priv->shm;
++	param[0].u.memref.size = sizeof(*info);
++
++	ret = tee_client_invoke_func(priv->ctx, &inv_arg, param);
++	if (ret < 0 || inv_arg.ret != 0) {
++		dev_err(dev, "TA_CMD_RTC_GET_INFO invoke ret: %d, tee ret: %x\n", ret, inv_arg.ret);
++		return -EINVAL;
++	}
++
++	info = tee_shm_get_va(priv->shm, 0);
++	if (IS_ERR(info)) {
++		dev_err(dev, "tee_shm_get_va failed\n");
++		return PTR_ERR(info);
++	}
++
++	if (param[0].u.memref.size != sizeof(*info)) {
++		dev_err(dev, "Invalid read size from OPTEE\n");
++		return -EPROTO;
++	}
++
++	if (info->version != RTC_INFO_VERSION) {
++		dev_err(dev, "Unsupported information version %llu\n", info->version);
++		return -EPROTO;
++	}
++
++	*features = info->features;
++
++	tm = &info->range_min;
++	rtc->range_min = mktime64(tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min,
++				  tm->tm_sec);
++	tm = &info->range_max;
++	rtc->range_max = mktime64(tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min,
++				  tm->tm_sec);
++
++	return 0;
++}
++
++static int optee_ctx_match(struct tee_ioctl_version_data *ver, const void *data)
++{
++	if (ver->impl_id == TEE_IMPL_ID_OPTEE)
++		return 1;
++	else
++		return 0;
++}
++
++static int optee_rtc_probe(struct device *dev)
++{
++	struct tee_client_device *rtc_device = to_tee_client_device(dev);
++	struct tee_ioctl_open_session_arg sess_arg;
++	struct optee_rtc *priv;
++	struct rtc_device *rtc;
++	struct tee_shm *shm;
++	int ret, err;
++
++	memset(&sess_arg, 0, sizeof(sess_arg));
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	rtc = devm_rtc_allocate_device(dev);
++	if (IS_ERR(rtc))
++		return PTR_ERR(rtc);
++
++	/* Open context with TEE driver */
++	priv->ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
++	if (IS_ERR(priv->ctx))
++		return -ENODEV;
++
++	/* Open session with rtc Trusted App */
++	export_uuid(sess_arg.uuid, &rtc_device->id.uuid);
++	sess_arg.clnt_login = TEE_IOCTL_LOGIN_REE_KERNEL;
++
++	ret = tee_client_open_session(priv->ctx, &sess_arg, NULL);
++	if (ret < 0 || sess_arg.ret != 0) {
++		dev_err(dev, "tee_client_open_session failed, err: %x\n", sess_arg.ret);
++		err = -EINVAL;
++		goto out_ctx;
++	}
++	priv->session_id = sess_arg.session;
++
++	shm = tee_shm_alloc_kernel_buf(priv->ctx, sizeof(struct optee_rtc_info));
++	if (IS_ERR(shm)) {
++		dev_err(priv->dev, "tee_shm_alloc_kernel_buf failed\n");
++		err = PTR_ERR(shm);
++		goto out_sess;
++	}
++
++	priv->shm = shm;
++	priv->dev = dev;
++	dev_set_drvdata(dev, priv);
++
++	rtc->ops = &optee_rtc_ops;
++
++	err = optee_rtc_read_info(dev, rtc, &priv->features);
++	if (err) {
++		dev_err(dev, "Failed to get RTC features from OP-TEE\n");
++		goto out_shm;
++	}
++
++	err = devm_rtc_register_device(rtc);
++	if (err)
++		goto out_shm;
++
++	/*
++	 * We must clear this bit after registering because rtc_register_device
++	 * will set it if it sees that .set_offset is provided.
++	 */
++	if (!(priv->features & TA_RTC_FEATURE_CORRECTION))
++		clear_bit(RTC_FEATURE_CORRECTION, rtc->features);
++
++	return 0;
++
++out_shm:
++	tee_shm_free(priv->shm);
++out_sess:
++	tee_client_close_session(priv->ctx, priv->session_id);
++out_ctx:
++	tee_client_close_context(priv->ctx);
++
++	return err;
++}
++
++static int optee_rtc_remove(struct device *dev)
++{
++	struct optee_rtc *priv = dev_get_drvdata(dev);
++
++	tee_client_close_session(priv->ctx, priv->session_id);
++	tee_client_close_context(priv->ctx);
++
++	return 0;
++}
++
++static const struct tee_client_device_id optee_rtc_id_table[] = {
++	{UUID_INIT(0xf389f8c8, 0x845f, 0x496c,
++		   0x8b, 0xbe, 0xd6, 0x4b, 0xd2, 0x4c, 0x92, 0xfd)},
++	{}
++};
++
++MODULE_DEVICE_TABLE(tee, optee_rtc_id_table);
++
++static struct tee_client_driver optee_rtc_driver = {
++	.id_table	= optee_rtc_id_table,
++	.driver		= {
++		.name		= "optee_rtc",
++		.bus		= &tee_bus_type,
++		.probe		= optee_rtc_probe,
++		.remove		= optee_rtc_remove,
++	},
++};
++
++static int __init optee_rtc_mod_init(void)
++{
++	return driver_register(&optee_rtc_driver.driver);
++}
++
++static void __exit optee_rtc_mod_exit(void)
++{
++	driver_unregister(&optee_rtc_driver.driver);
++}
++
++module_init(optee_rtc_mod_init);
++module_exit(optee_rtc_mod_exit);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Clément Léger <clement.leger@bootlin.com>");
++MODULE_DESCRIPTION("OP-TEE based RTC driver");
+-- 
+2.34.1
 
