@@ -2,233 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E57AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242840AbiCGNXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:23:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49276 "EHLO
+        id S242168AbiCGNZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:25:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242823AbiCGNXu (ORCPT
+        with ESMTP id S234024AbiCGNZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:23:50 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9204B31DD7
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:22:55 -0800 (PST)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 7 Mar 2022 08:25:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550807EDB2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:24:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 08B253F61B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 13:22:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646659374;
-        bh=7DE3CIcjsEOWGArllLnE/4SYWb481DICc4ujcmpZMCo=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=qm+Ekp9lZ35eZu0+bBAhi69fjghFEq1qnIGAFjikuazpTS61JKz5uIARAdt2fhT8V
-         M4MlNscRL+flKEgXOddb2v4UJWw9zxLxObamn/BkVt5QUQVcg9h7Gy3itpkD6T8/7B
-         uf2M+OwpE0gWPtt1y7RyJ4i1nVuHWdS1GS9lnVR4Yr2822X4oXi3JO6dDq8mWrpNCc
-         KIdTINIcyu+hd76D3HA0oVCC+CguTHAm1UkDAW4AhQhw2S095hNiz2V4MH3/yYvBFp
-         T9HGSrhWnn4UYSCWQ6S1ysHAmhwB3sZ9l6N9sYYA+StXL6ylS4PCtMQ+BmeXrSvTEY
-         ZW3gOt//f9yUw==
-Received: by mail-ed1-f70.google.com with SMTP id h17-20020a05640250d100b004133863d836so8621441edb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:22:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7DE3CIcjsEOWGArllLnE/4SYWb481DICc4ujcmpZMCo=;
-        b=HnMmumfxODzdb/Fr/poaZbifmgRg7AviGWDjheutx+UA3QoJt1orY+ZchIQQ4q2tAO
-         pMQpx+5N9yGUsN5mdidf4wNF7Rs+vd8c6fAbrjG40PGhmgZrWWq42a8aVnduC41Ej6J8
-         u0xanwbgklT2xLqTLOKvz7ly3/CbYSl2BadsMss3UXpy7fsOv97xtBr/DIWMbjJZlmx2
-         FZXvyOwsLk65EGVVuOLF9S/m0UozGkJ8yZdh/3+w63KnZ1mFO61a89W9dF6EBiSIGHcx
-         8+txJX6QBfBRjZVKZRh+aJGTu1ADiw1jNoet3zF4aZ2PO/Nr5y9oRNiSaokfNUmRQojE
-         HIRw==
-X-Gm-Message-State: AOAM530y+JvOcYgm17fLVaXgEQhRnfL39H3BEEun64menVSjc0k7goZc
-        /2gREcZbaLUnIfI2bnVyEeGxnmNSvHqz+fXu6oiTNbc/kh/IRo+DxXuCYkB02nwsLNE9n0FRnD2
-        dObKr+lIzDH4T9Tu2op8QYGI5D8z7uUji7wXX6XfHBQ==
-X-Received: by 2002:aa7:cfd2:0:b0:416:b04:bb60 with SMTP id r18-20020aa7cfd2000000b004160b04bb60mr10963258edy.76.1646659373639;
-        Mon, 07 Mar 2022 05:22:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwXxXeGEOYJaGgvq6dvSvl0b5LmE61OYrDSUPzwb/dvNqBwiKbTp6gV0bV0ZRCQ+AuRolvpWQ==
-X-Received: by 2002:aa7:cfd2:0:b0:416:b04:bb60 with SMTP id r18-20020aa7cfd2000000b004160b04bb60mr10963234edy.76.1646659373332;
-        Mon, 07 Mar 2022 05:22:53 -0800 (PST)
-Received: from [192.168.0.142] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id h17-20020a05640250d100b004162ee0a7aesm2785236edb.38.2022.03.07.05.22.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 05:22:52 -0800 (PST)
-Message-ID: <9e565eba-7678-1399-3cae-5335dc026e2c@canonical.com>
-Date:   Mon, 7 Mar 2022 14:22:51 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3E8E611EF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 13:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01CA0C340E9;
+        Mon,  7 Mar 2022 13:24:51 +0000 (UTC)
+Date:   Mon, 7 Mar 2022 08:24:50 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: ftrace bug
+Message-ID: <20220307082450.641ed866@gandalf.local.home>
+In-Reply-To: <9a86b2c9-1009-1683-442e-61c5a7dc8cf3@broadcom.com>
+References: <9a86b2c9-1009-1683-442e-61c5a7dc8cf3@broadcom.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] dt-bindings: pwm: convert atmel pwm to json-schema
-Content-Language: en-US
-To:     Sergiu Moga <sergiu.moga@microchip.com>,
-        claudiu.beznea@microchip.com, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        robh+dt@kernel.org, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220307130307.106102-1-sergiu.moga@microchip.com>
- <20220307130307.106102-2-sergiu.moga@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220307130307.106102-2-sergiu.moga@microchip.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 14:03, Sergiu Moga wrote:
-> Convert PWM binding for Atmel/Microchip SoCs to Device Tree Schema
-> format.
+On Mon, 7 Mar 2022 12:26:45 +0100
+Arend van Spriel <arend.vanspriel@broadcom.com> wrote:
+
+> Hi Steven,
 > 
-> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-> ---
->  .../devicetree/bindings/pwm/atmel-pwm.txt     | 35 -----------
->  .../devicetree/bindings/pwm/atmel-pwm.yaml    | 62 +++++++++++++++++++
->  2 files changed, 62 insertions(+), 35 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-pwm.yaml
+> I wanted to use FTRACE on an ARM platform and I hit the following 
+> warning which results in ftrace bug. This happens upon loading a module. 
+> Looking up the warning I suspect the branch target is too far off. The 
+> module is quite large and therefor not loaded in the modules section. Is 
+> there a way to exclude a module. In ftrace_module_init I see a check for 
+> !mod->num_ftrace_callsites. Is there a way to avoid creating ftrace 
+> callsites in a module?
+
+Are you sure it's the size. Just want to make sure that's the reason before
+going with different solutions.
+
 > 
-> diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
-> deleted file mode 100644
-> index fbb5325be1f0..000000000000
-> --- a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
+> Regards,
+> Arend
+> 
+> ------------[ cut here ]------------ 
+> 
+> WARNING: CPU: 2 PID: 1525 at arch/arm/kernel/insn.c:47 
+> __arm_gen_branch+0x70/0x78 
+> 
+> CPU: 2 PID: 1525 Comm: insmod Tainted: P                  4.19.183 #2 
+> 
+> Hardware name: Generic DT based system 
+> 
+> [<c02139e4>] (unwind_backtrace) from [<c020d4f8>] (show_stack+0x20/0x24) 
+> 
+> [<c020d4f8>] (show_stack) from [<c0922aec>] (dump_stack+0x98/0xac) 
+> 
+> [<c0922aec>] (dump_stack) from [<c0919b98>] (__warn.part.0+0xcc/0xe8) 
+> 
+> [<c0919b98>] (__warn.part.0) from [<c0919d4c>] 
+> (warn_slowpath_null+0x54/0x74)
+> [<c0919d4c>] (warn_slowpath_null) from [<c021225c>] 
+> (__arm_gen_branch+0x70/0x78)
+> [<c021225c>] (__arm_gen_branch) from [<c02120e4>] 
+> (ftrace_make_nop+0x64/0xec)
+> [<c02120e4>] (ftrace_make_nop) from [<c02ac2b0>] 
+> (ftrace_process_locs+0x370/0x4b4) 
+> 
+> [<c02ac2b0>] (ftrace_process_locs) from [<c02af538>] 
+> (ftrace_module_init+0x38/0x3c) 
+> 
+> [<c02af538>] (ftrace_module_init) from [<c02a47d8>] 
+> (load_module+0x18d0/0x2570)
+> [<c02a47d8>] (load_module) from [<c02a56f8>] 
+> (sys_finit_module+0xe0/0xf8)
+> [<c02a56f8>] (sys_finit_module) from [<c0201000>] 
+> (ret_fast_syscall+0x0/0x58)
+> Exception stack(0xd9b1bfa8 to 0xd9b1bff0) 
+> 
+> bfa0:                   01170228 00000000 00000003 01170228 00000000 
+> beb7ceb3
+> bfc0: 01170228 00000000 beb7cdc4 0000017b 00127010 00000000 00000000 
+> 00000000
+> bfe0: beb7cc38 beb7cc28 0001a0dc 00012890 
+> 
+> ---[ end trace f48808a851a4544a ]--- 
+> 
+> ------------[ cut here ]------------ 
+> 
+> WARNING: CPU: 2 PID: 1525 at kernel/trace/ftrace.c:2034 
+> ftrace_bug+0xfc/0x394
 
-I would prefer for new files to switch to common DT conversion:
-vendor,name.yaml
-
-You have there another PWM bindings for Atmel, so the name should not be
-just "pwm" but something more specific, maybe "at91sam-pwm"?
-
-> +++ /dev/null
-> @@ -1,35 +0,0 @@
-> -Atmel PWM controller
-> -
-> -Required properties:
-> -  - compatible: should be one of:
-> -    - "atmel,at91sam9rl-pwm"
-> -    - "atmel,sama5d3-pwm"
-> -    - "atmel,sama5d2-pwm"
-> -    - "microchip,sam9x60-pwm"
-> -  - reg: physical base address and length of the controller's registers
-> -  - #pwm-cells: Should be 3. See pwm.yaml in this directory for a
-> -    description of the cells format.
-> -
-> -Example:
-> -
-> -	pwm0: pwm@f8034000 {
-> -		compatible = "atmel,at91sam9rl-pwm";
-> -		reg = <0xf8034000 0x400>;
-> -		#pwm-cells = <3>;
-> -	};
-> -
-> -	pwmleds {
-> -		compatible = "pwm-leds";
-> -
-> -		d1 {
-> -			label = "d1";
-> -			pwms = <&pwm0 3 5000 0>
-> -			max-brightness = <255>;
-> -		};
-> -
-> -		d2 {
-> -			label = "d2";
-> -			pwms = <&pwm0 1 5000 1>
-> -			max-brightness = <255>;
-> -		};
-> -	};
-> diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml b/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml
-> new file mode 100644
-> index 000000000000..f5378a2226bd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/atmel-pwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Atmel PWM controller
-
-title: Atmel/Microchip PWM controller
-
-> +
-> +maintainers:
-> +  - Claudiu Beznea <claudiu.beznea@microchip.com>
-> +
-
-allOf including pwm.yaml
-
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - atmel,at91sam9rl-pwm
-> +      - atmel,sama5d3-pwm
-> +      - atmel,sama5d2-pwm
-> +      - microchip,sam9x60-pwm
-> +
-> +  reg:
-> +    description: |
-> +      Physical base address and length of the controller's
-> +      registers
-
-Skip description, it's obvious.
-
-> +    maxItems: 1
-> +
-> +  "#pwm-cells":
-> +    description: |
-> +      Should be 3. See pwm.yaml in this directory for a
-> +      description of the cells format.
-
-Skip description, it's obvious.
-
-> +    const: 3
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#pwm-cells"
-
-Skip pwm-cells, required by pwm.yaml.
-
-> +
-> +additionalProperties: true
-> +
-> +examples:
-> +  - |
-> +        pwm0: pwm@f8034000 {
-> +                compatible = "atmel,at91sam9rl-pwm";
-> +                reg = <0xf8034000 0x400>;
-> +                #pwm-cells = <3>;
-> +        };
-> +
-> +        pwmleds {
-
-Skip this node. No actual benefit. All clients are the same.
-
-> +                compatible = "pwm-leds";
-> +
-> +                led-1 {
-> +                        label = "led-1";
-> +                        pwms = <&pwm0 3 5000 0>;
-> +                        max-brightness = <255>;
-> +                };
-> +
-> +                led-2 {
-> +                        label = "led-2";
-> +                        pwms = <&pwm0 1 5000 1>;
-> +                        max-brightness = <255>;
-> +                };
-> +        };
+Three should be more content after the "cut here" that is very relevant (I
+hate that cut here, because I constantly need to tell people to show me
+more :-p I need to add a "ftrace bug cut here" line.)
 
 
-Best regards,
-Krzysztof
+Could you show me the output right after that.
+
+-- Steve
