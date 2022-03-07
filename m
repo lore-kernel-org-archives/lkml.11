@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233175AbiCGJyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:54:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
+        id S238411AbiCGJyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241080AbiCGJlt (ORCPT
+        with ESMTP id S241074AbiCGJlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6529674D0;
-        Mon,  7 Mar 2022 01:40:01 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B767E674C6;
+        Mon,  7 Mar 2022 01:39:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86DA5611D5;
-        Mon,  7 Mar 2022 09:40:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96376C340E9;
-        Mon,  7 Mar 2022 09:40:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F2CFB8102B;
+        Mon,  7 Mar 2022 09:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73C7EC340E9;
+        Mon,  7 Mar 2022 09:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646001;
-        bh=zDHN0pvH5VbPZU6z9GYhPXlHtcv0MaHvgRH814qRAaU=;
+        s=korg; t=1646645994;
+        bh=mwHGz5my3kdOnsfHVXD1eY4BLPH1ibOUm3wCthFc8UY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XpTibsm7pdkkvNb+iDiHpG4i/PGcHsH+zVq8RkfgxAv53K6vc24r9up7W4uab6NPf
-         x9R9xoGobddQXlzZHVvKRuivgYIunQiGF9s1Xtoxdf3MJVZLO+5+DshmNvlprtpLRM
-         /GsiPiSWq1mm1EYCexPriqQwYG35cPH3JtpIkeak=
+        b=C06GmzR2eQU57997rx9H1fXNAtU+JwPyIvmT6jW2rxzEsB2kRMRBDePwO/maPwR31
+         66UUJI9VoYVqNQPz5/Al00Z4dG/uZwjM+RsKcSU/O+8QXK5MdL8QdELoD9GiKyqoV2
+         /2KBH0CVDI4tknzByi0I1O/95faD3RZHkkidaLms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
+        stable@vger.kernel.org,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 086/262] drm/amdkfd: Check for null pointer after calling kmemdup
-Date:   Mon,  7 Mar 2022 10:17:10 +0100
-Message-Id: <20220307091704.909430741@linuxfoundation.org>
+Subject: [PATCH 5.15 102/262] drm/amd/display: Wrap dcn301_calculate_wm_and_dlg for FPU.
+Date:   Mon,  7 Mar 2022 10:17:26 +0100
+Message-Id: <20220307091705.356758501@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,39 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 
-[ Upstream commit abfaf0eee97925905e742aa3b0b72e04a918fa9e ]
+[ Upstream commit 25f1488bdbba63415239ff301fe61a8546140d9f ]
 
-As the possible failure of the allocation, kmemdup() may return NULL
-pointer.
-Therefore, it should be better to check the 'props2' in order to prevent
-the dereference of NULL pointer.
+Mirrors the logic for dcn30. Cue lots of WARNs and some
+kernel panics without this fix.
 
-Fixes: 3a87177eb141 ("drm/amdkfd: Add topology support for dGPUs")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../gpu/drm/amd/display/dc/dcn301/dcn301_resource.c   | 11 +++++++++++
+ .../gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c    |  2 +-
+ .../gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.h    |  2 +-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-index cfedfb1e8596c..c33d689f29e8e 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-@@ -1060,6 +1060,9 @@ static int kfd_parse_subtype_iolink(struct crat_subtype_iolink *iolink,
- 			return -ENODEV;
- 		/* same everything but the other direction */
- 		props2 = kmemdup(props, sizeof(*props2), GFP_KERNEL);
-+		if (!props2)
-+			return -ENOMEM;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
+index d17994bb318f7..34b01cc8f548b 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
+@@ -1387,6 +1387,17 @@ static void set_wm_ranges(
+ 	pp_smu->nv_funcs.set_wm_ranges(&pp_smu->nv_funcs.pp_smu, &ranges);
+ }
+ 
++static void dcn301_calculate_wm_and_dlg(
++		struct dc *dc, struct dc_state *context,
++		display_e2e_pipe_params_st *pipes,
++		int pipe_cnt,
++		int vlevel)
++{
++	DC_FP_START();
++	dcn301_calculate_wm_and_dlg_fp(dc, context, pipes, pipe_cnt, vlevel);
++	DC_FP_END();
++}
 +
- 		props2->node_from = id_to;
- 		props2->node_to = id_from;
- 		props2->kobj = NULL;
+ static struct resource_funcs dcn301_res_pool_funcs = {
+ 	.destroy = dcn301_destroy_resource_pool,
+ 	.link_enc_create = dcn301_link_encoder_create,
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
+index 94c32832a0e7b..0a7a338649731 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
+@@ -327,7 +327,7 @@ void dcn301_fpu_init_soc_bounding_box(struct bp_soc_bb_info bb_info)
+ 		dcn3_01_soc.sr_exit_time_us = bb_info.dram_sr_exit_latency_100ns * 10;
+ }
+ 
+-void dcn301_calculate_wm_and_dlg(struct dc *dc,
++void dcn301_calculate_wm_and_dlg_fp(struct dc *dc,
+ 		struct dc_state *context,
+ 		display_e2e_pipe_params_st *pipes,
+ 		int pipe_cnt,
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.h b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.h
+index fc7065d178422..774b0fdfc80be 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.h
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.h
+@@ -34,7 +34,7 @@ void dcn301_fpu_set_wm_ranges(int i,
+ 
+ void dcn301_fpu_init_soc_bounding_box(struct bp_soc_bb_info bb_info);
+ 
+-void dcn301_calculate_wm_and_dlg(struct dc *dc,
++void dcn301_calculate_wm_and_dlg_fp(struct dc *dc,
+ 		struct dc_state *context,
+ 		display_e2e_pipe_params_st *pipes,
+ 		int pipe_cnt,
 -- 
 2.34.1
 
