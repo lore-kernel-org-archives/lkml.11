@@ -2,115 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA16BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BFBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235372AbiCGFp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:45:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
+        id S235387AbiCGFpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:45:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiCGFp0 (ORCPT
+        with ESMTP id S235367AbiCGFp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:45:26 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CE84A920
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:44:32 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id 27so12653168pgk.10
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 21:44:32 -0800 (PST)
+        Mon, 7 Mar 2022 00:45:29 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481AE4B1E4
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:44:35 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id fs4-20020a17090af28400b001bf5624c0aaso2073579pjb.0
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 21:44:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YWajgjcCCrnsZSF3IfZMfbxzzFZcQpbBns1alayx99E=;
-        b=cGSKTJZ3Kh0Ek+WCmI4HffDYMUe79KY/em0iV2NUNCazJjGDuknQdSzpMZoSaLZmTW
-         MWFW28V2UbmFQKm/k3VUesxpUIBWzAjLzi2WcDEab8uTZuIAd1MQjyvECjNRKr9+ruFH
-         FNTKNGnEfcD1KYvDQ9idr3ukmIYhMRFgqGmexUFgyYHjJYbadhBDKkIE0L7DsSnD3Zjv
-         HykdLhbEQaupRwNLgPP4ZSdjV/Qo0IALd4wiaDRaNm9bd7ahZWuGrIGpL+yhLbnJXgSS
-         x0PUdKL3Kbe0fk3XC/83eJgP6jMQ0WpG489XH/88h9sIiLD0iO4AXz0cNoq3fnbBgbeT
-         s7qA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0KJ1UjrBbg7fzlE37vFvidwoVO0sq5aEejs8cXRFhtQ=;
+        b=mM6xhWXMHsiD6hkKquVoAp9riwKGW4Y0BUxcomfYBDTYo+XYnAaD+BZgNnyTjL1AWU
+         zejG8GBilDqTTvMTR9QQsw7JxCWOwgBHhxRj2VIZz5y14GgPIVd3bWy82oMmFcQgrEt7
+         FAcSMxYLv1YblrYNnz7KkCe6QEdcqzzzCeUjBzfBVt3POJ82ENLAf9aW0PaJYI0RPRm/
+         ToMG8C1rNpRf5e5kpzM0ijml7vjzLWhvD6kb+Ps/hm5HTdQP9WzTXJKR5wwqgAbsV1bW
+         fTbwgyihZy1rFq33m1CA2wRAY1+sK15eSn0nku684U0fntRocSnkU7d+7VCN5Li96AWg
+         WIhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YWajgjcCCrnsZSF3IfZMfbxzzFZcQpbBns1alayx99E=;
-        b=6A/olNaG5t4aZVJ/3rbb6Lem1bHGt+DSo7PjcPsIHeGZAOIOZ+HZ6z/s8mAliGgS4R
-         qRTeMwa072CW7pKCQVbOKlfk5W7KoeIoYVX3NVcbvhjsRpvYSM5lI682E9oYUBqZjJny
-         1X/hw3ZSfohSv+sVvw81l/bqvqFo2kDlvbQ955XJWluCcvXzCfmwwY0jLfYB/UbxywGz
-         99YCZ9Wh6sFtcj/GjEzNnh7hTQh7Q7i9PnGukUb8Jg5W8sccX72tHBnOTsu0z0Wp0+qj
-         FY3cbRJihurZrXT5Zt3lrolkFL4iA5RG3YHpHjApxrkwX56ZHQHVsheYDycw9F/v0sMq
-         Z8EA==
-X-Gm-Message-State: AOAM530aHWn5tplIbIhjS9rMqrw3XMITmqi0AieKzVZvWa0K2HP4rs+5
-        25WV3LVcXKdGLA86YUOCnxpB4g==
-X-Google-Smtp-Source: ABdhPJwnA3KEBp7KJP4Dkadosl1pu/fl5hoM+iRWl2JxYsBzf8nK0VH8nGH8sx7PD9Mes5im6f4iZg==
-X-Received: by 2002:a05:6a00:1a09:b0:4e1:67a7:2c87 with SMTP id g9-20020a056a001a0900b004e167a72c87mr11135766pfv.37.1646631872090;
-        Sun, 06 Mar 2022 21:44:32 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id k1-20020a056a00168100b004e0e45a39c6sm14447385pfc.181.2022.03.06.21.44.28
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0KJ1UjrBbg7fzlE37vFvidwoVO0sq5aEejs8cXRFhtQ=;
+        b=M/hNbm5WKWCJf5SDf9rzm6f15GeHWUJCAwWknr5LhghwqUlr6PgwbUcJoBPKLCuEda
+         aMxc0gdYPD4A3e0B9zKafO2rWt2qfhC6QLsIz1X6ypFIOZVQdRKRgRpqUI4pQ8hu569U
+         OAGzKVuWbXGnS9XvpMxZ7zTu6w9m6fAXINcbJNxa2t+D/h9+ju022m2YRjVAv9b3NWZ4
+         aByXmSGf5YKF76vIjkyMyjwvFCiflutGRgAMOuuPZ8Y+SwnXuVkpStyHGog+6W2eLmFo
+         k3yqNbWI0WNPEPVAaKXawSz3kUNpyJ5lLAAVEcM4x/RFk07FyJGgGkxziLrvImaXjHwE
+         +Abw==
+X-Gm-Message-State: AOAM531eyVI8wXIQ5l/v034QrtgT1sOYHua/mf7ao46nWrsHmeVPtvRe
+        NpziK+v5F+13Hh28STfQ8DmkzA==
+X-Google-Smtp-Source: ABdhPJzqYG18cC+N/uShcQuB2WbjyF/988f/94S+cZx93mrfz490W8VRJXux93FuMHauXjmvrnU4TQ==
+X-Received: by 2002:a17:902:f789:b0:14e:ebbc:264b with SMTP id q9-20020a170902f78900b0014eebbc264bmr10491053pln.169.1646631874829;
+        Sun, 06 Mar 2022 21:44:34 -0800 (PST)
+Received: from localhost ([223.184.83.228])
+        by smtp.gmail.com with ESMTPSA id c11-20020a056a000acb00b004f35ee129bbsm14767184pfl.140.2022.03.06.21.44.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 21:44:31 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>
-Subject: [PATCH v7 0/3] Determine the number of DMA channels by 'dma-channels' property
-Date:   Mon,  7 Mar 2022 13:44:23 +0800
-Message-Id: <cover.1646631717.git.zong.li@sifive.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 06 Mar 2022 21:44:34 -0800 (PST)
+Date:   Mon, 7 Mar 2022 11:14:32 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     zhanglianjie <zhanglianjie@uniontech.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] cpufreq: use helper macro __ATTR_XX
+Message-ID: <20220307054432.amawi7afl3vudfjn@vireshk-i7>
+References: <20220306021250.64315-1-zhanglianjie@uniontech.com>
+ <20220306021250.64315-2-zhanglianjie@uniontech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220306021250.64315-2-zhanglianjie@uniontech.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PDMA driver currently assumes there are four channels by default, it
-might cause the error if there is actually less than four channels.
-Change that by getting number of channel dynamically from device tree.
-For backwards-compatible, it uses the default value (i.e. 4) when there
-is no 'dma-channels' information in dts.
+On 06-03-22, 10:12, zhanglianjie wrote:
+> Use helper macro __ATTR_XX  to make code more clear.
+> Minor readability improvement.
+> 
+> Signed-off-by: zhanglianjie <zhanglianjie@uniontech.com>
+> 
+> diff --git a/drivers/cpufreq/cpufreq_governor.h b/drivers/cpufreq/cpufreq_governor.h
+> index 65ecf32ba4f8..a5a0bc3cc23e 100644
+> --- a/drivers/cpufreq/cpufreq_governor.h
+> +++ b/drivers/cpufreq/cpufreq_governor.h
+> @@ -68,12 +68,10 @@ static ssize_t file_name##_show						\
+>  }
+> 
+>  #define gov_attr_ro(_name)						\
+> -static struct governor_attr _name =					\
+> -__ATTR(_name, 0444, _name##_show, NULL)
+> +static struct governor_attr _name = __ATTR_RO(_name)
+> 
+>  #define gov_attr_rw(_name)						\
+> -static struct governor_attr _name =					\
+> -__ATTR(_name, 0644, _name##_show, _name##_store)
+> +static struct governor_attr _name = __ATTR_RW(_name)
+> 
+>  /* Common to all CPUs of a policy */
+>  struct policy_dbs_info {
 
-This patch set contains the dts and dt-bindings change.
-
-Changed in v7:
- - Rebase on tag v5.17-rc7
- - Modify the subject of patch
-
-Changed in v6:
- - Rebase on tag v5.17-rc6
- - Change sf_pdma.chans[] to a flexible array member.
-
-Changed in v5:
- - Rebase on tag v5.17-rc3
- - Fix typo in dt-bindings and commit message
- - Add PDMA versioning scheme for compatible
-
-Changed in v4:
- - Remove cflags of debug use reported-by: kernel test robot <lkp@intel.com>
-
-Changed in v3:
- - Fix allocating wrong size
- - Return error if 'dma-channels' is larger than maximum
-
-Changed in v2:
- - Rebase on tag v5.16
- - Use 4 as default value of dma-channels
-
-Zong Li (3):
-  dt-bindings: dma-engine: sifive,fu540: Add dma-channels property and
-    modify compatible
-  riscv: dts: Add dma-channels property and modify compatible
-  dmaengine: sf-pdma: Get number of channel by device tree
-
- .../bindings/dma/sifive,fu540-c000-pdma.yaml  | 19 +++++++++++++--
- .../boot/dts/microchip/microchip-mpfs.dtsi    |  3 ++-
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi    |  3 ++-
- drivers/dma/sf-pdma/sf-pdma.c                 | 24 ++++++++++++-------
- drivers/dma/sf-pdma/sf-pdma.h                 |  8 ++-----
- 5 files changed, 39 insertions(+), 18 deletions(-)
+This change looks fine though.
 
 -- 
-2.31.1
-
+viresh
