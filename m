@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48732C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D246AC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:22:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236113AbiCGKWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:22:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
+        id S239485AbiCGKWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:22:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240508AbiCGKBE (ORCPT
+        with ESMTP id S240548AbiCGKBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:04 -0500
+        Mon, 7 Mar 2022 05:01:06 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B701AD87;
-        Mon,  7 Mar 2022 01:49:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C24A3A5CA;
+        Mon,  7 Mar 2022 01:50:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18C68B80F9F;
-        Mon,  7 Mar 2022 09:49:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5909AC340F3;
-        Mon,  7 Mar 2022 09:49:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5CB5B80F9F;
+        Mon,  7 Mar 2022 09:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07E0BC340F3;
+        Mon,  7 Mar 2022 09:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646570;
-        bh=Kd7tWJSaOdAD0nh7OxQbtG+Qpn/HeAoCK+1NZS/YSUI=;
+        s=korg; t=1646646620;
+        bh=qaeVzm+CJRNN5ri3XIQbDaN3QFL3P1NnpVVrP6MRx7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/tkMUqmJMM769mppcvSKNaI+WgkPCuYWOOaKTngbfNFpdGN28apocI0HoMZWH0SG
-         x1kw/9lD8Ahv6WVQQ3gSBqpXLoUK6wxgp4NKJ3wkhVYIUhF9K4L+b/liQZzEJhOy/6
-         aOM83XRUp1v8PFkxwhJVDnvkeqhHeQzMoF0nT1hs=
+        b=COyl3+Z1ikTRS6ttw2rVy8wWUVOUgAA3G2hmr42zlRa7Hnl1ovALYxK1D+V0v6aJg
+         65drFYeKARD5ObAXrANI7w5Kxg25qXSGxiihLLUg7WcqnTZK4YMmK8Yzd0UDCR5eAl
+         iYWOUTi8k8q8WWQ3VetJVx3kEzmzvyPppbDezWzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Hutterer <peter.hutterer@who-t.net>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 008/186] Input: clear BTN_RIGHT/MIDDLE on buttonpads
-Date:   Mon,  7 Mar 2022 10:17:26 +0100
-Message-Id: <20220307091654.329712273@linuxfoundation.org>
+Subject: [PATCH 5.16 039/186] ext4: fast commit may miss file actions
+Date:   Mon,  7 Mar 2022 10:17:57 +0100
+Message-Id: <20220307091655.189669698@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,80 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
+[ Upstream commit bdc8a53a6f2f0b1cb5f991440f2100732299eb93 ]
 
-Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
-and the BTN_LEFT key bit.
+in the follow scenario:
+1. jbd start transaction n
+2. task A get new handle for transaction n+1
+3. task A do some actions and add inode to FC_Q_MAIN fc_q
+4. jbd complete transaction n and clear FC_Q_MAIN fc_q
+5. task A call fsync
 
-As explained in the specification, where a device has a button type
-value of 0 (click-pad) or 1 (pressure-pad) there should not be
-discrete buttons:
-https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
+Fast commit will lost the file actions during a full commit.
 
-However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
-though the device is a buttonpad and therefore does not have those
-buttons.
+we should also add updates to staging queue during a full commit.
+and in ext4_fc_cleanup(), when reset a inode's fc track range, check
+it's i_sync_tid, if it bigger than current transaction tid, do not
+rest it, or we will lost the track range.
 
-This behavior has forced userspace applications like libinput to
-implement different workarounds and quirks to detect buttonpads and
-offer to the user the right set of features and configuration options.
-For more information:
-https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
+And EXT4_MF_FC_COMMITTING is not needed anymore, so drop it.
 
-In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
-bits when the input device is register if the INPUT_PROP_BUTTONPAD
-property bit is set.
-
-Notice that this change will not affect udev because it does not check
-for buttons. See systemd/src/udev/udev-builtin-input_id.c.
-
-List of known affected hardware:
-
- - Chuwi AeroBook Plus
- - Chuwi Gemibook
- - Framework Laptop
- - GPD Win Max
- - Huawei MateBook 2020
- - Prestigio Smartbook 141 C2
- - Purism Librem 14v1
- - StarLite Mk II   - AMI firmware
- - StarLite Mk II   - Coreboot firmware
- - StarLite Mk III  - AMI firmware
- - StarLite Mk III  - Coreboot firmware
- - StarLabTop Mk IV - AMI firmware
- - StarLabTop Mk IV - Coreboot firmware
- - StarBook Mk V
-
-Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Acked-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Link: https://lore.kernel.org/r/20220117093655.35160-3-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/input.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/ext4/ext4.h        |  5 +----
+ fs/ext4/fast_commit.c | 11 ++++++-----
+ fs/ext4/super.c       |  1 -
+ 3 files changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index ccaeb24263854..c3139bc2aa0db 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -2285,6 +2285,12 @@ int input_register_device(struct input_dev *dev)
- 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
- 	__clear_bit(KEY_RESERVED, dev->keybit);
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index 8b5015ea46199..c2cc9d78915b0 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -1793,10 +1793,7 @@ static inline int ext4_valid_inum(struct super_block *sb, unsigned long ino)
+ enum {
+ 	EXT4_MF_MNTDIR_SAMPLED,
+ 	EXT4_MF_FS_ABORTED,	/* Fatal error detected */
+-	EXT4_MF_FC_INELIGIBLE,	/* Fast commit ineligible */
+-	EXT4_MF_FC_COMMITTING	/* File system underoing a fast
+-				 * commit.
+-				 */
++	EXT4_MF_FC_INELIGIBLE	/* Fast commit ineligible */
+ };
  
-+	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
-+	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
-+		__clear_bit(BTN_RIGHT, dev->keybit);
-+		__clear_bit(BTN_MIDDLE, dev->keybit);
-+	}
-+
- 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
- 	input_cleanse_bitmasks(dev);
+ static inline void ext4_set_mount_flag(struct super_block *sb, int bit)
+diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
+index 0cdfc5003d91a..aca8414706346 100644
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -377,7 +377,8 @@ static int ext4_fc_track_template(
+ 	spin_lock(&sbi->s_fc_lock);
+ 	if (list_empty(&EXT4_I(inode)->i_fc_list))
+ 		list_add_tail(&EXT4_I(inode)->i_fc_list,
+-				(ext4_test_mount_flag(inode->i_sb, EXT4_MF_FC_COMMITTING)) ?
++				(sbi->s_journal->j_flags & JBD2_FULL_COMMIT_ONGOING ||
++				 sbi->s_journal->j_flags & JBD2_FAST_COMMIT_ONGOING) ?
+ 				&sbi->s_fc_q[FC_Q_STAGING] :
+ 				&sbi->s_fc_q[FC_Q_MAIN]);
+ 	spin_unlock(&sbi->s_fc_lock);
+@@ -430,7 +431,8 @@ static int __track_dentry_update(struct inode *inode, void *arg, bool update)
+ 	node->fcd_name.len = dentry->d_name.len;
  
+ 	spin_lock(&sbi->s_fc_lock);
+-	if (ext4_test_mount_flag(inode->i_sb, EXT4_MF_FC_COMMITTING))
++	if (sbi->s_journal->j_flags & JBD2_FULL_COMMIT_ONGOING ||
++		sbi->s_journal->j_flags & JBD2_FAST_COMMIT_ONGOING)
+ 		list_add_tail(&node->fcd_list,
+ 				&sbi->s_fc_dentry_q[FC_Q_STAGING]);
+ 	else
+@@ -896,7 +898,6 @@ static int ext4_fc_submit_inode_data_all(journal_t *journal)
+ 	int ret = 0;
+ 
+ 	spin_lock(&sbi->s_fc_lock);
+-	ext4_set_mount_flag(sb, EXT4_MF_FC_COMMITTING);
+ 	list_for_each_entry(ei, &sbi->s_fc_q[FC_Q_MAIN], i_fc_list) {
+ 		ext4_set_inode_state(&ei->vfs_inode, EXT4_STATE_FC_COMMITTING);
+ 		while (atomic_read(&ei->i_fc_updates)) {
+@@ -1214,7 +1215,8 @@ static void ext4_fc_cleanup(journal_t *journal, int full, tid_t tid)
+ 		list_del_init(&iter->i_fc_list);
+ 		ext4_clear_inode_state(&iter->vfs_inode,
+ 				       EXT4_STATE_FC_COMMITTING);
+-		ext4_fc_reset_inode(&iter->vfs_inode);
++		if (iter->i_sync_tid <= tid)
++			ext4_fc_reset_inode(&iter->vfs_inode);
+ 		/* Make sure EXT4_STATE_FC_COMMITTING bit is clear */
+ 		smp_mb();
+ #if (BITS_PER_LONG < 64)
+@@ -1243,7 +1245,6 @@ static void ext4_fc_cleanup(journal_t *journal, int full, tid_t tid)
+ 	list_splice_init(&sbi->s_fc_q[FC_Q_STAGING],
+ 				&sbi->s_fc_q[FC_Q_MAIN]);
+ 
+-	ext4_clear_mount_flag(sb, EXT4_MF_FC_COMMITTING);
+ 	if (tid >= sbi->s_fc_ineligible_tid) {
+ 		sbi->s_fc_ineligible_tid = 0;
+ 		ext4_clear_mount_flag(sb, EXT4_MF_FC_INELIGIBLE);
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 888b2db92924d..32ca34403dcec 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -4626,7 +4626,6 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 	INIT_LIST_HEAD(&sbi->s_fc_dentry_q[FC_Q_STAGING]);
+ 	sbi->s_fc_bytes = 0;
+ 	ext4_clear_mount_flag(sb, EXT4_MF_FC_INELIGIBLE);
+-	ext4_clear_mount_flag(sb, EXT4_MF_FC_COMMITTING);
+ 	sbi->s_fc_ineligible_tid = 0;
+ 	spin_lock_init(&sbi->s_fc_lock);
+ 	memset(&sbi->s_fc_stats, 0, sizeof(sbi->s_fc_stats));
 -- 
 2.34.1
 
