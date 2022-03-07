@@ -2,110 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53422C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235299AbiCGFWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
+        id S235295AbiCGFZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:25:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235113AbiCGFWp (ORCPT
+        with ESMTP id S235280AbiCGFZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:22:45 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61FA4F454
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:21:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646630510; x=1678166510;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=nENgkNrXPp9CG8WF2N13y7IyQBK8xft0YApUuFADoXQ=;
-  b=Jhvp3+dxe+iWWXqCSCQDr3cYHEtPtpY8PShOHIjswO3zRxNEWMQUa2+c
-   rFDXEGDYVXXZUbCNy6thqg2/Wcf0ma0feemxtZ50DvbuJ/Jvcwxn/AABj
-   KwqTDRT/YPZgKb0cZkKkp2uCvNB3Xxem9oBNeNNYgZmd/z5L3syViAm4t
-   CWsTTUMdfYynEWHW7ftRY6ZfnwHFxBPRXtDVfY/phY1asai4FgPEJxcrb
-   LSY/8ekDp7w7CC5YvSb5+52BQF/+YEjJuoWEi69xUNCPtk9Bw2liVhb1B
-   kJW2On5UafDyAfatNbnPzCOOJAVTpdvd4qXP+5Jh6FvwHmYewGU1iUcBZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="315017980"
-X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
-   d="scan'208";a="315017980"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:21:50 -0800
-X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
-   d="scan'208";a="643100514"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:21:45 -0800
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
-        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
-        <minchan@kernel.org>, <apopple@nvidia.com>,
-        <ave.hansen@linux.intel.com>, <o451686892@gmail.com>,
-        <almasrymina@google.com>, <jhubbard@nvidia.com>,
-        <rcampbell@nvidia.com>, <peterx@redhat.com>,
-        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 15/16] mm/migration: fix possible do_pages_stat_array
- racing with memory offline
-References: <20220304093409.25829-1-linmiaohe@huawei.com>
-        <20220304093409.25829-16-linmiaohe@huawei.com>
-Date:   Mon, 07 Mar 2022 13:21:43 +0800
-In-Reply-To: <20220304093409.25829-16-linmiaohe@huawei.com> (Miaohe Lin's
-        message of "Fri, 4 Mar 2022 17:34:08 +0800")
-Message-ID: <875yoq5od4.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+        Mon, 7 Mar 2022 00:25:44 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E837713F1F;
+        Sun,  6 Mar 2022 21:24:50 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id o26so12637436pgb.8;
+        Sun, 06 Mar 2022 21:24:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=sBs0g7c3eiiRDzIn9OKXg+84akXNbU5YGA45uOIsBGI=;
+        b=SRY61KTFSOEutOMsOj0yyqdSkKS73lXb98tEFQ+u0In4fmQvBF5XApot+Xe61C0J8Q
+         NO42Jd6zJsunH959LMMHnjr1Vs7zIfZPDKIVBGNFbzlnzrnibnrLRuoXCuDVBZiTLAZJ
+         d2iE6zxPZRzjSc4Tn6zHNCo/dHYSW5NGfxIFVxZNAYlZUykYmrwq5j10/yX2hMyd5cIC
+         KaL0QUdLxf9HtgnC42ErNWj+FYeQhxUznHZ15pnWZnkw7+ngnPbAXIbXe7QSM3EZXMzs
+         FQo/BAptgzL+tTFVaFHnuaupDrKmx574KCXeVWind79qf60Vq9jZwmTz1QFEQIUgQo6F
+         drwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=sBs0g7c3eiiRDzIn9OKXg+84akXNbU5YGA45uOIsBGI=;
+        b=NyCWSJg9zphDO4ZwKuz9uzZhb3O38LDrZSwsHHFsa/m7xezn8QM80w0kATs3SAEyuI
+         sd8F/9b5qSajcfTyiejCdfBk/A1X0ZmleEpXZ+xhnl1heL1fxcN05XVrgFOvsbmTtm3T
+         7v8XD8lRZnP7AU0juVyknQFjN9Hw+ixbQdIE/puYqHYPNlDhSYJsbI4Kr1xvC0IcoOEK
+         JWp6hXlrRrKXzUV+1d6oy9SHlIEDaGA8R1AcbTz7JDTj7V0OqpH4++Rro7rHz+CnEAp/
+         z8mAwJHreXagx+ee5wl6fDDCRM3wrk8OtH+hAOAFYdf6l74GnXI/6TrPRN4fc9c2oW6n
+         Sb7w==
+X-Gm-Message-State: AOAM532cRf60NCnqnzegwrYvoCSFvpwF0NiqZqBl51MZ2snKAuSopFss
+        b7aYHZPEbFHu0OTh7R0jvVzz4i8yM18=
+X-Google-Smtp-Source: ABdhPJzzyVmlGJTfQnhHokej1K13burAVM1KEVsIusj8kJyzQ8+NI4ZAgrNyAm7qq2ziSwc0nanfSg==
+X-Received: by 2002:a63:90c4:0:b0:37c:7f95:2fb9 with SMTP id a187-20020a6390c4000000b0037c7f952fb9mr8375675pge.267.1646630690419;
+        Sun, 06 Mar 2022 21:24:50 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id z2-20020a17090a170200b001bf2d530d64sm9767170pjd.2.2022.03.06.21.24.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 06 Mar 2022 21:24:49 -0800 (PST)
+From:   Tony Huang <tonyhuang.sunplus@gmail.com>
+To:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, derek.kiernan@xilinx.com,
+        Dragan.cvetic@xilinx.com, arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     wells.lu@sunplus.com, tony.huang@sunplus.com,
+        Tony Huang <tonyhuang.sunplus@gmail.com>
+Subject: [PATCH v10 0/2] Add iop driver for Sunplus SP7021
+Date:   Mon,  7 Mar 2022 13:25:07 +0800
+Message-Id: <cover.1646629400.git.tonyhuang.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Miaohe Lin <linmiaohe@huawei.com> writes:
+Add iop driver for Sunplus SP7021 SOC
 
-> When follow_page peeks a page, the page could be reclaimed under heavy
-> memory pressure
+This is a patch series for iop driver for Sunplus SP7021 SOC.
 
-I don't think that memory pressure and reclaiming will be an issue.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
 
-> and thus be offlined while it's still being used by the
-> do_pages_stat_array().
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
-"offline" seems a possible problem.
+Tony Huang (2):
+  dt-binding: misc: Add iop yaml file for Sunplus SP7021
+  misc: Add iop driver for Sunplus SP7021
 
-Best Regards,
-Huang, Ying
+ .../devicetree/bindings/misc/sunplus-iop.yaml      |  76 ++++
+ MAINTAINERS                                        |   6 +
+ drivers/misc/Kconfig                               |  36 ++
+ drivers/misc/Makefile                              |   1 +
+ drivers/misc/sunplus_iop.c                         | 438 +++++++++++++++++++++
+ 5 files changed, 557 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/sunplus-iop.yaml
+ create mode 100644 drivers/misc/sunplus_iop.c
 
-> Use FOLL_GET to hold the page refcnt to fix this
-> potential issue.
->
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/migrate.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 7b1c0b988234..98a968e6f465 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1788,13 +1788,18 @@ static void do_pages_stat_array(struct mm_struct *mm, unsigned long nr_pages,
->  			goto set_status;
->  
->  		/* FOLL_DUMP to ignore special (like zero) pages */
-> -		page = follow_page(vma, addr, FOLL_DUMP);
-> +		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
->  
->  		err = PTR_ERR(page);
->  		if (IS_ERR(page))
->  			goto set_status;
->  
-> -		err = page ? page_to_nid(page) : -ENOENT;
-> +		if (page) {
-> +			err = page_to_nid(page);
-> +			put_page(page);
-> +		} else {
-> +			err = -ENOENT;
-> +		}
->  set_status:
->  		*status = err;
+-- 
+2.7.4
+
