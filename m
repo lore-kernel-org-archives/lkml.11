@@ -2,86 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245511AbiCGUzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:55:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
+        id S245521AbiCGUzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:55:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245411AbiCGUzF (ORCPT
+        with ESMTP id S245484AbiCGUzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:55:05 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB4F34656;
-        Mon,  7 Mar 2022 12:53:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646686419; x=1678222419;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JcJUkTKZL/93UJ5Ywi8SfyzOjahp0gYVOJlYJUbzoxM=;
-  b=H9vHSXVtD8zhoRFzkluKhtqE2Pf6hey6O8TRXIaDNT8qwt8N5kjPOxxO
-   1Ak0gEtMYkXZ6qLwc2ZUVohQIf3wYSBS7Jfbnl4//TFhFTUIeL4S2ZUpZ
-   maLksrMtsMaUQpoMD2alzuEylHD5nzsW6cuRCWP/2lVOP2htCBbkqY62g
-   MPHpmGv0jFieqklTwnNyUZqEmkcnvk//eksasLUlE/EgEOnbzL/0xazjT
-   Y2mmGEF4f5wxL2x+ip7RPM9AhuFRJo4wsmGD8VINUkgZd4Jknccqo8g+0
-   RoJbsSSCPrJR1XVOM5wQj0uiQFJSPfI3f50wksX1vZIP9j1xvPRRBsirE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="234456350"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="234456350"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 12:53:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="509844026"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga002.jf.intel.com with ESMTP; 07 Mar 2022 12:53:36 -0800
-Date:   Mon, 7 Mar 2022 21:53:35 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        kuba@kernel.org, magnus.karlsson@intel.com
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <YiZwz+6nRwl9YekK@boxer>
-References: <20220307213659.47658125@canb.auug.org.au>
+        Mon, 7 Mar 2022 15:55:04 -0500
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512EE340EF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:53:35 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6100:2d37:4115:c358])
+        by albert.telenet-ops.be with bizsmtp
+        id 3YtW2700D1Yj8bA06YtWdp; Mon, 07 Mar 2022 21:53:34 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRKLZ-0036Qh-1N; Mon, 07 Mar 2022 21:52:49 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRKLX-0034hh-Vg; Mon, 07 Mar 2022 21:52:47 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
+Date:   Mon,  7 Mar 2022 21:52:40 +0100
+Message-Id: <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1646683502.git.geert@linux-m68k.org>
+References: <cover.1646683502.git.geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307213659.47658125@canb.auug.org.au>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 09:36:59PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the net-next tree, today's linux-next build (arm64
-> allmodconfig) failed like this:
-> 
-> drivers/net/ethernet/intel/ice/ice_xsk.c: In function 'ice_xmit_pkt_batch':
-> drivers/net/ethernet/intel/ice/ice_xsk.c:801:0: error: ignoring #pragma GCC unroll [-Werror=unknown-pragmas]
->   loop_unrolled_for(i = 0; i < PKTS_PER_BATCH; i++) {
->  ^
-> cc1: all warnings being treated as errors
-> 
-> Caused by commit
-> 
->   126cdfe1007a ("ice: xsk: Improve AF_XDP ZC Tx and use batching API")
-> 
-> This build was done with gcc v5.4.
+Introduce fourcc codes for color-indexed frame buffer formats with two,
+four, and sixteen colors, and provide a mapping from bit per pixel and
+depth to fourcc codes.
 
-Hey Stephen, thanks for a report, I'll send a fix to net-next immediately.
-Maciej
+As the number of bits per pixel is less than eight, these rely on proper
+block handling for the calculation of bits per pixel and pitch.
 
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+v2:
+  - Improve pixel descriptions,
+  - Require depth to match bpp in drm_mode_legacy_fb_format(),
+  - Set .is_color_indexed flag.
+---
+ drivers/gpu/drm/drm_fourcc.c  | 21 +++++++++++++++++++++
+ include/uapi/drm/drm_fourcc.h |  5 ++++-
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/drm_fourcc.c b/drivers/gpu/drm/drm_fourcc.c
+index 6c76bd821d17e7c7..29f4fe199c4ddcf0 100644
+--- a/drivers/gpu/drm/drm_fourcc.c
++++ b/drivers/gpu/drm/drm_fourcc.c
+@@ -43,6 +43,21 @@ uint32_t drm_mode_legacy_fb_format(uint32_t bpp, uint32_t depth)
+ 	uint32_t fmt = DRM_FORMAT_INVALID;
+ 
+ 	switch (bpp) {
++	case 1:
++		if (depth == 1)
++			fmt = DRM_FORMAT_C1;
++		break;
++
++	case 2:
++		if (depth == 2)
++			fmt = DRM_FORMAT_C2;
++		break;
++
++	case 4:
++		if (depth == 4)
++			fmt = DRM_FORMAT_C4;
++		break;
++
+ 	case 8:
+ 		if (depth == 8)
+ 			fmt = DRM_FORMAT_C8;
+@@ -132,6 +147,12 @@ EXPORT_SYMBOL(drm_driver_legacy_fb_format);
+ const struct drm_format_info *__drm_format_info(u32 format)
+ {
+ 	static const struct drm_format_info formats[] = {
++		{ .format = DRM_FORMAT_C1,		.depth = 1,  .num_planes = 1,
++		  .char_per_block = { 1, }, .block_w = { 8, }, .block_h = { 1, }, .hsub = 1, .vsub = 1, .is_color_indexed = true },
++		{ .format = DRM_FORMAT_C2,		.depth = 2,  .num_planes = 1,
++		  .char_per_block = { 1, }, .block_w = { 4, }, .block_h = { 1, }, .hsub = 1, .vsub = 1, .is_color_indexed = true },
++		{ .format = DRM_FORMAT_C4,		.depth = 4,  .num_planes = 1,
++		  .char_per_block = { 1, }, .block_w = { 2, }, .block_h = { 1, }, .hsub = 1, .vsub = 1, .is_color_indexed = true },
+ 		{ .format = DRM_FORMAT_C8,		.depth = 8,  .num_planes = 1, .cpp = { 1, 0, 0 }, .hsub = 1, .vsub = 1, .is_color_indexed = true },
+ 		{ .format = DRM_FORMAT_R8,		.depth = 8,  .num_planes = 1, .cpp = { 1, 0, 0 }, .hsub = 1, .vsub = 1 },
+ 		{ .format = DRM_FORMAT_R10,		.depth = 10, .num_planes = 1, .cpp = { 2, 0, 0 }, .hsub = 1, .vsub = 1 },
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index fc0c1454d2757d5d..457ed39cc48f08e1 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -99,7 +99,10 @@ extern "C" {
+ #define DRM_FORMAT_INVALID	0
+ 
+ /* color index */
+-#define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C */
++#define DRM_FORMAT_C1		fourcc_code('C', '1', ' ', ' ') /* [7:0] C0:C1:C2:C3:C4:C5:C6:C7 1:1:1:1:1:1:1:1 eight pixels/byte */
++#define DRM_FORMAT_C2		fourcc_code('C', '2', ' ', ' ') /* [7:0] C0:C1:C2:C3 2:2:2:2 four pixels/byte */
++#define DRM_FORMAT_C4		fourcc_code('C', '4', ' ', ' ') /* [7:0] C0:C1 4:4 two pixels/byte */
++#define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C 8 one pixel/byte */
+ 
+ /* 8 bpp Red */
+ #define DRM_FORMAT_R8		fourcc_code('R', '8', ' ', ' ') /* [7:0] R */
+-- 
+2.25.1
 
