@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240938AbiCGKTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:19:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
+        id S241145AbiCGKTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:19:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240552AbiCGKBG (ORCPT
+        with ESMTP id S240500AbiCGKBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:06 -0500
+        Mon, 7 Mar 2022 05:01:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB18E41327;
-        Mon,  7 Mar 2022 01:50:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402B1BC8C;
+        Mon,  7 Mar 2022 01:49:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2382060AD4;
-        Mon,  7 Mar 2022 09:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237D0C340F7;
-        Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2826077B;
+        Mon,  7 Mar 2022 09:49:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5F87C340F5;
+        Mon,  7 Mar 2022 09:49:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646623;
-        bh=Zui8ECPQw1oRdjCitPElBm7a/khE+cS65N3yjxUWZyk=;
+        s=korg; t=1646646558;
+        bh=fLqIYr3a11V/hiFrqChIvb88lZsImseqXDa0AusqyDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mq7DsQ3o1lUfLxAcne0VD+VF186wDOdEZDlUK1TxrxZTIHmUM/hvXy/EDoOISSHSD
-         656t8MHtwUGub9mLNfADbK7vu7J66aA3MLkytgcYQxupznZTICEzmnxE4ZQ9kvR+/x
-         LKDHlGadiCFDZiQAPW0H4vPktPcUtqlYjgwI7W+U=
+        b=ln6xOasMxWFKJpR2mY+WfWasRkWdDBsVa4+u6ZsCMCkjYb+8kL2JcuCmJnzcRHYV5
+         xGl8Xs3k49XXcrdR5w9qMV/GGdpvmcdnXffAQ2710J5TeKQPo9cMBI7zycRwWvAOTs
+         ndVFx55TM0cxFFF66PxY2QHLNKsAeHEaOz1HdCB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Shuming Fan <shumingf@realtek.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 040/186] sched/fair: Fix fault in reweight_entity
-Date:   Mon,  7 Mar 2022 10:17:58 +0100
-Message-Id: <20220307091655.217627420@linuxfoundation.org>
+Subject: [PATCH 5.16 004/186] ASoC: rt5682s: do not block workqueue if card is unbound
+Date:   Mon,  7 Mar 2022 10:17:22 +0100
+Message-Id: <20220307091654.219631402@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,100 +55,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 
-[ Upstream commit 13765de8148f71fa795e0a6607de37c49ea5915a ]
+[ Upstream commit d7b530fdc45e75a54914a194c4becd9672a4e24f ]
 
-Syzbot found a GPF in reweight_entity. This has been bisected to
-commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
-sched_task_group")
+The current rt5682s_jack_detect_handler() assumes the component
+and card will always show up and implements an infinite usleep
+loop waiting for them to show up.
 
-There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-within a thread group that causes a null-ptr-deref in
-reweight_entity() in CFS. The scenario is that the main process spawns
-number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
-wait, and exit.  For each of the new threads the copy_process() gets
-invoked, which adds the new task_struct and calls sched_post_fork()
-for it.
+This does not hold true if a codec interrupt (or other
+event) occurs when the card is unbound. The codec driver's
+remove  or shutdown functions cannot cancel the workqueue due
+to the wait loop. As a result, code can either end up blocking
+the workqueue, or hit a kernel oops when the card is freed.
 
-In the above scenario there is a possibility that
-setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
-in the group that is just being created by copy_process(), and for
-which the sched_post_fork() has not been executed yet. This will
-trigger a null pointer dereference in reweight_entity(), as it will
-try to access the run queue pointer, which hasn't been set.
+Fix the issue by rescheduling the jack detect handler in
+case the card is not ready. In case card never shows up,
+the shutdown/remove/suspend calls can now cancel the detect
+task.
 
-Before the mentioned change the cfs_rq pointer for the task  has been
-set in sched_fork(), which is called much earlier in copy_process(),
-before the new task is added to the thread_group.  Now it is done in
-the sched_post_fork(), which is called after that.  To fix the issue
-the remove the update_load param from the update_load param() function
-and call reweight_task() only if the task flag doesn't have the
-TASK_NEW flag set.
-
-Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
-Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro.org
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Shuming Fan <shumingf@realtek.com>
+Link: https://lore.kernel.org/r/20220207153000.3452802-1-kai.vehmanen@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ sound/soc/codecs/rt5682s.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d24823b3c3f9f..35b256b789680 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1203,8 +1203,9 @@ int tg_nop(struct task_group *tg, void *data)
- }
- #endif
+diff --git a/sound/soc/codecs/rt5682s.c b/sound/soc/codecs/rt5682s.c
+index d49a4f68566d2..d79b548d23fa4 100644
+--- a/sound/soc/codecs/rt5682s.c
++++ b/sound/soc/codecs/rt5682s.c
+@@ -824,11 +824,13 @@ static void rt5682s_jack_detect_handler(struct work_struct *work)
+ 		container_of(work, struct rt5682s_priv, jack_detect_work.work);
+ 	int val, btn_type;
  
--static void set_load_weight(struct task_struct *p, bool update_load)
-+static void set_load_weight(struct task_struct *p)
- {
-+	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
- 	int prio = p->static_prio - MAX_RT_PRIO;
- 	struct load_weight *load = &p->se.load;
+-	while (!rt5682s->component)
+-		usleep_range(10000, 15000);
+-
+-	while (!rt5682s->component->card->instantiated)
+-		usleep_range(10000, 15000);
++	if (!rt5682s->component || !rt5682s->component->card ||
++	    !rt5682s->component->card->instantiated) {
++		/* card not yet ready, try later */
++		mod_delayed_work(system_power_efficient_wq,
++				 &rt5682s->jack_detect_work, msecs_to_jiffies(15));
++		return;
++	}
  
-@@ -4392,7 +4393,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
- 			p->static_prio = NICE_TO_PRIO(0);
- 
- 		p->prio = p->normal_prio = p->static_prio;
--		set_load_weight(p, false);
-+		set_load_weight(p);
- 
- 		/*
- 		 * We don't need the reset flag anymore after the fork. It has
-@@ -6879,7 +6880,7 @@ void set_user_nice(struct task_struct *p, long nice)
- 		put_prev_task(rq, p);
- 
- 	p->static_prio = NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- 	old_prio = p->prio;
- 	p->prio = effective_prio(p);
- 
-@@ -7170,7 +7171,7 @@ static void __setscheduler_params(struct task_struct *p,
- 	 */
- 	p->rt_priority = attr->sched_priority;
- 	p->normal_prio = normal_prio(p);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- }
- 
- /*
-@@ -9409,7 +9410,7 @@ void __init sched_init(void)
- #endif
- 	}
- 
--	set_load_weight(&init_task, false);
-+	set_load_weight(&init_task);
- 
- 	/*
- 	 * The boot idle thread does lazy MMU switching as well:
+ 	mutex_lock(&rt5682s->jdet_mutex);
+ 	mutex_lock(&rt5682s->calibrate_mutex);
 -- 
 2.34.1
 
