@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC88FC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BD2C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239278AbiCGJ6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:58:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58386 "EHLO
+        id S239259AbiCGJ6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:58:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239930AbiCGJkY (ORCPT
+        with ESMTP id S239784AbiCGJkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7EC75C18;
-        Mon,  7 Mar 2022 01:36:42 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B626374DE3;
+        Mon,  7 Mar 2022 01:36:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA1CB810BD;
-        Mon,  7 Mar 2022 09:36:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC41EC340F3;
-        Mon,  7 Mar 2022 09:36:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47EADB810D1;
+        Mon,  7 Mar 2022 09:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4B5DC36AF7;
+        Mon,  7 Mar 2022 09:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645801;
-        bh=4nV0Rt1hVSFqqgPnAUQQsOzvV1i7xstj0KiqKOkxUws=;
+        s=korg; t=1646645718;
+        bh=wtrHf0DEt28ZtCuvZ3yqQpW63WsACzFgMtatO3d91GY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZnoGJU+4hIiQTErbqokR29qtOlO58B23QLZFnOTTZHtK7UqALkLRqv/EH9f88KZPZ
-         2y+fOVkMkmoX27M1oQSvSHVRUdOo9Qb4p/vy0GZWQtR33pwFUAct58JyqPd+AH9mw2
-         4Uctk1dVjJ5DOp4C248zfTgjugv4yBGQM4ESkAD4=
+        b=FzjB10wNxIuNqZpYkJvfyT0E8WqAkuPrI9SKRB4TwtlDkw7z++oUPVge24sh3Se3A
+         nztcf8szdUtAOlcT2bkJQJwDmg5+pLv5n3r/Vih+PlsB2EbYYrIgjs4wpnSwitM9LO
+         W8QoaSrYsXiTjYCeRl0sbtLdWOmIuzpCMoVvaKnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 039/262] ata: pata_hpt37x: fix PCI clock detection
-Date:   Mon,  7 Mar 2022 10:16:23 +0100
-Message-Id: <20220307091703.628670051@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 015/262] HID: amd_sfh: Add functionality to clear interrupts
+Date:   Mon,  7 Mar 2022 10:15:59 +0100
+Message-Id: <20220307091702.806610384@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,43 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit 5f6b0f2d037c8864f20ff15311c695f65eb09db5 ]
+[ Upstream commit fb75a3791a8032848c987db29b622878d8fe2b1c ]
 
-The f_CNT register (at the PCI config. address 0x78) is 16-bit, not
-8-bit! The bug was there from the very start... :-(
+Newer AMD platforms with SFH may generate interrupts on some events
+which are unwarranted. Until this is cleared the actual MP2 data
+processing maybe stalled in some cases.
 
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Add a mechanism to clear the pending interrupts (if any) during the
+driver initialization and sensor command operations.
+
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/pata_hpt37x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c | 25 ++++++++++++++++++++++++-
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.h |  1 +
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ata/pata_hpt37x.c b/drivers/ata/pata_hpt37x.c
-index ae8375e9d2681..9d371859e81ed 100644
---- a/drivers/ata/pata_hpt37x.c
-+++ b/drivers/ata/pata_hpt37x.c
-@@ -964,14 +964,14 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+index 4198a8a786c8a..f1efeeaa465a2 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -88,6 +88,20 @@ static void amd_stop_all_sensor_v2(struct amd_mp2_dev *privdata)
+ 	writel(cmd_base.ul, privdata->mmio + AMD_C2P_MSG0);
+ }
  
- 	if ((freq >> 12) != 0xABCDE) {
- 		int i;
--		u8 sr;
-+		u16 sr;
- 		u32 total = 0;
++static void amd_sfh_clear_intr_v2(struct amd_mp2_dev *privdata)
++{
++	if (readl(privdata->mmio + AMD_P2C_MSG(4))) {
++		writel(0, privdata->mmio + AMD_P2C_MSG(4));
++		writel(0xf, privdata->mmio + AMD_P2C_MSG(5));
++	}
++}
++
++static void amd_sfh_clear_intr(struct amd_mp2_dev *privdata)
++{
++	if (privdata->mp2_ops->clear_intr)
++		privdata->mp2_ops->clear_intr(privdata);
++}
++
+ void amd_start_sensor(struct amd_mp2_dev *privdata, struct amd_mp2_sensor_info info)
+ {
+ 	union sfh_cmd_param cmd_param;
+@@ -192,6 +206,7 @@ static void amd_mp2_pci_remove(void *privdata)
+ 	struct amd_mp2_dev *mp2 = privdata;
+ 	amd_sfh_hid_client_deinit(privdata);
+ 	mp2->mp2_ops->stop_all(mp2);
++	amd_sfh_clear_intr(mp2);
+ }
  
- 		pr_warn("BIOS has not set timing clocks\n");
+ static const struct amd_mp2_ops amd_sfh_ops_v2 = {
+@@ -199,6 +214,7 @@ static const struct amd_mp2_ops amd_sfh_ops_v2 = {
+ 	.stop = amd_stop_sensor_v2,
+ 	.stop_all = amd_stop_all_sensor_v2,
+ 	.response = amd_sfh_wait_response_v2,
++	.clear_intr = amd_sfh_clear_intr_v2,
+ };
  
- 		/* This is the process the HPT371 BIOS is reported to use */
- 		for (i = 0; i < 128; i++) {
--			pci_read_config_byte(dev, 0x78, &sr);
-+			pci_read_config_word(dev, 0x78, &sr);
- 			total += sr & 0x1FF;
- 			udelay(15);
- 		}
+ static const struct amd_mp2_ops amd_sfh_ops = {
+@@ -258,8 +274,13 @@ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
+ 	mp2_select_ops(privdata);
+ 
+ 	rc = amd_sfh_hid_client_init(privdata);
+-	if (rc)
++	if (rc) {
++		amd_sfh_clear_intr(privdata);
++		dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
+ 		return rc;
++	}
++
++	amd_sfh_clear_intr(privdata);
+ 
+ 	return devm_add_action_or_reset(&pdev->dev, amd_mp2_pci_remove, privdata);
+ }
+@@ -288,6 +309,7 @@ static int __maybe_unused amd_mp2_pci_resume(struct device *dev)
+ 	}
+ 
+ 	schedule_delayed_work(&cl_data->work_buffer, msecs_to_jiffies(AMD_SFH_IDLE_LOOP));
++	amd_sfh_clear_intr(mp2);
+ 
+ 	return 0;
+ }
+@@ -313,6 +335,7 @@ static int __maybe_unused amd_mp2_pci_suspend(struct device *dev)
+ 	}
+ 
+ 	cancel_delayed_work_sync(&cl_data->work_buffer);
++	amd_sfh_clear_intr(mp2);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.h b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.h
+index 9c9119227135e..ee9818d3082e3 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.h
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.h
+@@ -140,5 +140,6 @@ struct amd_mp2_ops {
+ 	 void (*stop)(struct amd_mp2_dev *privdata, u16 sensor_idx);
+ 	 void (*stop_all)(struct amd_mp2_dev *privdata);
+ 	 int (*response)(struct amd_mp2_dev *mp2, u8 sid, u32 sensor_sts);
++	 void (*clear_intr)(struct amd_mp2_dev *privdata);
+ };
+ #endif
 -- 
 2.34.1
 
