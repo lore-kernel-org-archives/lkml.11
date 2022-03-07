@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B35B0C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEC9C35280
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236601AbiCGKDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:03:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
+        id S239672AbiCGKDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:03:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241015AbiCGJlp (ORCPT
+        with ESMTP id S241072AbiCGJlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C767D6D39D;
-        Mon,  7 Mar 2022 01:39:11 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6150F66AEC;
+        Mon,  7 Mar 2022 01:39:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3086AB810C3;
-        Mon,  7 Mar 2022 09:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74DD1C340E9;
-        Mon,  7 Mar 2022 09:34:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1D8B61219;
+        Mon,  7 Mar 2022 09:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A6FC340F4;
+        Mon,  7 Mar 2022 09:39:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645645;
-        bh=Ob/qNd3VHsSqymcYuL8emr4oc6bdPm38KbcwkhBrKsY=;
+        s=korg; t=1646645998;
+        bh=GxjjCsKo7A5cdJcZZChpjxpBbwzR2bIJcqLI7N/1ee8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W3NoA6g06B50h/rwz6dAFXPaGzI/HW7NaERZqZiqNVSmBwvfo0C2Q8q7R82F4bgb9
-         cQXStFifILJeHyNVmnACXm22nIVeekl0SsYGywNKE6zRppn+AlLy6AwlMS24c+oeZA
-         996Jmgtm16dH36mfl/DCEwKmH0V3YSHT56XyVqrg=
+        b=Don1FKx4OxSHYmPxsfZAhQGpqPYKDlQGU/21CmYowoyf+jBlj0te0/y7h/F28mEj8
+         s90KV4TIrQbQ7jXZN1yJK1nPcfVX2vNoJksDiDWufWWnquRpDXs78sBxNj8Up9ivsh
+         J48AzNqpXshRK1Uhc+OooDXQWY1aGp5Xr/+nlYzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Gow <davidgow@google.com>,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.10 097/105] Input: samsung-keypad - properly state IOMEM dependency
-Date:   Mon,  7 Mar 2022 10:19:40 +0100
-Message-Id: <20220307091646.906230487@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Tal <moshet@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 103/262] ethtool: Fix link extended state for big endian
+Date:   Mon,  7 Mar 2022 10:17:27 +0100
+Message-Id: <20220307091705.383984434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Moshe Tal <moshet@nvidia.com>
 
-commit ba115adf61b36b8c167126425a62b0efc23f72c0 upstream.
+[ Upstream commit e2f08207c558bc0bc8abaa557cdb29bad776ac7b ]
 
-Make the samsung-keypad driver explicitly depend on CONFIG_HAS_IOMEM, as it
-calls devm_ioremap(). This prevents compile errors in some configs (e.g,
-allyesconfig/randconfig under UML):
+The link extended sub-states are assigned as enum that is an integer
+size but read from a union as u8, this is working for small values on
+little endian systems but for big endian this always give 0. Fix the
+variable in the union to match the enum size.
 
-/usr/bin/ld: drivers/input/keyboard/samsung-keypad.o: in function `samsung_keypad_probe':
-samsung-keypad.c:(.text+0xc60): undefined reference to `devm_ioremap'
-
-Signed-off-by: David Gow <davidgow@google.com>
-Acked-by: anton ivanov <anton.ivanov@cambridgegreys.com>
-Link: https://lore.kernel.org/r/20220225041727.1902850-1-davidgow@google.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ecc31c60240b ("ethtool: Add link extended state")
+Signed-off-by: Moshe Tal <moshet@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/keyboard/Kconfig |    2 +-
+ include/linux/ethtool.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/input/keyboard/Kconfig
-+++ b/drivers/input/keyboard/Kconfig
-@@ -556,7 +556,7 @@ config KEYBOARD_PMIC8XXX
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 849524b55d89a..3fad741df53ef 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -94,7 +94,7 @@ struct ethtool_link_ext_state_info {
+ 		enum ethtool_link_ext_substate_link_logical_mismatch link_logical_mismatch;
+ 		enum ethtool_link_ext_substate_bad_signal_integrity bad_signal_integrity;
+ 		enum ethtool_link_ext_substate_cable_issue cable_issue;
+-		u8 __link_ext_substate;
++		u32 __link_ext_substate;
+ 	};
+ };
  
- config KEYBOARD_SAMSUNG
- 	tristate "Samsung keypad support"
--	depends on HAVE_CLK
-+	depends on HAS_IOMEM && HAVE_CLK
- 	select INPUT_MATRIXKMAP
- 	help
- 	  Say Y here if you want to use the keypad on your Samsung mobile
+-- 
+2.34.1
+
 
 
