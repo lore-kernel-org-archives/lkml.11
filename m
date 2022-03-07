@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C199C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F52C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238320AbiCGJwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
+        id S238389AbiCGJwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240973AbiCGJln (ORCPT
+        with ESMTP id S240983AbiCGJlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:43 -0500
+        Mon, 7 Mar 2022 04:41:44 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11206C1CA;
-        Mon,  7 Mar 2022 01:38:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E06E6D194;
+        Mon,  7 Mar 2022 01:38:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 392C4B8102B;
-        Mon,  7 Mar 2022 09:38:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73EFCC340F3;
-        Mon,  7 Mar 2022 09:38:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 016F2B810CC;
+        Mon,  7 Mar 2022 09:33:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AF16C340F3;
+        Mon,  7 Mar 2022 09:33:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645928;
-        bh=Ljpn8FdyEg3DeGHMfdNwKAXkMrJs/1K06M6QjXTJynQ=;
+        s=korg; t=1646645633;
+        bh=FKaTv4ewBvPPtU04iar21AHuOmepis0nGGadrUm3lE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d+4GFnPo+NGMku5ctl6vTPh7ZNUoS8xH6WCamUda8Lar1oMz4SnQgvywckPqGLDkw
-         /A1GqFMBNgihf5i3d76rMDgQWUV71xw16ZzVswqx3cfS+uJ4Qi3Dhql4YR19F3GaaG
-         txNHgn50N7Sm13degQ2STguVvEbwzdKHT7lsjrU0=
+        b=t7OsAvqbtDJDEnuCOsP8RGVIEUbJTVmmglIeRRS2B/wZQeWH6lMeVpsitU/u0syiD
+         aqFF6Lqmh3Q+AA7mkCtfkX8uGof6CXL6OVcygO14BX8jZfij6zLVL4Oh/BA/ysxK+1
+         V/Kb6zKhjmR+D+USm4cdTLCqhBea4QlNA1UdzEoM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Auld <matthew.auld@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Qiang Yu <qiang.yu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/262] drm/i915: dont call free_mmap_offset when purging
-Date:   Mon,  7 Mar 2022 10:17:03 +0100
-Message-Id: <20220307091704.720213737@linuxfoundation.org>
+Subject: [PATCH 5.10 093/105] drm/amdgpu: fix suspend/resume hang regression
+Date:   Mon,  7 Mar 2022 10:19:36 +0100
+Message-Id: <20220307091646.793701042@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,75 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Auld <matthew.auld@intel.com>
+From: Qiang Yu <qiang.yu@amd.com>
 
-[ Upstream commit 4c2602ba8d74c35d550ed3d518809c697de08d88 ]
+[ Upstream commit f1ef17011c765495c876fa75435e59eecfdc1ee4 ]
 
-The TTM backend is in theory the only user here(also purge should only
-be called once we have dropped the pages), where it is setup at object
-creation and is only removed once the object is destroyed. Also
-resetting the node here might be iffy since the ttm fault handler
-uses the stored fake offset to determine the page offset within the pages
-array.
+Regression has been reported that suspend/resume may hang with
+the previous vm ready check commit.
 
-This also blows up in the dontneed-before-mmap test, since the
-expectation is that the vma_node will live on, until the object is
-destroyed:
+So bring back the evicted list check as a temp fix.
 
-<2> [749.062902] kernel BUG at drivers/gpu/drm/i915/gem/i915_gem_ttm.c:943!
-<4> [749.062923] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-<4> [749.062928] CPU: 0 PID: 1643 Comm: gem_madvise Tainted: G     U  W         5.16.0-rc8-CI-CI_DRM_11046+ #1
-<4> [749.062933] Hardware name: Gigabyte Technology Co., Ltd. GB-Z390 Garuda/GB-Z390 Garuda-CF, BIOS IG1c 11/19/2019
-<4> [749.062937] RIP: 0010:i915_ttm_mmap_offset.cold.35+0x5b/0x5d [i915]
-<4> [749.063044] Code: 00 48 c7 c2 a0 23 4e a0 48 c7 c7 26 df 4a a0 e8 95 1d d0 e0 bf 01 00 00 00 e8 8b ec cf e0 31 f6 bf 09 00 00 00 e8 5f 30 c0 e0 <0f> 0b 48 c7 c1 24 4b 56 a0 ba 5b 03 00 00 48 c7 c6 c0 23 4e a0 48
-<4> [749.063052] RSP: 0018:ffffc90002ab7d38 EFLAGS: 00010246
-<4> [749.063056] RAX: 0000000000000240 RBX: ffff88811f2e61c0 RCX: 0000000000000006
-<4> [749.063060] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000009
-<4> [749.063063] RBP: ffffc90002ab7e58 R08: 0000000000000001 R09: 0000000000000001
-<4> [749.063067] R10: 000000000123d0f8 R11: ffffc90002ab7b20 R12: ffff888112a1a000
-<4> [749.063071] R13: 0000000000000004 R14: ffff88811f2e61c0 R15: ffff888112a1a000
-<4> [749.063074] FS:  00007f6e5fcad500(0000) GS:ffff8884ad600000(0000) knlGS:0000000000000000
-<4> [749.063078] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-<4> [749.063081] CR2: 00007efd264e39f0 CR3: 0000000115fd6005 CR4: 00000000003706f0
-<4> [749.063085] Call Trace:
-<4> [749.063087]  <TASK>
-<4> [749.063089]  __assign_mmap_offset+0x41/0x300 [i915]
-<4> [749.063171]  __assign_mmap_offset_handle+0x159/0x270 [i915]
-<4> [749.063248]  ? i915_gem_dumb_mmap_offset+0x70/0x70 [i915]
-<4> [749.063325]  drm_ioctl_kernel+0xae/0x140
-<4> [749.063330]  drm_ioctl+0x201/0x3d0
-<4> [749.063333]  ? i915_gem_dumb_mmap_offset+0x70/0x70 [i915]
-<4> [749.063409]  ? do_user_addr_fault+0x200/0x670
-<4> [749.063415]  __x64_sys_ioctl+0x6d/0xa0
-<4> [749.063419]  do_syscall_64+0x3a/0xb0
-<4> [749.063423]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-<4> [749.063428] RIP: 0033:0x7f6e5f100317
-
-Testcase: igt/gem_madvise/dontneed-before-mmap
-Fixes: cf3e3e86d779 ("drm/i915: Use ttm mmap handling for ttm bo's.")
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220106174910.280616-1-matthew.auld@intel.com
-(cherry picked from commit 658a0c632625e1db51837ff754fe18a6a7f2ccf8)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1922
+Fixes: c1a66c3bc425 ("drm/amdgpu: check vm ready by amdgpu_vm->evicting flag")
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Qiang Yu <qiang.yu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_pages.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_pages.c b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-index 8d6c38a622016..9053cea3395a6 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
-@@ -162,7 +162,6 @@ int i915_gem_object_pin_pages_unlocked(struct drm_i915_gem_object *obj)
- /* Immediately discard the backing storage */
- void i915_gem_object_truncate(struct drm_i915_gem_object *obj)
- {
--	drm_gem_free_mmap_offset(&obj->base);
- 	if (obj->ops->truncate)
- 		obj->ops->truncate(obj);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+index 47cc038d7d50..635601d8b131 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+@@ -724,7 +724,8 @@ bool amdgpu_vm_ready(struct amdgpu_vm *vm)
+ 	amdgpu_vm_eviction_lock(vm);
+ 	ret = !vm->evicting;
+ 	amdgpu_vm_eviction_unlock(vm);
+-	return ret;
++
++	return ret && list_empty(&vm->evicted);
  }
+ 
+ /**
 -- 
 2.34.1
 
