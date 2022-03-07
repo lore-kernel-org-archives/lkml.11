@@ -2,156 +2,419 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3340C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 06:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBB1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 06:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235483AbiCGGN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 01:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
+        id S235486AbiCGGRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 01:17:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234977AbiCGGNt (ORCPT
+        with ESMTP id S233321AbiCGGRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 01:13:49 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD3A6419
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 22:12:56 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id o23so12699141pgk.13
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 22:12:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nphVZGk3IRt95221bT7nfSyXQcqcrjz0Ux2hJDzPmMw=;
-        b=ifi3tEd+jUJc9itlg1Xoweu6CKrVulnxsqqlasH2SskzDA+aIdNk7OLrpFeGdVti39
-         ICRKw31jdbcyCePqW8r/u9kG021jyloq1SQ5LsyS6jm6YYfXPc4nzwpP+vjvkAj3QfQ6
-         I8bKLZKELQ52QHAZQBYhCRqgAcKejZjKTfjC8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nphVZGk3IRt95221bT7nfSyXQcqcrjz0Ux2hJDzPmMw=;
-        b=ijcSjHod74S7pHA6bO31OFVjJ7eiiZiNpoCCJdep8gxTR+ve7lyus6x6gDCRHSQXiN
-         YIq+g3RQzuqB0eOVJ8awMQEg/ru9O0GKQm7XSWKYc2T7F4wx+cT+3Lm3axbHI4iki3Zz
-         UIBmukMzlOAOfqfucPRry2mQI1bni3o1mua+A46HVknsxYvP4cW2Vr1B2r+e7xqoOCLS
-         B/HywWlD1YF/oE6VmC/adLlk3zeGpUfhwDAXuGorebOaUDLgHONL9Du4T/kyWlRURyZA
-         ToUX0AolN9R3hx/dDShrIDvDcjVVs1owWPBLcAUA4lPCGrHjvNUEromSvReR2GvQ5a87
-         DYow==
-X-Gm-Message-State: AOAM531gNGvEatgAmdHodsPGobaB/Coj8lSTBpdlXSB1Ouf6ybVbtr8N
-        626vBGBK1w1B10dDaQAkbLFEYA==
-X-Google-Smtp-Source: ABdhPJwbS4tHwgK4DS3o62V8oPKsTJMVUVN3CHN8/+075fpx4MAoYZjrJmfkAUcQfL8G/bf+YYFFhw==
-X-Received: by 2002:a63:1c8:0:b0:380:189b:1e66 with SMTP id 191-20020a6301c8000000b00380189b1e66mr5916458pgb.71.1646633575694;
-        Sun, 06 Mar 2022 22:12:55 -0800 (PST)
-Received: from google.com ([2401:fa00:1:10:40e5:90aa:d4b:2ad9])
-        by smtp.gmail.com with ESMTPSA id x6-20020a17090aa38600b001bce781ce03sm11488297pjp.18.2022.03.06.22.12.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 22:12:55 -0800 (PST)
-Date:   Mon, 7 Mar 2022 14:12:50 +0800
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado 
-        <nfraprado@collabora.com>
-Cc:     Xin Ji <xji@analogixsemi.com>, a.hajda@samsung.com,
-        narmstrong@baylibre.com, dan.carpenter@oracle.com,
-        robert.foss@linaro.org, jonas@kwiboo.se, jernej.skrabec@gmail.com,
-        airlied@linux.ie, daniel@ffwll.ch, sam@ravnborg.org,
-        pihsun@chromium.org, tzungbi@google.com, maxime@cerno.tech,
-        drinkcat@google.com, hsinyi@chromium.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        bliang@analogixsemi.com, qwen@analogixsemi.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v12 3/4] drm/bridge: anx7625: add MIPI DPI input feature
-Message-ID: <YiWiYpEfTOOqgyAN@google.com>
-References: <20211105031904.2641088-1-xji@analogixsemi.com>
- <20211105031904.2641088-3-xji@analogixsemi.com>
- <YiTruiCIkyxs3jTC@pendragon.ideasonboard.com>
+        Mon, 7 Mar 2022 01:17:43 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4E23BBD3;
+        Sun,  6 Mar 2022 22:16:47 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V6Qe1nO_1646633802;
+Received: from 30.240.113.233(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V6Qe1nO_1646633802)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Mar 2022 14:16:44 +0800
+Message-ID: <2005e3f7-ce30-bf36-4787-c503f0e7d6ce@linux.alibaba.com>
+Date:   Mon, 7 Mar 2022 14:16:42 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiTruiCIkyxs3jTC@pendragon.ideasonboard.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+From:   Shuai Xue <xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH v6 2/2] EDAC/ghes: use cper functions to avoid code
+ duplication
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     rric@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, ardb@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
+ <20220303122626.99740-3-xueshuai@linux.alibaba.com>
+ <YiHm1WHwO6HigCZx@nazgul.tnic>
+Content-Language: en-US
+In-Reply-To: <YiHm1WHwO6HigCZx@nazgul.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 06, 2022 at 07:13:30PM +0200, Laurent Pinchart wrote:
-> Hello Xin,
+Hi, Borislav,
+
+在 2022/3/4 PM6:16, Borislav Petkov 写道:
+> On Thu, Mar 03, 2022 at 08:26:26PM +0800, Shuai Xue wrote:
+>> To Borislav: Sorry, I only delete the format change summary in this commit
+>> log in this version. If I missed any comments, could you please point out
+>> clearly? Thank you very much.
 > 
-> (Question for Rob below, and I'm afraid this is urgent as we need to
-> merge a fix in v5.17).
+> I can't be more clear than the below - I simply took your patch and
+> heavily massaged it because it is a lot quicker this way.
 > 
-> On Fri, Nov 05, 2021 at 11:19:03AM +0800, Xin Ji wrote:
-> > The basic anx7625 driver only support MIPI DSI rx signal input.
-> > This patch add MIPI DPI rx input configuration support, after apply
-> > this patch, the driver can support DSI rx or DPI rx by adding
-> > 'bus-type' in DT.
-> > 
-> > Reviewed-by: Robert Foss <robert.foss@linaro.org>
-> > Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> > ---
-> >  drivers/gpu/drm/bridge/analogix/anx7625.c | 247 ++++++++++++++++------
-> >  drivers/gpu/drm/bridge/analogix/anx7625.h |  18 +-
-> >  2 files changed, 205 insertions(+), 60 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > index f48e91134c20..f7c3386c8929 100644
-> > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-
-[...]
-
-> >  static int anx7625_parse_dt(struct device *dev,
-> >  			    struct anx7625_platform_data *pdata)
-> >  {
-> > -	struct device_node *np = dev->of_node;
-> > +	struct device_node *np = dev->of_node, *ep0;
-> >  	struct drm_panel *panel;
-> >  	int ret;
-> > +	int bus_type, mipi_lanes;
-> > +
-> > +	anx7625_get_swing_setting(dev, pdata);
-> >  
-> > +	pdata->is_dpi = 1; /* default dpi mode */
-> >  	pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
-> >  	if (!pdata->mipi_host_node) {
-> >  		DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
-> >  		return -ENODEV;
-> >  	}
-> >  
-> > -	DRM_DEV_DEBUG_DRIVER(dev, "found dsi host node.\n");
-> > +	bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
-> > +	mipi_lanes = MAX_LANES_SUPPORT;
-> > +	ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
-> > +	if (ep0) {
-> > +		if (of_property_read_u32(ep0, "bus-type", &bus_type))
-> > +			bus_type = 0;
-> > +
-> > +		mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
-> > +	}
-> > +
-> > +	if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
+> You can compare it with your version and see what needed to be changed.
+> And you can of course ask questios why, if it is not clear. But it
+> should be - a shortlog of what I did is also in the commit message.
 > 
-> This is not correct *at all*. V4L2_FWNODE_BUS_TYPE_PARALLEL has nothing
-> to do with DSI. DSI stands for Digital *Serial* Interface. If anything,
-> the V4L2_FWNODE_BUS_TYPE_PARALLEL type would map better to DPI, even if
-> it's not an exact match.
+> Now, when you look at the resulting patch you can see what the change
+> does. Yours did more than one logical thing - which a patch should never
+> do.
 > 
-> This patch has landed in v5.17-rc1, along with the corresponding
-> bindings. As DT bindings are an ABI, we should really fix this before
-> v5.17 is released. There is no DSI bus types defined in DT, and adding
-> one as a fix so late in the v5.17-rc cycle seems a bit of a stretch to
-> me (unless Rob disagrees).
+> Also, I'd really really urge you to read
 > 
-> It would seem best to revert this series and the corresponding bindings,
-> and retry in v5.18.
+> Documentation/process/submitting-patches.rst
+> 
+> carefully before sending other patches. I won't do this heavy editing
+> in the future so you're going to have to read review comments and
+> *incorporate* them into your patches before submitting them again.
 
-There is a DT patch using this property that is already queued up for 5.17
-in the soc tree:
+Thank you very much for your valuable reworking. I see your concerns.
 
-https://lore.kernel.org/all/20220214200507.2500693-1-nfraprado@collabora.com/
+> You can test the below on your machine now to make sure it still
+> performs as expected.
 
-merged here:
+I have test this patch, it works well.
 
-http://git.kernel.org/soc/soc/c/32568ae37596b529628ac09b875f4874e614f63f
+>       - rip out useless reformatting
 
-We will need to revert that one as well.
+I have a question about the format after this patch:
 
-ChenYu
+	[ 4578.277035] EDAC MC0: 1 CE single-symbol chipkill ECC on unknown memory (node: 0 card: 0 rank: 0 bank: 256 row: 11098 column: 1032 page:0x95ad2e offset:0x20 grain:1 syndrome:0x0 - APEI location: node: 0 card: 0 rank: 0 bank: 256 row: 11098 column: 1032)
+
+Should we add a new patch to remove the 'space' delimiter after the colon?
+
+Best Regards,
+Shuai
+
+
+> ---
+> From: Shuai Xue <xueshuai@linux.alibaba.com>
+> Date: Thu, 3 Mar 2022 20:26:26 +0800
+> Subject: [PATCH] EDAC/ghes: Unify CPER memory error location reporting
+> 
+> Switch the GHES EDAC memory error reporting functions to use the common
+> CPER ones and get rid of code duplication.
+> 
+>   [ bp:
+>       - rewrite commit message, remove useless text
+>       - rip out useless reformatting
+>       - align function params on the opening brace
+>       - rename function to a more descriptive name
+>       - drop useless function exports
+>       - handle buffer lengths properly when printing other detail
+>       - remove useless casting
+>   ]
+> 
+> Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+> Link: https://lore.kernel.org/r/20220303122626.99740-3-xueshuai@linux.alibaba.com
+> ---
+>  drivers/edac/Kconfig        |   1 +
+>  drivers/edac/ghes_edac.c    | 200 +++++++-----------------------------
+>  drivers/firmware/efi/cper.c |   4 +-
+>  include/linux/cper.h        |   2 +
+>  4 files changed, 42 insertions(+), 165 deletions(-)
+> 
+> diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+> index 58ab63642e72..23f11554f400 100644
+> --- a/drivers/edac/Kconfig
+> +++ b/drivers/edac/Kconfig
+> @@ -55,6 +55,7 @@ config EDAC_DECODE_MCE
+>  config EDAC_GHES
+>  	bool "Output ACPI APEI/GHES BIOS detected errors via EDAC"
+>  	depends on ACPI_APEI_GHES && (EDAC=y)
+> +	select UEFI_CPER
+>  	help
+>  	  Not all machines support hardware-driven error report. Some of those
+>  	  provide a BIOS-driven error report mechanism via ACPI, using the
+> diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
+> index 6d1ddecbf0da..2805d5610300 100644
+> --- a/drivers/edac/ghes_edac.c
+> +++ b/drivers/edac/ghes_edac.c
+> @@ -15,11 +15,13 @@
+>  #include "edac_module.h"
+>  #include <ras/ras_event.h>
+>  
+> +#define OTHER_DETAIL_LEN	400
+> +
+>  struct ghes_pvt {
+>  	struct mem_ctl_info *mci;
+>  
+>  	/* Buffers for the error handling routine */
+> -	char other_detail[400];
+> +	char other_detail[OTHER_DETAIL_LEN];
+>  	char msg[80];
+>  };
+>  
+> @@ -235,8 +237,34 @@ static void ghes_scan_system(void)
+>  	system_scanned = true;
+>  }
+>  
+> +static int print_mem_error_other_detail(const struct cper_sec_mem_err *mem, char *msg,
+> +					const char *location, unsigned int len)
+> +{
+> +	u32 n;
+> +
+> +	if (!msg)
+> +		return 0;
+> +
+> +	n = 0;
+> +	len -= 1;
+> +
+> +	n += scnprintf(msg + n, len - n, "APEI location: %s ", location);
+> +
+> +	if (!(mem->validation_bits & CPER_MEM_VALID_ERROR_STATUS))
+> +		goto out;
+> +
+> +	n += scnprintf(msg + n, len - n, "status(0x%016llx): ", mem->error_status);
+> +	n += scnprintf(msg + n, len - n, "%s ", cper_mem_err_status_str(mem->error_status));
+> +
+> +out:
+> +	msg[n] = '\0';
+> +
+> +	return n;
+> +}
+> +
+>  void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+>  {
+> +	struct cper_mem_err_compact cmem;
+>  	struct edac_raw_error_desc *e;
+>  	struct mem_ctl_info *mci;
+>  	struct ghes_pvt *pvt;
+> @@ -292,60 +320,10 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+>  
+>  	/* Error type, mapped on e->msg */
+>  	if (mem_err->validation_bits & CPER_MEM_VALID_ERROR_TYPE) {
+> +		u8 etype = mem_err->error_type;
+> +
+>  		p = pvt->msg;
+> -		switch (mem_err->error_type) {
+> -		case 0:
+> -			p += sprintf(p, "Unknown");
+> -			break;
+> -		case 1:
+> -			p += sprintf(p, "No error");
+> -			break;
+> -		case 2:
+> -			p += sprintf(p, "Single-bit ECC");
+> -			break;
+> -		case 3:
+> -			p += sprintf(p, "Multi-bit ECC");
+> -			break;
+> -		case 4:
+> -			p += sprintf(p, "Single-symbol ChipKill ECC");
+> -			break;
+> -		case 5:
+> -			p += sprintf(p, "Multi-symbol ChipKill ECC");
+> -			break;
+> -		case 6:
+> -			p += sprintf(p, "Master abort");
+> -			break;
+> -		case 7:
+> -			p += sprintf(p, "Target abort");
+> -			break;
+> -		case 8:
+> -			p += sprintf(p, "Parity Error");
+> -			break;
+> -		case 9:
+> -			p += sprintf(p, "Watchdog timeout");
+> -			break;
+> -		case 10:
+> -			p += sprintf(p, "Invalid address");
+> -			break;
+> -		case 11:
+> -			p += sprintf(p, "Mirror Broken");
+> -			break;
+> -		case 12:
+> -			p += sprintf(p, "Memory Sparing");
+> -			break;
+> -		case 13:
+> -			p += sprintf(p, "Scrub corrected error");
+> -			break;
+> -		case 14:
+> -			p += sprintf(p, "Scrub uncorrected error");
+> -			break;
+> -		case 15:
+> -			p += sprintf(p, "Physical Memory Map-out event");
+> -			break;
+> -		default:
+> -			p += sprintf(p, "reserved error (%d)",
+> -				     mem_err->error_type);
+> -		}
+> +		p += snprintf(p, sizeof(pvt->msg), "%s", cper_mem_err_type_str(etype));
+>  	} else {
+>  		strcpy(pvt->msg, "unknown error");
+>  	}
+> @@ -362,52 +340,19 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+>  
+>  	/* Memory error location, mapped on e->location */
+>  	p = e->location;
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_NODE)
+> -		p += sprintf(p, "node:%d ", mem_err->node);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_CARD)
+> -		p += sprintf(p, "card:%d ", mem_err->card);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_MODULE)
+> -		p += sprintf(p, "module:%d ", mem_err->module);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_RANK_NUMBER)
+> -		p += sprintf(p, "rank:%d ", mem_err->rank);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_BANK)
+> -		p += sprintf(p, "bank:%d ", mem_err->bank);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_BANK_GROUP)
+> -		p += sprintf(p, "bank_group:%d ",
+> -			     mem_err->bank >> CPER_MEM_BANK_GROUP_SHIFT);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_BANK_ADDRESS)
+> -		p += sprintf(p, "bank_address:%d ",
+> -			     mem_err->bank & CPER_MEM_BANK_ADDRESS_MASK);
+> -	if (mem_err->validation_bits & (CPER_MEM_VALID_ROW | CPER_MEM_VALID_ROW_EXT)) {
+> -		u32 row = mem_err->row;
+> -
+> -		row |= cper_get_mem_extension(mem_err->validation_bits, mem_err->extended);
+> -		p += sprintf(p, "row:%d ", row);
+> -	}
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_COLUMN)
+> -		p += sprintf(p, "col:%d ", mem_err->column);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_BIT_POSITION)
+> -		p += sprintf(p, "bit_pos:%d ", mem_err->bit_pos);
+> +	cper_mem_err_pack(mem_err, &cmem);
+> +	p += cper_mem_err_location(&cmem, p);
+> +
+>  	if (mem_err->validation_bits & CPER_MEM_VALID_MODULE_HANDLE) {
+> -		const char *bank = NULL, *device = NULL;
+>  		struct dimm_info *dimm;
+>  
+> -		dmi_memdev_name(mem_err->mem_dev_handle, &bank, &device);
+> -		if (bank != NULL && device != NULL)
+> -			p += sprintf(p, "DIMM location:%s %s ", bank, device);
+> -		else
+> -			p += sprintf(p, "DIMM DMI handle: 0x%.4x ",
+> -				     mem_err->mem_dev_handle);
+> -
+> +		p += cper_dimm_err_location(&cmem, p);
+>  		dimm = find_dimm_by_handle(mci, mem_err->mem_dev_handle);
+>  		if (dimm) {
+>  			e->top_layer = dimm->idx;
+>  			strcpy(e->label, dimm->label);
+>  		}
+>  	}
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_CHIP_ID)
+> -		p += sprintf(p, "chipID: %d ",
+> -			     mem_err->extended >> CPER_MEM_CHIP_ID_SHIFT);
+>  	if (p > e->location)
+>  		*(p - 1) = '\0';
+>  
+> @@ -416,78 +361,7 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+>  
+>  	/* All other fields are mapped on e->other_detail */
+>  	p = pvt->other_detail;
+> -	p += snprintf(p, sizeof(pvt->other_detail),
+> -		"APEI location: %s ", e->location);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_ERROR_STATUS) {
+> -		u64 status = mem_err->error_status;
+> -
+> -		p += sprintf(p, "status(0x%016llx): ", (long long)status);
+> -		switch ((status >> 8) & 0xff) {
+> -		case 1:
+> -			p += sprintf(p, "Error detected internal to the component ");
+> -			break;
+> -		case 16:
+> -			p += sprintf(p, "Error detected in the bus ");
+> -			break;
+> -		case 4:
+> -			p += sprintf(p, "Storage error in DRAM memory ");
+> -			break;
+> -		case 5:
+> -			p += sprintf(p, "Storage error in TLB ");
+> -			break;
+> -		case 6:
+> -			p += sprintf(p, "Storage error in cache ");
+> -			break;
+> -		case 7:
+> -			p += sprintf(p, "Error in one or more functional units ");
+> -			break;
+> -		case 8:
+> -			p += sprintf(p, "component failed self test ");
+> -			break;
+> -		case 9:
+> -			p += sprintf(p, "Overflow or undervalue of internal queue ");
+> -			break;
+> -		case 17:
+> -			p += sprintf(p, "Virtual address not found on IO-TLB or IO-PDIR ");
+> -			break;
+> -		case 18:
+> -			p += sprintf(p, "Improper access error ");
+> -			break;
+> -		case 19:
+> -			p += sprintf(p, "Access to a memory address which is not mapped to any component ");
+> -			break;
+> -		case 20:
+> -			p += sprintf(p, "Loss of Lockstep ");
+> -			break;
+> -		case 21:
+> -			p += sprintf(p, "Response not associated with a request ");
+> -			break;
+> -		case 22:
+> -			p += sprintf(p, "Bus parity error - must also set the A, C, or D Bits ");
+> -			break;
+> -		case 23:
+> -			p += sprintf(p, "Detection of a PATH_ERROR ");
+> -			break;
+> -		case 25:
+> -			p += sprintf(p, "Bus operation timeout ");
+> -			break;
+> -		case 26:
+> -			p += sprintf(p, "A read was issued to data that has been poisoned ");
+> -			break;
+> -		default:
+> -			p += sprintf(p, "reserved ");
+> -			break;
+> -		}
+> -	}
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_REQUESTOR_ID)
+> -		p += sprintf(p, "requestorID: 0x%016llx ",
+> -			     (long long)mem_err->requestor_id);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_RESPONDER_ID)
+> -		p += sprintf(p, "responderID: 0x%016llx ",
+> -			     (long long)mem_err->responder_id);
+> -	if (mem_err->validation_bits & CPER_MEM_VALID_TARGET_ID)
+> -		p += sprintf(p, "targetID: 0x%016llx ",
+> -			     (long long)mem_err->responder_id);
+> +	p += print_mem_error_other_detail(mem_err, p, e->location, OTHER_DETAIL_LEN);
+>  	if (p > pvt->other_detail)
+>  		*(p - 1) = '\0';
+>  
+> diff --git a/drivers/firmware/efi/cper.c b/drivers/firmware/efi/cper.c
+> index 34eeaa59f04a..215c778fb33c 100644
+> --- a/drivers/firmware/efi/cper.c
+> +++ b/drivers/firmware/efi/cper.c
+> @@ -237,7 +237,7 @@ const char *cper_mem_err_status_str(u64 status)
+>  }
+>  EXPORT_SYMBOL_GPL(cper_mem_err_status_str);
+>  
+> -static int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg)
+> +int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg)
+>  {
+>  	u32 len, n;
+>  
+> @@ -291,7 +291,7 @@ static int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg)
+>  	return n;
+>  }
+>  
+> -static int cper_dimm_err_location(struct cper_mem_err_compact *mem, char *msg)
+> +int cper_dimm_err_location(struct cper_mem_err_compact *mem, char *msg)
+>  {
+>  	u32 len, n;
+>  	const char *bank = NULL, *device = NULL;
+> diff --git a/include/linux/cper.h b/include/linux/cper.h
+> index 5b1dd27b317d..eacb7dd7b3af 100644
+> --- a/include/linux/cper.h
+> +++ b/include/linux/cper.h
+> @@ -569,5 +569,7 @@ void cper_print_proc_arm(const char *pfx,
+>  			 const struct cper_sec_proc_arm *proc);
+>  void cper_print_proc_ia(const char *pfx,
+>  			const struct cper_sec_proc_ia *proc);
+> +int cper_mem_err_location(struct cper_mem_err_compact *mem, char *msg);
+> +int cper_dimm_err_location(struct cper_mem_err_compact *mem, char *msg);
+>  
+>  #endif
