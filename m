@@ -2,164 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD078C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E353C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243213AbiCGOc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:32:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55678 "EHLO
+        id S243220AbiCGOdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234087AbiCGOc6 (ORCPT
+        with ESMTP id S239640AbiCGOdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:32:58 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EC27938F
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:32:03 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id 12so15307663oix.12
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 06:32:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jAOEfcrHxWTEhg7BxTnoFSoh64ur+frJb+7Etlx9rtQ=;
-        b=GJ/zew/2c/T7gmBh99VfzZLRMIr1lWxgtwiRGpln7n6kXctT05678TBF1YPo8K/nyU
-         xOL/GNqnsexBZCu2VL/N3mTeUDMxf6kTPDvrzocCn/XswBlLdtp+GJzmpSxz7sqo4KXt
-         4wr7xC63ca5frxTj5uJRTgnPWTe6M+mGV6zRZ5vAST0uEDv9m+LWK0h2mFrEPzjBt1Yt
-         /X9IYwbSusvVKxyEyVqgZsa1ageF3DyBQDHldMq/hndd38A4zi/b6Iqeqx6a4+T4eW9U
-         S8DmT71hgMF8+wgDwfhNOqN3TjxkzV0ImuTqjRWVDS5YjPGK9jGaPbiZxzs0TVQ8sY7R
-         7MFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jAOEfcrHxWTEhg7BxTnoFSoh64ur+frJb+7Etlx9rtQ=;
-        b=JJ+ke/EcAgTY7uZQzRdOqQ/9LQ5nxU3XLO8niYqWiSARFuDj9XgGa8k0VWS5zaPioT
-         TJbefLICRtngiO7fMnCtipVR4rPVz+skmnQj/7M8t4DjNzZ9ogI/fAj7cD2LkwBek4+v
-         HRnBVlJPWVGu6OzhVmtH5M0gxxfoL+SGFGzOsUNYRQbaihAi3O3e59SDXEmDCzx3oa6+
-         7wRVdwx/8MsNlqkBORzVy1hZ+3MSrusti3ZsHjSiDpNZV2z2qWsxJ+iU7ahaiLglewce
-         1NnChxY3+WforE2yT2Ls4WA1LCGA57e2Fo5Vo0dzbVZgvHfzcwnPEv549GYUkylVIqu9
-         Ez9w==
-X-Gm-Message-State: AOAM532PwtX3gG9PrsNw0bDudW24q6YXQ4POwEO4IcKdyrz3kle7tGKU
-        5oYFlfengelt16IlZBFrLOuDBw==
-X-Google-Smtp-Source: ABdhPJzqOXx5kooaXG2dVnX2vpjZX9hB4LZw1mzfujLDchjIhcK0otseZB2nycRu3BZ28DFHpurG6A==
-X-Received: by 2002:a05:6808:23ca:b0:2d9:bb42:81e with SMTP id bq10-20020a05680823ca00b002d9bb42081emr5269110oib.141.1646663523111;
-        Mon, 07 Mar 2022 06:32:03 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id o10-20020a0568080f8a00b002d726c76b77sm6442939oiw.15.2022.03.07.06.32.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 06:32:02 -0800 (PST)
-Date:   Mon, 7 Mar 2022 06:33:47 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v4 3/7] usb: typec: mux: Check dev_set_name() return value
-Message-ID: <YiYXywEEz7WZQhfd@ripper>
-References: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
- <20220307034040.1111107-3-bjorn.andersson@linaro.org>
- <YiXZkqPQxqQ9I0VH@smile.fi.intel.com>
+        Mon, 7 Mar 2022 09:33:21 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2058.outbound.protection.outlook.com [40.107.22.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FEB931360
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:32:25 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fHv6XbBT10V6ys7QcNyw4SndyVlcesZduWmQTzxu1SaiAI9/noLWPDqSvoinSUUzhX5nuHguV6VPfZD+gksyVvu5aJsuLDxs5Xrqi3DYoDwPvY89HQYpmwUKT3Sh7IzosyHfekdcd4zRbeO2hOeB5A8toqeaTviR2dP/KJQmFxj5qLKs3U2FalcghytQL9YwSREh618UCwJTymIPw4MwiwVQGpe/IGLmSKmxLC2I6GuG/GPjS/VYH7OnwtTgl+gDS6FFySVp/L+ScCsjIuPixFSvBgfB48LLFTpbgwNl74+ltRX5Z6SoTADOd3huw/qPfowtoDhLKQBY3M45r/+5XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=diTjgBGPncoJwBHe+9NDm/od+MBbyK06HlZStJU1uIM=;
+ b=ZouipMtVm3Pdxe5gvO61LDVlngv3qwVX+UcEYcNG8yx0Afz9NLL5dxnegFX2Q2Wqn6upIwv2nKUhoJJp5bOTibPZ8SMK6ur+xT0nANiU3cRREZsSQH7+ai9kNAI5I8D0N74cUeMIsgtweYpvCPXF2MzUQADRiiV6sRGL7u3+tRlaUQdwYrC71UEF7pv/24XhC5ZfyzPgxb8g4cv2fiMWXALiTheGairqdJg2opXQ3BRbo6DPGa7nn7a/wO8MnRYRAa0tLPBdRZrOTvpppjFQcLEJF85o5U8o6QvssNwlupCSoPRgmmfjuRtdXT4kGueG9Yn7XfqPJc3iwiYrRiSrsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=variscite.com; dmarc=pass action=none
+ header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=diTjgBGPncoJwBHe+9NDm/od+MBbyK06HlZStJU1uIM=;
+ b=GeL0OVm/KAFVRi6yXnYkUtvRq9tCGZj7dw1GD9t/A5onzB2fXS5PcefvpZXXHnIYP8xO0HfKvLTzj19XS6bwQ1n7nywTdik2DZLyKXt9TTtF1rTb5qWe7N4HORsmoUzEZb+SFmM8sCrHsgnILe8HYYkG0UNHtRI/lWF4z1B8npYti/XCPFsDsE9eVqJrYmOWGNATWDJDipWb1drJ4glv8lcnlnn+sy+DTQ40NdTnvH8bBScEPErdfDlPO5S4xUPmDwJiqrC4sOm5PYyDTblIVt9nn+ytS8pI3o9DBaJ2h6W15eIW1/6c0V8FuEiMQT69P8YXtYJd5lor8wmC0TgIxw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=variscite.com;
+Received: from AM9PR08MB6999.eurprd08.prod.outlook.com (2603:10a6:20b:41a::7)
+ by HE1PR08MB2922.eurprd08.prod.outlook.com (2603:10a6:7:2e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.21; Mon, 7 Mar
+ 2022 14:32:22 +0000
+Received: from AM9PR08MB6999.eurprd08.prod.outlook.com
+ ([fe80::784c:5631:d38f:9a63]) by AM9PR08MB6999.eurprd08.prod.outlook.com
+ ([fe80::784c:5631:d38f:9a63%6]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
+ 14:32:22 +0000
+From:   Alifer Moraes <alifer.m@variscite.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     eran.m@variscite.com, han.xu@nxp.com,
+        linux-mtd@lists.infradead.org, miquel.raynal@bootlin.com,
+        pierluigi.p@variscite.com, richard@nod.at, vigneshr@ti.com,
+        Alifer Moraes <alifer.m@variscite.com>
+Subject: [PATCH] mtd: rawnand: gpmi: add support for legacy-bch-geometry
+Date:   Mon,  7 Mar 2022 11:32:02 -0300
+Message-Id: <20220307143202.28474-1-alifer.m@variscite.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: CP2P215CA0044.LAMP215.PROD.OUTLOOK.COM
+ (2603:10d6:102:2::30) To AM9PR08MB6999.eurprd08.prod.outlook.com
+ (2603:10a6:20b:41a::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiXZkqPQxqQ9I0VH@smile.fi.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5296dcdc-8036-42bf-17b7-08da00474a86
+X-MS-TrafficTypeDiagnostic: HE1PR08MB2922:EE_
+X-Microsoft-Antispam-PRVS: <HE1PR08MB29224F2A386D02E238C6473087089@HE1PR08MB2922.eurprd08.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: konwxPuLM6KI3RbZ2p1eUZ2NtqJVNkPdkD9CRxkVPpDs9QUIRVE0C+VSVE7/YJGdY2f3+7AvXw5rSPmy7Ma1csuXiyaBRqm2RqVlp3Vu4Ek46AhKtoOjaoGfECFm5Kmb+15ng1hI1b+BU9KVCPbFbwl6cbAOTKiXx5aDi+19ZUeUDWDyDU5dHOX2d6prAo2c1zn20Y30J0ih2+lJp401VwbCI5m1pqZm4kkaeatVF+Y11+mW8hKNqusJCPark7C0RFPUnHkRbBAHP+qayctjKrQ6a5s5O3UorfOvxCYFA90Q5ZTzy9gWC3HeCeRetXFbzPzX2I4aio6PBsXTbF+FNlu0+x4bfIi4PIyVhJsbsxot6k5RKknXdsJ1tYr93PPMA3U23ViqGgogEIKQJDlp2pHNBkYfEVTxL1MpAHbLtMdS+AydqwE875QE6n5ZZfB5sO/IithvehqeWMbsfcIhn7lZMNsTSaCRIlK4wISss+2FDtrCE2TO+2defR9Uv7plvy/WjRPBN8rmMz5aHWXQqCQZ1AvKsqk+8NW8KpYPAeaA2c4ojSy/6SiRzvjYFDdIfRywnhC8E2bcjfN3M5clm6dLILrRc8gCI9VMZ0TaIWp2fC6h4x2rS2l7vc9AvdNqdYsyr/PKKXwbC2mUQfsUqrMz2406R7ykpda/UETnwQKMaEdLdjoxRTK+jzBDDnhqkgovct06dbCNzFcv+xbaHQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR08MB6999.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(136003)(346002)(39840400004)(366004)(376002)(396003)(107886003)(6666004)(186003)(26005)(2906002)(1076003)(2616005)(52116002)(66476007)(86362001)(8936002)(6506007)(38100700002)(38350700002)(8676002)(66946007)(6916009)(66556008)(4326008)(6486002)(316002)(83380400001)(508600001)(36756003)(6512007)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j+6e/QB8dds8kk3e6UogiwBgjVrsCCuAqBMwbo9UOkXgNwLieZU7nfUxFNeD?=
+ =?us-ascii?Q?aejgb2e+smyxxX99nS85AVxC3TAwrTkybB5hjeSRZDDejEe1u/VpgO0xqh7Z?=
+ =?us-ascii?Q?K/6e9D9iFxFkGgMgLVj2lM/wjIkmzbHDGUSU3O4EiVuNX9YeYHJ0i+fdvCyZ?=
+ =?us-ascii?Q?tMNpl68TnB8iJD4Zo1Vd0D4Gn4UcH1xKC3h3CtVDci49bKsZQFetio577rHa?=
+ =?us-ascii?Q?DQil/ugCGnvVGMCZAYxZ5HNOHToyW2AsbWOmeO21YgvgSr6jIbGCEVJomt7H?=
+ =?us-ascii?Q?8OqJQYMoLnE8j6yDdXbz1zm7jlQ910jmoBDLtXfTVwEOvK6+6JB5Yoj9UXgJ?=
+ =?us-ascii?Q?wiTcia/vAmJjnQQOI2PcLmAZncqjfuEbtwyQ1OJB7PC28qtBsVluiRGLRiE2?=
+ =?us-ascii?Q?5ZLM8Rb1ojGKM2fndpN5cvZGJ+b6JXHVFHOYlPzyuYX3QQDKrWb00hf5fey2?=
+ =?us-ascii?Q?XFqBpfenLUUY4/NilI/Uu4tfH4rJsXM1j9JQgMhjnwHQ9vKzhnE1tTz9B2Pb?=
+ =?us-ascii?Q?ScxP+8z/8pyThB2rjX2Rfh6ujcdIGOBXrKaiwQD+xtR6siOVPX4nv9xxX4Yt?=
+ =?us-ascii?Q?a0Lt8VaPGy72rkctLCci7fJrLgHaZZ1iEPRZUJHc27PYlJ30NFsoOcyRk3pr?=
+ =?us-ascii?Q?UH3m/AwyDAxkJo6yKcGrC20GPwlAw/sEYg4ILhc0cteGj2Ahqr/stXe/d3Uy?=
+ =?us-ascii?Q?TYpu82WKOr+3gfr6vi63c4UYJ0tfxVjS7D3AOtVBwiuWAIBblBM9oO8IBICT?=
+ =?us-ascii?Q?fRIZazI4TwUVejUyRo0thDireYbqxHOovvWSa2Nx1GybVRidQjY2VaLCXGLk?=
+ =?us-ascii?Q?WCTzk7CECEyXM0qZc7mJFt8jQGxNwsbp08CG3h6gV9RJIdJ57m0P8zE64QFX?=
+ =?us-ascii?Q?OpdqV1epOZ2zBNYwG8NH9KdVl7K81XmOPjV3UTttPh5DnUtmYjCIyXhAfCRm?=
+ =?us-ascii?Q?sQo83GWhdbLmFrxNVA7qPov3K8JujLahUfQmYjFTy5YjRS3JvwmIl7FdeRoL?=
+ =?us-ascii?Q?cBTyJ35wOwkNMlwTWVHVyby9drGXUmsxmiYQL+DlX3pl7dImf9Nr6DaYhi/0?=
+ =?us-ascii?Q?DG0neMdJTdNqSVwK1+dn8A2nfqOMUZ0zL+YkMMCJW6BUQzA7n6G6glske5cG?=
+ =?us-ascii?Q?sGzcrm5KG9yBNzkHSneE20z7GJlB4jqVfM4imyihbXXSDVgQwtHoRDAwRLB0?=
+ =?us-ascii?Q?FpxJP2TpmW+3hsA7yOmbWC48dp9GeRN7MAiityotXfeWNYBEPYNvtTgoWFKy?=
+ =?us-ascii?Q?yejzXchRiQILIaAbSYk6jd2sUe2Aq8MlVGnQ+8qMdEwgqcDmcAWyLi3STLag?=
+ =?us-ascii?Q?F0zQB31pUepAh3aOZHrZqFmVzcGkK7ebQBxGpJJ72pGByUa/fpvPnys6OfM+?=
+ =?us-ascii?Q?OO+Bsh/cqigOZihbAT/yIE/Tq7eWAsY2JiMPYmYKC+RebLqfTfjU4WlUgpNf?=
+ =?us-ascii?Q?49lTn7nlhpkqPi1l1EVFdke4Hqe4pbhZrvKkxcVnjsxzDFShm8REDCoN56gm?=
+ =?us-ascii?Q?bD+o5qZ9woJU9kTgrPgdpgNfga0hEzLWDJQOORVRxOlFR3WqNPW6V5nvDSIf?=
+ =?us-ascii?Q?UE46kk4tW9WxrJ4NhohUol1WICYlqD04UdCuBVG/RQShxLWEbrWSheay8gAw?=
+ =?us-ascii?Q?/FkPJfWVa/CnmNaHeB0CLjk=3D?=
+X-OriginatorOrg: variscite.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5296dcdc-8036-42bf-17b7-08da00474a86
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR08MB6999.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 14:32:22.0576
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QkyNNIcKljkIqge0tPpDl55iC/7EFORKWBfLQ1L/gES+0SRCe4iQyeu1qOEDRqoSLzqbLsOoR2Rsia5k0B3LLA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR08MB2922
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 07 Mar 02:08 PST 2022, Andy Shevchenko wrote:
+From: Pierluigi Passaro <pierluigi.p@variscite.com>
 
-> On Sun, Mar 06, 2022 at 07:40:36PM -0800, Bjorn Andersson wrote:
-> > It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
-> 
-> Thanks!
-> Shouldn't we have a Fixes tag and be sent separately for this cycle?
-> 
+For backward compatibility, allow supporting legacy-bch-geometry as in
+original NXP releases.
 
-It seems appropriate to add:
+Signed-off-by: Pierluigi Passaro <pierluigi.p@variscite.com>
+Signed-off-by: Alifer Moraes <alifer.m@variscite.com>
+---
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 9 +++++++++
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.h | 3 +++
+ 2 files changed, 12 insertions(+)
 
-Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+index 1b64c5a5140d..ae375115ef0a 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -517,6 +517,11 @@ static int common_nfc_set_geometry(struct gpmi_nand_data *this)
+ 	const struct nand_ecc_props *requirements =
+ 		nanddev_get_ecc_requirements(&chip->base);
+ 
++	if (this->legacy_bch_geometry) {
++		dev_warn(this->dev, "use legacy bch geometry\n");
++		return legacy_set_geometry(this);
++	}
++
+ 	if (chip->ecc.strength > 0 && chip->ecc.size > 0)
+ 		return set_geometry_by_ecc_info(this, chip->ecc.strength,
+ 						chip->ecc.size);
+@@ -2072,6 +2077,10 @@ static int gpmi_nand_attach_chip(struct nand_chip *chip)
+ 	dev_dbg(this->dev, "Blockmark swapping %sabled\n",
+ 		this->swap_block_mark ? "en" : "dis");
+ 
++	if (of_property_read_bool(this->dev->of_node,
++			"fsl,legacy-bch-geometry"))
++		this->legacy_bch_geometry = true;
++
+ 	ret = gpmi_init_last(this);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.h b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.h
+index 5e1c3ddae5f8..d9926cf3d5e0 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.h
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.h
+@@ -151,6 +151,9 @@ struct gpmi_nand_data {
+ 
+ 	void			*raw_buffer;
+ 
++	/* legacy bch geometry flag */
++	bool			legacy_bch_geometry;
++
+ 	/* DMA channels */
+ #define DMA_CHANS		8
+ 	struct dma_chan		*dma_chans[DMA_CHANS];
+-- 
+2.25.1
 
-
-If the maintainer would prefer to get this into v5.18, it could either
-be picked ahead of the rest of the series, or I can resubmit it on its
-own. I don't think it's a critical fix though.
-
-> > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > ---
-> > 
-> > Changes since v3:
-> > - New patch
-> > 
-> >  drivers/usb/typec/mux.c | 14 ++++++++++----
-> >  1 file changed, 10 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
-> > index c8340de0ed49..d2aaf294b649 100644
-> > --- a/drivers/usb/typec/mux.c
-> > +++ b/drivers/usb/typec/mux.c
-> > @@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
-> >  	sw->dev.class = &typec_mux_class;
-> >  	sw->dev.type = &typec_switch_dev_type;
-> >  	sw->dev.driver_data = desc->drvdata;
-> > -	dev_set_name(&sw->dev, "%s-switch",
-> > -		     desc->name ? desc->name : dev_name(parent));
-> > +	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
-> 
-> We may use shorten form of the ternary
-> 
-> 	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ?: dev_name(parent));
-> 
-> at the same time, but it's up to you.
-> 
-
-I looked at it, but felt it was an unrelated change and decided to leave
-it as is.
-
-> Either way code looks good to me,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-
-Thanks,
-Bjorn
-
-> > +	if (ret) {
-> > +		put_device(&sw->dev);
-> > +		return ERR_PTR(ret);
-> > +	}
-> >  
-> >  	ret = device_add(&sw->dev);
-> >  	if (ret) {
-> > @@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
-> >  	mux->dev.class = &typec_mux_class;
-> >  	mux->dev.type = &typec_mux_dev_type;
-> >  	mux->dev.driver_data = desc->drvdata;
-> > -	dev_set_name(&mux->dev, "%s-mux",
-> > -		     desc->name ? desc->name : dev_name(parent));
-> > +	ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
-> 
-> Ditto.
-> 
-> > +	if (ret) {
-> > +		put_device(&mux->dev);
-> > +		return ERR_PTR(ret);
-> > +	}
-> >  
-> >  	ret = device_add(&mux->dev);
-> >  	if (ret) {
-> > -- 
-> > 2.33.1
-> > 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
