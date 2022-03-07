@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC78EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A184C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236423AbiCGJUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
+        id S236429AbiCGJUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:20:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236164AbiCGJUW (ORCPT
+        with ESMTP id S236401AbiCGJU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:20:22 -0500
+        Mon, 7 Mar 2022 04:20:27 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F7145792;
-        Mon,  7 Mar 2022 01:19:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1196506F1;
+        Mon,  7 Mar 2022 01:19:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05CDFB810B9;
-        Mon,  7 Mar 2022 09:19:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71326C340E9;
-        Mon,  7 Mar 2022 09:19:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B402B810BD;
+        Mon,  7 Mar 2022 09:19:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF3AC340F3;
+        Mon,  7 Mar 2022 09:19:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644764;
-        bh=dvkQIVaVU/XwX/y85aJnhScdigTtuAhBAx1OV2QuNa4=;
+        s=korg; t=1646644768;
+        bh=hGZGKF3eIIGA7dSlt4GgSw/n9/o1tLEFOlULyzLuRZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DeeBDI+w20OkWTuhfOIOkibO9bLb9OVQwE8fCR8olRSH7MFATIbWGZcjYx9YecHVM
-         PdnhU6WliIziJBWxoJPlt0khk0tKtxkZlOW+MfK0GjugDwet4nQIaHZ5Lf05fGYDnk
-         M08H3H0vRpbjnonrBk3f7Ef2rTVJ17B3Gk394950=
+        b=rzeZrAOxhaqqQYN9mhC3bcXqOx22V8pxBjJhqYfON6OMMoAzwz5Npa53rcRE6VUEW
+         o9T9pgejBskyoxp8l/Bo0HEjtG4CXj6v7R1fdfsOmncWlU8rXlJHWhpUlG1dzEsqnD
+         /ivrCQ9SG0FlaorANxUxdj19hbZOipJa5bniXMN8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH 4.9 15/32] netfilter: nf_queue: fix possible use-after-free
-Date:   Mon,  7 Mar 2022 10:18:41 +0100
-Message-Id: <20220307091634.873450554@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 16/32] net: dcb: flush lingering app table entries for unregistered devices
+Date:   Mon,  7 Mar 2022 10:18:42 +0100
+Message-Id: <20220307091634.901220025@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
 References: <20220307091634.434478485@linuxfoundation.org>
@@ -49,99 +48,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
+commit 91b0383fef06f20b847fa9e4f0e3054ead0b1a1b upstream.
 
-Eric Dumazet says:
-  The sock_hold() side seems suspect, because there is no guarantee
-  that sk_refcnt is not already 0.
+If I'm not mistaken (and I don't think I am), the way in which the
+dcbnl_ops work is that drivers call dcb_ieee_setapp() and this populates
+the application table with dynamically allocated struct dcb_app_type
+entries that are kept in the module-global dcb_app_list.
 
-On failure, we cannot queue the packet and need to indicate an
-error.  The packet will be dropped by the caller.
+However, nobody keeps exact track of these entries, and although
+dcb_ieee_delapp() is supposed to remove them, nobody does so when the
+interface goes away (example: driver unbinds from device). So the
+dcb_app_list will contain lingering entries with an ifindex that no
+longer matches any device in dcb_app_lookup().
 
-v2: split skb prefetch hunk into separate change
+Reclaim the lost memory by listening for the NETDEV_UNREGISTER event and
+flushing the app table entries of interfaces that are now gone.
 
-Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+In fact something like this used to be done as part of the initial
+commit (blamed below), but it was done in dcbnl_exit() -> dcb_flushapp(),
+essentially at module_exit time. That became dead code after commit
+7a6b6f515f77 ("DCB: fix kconfig option") which essentially merged
+"tristate config DCB" and "bool config DCBNL" into a single "bool config
+DCB", so net/dcb/dcbnl.c could not be built as a module anymore.
+
+Commit 36b9ad8084bd ("net/dcb: make dcbnl.c explicitly non-modular")
+recognized this and deleted dcbnl_exit() and dcb_flushapp() altogether,
+leaving us with the version we have today.
+
+Since flushing application table entries can and should be done as soon
+as the netdevice disappears, fundamentally the commit that is to blame
+is the one that introduced the design of this API.
+
+Fixes: 9ab933ab2cc8 ("dcbnl: add appliction tlv handlers")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_queue.h |    2 +-
- net/netfilter/nf_queue.c         |   12 ++++++++++--
- net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
- 3 files changed, 20 insertions(+), 6 deletions(-)
+ net/dcb/dcbnl.c |   44 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
---- a/include/net/netfilter/nf_queue.h
-+++ b/include/net/netfilter/nf_queue.h
-@@ -31,7 +31,7 @@ void nf_register_queue_handler(struct ne
- void nf_unregister_queue_handler(struct net *net);
- void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
- 
--void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
-+bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
- void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
- 
- static inline void init_hashrandom(u32 *jhash_initval)
---- a/net/netfilter/nf_queue.c
-+++ b/net/netfilter/nf_queue.c
-@@ -80,10 +80,13 @@ void nf_queue_entry_release_refs(struct
- EXPORT_SYMBOL_GPL(nf_queue_entry_release_refs);
- 
- /* Bump dev refs so they don't vanish while packet is out */
--void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
-+bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
- {
- 	struct nf_hook_state *state = &entry->state;
- 
-+	if (state->sk && !atomic_inc_not_zero(&state->sk->sk_refcnt))
-+		return false;
-+
- 	if (state->in)
- 		dev_hold(state->in);
- 	if (state->out)
-@@ -102,6 +105,7 @@ void nf_queue_entry_get_refs(struct nf_q
- 			dev_hold(physdev);
- 	}
- #endif
-+	return true;
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -1938,10 +1938,54 @@ int dcb_ieee_delapp(struct net_device *d
  }
- EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
+ EXPORT_SYMBOL(dcb_ieee_delapp);
  
-@@ -148,7 +152,11 @@ static int __nf_queue(struct sk_buff *sk
- 		.size	= sizeof(*entry) + afinfo->route_key_size,
- 	};
- 
--	nf_queue_entry_get_refs(entry);
-+	if (!nf_queue_entry_get_refs(entry)) {
-+		kfree(entry);
-+		return -ENOTCONN;
++static void dcbnl_flush_dev(struct net_device *dev)
++{
++	struct dcb_app_type *itr, *tmp;
++
++	spin_lock(&dcb_lock);
++
++	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
++		if (itr->ifindex == dev->ifindex) {
++			list_del(&itr->list);
++			kfree(itr);
++		}
 +	}
 +
- 	skb_dst_force(skb);
- 	afinfo->saveroute(skb, entry);
- 	status = qh->outfn(entry, queuenum);
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -673,9 +673,15 @@ static struct nf_queue_entry *
- nf_queue_entry_dup(struct nf_queue_entry *e)
++	spin_unlock(&dcb_lock);
++}
++
++static int dcbnl_netdevice_event(struct notifier_block *nb,
++				 unsigned long event, void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++
++	switch (event) {
++	case NETDEV_UNREGISTER:
++		if (!dev->dcbnl_ops)
++			return NOTIFY_DONE;
++
++		dcbnl_flush_dev(dev);
++
++		return NOTIFY_OK;
++	default:
++		return NOTIFY_DONE;
++	}
++}
++
++static struct notifier_block dcbnl_nb __read_mostly = {
++	.notifier_call  = dcbnl_netdevice_event,
++};
++
+ static int __init dcbnl_init(void)
  {
- 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
--	if (entry)
--		nf_queue_entry_get_refs(entry);
--	return entry;
++	int err;
 +
-+	if (!entry)
-+		return NULL;
-+
-+	if (nf_queue_entry_get_refs(entry))
-+		return entry;
-+
-+	kfree(entry);
-+	return NULL;
- }
+ 	INIT_LIST_HEAD(&dcb_app_list);
  
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
++	err = register_netdevice_notifier(&dcbnl_nb);
++	if (err)
++		return err;
++
+ 	rtnl_register(PF_UNSPEC, RTM_GETDCB, dcb_doit, NULL, NULL);
+ 	rtnl_register(PF_UNSPEC, RTM_SETDCB, dcb_doit, NULL, NULL);
+ 
 
 
