@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F048EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242214AbiCGMYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:24:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
+        id S238645AbiCGMYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:24:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242081AbiCGMXs (ORCPT
+        with ESMTP id S242197AbiCGMYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:23:48 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFBF39695;
-        Mon,  7 Mar 2022 04:22:48 -0800 (PST)
+        Mon, 7 Mar 2022 07:24:00 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E433DA77;
+        Mon,  7 Mar 2022 04:22:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646655773; x=1678191773;
+  t=1646655775; x=1678191775;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0TQozHfB8UTWKE6wf2o0Hvd8wf+stI5/pPPDsrXJk3o=;
-  b=rKS9LtW4uyojfRG969fcILDE+HLrgCUVrqcsPsDmlsxmAWH3tqdGWPpU
-   47L/7YhBmK06XuEVYFVrWsdXxndP8Om+jY6jtleVR7Z1kgP8xrdSwnZc4
-   ZNmpmv4hSg2RMjRxbv3c/rekU3Mk7Z3ltscz6Wq+BTgVc4fk05Glkd4p0
-   wRfOH8FaCQ5J15LdsL6g963CaXyX7Ayz1nhKBgzDdjTP4ollUHNvsFtxT
-   /u8Dt15PkgTfXmL1LlnvH2cgVrnAy2EDSqssqUDSnj+ehnJRda2e+JBDl
-   wMsEqijyjBS33ITvuB46p5hxznX9FAay4L758NZIvD+HV7gappMFYWsgW
+  bh=/2gvArZrxpjBHlcifiq/PuCMiVcOPlvOD5ludY/TGtU=;
+  b=tVpPbTXolMfnht7cQq+bnX3pcLSo8sDl469huGWHbOOktjldEK9T/wec
+   CMfUwMbWSqKQAg0uUSpFYehfm5s9+u9VkFcj4+E1gfcKpNDWXbn5HBzSR
+   654oQNXnalJc0esMaaPE7bfyavSAUJ05rmyGCiWGCIDzfugZSeUn+bfEO
+   as+N7EAudHX/Gg5/M2UEqRG35Q0IoChFziXRmXYiOddCYvykoWan0oXdr
+   LqBK9IOMsqmOlt65djijeUgYGmf4JJOo24vFi2MjT0RO/Y5LQ0M4S/ITz
+   7qhSBumTY8MPKgKmx6+pTGQGkiISzhnCsQyCtCZpEeFW0ToBQADEquLr7
    g==;
 X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
-   d="scan'208";a="155942223"
+   d="scan'208";a="151091529"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 05:22:48 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 05:22:54 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 05:22:47 -0700
+ 15.1.2375.17; Mon, 7 Mar 2022 05:22:54 -0700
 Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 05:22:45 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 05:22:51 -0700
 From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 To:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>,
@@ -47,9 +47,9 @@ CC:     <lars@metafoo.de>, <broonie@kernel.org>, <perex@perex.cz>,
         <tiwai@suse.com>, <robh+dt@kernel.org>,
         <nicolas.ferre@microchip.com>,
         "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH v3 2/6] ASoC: dt-bindings: Document Microchip's PDMC
-Date:   Mon, 7 Mar 2022 14:21:58 +0200
-Message-ID: <20220307122202.2251639-3-codrin.ciubotariu@microchip.com>
+Subject: [PATCH v3 4/6] ARM: dts: at91: sama7g5: add nodes for PDMC
+Date:   Mon, 7 Mar 2022 14:22:00 +0200
+Message-ID: <20220307122202.2251639-5-codrin.ciubotariu@microchip.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220307122202.2251639-1-codrin.ciubotariu@microchip.com>
 References: <20220307122202.2251639-1-codrin.ciubotariu@microchip.com>
@@ -60,157 +60,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for the new Microchip PDMC embedded in sama7g5 SoCs.
+Microchip's SAMA7G5 embeds two PDMCs. The PDMCs can be used to connect 2x4
+PDM microphones.
 
 Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 ---
 
-Changes in v3:
- - set line length to 80 characters long
- - set 'reg' as the second property
+Chnages in v3:
+ - none
 
 Changes in v2:
- - renamed patch from 'ASoC: add DT bindings for Microchip PDMC' to
-   'ASoC: dt-bindings: Document Microchip's PDMC';
- - renamed yaml file from 'mchp,pdmc.yaml' to 'microchip,pdmc.yaml';
- - used imperative mode in commit description;
- - renamed mchp,pdmc.h to microchip,pdmc.h;
- - fixed 'title' to represent HW;
- - made 'compatible' first property;
- - s/microhpone/microphone
- - none name in example set to 'sound'
+ - set 'sound' as nodes' name
 
- .../bindings/sound/microchip,pdmc.yaml        | 100 ++++++++++++++++++
- include/dt-bindings/sound/microchip,pdmc.h    |  13 +++
- 2 files changed, 113 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
- create mode 100644 include/dt-bindings/sound/microchip,pdmc.h
+ arch/arm/boot/dts/sama7g5.dtsi | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/sound/microchip,pdmc.yaml b/Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
-new file mode 100644
-index 000000000000..04414eb4ada9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/microchip,pdmc.yaml
-@@ -0,0 +1,100 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/microchip,pdmc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
+index eddcfbf4d223..70e86444194f 100644
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -275,6 +275,30 @@ pwm: pwm@e1604000 {
+ 			status = "disabled";
+ 		};
+ 
++		pdmc0: sound@e1608000 {
++			compatible = "microchip,sama7g5-pdmc";
++			reg = <0xe1608000 0x1000>;
++			interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
++			#sound-dai-cells = <0>;
++			dmas = <&dma0 AT91_XDMAC_DT_PERID(37)>;
++			dma-names = "rx";
++			clocks = <&pmc PMC_TYPE_PERIPHERAL 68>, <&pmc PMC_TYPE_GCK 68>;
++			clock-names = "pclk", "gclk";
++			status = "disabled";
++		};
 +
-+title: Microchip Pulse Density Microphone Controller
++		pdmc1: sound@e160c000 {
++			compatible = "microchip,sama7g5-pdmc";
++			reg = <0xe160c000 0x1000>;
++			interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
++			#sound-dai-cells = <0>;
++			dmas = <&dma0 AT91_XDMAC_DT_PERID(38)>;
++			dma-names = "rx";
++			clocks = <&pmc PMC_TYPE_PERIPHERAL 69>, <&pmc PMC_TYPE_GCK 69>;
++			clock-names = "pclk", "gclk";
++			status = "disabled";
++		};
 +
-+maintainers:
-+  - Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-+
-+description:
-+  The Microchip Pulse Density Microphone Controller (PDMC) interfaces up to 4
-+  digital microphones having Pulse Density Modulated (PDM) outputs.
-+
-+properties:
-+  compatible:
-+    const: microchip,sama7g5-pdmc
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#sound-dai-cells":
-+    const: 0
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: Peripheral Bus Clock
-+      - description: Generic Clock
-+
-+  clock-names:
-+    items:
-+      - const: pclk
-+      - const: gclk
-+
-+  dmas:
-+    description: RX DMA Channel
-+    maxItems: 1
-+
-+  dma-names:
-+    const: rx
-+
-+  microchip,mic-pos:
-+    description: |
-+      Position of PDM microphones on the DS line and the sampling edge (rising
-+      or falling) of the CLK line. A microphone is represented as a pair of DS
-+      line and the sampling edge. The first microphone is mapped to channel 0,
-+      the second to channel 1, etc.
-+    $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+    items:
-+      items:
-+        - description: value for DS line
-+        - description: value for sampling edge
-+      anyOf:
-+        - enum:
-+            - [0, 0]
-+            - [0, 1]
-+            - [1, 0]
-+            - [1, 1]
-+    minItems: 1
-+    maxItems: 4
-+    uniqueItems: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#sound-dai-cells"
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - dmas
-+  - dma-names
-+  - microchip,mic-pos
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/at91.h>
-+    #include <dt-bindings/dma/at91.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/sound/microchip,pdmc.h>
-+
-+    pdmc: sound@e1608000 {
-+        compatible = "microchip,sama7g5-pdmc";
-+        reg = <0xe1608000 0x4000>;
-+        #sound-dai-cells = <0>;
-+        interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
-+        dmas = <&dma0 AT91_XDMAC_DT_PERID(37)>;
-+        dma-names = "rx";
-+        clocks = <&pmc PMC_TYPE_PERIPHERAL 68>, <&pmc PMC_TYPE_GCK 68>;
-+        clock-names = "pclk", "gclk";
-+        microchip,mic-pos = <MCHP_PDMC_DS0 MCHP_PDMC_CLK_POSITIVE>,
-+                            <MCHP_PDMC_DS0 MCHP_PDMC_CLK_NEGATIVE>,
-+                            <MCHP_PDMC_DS1 MCHP_PDMC_CLK_POSITIVE>,
-+                            <MCHP_PDMC_DS1 MCHP_PDMC_CLK_NEGATIVE>;
-+    };
-diff --git a/include/dt-bindings/sound/microchip,pdmc.h b/include/dt-bindings/sound/microchip,pdmc.h
-new file mode 100644
-index 000000000000..96cde94ce74f
---- /dev/null
-+++ b/include/dt-bindings/sound/microchip,pdmc.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __DT_BINDINGS_MICROCHIP_PDMC_H__
-+#define __DT_BINDINGS_MICROCHIP_PDMC_H__
-+
-+/* PDM microphone's pin placement */
-+#define MCHP_PDMC_DS0 0
-+#define MCHP_PDMC_DS1 1
-+
-+/* PDM microphone clock edge sampling */
-+#define MCHP_PDMC_CLK_POSITIVE 0
-+#define MCHP_PDMC_CLK_NEGATIVE 1
-+
-+#endif /* __DT_BINDINGS_MICROCHIP_PDMC_H__ */
+ 		spdifrx: spdifrx@e1614000 {
+ 			#sound-dai-cells = <0>;
+ 			compatible = "microchip,sama7g5-spdifrx";
 -- 
 2.32.0
 
