@@ -2,151 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BCDC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 02:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F155BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 02:44:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234831AbiCGCow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 21:44:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
+        id S234855AbiCGCpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 21:45:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234775AbiCGCos (ORCPT
+        with ESMTP id S234840AbiCGCpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 21:44:48 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB8465FE8
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 18:43:53 -0800 (PST)
-Received: from unknown (HELO lgeamrelo04.lge.com) (156.147.1.127)
-        by 156.147.23.52 with ESMTP; 7 Mar 2022 11:43:50 +0900
-X-Original-SENDERIP: 156.147.1.127
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.127 with ESMTP; 7 Mar 2022 11:43:50 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Mon, 7 Mar 2022 11:43:25 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Theodore Ts'o <tytso@mit.edu>, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, torvalds@linux-foundation.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
-        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com, paulmck@kernel.org
-Subject: Re: Report 2 in ext4 and journal based on v5.17-rc1
-Message-ID: <20220307024325.GA6323@X58A-UD3R>
-References: <YiAow5gi21zwUT54@mit.edu>
- <1646285013-3934-1-git-send-email-byungchul.park@lge.com>
- <YiDSabde88HJ/aTt@mit.edu>
- <20220304004237.GB6112@X58A-UD3R>
- <YiLYX0sqmtkTEM5U@mit.edu>
- <20220305141538.GA31268@X58A-UD3R>
- <YiN8M4FwAeW/UAoN@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiN8M4FwAeW/UAoN@google.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+        Sun, 6 Mar 2022 21:45:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ADA5E178;
+        Sun,  6 Mar 2022 18:44:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E51F3B80FA1;
+        Mon,  7 Mar 2022 02:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DCF9C340EC;
+        Mon,  7 Mar 2022 02:44:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1646621045;
+        bh=fXrrtpJvgRp7AsWlaFX0EIrBU3vOypZe0/w7Wy6tFaw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Yl3BC2AszB49zMZHwLObBmVoM7K4Jl5NAwLN0LcontcU6+PloRGpwxKbmoFAmASQj
+         nil01KZFN6gYYCX2zEhBcI6kMloe1CybbviLAQBKoOkg5XN9rEbtCJknWmiocyWi5A
+         D0VbwX/8Vvx4sLUsNXs5QUX9ruW6Do6QDnUJL25c=
+Date:   Sun, 6 Mar 2022 18:44:04 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     =?ISO-8859-1?Q? "Michal_Koutn=FD" ?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Frank Hofmann <fhofmann@cloudflare.com>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Daniel Dao <dqminh@cloudflare.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] memcg: sync flush only if periodic flush is delayed
+Message-Id: <20220306184404.049447f8447d288fde34cabe@linux-foundation.org>
+In-Reply-To: <20220304184040.1304781-1-shakeelb@google.com>
+References: <20220304184040.1304781-1-shakeelb@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 03:05:23PM +0000, Joel Fernandes wrote:
-> On Sat, Mar 05, 2022 at 11:15:38PM +0900, Byungchul Park wrote:
-> > Almost all you've been blaming at Dept are totally non-sense. Based on
-> > what you're saying, I'm conviced that you don't understand how Dept
-> > works even 1%. You don't even try to understand it before blame.
-> > 
-> > You don't have to understand and support it. But I can't response to you
-> > if you keep saying silly things that way.
+On Fri,  4 Mar 2022 18:40:40 +0000 Shakeel Butt <shakeelb@google.com> wrote:
+
+> Daniel Dao has reported [1] a regression on workloads that may trigger
+> a lot of refaults (anon and file). The underlying issue is that flushing
+> rstat is expensive. Although rstat flush are batched with (nr_cpus *
+> MEMCG_BATCH) stat updates, it seems like there are workloads which
+> genuinely do stat updates larger than batch value within short amount of
+> time. Since the rstat flush can happen in the performance critical
+> codepaths like page faults, such workload can suffer greatly.
 > 
-> Byungchul, other than ext4 have there been any DEPT reports that other
-> subsystem maintainers' agree were valid usecases?
-
-Not yet.
-
-> Regarding false-positives, just to note lockdep is not without its share of
-> false-positives. Just that (as you know), the signal-to-noise ratio should be
-> high for it to be useful. I've put up with lockdep's false positives just
-> because it occasionally saves me from catastrophe.
-
-I love your insight. Agree. A tool would be useful only when it's
-*actually* helpful. I hope Dept would be so.
-
-> > > In any case, if DEPT is going to report these "circular dependencies
-> > > as bugs that MUST be fixed", it's going to be pure noise and I will
-> > > ignore all DEPT reports, and will push back on having Lockdep replaced
-> > 
-> > Dept is going to be improved so that what you are concerning about won't
-> > be reported.
+> This patch fixes this regression by making the rstat flushing
+> conditional in the performance critical codepaths. More specifically,
+> the kernel relies on the async periodic rstat flusher to flush the stats
+> and only if the periodic flusher is delayed by more than twice the
+> amount of its normal time window then the kernel allows rstat flushing
+> from the performance critical codepaths.
 > 
-> Yeah I am looking forward to learning more about it however I was wondering
-> about the following: lockdep can already be used for modeling "resource
-> acquire/release" and "resource wait" semantics that are unrelated to locks,
-> like we do in mm reclaim. I am wondering why we cannot just use those existing
-> lockdep mechanisms for the wait/wake usecases (Assuming that we can agree
-
-1. Lockdep can't work with general waits/events happening across
-   contexts basically. To get over this, manual tagging of
-   acquire/release can be used at each section that we suspect. But
-   unfortunately, we cannot use the method if we cannot simply identify
-   the sections. Furthermore, it's inevitable to miss sections that
-   shouldn't get missed.
-
-2. Some cases should be correctly tracked via wait/event model, not
-   acquisition order model. For example, read-lock in rwlock should be
-   defined as a waiter waiting for write-unlock, write-lock in rwlock
-   as a waiter waiting for either read-unlock or write-unlock.
-   Otherwise, if we try to track those cases using acquisition order,
-   it cannot completely work. Don't you think it looks werid?
-
-3. Tracking what we didn't track before means both stronger detection
-   and new emergence of false positives, exactly same as Lockdep at its
-   beginning when it started to track what we hadn't tracked before.
-   Even though the emergence was allowed at that time, now that Locdkep
-   got stable enough, folks would be more strict on new emergences. It's
-   gonna get even worse if valid reports are getting prevented by false
-   positives.
-
-   For that reason, multi reporting functionality is essential. I was
-   thinking to improve Lockdep to allow multi reporting. But it might be
-   needed to change more than developing a new tool from scratch. Plus
-   it might be even more difficult cuz Lockdep already works not badly.
-   So even for Lockdep, I thought the new thing should be developed
-   independently leaving Lockdep as it is.
-
-4. (minor reason) The concept and name of acquisition and release is not
-   for general wait/event. The design and implementation are not,
-   either. I wanted to address the issue as soon as possible before we
-   squeeze out Lockdep to use for general wait/event more and the kernel
-   code gets weird. Of course, it doesn't mean Dept is more stable than
-   Lockdep. However, I can tell Dept works what a dependency tool should
-   do and we need to make the code go right.
-
-> that circular dependencies on related to wait/wake is a bad thing. Or perhaps
-> there's a reason why Peter Zijlstra did not use lockdep for wait/wake
-> dependencies (such as multiple wake sources) considering he wrote a lot of
-> that code.
+> Now the question: what are the side-effects of this change? The worst
+> that can happen is the refault codepath will see 4sec old lruvec stats
+> and may cause false (or missed) activations of the refaulted page which
+> may under-or-overestimate the workingset size. Though that is not very
+> concerning as the kernel can already miss or do false activations.
 > 
-> Keep kicking ass brother, you're doing great.
+> There are two more codepaths whose flushing behavior is not changed by
+> this patch and we may need to come to them in future. One is the
+> writeback stats used by dirty throttling and second is the deactivation
+> heuristic in the reclaim. For now keeping an eye on them and if there is
+> report of regression due to these codepaths, we will reevaluate then.
+> 
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+>
+> ...
+>
+> @@ -648,10 +652,16 @@ void mem_cgroup_flush_stats(void)
+>  		__mem_cgroup_flush_stats();
+>  }
+>  
+> +void mem_cgroup_flush_stats_delayed(void)
+> +{
+> +	if (rstat_flush_time && time_after64(jiffies_64, flush_next_time))
 
-Thank you! I'll go through this in a right way so as not to disappoint
-you!
+rstat_flush_time isn't defined for me and my googling indicates this is
+the first time the symbol has been used in the history of the world. 
+I'm stumped.
 
-Thanks,
-Byungchul
+> +		mem_cgroup_flush_stats();
+> +}
+> +
+>
+> ...
+>
