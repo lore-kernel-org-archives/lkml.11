@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C77C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A34EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238177AbiCGJo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        id S238366AbiCGJpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:45:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238108AbiCGJde (ORCPT
+        with ESMTP id S233881AbiCGJdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:33:34 -0500
+        Mon, 7 Mar 2022 04:33:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7686D180;
-        Mon,  7 Mar 2022 01:30:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7166D383;
+        Mon,  7 Mar 2022 01:30:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 029A6B810BD;
-        Mon,  7 Mar 2022 09:30:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 263AFC340E9;
-        Mon,  7 Mar 2022 09:30:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3064B80F9F;
+        Mon,  7 Mar 2022 09:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39946C340E9;
+        Mon,  7 Mar 2022 09:30:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645433;
-        bh=U0NBSGGAAiB5RuM+ha/CczSgoW4P8pJ0p++3T5GdVUA=;
+        s=korg; t=1646645439;
+        bh=n8T0trpVCA6QTjmlNvO9Odw/Quu1Q28rfns210aAu6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BBJlxc2io+asrpTNvwDiGDQ2zMRHVzuNe5YKZWTTezH7C5mTuyHzc5n58cKIMeYdG
-         1Xk2pJ7jxJaONCWvYVT1AGYysMa2+eXvg4sB9bpSF4CjOQ59zrKHTKps7Z+wcc+xvl
-         BInyyu3Zu/QcBuYr9WSjlmzuWE5xuadZNPjcubrw=
+        b=akr6By2WRcx9hentJUu10bMglsc0Lgwo4+Yuy6LQjq75GoynGXqjvUkxUJHzsAkN/
+         K6YbvKi6y5FqqmKhpe6NKJpHFjLvd404Ta73Nds04IH+Anwrez9vxR9Wh/pCsDzFzK
+         gi48+mp3TeMgSJ3lXSpaNv/fpTIqamf1YpfnBYNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.10 030/105] iommu/amd: Recover from event log overflow
-Date:   Mon,  7 Mar 2022 10:18:33 +0100
-Message-Id: <20220307091645.031593223@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 032/105] xen/netfront: destroy queues before real_num_tx_queues is zeroed
+Date:   Mon,  7 Mar 2022 10:18:35 +0100
+Message-Id: <20220307091645.088216336@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,117 +50,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lennert Buytenhek <buytenh@wantstofly.org>
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-commit 5ce97f4ec5e0f8726a5dda1710727b1ee9badcac upstream.
+commit dcf4ff7a48e7598e6b10126cc02177abb8ae4f3f upstream.
 
-The AMD IOMMU logs I/O page faults and such to a ring buffer in
-system memory, and this ring buffer can overflow.  The AMD IOMMU
-spec has the following to say about the interrupt status bit that
-signals this overflow condition:
+xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
+delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
+("net-sysfs: update the queue counts in the unregistration path"),
+unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
+facts together means, that xennet_destroy_queues() called from
+xennet_remove() cannot do its job, because it's called after
+unregister_netdev(). This results in kfree-ing queues that are still
+linked in napi, which ultimately crashes:
 
-	EventOverflow: Event log overflow. RW1C. Reset 0b. 1 = IOMMU
-	event log overflow has occurred. This bit is set when a new
-	event is to be written to the event log and there is no usable
-	entry in the event log, causing the new event information to
-	be discarded. An interrupt is generated when EventOverflow = 1b
-	and MMIO Offset 0018h[EventIntEn] = 1b. No new event log
-	entries are written while this bit is set. Software Note: To
-	resume logging, clear EventOverflow (W1C), and write a 1 to
-	MMIO Offset 0018h[EventLogEn].
+    BUG: kernel NULL pointer dereference, address: 0000000000000000
+    #PF: supervisor read access in kernel mode
+    #PF: error_code(0x0000) - not-present page
+    PGD 0 P4D 0
+    Oops: 0000 [#1] PREEMPT SMP PTI
+    CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-1.32.fc32.qubes.x86_64+ #226
+    RIP: 0010:free_netdev+0xa3/0x1a0
+    Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 85 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
+    RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
+    RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
+    RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
+    RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
+    R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
+    R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
+    FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:0000000000000000
+    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
+    Call Trace:
+     <TASK>
+     xennet_remove+0x13d/0x300 [xen_netfront]
+     xenbus_dev_remove+0x6d/0xf0
+     __device_release_driver+0x17a/0x240
+     device_release_driver+0x24/0x30
+     bus_remove_device+0xd8/0x140
+     device_del+0x18b/0x410
+     ? _raw_spin_unlock+0x16/0x30
+     ? klist_iter_exit+0x14/0x20
+     ? xenbus_dev_request_and_reply+0x80/0x80
+     device_unregister+0x13/0x60
+     xenbus_dev_changed+0x18e/0x1f0
+     xenwatch_thread+0xc0/0x1a0
+     ? do_wait_intr_irq+0xa0/0xa0
+     kthread+0x16b/0x190
+     ? set_kthread_struct+0x40/0x40
+     ret_from_fork+0x22/0x30
+     </TASK>
 
-The AMD IOMMU driver doesn't currently implement this recovery
-sequence, meaning that if a ring buffer overflow occurs, logging
-of EVT/PPR/GA events will cease entirely.
+Fix this by calling xennet_destroy_queues() from xennet_uninit(),
+when real_num_tx_queues is still available. This ensures that queues are
+destroyed when real_num_tx_queues is set to 0, regardless of how
+unregister_netdev() was called.
 
-This patch implements the spec-mandated reset sequence, with the
-minor tweak that the hardware seems to want to have a 0 written to
-MMIO Offset 0018h[EventLogEn] first, before writing an 1 into this
-field, or the IOMMU won't actually resume logging events.
+Originally reported at
+https://github.com/QubesOS/qubes-issues/issues/7257
 
-Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
+Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the unregistration path")
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/YVrSXEdW2rzEfOvk@wantstofly.org
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/amd/amd_iommu.h       |    1 +
- drivers/iommu/amd/amd_iommu_types.h |    1 +
- drivers/iommu/amd/init.c            |   10 ++++++++++
- drivers/iommu/amd/iommu.c           |   10 ++++++++--
- 4 files changed, 20 insertions(+), 2 deletions(-)
+ drivers/net/xen-netfront.c |   39 +++++++++++++++++++++++----------------
+ 1 file changed, 23 insertions(+), 16 deletions(-)
 
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -17,6 +17,7 @@ extern int amd_iommu_init_passthrough(vo
- extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
- extern irqreturn_t amd_iommu_int_handler(int irq, void *data);
- extern void amd_iommu_apply_erratum_63(u16 devid);
-+extern void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
- extern void amd_iommu_reset_cmd_buffer(struct amd_iommu *iommu);
- extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -109,6 +109,7 @@
- #define PASID_MASK		0x0000ffff
- 
- /* MMIO status bits */
-+#define MMIO_STATUS_EVT_OVERFLOW_INT_MASK	(1 << 0)
- #define MMIO_STATUS_EVT_INT_MASK	(1 << 1)
- #define MMIO_STATUS_COM_WAIT_INT_MASK	(1 << 2)
- #define MMIO_STATUS_PPR_INT_MASK	(1 << 6)
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -657,6 +657,16 @@ static int __init alloc_command_buffer(s
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -844,6 +844,28 @@ static int xennet_close(struct net_devic
+ 	return 0;
  }
  
- /*
-+ * This function restarts event logging in case the IOMMU experienced
-+ * an event log buffer overflow.
-+ */
-+void amd_iommu_restart_event_logging(struct amd_iommu *iommu)
++static void xennet_destroy_queues(struct netfront_info *info)
 +{
-+	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
-+	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
++	unsigned int i;
++
++	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
++		struct netfront_queue *queue = &info->queues[i];
++
++		if (netif_running(info->netdev))
++			napi_disable(&queue->napi);
++		netif_napi_del(&queue->napi);
++	}
++
++	kfree(info->queues);
++	info->queues = NULL;
 +}
 +
-+/*
-  * This function resets the command buffer if the IOMMU stopped fetching
-  * commands from it.
-  */
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -813,7 +813,8 @@ amd_iommu_set_pci_msi_domain(struct devi
- #endif /* !CONFIG_IRQ_REMAP */
- 
- #define AMD_IOMMU_INT_MASK	\
--	(MMIO_STATUS_EVT_INT_MASK | \
-+	(MMIO_STATUS_EVT_OVERFLOW_INT_MASK | \
-+	 MMIO_STATUS_EVT_INT_MASK | \
- 	 MMIO_STATUS_PPR_INT_MASK | \
- 	 MMIO_STATUS_GALOG_INT_MASK)
- 
-@@ -823,7 +824,7 @@ irqreturn_t amd_iommu_int_thread(int irq
- 	u32 status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
- 
- 	while (status & AMD_IOMMU_INT_MASK) {
--		/* Enable EVT and PPR and GA interrupts again */
-+		/* Enable interrupt sources again */
- 		writel(AMD_IOMMU_INT_MASK,
- 			iommu->mmio_base + MMIO_STATUS_OFFSET);
- 
-@@ -844,6 +845,11 @@ irqreturn_t amd_iommu_int_thread(int irq
- 		}
- #endif
- 
-+		if (status & MMIO_STATUS_EVT_OVERFLOW_INT_MASK) {
-+			pr_info_ratelimited("IOMMU event log overflow\n");
-+			amd_iommu_restart_event_logging(iommu);
-+		}
++static void xennet_uninit(struct net_device *dev)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	xennet_destroy_queues(np);
++}
 +
- 		/*
- 		 * Hardware bug: ERBT1312
- 		 * When re-enabling interrupt (by writing 1
+ static void xennet_set_rx_rsp_cons(struct netfront_queue *queue, RING_IDX val)
+ {
+ 	unsigned long flags;
+@@ -1613,6 +1635,7 @@ static int xennet_xdp(struct net_device
+ }
+ 
+ static const struct net_device_ops xennet_netdev_ops = {
++	.ndo_uninit          = xennet_uninit,
+ 	.ndo_open            = xennet_open,
+ 	.ndo_stop            = xennet_close,
+ 	.ndo_start_xmit      = xennet_start_xmit,
+@@ -2105,22 +2128,6 @@ error:
+ 	return err;
+ }
+ 
+-static void xennet_destroy_queues(struct netfront_info *info)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
+-		struct netfront_queue *queue = &info->queues[i];
+-
+-		if (netif_running(info->netdev))
+-			napi_disable(&queue->napi);
+-		netif_napi_del(&queue->napi);
+-	}
+-
+-	kfree(info->queues);
+-	info->queues = NULL;
+-}
+-
+ 
+ 
+ static int xennet_create_page_pool(struct netfront_queue *queue)
 
 
