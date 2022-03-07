@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04959C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241160AbiCGKl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:41:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55808 "EHLO
+        id S239646AbiCGKmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:42:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241919AbiCGKVb (ORCPT
+        with ESMTP id S242208AbiCGKVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:21:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A738490FE0;
-        Mon,  7 Mar 2022 01:58:23 -0800 (PST)
+        Mon, 7 Mar 2022 05:21:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09CF91AE7;
+        Mon,  7 Mar 2022 01:59:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95E89B810BF;
-        Mon,  7 Mar 2022 09:58:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E644AC340E9;
-        Mon,  7 Mar 2022 09:58:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B57360BBC;
+        Mon,  7 Mar 2022 09:53:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C8DC340F5;
+        Mon,  7 Mar 2022 09:53:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647091;
-        bh=wciYs1Z2Wc8lea/p7Gi4XM3BlbwmUU0ilILwhu8t3Ys=;
+        s=korg; t=1646646836;
+        bh=K6eS3JaZPT0Wb2NjGA557EzkMGcgAGrutANdqmeykiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x1E/iQ/q1mSbm7jJzqNpmurX0zjiOdXkeVGnWZEkGiEDsKttp/s9oZw+vaDS+ua9D
-         z9csd0qoXTKert+W0XBRNLR9+tuxxV/97+LhxZGIlI3+U8RSJuOX+4X6MwmiyTYL4n
-         baJQnTqXgZ5p+UGICIT3Ba6uMpSeCg9iJy8rj7U0=
+        b=nTyq7f0s0n8UNkrgxp02nI4wH3jTUAdeJX1SCo/EsIQsdQb1lUXBb1XuL5o7jS4JE
+         eK2F0eqQ6EQHVK8k0EYY13uPiNMdx1hWDnp19xKIlmguINGk0a8uY+cKL8EDoI9hK3
+         CSPk8v5ndAbfs5LdRULSDakI0NtVtVzAsdLHgCdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 154/186] iavf: Fix race in init state
-Date:   Mon,  7 Mar 2022 10:19:52 +0100
-Message-Id: <20220307091658.380846634@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Antony Antony <antony.antony@secunet.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.16 069/186] xfrm: fix the if_id check in changelink
+Date:   Mon,  7 Mar 2022 10:18:27 +0100
+Message-Id: <20220307091656.021340087@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -53,51 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: Antony Antony <antony.antony@secunet.com>
 
-[ Upstream commit a472eb5cbaebb5774672c565e024336c039e9128 ]
+commit 6d0d95a1c2b07270870e7be16575c513c29af3f1 upstream.
 
-When iavf_init_version_check sends VIRTCHNL_OP_GET_VF_RESOURCES
-message, the driver will wait for the response after requeueing
-the watchdog task in iavf_init_get_resources call stack. The
-logic is implemented this way that iavf_init_get_resources has
-to be called in order to allocate adapter->vf_res. It is polling
-for the AQ response in iavf_get_vf_config function. Expect a
-call trace from kernel when adminq_task worker handles this
-message first. adapter->vf_res will be NULL in
-iavf_virtchnl_completion.
+if_id will be always 0, because it was not yet initialized.
 
-Make the watchdog task not queue the adminq_task if the init
-process is not finished yet.
-
-Fixes: 898ef1cb1cb2 ("iavf: Combine init and watchdog state machines")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8dce43919566 ("xfrm: interface with if_id 0 should return error")
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/xfrm/xfrm_interface.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 1af3fe427543..9ed02a8ca7a3 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2124,7 +2124,8 @@ static void iavf_watchdog_task(struct work_struct *work)
- 	schedule_delayed_work(&adapter->client_task, msecs_to_jiffies(5));
- 	mutex_unlock(&adapter->crit_lock);
- restart_watchdog:
--	queue_work(iavf_wq, &adapter->adminq_task);
-+	if (adapter->state >= __IAVF_DOWN)
-+		queue_work(iavf_wq, &adapter->adminq_task);
- 	if (adapter->aq_required)
- 		queue_delayed_work(iavf_wq, &adapter->watchdog_task,
- 				   msecs_to_jiffies(20));
--- 
-2.34.1
-
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -673,12 +673,12 @@ static int xfrmi_changelink(struct net_d
+ 	struct net *net = xi->net;
+ 	struct xfrm_if_parms p = {};
+ 
++	xfrmi_netlink_parms(data, &p);
+ 	if (!p.if_id) {
+ 		NL_SET_ERR_MSG(extack, "if_id must be non zero");
+ 		return -EINVAL;
+ 	}
+ 
+-	xfrmi_netlink_parms(data, &p);
+ 	xi = xfrmi_locate(net, &p);
+ 	if (!xi) {
+ 		xi = netdev_priv(dev);
 
 
