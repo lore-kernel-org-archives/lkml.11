@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3D3C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A60CEC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240242AbiCGJur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41816 "EHLO
+        id S240626AbiCGJvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240558AbiCGJlI (ORCPT
+        with ESMTP id S240794AbiCGJle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A3715A05;
-        Mon,  7 Mar 2022 01:37:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61372611D5;
-        Mon,  7 Mar 2022 09:37:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64442C340E9;
-        Mon,  7 Mar 2022 09:37:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645858;
-        bh=XC2dYqop3svzaK/jPsZIDCG3s790ZpIO28tWyxJ4SzI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ij87L2xmUqrWr+aK6YDXj+UjWhmQN0DPaR7u7tZVkkorwqDT661fiS8ZBuDhn7lKZ
-         ww+zC1frWH8ZZ4B16grZp0DtFCopmCIL95dfFXVcJ6jUDYcuuWqihIC2hjRONkf4z9
-         Uq30V26sitzJJT4TmXwRVg6UFATr2jjCvwP8x5pU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 059/262] KVM: x86: Handle 32-bit wrap of EIP for EMULTYPE_SKIP with flat code seg
-Date:   Mon,  7 Mar 2022 10:16:43 +0100
-Message-Id: <20220307091704.176390443@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:41:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 160B666FA1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:38:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646645890;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2hRKjru0jaANdaMFZ+K70lfTDMO4iHRVAfY2BeEn/4o=;
+        b=N42A3i3pxO9M6cKBKYsoatl4B9rd65zp+uuCLEAPI/JTL4CCFSBWmlNJm4jHdi0rfU6J6/
+        J5W3l7EziBREKA+XtqDpC31oO1Mzcp8XvlC4/rQNB+pU1o5uPVJHL2haStV32CT4ZvA2CU
+        zKBUHRGl5uHSjjMJnPGuwkcmbSvD+TE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-462-R9YZlNOKMf6ZO3lB2FBNFQ-1; Mon, 07 Mar 2022 04:38:08 -0500
+X-MC-Unique: R9YZlNOKMf6ZO3lB2FBNFQ-1
+Received: by mail-wm1-f69.google.com with SMTP id d8-20020a05600c34c800b0037e3cd6225eso5052580wmq.6
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:38:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2hRKjru0jaANdaMFZ+K70lfTDMO4iHRVAfY2BeEn/4o=;
+        b=dDL5oKxnVe3CdkjngNT1RB4iYW/kOxecO8cya2ti3+yK4Rl/pwfuGIs/g+60LkRWs9
+         QT8GO3cHonWUdp92dghHqJyMCDm4f/OR4M6YWiCl1FYZqy50gsftIJDcPYupjupqVArz
+         kCtodigFEYd8rH16gakQqKBBx6NOEo8hNoGLUTVwiaVnr5cMDBJbielVo9luB8jrEDNA
+         Nu/66PgYyHj8GtkyDBiv4CYdDCghPLtGpatYycWRtDrafjRiBTIWfFeJVEiJXwjd/Yhz
+         Ypy9poNFCvRUVhy1EFqezI0EOZ9zTHtOkO8KzRyuhsNm2sGMRJVjEz4Qbar62SPzSQdX
+         GwXA==
+X-Gm-Message-State: AOAM5302urYCqZ81D4sFvTioFOi338+iGEHiCph5HxWOlO4T18xXqLiz
+        PJcibIHkPE8j1w6ENnzpIfKP6QgHzHntWoNWb5D2hLBoVn9FfH6lQTb06Ga9vGhH5VRTFuh+UMs
+        R/xsR2fqOUh3wEpeD5iHBsa0=
+X-Received: by 2002:a5d:69c7:0:b0:1f0:61f3:642b with SMTP id s7-20020a5d69c7000000b001f061f3642bmr7650076wrw.632.1646645887134;
+        Mon, 07 Mar 2022 01:38:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxYgPmZBFCYVwYlVuJ55u4vArcYAHv9y3dFz+eZ23t3tabZPf1FdajgzMXADgtlXevyUTT86g==
+X-Received: by 2002:a5d:69c7:0:b0:1f0:61f3:642b with SMTP id s7-20020a5d69c7000000b001f061f3642bmr7650058wrw.632.1646645886967;
+        Mon, 07 Mar 2022 01:38:06 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id b12-20020a05600003cc00b001f34d8c5baesm918078wrg.78.2022.03.07.01.38.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:38:06 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:38:04 +0000
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     christophe.leroy@csgroup.eu, mcgrof@kernel.org
+Cc:     "cl@linux.com" <cl@linux.com>, "mbenes@suse.cz" <mbenes@suse.cz>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "void@manifault.com" <void@manifault.com>,
+        "atomlin@atomlin.com" <atomlin@atomlin.com>,
+        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "msuchanek@suse.de" <msuchanek@suse.de>,
+        "oleksandr@natalenko.name" <oleksandr@natalenko.name>,
+        "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
+        "pmladek@suse.com" <pmladek@suse.com>
+Subject: Re: [PATCH v9 07/14] module: Move extra signature support out of
+ core code
+Message-ID: <20220307093804.eor4dn5gp2dwn5jk@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220228234322.2073104-1-atomlin@redhat.com>
+ <20220228234322.2073104-8-atomlin@redhat.com>
+ <c03fa2bb-1b0e-62c7-53fe-33e44d20b564@csgroup.eu>
+ <20220305203756.jc5ayzboea6ixm4a@ava.usersys.com>
+ <4b00cc1c-0fc9-7348-28ee-b06de0fef3c7@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <4b00cc1c-0fc9-7348-28ee-b06de0fef3c7@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+On Sun 2022-03-06 17:46 +0000, Christophe Leroy wrote:
+> 2/ CONFIG_MODULES=y, CONFIG_MODULE_SIG=n
 
-[ Upstream commit 5e854864ee4384736f27a986633bae21731a4e4e ]
+Christophe,
 
-Truncate the new EIP to a 32-bit value when handling EMULTYPE_SKIP as the
-decode phase does not truncate _eip.  Wrapping the 32-bit boundary is
-legal if and only if CS is a flat code segment, but that check is
-implicitly handled in the form of limit checks in the decode phase.
+I see, I did not notice that the above is even possible.
 
-Opportunstically prepare for a future fix by storing the result of any
-truncation in "eip" instead of "_eip".
+> Case 2/, is_module_sig_enforced() is nowhere.
 
-Fixes: 1957aa63be53 ("KVM: VMX: Handle single-step #DB for EMULTYPE_SKIP on EPT misconfig")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Message-Id: <093eabb1eab2965201c9b018373baf26ff256d85.1635842679.git.houwenlong93@linux.alibaba.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kvm/x86.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Understood.
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 33457b27e220b..6b76486702ded 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7999,7 +7999,12 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 	 * updating interruptibility state and injecting single-step #DBs.
- 	 */
- 	if (emulation_type & EMULTYPE_SKIP) {
--		kvm_rip_write(vcpu, ctxt->_eip);
-+		if (ctxt->mode != X86EMUL_MODE_PROT64)
-+			ctxt->eip = (u32)ctxt->_eip;
-+		else
-+			ctxt->eip = ctxt->_eip;
-+
-+		kvm_rip_write(vcpu, ctxt->eip);
- 		if (ctxt->eflags & X86_EFLAGS_RF)
- 			kvm_set_rflags(vcpu, ctxt->eflags & ~X86_EFLAGS_RF);
- 		return 1;
+
+Luis,
+
+I'll send a v10 later today.
+
+
+Kind regards,
+
 -- 
-2.34.1
-
-
+Aaron Tomlin
 
