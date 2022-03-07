@@ -2,159 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7578C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:35:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236206AbiCGIeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 03:34:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S236203AbiCGIgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 03:36:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236203AbiCGIeS (ORCPT
+        with ESMTP id S232508AbiCGIgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 03:34:18 -0500
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E2713D26
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 00:33:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646642001;
-  x=1678178001;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mhhc4KiuxbavjISsXlMiWu5G1CPhO3zCf6Xz+ptSOuQ=;
-  b=JSRk6HM0syu9KGBVQr2Ht/qUIIYLdf/iFjisceZMBQiAmzeareXoqfy8
-   e3e0XjfvG6ClxVBX2L3t08o/YJPux9NGKgcAMQHzc2qd3TiVbx3WB0pnH
-   3fjwghQLOqmTdR5hP0rxDYi9hkBA3pzufFgtAGwVz03wYOqGUFMRGECcz
-   7+p7k1A4+0EMpHRf7ebC+mBSJDq6Vzb3+UaVOpf+22pNnfy5i7AnzG/C8
-   D0ykAYAY5tH/exwej/ZMhkON0QiX2z+OECGXeFNpBa8yLKYWydz9/2y+G
-   6Dor9/0I944RNmECFxP+tpF9RZDP07tfmR99OHbB+ekdsOBUvDdw1exeN
-   g==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>
-Subject: [PATCH] clocksource/drivers/exynos_mct: Support using only local timer
-Date:   Mon, 7 Mar 2022 09:32:55 +0100
-Message-ID: <20220307083255.1577365-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Mar 2022 03:36:15 -0500
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C10665D9
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 00:35:22 -0800 (PST)
+Received: by mail-qk1-f173.google.com with SMTP id d84so11303600qke.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 00:35:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lwoi80hKOWtc+skxMuKJlRziZR969/R4qDCbEpgM3eI=;
+        b=npT2OwGeHEwN+zbMyAmgoRMTNwQFElR93vAkMEPCgSrIV/0Wc2/nuLZ/Tw6BxIKw5D
+         Z5ezMTPvfHR+xKkJOcqt4fzkgjYg6J7UeqmSPwvFppiuCFpg3t2OydzNxAkRLJJLugYG
+         pup+zlcFqFLHB46siXZMLL2kkSQWez+FhA1CTI1Y6xnPrGdK+LYm8xxpOyDiCku7WsT4
+         ro5dywZ9cdNBgLO9KCZq+vOBCoaS2kcTdbkSBtE9RdH7xCGYzf7xlUM57u51t2JQdbiI
+         iT+YoAVKi1+o5QBJ2JiqcbMMAkJbkEWnbefAw0gzvapOxdZll4GzOyL/mkOCmDrLlGT3
+         FziA==
+X-Gm-Message-State: AOAM532Ex2SyAGz5xtocg00FbwyadNiiMvaZ6yeeLjF+/lLKoTpPkKvu
+        MdQ3M4zVHKKdX4ANqCapn5GFvROyZMjLFw==
+X-Google-Smtp-Source: ABdhPJyc2qCJ42FZEiPL00ohfrYXyQfSHr340Dv9eEXWqT68KLVPSLnAKiLByt73h88QUCKUQOX82g==
+X-Received: by 2002:a37:6c03:0:b0:663:4abb:52b5 with SMTP id h3-20020a376c03000000b006634abb52b5mr6135640qkc.566.1646642120817;
+        Mon, 07 Mar 2022 00:35:20 -0800 (PST)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id r64-20020a37a843000000b0067b0cf40b18sm2347710qke.69.2022.03.07.00.35.18
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 00:35:19 -0800 (PST)
+Received: by mail-yb1-f170.google.com with SMTP id w16so29364596ybi.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 00:35:18 -0800 (PST)
+X-Received: by 2002:a25:dc4:0:b0:629:2337:f9ea with SMTP id
+ 187-20020a250dc4000000b006292337f9eamr5533660ybn.6.1646642118604; Mon, 07 Mar
+ 2022 00:35:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <298f0644275d7d0b4aa3ee7143756a2431a4900c.1646311443.git.geert+renesas@glider.be>
+ <af4cffb7-a519-dea1-4b82-f00e9603ce84@baylibre.com>
+In-Reply-To: <af4cffb7-a519-dea1-4b82-f00e9603ce84@baylibre.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 7 Mar 2022 09:35:06 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWS+ExaTFeNQFJdNQ7+5y8wwNh3dnDE1bTtnuNw8-81iw@mail.gmail.com>
+Message-ID: <CAMuHMdWS+ExaTFeNQFJdNQ7+5y8wwNh3dnDE1bTtnuNw8-81iw@mail.gmail.com>
+Subject: Re: [PATCH] drm: Drop commas after SoC match table sentinels
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ARTPEC-8 SoC has a quad-core Cortex-A53 and a single-core Cortex-A5
-which share one MCT with one global and eight local timers.
+Hi Neil,
 
-The Cortex-A53 boots first and starts the global FRC and also registers
-a clock events device using the global timer.  (This global timer clock
-events is usually replaced by arch timer clock events for each of the
-cores.)
+On Mon, Mar 7, 2022 at 9:30 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
+> On 03/03/2022 13:44, Geert Uytterhoeven wrote:
+> > It does not make sense to have a comma after a sentinel, as any new
+> > elements must be added before the sentinel.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-When the A5 boots, we should not use the global timer interrupts or
-write to the global timer registers.  This is because even if there are
-four global comparators, the control bits for all four are in the same
-registers, and we would need to synchronize between the cpus.  Instead,
-the global timer FRC (already started by the A53) should be used as the
-clock source, and one of the local timers which are not used by the A53
-can be used for clock events on the A5.
+> Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 
-To support this, add a module param to set the local timer starting
-index.  If this parameter is non-zero, the global timer clock events
-device is not registered and we don't write to the global FRC if it is
-already started.
+Thank you!
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- drivers/clocksource/exynos_mct.c | 29 ++++++++++++++++++++++++-----
- 1 file changed, 24 insertions(+), 5 deletions(-)
+> Tell me if you want me to apply it to drm-misc-next.
 
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index f29c812b70c9..7ea2919b1808 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -33,7 +33,7 @@
- #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
- #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
- #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
--#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
-+#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
- #define EXYNOS4_MCT_L_MASK		(0xffffff00)
- 
- #define MCT_L_TCNTB_OFFSET		(0x00)
-@@ -77,6 +77,13 @@ static unsigned long clk_rate;
- static unsigned int mct_int_type;
- static int mct_irqs[MCT_NR_IRQS];
- 
-+/*
-+ * First local timer index to use.  If non-zero, global
-+ * timer is not written to.
-+ */
-+static unsigned int mct_local_idx;
-+module_param_named(local_idx, mct_local_idx, int, 0);
-+
- struct mct_clock_event_device {
- 	struct clock_event_device evt;
- 	unsigned long base;
-@@ -157,6 +164,17 @@ static void exynos4_mct_frc_start(void)
- 	u32 reg;
- 
- 	reg = readl_relaxed(reg_base + EXYNOS4_MCT_G_TCON);
-+
-+	/*
-+	 * If the FRC is already running, we don't need to start it again.  We
-+	 * could probably just do this on all systems, but, to avoid any risk
-+	 * for regressions, we only do it on systems where it's absolutely
-+	 * necessary (i.e., on systems where writes to the global registers
-+	 * need to be avoided).
-+	 */
-+	if (mct_local_idx && (reg & MCT_G_TCON_START))
-+		return;
-+
- 	reg |= MCT_G_TCON_START;
- 	exynos4_mct_write(reg, EXYNOS4_MCT_G_TCON);
- }
-@@ -449,7 +467,7 @@ static int exynos4_mct_starting_cpu(unsigned int cpu)
- 		per_cpu_ptr(&percpu_mct_tick, cpu);
- 	struct clock_event_device *evt = &mevt->evt;
- 
--	mevt->base = EXYNOS4_MCT_L_BASE(cpu);
-+	mevt->base = EXYNOS4_MCT_L_BASE(mct_local_idx + cpu);
- 	snprintf(mevt->name, sizeof(mevt->name), "mct_tick%d", cpu);
- 
- 	evt->name = mevt->name;
-@@ -554,13 +572,14 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
- 	} else {
- 		for_each_possible_cpu(cpu) {
- 			int mct_irq;
-+			unsigned int irqidx = MCT_L0_IRQ + mct_local_idx + cpu;
- 			struct mct_clock_event_device *pcpu_mevt =
- 				per_cpu_ptr(&percpu_mct_tick, cpu);
- 
- 			pcpu_mevt->evt.irq = -1;
--			if (MCT_L0_IRQ + cpu >= ARRAY_SIZE(mct_irqs))
-+			if (irqidx >= ARRAY_SIZE(mct_irqs))
- 				break;
--			mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
-+			mct_irq = mct_irqs[irqidx];
- 
- 			irq_set_status_flags(mct_irq, IRQ_NOAUTOEN);
- 			if (request_irq(mct_irq,
-@@ -619,7 +638,7 @@ static int __init mct_init_dt(struct device_node *np, unsigned int int_type)
- 	if (ret)
- 		return ret;
- 
--	return exynos4_clockevent_init();
-+	return (mct_local_idx == 0) ? exynos4_clockevent_init() : ret;
- }
- 
- 
--- 
-2.34.1
+Do I have other options? ;-)
+Thanks in advance!
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
