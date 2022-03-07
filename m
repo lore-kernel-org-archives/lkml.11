@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C01C35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435F2C3527C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238966AbiCGJsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        id S239443AbiCGJtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238914AbiCGJjB (ORCPT
+        with ESMTP id S239852AbiCGJkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265AE6F483;
-        Mon,  7 Mar 2022 01:33:47 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC23875608;
+        Mon,  7 Mar 2022 01:36:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B951EB810BF;
-        Mon,  7 Mar 2022 09:33:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0B8C340E9;
-        Mon,  7 Mar 2022 09:33:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEB3A612A1;
+        Mon,  7 Mar 2022 09:36:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A631C340E9;
+        Mon,  7 Mar 2022 09:35:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645612;
-        bh=wucGYhU/4fjXHEiYCpmNe9ovLCQpTNtpqblxmIxE1Eg=;
+        s=korg; t=1646645760;
+        bh=GU1qZ8dbEsL6J9ZZT5ufr9ok5ZV+KF9ztqFDg6yIkCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kgoOJsjRryeGWPhvZZ+RcY7yD+6tq6KDyiybW0V2GSPKO0gfPOvzABQcMf4NJ17aj
-         CRCK4AcD1q8p/k6+fgkehb11rNZ/JwQsHBpFKVIGSCzIQGnOGiVBkf76dodErqbWw7
-         TwAOLMa0Irj/xep/NqXH2tKO6G8Io/szzL0x3x+E=
+        b=sKEAVa6Y52Ayc4E4yjsvm+UL71ewIi5HwxouM69qvpJ9dFPZgjzc0EVkNs6xIIiJN
+         1JiNDTI00VlHQHBWwPSLiBm3vm66pPCjANWIkjv2rhf/xpe5+ZqCyU4Q3GJD/4KNaj
+         qc1xdLHCaELWiskXYK8hvgrt/+y74XITRQ70Obrg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 087/105] ARM: tegra: Move panels to AUX bus
-Date:   Mon,  7 Mar 2022 10:19:30 +0100
-Message-Id: <20220307091646.627103372@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 5.15 027/262] usb: gadget: dont release an existing dev->buf
+Date:   Mon,  7 Mar 2022 10:16:11 +0100
+Message-Id: <20220307091703.136302286@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,112 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 8d3b01e0d4bb54368d73d0984466d72c2eeeac74 ]
+commit 89f3594d0de58e8a57d92d497dea9fee3d4b9cda upstream.
 
-Move the eDP panel on Venice 2 and Nyan boards into the corresponding
-AUX bus device tree node. This allows us to avoid a nasty circular
-dependency that would otherwise be created between the DPAUX and panel
-nodes via the DDC/I2C phandle.
+dev->buf does not need to be released if it already exists before
+executing dev_config.
 
-Fixes: eb481f9ac95c ("ARM: tegra: add Acer Chromebook 13 device tree")
-Fixes: 59fe02cb079f ("ARM: tegra: Add DTS for the nyan-blaze board")
-Fixes: 40e231c770a4 ("ARM: tegra: Enable eDP for Venice2")
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211231172138.7993-2-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/tegra124-nyan-big.dts   | 15 +++++++++------
- arch/arm/boot/dts/tegra124-nyan-blaze.dts | 15 +++++++++------
- arch/arm/boot/dts/tegra124-venice2.dts    | 14 +++++++-------
- 3 files changed, 25 insertions(+), 19 deletions(-)
+ drivers/usb/gadget/legacy/inode.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/tegra124-nyan-big.dts b/arch/arm/boot/dts/tegra124-nyan-big.dts
-index 1d2aac2cb6d0..fdc1d64dfff9 100644
---- a/arch/arm/boot/dts/tegra124-nyan-big.dts
-+++ b/arch/arm/boot/dts/tegra124-nyan-big.dts
-@@ -13,12 +13,15 @@
- 		     "google,nyan-big-rev1", "google,nyan-big-rev0",
- 		     "google,nyan-big", "google,nyan", "nvidia,tegra124";
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1829,8 +1829,9 @@ dev_config (struct file *fd, const char
+ 	spin_lock_irq (&dev->lock);
+ 	value = -EINVAL;
+ 	if (dev->buf) {
++		spin_unlock_irq(&dev->lock);
+ 		kfree(kbuf);
+-		goto fail;
++		return value;
+ 	}
+ 	dev->buf = kbuf;
  
--	panel: panel {
--		compatible = "auo,b133xtn01";
--
--		power-supply = <&vdd_3v3_panel>;
--		backlight = <&backlight>;
--		ddc-i2c-bus = <&dpaux>;
-+	host1x@50000000 {
-+		dpaux@545c0000 {
-+			aux-bus {
-+				panel: panel {
-+					compatible = "auo,b133xtn01";
-+					backlight = <&backlight>;
-+				};
-+			};
-+		};
- 	};
- 
- 	mmc@700b0400 { /* SD Card on this bus */
-diff --git a/arch/arm/boot/dts/tegra124-nyan-blaze.dts b/arch/arm/boot/dts/tegra124-nyan-blaze.dts
-index 677babde6460..abdf4456826f 100644
---- a/arch/arm/boot/dts/tegra124-nyan-blaze.dts
-+++ b/arch/arm/boot/dts/tegra124-nyan-blaze.dts
-@@ -15,12 +15,15 @@
- 		     "google,nyan-blaze-rev0", "google,nyan-blaze",
- 		     "google,nyan", "nvidia,tegra124";
- 
--	panel: panel {
--		compatible = "samsung,ltn140at29-301";
--
--		power-supply = <&vdd_3v3_panel>;
--		backlight = <&backlight>;
--		ddc-i2c-bus = <&dpaux>;
-+	host1x@50000000 {
-+		dpaux@545c0000 {
-+			aux-bus {
-+				panel: panel {
-+					compatible = "samsung,ltn140at29-301";
-+					backlight = <&backlight>;
-+				};
-+			};
-+		};
- 	};
- 
- 	sound {
-diff --git a/arch/arm/boot/dts/tegra124-venice2.dts b/arch/arm/boot/dts/tegra124-venice2.dts
-index e6b54ac1ebd1..84e2d24065e9 100644
---- a/arch/arm/boot/dts/tegra124-venice2.dts
-+++ b/arch/arm/boot/dts/tegra124-venice2.dts
-@@ -48,6 +48,13 @@
- 		dpaux@545c0000 {
- 			vdd-supply = <&vdd_3v3_panel>;
- 			status = "okay";
-+
-+			aux-bus {
-+				panel: panel {
-+					compatible = "lg,lp129qe";
-+					backlight = <&backlight>;
-+				};
-+			};
- 		};
- 	};
- 
-@@ -1079,13 +1086,6 @@
- 		};
- 	};
- 
--	panel: panel {
--		compatible = "lg,lp129qe";
--		power-supply = <&vdd_3v3_panel>;
--		backlight = <&backlight>;
--		ddc-i2c-bus = <&dpaux>;
--	};
--
- 	vdd_mux: regulator@0 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "+VDD_MUX";
--- 
-2.34.1
-
 
 
