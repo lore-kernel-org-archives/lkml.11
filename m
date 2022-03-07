@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 313ABC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B41EC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238563AbiCGJr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        id S238649AbiCGJsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238276AbiCGJiI (ORCPT
+        with ESMTP id S238928AbiCGJjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59B565831;
-        Mon,  7 Mar 2022 01:32:23 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9FB6F49A;
+        Mon,  7 Mar 2022 01:33:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE00B810D5;
-        Mon,  7 Mar 2022 09:31:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D0CCC340E9;
-        Mon,  7 Mar 2022 09:31:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB7B60FF6;
+        Mon,  7 Mar 2022 09:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE577C36AE5;
+        Mon,  7 Mar 2022 09:33:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645498;
-        bh=++8/Vsf784pHB+1al/o8A7fD/NLBE4ezvlAl4JnQCrA=;
+        s=korg; t=1646645597;
+        bh=70FazzljlNlduRTWOkMcv6aw843eOYsSOelHFwwLpLU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nGFevt2EsGJePgXVhBrY/WGlzaDB5Ol9Kbki06zgzBFEKdhIXDtrz8/HzRJUpxClH
-         EEh/xo4sck1/G0uYO62NKRy83KlDO8tE8Jr22g6so9Es9molqgpJF4DgD6Pu7DoRUu
-         qm6k346MMyHwQfp9SA9s2I5GCFgXWNr5x3Pa/gE4=
+        b=thxbDtiWVAHvXEoi1ryR/w4xj9soCEJQCt59fO6yZobTonXJu9c1l/DnYqXSRqzBO
+         zCGvhWR0Ik/FDTlCusRRRAG0Dfgw+toW7jhkHZpFvTjcDifj8oCkthCySF53jJ6xdU
+         dZwUQIaHdQo5MfznpMKFqG8RsigJ878wjxIXGdy0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Nixdorf <j.nixdorf@avm.de>,
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 049/105] net: ipv6: ensure we call ipv6_mc_down() at most once
-Date:   Mon,  7 Mar 2022 10:18:52 +0100
-Message-Id: <20220307091645.564178487@linuxfoundation.org>
+Subject: [PATCH 5.10 065/105] ibmvnic: register netdev after init of adapter
+Date:   Mon,  7 Mar 2022 10:19:08 +0100
+Message-Id: <20220307091646.008120724@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,93 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: j.nixdorf@avm.de <j.nixdorf@avm.de>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-commit 9995b408f17ff8c7f11bc725c8aa225ba3a63b1c upstream.
+commit 570425f8c7c18b14fa8a2a58a0adb431968ad118 upstream.
 
-There are two reasons for addrconf_notify() to be called with NETDEV_DOWN:
-either the network device is actually going down, or IPv6 was disabled
-on the interface.
+Finish initializing the adapter before registering netdev so state
+is consistent.
 
-If either of them stays down while the other is toggled, we repeatedly
-call the code for NETDEV_DOWN, including ipv6_mc_down(), while never
-calling the corresponding ipv6_mc_up() in between. This will cause a
-new entry in idev->mc_tomb to be allocated for each multicast group
-the interface is subscribed to, which in turn leaks one struct ifmcaddr6
-per nontrivial multicast group the interface is subscribed to.
-
-The following reproducer will leak at least $n objects:
-
-ip addr add ff2e::4242/32 dev eth0 autojoin
-sysctl -w net.ipv6.conf.eth0.disable_ipv6=1
-for i in $(seq 1 $n); do
-	ip link set up eth0; ip link set down eth0
-done
-
-Joining groups with IPV6_ADD_MEMBERSHIP (unprivileged) or setting the
-sysctl net.ipv6.conf.eth0.forwarding to 1 (=> subscribing to ff02::2)
-can also be used to create a nontrivial idev->mc_list, which will the
-leak objects with the right up-down-sequence.
-
-Based on both sources for NETDEV_DOWN events the interface IPv6 state
-should be considered:
-
- - not ready if the network interface is not ready OR IPv6 is disabled
-   for it
- - ready if the network interface is ready AND IPv6 is enabled for it
-
-The functions ipv6_mc_up() and ipv6_down() should only be run when this
-state changes.
-
-Implement this by remembering when the IPv6 state is ready, and only
-run ipv6_mc_down() if it actually changed from ready to not ready.
-
-The other direction (not ready -> ready) already works correctly, as:
-
- - the interface notification triggered codepath for NETDEV_UP /
-   NETDEV_CHANGE returns early if ipv6 is disabled, and
- - the disable_ipv6=0 triggered codepath skips fully initializing the
-   interface as long as addrconf_link_ready(dev) returns false
- - calling ipv6_mc_up() repeatedly does not leak anything
-
-Fixes: 3ce62a84d53c ("ipv6: exit early in addrconf_notify() if IPv6 is disabled")
-Signed-off-by: Johannes Nixdorf <j.nixdorf@avm.de>
+Fixes: c26eba03e407 ("ibmvnic: Update reset infrastructure to support tunable parameters")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/addrconf.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -3712,6 +3712,7 @@ static int addrconf_ifdown(struct net_de
- 	struct inet6_dev *idev;
- 	struct inet6_ifaddr *ifa, *tmp;
- 	bool keep_addr = false;
-+	bool was_ready;
- 	int state, i;
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -5383,6 +5383,12 @@ static int ibmvnic_probe(struct vio_dev
+ 		goto ibmvnic_dev_file_err;
  
- 	ASSERT_RTNL();
-@@ -3777,7 +3778,10 @@ restart:
- 
- 	addrconf_del_rs_timer(idev);
- 
--	/* Step 2: clear flags for stateless addrconf */
-+	/* Step 2: clear flags for stateless addrconf, repeated down
-+	 *         detection
-+	 */
-+	was_ready = idev->if_flags & IF_READY;
- 	if (!unregister)
- 		idev->if_flags &= ~(IF_RS_SENT|IF_RA_RCVD|IF_READY);
- 
-@@ -3851,7 +3855,7 @@ restart:
- 	if (unregister) {
- 		ipv6_ac_destroy_dev(idev);
- 		ipv6_mc_destroy_dev(idev);
--	} else {
-+	} else if (was_ready) {
- 		ipv6_mc_down(idev);
+ 	netif_carrier_off(netdev);
++
++	adapter->state = VNIC_PROBED;
++
++	adapter->wait_for_reset = false;
++	adapter->last_reset_time = jiffies;
++
+ 	rc = register_netdev(netdev);
+ 	if (rc) {
+ 		dev_err(&dev->dev, "failed to register netdev rc=%d\n", rc);
+@@ -5390,10 +5396,6 @@ static int ibmvnic_probe(struct vio_dev
  	}
+ 	dev_info(&dev->dev, "ibmvnic registered\n");
  
+-	adapter->state = VNIC_PROBED;
+-
+-	adapter->wait_for_reset = false;
+-	adapter->last_reset_time = jiffies;
+ 	return 0;
+ 
+ ibmvnic_register_fail:
 
 
