@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 682BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236895AbiCGJ0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:26:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
+        id S236905AbiCGJ0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:26:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237325AbiCGJXo (ORCPT
+        with ESMTP id S236950AbiCGJXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B7E3AA63;
-        Mon,  7 Mar 2022 01:22:38 -0800 (PST)
+        Mon, 7 Mar 2022 04:23:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8343865830;
+        Mon,  7 Mar 2022 01:21:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 845E261027;
-        Mon,  7 Mar 2022 09:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EC55C340F3;
-        Mon,  7 Mar 2022 09:22:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D470B810BD;
+        Mon,  7 Mar 2022 09:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B826C340F5;
+        Mon,  7 Mar 2022 09:21:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644958;
-        bh=8HVQ0bK50UVVZlUYGGpvPde5Jchndo2Q57B4WADFTzI=;
+        s=korg; t=1646644885;
+        bh=0Q2WVn2wAh2H+CtyxAHWdQFdZ4PNcyjRU4u5dhDfKhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jT4a5GEADtID+u7evbBD1QQojYcW/jdnQaRYP1hHCjp9FpbbtfW0P0LTXWoJ4qyt5
-         SsqVxcbPPU3UOIB91vIlYNabFC4Bj+8po45kCwhV4+Htmjp4d06Ev6kl9goSpSzg1R
-         UR3Eyc/wIQ6myr5ePmBxWfP0jlYdpp5Hbpq2IKuU=
+        b=oFlIO2VGTvSeTK6qui5Ra5ww1tkxwwLO8pgmr7HnUxM4nwdZTadfT/YqOzUmgv/eI
+         HYtwWpwz/OnMjOdlHCGh9fDy/u4ryRZXjdOJAgz2/6Q1iAK1UscS6ExarhQyR9LRop
+         mO51fuXefVgwmLZkOs0+18OqIUIJXVgSmZm6fJk4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 35/42] soc: fsl: qe: Check of ioremap return value
-Date:   Mon,  7 Mar 2022 10:19:09 +0100
-Message-Id: <20220307091637.174000208@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 4.14 11/42] usb: gadget: clear related members when goto fail
+Date:   Mon,  7 Mar 2022 10:18:45 +0100
+Message-Id: <20220307091636.478364799@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -48,43 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit a222fd8541394b36b13c89d1698d9530afd59a9c ]
+commit 501e38a5531efbd77d5c73c0ba838a889bfc1d74 upstream.
 
-As the possible failure of the ioremap(), the par_io could be NULL.
-Therefore it should be better to check it and return error in order to
-guarantee the success of the initiation.
-But, I also notice that all the caller like mpc85xx_qe_par_io_init() in
-`arch/powerpc/platforms/85xx/common.c` don't check the return value of
-the par_io_init().
-Actually, par_io_init() needs to check to handle the potential error.
-I will submit another patch to fix that.
-Anyway, par_io_init() itsely should be fixed.
+dev->config and dev->hs_config and dev->dev need to be cleaned if
+dev_config fails to avoid UAF.
 
-Fixes: 7aa1aa6ecec2 ("QE: Move QE from arch/powerpc to drivers/soc")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Li Yang <leoyang.li@nxp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211231172138.7993-3-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/fsl/qe/qe_io.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/gadget/legacy/inode.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/fsl/qe/qe_io.c b/drivers/soc/fsl/qe/qe_io.c
-index 7ae59abc7863..127a4a836e67 100644
---- a/drivers/soc/fsl/qe/qe_io.c
-+++ b/drivers/soc/fsl/qe/qe_io.c
-@@ -41,6 +41,8 @@ int par_io_init(struct device_node *np)
- 	if (ret)
- 		return ret;
- 	par_io = ioremap(res.start, resource_size(&res));
-+	if (!par_io)
-+		return -ENOMEM;
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1882,8 +1882,8 @@ dev_config (struct file *fd, const char
  
- 	num_ports = of_get_property(np, "num-ports", NULL);
- 	if (num_ports)
--- 
-2.34.1
-
+ 	value = usb_gadget_probe_driver(&gadgetfs_driver);
+ 	if (value != 0) {
+-		kfree (dev->buf);
+-		dev->buf = NULL;
++		spin_lock_irq(&dev->lock);
++		goto fail;
+ 	} else {
+ 		/* at this point "good" hardware has for the first time
+ 		 * let the USB the host see us.  alternatively, if users
+@@ -1900,6 +1900,9 @@ dev_config (struct file *fd, const char
+ 	return value;
+ 
+ fail:
++	dev->config = NULL;
++	dev->hs_config = NULL;
++	dev->dev = NULL;
+ 	spin_unlock_irq (&dev->lock);
+ 	pr_debug ("%s: %s fail %zd, %p\n", shortname, __func__, value, dev);
+ 	kfree (dev->buf);
 
 
