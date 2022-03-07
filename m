@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D06C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52C2C47081
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239115AbiCGKDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:03:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        id S239166AbiCGKDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241040AbiCGJlr (ORCPT
+        with ESMTP id S241044AbiCGJlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A333A6D4F1;
-        Mon,  7 Mar 2022 01:39:29 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E51D6D872;
+        Mon,  7 Mar 2022 01:39:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A62AB810BC;
-        Mon,  7 Mar 2022 09:34:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50487C340E9;
-        Mon,  7 Mar 2022 09:34:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2794860F63;
+        Mon,  7 Mar 2022 09:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D08C340E9;
+        Mon,  7 Mar 2022 09:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645666;
-        bh=FqAG+kqT8WqmXuY5MAu1wS1V3RlqAKYNnKZE5WU6RQ0=;
+        s=korg; t=1646645972;
+        bh=i6eWzl/jBwIItkoI0ahapdrJ09185ZksOOhX4gEGG0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EMEfTCunc0TryJhZ/4Ril+WS6lMbWveCJpAaayHA69kpuYatXZ5XKUXiJS4lWNUbr
-         oULkKboMyYk95mxfQr8e+N/iYA8qVSXJSgJfs2IIaxjS2h0iGr7hy3G7vxKH8etEgT
-         QqWTfR8/WoQXZ6PkWFvrWelKDXug55Yjd2zxasdw=
+        b=Pbyft/bXq93m406sNkEG+jwu9ljZiF+BHbqUrrwuARIGVvph7bkwi36B0uzcwCAdS
+         OgQjWtiqB//gkCYgZ52no1651Z+Prw3ADsgMJ9ML06MvhH2fEBboYoFxz4kay1vzSS
+         vaK8E3rmUI1JGhFuSySKdkIvfGh8akjpC64uIflE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 103/105] btrfs: qgroup: fix deadlock between rescan worker and remove qgroup
-Date:   Mon,  7 Mar 2022 10:19:46 +0100
-Message-Id: <20220307091647.073789955@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 095/262] hugetlbfs: fix off-by-one error in hugetlb_vmdelete_list()
+Date:   Mon,  7 Mar 2022 10:17:19 +0100
+Message-Id: <20220307091705.155232526@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,82 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidong Yang <realwakka@gmail.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit d4aef1e122d8bbdc15ce3bd0bc813d6b44a7d63a upstream.
+[ Upstream commit d6aba4c8e20d4d2bf65d589953f6d891c178f3a3 ]
 
-The commit e804861bd4e6 ("btrfs: fix deadlock between quota disable and
-qgroup rescan worker") by Kawasaki resolves deadlock between quota
-disable and qgroup rescan worker. But also there is a deadlock case like
-it. It's about enabling or disabling quota and creating or removing
-qgroup. It can be reproduced in simple script below.
+Pass "end - 1" instead of "end" when walking the interval tree in
+hugetlb_vmdelete_list() to fix an inclusive vs.  exclusive bug.  The two
+callers that pass a non-zero "end" treat it as exclusive, whereas the
+interval tree iterator expects an inclusive "last".  E.g.  punching a
+hole in a file that precisely matches the size of a single hugepage,
+with a vma starting right on the boundary, will result in
+unmap_hugepage_range() being called twice, with the second call having
+start==end.
 
-for i in {1..100}
-do
-    btrfs quota enable /mnt &
-    btrfs qgroup create 1/0 /mnt &
-    btrfs qgroup destroy 1/0 /mnt &
-    btrfs quota disable /mnt &
-done
+The off-by-one error doesn't cause functional problems as
+__unmap_hugepage_range() turns into a massive nop due to
+short-circuiting its for-loop on "address < end".  But, the mmu_notifier
+invocations to invalid_range_{start,end}() are passed a bogus zero-sized
+range, which may be unexpected behavior for secondary MMUs.
 
-Here's why the deadlock happens:
+The bug was exposed by commit ed922739c919 ("KVM: Use interval tree to
+do fast hva lookup in memslots"), currently queued in the KVM tree for
+5.17, which added a WARN to detect ranges with start==end.
 
-1) The quota rescan task is running.
-
-2) Task A calls btrfs_quota_disable(), locks the qgroup_ioctl_lock
-   mutex, and then calls btrfs_qgroup_wait_for_completion(), to wait for
-   the quota rescan task to complete.
-
-3) Task B calls btrfs_remove_qgroup() and it blocks when trying to lock
-   the qgroup_ioctl_lock mutex, because it's being held by task A. At that
-   point task B is holding a transaction handle for the current transaction.
-
-4) The quota rescan task calls btrfs_commit_transaction(). This results
-   in it waiting for all other tasks to release their handles on the
-   transaction, but task B is blocked on the qgroup_ioctl_lock mutex
-   while holding a handle on the transaction, and that mutex is being held
-   by task A, which is waiting for the quota rescan task to complete,
-   resulting in a deadlock between these 3 tasks.
-
-To resolve this issue, the thread disabling quota should unlock
-qgroup_ioctl_lock before waiting rescan completion. Move
-btrfs_qgroup_wait_for_completion() after unlock of qgroup_ioctl_lock.
-
-Fixes: e804861bd4e6 ("btrfs: fix deadlock between quota disable and qgroup rescan worker")
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Signed-off-by: Sidong Yang <realwakka@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/20211228234257.1926057-1-seanjc@google.com
+Fixes: 1bfad99ab425 ("hugetlbfs: hugetlb_vmtruncate_list() needs to take a range to delete")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reported-by: syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/qgroup.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/hugetlbfs/inode.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/fs/btrfs/qgroup.c
-+++ b/fs/btrfs/qgroup.c
-@@ -1198,13 +1198,20 @@ int btrfs_quota_disable(struct btrfs_fs_
- 		goto out;
+diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+index cdfb1ae78a3f8..54c4e0b0dda4a 100644
+--- a/fs/hugetlbfs/inode.c
++++ b/fs/hugetlbfs/inode.c
+@@ -409,10 +409,11 @@ hugetlb_vmdelete_list(struct rb_root_cached *root, pgoff_t start, pgoff_t end)
+ 	struct vm_area_struct *vma;
  
  	/*
-+	 * Unlock the qgroup_ioctl_lock mutex before waiting for the rescan worker to
-+	 * complete. Otherwise we can deadlock because btrfs_remove_qgroup() needs
-+	 * to lock that mutex while holding a transaction handle and the rescan
-+	 * worker needs to commit a transaction.
-+	 */
-+	mutex_unlock(&fs_info->qgroup_ioctl_lock);
-+
-+	/*
- 	 * Request qgroup rescan worker to complete and wait for it. This wait
- 	 * must be done before transaction start for quota disable since it may
- 	 * deadlock with transaction by the qgroup rescan worker.
+-	 * end == 0 indicates that the entire range after
+-	 * start should be unmapped.
++	 * end == 0 indicates that the entire range after start should be
++	 * unmapped.  Note, end is exclusive, whereas the interval tree takes
++	 * an inclusive "last".
  	 */
- 	clear_bit(BTRFS_FS_QUOTA_ENABLED, &fs_info->flags);
- 	btrfs_qgroup_wait_for_completion(fs_info, false);
--	mutex_unlock(&fs_info->qgroup_ioctl_lock);
+-	vma_interval_tree_foreach(vma, root, start, end ? end : ULONG_MAX) {
++	vma_interval_tree_foreach(vma, root, start, end ? end - 1 : ULONG_MAX) {
+ 		unsigned long v_offset;
+ 		unsigned long v_end;
  
- 	/*
- 	 * 1 For the root item
+-- 
+2.34.1
+
 
 
