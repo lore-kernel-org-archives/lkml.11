@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FE5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19985C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235933AbiCGKOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:14:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        id S236205AbiCGKOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:14:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239060AbiCGJ6C (ORCPT
+        with ESMTP id S239119AbiCGJ6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:58:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231377C160;
-        Mon,  7 Mar 2022 01:46:08 -0800 (PST)
+        Mon, 7 Mar 2022 04:58:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A3B66FB1;
+        Mon,  7 Mar 2022 01:46:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E63EB80F9F;
-        Mon,  7 Mar 2022 09:46:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44A4C340F5;
-        Mon,  7 Mar 2022 09:46:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2C1C61052;
+        Mon,  7 Mar 2022 09:46:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FC5C340F3;
+        Mon,  7 Mar 2022 09:46:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646366;
-        bh=aJiMtZDEzYoL9IK8Ld/F52RoqRogDvXyrBRCMv7st+U=;
+        s=korg; t=1646646369;
+        bh=fzNPIGfkd7DH5T/5Hsq8CWGF/HS6ujw5PcfScaeRsOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1pSOpyQ2fTqUDGzQhvx9xyZUAFELAU7JdScOUXGTMujIT1ADAMfInBlm0wyIUVRRt
-         /JNnpomS+bemBpzhKQKVxxemzptiq1Pi9gLJPbGtx+znBr/io8l+5DQG/+JWgCtw51
-         feh0GsNlXkuiJr2D8gCkNMyrBCTR2pmfzMQLFOOk=
+        b=Cv+y2qWWLcKhxdzyKL88GTEhAlchcidJowKn7cG9iocJ3dSjWDd10q9q2DpJgukvV
+         /ZGliM5Riv8V3C5yre/ppY0SSVNma2AhyVVoHVwpu6vTVgflhQus27A8lVrKf0uHdH
+         r9CxSpsezciAJ2ve0A2iMTcysTZKG0wmwiz5qS6s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maurice Baijens <maurice.baijens@ellips.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 180/262] ixgbe: xsk: change !netif_carrier_ok() handling in ixgbe_xmit_zc()
-Date:   Mon,  7 Mar 2022 10:18:44 +0100
-Message-Id: <20220307091707.496512150@linuxfoundation.org>
+        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 171/262] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
+Date:   Mon,  7 Mar 2022 10:18:35 +0100
+Message-Id: <20220307091707.250352256@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,50 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: D. Wythe <alibuda@linux.alibaba.com>
 
-commit 6c7273a266759d9d36f7c862149f248bcdeddc0f upstream.
+commit 4940a1fdf31c39f0806ac831cde333134862030b upstream.
 
-Commit c685c69fba71 ("ixgbe: don't do any AF_XDP zero-copy transmit if
-netif is not OK") addressed the ring transient state when
-MEM_TYPE_XSK_BUFF_POOL was being configured which in turn caused the
-interface to through down/up. Maurice reported that when carrier is not
-ok and xsk_pool is present on ring pair, ksoftirqd will consume 100% CPU
-cycles due to the constant NAPI rescheduling as ixgbe_poll() states that
-there is still some work to be done.
+The problem of SMC_CLC_DECL_ERR_REGRMB on the server is very clear.
+Based on the fact that whether a new SMC connection can be accepted or
+not depends on not only the limit of conn nums, but also the available
+entries of rtoken. Since the rtoken release is trigger by peer, while
+the conn nums is decrease by local, tons of thing can happen in this
+time difference.
 
-To fix this, do not set work_done to false for a !netif_carrier_ok().
+This only thing that needs to be mentioned is that now all connection
+creations are completely protected by smc_server_lgr_pending lock, it's
+enough to check only the available entries in rtokens_used_mask.
 
-Fixes: c685c69fba71 ("ixgbe: don't do any AF_XDP zero-copy transmit if netif is not OK")
-Reported-by: Maurice Baijens <maurice.baijens@ellips.com>
-Tested-by: Maurice Baijens <maurice.baijens@ellips.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cd6851f30386 ("smc: remote memory buffers (RMBs)")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/smc/smc_core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -388,12 +388,14 @@ static bool ixgbe_xmit_zc(struct ixgbe_r
- 	u32 cmd_type;
- 
- 	while (budget-- > 0) {
--		if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
--		    !netif_carrier_ok(xdp_ring->netdev)) {
-+		if (unlikely(!ixgbe_desc_unused(xdp_ring))) {
- 			work_done = false;
- 			break;
- 		}
- 
-+		if (!netif_carrier_ok(xdp_ring->netdev))
-+			break;
-+
- 		if (!xsk_tx_peek_desc(pool, &desc))
- 			break;
- 
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1701,7 +1701,8 @@ int smc_conn_create(struct smc_sock *smc
+ 		    (ini->smcd_version == SMC_V2 ||
+ 		     lgr->vlan_id == ini->vlan_id) &&
+ 		    (role == SMC_CLNT || ini->is_smcd ||
+-		     lgr->conns_num < SMC_RMBS_PER_LGR_MAX)) {
++		    (lgr->conns_num < SMC_RMBS_PER_LGR_MAX &&
++		      !bitmap_full(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX)))) {
+ 			/* link group found */
+ 			ini->first_contact_local = 0;
+ 			conn->lgr = lgr;
 
 
