@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E79C8C35278
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9C7C3527C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241362AbiCGKjK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
+        id S241455AbiCGKj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:39:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239336AbiCGKPD (ORCPT
+        with ESMTP id S239623AbiCGKRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:15:03 -0500
+        Mon, 7 Mar 2022 05:17:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F067A9AE;
-        Mon,  7 Mar 2022 01:57:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345E8E1B;
+        Mon,  7 Mar 2022 01:57:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78EEB60E8F;
-        Mon,  7 Mar 2022 09:56:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80236C340F3;
-        Mon,  7 Mar 2022 09:56:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44C5E60919;
+        Mon,  7 Mar 2022 09:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 443DAC340E9;
+        Mon,  7 Mar 2022 09:57:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646986;
-        bh=ZdNObHiYHnzSCAvNC2nWvjr0DzK6YzERh5u9K+IXs9U=;
+        s=korg; t=1646647023;
+        bh=Ob/qNd3VHsSqymcYuL8emr4oc6bdPm38KbcwkhBrKsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2BWEtnMrptFPF/m3XbbPHcA3PdTDUBp6JVZVcYcLQV3iFkfhJUjOlpyuQV+CKw8k2
-         EiRralQeREDcdbKS/eAQ4q5sYL2FzIg2r3AXuVOqCp7VbECbL8bsTAMtglufZMdHhR
-         7gbAdPxAzovduPaaBAuWKTtqV9DHuUvqZl4/xt/g=
+        b=jPBCG7oLeIcyOidbAjoGxX9kWkJ7VqA7+lRZDGAR5v8pOQWxYrwGddyAQwpRqCy4w
+         zy6bINVs1XhkTTe2QMtEvPTvAWMqQYrax0ipcr0RAh2nMMspYc1AU6jxdO33cJYc40
+         9hq2vPFaiH8WD0AIeygW96g+TQrsaIbCqS5ljZI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.16 105/186] iommu/tegra-smmu: Fix missing put_device() call in tegra_smmu_find
-Date:   Mon,  7 Mar 2022 10:19:03 +0100
-Message-Id: <20220307091657.015501227@linuxfoundation.org>
+        stable@vger.kernel.org, David Gow <davidgow@google.com>,
+        anton ivanov <anton.ivanov@cambridgegreys.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.16 168/186] Input: samsung-keypad - properly state IOMEM dependency
+Date:   Mon,  7 Mar 2022 10:20:06 +0100
+Message-Id: <20220307091658.776320673@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,37 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: David Gow <davidgow@google.com>
 
-commit 9826e393e4a8c3df474e7f9eacd3087266f74005 upstream.
+commit ba115adf61b36b8c167126425a62b0efc23f72c0 upstream.
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+Make the samsung-keypad driver explicitly depend on CONFIG_HAS_IOMEM, as it
+calls devm_ioremap(). This prevents compile errors in some configs (e.g,
+allyesconfig/randconfig under UML):
 
-Fixes: 765a9d1d02b2 ("iommu/tegra-smmu: Fix mc errors on tegra124-nyan")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Link: https://lore.kernel.org/r/20220107080915.12686-1-linmq006@gmail.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+/usr/bin/ld: drivers/input/keyboard/samsung-keypad.o: in function `samsung_keypad_probe':
+samsung-keypad.c:(.text+0xc60): undefined reference to `devm_ioremap'
+
+Signed-off-by: David Gow <davidgow@google.com>
+Acked-by: anton ivanov <anton.ivanov@cambridgegreys.com>
+Link: https://lore.kernel.org/r/20220225041727.1902850-1-davidgow@google.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/tegra-smmu.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/input/keyboard/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -808,8 +808,10 @@ static struct tegra_smmu *tegra_smmu_fin
- 		return NULL;
+--- a/drivers/input/keyboard/Kconfig
++++ b/drivers/input/keyboard/Kconfig
+@@ -556,7 +556,7 @@ config KEYBOARD_PMIC8XXX
  
- 	mc = platform_get_drvdata(pdev);
--	if (!mc)
-+	if (!mc) {
-+		put_device(&pdev->dev);
- 		return NULL;
-+	}
- 
- 	return mc->smmu;
- }
+ config KEYBOARD_SAMSUNG
+ 	tristate "Samsung keypad support"
+-	depends on HAVE_CLK
++	depends on HAS_IOMEM && HAVE_CLK
+ 	select INPUT_MATRIXKMAP
+ 	help
+ 	  Say Y here if you want to use the keypad on your Samsung mobile
 
 
