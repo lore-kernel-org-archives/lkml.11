@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE925C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3611C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238095AbiCGJpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:45:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
+        id S238108AbiCGJpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:45:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237205AbiCGJdp (ORCPT
+        with ESMTP id S237493AbiCGJfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:33:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7157A6D38B;
-        Mon,  7 Mar 2022 01:30:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12D8E61119;
-        Mon,  7 Mar 2022 09:30:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2510DC340E9;
-        Mon,  7 Mar 2022 09:30:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645442;
-        bh=0XM5ZexUMskW4ZkOyUw7cgz87x2gisU6TaKUIornEEs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prVpmwuLgIooonbIepHM5R4nCKar+VYa+QwRltxUO8GtROqW4x0T/8m+EOEBiB4GL
-         /LmoNR4Wan3OcbhSb/sO+UboaqdV/t1QW157tW6NcomarZ4IRJgdsVCmXAGTInGsOA
-         NnS9Ra/0TmrrChIODtxha+1MKoezJ8yI2BrYWQm8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Cavallari <nicolas.cavallari@green-communications.fr>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 033/105] thermal: core: Fix TZ_GET_TRIP NULL pointer dereference
-Date:   Mon,  7 Mar 2022 10:18:36 +0100
-Message-Id: <20220307091645.116487211@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:35:20 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DDC5BD36
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:31:04 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id m42-20020a05600c3b2a00b00382ab337e14so9753434wms.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:31:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=mEobgGRGVJ5wiAE2capMOyflSnP2BH+i8WBwi8HQrCE=;
+        b=NjumzJzXCW534OAtBTl5MUzvZ/jln6ubPNbWaGKP0P3vhbQk0ynhrATl5R8P8ua6PE
+         jL7QXrBuehr/5qfZoRo7xAZPwv2FkvT329Qhq5iQ/bCJIeb87w2R1fsLjrWPZ0l//qCg
+         tYPDMOCjCq0N6QZyloMMGqvwdRQ99LolPRzcpnEPRbmLDFSE1SmD70dsPfGsPlv5XRXT
+         imSCAybERGskCUPGNBRperwkzn/+mHVGRBJVl2Qu1z1r1Lp9VZoJplbNe5LZ56FQRwP3
+         H6ON3vUdPlKsWhgRGxGoM4aSSOvmt0MqIocAVAIwQfitt8ryyh9rSJIeON46u3ohAq8e
+         +FuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=mEobgGRGVJ5wiAE2capMOyflSnP2BH+i8WBwi8HQrCE=;
+        b=j81yph3scVihpTGOPNmbBTCNe20KK8b5cBuVNGJ5cwVW33ezRALKTCSlA9LBzBMGOp
+         R1CgukRcxUFPrD9vamLlKIEB8/vhkJrfY0F5ZkQ5IV+0v+4IPV3WXirHUsYB8gnRtD1j
+         Dlifh7xn0jDuBB6EJi99eXoK0l16VSS4g9abYEUS1nAIW+lwhtHkwV9hUwj8VwF/vNeX
+         Z+pZvMQS9+CqVUdigIUWWmIlsauAEDzCRftTy3QQaLo9sr6bkz/IJal0cCUCt4AIJwPF
+         va+xIWtK4aLziGSthDldt8T9ScspURAkMcokL7sUk2nfTY8lNUokuB0CwZzlcOz92vxX
+         d1qA==
+X-Gm-Message-State: AOAM533gcAfNOqo26iDNEl/B7/ST1nKhBvqIhSzJSEkyL+Te0iIUW4Tf
+        YPLdm0K9ptf0iYXvFvQbp7R62A==
+X-Google-Smtp-Source: ABdhPJxVFyQ+f5cy6lUcxFa91ShR5PJvJhr2UPMVkDjDE6mY7sIKkjrehIRNnwFunvP9OhEL6QgSoA==
+X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr17701505wmh.21.1646645445640;
+        Mon, 07 Mar 2022 01:30:45 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g17-20020adff411000000b001f03426827csm10805840wro.71.2022.03.07.01.30.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:30:45 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:30:43 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 2/3] regulator: dt-bindings: maxim,max14577: convert
+ to dtschema
+Message-ID: <YiXQw01QZ4zFeALb@google.com>
+References: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
+ <20220215074759.29402-3-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220215074759.29402-3-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+On Tue, 15 Feb 2022, Krzysztof Kozlowski wrote:
 
-commit 5838a14832d447990827d85e90afe17e6fb9c175 upstream.
+> Convert the regulator bindings of Maxim MAX14577/MAX77835 MUIC to DT
+> schema format.  The existing bindings were defined in
+> ../bindings/mfd/max14577.txt.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/regulator/maxim,max14577.yaml    | 78 +++++++++++++++++++
+>  1 file changed, 78 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max14577.yaml
 
-Do not call get_trip_hyst() from thermal_genl_cmd_tz_get_trip() if
-the thermal zone does not define one.
+Applied, thanks.
 
-Fixes: 1ce50e7d408e ("thermal: core: genetlink support for events/cmd/sampling")
-Signed-off-by: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
-Cc: 5.10+ <stable@vger.kernel.org> # 5.10+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/thermal/thermal_netlink.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
---- a/drivers/thermal/thermal_netlink.c
-+++ b/drivers/thermal/thermal_netlink.c
-@@ -418,11 +418,12 @@ static int thermal_genl_cmd_tz_get_trip(
- 	for (i = 0; i < tz->trips; i++) {
- 
- 		enum thermal_trip_type type;
--		int temp, hyst;
-+		int temp, hyst = 0;
- 
- 		tz->ops->get_trip_type(tz, i, &type);
- 		tz->ops->get_trip_temp(tz, i, &temp);
--		tz->ops->get_trip_hyst(tz, i, &hyst);
-+		if (tz->ops->get_trip_hyst)
-+			tz->ops->get_trip_hyst(tz, i, &hyst);
- 
- 		if (nla_put_u32(msg, THERMAL_GENL_ATTR_TZ_TRIP_ID, i) ||
- 		    nla_put_u32(msg, THERMAL_GENL_ATTR_TZ_TRIP_TYPE, type) ||
-
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
