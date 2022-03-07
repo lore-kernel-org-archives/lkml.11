@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF518C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236821AbiCGJZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S236845AbiCGJZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237331AbiCGJXp (ORCPT
+        with ESMTP id S237013AbiCGJXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D252B41F9D;
-        Mon,  7 Mar 2022 01:22:44 -0800 (PST)
+        Mon, 7 Mar 2022 04:23:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B2D66607;
+        Mon,  7 Mar 2022 01:21:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BF196112D;
-        Mon,  7 Mar 2022 09:22:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77235C340F3;
-        Mon,  7 Mar 2022 09:22:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E90361015;
+        Mon,  7 Mar 2022 09:21:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7197C340E9;
+        Mon,  7 Mar 2022 09:21:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644963;
-        bh=21DyHoJWypXmQyJ2NJWEq5dGsoSvsOayLI1yONg1z8Y=;
+        s=korg; t=1646644898;
+        bh=fk3To6U2sEeYyO5t87ziffhXrEXeFLqFNumAxEt63ig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m1m6OR+sVgJ6O1u9FISdd4AjMFO8o+JZZ/Jw3oXU9urE2AidLJSaNR55N2lu/b5hJ
-         6SrpXtFX9kASdvUIuQ8t+fkJqL8KaYEg7iNhUe0NuHTj3G/YyJlDfGy8K7h6bQPzAV
-         9kW4YEE7uw85gnwevKz0EhEdibcQWqf+GF5H2lfg=
+        b=MwtOd/9+GJLaFacQFi41cHK0vxJF/ri8GcP9B4e/5EURUib3ZHB2o9BUQ08oSTB2F
+         UlyLhTz+HOp6CEB0b8JSGqgnc0j/gnRWxKAfLXS+xwDoKMIppu/4amvpXIUPMFxphk
+         f1qokUMKk70wMr/XTHWDh68KE/xoROHwV4u9I+iQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 37/42] nl80211: Handle nla_memdup failures in handle_nan_filter
-Date:   Mon,  7 Mar 2022 10:19:11 +0100
-Message-Id: <20220307091637.232978926@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 4.14 15/42] xfrm: fix MTU regression
+Date:   Mon,  7 Mar 2022 10:18:49 +0100
+Message-Id: <20220307091636.593984884@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -49,54 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jiri Bohac <jbohac@suse.cz>
 
-[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
+commit 6596a0229541270fb8d38d989f91b78838e5e9da upstream.
 
-As there's potential for failure of the nla_memdup(),
-check the return value.
+Commit 749439bfac6e1a2932c582e2699f91d329658196 ("ipv6: fix udpv6
+sendmsg crash caused by too small MTU") breaks PMTU for xfrm.
 
-Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+A Packet Too Big ICMPv6 message received in response to an ESP
+packet will prevent all further communication through the tunnel
+if the reported MTU minus the ESP overhead is smaller than 1280.
+
+E.g. in a case of a tunnel-mode ESP with sha256/aes the overhead
+is 92 bytes. Receiving a PTB with MTU of 1371 or less will result
+in all further packets in the tunnel dropped. A ping through the
+tunnel fails with "ping: sendmsg: Invalid argument".
+
+Apparently the MTU on the xfrm route is smaller than 1280 and
+fails the check inside ip6_setup_cork() added by 749439bf.
+
+We found this by debugging USGv6/ipv6ready failures. Failing
+tests are: "Phase-2 Interoperability Test Scenario IPsec" /
+5.3.11 and 5.4.11 (Tunnel Mode: Fragmentation).
+
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm:
+xfrm_state_mtu should return at least 1280 for ipv6") attempted
+to fix this but caused another regression in TCP MSS calculations
+and had to be reverted.
+
+The patch below fixes the situation by dropping the MTU
+check and instead checking for the underflows described in the
+749439bf commit message.
+
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Fixes: 749439bfac6e ("ipv6: fix udpv6 sendmsg crash caused by too small MTU")
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/wireless/nl80211.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/ipv6/ip6_output.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index f630fa2e3164..bbc3c876a5d8 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11257,6 +11257,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	i = 0;
- 	nla_for_each_nested(attr, attr_filter, rem) {
- 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
-+		if (!filter[i].filter)
-+			goto err;
-+
- 		filter[i].len = nla_len(attr);
- 		i++;
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1266,8 +1266,6 @@ static int ip6_setup_cork(struct sock *s
+ 		if (np->frag_size)
+ 			mtu = np->frag_size;
  	}
-@@ -11269,6 +11272,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	}
+-	if (mtu < IPV6_MIN_MTU)
+-		return -EINVAL;
+ 	cork->base.fragsize = mtu;
+ 	if (dst_allfrag(rt->dst.path))
+ 		cork->base.flags |= IPCORK_ALLFRAG;
+@@ -1316,8 +1314,6 @@ static int __ip6_append_data(struct sock
  
- 	return 0;
+ 	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
+ 			(opt ? opt->opt_nflen : 0);
+-	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
+-		     sizeof(struct frag_hdr);
+ 
+ 	headersize = sizeof(struct ipv6hdr) +
+ 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
+@@ -1325,6 +1321,13 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
+ 
++	if (mtu < fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++		goto emsgsize;
 +
-+err:
-+	i = 0;
-+	nla_for_each_nested(attr, attr_filter, rem) {
-+		kfree(filter[i].filter);
-+		i++;
-+	}
-+	kfree(filter);
-+	return -ENOMEM;
- }
- 
- static int nl80211_nan_add_func(struct sk_buff *skb,
--- 
-2.34.1
-
++	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
++		     sizeof(struct frag_hdr);
++
+ 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
+ 	 * the first fragment
+ 	 */
 
 
