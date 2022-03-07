@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16074C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238837AbiCGJzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:55:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
+        id S233990AbiCGJzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241141AbiCGJlz (ORCPT
+        with ESMTP id S241136AbiCGJlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A02F2DF1;
-        Mon,  7 Mar 2022 01:40:44 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8BE1163;
+        Mon,  7 Mar 2022 01:40:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2811A611D5;
-        Mon,  7 Mar 2022 09:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 236B8C340E9;
-        Mon,  7 Mar 2022 09:40:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACA936116E;
+        Mon,  7 Mar 2022 09:40:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A28C340E9;
+        Mon,  7 Mar 2022 09:40:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646043;
-        bh=pM04jYT3iEEc+cH4XO1fxzRYFDlUu4wBdsMG/Myc3Rk=;
+        s=korg; t=1646646037;
+        bh=1KdZZPBpmda3aO8BSAxIkdeJTjDLQGxFa1W+XSEQcWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MKSuvCxqc4TJBKta+7XK0B9yan3yLj6a/+uSJmlKDIFxcufavIqkVlWpdllyf2y17
-         BwDdCr1xvXvwGlMAQyVau9kDu2AdaCGyiT7bpBQsc5yNWrWztt1ZuA6t2LAq9VqMUp
-         agYw0PwqP68FNBnfz793+wy77F3kIRlsrJOD8lS4=
+        b=YYegaNKmYIugdqZLiR06O33mwA2bJG3ZCVEQbTIaS8CftjcOlxqWutq/+rQMLcwdA
+         4Kgb6R+rY2T7FgB1XlMUk27dmlkWHF2UK0sL+FMgYr+VIjhVDEnqpXG6gC1UQqaHhe
+         /5iC3GhoUWmcTl8xkaMGFKo0R9XBt9DvZVwbFKps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhan Liu <zhan.liu@amd.com>,
-        Agustin Gutierrez <agustin.gutierrez@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, He Fengqing <hefengqing@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 114/262] drm/amd/display: Update watermark values for DCN301
-Date:   Mon,  7 Mar 2022 10:17:38 +0100
-Message-Id: <20220307091705.686545607@linuxfoundation.org>
+Subject: [PATCH 5.15 113/262] bpf: Fix possible race in inc_misses_counter
+Date:   Mon,  7 Mar 2022 10:17:37 +0100
+Message-Id: <20220307091705.660001804@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,71 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Agustin Gutierrez <agustin.gutierrez@amd.com>
+From: He Fengqing <hefengqing@huawei.com>
 
-[ Upstream commit 2d8ae25d233767171942a9fba5fd8f4a620996be ]
+[ Upstream commit 0e3135d3bfa5dfb658145238d2bc723a8e30c3a3 ]
 
-[Why]
-There is underflow / visual corruption DCN301, for high
-bandwidth MST DSC configurations such as 2x1440p144 or 2x4k60.
+It seems inc_misses_counter() suffers from same issue fixed in
+the commit d979617aa84d ("bpf: Fixes possible race in update_prog_stats()
+for 32bit arches"):
+As it can run while interrupts are enabled, it could
+be re-entered and the u64_stats syncp could be mangled.
 
-[How]
-Use up-to-date watermark values for DCN301.
-
-Reviewed-by: Zhan Liu <zhan.liu@amd.com>
-Signed-off-by: Agustin Gutierrez <agustin.gutierrez@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Fixes: 9ed9e9ba2337 ("bpf: Count the number of times recursion was prevented")
+Signed-off-by: He Fengqing <hefengqing@huawei.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/r/20220122102936.1219518-1-hefengqing@huawei.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c   | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ kernel/bpf/trampoline.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
-index 3eee32faa208c..329ce4e84b83c 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
-@@ -582,32 +582,32 @@ static struct wm_table lpddr5_wm_table = {
- 			.wm_inst = WM_A,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 7.95,
--			.sr_enter_plus_exit_time_us = 9,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
- 			.valid = true,
- 		},
- 		{
- 			.wm_inst = WM_B,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 9.82,
--			.sr_enter_plus_exit_time_us = 11.196,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
- 			.valid = true,
- 		},
- 		{
- 			.wm_inst = WM_C,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 9.89,
--			.sr_enter_plus_exit_time_us = 11.24,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
- 			.valid = true,
- 		},
- 		{
- 			.wm_inst = WM_D,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 9.748,
--			.sr_enter_plus_exit_time_us = 11.102,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
- 			.valid = true,
- 		},
- 	}
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 6933a9bfee637..2660fbced9ad4 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -541,11 +541,12 @@ static u64 notrace bpf_prog_start_time(void)
+ static void notrace inc_misses_counter(struct bpf_prog *prog)
+ {
+ 	struct bpf_prog_stats *stats;
++	unsigned int flags;
+ 
+ 	stats = this_cpu_ptr(prog->stats);
+-	u64_stats_update_begin(&stats->syncp);
++	flags = u64_stats_update_begin_irqsave(&stats->syncp);
+ 	u64_stats_inc(&stats->misses);
+-	u64_stats_update_end(&stats->syncp);
++	u64_stats_update_end_irqrestore(&stats->syncp, flags);
+ }
+ 
+ /* The logic is similar to bpf_prog_run(), but with an explicit
 -- 
 2.34.1
 
