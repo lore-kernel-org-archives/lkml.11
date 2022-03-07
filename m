@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E32FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236377AbiCGJUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
+        id S230119AbiCGJU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:20:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236164AbiCGJUN (ORCPT
+        with ESMTP id S236374AbiCGJUT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:20:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AC449913;
-        Mon,  7 Mar 2022 01:19:18 -0800 (PST)
+        Mon, 7 Mar 2022 04:20:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C7A4BB9E;
+        Mon,  7 Mar 2022 01:19:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F3FFB810B9;
-        Mon,  7 Mar 2022 09:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADFDC340F3;
-        Mon,  7 Mar 2022 09:19:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30013B810B2;
+        Mon,  7 Mar 2022 09:19:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EC2FC340F5;
+        Mon,  7 Mar 2022 09:19:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644756;
-        bh=FiohOt7NoQYLxo5ix/ERErfoSi8NWtSUiMdB3zj+G9Y=;
+        s=korg; t=1646644759;
+        bh=j6TUN0r8UfveiHMI6u6iwnzfl6vV6ocFAP0/ty86B9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=00/nN/vAoQDPnQUTqH55kuxp3cEtRYDq5t/INNzaUXXrSqNRQOO+++mqdEtkomakq
-         Uf5D9fQl/a9G5S6sRjo23clE2fLhZeJ8iFmvL/LiIc9cZh1VzKTmMKUW/taFsIJsvZ
-         V+9dWzXV6xWWci+PJ0t8wAoS3FX4nRq1qlXZZsns=
+        b=q+9+jEmgBiNV+bcbMWnb+L9tA1jP5hfjt/2jQ0qMUG2BHbjGB6MQ8RMHor7BVal+G
+         7mkKva4T3YHeaiD/nSq/7GXY1nyc+jVO9DALeEkihgrxkB4FHAkagdzctvqjLSZvst
+         4dLCRkXmiqoeeVjjsQFfSYWpPagCX6KqhGt8Zs7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.9 12/32] ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
-Date:   Mon,  7 Mar 2022 10:18:38 +0100
-Message-Id: <20220307091634.790582784@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 4.9 13/32] xfrm: fix MTU regression
+Date:   Mon,  7 Mar 2022 10:18:39 +0100
+Message-Id: <20220307091634.818002970@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
 References: <20220307091634.434478485@linuxfoundation.org>
@@ -48,45 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Jiri Bohac <jbohac@suse.cz>
 
-commit 9bdd10d57a8807dba0003af0325191f3cec0f11c upstream.
+commit 6596a0229541270fb8d38d989f91b78838e5e9da upstream.
 
-While the $val/$val2 values passed in from userspace are always >= 0
-integers, the limits of the control can be signed integers and the $min
-can be non-zero and less than zero. To correctly validate $val/$val2
-against platform_max, add the $min offset to val first.
+Commit 749439bfac6e1a2932c582e2699f91d329658196 ("ipv6: fix udpv6
+sendmsg crash caused by too small MTU") breaks PMTU for xfrm.
 
-Fixes: 817f7c9335ec0 ("ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220215130645.164025-1-marex@denx.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+A Packet Too Big ICMPv6 message received in response to an ESP
+packet will prevent all further communication through the tunnel
+if the reported MTU minus the ESP overhead is smaller than 1280.
+
+E.g. in a case of a tunnel-mode ESP with sha256/aes the overhead
+is 92 bytes. Receiving a PTB with MTU of 1371 or less will result
+in all further packets in the tunnel dropped. A ping through the
+tunnel fails with "ping: sendmsg: Invalid argument".
+
+Apparently the MTU on the xfrm route is smaller than 1280 and
+fails the check inside ip6_setup_cork() added by 749439bf.
+
+We found this by debugging USGv6/ipv6ready failures. Failing
+tests are: "Phase-2 Interoperability Test Scenario IPsec" /
+5.3.11 and 5.4.11 (Tunnel Mode: Fragmentation).
+
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm:
+xfrm_state_mtu should return at least 1280 for ipv6") attempted
+to fix this but caused another regression in TCP MSS calculations
+and had to be reverted.
+
+The patch below fixes the situation by dropping the MTU
+check and instead checking for the underflows described in the
+749439bf commit message.
+
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Fixes: 749439bfac6e ("ipv6: fix udpv6 sendmsg crash caused by too small MTU")
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/ip6_output.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -328,7 +328,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 		mask = BIT(sign_bit + 1) - 1;
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1274,8 +1274,6 @@ static int ip6_setup_cork(struct sock *s
+ 		if (np->frag_size)
+ 			mtu = np->frag_size;
+ 	}
+-	if (mtu < IPV6_MIN_MTU)
+-		return -EINVAL;
+ 	cork->base.fragsize = mtu;
+ 	if (dst_allfrag(rt->dst.path))
+ 		cork->base.flags |= IPCORK_ALLFRAG;
+@@ -1324,8 +1322,6 @@ static int __ip6_append_data(struct sock
  
- 	val = ucontrol->value.integer.value[0];
--	if (mc->platform_max && val > mc->platform_max)
-+	if (mc->platform_max && ((int)val + min) > mc->platform_max)
- 		return -EINVAL;
- 	if (val > max - min)
- 		return -EINVAL;
-@@ -341,7 +341,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 	val = val << shift;
- 	if (snd_soc_volsw_is_stereo(mc)) {
- 		val2 = ucontrol->value.integer.value[1];
--		if (mc->platform_max && val2 > mc->platform_max)
-+		if (mc->platform_max && ((int)val2 + min) > mc->platform_max)
- 			return -EINVAL;
- 		if (val2 > max - min)
- 			return -EINVAL;
+ 	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
+ 			(opt ? opt->opt_nflen : 0);
+-	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
+-		     sizeof(struct frag_hdr);
+ 
+ 	headersize = sizeof(struct ipv6hdr) +
+ 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
+@@ -1333,6 +1329,13 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
+ 
++	if (mtu < fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++		goto emsgsize;
++
++	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
++		     sizeof(struct frag_hdr);
++
+ 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
+ 	 * the first fragment
+ 	 */
 
 
