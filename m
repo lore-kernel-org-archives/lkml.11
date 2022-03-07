@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D90C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BBF0C35278
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239698AbiCGKNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:13:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        id S239840AbiCGKNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:13:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238970AbiCGJ4l (ORCPT
+        with ESMTP id S238971AbiCGJ4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:56:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EC378931;
-        Mon,  7 Mar 2022 01:45:45 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085C57892A;
+        Mon,  7 Mar 2022 01:45:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EA41B8102B;
-        Mon,  7 Mar 2022 09:45:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3E6C340E9;
-        Mon,  7 Mar 2022 09:45:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B172B6116E;
+        Mon,  7 Mar 2022 09:45:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC576C340E9;
+        Mon,  7 Mar 2022 09:45:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646339;
-        bh=sk02j0fMZ+KjwipNO3fLASesLisB+hWzw3XWFB/DLG0=;
+        s=korg; t=1646646345;
+        bh=lA1UPH5y1HxaCRDqKeMKCobJhTqi7g8S5SnadOXS1QE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mIcrETy9410ysxHQQ6MTl/Jq82nd54vTbf/ey4aXz85ocAQzSGHkFwMQcK12X2dmc
-         VEbPq+2C7sdg8yVa4RE5jPIVrVHXX6AyFHis89YWKc1mGVTC4tT3Ju3L7X7OfJGOF7
-         J9xx08zFpFw3Y8cYJFXGgzmxO8pspyelZIM6qero=
+        b=z/xi1eDXw0YvDLMmO33d3D7fHASemKMMu0NfCfMo6gpL60jZLW2WDVjUwuCHuFo0j
+         u8KM8pZjCpZzFcAYV23okU+9rLxF0ZSWyEEuwnQiXxiB3MJvO2Ki4xevm7Ab25UNHx
+         nLRzBqOcoD3uYvNdq/PtaeiPbEuGOaQaexSzD8Mw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 210/262] soc: fsl: guts: Revert commit 3c0d64e867ed
-Date:   Mon,  7 Mar 2022 10:19:14 +0100
-Message-Id: <20220307091708.789658810@linuxfoundation.org>
+Subject: [PATCH 5.15 211/262] soc: fsl: guts: Add a missing memory allocation failure check
+Date:   Mon,  7 Mar 2022 10:19:15 +0100
+Message-Id: <20220307091708.839277782@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,62 +51,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit b113737cf12964a20cc3ba1ddabe6229099661c6 ]
+[ Upstream commit b9abe942cda43a1d46a0fd96efb54f1aa909f757 ]
 
-This reverts commit 3c0d64e867ed
-("soc: fsl: guts: reuse machine name from device tree").
+If 'devm_kstrdup()' fails, we should return -ENOMEM.
 
-A following patch will fix the missing memory allocation failure check
-instead.
+While at it, move the 'of_node_put()' call in the error handling path and
+after the 'machine' has been copied.
+Better safe than sorry.
 
+Fixes: a6fc3b698130 ("soc: fsl: add GUTS driver for QorIQ platforms")
+Depends-on: fddacc7ff4dd ("soc: fsl: guts: Revert commit 3c0d64e867ed")
 Suggested-by: Tyrel Datwyler <tyreld@linux.ibm.com>
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: Li Yang <leoyang.li@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/fsl/guts.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/soc/fsl/guts.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-index d5e9a5f2c087..67b079fc0c8e 100644
+index 67b079fc0c8e..75eabfb916cb 100644
 --- a/drivers/soc/fsl/guts.c
 +++ b/drivers/soc/fsl/guts.c
-@@ -28,7 +28,6 @@ struct fsl_soc_die_attr {
- static struct guts *guts;
- static struct soc_device_attribute soc_dev_attr;
- static struct soc_device *soc_dev;
--static struct device_node *root;
- 
- 
- /* SoC die attribute definition for QorIQ platform */
-@@ -138,7 +137,7 @@ static u32 fsl_guts_get_svr(void)
- 
- static int fsl_guts_probe(struct platform_device *pdev)
- {
--	struct device_node *np = pdev->dev.of_node;
-+	struct device_node *root, *np = pdev->dev.of_node;
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	const struct fsl_soc_die_attr *soc_die;
-@@ -161,8 +160,9 @@ static int fsl_guts_probe(struct platform_device *pdev)
+@@ -160,9 +160,14 @@ static int fsl_guts_probe(struct platform_device *pdev)
  	root = of_find_node_by_path("/");
  	if (of_property_read_string(root, "model", &machine))
  		of_property_read_string_index(root, "compatible", 0, &machine);
+-	of_node_put(root);
+-	if (machine)
++	if (machine) {
+ 		soc_dev_attr.machine = devm_kstrdup(dev, machine, GFP_KERNEL);
++		if (!soc_dev_attr.machine) {
++			of_node_put(root);
++			return -ENOMEM;
++		}
++	}
 +	of_node_put(root);
- 	if (machine)
--		soc_dev_attr.machine = machine;
-+		soc_dev_attr.machine = devm_kstrdup(dev, machine, GFP_KERNEL);
  
  	svr = fsl_guts_get_svr();
  	soc_die = fsl_soc_die_match(svr, fsl_soc_die);
-@@ -197,7 +197,6 @@ static int fsl_guts_probe(struct platform_device *pdev)
- static int fsl_guts_remove(struct platform_device *dev)
- {
- 	soc_device_unregister(soc_dev);
--	of_node_put(root);
- 	return 0;
- }
- 
 -- 
 2.34.1
 
