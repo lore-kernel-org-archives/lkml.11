@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4E6C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C01C35274
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239268AbiCGJtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S238966AbiCGJsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239336AbiCGJjh (ORCPT
+        with ESMTP id S238914AbiCGJjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:37 -0500
+        Mon, 7 Mar 2022 04:39:01 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BFF6D84E;
-        Mon,  7 Mar 2022 01:35:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265AE6F483;
+        Mon,  7 Mar 2022 01:33:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA445B810CF;
-        Mon,  7 Mar 2022 09:35:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 364B3C340E9;
-        Mon,  7 Mar 2022 09:35:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B951EB810BF;
+        Mon,  7 Mar 2022 09:33:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0B8C340E9;
+        Mon,  7 Mar 2022 09:33:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645702;
-        bh=rW27RDIxb4zRm6FShjRgjJye5PiLNdSUc2enKTspRag=;
+        s=korg; t=1646645612;
+        bh=wucGYhU/4fjXHEiYCpmNe9ovLCQpTNtpqblxmIxE1Eg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zyr9OPbpyEPPoTTdBZjQEm6LgcZYRC2day2ou8r5B4CmWT8jZxpVo9eGlekpjcEV1
-         PhL63/uHSS3+okyM6nGtrWJi7WTK659iXAA0bV8tXx2iQNle4WOW/Ia6VbuHJ98XJF
-         34u5AnfLlDZ5rS8H3S6QX8bl+OdNcEzDVUzTWCRo=
+        b=kgoOJsjRryeGWPhvZZ+RcY7yD+6tq6KDyiybW0V2GSPKO0gfPOvzABQcMf4NJ17aj
+         CRCK4AcD1q8p/k6+fgkehb11rNZ/JwQsHBpFKVIGSCzIQGnOGiVBkf76dodErqbWw7
+         TwAOLMa0Irj/xep/NqXH2tKO6G8Io/szzL0x3x+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Pei Zhang <pezhang@redhat.com>, Ming Lei <ming.lei@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 010/262] block: loop:use kstatfs.f_bsize of backing file to set discard granularity
-Date:   Mon,  7 Mar 2022 10:15:54 +0100
-Message-Id: <20220307091702.668709970@linuxfoundation.org>
+        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 087/105] ARM: tegra: Move panels to AUX bus
+Date:   Mon,  7 Mar 2022 10:19:30 +0100
+Message-Id: <20220307091646.627103372@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,62 +48,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit 06582bc86d7f48d35cd044098ca1e246e8c7c52e ]
+[ Upstream commit 8d3b01e0d4bb54368d73d0984466d72c2eeeac74 ]
 
-If backing file's filesystem has implemented ->fallocate(), we think the
-loop device can support discard, then pass sb->s_blocksize as
-discard_granularity. However, some underlying FS, such as overlayfs,
-doesn't set sb->s_blocksize, and causes discard_granularity to be set as
-zero, then the warning in __blkdev_issue_discard() is triggered.
+Move the eDP panel on Venice 2 and Nyan boards into the corresponding
+AUX bus device tree node. This allows us to avoid a nasty circular
+dependency that would otherwise be created between the DPAUX and panel
+nodes via the DDC/I2C phandle.
 
-Christoph suggested to pass kstatfs.f_bsize as discard granularity, and
-this way is fine because kstatfs.f_bsize means 'Optimal transfer block
-size', which still matches with definition of discard granularity.
-
-So fix the issue by setting discard_granularity as kstatfs.f_bsize if it
-is available, otherwise claims discard isn't supported.
-
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Vivek Goyal <vgoyal@redhat.com>
-Reported-by: Pei Zhang <pezhang@redhat.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220126035830.296465-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: eb481f9ac95c ("ARM: tegra: add Acer Chromebook 13 device tree")
+Fixes: 59fe02cb079f ("ARM: tegra: Add DTS for the nyan-blaze board")
+Fixes: 40e231c770a4 ("ARM: tegra: Enable eDP for Venice2")
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/tegra124-nyan-big.dts   | 15 +++++++++------
+ arch/arm/boot/dts/tegra124-nyan-blaze.dts | 15 +++++++++------
+ arch/arm/boot/dts/tegra124-venice2.dts    | 14 +++++++-------
+ 3 files changed, 25 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index c00ae30fde89e..92f9d32bfae5e 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -79,6 +79,7 @@
- #include <linux/ioprio.h>
- #include <linux/blk-cgroup.h>
- #include <linux/sched/mm.h>
-+#include <linux/statfs.h>
+diff --git a/arch/arm/boot/dts/tegra124-nyan-big.dts b/arch/arm/boot/dts/tegra124-nyan-big.dts
+index 1d2aac2cb6d0..fdc1d64dfff9 100644
+--- a/arch/arm/boot/dts/tegra124-nyan-big.dts
++++ b/arch/arm/boot/dts/tegra124-nyan-big.dts
+@@ -13,12 +13,15 @@
+ 		     "google,nyan-big-rev1", "google,nyan-big-rev0",
+ 		     "google,nyan-big", "google,nyan", "nvidia,tegra124";
  
- #include "loop.h"
+-	panel: panel {
+-		compatible = "auo,b133xtn01";
+-
+-		power-supply = <&vdd_3v3_panel>;
+-		backlight = <&backlight>;
+-		ddc-i2c-bus = <&dpaux>;
++	host1x@50000000 {
++		dpaux@545c0000 {
++			aux-bus {
++				panel: panel {
++					compatible = "auo,b133xtn01";
++					backlight = <&backlight>;
++				};
++			};
++		};
+ 	};
  
-@@ -939,8 +940,13 @@ static void loop_config_discard(struct loop_device *lo)
- 		granularity = 0;
+ 	mmc@700b0400 { /* SD Card on this bus */
+diff --git a/arch/arm/boot/dts/tegra124-nyan-blaze.dts b/arch/arm/boot/dts/tegra124-nyan-blaze.dts
+index 677babde6460..abdf4456826f 100644
+--- a/arch/arm/boot/dts/tegra124-nyan-blaze.dts
++++ b/arch/arm/boot/dts/tegra124-nyan-blaze.dts
+@@ -15,12 +15,15 @@
+ 		     "google,nyan-blaze-rev0", "google,nyan-blaze",
+ 		     "google,nyan", "nvidia,tegra124";
  
- 	} else {
-+		struct kstatfs sbuf;
+-	panel: panel {
+-		compatible = "samsung,ltn140at29-301";
+-
+-		power-supply = <&vdd_3v3_panel>;
+-		backlight = <&backlight>;
+-		ddc-i2c-bus = <&dpaux>;
++	host1x@50000000 {
++		dpaux@545c0000 {
++			aux-bus {
++				panel: panel {
++					compatible = "samsung,ltn140at29-301";
++					backlight = <&backlight>;
++				};
++			};
++		};
+ 	};
+ 
+ 	sound {
+diff --git a/arch/arm/boot/dts/tegra124-venice2.dts b/arch/arm/boot/dts/tegra124-venice2.dts
+index e6b54ac1ebd1..84e2d24065e9 100644
+--- a/arch/arm/boot/dts/tegra124-venice2.dts
++++ b/arch/arm/boot/dts/tegra124-venice2.dts
+@@ -48,6 +48,13 @@
+ 		dpaux@545c0000 {
+ 			vdd-supply = <&vdd_3v3_panel>;
+ 			status = "okay";
 +
- 		max_discard_sectors = UINT_MAX >> 9;
--		granularity = inode->i_sb->s_blocksize;
-+		if (!vfs_statfs(&file->f_path, &sbuf))
-+			granularity = sbuf.f_bsize;
-+		else
-+			max_discard_sectors = 0;
- 	}
++			aux-bus {
++				panel: panel {
++					compatible = "lg,lp129qe";
++					backlight = <&backlight>;
++				};
++			};
+ 		};
+ 	};
  
- 	if (max_discard_sectors) {
+@@ -1079,13 +1086,6 @@
+ 		};
+ 	};
+ 
+-	panel: panel {
+-		compatible = "lg,lp129qe";
+-		power-supply = <&vdd_3v3_panel>;
+-		backlight = <&backlight>;
+-		ddc-i2c-bus = <&dpaux>;
+-	};
+-
+ 	vdd_mux: regulator@0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "+VDD_MUX";
 -- 
 2.34.1
 
