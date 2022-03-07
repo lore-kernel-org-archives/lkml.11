@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC8FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F2EC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239555AbiCGJ7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:59:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        id S239531AbiCGJ71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240364AbiCGJk4 (ORCPT
+        with ESMTP id S240302AbiCGJkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15E12D1D5;
-        Mon,  7 Mar 2022 01:37:33 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:53 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B036212A;
+        Mon,  7 Mar 2022 01:37:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CCCF60F63;
-        Mon,  7 Mar 2022 09:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0729EC340E9;
-        Mon,  7 Mar 2022 09:37:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4F26ACE0EAA;
+        Mon,  7 Mar 2022 09:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67060C340E9;
+        Mon,  7 Mar 2022 09:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645852;
-        bh=UMz2txwKo30Dyf7QnStl7t4dAxLp9RmLZ4ZsAfzY8d8=;
+        s=korg; t=1646645813;
+        bh=Kd7tWJSaOdAD0nh7OxQbtG+Qpn/HeAoCK+1NZS/YSUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LS15UwDrFAU+y2WXNOjLV2+SYWBhc8wC/T+6LmDXSaXtkkO4L/4RyCeQzdEr17lJ6
-         xEkRw6bXXRD2KgecKvszsfMQQfYMpZKSFjiSxSee0rqP3X4bbrz6JuCSE1RigQCJB5
-         d1o/Tt/pUDPdxZ+yEMOguO+YRq9fEN4G1uNCmWyA=
+        b=QD55zRLkGxEiZE//iQf4qaGrw7MligeTV1hibvXlNnr/370TG9qX3+5i3GuSAMCxz
+         T3GtLlXcri2jquMshORYrBoqqFqyN6U5WGU5eXTiPVEGTYpIxBbcp1g/lnyUB+LGEz
+         3cuaHnLV/y44tOExE1GdSk2CF4eOutS3Tc9PhhiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Peter Hutterer <peter.hutterer@who-t.net>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 057/262] KVM: VMX: Read Posted Interrupt "control" exactly once per loop iteration
-Date:   Mon,  7 Mar 2022 10:16:41 +0100
-Message-Id: <20220307091704.121672878@linuxfoundation.org>
+Subject: [PATCH 5.15 007/262] Input: clear BTN_RIGHT/MIDDLE on buttonpads
+Date:   Mon,  7 Mar 2022 10:15:51 +0100
+Message-Id: <20220307091702.587190838@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,55 +52,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit cfb0e1306a3790eb055ebf7cdb7b0ee8a23e9b6e ]
+[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
 
-Use READ_ONCE() when loading the posted interrupt descriptor control
-field to ensure "old" and "new" have the same base value.  If the
-compiler emits separate loads, and loads into "new" before "old", KVM
-could theoretically drop the ON bit if it were set between the loads.
+Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
+and the BTN_LEFT key bit.
 
-Fixes: 28b835d60fcc ("KVM: Update Posted-Interrupts Descriptor when vCPU is preempted")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20211009021236.4122790-27-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+As explained in the specification, where a device has a button type
+value of 0 (click-pad) or 1 (pressure-pad) there should not be
+discrete buttons:
+https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
+
+However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
+though the device is a buttonpad and therefore does not have those
+buttons.
+
+This behavior has forced userspace applications like libinput to
+implement different workarounds and quirks to detect buttonpads and
+offer to the user the right set of features and configuration options.
+For more information:
+https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
+
+In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
+bits when the input device is register if the INPUT_PROP_BUTTONPAD
+property bit is set.
+
+Notice that this change will not affect udev because it does not check
+for buttons. See systemd/src/udev/udev-builtin-input_id.c.
+
+List of known affected hardware:
+
+ - Chuwi AeroBook Plus
+ - Chuwi Gemibook
+ - Framework Laptop
+ - GPD Win Max
+ - Huawei MateBook 2020
+ - Prestigio Smartbook 141 C2
+ - Purism Librem 14v1
+ - StarLite Mk II   - AMI firmware
+ - StarLite Mk II   - Coreboot firmware
+ - StarLite Mk III  - AMI firmware
+ - StarLite Mk III  - Coreboot firmware
+ - StarLabTop Mk IV - AMI firmware
+ - StarLabTop Mk IV - Coreboot firmware
+ - StarBook Mk V
+
+Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Acked-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/posted_intr.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/input/input.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-index 696ad48ab5daa..46fb83d6a286e 100644
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -51,7 +51,7 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index ccaeb24263854..c3139bc2aa0db 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -2285,6 +2285,12 @@ int input_register_device(struct input_dev *dev)
+ 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
+ 	__clear_bit(KEY_RESERVED, dev->keybit);
  
- 	/* The full case.  */
- 	do {
--		old.control = new.control = pi_desc->control;
-+		old.control = new.control = READ_ONCE(pi_desc->control);
++	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
++	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
++		__clear_bit(BTN_RIGHT, dev->keybit);
++		__clear_bit(BTN_MIDDLE, dev->keybit);
++	}
++
+ 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
+ 	input_cleanse_bitmasks(dev);
  
- 		dest = cpu_physical_id(cpu);
- 
-@@ -104,7 +104,7 @@ static void __pi_post_block(struct kvm_vcpu *vcpu)
- 	unsigned int dest;
- 
- 	do {
--		old.control = new.control = pi_desc->control;
-+		old.control = new.control = READ_ONCE(pi_desc->control);
- 		WARN(old.nv != POSTED_INTR_WAKEUP_VECTOR,
- 		     "Wakeup handler not enabled while the VCPU is blocked\n");
- 
-@@ -163,7 +163,7 @@ int pi_pre_block(struct kvm_vcpu *vcpu)
- 	}
- 
- 	do {
--		old.control = new.control = pi_desc->control;
-+		old.control = new.control = READ_ONCE(pi_desc->control);
- 
- 		WARN((pi_desc->sn == 1),
- 		     "Warning: SN field of posted-interrupts "
 -- 
 2.34.1
 
