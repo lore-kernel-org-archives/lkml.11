@@ -2,136 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243709AbiCGPVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
+        id S243704AbiCGPWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243691AbiCGPVk (ORCPT
+        with ESMTP id S237362AbiCGPWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:21:40 -0500
-X-Greylist: delayed 1235 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 07:20:45 PST
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA888D6B6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:20:45 -0800 (PST)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 6E3CA3111D
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:00:10 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id REqEn6xrJ9AGSREqFnRBzF; Mon, 07 Mar 2022 09:00:08 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=dQrC4NPwOH1bBJ1s8Jj8y2mqjLke9bqZ691DQeDyyuw=; b=bZlBLS6zySUXqHuHeg5DwGvuQm
-        hzFDmcDTJmfjJiXE0iky04k8rK2YvzWrETBnWlukqnRBGbf/lhY3nbfunMEAEn/wbWqJiV95iX499
-        vhwXj8MQyfA+jpS/9xxuNDcjdVM1LUMpQ5rrujdx6lEFHdBt3ePDPgqToHIIgnV3LtZGDoDKrtaVK
-        M0v+muupn88rXkNIgnI12zJgY7IDtBRpsy0ueUtD/bdD+RwFkVjYVMYPt+jhoqIL1iJ1YqZBiZKyx
-        Fz9kbQfPvfndyf1xlCoFpfSe14YD2Vjg+Dvfy+BeVgSW1mvaeQfCgojN9qswwxKFyazOiAEBL8QeB
-        K3p8FTmg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58898 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nREqE-002RVL-Fw; Mon, 07 Mar 2022 15:00:06 +0000
-Date:   Mon, 7 Mar 2022 07:00:04 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Linux 5.17-rc7
-Message-ID: <20220307150004.GA3279416@roeck-us.net>
-References: <CAHk-=wjkkYX8OvTv60+XvQkAK4Pg0QC0Hn-4+n7Q0t1+QWw7Sw@mail.gmail.com>
+        Mon, 7 Mar 2022 10:22:47 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2028D6A3;
+        Mon,  7 Mar 2022 07:21:52 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id r65so9412308wma.2;
+        Mon, 07 Mar 2022 07:21:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N3zVdZIdUp2SndvqCDVv0wLLG00x7X2w4FcjL+gKARY=;
+        b=nh76nqjdSWUzPHfeHac1Cemx0gt6iOLqZ7gUAYB9njkbJ5uIed+uFdnUtCgcEzkY2m
+         kk1f+n1i8/SDWaZ9GivaveBtcP92ZZ+moPcualmBFLCIbjjBUDN1lrYuKuzeZBdXIooj
+         dX39oEEXCFKREaU/e53HJK5Q8N1UNc4eZBIhq+cV2wEbIpejXycZ0spDbr1tGpowvwCr
+         CWwDB44Sd6+nOEY7gWsKNT7dRFWs65mJNWfbApoklXkDmtNDiGk2kgfh5QeXm7EaDyzV
+         /V+O6fE/c6JxjZKyNwI2OqRLyxymuLNljvcd1AFyoHiP8/Mz12C7gbfO1KIj998nsxxX
+         6gZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N3zVdZIdUp2SndvqCDVv0wLLG00x7X2w4FcjL+gKARY=;
+        b=ZHZgMETGydEQZhuUxFH5f1Y0h2ScB8vHDQR3EGkg60+TckO6AddTKXP0YldBeytvJo
+         t9gPFqP+KRVHwnvRYNAfCKkw3ab83OAJ68n+H2YkUKwAQ3Suqiml8b2mNwCwcaxJkBgS
+         jgyLNRmjdtbJglfTrNhxNIAZQcQX52/eMdr6GPkbl3LDRewYrtW+ZDhsunjjsy2ZYT+Y
+         Ws4QVEgYuH0aUvG6P1dggqrA8HzP3yeknYAkD1ttBA7PltokcFrZZvtlMqFpybU4bul8
+         R5cyF+iXVqfLYrFaKCplEJpplUp3eYWg89ybgLiM8RIa4ICk9HKmjh6E3uiPiiWAk/Sb
+         qjPQ==
+X-Gm-Message-State: AOAM531FokKvJtqFP8jcU0IIP9qcwN0vo6GJURR1aZ48y7X4+jX6hnL1
+        c0Yxf+vXBLbr31T3reGhMG4=
+X-Google-Smtp-Source: ABdhPJzoVbtWjie8oUL0KyAGWJ2UJtdQdOZdXjz6HbfRjjX7p2bvz5+ddajXPvHa+Ia+Gl7C0n4jag==
+X-Received: by 2002:a05:600c:2056:b0:389:736a:5631 with SMTP id p22-20020a05600c205600b00389736a5631mr15342323wmg.120.1646666511084;
+        Mon, 07 Mar 2022 07:21:51 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id p12-20020a056000018c00b001f079518150sm8403134wrx.93.2022.03.07.07.21.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 07:21:50 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Jan Kara <jack@suse.com>, linux-kernel@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH] udf: remove redundant assignment of variable etype
+Date:   Mon,  7 Mar 2022 15:21:49 +0000
+Message-Id: <20220307152149.139045-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjkkYX8OvTv60+XvQkAK4Pg0QC0Hn-4+n7Q0t1+QWw7Sw@mail.gmail.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nREqE-002RVL-Fw
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58898
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 06, 2022 at 02:41:11PM -0800, Linus Torvalds wrote:
-> No surprises this week - we still have a couple of pending things, but
-> everything looks under control.
-> 
-> Knock wood.
-> 
-> Last week saw the usual number of small fixes all over - with btrfs
-> standing out once again. But once again it's not like it's a lot of
-> changes, it's just that the rest tends to be pretty small.
-> 
-> "The rest" in this case is mostly networking (drivers but also some
-> core fixes), misc other drivers (gpu and input, with some noise
-> elsewhere) and arch updates (mostly devicetree and some kvm fixes, but
-> also RISC-V and s390).
-> 
-> Shortlog appended - and as things stand, I expect that final 5.17 will
-> be next weekend unless something surprising comes up.
-> 
-> Please test,
-> 
+Variable etype is being assigned a value that is never read. The
+variable and assignment are redundant and can be removed.
 
-Build results:
-	total: 155 pass: 153 fail: 2
-Failed builds:
-	powerpc:skiroot_defconfig
-	sparc64:allmodconfig
-Qemu test results:
-	total: 488 pass: 488 fail: 0
+Cleans up clang scan build warning:
+fs/udf/super.c:2485:10: warning: Although the value stored to 'etype'
+is used in the enclosing expression, the value is never actually read
+from 'etype' [deadcode.DeadStores]
 
-Not sure if it adds value at this point to keep reporting details,
-but here they are.
-
-Building powerpc:skiroot_defconfig ... failed
---------------
-arch/powerpc/kernel/stacktrace.c: In function 'handle_backtrace_ipi':
-arch/powerpc/kernel/stacktrace.c:171:9: error: implicit declaration of function 'nmi_cpu_backtrace'
-
-Introduced with commit 1614b2b11fab29 ("arch: Make ARCH_STACKWALK
-independent of STACKTRACE"). Discussed at
-https://lore.kernel.org/lkml/YeE2VWwHO50gFw9M@hirez.programming.kicks-ass.net/T/
-
-Fix: https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20220212111349.2806972-1-mpe@ellerman.id.au/
-The patch is available in linux-next. Comments in patchwork suggest
-that it will only be pushed during the next merge window.
-
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
-Building sparc64:allmodconfig ... failed
---------------
-Error log:
-<stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
-sparc64-linux-ld: drivers/memory/omap-gpmc.o: in function `gpmc_probe_generic_child':
-omap-gpmc.c:(.text.unlikely+0x14c4): undefined reference to `of_platform_device_create'
+ fs/udf/super.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Introduced by commit 4cd335dae3cf ("mtd: rawnand: omap2: Prevent invalid
-configuration and build error").
-Reported: https://lore.kernel.org/lkml/20220219150836.GA1035394@roeck-us.net/T/#t
-Fix: https://patchwork.ozlabs.org/project/linux-mtd/patch/20220219193600.24892-1-rogerq@kernel.org/
-The patch is available in linux-next.
+diff --git a/fs/udf/super.c b/fs/udf/super.c
+index 48871615e489..4042d9739fb7 100644
+--- a/fs/udf/super.c
++++ b/fs/udf/super.c
+@@ -2474,7 +2474,6 @@ static unsigned int udf_count_free_table(struct super_block *sb,
+ 	unsigned int accum = 0;
+ 	uint32_t elen;
+ 	struct kernel_lb_addr eloc;
+-	int8_t etype;
+ 	struct extent_position epos;
+ 
+ 	mutex_lock(&UDF_SB(sb)->s_alloc_mutex);
+@@ -2482,7 +2481,7 @@ static unsigned int udf_count_free_table(struct super_block *sb,
+ 	epos.offset = sizeof(struct unallocSpaceEntry);
+ 	epos.bh = NULL;
+ 
+-	while ((etype = udf_next_aext(table, &epos, &eloc, &elen, 1)) != -1)
++	while (udf_next_aext(table, &epos, &eloc, &elen, 1) != -1)
+ 		accum += (elen >> table->i_sb->s_blocksize_bits);
+ 
+ 	brelse(epos.bh);
+-- 
+2.35.1
 
-That, and the persistent terrible shape of linux-next, makes me wonder
-if we need some kind of pre-commit and/or pre-push validation system.
-
-Guenter
