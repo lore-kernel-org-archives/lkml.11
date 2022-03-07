@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74E4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236613AbiCGJWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:22:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
+        id S232774AbiCGJWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:22:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236596AbiCGJWR (ORCPT
+        with ESMTP id S236606AbiCGJWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:22:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9520A6662A;
-        Mon,  7 Mar 2022 01:20:31 -0800 (PST)
+        Mon, 7 Mar 2022 04:22:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28782522E0;
+        Mon,  7 Mar 2022 01:20:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45507B81054;
-        Mon,  7 Mar 2022 09:20:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 730FBC340E9;
-        Mon,  7 Mar 2022 09:20:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B556061033;
+        Mon,  7 Mar 2022 09:20:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91034C340F7;
+        Mon,  7 Mar 2022 09:20:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644828;
-        bh=tohyZRhddFOBEy3gO5lm9g2AbMMXdntkNRSQfG7NnjQ=;
+        s=korg; t=1646644832;
+        bh=+6XjYk4EJwm/J+lyiGtf8jIrpFJkTC+MKtWsP5gwjrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sdIEpxWQvbf0i5E56MqkCPIx9lVSZYExpxQ/S9oVeLjnnX6bgEESLPOO9jCzzb/rk
-         QHVsTBqGzj7ZsLbypMPYCFPkREkNYOLNLLoptw1Qk5ynSYLVtuw814JFBMjyEpuvRs
-         rChmU8V3VyQcN7p6hyaDt4R3Ik+WNveV5+/ptn5U=
+        b=SqxX67VQNNlmHXYhhA6pfgp5mUOrKNG3582u7kS1uJ8kAAkqyXIzZM6RxyHz4XKsD
+         Wf76hPP9GhRHo8WH8YUlR1cBKlL6Gp1MkPb2F4ZNCYjAEzhiobClALxwHnXkK5gZr/
+         YWOjaURcT6g/lv3wICctKtGT3CZnDJXCkcVfGLMI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@idosch.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 32/32] net: dcb: disable softirqs in dcbnl_flush_dev()
-Date:   Mon,  7 Mar 2022 10:18:58 +0100
-Message-Id: <20220307091635.351396827@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Hutterer <peter.hutterer@who-t.net>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 04/32] Input: clear BTN_RIGHT/MIDDLE on buttonpads
+Date:   Mon,  7 Mar 2022 10:18:30 +0100
+Message-Id: <20220307091634.566777307@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
 References: <20220307091634.434478485@linuxfoundation.org>
@@ -49,57 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-commit 10b6bb62ae1a49ee818fc479cf57b8900176773e upstream.
+[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
 
-Ido Schimmel points out that since commit 52cff74eef5d ("dcbnl : Disable
-software interrupts before taking dcb_lock"), the DCB API can be called
-by drivers from softirq context.
+Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
+and the BTN_LEFT key bit.
 
-One such in-tree example is the chelsio cxgb4 driver:
-dcb_rpl
--> cxgb4_dcb_handle_fw_update
-   -> dcb_ieee_setapp
+As explained in the specification, where a device has a button type
+value of 0 (click-pad) or 1 (pressure-pad) there should not be
+discrete buttons:
+https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
 
-If the firmware for this driver happened to send an event which resulted
-in a call to dcb_ieee_setapp() at the exact same time as another
-DCB-enabled interface was unregistering on the same CPU, the softirq
-would deadlock, because the interrupted process was already holding the
-dcb_lock in dcbnl_flush_dev().
+However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
+though the device is a buttonpad and therefore does not have those
+buttons.
 
-Fix this unlikely event by using spin_lock_bh() in dcbnl_flush_dev() as
-in the rest of the dcbnl code.
+This behavior has forced userspace applications like libinput to
+implement different workarounds and quirks to detect buttonpads and
+offer to the user the right set of features and configuration options.
+For more information:
+https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
 
-Fixes: 91b0383fef06 ("net: dcb: flush lingering app table entries for unregistered devices")
-Reported-by: Ido Schimmel <idosch@idosch.org>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220302193939.1368823-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
+bits when the input device is register if the INPUT_PROP_BUTTONPAD
+property bit is set.
+
+Notice that this change will not affect udev because it does not check
+for buttons. See systemd/src/udev/udev-builtin-input_id.c.
+
+List of known affected hardware:
+
+ - Chuwi AeroBook Plus
+ - Chuwi Gemibook
+ - Framework Laptop
+ - GPD Win Max
+ - Huawei MateBook 2020
+ - Prestigio Smartbook 141 C2
+ - Purism Librem 14v1
+ - StarLite Mk II   - AMI firmware
+ - StarLite Mk II   - Coreboot firmware
+ - StarLite Mk III  - AMI firmware
+ - StarLite Mk III  - Coreboot firmware
+ - StarLabTop Mk IV - AMI firmware
+ - StarLabTop Mk IV - Coreboot firmware
+ - StarBook Mk V
+
+Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Acked-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dcb/dcbnl.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/input/input.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -1942,7 +1942,7 @@ static void dcbnl_flush_dev(struct net_d
- {
- 	struct dcb_app_type *itr, *tmp;
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index 5d94fc3fce0bb..cb31236425a11 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -2112,6 +2112,12 @@ int input_register_device(struct input_dev *dev)
+ 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
+ 	__clear_bit(KEY_RESERVED, dev->keybit);
  
--	spin_lock(&dcb_lock);
-+	spin_lock_bh(&dcb_lock);
++	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
++	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
++		__clear_bit(BTN_RIGHT, dev->keybit);
++		__clear_bit(BTN_MIDDLE, dev->keybit);
++	}
++
+ 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
+ 	input_cleanse_bitmasks(dev);
  
- 	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
- 		if (itr->ifindex == dev->ifindex) {
-@@ -1951,7 +1951,7 @@ static void dcbnl_flush_dev(struct net_d
- 		}
- 	}
- 
--	spin_unlock(&dcb_lock);
-+	spin_unlock_bh(&dcb_lock);
- }
- 
- static int dcbnl_netdevice_event(struct notifier_block *nb,
+-- 
+2.34.1
+
 
 
