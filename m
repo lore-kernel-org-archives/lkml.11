@@ -2,105 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13CABC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F275EC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243856AbiCGPnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:43:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
+        id S243863AbiCGPoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:44:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243924AbiCGPnD (ORCPT
+        with ESMTP id S233446AbiCGPow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:43:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AC176652;
-        Mon,  7 Mar 2022 07:42:08 -0800 (PST)
+        Mon, 7 Mar 2022 10:44:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E0C70F42;
+        Mon,  7 Mar 2022 07:43:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 689B461479;
-        Mon,  7 Mar 2022 15:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67B34C340EB;
-        Mon,  7 Mar 2022 15:42:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3F8EB815EB;
+        Mon,  7 Mar 2022 15:43:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3107EC340E9;
+        Mon,  7 Mar 2022 15:43:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646667727;
-        bh=vwimokoLmujACAs7ILvplWTc17PHeX1/UInnu8gaKw8=;
+        s=k20201202; t=1646667835;
+        bh=pfUclWf7OeQP6fVMwAxfeek4Z/tO6y5WQdf6JL4ro+k=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IWGX3p+743ArJ22T83/9Z72NRV0Bgp+PWTHxZ+tGuKxnKIvXYX4lEN4ZyEiyCFhRc
-         aVlKCRmHsEbLkPGUorJmFixVg6ri1DTyKti3DlmA8EIbRrjJrghfCtDw3vTC+FOxx/
-         3uv3QU4Uc4UY0fBo3fftbiKxCrElM0u5KRWhk1csSDptwopQinmbLr8ojn7lmhOBoO
-         QR+b3ZwJNO1sOXYEMLzQZ+2sfg3IPbCdQSHrJZ45GZSS1CpbE+XKkwMsyhd9ED6CLf
-         t8dM14PHbJ2yFh5LXe+9zNEu2EZvkw7ovZCY1lZL6gvobR0HXt4+M27AyTKz68xVWe
-         t5Rdnboa6AhiA==
-Date:   Mon, 7 Mar 2022 17:41:26 +0200
+        b=MGqXs4QUJZlZgCVSTmVIhUyrefWcLiV5XQbqLL4lWUXGjnXK8TQIh8MZmlhlk7Dws
+         vymCZmmrecWaK5QsPzl/JEnH42FdMm3knJaE2LeAyUSJ6XKfnw56pF4AeKS+pTp0gM
+         5KdvMy04Dnkw4+IxsOcB497JN8wWMBQMp3/kpehP7UKOCvtf1DHR6KqD1XbWMnWqm1
+         J5NppGJKVe/xpRZtg5cS5CCRR4+KxGOb1RuKPdZJJ1tfKV82mNLMPHXXAbwf++SaN3
+         MlkGhHuxVnfK5PtQGRXqcvD5ziuoeGJJ2APZH4iRWJVk48q3ueX06DQHuMjFgRGo6P
+         8lzRQuuKTdedQ==
+Date:   Mon, 7 Mar 2022 17:43:14 +0200
 From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     Sergey Temerkhanov <s.temerkhanov@gmail.com>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] tpm: Rework open/close/shutdown to avoid races
-Message-ID: <YiYnpsryEDlrryzU@iki.fi>
-References: <20201215133801.546207-1-s.temerkhanov@gmail.com>
- <e7566e1e48f5be9dca034b4bfb67683b5d3cb88f.camel@HansenPartnership.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        linux-sgx@vger.kernel.org, jaharkes@cs.cmu.edu,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        codalist@telemann.coda.cs.cmu.edu, linux-unionfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH RFC v2] mm: Add f_ops->populate()
+Message-ID: <YiYoEiBklxQrb8Wj@iki.fi>
+References: <20220306032655.97863-1-jarkko@kernel.org>
+ <20220306152456.2649b1c56da2a4ce4f487be4@linux-foundation.org>
+ <c3083144-bfc1-3260-164c-e59b2d110df8@intel.com>
+ <YiYYvAWYgC+PKEx0@casper.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e7566e1e48f5be9dca034b4bfb67683b5d3cb88f.camel@HansenPartnership.com>
+In-Reply-To: <YiYYvAWYgC+PKEx0@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 10:51:43AM -0800, James Bottomley wrote:
-> On Tue, 2020-12-15 at 16:38 +0300, Sergey Temerkhanov wrote:
-> > Avoid race condition at shutdown by shutting downn the TPM 2.0
-> > devices synchronously. This eliminates the condition when the
-> > shutdown sequence sets chip->ops to NULL leading to the following:
+On Mon, Mar 07, 2022 at 02:37:48PM +0000, Matthew Wilcox wrote:
+> On Sun, Mar 06, 2022 at 03:41:54PM -0800, Dave Hansen wrote:
+> > In short: page faults stink.  The core kernel has lots of ways of
+> > avoiding page faults like madvise(MADV_WILLNEED) or mmap(MAP_POPULATE).
+> >  But, those only work on normal RAM that the core mm manages.
 > > 
-> > [ 1586.593561][ T8669] tpm2_del_space+0x28/0x73
-> > [ 1586.598718][ T8669] tpmrm_release+0x27/0x33wq
-> > [ 1586.603774][ T8669] __fput+0x109/0x1d
-> > [ 1586.608380][ T8669] task_work_run+0x7c/0x90
-> > [ 1586.613414][ T8669] prepare_exit_to_usermode+0xb8/0x128
-> > [ 1586.619522][ T8669] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > [ 1586.626068][ T8669] RIP: 0033:0x4cb4bb
+> > SGX is weird.  SGX memory is managed outside the core mm.  It doesn't
+> > have a 'struct page' and get_user_pages() doesn't work on it.  Its VMAs
+> > are marked with VM_IO.  So, none of the existing methods for avoiding
+> > page faults work on SGX memory.
+> > 
+> > This essentially helps extend existing "normal RAM" kernel ABIs to work
+> > for avoiding faults for SGX too.  SGX users want to enjoy all of the
+> > benefits of a delayed allocation policy (better resource use,
+> > overcommit, NUMA affinity) but without the cost of millions of faults.
 > 
-> An actual bug report would have been helpful.  However, from this trace
-> it's easy to deduce that tpm2_del_space() didn't get converted to the
-> get/put of the chip ops ... it's still trying to do its own half arsed
-> thing with tpm_chip_start() and the mutex.  So isn't a much simpler fix
-> simply to convert it as below?  compile tested only, but if you can
-> test it out I'll send a proper patch.
+> We have a mechanism for dynamically reducing the number of page faults
+> already; it's just buried in the page cache code.  You have vma->vm_file,
+> which contains a file_ra_state.  You can use this to track where
+> recent faults have been and grow the size of the region you fault in
+> per page fault.  You don't have to (indeed probably don't want to) use
+> the same algorithm as the page cache, but the _principle_ is the same --
+> were recent speculative faults actually used; should we grow the number
+> of pages actually faulted in, or is this a random sparse workload where
+> we want to allocate individual pages.
 > 
-> James
-> 
-> ---
-> 
-> diff --git a/drivers/char/tpm/tpm2-space.c b/drivers/char/tpm/tpm2-space.c
-> index 784b8b3cb903..0c0cd225046f 100644
-> --- a/drivers/char/tpm/tpm2-space.c
-> +++ b/drivers/char/tpm/tpm2-space.c
-> @@ -58,12 +58,12 @@ int tpm2_init_space(struct tpm_space *space, unsigned int buf_size)
->  
->  void tpm2_del_space(struct tpm_chip *chip, struct tpm_space *space)
->  {
-> -	mutex_lock(&chip->tpm_mutex);
-> -	if (!tpm_chip_start(chip)) {
-> +
-> +	if (tpm_try_get_ops(chip) == 0) {
->  		tpm2_flush_sessions(chip, space);
-> -		tpm_chip_stop(chip);
-> +		tpm_put_ops(chip);
->  	}
-> -	mutex_unlock(&chip->tpm_mutex);
-> +
->  	kfree(space->context_buf);
->  	kfree(space->session_buf);
->  }
-> 
+> Don't rely on the user to ask.  They don't know.
 
-James, would it possible for you to construct a proper patch from this and
-send it so we could include it to the next PR (use my tree as baseline)?
+This sounds like a possibility. I'll need to study it properly first
+though. Thank you for pointing this out.
 
 BR, Jarkko
