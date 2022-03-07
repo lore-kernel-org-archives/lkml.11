@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C199C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235493AbiCGJv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:51:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
+        id S238320AbiCGJwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240976AbiCGJln (ORCPT
+        with ESMTP id S240973AbiCGJln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9CF5BE42;
-        Mon,  7 Mar 2022 01:38:54 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11206C1CA;
+        Mon,  7 Mar 2022 01:38:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E0AAB810BD;
-        Mon,  7 Mar 2022 09:38:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E43C340E9;
-        Mon,  7 Mar 2022 09:38:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 392C4B8102B;
+        Mon,  7 Mar 2022 09:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73EFCC340F3;
+        Mon,  7 Mar 2022 09:38:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645932;
-        bh=np/VDDuSzK0U7l3ywkzyCKXrtcwvE2mSNRZWXCFH3oM=;
+        s=korg; t=1646645928;
+        bh=Ljpn8FdyEg3DeGHMfdNwKAXkMrJs/1K06M6QjXTJynQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AcxYnBHMOOcFKCUaZreVlVcOaV8GiigyfFlbbWi14nMM0kvmwwOfWkyD+tcUl404l
-         bmFPPxWeDnZvr9D8LYdoA7XnG1q2oX4AAjOOoPlAS6iSk7LbZ6mdwueIEO8kOBhDCP
-         lp5nQ6TG5zgC8qfDfFnth2ajJ5SoVJ/1IV+8smUI=
+        b=d+4GFnPo+NGMku5ctl6vTPh7ZNUoS8xH6WCamUda8Lar1oMz4SnQgvywckPqGLDkw
+         /A1GqFMBNgihf5i3d76rMDgQWUV71xw16ZzVswqx3cfS+uJ4Qi3Dhql4YR19F3GaaG
+         txNHgn50N7Sm13degQ2STguVvEbwzdKHT7lsjrU0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/262] NFSD: Fix zero-length NFSv3 WRITEs
-Date:   Mon,  7 Mar 2022 10:16:28 +0100
-Message-Id: <20220307091703.765871345@linuxfoundation.org>
+Subject: [PATCH 5.15 079/262] drm/i915: dont call free_mmap_offset when purging
+Date:   Mon,  7 Mar 2022 10:17:03 +0100
+Message-Id: <20220307091704.720213737@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,90 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Matthew Auld <matthew.auld@intel.com>
 
-[ Upstream commit 6a2f774424bfdcc2df3e17de0cefe74a4269cad5 ]
+[ Upstream commit 4c2602ba8d74c35d550ed3d518809c697de08d88 ]
 
-The Linux NFS server currently responds to a zero-length NFSv3 WRITE
-request with NFS3ERR_IO. It responds to a zero-length NFSv4 WRITE
-with NFS4_OK and count of zero.
+The TTM backend is in theory the only user here(also purge should only
+be called once we have dropped the pages), where it is setup at object
+creation and is only removed once the object is destroyed. Also
+resetting the node here might be iffy since the ttm fault handler
+uses the stored fake offset to determine the page offset within the pages
+array.
 
-RFC 1813 says of the WRITE procedure's @count argument:
+This also blows up in the dontneed-before-mmap test, since the
+expectation is that the vma_node will live on, until the object is
+destroyed:
 
-count
-         The number of bytes of data to be written. If count is
-         0, the WRITE will succeed and return a count of 0,
-         barring errors due to permissions checking.
+<2> [749.062902] kernel BUG at drivers/gpu/drm/i915/gem/i915_gem_ttm.c:943!
+<4> [749.062923] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+<4> [749.062928] CPU: 0 PID: 1643 Comm: gem_madvise Tainted: G     U  W         5.16.0-rc8-CI-CI_DRM_11046+ #1
+<4> [749.062933] Hardware name: Gigabyte Technology Co., Ltd. GB-Z390 Garuda/GB-Z390 Garuda-CF, BIOS IG1c 11/19/2019
+<4> [749.062937] RIP: 0010:i915_ttm_mmap_offset.cold.35+0x5b/0x5d [i915]
+<4> [749.063044] Code: 00 48 c7 c2 a0 23 4e a0 48 c7 c7 26 df 4a a0 e8 95 1d d0 e0 bf 01 00 00 00 e8 8b ec cf e0 31 f6 bf 09 00 00 00 e8 5f 30 c0 e0 <0f> 0b 48 c7 c1 24 4b 56 a0 ba 5b 03 00 00 48 c7 c6 c0 23 4e a0 48
+<4> [749.063052] RSP: 0018:ffffc90002ab7d38 EFLAGS: 00010246
+<4> [749.063056] RAX: 0000000000000240 RBX: ffff88811f2e61c0 RCX: 0000000000000006
+<4> [749.063060] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000009
+<4> [749.063063] RBP: ffffc90002ab7e58 R08: 0000000000000001 R09: 0000000000000001
+<4> [749.063067] R10: 000000000123d0f8 R11: ffffc90002ab7b20 R12: ffff888112a1a000
+<4> [749.063071] R13: 0000000000000004 R14: ffff88811f2e61c0 R15: ffff888112a1a000
+<4> [749.063074] FS:  00007f6e5fcad500(0000) GS:ffff8884ad600000(0000) knlGS:0000000000000000
+<4> [749.063078] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+<4> [749.063081] CR2: 00007efd264e39f0 CR3: 0000000115fd6005 CR4: 00000000003706f0
+<4> [749.063085] Call Trace:
+<4> [749.063087]  <TASK>
+<4> [749.063089]  __assign_mmap_offset+0x41/0x300 [i915]
+<4> [749.063171]  __assign_mmap_offset_handle+0x159/0x270 [i915]
+<4> [749.063248]  ? i915_gem_dumb_mmap_offset+0x70/0x70 [i915]
+<4> [749.063325]  drm_ioctl_kernel+0xae/0x140
+<4> [749.063330]  drm_ioctl+0x201/0x3d0
+<4> [749.063333]  ? i915_gem_dumb_mmap_offset+0x70/0x70 [i915]
+<4> [749.063409]  ? do_user_addr_fault+0x200/0x670
+<4> [749.063415]  __x64_sys_ioctl+0x6d/0xa0
+<4> [749.063419]  do_syscall_64+0x3a/0xb0
+<4> [749.063423]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+<4> [749.063428] RIP: 0033:0x7f6e5f100317
 
-RFC 8881 has similar language for NFSv4, though NFSv4 removed the
-explicit @count argument because that value is already contained in
-the opaque payload array.
-
-The synthetic client pynfs's WRT4 and WRT15 tests do emit zero-
-length WRITEs to exercise this spec requirement. Commit fdec6114ee1f
-("nfsd4: zero-length WRITE should succeed") addressed the same
-problem there with the same fix.
-
-But interestingly the Linux NFS client does not appear to emit zero-
-length WRITEs, instead squelching them. I'm not aware of a test that
-can generate such WRITEs for NFSv3, so I wrote a naive C program to
-generate a zero-length WRITE and test this fix.
-
-Fixes: 8154ef2776aa ("NFSD: Clean up legacy NFS WRITE argument XDR decoders")
-Reported-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Testcase: igt/gem_madvise/dontneed-before-mmap
+Fixes: cf3e3e86d779 ("drm/i915: Use ttm mmap handling for ttm bo's.")
+Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220106174910.280616-1-matthew.auld@intel.com
+(cherry picked from commit 658a0c632625e1db51837ff754fe18a6a7f2ccf8)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/nfs3proc.c | 6 +-----
- fs/nfsd/nfsproc.c  | 5 -----
- 2 files changed, 1 insertion(+), 10 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/nfsd/nfs3proc.c b/fs/nfsd/nfs3proc.c
-index 354bbfcd96aae..b540489ea240d 100644
---- a/fs/nfsd/nfs3proc.c
-+++ b/fs/nfsd/nfs3proc.c
-@@ -211,15 +211,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
- 	fh_copy(&resp->fh, &argp->fh);
- 	resp->committed = argp->stable;
- 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
--	if (!nvecs) {
--		resp->status = nfserr_io;
--		goto out;
--	}
-+
- 	resp->status = nfsd_write(rqstp, &resp->fh, argp->offset,
- 				  rqstp->rq_vec, nvecs, &cnt,
- 				  resp->committed, resp->verf);
- 	resp->count = cnt;
--out:
- 	return rpc_success;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_pages.c b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+index 8d6c38a622016..9053cea3395a6 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+@@ -162,7 +162,6 @@ int i915_gem_object_pin_pages_unlocked(struct drm_i915_gem_object *obj)
+ /* Immediately discard the backing storage */
+ void i915_gem_object_truncate(struct drm_i915_gem_object *obj)
+ {
+-	drm_gem_free_mmap_offset(&obj->base);
+ 	if (obj->ops->truncate)
+ 		obj->ops->truncate(obj);
  }
- 
-diff --git a/fs/nfsd/nfsproc.c b/fs/nfsd/nfsproc.c
-index de282f3273c50..312fd289be583 100644
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -235,10 +235,6 @@ nfsd_proc_write(struct svc_rqst *rqstp)
- 		argp->len, argp->offset);
- 
- 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
--	if (!nvecs) {
--		resp->status = nfserr_io;
--		goto out;
--	}
- 
- 	resp->status = nfsd_write(rqstp, fh_copy(&resp->fh, &argp->fh),
- 				  argp->offset, rqstp->rq_vec, nvecs,
-@@ -247,7 +243,6 @@ nfsd_proc_write(struct svc_rqst *rqstp)
- 		resp->status = fh_getattr(&resp->fh, &resp->stat);
- 	else if (resp->status == nfserr_jukebox)
- 		return rpc_drop_reply;
--out:
- 	return rpc_success;
- }
- 
 -- 
 2.34.1
 
