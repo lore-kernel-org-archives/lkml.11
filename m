@@ -2,121 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A184CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241622AbiCGLAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:00:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        id S241703AbiCGLAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:00:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbiCGK5l (ORCPT
+        with ESMTP id S241203AbiCGK5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:57:41 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71C4B1AB1;
-        Mon,  7 Mar 2022 02:18:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646648308; x=1678184308;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MF4bSZAjSpcDs7XroNbwBWFR0D4m2/1zQ1gUexWfA9w=;
-  b=Sft0QAgjBDgieXlDDqukQx7M0j/nfCng60Y8jIj9aYYI9mQoU8I/XVE6
-   nnlHTRw09URQxmyQL23fZHmClckEuF/y/IvDWsdJk0Iya9J3tB/giWWla
-   DT6UazX5CvlmI5k3aKj0qvTQziap0SSBFyJDgrGsPareXxvz6flJumFcE
-   oxIcsITrcK/4CCGRfg4eK1V1USTLE8DRtvCv0GN1fpJ27kF0sE+AjR6Hg
-   V+6MlrDv4B6qMNRJ6bx2RzWJqJjG3momgLwpXucILUHPRwFMe3FbmyAse
-   K6X45Y3BXIAJoApVZ840dfpv8YeQEO27e2yC7jVzV/G6vgbhnX34azWBR
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,161,1643698800"; 
-   d="scan'208";a="155932004"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 03:18:28 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 03:18:27 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 03:18:22 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        <UNGLinuxDriver@microchip.com>
-Subject: [RFC PATCH net-next 2/2] net: phy: lan87xx: use genphy_read_master_slave in read_status
-Date:   Mon, 7 Mar 2022 15:47:43 +0530
-Message-ID: <20220307101743.8567-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220307101743.8567-1-arun.ramadoss@microchip.com>
-References: <20220307101743.8567-1-arun.ramadoss@microchip.com>
+        Mon, 7 Mar 2022 05:57:35 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95A8B1523
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:17:24 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 80DB510001A;
+        Mon,  7 Mar 2022 10:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646648243;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4TZJ67Qf5npxgRoNb/48DKjrSfSErIPD2XpuA2RT2wg=;
+        b=an72McpjP8B3OkO7jW56TLtGhSr2iWjdcchaiD5cNEVqZeZybpLNGyy4Y1MpxQlqIlm31+
+        WqCJD3ZQ/fp9BTvYz482zc8PnsOG+bI1oA9BOCujbuPohBZx8lPnreCM8m+vFQLUl/KsxF
+        iwvandNv5rN/4keXXW+B8xIFRzj17A41qA/bf2dkh7dNLF/PvmRHmIWapD5L+VC8Q+sXYK
+        A0GMva5ZGNdf+T+LKk5N2r/tP/dvViwRJ7yOO+TSvZAU51Pma64Vp3ZR8/GtqYJSogQJiL
+        Xzcugksi3FY/8JnsbCu407xC0u6IaSj1IWr/TDrMBeN1PVKk+/3DyN01r8bwmA==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v2 1/2] ARM: at91: add code to handle secure calls
+Date:   Mon,  7 Mar 2022 11:15:49 +0100
+Message-Id: <20220307101550.95538-2-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220307101550.95538-1-clement.leger@bootlin.com>
+References: <20220307101550.95538-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To read the master slave configuration of the LAN87xx T1 phy, used the
-generic phy driver genphy_read_master_slave function. Removed the local
-lan87xx_read_master_slave function.
+Since OP-TEE now has a more complete support for sama5d2, add necessary
+code to perform SMC calls. The detection of OP-TEE is based on a
+specific device-tree node path (/firmware/optee) such has done by some
+other SoC. A check is added to avoid doing SMC calls without having
+OP-TEE.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/phy/microchip_t1.c | 30 +-----------------------------
- 1 file changed, 1 insertion(+), 29 deletions(-)
+ arch/arm/mach-at91/Makefile     |  2 +-
+ arch/arm/mach-at91/sam_secure.c | 46 +++++++++++++++++++++++++++++++++
+ arch/arm/mach-at91/sam_secure.h | 14 ++++++++++
+ arch/arm/mach-at91/sama5.c      |  2 ++
+ 4 files changed, 63 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/mach-at91/sam_secure.c
+ create mode 100644 arch/arm/mach-at91/sam_secure.h
 
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index 8292f7305805..389df3f4293c 100644
---- a/drivers/net/phy/microchip_t1.c
-+++ b/drivers/net/phy/microchip_t1.c
-@@ -674,34 +674,6 @@ static int lan87xx_cable_test_get_status(struct phy_device *phydev,
- 	return 0;
+diff --git a/arch/arm/mach-at91/Makefile b/arch/arm/mach-at91/Makefile
+index 522b680b6446..0dcc37180588 100644
+--- a/arch/arm/mach-at91/Makefile
++++ b/arch/arm/mach-at91/Makefile
+@@ -7,7 +7,7 @@
+ obj-$(CONFIG_SOC_AT91RM9200)	+= at91rm9200.o
+ obj-$(CONFIG_SOC_AT91SAM9)	+= at91sam9.o
+ obj-$(CONFIG_SOC_SAM9X60)	+= sam9x60.o
+-obj-$(CONFIG_SOC_SAMA5)		+= sama5.o
++obj-$(CONFIG_SOC_SAMA5)		+= sama5.o sam_secure.o
+ obj-$(CONFIG_SOC_SAMA7)		+= sama7.o
+ obj-$(CONFIG_SOC_SAMV7)		+= samv7.o
+ 
+diff --git a/arch/arm/mach-at91/sam_secure.c b/arch/arm/mach-at91/sam_secure.c
+new file mode 100644
+index 000000000000..2a01f7a7d13f
+--- /dev/null
++++ b/arch/arm/mach-at91/sam_secure.c
+@@ -0,0 +1,46 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2022, Microchip
++ */
++
++#include <linux/arm-smccc.h>
++#include <linux/of.h>
++
++#include "sam_secure.h"
++
++static bool optee_available;
++
++#define SAM_SIP_SMC_STD_CALL_VAL(func_num) \
++	ARM_SMCCC_CALL_VAL(ARM_SMCCC_STD_CALL, ARM_SMCCC_SMC_32, \
++	ARM_SMCCC_OWNER_SIP, (func_num))
++
++struct arm_smccc_res sam_smccc_call(u32 fn, u32 arg0, u32 arg1)
++{
++	struct arm_smccc_res res = {.a0 = -1};
++
++	if (WARN_ON(!optee_available))
++		return res;
++
++	arm_smccc_smc(SAM_SIP_SMC_STD_CALL_VAL(fn), arg0, arg1, 0, 0, 0, 0, 0,
++		      &res);
++
++	return res;
++}
++
++void __init sam_secure_init(void)
++{
++	struct device_node *np;
++
++	/*
++	 * We only check that the OP-TEE node is present and available. The
++	 * OP-TEE kernel driver is not needed for the type of interaction made
++	 * with OP-TEE here so the driver's status is not checked.
++	 */
++	np = of_find_node_by_path("/firmware/optee");
++	if (np && of_device_is_available(np))
++		optee_available = true;
++	of_node_put(np);
++
++	if (optee_available)
++		pr_info("Running under OP-TEE firmware\n");
++}
+diff --git a/arch/arm/mach-at91/sam_secure.h b/arch/arm/mach-at91/sam_secure.h
+new file mode 100644
+index 000000000000..360036672f52
+--- /dev/null
++++ b/arch/arm/mach-at91/sam_secure.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2022, Microchip
++ */
++
++#ifndef SAM_SECURE_H
++#define SAM_SECURE_H
++
++#include <linux/arm-smccc.h>
++
++void __init sam_secure_init(void);
++struct arm_smccc_res sam_smccc_call(u32 fn, u32 arg0, u32 arg1);
++
++#endif /* SAM_SECURE_H */
+diff --git a/arch/arm/mach-at91/sama5.c b/arch/arm/mach-at91/sama5.c
+index 89dab7cf01e8..de5dd28b392e 100644
+--- a/arch/arm/mach-at91/sama5.c
++++ b/arch/arm/mach-at91/sama5.c
+@@ -14,6 +14,7 @@
+ #include <asm/system_misc.h>
+ 
+ #include "generic.h"
++#include "sam_secure.h"
+ 
+ static void __init sama5_dt_device_init(void)
+ {
+@@ -47,6 +48,7 @@ MACHINE_END
+ static void __init sama5d2_init(void)
+ {
+ 	of_platform_default_populate(NULL, NULL, NULL);
++	sam_secure_init();
+ 	sama5d2_pm_init();
  }
  
--static int lan87xx_read_master_slave(struct phy_device *phydev)
--{
--	int rc = 0;
--
--	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
--	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
--
--	rc = phy_read(phydev, MII_CTRL1000);
--	if (rc < 0)
--		return rc;
--
--	if (rc & CTL1000_AS_MASTER)
--		phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
--	else
--		phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
--
--	rc = phy_read(phydev, MII_STAT1000);
--	if (rc < 0)
--		return rc;
--
--	if (rc & LPA_1000MSRES)
--		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
--	else
--		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
--
--	return rc;
--}
--
- static int lan87xx_read_status(struct phy_device *phydev)
- {
- 	int rc = 0;
-@@ -720,7 +692,7 @@ static int lan87xx_read_status(struct phy_device *phydev)
- 	phydev->pause = 0;
- 	phydev->asym_pause = 0;
- 
--	rc = lan87xx_read_master_slave(phydev);
-+	rc = genphy_read_master_slave(phydev);
- 	if (rc < 0)
- 		return rc;
- 
 -- 
-2.33.0
+2.34.1
 
